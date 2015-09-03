@@ -4,18 +4,11 @@
  * http://www.seis.sc.edu
  */
 
-/**
- * AMD style define, see https://github.com/amdjs/amdjs-api/wiki/AMD
- */
-define( 'miniseed',
-        ['seedcodec'],
-        function(seedcodec) {
-            
-  var miniseed = {
-    version: "0.0.1"
-  };
+import * as seedcodec from '../seedcodec/seedcodec';
 
-  miniseed.parseDataRecords = function (arrayBuffer) {
+export const version: "0.0.1";
+
+export function parseDataRecords(arrayBuffer) {
 	var dataRecords = []
 	var offset = 0
 	while (offset < arrayBuffer.byteLength) {
@@ -161,7 +154,7 @@ function checkByteSwap(bTime) {
 	return bTime.year < 1960 || bTime.year > 2055;
 }
 
-miniseed.areContiguous = function(dr1, dr2) {
+export function areContiguous(dr1, dr2) {
     var h1 = dr1.header;
     var h2 = dr2.header;
     return h1.end.getTime() < h2.start.getTime() 
@@ -174,7 +167,7 @@ miniseed.areContiguous = function(dr1, dr2) {
  * as the function timeOfSample(integer) set.
  * This assumes all data records are from the same channel.
  */
-miniseed.merge = function(drList) {
+export function merge(drList) {
     var out = [];
     var prevDR, currDR;
     var current;
@@ -224,7 +217,7 @@ miniseed.merge = function(drList) {
     return out;
 }
 
-miniseed.byChannel = function(drList) {
+export function byChannel(drList) {
     var out = {};
     var key;
     for (var i=0; i<drList.length; i++) {
@@ -239,5 +232,3 @@ miniseed.byChannel = function(drList) {
     return out;
 }
 
-return miniseed;
-        });
