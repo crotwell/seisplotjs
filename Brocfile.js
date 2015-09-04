@@ -14,6 +14,7 @@ module.exports = dist('src', {
   // global output only: naive shimming, when the id 'ember' is imported,
   // substitute with `window.Ember` instead
   shim: {
-    'ember': 'Ember'
+    'ember': 'Ember',
+    'd3': 'd3'
   }
 });
