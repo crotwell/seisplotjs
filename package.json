@@ -1,0 +1,28 @@
+{
+  "name": "seisplotjs",
+  "version": "0.0.1",
+  "description": "Javascript library for parsing, manipulating and displaying seismic data.",
+  "main": "seisplot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/crotwell/seisplotjs.git"
+  },
+  "keywords": [
+    "seismology",
+    "miniseed",
+    "steim1",
+    "steim2"
+  ],
+  "author": "Philip Crotwell <crotwell@seis.sc.edu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/crotwell/seisplotjs/issues"
+  },
+  "homepage": "https://github.com/crotwell/seisplotjs",
+  "devDependencies": {
+    "broccoli-dist-es6-module": "^0.2.1"
+  }
+}
