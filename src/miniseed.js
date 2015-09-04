@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 
-import seedcodec from '../seedcodec/seedcodec';
+import seedcodec from './seedcodec';
 
 export default function() {
   var version = "0.0.1";
