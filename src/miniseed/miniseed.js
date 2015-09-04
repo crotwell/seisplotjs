@@ -4,11 +4,12 @@
  * http://www.seis.sc.edu
  */
 
-import * as seedcodec from '../seedcodec/seedcodec';
+import seedcodec from '../seedcodec/seedcodec';
 
-export const version: "0.0.1";
+export default function() {
+  var version = "0.0.1";
 
-export function parseDataRecords(arrayBuffer) {
+  var parseDataRecords = function(arrayBuffer) {
 	var dataRecords = []
 	var offset = 0
 	while (offset < arrayBuffer.byteLength) {
@@ -154,7 +155,7 @@ function checkByteSwap(bTime) {
 	return bTime.year < 1960 || bTime.year > 2055;
 }
 
-export function areContiguous(dr1, dr2) {
+  var areContiguous = function(dr1, dr2) {
     var h1 = dr1.header;
     var h2 = dr2.header;
     return h1.end.getTime() < h2.start.getTime() 
@@ -167,7 +168,7 @@ export function areContiguous(dr1, dr2) {
  * as the function timeOfSample(integer) set.
  * This assumes all data records are from the same channel.
  */
-export function merge(drList) {
+  var merge = function(drList) {
     var out = [];
     var prevDR, currDR;
     var current;
@@ -217,7 +218,7 @@ export function merge(drList) {
     return out;
 }
 
-export function byChannel(drList) {
+  var byChannel = function(drList) {
     var out = {};
     var key;
     for (var i=0; i<drList.length; i++) {
@@ -232,3 +233,4 @@ export function byChannel(drList) {
     return out;
 }
 
+}

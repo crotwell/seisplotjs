@@ -4,9 +4,8 @@
  * http://www.seis.sc.edu
  */
 
-import * as ms from 'miniseed/miniseed.js';
-import * as sc from 'seedcodec/seedcodec.js';
+import miniseed from './miniseed/miniseed.js';
+import seedcodec from './seedcodec/seedcodec.js';
 
-export const miniseed = ms;
-export const seedcodec = sc;
+export { miniseed, seedcodec};
 

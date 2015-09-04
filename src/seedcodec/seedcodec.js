@@ -6,47 +6,49 @@
 // converted from Steim2.java in seedCodec
 // http://code.google.com/p/seedcodec/
         
-export const version: "0.0.1";
+export default function() {
+
+  var version = "0.0.1";
   
 // constants for compression types
 
 /** ascii */
-export const ASCII = 0;
+  var ASCII = 0;
 
 /** 16 bit integer, or java short */
-export const SHORT = 1;
+  var SHORT = 1;
 
 /** 24 bit integer */
-export const INT24 = 2;
+  var INT24 = 2;
 
 /** 32 bit integer, or java int */
-export const INTEGER = 3;
+  var INTEGER = 3;
 
 /** ieee float */
-export const FLOAT = 4;
+  var FLOAT = 4;
 
 /** ieee double*/
-export const DOUBLE = 5;
+  var DOUBLE = 5;
 
 /** Steim1 compression */
-export const STEIM1= 10;
+  var STEIM1= 10;
 
 /** Steim2 compression */
-export const STEIM2 = 11;
+  var STEIM2 = 11;
     
 /** CDSN 16 bit gain ranged */
-export const CDSN = 16;
+  var CDSN = 16;
         
 /** (A)SRO */
-export const SRO = 30;
+  var SRO = 30;
     
 /** DWWSSN 16 bit */
-export const DWWSSN = 32;
+  var DWWSSN = 32;
 
-var steim1 = {};
-var steim2 = {};
+  var steim1 = {};
+  var steim2 = {};
 
-export function decompress(compressionType, dataView, numSamples, littleEndian) {
+  var decompress = function(compressionType, dataView, numSamples, littleEndian) {
     // in case of record with no data points, ex detection blockette, which often have compression type
     // set to 0, which messes up the decompresser even though it doesn't matter since there is no data.
     if (numSamples == 0) {
@@ -417,5 +419,6 @@ function extractSteim2Samples(dataView, offset, swapBytes) {
 		out[i] = temp[i];
 	}
 	return out;
+}
 }
 	
