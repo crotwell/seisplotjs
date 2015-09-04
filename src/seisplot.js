@@ -6,6 +6,7 @@
 
 import miniseed from './miniseed.js';
 import seedcodec from './seedcodec.js';
+import waveformplot from './waveformplot.js';
 
-export { miniseed, seedcodec};
+export { miniseed, seedcodec, waveformplot};
 

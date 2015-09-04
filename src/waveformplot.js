@@ -6,11 +6,13 @@
 /**
  * AMD style define, see https://github.com/amdjs/amdjs-api/wiki/AMD
  */
-define('waveformplot',
-        ['miniseed', 'd3'],
-        function(miniseed, d3) {
-  
-function waveformplot() {
+
+import miniseed from './miniseed';
+import seedcodec from './seedcodec';
+import d3 from 'd3';
+
+export default function() {
+ 
     console.log("In waveformplot");
     var plotStart;
     var plotEnd;
@@ -36,7 +38,7 @@ function waveformplot() {
     var plotUUID = guid();
     var clipPathId = "clippath_"+plotUUID;
 
-    function my(inSvgParent, inSegments) {
+    var chart = function(inSvgParent, inSegments) {
         segments.push(inSegments);
         svgParent = inSvgParent;
         draw();
@@ -45,7 +47,7 @@ function waveformplot() {
       //  addResizeHandler(resize);
     }
     
-    my.append = function(key, segment) {
+    chart.append = function(key, segment) {
         segments.push(segment);
     }
     
@@ -106,13 +108,13 @@ function waveformplot() {
         }
     }
 
-    my.xScale = function() {
+    chart.xScale = function() {
         return xScale;
     };
-    my.yScale = function() {
+    chart.yScale = function() {
         return yScale;
     }
-    my.getResizeFunction = function() {
+    chart.getResizeFunction = function() {
         return resize;
     }
     
@@ -272,76 +274,73 @@ function waveformplot() {
         throttleResize = window.setTimeout(func, delay);
     };
     
-    my.resizeNeeded = function() {
+    chart.resizeNeeded = function() {
         throttle(function(){
             resize();
         }, 250);
     };
 
-    my.plotStart = function(value) {
+    chart.plotStart = function(value) {
         if (!arguments.length)
             return plotStart;
         plotStart = value;
         xScale.domain([ plotStart, plotEnd ])
-        my.resizeNeeded();
-        return my;
+        chart.resizeNeeded();
+        return chart;
     };
-    my.plotEnd = function(value) {
+    chart.plotEnd = function(value) {
         if (!arguments.length)
             return plotEnd;
         plotEnd = value;
         xScale.domain([ plotStart, plotEnd ])
-        my.resizeNeeded();
-        return my;
+        chart.resizeNeeded();
+        return chart;
     };
     
-    my.width = function(value) {
+    chart.width = function(value) {
         if (!arguments.length)
             return width;
         width = value;
-        return my;
+        return chart;
     };
 
-    my.height = function(value) {
+    chart.height = function(value) {
         if (!arguments.length)
             return height;
         height = value;
-        return my;
+        return chart;
     };
 
-    my.margin = function(value) {
+    chart.margin = function(value) {
         if (!arguments.length)
             return margin;
         margin = value;
-        return my;
+        return chart;
     }
-    my.xLabel = function(value) {
+    chart.xLabel = function(value) {
         if (!arguments.length)
             return xLabel;
         xLabel = value;
-        return my;
+        return chart;
     }
-    my.yLabel = function(value) {
+    chart.yLabel = function(value) {
         if (!arguments.length)
             return yLabel;
         yLabel = value;
-        return my;
+        return chart;
     }
-    my.xSublabel = function(value) {
+    chart.xSublabel = function(value) {
         if (!arguments.length)
             return xSublabel;
         xSublabel = value;
-        return my;
+        return chart;
     }
-    my.ySublabel = function(value) {
+    chart.ySublabel = function(value) {
         if (!arguments.length)
             return ySublabel;
         ySublabel = value;
-        return my;
+        return chart;
     }
 
-    return my;
-};
+}
 
-return waveformplot;
-        });
