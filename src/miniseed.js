@@ -4,9 +4,8 @@
  * http://www.seis.sc.edu
  */
 
-import seedcodec from './seedcodec';
+import seedcodec from './seedcodec.js';
 
-export default function() {
   var version = "0.0.1";
 
   var parseDataRecords = function(arrayBuffer) {
@@ -29,8 +28,8 @@ function DataRecord(dataView) {
 	this.data = new DataView(dataView.buffer, dataView.byteOffset+this.header.dataOffset, this.header.recordSize-this.header.dataOffset)
 	this.decompress = function() {
 	    var decompData = seedcodec.decompress(this.header.encoding, this.data, this.header.numSamples, this.header.littleEndian);
-        decompData.header = this.header;
-		return decompData;
+            decompData.header = this.header;
+            return decompData;
 	}
 	this.decompData;
 	this.codes = function() {
@@ -196,7 +195,7 @@ function checkByteSwap(bTime) {
     }
     for (var i=0; i<drList.length; i++) {
         currDR = drList[i];
-        if (! current || ! miniseed.areContiguous(prev, drList[i])) {
+        if (! current || ! areContiguous(prevDR, drList[i])) {
             if (current) {
                 assignMetaData(firstDR, current);
                 out.push(current);
@@ -206,7 +205,7 @@ function checkByteSwap(bTime) {
         } else {
             current = current.concat(currDR.decompress());
         }
-        prev = currDR;
+        prevDR = currDR;
     }
     if (current) {
         assignMetaData(firstDR, current);
@@ -222,7 +221,7 @@ function checkByteSwap(bTime) {
     var out = {};
     var key;
     for (var i=0; i<drList.length; i++) {
-        currDR = drList[i];
+        var currDR = drList[i];
         key = currDR.codes();
         if (! out[key]) {
             out[key] = [currDR]; 
@@ -233,4 +232,4 @@ function checkByteSwap(bTime) {
     return out;
 }
 
-}
+export { version, parseDataRecords, byChannel, merge };

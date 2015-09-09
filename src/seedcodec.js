@@ -6,7 +6,6 @@
 // converted from Steim2.java in seedCodec
 // http://code.google.com/p/seedcodec/
         
-export default function() {
 
   var version = "0.0.1";
   
@@ -420,5 +419,5 @@ function extractSteim2Samples(dataView, offset, swapBytes) {
 	}
 	return out;
 }
-}
+export { decompress, steim1, steim2 }
 	
