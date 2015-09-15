@@ -4,9 +4,6 @@
  * http://www.seis.sc.edu
  */
 
-import seedcodec from './seedcodec.js';
-
-  var version = "0.0.1";
 
   var parseDataRecords = function(arrayBuffer) {
 	var dataRecords = []
@@ -232,4 +229,4 @@ function checkByteSwap(bTime) {
     return out;
 }
 
-export { version, parseDataRecords, byChannel, merge, seedcodec };
+let miniseed = { parseDataRecords, byChannel, merge, seedcodec };

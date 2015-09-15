@@ -3,19 +3,28 @@
  * University of South Carolina, 2014
  * http://www.seis.sc.edu
  */
-/**
- * AMD style define, see https://github.com/amdjs/amdjs-api/wiki/AMD
- */
 
-import miniseed from './miniseed';
-//import seedcodec from './seedcodec';
 import d3 from 'd3';
 
+    /*
+     * from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+     */
+    var s4 = function() {
+          return Math.floor((1 + Math.random()) * 0x10000)
+                     .toString(16)
+                     .substring(1);
+    }
+    var guid = function() {
+          return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+                 s4() + '-' + s4() + s4() + s4();
+    }
+    
  
 class chart {
     constructor(inSvgParent, inSegments) {
         console.log("In waveformplot");
         this.throttleResize = true;
+console.log("1");
         this.plotStart;
         this.plotEnd;
         
@@ -27,7 +36,7 @@ class chart {
         this.height = this.outerHeight - this.margin.top - this.margin.bottom;
         // d3 margin convention, see http://bl.ocks.org/mbostock/3019563
     
-        this.segments = [];
+        this.segments = inSegments;
         this.svgParent;
         this.xScale;
         this.yScale;
@@ -37,14 +46,15 @@ class chart {
         this.xSublabel = "";
         this.yLabel = "Amplitude";
         this.ySublabel = "";
+console.log("2 before guid");
         this.plotUUID = guid();
-        this.clipPathId = "clippath_"+plotUUID;
-        segments.push(inSegments);
+        this.clipPathId = "clippath_"+this.plotUUID;
+        //segments.push(inSegments);
         this.svgParent = inSvgParent;
-        draw();
         
       //  fix this....
       //  addResizeHandler(resize);
+console.log("3 end constructor");
     }
 
     
@@ -105,7 +115,7 @@ class chart {
             for (let drNum = 0; drNum < this.segments[plotNum].length; drNum++) { 
                 console.log("resize select: "+'#'+this.segments[plotNum][drNum].seisId()+'_'+this.plotUUID);
                 svgG.select('#'+segments[plotNum][drNum].seisId()+'_'+this.plotUUID)
-                .attr("d", createLineFunction(segments[plotNum][drNum]));
+                .attr("d", this.createLineFunction(segments[plotNum][drNum]));
         }
         }
     }
@@ -121,17 +131,20 @@ class chart {
     }
     
     createLineFunction(segment) {
+console.log("in createLineFunction");
         this.seg = segment;
         return d3.svg.line()
         .x(function(d, i) {
-            return xScale(seg.timeOfSample(i));
+            return this.xScale(seg.timeOfSample(i));
         }).y(function(d, i) {
-            return yScale(d);
+            return this.yScale(d);
         }).interpolate("linear")(seg); // call the d3 function created by line with data
     }
     
     draw() {
-        console.log("In waveformplot.draw "+this.plots.length+" "+this.width+" "+this.height);
+        console.log("In waveformplot.draw 1"+this.segments.length+" "+this.width+" "+this.height);
+        console.log("In waveformplot.draw 2"+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0].lengh);
+        console.log("In waveformplot.draw 4"+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0][0].length);
         let sampPeriod = 1;
         let minAmp = 2 << 24;
         let maxAmp = -1 * (minAmp);
@@ -141,12 +154,13 @@ class chart {
         let record;
         let n;
         let connectingDR;
-        if (this.plots.length > 0) {
+        if (this.segments.length > 0) {
             if(!this.plotStart) {
-               this.plotStart = segments[0][0].start;
+               this.plotStart = this.segments[0][0].start;
             }
             if(!this.plotEnd) {
-                this.plotEnd = segments[0][0].end;
+// fix this????
+                this.plotEnd = this.segments[0][0].end;
             }
         }
         for (let plotNum=0; plotNum < this.segments.length; plotNum++) {
@@ -171,10 +185,10 @@ class chart {
                 }
             }
         }
-        this.outerWidth = parseInt(svgParent.style("width")) ;
-        this.outerHeight = parseInt(svgParent.style("height")) ;
-        let svg = svgParent.append("svg");
-        setWidthHeight(svg, outerWidth, outerHeight);
+        this.outerWidth = parseInt(this.svgParent.style("width")) ;
+        this.outerHeight = parseInt(this.svgParent.style("height")) ;
+        let svg = this.svgParent.append("svg");
+        this.setWidthHeight(svg, outerWidth, outerHeight);
 
         let svgG = svg
             .append("g")
@@ -185,15 +199,15 @@ class chart {
             .append("rect")
               .attr("width", this.width)
               .attr("height", this.height);
-        xScale = d3.time.scale().domain([ this.plotStart, this.plotEnd ])
+        this.xScale = d3.time.scale().domain([ this.plotStart, this.plotEnd ])
             .range([ 0, this.width ])
             .nice();
-        yScale = d3.scale.linear().domain([ minAmp, maxAmp ])
+        this.yScale = d3.scale.linear().domain([ minAmp, maxAmp ])
             .range([ this.height/this.segments/length, 0 ])
             .nice();
-        xAxis = d3.svg.axis().scale(this.xScale).orient("bottom").ticks(5);
+        this.xAxis = d3.svg.axis().scale(this.xScale).orient("bottom").ticks(5);
 
-        yAxis = d3.svg.axis().scale(this.yScale).orient("left").ticks(5);
+        this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").ticks(5);
         
         svgG.append("g").attr("class", "x axis")
             .attr("transform",  "translate(0," + (this.height ) + " )")
@@ -201,12 +215,14 @@ class chart {
         svgG.append("g").attr("class", "y axis").call(this.yAxis);
         
         
+console.log("plotUUID "+this.plotUUID);
+console.log("createLineFunction: "+this.createLineFunction);
         let seisG = svgG.selectAll("g").data(this.segments).enter().append("g").attr("id", function(d) {return d[0].seisId();});
         let seisPath = seisG.selectAll("path").data(function(d) {return d;})
             .enter().append("path")
             .classed("seispath")
             .attr("id", function(d) {return d.seisId()+'_'+this.plotUUID})
-            .attr("d", function(d) {return createLineFunction(d)});
+            .attr("d", function(d) {return this.createLineFunction(d)});
         
         /*
         let seismogram = svgG.append("g").attr("class", "seismogram").attr("clip-path", "url(#"+clipPathId+")");
@@ -237,7 +253,7 @@ class chart {
         svgG.append("rect").attr("class", "graphClickPane")
             .attr("width", this.width)
             .attr("height", this.height);
-        resize();
+        this.resize();
     }
     
     
@@ -251,19 +267,6 @@ class chart {
         svg
           .attr("width", this.outerWidth)
           .attr("height", this.outerHeight);
-    }
-    
-    /*
-     * from http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-     */
-    s4() {
-          return Math.floor((1 + Math.random()) * 0x10000)
-                     .toString(16)
-                     .substring(1);
-    }
-    guid() {
-          return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-                 s4() + '-' + s4() + s4() + s4();
     }
     
 
@@ -281,7 +284,7 @@ class chart {
         }, 250);
     }
 
-    set plotStart(value) {
+    setPlotStart(value) {
         if (!arguments.length)
             return this.plotStart;
         this.plotStart = value;
@@ -289,7 +292,7 @@ class chart {
         resizeNeeded();
         return this;
     }
-    set plotEnd(value) {
+    setPlotEnd(value) {
         if (!arguments.length)
             return this.plotEnd;
         this.plotEnd = value;
@@ -298,45 +301,45 @@ class chart {
         return this;
     }
     
-    set width(value) {
+    setWidth(value) {
         if (!arguments.length)
             return this.width;
         this.width = value;
         return this;
     }
 
-    set height(value) {
+    setHeight(value) {
         if (!arguments.length)
             return this.height;
         this.height = value;
         return this;
     }
 
-    set margin(value) {
+    setMargin(value) {
         if (!arguments.length)
             return this.margin;
         this.margin = value;
         return this;
     }
-    set xLabel(value) {
+    setXLabel(value) {
         if (!arguments.length)
             return this.xLabel;
         this.xLabel = value;
         return this;
     }
-    set yLabel(value) {
+    setYLabel(value) {
         if (!arguments.length)
             return this.yLabel;
         this.yLabel = value;
         return this;
     }
-    set xSublabel(value) {
+    setXSublabel(value) {
         if (!arguments.length)
             return this.xSublabel;
         this.xSublabel = value;
         return this;
     }
-    set ySublabel(value) {
+    setYSublabel(value) {
         if (!arguments.length)
             return this.ySublabel;
         this.ySublabel = value;
@@ -344,7 +347,5 @@ class chart {
     }
 }
 
-let seedcodec = miniseed.seedcodec;
-
-export { chart, miniseed, seedcodec }
+let waveformplot = { chart, miniseed, seedcodec }
 

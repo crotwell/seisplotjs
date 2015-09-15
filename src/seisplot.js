@@ -4,12 +4,8 @@
  * http://www.seis.sc.edu
  */
 
-//import miniseed from './miniseed.js';
-//import seedcodec from './seedcodec.js';
-import waveformplot from './waveformplot.js';
+const version = "0.0.1";
 
-let miniseed = waveformplot.miniseed;
-let seedcodec = waveformplot.seedcodec;
-
-export { miniseed, seedcodec, waveformplot};
+let seisplot = {version, miniseed, seedcodec, waveformplot};
+export default seisplot;
 

@@ -7,7 +7,6 @@
 // http://code.google.com/p/seedcodec/
         
 
-  var version = "0.0.1";
   
 // constants for compression types
 
@@ -419,5 +418,5 @@ function extractSteim2Samples(dataView, offset, swapBytes) {
 	}
 	return out;
 }
-export { decompress, steim1, steim2 }
+let seedcodec =  { decompress, steim1, steim2 }
 	
