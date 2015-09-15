@@ -8,7 +8,7 @@
  */
 
 import miniseed from './miniseed';
-import seedcodec from './seedcodec';
+//import seedcodec from './seedcodec';
 import d3 from 'd3';
 
  
@@ -344,6 +344,7 @@ class chart {
     }
 }
 
+let seedcodec = miniseed.seedcodec;
 
-export { chart }
+export { chart, miniseed, seedcodec }
 

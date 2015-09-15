@@ -232,4 +232,4 @@ function checkByteSwap(bTime) {
     return out;
 }
 
-export { version, parseDataRecords, byChannel, merge };
+export { version, parseDataRecords, byChannel, merge, seedcodec };
