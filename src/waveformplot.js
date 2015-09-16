@@ -24,7 +24,6 @@ class chart {
     constructor(inSvgParent, inSegments) {
         console.log("In waveformplot");
         this.throttleResize = true;
-console.log("1");
         this.plotStart;
         this.plotEnd;
         
@@ -46,7 +45,6 @@ console.log("1");
         this.xSublabel = "";
         this.yLabel = "Amplitude";
         this.ySublabel = "";
-console.log("2 before guid");
         this.plotUUID = guid();
         this.clipPathId = "clippath_"+this.plotUUID;
         //segments.push(inSegments);
@@ -54,7 +52,6 @@ console.log("2 before guid");
         
       //  fix this....
       //  addResizeHandler(resize);
-console.log("3 end constructor");
     }
 
     
@@ -68,19 +65,19 @@ console.log("3 end constructor");
          */
 
         let svgP = this.svgParent;
-        let svg = this.svgP.select("svg");
+        let svg = svgP.select("svg");
         let svgG = svg.select("g");
         /* Find the new window dimensions */
-        let targetWidth = this.svgP[0][0].clientWidth;
-        let targetHeight = this.svgP[0][0].clientHeight;
+        let targetWidth = svgP[0][0].clientWidth;
+        let targetHeight = svgP[0][0].clientHeight;
         console.log("target parent: "+targetWidth+"  "+targetHeight);
         
         let styleWidth = parseInt(svgP.style("width")) ;
         let styleHeight = parseInt(svgP.style("height")) ;
         if (styleHeight == 0) { styleHeight = 100;}
         console.log("style parent: "+styleWidth+"  "+styleHeight);
-        setWidthHeight(svg, styleWidth, styleHeight);
-        console.log("resize "+width+" "+height);
+        this.setWidthHeight(svg, styleWidth, styleHeight);
+        console.log("resize "+this.width+" "+this.height);
 
         /* Update the range of the scale with new width/height */
         this.xScale.range([0, this.width]);
@@ -89,10 +86,10 @@ console.log("3 end constructor");
         /* Update the axis with the new scale */
         svgG.select('.x.axis')
           .attr("transform",  "translate(0," + (this.height ) + " )")
-          .call(xAxis);
+          .call(this.xAxis);
 
         svgG.selectAll('.y.axis')
-          .call(yAxis);
+          .call(this.yAxis);
 
         svg.select('g.xLabel')
             .attr("transform", "translate("+(this.margin.left+(this.width)/2)+", "+(this.outerHeight  - 6)+")");
@@ -113,9 +110,8 @@ console.log("3 end constructor");
         /* Force D3 to recalculate and update the line segments*/
         for (let plotNum=0; plotNum < this.segments.length; plotNum++) {
             for (let drNum = 0; drNum < this.segments[plotNum].length; drNum++) { 
-                console.log("resize select: "+'#'+this.segments[plotNum][drNum].seisId()+'_'+this.plotUUID);
-                svgG.select('#'+segments[plotNum][drNum].seisId()+'_'+this.plotUUID)
-                .attr("d", this.createLineFunction(segments[plotNum][drNum]));
+                svgG.select('#'+this.segments[plotNum][drNum].seisId()+'_'+this.plotUUID)
+                .attr("d", this.createLineFunction(this.segments[plotNum][drNum], this.xScale, this.yScale));
         }
         }
     }
@@ -130,20 +126,21 @@ console.log("3 end constructor");
         return this.resize;
     }
     
-    createLineFunction(segment) {
-console.log("in createLineFunction");
-        this.seg = segment;
+    createLineFunction(segment, in_xScale, in_yScale) {
+        let seg = segment;
+        let xScale = in_xScale;
+        let yScale = in_yScale;
         return d3.svg.line()
         .x(function(d, i) {
-            return this.xScale(seg.timeOfSample(i));
+            return xScale(seg.timeOfSample(i));
         }).y(function(d, i) {
-            return this.yScale(d);
+            return yScale(d);
         }).interpolate("linear")(seg); // call the d3 function created by line with data
     }
     
     draw() {
         console.log("In waveformplot.draw 1"+this.segments.length+" "+this.width+" "+this.height);
-        console.log("In waveformplot.draw 2"+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0].lengh);
+        console.log("In waveformplot.draw 2"+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0].length);
         console.log("In waveformplot.draw 4"+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0][0].length);
         let sampPeriod = 1;
         let minAmp = 2 << 24;
@@ -162,13 +159,15 @@ console.log("in createLineFunction");
 // fix this????
                 this.plotEnd = this.segments[0][0].end;
             }
-        }
+        } else {
+console.log("segments length 0");
+}
         for (let plotNum=0; plotNum < this.segments.length; plotNum++) {
-            for (let drNum = 0; drNum < this.segments.length; drNum++) {
+            for (let drNum = 0; drNum < this.segments[plotNum].length; drNum++) {
                 record = this.segments[plotNum][drNum];
                 s = record.start;
                 e = record.end;
-                console.log("segment "+plotNum+" " + drNum + " " + s + "  " + e);
+                //console.log("segment "+plotNum+" " + drNum + " " + s + "  " + e+"  "+record.seisId());
                 for (n = 0; n < record.length; n++) {
                     if (minAmp > record[n]) {
                         minAmp = record[n];
@@ -203,26 +202,29 @@ console.log("in createLineFunction");
             .range([ 0, this.width ])
             .nice();
         this.yScale = d3.scale.linear().domain([ minAmp, maxAmp ])
-            .range([ this.height/this.segments/length, 0 ])
+            .range([ this.height/this.segments.length, 0 ])
             .nice();
         this.xAxis = d3.svg.axis().scale(this.xScale).orient("bottom").ticks(5);
 
         this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").ticks(5);
         
-        svgG.append("g").attr("class", "x axis")
+        svgG.append("g").classed("x axis", true)
             .attr("transform",  "translate(0," + (this.height ) + " )")
             .call(this.xAxis);
-        svgG.append("g").attr("class", "y axis").call(this.yAxis);
+        svgG.append("g").classed("y axis", true).call(this.yAxis);
+        let dataSvgG = svgG.append("g").classed("seisdata", true);
         
         
-console.log("plotUUID "+this.plotUUID);
-console.log("createLineFunction: "+this.createLineFunction);
-        let seisG = svgG.selectAll("g").data(this.segments).enter().append("g").attr("id", function(d) {return d[0].seisId();});
+        let insidePlotUUID = this.plotUUID;
+        let insideCreateLineFunction = this.createLineFunction;
+        let xScale = this.xScale;
+        let yScale = this.yScale;
+        let seisG = dataSvgG.selectAll("g").data(this.segments).enter().append("g").attr("id", function(d) {return d[0].seisId();});
         let seisPath = seisG.selectAll("path").data(function(d) {return d;})
             .enter().append("path")
-            .classed("seispath")
-            .attr("id", function(d) {return d.seisId()+'_'+this.plotUUID})
-            .attr("d", function(d) {return this.createLineFunction(d)});
+            .classed("seispath", true)
+            .attr("id", function(d) { return d.seisId()+'_'+insidePlotUUID})
+            .attr("d", function(d) {return insideCreateLineFunction(d, xScale, yScale)});
         
         /*
         let seismogram = svgG.append("g").attr("class", "seismogram").attr("clip-path", "url(#"+clipPathId+")");
@@ -234,23 +236,23 @@ console.log("createLineFunction: "+this.createLineFunction);
         seisLine.exit().remove();
 */
         svg.append("g")
-            .attr("class", "xLabel")
+            .classed("xLabel", true)
             .attr("transform", "translate("+(this.margin.left+(this.width)/2)+", "+(this.outerHeight  - 6)+")")
-            .append("text").attr("class", "x label")
+            .append("text").classed("x label", true)
             .attr("text-anchor", "middle")
             .text(this.xLabel);
         svg.append("g")
-            .attr("class", "yLabel")
+            .classed("yLabel", true)
             .attr("x", 0)
             .attr("transform", "translate(0, "+(this.margin.top+(this.height)/2)+")")
            .append("text")
-            .attr("class", "y label")
+            .classed("y label", true)
             .attr("text-anchor", "middle")
             .attr("dy", ".75em")
             .attr("transform-origin", "center center")
             .attr("transform", "rotate(-90)")
-            .text(yLabel);
-        svgG.append("rect").attr("class", "graphClickPane")
+            .text(this.yLabel);
+        svgG.append("rect").classed("graphClickPane", true)
             .attr("width", this.width)
             .attr("height", this.height);
         this.resize();
