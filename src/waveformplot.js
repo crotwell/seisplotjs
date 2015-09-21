@@ -27,10 +27,15 @@ class chart {
         this.plotStart;
         this.plotEnd;
         
+        let styleWidth = parseInt(inSvgParent.style("width")) ;
+        let styleHeight = parseInt(inSvgParent.style("height")) ;
+        if (styleWidth == 0) { styleWidth = 50;}
+        if (styleHeight == 0) { styleHeight = 100;}
+
         // d3 margin convention, see http://bl.ocks.org/mbostock/3019563
         this.margin = {top: 20, right: 20, bottom: 40, left: 75};
-        this.outerWidth = 960;
-        this.outerHeight = 500;
+        this.outerWidth = styleWidth;
+        this.outerHeight = styleHeight;
         this.width = this.outerWidth - this.margin.left - this.margin.right;
         this.height = this.outerHeight - this.margin.top - this.margin.bottom;
         // d3 margin convention, see http://bl.ocks.org/mbostock/3019563
@@ -47,7 +52,6 @@ class chart {
         this.ySublabel = "";
         this.plotUUID = guid();
         this.clipPathId = "clippath_"+this.plotUUID;
-        //segments.push(inSegments);
         this.svgParent = inSvgParent;
         
       //  fix this....
@@ -66,18 +70,12 @@ class chart {
 
         let svgP = this.svgParent;
         let svg = svgP.select("svg");
+        svg.classed("waveformPlotSVG", true);
         let svgG = svg.select("g");
-        /* Find the new window dimensions */
-        let targetWidth = svgP[0][0].clientWidth;
-        let targetHeight = svgP[0][0].clientHeight;
-        console.log("target parent: "+targetWidth+"  "+targetHeight);
         
         let styleWidth = parseInt(svgP.style("width")) ;
         let styleHeight = parseInt(svgP.style("height")) ;
-        if (styleHeight == 0) { styleHeight = 100;}
-        console.log("style parent: "+styleWidth+"  "+styleHeight);
         this.setWidthHeight(svg, styleWidth, styleHeight);
-        console.log("resize "+this.width+" "+this.height);
 
         /* Update the range of the scale with new width/height */
         this.xScale.range([0, this.width]);
@@ -139,9 +137,7 @@ class chart {
     }
     
     draw() {
-        console.log("In waveformplot.draw 1"+this.segments.length+" "+this.width+" "+this.height);
-        console.log("In waveformplot.draw 2"+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0].length);
-        console.log("In waveformplot.draw 4"+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0][0].length);
+        console.log("In waveformplot.draw "+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0][0].length);
         let sampPeriod = 1;
         let minAmp = 2 << 24;
         let maxAmp = -1 * (minAmp);
@@ -160,14 +156,13 @@ class chart {
                 this.plotEnd = this.segments[0][0].end;
             }
         } else {
-console.log("segments length 0");
-}
+            console.log("WARN: segments length 0");
+        }
         for (let plotNum=0; plotNum < this.segments.length; plotNum++) {
             for (let drNum = 0; drNum < this.segments[plotNum].length; drNum++) {
                 record = this.segments[plotNum][drNum];
                 s = record.start;
                 e = record.end;
-                //console.log("segment "+plotNum+" " + drNum + " " + s + "  " + e+"  "+record.seisId());
                 for (n = 0; n < record.length; n++) {
                     if (minAmp > record[n]) {
                         minAmp = record[n];
@@ -187,7 +182,7 @@ console.log("segments length 0");
         this.outerWidth = parseInt(this.svgParent.style("width")) ;
         this.outerHeight = parseInt(this.svgParent.style("height")) ;
         let svg = this.svgParent.append("svg");
-        this.setWidthHeight(svg, outerWidth, outerHeight);
+        this.setWidthHeight(svg, this.outerWidth, this.outerHeight);
 
         let svgG = svg
             .append("g")
@@ -262,10 +257,10 @@ console.log("segments length 0");
 
 
     setWidthHeight(svg, nOuterWidth, nOuterHeight) {
-        this.outerWidth = nOuterWidth;
-        this.outerHeight = nOuterHeight;
-        this.width = outerWidth - this.margin.left - this.margin.right;
-        this.height = outerHeight - this.margin.top - this.margin.bottom;
+        this.outerWidth = Math.max(200, nOuterWidth);
+        this.outerHeight = Math.max(100, nOuterHeight);
+        this.height = this.outerHeight - this.margin.top - this.margin.bottom;
+        this.width = this.outerWidth - this.margin.left - this.margin.right;
         svg
           .attr("width", this.outerWidth)
           .attr("height", this.outerHeight);
