@@ -22,7 +22,6 @@ import d3 from 'd3';
  
 class chart {
     constructor(inSvgParent, inSegments) {
-        console.log("In waveformplot");
         this.throttleResize = true;
         this.plotStart;
         this.plotEnd;
@@ -54,15 +53,63 @@ class chart {
         this.clipPathId = "clippath_"+this.plotUUID;
         this.svgParent = inSvgParent;
         
+        if (this.segments.length > 0) {
+            if(!this.plotStart) {
+               this.plotStart = this.segments[0][0].start;
+            }
+            if(!this.plotEnd) {
+// fix this????
+                this.plotEnd = this.segments[0][0].end;
+            }
+        }
       //  fix this....
       //  addResizeHandler(resize);
     }
 
+    enableZoom() {
+        let myThis = this;
+        let zoom = d3.behavior.zoom()
+                        .x(myThis.xScale)
+                        .on('zoom', function() {
+                            myThis.resize.call(myThis);
+                        });
+        myThis.svgParent.call(zoom);
+    }
+    enableDrag() {
+        let myThis = this;
+        let drag = d3.behavior.drag()
+                            .origin(function() {
+                                 return {x: 0, y: 0};
+                            })
+                            .on("drag", function() {
+                return myThis.dragmove.call(myThis);
+            });
+        let svgP = this.svgParent;
+        let svg = svgP.select("svg");
+        let svgG = svg.select("g");
+        let clickPane = svgG.select("rect.graphClickPane");
+        clickPane.call(drag);
+    }
     
     append(key, segment) {
         this.segments.push(segment);
     }
     
+    dragmove() {
+        d3.event.sourceEvent.stopPropagation(); // silence other listeners
+        let rectWidth = this.width;
+
+        let pStart = this.plotStart;
+        let pEnd = this.plotEnd;
+        let timeWidth = pEnd - pStart;
+        let timeShift = Math.round(timeWidth*d3.event.dx/rectWidth);
+        let zStart =  new Date(pStart.getTime() - timeShift);
+        let zEnd = new Date(pEnd.getTime() - timeShift);
+        this.setPlotStart(zStart);
+        this.setPlotEnd(zEnd);
+
+    };
+
     resize() {
         /*
          * This only works if added to the window, see addResizeHandler in crocusplot.js
@@ -137,7 +184,6 @@ class chart {
     }
     
     draw() {
-        console.log("In waveformplot.draw "+this.segments.length+" "+this.width+" "+this.height+"  s"+this.segments[0][0].length);
         let sampPeriod = 1;
         let minAmp = 2 << 24;
         let maxAmp = -1 * (minAmp);
@@ -269,32 +315,29 @@ class chart {
 
     // see http://blog.kevinchisholm.com/javascript/javascript-function-throttling/
     throttle(func, delay){
-        if (throttleResize) {
-            window.clearTimeout(throttleResize);
+        if (this.throttleResize) {
+            window.clearTimeout(this.throttleResize);
         }
-        throttleResize = window.setTimeout(func, delay);
+        this.throttleResize = window.setTimeout(func, delay);
     }
     
     resizeNeeded() {
-        throttle(function(){
-            resize();
+        let myThis = this;
+        this.throttle(function(){
+            myThis.resize();
         }, 250);
     }
 
     setPlotStart(value) {
-        if (!arguments.length)
-            return this.plotStart;
         this.plotStart = value;
         this.xScale.domain([ this.plotStart, this.plotEnd ])
-        resizeNeeded();
+        this.resizeNeeded();
         return this;
     }
     setPlotEnd(value) {
-        if (!arguments.length)
-            return this.plotEnd;
         this.plotEnd = value;
         this.xScale.domain([ this.plotStart, this.plotEnd ])
-        resizeNeeded();
+        this.resizeNeeded();
         return this;
     }
     
