@@ -2,9 +2,17 @@
   "name": "seisplotjs",
   "version": "0.0.1",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
-  "main": "seisplot.js",
+  "main": "lib/index.js",
+  "dependencies": {
+    "seisplotjs-seedcodec": ">= 1.0.0",
+    "seisplotjs-miniseed": ">= 1.0.0",
+    "seisplotjs-waveformplot": ">= 1.0.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint 'src/*.js'",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "babel --presets es2015 -d lib/ src/",
+    "prepublish": "npm run compile"
   },
   "repository": {
     "type": "git",
@@ -23,6 +31,12 @@
   },
   "homepage": "https://github.com/crotwell/seisplotjs",
   "devDependencies": {
-    "broccoli-dist-es6-module": "^0.2.1"
+    "babel-cli": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "eslint": "^3.7.1",
+    "eslint-config-standard": "^6.2.0",
+    "eslint-plugin-promise": "^3.0.0",
+    "eslint-plugin-standard": "^2.0.1",
+    "qunit": "^0.9.1"
   }
 }
