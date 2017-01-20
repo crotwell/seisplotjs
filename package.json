@@ -4,6 +4,7 @@
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "lib/index.js",
   "dependencies": {
+    "seisplotjs-distaz": ">= 1.0.0",
     "seisplotjs-seedcodec": ">= 1.0.0",
     "seisplotjs-miniseed": ">= 1.0.0",
     "seisplotjs-waveformplot": ">= 1.0.0"
