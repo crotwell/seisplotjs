@@ -5,8 +5,12 @@
   "main": "lib/index.js",
   "dependencies": {
     "seisplotjs-distaz": ">= 1.0.0",
-    "seisplotjs-seedcodec": ">= 1.0.0",
+    "seisplotjs-fdsnevent": ">= 0.0.1",
+    "seisplotjs-fdsnstation": ">= 0.0.1",
     "seisplotjs-miniseed": ">= 1.0.0",
+    "seisplotjs-seedcodec": ">= 1.0.0",
+    "seisplotjs-seedlink": ">= 0.0.1",
+    "seisplotjs-traveltime": ">= 0.0.1",
     "seisplotjs-waveformplot": ">= 1.0.0"
   },
   "scripts": {
