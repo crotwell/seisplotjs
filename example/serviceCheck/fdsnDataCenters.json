@@ -1,0 +1,311 @@
+{
+  "created": "2017-02-03T16:33:00Z",
+  "datacenters": [
+    {
+      "id": "IRIS",
+      "name": "IRIS Data Management Center",
+      "website": "",
+      "email": "",
+      "host": "service.iris.edu",
+      "region": "North America",
+      "supports": [
+        {
+          "type": "fdsn-event", 
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "NCEDC",
+      "name": "Northern California Earthquake Data Center",
+      "website": "",
+      "email": "",
+      "host": "service.ncedc.org",
+      "region": "North America",
+      "supports": [
+        {
+          "type": "fdsn-event",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "SCEDC",
+      "name": "Southern California Earthquake Data Center",
+      "website": "",
+      "email": "",
+      "host": "service.scedc.caltech.edu",
+      "region": "North America",
+      "supports": [
+        {
+          "type": "fdsn-event",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "USGS",
+      "name": "United States Geological Survey",
+      "website": "",
+      "email": "",
+      "host": "earthquake.usgs.gov",
+      "region": "North America",
+      "supports": [
+        {
+          "type": "fdsn-event",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "BGR",
+      "name": "BGR Hannover, Germany",
+      "website": "",
+      "email": "",
+      "host": "eida.bgr.de",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "Kandilli",
+      "name": "Bo&gbreve;azi&ccedil;i University, Kandilli Observatory",
+      "website": "http://www.koeri.boun.edu.tr/2/tr/",
+      "host": "eida-service.koeri.boun.edu.tr",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "ETHZ",
+      "name": "ETHZ",
+      "website": "http://eida.ethz.ch/fdsnws/",
+      "email": "",
+      "host": "eida.ethz.ch",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-event",
+          "versions": [ 1 ],
+          "host": "arclink.ethz.ch"
+        },
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "GEOFON",
+      "name": "GEOFON Program, GFZ",
+      "website": "http://geofon.gfz-potsdam.de/",
+      "email": "geofon@gfz-potsdam.de",
+      "host": "geofon.gfz-potsdam.de",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "IPGP",
+      "name": "IPGP Data Center",
+      "website": "http://centrededonnees.ipgp.fr",
+      "email": "",
+      "host": "eida.ipgp.fr",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "INGV",
+      "name": "INGV",
+      "website": "http://webservices.rm.ingv.it/",
+      "email": "",
+      "host": "webservices.rm.ingv.it",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-event",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "ISC",
+      "name": "ISC (International Seismological Centre)",
+      "website": "http://www.isc.ac.uk/",
+      "email": "",
+      "host": "www.isc.ac.uk",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-event",
+          "versions": [ 1 ],
+          "mirrors": [
+            { 
+              "host": "isc-mirror.iris.washington.edu",
+              "region": "North America"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "LMU",
+      "name": "LMU  Munich, Germany",
+      "website": "http://www.geophysik.uni-muenchen.de/observatory/seismology",
+      "email": "",
+      "host": "erde.geophysik.uni-muenchen.de",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "NIEP",
+      "name": "NIEP, Romania",
+      "website": "http://www.orfeus-eu.org/eida/eida_niep.html",
+      "email": "",
+      "host": "eida-sc3.infp.ro",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "ORFEUS",
+      "name": "ORFEUS Data Center",
+      "website": "http://www.orfeus-eu.org",
+      "email": "",
+      "host": "www.orfeus-eu.org",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "RESIF",
+      "name": "RESIF",
+      "website": "http://portal.resif.fr/",
+      "email": "contact@resif.fr",
+      "host": "ws.resif.fr",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "USP",
+      "name": "USP Seismological Center, Brazil",
+      "website": "http://www.moho.iag.usp.br/",
+      "email": "sismologia@iag.usp.br",
+      "host": "seisrequest.iag.usp.br",
+      "region": "South America",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    }
+  ]
+}
