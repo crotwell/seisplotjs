@@ -7,6 +7,7 @@
     "seisplotjs-distaz": ">= 1.0.0",
     "seisplotjs-fdsnevent": ">= 0.0.1",
     "seisplotjs-fdsnstation": ">= 0.0.1",
+    "seisplotjs-fdsndataselect": ">= 0.0.1",
     "seisplotjs-miniseed": ">= 1.0.0",
     "seisplotjs-seedcodec": ">= 1.0.0",
     "seisplotjs-seedlink": ">= 0.0.1",
@@ -40,9 +41,9 @@
     "babel-cli": "^6.14.0",
     "babel-preset-es2015": "^6.14.0",
     "babelify": "^7.3.0",
-    "eslint": "^3.7.1",
+    "eslint": "^3.11.1",
     "eslint-config-standard": "^6.2.0",
-    "eslint-plugin-promise": "^3.0.0",
+    "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^2.0.1",
     "qunit": "^0.9.1"
   }
