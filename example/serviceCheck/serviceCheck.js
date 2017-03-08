@@ -7,6 +7,7 @@ var fdsnstation = seisplotjs.fdsnstation;
 var fdsndataselect = seisplotjs.fdsndataselect;
 var RSVP = fdsnstation.RSVP;
 
+console.log("allFdsnTests: "+allFdsnTests);
 
 var DS = "fdsnws-dataselect";
 var EV = "fdsn-event";
@@ -15,205 +16,14 @@ var ST = "fdsn-station";
 
 
 // all tests should be object with testid, testname and test: function(datacenter, d3selector)
-
-var testEventVersion = {
-  testname: "Ev Ver",
-  testid: "eventversion",
-  test: function(dc) {
-    var mythis = this;
-    var host = serviceHost(dc, EV);
-
-    var quakeQuery = new fdsnevent.EventQuery()
-      .host(host);
-    var url = quakeQuery.formVersionURL();
-    return quakeQuery.queryVersion().then(function(version) {
-      return {
-        text: version,
-        output: version,
-        url: url
-      };
-    }).catch(function(err) {
-      if (! err.url) {err.url = url};
-      throw err;
-    });
-  }
-};
-
-
-var testStationVersion = {
-  testname: "Sta Ver",
-  testid: "stationversion",
-  test: function(dc) {
-    var mythis = this;
-    var host = serviceHost(dc, ST);
-
-    var query = new fdsnstation.StationQuery()
-      .host(host);
-    var url = query.formVersionURL();
-    return query.queryVersion().then(function(version) {
-      return {
-        text: version,
-        output: version,
-        url: url
-      };
-    }).catch(function(err) {
-      if (! err.url) {err.url = url};
-      throw err;
-    });
-  }
-};
-
-var testDataSelectVersion = {
-  testname: "DS Ver",
-  testid: "dataselectversion",
-  test: function(dc) {
-    var mythis = this;
-    var host = serviceHost(dc, ST);
-
-    var query = new fdsndataselect.DataSelectQuery()
-      .host(host);
-    var url = query.formVersionURL();
-    return query.queryVersion().then(function(version) {
-      return {
-        text: version,
-        output: version,
-        url: url
-      };
-    }).catch(function(err) {
-      if (! err.url) {err.url = url};
-      throw err;
-    });
-  }
-};
-
-
-var testLastDay = {
-  testname: "Last Day",
-  testid: "lastday",
-  test: function(dc) {
-    return new RSVP.Promise(function(resolve, reject) {
-    var mythis = this;
-    if ( ! doesSupport(dc, EV) ) {
-      reject(UNSUPPORTED);
-    } else {
-      resolve(null);
-    }
-   }).then(function(val) { 
-    var daysAgo = 1;
-    var host = serviceHost(dc, EV);
-    var quakeQuery = new fdsnevent.EventQuery()
-      .host(host)
-      .startTime(new Date(new Date().getTime()-86400*daysAgo*1000))
-      .endTime(new Date());
-    var url = quakeQuery.formURL();
-    return quakeQuery.query().then(function(quakes) {
-      return {
-        text: "Found "+quakes.length+" events.",
-        url: url,
-        output: quakes
-      };
-    }).catch(function(err) {
-      if (! err.url) {err.url = url};
-      throw err;
-    });
-    });
-  }
-};
-
-var testCatalogs = {
-  testname: "Catalogs",
-  testid: "catalogs",
-  test: function(dc) {
-    return new RSVP.Promise(function(resolve, reject) {
-    var mythis = this;
-    if ( ! doesSupport(dc, EV) ) {
-      reject(UNSUPPORTED);
-    } else {
-      resolve(null);
-    }
-   }).then(function(val) {
-    var host = serviceHost(dc, EV);
-    var quakeQuery = new fdsnevent.EventQuery()
-      .host(host);
-    var url = quakeQuery.formCatalogsURL();
-    return quakeQuery.queryCatalogs().then(function(catalogs) {
-      return {
-        text: "Found "+catalogs.length+" catalogs.",
-        url: url,
-        output: catalogs
-      };
-    }).catch(function(err) {
-      if (! err.url) {err.url = url};
-      throw err;
-    });
-    });
-  }
-};
-
-var testContributors = {
-  testname: "Contributors",
-  testid: "contributors",
-  test: function(dc) {
-    return new RSVP.Promise(function(resolve, reject) {
-    var mythis = this;
-    if ( ! doesSupport(dc, EV) ) {
-      reject(UNSUPPORTED);
-    } else {
-      resolve(null);
-    }
-   }).then(function(val) {
-    var host = serviceHost(dc, EV);
-    var quakeQuery = new fdsnevent.EventQuery()
-      .host(host);
-    var url = quakeQuery.formContributorsURL();
-    return quakeQuery.queryContributors().then(function(contributors) {
-      return {
-        text: "Found "+contributors.length+" contributors.",
-        url: url,
-        output: contributors
-      };
-    }).catch(function(err) {
-      if (! err.url) {err.url = url};
-      throw err;
-    });
-    });
-  }
-};
-
-var testNetworks = {
-  testname: "Networks",
-  testid: "networks",
-  test: function(dc) {
-    return new RSVP.Promise(function(resolve, reject) {
-    var mythis = this;
-    if ( ! doesSupport(dc, ST) ) {
-      reject(UNSUPPORTED);
-    } else {
-      resolve(null);
-    }
-   }).then(function(val) { 
-    var mythis = this;
-    var host = serviceHost(dc, ST);
-   
-    var query = new fdsnstation.StationQuery()
-      .host(host);
-    var sel =d3.select("tr."+dc.id).select("td."+mythis.testid);
-    var url = query.formURL(fdsnstation.LEVEL_NETWORK);
-    return query.queryNetworks().then(function(networks) {
-      return {
-        text: "Found "+networks.length+" networks.",
-        url: url,
-        output: networks
-      };
-    }).catch(function(err) {
-      if (! err.url) {err.url = url};
-      throw err;
-    });
-    });
-  }
-};
-
-// end test defs
+// allFdsnTests assumed to be global object with the tests in it, loaded from 
+// separate file. It should have 3 fields, each an array of tests like:
+// 
+// allFdsnTests = {
+//     fdsnEventTests = [ testEventVersion, testLastDay, testCatalogs, testContributors ],
+//     fdsnStationTests = [ testStationVersion, testNetworks ],
+//     fdsnDataTests = [ testDataSelectVersion ]
+// }
 
 var RUN = "Run";
 var UNSUPPORTED = "Unsupported";
@@ -260,8 +70,6 @@ console.log("run "+test.testname+" on "+dc.id+" "+DCType);
          return out;
        });
   }).then(function(testOut) {
-      console.log(dc.host+" "+test.testname+" is ok "+testOut);
-      console.log(dc.host+" "+test.testname+" is ok "+testOut.text);
       var sel = d3.select("tr."+dc.id).select("td."+test.testid);
       sel.selectAll("*").remove();
       sel.append("a").attr("class", "success").attr("href", testOut.url).text(testOut.text);
@@ -275,7 +83,11 @@ console.log("catch "+test.testname+" on "+dc.id+" "+DCType);
       } else {
         console.assert(false, err);
         if (err.url) {
-          sel.append("a").attr("class", "fail").attr("href", err.url).text("FAIL").attr("title", err.status+" "+ err.statusText);
+          var popupText = err.status+" "+ err.statusText;
+          if (err.status === 0) {
+            popupText += " maybe CORS issue?";
+          }
+          sel.append("a").attr("class", "fail").attr("href", err.url).text("Oops").attr("title", popupText);
         } else {
 console.log("error with no URL", err);
           sel.append("p").text("FAIL").attr("title", ""+err);
@@ -285,9 +97,6 @@ console.log("error with no URL", err);
   });
 }
 
-var fdsnEventTests = [ testEventVersion, testLastDay, testCatalogs, testContributors ];
-var fdsnStationTests = [ testStationVersion, testNetworks ];
-var fdsnDataTests = [ testDataSelectVersion ];
 
 d3.json('fdsnDataCenters.json', function(fdsn) {
   var table = d3.select(".results").select("table");
@@ -296,15 +105,15 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
     var thr = table.append("thead").append("tr");
     thr.append("th").text("Name");
     thr.append("th").text("Event");
-    fdsnEventTests.forEach(function(test) {
+    allFdsnTests.fdsnEventTests.forEach(function(test) {
       thr.append("th").text(test.testname);
     });
     thr.append("th").text("Station");
-    fdsnStationTests.forEach(function(test) {
+    allFdsnTests.fdsnStationTests.forEach(function(test) {
       thr.append("th").text(test.testname);
     });
     thr.append("th").text("DataSelect");
-    fdsnDataTests.forEach(function(test) {
+    allFdsnTests.fdsnDataTests.forEach(function(test) {
       thr.append("th").text(test.testname);
     });
     table.append("tbody");
@@ -334,7 +143,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
         return "No";
       }
     });
-  fdsnEventTests.forEach(function(test) {
+  allFdsnTests.fdsnEventTests.forEach(function(test) {
     tr.append("td").attr("class", test.testid).text(" ");
   });
   tr.append("td")
@@ -345,7 +154,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
         return "No";
       }
     });
-  fdsnStationTests.forEach(function(test) {
+  allFdsnTests.fdsnStationTests.forEach(function(test) {
     tr.append("td").attr("class", test.testid).text(" ");
   });
   tr.append("td")
@@ -356,7 +165,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
         return "No";
       }
     });
-  fdsnDataTests.forEach(function(test) {
+  allFdsnTests.fdsnDataTests.forEach(function(test) {
     tr.append("td").attr("class", test.testid).text(" ");
   });
 
@@ -377,7 +186,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
     var prevDSTest = initDSTest;
 
     if (doesSupport(dc, EV)) {
-      combinedTests.fdsnevent = fdsnEventTests.reduce(function(acc, test) {
+      combinedTests.fdsnevent = allFdsnTests.fdsnEventTests.reduce(function(acc, test) {
         return acc.then(function(prevResult) {
           if (prevResult) {
             var sel =d3.select("tr."+dc.id).select("td."+test.testid);
@@ -390,7 +199,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
       }, initEVTest);
     }
     if (doesSupport(dc, ST)) {
-       combinedTests.fdsnstation = fdsnStationTests.reduce(function(acc, test) {
+       combinedTests.fdsnstation = allFdsnTests.fdsnStationTests.reduce(function(acc, test) {
         return acc.then(function(prevResult) {
           if (prevResult) {
             var sel =d3.select("tr."+dc.id).select("td."+test.testid);
@@ -403,7 +212,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
       }, initSTTest);
     }
     if (doesSupport(dc, DS)) {
-      combinedTests.fdsndataselect = fdsnDataTests.reduce(function(acc, test) {
+      combinedTests.fdsndataselect = allFdsnTests.fdsnDataTests.reduce(function(acc, test) {
         return acc.then(function(prevResult) {
           if (prevResult) {
             var sel =d3.select("tr."+dc.id).select("td."+test.testid);

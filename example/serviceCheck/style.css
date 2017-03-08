@@ -1,10 +1,12 @@
 
 .fail {
+  padding: 3px;
   background-color: red;
   color: white;
 }
 
 .success {
+  padding: 3px;
   background-color: green;
   color: white;
 }

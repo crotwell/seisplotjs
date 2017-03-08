@@ -7,13 +7,17 @@
 <body>
 
    <h3>Service Check</h3>
-<p>Check FDSN web services.</p>
+<p>Check <a href="http://www.fdsn.org/webservices/datacenters/">known FDSN web services.</a></p>
 
+<p>FDSN web service <a href="http://www.fdsn.org/webservices/FDSN-WS-Specifications-1.1.pdf">specification</a>.</p>
+
+<p>This runs tests against FDSN web serices from within the browser. The means that we are making XMLHttpRequest from javascript that is loaded from our web server to the web server hosting the web service. If that server is not configured to allow queries from pages loaded from other sites, the request will fail. This is true even if the URL is accessible and working when directly entered into the browser. We believe that FDSN web services should in general be available in this manner. See the <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing">Wikipedia</a> article and <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS">Mozilla</a> and <a href="https://www.w3.org/TR/cors/">W3C</a> for more information.</p>
 <div class="results">
 <p>Javascript must be enabled to view the results.</p>
 </div> 
 
 <script src="seisplotjs_001s_standalone.js"></script>
+<script src="allServiceTests.js"></script>
 <script src="serviceCheck.js"></script>
 </body>
 </html>
