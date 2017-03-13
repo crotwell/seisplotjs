@@ -10,3 +10,7 @@
   background-color: green;
   color: white;
 }
+
+.clickableText {
+  cursor: pointer;
+}

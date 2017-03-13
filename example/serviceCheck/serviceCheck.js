@@ -30,7 +30,13 @@ var UNSUPPORTED = "Unsupported";
 var FAIL = "Fail";
 var OK = "OK";
 
+function selectionForTestDC(test, dc) {
+  var sel = d3.select("tr."+test.testid).select("td.testresult");
+  return sel;
+}
+
 function runTestOnDC(test, dc, DCType) {
+  var sel = selectionForTestDC(test, dc);
   if ( ! doesSupport(dc, DCType) ) {
     return new RSVP.Promise(function(resolve, reject) {
       resolve( {
@@ -70,7 +76,6 @@ console.log("run "+test.testname+" on "+dc.id+" "+DCType);
          return out;
        });
   }).then(function(testOut) {
-      var sel = d3.select("tr."+dc.id).select("td."+test.testid);
       sel.selectAll("*").remove();
       sel.append("a")
           .attr("class", "success")
@@ -83,7 +88,6 @@ console.log("catch "+test.testname+" on "+dc.id+" "+DCType);
 if (err.url) {
 console.log("   url: "+err.url);
 }
-      var sel = d3.select("tr."+dc.id).select("td."+test.testid);
       sel.selectAll("*").remove();
       if (err === UNSUPPORTED) {
          console.log("test "+test.testname+" on "+dc.id+" "+DCType+" unsupported.");
@@ -108,23 +112,19 @@ var fdsnDataCenters = null;
 
 d3.json('fdsnDataCenters.json', function(fdsn) {
   fdsnDataCenters = fdsn;
-  var table = d3.select(".results").select("table");
+  makeTable(fdsn);
+});
+
+function makeTable(fdsn) {
+  var table = d3.select(".datacenters").select("table");
   if ( table.empty()) {
-    table = d3.select(".results").append("table");
+    table = d3.select(".datacenters").append("table");
     var thr = table.append("thead").append("tr");
     thr.append("th").text("Name");
     thr.append("th").text("Event");
-    allFdsnTests.fdsnEventTests.forEach(function(test) {
-      thr.append("th").text(test.testname);
-    });
     thr.append("th").text("Station");
-    allFdsnTests.fdsnStationTests.forEach(function(test) {
-      thr.append("th").text(test.testname);
-    });
     thr.append("th").text("DataSelect");
-    allFdsnTests.fdsnDataTests.forEach(function(test) {
-      thr.append("th").text(test.testname);
-    });
+    thr.append("th").text("Run Tests");
     table.append("tbody");
   }
   var tableData = table.select("tbody")
@@ -145,6 +145,8 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
       return d.name;
     });
   tr.append("td")
+    .append("span")
+    .attr("class", "clickableText")
     .text(function(d) {
       if ( doesSupport(d, EV)) {
         return "Yes";
@@ -152,9 +154,6 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
         return "No";
       }
     });
-  allFdsnTests.fdsnEventTests.forEach(function(test) {
-    tr.append("td").attr("class", test.testid).text(" ");
-  });
   tr.append("td")
     .text(function(d) {
       if ( doesSupport(d, ST)) {
@@ -163,9 +162,6 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
         return "No";
       }
     });
-  allFdsnTests.fdsnStationTests.forEach(function(test) {
-    tr.append("td").attr("class", test.testid).text(" ");
-  });
   tr.append("td")
     .text(function(d) {
       if ( doesSupport(d, DS)) {
@@ -174,15 +170,55 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
         return "No";
       }
     });
-  allFdsnTests.fdsnDataTests.forEach(function(test) {
-    tr.append("td").attr("class", test.testid).text(" ");
+  tr.append("td")
+    .append("button")
+    .attr("class", "clickableText")
+    .text("Run")
+    .on("click", function(d) {
+      runAllTests(fdsn, d.id);
+    });
+}
+
+function makeResultsTable(dc, tests) {
+  var div = d3.select("div.results");
+  div.selectAll("*").remove();
+  var divP = div.append("p");
+  divP.text("Results for ");
+  divP.append("a").attr("href", dc.url).text(dc.name);
+  var table = d3.select(".results").select("table");
+  if ( table.empty()) {
+    table = d3.select(".results").append("table");
+    var thr = table.append("thead").append("tr");
+    thr.append("th").text("Result");
+    thr.append("th").text("Name");
+    thr.append("th").text("Service");
+    thr.append("th").text("Detail");
+    table.append("tbody");
+  }
+
+  var allTests = allFdsnTests.fdsnEventTests.concat(allFdsnTests.fdsnStationTests).concat(allFdsnTests.fdsnDataTests);
+
+  var tableData = table.select("tbody")
+    .selectAll("tr")
+    .data(allTests);
+  tableData.exit().remove();
+  var tr = tableData.enter().append("tr").attr("class", function(test) {return test.testid;});
+  tr.append("td").attr("class", "testresult");
+  tr.append("td").append("span").text(function(test) {
+       return test.testname;
   });
 
+}
+
+function runAllTests(fdsn, dcid) {
 // loop dc and tests...
+  var dc = fdsn.datacenters.find(function(dc) {
+    return dc.id === dcid;
+  });
+  makeResultsTable(dc, allFdsnTests);
   var dcTests = fdsn.datacenters
     .filter(function(dc) {
-      //return dc.id === "IRIS";
-      return true;
+      return dc.id === dcid;
     }).map(function(dc) {
     var combinedTests = { dc: dc };
     var initEVTest = new RSVP.Promise(function(resolve, reject) {
@@ -202,7 +238,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
       combinedTests.fdsnevent = allFdsnTests.fdsnEventTests.reduce(function(acc, test) {
         return acc.then(function(prevResult) {
           if (prevResult) {
-            var sel =d3.select("tr."+dc.id).select("td."+test.testid);
+            var sel = selectionForTestDC(test, dc);
             sel.append("span").text("Run");
             return runTestOnDC(test, dc, EV);
           } else {
@@ -215,7 +251,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
        combinedTests.fdsnstation = allFdsnTests.fdsnStationTests.reduce(function(acc, test) {
         return acc.then(function(prevResult) {
           if (prevResult) {
-            var sel =d3.select("tr."+dc.id).select("td."+test.testid);
+            var sel = selectionForTestDC(test, dc);
             sel.append("span").text("Run");
             return runTestOnDC(test, dc, ST);
           } else {
@@ -228,7 +264,7 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
       combinedTests.fdsndataselect = allFdsnTests.fdsnDataTests.reduce(function(acc, test) {
         return acc.then(function(prevResult) {
           if (prevResult) {
-            var sel =d3.select("tr."+dc.id).select("td."+test.testid);
+            var sel = selectionForTestDC(test, dc);
             sel.append("span").text("Run");
             return runTestOnDC(test, dc, DS);
           } else {
@@ -250,7 +286,7 @@ RSVP.all(dcTests.map(function(dcT) { return RSVP.hash(dcT);}))
 //    .enter().append('p').text(function(d) {
 //        return d.name;
 //    });
-});
+}
 
 function doesSupport(dc, type) {
   var out = dc.supports.find(function(s) { return s.type == type;});

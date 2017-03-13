@@ -25,6 +25,7 @@ var ST = "fdsn-station";
 var testEventVersion = {
   testname: "Ev Ver",
   testid: "eventversion",
+  webservices: [ 'EV' ],
   test: function(dc) {
     var host = serviceHost(dc, EV);
 
@@ -48,6 +49,7 @@ var testEventVersion = {
 var testStationVersion = {
   testname: "Sta Ver",
   testid: "stationversion",
+  webservices: [ 'ST' ],
   test: function(dc) {
     var host = serviceHost(dc, ST);
 
@@ -70,6 +72,7 @@ var testStationVersion = {
 var testDataSelectVersion = {
   testname: "DS Ver",
   testid: "dataselectversion",
+  webservices: [ 'DS' ],
   test: function(dc) {
     var host = serviceHost(dc, ST);
 
@@ -93,6 +96,7 @@ var testDataSelectVersion = {
 var testLastDay = {
   testname: "Last Day",
   testid: "lastday",
+  webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, EV) ) {
@@ -127,6 +131,7 @@ var testLastDay = {
 var testEventFromPublicID = {
   testname: "eventid=publicID",
   testid: "eventid_publicid",
+  webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
       if ( ! doesSupport(dc, EV) ) {
@@ -149,6 +154,7 @@ var testEventFromPublicID = {
         var singleQuakeQuery = new fdsnevent.EventQuery()
           .host(host)
           .eventid(encodeURIComponent(quakes[0].publicID));
+        url = singleQuakeQuery.formURL();
         return singleQuakeQuery.query();
       }).then(function(singleQuake) {
       return {
@@ -167,6 +173,7 @@ var testEventFromPublicID = {
 var testEventFromBestGuessEventId = {
   testname: "Best Guess EventId",
   testid: "guesseventid",
+  webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
       if ( ! doesSupport(dc, EV) ) {
@@ -207,6 +214,7 @@ var testEventFromBestGuessEventId = {
 var testCatalogs = {
   testname: "Catalogs",
   testid: "catalogs",
+  webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, EV) ) {
@@ -236,6 +244,7 @@ var testCatalogs = {
 var testContributors = {
   testname: "Contributors",
   testid: "contributors",
+  webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, EV) ) {
@@ -265,6 +274,7 @@ var testContributors = {
 var testNetworks = {
   testname: "Networks",
   testid: "networks",
+  webservices: [ 'ST' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, ST) ) {
@@ -298,6 +308,7 @@ var testNetworks = {
 var testDataSelectRecent = {
   testname: "Recent Data",
   testid: "recentData",
+  webservices: [ 'ST', 'DS' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, DS) || ! doesSupport(dc, ST) ) {
@@ -396,8 +407,8 @@ var justVersionTest = {
      fdsnDataTests: [ testDataSelectVersion ]
 };
 
-//return notVersionTest;
+return notVersionTest;
 //return justVersionTest;
 //return justOneTest;
-return tests;
+//return tests;
 }();
