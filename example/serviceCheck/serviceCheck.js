@@ -72,10 +72,17 @@ console.log("run "+test.testname+" on "+dc.id+" "+DCType);
   }).then(function(testOut) {
       var sel = d3.select("tr."+dc.id).select("td."+test.testid);
       sel.selectAll("*").remove();
-      sel.append("a").attr("class", "success").attr("href", testOut.url).text(testOut.text);
+      sel.append("a")
+          .attr("class", "success")
+          .attr("href", testOut.url)
+          .attr("title", testOut.url)
+          .text(testOut.text);
       return testOut;
   }).catch(function(err) {
 console.log("catch "+test.testname+" on "+dc.id+" "+DCType);
+if (err.url) {
+console.log("   url: "+err.url);
+}
       var sel = d3.select("tr."+dc.id).select("td."+test.testid);
       sel.selectAll("*").remove();
       if (err === UNSUPPORTED) {
@@ -90,15 +97,17 @@ console.log("catch "+test.testname+" on "+dc.id+" "+DCType);
           sel.append("a").attr("class", "fail").attr("href", err.url).text("Oops").attr("title", popupText);
         } else {
 console.log("error with no URL", err);
-          sel.append("p").text("FAIL").attr("title", ""+err);
+          sel.append("span").attr("class", "fail").attr("title", popupText).text("Oops");
         }
       }
       //return err;
   });
 }
 
+var fdsnDataCenters = null;
 
 d3.json('fdsnDataCenters.json', function(fdsn) {
+  fdsnDataCenters = fdsn;
   var table = d3.select(".results").select("table");
   if ( table.empty()) {
     table = d3.select(".results").append("table");
@@ -170,7 +179,11 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
   });
 
 // loop dc and tests...
-  var dcTests = fdsn.datacenters.map(function(dc) {
+  var dcTests = fdsn.datacenters
+    .filter(function(dc) {
+      //return dc.id === "IRIS";
+      return true;
+    }).map(function(dc) {
     var combinedTests = { dc: dc };
     var initEVTest = new RSVP.Promise(function(resolve, reject) {
        resolve(true);
