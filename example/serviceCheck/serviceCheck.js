@@ -144,31 +144,56 @@ function makeTable(fdsn) {
     }).html(function(d) {
       return d.name;
     });
-  tr.append("td")
-    .append("span")
-    .attr("class", "clickableText")
-    .text(function(d) {
-      if ( doesSupport(d, EV)) {
-        return "Yes";
-      } else {
-        return "No";
-      }
+    tr.append("td")
+      .append(function(d) {
+        if ( doesSupport(d, EV)) {
+          var aElement = document.createElement("a");
+          d3.select(aElement)
+            .attr("href", new fdsnevent.EventQuery()
+                .host(serviceHost(d, EV))
+                .formURL())
+            .text( "Yes" );
+          return aElement;
+        } else {
+          var aElement = document.createElement("span");
+          d3.select(aElement)
+            .text( "No");
+          return aElement;
+        }
+      });
+    tr.append("td")
+      .append(function(d) {
+        if ( doesSupport(d, ST)) {
+          var aElement = document.createElement("a");
+          d3.select(aElement)
+            .attr("href", new fdsnevent.EventQuery()
+                .host(serviceHost(d, ST))
+                .formURL())
+            .text( "Yes" );
+          return aElement;
+        } else {
+          var aElement = document.createElement("span");
+          d3.select(aElement)
+            .text( "No");
+          return aElement;
+        }
     });
   tr.append("td")
-    .text(function(d) {
-      if ( doesSupport(d, ST)) {
-        return "Yes";
-      } else {
-        return "No";
-      }
-    });
-  tr.append("td")
-    .text(function(d) {
-      if ( doesSupport(d, DS)) {
-        return "Yes";
-      } else {
-        return "No";
-      }
+      .append(function(d) {
+        if ( doesSupport(d, DS)) {
+          var aElement = document.createElement("a");
+          d3.select(aElement)
+            .attr("href", new fdsnevent.EventQuery()
+                .host(serviceHost(d, DS))
+                .formURL())
+            .text( "Yes" );
+          return aElement;
+        } else {
+          var aElement = document.createElement("span");
+          d3.select(aElement)
+            .text( "No");
+          return aElement;
+        }
     });
   tr.append("td")
     .append("button")
