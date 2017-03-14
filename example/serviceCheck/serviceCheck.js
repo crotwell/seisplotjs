@@ -151,7 +151,7 @@ function makeTable(fdsn) {
           d3.select(aElement)
             .attr("href", new fdsnevent.EventQuery()
                 .host(serviceHost(d, EV))
-                .formURL())
+                .formBaseURL())
             .text( "Yes" );
           return aElement;
         } else {
@@ -166,9 +166,9 @@ function makeTable(fdsn) {
         if ( doesSupport(d, ST)) {
           var aElement = document.createElement("a");
           d3.select(aElement)
-            .attr("href", new fdsnevent.EventQuery()
+            .attr("href", new fdsnstation.StationQuery()
                 .host(serviceHost(d, ST))
-                .formURL())
+                .formBaseURL())
             .text( "Yes" );
           return aElement;
         } else {
@@ -183,9 +183,9 @@ function makeTable(fdsn) {
         if ( doesSupport(d, DS)) {
           var aElement = document.createElement("a");
           d3.select(aElement)
-            .attr("href", new fdsnevent.EventQuery()
+            .attr("href", new fdsndataselect.DataSelectQuery()
                 .host(serviceHost(d, DS))
-                .formURL())
+                .formBaseURL())
             .text( "Yes" );
           return aElement;
         } else {
@@ -231,6 +231,12 @@ function makeResultsTable(dc, tests) {
   tr.append("td").attr("class", "testresult");
   tr.append("td").append("span").text(function(test) {
        return test.testname;
+  });
+  tr.append("td").append("span").text(function(test) {
+       return test.webservices.join(" ");
+  });
+  tr.append("td").append("span").text(function(test) {
+       return test.description;
   });
 
 }
