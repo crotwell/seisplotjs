@@ -23,8 +23,9 @@ var ST = "fdsn-station";
 // all tests should be object with testid, testname and test: function(datacenter, d3selector)
 
 var testEventVersion = {
-  testname: "Ev Ver",
+  testname: "Event Version",
   testid: "eventversion",
+  description: "Queries the version of the service, success as long as the query returns something",
   webservices: [ 'EV' ],
   test: function(dc) {
     var host = serviceHost(dc, EV);
@@ -47,8 +48,9 @@ var testEventVersion = {
 
 
 var testStationVersion = {
-  testname: "Sta Ver",
+  testname: "Station Version",
   testid: "stationversion",
+  description: "Queries the version of the service, success as long as the query returns something",
   webservices: [ 'ST' ],
   test: function(dc) {
     var host = serviceHost(dc, ST);
@@ -70,8 +72,9 @@ var testStationVersion = {
 };
 
 var testDataSelectVersion = {
-  testname: "DS Ver",
+  testname: "DataSelect Version",
   testid: "dataselectversion",
+  description: "Queries the version of the service, success as long as the query returns something",
   webservices: [ 'DS' ],
   test: function(dc) {
     var host = serviceHost(dc, ST);
@@ -96,6 +99,7 @@ var testDataSelectVersion = {
 var testLastDay = {
   testname: "Last Day",
   testid: "lastday",
+  description: "Queries for events in the past 24 hours",
   webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
@@ -131,6 +135,7 @@ var testLastDay = {
 var testEventFromPublicID = {
   testname: "eventid=publicID",
   testid: "eventid_publicid",
+  description: "Queries events in the past 24 hours, then tries to make an eventid= query for the first event using its entire publicID with no modification. This allows a client to do a general then specific query style.",
   webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
@@ -173,6 +178,7 @@ var testEventFromPublicID = {
 var testEventFromBestGuessEventId = {
   testname: "Best Guess EventId",
   testid: "guesseventid",
+  description: "Queries events in the past 24 hours, then tries to make an eventid= query for the first event using a huristic to determine the eventid. This allows a client to do a general then specific query style, but with more effort than eventid=publicID as the client must guess the value for eventid in the specific query. This is also fragile as the huristic must be updated for each new server.",
   webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
@@ -214,6 +220,7 @@ var testEventFromBestGuessEventId = {
 var testCatalogs = {
   testname: "Catalogs",
   testid: "catalogs",
+  description: "Queries the list of catalogs of the event service, success as long as the query returns something",
   webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
@@ -244,6 +251,7 @@ var testCatalogs = {
 var testContributors = {
   testname: "Contributors",
   testid: "contributors",
+  description: "Queries the list of contributors of the event service, success as long as the query returns something",
   webservices: [ 'EV' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
@@ -274,6 +282,7 @@ var testContributors = {
 var testNetworks = {
   testname: "Networks",
   testid: "networks",
+  description: "Queries for all networks, success as long as the query returns something, even an empty result.",
   webservices: [ 'ST' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
@@ -304,10 +313,89 @@ var testNetworks = {
   }
 };
 
+function randomNetwork(dc, startTime) {
+  var host = serviceHost(dc, ST);
+  var query = new fdsnstation.StationQuery()
+      .host(host);
+  if (startTime) {
+    query.startTime(startTime);
+  }
+  return query.queryNetworks().then(function(networks) {
+    if (networks.lengh == 0) {
+      var err = new Error("No networks");
+      err.url = query.formURL();
+      throw err;
+    }
+    // got some nets
+    var i = Math.floor(Math.random()*networks.length);
+    var net = networks[i];
+    net.url = query.formURL(fdsnstation.LEVEL_NETWORK);
+    return net;
+  });
+}
+
+
+function randomStation(dc, netCode, startTime) {
+  var host = serviceHost(dc, ST);
+  var query = new fdsnstation.StationQuery()
+      .host(host)
+      .networkCode(netCode);
+  if (startTime) {
+    query.startTime(startTime);
+  }
+  return query.queryStations().then(function(networks) {
+    if (networks.length == 0) {
+      var err = new Error("No networks");
+      err.url = query.formURL();
+      throw err;
+    }
+    if (networks[0].stations().length == 0) {
+      var err = new Error("No networks");
+      err.url = query.formURL();
+      throw err;
+    }
+    // got some stations in first net
+    var i = Math.floor(Math.random()*networks[0].stations().length);
+    var sta = networks[0].stations()[i];
+    sta.url = query.formURL(fdsnstation.LEVEL_STATION);
+    return sta;
+  });
+}
+
+
+
+var testStations = {
+  testname: "Stations",
+  testid: "stations",
+  description: "Queries for stations within a random network returned from all networks, success as long as the query returns something, even an empty result.",
+  webservices: [ 'ST' ],
+  test: function(dc) {
+    return new RSVP.Promise(function(resolve, reject) {
+      if ( ! doesSupport(dc, ST) ) {
+        reject(UNSUPPORTED);
+      } else {
+        resolve(null);
+      }
+    }).then(function(val) {
+      var mythis = this;
+      var host = serviceHost(dc, ST);
+      return randomNetwork(dc);
+    }).then(function(net) {
+      return randomStation(dc, net.networkCode());
+    }).then(function(sta) {
+      return {
+        text: "Found "+sta.stationCode(),
+        url: sta.url,
+        output: sta
+      };
+    });
+  }
+};
 
 var testDataSelectRecent = {
   testname: "Recent Data",
   testid: "recentData",
+  description: "Attempts to make a dataselect query by first querying for networks, then stations within the a random network and then using a random station to request the last 300 seconds for a BHZ channel. Success as long as the query returns, even with an empty result.",
   webservices: [ 'ST', 'DS' ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
@@ -317,27 +405,9 @@ var testDataSelectRecent = {
       resolve(null);
     }
    }).then(function(val) {
-    var host = serviceHost(dc, ST);
-    var query = new fdsnstation.StationQuery()
-      .host(host)
-      .channelCode("BHZ");
-//      .endAfter(new Date())
-//      .matchTimeseries(true);
-    return query.queryNetworks().then(function(nets) {
-      if (nets.length == 0) {
-        throw new Error("No Networks returned from "+query.formURL(fdsnstation.LEVEL_NETWORK));
-      }
-      query.networkCode(nets[0].networkCode())
-        .channelCode("BHZ");
-//        .endAfter(new Date())
-//        .matchTimeseries(true);
-      return query.queryStations();
-     });
-   }).then(function(networks) {
-    if (networks.length == 0 || networks[0].stations.length == 0 ) {
-      throw new Error("No Stations returned from "+query.formURL(fdsnstation.LEVEL_STATION));
-    }
-    return networks[0].stations()[0];
+    return randomNetwork(dc, new Date());
+   }).then(function(net) {
+     return randomStation(dc, net.networkCode(), new Date());
    }).then(function(station) {
     var host = serviceHost(dc, DS);
 
@@ -346,7 +416,7 @@ var testDataSelectRecent = {
     var url = query
       .networkCode(station.network().networkCode())
       .stationCode(station.stationCode())
-      .channelCode("BHZ")
+      .channelCode("SHZ,BHZ")
       .computeStartEnd(null, new Date(), 300, 0)
       .formURL(fdsnstation.LEVEL_NETWORK);
     return query.query().then(function(miniseed) {
@@ -387,14 +457,20 @@ function serviceHost(dc, type) {
 
 var tests = {
      fdsnEventTests: [ testEventVersion, testLastDay, testCatalogs, testContributors, testEventFromBestGuessEventId, testEventFromPublicID ],
-     fdsnStationTests: [ testStationVersion, testNetworks ],
+     fdsnStationTests: [ testStationVersion, testNetworks, testStations ],
      fdsnDataTests: [ testDataSelectVersion, testDataSelectRecent ]
  };
 
 var notVersionTest = {
-     fdsnEventTests: [  testLastDay, testCatalogs, testContributors, testEventFromBestGuessEventId, testEventFromPublicID ],
-     fdsnStationTests: [  testNetworks ],
-     fdsnDataTests: [ testDataSelectRecent ]
+     fdsnEventTests: tests.fdsnEventTests.filter(function(d) {
+         return d.testid.indexOf("version") === -1;
+     }),
+     fdsnStationTests: tests.fdsnStationTests.filter(function(d) {
+         return d.testid.indexOf("version") === -1;
+     }),
+     fdsnDataTests: tests.fdsnDataTests.filter(function(d) {
+         return d.testid.indexOf("version") === -1;
+     })
  };
 var justOneTest = {
      fdsnEventTests: [ ],
@@ -407,8 +483,12 @@ var justVersionTest = {
      fdsnDataTests: [ testDataSelectVersion ]
 };
 
-return notVersionTest;
-//return justVersionTest;
-//return justOneTest;
-//return tests;
+var out = notVersionTest;
+//var out = justVersionTest;
+//var out = justOneTest;
+//var out = tests;
+// util functions
+out.serviceHost = serviceHost;
+out.doesSupport = doesSupport;
+return out;
 }();
