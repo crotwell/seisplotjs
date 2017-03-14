@@ -254,6 +254,24 @@
       ]
     },
     {
+      "id": "NOA",
+      "name": "NOA, Greece",
+      "website": "http://bbnet.gein.noa.gr/",
+      "email": "",
+      "host": "eida.gein.noa.gr",
+      "region": "Europe",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
       "id": "ORFEUS",
       "name": "ORFEUS Data Center",
       "website": "http://www.orfeus-eu.org",
