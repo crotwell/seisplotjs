@@ -1,7 +1,5 @@
 // seisplotjs comes from the seisplotjs standalone bundle
 var d3 = seisplotjs.d3;
-var wp = seisplotjs.waveformplot;
-var traveltime = seisplotjs.traveltime;
 var fdsnevent = seisplotjs.fdsnevent;
 var fdsnstation = seisplotjs.fdsnstation;
 var fdsndataselect = seisplotjs.fdsndataselect;
@@ -25,10 +23,7 @@ var ST = "fdsn-station";
 //     fdsnDataTests = [ testDataSelectVersion ]
 // }
 
-var RUN = "Run";
 var UNSUPPORTED = "Unsupported";
-var FAIL = "Fail";
-var OK = "OK";
 
 function selectionForTestDC(test, dc) {
   var sel = d3.select("tr."+test.testid).select("td.testresult");
@@ -36,24 +31,24 @@ function selectionForTestDC(test, dc) {
 }
 
 function runTestOnDC(test, dc, DCType) {
+  var testRunStart = performance.now();
   var sel = selectionForTestDC(test, dc);
 console.log("RunTestOnDC: "+test.testname+" "+dc.id+" "+DCType+"  sup="+doesSupport(dc, DCType));
   if ( ! doesSupport(dc, DCType) ) {
-    return new RSVP.Promise(function(resolve, reject) {
+    return new RSVP.Promise(function(resolve) {
       resolve( {
         text: UNSUPPORTED,
         url: "none"
       });
     });
   }
-  var mytest = test;
   // dc type is supported
-  return new RSVP.Promise(function(resolve, reject) {
+  return new RSVP.Promise(function(resolve) {
     resolve( {
         text: "",
         url: "none"
       });
-  }).then(function(val) {
+  }).then(function() {
      // run test and package up result
 console.log("run "+test.testname+" on "+dc.id+" "+DCType);
      return test.test(dc)
@@ -62,6 +57,7 @@ console.log("run "+test.testname+" on "+dc.id+" "+DCType);
            text: "ok",
            test: test,
            dc: dc,
+           runtime: ( performance.now() - testRunStart ),
            output: "",
            result: result
          };
@@ -81,30 +77,46 @@ console.log("run "+test.testname+" on "+dc.id+" "+DCType);
       sel.append("a")
           .attr("class", "success")
           .attr("href", testOut.url)
-          .attr("title", testOut.url)
-          .text(testOut.text);
+          .text("OK");
+      var messageSel = d3.select("tr."+test.testid).select("td.testmessage");
+      messageSel.selectAll("*").remove();
+      messageSel.append("span").text(testOut.text);
+      var runtimeSel = d3.select("tr."+test.testid).select("td.runtime");
+      runtimeSel.selectAll("*").remove();
+      runtimeSel.append("span").text(Math.round(testOut.runtime));
       return testOut;
   }).catch(function(err) {
+      var messageSel = d3.select("tr."+test.testid).select("td.testmessage");
 console.log("catch in test='"+test.testname+"' on "+dc.id+" "+DCType);
 console.assert(false, err);
 if (err.url) {
 console.log("   url: "+err.url);
 }
       sel.selectAll("*").remove();
+      messageSel.selectAll("*").remove();
       if (err === UNSUPPORTED) {
          console.log("test "+test.testname+" on "+dc.id+" "+DCType+" unsupported.");
+         sel.append("span").text("unsupported");
       } else {
         console.assert(false, err);
-        if (err.url) {
-          var popupText = err.status+" "+ err.statusText;
+        var popupText = "";
+        if (err.message) {popupText += err.message;}
+        if (typeof err.status != 'undefined') {
+          popupText += " status="+err.status;
           if (err.status === 0) {
-            popupText += "status=0, maybe CORS issue?";
+            popupText += ", maybe CORS issue?";
           }
+        }
+        if (err.statusText) {
+          popupText += " "+ err.statusText;
+        }
+        if (err.url) {
           sel.append("a").attr("class", "fail").attr("href", err.url).text("Oops").attr("title", popupText);
         } else {
 console.log("error with no URL", err);
           sel.append("span").attr("class", "fail").attr("title", popupText).text("Oops");
         }
+        messageSel.append("span").text(popupText);
       }
       //return err;
   });
@@ -118,7 +130,9 @@ d3.json('fdsnDataCenters.json', function(fdsn) {
 });
 
 function makeTable(fdsn) {
-  var table = d3.select(".datacenters").select("table");
+  var div = d3.select(".datacenters");
+  div.select("p").remove();
+  var table = div.select("table");
   if ( table.empty()) {
     table = d3.select(".datacenters").append("table");
     var thr = table.append("thead").append("tr");
@@ -157,10 +171,10 @@ function makeTable(fdsn) {
             .text( "Yes" );
           return aElement;
         } else {
-          var aElement = document.createElement("span");
-          d3.select(aElement)
+          var spanElement = document.createElement("span");
+          d3.select(spanElement)
             .text( "No");
-          return aElement;
+          return spanElement;
         }
       });
     tr.append("td")
@@ -174,10 +188,10 @@ function makeTable(fdsn) {
             .text( "Yes" );
           return aElement;
         } else {
-          var aElement = document.createElement("span");
-          d3.select(aElement)
+          var spanElement = document.createElement("span");
+          d3.select(spanElement)
             .text( "No");
-          return aElement;
+          return spanElement;
         }
     });
   tr.append("td")
@@ -191,46 +205,43 @@ function makeTable(fdsn) {
             .text( "Yes" );
           return aElement;
         } else {
-          var aElement = document.createElement("span");
-          d3.select(aElement)
+          var spanElement = document.createElement("span");
+          d3.select(spanElement)
             .text( "No");
-          return aElement;
+          return spanElement;
         }
     });
   tr.append("td")
     .append("button")
-    .attr("class", "clickableText")
     .text("Run")
     .on("click", function(d) {
       runAllTests(fdsn, d.id);
     });
 }
 
-function makeResultsTable(dc, tests) {
+function makeResultsTable(dc, inTests) {
   var div = d3.select("div.results");
   div.selectAll("*").remove();
-  var divP = div.append("p");
+  var divP = div.append("h3");
   divP.text("Results for ");
   divP.append("a").attr("href", dc.url).text(dc.name);
-  var table = d3.select(".results").select("table");
+  var table = div.select("table");
   if ( table.empty()) {
     table = d3.select(".results").append("table");
     var thr = table.append("thead").append("tr");
     thr.append("th").text("Result");
-    thr.append("th").text("Name");
+    thr.append("th").text("Test Name");
     thr.append("th").text("Service");
     thr.append("th").text("Detail");
+    thr.append("th").text("Output");
+    thr.append("th").text("Runtime (ms)");
     table.append("tbody");
   }
 
-  var allTests = allFdsnTests.fdsnEventTests.concat(allFdsnTests.fdsnStationTests).concat(allFdsnTests.fdsnDataTests);
+  var allTests = inTests.fdsnEventTests.concat(inTests.fdsnStationTests).concat(inTests.fdsnDataTests);
 
-console.log("before allTests.filter "+dc.id+"  EV"+doesSupport(dc, EV)+" ST"+doesSupport(dc, ST));
   allTests = allTests.filter(function(test) {
-console.log("all tests filter "+test.testname);
     return test.webservices.reduce(function(acc, wsType) {
-console.log("reduce: "+dc.id+" "+acc+" "+test.testname+" "+wsType+" "+doesSupport(dc, wsType));
-console.log("  "+(acc && doesSupport(dc, wsType)));
       return acc && doesSupport(dc, wsType);
     }, true);
   });
@@ -250,7 +261,8 @@ console.log("  "+(acc && doesSupport(dc, wsType)));
   tr.append("td").append("span").text(function(test) {
        return test.description;
   });
-
+  tr.append("td").attr("class", "testmessage");
+  tr.append("td").attr("class", "runtime");
 }
 
 function runAllTests(fdsn, dcid) {
@@ -264,18 +276,15 @@ function runAllTests(fdsn, dcid) {
       return dc.id === dcid;
     }).map(function(dc) {
     var combinedTests = { dc: dc };
-    var initEVTest = new RSVP.Promise(function(resolve, reject) {
+    var initEVTest = new RSVP.Promise(function(resolve) {
        resolve(true);
     });
-    var prevEVTest = initEVTest;
-    var initSTTest = new RSVP.Promise(function(resolve, reject) {
+    var initSTTest = new RSVP.Promise(function(resolve) {
        resolve(true);
     });
-    var prevSTTest = initSTTest;
-    var initDSTest = new RSVP.Promise(function(resolve, reject) {
+    var initDSTest = new RSVP.Promise(function(resolve) {
        resolve(true);
     });
-    var prevDSTest = initDSTest;
 
     if (doesSupport(dc, EV)) {
       combinedTests.fdsnevent = allFdsnTests.fdsnEventTests.reduce(function(acc, test) {
@@ -320,8 +329,11 @@ function runAllTests(fdsn, dcid) {
   });
 
 RSVP.all(dcTests.map(function(dcT) { return RSVP.hash(dcT);}))
-.then(function(r) {console.log("tests finished"); })
-.catch(function(r) {console.log("oops, something didn't finish");});
+.then(function() {console.log("tests finished"); })
+.catch(function(r) {
+  console.assert(false, r);
+  console.log("oops, something didn't finish");
+});
 
 
 
@@ -332,11 +344,11 @@ RSVP.all(dcTests.map(function(dcT) { return RSVP.hash(dcT);}))
 }
 
 function doesSupport(dc, type) {
-  var out = dc.supports.find(function(s) { return s.type == type;});
-  if (! out) {
-    var dcws = dc.supports.map(function(d) { return d.type; }).join(',');
-    console.log("not doesSupport "+dc.id+" "+dcws+" "+type+" undef");
-  }
+  var out = dc.supports.find(function(s) { return s.type === type;});
+//  if (! out) {
+//    var dcws = dc.supports.map(function(d) { return d.type; }).join(',');
+//    console.log("not doesSupport "+dc.id+" "+dcws+" "+type+" undef");
+//  }
   return typeof out != 'undefined';
 
 }
@@ -347,13 +359,5 @@ function serviceHost(dc, type) {
     return does.host ? does.host : dc.host;
   }
   return null;
-}
-
-function createSupportsItem(selector, isSupported) {
-  if (isSupported) {
-    selector.text("Yes");
-  } else {
-    selector.text("No");
-  }
 }
 

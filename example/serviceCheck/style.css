@@ -11,6 +11,6 @@
   color: white;
 }
 
-.clickableText {
-  cursor: pointer;
+td span {
+  min-width: 80px;
 }
