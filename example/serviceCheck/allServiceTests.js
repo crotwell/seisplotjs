@@ -226,7 +226,7 @@ var testLastDay = {
 var testEventFromPublicID = {
   testname: "eventid=publicID",
   testid: "eventid_publicid",
-  description: "Queries events in the past 24 hours, then tries to make an eventid= query for the first event using its entire publicID with no modification. This allows a client to do a general then specific query style. because the spec is ambiguous on the relationship between piblicID and eventid, this may be an unfair test, but I feel it is useful for the service to accept as eventid whatever it outputs as publicID.",
+  description: "Queries events in the past 24 hours, then tries to make an eventid= query for the first event using its entire publicID with no modification. This allows a client to do a general then specific query style. Because the spec is ambiguous on the relationship between piblicID and eventid, this may be an unfair test, but I feel it is useful for the service to accept as eventid whatever it outputs as publicID.",
   webservices: [ EV ],
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
