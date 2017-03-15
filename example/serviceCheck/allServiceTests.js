@@ -2,7 +2,6 @@
 console.log("in allServiceTests.js");
 var allFdsnTests = function() {
 
-console.log("in outer function of allServiceTests.js");
 
 // seisplotjs comes from the seisplotjs standalone bundle
 var d3 = seisplotjs.d3;
@@ -117,11 +116,15 @@ var testNoDataEvent = {
       .minMag(99);
     var url = quakeQuery.formURL();
     return quakeQuery.query().then(function(quakes) {
-      return {
-        text: "Found "+quakes.length,
-        url: url,
-        output: quakes
-      };
+      if (quakes.length > 0) {
+        throw new Error("Should be no data, but "+quakes.length+" events.");
+      } else {
+        return {
+          text: "Found "+quakes.length,
+          url: url,
+          output: quakes
+        };
+      }
     }).catch(function(err) {
       if (! err.url) {err.url = url;}
       throw err;
@@ -334,11 +337,15 @@ var testNoDataNetwork = {
       .networkCode("xx");
     var url = query.formURL(fdsnstation.LEVEL_NETWORK);
     return query.queryNetworks().then(function(networks) {
-      return {
-        text: "Found "+networks.length,
-        url: url,
-        output: networks
-      };
+      if (networks.length > 0) {
+        throw new Error("Should be no data, but "+networks.length+" networks.");
+      } else {
+        return {
+          text: "Found "+networks.length,
+          url: url,
+          output: networks
+        };
+      }
     }).catch(function(err) {
       if (! err.url) {err.url = url;}
       throw err;
@@ -537,15 +544,19 @@ var testDataSelectNoData = {
       .networkCode("XX")
       .stationCode("ABC")
       .locationCode("99")
-      .channelCode("SHZ")
-      .computeStartEnd(null, new Date(), 300, 0)
+      .channelCode("XXX")
+      .computeStartEnd(new Date(Date.UTC(1980,1,1,0,0,0)), null, 300, 0)
       .formURL();
     return query.query().then(function(miniseed) {
-      return {
-        text: "Found "+miniseed.length,
-        url: url,
-        output: miniseed
-      };
+      if (miniseed.length > 0) {
+        throw new Error("Should be no data, but "+miniseed.length+" miniseed records.");
+      } else {
+        return {
+          text: "Found "+miniseed.length,
+          url: url,
+          output: miniseed
+        };
+      }
     }).catch(function(err) {
       if (! err.url) {err.url = url;}
       throw err;
@@ -599,12 +610,10 @@ var testDataSelectRecent = {
 
 function doesSupport(dc, type) {
 var dcws = dc.supports.map(function(d) { return d.type; }).join(',');
-console.log("allServiceTests: "+dc.id+" "+dcws+"  type="+type);
-  var out = dc.supports.find(function(s) { return s.type == type;});
-  if (! out) {
-    console.log("not doesSupport "+dc.id+" "+dcws+" "+type+" undef");
-  }
-console.log("out in doesSupport: "+out);
+  var out = dc.supports.find(function(s) { return s.type === type;});
+//  if (! out) {
+//    console.log("not doesSupport "+dc.id+" "+dcws+" "+type+" undef");
+//  }
   return typeof out != 'undefined';
 }
 
