@@ -9,10 +9,10 @@ var RSVP = fdsnstation.RSVP;
 
 console.log("allFdsnTests: "+allFdsnTests);
 
+
 var DS = "fdsnws-dataselect";
 var EV = "fdsn-event";
 var ST = "fdsn-station";
-
 
 
 // all tests should be object with testid, testname and test: function(datacenter, d3selector)
@@ -37,6 +37,7 @@ function selectionForTestDC(test, dc) {
 
 function runTestOnDC(test, dc, DCType) {
   var sel = selectionForTestDC(test, dc);
+console.log("RunTestOnDC: "+test.testname+" "+dc.id+" "+DCType+"  sup="+doesSupport(dc, DCType));
   if ( ! doesSupport(dc, DCType) ) {
     return new RSVP.Promise(function(resolve, reject) {
       resolve( {
@@ -84,7 +85,8 @@ console.log("run "+test.testname+" on "+dc.id+" "+DCType);
           .text(testOut.text);
       return testOut;
   }).catch(function(err) {
-console.log("catch "+test.testname+" on "+dc.id+" "+DCType);
+console.log("catch in test='"+test.testname+"' on "+dc.id+" "+DCType);
+console.assert(false, err);
 if (err.url) {
 console.log("   url: "+err.url);
 }
@@ -96,7 +98,7 @@ console.log("   url: "+err.url);
         if (err.url) {
           var popupText = err.status+" "+ err.statusText;
           if (err.status === 0) {
-            popupText += " maybe CORS issue?";
+            popupText += "status=0, maybe CORS issue?";
           }
           sel.append("a").attr("class", "fail").attr("href", err.url).text("Oops").attr("title", popupText);
         } else {
@@ -223,6 +225,16 @@ function makeResultsTable(dc, tests) {
 
   var allTests = allFdsnTests.fdsnEventTests.concat(allFdsnTests.fdsnStationTests).concat(allFdsnTests.fdsnDataTests);
 
+console.log("before allTests.filter "+dc.id+"  EV"+doesSupport(dc, EV)+" ST"+doesSupport(dc, ST));
+  allTests = allTests.filter(function(test) {
+console.log("all tests filter "+test.testname);
+    return test.webservices.reduce(function(acc, wsType) {
+console.log("reduce: "+dc.id+" "+acc+" "+test.testname+" "+wsType+" "+doesSupport(dc, wsType));
+console.log("  "+(acc && doesSupport(dc, wsType)));
+      return acc && doesSupport(dc, wsType);
+    }, true);
+  });
+
   var tableData = table.select("tbody")
     .selectAll("tr")
     .data(allTests);
@@ -321,10 +333,12 @@ RSVP.all(dcTests.map(function(dcT) { return RSVP.hash(dcT);}))
 
 function doesSupport(dc, type) {
   var out = dc.supports.find(function(s) { return s.type == type;});
-//  if (! out) {
-//    console.log("doesSupport "+dc.id+" "+type+" undef");
-//  }
-  return out;
+  if (! out) {
+    var dcws = dc.supports.map(function(d) { return d.type; }).join(',');
+    console.log("not doesSupport "+dc.id+" "+dcws+" "+type+" undef");
+  }
+  return typeof out != 'undefined';
+
 }
 
 function serviceHost(dc, type) {
