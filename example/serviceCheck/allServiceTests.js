@@ -511,7 +511,7 @@ function randomNetwork(dc, startTime) {
       throw err;
     }
     // got some nets
-    var permNetRE = /[A-V][A-Z]/;
+    var permNetRE = /[A-W][A-Z0-9]/;
     var unrestricted = networks.filter(function(net) {
       return  (( ! net.restrictedStatus()) || net.restrictedStatus() == "open")
              && permNetRE.test(net.networkCode());
