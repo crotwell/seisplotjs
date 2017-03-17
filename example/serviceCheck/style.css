@@ -5,6 +5,12 @@
   color: white;
 }
 
+.failOpinion {
+  padding: 3px;
+  background-color: yellow;
+  color: green;
+}
+
 .success {
   padding: 3px;
   background-color: green;
@@ -13,4 +19,8 @@
 
 td span {
   min-width: 80px;
+}
+
+tr:nth-child(even) {
+    background-color: #F9F9F9;
 }

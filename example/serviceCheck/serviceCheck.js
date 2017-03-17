@@ -83,7 +83,7 @@ console.log("run "+test.testname+" on "+dc.id+" "+DCType);
       messageSel.append("span").text(testOut.text);
       var runtimeSel = d3.select("tr."+test.testid).select("td.runtime");
       runtimeSel.selectAll("*").remove();
-      runtimeSel.append("span").text(Math.round(testOut.runtime));
+      runtimeSel.append("span").text(Math.round(testOut.runtime)/1000);
       return testOut;
   }).catch(function(err) {
       var messageSel = d3.select("tr."+test.testid).select("td.testmessage");
@@ -92,6 +92,10 @@ console.assert(false, err);
 if (err.url) {
 console.log("   url: "+err.url);
 }
+      var failClass = 'fail';
+      if (test.severity === 'opinion') {
+        failClass = 'failOpinion';
+      }
       sel.selectAll("*").remove();
       messageSel.selectAll("*").remove();
       if (err === UNSUPPORTED) {
@@ -111,10 +115,10 @@ console.log("   url: "+err.url);
           popupText += " "+ err.statusText;
         }
         if (err.url) {
-          sel.append("a").attr("class", "fail").attr("href", err.url).text("Oops").attr("title", popupText);
+          sel.append("a").attr("class", failClass).attr("href", err.url).text("Oops").attr("title", popupText);
         } else {
 console.log("error with no URL", err);
-          sel.append("span").attr("class", "fail").attr("title", popupText).text("Oops");
+          sel.append("span").attr("class", failClass).attr("title", popupText).text("Oops");
         }
         messageSel.append("span").text(popupText);
       }
@@ -234,7 +238,7 @@ function makeResultsTable(dc, inTests) {
     thr.append("th").text("Service");
     thr.append("th").text("Detail");
     thr.append("th").text("Output");
-    thr.append("th").text("Runtime (ms)");
+    thr.append("th").text("Runtime (s)");
     table.append("tbody");
   }
 

@@ -23,6 +23,7 @@ var testEventVersion = {
   testid: "eventversion",
   description: "Queries the version of the service, success as long as the query returns something",
   webservices: [ EV ],
+  severity: 'severe',
   test: function(dc) {
     var host = serviceHost(dc, EV);
 
@@ -48,6 +49,7 @@ var testStationVersion = {
   testid: "stationversion",
   description: "Queries the version of the service, success as long as the query returns something",
   webservices: [ ST ],
+  severity: 'severe',
   test: function(dc) {
     var host = serviceHost(dc, ST);
 
@@ -72,6 +74,7 @@ var testDataSelectVersion = {
   testid: "dataselectversion",
   description: "Queries the version of the service, success as long as the query returns something",
   webservices: [ DS ],
+  severity: 'severe',
   test: function(dc) {
     var host = serviceHost(dc, DS);
 
@@ -95,6 +98,7 @@ var testNoData204Event = {
   testname: "Event 204",
   testid: "nodata204event",  description: "Check that 204 is returned for queries for events that should be valid but return no data without nodata=404. Success if 204 http status is returned. This can also be a check on the CORS header.",
   webservices: [ EV ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, EV) ) {
@@ -153,6 +157,7 @@ var testNoDataEvent = {
   testid: "nodataevent",
   description: "Queries for events that should be valid but return no data. Success if nothing is returned. This can also be a check on the CORS header.",
   webservices: [ EV ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, EV) ) {
@@ -192,6 +197,7 @@ var testLastDay = {
   testid: "lastday",
   description: "Queries for events in the past 24 hours",
   webservices: [ EV ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, EV) ) {
@@ -221,6 +227,66 @@ var testLastDay = {
   }
 };
 
+var testDateIncludeZ = {
+  testname: "Date Ends w/ Z",
+  testid: "eventdataZ",
+  description: "Queries for events in the past 24 hours and checks that the origin time string ends with a Z for UTC timezone.",
+  webservices: [ EV ],
+  severity: 'opinion',
+  test: function(dc) {
+    return new RSVP.Promise(function(resolve, reject) {
+      if ( ! doesSupport(dc, EV) ) {
+        reject(new Error("Unsupported"));
+      } else {
+        resolve(null);
+      }
+    }).then(function() {
+      var daysAgo = 1;
+      var host = serviceHost(dc, EV);
+      var quakeQuery = new fdsnevent.EventQuery()
+        .host(host)
+        .startTime(new Date(new Date().getTime()-86400*daysAgo*1000))
+        .endTime(new Date());
+      var url = quakeQuery.formURL();
+      return quakeQuery.queryRawXml().then(function(qml) {
+        let top = qml.documentElement;
+        let eventArray = Array.prototype.slice.call(top.getElementsByTagName("event"));
+        if (eventArray.length === 0) {
+          throw new Error("No events returned");
+        }
+        var failureEvent = null;
+        let otimeStr = null;
+        if (eventArray.every(function(q, i) {
+          otimeStr = quakeQuery._grabFirstElText(quakeQuery._grabFirstEl(quakeQuery._grabFirstEl(qml, 'origin'), 'time'),'value');
+          if (otimeStr ) {
+            if (otimeStr.charAt(otimeStr.length-1) === 'Z') {
+              return true;
+            } else {
+              failureEvent = q;
+              return false;
+            }
+          } else {
+            var err = new Error("origintime is missing for "+i+"th event: "+q.getAttribute("publicID"));
+            err.url = url;
+            throw err;
+          }
+        })) {
+          return {
+            text: "Found "+eventArray.length,
+            url: url,
+            output: qml
+          };
+        } else {
+          throw new Error("Check for Z failed for "+otimeStr+", event: "+failureEvent.getAttribute("publicID"));
+        }
+      
+      }).catch(function(err) {
+        if (! err.url) {err.url = url;}
+        throw err;
+      });
+    });
+  }
+};
 
 
 var testEventFromPublicID = {
@@ -228,6 +294,7 @@ var testEventFromPublicID = {
   testid: "eventid_publicid",
   description: "Queries events in the past 24 hours, then tries to make an eventid= query for the first event using its entire publicID with no modification. This allows a client to do a general then specific query style. Because the spec is ambiguous on the relationship between piblicID and eventid, this may be an unfair test, but I feel it is useful for the service to accept as eventid whatever it outputs as publicID.",
   webservices: [ EV ],
+  severity: 'opinion',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
       if ( ! doesSupport(dc, EV) ) {
@@ -275,6 +342,7 @@ var testEventFromBestGuessEventId = {
   testid: "guesseventid",
   description: "Queries events in the past 24 hours, then tries to make an eventid= query for the first event using a huristic to determine the eventid. This allows a client to do a general then specific query style, but with more effort than eventid=publicID as the client must guess the value for eventid in the specific query. This is also fragile as the huristic must be updated for each new server.",
   webservices: [ EV ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
       if ( ! doesSupport(dc, EV) ) {
@@ -317,6 +385,7 @@ var testCatalogs = {
   testid: "catalogs",
   description: "Queries the list of catalogs of the event service, success as long as the query returns something",
   webservices: [ EV ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, EV) ) {
@@ -348,6 +417,7 @@ var testContributors = {
   testid: "contributors",
   description: "Queries the list of contributors of the event service, success as long as the query returns something",
   webservices: [ EV ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, EV) ) {
@@ -378,6 +448,7 @@ var testNoData204Station = {
   testname: "Station 204",
   testid: "nodata204Station",  description: "Check that 204 is returned for queries for networks that should be valid but return no data, without nodata=404. Success if 204 http status is returned. This can also be a check on the CORS header.",
   webservices: [ ST ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, ST) ) {
@@ -433,6 +504,7 @@ var testNoDataNetwork = {
   testid: "nodatanetworks",
   description: "Queries for networks that should be well formed but return no networks, success as long as the query returns something, even an empty result. This can also be a check on the CORS header.",
   webservices: [ ST ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, ST) ) {
@@ -470,6 +542,7 @@ var testNetworks = {
   testid: "networks",
   description: "Queries for all networks, success as long as the query returns something, even an empty result.",
   webservices: [ ST ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, ST) ) {
@@ -578,6 +651,7 @@ var testStations = {
   testid: "stations",
   description: "Queries for stations within a random unrestricted network returned from all networks, success as long as the query returns something, even an empty result.",
   webservices: [ ST ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
       if ( ! doesSupport(dc, ST) ) {
@@ -604,6 +678,7 @@ var testCommaStations = {
   testid: "commastations",
   description: "Queries for two station codes separated by comma from within a random unrestricted network returned from all networks, success as long as the query returns at least two stations.",
   webservices: [ ST ],
+  severity: 'severe',
   test: function(dc) {
     var host = serviceHost(dc, ST);
     return new RSVP.Promise(function(resolve, reject) {
@@ -669,11 +744,69 @@ var testCommaStations = {
   }
 };
 
+function dateStrEndsZ(s) {
+  return s.charAt(s.length-1) === 'Z';
+}
+
+var testStationDateIncludeZ = {
+  testname: "Station Date Ends w/ Z",
+  testid: "stationdataZ",
+  description: "Queries for stations in random network and checks that the start and end time string ends with a Z for UTC timezone.",
+  webservices: [ ST ],
+  severity: 'opinion',
+  test: function(dc) {
+    var host = serviceHost(dc, ST);
+    return new RSVP.Promise(function(resolve, reject) {
+      if ( ! doesSupport(dc, ST) ) {
+        reject(new Error("Unsupported"));
+      } else {
+        resolve(null);
+      }
+    }).then(function() {
+      return randomNetwork(dc);
+    }).then(function(net) {
+      var query = new fdsnstation.StationQuery()
+        .host(host)
+        .networkCode(net.networkCode());
+      return query.queryRawXml(fdsnstation.LEVEL_STATION);
+    }).then(function(staml) {
+      let top = staml.documentElement;
+      let netArray = top.getElementsByTagNameNS(fdsnstation.STAML_NS, "Network");
+      netArray.url = top.url;
+      for (let i=0; i<netArray.length; i++) {
+        let netStart = netArray.item(i).getAttribute("startDate");
+        if ( ! dateStrEndsZ(netStart)) {
+          let err = new Error("network "+netArray.item(i).getAttribute("code")+" start date does not end with Z: "+netStart);
+          err.url = staml.url;
+          throw err;
+        }
+        let staArray = netArray.item(i).getElementsByTagNameNS(fdsnstation.STAML_NS, "Station");
+        for (let i=0; i<staArray.length; i++) {
+          let staStart = staArray.item(i).getAttribute("startDate");
+          if ( ! dateStrEndsZ(staStart)) {
+            let err = new Error("station "+staArray.item(i).getAttribute("code")+" start date does not end with Z: "+staStart);
+            err.url = staml.url;
+            throw err;
+          }
+        } 
+      } 
+      return netArray;
+    }).then(function(netArray) {
+      return {
+        text: "Found "+netArray.length,
+        url: netArray.url,
+        output: netArray
+      };
+    });
+  }
+};
+
 var testChannels = {
   testname: "Channels",
   testid: "channels",
   description: "Queries for channels from a random unrestricted station within a random network returned from all networks, success as long as the query returns something, even an empty result.",
   webservices: [ ST ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
       if ( ! doesSupport(dc, ST) ) {
@@ -709,6 +842,7 @@ var testNoData204DataSelect = {
   testname: "DataSelect 204",
   testid: "nodata204DataSelect",  description: "Check that 204 is returned for queries for dataselect that should be valid but return no data without nodata=404. Success if 204 http status is returned. This can also be a check on the CORS header.",
   webservices: [ DS ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, DS) ) {
@@ -769,6 +903,7 @@ var testDataSelectNoData = {
   testid: "dsnodata",
   description: "Attempts to make a dataselect query that should be correctly formed but should not return data. Success as long as the query returns, even with an empty result. This can also be a check on the CORS header.",
   webservices: [ DS ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, DS) || ! doesSupport(dc, ST) ) {
@@ -811,6 +946,7 @@ var testDataSelectRecent = {
   testid: "recentData",
   description: "Attempts to make a dataselect query by first querying for networks, then stations within the a random network and then using a random station to request the last 300 seconds for a SHZ,BHZ channel. Success as long as the query returns, even with an empty result.",
   webservices: [ ST, DS ],
+  severity: 'severe',
   test: function(dc) {
     return new RSVP.Promise(function(resolve, reject) {
     if ( ! doesSupport(dc, DS) || ! doesSupport(dc, ST) ) {
@@ -867,8 +1003,8 @@ function serviceHost(dc, type) {
 }
 
 var tests = {
-     fdsnEventTests: [ testEventVersion, testNoData204Event, testNoDataEvent, testLastDay, testCatalogs, testContributors, testEventFromBestGuessEventId, testEventFromPublicID ],
-     fdsnStationTests: [ testStationVersion, testNoData204Station, testNoDataNetwork, testNetworks, testStations, testChannels, testCommaStations ],
+     fdsnEventTests: [ testEventVersion, testNoData204Event, testNoDataEvent, testLastDay, testCatalogs, testContributors, testEventFromBestGuessEventId, testDateIncludeZ, testEventFromPublicID  ],
+     fdsnStationTests: [ testStationVersion, testNoData204Station, testNoDataNetwork, testNetworks, testStations, testChannels, testCommaStations, testStationDateIncludeZ ],
      fdsnDataTests: [ testDataSelectVersion, testNoData204DataSelect, testDataSelectNoData, testDataSelectRecent ]
  };
 
