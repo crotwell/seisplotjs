@@ -8,6 +8,7 @@ import * as distaz from 'seisplotjs-distaz';
 import * as fdsnevent from 'seisplotjs-fdsnevent';
 import * as fdsnstation from 'seisplotjs-fdsnstation';
 import * as fdsndataselect from 'seisplotjs-fdsndataselect';
+import * as filter from 'seisplotjs-filter';
 import * as miniseed from 'seisplotjs-miniseed';
 import * as seedcodec from 'seisplotjs-seedcodec';
 import * as seedlink from 'seisplotjs-seedlink';
@@ -20,6 +21,7 @@ export { distaz,
          fdsnevent,
          fdsnstation,
          fdsndataselect,
+         filter,
          seedcodec, 
          miniseed, 
          seedlink, 
