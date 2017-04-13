@@ -8,6 +8,7 @@
     "seisplotjs-fdsnevent": ">= 0.0.0",
     "seisplotjs-fdsnstation": ">= 0.0.0",
     "seisplotjs-fdsndataselect": ">= 0.0.0",
+    "seisplotjs-filter": ">= 0.0.0",
     "seisplotjs-miniseed": ">= 1.0.0",
     "seisplotjs-seedcodec": ">= 1.0.0",
     "seisplotjs-seedlink": ">= 0.0.0",
@@ -15,7 +16,8 @@
     "seisplotjs-waveformplot": ">= 1.0.0"
   },
   "scripts": {
-    "lint": "eslint 'src/*.js' 'example/serviceCheck/serviceCheck.js' 'example/serviceCheck/allServiceTests.js'",
+    "lint": "eslint 'src/*.js' ",
+    "examplelint": "eslint -c .eslintrc_examples.js 'example/serviceCheck/serviceCheck.js' 'example/serviceCheck/allServiceTests.js' 'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "babel --presets es2015 -d lib/ src/",
     "standalone": "browserify src/index.js --standalone seisplotjs -o seisplotjs_001s_standalone.js -t [ babelify --presets [ es2015 ] ]",
