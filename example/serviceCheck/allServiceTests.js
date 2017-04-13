@@ -281,9 +281,6 @@ var testLastDayQueryWithZ = {
         if (! err.url) {err.url = url;}
         throw err;
       });
-    }).catch(function(err) {
-      if (! err.url) {err.url = url;}
-      throw err;
     });
   }
 };
@@ -661,9 +658,9 @@ function randomNetwork(dc, startTime) {
                 ||  net.totalNumberStations > 1);
     });
     if (withStations.length == 0) {
-      var errRestricted = new Error("No networks with stations");
-      errRestricted.url = url;
-      throw errRestricted;
+      var errNoSta = new Error("No networks with stations");
+      errNoSta.url = url;
+      throw errNoSta;
     }
     var i = Math.floor(Math.random()*withStations.length);
     var net = withStations[i];
@@ -800,7 +797,7 @@ var testCommaStations = {
           throw noNetErr;
         }
         if (networks[0].stations().length < 2) {
-          var notTwoStaErr = new Error("Not at least two stations returned: "+networks[0].stations().length);
+          var notTwoStaErr = new Error("Not at least two stations returned for "+net.networkCode+": "+networks[0].stations().length);
           notTwoStaErr.url = url;
           throw notTwoStaErr;
         }
