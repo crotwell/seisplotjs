@@ -227,6 +227,67 @@ var testLastDay = {
   }
 };
 
+
+var testLastDayQueryWithZ = {
+  testname: "Last Day Query With Z",
+  testid: "eventqueryZ",
+  description: "Queries for events in the past 24 hours using a time that ends with Z",
+  webservices: [ EV ],
+  severity: 'opinion',
+  test: function(dc) {
+    return new RSVP.Promise(function(resolve, reject) {
+    if ( ! doesSupport(dc, EV) ) {
+      reject(new Error("Unsupported"));
+    } else {
+      resolve(null);
+    }
+   }).then(function() {
+    var daysAgo = 1;
+    var host = serviceHost(dc, EV);
+    var quakeQuery = new fdsnevent.EventQuery()
+      .host(host)
+      .startTime(new Date(Date.parse('2017-01-01T12:34:56.789')))
+      .endTime(new Date(Date.parse('2017-01-05T00:00:00.000')));
+    var url = quakeQuery.formURL().replace('.789', '.789Z').replace('.000', '.000Z');
+    return new Promise(function(resolve, reject) {
+        let client = new XMLHttpRequest();
+        client.open("GET", url);
+        client.onreadystatechange = handler;
+        client.responseType = "document";
+        client.setRequestHeader("Accept", "application/xml");
+        client.send();
+
+        function handler() {
+          if (this.readyState === this.DONE) {
+            if (this.status === 200) {
+              resolve( {
+                text: "Response OK ",
+                url: url,
+                output: this.responseXML
+              });
+            } else if (this.status === 404 || this.status === 204) {
+              reject(new Error("Should be 200 , but received no data, "+this.status));
+            } else if (this.status === 400 ) {
+              reject(new Error("Bad request, "+this.status));
+            } else {
+              var error = new Error("Unexpected http status code: "+this.status);
+              error.status = this.status;
+              error.statusText = this.statusText;
+              reject(error);
+            }
+          }
+        }
+      }).catch(function(err) {
+        if (! err.url) {err.url = url;}
+        throw err;
+      });
+    }).catch(function(err) {
+      if (! err.url) {err.url = url;}
+      throw err;
+    });
+  }
+};
+
 var testDateIncludeZ = {
   testname: "Date Ends w/ Z",
   testid: "eventdataZ",
@@ -594,8 +655,18 @@ function randomNetwork(dc, startTime) {
       errRestricted.url = url;
       throw errRestricted;
     }
-    var i = Math.floor(Math.random()*unrestricted.length);
-    var net = unrestricted[i];
+    var withStations = unrestricted.filter(function(net) {
+             return ( typeof net.totalNumberStations === "undefined" 
+                || !net.totalNumberStations
+                ||  net.totalNumberStations > 1);
+    });
+    if (withStations.length == 0) {
+      var errRestricted = new Error("No networks with stations");
+      errRestricted.url = url;
+      throw errRestricted;
+    }
+    var i = Math.floor(Math.random()*withStations.length);
+    var net = withStations[i];
     net.url = url;
     return net;
   }).catch(function(err) {
@@ -747,6 +818,65 @@ var testCommaStations = {
 function dateStrEndsZ(s) {
   return s.charAt(s.length-1) === 'Z';
 }
+
+var testStationQueryWithZ = {
+  testname: "Starttime Query With Z",
+  testid: "stationqueryZ",
+  description: "Queries for stations with starttime of 2016-01-01 using a time that ends with Z",
+  webservices: [ ST ],
+  severity: 'opinion',
+  test: function(dc) {
+    return new RSVP.Promise(function(resolve, reject) {
+    if ( ! doesSupport(dc, ST) ) {
+      reject(new Error("Unsupported"));
+    } else {
+      resolve(null);
+    }
+   }).then(function() {
+    var host = serviceHost(dc, ST);
+    var query = new fdsnstation.StationQuery()
+      .host(host)
+      .startTime(new Date(Date.parse('2016-01-01T12:34:56.789')))
+      .endTime(new Date(Date.parse('2016-02-01T00:00:00.000')));
+    var url = query.formURL(fdsnstation.LEVEL_STATION).replace('.789', '.789Z').replace('.000', '.000Z');
+    return new Promise(function(resolve, reject) {
+        let client = new XMLHttpRequest();
+        client.open("GET", url);
+        client.onreadystatechange = handler;
+        client.responseType = "document";
+        client.setRequestHeader("Accept", "application/xml");
+        client.send();
+
+        function handler() {
+          if (this.readyState === this.DONE) {
+            if (this.status === 200) {
+                resolve(this.responseXML);
+            } else if (this.status === 404 || this.status === 204) {
+              reject(new Error("Should be 200 , but received no data, "+this.status));
+            } else if (this.status === 400 ) {
+              reject(new Error("Bad request, "+this.status));
+            } else {
+              var error = new Error("Unexpected http status code: "+this.status);
+              error.status = this.status;
+              error.statusText = this.statusText;
+              reject(error);
+            }
+          }
+        }
+      }).then(function(responseXML) {
+        return {
+          text: "Response OK ",
+          url: url,
+          output: responseXML
+        };
+      }).catch(function(err) {
+        if (! err.url) {err.url = url;}
+        throw err;
+      });
+    });
+  }
+};
+
 
 var testStationDateIncludeZ = {
   testname: "Station Date Ends w/ Z",
@@ -1003,8 +1133,8 @@ function serviceHost(dc, type) {
 }
 
 var tests = {
-     fdsnEventTests: [ testEventVersion, testNoData204Event, testNoDataEvent, testLastDay, testCatalogs, testContributors, testEventFromBestGuessEventId, testDateIncludeZ, testEventFromPublicID  ],
-     fdsnStationTests: [ testStationVersion, testNoData204Station, testNoDataNetwork, testNetworks, testStations, testChannels, testCommaStations, testStationDateIncludeZ ],
+     fdsnEventTests: [ testEventVersion, testNoData204Event, testNoDataEvent, testLastDay, testCatalogs, testContributors, testEventFromBestGuessEventId, testLastDayQueryWithZ, testDateIncludeZ, testEventFromPublicID  ],
+     fdsnStationTests: [ testStationVersion, testNoData204Station, testNoDataNetwork, testNetworks, testStations, testChannels, testCommaStations, testStationQueryWithZ, testStationDateIncludeZ ],
      fdsnDataTests: [ testDataSelectVersion, testNoData204DataSelect, testDataSelectNoData, testDataSelectRecent ]
  };
 
