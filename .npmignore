@@ -1,4 +1,6 @@
 src/
+example/knmi/
+example/networkPlot/
 .DS_Store
 .git/
 seisplotjs_*_standalone.js

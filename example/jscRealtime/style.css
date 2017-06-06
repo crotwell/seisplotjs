@@ -1,0 +1,25 @@
+div.realtimePlot {
+  height: 250px;
+}
+
+path.seispath {
+  stroke: skyblue;
+  fill: none;
+  stroke-width: 1px;
+}
+
+path.seisplot .orientZ {
+  stroke: seagreen;
+}
+
+path.seisplot .orientN {
+  stroke: red;
+}
+
+path.seisplot .orientE {
+  stroke: orange;
+}
+
+text.sublabel {
+  font-size: x-small;
+}
