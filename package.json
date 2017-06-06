@@ -1,6 +1,6 @@
 {
   "name": "seisplotjs",
-  "version": "1.0.0",
+  "version": "1.0.1-SNAPSHOT",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "lib/index.js",
   "dependencies": {
@@ -21,7 +21,7 @@
     "examplelint": "eslint -c .eslintrc_examples.js 'example/serviceCheck/serviceCheck.js' 'example/serviceCheck/allServiceTests.js' 'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "babel --presets es2015 -d lib/ src/",
-    "standalone": "browserify src/index.js --standalone seisplotjs -o seisplotjs_100_standalone.js -t [ babelify --presets [ es2015 ] ]",
+    "standalone": "browserify src/index.js --standalone seisplotjs -o seisplotjs_${npm_package_version}_standalone.js -t [ babelify --presets [ es2015 ] ]",
     "prepublish": "npm run compile"
   },
   "repository": {
