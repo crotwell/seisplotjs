@@ -14,7 +14,7 @@
     "seisplotjs-seedcodec": ">= 1.0.1",
     "seisplotjs-seedlink": ">= 1.0.0",
     "seisplotjs-traveltime": ">= 1.0.0",
-    "seisplotjs-waveformplot": ">= 1.2.0"
+    "seisplotjs-waveformplot": ">= 1.2.1"
   },
   "scripts": {
     "lint": "eslint 'src/*.js' ",
