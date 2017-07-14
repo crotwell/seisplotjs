@@ -1,5 +1,5 @@
 {
-  "created": "2017-02-03T16:33:00Z",
+  "created": "2017-07-14T13:04:18Z",
   "datacenters": [
     {
       "id": "IRIS",
@@ -314,6 +314,23 @@
       "email": "sismologia@iag.usp.br",
       "host": "seisrequest.iag.usp.br",
       "region": "South America",
+      "supports": [
+        {
+          "type": "fdsn-station",
+          "versions": [ 1 ]
+        },
+        {
+          "type": "fdsnws-dataselect",
+          "versions": [ 1 ]
+        }
+      ]
+    },
+    {
+      "id": "TexNet",
+      "name": "Texas Seismological Network",
+      "website": "http://www.beg.utexas.edu/",
+      "host": "rtserve.beg.utexas.edu",
+      "region": "North America",
       "supports": [
         {
           "type": "fdsn-station",
