@@ -285,6 +285,67 @@ var testLastDayQueryWithZ = {
   }
 };
 
+var testEventCrossDateLine = {
+  testname: "Cross Date Line",
+  testid: "eventcrossdate",
+  description: "Queries for events in a region that crosses the date line, ie minlon > maxlon",
+  webservices: [ EV ],
+  severity: 'opinion',
+  test: function(dc) {
+    return new RSVP.Promise(function(resolve, reject) {
+    if ( ! doesSupport(dc, EV) ) {
+      reject(new Error("Unsupported"));
+    } else {
+      resolve(null);
+    }
+   }).then(function() {
+    var daysAgo = 1;
+    var host = serviceHost(dc, EV);
+    var quakeQuery = new fdsnevent.EventQuery()
+      .host(host)
+      .startTime(new Date(Date.parse('2017-01-01T12:34:56.789')))
+      .endTime(new Date(Date.parse('2017-01-05T00:00:00.000')))
+      .minLat(-20)
+      .maxLat(20)
+      .minLon(170)
+      .maxLon(-170);
+    var url = quakeQuery.formURL();
+    return new Promise(function(resolve, reject) {
+        let client = new XMLHttpRequest();
+        client.open("GET", url);
+        client.onreadystatechange = handler;
+        client.responseType = "document";
+        client.setRequestHeader("Accept", "application/xml");
+        client.send();
+
+        function handler() {
+          if (this.readyState === this.DONE) {
+            // ok even if no data returned
+            if (this.status === 200 || this.status === 404 || this.status === 204) {
+              resolve( {
+                text: "Response OK ",
+                url: url,
+                output: this.responseXML
+              });
+            } else if (this.status === 400 ) {
+              reject(new Error("Bad request, "+this.status));
+            } else {
+              var error = new Error("Unexpected http status code: "+this.status);
+              error.status = this.status;
+              error.statusText = this.statusText;
+              reject(error);
+            }
+          }
+        }
+      }).catch(function(err) {
+        if (! err.url) {err.url = url;}
+        throw err;
+      });
+    });
+  }
+};
+
+
 var testDateIncludeZ = {
   testname: "Date Ends w/ Z",
   testid: "eventdataZ",
@@ -402,29 +463,33 @@ var testEventFromBestGuessEventId = {
   webservices: [ EV ],
   severity: 'severe',
   test: function(dc) {
+    var url = "none";
+    var daysAgo = .5;
+    var host = serviceHost(dc, EV);
     return new RSVP.Promise(function(resolve, reject) {
       if ( ! doesSupport(dc, EV) ) {
         reject(new Error("Unsupported"));
       } else {
-        resolve(null);
+        host = serviceHost(dc, EV);
+        resolve(host);
       }
-   }).then(function() {
-    var daysAgo = .5;
-    var host = serviceHost(dc, EV);
-    var quakeQuery = new fdsnevent.EventQuery()
-      .host(host)
-      .startTime(new Date(new Date().getTime()-86400*daysAgo*1000))
-      .endTime(new Date());
-    var url = quakeQuery.formURL();
-    return quakeQuery.query().then(function(quakes) {
+    }).then(function(host) {
+      var quakeQuery = new fdsnevent.EventQuery()
+        .host(host)
+        .startTime(new Date(new Date().getTime()-86400*daysAgo*1000))
+        .endTime(new Date());
+      url = quakeQuery.formURL();
+      return quakeQuery.query();
+    }).then(function(quakes) {
         if (quakes.length == 0) {
           throw new Error("No quakes returned");
         }
         var singleQuakeQuery = new fdsnevent.EventQuery()
           .host(host)
-          .eventid(encodeURIComponent(quakes[0].eventid));
+          .eventid(encodeURIComponent(quakes[0].eventid()));
+        url = singleQuakeQuery.formURL();
         return singleQuakeQuery.query();
-      }).then(function(quakes) {
+    }).then(function(quakes) {
       return {
         text: "Found "+quakes.length,
         url: url,
@@ -433,7 +498,6 @@ var testEventFromBestGuessEventId = {
     }).catch(function(err) {
       if (! err.url) {err.url = url;}
       throw err;
-    });
     });
   }
 };
@@ -733,7 +797,7 @@ var testStations = {
       return randomStation(dc, net.networkCode());
     }).then(function(sta) {
       return {
-        text: "Found "+sta.stationCode(),
+        text: "Found "+sta.codes(),
         url: sta.url,
         output: sta
       };
@@ -928,6 +992,71 @@ var testStationDateIncludeZ = {
   }
 };
 
+var testStationCrossDateLine = {
+  testname: "Station Cross Date Line",
+  testid: "stationcrossdate",
+  description: "Queries for stations in a region that crosses the date line, ie minlon > maxlon",
+  webservices: [ ST ],
+  severity: 'opinion',
+  test: function(dc) {
+    return new RSVP.Promise(function(resolve, reject) {
+    if ( ! doesSupport(dc, ST) ) {
+      reject(new Error("Unsupported"));
+    } else {
+      resolve(null);
+    }
+    }).then(function() {
+      return randomNetwork(dc);
+    }).then(function(net) {
+      return randomStation(dc, net.networkCode());
+   }).then(function(randomStation) {
+    var host = serviceHost(dc, ST);
+      var query = new fdsnstation.StationQuery()
+    var stationQuery = new fdsnstation.StationQuery();
+      stationQuery.host(host)
+      .networkCode(randomStation.network().networkCode())
+      .minLat(randomStation.latitude()-1)
+      .maxLat(randomStation.latitude()+1)
+      .minLon(randomStation.longitude()-1)
+      .maxLon(-179);
+    var url = stationQuery.formURL(fdsnstation.LEVEL_STATION);
+    return new Promise(function(resolve, reject) {
+        let client = new XMLHttpRequest();
+        client.open("GET", url);
+        client.onreadystatechange = handler;
+        client.responseType = "document";
+        client.setRequestHeader("Accept", "application/xml");
+        client.send();
+
+        function handler() {
+          if (this.readyState === this.DONE) {
+            // ok even if no data returned
+            if (this.status === 200) {
+              resolve( {
+                text: "Response OK ",
+                url: url,
+                output: this.responseXML
+              });
+            } else if (this.status === 404 || this.status === 204) {
+              reject(new Error("Should be 200 , but received no data, "+this.status));
+            } else if (this.status === 400 ) {
+              reject(new Error("Bad request, "+this.status));
+            } else {
+              var error = new Error("Unexpected http status code: "+this.status);
+              error.status = this.status;
+              error.statusText = this.statusText;
+              reject(error);
+            }
+          }
+        }
+      }).catch(function(err) {
+        if (! err.url) {err.url = url;}
+        throw err;
+      });
+    });
+  }
+};
+
 var testChannels = {
   testname: "Channels",
   testid: "channels",
@@ -965,9 +1094,103 @@ var testChannels = {
   }
 };
 
+
+var testSensitivityUnit = {
+  testname: "Sensitvity units valid SI",
+  testid: "sensitivityUnits",
+  description: "Checks the units in the instrumentSensitivity against the validation list at https://github.com/iris-edu/StationXML-Validator/wiki/Unit-name-overview-for-IRIS-StationXML-validator",
+  webservices: [ ST ],
+  severity: 'opinion',
+  test: function(dc) {
+    var host = serviceHost(dc, ST);
+    return new RSVP.Promise(function(resolve, reject) {
+      if ( ! doesSupport(dc, ST) ) {
+        reject(new Error("Unsupported"));
+      } else {
+        resolve(null);
+      }
+    }).then(function() {
+      return randomNetwork(dc, new Date());
+    }).then(function(net) {
+      return randomStation(dc, net.networkCode(), new Date());
+    }).then(function(station) {
+      var query = new fdsnstation.StationQuery()
+        .host(host)
+        .networkCode(station.network().networkCode())
+        .stationCode(station.stationCode()) ;
+      return query.queryChannels()
+        .then(function(nets) {
+          nets.url = query.formURL(fdsnstation.LEVEL_CHANNEL);
+          return nets;
+        });
+    }).then(function(nets) {
+      return new Promise(function(resolve, reject){
+        d3.json('knownUnits.json', function(error, knownUnits) {
+          error ? reject(error) : resolve(knownUnits);
+        });
+      }).then(function(knownUnits) {
+console.log("Units: "+knownUnits.units);
+        return knownUnits.units;
+      }).then(function(knownUnits) {
+        for (let n of nets) {
+          for (let s of n.stations()) {
+console.log("Station: "+s.codes());
+            for (let c of s.channels()) {
+              let cu = c.instrumentSensitivity().inputUnits();
+              let found = false;
+              for (let u of knownUnits) {
+                if (cu === u) {
+                  found = true;
+                  break;
+                }
+              }
+              if (! found) {
+                let foundLower = false;
+                let cuLower = cu.toLowerCase();
+                for (let u of knownUnits) {
+                  if (cuLower === u.toLowerCase()) {
+                    foundLower = true;
+                    break;
+                  }
+                }
+                let err = new Error("Unit "+cu+" not SI for "+c.codes());
+                if (foundLower) {
+                  err = new Error("Unit "+cu+" wrong case for SI in "+c.codes());
+                }
+                err.url = nets.url;
+                throw err;
+              }
+
+              cu = c.instrumentSensitivity().outputUnits();
+              found = false;
+              for (let u of knownUnits) {
+                if (cu === u) {
+                  found = true;
+                  break;
+                }
+              }
+              if (! found) {
+                throw new Error("Unit "+cu+" not well known for "+c.codes());
+              }
+            }
+          }
+        }
+        return {
+          text: "Units ok for channels from "+station.codes(),
+          url: channels.url,
+          output: channels
+        };
+      });
+    });
+  }
+};
+
+
+
 var testNoData204DataSelect = {
   testname: "DataSelect 204",
-  testid: "nodata204DataSelect",  description: "Check that 204 is returned for queries for dataselect that should be valid but return no data without nodata=404. Success if 204 http status is returned. This can also be a check on the CORS header.",
+  testid: "nodata204DataSelect",  
+  description: "Check that 204 is returned for queries for dataselect that should be valid but return no data without nodata=404. Success if 204 http status is returned. This can also be a check on the CORS header.",
   webservices: [ DS ],
   severity: 'severe',
   test: function(dc) {
@@ -1130,8 +1353,8 @@ function serviceHost(dc, type) {
 }
 
 var tests = {
-     fdsnEventTests: [ testEventVersion, testNoData204Event, testNoDataEvent, testLastDay, testCatalogs, testContributors, testEventFromBestGuessEventId, testLastDayQueryWithZ, testDateIncludeZ, testEventFromPublicID  ],
-     fdsnStationTests: [ testStationVersion, testNoData204Station, testNoDataNetwork, testNetworks, testStations, testChannels, testCommaStations, testStationQueryWithZ, testStationDateIncludeZ ],
+     fdsnEventTests: [ testEventVersion, testNoData204Event, testNoDataEvent, testLastDay, testCatalogs, testContributors, testEventFromBestGuessEventId, testLastDayQueryWithZ, testDateIncludeZ, testEventCrossDateLine, testEventFromPublicID  ],
+     fdsnStationTests: [ testStationVersion, testNoData204Station, testNoDataNetwork, testNetworks, testStations, testChannels, testCommaStations, testStationQueryWithZ, testStationDateIncludeZ, testStationCrossDateLine, testSensitivityUnit ],
      fdsnDataTests: [ testDataSelectVersion, testNoData204DataSelect, testDataSelectNoData, testDataSelectRecent ]
  };
 
@@ -1147,9 +1370,9 @@ var notVersionTest = {
      })
  };
 var justOneTest = {
-     fdsnEventTests: [ ],
-     fdsnStationTests: [ ],
-     fdsnDataTests: [ testDataSelectRecent]
+     fdsnEventTests: [ testEventFromBestGuessEventId,  testEventCrossDateLine],
+     fdsnStationTests: [ testStationCrossDateLine ],
+     fdsnDataTests: [ ]
 };
 var justVersionTest = {
      fdsnEventTests: [ testEventVersion ],
