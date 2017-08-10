@@ -4,17 +4,17 @@
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "lib/index.js",
   "dependencies": {
-    "seisplotjs-distaz": ">= 1.0.0",
-    "seisplotjs-fdsnevent": ">= 1.0.1",
-    "seisplotjs-fdsnstation": ">= 1.0.0",
-    "seisplotjs-fdsndataselect": ">= 1.0.0",
+    "seisplotjs-distaz": ">= 1.0.1-SNAPSHOT",
+    "seisplotjs-fdsnevent": ">= 1.0.2-SNAPSHOT",
+    "seisplotjs-fdsnstation": ">= 1.0.1-SNAPSHOT",
+    "seisplotjs-fdsndataselect": ">= 1.0.1-SNAPSHOT",
     "seisplotjs-filter": ">= 1.0.0",
-    "seisplotjs-miniseed": ">= 1.1.0",
-    "seisplotjs-model": ">= 1.0.0",
-    "seisplotjs-seedcodec": ">= 1.0.1",
-    "seisplotjs-seedlink": ">= 1.0.0",
-    "seisplotjs-traveltime": ">= 1.0.0",
-    "seisplotjs-waveformplot": ">= 1.2.1"
+    "seisplotjs-miniseed": ">= 1.1.1-SNAPSHOT",
+    "seisplotjs-model": ">= 1.0.2-SNAPSHOT",
+    "seisplotjs-seedcodec": ">= 1.0.2-SNAPSHOT",
+    "seisplotjs-seedlink": ">= 1.0.1-SNAPSHOT",
+    "seisplotjs-traveltime": ">= 1.0.1-SNAPSHOT",
+    "seisplotjs-waveformplot": ">= 1.2.2-SNAPSHOT"
   },
   "scripts": {
     "lint": "eslint 'src/*.js' ",
@@ -44,12 +44,12 @@
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^7.3.0",
-    "eslint": "^3.19.0",
+    "eslint": "^4.4.1",
     "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-node": "^4.2.2",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "qunit": "^0.9.1"
+    "qunit": "^1.0.0"
   }
 }

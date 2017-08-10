@@ -1,6 +1,5 @@
 module.exports = {
     "extends": "eslint:recommended",
-    "installedESLint": true,
     "plugins": [
         "standard",
         "promise"
