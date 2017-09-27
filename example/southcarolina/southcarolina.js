@@ -73,7 +73,7 @@ quakeQuery.query().then(function(quakes) {
   tableData.exit().remove();
 
   var tr = tableData
-    .enter() 
+    .enter()
     .append("tr");
   tr.append("td")
     .text(function(d) {
@@ -132,7 +132,7 @@ console.log("quake network Promise then");
           return hash;
         });
     });
-    return quakes;   
+    return quakes;
 }, function(request) {
 wp.d3.select("div.recentQuakes")
     .append("p")
@@ -186,11 +186,11 @@ console.log("plotOneStation: "+mystation.codes());
 console.log("error from loadParse: "+error);
         div.append('p').html("Error loading data." );
       } else {
-          var byChannel = wp.miniseed.byChannel(dataRecords);
-          var keys = Object.keys(byChannel);
-          for (var i = 0; i < keys.length; i++) {
-            var key = keys[i];
-            var segments = wp.miniseed.merge(byChannel[key]);
+        var byChannel = wp.miniseed.byChannel(dataRecords);
+        var keys = Array.from(byChannel.keys());
+        console.log("Got "+dataRecords.length+" data records for "+keys.length+" channels");
+        for (var key of byChannel.keys()) {
+          var segments = wp.miniseed.merge(byChannel.get(key));
             div.append('p').html('Plot for ' + key);
             var svgdiv = div.append('div').attr('class', 'myseisplot');
             if (segments.length > 0) {
@@ -199,7 +199,7 @@ console.log("error from loadParse: "+error);
                   markers.push({ markertype: 'predicted', name: "origin", time: quake.time() });
                   markers.push({ markertype: 'predicted', name: firstPS.firstP.phase, time: new Date(quake.time().getTime()+(firstPS.firstP.time)*1000) });
                   markers.push({ markertype: 'predicted', name: firstPS.firstS.phase, time: new Date(quake.time().getTime()+(firstPS.firstS.time)*1000) });
-                
+
                 if (quake.arrivals()) {
                   for ( let aNum=0; aNum < quake.arrivals().length; aNum++) {
                     let arrival = quake.arrivals()[aNum];
