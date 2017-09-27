@@ -1,20 +1,20 @@
 {
   "name": "seisplotjs",
-  "version": "1.0.1-SNAPSHOT",
+  "version": "1.0.1-alpha.1",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "lib/index.js",
   "dependencies": {
-    "seisplotjs-distaz": ">= 1.0.1-SNAPSHOT",
-    "seisplotjs-fdsnevent": ">= 1.0.2-SNAPSHOT",
-    "seisplotjs-fdsnstation": ">= 1.0.1-SNAPSHOT",
-    "seisplotjs-fdsndataselect": ">= 1.0.1-SNAPSHOT",
+    "seisplotjs-distaz": ">= 1.0.1-alpha.1",
+    "seisplotjs-fdsnevent": ">= 1.0.2-alpha.1",
+    "seisplotjs-fdsnstation": ">= 1.0.1-alpha.1",
+    "seisplotjs-fdsndataselect": ">= 1.0.1-alpha.1",
     "seisplotjs-filter": ">= 1.0.0",
-    "seisplotjs-miniseed": ">= 1.1.1-SNAPSHOT",
-    "seisplotjs-model": ">= 1.0.2-SNAPSHOT",
-    "seisplotjs-seedcodec": ">= 1.0.2-SNAPSHOT",
-    "seisplotjs-seedlink": ">= 1.0.1-SNAPSHOT",
-    "seisplotjs-traveltime": ">= 1.0.1-SNAPSHOT",
-    "seisplotjs-waveformplot": ">= 1.2.2-SNAPSHOT"
+    "seisplotjs-miniseed": ">= 1.2.0-alpha.1",
+    "seisplotjs-model": ">= 1.0.2-alpha.1",
+    "seisplotjs-seedcodec": ">= 1.0.2-alpha.1",
+    "seisplotjs-seedlink": ">= 1.0.1-alpha.1",
+    "seisplotjs-traveltime": ">= 1.0.1-alpha.1",
+    "seisplotjs-waveformplot": ">= 1.2.2-alpha.1"
   },
   "scripts": {
     "lint": "eslint 'src/*.js' ",
@@ -22,7 +22,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "babel --presets es2015 -d lib/ src/",
     "standalone": "browserify src/index.js --standalone seisplotjs -o seisplotjs_${npm_package_version}_standalone.js -t [ babelify --presets [ es2015 ] ]",
-    "prepublish": "npm run compile"
+    "prepare": "npm run compile"
   },
   "repository": {
     "type": "git",
