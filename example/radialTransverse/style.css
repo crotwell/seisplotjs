@@ -1,0 +1,137 @@
+div.myseisplot {
+}
+
+div.particleMotion {
+}
+.predicted polygon {
+  fill: rgba(220,220,220,.4);
+}
+
+.pick polygon {
+  fill: rgba(255,100,100,.4);
+}
+
+path.seispath {
+  stroke: skyblue;
+  fill: none;
+  stroke-width: 1px;
+}
+
+/* Responsive SVG */
+.svg-container-square {
+    display: inline-block;
+    position: relative;
+    width: 90%;
+    padding-bottom: 70%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-container-wide {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 40%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+
+
+path.orientZ {
+  stroke: seagreen;
+}
+
+path.orientN {
+  stroke: cornflowerblue;
+}
+
+path.orientE {
+  stroke: orange;
+}
+
+
+path.seispath {
+  stroke: skyblue;
+  fill: none;
+  stroke-width: 1px;
+}
+
+svg g.allsegments g:nth-child(9n+1) path.seispath {
+  stroke: skyblue;
+}
+
+svg g.allsegments g:nth-child(9n+2) path.seispath {
+  stroke: olivedrab;
+}
+
+svg g.allsegments g:nth-child(9n+3) path.seispath {
+  stroke: goldenrod;
+}
+
+svg g.allsegments g:nth-child(9n+4) path.seispath {
+  stroke: firebrick;
+}
+
+svg g.allsegments g:nth-child(9n+5) path.seispath {
+  stroke: darkcyan;
+}
+
+svg g.allsegments g:nth-child(9n+6) path.seispath {
+  stroke: orange;
+}
+
+svg g.allsegments g:nth-child(9n+7) path.seispath {
+  stroke: darkmagenta;
+}
+
+svg g.allsegments g:nth-child(9n+8) path.seispath {
+  stroke: deeppink2;
+}
+
+svg g.allsegments g:nth-child(9n+9) path.seispath {
+  stroke: sienna;
+}
+
+/* same colors for titles */
+
+svg g.title tspan:nth-child(9n+1)  {
+  fill: skyblue;
+}
+
+svg g.title tspan:nth-child(9n+2)  {
+  stroke: olivedrab;
+}
+
+svg g.title tspan:nth-child(9n+3)  {
+  stroke: goldenrod;
+}
+
+svg g.title tspan:nth-child(9n+4)  {
+  stroke: firebrick;
+}
+
+svg g.title tspan:nth-child(9n+5)  {
+  stroke: darkcyan;
+}
+
+svg g.title tspan:nth-child(9n+6)  {
+  stroke: orange;
+}
+
+svg g.title tspan:nth-child(9n+7)  {
+  stroke: darkmagenta;
+}
+
+svg g.title tspan:nth-child(9n+8)  {
+  stroke: deeppink2;
+}
+
+svg g.title tspan:nth-child(9n+9)  {
+  stroke: sienna;
+}
+
