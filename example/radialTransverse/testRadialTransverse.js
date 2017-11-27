@@ -23,8 +23,8 @@ var locCode = '--';
 var chanCode = 'BH?';
 var datahost = IRIS;
 var quakehost = USGS;
-var preOffset = 5;
-var dur = 25;
+var preOffset = 25;
+var dur = 125;
 
 var protocol = 'http:';
 if ("https:" == document.location.protocol) {
