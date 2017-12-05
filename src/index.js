@@ -19,20 +19,20 @@ import * as seedcodec      from 'seisplotjs-seedcodec';
 import * as seedlink       from 'seisplotjs-seedlink';
 import * as traveltime     from 'seisplotjs-traveltime';
 import * as waveformplot   from 'seisplotjs-waveformplot';
-let d3 = waveformplot.d3;
+const d3 = waveformplot.d3;
+const moment = model.moment;
 
 /* reexport */
-export { distaz, 
+export { distaz,
          fdsnevent,
          fdsnstation,
          fdsndataselect,
          filter,
-         miniseed, 
+         miniseed,
          model,
-         seedcodec, 
-         seedlink, 
-         traveltime, 
+         seedcodec,
+         seedlink,
+         traveltime,
          waveformplot,
-         d3 };
-
-
+         d3,
+         moment };
