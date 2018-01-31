@@ -45,6 +45,9 @@ port=EEYORE_PORT;
 let seedlinkUrl = wsProtocol+"//"+host+(port==80?'':':'+port)+'/seedlink';
 console.log("URL: "+seedlinkUrl);
 
+
+d3.selectAll('.textHost').text(host);
+
 let slConn = null;
 let allSeisPlots = new Map();
 let svgParent = wp.d3.select('div.realtime');
