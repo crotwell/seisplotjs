@@ -98,8 +98,8 @@ var bothPromise = fdsnstation.RSVP.hash({
         });
     return fdsnstation.RSVP.hash(hash);
   }).then(function(hash) {
-    hash.S_arrival = new Date(hash.quake.time().getTime()+(hash.traveltime.firstS.time)*1000);
-    hash.P_arrival = new Date(hash.quake.time().getTime()+(hash.traveltime.firstP.time)*1000);
+    hash.S_arrival = new Date(hash.quake.time().valueOf()+(hash.traveltime.firstS.time)*1000);
+    hash.P_arrival = new Date(hash.quake.time().valueOf()+(hash.traveltime.firstP.time)*1000);
     hash.seisDates = wp.calcStartEndDates(new Date(hash.S_arrival.getTime()-preOffset*1000), null, dur, 0);
     hash.miniseed = new seisplotjs.fdsndataselect.DataSelectQuery()
       .host(IRIS)
@@ -182,8 +182,8 @@ console.log("rotate to "+hash.distaz.baz+" "+((hash.distaz.baz+180)%360) );
 console.log("first points: "+seisZ[0].yAtIndex(0)+" "+rotated.radial.yAtIndex(0)+" "+rotated.transverse.yAtIndex(0))
         var rotatedSeismograph = new wp.Seismograph(rotsvgDiv, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
         titles = [hash.rotatedSeismograms[0][0].codes(),
-                  hash.rotatedSeismograms[1][0].chanCode()+" "+rotated.azimuthRadial,
-                  hash.rotatedSeismograms[2][0].chanCode()+" "+rotated.azimuthTransverse];
+                  hash.rotatedSeismograms[1][0].chanCode()+" "+rotated.azimuthRadial.toFixed(2),
+                  hash.rotatedSeismograms[2][0].chanCode()+" "+rotated.azimuthTransverse.toFixed(2)];
         rotatedSeismograph.setTitle(titles);
         var rotateMarkers = [];
           rotateMarkers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time() });
