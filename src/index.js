@@ -4,10 +4,6 @@
  * http://www.seis.sc.edu
  */
 
-/** polyfill for babel **/
-import "babel-polyfill";
-
-
 import * as distaz         from 'seisplotjs-distaz';
 import * as fdsnevent      from 'seisplotjs-fdsnevent';
 import * as fdsnstation    from 'seisplotjs-fdsnstation';
