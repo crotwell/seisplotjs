@@ -1,0 +1,17 @@
+div.myseisplot {
+  height: 300px;
+}
+
+path.seispath {
+  stroke: skyblue;
+  fill: none;
+  stroke-width: 1px;
+}
+
+.predicted polygon {
+  fill: rgba(220,220,220,.4);
+}
+
+.pick polygon {
+  fill: rgba(255,100,100,.4);
+}
