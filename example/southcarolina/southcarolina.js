@@ -1,10 +1,13 @@
 
 
 // seisplotjs comes from the seisplotjs standalone bundle
-var wp = seisplotjs.waveformplot
-var traveltime = seisplotjs.traveltime
-var fdsnevent = seisplotjs.fdsnevent
-var fdsnstation = seisplotjs.fdsnstation
+var wp = seisplotjs.waveformplot;
+var traveltime = seisplotjs.traveltime;
+var fdsnevent = seisplotjs.fdsnevent;
+var fdsnstation = seisplotjs.fdsnstation;
+var fdsndataselect = seisplotjs.fdsndataselect;
+var moment = fdsnevent.moment;
+var RSVP = fdsnstation.RSVP;
 
 var USGS = "earthquake.usgs.gov";
 var IRIS = "service.iris.edu";
@@ -31,8 +34,8 @@ var quakeQuery = new fdsnevent.EventQuery()
   .protocol(protocol)
   .minLat(32).maxLat(35)
   .minLon(-82).maxLon(-79)
-  .startTime(new Date(new Date().getTime()-86400*daysAgo*1000))
-  .endTime(new Date());
+  .startTime(moment.utc().subtract(daysAgo, 'days'))
+  .endTime(moment.utc());
 wp.d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
@@ -152,80 +155,87 @@ console.log("plot seis");
 }
 
 var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, clockOffset, protocol, host) {
-console.log("plotOneStation: "+mystation.codes());
-    new traveltime.TraveltimeQuery()
-        .protocol(protocol)
-        .evdepth( quake.depth() > 0 ? quake.depth()/1000 : 0)
-        .evlat(quake.latitude()).evlon(quake.longitude())
-        .stalat(mystation.latitude()).stalon(mystation.longitude())
-        .phases('p,P,PKP,PKIKP,Pdiff,s,S,Sdiff,PKP,SKS,SKIKS')
-        .query()
-        .then(function(ttimes) {
-    var firstP = null;
-    var firstS = null;
-    for (var p=0; p<ttimes.arrivals.length; p++) {
-      if ((ttimes.arrivals[p].phase.startsWith('P') || ttimes.arrivals[p].phase.startsWith('p')) && ( ! firstP || firstP.time > ttimes.arrivals[p])) {
-        firstP = ttimes.arrivals[p];
+  console.log("plotOneStation: "+mystation.codes());
+  return new traveltime.TraveltimeQuery()
+      .protocol(protocol)
+      .evdepth( quake.depth() > 0 ? quake.depth()/1000 : 0)
+      .evlat(quake.latitude()).evlon(quake.longitude())
+      .stalat(mystation.latitude()).stalon(mystation.longitude())
+      .phases('p,P,PKP,PKIKP,Pdiff,s,S,Sdiff,PKP,SKS,SKIKS')
+      .query()
+      .then(function(ttimes) {
+      var firstP = null;
+      var firstS = null;
+      for (var p=0; p<ttimes.arrivals.length; p++) {
+        if ((ttimes.arrivals[p].phase.startsWith('P') || ttimes.arrivals[p].phase.startsWith('p')) && ( ! firstP || firstP.time > ttimes.arrivals[p])) {
+          firstP = ttimes.arrivals[p];
+        }
+        if ((ttimes.arrivals[p].phase.startsWith('S') || ttimes.arrivals[p].phase.startsWith('s')) && ( ! firstS || firstS.time > ttimes.arrivals[p])) {
+          firstS = ttimes.arrivals[p];
+        }
       }
-      if ((ttimes.arrivals[p].phase.startsWith('S') || ttimes.arrivals[p].phase.startsWith('s')) && ( ! firstS || firstS.time > ttimes.arrivals[p])) {
-        firstS = ttimes.arrivals[p];
-      }
-    }
-    return { firstP: firstP, firstS: firstS };
+      return { firstP: firstP, firstS: firstS };
     }).then(function(firstPS) {
-    var PArrival = new Date(quake.time().getTime()+(firstPS.firstP.time+pOffset)*1000);
-    var seisDates = wp.calcStartEndDates(PArrival, null, dur, clockOffset);
-    var startDate = seisDates.start;
-    var endDate = seisDates.end;
+      var PArrival = moment(quake.time()).add(firstPS.firstP.time+pOffset, 'seconds');
+      var seisDates = wp.calcStartEndDates(PArrival, null, dur, clockOffset);
+      var startDate = seisDates.start;
+      var endDate = seisDates.end;
 
-    console.log("Start end: "+startDate+" "+endDate);
-    var url = wp.formRequestUrl(protocol, host, mystation.network().networkCode(), mystation.stationCode(), loc, chan, startDate, endDate);
-    console.log("Data request: "+url);
-    wp.loadParse(url, function (error, dataRecords) {
-      if (error) {
-console.log("error from loadParse: "+error);
-        div.append('p').html("Error loading data." );
-      } else {
-        var byChannel = wp.miniseed.byChannel(dataRecords);
+      console.log("Start end: "+startDate+" "+endDate);
+
+      let dsQuery = new fdsndataselect.DataSelectQuery()
+          .protocol(protocol)
+          .host(host)
+          .networkCode(mystation.network().networkCode())
+          .stationCode(mystation.stationCode())
+          .locationCode(loc)
+          .channelCode(chan)
+          .startTime(startDate)
+          .endTime(endDate);
+      return RSVP.hash({
+        "firstPS": firstPS,
+        "PArrival": PArrival,
+        "startDate": startDate,
+        "endDate": endDate,
+        "dataRecords": dsQuery.query(),
+        "dsQuery": dsQuery
+      });
+    }).then(function(hash) {
+        var byChannel = wp.miniseed.byChannel(hash.dataRecords);
         var keys = Array.from(byChannel.keys());
-        console.log("Got "+dataRecords.length+" data records for "+keys.length+" channels");
+        console.log("Got "+hash.dataRecords.length+" data records for "+keys.length+" channels");
         for (var key of byChannel.keys()) {
           var segments = wp.miniseed.merge(byChannel.get(key));
-            div.append('p').html('Plot for ' + key);
-            var svgdiv = div.append('div').attr('class', 'myseisplot');
-            if (segments.length > 0) {
-                var seismogram = new wp.chart(svgdiv, segments, startDate, endDate);
-                var markers = [];
-                  markers.push({ markertype: 'predicted', name: "origin", time: quake.time() });
-                  markers.push({ markertype: 'predicted', name: firstPS.firstP.phase, time: new Date(quake.time().getTime()+(firstPS.firstP.time)*1000) });
-                  markers.push({ markertype: 'predicted', name: firstPS.firstS.phase, time: new Date(quake.time().getTime()+(firstPS.firstS.time)*1000) });
+          div.append('p').html('Plot for ' + key);
+          var svgdiv = div.append('div').attr('class', 'myseisplot');
+          if (segments.length > 0) {
+              var seismogram = new wp.Seismograph(svgdiv, segments, hash.startDate, hash.endDate);
+              var markers = [];
+                markers.push({ markertype: 'predicted', name: "origin", time: quake.time() });
+                markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time()).add(hash.firstPS.firstP.time, 'seconds') });
+                markers.push({ markertype: 'predicted', name: hash.firstPS.firstS.phase, time: moment(quake.time()).add(hash.firstPS.firstS.time, 'seconds') });
 
-                if (quake.arrivals()) {
-                  for ( let aNum=0; aNum < quake.arrivals().length; aNum++) {
-                    let arrival = quake.arrivals()[aNum];
-if (! arrival) {console.log("arrival is undef??? "+aNum); }
-                    if (arrival && arrival.pick().stationCode() == mystation.stationCode()) {
-                    markers.push({ markertype: 'pick', name: arrival.phase(), time: arrival.pick().time() });
-                    console.log("markers.push({ markertype: 'pick', name: "+arrival.phase()+", time: "+arrival.pick().time() );
-                    }
+              if (quake.arrivals()) {
+                for ( let aNum=0; aNum < quake.arrivals().length; aNum++) {
+                  let arrival = quake.arrivals()[aNum];
+                  if (arrival && arrival.pick().stationCode() == mystation.stationCode()) {
+                  markers.push({ markertype: 'pick', name: arrival.phase(), time: arrival.pick().time() });
+                  console.log("markers.push({ markertype: 'pick', name: "+arrival.phase()+", time: "+arrival.pick().time() );
                   }
                 }
-/*
-                for (var m=0;m<ttimes.arrivals.length; m++) {
-                  markers.push({ name: ttimes.arrivals[m].phase, time: new Date(quake.time().getTime()+(ttimes.arrivals[m].time)*1000) });
-                }
-*/
-                seismogram.appendMarkers(markers);
-                seismogram.draw();
-            }
+              }
+
+              seismogram.appendMarkers(markers);
+              seismogram.draw();
+          }
         }
         if (keys.length==0){
             div.append('p').html('No data found for '+mystation.codes());
         }
-      }
-    });
-    return firstPS;
+        return hash;
     }).catch(function(e) {
-console.log("catch in ttimes then"+e);
+      console.log("catch in ttimes then"+e);
+      console.assert(false, e);
+      div.append('p').html("Error loading data."+e );
     });
 };
