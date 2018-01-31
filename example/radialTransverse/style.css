@@ -90,7 +90,7 @@ svg g.allsegments g:nth-child(9n+7) path.seispath {
 }
 
 svg g.allsegments g:nth-child(9n+8) path.seispath {
-  stroke: deeppink2;
+  stroke: MediumVioletRed;
 }
 
 svg g.allsegments g:nth-child(9n+9) path.seispath {
@@ -128,10 +128,9 @@ svg g.title tspan:nth-child(9n+7)  {
 }
 
 svg g.title tspan:nth-child(9n+8)  {
-  stroke: deeppink2;
+  stroke: MediumVioletRed;
 }
 
 svg g.title tspan:nth-child(9n+9)  {
   stroke: sienna;
 }
-
