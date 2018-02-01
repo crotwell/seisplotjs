@@ -13,7 +13,7 @@ fdsnstation.RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
-var daysAgo = 360;
+var daysAgo = 365;
 var netCode = 'NL';
 var staCodes = '*';
 var chanCode = 'BHZ';
@@ -30,8 +30,8 @@ var quakeQuery = new fdsnevent.EventQuery()
   .minLat(45).maxLat(58)
   .minLon(-2).maxLon(11)
   .minMag(4)
-  .startTime(new Date(new Date().getTime()-86400*daysAgo*1000))
-  .endTime(new Date());
+  .startTime(moment.utc().subtract(daysAgo, 'days'))
+  .endTime(moment.utc());
 var eventUrl = quakeQuery.formURL();
 wp.d3.select("div.recentQuakesUrl")
     .append("p")
@@ -45,14 +45,18 @@ var stationQuery = new fdsnstation.StationQuery()
   .networkCode(netCode)
   .channelCode(chanCode);
 
-wp.d3.select("div.recentQuakesUrl")
+var stationsUrl = stationQuery.formURL(fdsnstation.LEVEL_STATION);
+wp.d3.select("div.stationsUrl")
     .append("p")
-    .text("Stations URL: "+stationQuery.formURL(fdsnstation.LEVEL_STATION));
+    .text("Stations URL: ")
+    .append('a').attr('href', stationsUrl)
+    .text(stationsUrl);
 var networkPromise = stationQuery.queryStations().then(function(netArray) {
           staCodes = [];
           for (var i=0;i<netArray[0].stations().length; i++) {
             staCodes.push(netArray[0].stations()[i].stationCode());
           }
+          wp.d3.select("div.stationCodes").append('p').text(staCodes.join());
           console.log("sta codes: "+staCodes.join());
           return netArray;
 });
