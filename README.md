@@ -2,7 +2,7 @@
 Javascript modules for parsing, manipulating and plotting seismic data.
 
 Examples of various access and display types can be seen at
-[http://www.seis.sc.edu/~crotwell/seisplotjs_demo/](http://www.seis.sc.edu/~crotwell/seisplotjs_demo/).
+[http://www.seis.sc.edu/~crotwell/seisplotjs_demo/](http://www.seis.sc.edu/~crotwell/seisplotjs_demo/). Also see the [wiki](https://github.com/crotwell/seisplotjs/wiki).
 
 
 Seisplotjs is divided into submodules:
@@ -20,5 +20,3 @@ Seisplotjs is divided into submodules:
 * [waveformplot](https://github.com/crotwell/seisplotjs-waveformplot) - plotting of seismograms via [d3](http://d3js.org)
 * d3 - the [d3](http://d3js.org) library, for easy access
 * moment - the [momentjs](http://momentjs.com) library, for easy access
-
-
