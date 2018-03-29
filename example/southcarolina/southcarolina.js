@@ -22,6 +22,17 @@ var locCode = '00';
 var chanCode = 'HHZ';
 var datahost = IRIS;
 var quakehost = USGS;
+var minLat = 31;
+var maxLat = 36;
+var minLon = -84;
+var maxLon = -79;
+var centerLat = (minLat+maxLat)/2;
+var centerLon = (minLon+maxLon)/2;
+var mapZoomLevel = 7;
+
+var dur = 300;
+var pOffset = -120;
+var clockOffset = 0; // set this from server somehow!!!!
 
 var protocol = 'http:';
 if ("https:" == document.location.protocol) {
@@ -32,8 +43,8 @@ console.log("Protocol: "+protocol+"  host: "+quakehost);
 var quakeQuery = new fdsnevent.EventQuery()
   .host(quakehost)
   .protocol(protocol)
-  .minLat(32).maxLat(35)
-  .minLon(-82).maxLon(-79)
+  .minLat(minLat).maxLat(maxLat)
+  .minLon(minLon).maxLon(maxLon)
   .startTime(moment.utc().subtract(daysAgo, 'days'))
   .endTime(moment.utc());
 wp.d3.select("div.recentQuakesUrl")
@@ -43,6 +54,8 @@ wp.d3.select("div.recentQuakesUrl")
 var stationQuery = new fdsnstation.StationQuery()
   .protocol(protocol)
   .networkCode(netCode)
+  .minLat(minLat).maxLat(maxLat)
+  .minLon(minLon).maxLon(maxLon)
   .channelCode(chanCode);
 wp.d3.select("div.recentQuakesUrl")
     .append("p")
@@ -54,6 +67,25 @@ var networkPromise = stationQuery.queryStations().then(function(netArray) {
           }
           console.log("sta codes: "+staCodes.join());
           return netArray;
+}).then(function(netArray) {
+  wp.d3.select("ul.stations")
+    .selectAll("li")
+    .data(netArray[0].stations())
+    .enter()
+    .append("li")
+    .text(function(d) {
+      return d.stationCode()
+          +" ("+d.latitude()+", "+d.longitude()+") "
+          +d.name();
+    });
+  return netArray;
+}).then(function(netArray) {
+  for (let s of netArray[0].stations()) {
+    let m = L.marker([s.latitude(), s.longitude()]);
+    m.addTo(mymap);
+    m.bindTooltip(s.codes());
+  }
+  return netArray;
 });
 
 quakeQuery.query().then(function(quakes) {
@@ -75,6 +107,18 @@ quakeQuery.query().then(function(quakes) {
     .data(quakes, function(d) {return d.time();});
   tableData.exit().remove();
 
+  for (const q of quakes) {
+    let circle = L.circleMarker([q.latitude(), q.longitude()], {
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 0.5,
+      radius: q.magnitude() ? (q.magnitude().mag()*5) : 3 // in case no mag
+    }).addTo(mymap);
+    circle.on('click', function(e) {
+        doEventClick(q);
+    } );
+    circle.bindTooltip(q.time().toISOString()+" "+(q.magnitude() ? (q.magnitude().mag()+" "+q.magnitude().type()) : "unkn"));
+  }
   var tr = tableData
     .enter()
     .append("tr");
@@ -84,8 +128,12 @@ quakeQuery.query().then(function(quakes) {
       });
   tr.append("td")
     .text(function(d) {
-      return d.magnitude().mag()+" "
-          +d.magnitude().type();
+      if (d.magnitude()) {
+        return d.magnitude().mag()+" "
+            +d.magnitude().type();
+      } else {
+        return "unknown";
+      }
       });
   tr.append("td")
     .text(function(d) {
@@ -99,55 +147,58 @@ quakeQuery.query().then(function(quakes) {
     .text(function(d) {
       return d.description();
       });
-  tr.on("click", function(d){
-console.log("click "+d.time().toISOString());
-      wp.d3.select("div.seismograms")
-        .selectAll("p")
-        .remove();
-      wp.d3.select("div.seismograms")
-        .selectAll("p")
-        .data([d])
-        .enter()
-        .append("p")
-        .text(function(d) {
-          return "quake: "
-              +d.time().toISOString()+" "
-              +d.magnitude().mag()+" "
-              +d.magnitude().type()+" "
-              +"("+d.latitude()+", "+d.longitude()+") "
-              +(d.depth()/1000)+"km "
-              +d.description();
-        });
-
-        fdsnstation.RSVP.hash({
-            network: networkPromise,
-            quake: new fdsnevent.EventQuery()
-                .protocol(quakeQuery.protocol())
-                .host(quakeQuery.host())
-                .eventid(d.eventid())
-                .includearrivals(true)
-                .query()
-                .then(function(qArray) {return qArray[0];})
-        }).then(function(hash) {
-console.log("quake network Promise then");
-          plotSeismograms(wp.d3.select("div.seismograms"),
-                       hash.network[0].stations(), locCode, chanCode, hash.quake, datahost, protocol);
-          return hash;
-        });
-    });
-    return quakes;
+  tr.on("click", doEventClick);
+  return quakes;
 }, function(request) {
 wp.d3.select("div.recentQuakes")
     .append("p")
     .text("Reject: "+request.statusText);
 });
 
+var doEventClick = function(d){
+console.log("click "+d.time().toISOString());
+    wp.d3.select("div.seismograms")
+      .selectAll("p")
+      .remove();
+    wp.d3.select("div.seismograms")
+      .selectAll("p")
+      .data([d])
+      .enter()
+      .append("p")
+      .text(function(d) {
+        let magStr = "unknown";
+        if (d.magnitude()) {
+          magStr = d.magnitude().mag()+" "
+          +d.magnitude().type();
+        }
+        return "quake: "
+            +d.time().toISOString()+" "
+            +magStr+" "
+            +"("+d.latitude()+", "+d.longitude()+") "
+            +(d.depth()/1000)+"km "
+            +d.description();
+      });
+
+      fdsnstation.RSVP.hash({
+          network: networkPromise,
+          quake: new fdsnevent.EventQuery()
+              .protocol(quakeQuery.protocol())
+              .host(quakeQuery.host())
+              .eventid(d.eventid())
+              .includearrivals(true)
+              .query()
+              .then(function(qArray) {return qArray[0];})
+      }).then(function(hash) {
+console.log("quake network Promise then");
+        plotSeismograms(wp.d3.select("div.seismograms"),
+                     hash.network[0].stations(), locCode, chanCode, hash.quake, datahost, protocol);
+        return hash;
+      });
+  };
+
 var plotSeismograms = function(div, stations, loc, chan, quake, host, protocol) {
   div.selectAll('div.myseisplot').remove();
 console.log("plot seis");
-  var dur = 300;
-  var pOffset = -120;
-  var clockOffset = 0; // set this from server somehow!!!!
   console.log("calc start end: "+quake.time()+" "+dur+" "+clockOffset);
   for (var s = 0; s<stations.length; s++) {
     plotOneStation(div, stations[s], loc, chan, quake, pOffset, dur, clockOffset, protocol, host);
@@ -239,3 +290,11 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
       div.append('p').html("Error loading data."+e );
     });
 };
+
+
+// map
+var mymap = L.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
+var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	maxZoom: 17,
+	attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+}).addTo(mymap);

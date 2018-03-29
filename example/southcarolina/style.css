@@ -2,6 +2,11 @@ div.myseisplot {
   height: 300px;
 }
 
+#mapid {
+  height: 600px;
+  width: 700px;
+}
+
 path.seispath {
   stroke: skyblue;
   fill: none;
