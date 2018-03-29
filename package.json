@@ -1,6 +1,6 @@
 {
   "name": "seisplotjs",
-  "version": "1.1.0",
+  "version": "1.2.0-alpha.1",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "lib/index.js",
   "dependencies": {
@@ -10,7 +10,7 @@
     "seisplotjs-fdsnstation": "^1.1.0",
     "seisplotjs-filter": "^1.1.0",
     "seisplotjs-miniseed": "^1.2.0",
-    "seisplotjs-model": "^1.1.0",
+    "seisplotjs-model": "^1.2.0-alpha.1",
     "seisplotjs-seedcodec": "^1.0.2",
     "seisplotjs-seedlink": "^1.1.0",
     "seisplotjs-traveltime": "^1.1.0",
