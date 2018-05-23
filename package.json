@@ -21,7 +21,7 @@
     "examplelint": "eslint -c .eslintrc_examples.js 'example/serviceCheck/serviceCheck.js' 'example/serviceCheck/allServiceTests.js' 'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "babel --presets es2015 -d lib/ src/",
-    "standalone": "browserify src/index.js --standalone seisplotjs -o seisplotjs_${npm_package_version}_standalone.js -t [ babelify ]",
+    "standalone": "browserify src/index.js --ignore-missing --standalone seisplotjs -o seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ]",
     "doc": "documentation build  src/index.js --github -o docs -f html --document-exported ",
     "prepare": "npm run compile",
     "version": "npm run compile && npm run standalone",
