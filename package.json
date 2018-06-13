@@ -4,16 +4,16 @@
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "lib/index.js",
   "dependencies": {
-    "seisplotjs-distaz": "^1.0.1",
+    "seisplotjs-distaz": "^1.0.2",
     "seisplotjs-fdsndataselect": "^1.1.3-alpha.1",
     "seisplotjs-fdsnevent": "^1.1.1-alpha.1",
     "seisplotjs-fdsnstation": "^1.1.1-alpha.1",
     "seisplotjs-filter": "^1.1.0",
-    "seisplotjs-miniseed": "^1.2.0",
+    "seisplotjs-miniseed": "^1.2.1-alpha.1",
     "seisplotjs-model": "^1.2.0-alpha.1",
     "seisplotjs-seedcodec": "^1.0.2",
     "seisplotjs-seedlink": "^1.2.0-alpha.1",
-    "seisplotjs-traveltime": "^1.1.0",
+    "seisplotjs-traveltime": "^1.1.1-alpha.1",
     "seisplotjs-waveformplot": "^1.2.4-alpha.1"
   },
   "scripts": {
