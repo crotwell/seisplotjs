@@ -1,10 +1,11 @@
 
 
 // seisplotjs comes from the seisplotjs bundle
-var wp = seisplotjs.waveformplot
-var traveltime = seisplotjs.traveltime
-var fdsnevent = seisplotjs.fdsnevent
-var fdsnstation = seisplotjs.fdsnstation
+const wp = seisplotjs.waveformplot;
+const traveltime = seisplotjs.traveltime;
+const fdsnevent = seisplotjs.fdsnevent;
+const fdsnstation = seisplotjs.fdsnstation;
+const fdsndataselect = seisplotjs.fdsndataselect;
 
 fdsnstation.RSVP.on('error', function(reason) {
   console.assert(false, reason);
@@ -26,8 +27,8 @@ var quakeQuery = new fdsnevent.EventQuery()
   .host(HOST)
   .minLat(32).maxLat(35)
   .minLon(-124).maxLon(-115)
-  .startTime(new Date(new Date().getTime()-86400*daysAgo*1000))
-  .endTime(new Date());
+  .startTime(moment.utc().subtract(daysAgo, 'days'))
+  .endTime(moment.utc());
 wp.d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
@@ -124,9 +125,9 @@ console.log("click "+d.time().toISOString());
                 .then(function(qArray) {return qArray[0];})
         }).then(function(hash) {
 console.log("quake network Promise then");
-          plotSeismograms(wp.d3.select("div.seismograms"),
+          hash.plotPromise = plotSeismograms(wp.d3.select("div.seismograms"),
                        hash.network[0].stations(), "--", chanCode, hash.quake, HOST, protocol);
-          return hash;
+          return fdsnstation.RSVP.hash(hash);
         });
     });
     return quakes;
@@ -140,19 +141,27 @@ wp.d3.select("div.recentQuakes")
 
 var plotSeismograms = function(div, stations, loc, chan, quake, dataHost, protocol) {
   div.selectAll('div.myseisplot').remove();
-console.log("plot seis");
+console.log("plot seis "+stations.length+" stations");
   var dur = 300;
   var pOffset = -120;
   var clockOffset = 0; // set this from server somehow!!!!
   console.log("calc start end: "+quake.time().toISOString()+" "+dur+" "+clockOffset);
+  let promise = new fdsnstation.RSVP.Promise(function(resolve, reject) {
+    resolve(true);
+  });
   for (var s = 0; s<stations.length; s++) {
-    plotOneStation(div, stations[s], loc, chan, quake, pOffset, dur, clockOffset, protocol, dataHost);
+    const mysta = stations[s];
+    console.log("plot s "+s+" of "+stations.length+"  "+mysta);
+    promise = promise.then( () => {
+      return plotOneStation(div, mysta, loc, chan, quake, pOffset, dur, clockOffset, protocol, dataHost);
+    });
   }
+  return promise;
 }
 
 var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, clockOffset, protocol, host) {
 console.log("plotOneStation: "+mystation.codes());
-    new traveltime.TraveltimeQuery()
+    return new traveltime.TraveltimeQuery()
         .protocol(protocol)
         .evdepth( quake.depth() > 0 ? quake.depth()/1000 : 0)
         .evlat(quake.latitude()).evlon(quake.longitude())
@@ -172,19 +181,22 @@ console.log("plotOneStation: "+mystation.codes());
     }
     return { firstP: firstP, firstS: firstS };
     }).then(function(firstPS) {
-    var PArrival = new Date(quake.time().getTime()+(firstPS.firstP.time+pOffset)*1000);
+    var PArrival = moment.utc(quake.time()).add((firstPS.firstP.time+pOffset), 'seconds');
     var seisDates = wp.calcStartEndDates(PArrival, null, dur, clockOffset);
     var startDate = seisDates.start;
     var endDate = seisDates.end;
 
     console.log("Start end: "+startDate.toISOString()+" "+endDate.toISOString());
-    var url = wp.formRequestUrl(protocol, host, mystation.network().networkCode(), mystation.stationCode(), loc, chan, startDate, endDate);
-    console.log("Data request: "+url);
-    wp.loadParse(url, function (error, dataRecords) {
-      if (error) {
-console.log("error from loadParse: "+error);
-        div.append('p').html("Error loading data." );
-      } else {
+    return new fdsndataselect.DataSelectQuery(host)
+      .protocol(protocol)
+      .networkCode(mystation.network().networkCode())
+      .stationCode(mystation.stationCode())
+      .locationCode(loc)
+      .channelCode(chan)
+      .startTime(startDate)
+      .endTime(endDate)
+      .query()
+      .then(dataRecords => {
         var byChannel = wp.miniseed.byChannel(dataRecords);
         var keys = Array.from(byChannel.keys());
         console.log("Got "+dataRecords.length+" data records for "+keys.length+" channels");
@@ -193,11 +205,11 @@ console.log("error from loadParse: "+error);
             div.append('p').html('Plot for ' + key);
             var svgdiv = div.append('div').attr('class', 'myseisplot');
             if (segments.length > 0) {
-                var seismogram = new wp.chart(svgdiv, segments, startDate, endDate);
+                var seismogram = new wp.Seismograph(svgdiv, segments, startDate, endDate);
                 var markers = [];
                   markers.push({ markertype: 'predicted', name: "origin", time: quake.time() });
-                  markers.push({ markertype: 'predicted', name: firstPS.firstP.phase, time: new Date(quake.time().getTime()+(firstPS.firstP.time)*1000) });
-                  markers.push({ markertype: 'predicted', name: firstPS.firstS.phase, time: new Date(quake.time().getTime()+(firstPS.firstS.time)*1000) });
+                  markers.push({ markertype: 'predicted', name: firstPS.firstP.phase, time: moment.utc(quake.time()).add(firstPS.firstP.time, 'seconds') });
+                  markers.push({ markertype: 'predicted', name: firstPS.firstS.phase, time: moment.utc(quake.time()).add(firstPS.firstS.time, 'seconds') });
 
                 if (quake.arrivals()) {
                   for ( let aNum=0; aNum < quake.arrivals().length; aNum++) {
@@ -209,11 +221,6 @@ if (! arrival) {console.log("arrival is undef??? "+aNum); }
                     }
                   }
                 }
-/*
-                for (var m=0;m<ttimes.arrivals.length; m++) {
-                  markers.push({ name: ttimes.arrivals[m].phase, time: new Date(quake.time().getTime()+(ttimes.arrivals[m].time)*1000) });
-                }
-*/
                 seismogram.appendMarkers(markers);
                 seismogram.draw();
             }
@@ -221,10 +228,13 @@ if (! arrival) {console.log("arrival is undef??? "+aNum); }
         if (keys.length==0){
             div.append('p').html('No data found for '+mystation.codes());
         }
-      }
-    });
-    return firstPS;
+        return firstPS;
+      })
+      .catch(error => {
+        console.log("error retrieve data: "+error);
+        div.append('p').text("Error loading data." );
+      });
     }).catch(function(e) {
-console.log("catch in ttimes then"+e);
+      console.assert(false, e);
     });
 };

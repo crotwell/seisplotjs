@@ -103,6 +103,7 @@ doplot = function(sta) {
   //    seisDiv.append('p').text(codes);
       let plotDiv = seisDiv.append('div').attr('class', 'realtimePlot');
       let seisPlot = new wp.Seismograph(plotDiv, [seismogram], timeWindow.start, timeWindow.end);
+      seisPlot.svg.classed('realtimePlot', true).classed('overlayPlot', false)
       seisPlot.disableWheelZoom();
       seisPlot.setXSublabel(codes);
       seisPlot.setMargin(margin );
