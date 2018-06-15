@@ -11,16 +11,16 @@
     "seisplotjs-filter": "^1.1.0",
     "seisplotjs-miniseed": "^1.2.1-alpha.1",
     "seisplotjs-model": "^1.2.0-alpha.1",
-    "seisplotjs-seedcodec": "^1.0.2",
+    "seisplotjs-seedcodec": "^1.0.3",
     "seisplotjs-seedlink": "^1.2.0-alpha.1",
-    "seisplotjs-traveltime": "^1.1.1-alpha.1",
+    "seisplotjs-traveltime": "^1.2.0",
     "seisplotjs-waveformplot": "^1.2.4-alpha.1"
   },
   "scripts": {
     "lint": "eslint 'src/*.js' ",
     "examplelint": "eslint -c .eslintrc_examples.js 'example/serviceCheck/serviceCheck.js' 'example/serviceCheck/allServiceTests.js' 'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "babel --presets es2015 -d lib/ src/",
+    "compile": "babel --presets env -d lib/ src/",
     "standalone": "browserify src/index.js --ignore-missing --standalone seisplotjs -o seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ]",
     "doc": "documentation build  src/index.js --github -o docs -f html --document-exported ",
     "prepare": "npm run compile",
@@ -47,15 +47,13 @@
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "babel-preset-es2015": "^6.24.1",
     "babelify": "^8.0.0",
     "eslint": "^4.16.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-standard": "^3.0.1",
-    "qunit": "^1.0.0"
+    "eslint-plugin-standard": "^3.0.1"
   },
   "babel": {
     "presets": [
