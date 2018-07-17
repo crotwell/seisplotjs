@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Testing deconvolution with seisplotjs.filter.</h1>
+ <p>See <a href="https://github.com/crotwell/seisplotjs-filter">the Github</a> page for more information.</p>
+
+<h5>Miniseed records:</h5>
+<div class="miniseed">
+</div>
+
+<h5>Raw seismogram</h5>
+<div class="rawseisplot seisplot"></div>
+
+<h5>Instrument Corrected Seismogram</h5>
+<div class="transferseisplot seisplot"></div>
+
+
+<h5>Filtered seismogram, butterworth lowpass 1Hz</h5>
+<div class="filterseisplot seisplot"></div>
+
+<h5>DFT seismogram</h5>
+<div class="fftplot" >
+  <svg width="960" height="500"></svg>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
+<script src="seisplotjs_1.2.0-alpha.1_standalone.js"></script>
+<script src="deconvolve.js"></script>
+</body>
+</html>
