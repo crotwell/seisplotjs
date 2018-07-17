@@ -2,6 +2,8 @@ src/
 example/knmi/
 example/socal/
 example/sis/
+example/testCss/
+example/uw/
 .DS_Store
 .git/
 seisplotjs_*_standalone.js
