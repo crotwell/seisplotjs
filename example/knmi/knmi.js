@@ -162,7 +162,7 @@ console.log("plot seis");
 
 var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, clockOffset, protocol, host) {
 console.log("plotOneStation: "+mystation.codes());
-new traveltime.TraveltimeQuery()
+return new traveltime.TraveltimeQuery()
     .protocol(protocol)
     .evdepth( quake.depth() > 0 ? quake.depth()/1000 : 0)
     .evlat(quake.latitude()).evlon(quake.longitude())
@@ -246,5 +246,6 @@ if (! arrival) {console.log("arrival is undef??? "+aNum); }
       console.log("catch in ttimes then"+e);
       console.assert(false, e);
       div.append('p').html("Error loading data."+e );
+      throw e;
     });
 };
