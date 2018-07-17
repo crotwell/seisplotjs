@@ -12,9 +12,9 @@
     "seisplotjs-miniseed": "^1.2.1",
     "seisplotjs-model": "^1.2.0",
     "seisplotjs-seedcodec": "^1.0.3",
-    "seisplotjs-seedlink": "^1.2.0-alpha.1",
+    "seisplotjs-seedlink": "^1.2.0",
     "seisplotjs-traveltime": "^1.2.0",
-    "seisplotjs-waveformplot": "^1.2.4-alpha.1"
+    "seisplotjs-waveformplot": "^1.2.4"
   },
   "scripts": {
     "lint": "eslint 'src/*.js' ",
