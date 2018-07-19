@@ -37,7 +37,7 @@ if (protocol == 'https:') {
 //
 let IRIS_HOST = "rtserve.iris.washington.edu";
 let EEYORE_HOST = "eeyore.seis.sc.edu";
-let EEYORE_PORT = 6382;
+let EEYORE_PORT = 6383;
 let host = IRIS_HOST;
 let port = 80;
 host=EEYORE_HOST;
