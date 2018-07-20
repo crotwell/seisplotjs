@@ -49,6 +49,7 @@ function processMiniseed(records) {
       seisplot.draw();
 
       responseQuery.query(st.LEVEL_RESPONSE).then(netArray => {
+        let channel = netArray[0].stations()[0].channels()[0];
         var response = netArray[0].stations()[0].channels()[0].response();
         console.log("resp2: "+response);
         var correctedSeismogram = [];
@@ -66,6 +67,10 @@ function processMiniseed(records) {
         var transferPlot = new wp.Seismograph(svgTransfer, correctedSeismogram);
         transferPlot.setYSublabel(correctedSeismogram[0].yUnit());
         transferPlot.draw();
+        return channel;
+      }).then(channel => {
+        let respData = this.calcInstResponse(channel, 0.001, 40, 100);
+        respLogPlot(respData, "div.instresponseplot")
       });
 
 
@@ -92,7 +97,7 @@ function processMiniseed(records) {
       let fftOut = seisplotjs.filter.calcDFT(seismogram[0].y(), seismogram[0].numPoints() );
 
 
-      simpleLogPlot(fftOut, "div.fftplot", seismogram[0].sampleRate())
+      simpleLogPlot(fftOut, "div.fftplot", seismogram[0].sampleRate());
 
 }
 
@@ -111,6 +116,99 @@ console.log("rawBuffer size: "+rawBuffer.response.length);
 console.log("got "+records.length+" records");
       processMiniseed(records);
     });
+}
+
+function calcInstResponseAtFreq(freq, sacPoleZero) {
+  let ONE = seisplotjs.model.createComplex(1, 0);
+  let respAtF = seisplotjs.filter.transfer.evalPoleZeroInverse(sacPoleZero, freq);
+  return ONE.overComplex(respAtF);
+}
+function calcInstResponse(channel, minFreq, maxFreq, numPoints) {
+  let out = {
+    minFreq: minFreq,
+    maxFreq: maxFreq,
+    numPoints: numPoints,
+    data: new Array(),
+  }
+  let sampRate = channel.sampleRate();
+  const sacPoleZero = seisplotjs.filter.transfer.convertToSacPoleZero(channel.response());
+  // make vel instead of disp
+  sacPoleZero.zeros = sacPoleZero.zeros.slice(0, sacPoleZero.zeros.length-1);
+  d3.select("div.sacpolezero").append("pre").text(sacPoleZero.toString());
+  let powerScale = d3.scalePow()
+    .exponent(10)
+    .domain([0, numPoints-1])
+    .range([minFreq, maxFreq]);
+  for (let i=0; i< numPoints; i++) {
+    let freq = powerScale(i);
+    let respAtF = this.calcInstResponseAtFreq(freq, sacPoleZero);
+    out.data.push({
+      freq: freq,
+      amp: respAtF.abs(),
+      phase: respAtF.angle()
+    });
+  }
+  return out;
+}
+
+function respLogPlot(respData, cssSelector) {
+      var svg = d3.select(cssSelector).select("svg");
+
+      var margin = {top: 20, right: 20, bottom: 30, left: 50},
+      width = +svg.attr("width") - margin.left - margin.right,
+      height = +svg.attr("height") - margin.top - margin.bottom,
+      g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var x = d3.scaleLog()
+      .rangeRound([0, width]);
+
+  var y = d3.scaleLog()
+      .rangeRound([height, 0]);
+
+  var line = d3.line()
+      .x(function(d, i) { return x(d.freq); })
+      .y(function(d, i) { return y(d.amp); });
+
+    x.domain([respData.minFreq, respData.maxFreq]);
+  //  x.domain(d3.extent(fftAmp, function(d, i) { return i; }));
+    y.domain(d3.extent(respData.data, function(d, i) { return d.amp; }));
+    if (y.domain()[0] === y.domain()[1]) {
+      y.domain( [ y.domain()[0]/2, y.domain()[1]*2]);
+    }
+
+    g.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+      .append("text")
+        .attr("fill", "#000")
+        .attr("y", 0)
+        .attr("x", width/2)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+        .text("Hertz");
+
+  //    .select(".domain")
+  //      .remove();
+
+    g.append("g")
+        .call(d3.axisLeft(y))
+      .append("text")
+        .attr("fill", "#000")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", "0.71em")
+        .attr("text-anchor", "end")
+        .text("Amp");
+
+    g.append("path")
+        .datum(respData.data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 1.5)
+        .attr("d", line);
+
 }
 
 function simpleLogPlot(fft, cssSelector, sps) {
