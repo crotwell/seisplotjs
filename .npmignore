@@ -1,4 +1,5 @@
 src/
+flow-typed/
 example/knmi/
 example/socal/
 example/sis/
