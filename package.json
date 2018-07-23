@@ -1,6 +1,6 @@
 {
   "name": "seisplotjs",
-  "version": "1.2.1_alpha.1",
+  "version": "1.2.1-alpha.1",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "lib/index.js",
   "dependencies": {
@@ -53,6 +53,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-flow": "^6.23.0",
     "babelify": "^8.0.0",
+    "documentation": "^8.0.2",
     "eslint": "^4.16.0",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-flowtype": "^2.50.0",
