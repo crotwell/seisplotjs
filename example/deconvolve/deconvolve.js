@@ -1,3 +1,7 @@
+// @flow
+
+// just to get flow working...
+//import * as seisplotjs from '../../src/index';
 
 // this comes from the seisplotjs miniseed bundle
 var ds = seisplotjs.fdsndataselect;
@@ -40,17 +44,16 @@ divP.append("a")
     .text(url);
 
 function processMiniseed(records) {
-
       let seismogram = miniseed.merge(records);
 
       var svgdiv = d3.select('div.rawseisplot');
       var seisplot = new wp.Seismograph(svgdiv, seismogram);
-      seisplot.setYSublabel(seismogram[0].yUnit());
+      seisplot.setYSublabel(seismogram[0].yUnit);
       seisplot.draw();
 
       responseQuery.query(st.LEVEL_RESPONSE).then(netArray => {
-        let channel = netArray[0].stations()[0].channels()[0];
-        var response = netArray[0].stations()[0].channels()[0].response();
+        let channel = netArray[0].stations[0].channels[0];
+        var response = netArray[0].stations[0].channels[0].response;
         console.log("resp2: "+response);
         var correctedSeismogram = [];
         for(let i=0; i<seismogram.length; i++) {
@@ -65,11 +68,11 @@ function processMiniseed(records) {
 
         var svgTransfer = d3.select('div.transferseisplot');
         var transferPlot = new wp.Seismograph(svgTransfer, correctedSeismogram);
-        transferPlot.setYSublabel(correctedSeismogram[0].yUnit());
+        transferPlot.setYSublabel(correctedSeismogram[0].yUnit);
         transferPlot.draw();
         return channel;
       }).then(channel => {
-        let respData = this.calcInstResponse(channel, 0.001, 40, 100);
+        let respData = calcInstResponse(channel, 0.001, 40, 100);
         respLogPlot(respData, "div.instresponseplot")
       });
 
@@ -80,24 +83,24 @@ function processMiniseed(records) {
                                  0, // low corner
                                  1, // high corner
 
-                                 1/seismogram[0].sampleRate() // delta (period)
+                                 1/seismogram[0].sampleRate // delta (period)
                         );
       var filteredSeismogram = [];
       for(let i=0; i<seismogram.length; i++) {
         var s = seismogram[i].clone();
-        butterworth.filterInPlace(s.y());
+        butterworth.filterInPlace(s.y);
         filteredSeismogram.push(s);
       }
 
       var svgFiltered = d3.select('div.filterseisplot');
       var filteredPlot = new wp.Seismograph(svgFiltered, filteredSeismogram);
-      filteredPlot.setYSublabel(filteredSeismogram[0].yUnit());
+      filteredPlot.setYSublabel(filteredSeismogram[0].yUnit);
       filteredPlot.draw();
 
-      let fftOut = seisplotjs.filter.calcDFT(seismogram[0].y(), seismogram[0].numPoints() );
+      let fftOut = seisplotjs.filter.calcDFT(seismogram[0].y, seismogram[0].numPoints );
 
 
-      simpleLogPlot(fftOut, "div.fftplot", seismogram[0].sampleRate());
+      simpleLogPlot(fftOut, "div.fftplot", seismogram[0].sampleRate);
 
 }
 
@@ -119,7 +122,7 @@ console.log("got "+records.length+" records");
 }
 
 function calcInstResponseAtFreq(freq, sacPoleZero) {
-  let ONE = seisplotjs.model.createComplex(1, 0);
+  let ONE = seisplotjs.filter.createComplex(1, 0);
   let respAtF = seisplotjs.filter.transfer.evalPoleZeroInverse(sacPoleZero, freq);
   return ONE.overComplex(respAtF);
 }
@@ -128,10 +131,10 @@ function calcInstResponse(channel, minFreq, maxFreq, numPoints) {
     minFreq: minFreq,
     maxFreq: maxFreq,
     numPoints: numPoints,
-    data: new Array(),
+    data: [],
   }
-  let sampRate = channel.sampleRate();
-  const sacPoleZero = seisplotjs.filter.transfer.convertToSacPoleZero(channel.response());
+  let sampRate = channel.sampleRate;
+  const sacPoleZero = seisplotjs.filter.transfer.convertToSacPoleZero(channel.response);
   // make vel instead of disp
   sacPoleZero.zeros = sacPoleZero.zeros.slice(0, sacPoleZero.zeros.length-1);
   d3.select("div.sacpolezero").append("pre").text(sacPoleZero.toString());
@@ -141,7 +144,7 @@ function calcInstResponse(channel, minFreq, maxFreq, numPoints) {
     .range([minFreq, maxFreq]);
   for (let i=0; i< numPoints; i++) {
     let freq = powerScale(i);
-    let respAtF = this.calcInstResponseAtFreq(freq, sacPoleZero);
+    let respAtF = calcInstResponseAtFreq(freq, sacPoleZero);
     out.data.push({
       freq: freq,
       amp: respAtF.abs(),

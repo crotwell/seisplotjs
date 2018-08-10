@@ -1,14 +1,25 @@
+//@flow
 
+import * as OregonDSPTop from 'oregondsp';
 import { calcDFT, inverseDFT } from './index';
-import * as model from '../model';
+import * as model from '../model/index';
 import Qty from 'js-quantities';
 
-export function transfer(seis,
-                        response,
-                        lowCut,
-                        lowPass,
-                        highPass,
-                        highCut) {
+
+let OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
+
+// if OregonDSP is loaded (here it is) we want to use
+// its Complex instead of the simple one defined in model
+export function createComplex(real: number, imag: number) {
+  return OregonDSP.filter.iir.Complex_init(real, imag);
+};
+
+export function transfer(seis :model.Seismogram,
+                        response :model.Response,
+                        lowCut :number,
+                        lowPass :number,
+                        highPass :number,
+                        highCut :number) {
         if (! response) {
           throw new Error("Response not exist???");
         }
@@ -17,10 +28,15 @@ export function transfer(seis,
         return transferSacPZ(seis, sacPoleZero, lowCut, lowPass, highPass, highCut);
       }
 
-export function transferSacPZ(seis, sacPoleZero, lowCut, lowPass, highPass, highCut) {
-        const sampFreq = seis.sampleRate();
+export function transferSacPZ(seis :model.Seismogram,
+                              sacPoleZero,
+                              lowCut :number,
+                              lowPass :number,
+                              highPass :number,
+                              highCut :number) {
+        const sampFreq = seis.sampleRate;
 
-        let values = seis.y();
+        let values = seis.y;
         /* sac premultiplies the data by the sample period before doing the fft. Later it
          * seems to be cancled out by premultiplying the pole zeros by a similar factor.
          * I don't understand why they do this, but am reproducing it in order to be
@@ -35,18 +51,20 @@ export function transferSacPZ(seis, sacPoleZero, lowCut, lowPass, highPass, high
         // a extra factor of nfft gets in somehow???
         values = values.map(d => d * freqValues.length);
         let out = seis.clone();
-        out.y(values);
+        out.y = values;
         //out.y_unit = UNITS.METER;
-        out.yUnit('m');
+        out.yUnit = 'm';
         return out;
     }
 
 
-export function combine(freqValues, sampFreq,  sacPoleZero,
-                 lowCut,
-                 lowPass,
-                 highPass,
-                 highCut) {
+export function combine(freqValues :Array<number>,
+                        sampFreq :number,  
+                        sacPoleZero,
+                        lowCut :number,
+                        lowPass :number,
+                        highPass :number,
+                        highCut :number) {
         const deltaF = sampFreq / freqValues.length;
 
         // handle zero freq, no imag, set real to 0
@@ -68,7 +86,7 @@ export function combine(freqValues, sampFreq,  sacPoleZero,
                                                                lowPass,
                                                                highPass,
                                                                highCut));
-            let freqComplex = model.createComplex(freqValues[i], freqValues[freqValues.length-i])
+            let freqComplex = createComplex(freqValues[i], freqValues[freqValues.length-i])
                 .timesComplex(respAtS);
             freqValues[i] = freqComplex.real();
             freqValues[freqValues.length-i] = freqComplex.imag();
@@ -83,17 +101,17 @@ export function combine(freqValues, sampFreq,  sacPoleZero,
      * 1/(pz(s) to avoid divide by zero issues. If there is a divide by zero
      * situation, then the response is set to be 0+0i.
      */
-  export function evalPoleZeroInverse(sacPoleZero, freq) {
-        const s = model.createComplex(0, 2 * Math.PI * freq);
-        let zeroOut = model.createComplex(1, 0);
-        let poleOut = model.createComplex(1, 0);
+  export function evalPoleZeroInverse(sacPoleZero, freq :number) {
+        const s = createComplex(0, 2 * Math.PI * freq);
+        let zeroOut = createComplex(1, 0);
+        let poleOut = createComplex(1, 0);
         for(let i = 0; i < sacPoleZero.poles.length; i++) {
             poleOut = poleOut.timesComplex( s.minusComplex(sacPoleZero.poles[i]) );
         }
         for(let i = 0; i < sacPoleZero.zeros.length; i++) {
             if(s.real() == sacPoleZero.zeros[i].real()
                     && s.imag() == sacPoleZero.zeros[i].imag()) {
-                return model.createComplex(0,0);
+                return createComplex(0,0);
             }
             zeroOut = zeroOut.timesComplex( s.minusComplex(sacPoleZero.zeros[i]) );
         }
@@ -101,11 +119,11 @@ export function combine(freqValues, sampFreq,  sacPoleZero,
         return out.overReal( sacPoleZero.constant);
     }
 
-export function freqTaper( freq,
-                    lowCut,
-                    lowPass,
-                    highPass,
-                    highCut) {
+export function freqTaper(freq :number,
+                          lowCut :number,
+                          lowPass :number,
+                          highPass :number,
+                          highCut :number) :number {
     if (lowCut > lowPass || lowPass > highPass || highPass > highCut) {
         throw new Error("must be lowCut > lowPass > highPass > highCut: "+lowCut +" "+ lowPass +" "+ highPass +" "+ highCut);
     }
@@ -136,9 +154,14 @@ export const UNITS = {
   * converts the analog to digital stage (usually 0) along
   * with the overall gain, but does not include later FIR stages.
   */
-export function convertToSacPoleZero( response) {
-    const polesZeros = response.stages()[0].filter();
-    let unit = response.instrumentSensitivity().inputUnits();
+export function convertToSacPoleZero( response :model.Response) {
+    let polesZeros :model.PolesZeros;
+    if (response.stages[0].filter instanceof model.PolesZeros) {
+      polesZeros = response.stages[0].filter;
+    } else {
+      throw new Error("can't find PolesZeros");
+    }
+    let unit = response.instrumentSensitivity.inputUnits;
     if (unit === "M/S" || unit === "M/SEC") {
       unit = "m/s";
     }
@@ -159,32 +182,32 @@ export function convertToSacPoleZero( response) {
     }
 
     let mulFactor = 1;
-    if (polesZeros.pzTransferFunctionType() === "LAPLACE (HERTZ)") {
+    if (polesZeros.pzTransferFunctionType === "LAPLACE (HERTZ)") {
         mulFactor = 2 * Math.PI;
     }
     let zeros = [];
     // extra gamma zeros are (0,0)
-    for (let i = 0; i < polesZeros.zeros().length; i++) {
-        zeros[i] = model.createComplex(polesZeros.zeros()[i].real * mulFactor,
-                               polesZeros.zeros()[i].imag * mulFactor);
+    for (let i = 0; i < polesZeros.zeros.length; i++) {
+        zeros[i] = createComplex(polesZeros.zeros[i].real * mulFactor,
+                               polesZeros.zeros[i].imag * mulFactor);
     }
     for (let i=0; i<gamma; i++) {
-      zeros.push(model.createComplex(0,0));
+      zeros.push(createComplex(0,0));
     }
     let poles = [];
-    for (let i = 0; i < polesZeros.poles().length; i++) {
-        poles[i] = model.createComplex(polesZeros.poles()[i].real * mulFactor,
-                               polesZeros.poles()[i].imag * mulFactor);
+    for (let i = 0; i < polesZeros.poles.length; i++) {
+        poles[i] = createComplex(polesZeros.poles[i].real * mulFactor,
+                               polesZeros.poles[i].imag * mulFactor);
     }
-    let constant = polesZeros.normalizationFactor();
-    let sd = response.instrumentSensitivity().sensitivity();
-    let fs = response.instrumentSensitivity().frequency();
+    let constant = polesZeros.normalizationFactor;
+    let sd = response.instrumentSensitivity.sensitivity;
+    let fs = response.instrumentSensitivity.frequency;
     sd *= Math.pow(2 * Math.PI * fs, gamma);
-    let A0 = polesZeros.normalizationFactor();
-    let fn = polesZeros.normalizationFrequency();
+    let A0 = polesZeros.normalizationFactor;
+    let fn = polesZeros.normalizationFrequency;
     A0 = A0 / Math.pow(2 * Math.PI * fn, gamma);
-    if (polesZeros.pzTransferFunctionType() === "LAPLACE (HERTZ)") {
-        A0 *= Math.pow(2 * Math.PI, polesZeros.poles().length - polesZeros.zeros().length);
+    if (polesZeros.pzTransferFunctionType === "LAPLACE (HERTZ)") {
+        A0 *= Math.pow(2 * Math.PI, polesZeros.poles.length - polesZeros.zeros.length);
     }
     if (poles.length == 0 && zeros.length == 0) {
         constant = (sd * A0);
@@ -224,12 +247,12 @@ export function convertToSacPoleZero( response) {
     };
 }
 
-export function calc_A0(poles, zeros, ref_freq) {
-    let numer = model.createComplex(1, 0);
-    let denom = model.createComplex(1, 0);
+export function calc_A0(poles :Array<Complex>, zeros :Array<Complex>, ref_freq :number) {
+    let numer = createComplex(1, 0);
+    let denom = createComplex(1, 0);
     let f0;
     let a0;
-    f0 = model.createComplex(0, 2 * Math.PI * ref_freq);
+    f0 = createComplex(0, 2 * Math.PI * ref_freq);
     for (let i = 0; i < zeros.length; i++) {
         denom = denom.timesComplex( f0.minusComplex(zeros[i]));
     }

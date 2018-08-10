@@ -6,16 +6,11 @@ import * as model from '../model/index';
 import * as transfer  from './transfer';
 import * as taper  from './taper';
 
+export const createComplex = transfer.createComplex;
+
 let OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 export { OregonDSP, model, taper, transfer };
-
-
-// if OregonDSP is loaded (here it is) we want to use
-// its Complex instead of the simple one defined in model
-export function createComplex(real: number, imag: number) {
-  return OregonDSP.filter.iir.Complex_init(real, imag);
-};
 
 export let BAND_PASS = OregonDSP.filter.iir.PassbandType.BANDPASS;
 export let LOW_PASS = OregonDSP.filter.iir.PassbandType.LOWPASS;

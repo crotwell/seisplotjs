@@ -140,11 +140,11 @@ export function findStartEnd(data: Array<miniseed.model.Seismogram> | miniseed.m
        // assume single segment object
 
 
-       if ( ! accumulator || data.start() < accumulator.start) {
-         out.start = data.start();
+       if ( ! accumulator || data.start < accumulator.start) {
+         out.start = data.start;
        }
-       if ( ! accumulator || accumulator.end < data.end() ) {
-         out.end = data.end();
+       if ( ! accumulator || accumulator.end < data.end ) {
+         out.end = data.end;
        }
        accumulator = out;
     }

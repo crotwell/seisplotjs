@@ -62,26 +62,26 @@ wp.d3.select("div.recentQuakesUrl")
     .text("Stations URL: "+stationQuery.formURL(fdsnstation.LEVEL_STATION));
 var networkPromise = stationQuery.queryStations().then(function(netArray) {
           staCodes = [];
-          for (var i=0;i<netArray[0].stations().length; i++) {
-            staCodes.push(netArray[0].stations()[i].stationCode());
+          for (var i=0;i<netArray[0].stations.length; i++) {
+            staCodes.push(netArray[0].stations[i].stationCode);
           }
           console.log("sta codes: "+staCodes.join());
           return netArray;
 }).then(function(netArray) {
   wp.d3.select("ul.stations")
     .selectAll("li")
-    .data(netArray[0].stations())
+    .data(netArray[0].stations)
     .enter()
     .append("li")
     .text(function(d) {
-      return d.stationCode()
-          +" ("+d.latitude()+", "+d.longitude()+") "
-          +d.name();
+      return d.stationCode
+          +" ("+d.latitude+", "+d.longitude+") "
+          +d.name;
     });
   return netArray;
 }).then(function(netArray) {
-  for (let s of netArray[0].stations()) {
-    let m = L.marker([s.latitude(), s.longitude()]);
+  for (let s of netArray[0].stations) {
+    let m = L.marker([s.latitude, s.longitude]);
     m.addTo(mymap);
     m.bindTooltip(s.codes());
   }
@@ -104,48 +104,48 @@ quakeQuery.query().then(function(quakes) {
   }
   var tableData = table.select("tbody")
     .selectAll("tr")
-    .data(quakes, function(d) {return d.time();});
+    .data(quakes, function(d) {return d.time;});
   tableData.exit().remove();
 
   for (const q of quakes) {
-    let circle = L.circleMarker([q.latitude(), q.longitude()], {
+    let circle = L.circleMarker([q.latitude, q.longitude], {
       color: 'red',
       fillColor: '#f03',
       fillOpacity: 0.5,
-      radius: q.magnitude() ? (q.magnitude().mag()*5) : 3 // in case no mag
+      radius: q.magnitude ? (q.magnitude.mag*5) : 3 // in case no mag
     }).addTo(mymap);
     circle.on('click', function(e) {
         doEventClick(q);
     } );
-    circle.bindTooltip(q.time().toISOString()+" "+(q.magnitude() ? (q.magnitude().mag()+" "+q.magnitude().type()) : "unkn"));
+    circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
   }
   var tr = tableData
     .enter()
     .append("tr");
   tr.append("td")
     .text(function(d) {
-      return d.time().toISOString();
+      return d.time.toISOString();
       });
   tr.append("td")
     .text(function(d) {
-      if (d.magnitude()) {
-        return d.magnitude().mag()+" "
-            +d.magnitude().type();
+      if (d.magnitude) {
+        return d.magnitude.mag+" "
+            +d.magnitude.type;
       } else {
         return "unknown";
       }
       });
   tr.append("td")
     .text(function(d) {
-      return "("+d.latitude()+", "+d.longitude()+")";
+      return "("+d.latitude+", "+d.longitude+")";
       });
   tr.append("td")
     .text(function(d) {
-      return (d.depth()/1000)+"km ";
+      return (d.depth/1000)+"km ";
       });
   tr.append("td")
     .text(function(d) {
-      return d.description();
+      return d.description;
       });
   tr.on("click", doEventClick);
   return quakes;
@@ -156,7 +156,7 @@ wp.d3.select("div.recentQuakes")
 });
 
 var doEventClick = function(d){
-console.log("click "+d.time().toISOString());
+console.log("click "+d.time.toISOString());
     wp.d3.select("div.seismograms")
       .selectAll("p")
       .remove();
@@ -167,16 +167,16 @@ console.log("click "+d.time().toISOString());
       .append("p")
       .text(function(d) {
         let magStr = "unknown";
-        if (d.magnitude()) {
-          magStr = d.magnitude().mag()+" "
-          +d.magnitude().type();
+        if (d.magnitude) {
+          magStr = d.magnitude.mag+" "
+          +d.magnitude.type;
         }
         return "quake: "
-            +d.time().toISOString()+" "
+            +d.time.toISOString()+" "
             +magStr+" "
-            +"("+d.latitude()+", "+d.longitude()+") "
-            +(d.depth()/1000)+"km "
-            +d.description();
+            +"("+d.latitude+", "+d.longitude+") "
+            +(d.depth/1000)+"km "
+            +d.description;
       });
 
       fdsnstation.RSVP.hash({
@@ -184,14 +184,14 @@ console.log("click "+d.time().toISOString());
           quake: new fdsnevent.EventQuery()
               .protocol(quakeQuery.protocol())
               .host(quakeQuery.host())
-              .eventid(d.eventid())
+              .eventid(d.eventid)
               .includearrivals(true)
               .query()
               .then(function(qArray) {return qArray[0];})
       }).then(function(hash) {
 console.log("quake network Promise then");
         plotSeismograms(wp.d3.select("div.seismograms"),
-                     hash.network[0].stations(), locCode, chanCode, hash.quake, datahost, protocol);
+                     hash.network[0].stations, locCode, chanCode, hash.quake, datahost, protocol);
         return hash;
       });
   };
@@ -199,7 +199,7 @@ console.log("quake network Promise then");
 var plotSeismograms = function(div, stations, loc, chan, quake, host, protocol) {
   div.selectAll('div.myseisplot').remove();
 console.log("plot seis");
-  console.log("calc start end: "+quake.time()+" "+dur+" "+clockOffset);
+  console.log("calc start end: "+quake.time+" "+dur+" "+clockOffset);
   for (var s = 0; s<stations.length; s++) {
     plotOneStation(div, stations[s], loc, chan, quake, pOffset, dur, clockOffset, protocol, host);
   }
@@ -209,9 +209,9 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
   console.log("plotOneStation: "+mystation.codes());
   return new traveltime.TraveltimeQuery()
       .protocol(protocol)
-      .evdepth( quake.depth() > 0 ? quake.depth()/1000 : 0)
-      .evlat(quake.latitude()).evlon(quake.longitude())
-      .stalat(mystation.latitude()).stalon(mystation.longitude())
+      .evdepth( quake.depth > 0 ? quake.depth/1000 : 0)
+      .evlat(quake.latitude).evlon(quake.longitude)
+      .stalat(mystation.latitude).stalon(mystation.longitude)
       .phases('p,P,PKP,PKIKP,Pdiff,s,S,Sdiff,PKP,SKS,SKIKS')
       .query()
       .then(function(ttimes) {
@@ -227,7 +227,7 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
       }
       return { firstP: firstP, firstS: firstS };
     }).then(function(firstPS) {
-      var PArrival = moment(quake.time()).add(firstPS.firstP.time+pOffset, 'seconds');
+      var PArrival = moment(quake.time).add(firstPS.firstP.time+pOffset, 'seconds');
       var seisDates = wp.calcStartEndDates(PArrival, null, dur, clockOffset);
       var startDate = seisDates.start;
       var endDate = seisDates.end;
@@ -237,8 +237,8 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
       let dsQuery = new fdsndataselect.DataSelectQuery()
           .protocol(protocol)
           .host(host)
-          .networkCode(mystation.network().networkCode())
-          .stationCode(mystation.stationCode())
+          .networkCode(mystation.network.networkCode)
+          .stationCode(mystation.stationCode)
           .locationCode(loc)
           .channelCode(chan)
           .startTime(startDate)
@@ -262,16 +262,16 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
           if (segments.length > 0) {
               var seismogram = new wp.Seismograph(svgdiv, segments, hash.startDate, hash.endDate);
               var markers = [];
-                markers.push({ markertype: 'predicted', name: "origin", time: quake.time() });
-                markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time()).add(hash.firstPS.firstP.time, 'seconds') });
-                markers.push({ markertype: 'predicted', name: hash.firstPS.firstS.phase, time: moment(quake.time()).add(hash.firstPS.firstS.time, 'seconds') });
+                markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
+                markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time).add(hash.firstPS.firstP.time, 'seconds') });
+                markers.push({ markertype: 'predicted', name: hash.firstPS.firstS.phase, time: moment(quake.time).add(hash.firstPS.firstS.time, 'seconds') });
 
-              if (quake.arrivals()) {
-                for ( let aNum=0; aNum < quake.arrivals().length; aNum++) {
-                  let arrival = quake.arrivals()[aNum];
-                  if (arrival && arrival.pick().stationCode() == mystation.stationCode()) {
-                  markers.push({ markertype: 'pick', name: arrival.phase(), time: arrival.pick().time() });
-                  console.log("markers.push({ markertype: 'pick', name: "+arrival.phase()+", time: "+arrival.pick().time() );
+              if (quake.arrivals) {
+                for ( let aNum=0; aNum < quake.arrivals.length; aNum++) {
+                  let arrival = quake.arrivals[aNum];
+                  if (arrival && arrival.pick.stationCode == mystation.stationCode) {
+                  markers.push({ markertype: 'pick', name: arrival.phase, time: arrival.pick.time });
+                  console.log("markers.push({ markertype: 'pick', name: "+arrival.phase+", time: "+arrival.pick.time );
                   }
                 }
               }
@@ -281,7 +281,7 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
           }
         }
         if (keys.length==0){
-            div.append('p').html('No data found for '+mystation.codes());
+            div.append('p').html('No data found for '+mystation.codes);
         }
         return hash;
     }).catch(function(e) {
