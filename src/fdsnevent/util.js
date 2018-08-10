@@ -1,4 +1,4 @@
-
+// @flow
 
 
 // these are similar methods as in seisplotjs-fdsnstation

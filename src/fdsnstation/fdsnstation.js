@@ -370,13 +370,13 @@ export class StationQuery {
 
   convertToNetwork(xml: Element): model.Network {
     let out = new model.Network(util._grabAttribute(xml, "code"))
-      .startDate(util._grabAttribute(xml, "startDate"));
-      const rs = util._grabAttribute(xml, "restrictedStatus");
-      if (rs) { out.restrictedStatus(rs); }
-      const desc = util._grabFirstElText(xml, 'Description');
-      if (desc) {out.description(desc);}
+    out.startDate = util._grabAttribute(xml, "startDate");
+    const rs = util._grabAttribute(xml, "restrictedStatus");
+    if (rs) { out.restrictedStatus = rs; }
+    const desc = util._grabFirstElText(xml, 'Description');
+    if (desc) {out.description = desc;}
     if (util._grabAttribute(xml, "endDate")) {
-      out.endDate(util._grabAttribute(xml, "endDate"));
+      out.endDate = util._grabAttribute(xml, "endDate");
     }
     let totSta = xml.getElementsByTagNameNS(STAML_NS, "TotalNumberStations");
     if (totSta && totSta.length >0) {
@@ -387,47 +387,47 @@ export class StationQuery {
     for (let i=0; i<staArray.length; i++) {
       stations.push(this.convertToStation(out, staArray.item(i)));
     }
-    out.stations(stations);
+    out.stations = stations;
     return out;
   }
   convertToStation(network: model.Network, xml: Element): model.Station {
     let out = new model.Station(network, util._grabAttribute(xml, "code"))
-      .startDate(util._grabAttribute(xml, "startDate"));
-      const rs = util._grabAttribute(xml, "restrictedStatus");
-      if (rs) { out.restrictedStatus(rs); }
-      out.latitude(util._grabFirstElFloat(xml, 'Latitude'))
-      .longitude(util._grabFirstElFloat(xml, 'Longitude'))
-      .elevation(util._grabFirstElFloat(xml, 'Elevation'))
-      .name(util._grabFirstElText(util._grabFirstEl(xml, 'Site'), 'Name'));
+    out.startDate = util._grabAttribute(xml, "startDate");
+    const rs = util._grabAttribute(xml, "restrictedStatus");
+    if (rs) { out.restrictedStatus = rs; }
+    out.latitude = util._grabFirstElFloat(xml, 'Latitude');
+    out.longitude = util._grabFirstElFloat(xml, 'Longitude');
+    out.elevation = util._grabFirstElFloat(xml, 'Elevation');
+    out.name = util._grabFirstElText(util._grabFirstEl(xml, 'Site'), 'Name');
     if (util._grabAttribute(xml, "endDate")) {
-      out.endDate(util._grabAttribute(xml, "endDate"));
+      out.endDate = util._grabAttribute(xml, "endDate");
     }
     let chanArray = xml.getElementsByTagNameNS(STAML_NS, "Channel");
     let channels = [];
     for (let i=0; i<chanArray.length; i++) {
       channels.push(this.convertToChannel(out, chanArray.item(i)));
     }
-    out.channels(channels);
+    out.channels = channels;
     return out;
   }
   convertToChannel(station: model.Station, xml: Element): model.Channel {
     let out = new model.Channel(station, util._grabAttribute(xml, "code"), util._grabAttribute(xml, "locationCode"))
-      .startDate(util._grabAttribute(xml, "startDate"));
-      const rs = util._grabAttribute(xml, "restrictedStatus");
-      if (rs) { out.restrictedStatus(rs); }
-      out.latitude(util._grabFirstElFloat(xml, 'Latitude'))
-      .longitude(util._grabFirstElFloat(xml, 'Longitude'))
-      .elevation(util._grabFirstElFloat(xml, 'Elevation'))
-      .depth(util._grabFirstElFloat(xml, 'Depth'))
-      .azimuth(util._grabFirstElFloat(xml, 'Azimuth'))
-      .dip(util._grabFirstElFloat(xml, 'Dip'))
-      .sampleRate(util._grabFirstElFloat(xml, 'SampleRate'));
+    out.startDate = util._grabAttribute(xml, "startDate");
+    const rs = util._grabAttribute(xml, "restrictedStatus");
+    if (rs) { out.restrictedStatus = rs; }
+    out.latitude = util._grabFirstElFloat(xml, 'Latitude');
+    out.longitude = util._grabFirstElFloat(xml, 'Longitude');
+    out.elevation = util._grabFirstElFloat(xml, 'Elevation');
+    out.depth = util._grabFirstElFloat(xml, 'Depth');
+    out.azimuth = util._grabFirstElFloat(xml, 'Azimuth');
+    out.dip = util._grabFirstElFloat(xml, 'Dip');
+    out.sampleRate = util._grabFirstElFloat(xml, 'SampleRate');
     if (util._grabAttribute(xml, "endDate")) {
-      out.endDate(util._grabAttribute(xml, "endDate"));
+      out.endDate = util._grabAttribute(xml, "endDate");
     }
     let responseXml = xml.getElementsByTagNameNS(STAML_NS, 'Response');
     if (responseXml && responseXml.length > 0 ) {
-      out.response(this.convertToResponse(responseXml.item(0)));
+      out.response = this.convertToResponse(responseXml.item(0));
     }
     return out;
   }
@@ -448,7 +448,7 @@ export class StationQuery {
       let jsStages = Array.from(xmlStages).map(function(stageXml) {
         return mythis.convertToStage(stageXml);
       });
-      out.stages(jsStages);
+      out.stages = jsStages;
     }
     return out;
   }
@@ -472,9 +472,9 @@ export class StationQuery {
     let outputUnits = util._grabFirstElText(util._grabFirstEl(stageXml, 'OutputUnits'), 'Name');
     if (subEl.localName == 'PolesZeros') {
       filter = new model.PolesZeros(inputUnits, outputUnits);
-      filter.pzTransferFunctionType(util._grabFirstElText(stageXml, 'PzTransferFunctionType'));
-      filter.normalizationFactor(util._grabFirstElFloat(stageXml, 'NormalizationFactor'));
-      filter.normalizationFrequency(util._grabFirstElFloat(stageXml, 'NormalizationFrequency'));
+      filter.pzTransferFunctionType = util._grabFirstElText(stageXml, 'PzTransferFunctionType');
+      filter.normalizationFactor = util._grabFirstElFloat(stageXml, 'NormalizationFactor');
+      filter.normalizationFrequency = util._grabFirstElFloat(stageXml, 'NormalizationFrequency');
       let zeros = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Zero'))
           .map(function(zeroEl) {
             return model.createComplex(util._grabFirstElFloat(zeroEl, 'Real'),
@@ -485,30 +485,30 @@ export class StationQuery {
             return model.createComplex(util._grabFirstElFloat(poleEl, 'Real'),
                                util._grabFirstElFloat(poleEl, 'Imaginary'));
           });
-      filter.zeros(zeros);
-      filter.poles(poles);
+      filter.zeros = zeros;
+      filter.poles = poles;
     } else if (subEl.localName == 'Coefficients') {
       let coeffXml = subEl;
       filter = new model.CoefficientsFilter(inputUnits, outputUnits);
-      filter.cfTransferFunction(util._grabFirstElText(coeffXml, 'CfTransferFunctionType'));
-      filter.numerator(Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Numerator'))
+      filter.cfTransferFunction = util._grabFirstElText(coeffXml, 'CfTransferFunctionType');
+      filter.numerator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Numerator'))
           .map(function(numerEl) {
             return parseFloat(numerEl.textContent);
-          }));
-      filter.denominator(Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Denominator'))
+          });
+      filter.denominator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Denominator'))
           .map(function(denomEl) {
             return parseFloat(denomEl.textContent);
-          }));
+          });
     } else if (subEl.localName == 'ResponseList') {
       throw new Error("ResponseList not supported: ");
     } else if (subEl.localName == 'FIR') {
       let firXml = subEl;
       filter = new model.FIR(inputUnits, outputUnits);
-      filter.symmetry(util._grabFirstElText(firXml, 'Symmetry'));
-      filter.numerator(Array.from(firXml.getElementsByTagNameNS(STAML_NS, 'NumeratorCoefficient'))
+      filter.symmetry = util._grabFirstElText(firXml, 'Symmetry');
+      filter.numerator = Array.from(firXml.getElementsByTagNameNS(STAML_NS, 'NumeratorCoefficient'))
           .map(function(numerEl) {
             return parseFloat(numerEl.textContent);
-          }));
+          });
     } else if (subEl.localName == 'Polynomial') {
       throw new Error("Polynomial not supported: ");
     } else if (subEl.localName == 'StageGain') {
@@ -521,10 +521,10 @@ export class StationQuery {
       // add description and name if it was there
       let description = util._grabFirstElText(subEl, 'Description');
       if (description) {
-        filter.description(description);
+        filter.description = description;
       }
       if (subEl.hasAttribute('name')) {
-        filter.name(util._grabAttribute(subEl, 'name'));
+        filter.name = util._grabAttribute(subEl, 'name');
       }
     }
     let decimationXml = util._grabFirstEl(stageXml, 'Decimation');
@@ -546,19 +546,19 @@ export class StationQuery {
 
   convertToDecimation(decXml: Element): model.Decimation {
     let out = new model.Decimation();
+    out.inputSampleRate = util._grabFirstElFloat(decXml, 'InputSampleRate');
+    out.factor = util._grabFirstElInt(decXml, 'Factor');
+    out.offset = util._grabFirstElInt(decXml, 'Offset');
+    out.delay = util._grabFirstElFloat(decXml, 'Delay');
+    out.correction = util._grabFirstElFloat(decXml, 'Correction');
     return out
-      .inputSampleRate(util._grabFirstElFloat(decXml, 'InputSampleRate'))
-      .factor(util._grabFirstElInt(decXml, 'Factor'))
-      .offset(util._grabFirstElInt(decXml, 'Offset'))
-      .delay(util._grabFirstElFloat(decXml, 'Delay'))
-      .correction(util._grabFirstElFloat(decXml, 'Correction'));
   }
 
   convertToGain(gainXml: Element): model.Gain {
     let out = new model.Gain();
-    return out
-      .value(util._grabFirstElFloat(gainXml, 'Value'))
-      .frequency(util._grabFirstElFloat(gainXml, 'Frequency'));
+    out.value = util._grabFirstElFloat(gainXml, 'Value');
+    out.frequency = util._grabFirstElFloat(gainXml, 'Frequency');
+    return out;
   }
 
 

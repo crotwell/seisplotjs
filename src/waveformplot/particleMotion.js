@@ -29,13 +29,13 @@ export function createParticleMotionBySelector(selector: string) :void {
   }
 
 function addDivForParticleMotion(sa: Array<miniseed.model.Seismogram>, sb: Array<miniseed.model.Seismogram>, svgParent: any, startDate: moment, endDate: moment) :void {
-  svgParent.append("h5").text(sa[0].chanCode()+" "+sb[0].chanCode());
+  svgParent.append("h5").text(sa[0].chanCode+" "+sb[0].chanCode);
   let svgDiv = svgParent.append("div");
-  svgDiv.classed(sa[0].chanCode()+" "+sb[0].chanCode(), true);
+  svgDiv.classed(sa[0].chanCode+" "+sb[0].chanCode, true);
   svgDiv.classed("svg-container-square", true);
   let pmp = new ParticleMotion(svgDiv, [sa[0], sb[0]], startDate, endDate);
-  pmp.setXLabel(sa[0].chanCode());
-  pmp.setYLabel(sb[0].chanCode());
+  pmp.setXLabel(sa[0].chanCode);
+  pmp.setYLabel(sb[0].chanCode);
   pmp.draw();
 }
 
@@ -121,12 +121,12 @@ export class ParticleMotion {
     let mythis = this;
     this.g.selectAll("g.particleMotion").remove();
     let lineG = this.g.append("g").classed("particleMotion", true);
-    let path = lineG.selectAll("path").data( [ segA.y() ] );
+    let path = lineG.selectAll("path").data( [ segA.y ] );
     path.exit().remove();
     path.enter()
       .append("path")
       .attr("class", function() {
-        return "seispath "+segA.codes()+" orient"+segA.chanCode().charAt(2)+"_"+segB.chanCode().charAt(2);
+        return "seispath "+segA.codes()+" orient"+segA.chanCode.charAt(2)+"_"+segB.chanCode.charAt(2);
       })
     .attr("d", d3.line().curve(d3.curveLinear)
       .x(d => mythis.xScale(d))

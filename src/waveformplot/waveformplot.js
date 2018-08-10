@@ -17,6 +17,7 @@ import {
 
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
+import * as model from '../model/index';
 
 const moment = miniseed.model.moment;
 
@@ -175,7 +176,7 @@ export class Seismograph {
     if (this.segments && this.segments.length>0) {
       let maxSps = 1;
       maxSps = this.segments.reduce(function(accum, seg) {
-        return Math.max(accum, seg.sampleRate());
+        return Math.max(accum, seg.sampleRate);
       }, maxSps);
       let secondsPerPixel = this.calcSecondsPerPixel( mythis.xScale);
       let samplesPerPixel = maxSps * secondsPerPixel;
@@ -260,7 +261,7 @@ export class Seismograph {
           .attr("class", "segment")
         .append("path")
           .attr("class", function(seg) {
-              return "seispath "+seg.codes()+" orient"+seg.chanCode().charAt(2);
+              return "seispath "+seg.codes()+" orient"+seg.chanCode.charAt(2);
           })
           .attr("style", "clip-path: url(#"+CLIP_PREFIX+this.plotId+")")
           .attr("d", function(seg) {
@@ -276,10 +277,10 @@ export class Seismograph {
 
   segmentDrawLine(seg: miniseed.model.Seismogram, xScale: any) :void {
     let secondsPerPixel = this.calcSecondsPerPixel(xScale);
-    let samplesPerPixel = seg.sampleRate() * secondsPerPixel;
+    let samplesPerPixel = seg.sampleRate * secondsPerPixel;
     this.lineFunc.x(function(d) { return xScale(d.time); });
     if (samplesPerPixel < this.segmentDrawCompressedCutoff) {
-      return this.lineFunc(seg.y().map(function(d,i) {
+      return this.lineFunc(seg.y.map(function(d,i) {
         return {time: seg.timeOfSample(i).toDate(), y: d };
       }));
     } else {
@@ -288,9 +289,9 @@ export class Seismograph {
            || seg.highlow.secondsPerPixel != secondsPerPixel
            || seg.highlow.xScaleDomain[1] != xScale.domain()[1]) {
         let highlow = [];
-        let numHL = 2*Math.ceil(seg.y().length/samplesPerPixel);
+        let numHL = 2*Math.ceil(seg.y.length/samplesPerPixel);
         for(let i=0; i<numHL; i++) {
-          let snippet = seg.y().slice(i * samplesPerPixel,
+          let snippet = seg.y.slice(i * samplesPerPixel,
                                     (i+1) * samplesPerPixel);
           if (snippet.length != 0) {
           highlow[2*i] = snippet.reduce(function(acc, val) {
@@ -310,7 +311,7 @@ export class Seismograph {
         };
       }
       return this.lineFunc(seg.highlow.highlowArray.map(function(d :number,i :number) {
-        return {time: new Date(seg.start().valueOf()+1000*((Math.floor(i/2)+.5)*secondsPerPixel)), y: d };
+        return {time: new Date(seg.start.valueOf()+1000*((Math.floor(i/2)+.5)*secondsPerPixel)), y: d };
       }));
     }
   }
@@ -550,10 +551,10 @@ export class Seismograph {
   then each item will be in a separate tspan for easier formatting.
   */
   setTitle(value :string | Array<string>) :Seismograph {
-    if (value instanceof String) {
-      this.title = [ value ];
-    } else {
+    if (Array.isArray(value)) {
       this.title = value;
+    } else {
+      this.title = [ value ];
     }
     this.svg.selectAll("g.title").remove();
     let titleSVGText = this.svg.append("g")
@@ -698,9 +699,9 @@ export class Seismograph {
   redoDisplayYScale() :void {
     let niceMinMax = this.yScale.domain();
     if (this.doGain && this.instrumentSensitivity) {
-      niceMinMax[0] = niceMinMax[0] / this.instrumentSensitivity.sensitivity();
-      niceMinMax[1] = niceMinMax[1] / this.instrumentSensitivity.sensitivity();
-      this.setYSublabel(this.instrumentSensitivity.inputUnits());
+      niceMinMax[0] = niceMinMax[0] / this.instrumentSensitivity.sensitivity;
+      niceMinMax[1] = niceMinMax[1] / this.instrumentSensitivity.sensitivity;
+      this.setYSublabel(this.instrumentSensitivity.inputUnits);
     } else {
       this.setYSublabel("Count");
     }

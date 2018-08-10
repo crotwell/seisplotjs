@@ -1,11 +1,11 @@
 
-
+// @flow
 
 // these are similar methods as in seisplotjs-fdsnstation
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
 
-export function _isDef(v: mixed) :boolean {
+export function _isDef(v: mixed) :boolean  %checks {
   return typeof v !== 'undefined' && v !== null;
 }
 

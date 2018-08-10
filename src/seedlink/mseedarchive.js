@@ -50,13 +50,13 @@ export class MSeedArchive {
     return true;
   }
   loadDataForChannel(channel: model.Channel, start: moment, end: moment) {
-    return this.loadData(channel.station().network().networkCode(),
-                    channel.station().stationCode(),
-                    channel.locationCode(),
-                    channel.channelCode(),
+    return this.loadData(channel.station.network.networkCode,
+                    channel.station.stationCode,
+                    channel.locationCode,
+                    channel.channelCode,
                     start,
                     end,
-                    channel.sampleRate());
+                    channel.sampleRate);
   }
   loadData(net: string, sta: string, loc: string, chan: string, start: moment, end: moment, sampleRate: number) {
     let basePattern = this.fillBasePattern(net, sta, loc, chan);

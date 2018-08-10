@@ -409,16 +409,16 @@ export class EventQuery {
   convertToQuake(qml: Element) :model.Quake {
     let out = new model.Quake();
     out.publicID = util._grabAttribute(qml, 'publicID');
-    out.description(util._grabFirstElText(util._grabFirstEl(qml, 'description'), 'text'));
+    out.description = util._grabFirstElText(util._grabFirstEl(qml, 'description'), 'text');
     let otimeStr = util._grabFirstElText(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'time'),'value');
     if (otimeStr ) {
-      out.time(otimeStr);
+      out.time = otimeStr;
     } else {
-      console.log("origintime is missing..."+out.description());
+      console.log("origintime is missing..."+out.description);
     }
-    out.latitude(util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'latitude'), 'value'));
-    out.longitude(util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'longitude'), 'value'));
-    out.depth(util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'depth'), 'value'));
+    out.latitude = util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'latitude'), 'value');
+    out.longitude = util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'longitude'), 'value');
+    out.depth = util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'depth'), 'value');
     let allOriginEls = qml.getElementsByTagNameNS(BED_NS, "origin");
     let allOrigins = [];
     for (let oNum=0; oNum < allOriginEls.length; oNum++) {
@@ -429,7 +429,7 @@ export class EventQuery {
     for (let mNum=0; mNum < allMagEls.length; mNum++) {
       allMags.push(this.convertToMagnitude(allMagEls.item(mNum)));
     }
-    if (allMags.length > 0) {out.magnitude(allMags[0]);}
+    if (allMags.length > 0) {out.magnitude = allMags[0];}
     let allPickEls = qml.getElementsByTagNameNS(BED_NS, 'pick');
     let allPicks = [];
     for (let pNum=0; pNum < allPickEls.length; pNum++) {
@@ -440,16 +440,16 @@ export class EventQuery {
     for ( let aNum=0; aNum < allArrivalEls.length; aNum++) {
       allArrivals.push(this.convertToArrival(allArrivalEls.item(aNum), allPicks));
     }
-    out.originList(allOrigins);
-    out.magnitudeList(allMags);
-    out.picks(allPicks);
-    out.arrivals(allArrivals);
-    out.eventid(this.extractEventId(qml));
-    out.preferredOriginId=util._grabFirstElText(qml, 'preferredOriginID');
-    out.preferredMagnitudeID=util._grabFirstElText(qml, 'preferredMagnitudeID');
+    out.originList = allOrigins;
+    out.magnitudeList = allMags;
+    out.pickList = allPicks;
+    out.arrivalList = allArrivals;
+    out.eventid = this.extractEventId(qml);
+    out.preferredOriginId = util._grabFirstElText(qml, 'preferredOriginID');
+    out.preferredMagnitudeID = util._grabFirstElText(qml, 'preferredMagnitudeID');
     return out;
   }
-  extractEventId(qml: Element) :string|null {
+  extractEventId(qml: Element) :string {
     let eventid = util._grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventid');
     let catalogEventSource = util._grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventsource');
     if (eventid) {
@@ -469,20 +469,19 @@ export class EventQuery {
       parsed = re.exec(publicid);
       if (parsed) { return parsed[1];}
     }
-//    throw new Error("Unable to find eventid for publicID="+publicid);
-    return null;
+    return "unknown";
   }
   convertToOrigin(qml: Element) :model.Origin {
     let out = new model.Origin();
     let otimeStr = util._grabFirstElText(util._grabFirstEl(qml, 'time'),'value');
     if (otimeStr ) {
-      out.time(otimeStr);
+      out.time = otimeStr;
     } else {
       console.log("origintime is missing...");
     }
-    out.latitude(util._grabFirstElFloat(util._grabFirstEl(qml, 'latitude'), 'value'));
-    out.longitude(util._grabFirstElFloat(util._grabFirstEl(qml, 'longitude'), 'value'));
-    out.depth(util._grabFirstElFloat(util._grabFirstEl(qml, 'depth'), 'value'));
+    out.latitude = util._grabFirstElFloat(util._grabFirstEl(qml, 'latitude'), 'value');
+    out.longitude = util._grabFirstElFloat(util._grabFirstEl(qml, 'longitude'), 'value');
+    out.depth = util._grabFirstElFloat(util._grabFirstEl(qml, 'depth'), 'value');
     return out;
   }
   convertToMagnitude(qml: Element) :model.Magnitude {
@@ -497,7 +496,7 @@ export class EventQuery {
     let pickID = util._grabFirstElText(arrivalQML, 'pickID');
     let phase = util._grabFirstElText(arrivalQML, 'phase');
     if (phase && pickID) {
-      let myPick = allPicks.find(function(p: model.Pick) { return p.publicID() === pickID;});
+      let myPick = allPicks.find(function(p: model.Pick) { return p.publicID === pickID;});
       if ( ! myPick) {
         throw new Error("Can't find pick with ID="+pickID+" for Arrival");
       }
@@ -523,7 +522,7 @@ export class EventQuery {
                       +"."+ stringify(channelCode));
     }
     let out = new model.Pick(time, netCode, stationCode, locationCode, channelCode);
-    out.publicID(util._grabAttribute(pickQML, "publicID"));
+    out.publicID = util._grabAttribute(pickQML, "publicID");
     return out;
   }
 

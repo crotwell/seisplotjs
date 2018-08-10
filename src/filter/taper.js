@@ -1,12 +1,13 @@
+// @flow
+import * as model from '../model/index';
 
-
-export function taper(seis, width = 0.05, taperType = HANNING) {
+export function taper(seis :model.Seismogram, width :number = 0.05, taperType :string = HANNING) :model.Seismogram {
   if (width > 0.5) {
     throw new Error("Taper width cannot be larger than 0.5, width="+width);
   }
 
   let out = seis.clone();
-  let data = out.y();
+  let data = out.y;
   let w = Math.floor(data.length * width);
   let coeff = getCoefficients(taperType, w);
   const omega = coeff[0];
@@ -17,7 +18,7 @@ export function taper(seis, width = 0.05, taperType = HANNING) {
     data[i] = data[i] * taperFactor;
     data[data.length - i - 1] = data[data.length - i - 1] * taperFactor;
   }
-  out.y(data);
+  out.y = data;
   return out;
 }
 
@@ -25,7 +26,7 @@ export function taper(seis, width = 0.05, taperType = HANNING) {
 /**
  * Calculates the coefficients for tapering, [omega, f0, f1]
  */
-export function getCoefficients(type, length) {
+export function getCoefficients(type :string, length :number ) :Array<number> {
   let omega, f0, f1;
   if(type === HANNING) {
       omega = Math.PI / length;

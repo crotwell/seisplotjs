@@ -331,10 +331,10 @@ export function createSeismogram(contig: Array<DataRecord>): model.Seismogram {
   let out = new model.Seismogram(y,
                                  contig[0].header.sampleRate,
                                  contig[0].header.start);
-  out.netCode(contig[0].header.netCode)
-    .staCode(contig[0].header.staCode)
-    .locId(contig[0].header.locCode)
-    .chanCode(contig[0].header.chanCode);
+  out.networkCode = contig[0].header.netCode;
+  out.stationCode = contig[0].header.staCode;
+  out.locationCode = contig[0].header.locCode;
+  out.channelCode = contig[0].header.chanCode;
 
   return out;
 }
@@ -380,7 +380,7 @@ export function merge(drList: Array<DataRecord>): Array<model.Seismogram> {
 /** Finds the min and max values of a Seismogram, with an optional
   * accumulator for use with gappy data. */
 export function segmentMinMax(segment: model.Seismogram, minMaxAccumulator:? Array<number>) :Array<number> {
-  if ( ! segment.y()) {
+  if ( ! segment.y) {
     throw new Error("Segment does not have a y field, doesn't look like a seismogram segment. "+stringify(segment));
   }
   let minAmp = Number.MAX_SAFE_INTEGER;
@@ -389,7 +389,7 @@ export function segmentMinMax(segment: model.Seismogram, minMaxAccumulator:? Arr
     minAmp = minMaxAccumulator[0];
     maxAmp = minMaxAccumulator[1];
   }
-  let yData = ((segment.y() :any) :Array<number>); // for flow
+  let yData = ((segment.y :any) :Array<number>); // for flow
   for (let n = 0; n < yData.length; n++) {
     if (minAmp > yData[n]) {
       minAmp = yData[n];
