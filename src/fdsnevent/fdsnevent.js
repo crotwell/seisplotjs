@@ -490,7 +490,7 @@ export class EventQuery {
     if (mag && type) {
       return new model.Magnitude(mag, type);
     }
-    throw new Error("Did not find mag and type in Element: "+mag +" "+ type);
+    throw new Error("Did not find mag and type in Element: ${mag} ${type}");
   }
   convertToArrival(arrivalQML: Element, allPicks: Array<model.Pick>) :model.Arrival {
     let pickID = util._grabFirstElText(arrivalQML, 'pickID');

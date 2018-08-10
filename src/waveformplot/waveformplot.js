@@ -743,7 +743,7 @@ export class Seismograph {
   trim(timeWindow: TimeRangeType) :void {
     if (this.segments) {
       this.segments = this.segments.filter(function(d) {
-        return d.end().isAfter(timeWindow.start);
+        return d.end.isAfter(timeWindow.start);
       });
       if (this.segments.length > 0) {
         this.calcScaleDomain();
@@ -756,17 +756,6 @@ export class Seismograph {
 Seismograph._lastID = 0;
 
 const CLIP_PREFIX = "seismographclip";
-
-// backwards compatibility
-/**
-* @deprecated use Seismograph
-*/
-export class chart extends Seismograph {
-  constructor(inSvgParent: any, inSegments: Array<miniseed.model.Seismogram>, plotStartDate :moment, plotEndDate :moment) {
-    super(inSvgParent, inSegments, plotStartDate, plotEndDate);
-    console.warn("chart is deprecated, please use Seismograph");
-  }
-}
 
 const formatMillisecond = d3.utcFormat(".%L"),
     formatSecond = d3.utcFormat(":%S"),

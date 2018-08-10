@@ -59,7 +59,7 @@ export function transferSacPZ(seis :model.Seismogram,
 
 
 export function combine(freqValues :Array<number>,
-                        sampFreq :number,  
+                        sampFreq :number,
                         sacPoleZero,
                         lowCut :number,
                         lowPass :number,
@@ -247,7 +247,8 @@ export function convertToSacPoleZero( response :model.Response) {
     };
 }
 
-export function calc_A0(poles :Array<Complex>, zeros :Array<Complex>, ref_freq :number) {
+export function calc_A0(poles :Array<OregonDSP.filter.iir.Complex>,
+                        zeros :Array<OregonDSP.filter.iir.Complex>, ref_freq :number) {
     let numer = createComplex(1, 0);
     let denom = createComplex(1, 0);
     let f0;
