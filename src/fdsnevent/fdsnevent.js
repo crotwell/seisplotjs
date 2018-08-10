@@ -469,7 +469,7 @@ export class EventQuery {
       parsed = re.exec(publicid);
       if (parsed) { return parsed[1];}
     }
-    return "unknown";
+    return "unknownEventId";
   }
   convertToOrigin(qml: Element) :model.Origin {
     let out = new model.Origin();
@@ -488,7 +488,10 @@ export class EventQuery {
     let mag = util._grabFirstElFloat(util._grabFirstElNS(qml, BED_NS, 'mag'), 'value');
     let type = util._grabFirstElText(qml, 'type');
     if (mag && type) {
-      return new model.Magnitude(mag, type);
+      let out = new model.Magnitude(mag, type);
+      out.publicID = util._grabAttribute(qml, 'publicID');
+      console.log(`convertToMagnitude ${out.publicID}`);
+      return out;
     }
     throw new Error("Did not find mag and type in Element: ${mag} ${type}");
   }

@@ -54,6 +54,7 @@ export class Origin {
   latitude: number;
   longitude: number;
   depth: number;
+  publicID: string;
 
   constructor() {
 // what is essential???
@@ -70,6 +71,7 @@ export class Origin {
 export class Magnitude {
   mag: number;
   type: string;
+  publicID: string;
 
   constructor(mag: number, type: string) {
     this.mag = mag;
