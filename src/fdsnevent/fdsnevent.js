@@ -406,6 +406,31 @@ export class EventQuery {
     }
   }
 
+  /** Checks to see if any parameter that would limit the data
+    * returned is set. This is a crude, coarse check to make sure
+    * the client doesn't ask for EVERYTHING the server has. */
+  isSomeParameterSet(): boolean {
+    return util._isDef(this._eventid) ||
+      util._isDef(this._startTime) ||
+      util._isDef(this._endTime) ||
+      util._isDef(this._minLat) ||
+      util._isDef(this._maxLat) ||
+      util._isDef(this._minLon) ||
+      util._isDef(this._maxLon) ||
+      util._isDef(this._latitude) ||
+      util._isDef(this._longitude) ||
+      util._isDef(this._minRadius) ||
+      util._isDef(this._maxRadius) ||
+      util._isDef(this.minDepth) ||
+      util._isDef(this.maxDepth) ||
+      util._isDef(this.limit) ||
+      util._isDef(this.minMag) ||
+      util._isDef(this.maxMag) ||
+      util._isDef(this.updatedAfter) ||
+      util._isDef(this.catalog) ||
+      util._isDef(this.contributor);
+  }
+
   convertToQuake(qml: Element) :model.Quake {
     let out = new model.Quake();
     out.publicID = util._grabAttribute(qml, 'publicID');

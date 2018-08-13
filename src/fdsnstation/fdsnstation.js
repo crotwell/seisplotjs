@@ -8,13 +8,12 @@ RSVP.on('error', function(reason) {
 
 import * as model from '../model';
 import * as util from './util';
+import moment from 'moment';
 
 // special due to flow
-import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from '../model';
+import {_isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from '../model';
 
 export { RSVP, model };
-
-export const moment = model.moment;
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';
@@ -366,6 +365,31 @@ export class StationQuery {
     } else {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
+  }
+
+  /** Checks to see if any parameter that would limit the data
+    * returned is set. This is a crude, coarse check to make sure
+    * the client doesn't ask for EVERYTHING the server has. */
+  isSomeParameterSet(): boolean {
+    return _isDef(this._networkCode) ||
+    _isDef(this._stationCode) ||
+    _isDef(this._locationCode) ||
+    _isDef(this._channelCode) ||
+    _isDef(this._startTime) ||
+    _isDef(this._endTime) ||
+    _isDef(this._startBefore) ||
+    _isDef(this._endBefore) ||
+    _isDef(this._startAfter) ||
+    _isDef(this._endAfter) ||
+    _isDef(this._minLat) ||
+    _isDef(this._maxLat) ||
+    _isDef(this._minLon) ||
+    _isDef(this._maxLon) ||
+    _isDef(this._latitude) ||
+    _isDef(this._longitude) ||
+    _isDef(this._minRadius) ||
+    _isDef(this._maxRadius) ||
+    _isDef(this._updatedAfter);
   }
 
   convertToNetwork(xml: Element): model.Network {
