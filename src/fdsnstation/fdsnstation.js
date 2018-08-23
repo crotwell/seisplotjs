@@ -11,7 +11,7 @@ import * as util from './util';
 import moment from 'moment';
 
 // special due to flow
-import {_isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from '../model';
+import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from '../model';
 
 export { RSVP, model };
 
@@ -371,25 +371,25 @@ export class StationQuery {
     * returned is set. This is a crude, coarse check to make sure
     * the client doesn't ask for EVERYTHING the server has. */
   isSomeParameterSet(): boolean {
-    return _isDef(this._networkCode) ||
-    _isDef(this._stationCode) ||
-    _isDef(this._locationCode) ||
-    _isDef(this._channelCode) ||
-    _isDef(this._startTime) ||
-    _isDef(this._endTime) ||
-    _isDef(this._startBefore) ||
-    _isDef(this._endBefore) ||
-    _isDef(this._startAfter) ||
-    _isDef(this._endAfter) ||
-    _isDef(this._minLat) ||
-    _isDef(this._maxLat) ||
-    _isDef(this._minLon) ||
-    _isDef(this._maxLon) ||
-    _isDef(this._latitude) ||
-    _isDef(this._longitude) ||
-    _isDef(this._minRadius) ||
-    _isDef(this._maxRadius) ||
-    _isDef(this._updatedAfter);
+    return util._isDef(this._networkCode) ||
+    util._isDef(this._stationCode) ||
+    util._isDef(this._locationCode) ||
+    util._isDef(this._channelCode) ||
+    util._isDef(this._startTime) ||
+    util._isDef(this._endTime) ||
+    util._isDef(this._startBefore) ||
+    util._isDef(this._endBefore) ||
+    util._isDef(this._startAfter) ||
+    util._isDef(this._endAfter) ||
+    util._isDef(this._minLat) ||
+    util._isDef(this._maxLat) ||
+    util._isDef(this._minLon) ||
+    util._isDef(this._maxLon) ||
+    util._isDef(this._latitude) ||
+    util._isDef(this._longitude) ||
+    util._isDef(this._minRadius) ||
+    util._isDef(this._maxRadius) ||
+    util._isDef(this._updatedAfter);
   }
 
   convertToNetwork(xml: Element): model.Network {
