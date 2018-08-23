@@ -15,6 +15,11 @@ import { model } from './miniseed';
 export { RSVP, model, miniseed };
 import { moment } from './model';
 
+export type ChannelTimeRange = {
+  channel: model.Channel,
+  startTime: moment,
+  endTime: moment,
+}
 export const FORMAT_MINISEED = 'mseed';
 
 export const IRIS_HOST = "service.iris.edu";
@@ -239,6 +244,7 @@ export class DataSelectQuery {
   /** @deprecated use queryDataRecords or querySeismograms instead
    */
   query() :Promise<Array<miniseed.DataRecord>> {
+    console.log("fdsndataselect.query() is deprecated, use queryDataRecords or querySeismograms.");
     return this.queryDataRecords();
   }
   queryDataRecords() :Promise<Array<miniseed.DataRecord>> {
@@ -282,6 +288,40 @@ console.log("fdsnDataSelect URL: "+url);
       }
     });
     return promise;
+  }
+
+  postQueryDataRecords(channelTimeList: Array<ChannelTimeRange>) :Promise<Array<miniseed.DataRecord>> {
+    return this.postQueryRaw(channelTimeList)
+    .then( fetchResponse => {
+      return fetchResponse.arrayBuffer();
+    }).then(function(rawBuffer) {
+        let dataRecords = miniseed.parseDataRecords(rawBuffer);
+        return dataRecords;
+    });
+  }
+  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<model.Seismogram>>> {
+    return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
+      return miniseed.mergeByChannel(dataRecords);
+    });
+  }
+  postQueryRaw(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
+    return fetch(this.formURL(), {
+        method: "POST",
+        mode: "cors",
+        referrer: "seisplotjs",
+        body: this.createPostBody(channelTimeList),
+      });
+  }
+
+  createPostBody(channelTimeList: Array<ChannelTimeRange>) :string {
+    let out = "";
+    for (let ct of channelTimeList) {
+      let sta = ct.channel.station;
+      let net = sta.network;
+      out += `${net.networkCode} ${sta.stationCode} ${ct.channel.locationCode} ${ct.channel.channelCode} ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}
+      `; // include newline
+    }
+    return out;
   }
 
   formBaseURL() :string {
