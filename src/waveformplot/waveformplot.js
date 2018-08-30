@@ -88,6 +88,8 @@ export class Seismograph {
   markers: Array<MarkerType>;
   markerTextOffset: number;
   markerTextAngle: number;
+  minHeight: number;
+  maxHeight: number;
   width: number;
   height: number;
   outerWidth: number;
@@ -145,7 +147,7 @@ export class Seismograph {
     this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
     this.svg.attr("preserveAspectRatio", "xMinYMin meet");
-    this.svg.attr("viewBox", "0 0 400 200")
+    this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`)
       .attr("plotId", this.plotId);
 
     if ( ! plotStartDate || ! plotEndDate) {
@@ -202,7 +204,9 @@ export class Seismograph {
         .attr("style", "clip-path: url(#"+CLIP_PREFIX+this.plotId+")");
 
     d3.select(window).on('resize.seismograph'+this.plotId, function() {
-      if (mythis.checkResize()) {mythis.draw();}
+      if ( ! mythis.beforeFirstDraw && mythis.checkResize() ) {
+        mythis.draw();
+      }
     });
 
   }
@@ -214,18 +218,21 @@ export class Seismograph {
   checkResize() :boolean {
     let rect = this.svgParent.node().getBoundingClientRect();
     if (rect.width != this.outerWidth || rect.height != this.outerHeight) {
-      this.setWidthHeight(rect.width, rect.height);
       return true;
     }
     return false;
   }
   draw() :void {
-    this.beforeFirstDraw = false;
-    this.checkResize();
+    let rect = this.svgParent.node().getBoundingClientRect();
+    if ((rect.width != this.outerWidth || rect.height != this.outerHeight)) {
+      if (rect.height > this.maxHeight) { rect.height = this.maxHeight; }
+      this.setWidthHeight(rect.width, rect.height);
+    }
     this.drawSegments(this.segments, this.g.select("g.allsegments"));
     this.drawAxis(this.g);
     this.drawAxisLabels();
     this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
+    this.beforeFirstDraw = false;
   }
 
   calcScaleAndZoom() :void {
@@ -329,16 +336,18 @@ export class Seismograph {
   }
 
   rescaleYAxis() :void {
-    let delay = 500;
-    let myThis = this;
-    if (this.throttleRescale) {
-      window.clearTimeout(this.throttleRescale);
+    if ( ! this.beforeFirstDraw) {
+      let delay = 500;
+      let myThis = this;
+      if (this.throttleRescale) {
+        window.clearTimeout(this.throttleRescale);
+      }
+      this.throttleRescale = window.setTimeout(
+        function(){
+          myThis.g.select(".axis--y").transition().duration(delay/2).call(myThis.yAxis);
+          myThis.throttleRescale = null;
+        }, delay);
     }
-    this.throttleRescale = window.setTimeout(
-      function(){
-        myThis.g.select(".axis--y").transition().duration(delay/2).call(myThis.yAxis);
-        myThis.throttleRescale = null;
-      }, delay);
   }
 
   drawAxisLabels() :void {
@@ -350,9 +359,10 @@ export class Seismograph {
   }
 
   resetZoom() :void {
-    let mythis = this;
     this.xScale = this.origXScale;
-    mythis.redrawWithXScale(this.xScale);
+    if ( ! this.beforeFirstDraw) {
+      this.redrawWithXScale(this.xScale);
+    }
   }
 
 
@@ -489,7 +499,9 @@ export class Seismograph {
     this.yScaleRmean.range([this.height, 0]);
     this.yAxis.scale(this.yScaleRmean);
     this.calcScaleAndZoom();
-    this.redrawWithXScale(this.xScale);
+    if ( ! this.beforeFirstDraw) {
+      this.redrawWithXScale(this.xScale);
+    }
   }
 
 
@@ -524,7 +536,9 @@ export class Seismograph {
     const plotStart = (startDate instanceof Date) ? startDate : moment.utc(startDate).toDate();
     const plotEnd = (endDate instanceof Date) ? endDate : moment.utc(endDate).toDate();
     this.xScale.domain([ plotStart, plotEnd ]);
-    this.redrawWithXScale(this.xScale);
+    if ( ! this.beforeFirstDraw) {
+      this.redrawWithXScale(this.xScale);
+    }
     return this;
   }
 
@@ -669,7 +683,9 @@ export class Seismograph {
   }
   clearMarkers() :Seismograph {
     this.markers.length = 0; //set array length to zero deletes all
-    this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
+    if ( ! this.beforeFirstDraw) {
+      this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
+    }
     return this;
   }
   getMarkers() :Array<MarkerType> {
@@ -683,7 +699,9 @@ export class Seismograph {
     } else {
       this.markers.push(value);
     }
-    this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
+    if ( ! this.beforeFirstDraw) {
+      this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
+    }
     return this;
   }
 
