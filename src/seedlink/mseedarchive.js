@@ -68,12 +68,12 @@ export class MSeedArchive {
     let promiseArray = [];
     while (t.isBefore(end)) {
       let url = this.getRootUrl()+'/'+this.fillTimePattern(basePattern, t);
-      promiseArray.push(fetch(url, { cache: "no-store" }));
+      promiseArray.push(fetch(url));
       t.add(1, 'hour');
     }
     if (moment.utc(t).add(recordTime, 'seconds').isAfter(end)) {
       let url = this.getRootUrl()+'/'+this.fillTimePattern(basePattern, t);
-      promiseArray.push(fetch(url, { cache: "no-store" }));
+      promiseArray.push(fetch(url));
     }
     promiseArray = promiseArray.map( (p, i) => {
       return p.then(fetchResponse => {
@@ -99,7 +99,7 @@ export class MSeedArchive {
       }).then(arrayBuffer => {
         let dataRecords = [];
         if (arrayBuffer && arrayBuffer.byteLength > 0) {
-          dataRecords = dataRecords.concat(miniseed.parseDataRecords(arrayBuffer));
+          dataRecords = miniseed.parseDataRecords(arrayBuffer);
         }
         return dataRecords;
       })
