@@ -127,7 +127,9 @@ import type {TimeRangeType} from './chooser';
 
 export function findStartEnd(data: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram, accumulator?: TimeRangeType) :TimeRangeType {
     let out :TimeRangeType;
-    if ( ! accumulator) {
+    if ( ! accumulator && ! data) {
+      throw new Error("data and accumulator are not defined");
+    } else if ( ! accumulator) {
       out = {start: moment.utc('2500-01-01'), end: moment.utc('1001-01-01'), duration: 0 };
     } else {
       out = accumulator;
