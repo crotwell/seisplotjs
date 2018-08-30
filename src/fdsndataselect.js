@@ -318,8 +318,8 @@ console.log("fdsnDataSelect URL: "+url);
     for (let ct of channelTimeList) {
       let sta = ct.channel.station;
       let net = sta.network;
-      out += `${net.networkCode} ${sta.stationCode} ${ct.channel.locationCode} ${ct.channel.channelCode} ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}
-      `; // include newline
+      out += `${net.networkCode} ${sta.stationCode} ${ct.channel.locationCode} ${ct.channel.channelCode} ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}`;
+      out += '\n';
     }
     return out;
   }
