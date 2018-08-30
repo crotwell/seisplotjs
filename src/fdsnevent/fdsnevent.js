@@ -99,6 +99,8 @@ export class EventQuery {
     this.host(host);
     if (! host) {
       this._host = USGS_HOST;
+      // usgs does 301 moved permanently to https
+      this._protocol = 'https:';
     }
   }
   specVersion(value?: number): number | EventQuery {
