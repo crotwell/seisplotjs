@@ -37,7 +37,7 @@ export class EventQuery {
   /** @private */
   _nodata: number;
   /** @private */
-  _eventid: string;
+  _eventId: string;
   /** @private */
   _startTime: moment;
   /** @private */
@@ -76,8 +76,6 @@ export class EventQuery {
   _includeAllOrigins: boolean;
   /** @private */
   _includeAllMagnitudes: boolean;
-  /** @private */
-  _eventid: string;
   /** @private */
   _limit: number;
   /** @private */
@@ -143,11 +141,11 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  eventid(value?: string) :string | EventQuery {
+  eventId(value?: string) :string | EventQuery {
     if (hasNoArgs(value)) {
-      return this._eventid;
+      return this._eventId;
     } else if (isStringArg(value)) {
-      this._eventid = value;
+      this._eventId = value;
       return this;
     } else  {
       throw new Error('value argument is optional or string, but was '+typeof value);
@@ -412,7 +410,7 @@ export class EventQuery {
     * returned is set. This is a crude, coarse check to make sure
     * the client doesn't ask for EVERYTHING the server has. */
   isSomeParameterSet(): boolean {
-    return util._isDef(this._eventid) ||
+    return util._isDef(this._eventId) ||
       util._isDef(this._startTime) ||
       util._isDef(this._endTime) ||
       util._isDef(this._minLat) ||
@@ -435,7 +433,7 @@ export class EventQuery {
 
   convertToQuake(qml: Element) :model.Quake {
     let out = new model.Quake();
-    out.publicID = util._grabAttribute(qml, 'publicID');
+    out.publicId = util._grabAttribute(qml, 'publicID');
     out.description = util._grabFirstElText(util._grabFirstEl(qml, 'description'), 'text');
     let otimeStr = util._grabFirstElText(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'time'),'value');
     if (otimeStr ) {
@@ -446,10 +444,19 @@ export class EventQuery {
     out.latitude = util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'latitude'), 'value');
     out.longitude = util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'longitude'), 'value');
     out.depth = util._grabFirstElFloat(util._grabFirstEl(util._grabFirstEl(qml, 'origin'), 'depth'), 'value');
+
+    //need picks before can do origins
+    let allPickEls = qml.getElementsByTagNameNS(BED_NS, 'pick');
+    let allPicks = [];
+    for (let pNum=0; pNum < allPickEls.length; pNum++) {
+      allPicks.push(this.convertToPick(allPickEls.item(pNum)));
+    }
+    console.log(`convert ${allPicks.length} picks for quake`);
+
     let allOriginEls = qml.getElementsByTagNameNS(BED_NS, "origin");
     let allOrigins = [];
     for (let oNum=0; oNum < allOriginEls.length; oNum++) {
-      allOrigins.push(this.convertToOrigin(allOriginEls.item(oNum)));
+      allOrigins.push(this.convertToOrigin(allOriginEls.item(oNum), allPicks));
     }
     let allMagEls = qml.getElementsByTagNameNS(BED_NS, "magnitude");
     let allMags = [];
@@ -457,37 +464,34 @@ export class EventQuery {
       allMags.push(this.convertToMagnitude(allMagEls.item(mNum)));
     }
     if (allMags.length > 0) {out.magnitude = allMags[0];}
-    let allPickEls = qml.getElementsByTagNameNS(BED_NS, 'pick');
-    let allPicks = [];
-    for (let pNum=0; pNum < allPickEls.length; pNum++) {
-      allPicks.push(this.convertToPick(allPickEls.item(pNum)));
-    }
-    let allArrivalEls = qml.getElementsByTagNameNS(BED_NS, 'arrival');
-    let allArrivals = [];
-    for ( let aNum=0; aNum < allArrivalEls.length; aNum++) {
-      allArrivals.push(this.convertToArrival(allArrivalEls.item(aNum), allPicks));
-    }
     out.originList = allOrigins;
     out.magnitudeList = allMags;
     out.pickList = allPicks;
-    out.arrivalList = allArrivals;
-    out.eventid = this.extractEventId(qml);
+    out.arrivalList = [];
+    out.eventId = this.extractEventId(qml);
     out.preferredOriginId = util._grabFirstElText(qml, 'preferredOriginID');
-    out.preferredMagnitudeID = util._grabFirstElText(qml, 'preferredMagnitudeID');
+    out.preferredMagnitudeId = util._grabFirstElText(qml, 'preferredMagnitudeID');
+    for (let o of allOrigins) {
+      if (o.publicId === out.preferredOriginId) {
+        out.preferredOrigin = o;
+      } else {
+        console.log(`no match: ${o.publicId} ${out.preferredOriginId}`)
+      }
+    }
     return out;
   }
   extractEventId(qml: Element) :string {
-    let eventid = util._grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventid');
+    let eventId = util._grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventid');
     let catalogEventSource = util._grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventsource');
-    if (eventid) {
+    if (eventId) {
       if (this.host() === USGS_HOST && catalogEventSource) {
-        // USGS, NCEDC and SCEDC use concat of eventsource and eventid as eventit, sigh...
-        return catalogEventSource+eventid;
+        // USGS, NCEDC and SCEDC use concat of eventsource and eventId as eventit, sigh...
+        return catalogEventSource+eventId;
       } else {
-        return eventid;
+        return eventId;
       }
     }
-    let publicid = util._grabAttribute(qml, 'publicID');
+    let publicid = util._grabAttribute(qml, 'publicId');
     if (publicid) {
       let re = /eventid=([\w\d]+)/;
       let parsed = re.exec(publicid);
@@ -498,7 +502,7 @@ export class EventQuery {
     }
     return "unknownEventId";
   }
-  convertToOrigin(qml: Element) :model.Origin {
+  convertToOrigin(qml: Element, allPicks) :model.Origin {
     let out = new model.Origin();
     let otimeStr = util._grabFirstElText(util._grabFirstEl(qml, 'time'),'value');
     if (otimeStr ) {
@@ -509,6 +513,15 @@ export class EventQuery {
     out.latitude = util._grabFirstElFloat(util._grabFirstEl(qml, 'latitude'), 'value');
     out.longitude = util._grabFirstElFloat(util._grabFirstEl(qml, 'longitude'), 'value');
     out.depth = util._grabFirstElFloat(util._grabFirstEl(qml, 'depth'), 'value');
+    out.publicId = util._grabAttribute(qml, 'publicID');
+
+    let allArrivalEls = qml.getElementsByTagNameNS(BED_NS, 'arrival');
+    console.log(`found ${allArrivalEls.length} arrival in origin`);
+    let allArrivals = [];
+    for ( let aNum=0; aNum < allArrivalEls.length; aNum++) {
+      allArrivals.push(this.convertToArrival(allArrivalEls.item(aNum), allPicks));
+    }
+    out.arrivalList = allArrivals;
     return out;
   }
   convertToMagnitude(qml: Element) :model.Magnitude {
@@ -516,33 +529,35 @@ export class EventQuery {
     let type = util._grabFirstElText(qml, 'type');
     if (mag && type) {
       let out = new model.Magnitude(mag, type);
-      out.publicID = util._grabAttribute(qml, 'publicID');
-      console.log(`convertToMagnitude ${out.publicID}`);
+      out.publicId = util._grabAttribute(qml, 'publicID');
+      console.log(`convertToMagnitude ${out.publicId}`);
       return out;
     }
     throw new Error("Did not find mag and type in Element: ${mag} ${type}");
   }
   convertToArrival(arrivalQML: Element, allPicks: Array<model.Pick>) :model.Arrival {
-    let pickID = util._grabFirstElText(arrivalQML, 'pickID');
+    let pickId = util._grabFirstElText(arrivalQML, 'pickID');
     let phase = util._grabFirstElText(arrivalQML, 'phase');
-    if (phase && pickID) {
-      let myPick = allPicks.find(function(p: model.Pick) { return p.publicID === pickID;});
+    if (phase && pickId) {
+      let myPick = allPicks.find(function(p: model.Pick) { return p.publicId === pickId;});
       if ( ! myPick) {
-        throw new Error("Can't find pick with ID="+pickID+" for Arrival");
+        throw new Error("Can't find pick with Id="+pickId+" for Arrival");
       }
-      return new model.Arrival(phase, myPick);
+      let out = new model.Arrival(phase, myPick);
+      out.publicId = util._grabAttribute(arrivalQML, 'publicID');
+      return out;
     } else {
-      throw new Error("Arrival does not have phase or pickID: "+stringify(phase)+" "+stringify(pickID));
+      throw new Error("Arrival does not have phase or pickId: "+stringify(phase)+" "+stringify(pickId));
     }
   }
   convertToPick(pickQML: Element) :model.Pick {
     let otimeStr = util._grabFirstElText(util._grabFirstEl(pickQML, 'time'),'value');
     let time = checkStringOrDate(otimeStr);
-    let waveformIDEl = util._grabFirstEl(pickQML, 'waveformID');
-    let netCode = util._grabAttribute(waveformIDEl, "networkCode");
-    let stationCode = util._grabAttribute(waveformIDEl, "stationCode");
-    let locationCode = util._grabAttribute(waveformIDEl, "locationCode");
-    let channelCode = util._grabAttribute(waveformIDEl, "channelCode");
+    let waveformIdEl = util._grabFirstEl(pickQML, 'waveformID');
+    let netCode = util._grabAttribute(waveformIdEl, "networkCode");
+    let stationCode = util._grabAttribute(waveformIdEl, "stationCode");
+    let locationCode = util._grabAttribute(waveformIdEl, "locationCode");
+    let channelCode = util._grabAttribute(waveformIdEl, "channelCode");
     // handle empty loc code, it can be missing
     if ( ! locationCode) { locationCode = '';}
     if (! netCode || ! stationCode || ! channelCode) {
@@ -552,7 +567,7 @@ export class EventQuery {
                       +"."+ stringify(channelCode));
     }
     let out = new model.Pick(time, netCode, stationCode, locationCode, channelCode);
-    out.publicID = util._grabAttribute(pickQML, "publicID");
+    out.publicId = util._grabAttribute(pickQML, "publicID");
     return out;
   }
 
@@ -733,7 +748,7 @@ console.log("204 nodata so return empty xml");
       colon = "";
     }
     let url = this.formBaseURL()+"/query?";
-    if (this._eventid) { url = url+this.makeParam("eventid", this.eventid());}
+    if (this._eventId) { url = url+this.makeParam("eventid", this.eventId());}
     if (this._startTime) { url = url+this.makeParam("starttime", model.toIsoWoZ(this.startTime()));}
     if (this._endTime) { url = url+this.makeParam("endtime", model.toIsoWoZ(this.endTime()));}
     if (util._isDef(this._minMag)) { url = url+this.makeParam("minmag", this.minMag());}
@@ -761,7 +776,7 @@ console.log("204 nodata so return empty xml");
       } else {
         // USGS does not support includearrivals, but does actually
         // include the arrivals for an eventid= style query
-        if (this._eventid) {
+        if (this._eventId) {
           // ok, works without the param
         } else {
           throw new Error("USGS host, earthquake.usgs.gov, does not support includearrivals parameter.");

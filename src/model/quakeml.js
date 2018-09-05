@@ -11,8 +11,8 @@ import { moment } from './util';
   * other uses in javascript.
   */
 export class Quake {
-  eventid: string;
-  publicID: string;
+  eventId: string;
+  publicId: string;
   _time: moment;
   latitude: number;
   longitude: number;
@@ -24,7 +24,8 @@ export class Quake {
   arrivalList: Array<Arrival>;
   pickList: Array<Pick>;
   preferredOriginId: string;
-  preferredMagnitudeID: string;
+  preferredOrigin: Origin;
+  preferredMagnitudeId: string;
   constructor() {
 // what is essential???
   }
@@ -54,7 +55,8 @@ export class Origin {
   latitude: number;
   longitude: number;
   depth: number;
-  publicID: string;
+  arrivalList: Array<Arrival>;
+  publicId: string;
 
   constructor() {
 // what is essential???
@@ -65,13 +67,16 @@ export class Origin {
       +" "+stringify(this.longitude)
       +' '+stringify(this.depth);
   }
+  get arrivals(): Array<Arrival> {
+    return this.arrivalList;
+  }
 }
 /** Represents a QuakeML Magnitude.
  */
 export class Magnitude {
   mag: number;
   type: string;
-  publicID: string;
+  publicId: string;
 
   constructor(mag: number, type: string) {
     this.mag = mag;
@@ -87,7 +92,7 @@ export class Magnitude {
 export class Arrival {
   phase: string;
   pick: Pick;
-  publicID: string;
+  publicId: string;
 
   constructor(phase: string, pick: Pick) {
     this.phase = phase;
@@ -103,7 +108,7 @@ export class Pick {
   stationCode: string;
   locationCode: string;
   channelCode: string;
-  publicID: string;
+  publicId: string;
   constructor(time: moment,
       networkCode: string,
       stationCode:string,
