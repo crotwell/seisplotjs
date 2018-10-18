@@ -1,18 +1,18 @@
 
-declare module "oregondsp" {
-  declare export default type "com" = {
-    declare type "oregondsp" = {
-      declare type "signalProcessing" = {
-        declare type "filter" = {
-          declare type "iir" = {
-            declare type "Complex" = {
-              real: number;
-              imag: number;
-            };
-            declare function Complex_init(real :number, imag :number) :Complex;
-          }
-        }
-      }
+declare module "oregondsp/com/oregondsp/signalProcessing/filter/iir" {
+    declare export class Complex {
+      //real: number;
+      //imag: number;
+      constructor(real: number, imag: number): Complex;
+      real(): number;
+      imag(): number;
+      abs(): number;
+      angle(): number;
+      times(c: Complex): Complex;
+      plus(c: Complex): Complex;
+      conjugate(): Complex;
+      toString(): string;
     }
-  }
+
+    declare export function Complex_init(real :number, imag :number) :Complex;
 }

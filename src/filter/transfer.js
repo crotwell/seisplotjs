@@ -3,6 +3,7 @@
 import * as OregonDSPTop from 'oregondsp';
 import { calcDFT, inverseDFT } from './index';
 import * as model from '../model/index';
+import { SacPoleZero } from '../model/sacPoleZero'
 import Qty from 'js-quantities';
 
 
@@ -29,7 +30,7 @@ export function transfer(seis :model.Seismogram,
       }
 
 export function transferSacPZ(seis :model.Seismogram,
-                              sacPoleZero,
+                              sacPoleZero: SacPoleZero,
                               lowCut :number,
                               lowPass :number,
                               highPass :number,
@@ -101,7 +102,7 @@ export function combine(freqValues :Array<number>,
      * 1/(pz(s) to avoid divide by zero issues. If there is a divide by zero
      * situation, then the response is set to be 0+0i.
      */
-  export function evalPoleZeroInverse(sacPoleZero, freq :number) {
+  export function evalPoleZeroInverse(sacPoleZero: SacPoleZero, freq :number) {
         const s = createComplex(0, 2 * Math.PI * freq);
         let zeroOut = createComplex(1, 0);
         let poleOut = createComplex(1, 0);
@@ -215,40 +216,17 @@ export function convertToSacPoleZero( response :model.Response) {
         constant = (sd * calc_A0(poles, zeros, fs));
     }
     constant *= scaleUnit.scalar;
-    return {
-      poles:poles,
-      zeros: zeros,
-      constant: constant,
-      toString: function() {
-        let s = ["sacPoleZero:"];
-        s.push("  poles: "+this.poles.length);
-        for(let i=0; i<this.poles.length; i++ ) {
-          s.push("    "+this.poles[i].real()+" "+this.poles[i].imag());
-        }
-        s.push("  zeros: "+this.zeros.length);
-        for(let i=0; i<this.zeros.length; i++ ) {
-          s.push("    "+this.zeros[i].real()+" "+this.zeros[i].imag());
-        }
-        s.push("  constant: "+this.constant);
-        if (this.debug) {
-          s.push("    gamma: "+this.debug.gamma);
-          s.push("    mulFactor: "+this.debug.mulFactor);
-          s.push("    sd: "+this.debug.sd);
-          s.push("    A0: "+this.debug.A0);
-        }
-        return s.join('\n');
-      },
-      debug: {
-        gamma: gamma,
-        mulFactor: mulFactor,
-        sd: sd,
-        A0: A0
-      }
-    };
+    let sacPZ = new SacPoleZero(poles, zeros, constant);
+    sacPZ.gamma= gamma;
+    sacPZ.mulFactor= mulFactor;
+    sacPZ.sd= sd;
+    sacPZ.A0= A0;
+    return sacPZ;
 }
 
 export function calc_A0(poles :Array<OregonDSP.filter.iir.Complex>,
-                        zeros :Array<OregonDSP.filter.iir.Complex>, ref_freq :number) {
+                        zeros :Array<OregonDSP.filter.iir.Complex>,
+                        ref_freq :number) {
     let numer = createComplex(1, 0);
     let denom = createComplex(1, 0);
     let f0;
