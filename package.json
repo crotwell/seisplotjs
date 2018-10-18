@@ -44,12 +44,12 @@
   },
   "homepage": "https://github.com/crotwell/seisplotjs",
   "devDependencies": {
+    "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-flow": "^6.23.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/preset-flow": "^7.0.0",
     "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
     "documentation": "^8.1.2",
     "eslint": "^5.7.0",
     "eslint-config-standard": "^12.0.0",
@@ -64,7 +64,7 @@
   "babel": {
     "presets": [
       [
-        "env",
+        "@babel/preset-env",
         {
           "targets": {
             "browsers": [
@@ -74,7 +74,7 @@
           }
         }
       ],
-      "flow"
+      "@babel/preset-flow"
     ]
   }
 }
