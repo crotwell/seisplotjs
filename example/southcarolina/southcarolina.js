@@ -184,7 +184,7 @@ console.log("click "+d.time.toISOString());
           quake: new fdsnevent.EventQuery()
               .protocol(quakeQuery.protocol())
               .host(quakeQuery.host())
-              .eventid(d.eventid)
+              .eventId(d.eventId)
               .includearrivals(true)
               .query()
               .then(function(qArray) {return qArray[0];})
