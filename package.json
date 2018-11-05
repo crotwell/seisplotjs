@@ -63,7 +63,8 @@
     "flow-bin": "^0.83.0",
     "flow-copy-source": "^2.0.2",
     "isomorphic-fetch": "^2.2.1",
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "jest-extended": "^0.11.0"
   },
   "babel": {
     "presets": [
