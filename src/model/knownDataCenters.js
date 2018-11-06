@@ -1,5 +1,6 @@
 // @flow
 import { moment } from './util';
+import checkProtocol from '../checkProtocol.js';
 
 // flow type for json known datacenters type
 //import type { moment as momentType } from 'moment';
@@ -42,7 +43,7 @@ let knownDCs = null;
 
 
 export const knownDataCenters = {
-  knownDataCentersJsonURL: "http://www.seis.sc.edu/fdsnServiceCheck/fdsnDataCenters.json",
+  knownDataCentersJsonURL: checkProtocol()+"//www.seis.sc.edu/fdsnServiceCheck/fdsnDataCenters.json",
 
   DS: DS,
   EV: EV,

@@ -6,6 +6,7 @@
  * http://www.seis.sc.edu
  */
 
+import checkProtocol from '../checkProtocol.js';
 import RSVP from 'rsvp';
 import moment from 'moment';
 
@@ -145,7 +146,7 @@ export class RingserverConnection {
   }
 
   formBaseURL() :string {
-    return 'http://'+this._host+(this._port==80 ? '' : (':'+this._port));
+    return checkProtocol()+'//'+this._host+(this._port==80 ? '' : (':'+this._port));
   }
 
   formIdURL() :string {

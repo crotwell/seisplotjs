@@ -6,6 +6,7 @@ RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
+import checkProtocol from '../checkProtocol.js';
 import * as model from '../model';
 import * as util from './util';
 import moment from 'moment';
@@ -87,10 +88,7 @@ export class StationQuery {
   _matchTimeseries: boolean;
   constructor(host?: string) {
     this._specVersion = 1;
-    this._protocol = 'http';
-    if (document && document.location && "https:" == document.location.protocol) {
-      this._protocol = 'https:'
-    }
+    this._protocol = checkProtocol();
     this.host(host);
     if (! host) {
       this._host = IRIS_HOST;

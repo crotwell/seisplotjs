@@ -1,5 +1,6 @@
 // @flow
 
+import checkProtocol from './checkProtocol.js';
 import RSVP from 'rsvp';
 
 RSVP.on('error', function(reason: string) {
@@ -59,10 +60,7 @@ export class DataSelectQuery {
   _format: string;
   constructor(host?: string) {
     this._specVersion = 1;
-    this._protocol = 'http';
-    if (document && document.location && "https:" == document.location.protocol) {
-      this._protocol = 'https:'
-    }
+    this._protocol = checkProtocol();
     if (host) {
       this._host = host;
     } else {

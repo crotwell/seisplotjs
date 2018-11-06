@@ -2,6 +2,7 @@
 
 import * as model from '../model';
 import * as util from './util';
+import checkProtocol from '../checkProtocol.js';
 
 // special due to flow
 import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from '../model';
@@ -90,10 +91,7 @@ export class EventQuery {
   _format: string;
   constructor(host?: string) {
     this._specVersion = 1;
-    this._protocol = 'http:';
-    if (document && document.location && "https:" === document.location.protocol) {
-      this._protocol = 'https:'
-    }
+    this._protocol = checkProtocol();
     this.host(host);
     if (! host) {
       this._host = USGS_HOST;

@@ -1,5 +1,6 @@
 // @flow
 
+import checkProtocol from '../checkProtocol.js';
 import RSVP from 'rsvp';
 import {hasArgs, hasNoArgs, isStringArg, isNumArg, stringify, isDef } from './util';
 
@@ -40,7 +41,7 @@ export class TraveltimeQuery {
   _noheader: boolean;
   constructor(host :?string) {
     this._specVersion = "1";
-    this._protocol = 'http:';
+    this._protocol = checkProtocol();
     if (! host) {
       this._host = IRIS_HOST;
     } else {
