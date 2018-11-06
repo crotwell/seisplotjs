@@ -2,7 +2,7 @@ import * as filter from '../../src/filter/index.js';
 import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
 let moment = filter.model.moment;
 
-const ONE_COMPLEX = filter.model.createComplex(1, 0);
+const ONE_COMPLEX = filter.createComplex(1, 0);
 /**
  * @author crotwell Created on Jul 27, 2005
  */
@@ -100,12 +100,12 @@ test("testEvalPoleZero", () => {
                       [9.99939, 2.35369e+10, 1.17822e+10],
                       [10, 2.35375e+10, 1.17818e+10]];
     // IU.HRV.BHE response
-    const zeros =  [filter.model.createComplex(0, 0),
-                    filter.model.createComplex(0, 0),
-                    filter.model.createComplex(0, 0) ];
-    const poles =  [filter.model.createComplex(-0.0139, 0.0100),
-                    filter.model.createComplex(-0.0139, -0.0100),
-                    filter.model.createComplex(-31.4160, 0.0000) ];
+    const zeros =  [filter.createComplex(0, 0),
+                    filter.createComplex(0, 0),
+                    filter.createComplex(0, 0) ];
+    const poles =  [filter.createComplex(-0.0139, 0.0100),
+                    filter.createComplex(-0.0139, -0.0100),
+                    filter.createComplex(-31.4160, 0.0000) ];
     let sacPoleZero = {
       poles: poles,
       zeros: zeros,
@@ -138,12 +138,12 @@ test("ReadPoleZero", () => {
   .then( pz => {
 
     // IU.HRV.BHE response
-    const zeros =  [filter.model.createComplex(0, 0),
-      filter.model.createComplex(0, 0),
-      filter.model.createComplex(0, 0) ];
-    const poles =  [filter.model.createComplex(-0.0139, 0.0100),
-      filter.model.createComplex(-0.0139, -0.0100),
-      filter.model.createComplex(-31.4160, 0.0000) ];
+    const zeros =  [filter.createComplex(0, 0),
+      filter.createComplex(0, 0),
+      filter.createComplex(0, 0) ];
+    const poles =  [filter.createComplex(-0.0139, 0.0100),
+      filter.createComplex(-0.0139, -0.0100),
+      filter.createComplex(-31.4160, 0.0000) ];
     let sacPoleZero = {
     poles: poles,
     zeros: zeros,
@@ -151,13 +151,13 @@ test("ReadPoleZero", () => {
     };
     expect(pz.zeros.length).toBe(sacPoleZero.zeros.length);
     for (let i=0; i<pz.zeros.length; i++) {
-      expect(pz.zeros[i].real).toBeCloseTo(sacPoleZero.zeros[i].real, 9);
-      expect(pz.zeros[i].imag).toBeCloseTo(sacPoleZero.zeros[i].imag, 9);
+      expect(pz.zeros[i].real()).toBeCloseTo(sacPoleZero.zeros[i].real(), 9);
+      expect(pz.zeros[i].imag()).toBeCloseTo(sacPoleZero.zeros[i].imag(), 9);
     }
     expect(pz.poles.length).toBe(sacPoleZero.poles.length);
     for (let i=0; i<pz.poles.length; i++) {
-      expect(pz.poles[i].real).toBeCloseTo(sacPoleZero.poles[i].real, 9);
-      expect(pz.poles[i].imag).toBeCloseTo(sacPoleZero.poles[i].imag, 9);
+      expect(pz.poles[i].real()).toBeCloseTo(sacPoleZero.poles[i].real(), 9);
+      expect(pz.poles[i].imag()).toBeCloseTo(sacPoleZero.poles[i].imag(), 9);
     }
     expect(pz.constant).toBe(sacPoleZero.constant);
   });
@@ -449,7 +449,7 @@ test("impulse one zero", () => {
         });
       }
       return saveDataPromise.then( () => {
-        expect(bagdata).arrayToBeCloseToRatio(sacdata, 2);
+        expect(bagdata).arrayToBeCloseToRatio(sacdata, 2 , 1e-2, 1e-3);
       }).catch(err => {
         console.log("Error write sac "+err);
       });

@@ -90,13 +90,13 @@ export function readSacPoleZero(filename) {
           if (items[0] === 'POLES') {
             // no more zeros, fill array with 0
             for(let z = pz.zeros.length; z < numZeros; z++) {
-              pz.zeros.push(filter.model.createComplex(0,0));
+              pz.zeros.push(filter.createComplex(0,0));
             }
             break;
           } else {
             let real = parseFloat(items[0]);
             let imag = parseFloat(items[1]);
-            pz.zeros.push(filter.model.createComplex(real, imag));
+            pz.zeros.push(filter.createComplex(real, imag));
           }
           i++;
           l = lines[i];
@@ -112,13 +112,13 @@ export function readSacPoleZero(filename) {
           if (items[0] === 'CONSTANT') {
             // no more poles, fill array with 0
             for(let z = pz.poles.length; z < numPoles; z++) {
-              pz.poles.push(filter.model.createComplex(0,0));
+              pz.poles.push(filter.createComplex(0,0));
             }
             break;
           } else {
             let real = parseFloat(items[0]);
             let imag = parseFloat(items[1]);
-            pz.poles.push(filter.model.createComplex(real, imag));
+            pz.poles.push(filter.createComplex(real, imag));
           }
           i++;
           l = lines[i];

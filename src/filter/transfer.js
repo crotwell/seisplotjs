@@ -110,8 +110,8 @@ export function combine(freqValues :Array<number>,
             poleOut = poleOut.timesComplex( s.minusComplex(sacPoleZero.poles[i]) );
         }
         for(let i = 0; i < sacPoleZero.zeros.length; i++) {
-            if(s.real() == sacPoleZero.zeros[i].real()
-                    && s.imag() == sacPoleZero.zeros[i].imag()) {
+            if(s.real() === sacPoleZero.zeros[i].real()
+                    && s.imag() === sacPoleZero.zeros[i].imag()) {
                 return createComplex(0,0);
             }
             zeroOut = zeroOut.timesComplex( s.minusComplex(sacPoleZero.zeros[i]) );
