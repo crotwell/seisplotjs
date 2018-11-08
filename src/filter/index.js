@@ -7,7 +7,7 @@ import * as transfer  from './transfer';
 import * as taper  from './taper';
 import {hilbert, envelope} from './hilbert';
 import {calcDFT, inverseDFT, ampPhase} from './fft';
-import {rotate, vectorMagnitude} from 'vector';
+import {rotate, vectorMagnitude} from './vector';
 
 export const createComplex = transfer.createComplex;
 
@@ -21,13 +21,9 @@ export let BAND_PASS = OregonDSP.filter.iir.PassbandType.BANDPASS;
 export let LOW_PASS = OregonDSP.filter.iir.PassbandType.LOWPASS;
 export let HIGH_PASS = OregonDSP.filter.iir.PassbandType.HIGHPASS;
 
-const DtoR = Math.PI / 180;
-
 export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
 }
-
-
 
 export function rMean(seis: model.Seismogram) :model.Seismogram {
   let out = seis.clone();

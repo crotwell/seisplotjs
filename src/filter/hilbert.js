@@ -1,5 +1,7 @@
 //@flow
 
+import * as OregonDSPTop from 'oregondsp';
+const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 /** Calculates the envelope, y_i = sqrt( y_i * y_i + h_i * h_i)
  *  where h is the hilber transform of y. The default configuration

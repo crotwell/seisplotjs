@@ -1,6 +1,8 @@
 //@flow
 
 
+export const DtoR = Math.PI / 180;
+
 export function rotate(seisA: model.Seismogram, azimuthA: number, seisB: model.Seismogram, azimuthB: number, azimuth: number) {
   if (seisA.y.length != seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "

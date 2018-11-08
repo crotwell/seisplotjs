@@ -7,7 +7,7 @@ import { SacPoleZero } from '../model/sacPoleZero'
 import Qty from 'js-quantities';
 
 
-let OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
+const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 // if OregonDSP is loaded (here it is) we want to use
 // its Complex instead of the simple one defined in model

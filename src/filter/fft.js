@@ -1,5 +1,9 @@
 //@flow
 
+import {createComplex } from './transfer';
+
+import * as OregonDSPTop from 'oregondsp';
+const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 export function calcDFT(waveform: Array<number>, npts: number):Array<number> {
   let log2N = 4;
