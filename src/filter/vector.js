@@ -1,9 +1,32 @@
 //@flow
-
+import {Seismogram, Trace, ensureIsTrace } from '../model/seismogram';
 
 export const DtoR = Math.PI / 180;
 
-export function rotate(seisA: model.Seismogram, azimuthA: number, seisB: model.Seismogram, azimuthB: number, azimuth: number) {
+export function rotate(seisA: Trace | Seismogram, azimuthA: number, seisB: Trace | Seismogram, azimuthB: number, azimuth: number) {
+  const traceA = ensureIsTrace(seisA);
+  const traceB = ensureIsTrace(seisB);
+  if (traceA.segments.length !== traceB.segments.length) {
+    throw new Error("Traces do not have same number of segments: "+traceA.segments.length+" !== "+traceB.segments.length);
+  }
+  let rotOutRad = [];
+  let rotOutTrans = [];
+  for( let i=0; i< traceA.segments.length; i++) {
+    let result = rotateSeismograms(traceA.segments[i], azimuthA,
+                                   traceB.segments[i], azimuthB, azimuth);
+    rotOutRad.push(result.radial);
+    rotOutTrans.push(result.transverse);
+  }
+  let out = {
+    "radial": new Trace(rotOutRad),
+    "transverse": new Trace(rotOutTrans),
+    "azimuthRadial": azimuth % 360,
+    "azimuthTransverse": (azimuth + 90) % 360
+  };
+  return out;
+}
+
+export function rotateSeismograms(seisA: Seismogram, azimuthA: number, seisB: Seismogram, azimuthB: number, azimuth: number) {
   if (seisA.y.length != seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);
@@ -43,7 +66,7 @@ export function rotate(seisA: model.Seismogram, azimuthA: number, seisB: model.S
   };
   return out;
 }
-export function vectorMagnitude(seisA: model.Seismogram, seisB: model.Seismogram, seisC: model.Seismogram) {
+export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Seismogram) {
   if (seisA.y.length != seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);

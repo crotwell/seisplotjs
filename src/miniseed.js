@@ -341,14 +341,13 @@ export function createSeismogram(contig: Array<DataRecord>): model.Seismogram {
 
 
 /**
- * Merges data records into a arrary of seismogram segment objects
- * containing the data as a float array, y. Each seismogram has
- * sampleRate, start, end, netCode, staCode, locCode, chanCode as well
- * as the function timeOfSample(integer) set.
+ * Merges data records into a Trace object, each of
+ * which consists of Seismogram segment objects
+ * containing the data as a float array.
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
  */
-export function merge(drList: Array<DataRecord>): Array<model.Seismogram> {
+export function merge(drList: Array<DataRecord>): model.Trace {
   let out = [];
   let currDR;
   drList.sort(function(a,b) {
@@ -372,7 +371,7 @@ export function merge(drList: Array<DataRecord>): Array<model.Seismogram> {
       out.push(createSeismogram(contig));
       contig = [];
   }
-  return out;
+  return new model.Trace(out);
 }
 
 
@@ -420,10 +419,13 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
   return out;
 }
 
-export function mergeByChannel(drList: Array<DataRecord>): Map<string, Array<model.Seismogram>> {
+export function mergeByChannel(drList: Array<DataRecord>): Map<string, model.Trace> {
   let out = new Map();
-  this.byChannel(drList).forEach((value, key) => {
-    out.set(key, merge(value));
-  });
+  let byChannelMap = this.byChannel(drList);
+  console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
+  for (let [key, seisArray] of byChannelMap) {
+    out.set(key, merge(seisArray));
+  }
+  console.log("mergeByChannel  out.size="+out.size);
   return out;
 }

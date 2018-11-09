@@ -103,7 +103,7 @@ var bothPromise = fdsnstation.RSVP.hash({
     hash.S_arrival = new Date(hash.quake.time.valueOf()+(hash.traveltime.firstS.time)*1000);
     hash.P_arrival = new Date(hash.quake.time.valueOf()+(hash.traveltime.firstP.time)*1000);
     hash.seisDates = wp.calcStartEndDates(new Date(hash.S_arrival.getTime()-preOffset*1000), null, dur, 0);
-    hash.miniseed = new seisplotjs.fdsndataselect.DataSelectQuery()
+    hash.seismograms = new seisplotjs.fdsndataselect.DataSelectQuery()
       .host(IRIS)
       .nodata(404)
       .networkCode(hash.station.network.networkCode)
@@ -112,30 +112,24 @@ var bothPromise = fdsnstation.RSVP.hash({
       .channelCode(chanCode)
       .startTime(hash.seisDates.start)
       .endTime(hash.seisDates.end)
-      .query();
-    return fdsnstation.RSVP.hash(hash);
-  }).then(function(hash) {
-
-    let byChannel = miniseed.byChannel(hash.miniseed);
-    let keys = Array.from(byChannel.keys());
-    console.log("keys: ${keys}");
-    hash.seismograms = [];
-    for(let i=0; i<keys.length; i++) {
-      let key = keys[i];
-      hash.seismograms.push(miniseed.merge(byChannel.get(key)));
-    }
+      .querySeismograms();
     return fdsnstation.RSVP.hash(hash);
   }).then(function(hash) {
     let div = seisplotjs.d3.select("div.seismograms");
     let svgDiv = div.append("div");
     svgDiv.classed("svg-container-wide", true);
-    if (hash.seismograms.length > 0) {
-      console.log("hash.seismograms "+hash.seismograms.length+" "+hash.seismograms[0].length);
-        var seismograph = new wp.Seismograph(svgDiv, hash.seismograms, hash.seisDates.start, hash.seisDates.end);
-        let titles = [hash.seismograms[0][0].codes(),
-                  hash.seismograms[1][0].chanCode,
-                  hash.seismograms[2][0].chanCode];
-        seismograph.setTitle(titles);
+    console.log("hash.seismograms size: "+hash.seismograms.size);
+    if (hash.seismograms.size > 0) {
+      console.log("hash.seismograms "+hash.seismograms.size+" ");
+        let seisConfig = new wp.SeismographConfig();
+        let traceArray = Array.from(hash.seismograms.values());
+        traceArray.sort(wp.sort.alphabeticalSort);
+        console.log("traceArray: "+traceArray.length+"  "+traceArray[0]+"  "+(typeof traceArray[0]))
+        var seismograph = new wp.SvgSeismograph(svgDiv, seisConfig, traceArray, hash.seisDates.start, hash.seisDates.end);
+        let titles = [traceArray[0].codes(),
+                  traceArray[1].channelCode,
+                  traceArray[2].channelCode];
+        seisConfig.title = titles;
         var markers = [];
           markers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time });
           markers.push({ markertype: 'predicted', name: hash.traveltime.firstP.phase, time: hash.P_arrival });
@@ -164,29 +158,31 @@ var bothPromise = fdsnstation.RSVP.hash({
         var seisZ = null;
         var seisNorth = null;
         var seisEast = null;
-        for (var i = 0; i < hash.seismograms.length; i++) {
-          if (hash.seismograms[i][0].chanCode.charAt(2) === "Z") {
-            seisZ = hash.seismograms[i];
+        for (let [key, trace] of hash.seismograms) {
+          if (trace.channelCode.charAt(2) === "Z") {
+            seisZ = trace;
           }
-          if (hash.seismograms[i][0].chanCode.charAt(2) === "N") {
-            seisNorth = hash.seismograms[i];
+          if (trace.channelCode.charAt(2) === "N") {
+            seisNorth = trace;
           }
-          if (hash.seismograms[i][0].chanCode.charAt(2) === "E") {
-            seisEast = hash.seismograms[i];
+          if (trace.channelCode.charAt(2) === "E") {
+            seisEast = trace;
           }
         }
         if ( ! seisZ || ! seisNorth || ! seisEast) {
           throw new Error("unable to find ZNE: ${seisZ} ${seisNorth} ${seisEast}");
         }
 console.log("rotate to "+hash.distaz.baz+" "+((hash.distaz.baz+180)%360) );
-        var rotated = seisplotjs.filter.rotate(seisNorth[0], 0, seisEast[0], 90, (hash.distaz.baz+180)%360);
-        hash.rotatedSeismograms = [seisZ, [rotated.radial], [rotated.transverse]];
-console.log("first points: "+seisZ[0].yAtIndex(0)+" "+rotated.radial.yAtIndex(0)+" "+rotated.transverse.yAtIndex(0))
-        var rotatedSeismograph = new wp.Seismograph(rotsvgDiv, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
-        titles = [hash.rotatedSeismograms[0][0].codes(),
-                  hash.rotatedSeismograms[1][0].chanCode+" "+rotated.azimuthRadial.toFixed(2),
-                  hash.rotatedSeismograms[2][0].chanCode+" "+rotated.azimuthTransverse.toFixed(2)];
-        rotatedSeismograph.setTitle(titles);
+        var rotated = seisplotjs.filter.rotate(seisNorth, 0, seisEast, 90, (hash.distaz.baz+180)%360);
+        hash.rotatedSeismograms = [ seisZ, rotated.radial, rotated.transverse ];
+        hash.rotatedSeismograms.sort(wp.sort.alphabeticalSort);
+console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.segments[0].yAtIndex(0)+" "+rotated.transverse.segments[0].yAtIndex(0))
+        let rotSeisConfig = new wp.SeismographConfig();
+        var rotatedSeismograph = new wp.SvgSeismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
+        titles = [hash.rotatedSeismograms[0].codes(),
+                  hash.rotatedSeismograms[1].channelCode+" "+rotated.azimuthRadial.toFixed(2),
+                  hash.rotatedSeismograms[2].channelCode+" "+rotated.azimuthTransverse.toFixed(2)];
+        rotSeisConfig.title = titles;
         var rotateMarkers = [];
           rotateMarkers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time });
           rotateMarkers.push({ markertype: 'predicted', name: hash.traveltime.firstP.phase, time: hash.P_arrival });
@@ -206,5 +202,6 @@ console.log("first points: "+seisZ[0].yAtIndex(0)+" "+rotated.radial.yAtIndex(0)
         rotatedSeismograph.draw();
     } else{
       div.append('p').html('No data found for '+hash.station.codes());
+      console.log("hash.seismograms: "+hash.seismograms.size);
     }
   });

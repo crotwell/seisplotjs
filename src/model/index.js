@@ -32,7 +32,7 @@ import {Network,
         Decimation,
         Gain
       } from './stationxml';
-import {Seismogram } from './seismogram';
+import {Seismogram, Trace, ensureIsTrace } from './seismogram';
 
 
 /* re-export */
@@ -58,4 +58,6 @@ export  { moment,
           Decimation,
           Gain,
           Seismogram,
+          Trace,
+          ensureIsTrace,
           hasArgs, hasNoArgs, isStringArg, isNumArg, stringify, toIsoWoZ, isDef };

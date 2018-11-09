@@ -5,11 +5,15 @@ import './inject_css_manual';
 
 import {
   createPlotsBySelector,
-  Seismograph,
-  chart
+  Seismograph
 } from './waveformplot';
 
+import { CanvasSeismograph } from './canvasSeismograph';
+import { SvgSeismograph } from './svgSeismograph';
+import {SeismographConfig } from './seismographconfig';
+
 import * as chooser from './chooser';
+import * as sort from './sort';
 
 import {
   particleMotion,
@@ -39,7 +43,10 @@ export {
     RSVP,
     createPlotsBySelector,
     Seismograph,
-    chart,
+    SvgSeismograph,
+    CanvasSeismograph,
+    SeismographConfig,
+    sort,
     particleMotion,
     createParticleMotionBySelector,
     createPlotsBySelectorPromise,

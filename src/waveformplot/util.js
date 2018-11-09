@@ -125,7 +125,7 @@ export function calcStartEndDates(start?: moment, end?: moment, duration?: numbe
 export type TimeWindow = {start: moment, end: moment};
 import type {TimeRangeType} from './chooser';
 
-export function findStartEnd(data: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram, accumulator?: TimeRangeType) :TimeRangeType {
+export function findStartEnd(data: Array<miniseed.model.Trace> | Array<miniseed.model.Seismogram> | miniseed.model.Seismogram, accumulator?: TimeRangeType) :TimeRangeType {
     let out :TimeRangeType;
     if ( ! accumulator && ! data) {
       throw new Error("data and accumulator are not defined");
@@ -153,11 +153,13 @@ export function findStartEnd(data: Array<miniseed.model.Seismogram> | miniseed.m
     return out;
   }
 
-export function findMinMax(data: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram, minMaxAccumulator ?: Array<number>) :Array<number> {
+export function findMinMax(data: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram | miniseed.model.Trace, minMaxAccumulator ?: Array<number>) :Array<number> {
     if ( Array.isArray(data)) {
        for(let i=0; i< data.length; i++) {
          minMaxAccumulator = findMinMax(data[i], minMaxAccumulator);
        }
+    } else if (data instanceof miniseed.model.Trace) {
+      return findMinMax(data.seisArray, minMaxAccumulator);
     } else {
        // assume single segment object
        minMaxAccumulator = miniseed.segmentMinMax(data, minMaxAccumulator);

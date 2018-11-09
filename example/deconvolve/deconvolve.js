@@ -1,4 +1,4 @@
-// @flow
+// @ flow
 
 // just to get flow working...
 //import * as seisplotjs from '../../src/index';
@@ -15,8 +15,8 @@ var moment = ds.model.moment;
 var doRunQuery = true;
 // doRunQuery = false;//for testing
 
-let eqTime = moment.utc('2018-07-13T09:46:49Z').add(300, 'seconds');
-let times = new ds.StartEndDuration(eqTime, null, 1200, 0);
+let eqTime = moment.utc('2018-07-13T09:46:49Z').add(60, 'seconds');
+let times = new ds.StartEndDuration(eqTime, null, 300, 0);
 var dsQuery = new ds.DataSelectQuery()
   .nodata(404)
   .networkCode('CO')
@@ -43,12 +43,15 @@ divP.append("a")
     .attr("href", url)
     .text(url);
 
-function processMiniseed(records) {
-      let seismogram = miniseed.merge(records);
+function processTraces(traceMap) {
+      let trace = traceMap.values().next().value;
 
       var svgdiv = d3.select('div.rawseisplot');
-      var seisplot = new wp.Seismograph(svgdiv, seismogram);
-      seisplot.setYSublabel(seismogram[0].yUnit);
+      let seisConfig = new wp.SeismographConfig();
+      seisConfig.ySublabel = trace.yUnit;
+      let seisConfigB = new wp.SeismographConfig();
+      seisConfigB.ySublabel = trace.yUnit;
+      var seisplot = new wp.SvgSeismograph(svgdiv, seisConfigB, trace);
       seisplot.draw();
 
       responseQuery.query(st.LEVEL_RESPONSE).then(netArray => {
@@ -56,8 +59,8 @@ function processMiniseed(records) {
         var response = netArray[0].stations[0].channels[0].response;
         console.log("resp2: "+response);
         var correctedSeismogram = [];
-        for(let i=0; i<seismogram.length; i++) {
-          let taperSeis = seisplotjs.filter.taper.taper(seisplotjs.filter.rMean(seismogram[i]));
+        for(let i=0; i<trace.segments.length; i++) {
+          let taperSeis = seisplotjs.filter.taper.taper(seisplotjs.filter.rMean(trace.segments[i]));
           correctedSeismogram.push(seisplotjs.filter.transfer.transfer(taperSeis,
                                             response,
                                             .01,
@@ -67,8 +70,9 @@ function processMiniseed(records) {
         }
 
         var svgTransfer = d3.select('div.transferseisplot');
-        var transferPlot = new wp.Seismograph(svgTransfer, correctedSeismogram);
-        transferPlot.setYSublabel(correctedSeismogram[0].yUnit);
+        let transferConfig = new wp.SeismographConfig();
+        var transferPlot = new wp.SvgSeismograph(svgTransfer, transferConfig, correctedSeismogram);
+        transferConfig.ySublabel=correctedSeismogram[0].yUnit;
         transferPlot.draw();
         return channel;
       }).then(channel => {
@@ -83,41 +87,69 @@ function processMiniseed(records) {
                                  0, // low corner
                                  1, // high corner
 
-                                 1/seismogram[0].sampleRate // delta (period)
+                                 1/trace.sampleRate // delta (period)
                         );
       var filteredSeismogram = [];
-      for(let i=0; i<seismogram.length; i++) {
-        var s = seismogram[i].clone();
+      for(let i=0; i<trace.segments.length; i++) {
+        var s = trace.segments[i].clone();
         butterworth.filterInPlace(s.y);
         filteredSeismogram.push(s);
       }
 
       var svgFiltered = d3.select('div.filterseisplot');
-      var filteredPlot = new wp.Seismograph(svgFiltered, filteredSeismogram);
-      filteredPlot.setYSublabel(filteredSeismogram[0].yUnit);
+
+      var filteredPlot = new wp.SvgSeismograph(svgFiltered, seisConfig, filteredSeismogram);
       filteredPlot.draw();
 
-      let fftOut = seisplotjs.filter.calcDFT(seismogram[0].y, seismogram[0].numPoints );
+      let fftOut = seisplotjs.filter.calcDFT(trace.segments[0].y, trace.segments[0].numPoints );
 
 
-      simpleLogPlot(fftOut, "div.fftplot", seismogram[0].sampleRate);
+      simpleLogPlot(fftOut, "div.fftplot", trace.sampleRate);
 
+      let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(100, .2, .8);
+      let hilbertSeismogram = [];
+      for(let i=0; i< trace.segments.length; i++) {
+        hilbertSeismogram.push(seisplotjs.filter.hilbert(trace.segments[i]));
+      }
+      let svgHilbert = d3.select('div.hilbertseisplot');
+      var hilbertPlot = new wp.SvgSeismograph(svgHilbert, seisConfig, hilbertSeismogram);
+      hilbertPlot.draw();
+
+      let envelopeSeismogram = [];
+      for(let i=0; i< trace.segments.length; i++) {
+        envelopeSeismogram.push(seisplotjs.filter.envelope(trace.segments[i]));
+      }
+      let svgEnvelope = d3.select('div.envelopeseisplot');
+      var envelopePlot = new wp.SvgSeismograph(svgEnvelope, seisConfig, envelopeSeismogram);
+      envelopePlot.setDoRMean(false);
+      envelopePlot.draw();
 }
 
 if (doRunQuery) {
-  dsQuery.query().then(processMiniseed).catch( function(error) {
+  dsQuery.querySeismograms().then(traceMap => {
+    console.log("before process, traceMap.size="+traceMap.size);
+    processTraces(traceMap);
+    return traceMap;
+  }).catch( function(error) {
     d3.select("div.miniseed").append('p').html("Error loading data." +error);
     console.assert(false, error);
   });
 } else {
-  d3.request("fdsnws-dataselect_2017-04-12T13_42_59Z.mseed")
-    .responseType("arraybuffer")
-    .get(function(error, rawBuffer) {
-if(error) console.log("error: "+error);
-console.log("rawBuffer size: "+rawBuffer.response.length);
-      var records = miniseed.parseDataRecords(rawBuffer.response);
-console.log("got "+records.length+" records");
-      processMiniseed(records);
+  fetch("fdsnws-dataselect_2017-04-12T13_42_59Z.mseed")
+  .then( fetchResponse => {
+    return fetchResponse.arrayBuffer();
+  }).then(function(rawBuffer) {
+      let dataRecords = miniseed.parseDataRecords(rawBuffer);
+      return dataRecords;
+    }).then(function(dataRecords) {
+      let traceMap = miniseed.mergeByChannel(records);
+      processTraces(traceMap);
+      return traceMap;
+    }).then(function(dataRecords) {
+      console.log("After fetch promise resolve");
+    }).catch( function(error) {
+      d3.select("div.miniseed").append('p').html("Error loading data." +error);
+      console.assert(false, error);
     });
 }
 
