@@ -4,20 +4,20 @@
 //import * as seisplotjs from '../../src/index';
 
 // this comes from the seisplotjs miniseed bundle
-var ds = seisplotjs.fdsndataselect;
-var st = seisplotjs.fdsnstation;
-var wp = seisplotjs.waveformplot;
-var d3 = wp.d3;
-var miniseed = wp.miniseed;
-var OregonDSP = seisplotjs.filter.OregonDSP
-var moment = ds.model.moment;
+const ds = seisplotjs.fdsndataselect;
+const st = seisplotjs.fdsnstation;
+const wp = seisplotjs.waveformplot;
+const d3 = wp.d3;
+const miniseed = wp.miniseed;
+const OregonDSP = seisplotjs.filter.OregonDSP
+const moment = ds.model.moment;
 
-var doRunQuery = true;
+let doRunQuery = true;
 // doRunQuery = false;//for testing
 
 let eqTime = moment.utc('2018-07-13T09:46:49Z').add(60, 'seconds');
 let times = new ds.StartEndDuration(eqTime, null, 300, 0);
-var dsQuery = new ds.DataSelectQuery()
+let dsQuery = new ds.DataSelectQuery()
   .nodata(404)
   .networkCode('CO')
   .stationCode('JSC')
@@ -26,7 +26,7 @@ var dsQuery = new ds.DataSelectQuery()
   .startTime(times.start)
   .endTime(times.end);
 
-var responseQuery = new st.StationQuery()
+let responseQuery = new st.StationQuery()
   .nodata(404)
   .networkCode('CO')
   .stationCode('JSC')
@@ -35,10 +35,10 @@ var responseQuery = new st.StationQuery()
   .startTime(times.start)
   .endTime(times.end);
 
-var div = d3.select('div.miniseed');
-var divP = div.append('p');
+let div = d3.select('div.miniseed');
+let divP = div.append('p');
 divP.text("URL: ");
-var url = dsQuery.formURL();
+let url = dsQuery.formURL();
 divP.append("a")
     .attr("href", url)
     .text(url);
@@ -46,19 +46,19 @@ divP.append("a")
 function processTraces(traceMap) {
       let trace = traceMap.values().next().value;
 
-      var svgdiv = d3.select('div.rawseisplot');
+      let svgdiv = d3.select('div.rawseisplot');
       let seisConfig = new wp.SeismographConfig();
       seisConfig.ySublabel = trace.yUnit;
       let seisConfigB = new wp.SeismographConfig();
       seisConfigB.ySublabel = trace.yUnit;
-      var seisplot = new wp.SvgSeismograph(svgdiv, seisConfigB, trace);
+      let seisplot = new wp.SvgSeismograph(svgdiv, seisConfigB, trace);
       seisplot.draw();
 
       responseQuery.query(st.LEVEL_RESPONSE).then(netArray => {
         let channel = netArray[0].stations[0].channels[0];
-        var response = netArray[0].stations[0].channels[0].response;
+        let response = netArray[0].stations[0].channels[0].response;
         console.log("resp2: "+response);
-        var correctedSeismogram = [];
+        let correctedSeismogram = [];
         for(let i=0; i<trace.segments.length; i++) {
           let taperSeis = seisplotjs.filter.taper.taper(seisplotjs.filter.rMean(trace.segments[i]));
           correctedSeismogram.push(seisplotjs.filter.transfer.transfer(taperSeis,
@@ -69,9 +69,9 @@ function processTraces(traceMap) {
                                             50));
         }
 
-        var svgTransfer = d3.select('div.transferseisplot');
+        let svgTransfer = d3.select('div.transferseisplot');
         let transferConfig = new wp.SeismographConfig();
-        var transferPlot = new wp.SvgSeismograph(svgTransfer, transferConfig, correctedSeismogram);
+        let transferPlot = new wp.SvgSeismograph(svgTransfer, transferConfig, correctedSeismogram);
         transferConfig.ySublabel=correctedSeismogram[0].yUnit;
         transferPlot.draw();
         return channel;
@@ -89,16 +89,16 @@ function processTraces(traceMap) {
 
                                  1/trace.sampleRate // delta (period)
                         );
-      var filteredSeismogram = [];
+      let filteredSeismogram = [];
       for(let i=0; i<trace.segments.length; i++) {
-        var s = trace.segments[i].clone();
+        let s = trace.segments[i].clone();
         butterworth.filterInPlace(s.y);
         filteredSeismogram.push(s);
       }
 
-      var svgFiltered = d3.select('div.filterseisplot');
+      let svgFiltered = d3.select('div.filterseisplot');
 
-      var filteredPlot = new wp.SvgSeismograph(svgFiltered, seisConfig, filteredSeismogram);
+      let filteredPlot = new wp.SvgSeismograph(svgFiltered, seisConfig, filteredSeismogram);
       filteredPlot.draw();
 
       let fftOut = seisplotjs.filter.calcDFT(trace.segments[0].y, trace.segments[0].numPoints );
@@ -112,7 +112,7 @@ function processTraces(traceMap) {
         hilbertSeismogram.push(seisplotjs.filter.hilbert(trace.segments[i]));
       }
       let svgHilbert = d3.select('div.hilbertseisplot');
-      var hilbertPlot = new wp.SvgSeismograph(svgHilbert, seisConfig, hilbertSeismogram);
+      let hilbertPlot = new wp.SvgSeismograph(svgHilbert, seisConfig, hilbertSeismogram);
       hilbertPlot.draw();
 
       let envelopeSeismogram = [];
@@ -120,7 +120,7 @@ function processTraces(traceMap) {
         envelopeSeismogram.push(seisplotjs.filter.envelope(trace.segments[i]));
       }
       let svgEnvelope = d3.select('div.envelopeseisplot');
-      var envelopePlot = new wp.SvgSeismograph(svgEnvelope, seisConfig, envelopeSeismogram);
+      let envelopePlot = new wp.SvgSeismograph(svgEnvelope, seisConfig, envelopeSeismogram);
       envelopePlot.setDoRMean(false);
       envelopePlot.draw();
 }
@@ -187,20 +187,20 @@ function calcInstResponse(channel, minFreq, maxFreq, numPoints) {
 }
 
 function respLogPlot(respData, cssSelector) {
-      var svg = d3.select(cssSelector).select("svg");
+      let svg = d3.select(cssSelector).select("svg");
 
-      var margin = {top: 20, right: 20, bottom: 30, left: 50},
+      let margin = {top: 20, right: 20, bottom: 30, left: 50},
       width = +svg.attr("width") - margin.left - margin.right,
       height = +svg.attr("height") - margin.top - margin.bottom,
       g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  var x = d3.scaleLog()
+  let x = d3.scaleLog()
       .rangeRound([0, width]);
 
-  var y = d3.scaleLog()
+  let y = d3.scaleLog()
       .rangeRound([height, 0]);
 
-  var line = d3.line()
+  let line = d3.line()
       .x(function(d, i) { return x(d.freq); })
       .y(function(d, i) { return y(d.amp); });
 
@@ -248,36 +248,36 @@ function respLogPlot(respData, cssSelector) {
 
 function simpleLogPlot(fft, cssSelector, sps) {
 
-    var T = 1/sps;
-    var ampLength = fft.length/2 +1;
-    var fftReal = fft.slice(0, ampLength);
-    var fftImag = new Array(ampLength);
+    let T = 1/sps;
+    let ampLength = fft.length/2 +1;
+    let fftReal = fft.slice(0, ampLength);
+    let fftImag = new Array(ampLength);
     fftImag[0] = 0;
     fftImag[fftImag.length-1] = 0;
     for (let i=1; i< fft.length/2; i++) {
       fftImag[i] = fft[fft.length - i];
     }
-    var fftAmp = new Array(fftReal.length);
+    let fftAmp = new Array(fftReal.length);
     for (let i=0; i< fftReal.length; i++) {
       fftAmp[i] = Math.hypot(fftReal[i], fftImag[i]);
     }
 
     fftAmp = fftAmp.slice(1);
 
-    var svg = d3.select(cssSelector).select("svg");
+    let svg = d3.select(cssSelector).select("svg");
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    let margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = +svg.attr("width") - margin.left - margin.right,
     height = +svg.attr("height") - margin.top - margin.bottom,
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var x = d3.scaleLog()
+let x = d3.scaleLog()
     .rangeRound([0, width]);
 
-var y = d3.scaleLog()
+let y = d3.scaleLog()
     .rangeRound([height, 0]);
 
-var line = d3.line()
+let line = d3.line()
     .x(function(d, i) { return x((i+1)*T); })
     .y(function(d, i) { return y(d); });
 

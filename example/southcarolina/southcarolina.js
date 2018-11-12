@@ -1,46 +1,46 @@
 
 
 // seisplotjs comes from the seisplotjs standalone bundle
-var wp = seisplotjs.waveformplot;
-var traveltime = seisplotjs.traveltime;
-var fdsnevent = seisplotjs.fdsnevent;
-var fdsnstation = seisplotjs.fdsnstation;
-var fdsndataselect = seisplotjs.fdsndataselect;
-var moment = fdsnevent.moment;
-var RSVP = fdsnstation.RSVP;
+let wp = seisplotjs.waveformplot;
+let traveltime = seisplotjs.traveltime;
+let fdsnevent = seisplotjs.fdsnevent;
+let fdsnstation = seisplotjs.fdsnstation;
+let fdsndataselect = seisplotjs.fdsndataselect;
+let moment = fdsnevent.moment;
+let RSVP = fdsnstation.RSVP;
 
-var USGS = "earthquake.usgs.gov";
-var IRIS = "service.iris.edu";
+let USGS = "earthquake.usgs.gov";
+let IRIS = "service.iris.edu";
 
 fdsnstation.RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
-var daysAgo = 365;
-var netCode = 'CO';
-var locCode = '00';
-var chanCode = 'HHZ';
-var datahost = IRIS;
-var quakehost = USGS;
-var minLat = 31;
-var maxLat = 36;
-var minLon = -84;
-var maxLon = -79;
-var centerLat = (minLat+maxLat)/2;
-var centerLon = (minLon+maxLon)/2;
-var mapZoomLevel = 7;
+let daysAgo = 365;
+let netCode = 'CO';
+let locCode = '00';
+let chanCode = 'HHZ';
+let datahost = IRIS;
+let quakehost = USGS;
+let minLat = 31;
+let maxLat = 36;
+let minLon = -84;
+let maxLon = -79;
+let centerLat = (minLat+maxLat)/2;
+let centerLon = (minLon+maxLon)/2;
+let mapZoomLevel = 7;
 
-var dur = 300;
-var pOffset = -120;
-var clockOffset = 0; // set this from server somehow!!!!
+let dur = 300;
+let pOffset = -120;
+let clockOffset = 0; // set this from server somehow!!!!
 
-var protocol = 'http:';
+let protocol = 'http:';
 if ("https:" == document.location.protocol) {
   protocol = 'https:'
 }
 console.log("Protocol: "+protocol+"  host: "+quakehost);
 
-var quakeQuery = new fdsnevent.EventQuery()
+let quakeQuery = new fdsnevent.EventQuery()
   .host(quakehost)
   .protocol(protocol)
   .minLat(minLat).maxLat(maxLat)
@@ -51,7 +51,7 @@ wp.d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
 
-var stationQuery = new fdsnstation.StationQuery()
+let stationQuery = new fdsnstation.StationQuery()
   .protocol(protocol)
   .networkCode(netCode)
   .minLat(minLat).maxLat(maxLat)
@@ -60,9 +60,9 @@ var stationQuery = new fdsnstation.StationQuery()
 wp.d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Stations URL: "+stationQuery.formURL(fdsnstation.LEVEL_STATION));
-var networkPromise = stationQuery.queryStations().then(function(netArray) {
+let networkPromise = stationQuery.queryStations().then(function(netArray) {
           staCodes = [];
-          for (var i=0;i<netArray[0].stations.length; i++) {
+          for (let i=0;i<netArray[0].stations.length; i++) {
             staCodes.push(netArray[0].stations[i].stationCode);
           }
           console.log("sta codes: "+staCodes.join());
@@ -89,12 +89,12 @@ var networkPromise = stationQuery.queryStations().then(function(netArray) {
 });
 
 quakeQuery.query().then(function(quakes) {
-  var table = wp.d3.select("div.recentQuakes")
+  let table = wp.d3.select("div.recentQuakes")
     .select("table");
   if ( table.empty()) {
     table = wp.d3.select("div.recentQuakes")
       .append("table");
-    var th = table.append("thead").append("tr");
+    let th = table.append("thead").append("tr");
     th.append("th").text("Time");
     th.append("th").text("Mag");
     th.append("th").text("Lat,Lon");
@@ -102,7 +102,7 @@ quakeQuery.query().then(function(quakes) {
     th.append("th").text("Decription");
     table.append("tbody");
   }
-  var tableData = table.select("tbody")
+  let tableData = table.select("tbody")
     .selectAll("tr")
     .data(quakes, function(d) {return d.time;});
   tableData.exit().remove();
@@ -119,7 +119,7 @@ quakeQuery.query().then(function(quakes) {
     } );
     circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
   }
-  var tr = tableData
+  let tr = tableData
     .enter()
     .append("tr");
   tr.append("td")
@@ -155,7 +155,7 @@ wp.d3.select("div.recentQuakes")
     .text("Reject: "+request.statusText);
 });
 
-var doEventClick = function(d){
+let doEventClick = function(d){
 console.log("click "+d.time.toISOString());
     wp.d3.select("div.seismograms")
       .selectAll("p")
@@ -196,16 +196,16 @@ console.log("quake network Promise then");
       });
   };
 
-var plotSeismograms = function(div, stations, loc, chan, quake, host, protocol) {
+let plotSeismograms = function(div, stations, loc, chan, quake, host, protocol) {
   div.selectAll('div.myseisplot').remove();
 console.log("plot seis");
   console.log("calc start end: "+quake.time+" "+dur+" "+clockOffset);
-  for (var s = 0; s<stations.length; s++) {
+  for (let s = 0; s<stations.length; s++) {
     plotOneStation(div, stations[s], loc, chan, quake, pOffset, dur, clockOffset, protocol, host);
   }
 }
 
-var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, clockOffset, protocol, host) {
+let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, clockOffset, protocol, host) {
   console.log("plotOneStation: "+mystation.codes());
   return new traveltime.TraveltimeQuery()
       .protocol(protocol)
@@ -215,9 +215,9 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
       .phases('p,P,PKP,PKIKP,Pdiff,s,S,Sdiff,PKP,SKS,SKIKS')
       .query()
       .then(function(ttimes) {
-      var firstP = null;
-      var firstS = null;
-      for (var p=0; p<ttimes.arrivals.length; p++) {
+      let firstP = null;
+      let firstS = null;
+      for (let p=0; p<ttimes.arrivals.length; p++) {
         if ((ttimes.arrivals[p].phase.startsWith('P') || ttimes.arrivals[p].phase.startsWith('p')) && ( ! firstP || firstP.time > ttimes.arrivals[p])) {
           firstP = ttimes.arrivals[p];
         }
@@ -227,10 +227,10 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
       }
       return { firstP: firstP, firstS: firstS };
     }).then(function(firstPS) {
-      var PArrival = moment(quake.time).add(firstPS.firstP.time+pOffset, 'seconds');
-      var seisDates = wp.calcStartEndDates(PArrival, null, dur, clockOffset);
-      var startDate = seisDates.start;
-      var endDate = seisDates.end;
+      let PArrival = moment(quake.time).add(firstPS.firstP.time+pOffset, 'seconds');
+      let seisDates = wp.calcStartEndDates(PArrival, null, dur, clockOffset);
+      let startDate = seisDates.start;
+      let endDate = seisDates.end;
 
       console.log("Start end: "+startDate+" "+endDate);
 
@@ -252,16 +252,16 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
         "dsQuery": dsQuery
       });
     }).then(function(hash) {
-        var byChannel = wp.miniseed.byChannel(hash.dataRecords);
-        var keys = Array.from(byChannel.keys());
+        let byChannel = wp.miniseed.byChannel(hash.dataRecords);
+        let keys = Array.from(byChannel.keys());
         console.log("Got "+hash.dataRecords.length+" data records for "+keys.length+" channels");
-        for (var key of byChannel.keys()) {
-          var segments = wp.miniseed.merge(byChannel.get(key));
+        for (let key of byChannel.keys()) {
+          let segments = wp.miniseed.merge(byChannel.get(key));
           div.append('p').html('Plot for ' + key);
-          var svgdiv = div.append('div').attr('class', 'myseisplot');
+          let svgdiv = div.append('div').attr('class', 'myseisplot');
           if (segments.length > 0) {
-              var seismogram = new wp.Seismograph(svgdiv, segments, hash.startDate, hash.endDate);
-              var markers = [];
+              let seismogram = new wp.Seismograph(svgdiv, segments, hash.startDate, hash.endDate);
+              let markers = [];
                 markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                 markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time).add(hash.firstPS.firstP.time, 'seconds') });
                 markers.push({ markertype: 'predicted', name: hash.firstPS.firstS.phase, time: moment(quake.time).add(hash.firstPS.firstS.time, 'seconds') });
@@ -293,8 +293,8 @@ var plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
 
 
 // map
-var mymap = L.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
-var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+let mymap = L.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
+let OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
 	maxZoom: 17,
 	attribution: 'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 }).addTo(mymap);

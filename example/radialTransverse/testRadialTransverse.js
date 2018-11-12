@@ -5,36 +5,36 @@
 //import * as seisplotjs from '../../src/index';
 
 // seisplotjs comes from the seisplotjs standalone bundle
-var wp = seisplotjs.waveformplot;
-var traveltime = seisplotjs.traveltime;
-var fdsnevent = seisplotjs.fdsnevent;
-var fdsnstation = seisplotjs.fdsnstation;
-var miniseed = seisplotjs.miniseed;
+let wp = seisplotjs.waveformplot;
+let traveltime = seisplotjs.traveltime;
+let fdsnevent = seisplotjs.fdsnevent;
+let fdsnstation = seisplotjs.fdsnstation;
+let miniseed = seisplotjs.miniseed;
 
-var USGS = "earthquake.usgs.gov";
-var IRIS = "service.iris.edu";
+let USGS = "earthquake.usgs.gov";
+let IRIS = "service.iris.edu";
 
 fdsnstation.RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
-var daysAgo = 365;
-var netCode = 'US';
-var staCode = 'LONY';
-var locCode = '--';
-var chanCode = 'BH?';
-var datahost = IRIS;
-var quakehost = USGS;
-var preOffset = 25;
-var dur = 125;
+let daysAgo = 365;
+let netCode = 'US';
+let staCode = 'LONY';
+let locCode = '--';
+let chanCode = 'BH?';
+let datahost = IRIS;
+let quakehost = USGS;
+let preOffset = 25;
+let dur = 125;
 
-var protocol = 'http:';
+let protocol = 'http:';
 if ("https:" == document.location.protocol) {
   protocol = 'https:'
 }
 console.log("Protocol: "+protocol+"  host: "+quakehost);
 
-var quakeQuery = new fdsnevent.EventQuery()
+let quakeQuery = new fdsnevent.EventQuery()
   .host(quakehost)
   .protocol(protocol)
   .minLat(36).maxLat(37)
@@ -45,7 +45,7 @@ wp.d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
 
-var stationQuery = new fdsnstation.StationQuery()
+let stationQuery = new fdsnstation.StationQuery()
   .protocol(protocol)
   .networkCode(netCode)
   .stationCode(staCode)
@@ -54,24 +54,24 @@ wp.d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Stations URL: "+stationQuery.formURL(fdsnstation.LEVEL_STATION));
 
-var stationPromise = stationQuery.queryStations().then(function(netArray) {
+let stationPromise = stationQuery.queryStations().then(function(netArray) {
           let staCodes = [];
-          for (var i=0;i<netArray[0].stations.length; i++) {
+          for (let i=0;i<netArray[0].stations.length; i++) {
             staCodes.push(netArray[0].stations[i].stationCode);
           }
           console.log("sta codes: "+staCodes.join());
           return netArray[0].stations[0];
 });
 
-var quakePromise = quakeQuery.query().then(function(quakes) {
-  var q = quakes[0];
+let quakePromise = quakeQuery.query().then(function(quakes) {
+  let q = quakes[0];
   console.log("quake: "+q.time.toISOString()+" "+q.magnitude.mag+" "
         +q.magnitude.type+" ("+q.latitude+", "+q.longitude+") "
         +(q.depth/1000)+" km ");
   return q;
 });
 
-var bothPromise = fdsnstation.RSVP.hash({
+let bothPromise = fdsnstation.RSVP.hash({
     station: stationPromise,
     quake: quakePromise
   }).then(function(hash) {
@@ -86,9 +86,9 @@ var bothPromise = fdsnstation.RSVP.hash({
         .phases('p,P,PKP,PKIKP,Pdiff,s,S,Sdiff,PKP,SKS,SKIKS')
         .query()
         .then(function(ttimes) {
-          var firstP = null;
-          var firstS = null;
-          for (var p=0; p<ttimes.arrivals.length; p++) {
+          let firstP = null;
+          let firstS = null;
+          for (let p=0; p<ttimes.arrivals.length; p++) {
             if ((ttimes.arrivals[p].phase.startsWith('P') || ttimes.arrivals[p].phase.startsWith('p')) && ( ! firstP || firstP.time > ttimes.arrivals[p])) {
               firstP = ttimes.arrivals[p];
             }
@@ -125,12 +125,12 @@ var bothPromise = fdsnstation.RSVP.hash({
         let traceArray = Array.from(hash.seismograms.values());
         traceArray.sort(wp.sort.alphabeticalSort);
         console.log("traceArray: "+traceArray.length+"  "+traceArray[0]+"  "+(typeof traceArray[0]))
-        var seismograph = new wp.SvgSeismograph(svgDiv, seisConfig, traceArray, hash.seisDates.start, hash.seisDates.end);
+        let seismograph = new wp.SvgSeismograph(svgDiv, seisConfig, traceArray, hash.seisDates.start, hash.seisDates.end);
         let titles = [traceArray[0].codes(),
                   traceArray[1].channelCode,
                   traceArray[2].channelCode];
         seisConfig.title = titles;
-        var markers = [];
+        let markers = [];
           markers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time });
           markers.push({ markertype: 'predicted', name: hash.traveltime.firstP.phase, time: hash.P_arrival });
           markers.push({ markertype: 'predicted', name: hash.traveltime.firstS.phase, time: hash.S_arrival });
@@ -155,9 +155,9 @@ var bothPromise = fdsnstation.RSVP.hash({
         let rotsvgDiv = rotdiv.append("div");
         rotsvgDiv.classed("svg-container-wide", true);
 
-        var seisZ = null;
-        var seisNorth = null;
-        var seisEast = null;
+        let seisZ = null;
+        let seisNorth = null;
+        let seisEast = null;
         for (let [key, trace] of hash.seismograms) {
           if (trace.channelCode.charAt(2) === "Z") {
             seisZ = trace;
@@ -173,17 +173,17 @@ var bothPromise = fdsnstation.RSVP.hash({
           throw new Error("unable to find ZNE: ${seisZ} ${seisNorth} ${seisEast}");
         }
 console.log("rotate to "+hash.distaz.baz+" "+((hash.distaz.baz+180)%360) );
-        var rotated = seisplotjs.filter.rotate(seisNorth, 0, seisEast, 90, (hash.distaz.baz+180)%360);
+        let rotated = seisplotjs.filter.rotate(seisNorth, 0, seisEast, 90, (hash.distaz.baz+180)%360);
         hash.rotatedSeismograms = [ seisZ, rotated.radial, rotated.transverse ];
         hash.rotatedSeismograms.sort(wp.sort.alphabeticalSort);
 console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.segments[0].yAtIndex(0)+" "+rotated.transverse.segments[0].yAtIndex(0))
         let rotSeisConfig = new wp.SeismographConfig();
-        var rotatedSeismograph = new wp.SvgSeismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
+        let rotatedSeismograph = new wp.SvgSeismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
         titles = [hash.rotatedSeismograms[0].codes(),
                   hash.rotatedSeismograms[1].channelCode+" "+rotated.azimuthRadial.toFixed(2),
                   hash.rotatedSeismograms[2].channelCode+" "+rotated.azimuthTransverse.toFixed(2)];
         rotSeisConfig.title = titles;
-        var rotateMarkers = [];
+        let rotateMarkers = [];
           rotateMarkers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time });
           rotateMarkers.push({ markertype: 'predicted', name: hash.traveltime.firstP.phase, time: hash.P_arrival });
           rotateMarkers.push({ markertype: 'predicted', name: hash.traveltime.firstS.phase, time: hash.S_arrival });

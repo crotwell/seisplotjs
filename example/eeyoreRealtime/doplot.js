@@ -58,9 +58,9 @@ let stopped = false;
 let numSteps = 0;
 
 wp.d3.select("button#load").on("click", function(d) {
-  var selectEl = document.getElementById("stationChoice");
-  var selectedIndex = selectEl.selectedIndex;
-  var staCode = selectEl.options[selectedIndex].value;
+  let selectEl = document.getElementById("stationChoice");
+  let selectedIndex = selectEl.selectedIndex;
+  let staCode = selectEl.options[selectedIndex].value;
 
   console.log("Load..."+staCode);
   doplot(staCode);
