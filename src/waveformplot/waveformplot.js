@@ -14,29 +14,21 @@ import {
     findStartEnd,
     findMinMax
   } from './util';
-
+import SeismographConfig from './seismographconfig';
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
+import type { MarginType, MarkerType } from './seismographconfig';
 import * as model from '../model/index';
+import {multiFormatHour, formatMillisecond, formatSecond, formatMinute, formatHour, formatDay, formatMonth, formatYear} from './seismographconfig';
 
 const moment = miniseed.model.moment;
 
-export type MarginType = {
-  top: number,
-  right: number,
-  bottom: number,
-  left: number
-};
+
 
 export type ScaleChangeListenerType = {
   notifyScaleChange: (value : any) => void
 }
 
-export type MarkerType = {
-  name: string,
-  time: moment,
-  type: string
-}
 
 export function createPlotsBySelector(selector :string) {
   return createPlotsBySelectorPromise(selector).then(function(resultArray){
@@ -77,6 +69,8 @@ export class Seismograph {
   beforeFirstDraw: boolean;
   xScaleFormat: (date: Date) => string;
   yScaleFormat: string | (value :number) => string;
+  seismographConfig: SeismographConfig;
+
   title: Array<string>;
   xLabel: string;
   xSublabel: string;
@@ -774,21 +768,3 @@ export class Seismograph {
 Seismograph._lastID = 0;
 
 const CLIP_PREFIX = "seismographclip";
-
-const formatMillisecond = d3.utcFormat(".%L"),
-    formatSecond = d3.utcFormat(":%S"),
-    formatMinute = d3.utcFormat("%H:%M"),
-    formatHour = d3.utcFormat("%H:%M"),
-    formatDay = d3.utcFormat("%m/%d"),
-    formatMonth = d3.utcFormat("%Y/%m"),
-    formatYear = d3.utcFormat("%Y");
-
-const multiFormatHour = function(date: Date) :string {
-  return (d3.utcSecond(date) < date ? formatMillisecond
-      : d3.utcMinute(date) < date ? formatSecond
-      : d3.utcHour(date) < date ? formatMinute
-      : d3.utcDay(date) < date ? formatHour
-      : d3.utcMonth(date) < date ?  formatDay
-      : d3.utcYear(date) < date ? formatMonth
-      : formatYear)(date);
-};

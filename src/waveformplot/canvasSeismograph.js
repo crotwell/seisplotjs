@@ -35,7 +35,7 @@ const CLIP_PREFIX = "seismographclip";
   * }<br/>
   * in order to have the seismogram display.
   */
-export class SvgSeismograph {
+export class CanvasSeismograph {
   static _lastID: number;
   plotId: number;
   beforeFirstDraw: boolean;
@@ -43,6 +43,7 @@ export class SvgSeismograph {
 
   svgParent: any;
   segments: Array<miniseed.model.Trace>;
+  traces: Array<miniseed.model.Trace>;
   markers: Array<MarkerType>;
   width: number;
   height: number;
@@ -50,6 +51,7 @@ export class SvgSeismograph {
   outerHeight: number;
   scaleChangeListeners: Array<ScaleChangeListenerType>;
   svg: any;
+  canvas: any;
   xScale: any;
   origXScale: any;
   currZoomXScale: any;
@@ -65,7 +67,7 @@ export class SvgSeismograph {
   throttleResize: any;
   constructor(inSvgParent :any, seismographConfig, inSegments: Array<miniseed.model.Trace>, plotStartDate :moment, plotEndDate :moment) {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
-    this.plotId = ++SvgSeismograph._lastID;
+    this.plotId = ++CanvasSeismograph._lastID;
     this.beforeFirstDraw = true;
     this.seismographConfig = seismographConfig;
     this.width = 200;
@@ -76,12 +78,17 @@ export class SvgSeismograph {
     this._internalAppend(inSegments);
     this.markers = [];
 
+    this.canvas = null;
+
     this.svg = inSvgParent.append("svg");
     this.svg.classed("seismograph", true);
-    this.svg.classed("svg-content-responsive", true);
+    //this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
+    this.svg.style("postition", "absolute");
+    this.svg.style("top", "0px");
+    this.svg.style("left", "0px");
     //this.svg.attr("preserveAspectRatio", "xMinYMin meet");
-    //this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`)
+    //this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
     this.svg.attr("plotId", this.plotId);
 
     if ( ! plotStartDate || ! plotEndDate) {
@@ -120,7 +127,6 @@ export class SvgSeismograph {
       maxZoom = Math.max(maxZoom,
                          Math.pow(2, Math.ceil(Math.log(zoomLevelFactor)/Math.log(2))));
     }
-
     this.zoom = d3.zoom()
             .scaleExtent([1/4, maxZoom ] )
             .on("zoom", function() {
@@ -130,14 +136,16 @@ export class SvgSeismograph {
     this.g = this.svg.append("g")
       .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
     this.g.append("g").attr("class", "allsegments");
-    this.svg.call(this.zoom);
+  //  this.svg.call(this.zoom);
+
     this.calcScaleDomain();
+    //this.setWidthHeight(this.width, this.height);
 
     // create marker g
     this.g.append("g").attr("class", "allmarkers")
         .attr("style", "clip-path: url(#"+CLIP_PREFIX+this.plotId+")");
-
-    d3.select(window).on('resize.seismograph'+this.plotId, function() {
+    d3.select(window).on('resize.canvasseismograph'+mythis.plotId, function() {
+      console.log('canvas resize.seismograph'+mythis.plotId+" ");
       if ( ! mythis.beforeFirstDraw && mythis.checkResize() ) {
         mythis.draw();
       }
@@ -147,29 +155,266 @@ export class SvgSeismograph {
 
   disableWheelZoom() :void {
     this.svg.call(this.zoom).on("wheel.zoom", null);
+    this.canvas.call(this.zoom).on("wheel.zoom", null);
   }
 
   checkResize() :boolean {
-    let rect = this.svgParent.node().getBoundingClientRect();
+    let rect = this.svg.node().getBoundingClientRect();
     if (rect.width != this.outerWidth || rect.height != this.outerHeight) {
       return true;
     }
     return false;
   }
   draw() :void {
+    console.log("####### IN canvasSeismogram.draw");
     let rect = this.svg.node().getBoundingClientRect();
-    console.log("svgSeis draw bound rect: "+rect.width +"!="+ this.outerWidth +"  "+ rect.height +"!="+ this.outerHeight);
+    const styleHeight = this.svgParent.style("height");
+    const styleWidth = this.svgParent.style("width");
     if ((rect.width != this.outerWidth || rect.height != this.outerHeight)) {
       if (rect.height > this.seismographConfig.maxHeight) { rect.height = this.seismographConfig.maxHeight; }
       this.setWidthHeight(rect.width, rect.height);
     }
-    this.drawSegments(this.traces, this.g.select("g.allsegments"));
+    if ( ! this.canvas ) {
+      this.canvas = this.svgParent.append('canvas').classed("seismograph", true);
+      //this.canvas.call(this.zoom);
+      const mythis = this;
+      this.canvas.call(d3.zoom().on("zoom", function () {
+        mythis.zoomed(mythis);
+     }));
+      this.canvas.attr("height", this.outerHeight)
+        .attr("width", this.outerWidth);
+      let style = window.getComputedStyle(this.canvas.node());
+      let marginTop = style.getPropertyValue('margin-top');
+      let padTop = style.getPropertyValue('padding-top');
+      if (padTop.endsWith("px")) {
+        padTop = Number(padTop.replace("px", ""));
+      }
+      let borderTop = style.getPropertyValue('border-top-width');
+      if (borderTop.endsWith("px")) {
+        borderTop = Number(borderTop.replace("px", ""));
+      }
+      let padLeft = style.getPropertyValue('padding-left');
+      padLeft = Number(padLeft.replace("px", ""));
+      console.log("padTop: "+padTop+"  "+(1+padTop-1)+"  borderTop "+borderTop+"  m "+marginTop+" sc.m"+this.seismographConfig.margin.top);
+      this.sizeCanvas();
+    }
+    this.drawTraces();
+    //this.drawSegments(this.traces, this.g.select("g.allsegments"));
     this.drawAxis(this.g);
     this.drawAxisLabels();
     this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
     this.beforeFirstDraw = false;
   }
+  printSizes() :void {
+    let rect = this.svg.node().getBoundingClientRect();
+    console.log("svg rect.height "+rect.height);
+    console.log("svg rect.width "+rect.width);
+    let grect = this.svgParent.node().getBoundingClientRect();
+    console.log("parent rect.height "+grect.height);
+    console.log("parent rect.width "+grect.width);
+      let crect = this.canvas.node().getBoundingClientRect();
+      console.log("c rect.height "+crect.height);
+      console.log("c rect.width "+crect.width);
+        console.log("c style.height "+this.canvas.style("height"));
+        console.log("c style.width "+this.canvas.style("width"));
+    console.log("this.height "+this.height);
+    console.log("this.width "+this.width);
+  console.log("canvas.height "+this.canvas.node().height);
+  console.log("canvas.width "+this.canvas.node().width);
+    console.log("this.outerHeight "+this.outerHeight);
+    console.log("this.outerWidth "+this.outerWidth);
+    console.log("this.margin "+this.seismographConfig.margin);
+  }
+  sizeCanvas() :void {
+    // resize canvas if exists
+    if ( this.canvas) {
+      // this.canvas
+      //     .attr('height', this.outerHeight- this.seismographConfig.margin.top- this.seismographConfig.margin.bottom)
+      //.attr('width', this.outerWidth- this.seismographConfig.margin.left- this.seismographConfig.margin.right)
+      //.style('position', 'absolute')
+      //     .style('top', Math.round(1.0*this.outerHeight/this.height*this.seismographConfig.margin.top) + 'px')
+      //     .style('left', Math.round(1.0*this.outerWidth/this.width*this.seismographConfig.margin.left) + 'px');
+      //this.svg.attr('height', this.outerHeight+'px').attr('width', this.outerWidth+'px');
 
+      this.canvas
+        .style('position', 'absolute')
+        .style('top', (0) + 'px')
+        .style('left', (0) + 'px');
+        //.style('top', (this.seismographConfig.margin.top) + 'px')
+        //.style('left', (this.seismographConfig.margin.left) + 'px');
+            //  .attr('height', (this.height)+'px')
+            //  .attr('width', (this.width)+'px');
+          //    .style('position', 'absolute')
+
+      const canvasNode = this.canvas.node();
+      if ( ! canvasNode) {
+        console.log("sizeCanvas Canvas.node() is null: "+canvasNode);
+      }
+      canvasNode.height = this.outerHeight;
+      canvasNode.width = this.outerWidth;
+    }
+  }
+
+  drawTraces() {
+    this.drawTracesCanvas();
+  }
+  drawTracesCanvas() :void {
+    // get the canvas drawing context
+    const canvasNode = this.canvas.node();
+    if ( ! canvasNode) {
+      console.log("Canvas.node() is null: "+canvasNode);
+    }
+    const context = canvasNode.getContext("2d");
+    context.save();
+    // clear the canvas from previous drawing
+    context.clearRect(0, 0, canvasNode.width, canvasNode.height);
+    context.translate(this.seismographConfig.margin.left, this.seismographConfig.margin.top);
+    // Create clipping path
+    context.beginPath();
+    context.rect(0, 0, this.width, this.height);
+    context.clip();
+
+    const plotStart = moment.utc(this.currZoomXScale.domain()[0]);
+    const plotEnd = moment.utc(this.currZoomXScale.domain()[1]);
+    const plotDuration = moment.duration(plotEnd.diff(plotStart));
+    const secondsPerPixel = plotDuration.asSeconds()/
+        (this.currZoomXScale.range()[1]-this.currZoomXScale.range()[0]);
+
+    this.traces.forEach( (t,ti) => {
+//      const color = d3.select(`svg g.allsegments g:nth-child(9n+1) g path.seispath`)
+    const color = this.getColorForIndex(ti);
+      t.seisArray.forEach((s, si) => {
+        if (s.start.isAfter(moment.utc(this.currZoomXScale.domain()[1])) ||
+            s.end.isBefore(moment.utc(this.currZoomXScale.domain()[0]))) {
+              // segment either totally off to left or right of visible
+              return;
+        }
+        const samplesPerPixel = 1.0*s.sampleRate*secondsPerPixel;
+        const pixelsPerSample = 1.0/samplesPerPixel;
+        const startPixel = this.currZoomXScale(s.start.toDate());
+        const endPixel = this.currZoomXScale(s.end.toDate());
+        let leftVisibleSample = 0;
+        let rightVisibleSample = s.y.length;
+        let leftVisiblePixel = startPixel;
+        let rightVisiblePixel = endPixel;
+        if (startPixel < 0) {
+          leftVisibleSample = Math.floor(-1*startPixel*samplesPerPixel) -1;
+          leftVisiblePixel = 0;
+        }
+        if (endPixel > this.width) {
+          rightVisibleSample = leftVisibleSample+Math.ceil((this.width+1)*samplesPerPixel) +1;
+          rightVisiblePixel = this.width+1;
+        }
+        //console.log(`${ti} ${si} ls${leftVisibleSample} rs${rightVisibleSample}  lp${leftVisiblePixel} rp${rightVisiblePixel} `);
+        context.beginPath();
+        context.strokeStyle = color;
+        //context.lineWidth = 5;
+        context.moveTo(leftVisiblePixel, this.yScale(s.y[leftVisibleSample]));
+        for(let i=leftVisibleSample; i<rightVisibleSample && i<s.y.length; i++) {
+
+          context.lineTo(startPixel+i*pixelsPerSample, this.yScale(s.y[i]));
+        }
+        context.stroke();
+      });
+    });
+    context.restore();
+  }
+  getColorForIndex(i) {
+    switch(i%9) {
+      case 0:
+        return "skyblue";
+      case 1:
+        return "olivedrab";
+      case 2:
+        return "goldenrod";
+      case 3:
+        return "firebrick";
+      case 4:
+        return "darkcyan";
+      case 5:
+        return "orange";
+      case 6:
+        return "darkmagenta";
+      case 7:
+        return "mediumvioletred";
+      case 8:
+        return "sienna";
+      default:
+        return "black";
+    }
+  }
+  drawCanvasAlignment() :void {
+    const mythis = this;
+    let radius = 10;
+    // draw corners in svg for comparison
+    let minX = this.currZoomXScale.domain()[0];
+    let maxX = this.currZoomXScale.domain()[1];
+    let minY = this.yScale.domain()[0];
+    let maxY = this.yScale.domain()[1];
+    this.g.selectAll("circle").remove();
+    let circles = this.g.selectAll("circle").data([ [minX, minY],
+                                      [minX, maxY],
+                                      [maxX, minY],
+                                      [maxX, maxY]]);
+    circles.exit().remove();
+    circles
+      .enter().append("circle")
+      .attr('cx', function(d){  return mythis.currZoomXScale(d[0]);})
+      .attr('cy', function(d){  return mythis.yScale(d[1]);})
+      .attr('r', radius+2);
+      console.log("svg draw red: "+mythis.currZoomXScale(maxX)+", "+mythis.yScale(minY));
+
+    this.g.selectAll("path.diagonal").remove();
+    this.g.append("path").attr("class",  "seispath diagonal").attr("d", "M0,0L"+mythis.currZoomXScale(maxX)+", "+mythis.yScale(minY));
+
+    // get the canvas drawing context
+    const canvasNode = this.canvas.node();
+    if ( ! canvasNode) {
+      console.log("Canvas.node() is null: "+canvasNode);
+    }
+    //canvasNode.height = this.height;
+    //canvasNode.width = this.width;
+    const context = canvasNode.getContext("2d");
+    // clear the canvas from previous drawing
+    context.clearRect(0, 0, canvasNode.width, canvasNode.height);
+    context.translate(this.seismographConfig.margin.left, this.seismographConfig.margin.top);
+    // Create clipping path
+    //  context.beginPath();
+    //  context.rect(0, 0, this.width, this.height);
+    //  context.clip();
+    context.beginPath();
+    context.fillStyle = "lightblue";
+    context.arc(this.xScale(minX), this.yScale(minY), radius, 0, 2*Math.PI, true);
+    context.fill();
+    context.beginPath();
+    context.fillStyle = "red";
+    console.log("draw red: "+this.xScale(this.xScale.domain()[1])+", "+this.yScale(this.yScale.domain()[0]));
+    context.arc(this.xScale(maxX), this.yScale(minY), radius, 0, 2*Math.PI, true);
+    //context.arc(this.width-10, 10, radius, 0, 2*Math.PI, true);
+    context.fill();
+    context.beginPath();
+    context.fillStyle = "green";
+    context.arc(this.xScale(minX), this.yScale(maxY), radius, 0, 2*Math.PI, true);
+    //context.arc(this.width-10, this.height-10, radius, 0, 2*Math.PI, true);
+    context.fill();
+    context.beginPath();
+    context.fillStyle = "black";
+    context.arc(this.xScale(maxX), this.yScale(maxY), radius, 0, 2*Math.PI, true);
+    //context.arc(10, this.height-10, radius, 0, 2*Math.PI, true);
+    context.fill();
+    context.beginPath();
+    context.moveTo(this.xScale(this.xScale.domain()[0]), this.yScaleRmean(0));
+    context.lineTo(this.xScale(this.xScale.domain()[1]), this.yScaleRmean(0));
+    context.moveTo(0,0);
+    context.lineTo(this.width, this.height);
+    context.stroke();
+    context.beginPath();
+    context.strokeStyle = "red";
+    context.moveTo(this.xScale(this.xScale.domain()[1]), this.yScaleRmean(this.yScaleRmean.domain()[0]));
+    context.lineTo(this.xScale(this.xScale.domain()[0]), this.yScaleRmean(this.yScaleRmean.domain()[1]));
+    context.stroke();
+  //  this.printSizes();
+  }
   calcScaleAndZoom() :void {
     this.rescaleYAxis();
     this.zoom = d3.zoom()
@@ -187,7 +432,34 @@ export class SvgSeismograph {
             .attr("width", this.width)
             .attr("height", this.height);
   }
-  drawSegments(traceList: Array<miniseed.model.Trace>, svgG: any) :void {
+  drawTracesSvg() {
+    const mythis = this;
+    const allSegG = this.g.select("g.allsegments");
+    const traceJoin = allSegG.selectAll("g")
+      .data(this.traces);
+    traceJoin.exit().remove();
+    traceJoin.enter()
+      .append("g")
+        .attr("class", "trace");
+
+    const subtraceJoin = allSegG.selectAll("g")
+      .selectAll('g')
+       .data(function(trace) {console.log(`segG trace seg: ${trace.segments.length}`);return trace.segments;});
+    subtraceJoin.enter()
+       .append("g")
+         .attr("class", "segment")
+    .append("path")
+      .attr("class", function(seg) {
+          return "seispath "+seg.codes()+" orient"+seg.chanCode.charAt(2);
+      })
+      .attr("style", "clip-path: url(#"+CLIP_PREFIX+mythis.plotId+")")
+      .merge(subtraceJoin)
+      .attr("d", function(seg, si, g) {
+        console.log(`draw segment: trace ${g}  seg: ${si}  firstPoint: ${mythis.yScale(seg.y[0])}`)
+         return mythis.segmentDrawLine(seg, mythis.currZoomXScale);
+       });
+  }
+  olddrawSegments(traceList: Array<miniseed.model.Trace>, svgG: any) :void {
     let drawG = svgG;
     let mythis = this;
 
@@ -196,16 +468,23 @@ export class SvgSeismograph {
       .data(traceList);
 
     traceG.exit().remove();
-    let segG = traceG
+    //let segG = traceG
+    //  .enter()
+    //  .append("g")
+    //    .attr("class", "trace");
+
+    // traceG.data().each(function(trace, ti) {
+    //   console.log(`in segG.each: trace: ${ti} ${trace.segments.length}`);
+    //   let segJoin = d3.select(this)
+    //  .selectAll("g")
+    traceG
       .enter()
       .append("g")
         .attr("class", "trace");
-
-     segG.each(function(trace, i) {
-       console.log("in segG.each: "+i+" "+trace.segments.length);
-       d3.select(this)
-         .selectAll("g")
-         .data(trace.segments)
+    let segG = traceG
+      .selectAll('g')
+         .data(function(trace) {console.log(`segG trace seg: ${trace.segments.length}`);return trace.segments;});
+    segG
          .enter()
          .append("g")
            .attr("class", "segment")
@@ -214,10 +493,12 @@ export class SvgSeismograph {
             return "seispath "+seg.codes()+" orient"+seg.chanCode.charAt(2);
         })
         .attr("style", "clip-path: url(#"+CLIP_PREFIX+mythis.plotId+")")
-        .attr("d", function(seg) {
-           return mythis.segmentDrawLine(seg, mythis.xScale);
+        .merge(segG)
+        .attr("d", function(seg, si, g) {
+          console.log(`draw segment: trace ${g}  seg: ${si}  firstPoint: ${mythis.yScale(seg.y[0])}`)
+           return mythis.segmentDrawLine(seg, mythis.currZoomXScale);
          });
-     });
+    // });
   }
 
   calcSecondsPerPixel(xScale :any) :number {
@@ -231,10 +512,10 @@ export class SvgSeismograph {
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
     this.lineFunc.x(function(d) { return xScale(d.time); });
     if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
-      if (! seg.y) {
-        console.log("svgSeism seg.y not defined: "+(typeof seg)+" "+(seg instanceof miniseed.model.Seismogram));
-      return null;
-      }
+if (! seg.y) {
+  console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof miniseed.model.Trace));
+return null;
+}
       return this.lineFunc(seg.y.map(function(d,i) {
         return {time: seg.timeOfSample(i).toDate(), y: d };
       }));
@@ -317,7 +598,8 @@ export class SvgSeismograph {
   }
 
 
-  zoomed(mythis :SvgSeismograph) :void {
+  zoomed(mythis :CanvasSeismograph) :void {
+    console.log("zoomed");
     let t = d3.event.transform;
     let xt = t.rescaleX(this.xScale);
     mythis.redrawWithXScale(xt);
@@ -326,10 +608,21 @@ export class SvgSeismograph {
   redrawWithXScale(xt :any) :void {
     this.currZoomXScale = xt;
     let mythis = this;
-    this.g.selectAll(".segment").select("path")
-          .attr("d", function(seg) {
-             return mythis.segmentDrawLine(seg, xt);
-           });
+    this.g.select("g.allsegments").selectAll("g.trace").remove();
+      //
+      // .each(function(d, i) {
+      //   console.log(`redrawWithXScale trace ${i}`);
+      //   let trace = mythis.traces[i];
+      //   let segG = d3.select(this)
+      //     .selectAll("g.segment")
+      //     .select("path")
+      //     .attr("d", function(dd, j) {
+      //       console.log(`redrawWithXScale trace ${i} seg ${j}`);
+      //        return mythis.segmentDrawLine(trace.segments[j], mythis.currZoomXScale);
+      //      });
+      // });
+    this.drawTraces();
+    //this.drawSegments(this.traces, this.g.select("g.allsegments"));
     this.g.select("g.allmarkers").selectAll("g.marker")
           .attr("transform", function(marker :MarkerType) {
             let textx = xt( marker.time);
@@ -438,10 +731,13 @@ export class SvgSeismograph {
   }
 
   setWidthHeight(nOuterWidth: number, nOuterHeight: number) :void {
-    this.outerWidth = nOuterWidth ? Math.max(200, nOuterWidth) : 200;
-    this.outerHeight = nOuterHeight ? Math.max(100, nOuterHeight): 100;
+    console.log("setWidthHeight: outer: "+nOuterWidth+" "+nOuterHeight);
+    this.outerWidth = Math.round(nOuterWidth ? Math.max(200, nOuterWidth) : 200);
+    this.outerHeight = Math.round(nOuterHeight ? Math.max(100, nOuterHeight): 100);
     this.height = this.outerHeight - this.seismographConfig.margin.top - this.seismographConfig.margin.bottom;
     this.width = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
+
+      console.log("setWidthHeight: inner: "+this.width+" "+this.height);
     //this.svg.attr("viewBox", "0 0 "+this.outerWidth+" "+this.outerHeight);
     this.origXScale.range([0, this.width]);
     this.xScale.range([0, this.width]);
@@ -450,6 +746,7 @@ export class SvgSeismograph {
     this.yScaleRmean.range([this.height, 0]);
     this.yAxis.scale(this.yScaleRmean);
     this.calcScaleAndZoom();
+    this.sizeCanvas();
     if ( ! this.beforeFirstDraw) {
       this.redrawWithXScale(this.xScale);
     }
@@ -474,16 +771,16 @@ export class SvgSeismograph {
   getPlotStart() :moment {
     return moment.utc(this.xScale.domain()[0]);
   }
-  setPlotStart(value :moment) :SvgSeismograph {
+  setPlotStart(value :moment) :CanvasSeismograph {
     return this.setPlotStartEnd(value, this.xScale.domain()[1]);
   }
   getPlotEnd() :moment {
     return moment.utc(this.xScale.domain()[1]);
   }
-  setPlotEnd(value :moment) :SvgSeismograph {
+  setPlotEnd(value :moment) :CanvasSeismograph {
     return this.setPlotStartEnd(this.xScale.domain()[0], value);
   }
-  setPlotStartEnd(startDate :moment, endDate :moment) :SvgSeismograph {
+  setPlotStartEnd(startDate :moment, endDate :moment) :CanvasSeismograph {
     const plotStart = (startDate instanceof Date) ? startDate : moment.utc(startDate).toDate();
     const plotEnd = (endDate instanceof Date) ? endDate : moment.utc(endDate).toDate();
     this.xScale.domain([ plotStart, plotEnd ]);
@@ -493,17 +790,17 @@ export class SvgSeismograph {
     return this;
   }
 
-  setWidth(value :number) :SvgSeismograph {
+  setWidth(value :number) :CanvasSeismograph {
     this.setWidthHeight(value, this.outerHeight);
     return this;
   }
 
-  setHeight(value :number) :SvgSeismograph {
+  setHeight(value :number) :CanvasSeismograph {
     this.setWidthHeight(this.outerWidth, value);
     return this;
   }
 
-  setMargin(value :MarginType ) :SvgSeismograph {
+  setMargin(value :MarginType ) :CanvasSeismograph {
     this.seismographConfig.margin = value;
     this.setWidthHeight(this.outerWidth, this.outerHeight);
     this.g.attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
@@ -525,7 +822,7 @@ export class SvgSeismograph {
         .text(thisseismographConfig.title);
     }
   }
-  drawXLabel() :SvgSeismograph {
+  drawXLabel() :CanvasSeismograph {
     this.svg.selectAll("g.xLabel").remove();
     this.svg.append("g")
        .classed("xLabel", true)
@@ -535,7 +832,7 @@ export class SvgSeismograph {
        .text(this.seismographConfig.xLabel);
     return this;
   }
-  drawYLabel() :SvgSeismograph {
+  drawYLabel() :CanvasSeismograph {
     this.svg.selectAll('g.yLabel').remove();
     this.svg.append("g")
        .classed("yLabel", true)
@@ -550,7 +847,7 @@ export class SvgSeismograph {
        .text(this.seismographConfig.yLabel);
     return this;
   }
-  drawXSublabel() :SvgSeismograph {
+  drawXSublabel() :CanvasSeismograph {
     this.svg.selectAll('g.xSublabel').remove();
     this.svg.append("g")
        .classed("xSublabel", true)
@@ -560,7 +857,7 @@ export class SvgSeismograph {
        .text(this.seismographConfig.xSublabel);
     return this;
   }
-  drawYSublabel() :SvgSeismograph {
+  drawYSublabel() :CanvasSeismograph {
     this.svg.selectAll('g.ySublabel').remove();
     this.svg.append("g")
        .classed("ySublabel", true)
@@ -593,7 +890,7 @@ export class SvgSeismograph {
     this.instrumentSensitivity = value;
     this.redoDisplayYScale();
   }
-  clearMarkers() :SvgSeismograph {
+  clearMarkers() :CanvasSeismograph {
     this.markers.length = 0; //set array length to zero deletes all
     if ( ! this.beforeFirstDraw) {
       this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
@@ -603,7 +900,7 @@ export class SvgSeismograph {
   getMarkers() :Array<MarkerType> {
     return this.markers;
   }
-  appendMarkers(value: Array<MarkerType> | MarkerType) :SvgSeismograph {
+  appendMarkers(value: Array<MarkerType> | MarkerType) :CanvasSeismograph {
     if (Array.isArray(value)) {
       for( let m of value) {
         this.markers.push(m);
@@ -663,7 +960,8 @@ export class SvgSeismograph {
     if ( ! this.beforeFirstDraw) {
       // only trigger a draw if appending after already drawn on screen
       // otherwise, just append the data and wait for outside to call first draw()
-      this.drawSegments(this.traces, this.g.select("g.allsegments"));
+      this.drawTraces();
+      //this.drawSegments(this.traces, this.g.select("g.allsegments"));
     }
     return this;
   }
@@ -675,7 +973,8 @@ export class SvgSeismograph {
       });
       if (this.traces.length > 0) {
         this.calcScaleDomain();
-        this.drawSegments(this.traces, this.g.select("g.allsegments"));
+        this.drawTraces();
+        //this.drawSegments(this.traces, this.g.select("g.allsegments"));
       }
     }
   }
@@ -683,4 +982,4 @@ export class SvgSeismograph {
 
 
 // static ID for seismogram
-SvgSeismograph._lastID = 0;
+CanvasSeismograph._lastID = 0;
