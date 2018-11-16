@@ -1,4 +1,11 @@
-div.myseisplot {
+svg.seismograph {
+  height: 100%;
+  width: 100%;
+}
+
+canvas.seismograph {
+  height: 100%;
+  width: 100%;
 }
 
 div.particleMotion {
@@ -15,30 +22,6 @@ path.seispath {
   stroke: skyblue;
   fill: none;
   stroke-width: 1px;
-}
-
-/* Responsive SVG */
-.svg-container-square {
-    display: inline-block;
-    position: relative;
-    width: 90%;
-    padding-bottom: 70%; /* aspect ratio */
-    vertical-align: top;
-    overflow: hidden;
-}
-.svg-container-wide {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    padding-bottom: 40%; /* aspect ratio */
-    vertical-align: top;
-    overflow: hidden;
-}
-.svg-content-responsive {
-    display: inline-block;
-    position: absolute;
-    top: 10px;
-    left: 0;
 }
 
 
@@ -61,39 +44,39 @@ path.seispath {
   stroke-width: 1px;
 }
 
-svg g.allsegments g:nth-child(9n+1) path.seispath {
+svg g.allsegments g:nth-child(9n+1) g path.seispath {
   stroke: skyblue;
 }
 
-svg g.allsegments g:nth-child(9n+2) path.seispath {
+svg g.allsegments g:nth-child(9n+2) g path.seispath {
   stroke: olivedrab;
 }
 
-svg g.allsegments g:nth-child(9n+3) path.seispath {
+svg g.allsegments g:nth-child(9n+3) g path.seispath {
   stroke: goldenrod;
 }
 
-svg g.allsegments g:nth-child(9n+4) path.seispath {
+svg g.allsegments g:nth-child(9n+4) g path.seispath {
   stroke: firebrick;
 }
 
-svg g.allsegments g:nth-child(9n+5) path.seispath {
+svg g.allsegments g:nth-child(9n+5) g path.seispath {
   stroke: darkcyan;
 }
 
-svg g.allsegments g:nth-child(9n+6) path.seispath {
+svg g.allsegments g:nth-child(9n+6) g path.seispath {
   stroke: orange;
 }
 
-svg g.allsegments g:nth-child(9n+7) path.seispath {
+svg g.allsegments g:nth-child(9n+7) g path.seispath {
   stroke: darkmagenta;
 }
 
-svg g.allsegments g:nth-child(9n+8) path.seispath {
+svg g.allsegments g:nth-child(9n+8) g path.seispath {
   stroke: MediumVioletRed;
 }
 
-svg g.allsegments g:nth-child(9n+9) path.seispath {
+svg g.allsegments g:nth-child(9n+9) g path.seispath {
   stroke: sienna;
 }
 

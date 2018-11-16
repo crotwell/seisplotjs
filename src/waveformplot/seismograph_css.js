@@ -34,6 +34,23 @@ path.seispath {
   stroke-width: 1px;
 }
 
+svg.seismograph {
+  height: 450;
+  width: 90%;
+}
+canvas.seismograph {
+  height: 450;
+  width: 90%;
+}
+div.container-wide {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 40%; /* aspect ratio */
+  vertical-align: top;
+  overflow: hidden;
+}
+
 svg.realtimePlot g.allsegments g path.seispath {
   stroke: skyblue;
 }

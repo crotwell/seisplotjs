@@ -117,7 +117,9 @@ let bothPromise = fdsnstation.RSVP.hash({
   }).then(function(hash) {
     let div = seisplotjs.d3.select("div.seismograms");
     let svgDiv = div.append("div");
-    svgDiv.classed("svg-container-wide", true);
+    svgDiv.style("position", "relative");
+    svgDiv.style("width", "100%");
+    svgDiv.style("height", "450px");
     console.log("hash.seismograms size: "+hash.seismograms.size);
     if (hash.seismograms.size > 0) {
       console.log("hash.seismograms "+hash.seismograms.size+" ");
@@ -125,7 +127,7 @@ let bothPromise = fdsnstation.RSVP.hash({
         let traceArray = Array.from(hash.seismograms.values());
         traceArray.sort(wp.sort.alphabeticalSort);
         console.log("traceArray: "+traceArray.length+"  "+traceArray[0]+"  "+(typeof traceArray[0]))
-        let seismograph = new wp.SvgSeismograph(svgDiv, seisConfig, traceArray, hash.seisDates.start, hash.seisDates.end);
+        let seismograph = new wp.CanvasSeismograph(svgDiv, seisConfig, traceArray, hash.seisDates.start, hash.seisDates.end);
         let titles = [traceArray[0].codes(),
                   traceArray[1].channelCode,
                   traceArray[2].channelCode];
