@@ -112,13 +112,16 @@ export class Trace {
     if (this.seisArray.length == 0) {throw new Error("Trace is empty");}
     let f = this.seisArray[0];
     this.seisArray.forEach(s => {
-      if (s.networkCode !== f.networkCode) {throw new Error("NetworkCode not same: "+s.networkCode+" !== "+f.networkCode);}
-      if (s.stationCode !== f.stationCode) {throw new Error("StationCode not same: "+s.stationCode+" !== "+f.stationCode);}
-      if (s.locationCode !== f.locationCode) {throw new Error("LocationCode not same: "+s.locationCode+" !== "+f.locationCode);}
-      if (s.channelCode !== f.channelCode) {throw new Error("ChannelCode not same: "+s.channelCode+" !== "+f.channelCode);}
-      if (s.yUnit !== f.yUnit) {throw new Error("yUnit not same: "+s.yUnit+" !== "+f.yUnit);}
-      if (s.sampleRate !== f.sampleRate) {throw new Error("SampleRate not same: "+s.sampleRate+" !== "+f.sampleRate);}
+      this.checkSimilar(f, s);
     });
+  }
+  checkSimilar(f, s) {
+    if (s.networkCode !== f.networkCode) {throw new Error("NetworkCode not same: "+s.networkCode+" !== "+f.networkCode);}
+    if (s.stationCode !== f.stationCode) {throw new Error("StationCode not same: "+s.stationCode+" !== "+f.stationCode);}
+    if (s.locationCode !== f.locationCode) {throw new Error("LocationCode not same: "+s.locationCode+" !== "+f.locationCode);}
+    if (s.channelCode !== f.channelCode) {throw new Error("ChannelCode not same: "+s.channelCode+" !== "+f.channelCode);}
+    if (s.yUnit !== f.yUnit) {throw new Error("yUnit not same: "+s.yUnit+" !== "+f.yUnit);}
+    if (s.sampleRate !== f.sampleRate) {throw new Error("SampleRate not same: "+s.sampleRate+" !== "+f.sampleRate);}
   }
   findStartEnd() {
     let allStart = this.seisArray.map(seis => {
@@ -154,6 +157,21 @@ export class Trace {
   }
   get segments() : Array<Seismogram> {
     return this.seisArray;
+  }
+  append(seismogram) {
+    this.checkSimilar(this.seisArray[0], seismogram);
+    this.seisArray.push(seismogram);
+  }
+
+  trim(timeWindow: TimeRangeType) :void {
+    if (this.seisArray) {
+      this.seisArray = this.seisArray.filter(function(d) {
+        //return d.end.isAfter(timeWindow.start) && d.start.isBefore(timeWindow.end);
+        return d.end.isAfter(timeWindow.start) ;
+      });
+      this.findStartEnd();
+      console.log(`trace.seisArray after trim ${this.seisArray.length}`);
+    }
   }
 }
 
