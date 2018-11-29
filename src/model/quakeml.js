@@ -21,7 +21,6 @@ export class Quake {
   magnitude: Magnitude;
   magnitudeList: Array<Magnitude>;
   originList: Array<Origin>;
-  arrivalList: Array<Arrival>;
   pickList: Array<Pick>;
   preferredOriginId: string;
   preferredOrigin: Origin;
@@ -36,7 +35,7 @@ export class Quake {
     this._time = moment.utc(value);
   }
   get arrivals(): Array<Arrival> {
-    return this.arrivalList;
+    return this.preferredOrigin.arrivalList;
   }
   get picks(): Array<Pick> {
     return this.pickList;

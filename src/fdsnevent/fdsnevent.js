@@ -465,7 +465,6 @@ export class EventQuery {
     out.originList = allOrigins;
     out.magnitudeList = allMags;
     out.pickList = allPicks;
-    out.arrivalList = [];
     out.eventId = this.extractEventId(qml);
     out.preferredOriginId = util._grabFirstElText(qml, 'preferredOriginID');
     out.preferredMagnitudeId = util._grabFirstElText(qml, 'preferredMagnitudeID');
