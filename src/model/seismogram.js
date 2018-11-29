@@ -160,23 +160,31 @@ export class Trace {
   }
   append(seismogram) {
     this.checkSimilar(this.seisArray[0], seismogram);
+    this.start = moment.min([ this.start, moment.utc(seismogram.start)]);
+    this.end = moment.max([ this.end, moment.utc(seismogram.end)]);
     this.seisArray.push(seismogram);
   }
-
-  trim(timeWindow: TimeRangeType) :void {
+  /**
+    * Creates a new Trace composed of all seismogram segments that overlap the
+    * given time window. If none do, this returns null;
+    */
+  trim(timeWindow: TimeRangeType) :Trace {
+    let out = null;
     if (this.seisArray) {
-      this.seisArray = this.seisArray.filter(function(d) {
-        //return d.end.isAfter(timeWindow.start) && d.start.isBefore(timeWindow.end);
-        return d.end.isAfter(timeWindow.start) ;
+      let trimSeisArray = this.seisArray.filter(function(d) {
+        return d.end.isAfter(timeWindow.start);
+      }).filter(function(d) {
+        return d.start.isBefore(timeWindow.end);
       });
-      this.findStartEnd();
-      console.log(`trace.seisArray after trim ${this.seisArray.length}`);
+      if (trimSeisArray.length > 0) {
+        out = new Trace(trimSeisArray);
+      }
     }
+    return out;
   }
 }
 
 export function ensureIsTrace(seisTrace :Trace | Seismogram) {
-  console.log("ensureIsTrace "+(typeof seisTrace));
   if (typeof seisTrace === "object") {
     if (seisTrace instanceof Trace) {
       return seisTrace;
