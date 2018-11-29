@@ -42,7 +42,6 @@ export class CanvasSeismograph {
   seismographConfig: SeismographConfig;
 
   svgParent: any;
-  segments: Array<miniseed.model.Trace>;
   traces: Array<miniseed.model.Trace>;
   markers: Array<MarkerType>;
   width: number;
@@ -80,7 +79,7 @@ export class CanvasSeismograph {
 
     this.canvas = null;
 
-    this.svg = inSvgParent.append("svg");
+    this.svg = this.svgParent.append("svg");
     this.svg.classed("seismograph", true);
     //this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
@@ -155,7 +154,9 @@ export class CanvasSeismograph {
 
   disableWheelZoom() :void {
     this.svg.call(this.zoom).on("wheel.zoom", null);
+    if (this.canvas) {
     this.canvas.call(this.zoom).on("wheel.zoom", null);
+  }
   }
 
   checkResize() :boolean {
@@ -199,7 +200,6 @@ export class CanvasSeismograph {
       this.sizeCanvas();
     }
     this.drawTraces();
-    //this.drawSegments(this.traces, this.g.select("g.allsegments"));
     this.drawAxis(this.g);
     this.drawAxisLabels();
     this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
@@ -259,6 +259,10 @@ export class CanvasSeismograph {
     this.drawTracesCanvas();
   }
   drawTracesCanvas() :void {
+    if (Document && Document.hidden) {
+      // no need to draw if we are not visible
+      return;
+    }
     // get the canvas drawing context
     const canvasNode = this.canvas.node();
     if ( ! canvasNode) {
@@ -789,12 +793,10 @@ return null;
     }
     return this;
   }
-
   setWidth(value :number) :CanvasSeismograph {
     this.setWidthHeight(value, this.outerHeight);
     return this;
   }
-
   setHeight(value :number) :CanvasSeismograph {
     this.setWidthHeight(this.outerWidth, value);
     return this;
@@ -954,7 +956,7 @@ return null;
     }
   }
   /** appends the seismogram(s) as separate time series. */
-  append(seismogram: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram) {
+  append(seismogram: Array<miniseed.model.Trace> | miniseed.model.Trace) {
     this._internalAppend(seismogram);
     this.calcScaleDomain();
     if ( ! this.beforeFirstDraw) {
@@ -965,7 +967,23 @@ return null;
     }
     return this;
   }
-
+  remove(trace: miniseed.model.Trace) :void {
+    this.traces = this.traces.filter( t => t !== trace);
+  }
+  replace(oldTrace, newTrace) :void {
+    let index = this.traces.findIndex(t => t === oldTrace);
+    if (index !== -1) {
+      this.traces[index] = newTrace;
+    } else {
+      index = this.traces.findIndex(t => t.codes() === oldTrace.codes());
+      if (index !== -1) {
+        this.traces[index] = newTrace;
+      } else {
+        this.traces.push(newTrace);
+      }
+    }
+    console.log(`replace trace ${index} ${this.traces.length}`);
+  }
   trim(timeWindow: TimeRangeType) :void {
     if (this.traces) {
       this.traces = this.traces.filter(function(d) {
