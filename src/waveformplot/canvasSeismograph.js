@@ -73,6 +73,7 @@ export class CanvasSeismograph {
     this.height = 100;
 
     this.svgParent = inSvgParent;
+    this.svgParent.style("position", "relative");
     this.traces = [];
     this._internalAppend(inSegments);
     this.markers = [];
