@@ -461,7 +461,6 @@ export class EventQuery {
     for (let mNum=0; mNum < allMagEls.length; mNum++) {
       allMags.push(this.convertToMagnitude(allMagEls.item(mNum)));
     }
-    if (allMags.length > 0) {out.magnitude = allMags[0];}
     out.originList = allOrigins;
     out.magnitudeList = allMags;
     out.pickList = allPicks;
@@ -473,6 +472,15 @@ export class EventQuery {
         out.preferredOrigin = o;
       } else {
         console.log(`no match: ${o.publicId} ${out.preferredOriginId}`)
+      }
+    }
+    if (allMags.length > 0) {out.magnitude = allMags[0];}
+    for (let m of allMags) {
+      if (m.publicId === out.preferredMagnitudeId) {
+        out.preferredMagnitude = m;
+        out.magnitude = m;
+      } else {
+        console.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`)
       }
     }
     return out;
