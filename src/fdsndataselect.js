@@ -251,7 +251,13 @@ export class DataSelectQuery {
         return dataRecords;
     });
   }
+  /** @deprecated use queryTraces to handle gaps */
   querySeismograms() :Promise<Map<string, Array<model.Seismogram>>> {
+    return this.queryDataRecords().then(dataRecords => {
+      return miniseed.mergeByChannel(dataRecords);
+    });
+  }
+  queryTraces() :Promise<Map<string, Array<model.Trace>>> {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
