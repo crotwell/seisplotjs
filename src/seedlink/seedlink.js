@@ -52,14 +52,21 @@ export class SeedlinkConnection {
     this.requestConfig = requestConfig;
     this.receiveMiniseedFn = receiveMiniseedFn;
     this.errorFn = errorFn;
+    this.closeFn = null;
     this.command = 'DATA';
   }
-
   setTimeCommand(startDate :moment) {
     this.command = "TIME "+moment(startDate).format("YYYY,MM,DD,HH,mm,ss");
   }
+  setOnError(errorFn :(error: Error) => void) {
+    this.errorFn = errorFn;
+  }
+  setOnClose(closeFn :(close: CloseEvent) => void) {
+    this.closeFn = closeFn;
+  }
 
   connect() {
+    if (this.webSocket) {this.webSocket.close();}
     this.webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
     this.webSocket.binaryType = 'arraybuffer';
     const that = this;
@@ -82,6 +89,23 @@ export class SeedlinkConnection {
         that.close();
       });
     };
+    this.webSocket.onerror = function(err) {
+      if (this.errorFn) {
+        this.errorFn(err);
+      } else {
+        console.log(err);
+      }
+    };
+    this.webSocket.onclose = function(closeEvent) {
+      if (this.closeFn) {
+        this.closeFn(closeEvent);
+      } else {
+        console.log(`Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
+      }
+      if (this.webSocket) {
+        this.webSocket = null;
+      }
+    }
   }
 
   close() :void {
