@@ -73,6 +73,8 @@ export class CanvasSeismograph {
     this.height = 100;
 
     this.svgParent = inSvgParent;
+    // need relative position in parent div to allow absolute position
+    // of svg and canvas for overlaying
     this.svgParent.style("position", "relative");
     this.traces = [];
     this._internalAppend(inSegments);
