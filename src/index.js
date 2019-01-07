@@ -17,6 +17,7 @@ import * as traveltime     from './traveltime/traveltime';
 import * as waveformplot   from './waveformplot/index';
 const d3 = waveformplot.d3;
 const moment = model.moment;
+const RSVP = fdsndataselect.RSVP;
 
 /* reexport */
 export { distaz,
@@ -31,4 +32,5 @@ export { distaz,
          traveltime,
          waveformplot,
          d3,
-         moment };
+         moment,
+         RSVP };
