@@ -23,8 +23,10 @@ export class SeismographConfig {
   xScaleFormat: (date: Date) => string;
   yScaleFormat: string | (value :number) => string;
   _title: Array<string>;
+  isXAxis: boolean;
   xLabel: string;
   xSublabel: string;
+  isYAxis: boolean;
   yLabel: string;
   ySublabel: string;
   ySublabelTrans: number;
@@ -35,11 +37,14 @@ export class SeismographConfig {
   margin: MarginType;
   segmentDrawCompressedCutoff: number;//below this draw all points, above draw minmax
   maxZoomPixelPerSample: number; // no zoom in past point of sample
-                                       // separated by pixels
+                                 // separated by pixels
+  disableWheelZoom: boolean;      
   doRMean: boolean;
   doGain: boolean;
 
-  constructor(plotStartDate :moment, plotEndDate :moment) {
+  constructor() {
+    this.isXAxis = true;
+    this.isYAxis = true;
     this.xScaleFormat = multiFormatHour;
     this.yScaleFormat = "3e";
     this._title = [ ];
@@ -56,6 +61,7 @@ export class SeismographConfig {
     this.segmentDrawCompressedCutoff=10;//below this draw all points, above draw minmax
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample
                                      // separated by pixels
+    this.disableWheelZoom = false;
   }
 
   get title() :Array<string> {

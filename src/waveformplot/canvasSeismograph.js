@@ -40,6 +40,8 @@ export class CanvasSeismograph {
   plotId: number;
   beforeFirstDraw: boolean;
   seismographConfig: SeismographConfig;
+  plotStartDate :moment;
+  plotEndDate :moment;
 
   svgParent: any;
   traces: Array<miniseed.model.Trace>;
@@ -69,6 +71,8 @@ export class CanvasSeismograph {
     this.plotId = ++CanvasSeismograph._lastID;
     this.beforeFirstDraw = true;
     this.seismographConfig = seismographConfig;
+    this.plotStartDate = plotStartDate;
+    this.plotEndDate = plotEndDate;
     this.width = 200;
     this.height = 100;
 
@@ -158,8 +162,8 @@ export class CanvasSeismograph {
   disableWheelZoom() :void {
     this.svg.call(this.zoom).on("wheel.zoom", null);
     if (this.canvas) {
-    this.canvas.call(this.zoom).on("wheel.zoom", null);
-  }
+      this.canvas.call(this.zoom).on("wheel.zoom", null);
+    }
   }
 
   checkResize() :boolean {
@@ -170,7 +174,7 @@ export class CanvasSeismograph {
     return false;
   }
   draw() :void {
-    console.log("####### IN canvasSeismogram.draw");
+    console.log(`"####### IN canvasSeismogram.draw ${this.plotStartDate} - ${this.plotEndDate}`);
     let rect = this.svg.node().getBoundingClientRect();
     const styleHeight = this.svgParent.style("height");
     const styleWidth = this.svgParent.style("width");
@@ -185,6 +189,9 @@ export class CanvasSeismograph {
       this.canvas.call(d3.zoom().on("zoom", function () {
         mythis.zoomed(mythis);
      }));
+     if (this.seismographConfig.disableWheelZoom) {
+       this.disableWheelZoom();
+     }
       this.canvas.attr("height", this.outerHeight)
         .attr("width", this.outerWidth);
       let style = window.getComputedStyle(this.canvas.node());
@@ -206,6 +213,7 @@ export class CanvasSeismograph {
     this.drawAxis(this.g);
     this.drawAxisLabels();
     this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
+    //this.drawCanvasAlignment();
     this.beforeFirstDraw = false;
   }
   printSizes() :void {
@@ -564,14 +572,17 @@ return null;
     this.xAxis.tickFormat(this.seismographConfig.xScaleFormat);
     this.yAxis.ticks(8, this.seismographConfig.yScaleFormat);
     svgG.selectAll("g.axis").remove();
-    svgG.append("g")
-        .attr("class", "axis axis--x")
-        .attr("transform", "translate(0," + this.height + ")")
-        .call(this.xAxis);
-
-    svgG.append("g")
-        .attr("class", "axis axis--y")
-        .call(this.yAxis);
+    if (this.seismographConfig.isXAxis) {
+      svgG.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + this.height + ")")
+          .call(this.xAxis);
+    }
+    if (this.seismographConfig.isYAxis) {
+      svgG.append("g")
+          .attr("class", "axis axis--y")
+          .call(this.yAxis);
+    }
   }
 
   rescaleYAxis() :void {
@@ -829,12 +840,14 @@ return null;
   }
   drawXLabel() :CanvasSeismograph {
     this.svg.selectAll("g.xLabel").remove();
-    this.svg.append("g")
-       .classed("xLabel", true)
-       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight - this.seismographConfig.margin.bottom/3  )+")")
-       .append("text").classed("x label", true)
-       .attr("text-anchor", "middle")
-       .text(this.seismographConfig.xLabel);
+    if (this.seismographConfig.xLabel && this.seismographConfig.xLabel.length > 0) {
+      this.svg.append("g")
+         .classed("xLabel", true)
+         .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight - this.seismographConfig.margin.bottom/3  )+")")
+         .append("text").classed("x label", true)
+         .attr("text-anchor", "middle")
+         .text(this.seismographConfig.xLabel);
+    }
     return this;
   }
   drawYLabel() :CanvasSeismograph {
@@ -933,7 +946,9 @@ return null;
     if (this.seismographConfig.doGain && this.instrumentSensitivity) {
       niceMinMax[0] = niceMinMax[0] / this.instrumentSensitivity.sensitivity;
       niceMinMax[1] = niceMinMax[1] / this.instrumentSensitivity.sensitivity;
-      this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
+      if (this.seismographConfig.ySublabel === null || this.seismographConfig.ySublabel.length === 0) {
+        this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
+      }
     } else {
       this.seismographConfig.ySublabel = "Count";
     }
