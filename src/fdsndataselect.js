@@ -297,24 +297,43 @@ console.log("fdsnDataSelect URL: "+url);
   postQueryDataRecords(channelTimeList: Array<ChannelTimeRange>) :Promise<Array<miniseed.DataRecord>> {
     return this.postQueryRaw(channelTimeList)
     .then( fetchResponse => {
-      return fetchResponse.arrayBuffer();
-    }).then(function(rawBuffer) {
-        let dataRecords = miniseed.parseDataRecords(rawBuffer);
-        return dataRecords;
+      if(fetchResponse.ok) {
+        return fetchResponse.arrayBuffer().then(ab => {
+          console.log(`fetch response ok, bytes=${ab.byteLength}  ${(typeof ab)}`)
+          return miniseed.parseDataRecords(ab);
+        });
+      } else {
+        console.log("fetchRespone not ok");
+        return [];
+      }
     });
   }
+  /** @deprecated use queryTraces to handle gaps */
   postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<model.Seismogram>>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
   }
+  postQueryTraces(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<model.Trace>>> {
+    return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
+      return miniseed.tracePerChannel(dataRecords);
+    });
+  }
   postQueryRaw(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
-    return fetch(this.formURL(), {
-        method: "POST",
-        mode: "cors",
-        referrer: "seisplotjs",
-        body: this.createPostBody(channelTimeList),
+    if (channelTimeList.length === 0) {
+      // return promise faking an not ok fetch response
+      console.log("Empty chan length so return fake fetch promise");
+      return RSVP.hash({
+        ok: false
       });
+    } else {
+      return fetch(this.formURL(), {
+          method: "POST",
+          mode: "cors",
+          referrer: "seisplotjs",
+          body: this.createPostBody(channelTimeList),
+        });
+    }
   }
 
   createPostBody(channelTimeList: Array<ChannelTimeRange>) :string {
