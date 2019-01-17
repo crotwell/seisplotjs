@@ -1,6 +1,7 @@
 // @flow
 
 import { moment, checkStringOrDate, hasArgs, hasNoArgs, isStringArg } from './util';
+import * as miniseed from '../miniseed';
 
 /**
 * A Seismogram object.
@@ -10,7 +11,8 @@ import { moment, checkStringOrDate, hasArgs, hasNoArgs, isStringArg } from './ut
 */
 export class Seismogram {
   /** Array of y values */
-  y: Array<number>;
+  _y: Array<number>;
+  _compressed: Array<miniseed.DataRecord>;
   /** the sample rate in hertz */
   sampleRate:number;
   /** @private */
@@ -21,10 +23,30 @@ export class Seismogram {
   channelCode:string;
   yUnit:string;
   constructor(yArray:Array<number>, sampleRate: number, start: moment) {
-    this.y = yArray;
+    if (yArray.length > 0 && yArray[0] instanceof miniseed.DataRecord) {
+      this._compressed = yArray;
+      this._y = null;
+    } else {
+      this._compressed = null;
+      this._y = yArray;
+    }
     this.sampleRate = sampleRate;
     this.start = checkStringOrDate(start);
     this.yUnit = 'count';
+  }
+  get y() {
+    if ( ! this._y && this._compressed) {
+      let out = [];
+      for (let i=0; i<this._compressed.length; i++) {
+        out = out.concat(this._compressed[i].decompress());
+      }
+      this._y = out;
+      this._compressed = null;
+    }
+    return this._y;
+  }
+  set y(value) {
+    this._y = value;
   }
   get start() :moment {
     return this._start;
@@ -70,6 +92,33 @@ export class Seismogram {
     let out = new Seismogram(this.y.slice(),
                           this.sampleRate,
                           moment.utc(this._start));
+    out.networkCode = this.networkCode;
+    out.stationCode = this.stationCode;
+    out.locationCode = this.locationCode;
+    out.channelCode = this.channelCode;
+    return out;
+  }
+  trim(trimStart: moment, trimEnd: moment) {
+    if (trimEnd.isBefore(this._start) || trimStart.isAfter(this._end)) {
+      return null;
+    }
+    let sIndex = 0;
+    if (trimStart.isAfter(this._start)) {
+      let milliDiff = trimStart.diff(this._start);
+      let offset = milliDiff * this.sampleRate /1000.0;
+      sIndex = Math.floor(offset);
+    }
+    let eIndex = 0;
+    if (trimEnd.isBefore(this._end)) {
+      let milliDiff = moment.utc(this._end).diff(trimEnd);
+      let offset = milliDiff * this.sampleRate /1000.0;
+      eIndex = this.y.length - Math.floor(offset);
+    }
+    let newY = this.y.slice(sIndex, eIndex);
+
+    let out = new Seismogram(newY,
+                          this.sampleRate,
+                          moment.utc(this._start).add(sIndex / this.sampleRate, 'seconds'));
     out.networkCode = this.networkCode;
     out.stationCode = this.stationCode;
     out.locationCode = this.locationCode;
@@ -152,6 +201,9 @@ export class Trace {
   get yUnit() :string {
     return this.seisArray[0].yUnit;
   }
+  get numPoints() :number {
+    return this.seisArray.reduce((accumulator, seis) => accumulator + seis.numPoints, 0);
+  }
   codes() :string {
     return this.seisArray[0].codes();
   }
@@ -181,6 +233,24 @@ export class Trace {
       }
     }
     return out;
+  }
+  break(duration: moment.Duration) {
+    if (this.seisArray) {
+      let breakStart = moment.utc(this.start);
+      let out = [];
+      while (breakStart.isBefore(this.end)) {
+        let breakEnd = moment.utc(breakStart).add(duration);
+        let trimSeisArray = this.seisArray.map(function(seis) {
+          return seis.clone().trim(breakStart, breakEnd);
+        });
+        out = out.concat(trimSeisArray);
+        breakStart.add(duration);
+      }
+      // check for null
+      out = out.filter(function(seis) { return seis;})
+      this.seisArray = out;
+    }
+    return this;
   }
 }
 

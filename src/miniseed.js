@@ -21,6 +21,7 @@ export {
 
 /** parse arrayBuffer into an array of DataRecords. */
 export function parseDataRecords(arrayBuffer: ArrayBuffer) {
+  console.log(`Parse Data Records, arrayBuffer length = ${arrayBuffer.byteLength}`);
   let dataRecords = [];
   let offset = 0;
   while (offset < arrayBuffer.byteLength) {
@@ -43,6 +44,9 @@ export function parseSingleDataRecord(dataView: DataView) {
 
 /** parse the DataHeader from a single DataRecord starting at the beginning of the DataView. */
 export function parseSingleDataRecordHeader(dataView: DataView) :DataHeader {
+  if (dataView.byteLength < 47) {
+    throw new Error(`Not enought bytes for header, need 47, found ${dataView.byteLength}`);
+  }
   let out = new DataHeader();
   out.seq = makeString(dataView, 0, 6);
   out.typeCode = dataView.getUint8(6);
@@ -424,7 +428,7 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
   return out;
 }
 
-export function mergeByChannel(drList: Array<DataRecord>): Map<string, model.Trace> {
+export function mergeByChannel(drList: Array<DataRecord> ): Map<string, model.Trace> {
   let out = new Map();
   let byChannelMap = this.byChannel(drList);
   console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
@@ -432,5 +436,17 @@ export function mergeByChannel(drList: Array<DataRecord>): Map<string, model.Tra
     out.set(key, merge(seisArray));
   }
   console.log("mergeByChannel  out.size="+out.size);
+  return out;
+}
+
+export function tracePerChannel(drList: Array<DataRecord>): Map<string, model.Trace> {
+  let out = new Map();
+  let byChannelMap = this.byChannel(drList);
+  console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
+  for (let [key, seisArray] of byChannelMap) {
+    seisArray = seisArray.map(dr => createSeismogram( [ dr ] ));
+    out.set(key, new model.Trace(seisArray));
+  }
+  console.log("traceByChannel  out.size="+out.size);
   return out;
 }

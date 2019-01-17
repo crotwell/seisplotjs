@@ -49,6 +49,26 @@ export class MSeedArchive {
     }
     return true;
   }
+  loadTraces(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<model.Trace>>> {
+    let promiseArray = channelTimeList.map(ct => {
+      let sta = ct.channel.station;
+      let net = sta.network;
+      return this.loadDataForChannel(ct.channel, ct.startTime, ct.endTime);
+      });
+    return RSVP.all(promiseArray).then(pArray => {
+        let dataRecords: Array<miniseed.DataRecord> = [];
+        let index = 0;
+        pArray.forEach(p => {
+          console.log(`${index} had ${p.length} data records`);
+          dataRecords = dataRecords.concat(p);
+          index++;
+        });
+        console.log(`Total: ${dataRecords.length}`);
+        return dataRecords;
+    }).then(dataRecords => {
+      return miniseed.tracePerChannel(dataRecords);
+    });
+  }
   loadDataForChannel(channel: model.Channel, start: moment, end: moment) {
     return this.loadData(channel.station.network.networkCode,
                     channel.station.stationCode,
@@ -82,43 +102,49 @@ export class MSeedArchive {
           if (fetchResponse.status == 200 || fetchResponse.status == 304) {
             return fetchResponse.arrayBuffer().then(ab => {
               console.log("got data for "+fetchResponse.url+" "+ab.byteLength);
-              return ab;
+              let dataRecords = [];
+              if (ab.byteLength > 0) {
+                dataRecords = miniseed.parseDataRecords(ab);
+              }
+              return dataRecords;
             });
           } else {
             console.log("no data: status="+fetchResponse.status+" "+fetchResponse.url);
-            return null;
+            return [];
           }
         } else {
-          console.log("###### not ok "+fetchResponse.status);
-          return null;
+          console.log("###### not ok, return [] "+fetchResponse.status);
+          return []; // empty array means no data
           //throw new Error("no data returned: "+fetchResponse.ok+" "+fetchResponse.url);
         }
       }).catch(err => {
         console.log("caught fetch err, continuing with empty: "+err);
-        return null;
-      }).then(arrayBuffer => {
-        let dataRecords = [];
-        if (arrayBuffer && arrayBuffer.byteLength > 0) {
-          dataRecords = miniseed.parseDataRecords(arrayBuffer);
-        }
-        return dataRecords;
-      })
+        return [];
+      });
     });
 
     return RSVP.all(promiseArray).then(pArray => {
         let dataRecords: Array<miniseed.DataRecord> = [];
         let index = 0;
         pArray.forEach(p => {
+          console.log(`${index} had ${p.length} data records`);
           dataRecords = dataRecords.concat(p);
+          index++;
         });
+        console.log(`Total: ${dataRecords.length}`);
         return dataRecords;
     }).then(dataRecords => {
       if (dataRecords) {
-        return dataRecords.filter(dr => dr.header.end.isSameOrAfter(start) &&
+        dataRecords =  dataRecords.filter(dr => dr.header.end.isSameOrAfter(start) &&
                                         dr.header.start.isSameOrBefore(end));
+
+        console.log(`Have dr, after filter Total: ${dataRecords.length}`);
       } else {
-        return []; // for flow
+
+        console.log(`dataRecords is false: Total: ${dataRecords.length}`);
+        dataRecords = []; // for flow
       }
+      return dataRecords;
     });
   }
   fillBasePattern(net: string, sta: string, loc: string, chan: string): string {
