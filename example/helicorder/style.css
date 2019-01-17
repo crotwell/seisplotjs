@@ -1,0 +1,37 @@
+div.heli {
+  height: 600px;
+}
+
+div.heliLine {
+  height: 100px;
+}
+
+svg.seismograph {
+  height: 100px;
+  width: 90%;
+}
+canvas.seismograph {
+  height: 100px;
+  width: 90%;
+}
+path.seispath {
+  stroke: skyblue;
+  fill: none;
+  stroke-width: 1px;
+}
+
+path.seisplot .orientZ {
+  stroke: seagreen;
+}
+
+path.seisplot .orientN {
+  stroke: red;
+}
+
+path.seisplot .orientE {
+  stroke: orange;
+}
+
+text.sublabel {
+  font-size: x-small;
+}

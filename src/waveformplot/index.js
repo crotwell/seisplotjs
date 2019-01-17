@@ -10,6 +10,7 @@ import {
 
 import { CanvasSeismograph } from './canvasSeismograph';
 import { SvgSeismograph } from './svgSeismograph';
+import {Helicorder} from './helicorder';
 import {SeismographConfig } from './seismographconfig';
 
 import * as chooser from './chooser';
@@ -45,6 +46,7 @@ export {
     Seismograph,
     SvgSeismograph,
     CanvasSeismograph,
+    Helicorder,
     SeismographConfig,
     sort,
     particleMotion,
