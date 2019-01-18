@@ -13,22 +13,13 @@ let staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', '
 let netCode = 'CO';
 let locCode = '00';
 
-let staChoice = d3.select('#stationChoice');
-staChoice
-  .selectAll("option")
-  .data(staList)
-  .enter()
-    .append("option")
-    .text(function(d) {return d;});
-staChoice.on('change', function() {
-    let sta = d3.select('#stationChoice').property('value');
-    doplot(sta, currentEndTime);
-  });
-
 let divClass = "heli";
 let clockOffset = 0; // should get from server somehow
 let duration = 24*60*60;
+let overlap = 0.75;
+let instCode = "H";
 let orientationCode = 'Z';
+let altOrientationCode = null;
 let maxSteps = -1; // max num of ticks of the timer before stopping, for debugin
 let nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
 //nowHour = moment.utc("2019-01-11T21:58:00Z").endOf('hour').add(1, 'millisecond');
@@ -70,7 +61,20 @@ let numSteps = 0;
 
 let currentEndTime = moment.utc().endOf('hour').add(1, 'millisecond');
 let currentStation = null;
+let currentOrient = "Z";
 let heli = null;
+
+let staChoice = d3.select('#stationChoice');
+staChoice
+  .selectAll("option")
+  .data(staList)
+  .enter()
+    .append("option")
+    .text(function(d) {return d;});
+staChoice.on('change', function() {
+    let sta = d3.select('#stationChoice').property('value');
+    doplot(sta, currentEndTime);
+  });
 
 wp.d3.select("button#loadToday").on("click", function(d) {
   currentEndTime = moment.utc().endOf('hour').add(1, 'millisecond');
@@ -84,6 +88,29 @@ wp.d3.select("button#loadPrev").on("click", function(d) {
 
 wp.d3.select("button#loadNext").on("click", function(d) {
   currentEndTime = moment.utc(currentEndTime).add(1, 'day');
+  load(currentEndTime);
+});
+wp.d3.select("button#loadZ").on("click", function(d) {
+  orientationCode = "Z";
+  altOrientationCode = null;
+  load(currentEndTime);
+});
+wp.d3.select("button#loadN").on("click", function(d) {
+  orientationCode = "N";
+  altOrientationCode = "1";
+  load(currentEndTime);
+});
+wp.d3.select("button#loadE").on("click", function(d) {
+  orientationCode = "E";
+  altOrientationCode = "2";
+  load(currentEndTime);
+});
+wp.d3.select("button#loadSM").on("click", function(d) {
+  instCode = "N";
+  load(currentEndTime);
+});
+wp.d3.select("button#loadVel").on("click", function(d) {
+  instCode = "H";
   load(currentEndTime);
 });
 
@@ -101,12 +128,8 @@ doplot = function(staCode, endTime) {
   let timeWindow = seisplotjs.fdsndataselect.calcStartEndDates(null, endTime, duration, clockOffset);
   let netCodeQuery = netCode;
   let locCodeQuery = locCode;
-  let chanCodeQuery = 'HHZ,HNZ';
-  if (staCode === "C1SC") {
-    chanCodeQuery = "HNZ";
-  } else {
-    chanCodeQuery = "HHZ";
-  }
+  let chanCodeQuery = `H${instCode}${orientationCode}`;
+  if (altOrientationCode) {chanCodeQuery = `${chanCodeQuery},H${instCode}${altOrientationCode}`;}
   d3.selectAll("span.textNetCode").text(netCodeQuery);
   d3.selectAll("span.textStaCode").text(staCode);
   d3.selectAll("span.textLocCode").text(locCodeQuery);
@@ -124,9 +147,18 @@ doplot = function(staCode, endTime) {
   let hash = {
     timeWindow: timeWindow,
     staCode: staCode,
-    chanOrient: orientationCode
+    chanOrient: orientationCode,
+    altChanOrient: altOrientationCode,
+    instCode: instCode,
+    minMaxInstCode: instCode === 'H' ? 'X' : 'Y'
   };
-  return channelQuery.queryChannels().then(netArray => {
+  return channelQuery.queryChannels()
+  .catch(e => {
+      svgParent.append("h3").text("Error Loading Data, retrying... ").style("color", "red");
+      svgParent.append("p").text(`e`);
+      return new Promise(resolve => setTimeout(resolve, 2000, channelQuery.queryChannels()));
+  })
+  .then(netArray => {
     let chanTR = [];
     hash.chanTR = chanTR;
     hash.netArray = netArray;
@@ -148,7 +180,7 @@ doplot = function(staCode, endTime) {
       "http://eeyore.seis.sc.edu/minmax",
       "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
     let minMaxChanTR = hash.chanTR.map( ct => {
-      let chanCode = "LX"+ct.channel.channelCode.charAt(2);
+      let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
       let fake = new seisplotjs.model.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
       fake.sampleRate = 2;
       return {
@@ -176,27 +208,38 @@ doplot = function(staCode, endTime) {
     console.log(`got ${traceMap.size} channel-seismograms`);
     if (traceMap.size !== 0) {
       let heliConfig = new wp.HelicorderConfig();
-      heliConfig.overlap = 0.80;
+      heliConfig.overlap = overlap;
       heliConfig.lineSeisConfig.margin.left = 22;
       let minMaxTrace = null;
       traceMap.forEach((value, key) => {
-        if (key.endsWith("LX"+hash.chanOrient)) {
+        if (key.endsWith(`L${hash.minMaxInstCode}${hash.chanOrient}`) || key.endsWith(`L${hash.minMaxInstCode}${hash.altChanOrient}`)) {
           minMaxTrace = value;
+        } else {
+          console.log(`does not match: ${key}`);
         }
       });
+      if (! minMaxTrace) {
+        throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient}`);
+      }
       hash.minMaxTrace = minMaxTrace;
       hash.traceMap = null;
       console.log(`before break: ${minMaxTrace.numPoints}`)
       console.log(`trace type: ${(typeof minMaxTrace)} ${minMaxTrace.constructor.name} ${minMaxTrace.numPoints}`);
       hash.heli = new wp.Helicorder(svgParent,
-                            heliConfig,
-                            minMaxTrace,
-                          hash.timeWindow.start,hash.timeWindow.end);
+                                    heliConfig,
+                                    minMaxTrace,
+                                    hash.timeWindow.start,hash.timeWindow.end);
+      svgParent.selectAll("*").remove(); // remove old data
       hash.heli.draw();
     } else {
       svgParent.append("p").text("No Data.")
     }
     return hash;
+  })
+  .catch(e => {
+      svgParent.append("h3").text("Error Loading Data").style("color", "red");
+      svgParent.append("p").text(`e`);
+      throw e;
   });
 }
 
