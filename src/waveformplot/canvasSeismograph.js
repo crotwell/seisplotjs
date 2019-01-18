@@ -178,9 +178,11 @@ export class CanvasSeismograph {
     const styleHeight = this.svgParent.style("height");
     const styleWidth = this.svgParent.style("width");
     if ((rect.width != this.outerWidth || rect.height != this.outerHeight)) {
+      if (rect.height < this.seismographConfig.minHeight) { rect.height = this.seismographConfig.minHeight; }
       if (rect.height > this.seismographConfig.maxHeight) { rect.height = this.seismographConfig.maxHeight; }
       this.setWidthHeight(rect.width, rect.height);
     }
+    console.log(`   height: ${rect.height} ${this.seismographConfig.minHeight} to ${this.seismographConfig.maxHeight}`)
     if ( ! this.canvas ) {
       this.canvas = this.svgParent.append('canvas').classed("seismograph", true);
       //this.canvas.call(this.zoom);

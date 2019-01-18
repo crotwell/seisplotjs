@@ -52,19 +52,23 @@ export class Helicorder {
       let end = lineTime.end;
       let seisDiv = this.svgParent.append('div');
       let nl = this.heliConfig.numLines;
-      let height = this.heliConfig.maxHeight*(1/nl+this.heliConfig.overlap/(nl-2));
-      let marginTop = lineTime.lineNumber==0?0:Math.round(-1.0*this.heliConfig.maxHeight*this.heliConfig.overlap/(nl-2));
-      console.log(`line ${lineTime.lineNumber} height: ${height}  marginTop: ${marginTop}`);
+      let height = this.heliConfig.maxHeight/(nl-(nl-1)*this.heliConfig.overlap);
+      let marginTop = lineTime.lineNumber==0?0:Math.round(-1.0*height*this.heliConfig.overlap);
+      console.log(`line ${lineTime.lineNumber} height: ${height}  marginTop: ${marginTop}  ${this.heliConfig.overlap}`);
       seisDiv.classed('heliLine', true)
         .style('height', height+'px')
         .style('margin-top', `${marginTop}px`);
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
       lineSeisConfig.yLabel = `${start.format("HH.mm")}`;
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
-
+      lineSeisConfig.minHeight = height;
+      lineSeisConfig.maxHeight = height;
       let seismograph = new CanvasSeismograph(seisDiv, lineSeisConfig, this.trace, start, end);
       seismograph.disableWheelZoom();
       seismograph.draw();
+      seismograph.canvas.style("height", `${height}px`);
+      seismograph.svg.style("height", `${height}px`);
+
       this.seismographArray.push(seismograph);
       start = end;
     }
