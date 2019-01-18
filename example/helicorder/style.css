@@ -4,6 +4,31 @@ div.heli {
 
 div.heliLine {
   height: 100px;
+  margin-top: -50px;
+  color: black;
+}
+
+div.heli div.heliLine:first-child {
+  margin-top: 0;
+}
+
+div.heli div.heliLine:nth-child(3n+1) {
+  color: skyblue;
+}
+div.heli div.heliLine:nth-child(3n+2) {
+  color: olivedrab;
+}
+div.heli div.heliLine:nth-child(3n) {
+  color: goldenrod;
+}
+div.heli div.heliLine:nth-child(3n+1) .yLabel text {
+  fill: skyblue;
+}
+div.heli div.heliLine:nth-child(3n+2) .yLabel text {
+  fill: olivedrab;
+}
+div.heli div.heliLine:nth-child(3n) .yLabel text {
+  fill: goldenrod;
 }
 
 svg.seismograph {

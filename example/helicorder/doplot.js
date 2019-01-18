@@ -9,9 +9,9 @@ let moment = seisplotjs.moment;
 let wp = seisplotjs.waveformplot;
 let d3 = seisplotjs.d3;
 
-let net = 'CO';
 let staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
-
+let netCode = 'CO';
+let locCode = '00';
 
 let staChoice = d3.select('#stationChoice');
 staChoice
@@ -99,23 +99,25 @@ let load = function(endTime) {
 doplot = function(staCode, endTime) {
   svgParent.selectAll("*").remove(); // remove old data
   let timeWindow = seisplotjs.fdsndataselect.calcStartEndDates(null, endTime, duration, clockOffset);
-
+  let netCodeQuery = netCode;
+  let locCodeQuery = locCode;
   let chanCodeQuery = 'HHZ,HNZ';
   if (staCode === "C1SC") {
     chanCodeQuery = "HNZ";
   } else {
     chanCodeQuery = "HHZ";
   }
-  d3.selectAll("span.textNetCode").text('CO');
+  d3.selectAll("span.textNetCode").text(netCodeQuery);
   d3.selectAll("span.textStaCode").text(staCode);
+  d3.selectAll("span.textLocCode").text(locCodeQuery);
   d3.selectAll("span.textChanCode").text(chanCodeQuery);
   d3.selectAll("span.startTime").text(timeWindow.start.format('ddd, MMM D, YYYY HH:mm [GMT]'));
   d3.selectAll("span.endTime").text(timeWindow.end.format('ddd, MMM D, YYYY HH:mm [GMT]'));
   let channelQuery = new seisplotjs.fdsnstation.StationQuery()
     .nodata(404)
-    .networkCode('CO')
+    .networkCode(netCodeQuery)
     .stationCode(staCode)
-    .locationCode('00')
+    .locationCode(locCodeQuery)
     .channelCode(chanCodeQuery)
     .startTime(timeWindow.start)
     .endTime(timeWindow.end);
@@ -159,6 +161,7 @@ doplot = function(staCode, endTime) {
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
     if (hash.traceMap.size == 0) {
+      svgParent.append("p").text("No Data Found").style("color", "red");
       console.log("min max data from miniseedArchive found none");
       throw new Error("min max data from miniseedArchive found none");
       let dsQ = new seisplotjs.fdsndataselect.DataSelectQuery()
@@ -172,14 +175,9 @@ doplot = function(staCode, endTime) {
     let traceMap = hash.traceMap;
     console.log(`got ${traceMap.size} channel-seismograms`);
     if (traceMap.size !== 0) {
-      let seisConfig = new wp.SeismographConfig();
-      seisConfig.maxHeight = 600;
-      seisConfig.xLabel = '';
-      seisConfig.yLabel = '';
-      seisConfig.xSublabel = '';
-      seisConfig.ySublabel = '';
-      seisConfig.isXAxis = false;
-      seisConfig.isYAxis = false;
+      let heliConfig = new wp.HelicorderConfig();
+      heliConfig.overlap = 0.80;
+      heliConfig.lineSeisConfig.margin.left = 22;
       let minMaxTrace = null;
       traceMap.forEach((value, key) => {
         if (key.endsWith("LX"+hash.chanOrient)) {
@@ -191,7 +189,7 @@ doplot = function(staCode, endTime) {
       console.log(`before break: ${minMaxTrace.numPoints}`)
       console.log(`trace type: ${(typeof minMaxTrace)} ${minMaxTrace.constructor.name} ${minMaxTrace.numPoints}`);
       hash.heli = new wp.Helicorder(svgParent,
-                            seisConfig,
+                            heliConfig,
                             minMaxTrace,
                           hash.timeWindow.start,hash.timeWindow.end);
       hash.heli.draw();
@@ -234,6 +232,8 @@ let doDisconnect = function(value) {
   }
 }
 
+console.log(' ##### DISABLE autoupdate ####')
+paused=true;
 let timerInterval = 300*1000;
 // testing
 timerInterval = 10000;

@@ -96,7 +96,6 @@ export class CanvasSeismograph {
     //this.svg.attr("preserveAspectRatio", "xMinYMin meet");
     //this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
     this.svg.attr("plotId", this.plotId);
-
     if ( ! plotStartDate || ! plotEndDate) {
       let st = findStartEnd(inSegments);
       plotStartDate = st.start;
@@ -297,7 +296,7 @@ export class CanvasSeismograph {
 
     this.traces.forEach( (t,ti) => {
 //      const color = d3.select(`svg g.allsegments g:nth-child(9n+1) g path.seispath`)
-    const color = this.getColorForIndex(ti);
+    const color = this.seismographConfig.getColorForIndex(ti);
       t.seisArray.forEach((s, si) => {
         if (s.start.isAfter(moment.utc(this.currZoomXScale.domain()[1])) ||
             s.end.isBefore(moment.utc(this.currZoomXScale.domain()[0]))) {
@@ -333,30 +332,6 @@ export class CanvasSeismograph {
       });
     });
     context.restore();
-  }
-  getColorForIndex(i) {
-    switch(i%9) {
-      case 0:
-        return "skyblue";
-      case 1:
-        return "olivedrab";
-      case 2:
-        return "goldenrod";
-      case 3:
-        return "firebrick";
-      case 4:
-        return "darkcyan";
-      case 5:
-        return "orange";
-      case 6:
-        return "darkmagenta";
-      case 7:
-        return "mediumvioletred";
-      case 8:
-        return "sienna";
-      default:
-        return "black";
-    }
   }
   drawCanvasAlignment() :void {
     const mythis = this;
@@ -950,7 +925,9 @@ return null;
         this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
       }
     } else {
-      this.seismographConfig.ySublabel = "Count";
+      if (this.seismographConfig.ySublabel === null || this.seismographConfig.ySublabel.length === 0) {
+        this.seismographConfig.ySublabel = "Count";
+      }
     }
     if (this.seismographConfig.doRMean) {
       this.yScaleRmean.domain([ (niceMinMax[0]-niceMinMax[1])/2, (niceMinMax[1]-niceMinMax[0])/2 ]);

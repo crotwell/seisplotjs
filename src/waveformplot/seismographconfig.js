@@ -38,7 +38,9 @@ export class SeismographConfig {
   segmentDrawCompressedCutoff: number;//below this draw all points, above draw minmax
   maxZoomPixelPerSample: number; // no zoom in past point of sample
                                  // separated by pixels
-  disableWheelZoom: boolean;      
+
+  lineColors :Array<string>;
+  disableWheelZoom: boolean;
   doRMean: boolean;
   doGain: boolean;
 
@@ -62,6 +64,18 @@ export class SeismographConfig {
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample
                                      // separated by pixels
     this.disableWheelZoom = false;
+
+    this.lineColors = [
+       "skyblue",
+       "olivedrab",
+       "goldenrod",
+       "firebrick",
+       "darkcyan",
+       "orange",
+       "darkmagenta",
+       "mediumvioletred",
+       "sienna",
+       "black"];
   }
 
   get title() :Array<string> {
@@ -76,6 +90,37 @@ export class SeismographConfig {
     } else {
       this._title = [ value ];
     }
+  }
+
+  getColorForIndex(i) {
+    if (this.lineColors.length && this.lineColors.length > 0) {
+      return this.lineColors[i%this.lineColors.length];
+    } else {
+        return "black";
+    }
+  }
+  clone() :SeismographConfig {
+    let out = new SeismographConfig();
+    out.isXAxis = this.isXAxis;
+    out.isYAxis = this.isYAxis;
+    out.xScaleFormat = this.xScaleFormat;
+    out.yScaleFormat = this.yScaleFormat;
+    out._title = this._title;
+    out.xLabel = this.xLabel;
+    out.xSublabel = this.xSublabel;
+    out.yLabel = this.yLabel;
+    out.ySublabel = this.ySublabel;
+    out.ySublabelTrans = this.ySublabelTrans;
+    out.doRMean = this.doRMean;
+    out.doGain = this.doGain;
+    out.markerTextOffset = this.markerTextOffset;
+    out.markerTextAngle = this.markerTextAngle;
+    out.margin = this.margin;
+    out.segmentDrawCompressedCutoff = this.segmentDrawCompressedCutoff;
+    out.maxZoomPixelPerSample = this.maxZoomPixelPerSample;
+    out.disableWheelZoom = this.disableWheelZoom;
+    out.lineColors = this.lineColors;
+    return out;
   }
 };
 
