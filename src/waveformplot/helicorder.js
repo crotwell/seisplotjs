@@ -97,6 +97,11 @@ export class Helicorder {
       this.seismographArray[i].draw();
     }
   }
+  appendMarkers(value: Array<MarkerType> | MarkerType) {
+    for(let s of this.seismographArray) {
+      s.appendMarkers(value);
+    }
+  }
 }
 
 export class HelicorderConfig extends SeismographConfig {

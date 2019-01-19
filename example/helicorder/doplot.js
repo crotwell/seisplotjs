@@ -63,6 +63,7 @@ let currentEndTime = moment.utc().endOf('hour').add(1, 'millisecond');
 let currentStation = null;
 let currentOrient = "Z";
 let heli = null;
+let quakes = [];
 
 let staChoice = d3.select('#stationChoice');
 staChoice
@@ -120,7 +121,7 @@ let load = function(endTime) {
   var staCode = selectEl.options[selectedIndex].value;
 
   console.log("Load..."+staCode);
-  doplot(staCode, endTime).then(hash => heli = hash.heli);
+  doplot(staCode, endTime).then(hash => {heli = hash.heli;});
 }
 
 doplot = function(staCode, endTime) {
@@ -164,7 +165,7 @@ doplot = function(staCode, endTime) {
     hash.netArray = netArray;
     netArray.map( n => {
       n.stations.map( s => {
-        s.channels.filter( c => c.channelCode.endsWith(orientationCode))
+        s.channels.filter( c => c.channelCode.endsWith(hash.chanOrient) || c.channelCode.endsWith(hash.altChanOrient))
         .map(c => {
           chanTR.push({
             channel: c,
@@ -235,11 +236,104 @@ doplot = function(staCode, endTime) {
       svgParent.append("p").text("No Data.")
     }
     return hash;
-  })
-  .catch(e => {
+  }).then(hash => {
+    let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
+    localQuakesQuery
+      .startTime(hash.timeWindow.start)
+      .endTime(hash.timeWindow.end)
+      .minLat(31.75)
+      .maxLat(35.5)
+      .minLon(-84)
+      .maxLon(-78);
+    hash.localQuakes = localQuakesQuery.query();
+    return seisplotjs.RSVP.hash(hash);
+  }).then(hash => {
+    let regionalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
+    regionalQuakesQuery
+      .startTime(hash.timeWindow.start)
+      .endTime(hash.timeWindow.end)
+      .latitude(33)
+      .longitude(-81)
+      .maxRadius(10)
+      .minMag(4);
+    hash.regionalQuakes = regionalQuakesQuery.query();
+    return seisplotjs.RSVP.hash(hash);
+  }).then(hash => {
+    let globalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
+    globalQuakesQuery
+      .startTime(hash.timeWindow.start)
+      .endTime(hash.timeWindow.end)
+      .minMag(6);
+    hash.globalQuakes = globalQuakesQuery.query();
+    return seisplotjs.RSVP.hash(hash);
+  }).catch(e => {
       svgParent.append("h3").text("Error Loading Data").style("color", "red");
       svgParent.append("p").text(`e`);
       throw e;
+  }).then(hash => {
+    console.log(`num quakes ${hash.localQuakes.length}  ${hash.regionalQuakes.length}  ${hash.globalQuakes.length}`)
+    hash.quakes = [];
+    if (hash.localQuakes.length > 0)hash.quakes = hash.localQuakes;
+    if (hash.regionalQuakes.length > 0)hash.quakes = hash.quakes.concat(hash.regionalQuakes);
+    if (hash.globalQuakes.length > 0)hash.quakes = hash.quakes.concat(hash.globalQuakes);
+
+    return seisplotjs.RSVP.hash(hash);
+  }).then(hash => {
+    let traveltimes = [];
+    let mystation = hash.chanTR[0].channel.station;
+    hash.quakes.forEach(quake => {
+      let ttresult = new seisplotjs.traveltime.TraveltimeQuery()
+        .protocol(protocol)
+        .evdepth( quake.depth > 0 ? quake.depth/1000 : 0)
+        .evlat(quake.latitude).evlon(quake.longitude)
+        .stalat(mystation.latitude).stalon(mystation.longitude)
+        .phases('p,P,PKP,PKIKP,Pdiff,s,S,Sdiff,PKP,SKS,SKIKS')
+        .query()
+        .then(function(ttimes) {
+          let firstP = null;
+          let firstS = null;
+          for (let p=0; p<ttimes.arrivals.length; p++) {
+            if ((ttimes.arrivals[p].phase.startsWith('P') || ttimes.arrivals[p].phase.startsWith('p')) && ( ! firstP || firstP.time > ttimes.arrivals[p])) {
+              firstP = ttimes.arrivals[p];
+            }
+            if ((ttimes.arrivals[p].phase.startsWith('S') || ttimes.arrivals[p].phase.startsWith('s')) && ( ! firstS || firstS.time > ttimes.arrivals[p])) {
+              firstS = ttimes.arrivals[p];
+            }
+          }
+          return {
+            firstP: firstP,
+            firstPTime: moment(quake.time).add(firstP.time, 'seconds'),
+            firstS: firstS,
+            firstSTime: moment(quake.time).add(firstS.time, 'seconds'),
+            ttimes: ttimes
+          };
+        });
+      traveltimes.push(ttresult);
+    });
+    hash.traveltimes = seisplotjs.RSVP.all(traveltimes);
+    return seisplotjs.RSVP.hash(hash);
+  }).then(hash => {
+    let markers = [];
+    hash.quakes.forEach(quake => {
+      console.log(`q uake: ${quake.time} ${quake.mag}`);
+      markers.push({ markertype: 'predicted', name: `${quake.magnitude} ${quake.time.format('HH:mm:ss')}`, time: quake.time });
+      if (quake.arrivals) {
+        quake.arrivals.forEach(arrival => {
+          console.log(`arrival ${arrival} ${arrival.pick.stationCode}`);
+          if (arrival && arrival.pick.stationCode == hash.staCode) {
+          markers.push({ markertype: 'pick', name: arrival.phase, time: arrival.pick.time });
+          console.log("markers.push({ markertype: 'pick', name: "+arrival.phase+", time: "+arrival.pick.time );
+          }
+        });
+      }
+    });
+
+    hash.traveltimes.forEach(tt => {
+      markers.push({ markertype: 'predicted', name: tt.firstP.phase, time: tt.firstPTime });
+      markers.push({ markertype: 'predicted', name: tt.firstS.phase, time: tt.firstSTime });
+    });
+    hash.heli.appendMarkers(markers);
+    return hash;
   });
 }
 
