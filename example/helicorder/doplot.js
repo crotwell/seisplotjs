@@ -18,6 +18,7 @@ let clockOffset = 0; // should get from server somehow
 let duration = 24*60*60;
 let overlap = 0.75;
 let instCode = "H";
+let bandCode = "H";
 let orientationCode = 'Z';
 let altOrientationCode = null;
 let maxSteps = -1; // max num of ticks of the timer before stopping, for debugin
@@ -107,10 +108,17 @@ wp.d3.select("button#loadE").on("click", function(d) {
   load(currentEndTime);
 });
 wp.d3.select("button#loadSM").on("click", function(d) {
+  bandCode = "H";
   instCode = "N";
   load(currentEndTime);
 });
 wp.d3.select("button#loadVel").on("click", function(d) {
+  bandCode = "H";
+  instCode = "H";
+  load(currentEndTime);
+});
+wp.d3.select("button#loadLongPeriod").on("click", function(d) {
+  bandCode = "L";
   instCode = "H";
   load(currentEndTime);
 });
@@ -129,7 +137,7 @@ doplot = function(staCode, endTime) {
   let timeWindow = seisplotjs.fdsndataselect.calcStartEndDates(null, endTime, duration, clockOffset);
   let netCodeQuery = netCode;
   let locCodeQuery = locCode;
-  let chanCodeQuery = `H${instCode}${orientationCode}`;
+  let chanCodeQuery = `${bandCode}${instCode}${orientationCode}`;
   if (altOrientationCode) {chanCodeQuery = `${chanCodeQuery},H${instCode}${altOrientationCode}`;}
   d3.selectAll("span.textNetCode").text(netCodeQuery);
   d3.selectAll("span.textStaCode").text(staCode);
@@ -177,20 +185,27 @@ doplot = function(staCode, endTime) {
     });
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    let minMaxQ = new seisplotjs.seedlink.MSeedArchive(
-      "http://eeyore.seis.sc.edu/minmax",
-      "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
-    let minMaxChanTR = hash.chanTR.map( ct => {
-      let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
-      let fake = new seisplotjs.model.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
-      fake.sampleRate = 2;
-      return {
-        channel: fake,
-        startTime: ct.startTime,
-        endTime: ct.endTime
-      };
-    });
-    hash.traceMap = minMaxQ.loadTraces(minMaxChanTR);
+    if (bandCode == 'H') {
+      let minMaxQ = new seisplotjs.seedlink.MSeedArchive(
+        "http://eeyore.seis.sc.edu/minmax",
+        "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
+      let minMaxChanTR = hash.chanTR.map( ct => {
+        let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
+        let fake = new seisplotjs.model.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
+        fake.sampleRate = 2;
+        return {
+          channel: fake,
+          startTime: ct.startTime,
+          endTime: ct.endTime
+        };
+      });
+      hash.traceMap = minMaxQ.loadTraces(minMaxChanTR);
+    } else {
+      let mseedQ = new seisplotjs.seedlink.MSeedArchive(
+        "http://eeyore.seis.sc.edu/mseed",
+        "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
+      hash.traceMap = mseedQ.loadTraces(hash.chanTR);
+    }
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
     if (hash.traceMap.size == 0) {
@@ -214,6 +229,8 @@ doplot = function(staCode, endTime) {
       let minMaxTrace = null;
       traceMap.forEach((value, key) => {
         if (key.endsWith(`L${hash.minMaxInstCode}${hash.chanOrient}`) || key.endsWith(`L${hash.minMaxInstCode}${hash.altChanOrient}`)) {
+          minMaxTrace = value;
+        } else if (key.endsWith(`${bandCode}${hash.instCode}${hash.chanOrient}`) || key.endsWith(`${bandCode}${hash.instCode}${hash.altChanOrient}`)) {
           minMaxTrace = value;
         } else {
           console.log(`does not match: ${key}`);
