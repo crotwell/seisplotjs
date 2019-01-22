@@ -34,7 +34,7 @@ export class Helicorder {
     this.seismographArray = [];
     this.svgParent = inSvgParent;
     this.heliConfig = heliConfig;
-    this.secondsPerLine = 7200;
+    this.secondsPerLine = moment.duration(plotEndDate.diff(plotStartDate, 'seconds'))/heliConfig.numLines;
     this.plotStartDate = plotStartDate;
     this.plotEndDate = plotEndDate;
     this.trace = trace;
@@ -98,8 +98,16 @@ export class Helicorder {
     }
   }
   appendMarkers(value: Array<MarkerType> | MarkerType) {
+    let markers = value;
+    if (! Array.isArray(value)) {
+      markers = [ value ];
+    }
     for(let s of this.seismographArray) {
-      s.appendMarkers(value);
+      for(let m of markers) {
+        if (m.time.isAfter(s.plotStartDate) && m.time.isBefore(s.plotEndDate)) {
+          s.appendMarkers(m);
+        }
+      }
     }
   }
 }

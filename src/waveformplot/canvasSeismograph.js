@@ -15,6 +15,7 @@ import {
     findMinMax
   } from './util';
 import SeismographConfig from './seismographconfig';
+import type { MarginType, MarkerType } from './seismographconfig';
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
 import * as model from '../model/index';
@@ -86,7 +87,8 @@ export class CanvasSeismograph {
 
     this.canvas = null;
 
-    this.svg = this.svgParent.append("svg");
+    this.svg = this.svgParent.append("svg")
+      .style("z-index", 100);
     this.svg.classed("seismograph", true);
     //this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
@@ -184,8 +186,7 @@ export class CanvasSeismograph {
     }
     console.log(`   height: ${rect.height} ${this.seismographConfig.minHeight} to ${this.seismographConfig.maxHeight}`)
     if ( ! this.canvas ) {
-      this.canvas = this.svgParent.append('canvas').classed("seismograph", true);
-      //this.canvas.call(this.zoom);
+      this.canvas = this.svgParent.insert("canvas",":first-child").classed("seismograph", true);
       const mythis = this;
       this.canvas.call(d3.zoom().on("zoom", function () {
         mythis.zoomed(mythis);
@@ -194,7 +195,8 @@ export class CanvasSeismograph {
        this.disableWheelZoom();
      }
       this.canvas.attr("height", this.outerHeight)
-        .attr("width", this.outerWidth);
+        .attr("width", this.outerWidth)
+        .style("z-index", "-1"); // make sure canvas is below svg
       let style = window.getComputedStyle(this.canvas.node());
       let marginTop = style.getPropertyValue('margin-top');
       let padTop = style.getPropertyValue('padding-top');
@@ -679,9 +681,17 @@ return null;
           innerTextG.append("title").text(function(marker) {
               return marker.name+" "+marker.time.toISOString();
           });
-          innerTextG.append("text")
+          let textSel = innerTextG.append("text");
+          if (marker.link && marker.link.length > 0) {
+            // if marker has link, make it clickable
+            textSel.append("svg:a")
+              .attr("xlink:href",function(marker) {return marker.link;})
+              .text(function(marker) {return marker.name;});
+          } else {
+            textSel.text(function(marker) {return marker.name;});
+          }
+          textSel
               .attr("dy", "-0.35em")
-              .text(function(marker) {return marker.name;})
               .call(function(selection) {
                 // this stores the BBox of the text in the bbox field for later use
                 selection.each(function(t){

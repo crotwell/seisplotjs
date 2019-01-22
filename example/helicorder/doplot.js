@@ -226,6 +226,7 @@ doplot = function(staCode, endTime) {
       let heliConfig = new wp.HelicorderConfig();
       heliConfig.overlap = overlap;
       heliConfig.lineSeisConfig.margin.left = 22;
+      heliConfig.numLines = 12;
       let minMaxTrace = null;
       traceMap.forEach((value, key) => {
         if (key.endsWith(`L${hash.minMaxInstCode}${hash.chanOrient}`) || key.endsWith(`L${hash.minMaxInstCode}${hash.altChanOrient}`)) {
@@ -285,7 +286,7 @@ doplot = function(staCode, endTime) {
     return seisplotjs.RSVP.hash(hash);
   }).catch(e => {
       svgParent.append("h3").text("Error Loading Data").style("color", "red");
-      svgParent.append("p").text(`e`);
+      svgParent.append("p").text(`${e}`);
       throw e;
   }).then(hash => {
     console.log(`num quakes ${hash.localQuakes.length}  ${hash.regionalQuakes.length}  ${hash.globalQuakes.length}`)
@@ -333,7 +334,11 @@ doplot = function(staCode, endTime) {
     let markers = [];
     hash.quakes.forEach(quake => {
       console.log(`q uake: ${quake.time} ${quake.mag}`);
-      markers.push({ markertype: 'predicted', name: `${quake.magnitude} ${quake.time.format('HH:mm:ss')}`, time: quake.time });
+      markers.push({ markertype: 'predicted',
+                     name: `${quake.magnitude} ${quake.time.format('HH:mm:ss')}`,
+                     time: quake.time,
+                     link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`
+                   });
       if (quake.arrivals) {
         quake.arrivals.forEach(arrival => {
           console.log(`arrival ${arrival} ${arrival.pick.stationCode}`);

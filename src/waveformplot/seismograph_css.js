@@ -128,4 +128,12 @@ svg.overlayPlot g.title tspan:nth-child(9n+8)  {
 svg.overlayPlot g.title tspan:nth-child(9n+9)  {
   stroke: sienna;
 }
+
+
+/* links in svg */
+svg text a {
+  fill: #0000EE;
+  text-decoration: underline;
+}
+
 `;
