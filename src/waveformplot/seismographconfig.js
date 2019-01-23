@@ -25,13 +25,16 @@ export class SeismographConfig {
   _title: Array<string>;
   isXAxis: boolean;
   xLabel: string;
+  xLabelOrientation: string;
   xSublabel: string;
   isYAxis: boolean;
   yLabel: string;
+  yLabelOrientation: string;
   ySublabel: string;
   ySublabelTrans: number;
   markerTextOffset: number;
   markerTextAngle: number;
+  markerFlagpoleBase: string;
   minHeight: number;
   maxHeight: number;
   margin: MarginType;
@@ -51,14 +54,17 @@ export class SeismographConfig {
     this.yScaleFormat = "3e";
     this._title = [ ];
     this.xLabel = "Time";
+    this.xLabelOrientation = "horizontal";
     this.xSublabel = "";
     this.yLabel = "Amplitude";
+    this.xLabelOrientation = "vertical";
     this.ySublabel = "";
     this.ySublabelTrans = 15;
     this.doRMean = true;
     this.doGain = true;
     this.markerTextOffset = .85;
     this.markerTextAngle = 45;
+    this.markerFlagpoleBase = "bottom"; // bottom or center
     this.margin = {top: 20, right: 20, bottom: 42, left: 85, toString: function() {return "t:"+this.top+" l:"+this.left+" b:"+this.bottom+" r:"+this.right;}};
     this.segmentDrawCompressedCutoff=10;//below this draw all points, above draw minmax
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample
@@ -107,14 +113,17 @@ export class SeismographConfig {
     out.yScaleFormat = this.yScaleFormat;
     out._title = this._title;
     out.xLabel = this.xLabel;
+    out.xLabelOrientation = this.xLabelOrientation;
     out.xSublabel = this.xSublabel;
     out.yLabel = this.yLabel;
+    out.yLabelOrientation = this.yLabelOrientation;
     out.ySublabel = this.ySublabel;
     out.ySublabelTrans = this.ySublabelTrans;
     out.doRMean = this.doRMean;
     out.doGain = this.doGain;
     out.markerTextOffset = this.markerTextOffset;
     out.markerTextAngle = this.markerTextAngle;
+    out.markerFlagpoleBase = this.markerFlagpoleBase;
     out.margin = this.margin;
     out.segmentDrawCompressedCutoff = this.segmentDrawCompressedCutoff;
     out.maxZoomPixelPerSample = this.maxZoomPixelPerSample;

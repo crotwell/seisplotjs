@@ -430,7 +430,12 @@ export class SvgSeismograph {
                 .x(function(d) {
                   return 0; // g is translated so marker time is zero
                 }).y(function(d, i) {
-                  return (i==0) ? 0 : mythis.yScale.range()[0];
+                  if (mythis.seismographConfig.markerFlagpoleBase === 'center') {
+                    return (i==0) ? (mythis.yScale.range()[0]+mythis.yScale.range()[1])/2 : mythis.yScale.range()[0];
+                  } else {
+                    // mythis.seismographConfig.markerFlagpoleBase === 'bottom'
+                    return (i==0) ? 0 : mythis.yScale.range()[0];
+                  }
                 }).curve(d3.curveLinear)([ mythis.yScale.domain()[0], mythis.yScale.domain()[1] ] ); // call the d3 function created by line with data
 
             });
@@ -541,13 +546,21 @@ export class SvgSeismograph {
        .classed("yLabel", true)
        .attr("x", 0)
        .attr("transform", "translate(0, "+(this.seismographConfig.margin.top+(this.height)/2)+")")
-       .append("text")
+       .append("text");
+    svgText
        .classed("y label", true)
+       .attr("dy", ".75em");
+    if (this.seismographConfig.yLabelOrientation === "vertical") {
+      // vertical
+       svgText
        .attr("text-anchor", "middle")
-       .attr("dy", ".75em")
        .attr("transform-origin", "center center")
-       .attr("transform", "rotate(-90)")
-       .text(this.seismographConfig.yLabel);
+       .attr("transform", "rotate(-90)");
+    } else {
+      // horizontal
+      svgText.attr("text-anchor", "start")
+    }
+    svgText.text(this.seismographConfig.yLabel);
     return this;
   }
   drawXSublabel() :SvgSeismograph {

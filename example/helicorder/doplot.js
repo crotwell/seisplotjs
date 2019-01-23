@@ -136,7 +136,10 @@ doPlot = function(config) {
     if (traceMap.size !== 0) {
       let heliConfig = new wp.HelicorderConfig();
       heliConfig.overlap = overlap;
-      heliConfig.lineSeisConfig.margin.left = 22;
+      heliConfig.lineSeisConfig.margin.left = 42;
+      heliConfig.lineSeisConfig.yLabelOrientation = "horizontal";
+      heliConfig.markerFlagpoleBase = 'center';
+      heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
       heliConfig.numLines = 12;
       let minMaxTrace = null;
       traceMap.forEach((value, key) => {
@@ -244,7 +247,7 @@ doPlot = function(config) {
     let markers = [];
     hash.quakes.forEach(quake => {
       markers.push({ markertype: 'predicted',
-                     name: `${quake.magnitude} ${quake.time.format('HH:mm:ss')}`,
+                     name: `M${quake.magnitude.mag} ${quake.time.format('HH:mm')}`,
                      time: quake.time,
                      link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`
                    });
