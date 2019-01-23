@@ -244,12 +244,21 @@ doPlot = function(config) {
     hash.traveltimes = seisplotjs.RSVP.all(traveltimes);
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
+    let mystation = hash.chanTR[0].channel.station;
     let markers = [];
     hash.quakes.forEach(quake => {
+      let distaz = seisplotjs.distaz.distaz(mystation.latitude, mystation.longitude, quake.latitude, quake.longitude);
       markers.push({ markertype: 'predicted',
                      name: `M${quake.magnitude.mag} ${quake.time.format('HH:mm')}`,
                      time: quake.time,
-                     link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`
+                     link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
+                     description: `${quake.time.toISOString()}
+${quake.latitude}/${quake.longitude} ${(quake.depth/1000).toFixed(2)} km
+${quake.description}
+${quake.magnitude}
+${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
+`
+
                    });
       if (quake.arrivals) {
         quake.arrivals.forEach(arrival => {
