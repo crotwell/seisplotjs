@@ -7,19 +7,14 @@
 <body>
 
 <h3>Helicorder Plots for South Carolina Seismic Network Stations:</h3>
+<div id="scsnStations"><form></form></div>
+<div id="orientations"><form></form></div>
+<div id="instruments"><form></form></div>
 
-<select id="stationChoice" name="stationChoice">
-</select>
 <button id="loadToday">Today</button>
+<button id="loadNow">Now</button>
 <button id="loadPrev">Previous</button>
 <button id="loadNext">Next</button>
-
-<button id="loadZ">Z</button>
-<button id="loadN">N/1</button>
-<button id="loadE">E/2</button>
-<button id="loadSM">Strong Motion</button>
-<button id="loadVel">Velocity</button>
-<button id="loadLongPeriod">LongPeriod</button>
 
 
 <h3><span class="textNetCode"></span>.<span class="textStaCode"></span>.<span class="textLocCode">00</span>.<span class="textChanCode">H??</span> channels from <span class="startTime"></span> to <span class="endTime"></span>.</h3>
@@ -35,5 +30,6 @@
 -->
 <script src="seisplotjs_2.0.0-alpha.1_standalone.js"></script>
 <script src="doplot.js"></script>
+<script src="heli.js"></script>
 </body>
 </html>

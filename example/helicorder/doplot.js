@@ -1,146 +1,56 @@
 
-//let seedlink = require('seisplotjs-seedlink');
-// this global comes from the seisplotjs_seedlink standalone js
-let seedlink = seisplotjs.seedlink
-let moment = seisplotjs.moment;
 
-//let wp = require('seisplotjs-waveformplot');
-// this global comes from the seisplotjs_waveformplot standalone js
-let wp = seisplotjs.waveformplot;
-let d3 = seisplotjs.d3;
+doPlot = function(config) {
+  //let seedlink = require('seisplotjs-seedlink');
+  // this global comes from the seisplotjs_seedlink standalone js
+  let seedlink = seisplotjs.seedlink
+  let moment = seisplotjs.moment;
 
-let staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
-let netCode = 'CO';
-let locCode = '00';
-
-let divClass = "heli";
-let clockOffset = 0; // should get from server somehow
-let duration = 24*60*60;
-let overlap = 0.75;
-let instCode = "H";
-let bandCode = "H";
-let orientationCode = 'Z';
-let altOrientationCode = null;
-let maxSteps = -1; // max num of ticks of the timer before stopping, for debugin
-let nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
-//nowHour = moment.utc("2019-01-11T21:58:00Z").endOf('hour').add(1, 'millisecond');
-let protocol = 'http:';
-if ("https:" == document.location.protocol) {
-  protocol = 'https:'
-}
-let wsProtocol = 'ws:';
-if (protocol == 'https:') {
-  wsProtocol = 'wss:';
-}
-
-//
-// Note: currently rtserve.iris does not support wss, and so this will
-// not work from https pages as you cannot use non-encrypted (ws)
-// loaded from a https web page
-//
-let IRIS_HOST = "rtserve.iris.washington.edu";
-let EEYORE_HOST = "eeyore.seis.sc.edu";
-let EEYORE_PORT = 6383;
-let host = IRIS_HOST;
-let port = 80;
-host=EEYORE_HOST;
-port=EEYORE_PORT;
-let seedlinkUrl = wsProtocol+"//"+host+(port==80?'':':'+port)+'/seedlink';
-console.log("URL: "+seedlinkUrl);
+  //let wp = require('seisplotjs-waveformplot');
+  // this global comes from the seisplotjs_waveformplot standalone js
+  let wp = seisplotjs.waveformplot;
+  let d3 = seisplotjs.d3;
 
 
-d3.selectAll('.textHost').text(host);
+  let divClass = "heli";
+  let clockOffset = 0; // should get from server somehow
+  let duration = 24*60*60;
+  let overlap = 0.75;
+  let maxSteps = -1; // max num of ticks of the timer before stopping, for debugin
+  let nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
+  //nowHour = moment.utc("2019-01-11T21:58:00Z").endOf('hour').add(1, 'millisecond');
 
-let slConn = null;
-let allSeisPlots = new Map();
-let svgParent = wp.d3.select(`div.${divClass}`);
-let margin = {top: 20, right: 20, bottom: 50, left: 60};
+  // stringify moment...
+  let end = config.endTime;
+  if (moment.isMoment(end)) {
+    config.endTime = end.toISOString();
+  }
+  history.pushState(config, "title");
+  config.endTime = end;
 
-let paused = false;
-let stopped = false;
-let numSteps = 0;
-
-let currentEndTime = moment.utc().endOf('hour').add(1, 'millisecond');
-let currentStation = null;
-let currentOrient = "Z";
-let heli = null;
-let quakes = [];
-
-let staChoice = d3.select('#stationChoice');
-staChoice
-  .selectAll("option")
-  .data(staList)
-  .enter()
-    .append("option")
-    .text(function(d) {return d;});
-staChoice.on('change', function() {
-    let sta = d3.select('#stationChoice').property('value');
-    doplot(sta, currentEndTime);
-  });
-
-wp.d3.select("button#loadToday").on("click", function(d) {
-  currentEndTime = moment.utc().endOf('hour').add(1, 'millisecond');
-  load(currentEndTime);
-});
-
-wp.d3.select("button#loadPrev").on("click", function(d) {
-  currentEndTime = moment.utc(currentEndTime).subtract(1, 'day');
-  load(currentEndTime);
-});
-
-wp.d3.select("button#loadNext").on("click", function(d) {
-  currentEndTime = moment.utc(currentEndTime).add(1, 'day');
-  load(currentEndTime);
-});
-wp.d3.select("button#loadZ").on("click", function(d) {
-  orientationCode = "Z";
-  altOrientationCode = null;
-  load(currentEndTime);
-});
-wp.d3.select("button#loadN").on("click", function(d) {
-  orientationCode = "N";
-  altOrientationCode = "1";
-  load(currentEndTime);
-});
-wp.d3.select("button#loadE").on("click", function(d) {
-  orientationCode = "E";
-  altOrientationCode = "2";
-  load(currentEndTime);
-});
-wp.d3.select("button#loadSM").on("click", function(d) {
-  bandCode = "H";
-  instCode = "N";
-  load(currentEndTime);
-});
-wp.d3.select("button#loadVel").on("click", function(d) {
-  bandCode = "H";
-  instCode = "H";
-  load(currentEndTime);
-});
-wp.d3.select("button#loadLongPeriod").on("click", function(d) {
-  bandCode = "L";
-  instCode = "H";
-  load(currentEndTime);
-});
-
-let load = function(endTime) {
-  var selectEl = document.getElementById("stationChoice");
-  var selectedIndex = selectEl.selectedIndex;
-  var staCode = selectEl.options[selectedIndex].value;
-
-  console.log("Load..."+staCode);
-  doplot(staCode, endTime).then(hash => {heli = hash.heli;});
-}
-
-doplot = function(staCode, endTime) {
+  let plotEnd;
+  if (moment.isMoment(end)) {
+    plotEnd = end;
+  } else if( ! end || end.length === 0 || end === 'now') {
+    plotEnd = moment.utc().endOf('hour').add(1, 'millisecond');
+  } else if( end === 'today') {
+    plotEnd = moment.utc().endOf('day').add(1, 'millisecond');
+  } else {
+    plotEnd = config.endTime;
+  }
+  let svgParent = wp.d3.select(`div.${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
-  let timeWindow = seisplotjs.fdsndataselect.calcStartEndDates(null, endTime, duration, clockOffset);
-  let netCodeQuery = netCode;
-  let locCodeQuery = locCode;
-  let chanCodeQuery = `${bandCode}${instCode}${orientationCode}`;
-  if (altOrientationCode) {chanCodeQuery = `${chanCodeQuery},H${instCode}${altOrientationCode}`;}
+  let timeWindow = seisplotjs.fdsndataselect.calcStartEndDates(null, plotEnd, duration, clockOffset);
+
+  let netCodeQuery = config.netCode;
+  let staCodeQuery = config.station;
+  let locCodeQuery = config.locCode;
+  let chanCodeQuery = `${config.bandCode}${config.instCode}${config.orientationCode}`;
+  if (config.altOrientationCode && config.altOrientationCode.length !== 0) {
+    chanCodeQuery = `${chanCodeQuery},${config.bandCode}${config.instCode}${config.altOrientationCode}`;
+  }
   d3.selectAll("span.textNetCode").text(netCodeQuery);
-  d3.selectAll("span.textStaCode").text(staCode);
+  d3.selectAll("span.textStaCode").text(staCodeQuery);
   d3.selectAll("span.textLocCode").text(locCodeQuery);
   d3.selectAll("span.textChanCode").text(chanCodeQuery);
   d3.selectAll("span.startTime").text(timeWindow.start.format('ddd, MMM D, YYYY HH:mm [GMT]'));
@@ -148,18 +58,19 @@ doplot = function(staCode, endTime) {
   let channelQuery = new seisplotjs.fdsnstation.StationQuery()
     .nodata(404)
     .networkCode(netCodeQuery)
-    .stationCode(staCode)
+    .stationCode(staCodeQuery)
     .locationCode(locCodeQuery)
     .channelCode(chanCodeQuery)
     .startTime(timeWindow.start)
     .endTime(timeWindow.end);
   let hash = {
     timeWindow: timeWindow,
-    staCode: staCode,
-    chanOrient: orientationCode,
-    altChanOrient: altOrientationCode,
-    instCode: instCode,
-    minMaxInstCode: instCode === 'H' ? 'X' : 'Y'
+    staCode: staCodeQuery,
+    chanOrient: config.orientationCode,
+    altChanOrient: config.altOrientationCode ? config.altOrientationCode : "",
+    bandCode: config.bandCode,
+    instCode: config.instCode,
+    minMaxInstCode: config.instCode === 'H' ? 'X' : 'Y'
   };
   return channelQuery.queryChannels()
   .catch(e => {
@@ -185,7 +96,7 @@ doplot = function(staCode, endTime) {
     });
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    if (bandCode == 'H') {
+    if (hash.bandCode == 'H') {
       let minMaxQ = new seisplotjs.seedlink.MSeedArchive(
         "http://eeyore.seis.sc.edu/minmax",
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
@@ -231,8 +142,9 @@ doplot = function(staCode, endTime) {
       traceMap.forEach((value, key) => {
         if (key.endsWith(`L${hash.minMaxInstCode}${hash.chanOrient}`) || key.endsWith(`L${hash.minMaxInstCode}${hash.altChanOrient}`)) {
           minMaxTrace = value;
-        } else if (key.endsWith(`${bandCode}${hash.instCode}${hash.chanOrient}`) || key.endsWith(`${bandCode}${hash.instCode}${hash.altChanOrient}`)) {
+        } else if (key.endsWith(`${hash.bandCode}${hash.instCode}${hash.chanOrient}`) || key.endsWith(`${hash.bandCode}${hash.instCode}${hash.altChanOrient}`)) {
           minMaxTrace = value;
+          d3.selectAll("span.textChanCode").text(key.slice(-3));
         } else {
           console.log(`does not match: ${key}`);
         }
@@ -242,8 +154,6 @@ doplot = function(staCode, endTime) {
       }
       hash.minMaxTrace = minMaxTrace;
       hash.traceMap = null;
-      console.log(`before break: ${minMaxTrace.numPoints}`)
-      console.log(`trace type: ${(typeof minMaxTrace)} ${minMaxTrace.constructor.name} ${minMaxTrace.numPoints}`);
       hash.heli = new wp.Helicorder(svgParent,
                                     heliConfig,
                                     minMaxTrace,
@@ -333,7 +243,6 @@ doplot = function(staCode, endTime) {
   }).then(hash => {
     let markers = [];
     hash.quakes.forEach(quake => {
-      console.log(`q uake: ${quake.time} ${quake.mag}`);
       markers.push({ markertype: 'predicted',
                      name: `${quake.magnitude} ${quake.time.format('HH:mm:ss')}`,
                      time: quake.time,
@@ -341,10 +250,8 @@ doplot = function(staCode, endTime) {
                    });
       if (quake.arrivals) {
         quake.arrivals.forEach(arrival => {
-          console.log(`arrival ${arrival} ${arrival.pick.stationCode}`);
           if (arrival && arrival.pick.stationCode == hash.staCode) {
-          markers.push({ markertype: 'pick', name: arrival.phase, time: arrival.pick.time });
-          console.log("markers.push({ markertype: 'pick', name: "+arrival.phase+", time: "+arrival.pick.time );
+            markers.push({ markertype: 'pick', name: arrival.phase, time: arrival.pick.time });
           }
         });
       }
@@ -357,68 +264,4 @@ doplot = function(staCode, endTime) {
     hash.heli.appendMarkers(markers);
     return hash;
   });
-}
-
-
-
-wp.d3.select("button#pause").on("click", function(d) {
-  doPause( ! paused);
-});
-
-wp.d3.select("button#disconnect").on("click", function(d) {
-  doDisconnect( ! stopped);
-});
-
-let doPause = function(value) {
-  console.log("Pause..."+paused+" -> "+value);
-  paused = value;
-  if (paused) {
-    wp.d3.select("button#pause").text("Play");
-  } else {
-    wp.d3.select("button#pause").text("Pause");
-  }
-}
-
-let doDisconnect = function(value) {
-  console.log("disconnect..."+stopped+" -> "+value);
-  stopped = value;
-  if (stopped) {
-    if (slConn) {slConn.close();}
-    wp.d3.select("button#disconnect").text("Reconnect");
-  } else {
-    if (slConn) {slConn.connect();}
-    wp.d3.select("button#disconnect").text("Disconnect");
-  }
-}
-
-console.log(' ##### DISABLE autoupdate ####')
-paused=true;
-let timerInterval = 300*1000;
-// testing
-timerInterval = 10000;
-if (timerInterval < 10000) { timerInterval = 10000;}
-console.log("start time with interval "+timerInterval);
-let timer = wp.d3.interval(function(elapsed) {
-  if ( ! heli) {return;}
-  if ( paused) {
-    return;
-  }
-  if ( allSeisPlots.size > 1) {
-    numSteps++;
-    if (maxSteps > 0 && numSteps > maxSteps ) {
-      console.log("quit after max steps: "+maxSteps);
-      timer.stop();
-      slConn.close();
-    }
-  }
-  nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
-  timeWindow = wp.calcStartEndDates(null, nowHour, duration, clockOffset);
-  console.log("reset time window for "+timeWindow.start+" "+timeWindow.end );
-
-  heli.setPlotStartEnd(timeWindow.start, timeWindow.end);
-}, timerInterval);
-
-let errorFn = function(error) {
-  console.log("error: "+error);
-  svgParent.select("p").text("Error: "+error);
 };
