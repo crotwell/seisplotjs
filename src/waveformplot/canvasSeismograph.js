@@ -175,7 +175,6 @@ export class CanvasSeismograph {
     return false;
   }
   draw() :void {
-    console.log(`"####### IN canvasSeismogram.draw ${this.plotStartDate} - ${this.plotEndDate}`);
     let rect = this.svg.node().getBoundingClientRect();
     const styleHeight = this.svgParent.style("height");
     const styleWidth = this.svgParent.style("width");
@@ -184,7 +183,6 @@ export class CanvasSeismograph {
       if (rect.height > this.seismographConfig.maxHeight) { rect.height = this.seismographConfig.maxHeight; }
       this.setWidthHeight(rect.width, rect.height);
     }
-    console.log(`   height: ${rect.height} ${this.seismographConfig.minHeight} to ${this.seismographConfig.maxHeight}`)
     if ( ! this.canvas ) {
       this.canvas = this.svgParent.insert("canvas",":first-child").classed("seismograph", true);
       const mythis = this;
@@ -209,7 +207,6 @@ export class CanvasSeismograph {
       }
       let padLeft = style.getPropertyValue('padding-left');
       padLeft = Number(padLeft.replace("px", ""));
-      console.log("padTop: "+padTop+"  "+(1+padTop-1)+"  borderTop "+borderTop+"  m "+marginTop+" sc.m"+this.seismographConfig.margin.top);
       this.sizeCanvas();
     }
     this.drawTraces();
@@ -736,13 +733,13 @@ return null;
   }
 
   setWidthHeight(nOuterWidth: number, nOuterHeight: number) :void {
-    console.log("setWidthHeight: outer: "+nOuterWidth+" "+nOuterHeight);
+    //console.log("setWidthHeight: outer: "+nOuterWidth+" "+nOuterHeight);
     this.outerWidth = Math.round(nOuterWidth ? Math.max(200, nOuterWidth) : 200);
     this.outerHeight = Math.round(nOuterHeight ? Math.max(100, nOuterHeight): 100);
     this.height = this.outerHeight - this.seismographConfig.margin.top - this.seismographConfig.margin.bottom;
     this.width = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
 
-      console.log("setWidthHeight: inner: "+this.width+" "+this.height);
+      //console.log("setWidthHeight: inner: "+this.width+" "+this.height);
     //this.svg.attr("viewBox", "0 0 "+this.outerWidth+" "+this.outerHeight);
     this.origXScale.range([0, this.width]);
     this.xScale.range([0, this.width]);
@@ -989,7 +986,6 @@ return null;
         this.traces.push(newTrace);
       }
     }
-    console.log(`replace trace ${index} ${this.traces.length}`);
   }
   trim(timeWindow: TimeRangeType) :void {
     if (this.traces) {
