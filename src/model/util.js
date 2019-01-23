@@ -63,7 +63,8 @@ export function stringify(value: mixed): string {
 }
 
 /** converts the input value is a moment, throws Error if not
- * a string, Date or moment.
+ * a string, Date or moment. Zero length string or "now" return
+ * current time.
  */
 export function checkStringOrDate(d: any): moment {
   if (moment.isMoment(d)) {
@@ -73,7 +74,12 @@ export function checkStringOrDate(d: any): moment {
   } else if (d instanceof Number || typeof d === "number") {
     return moment.utc(d);
   } else if (d instanceof String || typeof d === "string") {
-    return moment.utc(d);
+    let lc = d.toLowerCase();
+    if (d.length === 0 || lc === "now") {
+      return moment.utc();
+    } else {
+      return moment.utc(d);
+    }
   }
   throw new Error("unknown date type: "+d+" "+(typeof d));
 }
