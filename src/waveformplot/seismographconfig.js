@@ -9,7 +9,8 @@ const moment = model.moment;
 export type MarkerType = {
   name: string,
   time: moment,
-  type: string
+  type: string,
+  description: string
 }
 
 export type MarginType = {
@@ -57,7 +58,7 @@ export class SeismographConfig {
     this.xLabelOrientation = "horizontal";
     this.xSublabel = "";
     this.yLabel = "Amplitude";
-    this.xLabelOrientation = "vertical";
+    this.yLabelOrientation = "vertical";
     this.ySublabel = "";
     this.ySublabelTrans = 15;
     this.doRMean = true;

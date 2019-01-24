@@ -676,7 +676,11 @@ return null;
               let texty = maxY - mythis.seismographConfig.markerTextOffset*(deltaY);
               return  "translate("+0+","+texty+") rotate("+mythis.seismographConfig.markerTextAngle+")";});
           innerTextG.append("title").text(function(marker) {
+            if (marker.description) {
+              return marker.description;
+            } else {
               return marker.name+" "+marker.time.toISOString();
+            }
           });
           let textSel = innerTextG.append("text");
           if (marker.link && marker.link.length > 0) {
