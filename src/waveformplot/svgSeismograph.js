@@ -644,9 +644,13 @@ export class SvgSeismograph {
     if (this.seismographConfig.doGain && this.instrumentSensitivity) {
       niceMinMax[0] = niceMinMax[0] / this.instrumentSensitivity.sensitivity;
       niceMinMax[1] = niceMinMax[1] / this.instrumentSensitivity.sensitivity;
-      this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
+      if (this.seismographConfig.ySublabelIsUnits) {
+        this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
+      }
     } else {
-      this.seismographConfig.ySublabel = "Count";
+      if (this.seismographConfig.ySublabelIsUnits) {
+        this.seismographConfig.ySublabel = "Count";
+      }
     }
     if (this.seismographConfig.doRMean) {
       this.yScaleRmean.domain([ (niceMinMax[0]-niceMinMax[1])/2, (niceMinMax[1]-niceMinMax[0])/2 ]);

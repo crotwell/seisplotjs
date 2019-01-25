@@ -33,6 +33,7 @@ export class SeismographConfig {
   yLabelOrientation: string;
   ySublabel: string;
   ySublabelTrans: number;
+  ySublabelIsUnits: boolean;
   markerTextOffset: number;
   markerTextAngle: number;
   markerFlagpoleBase: string;
@@ -61,6 +62,7 @@ export class SeismographConfig {
     this.yLabelOrientation = "vertical";
     this.ySublabel = "";
     this.ySublabelTrans = 15;
+    this.ySublabelIsUnits = true;
     this.doRMean = true;
     this.doGain = true;
     this.markerTextOffset = .85;

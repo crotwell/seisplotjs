@@ -949,11 +949,11 @@ return null;
     if (this.seismographConfig.doGain && this.instrumentSensitivity) {
       niceMinMax[0] = niceMinMax[0] / this.instrumentSensitivity.sensitivity;
       niceMinMax[1] = niceMinMax[1] / this.instrumentSensitivity.sensitivity;
-      if (this.seismographConfig.ySublabel === null || this.seismographConfig.ySublabel.length === 0) {
+      if (this.seismographConfig.ySublabelIsUnits) {
         this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
       }
     } else {
-      if (this.seismographConfig.ySublabel === null || this.seismographConfig.ySublabel.length === 0) {
+      if (this.seismographConfig.ySublabelIsUnits) {
         this.seismographConfig.ySublabel = "Count";
       }
     }
