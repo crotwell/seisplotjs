@@ -12,6 +12,7 @@ import { CanvasSeismograph } from './canvasSeismograph';
 import { SvgSeismograph } from './svgSeismograph';
 import {Helicorder, HelicorderConfig } from './helicorder';
 import {SeismographConfig } from './seismographconfig';
+import {createSimpleFFTPlot } from './fftPlot';
 
 import * as chooser from './chooser';
 import * as sort from './sort';
@@ -49,6 +50,7 @@ export {
     Helicorder,
     HelicorderConfig,
     SeismographConfig,
+    createSimpleFFTPlot,
     sort,
     particleMotion,
     createParticleMotionBySelector,
