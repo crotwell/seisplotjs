@@ -160,7 +160,10 @@ export class Trace {
   checkAllSimilar() {
     if (this.seisArray.length == 0) {throw new Error("Trace is empty");}
     let f = this.seisArray[0];
-    this.seisArray.forEach(s => {
+    this.seisArray.forEach((s, i) => {
+      if (! s) {
+        throw new Error(`index ${i} is null in trace`);
+      }
       this.checkSimilar(f, s);
     });
   }
