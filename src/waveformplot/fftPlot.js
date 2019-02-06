@@ -41,11 +41,11 @@ let y = d3.scaleLog()
     .rangeRound([height, 0]);
 
 let line = d3.line()
-    .x(function(d, i) { return x((i+1)*T); })
+    .x(function(d, i) { return x((i+1)*sps/2/(fftAmp.length-1)); })
     .y(function(d, i) { return y(d); });
 
   // minus one as slice off zero freq above
-  x.domain([T, (fftAmp.length-1)*T]);
+  x.domain([sps/2/(fftAmp.length-1), sps/2]);
 //  x.domain(d3.extent(fftAmp, function(d, i) { return i; }));
   y.domain(d3.extent(fftAmp, function(d, i) { return d; }));
   if (y.domain()[0] === y.domain()[1]) {
@@ -54,7 +54,9 @@ let line = d3.line()
 console.log(`height: ${height} T ${T}  fft0 ${fftAmp[0]}`);
   g.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
+      .call(d3.axisBottom(x));
+  g.append("g")
+      .attr("transform", "translate(0," + height+ margin.bottom + ")")
     .append("text")
       .attr("fill", "#000")
       .attr("y", 0)
