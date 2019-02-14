@@ -953,8 +953,12 @@ return null;
         this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
       }
     } else {
-      if (this.seismographConfig.ySublabelIsUnits) {
-        this.seismographConfig.ySublabel = "Count";
+      if (this.seismographConfig.ySublabelIsUnits && ! this.seismographConfig.ySublabel && ! this.instrumentSensitivity ) {
+        this.seismographConfig.ySublabel = "";
+        for (let t of this.traces) {
+          this.seismographConfig.ySublabel += `${t.yUnit} `;
+        }
+        //this.seismographConfig.ySublabel = "Count";
       }
     }
     if (this.seismographConfig.doRMean) {
