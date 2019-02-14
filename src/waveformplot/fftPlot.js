@@ -87,4 +87,5 @@ console.log(`height: ${height} T ${T}  fft0 ${fftAmp[0]}`);
       .attr("stroke-width", 1.5)
       .attr("d", line);
 
+    return svg;
 }
