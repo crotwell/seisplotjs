@@ -96,6 +96,7 @@ export class Seismogram {
     out.stationCode = this.stationCode;
     out.locationCode = this.locationCode;
     out.channelCode = this.channelCode;
+    out.yUnit = this.yUnit;
     return out;
   }
   trim(trimStart: moment, trimEnd: moment) {
@@ -135,17 +136,6 @@ export class Seismogram {
   * and sample rate, but cover different times. */
 export class Trace {
   seisArray: Array<Seismogram>;
-  /** the sample rate in hertz */
-  sampleRate:number;
-  /** @private */
-  _start:moment;
-  networkCode:string;
-  stationCode:string;
-  locationCode:string;
-  channelCode:string;
-  yUnit:string;
-  start: moment;
-  end: moment;
   constructor(seisArray: Seismogram | Array<Seismogram>) {
     if ( Array.isArray(seisArray)) {
       this.seisArray = seisArray;
@@ -254,6 +244,11 @@ export class Trace {
       this.seisArray = out;
     }
     return this;
+  }
+  merge() {
+    seisArray.reduce((acc, s) => {
+                return acc.concat(s.y);
+              }, []);
   }
 }
 
