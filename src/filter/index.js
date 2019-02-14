@@ -69,7 +69,7 @@ export function gainCorrect(instrumentSensitivity : model.InstrumentSensitivity,
         return d/gain;
       });
       out.y = gainY;
-      out.yUnit = instrumentSensitivity.inputUnit;
+      out.yUnit = instrumentSensitivity.inputUnits;
       return out;
   }
 }
