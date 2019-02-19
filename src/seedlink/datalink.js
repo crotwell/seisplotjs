@@ -282,8 +282,6 @@ export class DataLinkPacket {
     }
     if (this.streamId.endsWith(MSEED_TYPE)) {
       this.miniseed = miniseed.parseSingleDataRecord(dataview);
-    } else {
-      throw new Error("Unknown DataLink Packet type: "+this.streamId);
     }
   }
 
