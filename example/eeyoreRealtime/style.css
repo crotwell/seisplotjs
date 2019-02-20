@@ -2,6 +2,15 @@ div.realtimePlot {
   height: 250px;
 }
 
+svg.seismograph {
+  height: 100%;
+  width: 100%;
+}
+
+canvas.seismograph {
+  height: 100%;
+  width: 100%;
+}
 path.seispath {
   stroke: skyblue;
   fill: none;

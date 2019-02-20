@@ -7,6 +7,7 @@ let seedlink = seisplotjs.seedlink
 // this global comes from the seisplotjs_waveformplot standalone js
 let wp = seisplotjs.waveformplot;
 let d3 = seisplotjs.d3;
+let moment = seisplotjs.moment;
 
 let net = 'CO';
 let staList = ['3605', 'BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'RGR', 'SUMMV'];
@@ -17,6 +18,7 @@ d3.select('#stationChoice')
     .append("option")
     .text(function(d) {return d;});
 
+let timerInProgress = false;
 let clockOffset = 0; // should get from server somehow
 let duration = 300;
 let maxSteps = -1; // max num of ticks of the timer before stopping, for debugin
@@ -48,8 +50,10 @@ console.log("URL: "+seedlinkUrl);
 
 d3.selectAll('.textHost').text(host);
 
+
 let slConn = null;
 let allSeisPlots = new Map();
+let allTraces = new Map();
 let svgParent = wp.d3.select('div.realtime');
 let margin = {top: 20, right: 20, bottom: 50, left: 60};
 
@@ -81,6 +85,7 @@ doplot = function(sta) {
     'STATION '+sta+' '+net,
     'SELECT 00HN?.D' ];
 
+
   console.log("before select");
   svgParent.selectAll("*").remove();
   if (wsProtocol == 'wss:' && host == IRIS_HOST) {
@@ -92,28 +97,53 @@ doplot = function(sta) {
 
   let callbackFn = function(slPacket) {
     let codes = slPacket.miniseed.codes();
-    console.log("seedlink: seq="+slPacket.sequence+" "+codes);
+    //console.log("seedlink: seq="+slPacket.sequence+" "+codes);
     let seismogram = wp.miniseed.createSeismogram([slPacket.miniseed]);
-    if (allSeisPlots.get(codes)) {
-      allSeisPlots.get(codes).trim(timeWindow);
-      allSeisPlots.get(codes).append(seismogram);
+    if (allSeisPlots.has(codes) && allTraces.has(codes)) {
+      const oldTrace = allTraces.get(codes);
+      oldTrace.append(seismogram);
+      const littleBitLarger = {'start': moment.utc(timeWindow.start).subtract(60, 'second'),
+                              'end': moment.utc(timeWindow.end).add(180, 'second')};
+      const newTrace = oldTrace.trim(littleBitLarger);
+      if (newTrace) {
+        allTraces.set(codes, newTrace);
+        allSeisPlots.get(codes).replace(oldTrace, newTrace);
+        allSeisPlots.get(codes).calcScaleDomain();
+      } else {
+        // trim removed all data, nothing left in window
+        allTraces.delete(codes);
+        allSeisPlots.get(codes).remove(oldTrace);
+        console.log(`All data removed from trace ${codes}`);
+      }
+//      allSeisPlots.get(codes).trim(timeWindow);
     } else {
       svgParent.select("p.waitingondata").remove();
       let seisDiv = svgParent.append('div').attr('class', codes);
   //    seisDiv.append('p').text(codes);
       let plotDiv = seisDiv.append('div').attr('class', 'realtimePlot');
-      let seisPlot = new wp.Seismograph(plotDiv, [seismogram], timeWindow.start, timeWindow.end);
+      plotDiv.style("position", "relative");
+      plotDiv.style("width", "100%");
+      plotDiv.style("height", "150px");
+      let trace = new seisplotjs.model.Trace(seismogram);
+      let seisPlotConfig = new wp.SeismographConfig();
+      seisPlotConfig.xSublabel = codes;
+      seisPlotConfig.margin = margin ;
+      let seisPlot = new wp.CanvasSeismograph(plotDiv, seisPlotConfig, [trace], timeWindow.start, timeWindow.end);
       seisPlot.svg.classed('realtimePlot', true).classed('overlayPlot', false)
       seisPlot.disableWheelZoom();
-      seisPlot.setXSublabel(codes);
-      seisPlot.setMargin(margin );
       seisPlot.draw();
       allSeisPlots.set(slPacket.miniseed.codes(), seisPlot);
+      allTraces.set(codes, trace)
     }
   }
 
   slConn = new seedlink.SeedlinkConnection(seedlinkUrl, config, callbackFn, errorFn);
   slConn.setTimeCommand(timeWindow.start);
+  slConn.setOnClose( closeEvent => {
+    console.log(`doplot: Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
+    stopped = true;
+    wp.d3.select("button#disconnect").text("Reconnect");
+  });
   slConn.connect();
 };
 
@@ -150,12 +180,13 @@ let doDisconnect = function(value) {
 
 let timerInterval = (timeWindow.end.valueOf()-timeWindow.start.valueOf())/
                     (parseInt(svgParent.style("width"))-margin.left-margin.right);
-if (timerInterval < 200) { timerInterval = 200;}
-console.log("start time with interval "+timerInterval);
+                    console.log("start time with interval "+timerInterval);
+while (timerInterval < 100) { timerInterval *= 2;}
 let timer = wp.d3.interval(function(elapsed) {
-  if ( paused) {
+  if ( paused || timerInProgress) {
     return;
   }
+  timerInProgress = true;
   if ( allSeisPlots.size > 1) {
     numSteps++;
     if (maxSteps > 0 && numSteps > maxSteps ) {
@@ -166,9 +197,14 @@ let timer = wp.d3.interval(function(elapsed) {
   }
   timeWindow = wp.calcStartEndDates(null, null, duration, clockOffset);
   //console.log("reset time window for "+timeWindow.start+" "+timeWindow.end );
-  allSeisPlots.forEach(function(value, key) {
-      value.setPlotStartEnd(timeWindow.start, timeWindow.end);
+  window.requestAnimationFrame(timestamp => {
+    allSeisPlots.forEach(function(value, key) {
+        value.setPlotStartEnd(timeWindow.start, timeWindow.end);
+        //console.log(`${key} tw: ${value.xScale.domain()}  width: ${value.width}  xScale range: ${value.xScale.range()}`);
+    });
+    timerInProgress = false
   });
+
 }, timerInterval);
 
 let errorFn = function(error) {
