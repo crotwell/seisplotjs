@@ -1,7 +1,9 @@
 div.heli {
   height: 600px;
 }
-
+div form span {
+  margin-right: 10px;
+}
 div.heliLine {
   height: 100px;
   margin-top: -50px;
@@ -59,4 +61,35 @@ path.seisplot .orientE {
 
 text.sublabel {
   font-size: x-small;
+}
+
+
+.tooltip{
+		display: inline;
+		position: relative;
+}
+
+.tooltip:hover:after{
+		background: #333;
+		background: rgba(255,255,255,.8);
+		border-radius: 5px;
+		bottom: 26px;
+		color: #fff;
+		content: attr(title);
+		left: 20%;
+		padding: 5px 15px;
+		position: absolute;
+		z-index: 98;
+		width: 220px;
+}
+
+.tooltip:hover:before{
+		border: solid;
+		border-color: #333 transparent;
+		border-width: 6px 6px 0 6px;
+		bottom: 20px;
+		content: "";
+		left: 50%;
+		position: absolute;
+		z-index: 99;
 }

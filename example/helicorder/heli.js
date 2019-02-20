@@ -16,7 +16,7 @@ let locCode = '00';
 // also see near bottom where we check if page history has state obj and use that
 let state = {
   netCode: 'CO',
-  station: staList[0],
+  station: "",
   locCode: '00',
   bandCode: "H",
   instCode: "H",
@@ -79,6 +79,7 @@ let quakes = [];
 let station = null;
 
 let staButtonSpan = d3.select("#scsnStations")
+  .select("form")
   .selectAll("span")
   .data(staList)
   .enter()

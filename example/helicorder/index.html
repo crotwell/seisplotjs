@@ -7,15 +7,19 @@
 <body>
 
 <h3>Helicorder Plots for South Carolina Seismic Network Stations:</h3>
-<div id="scsnStations"><form></form></div>
-<div id="orientations"><form></form></div>
-<div id="instruments"><form></form></div>
-
+<div id="scsnStations">
+  <form><label title="Stations within the South Carolina Seismic Network">Stations:</label>
+  </form>
+</div>
+<div id="orientations"><form><label>Orientation: </label></form></form></div>
+<div id="instruments"><form><label>Instrument: </label></form></form></div>
+<div id="times">
+  <label>Time Range: </label>
 <button id="loadToday">Today</button>
 <button id="loadNow">Now</button>
 <button id="loadPrev">Previous</button>
 <button id="loadNext">Next</button>
-
+</div>
 
 <h3><span class="textNetCode"></span>.<span class="textStaCode"></span>.<span class="textLocCode">00</span>.<span class="textChanCode">H??</span> channels from <span class="startTime"></span> to <span class="endTime"></span>.</h3>
 

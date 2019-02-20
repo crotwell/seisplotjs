@@ -253,7 +253,7 @@ doPlot = function(config) {
                      time: quake.time,
                      link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
                      description: `${quake.time.toISOString()}
-${quake.latitude}/${quake.longitude} ${(quake.depth/1000).toFixed(2)} km
+${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(quake.depth/1000).toFixed(2)} km
 ${quake.description}
 ${quake.magnitude}
 ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
