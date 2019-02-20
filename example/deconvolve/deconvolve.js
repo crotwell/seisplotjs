@@ -46,12 +46,17 @@ divP.append("a")
 function processTraces(traceMap) {
       let trace = traceMap.values().next().value;
 
-      let svgdiv = d3.select('div.rawseisplot');
+      let div = d3.select('div.rawseisplot');
+      let svgDiv = div.append("div");
+      svgDiv.style("position", "relative");
+      svgDiv.style("width", "100%");
+      svgDiv.style("height", "450px");
       let seisConfig = new wp.SeismographConfig();
       seisConfig.ySublabel = trace.yUnit;
       let seisConfigB = new wp.SeismographConfig();
       seisConfigB.ySublabel = trace.yUnit;
-      let seisplot = new wp.SvgSeismograph(svgdiv, seisConfigB, trace);
+      let seisplot = new wp.CanvasSeismograph(svgDiv, seisConfigB, trace);
+      seisplot.setHeight(450);
       seisplot.draw();
 
       responseQuery.query(st.LEVEL_RESPONSE).then(netArray => {
@@ -70,8 +75,12 @@ function processTraces(traceMap) {
         }
 
         let svgTransfer = d3.select('div.transferseisplot');
+        let svgTransferDiv = svgTransfer.append("div");
+        svgTransferDiv.style("position", "relative");
+        svgTransferDiv.style("width", "100%");
+        svgTransferDiv.style("height", "450px");
         let transferConfig = new wp.SeismographConfig();
-        let transferPlot = new wp.SvgSeismograph(svgTransfer, transferConfig, correctedSeismogram);
+        let transferPlot = new wp.CanvasSeismograph(svgTransferDiv, transferConfig, correctedSeismogram);
         transferConfig.ySublabel=correctedSeismogram[0].yUnit;
         transferPlot.draw();
         return channel;
