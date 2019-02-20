@@ -13,6 +13,7 @@ import * as miniseed       from './miniseed';
 import * as model          from './model/index';
 import * as seedcodec      from './seedcodec';
 import * as seedlink       from './seedlink/index';
+import * as datalink       from './seedlink/datalink';
 import * as traveltime     from './traveltime/traveltime';
 import * as waveformplot   from './waveformplot/index';
 const d3 = waveformplot.d3;
@@ -28,6 +29,7 @@ export { distaz,
          miniseed,
          model,
          seedcodec,
+         datalink,
          seedlink,
          traveltime,
          waveformplot,

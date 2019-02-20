@@ -126,23 +126,23 @@ export class DataLinkConnection {
     });
   }
 
-/** encodes command with optional data section as
- * a string. This works for client generated commands
- * but not for a PACKET, which would have binary data.
- * PACKET is what client receives, but should never
- * send as we do not generate data. */
-  encodeDLCommand(command :string, dataString ?:string) :ArrayBuffer {
+/** encodes as a Datalink packet, header with optional data section as
+ * binary Uint8Array. Size of the binary data is appended
+ * to the header.
+ */
+  encodeDL(command :string, data ?:Uint8Array) :ArrayBuffer {
     let cmdLen = command.length;
     let len = 3+command.length;
     let lenStr = "";
-    if (dataString && dataString.length > 0) {
-      lenStr = String(dataString.length);
+    if (data && data.length > 0) {
+      lenStr = String(data.length);
       len+=lenStr.length+1;
       cmdLen += lenStr.length+1;
-      len+=dataString.length;
+      len+=data.length;
 
     }
     let rawPacket = new ArrayBuffer(len);
+    const binaryPacket = new Uint8Array(rawPacket)
     let packet = new DataView(rawPacket);
     packet.setUint8(0, 68); // ascii D
     packet.setUint8(1, 76); // ascii L
@@ -153,24 +153,26 @@ export class DataLinkConnection {
       i++;
     }
     const SPACE = ' ';
-    if (dataString && dataString.length > 0) {
+    if (data && data.length > 0) {
       packet.setUint8(i, SPACE.charCodeAt(0)); // ascii space
       i++;
       for (const c of lenStr) {
         packet.setUint8(i, c.charCodeAt(0));
         i++;
       }
-      for (const c of dataString) {
-        packet.setUint8(i, c.charCodeAt(0));
-        i++;
-      }
+      binaryPacket.set(data, i);
     }
+    console.log(`encodeDL: ${new TextDecoder("utf-8").decode(binaryPacket)}`)
     return rawPacket;
   }
 
-  sendDLCommand(command :string, dataString ?:string) :void {
-    console.log("send: "+command+" | "+(dataString ? dataString : ""));
-    const rawPacket = this.encodeDLCommand(command, dataString);
+  /** sends the header with optional binary data
+   * as the data section. Size of the data is appended
+   * to the header before sending.
+   */
+  sendDLBinary(header :string, data ?:arrayBuffer) :void {
+    console.log(`sendDLBinary: ${header} ${data ? data.length : 0}`)
+    const rawPacket = this.encodeDL(header, data);
     if (this.webSocket) {
       this.webSocket.send(rawPacket);
     } else {
@@ -178,16 +180,25 @@ export class DataLinkConnection {
     }
   }
 
+    /** sends the command as header with optional dataString
+     * as the data section. Size of the dataString is appended
+     * to the header before sending.
+     */
+  sendDLCommand(command :string, dataString ?:string) :void {
+    console.log("send: "+command+" | "+(dataString ? dataString : ""));
+    this.sendDLBinary(command, stringToUnit8Array(dataString));
+  }
+
   /**
   * Send a DataLink Command and await the response. Command is a string.
   * Returns a Promise that resolves with the webSocket MessageEvent.
   */
-  awaitDLCommand(command :string, dataString ?:string) :Promise<string> {
+  awaitDLBinary(header :string, data ?:Unit8Array) :Promise<string> {
     let that = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       that.responseResolve = resolve;
       that.responseReject = reject;
-      that.sendDLCommand(command, dataString);
+      that.sendDLBinary(header, data);
     }).then(response => {
       that.responseResolve = null;
       that.responseReject = null;
@@ -198,6 +209,21 @@ export class DataLinkConnection {
       throw error;
     });
     return promise;
+  }
+
+
+  /**
+  * Send a DataLink Command and await the response. Command is a string.
+  * Returns a Promise that resolves with the webSocket MessageEvent.
+  */
+  awaitDLCommand(command :string, dataString ?:string) :Promise<string> {
+    return this.awaitDLBinary(command, stringToUnit8Array(dataString));
+  }
+
+  writeAck(streamid, hpdatastart, hpdataend, data) {
+    let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`
+    console.log(`writeAck: header: ${header}`);
+    return this.awaitDLBinary(header, data)
   }
 
   handle(wsEvent :MessageEvent ) {
@@ -286,3 +312,19 @@ export class DataLinkPacket {
   }
 
 }
+
+
+  export function momentToHPTime(m :moment) :number {
+    return m.valueOf()*1000;
+  }
+
+  export function stringToUnit8Array(dataString ?:string) :Unit8Array {
+    let binaryData = null;
+    if (dataString) {
+      binaryData = new Uint8Array(dataString.length);
+      for (let i=0; i<dataString.length;i++) {
+        binaryData[i] = dataString.charCodeAt(i);
+      }
+    }
+    return binaryData;
+  }
