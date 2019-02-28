@@ -95,7 +95,7 @@ export class DataLinkConnection {
   }
 
   endStream() :void {
-    if (this.mode === QUERY_MODE) {return;}
+    if (this.webSocket === null || this.mode === null || this.mode === QUERY_MODE) {return;}
     this.mode = QUERY_MODE;
     this.sendDLCommand(ENDSTREAM, "");
   }
