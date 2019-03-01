@@ -88,6 +88,10 @@ export class DataLinkConnection {
     });
   }
 
+  isConnected() :boolean {
+    return this.webSocket !== null;
+  }
+
   stream() :void {
     if (this.mode === STREAM_MODE) {return;}
     this.mode = STREAM_MODE;
