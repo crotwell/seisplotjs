@@ -1,27 +1,34 @@
-
+import {ampPhase} from '../filter';
 
 export function createSimpleFFTPlot(fft, cssSelector, sps) {
+  simpleOverlayFFTPlot( [ fft], cssSelector, sps);
+}
 
+export function simpleOverlayFFTPlot(fftArrays, cssSelector, sps) {
     let T = 1/sps;
-    let ampLength = fft.length/2 +1;
-    let fftReal = fft.slice(0, ampLength);
-    let fftImag = new Array(ampLength);
-    fftImag[0] = 0;
-    fftImag[fftImag.length-1] = 0;
-    for (let i=1; i< fft.length/2; i++) {
-      fftImag[i] = fft[fft.length - i];
-    }
-    let fftAmp = new Array(fftReal.length);
-    for (let i=0; i< fftReal.length; i++) {
-      fftAmp[i] = Math.hypot(fftReal[i], fftImag[i]);
+    let ampPhaseList = [];
+    let maxFFTAmpLen = 0;
+    let extentFFTData = null;
+    for (const fft of fftArrays) {
+      let ap = ampPhase(fft);
+      ampPhaseList.push(ap);
+      if (maxFFTAmpLen < ap.amp.length) {
+        maxFFTAmpLen = ap.amp.length;
+      }
+      ap.ampSlice = ap.amp.slice(1)
+      let currExtent = d3.extent(ap.ampSlice, function(d, i) { return d; });
+      if (extentFFTData) {
+        extentFFTData = d3.extent([extentFFTData[0], extentFFTData[1], currExtent[0], currExtent[1]], function(d, i) { return d; })
+      } else {
+        extentFFTData = currExtent;
+      }
     }
 
-    fftAmp = fftAmp.slice(1);
-
-console.log(`FFT len:${fftAmp.length} T: ${T} sps: ${sps}`)
+console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`)
 
     let svgParent = d3.select(cssSelector);
     let svg = svgParent.append("svg");
+    svg.classed("fftplot", true);
 
     let margin = {top: 20, right: 20, bottom: 30, left: 50};
     //const styleHeight = svgParent.style("height");
@@ -41,17 +48,16 @@ let y = d3.scaleLog()
     .rangeRound([height, 0]);
 
 let line = d3.line()
-    .x(function(d, i) { return x((i+1)*sps/2/(fftAmp.length-1)); })
+    .x(function(d, i, a) { return x((i+1)*sps/2/(a.length-1)); })
     .y(function(d, i) { return y(d); });
 
   // minus one as slice off zero freq above
-  x.domain([sps/2/(fftAmp.length-1), sps/2]);
+  x.domain([sps/2/(maxFFTAmpLen-1), sps/2]);
 //  x.domain(d3.extent(fftAmp, function(d, i) { return i; }));
-  y.domain(d3.extent(fftAmp, function(d, i) { return d; }));
+  y.domain(extentFFTData);
   if (y.domain()[0] === y.domain()[1]) {
     y.domain( [ y.domain()[0]/2, y.domain()[1]*2]);
   }
-console.log(`height: ${height} T ${T}  fft0 ${fftAmp[0]}`);
   g.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
@@ -77,15 +83,11 @@ console.log(`height: ${height} T ${T}  fft0 ${fftAmp[0]}`);
       .attr("dy", "0.71em")
       .attr("text-anchor", "end")
       .text("Amp");
-
-  g.append("path")
-      .datum(fftAmp)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("stroke-width", 1.5)
-      .attr("d", line);
-
+  let pathg = g.append("g").classed("allfftpaths", true);
+  for (const ap of ampPhaseList) {
+    pathg.append("g").append("path")
+        .datum(ap.ampSlice)
+        .attr("d", line);
+  }
     return svg;
 }
