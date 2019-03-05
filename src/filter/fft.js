@@ -10,9 +10,10 @@ export function calcDFT(waveform: Array<number>, npts: number):Array<number> {
   let N = 16;
   while(N < npts) { log2N += 1; N = 2 * N;}
   let dft = new OregonDSP.fft.RDFT(log2N);
-  let inArray = waveform.slice();
-  for(let i=waveform.length; i< N; i++) {
-    inArray.push(0);
+  let inArray = new Float32Array(N);
+  inArray.fill(0);
+  for(let i=0; i<waveform.length; i++) {
+    inArray[i] = waveform[i];
   }
 
   let out = Array(N).fill(0);
