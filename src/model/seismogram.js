@@ -246,7 +246,7 @@ export class Trace {
     return this;
   }
   merge() {
-    seisArray.reduce((acc, s) => {
+    return this.seisArray.reduce((acc, s) => {
                 return acc.concat(s.y);
               }, []);
   }
