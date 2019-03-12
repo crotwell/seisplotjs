@@ -6,7 +6,7 @@ import * as model from '../model/index';
 import * as transfer  from './transfer';
 import * as taper  from './taper';
 import {hilbert, envelope} from './hilbert';
-import {calcDFT, inverseDFT, ampPhase} from './fft';
+import {calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult} from './fft';
 import {rotate, vectorMagnitude} from './vector';
 
 export const createComplex = transfer.createComplex;
@@ -14,7 +14,7 @@ export const createComplex = transfer.createComplex;
 let OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 export { OregonDSP, model, taper, transfer, hilbert, envelope,
-  calcDFT, inverseDFT, ampPhase,
+  calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult,
   rotate, vectorMagnitude };
 
 export let BAND_PASS = OregonDSP.filter.iir.PassbandType.BANDPASS;

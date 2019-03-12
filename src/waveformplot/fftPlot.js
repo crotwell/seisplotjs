@@ -1,22 +1,33 @@
-import {ampPhase} from '../filter';
+import {ampPhase, FFTResult} from '../filter';
 
 export function createSimpleFFTPlot(fft, cssSelector, sps) {
   simpleOverlayFFTPlot( [ fft], cssSelector, sps);
 }
 
-export function simpleOverlayFFTPlot(fftArrays, cssSelector, sps) {
+export function simpleOverlayFFTPlot(fftArrays, cssSelector, sps, loglog) {
     let T = 1/sps;
     let ampPhaseList = [];
     let maxFFTAmpLen = 0;
     let extentFFTData = null;
     for (const fft of fftArrays) {
-      let ap = ampPhase(fft);
+      let ap;
+      if (fft instanceof FFTResult) {
+        ap = fft;
+      } else {
+        // assume packed array
+        ap = new FFTResult(fft);
+      }
       ampPhaseList.push(ap);
       if (maxFFTAmpLen < ap.amp.length) {
         maxFFTAmpLen = ap.amp.length;
       }
-      ap.ampSlice = ap.amp.slice(1)
-      let currExtent = d3.extent(ap.ampSlice, function(d, i) { return d; });
+
+      if (loglog) {
+        ap.ampSlice = ap.amp.slice(1); // don't plot zero freq amp
+      } else {
+        ap.ampSlice = ap.amp;
+      }
+      let currExtent = d3.extent(ap.ampSlice);
       if (extentFFTData) {
         extentFFTData = d3.extent([extentFFTData[0], extentFFTData[1], currExtent[0], currExtent[1]], function(d, i) { return d; })
       } else {
@@ -41,15 +52,20 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`)
     let height = +styleHeight - margin.top - margin.bottom;
     let g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-let x = d3.scaleLog()
-    .rangeRound([0, width]);
+    let x;
+    if (loglog) {
+      x = d3.scaleLog()
+          .rangeRound([0, width]);
+    } else {
+      x = d3.scaleLinear()
+          .rangeRound([0, width]);
+    }
+    let y = d3.scaleLog()
+        .rangeRound([height, 0]);
 
-let y = d3.scaleLog()
-    .rangeRound([height, 0]);
-
-let line = d3.line()
-    .x(function(d, i, a) { return x((i+1)*sps/2/(a.length-1)); })
-    .y(function(d, i) { return y(d); });
+    let line = d3.line()
+        .x(function(d, i, a) { return x((i+1)*sps/2/(a.length-1)); })
+        .y(function(d, i) { return y(d); });
 
   // minus one as slice off zero freq above
   x.domain([sps/2/(maxFFTAmpLen-1), sps/2]);
