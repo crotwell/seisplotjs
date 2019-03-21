@@ -17,7 +17,7 @@ import moment from 'moment';
 /* reexport */
 export { miniseed, RSVP };
 
-export const DATALINK_PROTOCOL = "1.0";
+export const DATALINK_PROTOCOL = "DataLink1.0";
 export const QUERY_MODE = "QUERY";
 export const STREAM_MODE = "STREAM";
 export const MAX_PROC_NUM = Math.pow(2, 16)-2;
