@@ -14,7 +14,7 @@ import {
     findStartEnd,
     findMinMax
   } from './util';
-import SeismographConfig from './seismographconfig';
+import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
@@ -267,7 +267,12 @@ export class CanvasSeismograph {
   }
 
   drawTraces() {
-    this.drawTracesCanvas();
+    if (this.seismographConfig.drawingType === DRAW_CANVAS || this.seismographConfig.drawingType === DRAW_BOTH) {
+      this.drawTracesCanvas();
+    }
+    if (this.seismographConfig.drawingType === DRAW_SVG || this.seismographConfig.drawingType === DRAW_BOTH) {
+      this.drawTracesSvg();
+    }
   }
   drawTracesCanvas() :void {
     if (Document && Document.hidden) {
@@ -446,50 +451,8 @@ export class CanvasSeismograph {
       .attr("style", "clip-path: url(#"+CLIP_PREFIX+mythis.plotId+")")
       .merge(subtraceJoin)
       .attr("d", function(seg, si, g) {
-        console.log(`draw segment: trace ${g}  seg: ${si}  firstPoint: ${mythis.yScale(seg.y[0])}`)
          return mythis.segmentDrawLine(seg, mythis.currZoomXScale);
        });
-  }
-  olddrawSegments(traceList: Array<miniseed.model.Trace>, svgG: any) :void {
-    let drawG = svgG;
-    let mythis = this;
-
-    let traceG = drawG
-      .selectAll("g")
-      .data(traceList);
-
-    traceG.exit().remove();
-    //let segG = traceG
-    //  .enter()
-    //  .append("g")
-    //    .attr("class", "trace");
-
-    // traceG.data().each(function(trace, ti) {
-    //   console.log(`in segG.each: trace: ${ti} ${trace.segments.length}`);
-    //   let segJoin = d3.select(this)
-    //  .selectAll("g")
-    traceG
-      .enter()
-      .append("g")
-        .attr("class", "trace");
-    let segG = traceG
-      .selectAll('g')
-         .data(function(trace) {console.log(`segG trace seg: ${trace.segments.length}`);return trace.segments;});
-    segG
-         .enter()
-         .append("g")
-           .attr("class", "segment")
-      .append("path")
-        .attr("class", function(seg) {
-            return "seispath "+seg.codes()+" orient"+seg.chanCode.charAt(2);
-        })
-        .attr("style", "clip-path: url(#"+CLIP_PREFIX+mythis.plotId+")")
-        .merge(segG)
-        .attr("d", function(seg, si, g) {
-          console.log(`draw segment: trace ${g}  seg: ${si}  firstPoint: ${mythis.yScale(seg.y[0])}`)
-           return mythis.segmentDrawLine(seg, mythis.currZoomXScale);
-         });
-    // });
   }
 
   calcSecondsPerPixel(xScale :any) :number {

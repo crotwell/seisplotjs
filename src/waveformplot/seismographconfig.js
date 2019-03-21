@@ -20,7 +20,12 @@ export type MarginType = {
   left: number
 };
 
+export const DRAW_SVG = "svg";
+export const DRAW_CANVAS = "canvas";
+export const DRAW_BOTH = "both"; // for testing
+
 export class SeismographConfig {
+  drawingType: string;
   xScaleFormat: (date: Date) => string;
   yScaleFormat: string | (value :number) => string;
   _title: Array<string>;
@@ -50,6 +55,7 @@ export class SeismographConfig {
   doGain: boolean;
 
   constructor() {
+    this.drawingType = DRAW_CANVAS;
     this.isXAxis = true;
     this.isYAxis = true;
     this.xScaleFormat = multiFormatHour;
