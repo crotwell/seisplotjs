@@ -28,7 +28,9 @@ const moment = miniseed.model.moment;
 
 const CLIP_PREFIX = "seismographclip";
 
-/** A seismogram plot, using d3. Note that you must have
+/** A seismogram plot, using d3. The actual waveform can be drawn
+  * with a separate Canvas (default) or with SVG.
+  * Note that for SVG you must have
   * stroke and fill set in css like:<br>
   * path.seispath {
   *   stroke: skyblue;
