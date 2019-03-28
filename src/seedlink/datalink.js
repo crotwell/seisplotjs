@@ -314,12 +314,24 @@ export class DataLinkPacket {
       this.miniseed = miniseed.parseSingleDataRecord(dataview);
     }
   }
+  get packetStart() {
+    return hpTimeToMoment(this.hppacketstart)
+  }
+  get packetEnd() {
+    return hpTimeToMoment(this.hppacketend)
+  }
+  get packetTime() {
+    return hpTimeToMoment(this.hppackettime)
+  }
 
 }
 
 
   export function momentToHPTime(m :moment) :number {
     return m.valueOf()*1000;
+  }
+  export function hpTimeToMoment(hptime :number) :moment {
+    return moment.utc(hptime/1000);
   }
 
   export function stringToUnit8Array(dataString ?:string) :Unit8Array {
