@@ -140,10 +140,12 @@ export class DataRecord {
     return this.decompData;
   }
 
-  /** Concatenates the net, station, loc and channel codes, separated by periods.
+  /** Concatenates the net, station, loc and channel codes,
+    * separated by the given seperator, or periods if not given.
   */
-  codes() {
-    return this.header.netCode+"."+this.header.staCode+"."+this.header.locCode+"."+this.header.chanCode;
+  codes(sep) {
+    if ( ! sep) { sep = '.'};
+    return this.header.netCode+sep+this.header.staCode+sep+this.header.locCode+sep+this.header.chanCode;
   }
 }
 
