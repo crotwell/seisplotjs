@@ -76,6 +76,7 @@ export class DataLinkConnection {
       };
       webSocket.onclose = function() {
         that.webSocket = null; // clean up
+        this.mode = QUERY_MODE
       };
       webSocket.onopen = function() {
         resolve(that);
