@@ -30,9 +30,12 @@ export class Seismogram {
       this._compressed = null;
       this._y = yArray;
     }
-    this.sampleRate = sampleRate;
+    this._sampleRate = sampleRate;
     this.start = checkStringOrDate(start);
     this.yUnit = 'count';
+    // to avoid recalc of end time as it is kind of expensive
+    this._end_cache = null;
+    this._end_cache_numPoints = 0;
   }
   get y() {
     if ( ! this._y && this._compressed) {
@@ -47,15 +50,29 @@ export class Seismogram {
   }
   set y(value) {
     this._y = value;
+    this._invalidate_end_cache();
   }
   get start() :moment {
     return this._start;
   }
   set start(value: moment | string) {
     this._start = checkStringOrDate(value);
+    this._invalidate_end_cache();
   }
   get end() :moment {
-    return this.timeOfSample(this.numPoints-1);
+    if ( ! this._end_cache || this._end_cache_numPoints !== this.numPoints) {
+      // array length modified, recalc cached end time
+      this._end_cache_numPoints = this.numPoints;
+      this._end_cache = this.timeOfSample(this._end_cache_numPoints-1);
+    }
+    return this._end_cache;
+  }
+  get sampleRate() {
+    return this._sampleRate;
+  }
+  set sampleRate(value: number) {
+    this._sampleRate = value;
+    this._invalidate_end_cache();
   }
   get numPoints() :number {
     return this.y.length;
@@ -125,6 +142,10 @@ export class Seismogram {
     out.locationCode = this.locationCode;
     out.channelCode = this.channelCode;
     return out;
+  }
+  _invalidate_end_cache() {
+    this._end_cache = null;
+    this._end_cache_numPoints = 0;
   }
 }
 
