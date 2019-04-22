@@ -296,6 +296,8 @@ export class CanvasSeismograph {
     context.rect(0, 0, this.width, this.height);
     context.clip();
 
+    context.lineWidth = this.seismographConfig.lineWidth;
+
     const plotStart = moment.utc(this.currZoomXScale.domain()[0]);
     const plotEnd = moment.utc(this.currZoomXScale.domain()[1]);
     const plotDuration = moment.duration(plotEnd.diff(plotStart));
@@ -304,7 +306,8 @@ export class CanvasSeismograph {
 
     this.traces.forEach( (t,ti) => {
 //      const color = d3.select(`svg g.allsegments g:nth-child(9n+1) g path.seispath`)
-    const color = this.seismographConfig.getColorForIndex(ti);
+      const color = this.seismographConfig.getColorForIndex(ti);
+      let firstTime = true;
       t.seisArray.forEach((s, si) => {
         if (s.start.isAfter(moment.utc(this.currZoomXScale.domain()[1])) ||
             s.end.isBefore(moment.utc(this.currZoomXScale.domain()[0]))) {
@@ -328,16 +331,25 @@ export class CanvasSeismograph {
           rightVisiblePixel = this.width+1;
         }
         //console.log(`${ti} ${si} ls${leftVisibleSample} rs${rightVisibleSample}  lp${leftVisiblePixel} rp${rightVisiblePixel} `);
-        context.beginPath();
-        context.strokeStyle = color;
-        //context.lineWidth = 5;
-        context.moveTo(leftVisiblePixel, this.yScale(s.y[leftVisibleSample]));
+        if (firstTime || ! this.seismographConfig.connectSegments ){
+          context.beginPath();
+          context.strokeStyle = color;
+          //context.lineWidth = 5;
+          context.moveTo(leftVisiblePixel, this.yScale(s.y[leftVisibleSample]));
+          firstTime = false;
+        }
         for(let i=leftVisibleSample; i<rightVisibleSample && i<s.y.length; i++) {
 
           context.lineTo(startPixel+i*pixelsPerSample, this.yScale(s.y[i]));
         }
-        context.stroke();
+        if (! this.seismographConfig.connectSegments ){
+          context.stroke();
+        }
       });
+
+      if (this.seismographConfig.connectSegments ){
+        context.stroke();
+      }
     });
     context.restore();
   }

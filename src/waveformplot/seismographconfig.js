@@ -49,6 +49,7 @@ export class SeismographConfig {
   maxZoomPixelPerSample: number; // no zoom in past point of sample
                                  // separated by pixels
 
+  connectSegments: boolean;
   lineColors :Array<string>;
   disableWheelZoom: boolean;
   doRMean: boolean;
@@ -79,8 +80,9 @@ export class SeismographConfig {
     this.segmentDrawCompressedCutoff=10;//below this draw all points, above draw minmax
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample
                                      // separated by pixels
-    this.disableWheelZoom = false;
 
+    this.disableWheelZoom = false;
+    this.connectSegments = false;
     this.lineColors = [
        "skyblue",
        "olivedrab",
@@ -92,6 +94,7 @@ export class SeismographConfig {
        "mediumvioletred",
        "sienna",
        "black"];
+    this.lineWidth = 1;
   }
 
   get title() :Array<string> {
