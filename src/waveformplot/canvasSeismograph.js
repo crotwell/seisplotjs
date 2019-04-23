@@ -913,12 +913,16 @@ return null;
   }
 
   calcScaleDomain() :void {
-    let minMax = findMinMax(this.traces);
-    if (minMax[0] == minMax[1]) {
-      // flatlined data, use -1, +1
-      minMax = [ minMax[0]-1, minMax[1]+1];
+    if (this.seismographConfig.fixedYScale) {
+      this.yScale.domain(this.seismographConfig.fixedYScale);
+    } else {
+      let minMax = findMinMax(this.traces);
+      if (minMax[0] == minMax[1]) {
+        // flatlined data, use -1, +1
+        minMax = [ minMax[0]-1, minMax[1]+1];
+      }
+      this.yScale.domain(minMax).nice();
     }
-    this.yScale.domain(minMax).nice();
     this.redoDisplayYScale();
   }
   redoDisplayYScale() :void {

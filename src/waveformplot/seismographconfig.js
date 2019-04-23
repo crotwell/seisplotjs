@@ -54,6 +54,7 @@ export class SeismographConfig {
   disableWheelZoom: boolean;
   doRMean: boolean;
   doGain: boolean;
+  fixedYScale: Array<number>;
 
   constructor() {
     this.drawingType = DRAW_CANVAS;
@@ -72,6 +73,7 @@ export class SeismographConfig {
     this.ySublabelIsUnits = true;
     this.doRMean = true;
     this.doGain = true;
+    this.fixedYScale = null;
     this.markerTextOffset = .85;
     this.markerTextAngle = 45;
     this.markerFlagpoleBase = "bottom"; // bottom or center
