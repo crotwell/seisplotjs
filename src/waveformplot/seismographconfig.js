@@ -136,6 +136,7 @@ export class SeismographConfig {
     out.ySublabelTrans = this.ySublabelTrans;
     out.doRMean = this.doRMean;
     out.doGain = this.doGain;
+    out.fixedYScale = this.fixedYScale;
     out.markerTextOffset = this.markerTextOffset;
     out.markerTextAngle = this.markerTextAngle;
     out.markerFlagpoleBase = this.markerFlagpoleBase;
