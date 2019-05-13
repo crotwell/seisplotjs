@@ -1,6 +1,10 @@
 module.exports = {
-    "extends": "eslint:recommended",
+    "extends": [
+      "eslint:recommended",
+      "plugin:flowtype/recommended"
+    ],
     "plugins": [
+      "flowtype",
         "standard",
         "promise"
     ],
