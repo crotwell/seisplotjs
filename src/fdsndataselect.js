@@ -16,10 +16,15 @@ import { model } from './miniseed';
 export { RSVP, model, miniseed };
 import { moment } from './model';
 
-export type ChannelTimeRange = {
-  channel: model.Channel,
-  startTime: moment,
-  endTime: moment,
+export class ChannelTimeRange {
+  channel: model.Channel;
+  startTime: moment;
+  endTime: moment;
+  constructor(channel: model.Channel, startTime: moment, endTime: moment) {
+    this.channel = channel;
+    this.startTime = startTime;
+    this.endTime = endTime;
+  }
 }
 export const FORMAT_MINISEED = 'mseed';
 
@@ -68,6 +73,10 @@ export class DataSelectQuery {
     }
     this._port = 80;
   }
+  /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+   *  Setting this is probably a bad idea as the code may not be compatible with
+   *  the web service.
+  */
   specVersion(value?: number): number | DataSelectQuery {
     if (hasArgs(value)) {
       this._specVersion = value;
@@ -78,6 +87,9 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Gets/Sets the protocol, http or https. This should match the protocol
+   *  of the page loaded, but is autocalculated and generally need not be set.
+  */
   protocol(value?: string) :string | DataSelectQuery {
     if (isStringArg(value)) {
       this._protocol = value;
@@ -88,6 +100,8 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Gets/Sets the remote host to connect to.
+  */
   host(value?: string) :string | DataSelectQuery {
     if (isStringArg(value)) {
       this._host = value;
@@ -98,6 +112,9 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
+   * the status code when no matching data is found by the service.
+   */
   nodata(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._nodata;
@@ -108,6 +125,8 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Gets/Sets the remote port to connect to.
+  */
   port(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._port;
