@@ -76,7 +76,7 @@ export class UnsupportedCompressionType extends Error {
  *  @throws CodecException fail to decompress.
  *  @throws UnsupportedCompressionType unsupported compression type
  */
-export function decompress(compressionType: number, dataView: DataView, numSamples: number, littleEndian: boolean) :Array<number> {
+export function decompress(compressionType: number, dataView: DataView, numSamples: number, littleEndian: boolean): Array<number> {
   // in case of record with no data points, ex detection blockette, which often have compression type
   // set to 0, which messes up the decompresser even though it doesn't matter since there is no data.
   if (numSamples == 0) {
@@ -283,11 +283,10 @@ function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian:
  *  compression, there may be an offset carried over from a previous data
  *  record.  This offset value can be placed in <b>bias</b>, otherwise leave
  *  the value as 0.
- *  @param b input byte array to be decoded
+ *  @param dataView input byte array to be decoded
  *  @param numSamples the number of samples that can be decoded from array
- *  <b>b</b>
  *  @param swapBytes if true, swap reverse the endian-ness of the elements of
- *  byte array <b>b</b>.
+ *  dataview
  *  @param bias the first difference value will be computed from this value.
  *  If set to 0, the method will attempt to use the X(0) constant instead.
  *  @return int array of length <b>numSamples</b>.

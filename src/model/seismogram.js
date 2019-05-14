@@ -99,6 +99,8 @@ export class Seismogram {
   timeOfSample(i:number ) :moment {
     return moment.utc(this.start).add(i/this.sampleRate, 'seconds');
   }
+  /** @return nslc codes separated by '.'
+  */
   codes() :string {
     return this.networkCode+"."+this.stationCode+"."+this.locationCode+"."+this.channelCode;
   }

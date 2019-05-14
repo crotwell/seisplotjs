@@ -101,6 +101,7 @@ export function parseSingleDataRecordHeader(dataView: DataView) :DataHeader {
   * @param {DataView} dataView containing the data
   * @param {number} offset offset into the DataView to start
   * @param {number} length size in bytes of the Blockette
+  * @param headerByteSwap true if byte swapping is needed
   */
 export function parseBlockette(dataView :DataView, offset: number, length :number, headerByteSwap: boolean) :Blockette {
   const type = dataView.getUint16(offset, headerByteSwap);
