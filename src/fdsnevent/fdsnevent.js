@@ -36,6 +36,8 @@ export class EventQuery {
   /** @private */
   _host: string;
   /** @private */
+  _port: number;
+  /** @private */
   _nodata: number;
   /** @private */
   _eventId: string;
@@ -98,7 +100,12 @@ export class EventQuery {
       // usgs does 301 moved permanently to https
       this._protocol = 'https:';
     }
+    this._port = 80;
   }
+  /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+   *  Setting this is probably a bad idea as the code may not be compatible with
+   *  the web service.
+  */
   specVersion(value?: number): number | EventQuery {
     if (hasArgs(value)) {
       this._specVersion = value;
@@ -109,6 +116,9 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Gets/Sets the protocol, http or https. This should match the protocol
+   *  of the page loaded, but is autocalculated and generally need not be set.
+  */
   protocol(value?: string) :string | EventQuery {
     if (isStringArg(value)) {
       this._protocol = value;
@@ -119,6 +129,8 @@ export class EventQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Gets/Sets the remote host to connect to.
+  */
   host(value?: string) :string | EventQuery {
     if (isStringArg(value)) {
       this._host = value;
@@ -129,6 +141,21 @@ export class EventQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Gets/Sets the remote port to connect to.
+  */
+  port(value?: number): number | DataSelectQuery {
+    if (hasNoArgs(value)) {
+      return this._port;
+    } else if (hasArgs(value)) {
+      this._port = value;
+      return this;
+    } else {
+      throw new Error('value argument is optional or number, but was '+typeof value);
+    }
+  }
+  /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
+   * the status code when no matching data is found by the service.
+   */
   nodata(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._nodata;
@@ -139,6 +166,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the eventid query parameter.
+  */
   eventId(value?: string) :string | EventQuery {
     if (hasNoArgs(value)) {
       return this._eventId;
@@ -149,6 +178,8 @@ export class EventQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Get/Set the starttime query parameter.
+  */
   startTime(value?: moment) :moment | EventQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
@@ -159,6 +190,8 @@ export class EventQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the endtime query parameter.
+  */
   endTime(value?: moment) :moment | EventQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
@@ -169,6 +202,8 @@ export class EventQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the updatedafter query parameter.
+  */
   updatedAfter(value?: moment) :moment | EventQuery {
     if (hasNoArgs(value)) {
       return this._updatedAfter;
@@ -179,6 +214,8 @@ export class EventQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the minmag query parameter.
+  */
   minMag(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._minMag;
@@ -189,6 +226,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the maxmag query parameter.
+  */
   maxMag(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._maxMag;
@@ -199,6 +238,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the magnitudetype query parameter.
+  */
   magnitudeType(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
       return this._magnitudeType;
@@ -209,6 +250,8 @@ export class EventQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Get/Set the mindepth query parameter.
+  */
   minDepth(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._minDepth;
@@ -219,6 +262,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the maxdepth query parameter.
+  */
   maxDepth(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._maxDepth;
@@ -229,6 +274,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the minlat query parameter.
+  */
   minLat(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._minLat;
@@ -239,6 +286,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the maxlat query parameter.
+  */
   maxLat(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._maxLat;
@@ -249,6 +298,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the minlon query parameter.
+  */
   minLon(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._minLon;
@@ -259,6 +310,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the maxlon query parameter.
+  */
   maxLon(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._maxLon;
@@ -269,6 +322,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the latitude query parameter.
+  */
   latitude(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._latitude;
@@ -279,6 +334,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the longitude query parameter.
+  */
   longitude(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._longitude;
@@ -289,6 +346,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the minradius query parameter.
+  */
   minRadius(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._minRadius;
@@ -299,6 +358,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the maxradius query parameter.
+  */
   maxRadius(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._maxRadius;
@@ -313,6 +374,8 @@ export class EventQuery {
   includearrivals(value?: boolean): boolean | EventQuery {
     return this.includeArrivals(value);
   }
+  /** Get/Set the includearrivals query parameter.
+  */
   includeArrivals(value?: boolean): boolean | EventQuery {
     if (hasNoArgs(value)) {
       return this._includeArrivals;
@@ -323,6 +386,8 @@ export class EventQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
+  /** Get/Set the includeallorigins query parameter.
+  */
   includeAllOrigins(value?: boolean): boolean | EventQuery {
     if (hasNoArgs(value)) {
       return this._includeAllOrigins;
@@ -333,6 +398,8 @@ export class EventQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
+  /** Get/Set the includeallmagnitudes query parameter.
+  */
   includeAllMagnitudes(value?: boolean): boolean | EventQuery {
     if (hasNoArgs(value)) {
       return this._includeAllMagnitudes;
@@ -343,6 +410,8 @@ export class EventQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
+  /** Get/Set the format query parameter.
+  */
   format(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
       return this._format;
@@ -353,6 +422,8 @@ export class EventQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Get/Set the limit query parameter.
+  */
   limit(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._limit;
@@ -363,6 +434,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the offset query parameter.
+  */
   offset(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._offset;
@@ -373,6 +446,8 @@ export class EventQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the orderby query parameter.
+  */
   orderBy(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
       return this._orderBy;
@@ -383,6 +458,8 @@ export class EventQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Get/Set the catalog query parameter.
+  */
   catalog(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
       return this._catalog;
@@ -393,6 +470,8 @@ export class EventQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Get/Set the contributor query parameter.
+  */
   contributor(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
       return this._contributor;
@@ -429,6 +508,9 @@ export class EventQuery {
       util._isDef(this.contributor);
   }
 
+  /** Parses a QuakeML event xml element into a Quake object.
+   * @param qml the event xml Element
+  */
   convertToQuake(qml: Element) :model.Quake {
     let out = new model.Quake();
     out.publicId = util._grabAttribute(qml, 'publicID');
@@ -507,6 +589,10 @@ export class EventQuery {
     }
     return "unknownEventId";
   }
+  /** Parses a QuakeML origin xml element into a Origin object.
+   * @param qml the origin xml Element
+   * @param allPicks picks already extracted from the xml for linking arrivals with picks
+  */
   convertToOrigin(qml: Element, allPicks) :model.Origin {
     let out = new model.Origin();
     let otimeStr = util._grabFirstElText(util._grabFirstEl(qml, 'time'),'value');
@@ -529,6 +615,9 @@ export class EventQuery {
     out.arrivalList = allArrivals;
     return out;
   }
+  /** Parses a QuakeML magnitude xml element into a Magnitude object.
+   * @param qml the magnitude xml Element
+  */
   convertToMagnitude(qml: Element) :model.Magnitude {
     let mag = util._grabFirstElFloat(util._grabFirstElNS(qml, BED_NS, 'mag'), 'value');
     let type = util._grabFirstElText(qml, 'type');
@@ -540,6 +629,10 @@ export class EventQuery {
     }
     throw new Error("Did not find mag and type in Element: ${mag} ${type}");
   }
+  /** Parses a QuakeML arrival xml element into a Arrival object.
+   * @param arrivalQML the arrival xml Element
+   * @param allPicks picks already extracted from the xml for linking arrivals with picks
+  */
   convertToArrival(arrivalQML: Element, allPicks: Array<model.Pick>) :model.Arrival {
     let pickId = util._grabFirstElText(arrivalQML, 'pickID');
     let phase = util._grabFirstElText(arrivalQML, 'phase');
@@ -555,6 +648,9 @@ export class EventQuery {
       throw new Error("Arrival does not have phase or pickId: "+stringify(phase)+" "+stringify(pickId));
     }
   }
+  /** Parses a QuakeML pick xml element into a Pick object.
+   * @param pickQML the pick xml Element
+  */
   convertToPick(pickQML: Element) :model.Pick {
     let otimeStr = util._grabFirstElText(util._grabFirstEl(pickQML, 'time'),'value');
     let time = checkStringOrDate(otimeStr);
@@ -576,6 +672,9 @@ export class EventQuery {
     return out;
   }
 
+  /** Queries the remote service and parses the returned xml.
+   *  @return Promise to an Array of Quake objects.
+  */
   query(): Promise<Array<model.Quake>> {
     let mythis = this;
     return this.queryRawXml().then(function(rawXml) {
@@ -583,6 +682,10 @@ export class EventQuery {
     });
   }
 
+  /** Parses a QuakeML xml document into seisplotjs objects
+  *  @param rawXml the xml Document to parse
+  *  @return array of Quake objects
+  */
   parseQuakeML(rawXml: Document) :Array<model.Quake> {
     let top = rawXml.documentElement;
     if (! top) {
@@ -596,6 +699,9 @@ export class EventQuery {
     return out;
   }
 
+  /** Queries the remote server, to get QuakeML xml.
+  * @return xml Document
+  */
   queryRawXml() :Promise<Document> {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
@@ -637,18 +743,26 @@ console.log("204 nodata so return empty xml");
     return promise;
   }
 
-
+  /** Forms the basic URL to contact the web service, without any query paramters
+   * @return the url
+  */
   formBaseURL() :string {
       let colon = ":";
       if (this._protocol.endsWith(colon)) {
         colon = "";
       }
-      return this._protocol+colon+"//"+this._host+"/fdsnws/event/"+this._specVersion;
+      return this._protocol+colon+"//"+this._host+(this._port==80?"":(":"+this._port))+"/fdsnws/event/"+this._specVersion;
   }
 
+  /** Forms the URL to get catalogs from the web service, without any query paramters
+   * @return the url
+  */
   formCatalogsURL() :string {
     return this.formBaseURL()+"/catalogs";
   }
+  /** Queries the remote web service to get known catalogs
+   * @return Promise to Array of catalog names
+  */
   queryCatalogs() :Promise<Array<string>> {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
@@ -682,9 +796,15 @@ console.log("204 nodata so return empty xml");
     });
   }
 
+  /** Forms the URL to get contributors from the web service, without any query paramters
+   * @return the url
+  */
   formContributorsURL() :string {
     return this.formBaseURL()+"/contributors";
   }
+  /** Queries the remote web service to get known contributors
+   * @return Promise to Array of contributor names
+  */
   queryContributors() :Promise<Array<string>> {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
@@ -716,10 +836,16 @@ console.log("204 nodata so return empty xml");
     });
   }
 
+  /** Forms the URL to get version from the web service, without any query paramters
+   * @return the url
+  */
   formVersionURL() :string {
     return this.formBaseURL()+"/version";
   }
 
+  /** Queries the remote web service to get its version
+   * @return Promise to version string
+  */
   queryVersion() :Promise<string>{
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
@@ -743,10 +869,15 @@ console.log("204 nodata so return empty xml");
     return promise;
   }
 
+  /**
+  * Create a name=value parameter to add to a URL, including trailing ampersand
+  */
   makeParam(name: string, val: mixed) :string {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
 
+  /** Form URL to query the remote web service, encoding the query parameters.
+  */
   formURL() :string {
     let colon = ":";
     if (this._protocol.endsWith(colon)) {

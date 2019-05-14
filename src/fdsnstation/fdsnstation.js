@@ -25,12 +25,17 @@ export const LEVELS = [ LEVEL_NETWORK, LEVEL_STATION, LEVEL_CHANNEL, LEVEL_RESPO
 
 export const IRIS_HOST = "service.iris.edu";
 
+/** xml namespace for stationxml */
 export const STAML_NS = 'http://www.fdsn.org/xml/station/1';
 
+/** a fake, completely empty stationxml document in case of no data. */
 export const FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>';
 
 
-
+/**
+ * Query to a FDSN Station web service.
+ * @see http://www.fdsn.org/webservices/
+*/
 export class StationQuery {
   /** @private */
   _specVersion: number;
@@ -38,6 +43,8 @@ export class StationQuery {
   _protocol: string;
   /** @private */
   _host: string;
+  /** @private */
+  _port: number;
   /** @private */
   _nodata: number;
   /** @private */
@@ -86,6 +93,9 @@ export class StationQuery {
   _updatedAfter: moment;
   /** @private */
   _matchTimeseries: boolean;
+  /** Construct a query
+   * @param host the host to connect to , defaults to service.iris.edu
+   */
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
@@ -93,7 +103,12 @@ export class StationQuery {
     if (! host) {
       this._host = IRIS_HOST;
     }
+    this._port = 80;
   }
+  /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+   *  Setting this is probably a bad idea as the code may not be compatible with
+   *  the web service.
+  */
   specVersion(value?: number): number | StationQuery {
     if (hasArgs(value)) {
       this._specVersion = value;
@@ -104,6 +119,9 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Gets/Sets the protocol, http or https. This should match the protocol
+   *  of the page loaded, but is autocalculated and generally need not be set.
+  */
   protocol(value?: string) :string | StationQuery {
     if (isStringArg(value)) {
       this._protocol = value;
@@ -114,6 +132,8 @@ export class StationQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Gets/Sets the remote host to connect to.
+  */
   host(value?: string) :string | StationQuery {
     if (isStringArg(value)) {
       this._host = value;
@@ -124,6 +144,21 @@ export class StationQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Gets/Sets the remote port to connect to.
+  */
+  port(value?: number): number | DataSelectQuery {
+    if (hasNoArgs(value)) {
+      return this._port;
+    } else if (hasArgs(value)) {
+      this._port = value;
+      return this;
+    } else {
+      throw new Error('value argument is optional or number, but was '+typeof value);
+    }
+  }
+  /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
+   * the status code when no matching data is found by the service.
+   */
   nodata(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._nodata;
@@ -134,6 +169,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the network query parameter.
+  */
   networkCode(value?: string) :string | StationQuery {
     if (isStringArg(value)) {
       this._networkCode = value;
@@ -144,6 +181,8 @@ export class StationQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the station query parameter.
+  */
   stationCode(value?: string) :string | StationQuery {
     if (isStringArg(value)) {
       this._stationCode = value;
@@ -154,6 +193,8 @@ export class StationQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the location query parameter.
+  */
   locationCode(value?: string) :string | StationQuery {
     if (isStringArg(value)) {
       this._locationCode = value;
@@ -164,6 +205,8 @@ export class StationQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the channel query parameter.
+  */
   channelCode(value?: string) :string | StationQuery {
     if (isStringArg(value)) {
       this._channelCode = value;
@@ -174,6 +217,8 @@ export class StationQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the starttime query parameter.
+  */
   startTime(value?: moment) :moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
@@ -184,6 +229,8 @@ export class StationQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the endtime query parameter.
+  */
   endTime(value?: moment) :moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
@@ -194,6 +241,8 @@ export class StationQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the startbefore query parameter.
+  */
   startBefore(value?: moment) :moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startBefore;
@@ -204,6 +253,8 @@ export class StationQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the endbefore query parameter.
+  */
   endBefore(value?: moment) :moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endBefore;
@@ -214,6 +265,8 @@ export class StationQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the startafter query parameter.
+  */
   startAfter(value?: moment) :moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startAfter;
@@ -224,6 +277,8 @@ export class StationQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the endafter query parameter.
+  */
   endAfter(value?: moment) :moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endAfter;
@@ -234,6 +289,8 @@ export class StationQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the minlat query parameter.
+  */
   minLat(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._minLat;
@@ -244,6 +301,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the maxlon query parameter.
+  */
   maxLat(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._maxLat;
@@ -254,6 +313,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the minlon query parameter.
+  */
   minLon(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._minLon;
@@ -264,6 +325,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the maxlon query parameter.
+  */
   maxLon(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._maxLon;
@@ -274,6 +337,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the latitude query parameter.
+  */
   latitude(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._latitude;
@@ -284,6 +349,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the longitude query parameter.
+  */
   longitude(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._longitude;
@@ -294,6 +361,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the minradius query parameter.
+  */
   minRadius(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._minRadius;
@@ -304,6 +373,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the maxradius query parameter.
+  */
   maxRadius(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._maxRadius;
@@ -314,6 +385,8 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the includerestricted query parameter.
+  */
   includeRestricted(value?: boolean): boolean | StationQuery {
     if (hasNoArgs(value)) {
       return this._includeRestricted;
@@ -324,6 +397,8 @@ export class StationQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
+  /** Get/Set the includeavailability query parameter.
+  */
   includeAvailability(value?: boolean): boolean | StationQuery {
     if (hasNoArgs(value)) {
       return this._includeAvailability;
@@ -334,6 +409,8 @@ export class StationQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
+  /** Get/Set the format query parameter.
+  */
   format(value?: string) :string | StationQuery {
     if (isStringArg(value)) {
       this._format = value;
@@ -344,6 +421,8 @@ export class StationQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the updatedafter query parameter.
+  */
   updatedAfter(value?: moment) :moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._updatedAfter;
@@ -354,6 +433,8 @@ export class StationQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the matchtimeseries query parameter.
+  */
   matchTimeseries(value?: boolean): boolean | StationQuery {
     if (hasNoArgs(value)) {
       return this._matchTimeseries;
@@ -390,6 +471,9 @@ export class StationQuery {
     util._isDef(this._updatedAfter);
   }
 
+  /** Parses a FDSNStationXML Network xml element into a Network object.
+   * @param xml the network xml Element
+  */
   convertToNetwork(xml: Element): model.Network {
     let out = new model.Network(util._grabAttribute(xml, "code"))
     out.startDate = util._grabAttribute(xml, "startDate");
@@ -412,6 +496,10 @@ export class StationQuery {
     out.stations = stations;
     return out;
   }
+  /** Parses a FDSNStationXML Station xml element into a Station object.
+   * @param network the containing network
+   * @param xml the station xml Element
+  */
   convertToStation(network: model.Network, xml: Element): model.Station {
     let out = new model.Station(network, util._grabAttribute(xml, "code"))
     out.startDate = util._grabAttribute(xml, "startDate");
@@ -432,6 +520,10 @@ export class StationQuery {
     out.channels = channels;
     return out;
   }
+  /** Parses a FDSNStationXML Channel xml element into a Channel object.
+   * @param station the containing staton
+   * @param xml the channel xml Element
+  */
   convertToChannel(station: model.Station, xml: Element): model.Channel {
     let out = new model.Channel(station, util._grabAttribute(xml, "code"), util._grabAttribute(xml, "locationCode"))
     out.startDate = util._grabAttribute(xml, "startDate");
@@ -454,6 +546,9 @@ export class StationQuery {
     return out;
   }
 
+  /** Parses a FDSNStationXML Response xml element into a Response object.
+   * @param responseXml the response xml Element
+  */
   convertToResponse(responseXml: Element): model.Response {
     let mythis = this;
     let out;
@@ -475,6 +570,9 @@ export class StationQuery {
     return out;
   }
 
+  /** Parses a FDSNStationXML InstrumentSensitivity xml element into a InstrumentSensitivity object.
+   * @param xml the InstrumentSensitivity xml Element
+  */
   convertToInstrumentSensitivity(xml: Element): model.InstrumentSensitivity {
     let sensitivity: number = util._grabFirstElFloat(xml, 'Value');
     let frequency = util._grabFirstElFloat(xml, 'Frequency');
@@ -483,6 +581,9 @@ export class StationQuery {
     return new model.InstrumentSensitivity(sensitivity, frequency, inputUnits, outputUnits);
   }
 
+  /** Parses a FDSNStationXML Stage xml element into a Stage object.
+   * @param xml the Stage xml Element
+  */
   convertToStage(stageXml: Element): model.Stage {
     let mythis = this;
     let subEl = stageXml.firstElementChild;
@@ -566,6 +667,9 @@ export class StationQuery {
     return out;
   }
 
+  /** Parses a FDSNStationXML Decimation xml element into a Decimation object.
+   * @param xml the Decimation xml Element
+  */
   convertToDecimation(decXml: Element): model.Decimation {
     let out = new model.Decimation();
     out.inputSampleRate = util._grabFirstElFloat(decXml, 'InputSampleRate');
@@ -576,6 +680,9 @@ export class StationQuery {
     return out
   }
 
+  /** Parses a FDSNStationXML Gain xml element into a Gain object.
+   * @param xml the Gain xml Element
+  */
   convertToGain(gainXml: Element): model.Gain {
     let out = new model.Gain();
     out.value = util._grabFirstElFloat(gainXml, 'Value');
@@ -583,20 +690,39 @@ export class StationQuery {
     return out;
   }
 
-
+  /** Queries the remote web service for networks.
+   * @returns a Promise to an Array of Network objects.
+   */
   queryNetworks(): Promise<Array<model.Network>> {
     return this.query(LEVEL_NETWORK);
   }
+  /** Queries the remote web service for stations. The stations
+   * are contained within their respective Networks.
+   * @returns a Promise to an Array of Network objects.
+   */
   queryStations(): Promise<Array<model.Network>> {
     return this.query(LEVEL_STATION);
   }
+  /** Queries the remote web service for channels. The Channels
+   * are contained within their respective Stations which are in Networks.
+   * @returns a Promise to an Array of Network objects.
+   */
   queryChannels(): Promise<Array<model.Network>> {
     return this.query(LEVEL_CHANNEL);
   }
+  /** Queries the remote web service for responses. The Responses
+   * are contained within their respective Channels,
+   * which are in Stations which are in Networks.
+   * @returns a Promise to an Array of Network objects.
+   */
   queryResponse(): Promise<Array<model.Network>> {
     return this.query(LEVEL_RESPONSE);
   }
 
+  /** Queries the remote web service at the given level.
+   * @param level the level to query at, networ, station, channel or response.
+   * @returns a Promise to an Array of Network objects.
+   */
   query(level: string): Promise<Array<model.Network>> {
     if (! LEVELS.includes(level)) {throw new Error("Unknown level: '"+level+"'");}
     let mythis = this;
@@ -605,6 +731,9 @@ export class StationQuery {
     });
   }
 
+  /** Parses the FDSN StationXML returned from a query.
+   * @returns an Array of Network objects.
+   */
   parseRawXml(rawXml: Document) :Array<model.Network> {
     let top = rawXml.documentElement;
     if (! top) {throw new Error("No documentElement in XML");}
@@ -615,7 +744,10 @@ export class StationQuery {
     }
     return out;
   }
-
+  /** Queries the remote web service at the given level for raw xml.
+   * @param level the level to query at, network, station, channel or response.
+   * @returns a Promise to an xml Document.
+   */
   queryRawXml(level: string): Promise<Document> {
     let mythis = this;
     let mylevel = level;
@@ -655,11 +787,17 @@ console.log("204 nodata so return empty xml");
     });
     return promise;
   }
-
+  /** Forms the URL to get version from the web service, without any query paramters
+   * @return the url
+  */
   formVersionURL() {
       return this.formBaseURL()+"/version";
   }
 
+
+  /** Queries the remote web service to get its version
+   * @return Promise to version string
+  */
   queryVersion() {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
@@ -685,19 +823,24 @@ console.log("204 nodata so return empty xml");
     });
     return promise;
   }
-
+  /**
+  * Create a name=value parameter to add to a URL, including trailing ampersand
+  */
   makeParam(name: string, val: mixed) {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
-
+  /** Forms the basic URL to contact the web service, without any query paramters
+   * @return the url
+  */
   formBaseURL() {
     let colon = ":";
     if (this._protocol.endsWith(colon)) {
       colon = "";
     }
-    return this._protocol+colon+"//"+this._host+"/fdsnws/station/"+this._specVersion;
+    return this._protocol+colon+"//"+this._host+(this._port==80?"":(":"+this._port))+"/fdsnws/station/"+this._specVersion;
   }
-
+  /** Form URL to query the remote web service, encoding the query parameters.
+  */
   formURL(level:string) {
     let url = this.formBaseURL()+"/query?";
     if (! level) {throw new Error("level not specified, should be one of network, station, channel, response.");}
