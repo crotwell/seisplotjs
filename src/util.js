@@ -14,7 +14,15 @@ console.assert(moment === momentTimezone, "Two moments!!!");
 //reexport
 export { moment, };
 
-// copy from model.util to make flow happy
+
+import RSVP from 'rsvp';
+
+RSVP.on('error', function(reason: string) {
+  console.assert(false, reason);
+});
+
+//reexport
+export {RSVP, };
 
 
 // flow predicate %check functions

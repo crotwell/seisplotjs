@@ -24,9 +24,10 @@ import * as traveltime     from './traveltime';
 import * as util      from './util';
 import * as waveformplot   from './waveformplot/index';
 
-import d3 from 'd3';
-import moment from 'moment';
-import RSVP from 'rsvp';
+
+const d3 = waveformplot.d3;
+const moment = util.moment;
+const RSVP = util.RSVP;
 
 
 /* reexport */
