@@ -1,7 +1,7 @@
 
-import * as fdsnstation from '../../src/fdsnstation/fdsnstation.js';
-import * as util from '../../src/fdsnstation/util.js';
-let moment = fdsnstation.model.moment;
+import * as fdsnstation from '../../src/fdsnstation.js';
+import * as util from '../../src/util.js';
+let moment = util.moment;
 
 test( "station parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_STATION, "text/xml");

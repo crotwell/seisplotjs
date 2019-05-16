@@ -1,6 +1,6 @@
 
-import * as fdsnevent from '../../src/fdsnevent/fdsnevent.js';
-import * as util from '../../src/fdsnevent/util.js';
+import * as fdsnevent from '../../src/fdsnevent.js';
+import * as util from '../../src/util.js';
 
 test( "query setter test", () => {
   let eventQuery = new fdsnevent.EventQuery();

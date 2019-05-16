@@ -1,4 +1,4 @@
-import checkProtocol from '../src/checkProtocol.js';
+import {checkProtocol} from '../src/util.js';
 
 test("simple protocol check", () => {
   expect(checkProtocol()).toBe('http:');

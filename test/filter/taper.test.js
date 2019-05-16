@@ -1,6 +1,7 @@
 import * as filter from '../../src/filter/index.js';
+import {Seismogram, Trace} from '../../src/seismogram';
 import {readSac, readSacPoleZero} from './sacfile';
-let moment = filter.model.moment;
+import  {moment} from '../../src/util';
 
 test("simple value taper", () => {
   let taperLen = 10;
@@ -15,7 +16,7 @@ test("constant", () => {
   let taperWidth = 0.05;
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
-  const origseis = new filter.model.Seismogram(orig, 1, moment.utc());
+  const origseis = new Seismogram(orig, 1, moment.utc());
   let bagtaper = filter.taper.taper(origseis, taperWidth);
   const omega = Math.PI / length;
   const f0 = .5;
@@ -35,7 +36,7 @@ test("const100 taper", () => {
  .then ( result => {
      let orig = result[0];
      let sactaper = result[1];
-     const origseis = new filter.model.Seismogram(orig.y, 1/orig.delta, moment.utc());
+     const origseis = new Seismogram(orig.y, 1/orig.delta, moment.utc());
      let bagtaper = filter.taper.taper(origseis);
      const sacdata = sactaper.y;
      const bagdata = bagtaper.y;
@@ -77,7 +78,7 @@ test("HRV taper", () => {
   .then ( result => {
       let sactaper = result[0];
       let orig = result[1];
-      const origseis = new filter.model.Seismogram(orig.y, 1/orig.delta, moment.utc());
+      const origseis = new Seismogram(orig.y, 1/orig.delta, moment.utc());
       let bagtaper = filter.taper.taper(filter.rMean(origseis));
       const sacdata = sactaper.y;
       const bagdata = bagtaper.y;

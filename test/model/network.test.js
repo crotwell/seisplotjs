@@ -1,7 +1,7 @@
-import * as model from '../../src/model/index.js';
+import {Network, Station, Channel} from '../../src/stationxml';
 
 test("simple network", () => {
   let NET_CODE = "AA";
-  let net = new model.Network(NET_CODE);
+  let net = new Network(NET_CODE);
   expect(net.networkCode).toBe(NET_CODE);
 });

@@ -1,19 +1,18 @@
 
-import * as fdsnstation from '../../src/fdsnstation/fdsnstation.js';
-import * as util from '../../src/fdsnstation/util.js';
+import * as fdsnstation from '../../src/fdsnstation';
 
 test( "_grabFirstEl test", () => {
   const LATITUDE = "Latitude";
   const xml = new DOMParser().parseFromString(rawXML, "text/xml");
-  let net = util._grabFirstEl(xml, "Network");
+  let net = fdsnstation.util._grabFirstEl(xml, "Network");
   expect(net).toBeDefined();
-  let sta = util._grabFirstEl(net, "Station");
+  let sta = fdsnstation.util._grabFirstEl(net, "Station");
   expect(sta).toBeDefined();
-  let lat = util._grabFirstEl(sta, LATITUDE);
+  let lat = fdsnstation.util._grabFirstEl(sta, LATITUDE);
   expect(lat).toBeDefined();
   expect(lat.textContent).toBe("34.2818");
-  expect(util._grabFirstElText(sta, LATITUDE)).toBe("34.2818")
-  expect(util._grabFirstElFloat(sta, LATITUDE)).toBe(34.2818);
+  expect(fdsnstation.util._grabFirstElText(sta, LATITUDE)).toBe("34.2818")
+  expect(fdsnstation.util._grabFirstElFloat(sta, LATITUDE)).toBe(34.2818);
 });
 
 const rawXML = `<?xml version="1.0" encoding="ISO-8859-1"?>

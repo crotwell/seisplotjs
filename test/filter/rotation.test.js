@@ -1,5 +1,5 @@
 import {rotate, rotateSeismograms } from '../../src/filter/vector.js';
-import { Seismogram, Trace }  from "../../src/model/seismogram";
+import { Seismogram, Trace }  from "../../src/seismogram";
 
 test("trace rotation", () => {
   let a = [ 1, 1, 0];

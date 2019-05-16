@@ -1,5 +1,5 @@
 import * as miniseed from '../../src/miniseed.js';
-let moment = miniseed.model.moment;
+import  {moment} from '../../src/util';
 
 var fs = require('fs');
 
@@ -21,9 +21,9 @@ test("load miniseed file", () => {
     expect(btime.min).toEqual(48);
     expect(btime.sec).toEqual(0);
     expect(btime.tenthMilli).toEqual(84);
-    let startMoment = moment.utc([2016, 0, 1, 13, 48, 0, 8]);
-    startMoment.dayOfYear(265);
-    expect(dr.header.start).toEqual(startMoment);
+    let startMoment = moment.utc([2016, 8, 21, 13, 48, 0, 8]);
+    //startMoment.dayOfYear(265); day 265 = Sept 21, months zero based in moment
+    expect(dr.header.start.toISOString()).toEqual(startMoment.toISOString());
     expect(dr.header.numSamples).toEqual(99);
     let decomp = parsed[0].decompress();
     expect(decomp).toBeDefined();

@@ -940,3 +940,12 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
   }
   return out;
 }
+
+export const util = {
+  "_grabFirstEl": _grabFirstEl,
+  "_grabFirstElText": _grabFirstElText,
+  "_grabFirstElFloat": _grabFirstElFloat,
+  "_grabFirstElInt": _grabFirstElInt,
+  "_grabAttribute": _grabAttribute,
+  "_grabAttributeNS": _grabAttributeNS
+}

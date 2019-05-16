@@ -1,4 +1,4 @@
-import * as traveltime from '../../src/traveltime/traveltime.js';
+import * as traveltime from '../../src/traveltime';
 
 test("formURL", () => {
   let query = new traveltime.TraveltimeQuery()

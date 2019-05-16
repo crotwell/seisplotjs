@@ -1,6 +1,6 @@
 
 import * as miniseed from '../../src/miniseed.js';
-let moment = miniseed.model.moment;
+import  {moment} from '../../src/util';
 
 var fs = require('fs');
 

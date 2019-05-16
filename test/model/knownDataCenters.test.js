@@ -1,4 +1,4 @@
-import { knownDataCenters } from '../../src/model/knownDataCenters.js';
+import { knownDataCenters } from '../../src/knownDataCenters.js';
 require('isomorphic-fetch');
 
 
