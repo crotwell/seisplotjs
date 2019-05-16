@@ -107,7 +107,7 @@ function processTraces(traceMap) {
 
       let svgFiltered = d3.select('div.filterseisplot');
 
-      let filteredPlot = new wp.SvgSeismograph(svgFiltered, seisConfig, filteredSeismogram);
+      let filteredPlot = new wp.CanvasSeismograph(svgFiltered, seisConfig, filteredSeismogram);
       filteredPlot.draw();
 
       let fftOut = seisplotjs.filter.calcDFT(trace.segments[0].y, trace.segments[0].numPoints );
@@ -121,7 +121,7 @@ function processTraces(traceMap) {
         hilbertSeismogram.push(seisplotjs.filter.hilbert(trace.segments[i]));
       }
       let svgHilbert = d3.select('div.hilbertseisplot');
-      let hilbertPlot = new wp.SvgSeismograph(svgHilbert, seisConfig, hilbertSeismogram);
+      let hilbertPlot = new wp.CanvasSeismograph(svgHilbert, seisConfig, hilbertSeismogram);
       hilbertPlot.draw();
 
       let envelopeSeismogram = [];
@@ -129,7 +129,7 @@ function processTraces(traceMap) {
         envelopeSeismogram.push(seisplotjs.filter.envelope(trace.segments[i]));
       }
       let svgEnvelope = d3.select('div.envelopeseisplot');
-      let envelopePlot = new wp.SvgSeismograph(svgEnvelope, seisConfig, envelopeSeismogram);
+      let envelopePlot = new wp.CanvasSeismograph(svgEnvelope, seisConfig, envelopeSeismogram);
       envelopePlot.setDoRMean(false);
       envelopePlot.draw();
 }

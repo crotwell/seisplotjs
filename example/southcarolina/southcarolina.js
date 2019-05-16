@@ -260,7 +260,7 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
           div.append('p').html('Plot for ' + key);
           let svgdiv = div.append('div').attr('class', 'myseisplot');
           if (segments.length > 0) {
-              let seismogram = new wp.Seismograph(svgdiv, segments, hash.startDate, hash.endDate);
+              let seismogram = new wp.CanvasSeismograph(svgdiv, segments, hash.startDate, hash.endDate);
               let markers = [];
                 markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                 markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time).add(hash.firstPS.firstP.time, 'seconds') });

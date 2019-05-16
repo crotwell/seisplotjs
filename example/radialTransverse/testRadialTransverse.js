@@ -180,7 +180,7 @@ console.log("rotate to "+hash.distaz.baz+" "+((hash.distaz.baz+180)%360) );
         hash.rotatedSeismograms.sort(wp.sort.alphabeticalSort);
 console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.segments[0].yAtIndex(0)+" "+rotated.transverse.segments[0].yAtIndex(0))
         let rotSeisConfig = new wp.SeismographConfig();
-        let rotatedSeismograph = new wp.SvgSeismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
+        let rotatedSeismograph = new wp.CanvasSeismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
         titles = [hash.rotatedSeismograms[0].codes(),
                   hash.rotatedSeismograms[1].channelCode+" "+rotated.azimuthRadial.toFixed(2),
                   hash.rotatedSeismograms[2].channelCode+" "+rotated.azimuthTransverse.toFixed(2)];
