@@ -6,13 +6,12 @@
  * http://www.seis.sc.edu
  */
 
-import checkProtocol from './checkProtocol.js';
 import RSVP from 'rsvp';
 import moment from 'moment';
 
 import * as miniseed from './miniseed';
 
-import { hasArgs, hasNoArgs, isStringArg, isNumArg, isDef } from './util';
+import { checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, isDef } from './util';
 
 export type RingserverVersion = {
   'ringserverVersion': string,

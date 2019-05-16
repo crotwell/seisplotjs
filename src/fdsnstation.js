@@ -6,12 +6,11 @@ RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
-import checkProtocol from './checkProtocol.js';
 import * as model from './model';
 import moment from 'moment';
 
 // special due to flow
-import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from '../model';
+import {checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';

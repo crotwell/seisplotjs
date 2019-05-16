@@ -57,3 +57,13 @@ export function stringify(value: mixed): string {
     return "<unknown"+(typeof value)+"???>";
   }
 }
+
+
+/** returns the protocol, http or https for the document if possible. */
+export function checkProtocol() {
+  let _protocol = 'http:';
+  if (typeof document !== 'undefined' && document.location && "https:" === document.location.protocol) {
+    _protocol = 'https:';
+  }
+  return _protocol;
+}

@@ -1,6 +1,5 @@
 // @flow
 
-import checkProtocol from './checkProtocol.js';
 import RSVP from 'rsvp';
 
 RSVP.on('error', function(reason: string) {
@@ -8,7 +7,7 @@ RSVP.on('error', function(reason: string) {
 });
 
 // special due to flow
-import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './model';
+import {checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import * as miniseed from './miniseed';
 import { model } from './miniseed';
