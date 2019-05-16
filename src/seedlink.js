@@ -8,14 +8,11 @@
 
  /*global DataView*/
 
-import * as miniseed from '../miniseed';
+import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
 
 import {dataViewToString} from './util';
-
-/* reexport */
-export { miniseed, RSVP };
 
 export const SEEDLINK_PROTOCOL = "SeedLink3.1";
 

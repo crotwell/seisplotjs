@@ -6,13 +6,11 @@
  * http://www.seis.sc.edu
  */
 
-import checkProtocol from '../checkProtocol.js';
+import checkProtocol from './checkProtocol.js';
 import RSVP from 'rsvp';
 import moment from 'moment';
 
-export { RSVP, moment };
-
-import * as miniseed from '../miniseed';
+import * as miniseed from './miniseed';
 
 import { hasArgs, hasNoArgs, isStringArg, isNumArg, isDef } from './util';
 

@@ -1,10 +1,9 @@
 // @flow
 import moment from 'moment';
 import * as util from './util';
-import * as miniseed from '../miniseed';
+import * as model from './model/index';
+import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
-
-let model = miniseed.model;
 
 export const Allowed_Flags = [ 'n', 's', 'l', 'c', 'Y', 'j', 'H'];
 

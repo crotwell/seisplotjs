@@ -10,12 +10,9 @@
  */
 
 import {dataViewToString} from './util';
-import * as miniseed from '../miniseed';
+import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
-
-/* reexport */
-export { miniseed, RSVP };
 
 export const DATALINK_PROTOCOL = "DataLink1.0";
 export const QUERY_MODE = "QUERY";
