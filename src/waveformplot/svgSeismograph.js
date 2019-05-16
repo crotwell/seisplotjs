@@ -542,7 +542,7 @@ export class SvgSeismograph {
   }
   drawYLabel() :SvgSeismograph {
     this.svg.selectAll('g.yLabel').remove();
-    this.svg.append("g")
+    let svgText = this.svg.append("g")
        .classed("yLabel", true)
        .attr("x", 0)
        .attr("transform", "translate(0, "+(this.seismographConfig.margin.top+(this.height)/2)+")")
