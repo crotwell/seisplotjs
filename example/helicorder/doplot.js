@@ -102,13 +102,13 @@ doPlot = function(config) {
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
       let minMaxChanTR = hash.chanTR.map( ct => {
         let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
-        let fake = new seisplotjs.model.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
+        let fake = new seisplotjs.stationxml.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
         fake.sampleRate = 2;
-        return {
-          channel: fake,
-          startTime: ct.startTime,
-          endTime: ct.endTime
-        };
+        return new ChannelTimeRange()
+          fake,
+           ct.startTime,
+           ct.endTime
+        );
       });
       hash.traceMap = minMaxQ.loadTraces(minMaxChanTR);
     } else {

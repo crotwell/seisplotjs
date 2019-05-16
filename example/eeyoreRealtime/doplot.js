@@ -124,7 +124,7 @@ doplot = function(sta) {
       plotDiv.style("position", "relative");
       plotDiv.style("width", "100%");
       plotDiv.style("height", "150px");
-      let trace = new seisplotjs.model.Trace(seismogram);
+      let trace = new seisplotjs.seismogram.Trace(seismogram);
       let seisPlotConfig = new wp.SeismographConfig();
       seisPlotConfig.xSublabel = codes;
       seisPlotConfig.margin = margin ;

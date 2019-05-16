@@ -10,7 +10,7 @@ const wp = seisplotjs.waveformplot;
 const d3 = wp.d3;
 const miniseed = wp.miniseed;
 const OregonDSP = seisplotjs.filter.OregonDSP
-const moment = ds.model.moment;
+const moment = seisplotjs.moment;
 
 let doRunQuery = true;
 // doRunQuery = false;//for testing

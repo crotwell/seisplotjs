@@ -6,8 +6,9 @@ const traveltime = seisplotjs.traveltime;
 const fdsnevent = seisplotjs.fdsnevent;
 const fdsnstation = seisplotjs.fdsnstation;
 const fdsndataselect = seisplotjs.fdsndataselect;
+const d3 = seisplotjs.d3;
 
-fdsnstation.RSVP.on('error', function(reason) {
+seisplotjs.RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
@@ -114,7 +115,7 @@ console.log("click "+d.time.toISOString());
               +(d.depth/1000)+"km "
               +d.description;
         });
-        fdsnstation.RSVP.hash({
+        seisplotjs.RSVP.hash({
             network: networkPromise,
             quake: new fdsnevent.EventQuery()
                 .host(quakeQuery.host())
@@ -127,7 +128,7 @@ console.log("click "+d.time.toISOString());
 console.log("quake network Promise then");
           hash.plotPromise = plotSeismograms(wp.d3.select("div.seismograms"),
                        hash.network[0].stations, "--", chanCode, hash.quake, HOST, protocol);
-          return fdsnstation.RSVP.hash(hash);
+          return seisplotjs.RSVP.hash(hash);
         });
     });
     return quakes;
@@ -146,7 +147,7 @@ console.log("plot seis "+stations.length+" stations");
   let pOffset = -120;
   let clockOffset = 0; // set this from server somehow!!!!
   console.log("calc start end: "+quake.time.toISOString()+" "+dur+" "+clockOffset);
-  let promise = new fdsnstation.RSVP.Promise(function(resolve, reject) {
+  let promise = new seisplotjs.RSVP.Promise(function(resolve, reject) {
     resolve(true);
   });
   for (let s = 0; s<stations.length; s++) {
@@ -201,11 +202,12 @@ console.log("plotOneStation: "+mystation.codes());
         let keys = Array.from(byChannel.keys());
         console.log("Got "+dataRecords.length+" data records for "+keys.length+" channels");
         for (let key of byChannel.keys()) {
-          let segments = wp.miniseed.merge(byChannel.get(key));
+          let trace = wp.miniseed.merge(byChannel.get(key));
             div.append('p').html('Plot for ' + key);
             let svgdiv = div.append('div').attr('class', 'myseisplot');
-            if (segments.length > 0) {
-                let seismogram = new wp.Seismograph(svgdiv, segments, startDate, endDate);
+            if (trace) {
+                let seisConfig = new wp.SeismographConfig()
+                let seismogram = new wp.CanvasSeismograph(svgdiv, seisConfig, trace, startDate, endDate);
                 let markers = [];
                   markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                   markers.push({ markertype: 'predicted', name: firstPS.firstP.phase, time: moment.utc(quake.time).add(firstPS.firstP.time, 'seconds') });
@@ -222,7 +224,10 @@ if (! arrival) {console.log("arrival is undef??? "+aNum); }
                   }
                 }
                 seismogram.appendMarkers(markers);
+                console.log("draw");
                 seismogram.draw();
+            } else {
+              div.append('p').html('Empty trace, No data found for '+mystation.codes());
             }
         }
         if (keys.length==0){
