@@ -10,7 +10,7 @@ import  {moment} from '../util';
 export { dataselect, miniseed, d3, RSVP, moment };
 
 export type PlotDataType = {
-  "segments": Array<Array<Seismogram>>,
+  "traceMap": Array<Array<Seismogram>>,
   "startDate": moment,
   "endDate": moment,
   "request": dataselect.DataSelectQuery,
@@ -45,7 +45,7 @@ export function createPlotsBySelectorPromise(selector :string) :Promise<Array<Pl
         })
         .then(ab => {
           return {
-            "segments": miniseed.mergeByChannel(miniseed.parseDataRecords(ab)),
+            "traceMap": miniseed.mergeByChannel(miniseed.parseDataRecords(ab)),
             "startDate": startDate,
             "endDate": endDate,
             "request": null,
@@ -82,7 +82,7 @@ export function createPlotsBySelectorPromise(selector :string) :Promise<Array<Pl
         return miniseed.mergeByChannel(dataRecords);
       }).then(function(segments) {
         return {
-          "segments": segments,
+          "traceMap": segments,
           "startDate": startDate,
           "endDate": endDate,
           "request": request,
@@ -92,7 +92,7 @@ export function createPlotsBySelectorPromise(selector :string) :Promise<Array<Pl
         // rejection, so no inSegments
         // but may need others to display message
         return {
-          "segments": [],
+          "traceMap": new Map(),
           "startDate": start,
           "endDate": end,
           "request": request,
@@ -104,6 +104,29 @@ export function createPlotsBySelectorPromise(selector :string) :Promise<Array<Pl
     }
   });
   return RSVP.all(out);
+}
+
+
+export function createPlotsBySelector(selector :string) {
+  return createPlotsBySelectorPromise(selector).then(function(resultArray){
+    resultArray.forEach(function(result :PlotDataType) {
+      result.svgParent.append("p").text("Build plot");
+        if (result.segments.size >0) {
+          let s = result.segments[0];
+          let svgDiv = result.svgParent.append("div");
+          svgDiv.classed("svg-container-wide", true);
+          let seisConfig = new SeismographConfig();
+          let seismogram = new CanvasSeismograph(svgDiv, seisConfig, result.segments.values(), result.startDate, result.endDate);
+          seismogram.draw();
+        } else {
+          result.svgParent.append("p").text("No Data");
+          if (result.statusCode || result.responseText) {
+            result.svgParent.append("p").text(result.statusCode +" "+ result.responseText);
+          }
+        }
+      });
+      return resultArray;
+  });
 }
 
 export function calcClockOffset(serverTime :moment) {

@@ -3,13 +3,7 @@
 // for browserify-css
 import './inject_css_manual';
 
-import {
-  createPlotsBySelector,
-  Seismograph
-} from './waveformplot';
-
 import { CanvasSeismograph } from './canvasSeismograph';
-import { SvgSeismograph } from './svgSeismograph';
 import {Helicorder, HelicorderConfig } from './helicorder';
 import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH } from './seismographconfig';
 import {createSimpleFFTPlot, simpleOverlayFFTPlot } from './fftPlot';
@@ -26,6 +20,7 @@ import {
   miniseed ,
   d3,
   RSVP,
+  createPlotsBySelector,
   createPlotsBySelectorWithCallback,
   createPlotsBySelectorPromise,
   calcClockOffset,
@@ -44,8 +39,6 @@ export {
     d3,
     RSVP,
     createPlotsBySelector,
-    Seismograph,
-    SvgSeismograph,
     CanvasSeismograph,
     Helicorder,
     HelicorderConfig,

@@ -29,6 +29,11 @@ import {multiFormatHour,
 
 const CLIP_PREFIX = "seismographclip";
 
+
+export type ScaleChangeListenerType = {
+  notifyScaleChange: (value : any) => void
+}
+
 /** A seismogram plot, using d3. The actual waveform can be drawn
   * with a separate Canvas (default) or with SVG.
   * Note that for SVG you must have
