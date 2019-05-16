@@ -955,7 +955,9 @@ return null;
   }
   /** can append single seismogram segment or an array of segments. */
   _internalAppend(seismogram: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram| miniseed.model.Trace ) :void {
-    if (Array.isArray(seismogram)) {
+    if ( ! seismogram) {
+      // don't append a null
+    } else if (Array.isArray(seismogram)) {
       for(let s of seismogram) {
         this._internalAppend(s);
       }
