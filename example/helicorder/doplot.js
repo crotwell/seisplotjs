@@ -1,9 +1,7 @@
 
 
 doPlot = function(config) {
-  //let seedlink = require('seisplotjs-seedlink');
-  // this global comes from the seisplotjs_seedlink standalone js
-  let seedlink = seisplotjs.seedlink
+  // this global comes from the seisplotjs standalone js
   let moment = seisplotjs.moment;
 
   //let wp = require('seisplotjs-waveformplot');
@@ -97,14 +95,14 @@ doPlot = function(config) {
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
     if (hash.bandCode == 'H') {
-      let minMaxQ = new seisplotjs.seedlink.MSeedArchive(
+      let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
         "http://eeyore.seis.sc.edu/minmax",
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
       let minMaxChanTR = hash.chanTR.map( ct => {
         let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
         let fake = new seisplotjs.stationxml.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
         fake.sampleRate = 2;
-        return new ChannelTimeRange()
+        return new seisplotjs.fdsndataselect.ChannelTimeRange(
           fake,
            ct.startTime,
            ct.endTime
@@ -112,7 +110,7 @@ doPlot = function(config) {
       });
       hash.traceMap = minMaxQ.loadTraces(minMaxChanTR);
     } else {
-      let mseedQ = new seisplotjs.seedlink.MSeedArchive(
+      let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
         "http://eeyore.seis.sc.edu/mseed",
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
       hash.traceMap = mseedQ.loadTraces(hash.chanTR);

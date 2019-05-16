@@ -6,13 +6,13 @@ let traveltime = seisplotjs.traveltime;
 let fdsnevent = seisplotjs.fdsnevent;
 let fdsnstation = seisplotjs.fdsnstation;
 let fdsndataselect = seisplotjs.fdsndataselect;
-let moment = fdsnevent.moment;
-let RSVP = fdsnstation.RSVP;
+let moment = seisplotjs.moment;
+let RSVP = seisplotjs.RSVP;
 
 let USGS = "earthquake.usgs.gov";
 let IRIS = "service.iris.edu";
 
-fdsnstation.RSVP.on('error', function(reason) {
+RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
@@ -179,7 +179,7 @@ console.log("click "+d.time.toISOString());
             +d.description;
       });
 
-      fdsnstation.RSVP.hash({
+      RSVP.hash({
           network: networkPromise,
           quake: new fdsnevent.EventQuery()
               .protocol(quakeQuery.protocol())
@@ -252,15 +252,16 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
         "dsQuery": dsQuery
       });
     }).then(function(hash) {
-        let byChannel = wp.miniseed.byChannel(hash.dataRecords);
+        let byChannel = seisplotjs.miniseed.mergeByChannel(hash.dataRecords);
         let keys = Array.from(byChannel.keys());
         console.log("Got "+hash.dataRecords.length+" data records for "+keys.length+" channels");
         for (let key of byChannel.keys()) {
-          let segments = wp.miniseed.merge(byChannel.get(key));
+          let segments = byChannel.get(key);
           div.append('p').html('Plot for ' + key);
           let svgdiv = div.append('div').attr('class', 'myseisplot');
-          if (segments.length > 0) {
-              let seismogram = new wp.CanvasSeismograph(svgdiv, segments, hash.startDate, hash.endDate);
+          if (segments) {
+              let seisConfig = new wp.SeismographConfig();
+              let seismogram = new wp.CanvasSeismograph(svgdiv, seisConfig, segments, hash.startDate, hash.endDate);
               let markers = [];
                 markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                 markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time).add(hash.firstPS.firstP.time, 'seconds') });
@@ -278,6 +279,8 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
 
               seismogram.appendMarkers(markers);
               seismogram.draw();
+          } else {
+            console.log(`no segments for ${key}`)
           }
         }
         if (keys.length==0){
