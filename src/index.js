@@ -6,6 +6,7 @@
 
 import * as datalink         from './datalink';
 import * as distaz         from './distaz';
+import * as fdsnavailability  from './fdsnavailability';
 import * as fdsnevent      from './fdsnevent';
 import * as fdsnstation    from './fdsnstation';
 import * as fdsndataselect from './fdsndataselect';
@@ -34,6 +35,7 @@ const RSVP = util.RSVP;
 /* reexport */
 export { datalink,
          distaz,
+         fdsnavailability,
          fdsnevent,
          fdsnstation,
          fdsndataselect,
