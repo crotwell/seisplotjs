@@ -8,6 +8,7 @@
  */
 
 import {
+    moment,
     d3,
     miniseed,
     createPlotsBySelectorPromise,
@@ -21,7 +22,6 @@ import type { MarginType, MarkerType } from './seismographconfig';
 import * as model from '../model/index';
 import {multiFormatHour, formatMillisecond, formatSecond, formatMinute, formatHour, formatDay, formatMonth, formatYear} from './seismographconfig';
 
-const moment = miniseed.model.moment;
 
 
 

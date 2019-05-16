@@ -8,6 +8,7 @@
  */
 
 import {
+    moment,
     d3,
     miniseed,
     createPlotsBySelectorPromise,
@@ -16,14 +17,14 @@ import {
   } from './util';
 import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
+import {Seismogram, Trace } from './seismogram';
+import {InstrumentSensitivity} from './stationxml';
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
-import * as model from '../model/index';
 import {multiFormatHour,
   formatMillisecond, formatSecond, formatMinute,
   formatHour, formatDay, formatMonth, formatYear} from './seismographconfig';
 
-const moment = miniseed.model.moment;
 
 
 const CLIP_PREFIX = "seismographclip";
@@ -47,7 +48,7 @@ export class CanvasSeismograph {
   plotEndDate :moment;
 
   svgParent: any;
-  traces: Array<miniseed.model.Trace>;
+  traces: Array<miniseed.Trace>;
   markers: Array<MarkerType>;
   width: number;
   height: number;
@@ -61,7 +62,7 @@ export class CanvasSeismograph {
   currZoomXScale: any;
   yScale: any;
   yScaleRmean: any;
-  instrumentSensitivity: miniseed.model.InstrumentSensitivity;
+  instrumentSensitivity: InstrumentSensitivity;
   lineFunc: any;
   zoom: any;
   xAxis: any;
@@ -69,7 +70,7 @@ export class CanvasSeismograph {
   g: any;
   throttleRescale: any;
   throttleResize: any;
-  constructor(inSvgParent :any, seismographConfig, inSegments: Array<miniseed.model.Trace>, plotStartDate :moment, plotEndDate :moment) {
+  constructor(inSvgParent :any, seismographConfig, inSegments: Array<Trace>, plotStartDate :moment, plotEndDate :moment) {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++CanvasSeismograph._lastID;
     this.beforeFirstDraw = true;
@@ -475,13 +476,13 @@ export class CanvasSeismograph {
     return (domain[1].getTime()-domain[0].getTime())/1000 / (range[1]-range[0]);
   }
 
-  segmentDrawLine(seg: miniseed.model.Seismogram, xScale: any) :void {
+  segmentDrawLine(seg: Seismogram, xScale: any) :void {
     let secondsPerPixel = this.calcSecondsPerPixel(xScale);
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
     this.lineFunc.x(function(d) { return xScale(d.time); });
     if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
 if (! seg.y) {
-  console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof miniseed.model.Trace));
+  console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Trace));
 return null;
 }
       return this.lineFunc(seg.y.map(function(d,i) {
@@ -884,7 +885,7 @@ return null;
     this.seismographConfig.doGain = value;
     this.redoDisplayYScale();
   }
-  setInstrumentSensitivity(value: model.InstrumentSensitivity) {
+  setInstrumentSensitivity(value: InstrumentSensitivity) {
     this.instrumentSensitivity = value;
     this.redoDisplayYScale();
   }
@@ -950,11 +951,11 @@ return null;
     this.rescaleYAxis();
     this.drawYSublabel();
   }
-  getSeismograms() :Array<miniseed.model.Trace> {
+  getSeismograms() :Array<Trace> {
     return this.traces;
   }
   /** can append single seismogram segment or an array of segments. */
-  _internalAppend(seismogram: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram| miniseed.model.Trace ) :void {
+  _internalAppend(seismogram: Array<Seismogram> | Seismogram| Trace ) :void {
     if ( ! seismogram) {
       // don't append a null
     } else if (Array.isArray(seismogram)) {
@@ -962,11 +963,11 @@ return null;
         this._internalAppend(s);
       }
     } else {
-      this.traces.push(miniseed.model.ensureIsTrace(seismogram));
+      this.traces.push(ensureIsTrace(seismogram));
     }
   }
   /** appends the seismogram(s) as separate time series. */
-  append(seismogram: Array<miniseed.model.Trace> | miniseed.model.Trace) {
+  append(seismogram: Array<Trace> | Trace) {
     this._internalAppend(seismogram);
     this.calcScaleDomain();
     if ( ! this.beforeFirstDraw) {
@@ -977,7 +978,7 @@ return null;
     }
     return this;
   }
-  remove(trace: miniseed.model.Trace) :void {
+  remove(trace: Trace) :void {
     this.traces = this.traces.filter( t => t !== trace);
   }
   replace(oldTrace, newTrace) :void {

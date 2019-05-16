@@ -1,7 +1,7 @@
 // @flow
 
-import * as model from './model';
-import { moment } from './model';
+import { moment } from 'moment';
+import { Quake, Origin, Magnitude, Arrival, Pick } from 'quakeml'
 
 // special due to flow
 import {checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
@@ -507,8 +507,8 @@ export class EventQuery {
   /** Parses a QuakeML event xml element into a Quake object.
    * @param qml the event xml Element
   */
-  convertToQuake(qml: Element) :model.Quake {
-    let out = new model.Quake();
+  convertToQuake(qml: Element) :Quake {
+    let out = new Quake();
     out.publicId = _grabAttribute(qml, 'publicID');
     out.description = _grabFirstElText(_grabFirstEl(qml, 'description'), 'text');
     let otimeStr = _grabFirstElText(_grabFirstEl(_grabFirstEl(qml, 'origin'), 'time'),'value');
@@ -589,8 +589,8 @@ export class EventQuery {
    * @param qml the origin xml Element
    * @param allPicks picks already extracted from the xml for linking arrivals with picks
   */
-  convertToOrigin(qml: Element, allPicks) :model.Origin {
-    let out = new model.Origin();
+  convertToOrigin(qml: Element, allPicks) :Origin {
+    let out = new Origin();
     let otimeStr = _grabFirstElText(_grabFirstEl(qml, 'time'),'value');
     if (otimeStr ) {
       out.time = otimeStr;
@@ -614,11 +614,11 @@ export class EventQuery {
   /** Parses a QuakeML magnitude xml element into a Magnitude object.
    * @param qml the magnitude xml Element
   */
-  convertToMagnitude(qml: Element) :model.Magnitude {
+  convertToMagnitude(qml: Element) :Magnitude {
     let mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, 'mag'), 'value');
     let type = _grabFirstElText(qml, 'type');
     if (mag && type) {
-      let out = new model.Magnitude(mag, type);
+      let out = new Magnitude(mag, type);
       out.publicId = _grabAttribute(qml, 'publicID');
       console.log(`convertToMagnitude ${out.publicId}`);
       return out;
@@ -629,15 +629,15 @@ export class EventQuery {
    * @param arrivalQML the arrival xml Element
    * @param allPicks picks already extracted from the xml for linking arrivals with picks
   */
-  convertToArrival(arrivalQML: Element, allPicks: Array<model.Pick>) :model.Arrival {
+  convertToArrival(arrivalQML: Element, allPicks: Array<Pick>) :Arrival {
     let pickId = _grabFirstElText(arrivalQML, 'pickID');
     let phase = _grabFirstElText(arrivalQML, 'phase');
     if (phase && pickId) {
-      let myPick = allPicks.find(function(p: model.Pick) { return p.publicId === pickId;});
+      let myPick = allPicks.find(function(p: Pick) { return p.publicId === pickId;});
       if ( ! myPick) {
         throw new Error("Can't find pick with Id="+pickId+" for Arrival");
       }
-      let out = new model.Arrival(phase, myPick);
+      let out = new Arrival(phase, myPick);
       out.publicId = _grabAttribute(arrivalQML, 'publicID');
       return out;
     } else {
@@ -647,7 +647,7 @@ export class EventQuery {
   /** Parses a QuakeML pick xml element into a Pick object.
    * @param pickQML the pick xml Element
   */
-  convertToPick(pickQML: Element) :model.Pick {
+  convertToPick(pickQML: Element) :Pick {
     let otimeStr = _grabFirstElText(_grabFirstEl(pickQML, 'time'),'value');
     let time = checkStringOrDate(otimeStr);
     let waveformIdEl = _grabFirstEl(pickQML, 'waveformID');
@@ -663,7 +663,7 @@ export class EventQuery {
                       +"."+ stringify(locationCode)
                       +"."+ stringify(channelCode));
     }
-    let out = new model.Pick(time, netCode, stationCode, locationCode, channelCode);
+    let out = new Pick(time, netCode, stationCode, locationCode, channelCode);
     out.publicId = _grabAttribute(pickQML, "publicID");
     return out;
   }
@@ -671,7 +671,7 @@ export class EventQuery {
   /** Queries the remote service and parses the returned xml.
    *  @return Promise to an Array of Quake objects.
   */
-  query(): Promise<Array<model.Quake>> {
+  query(): Promise<Array<Quake>> {
     let mythis = this;
     return this.queryRawXml().then(function(rawXml) {
         return mythis.parseQuakeML(rawXml);
@@ -682,7 +682,7 @@ export class EventQuery {
   *  @param rawXml the xml Document to parse
   *  @return array of Quake objects
   */
-  parseQuakeML(rawXml: Document) :Array<model.Quake> {
+  parseQuakeML(rawXml: Document) :Array<Quake> {
     let top = rawXml.documentElement;
     if (! top) {
       throw new Error("Can't get documentElement");
@@ -881,8 +881,8 @@ console.log("204 nodata so return empty xml");
     }
     let url = this.formBaseURL()+"/query?";
     if (this._eventId) { url = url+this.makeParam("eventid", this.eventId());}
-    if (this._startTime) { url = url+this.makeParam("starttime", model.toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+this.makeParam("endtime", model.toIsoWoZ(this.endTime()));}
+    if (this._startTime) { url = url+this.makeParam("starttime", toIsoWoZ(this.startTime()));}
+    if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
     if (_isDef(this._minMag)) { url = url+this.makeParam("minmag", this.minMag());}
     if (_isDef(this._maxMag)) { url = url+this.makeParam("maxmag", this.maxMag());}
     if (_isDef(this._magnitudeType)) { url = url+this.makeParam("magnitudetype", this.magnitudeType());}

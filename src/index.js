@@ -10,12 +10,16 @@ import * as fdsnevent      from './fdsnevent';
 import * as fdsnstation    from './fdsnstation';
 import * as fdsndataselect from './fdsndataselect';
 import * as filter         from './filter/index';
+import * as knownDataCenters from './knownDataCenters';
 import * as miniseed       from './miniseed';
-import * as model          from './model/index';
 import * as mseedarchive   from './mseedarchive';
+import * as quakeml        from './quakeml';
 import * as ringserverweb  from './ringserver-web';
+import * as sacPoleZero    from './sacPoleZero';
 import * as seedcodec      from './seedcodec';
 import * as seedlink       from './seedlink';
+import * as seismogram     from './seismogram';
+import * as stationxml     from './stationxml';'
 import * as traveltime     from './traveltime';
 import * as util      from './util';
 import * as waveformplot   from './waveformplot/index';

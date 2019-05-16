@@ -8,16 +8,11 @@
  */
 
 // special due to flow
-import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './model';
+import {moment, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
+import {Seismogram, Trace} from './seismogram';
 import * as seedcodec from './seedcodec';
-import * as model from './model';
 
-/* re-export */
-export {
-  seedcodec,
-  model
-};
 
 /** parse arrayBuffer into an array of DataRecords. */
 export function parseDataRecords(arrayBuffer: ArrayBuffer) {
@@ -177,8 +172,8 @@ export class DataHeader {
   blocketteOffset: number;
   recordSize: number;
   blocketteList: Array<Blockette>;
-  start: model.moment;
-  end: model.moment;
+  start: moment;
+  end: moment;
   constructor() {
     this.seq = "      ";
     this.typeCode = 68; // D
@@ -204,7 +199,7 @@ export class DataHeader {
     this.littleEndian = false;
     this.sampleRate = 0;
     this.start = this.startBTime.toMoment();
-    this.end = model.moment.utc(this.start);
+    this.end = moment.utc(this.start);
   }
 
   toString() {
@@ -229,8 +224,8 @@ export class DataHeader {
   /** Calculates the time of the i-th sample in the record, zero based,
    *  so timeOfSample(0) is the start and timeOfSample(this.numSamples-1) is end.
   */
-  timeOfSample(i: number): model.moment {
-    return model.moment.utc(this.start).add(i/this.sampleRate, 'second');
+  timeOfSample(i: number): moment {
+    return moment.utc(this.start).add(i/this.sampleRate, 'second');
   }
 }
 
@@ -301,8 +296,8 @@ export class BTime {
   toString(): string {
     return this.year+"-"+this.jday+" "+this.hour+":"+this.min+":"+this.sec+"."+this.tenthMilli.toFixed().padStart(4,'0')+" "+this.toMoment().toISOString();
   }
-  toMoment(): model.moment {
-    let m = new model.moment.utc([this.year, 0, 1, this.hour, this.min, this.sec, 0]);
+  toMoment(): moment {
+    let m = new moment.utc([this.year, 0, 1, this.hour, this.min, this.sec, 0]);
     m.add(Math.round(this.tenthMilli/10), 'ms');
     m.dayOfYear(this.jday);
     if (m.isValid()) {
@@ -335,12 +330,12 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord) {
 /** Concatentates a sequence of DataRecords into a single seismogram object.
   * Assumes that they are all contiguous and in order. Header values from the first
   * DataRecord are used. */
-export function createSeismogram(contig: Array<DataRecord>): model.Seismogram {
+export function createSeismogram(contig: Array<DataRecord>): Seismogram {
   let y = [];
   for (let i=0; i<contig.length; i++) {
     y = y.concat(contig[i].decompress());
   }
-  let out = new model.Seismogram(y,
+  let out = new Seismogram(y,
                                  contig[0].header.sampleRate,
                                  contig[0].header.start);
   out.networkCode = contig[0].header.netCode;
@@ -359,7 +354,7 @@ export function createSeismogram(contig: Array<DataRecord>): model.Seismogram {
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
  */
-export function merge(drList: Array<DataRecord>): model.Trace {
+export function merge(drList: Array<DataRecord>): Trace {
   let out = [];
   let currDR;
   drList.sort(function(a,b) {
@@ -383,14 +378,14 @@ export function merge(drList: Array<DataRecord>): model.Trace {
       out.push(createSeismogram(contig));
       contig = [];
   }
-  return new model.Trace(out);
+  return new Trace(out);
 }
 
 
 
 /** Finds the min and max values of a Seismogram, with an optional
   * accumulator for use with gappy data. */
-export function segmentMinMax(segment: model.Seismogram, minMaxAccumulator:? Array<number>) :Array<number> {
+export function segmentMinMax(segment: Seismogram, minMaxAccumulator:? Array<number>) :Array<number> {
   if ( ! segment.y) {
     throw new Error("Segment does not have a y field, doesn't look like a seismogram segment. "+stringify(segment));
   }
@@ -431,7 +426,7 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
   return out;
 }
 
-export function mergeByChannel(drList: Array<DataRecord> ): Map<string, model.Trace> {
+export function mergeByChannel(drList: Array<DataRecord> ): Map<string, Trace> {
   let out = new Map();
   let byChannelMap = this.byChannel(drList);
   console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
@@ -442,13 +437,13 @@ export function mergeByChannel(drList: Array<DataRecord> ): Map<string, model.Tr
   return out;
 }
 
-export function tracePerChannel(drList: Array<DataRecord>): Map<string, model.Trace> {
+export function tracePerChannel(drList: Array<DataRecord>): Map<string, Trace> {
   let out = new Map();
   let byChannelMap = this.byChannel(drList);
   console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
   for (let [key, seisArray] of byChannelMap) {
     seisArray = seisArray.map(dr => createSeismogram( [ dr ] ));
-    out.set(key, new model.Trace(seisArray));
+    out.set(key, new Trace(seisArray));
   }
   console.log("traceByChannel  out.size="+out.size);
   return out;

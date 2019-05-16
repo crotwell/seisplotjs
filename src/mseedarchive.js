@@ -1,9 +1,12 @@
 // @flow
 import moment from 'moment';
 import * as util from './util';
-import * as model from './model/index';
 import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
+
+import {ChannelTimeRange } from './fdsndataselect';
+import {Seismogram, Trace} from './seismogram';
+import {Channel} from './stationxml';
 
 export const Allowed_Flags = [ 'n', 's', 'l', 'c', 'Y', 'j', 'H'];
 
@@ -48,7 +51,7 @@ export class MSeedArchive {
     }
     return true;
   }
-  loadTraces(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<model.Trace>>> {
+  loadTraces(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<Trace>>> {
     let promiseArray = channelTimeList.map(ct => {
       let sta = ct.channel.station;
       let net = sta.network;
@@ -68,7 +71,7 @@ export class MSeedArchive {
       return miniseed.tracePerChannel(dataRecords);
     });
   }
-  loadDataForChannel(channel: model.Channel, start: moment, end: moment) {
+  loadDataForChannel(channel: Channel, start: moment, end: moment) {
     return this.loadData(channel.station.network.networkCode,
                     channel.station.stationCode,
                     channel.locationCode,

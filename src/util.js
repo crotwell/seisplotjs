@@ -2,7 +2,21 @@
 
 /*global DataView*/
 
+import moment from 'moment';
+if (typeof window !== 'undefined') {
+//  console.log("setting global moment for momentTimezone, this is dumb...");
+  window.moment = moment; // allow moment-timezone to find it
+}
+import momentTimezone from 'moment-timezone';
+
+console.assert(moment === momentTimezone, "Two moments!!!");
+
+//reexport
+export { moment, };
+
 // copy from model.util to make flow happy
+
+
 // flow predicate %check functions
 export function hasArgs(value: any): boolean %checks {
   return arguments.length != 0 && typeof value != 'undefined';
@@ -46,7 +60,11 @@ export function stringify(value: mixed): string {
     return "function "+value.name;
   } else if (typeof value === 'object') {
     if (value) {
+      if (value instanceof moment) {
+        return value.toISOString();
+      } else {
         return value.toString();
+      }
     } else {
       return "null";
     }
@@ -58,6 +76,34 @@ export function stringify(value: mixed): string {
   }
 }
 
+/** converts the input value is a moment, throws Error if not
+ * a string, Date or moment. Zero length string or "now" return
+ * current time.
+ */
+export function checkStringOrDate(d: any): moment {
+  if (moment.isMoment(d)) {
+    return d;
+  } else if (d instanceof Date) {
+      return moment.utc(d);
+  } else if (d instanceof Number || typeof d === "number") {
+    return moment.utc(d);
+  } else if (d instanceof String || typeof d === "string") {
+    let lc = d.toLowerCase();
+    if (d.length === 0 || lc === "now") {
+      return moment.utc();
+    } else {
+      return moment.utc(d);
+    }
+  }
+  throw new Error("unknown date type: "+d+" "+(typeof d));
+}
+
+/** converts to ISO8601 but removes the trailing Z as FDSN web services
+  do not allow that. */
+export function toIsoWoZ(date:moment) :string {
+  let out = date.toISOString();
+  return out.substring(0, out.length-1);
+}
 
 /** returns the protocol, http or https for the document if possible. */
 export function checkProtocol() {
@@ -66,4 +112,31 @@ export function checkProtocol() {
     _protocol = 'https:';
   }
   return _protocol;
+}
+
+
+export type ComplexType = {
+  real: number,
+  imag: number
+}
+
+// allow overriding the complex object to use
+// if OregonDSP is loaded we want to use
+// its Complex instead of the simple one defined here
+export function createComplex(real:number, imag:number): ComplexType {
+  /*
+  try {
+    return new OregonDSP.filter.iir.Complex_init(real, imag);
+  } catch(err) {
+  console.log("create complex default case "+err);
+  return {
+    real: real,
+    imag: imag
+  };
+}
+*/
+  return {
+    real: real,
+    imag: imag
+  };
 }

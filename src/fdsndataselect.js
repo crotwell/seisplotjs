@@ -7,18 +7,19 @@ RSVP.on('error', function(reason: string) {
 });
 
 // special due to flow
-import {checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import * as miniseed from './miniseed';
-import { model } from './miniseed';
+import { Channel } from './stationxml';
+import { Seismogram, Trace } from './seismogram';
 
-import { moment } from './model';
+import { moment } from './util';
 
 export class ChannelTimeRange {
-  channel: model.Channel;
+  channel: stationxml.Channel;
   startTime: moment;
   endTime: moment;
-  constructor(channel: model.Channel, startTime: moment, endTime: moment) {
+  constructor(channel: Channel, startTime: moment, endTime: moment) {
     this.channel = channel;
     this.startTime = startTime;
     this.endTime = endTime;
@@ -269,12 +270,12 @@ export class DataSelectQuery {
     });
   }
   /** @deprecated use queryTraces to handle gaps */
-  querySeismograms() :Promise<Map<string, Array<model.Seismogram>>> {
+  querySeismograms() :Promise<Map<string, Array<Seismogram>>> {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
   }
-  queryTraces() :Promise<Map<string, Array<model.Trace>>> {
+  queryTraces() :Promise<Map<string, Array<Trace>>> {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
@@ -326,12 +327,12 @@ console.log("fdsnDataSelect URL: "+url);
     });
   }
   /** @deprecated use queryTraces to handle gaps */
-  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<model.Seismogram>>> {
+  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<Seismogram>>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
   }
-  postQueryTraces(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<model.Trace>>> {
+  postQueryTraces(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<Trace>>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.tracePerChannel(dataRecords);
     });
@@ -410,8 +411,8 @@ console.log("fdsnDataSelect URL: "+url);
     if (this._stationCode) { url = url+this.makeParam("sta", this.stationCode());}
     if (this._locationCode) { url = url+this.makeParam("loc", this.locationCode());}
     if (this._channelCode) { url = url+this.makeParam("cha", this.channelCode());}
-    if (this._startTime) { url = url+this.makeParam("starttime", model.toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+this.makeParam("endtime", model.toIsoWoZ(this.endTime()));}
+    if (this._startTime) { url = url+this.makeParam("starttime", toIsoWoZ(this.startTime()));}
+    if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
     if (this._quality) { url = url+this.makeParam("quality", this.quality());}
     if (this._minimumLength) { url = url+this.makeParam("minimumlength", this.minimumLength());}
     if (this._repository) { url = url+this.makeParam("repository", this.repository());}
@@ -455,14 +456,14 @@ export class StartEndDuration {
       this.duration = moment.duration(duration, 'seconds');
     }
     if (start && end) {
-      this.start = model.checkStringOrDate(start);
-      this.end = model.checkStringOrDate(end);
+      this.start = checkStringOrDate(start);
+      this.end = checkStringOrDate(end);
       this.duration = moment.duration(this.end.diff(this.start));
     } else if (start && this.duration) {
-      this.start = model.checkStringOrDate(start);
+      this.start = checkStringOrDate(start);
       this.end = moment.utc(this.start).add(this.duration);
     } else if (end && this.duration) {
-      this.end = model.checkStringOrDate(end);
+      this.end = checkStringOrDate(end);
       this.start = moment.utc(this.end).subtract(this.duration);
     } else if (this.duration) {
       if (clockOffset === undefined) {

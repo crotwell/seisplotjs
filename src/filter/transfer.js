@@ -2,8 +2,9 @@
 
 import * as OregonDSPTop from 'oregondsp';
 import { calcDFT, inverseDFT } from './index';
-import * as model from '../model/index';
-import { SacPoleZero } from '../model/sacPoleZero'
+import {Seismogrm, Trace} from './seismogram';
+import { SacPoleZero } from './sacPoleZero';
+import {Response, PolesZeros } from './stationxml';
 import Qty from 'js-quantities';
 
 
@@ -15,8 +16,8 @@ export function createComplex(real: number, imag: number) {
   return OregonDSP.filter.iir.Complex_init(real, imag);
 };
 
-export function transfer(seis :model.Seismogram,
-                        response :model.Response,
+export function transfer(seis :Seismogram,
+                        response :Response,
                         lowCut :number,
                         lowPass :number,
                         highPass :number,
@@ -29,7 +30,7 @@ export function transfer(seis :model.Seismogram,
         return transferSacPZ(seis, sacPoleZero, lowCut, lowPass, highPass, highCut);
       }
 
-export function transferSacPZ(seis :model.Seismogram,
+export function transferSacPZ(seis :Seismogram,
                               sacPoleZero: SacPoleZero,
                               lowCut :number,
                               lowPass :number,
@@ -155,9 +156,9 @@ export const UNITS = {
   * converts the analog to digital stage (usually 0) along
   * with the overall gain, but does not include later FIR stages.
   */
-export function convertToSacPoleZero( response :model.Response) {
-    let polesZeros :model.PolesZeros;
-    if (response.stages[0].filter instanceof model.PolesZeros) {
+export function convertToSacPoleZero( response :Response) {
+    let polesZeros :PolesZeros;
+    if (response.stages[0].filter instanceof PolesZeros) {
       polesZeros = response.stages[0].filter;
     } else {
       throw new Error("can't find PolesZeros");

@@ -6,11 +6,11 @@ RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
-import * as model from './model';
 import moment from 'moment';
+import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain}
 
 // special due to flow
-import {checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, createComplex, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';
@@ -470,8 +470,8 @@ export class StationQuery {
   /** Parses a FDSNStationXML Network xml element into a Network object.
    * @param xml the network xml Element
   */
-  convertToNetwork(xml: Element): model.Network {
-    let out = new model.Network(_grabAttribute(xml, "code"))
+  convertToNetwork(xml: Element): Network {
+    let out = new Network(_grabAttribute(xml, "code"))
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
@@ -496,8 +496,8 @@ export class StationQuery {
    * @param network the containing network
    * @param xml the station xml Element
   */
-  convertToStation(network: model.Network, xml: Element): model.Station {
-    let out = new model.Station(network, _grabAttribute(xml, "code"))
+  convertToStation(network: Network, xml: Element): Station {
+    let out = new Station(network, _grabAttribute(xml, "code"))
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
@@ -520,8 +520,8 @@ export class StationQuery {
    * @param station the containing staton
    * @param xml the channel xml Element
   */
-  convertToChannel(station: model.Station, xml: Element): model.Channel {
-    let out = new model.Channel(station, _grabAttribute(xml, "code"), _grabAttribute(xml, "locationCode"))
+  convertToChannel(station: Station, xml: Element): Channel {
+    let out = new Channel(station, _grabAttribute(xml, "code"), _grabAttribute(xml, "locationCode"))
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
@@ -545,16 +545,16 @@ export class StationQuery {
   /** Parses a FDSNStationXML Response xml element into a Response object.
    * @param responseXml the response xml Element
   */
-  convertToResponse(responseXml: Element): model.Response {
+  convertToResponse(responseXml: Element): Response {
     let mythis = this;
     let out;
     let inst = responseXml.getElementsByTagNameNS(STAML_NS, 'InstrumentSensitivity');
     if (inst && inst.item(0)) {
-      out = new model.Response(this.convertToInstrumentSensitivity(inst.item(0)));
+      out = new Response(this.convertToInstrumentSensitivity(inst.item(0)));
     } else {
       // DMC returns empty response element when they know nothing (instead
       // of just leaving it out). Return empty object in this case
-      out = new model.Response();
+      out = new Response();
     }
     let xmlStages = responseXml.getElementsByTagNameNS(STAML_NS, 'Stage');
     if (xmlStages && xmlStages.length > 0) {
@@ -569,46 +569,46 @@ export class StationQuery {
   /** Parses a FDSNStationXML InstrumentSensitivity xml element into a InstrumentSensitivity object.
    * @param xml the InstrumentSensitivity xml Element
   */
-  convertToInstrumentSensitivity(xml: Element): model.InstrumentSensitivity {
+  convertToInstrumentSensitivity(xml: Element): InstrumentSensitivity {
     let sensitivity: number = _grabFirstElFloat(xml, 'Value');
     let frequency = _grabFirstElFloat(xml, 'Frequency');
     let inputUnits = _grabFirstElText(_grabFirstEl(xml, 'InputUnits'), 'Name');
     let outputUnits = _grabFirstElText(_grabFirstEl(xml, 'OutputUnits'), 'Name');
-    return new model.InstrumentSensitivity(sensitivity, frequency, inputUnits, outputUnits);
+    return new InstrumentSensitivity(sensitivity, frequency, inputUnits, outputUnits);
   }
 
   /** Parses a FDSNStationXML Stage xml element into a Stage object.
    * @param xml the Stage xml Element
   */
-  convertToStage(stageXml: Element): model.Stage {
+  convertToStage(stageXml: Element): Stage {
     let mythis = this;
     let subEl = stageXml.firstElementChild;
     if (! subEl) {
       throw new Error("Stage element has no child elements");
     }
-    let filter: model.AbstractFilterType | null = null;
+    let filter: AbstractFilterType | null = null;
     let inputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'InputUnits'), 'Name');
     let outputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'OutputUnits'), 'Name');
     if (subEl.localName == 'PolesZeros') {
-      filter = new model.PolesZeros(inputUnits, outputUnits);
+      filter = new PolesZeros(inputUnits, outputUnits);
       filter.pzTransferFunctionType = _grabFirstElText(stageXml, 'PzTransferFunctionType');
       filter.normalizationFactor = _grabFirstElFloat(stageXml, 'NormalizationFactor');
       filter.normalizationFrequency = _grabFirstElFloat(stageXml, 'NormalizationFrequency');
       let zeros = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Zero'))
           .map(function(zeroEl) {
-            return model.createComplex(_grabFirstElFloat(zeroEl, 'Real'),
+            return createComplex(_grabFirstElFloat(zeroEl, 'Real'),
                                _grabFirstElFloat(zeroEl, 'Imaginary'));
           });
       let poles = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Pole'))
           .map(function(poleEl) {
-            return model.createComplex(_grabFirstElFloat(poleEl, 'Real'),
+            return createComplex(_grabFirstElFloat(poleEl, 'Real'),
                                _grabFirstElFloat(poleEl, 'Imaginary'));
           });
       filter.zeros = zeros;
       filter.poles = poles;
     } else if (subEl.localName == 'Coefficients') {
       let coeffXml = subEl;
-      filter = new model.CoefficientsFilter(inputUnits, outputUnits);
+      filter = new CoefficientsFilter(inputUnits, outputUnits);
       filter.cfTransferFunction = _grabFirstElText(coeffXml, 'CfTransferFunctionType');
       filter.numerator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Numerator'))
           .map(function(numerEl) {
@@ -622,7 +622,7 @@ export class StationQuery {
       throw new Error("ResponseList not supported: ");
     } else if (subEl.localName == 'FIR') {
       let firXml = subEl;
-      filter = new model.FIR(inputUnits, outputUnits);
+      filter = new FIR(inputUnits, outputUnits);
       filter.symmetry = _grabFirstElText(firXml, 'Symmetry');
       filter.numerator = Array.from(firXml.getElementsByTagNameNS(STAML_NS, 'NumeratorCoefficient'))
           .map(function(numerEl) {
@@ -647,7 +647,7 @@ export class StationQuery {
       }
     }
     let decimationXml = _grabFirstEl(stageXml, 'Decimation');
-    let decimation: model.Decimation | null = null;
+    let decimation: Decimation | null = null;
     if (decimationXml) {
       decimation = this.convertToDecimation(decimationXml);
     }
@@ -658,7 +658,7 @@ export class StationQuery {
     } else {
       throw new Error("Did not find Gain in stage number "+stringify(_grabAttribute(stageXml, "number")));
     }
-    let out = new model.Stage(filter, decimation, gain);
+    let out = new Stage(filter, decimation, gain);
 
     return out;
   }
@@ -666,8 +666,8 @@ export class StationQuery {
   /** Parses a FDSNStationXML Decimation xml element into a Decimation object.
    * @param xml the Decimation xml Element
   */
-  convertToDecimation(decXml: Element): model.Decimation {
-    let out = new model.Decimation();
+  convertToDecimation(decXml: Element): Decimation {
+    let out = new Decimation();
     out.inputSampleRate = _grabFirstElFloat(decXml, 'InputSampleRate');
     out.factor = _grabFirstElInt(decXml, 'Factor');
     out.offset = _grabFirstElInt(decXml, 'Offset');
@@ -679,8 +679,8 @@ export class StationQuery {
   /** Parses a FDSNStationXML Gain xml element into a Gain object.
    * @param xml the Gain xml Element
   */
-  convertToGain(gainXml: Element): model.Gain {
-    let out = new model.Gain();
+  convertToGain(gainXml: Element): Gain {
+    let out = new Gain();
     out.value = _grabFirstElFloat(gainXml, 'Value');
     out.frequency = _grabFirstElFloat(gainXml, 'Frequency');
     return out;
@@ -689,21 +689,21 @@ export class StationQuery {
   /** Queries the remote web service for networks.
    * @returns a Promise to an Array of Network objects.
    */
-  queryNetworks(): Promise<Array<model.Network>> {
+  queryNetworks(): Promise<Array<Network>> {
     return this.query(LEVEL_NETWORK);
   }
   /** Queries the remote web service for stations. The stations
    * are contained within their respective Networks.
    * @returns a Promise to an Array of Network objects.
    */
-  queryStations(): Promise<Array<model.Network>> {
+  queryStations(): Promise<Array<Network>> {
     return this.query(LEVEL_STATION);
   }
   /** Queries the remote web service for channels. The Channels
    * are contained within their respective Stations which are in Networks.
    * @returns a Promise to an Array of Network objects.
    */
-  queryChannels(): Promise<Array<model.Network>> {
+  queryChannels(): Promise<Array<Network>> {
     return this.query(LEVEL_CHANNEL);
   }
   /** Queries the remote web service for responses. The Responses
@@ -711,7 +711,7 @@ export class StationQuery {
    * which are in Stations which are in Networks.
    * @returns a Promise to an Array of Network objects.
    */
-  queryResponse(): Promise<Array<model.Network>> {
+  queryResponse(): Promise<Array<Network>> {
     return this.query(LEVEL_RESPONSE);
   }
 
@@ -719,7 +719,7 @@ export class StationQuery {
    * @param level the level to query at, networ, station, channel or response.
    * @returns a Promise to an Array of Network objects.
    */
-  query(level: string): Promise<Array<model.Network>> {
+  query(level: string): Promise<Array<Network>> {
     if (! LEVELS.includes(level)) {throw new Error("Unknown level: '"+level+"'");}
     let mythis = this;
     return this.queryRawXml(level).then(function(rawXml) {
@@ -730,7 +730,7 @@ export class StationQuery {
   /** Parses the FDSN StationXML returned from a query.
    * @returns an Array of Network objects.
    */
-  parseRawXml(rawXml: Document) :Array<model.Network> {
+  parseRawXml(rawXml: Document) :Array<Network> {
     let top = rawXml.documentElement;
     if (! top) {throw new Error("No documentElement in XML");}
     let netArray = top.getElementsByTagNameNS(STAML_NS, "Network");
@@ -845,12 +845,12 @@ console.log("204 nodata so return empty xml");
     if (this._stationCode) { url = url+this.makeParam("sta", this.stationCode());}
     if (this._locationCode) { url = url+this.makeParam("loc", this.locationCode());}
     if (this._channelCode) { url = url+this.makeParam("cha", this.channelCode());}
-    if (this._startTime) { url = url+this.makeParam("starttime", model.toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+this.makeParam("endtime", model.toIsoWoZ(this.endTime()));}
-    if (this._startBefore) { url = url+this.makeParam("startbefore", model.toIsoWoZ(this.startBefore()));}
-    if (this._startAfter) { url = url+this.makeParam("startafter", model.toIsoWoZ(this.startAfter()));}
-    if (this._endBefore) { url = url+this.makeParam("endbefore", model.toIsoWoZ(this.endBefore()));}
-    if (this._endAfter) { url = url+this.makeParam("endafter", model.toIsoWoZ(this.endAfter()));}
+    if (this._startTime) { url = url+this.makeParam("starttime", toIsoWoZ(this.startTime()));}
+    if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
+    if (this._startBefore) { url = url+this.makeParam("startbefore", toIsoWoZ(this.startBefore()));}
+    if (this._startAfter) { url = url+this.makeParam("startafter", toIsoWoZ(this.startAfter()));}
+    if (this._endBefore) { url = url+this.makeParam("endbefore", toIsoWoZ(this.endBefore()));}
+    if (this._endAfter) { url = url+this.makeParam("endafter", toIsoWoZ(this.endAfter()));}
     if (this._minLat) { url = url+this.makeParam("minlat", this.minLat());}
     if (this._maxLat) { url = url+this.makeParam("maxlat", this.maxLat());}
     if (this._minLon) { url = url+this.makeParam("minlon", this.minLon());}
@@ -861,7 +861,7 @@ console.log("204 nodata so return empty xml");
     if (this._maxRadius) { url = url+this.makeParam("maxradius", this.maxRadius());}
     if (this._includeRestricted) { url = url+this.makeParam("includerestricted", this.includeRestricted());}
     if (this._includeAvailability) { url = url+this.makeParam("includeavailability", this.includeAvailability());}
-    if (this._updatedAfter) { url = url+this.makeParam("updatedafter", model.toIsoWoZ(this.updatedAfter()));}
+    if (this._updatedAfter) { url = url+this.makeParam("updatedafter", toIsoWoZ(this.updatedAfter()));}
     if (this._matchTimeseries) { url = url+this.makeParam("matchtimeseries", this.matchTimeseries());}
     if (this._format) { url = url+this.makeParam("format", this.format());}
     if (this._nodata) { url = url+this.makeParam("nodata", this.nodata());}

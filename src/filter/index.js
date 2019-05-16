@@ -1,7 +1,9 @@
 // @flow
 
 import * as OregonDSPTop from 'oregondsp';
-import * as model from '../model/index';
+
+import {Seismogram, Trace} from './seismogram';
+import {InstrumentSensitivity} from './stationxml';
 
 import * as transfer  from './transfer';
 import * as taper  from './taper';
@@ -25,16 +27,16 @@ export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
 }
 
-export function rMean(seis: model.Seismogram|model.Trace) :model.Seismogram {
+export function rMean(seis: Seismogram|Trace) :Seismogram {
   console.log(`rMean input class is: ${(seis.constructor.name)}`)
-  if (seis instanceof model.Trace) {
+  if (seis instanceof Trace) {
     let meanVal = 0;
     let npts = seis.numPoints;
     for (let s of seis.seisArray) {
       meanVal += mean(s)*s.numPoints;
     }
     meanVal = meanVal / npts;
-    let rmeanTrace = new model.Trace(seis.seisArray.map(s =>{
+    let rmeanTrace = new Trace(seis.seisArray.map(s =>{
         let demeanY = s.y.map(function(d) {
           return d-meanVal;
         });
@@ -43,7 +45,7 @@ export function rMean(seis: model.Seismogram|model.Trace) :model.Seismogram {
         return out;
       }));
     return rmeanTrace;
-  } else if (seis instanceof model.Seismogram) {
+  } else if (seis instanceof Seismogram) {
     let out = seis.clone();
     let meanVal = mean(seis);
     let demeanY = seis.y.map(function(d) {
@@ -56,9 +58,9 @@ export function rMean(seis: model.Seismogram|model.Trace) :model.Seismogram {
   }
 }
 
-export function gainCorrect(instrumentSensitivity : model.InstrumentSensitivity, seis: model.Seismogram|model.Trace) {
-  if (seis instanceof model.Trace) {
-    let gainTrace = new model.Trace(seis.seisArray.map(s =>{
+export function gainCorrect(instrumentSensitivity : model.InstrumentSensitivity, seis: Seismogram|Trace) {
+  if (seis instanceof Trace) {
+    let gainTrace = new Trace(seis.seisArray.map(s =>{
       return gainCorrect(instrumentSensitivity, s);
       }));
     return gainTrace;
@@ -75,11 +77,11 @@ export function gainCorrect(instrumentSensitivity : model.InstrumentSensitivity,
 }
 
 
-export function minMaxMean(seis: model.Seismogram|model.Trace): number {
+export function minMaxMean(seis: Seismogram|Trace): number {
   let meanVal = 0;
   let minVal = 9999999999;
   let maxVal = -9999999999;
-  if (seis instanceof model.Trace) {
+  if (seis instanceof Trace) {
     let npts = seis.numPoints;
     for (let s of seis.seisArray) {
       meanVal += mean(s)*s.numPoints;
@@ -98,8 +100,8 @@ export function minMaxMean(seis: model.Seismogram|model.Trace): number {
     mean: meanVal
   };
 }
-export function mean(waveform: model.Seismogram|model.Trace): number {
-  if (waveform instanceof model.Trace) {
+export function mean(waveform: Seismogram|Trace): number {
+  if (waveform instanceof Trace) {
     let meanVal = 0;
 
     let npts = waveform.numPoints;

@@ -1,10 +1,10 @@
 //@flow
 
 import type { TimeRangeType } from './chooser';
-import * as model from '../model/index';
-import { d3 } from './util';
-
-const moment = model.moment;
+import {Seismogram, Trace} from './seismogram';
+import {Channel, InstrumentSensitivity} from './stationxml';
+import {Quake} from './quakeml';
+import { d3, moment } from './util';
 
 export type MarkerType = {
   name: string,
@@ -150,11 +150,11 @@ export class SeismographConfig {
 };
 
 export class SeismogramDisplayData {
-  trace: model.seismogram.Trace;
+  trace: Trace;
   markers: Array<MarkerType>;
-  channel: model.stationxml.Channel;
-  instrumentSensitivity: miniseed.model.InstrumentSensitivity;
-  quake: model.quakeml.Quake;
+  channel: Channel;
+  instrumentSensitivity: InstrumentSensitivity;
+  quake: Quake;
   startDate: moment;
   endDate: moment;
   doShow: boolean;

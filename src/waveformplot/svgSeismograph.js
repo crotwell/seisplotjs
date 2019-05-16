@@ -8,6 +8,7 @@
  */
 
 import {
+    moment,
     d3,
     miniseed,
     createPlotsBySelectorPromise,
@@ -15,14 +16,13 @@ import {
     findMinMax
   } from './util';
 import SeismographConfig from './seismographconfig';
+import {Seismogram, Trace, ensureIsTrace } from './seismogram';
+import {InstrumentSensitivity} from './stationxml';
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
-import * as model from '../model/index';
 import {multiFormatHour,
   formatMillisecond, formatSecond, formatMinute,
   formatHour, formatDay, formatMonth, formatYear} from './seismographconfig';
-
-const moment = miniseed.model.moment;
 
 
 const CLIP_PREFIX = "seismographclip";
@@ -42,7 +42,7 @@ export class SvgSeismograph {
   seismographConfig: SeismographConfig;
 
   svgParent: any;
-  segments: Array<miniseed.model.Trace>;
+  segments: Array<Trace>;
   markers: Array<MarkerType>;
   width: number;
   height: number;
@@ -55,7 +55,7 @@ export class SvgSeismograph {
   currZoomXScale: any;
   yScale: any;
   yScaleRmean: any;
-  instrumentSensitivity: miniseed.model.InstrumentSensitivity;
+  instrumentSensitivity: InstrumentSensitivity;
   lineFunc: any;
   zoom: any;
   xAxis: any;
@@ -63,7 +63,7 @@ export class SvgSeismograph {
   g: any;
   throttleRescale: any;
   throttleResize: any;
-  constructor(inSvgParent :any, seismographConfig, inSegments: Array<miniseed.model.Trace>, plotStartDate :moment, plotEndDate :moment) {
+  constructor(inSvgParent :any, seismographConfig, inSegments: Array<Trace>, plotStartDate :moment, plotEndDate :moment) {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++SvgSeismograph._lastID;
     this.beforeFirstDraw = true;
@@ -187,7 +187,7 @@ export class SvgSeismograph {
             .attr("width", this.width)
             .attr("height", this.height);
   }
-  drawSegments(traceList: Array<miniseed.model.Trace>, svgG: any) :void {
+  drawSegments(traceList: Array<Trace>, svgG: any) :void {
     let drawG = svgG;
     let mythis = this;
 
@@ -226,13 +226,13 @@ export class SvgSeismograph {
     return (domain[1].getTime()-domain[0].getTime())/1000 / (range[1]-range[0]);
   }
 
-  segmentDrawLine(seg: miniseed.model.Seismogram, xScale: any) :void {
+  segmentDrawLine(seg: Seismogram, xScale: any) :void {
     let secondsPerPixel = this.calcSecondsPerPixel(xScale);
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
     this.lineFunc.x(function(d) { return xScale(d.time); });
     if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
       if (! seg.y) {
-        console.log("svgSeism seg.y not defined: "+(typeof seg)+" "+(seg instanceof miniseed.model.Seismogram));
+        console.log("svgSeism seg.y not defined: "+(typeof seg)+" "+(seg instanceof Seismogram));
       return null;
       }
       return this.lineFunc(seg.y.map(function(d,i) {
@@ -602,7 +602,7 @@ export class SvgSeismograph {
     this.seismographConfig.doGain = value;
     this.redoDisplayYScale();
   }
-  setInstrumentSensitivity(value: model.InstrumentSensitivity) {
+  setInstrumentSensitivity(value: InstrumentSensitivity) {
     this.instrumentSensitivity = value;
     this.redoDisplayYScale();
   }
@@ -665,21 +665,21 @@ export class SvgSeismograph {
     this.rescaleYAxis();
     this.drawYSublabel();
   }
-  getSeismograms() :Array<miniseed.model.Trace> {
+  getSeismograms() :Array<Trace> {
     return this.traces;
   }
   /** can append single seismogram segment or an array of segments. */
-  _internalAppend(seismogram: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram| miniseed.model.Trace ) :void {
+  _internalAppend(seismogram: Array<Seismogram> | Seismogram| Trace ) :void {
     if (Array.isArray(seismogram)) {
       for(let s of seismogram) {
         this._internalAppend(s);
       }
     } else {
-      this.traces.push(miniseed.model.ensureIsTrace(seismogram));
+      this.traces.push(ensureIsTrace(seismogram));
     }
   }
   /** appends the seismogram(s) as separate time series. */
-  append(seismogram: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram) {
+  append(seismogram: Array<Seismogram> | Seismogram) {
     this._internalAppend(seismogram);
     this.calcScaleDomain();
     if ( ! this.beforeFirstDraw) {

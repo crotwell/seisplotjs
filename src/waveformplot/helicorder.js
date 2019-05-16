@@ -1,6 +1,7 @@
 // @flow
 
 import {
+    moment,
     d3,
     miniseed,
     createPlotsBySelectorPromise,
@@ -10,12 +11,10 @@ import {
 
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
-import * as model from '../model/index';
-import { Seismogram, Trace } from '../model/seismogram';
+import { Seismogram, Trace } from './seismogram';
 import { CanvasSeismograph } from './canvasSeismograph';
 import { SeismographConfig } from './seismographconfig';
 
-const moment = miniseed.model.moment;
 
 export class Helicorder {
   seismographArray: Array<CanvasSeismograph>;

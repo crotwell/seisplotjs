@@ -1,7 +1,7 @@
 // @flow
-import * as model from '../model/index';
+import {Seismogram, Trace} from './seismogram';
 
-export function taper(seis :model.Seismogram, width :number = 0.05, taperType :string = HANNING) :model.Seismogram {
+export function taper(seis :Seismogram, width :number = 0.05, taperType :string = HANNING) :Seismogram {
   if (width > 0.5) {
     throw new Error("Taper width cannot be larger than 0.5, width="+width);
   }
