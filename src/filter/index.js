@@ -2,8 +2,8 @@
 
 import * as OregonDSPTop from 'oregondsp';
 
-import {Seismogram, Trace} from './seismogram';
-import {InstrumentSensitivity} from './stationxml';
+import {Seismogram, Trace} from '../seismogram';
+import {InstrumentSensitivity} from '../stationxml';
 
 import * as transfer  from './transfer';
 import * as taper  from './taper';
@@ -15,7 +15,7 @@ export const createComplex = transfer.createComplex;
 
 let OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
-export { OregonDSP, model, taper, transfer, hilbert, envelope,
+export { OregonDSP, taper, transfer, hilbert, envelope,
   calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult,
   rotate, vectorMagnitude };
 

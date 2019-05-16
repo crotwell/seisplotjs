@@ -19,7 +19,7 @@ import * as sacPoleZero    from './sacPoleZero';
 import * as seedcodec      from './seedcodec';
 import * as seedlink       from './seedlink';
 import * as seismogram     from './seismogram';
-import * as stationxml     from './stationxml';'
+import * as stationxml     from './stationxml';
 import * as traveltime     from './traveltime';
 import * as util      from './util';
 import * as waveformplot   from './waveformplot/index';
@@ -30,16 +30,22 @@ import RSVP from 'rsvp';
 
 
 /* reexport */
-export { distaz,
+export { datalink,
+         distaz,
          fdsnevent,
          fdsnstation,
          fdsndataselect,
          filter,
+         knownDataCenters,
          miniseed,
-         model,
+         mseedarchive,
+         quakeml,
+         ringserverweb,
+         sacPoleZero,
          seedcodec,
-         datalink,
          seedlink,
+         seismogram,
+         stationxml,
          traveltime,
          util,
          waveformplot,

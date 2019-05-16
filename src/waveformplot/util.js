@@ -2,14 +2,15 @@
 
 import * as dataselect from '../fdsndataselect';
 import * as miniseed from '../miniseed';
+import {Seismogram, Trace} from '../seismogram';
 import * as d3 from 'd3';
 let RSVP = dataselect.RSVP;
-const moment = miniseed.model.moment;
+import  {moment} from '../util';
 
 export { dataselect, miniseed, d3, RSVP, moment };
 
 export type PlotDataType = {
-  "segments": Array<Array<miniseed.model.Seismogram>>,
+  "segments": Array<Array<Seismogram>>,
   "startDate": moment,
   "endDate": moment,
   "request": dataselect.DataSelectQuery,
@@ -125,7 +126,7 @@ export function calcStartEndDates(start?: moment, end?: moment, duration?: numbe
 export type TimeWindow = {start: moment, end: moment};
 import type {TimeRangeType} from './chooser';
 
-export function findStartEnd(data: Array<miniseed.model.Trace> | Array<miniseed.model.Seismogram> | miniseed.model.Seismogram, accumulator?: TimeRangeType) :TimeRangeType {
+export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram, accumulator?: TimeRangeType) :TimeRangeType {
     let out :TimeRangeType;
     if ( ! accumulator && ! data) {
       throw new Error("data and accumulator are not defined");
@@ -153,12 +154,12 @@ export function findStartEnd(data: Array<miniseed.model.Trace> | Array<miniseed.
     return out;
   }
 
-export function findMinMax(data: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram | miniseed.model.Trace, minMaxAccumulator ?: Array<number>) :Array<number> {
+export function findMinMax(data: Array<Seismogram> | Seismogram | Trace, minMaxAccumulator ?: Array<number>) :Array<number> {
     if ( Array.isArray(data)) {
        for(let i=0; i< data.length; i++) {
          minMaxAccumulator = findMinMax(data[i], minMaxAccumulator);
        }
-    } else if (data instanceof miniseed.model.Trace) {
+    } else if (data instanceof Trace) {
       return findMinMax(data.seisArray, minMaxAccumulator);
     } else {
        // assume single segment object

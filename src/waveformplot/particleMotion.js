@@ -1,14 +1,15 @@
 // @flow
 
 import {
+    moment,
     d3,
     miniseed,
     createPlotsBySelectorPromise,
     findMinMax
   } from './util';
 
-const moment = miniseed.model.moment;
 import type { MarginType } from './waveformplot';
+import {Seismogram, Trace} from '../seismogram';
 
 export function createParticleMotionBySelector(selector: string) :void {
     createPlotsBySelectorPromise(selector)
@@ -28,7 +29,7 @@ export function createParticleMotionBySelector(selector: string) :void {
     });
   }
 
-function addDivForParticleMotion(sa: Array<miniseed.model.Seismogram>, sb: Array<miniseed.model.Seismogram>, svgParent: any, startDate: moment, endDate: moment) :void {
+function addDivForParticleMotion(sa: Array<Seismogram>, sb: Array<Seismogram>, svgParent: any, startDate: moment, endDate: moment) :void {
   svgParent.append("h5").text(sa[0].chanCode+" "+sb[0].chanCode);
   let svgDiv = svgParent.append("div");
   svgDiv.classed(sa[0].chanCode+" "+sb[0].chanCode, true);
@@ -42,7 +43,7 @@ function addDivForParticleMotion(sa: Array<miniseed.model.Seismogram>, sb: Array
 /** Particle motion. */
 export class ParticleMotion {
   plotId: number;
-  segments: Array<miniseed.model.Seismogram>;
+  segments: Array<Seismogram>;
   width: number;
   height: number;
   outerWidth: number;
@@ -65,7 +66,7 @@ export class ParticleMotion {
   svgParent: any;
   g: any;
   static _lastID: number;
-  constructor(inSvgParent: any, inSegments: Array<miniseed.model.Seismogram>, plotStartDate: moment, plotEndDate: moment) :void {
+  constructor(inSvgParent: any, inSegments: Array<Seismogram>, plotStartDate: moment, plotEndDate: moment) :void {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
     if (inSegments.length != 2) {throw new Error("inSegments should be lenght 2 but was "+inSegments.length);}
     this.plotId = ++ParticleMotion._lastID;
@@ -117,7 +118,7 @@ export class ParticleMotion {
     }
     return false;
   }
-  drawParticleMotion(segA: miniseed.model.Seismogram, segB: miniseed.model.Seismogram) {
+  drawParticleMotion(segA: Seismogram, segB: Seismogram) {
     let mythis = this;
     this.g.selectAll("g.particleMotion").remove();
     let lineG = this.g.append("g").classed("particleMotion", true);

@@ -1,10 +1,10 @@
 // @flow
 
 import { moment } from 'moment';
-import { Quake, Origin, Magnitude, Arrival, Pick } from 'quakeml'
+import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml'
 
 // special due to flow
-import {checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 
 import RSVP from 'rsvp';

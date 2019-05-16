@@ -17,8 +17,8 @@ import {
   } from './util';
 import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
-import {Seismogram, Trace } from './seismogram';
-import {InstrumentSensitivity} from './stationxml';
+import {Seismogram, Trace, ensureIsTrace } from '../seismogram';
+import {InstrumentSensitivity} from '../stationxml';
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
 import {multiFormatHour,

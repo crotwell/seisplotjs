@@ -11,7 +11,7 @@ import {
 
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
-import { Seismogram, Trace } from './seismogram';
+import { Seismogram, Trace } from '../seismogram';
 import { CanvasSeismograph } from './canvasSeismograph';
 import { SeismographConfig } from './seismographconfig';
 

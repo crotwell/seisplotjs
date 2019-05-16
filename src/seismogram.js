@@ -1,7 +1,7 @@
 // @flow
 
 import { moment, checkStringOrDate, hasArgs, hasNoArgs, isStringArg } from './util';
-import * as miniseed from '../miniseed';
+import * as miniseed from './miniseed';
 
 /**
 * A Seismogram object.

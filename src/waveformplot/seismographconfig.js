@@ -1,9 +1,9 @@
 //@flow
 
 import type { TimeRangeType } from './chooser';
-import {Seismogram, Trace} from './seismogram';
-import {Channel, InstrumentSensitivity} from './stationxml';
-import {Quake} from './quakeml';
+import {Seismogram, Trace} from '../seismogram';
+import {Channel, InstrumentSensitivity} from '../stationxml';
+import {Quake} from '../quakeml';
 import { d3, moment } from './util';
 
 export type MarkerType = {

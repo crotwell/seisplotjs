@@ -7,7 +7,7 @@ RSVP.on('error', function(reason) {
 });
 
 import moment from 'moment';
-import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain}
+import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
 
 // special due to flow
 import {checkProtocol, createComplex, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';

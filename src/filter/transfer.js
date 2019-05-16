@@ -2,9 +2,9 @@
 
 import * as OregonDSPTop from 'oregondsp';
 import { calcDFT, inverseDFT } from './index';
-import {Seismogrm, Trace} from './seismogram';
-import { SacPoleZero } from './sacPoleZero';
-import {Response, PolesZeros } from './stationxml';
+import {Seismogrm, Trace} from '../seismogram';
+import { SacPoleZero } from '../sacPoleZero';
+import {Response, PolesZeros } from '../stationxml';
 import Qty from 'js-quantities';
 
 

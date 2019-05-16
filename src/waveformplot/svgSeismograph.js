@@ -16,8 +16,8 @@ import {
     findMinMax
   } from './util';
 import SeismographConfig from './seismographconfig';
-import {Seismogram, Trace, ensureIsTrace } from './seismogram';
-import {InstrumentSensitivity} from './stationxml';
+import {Seismogram, Trace, ensureIsTrace } from '../seismogram';
+import {InstrumentSensitivity} from '../stationxml';
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
 import {multiFormatHour,

@@ -19,7 +19,8 @@ import SeismographConfig from './seismographconfig';
 import type { PlotDataType } from './util';
 import type { TimeRangeType } from './chooser';
 import type { MarginType, MarkerType } from './seismographconfig';
-import * as model from '../model/index';
+import {Seismogram,Trace} from '../seismogram';
+import {InstrumentSensitivity} from '../stationxml';
 import {multiFormatHour, formatMillisecond, formatSecond, formatMinute, formatHour, formatDay, formatMonth, formatYear} from './seismographconfig';
 
 
@@ -78,7 +79,7 @@ export class Seismograph {
   ySublabel: string;
   ySublabelTrans: number;
   svgParent: any;
-  segments: Array<miniseed.model.Seismogram>;
+  segments: Array<Seismogram>;
   markers: Array<MarkerType>;
   markerTextOffset: number;
   markerTextAngle: number;
@@ -101,7 +102,7 @@ export class Seismograph {
   yScaleRmean: any;
   doRMean: boolean;
   doGain: boolean;
-  instrumentSensitivity: miniseed.model.InstrumentSensitivity;
+  instrumentSensitivity: InstrumentSensitivity;
   lineFunc: any;
   zoom: any;
   xAxis: any;
@@ -109,7 +110,7 @@ export class Seismograph {
   g: any;
   throttleRescale: any;
   throttleResize: any;
-  constructor(inSvgParent :any, inSegments: Array<miniseed.model.Seismogram>, plotStartDate :moment, plotEndDate :moment) {
+  constructor(inSvgParent :any, inSegments: Array<Seismogram>, plotStartDate :moment, plotEndDate :moment) {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
@@ -246,7 +247,7 @@ export class Seismograph {
             .attr("width", this.width)
             .attr("height", this.height);
   }
-  drawSegments(segments: Array<miniseed.model.Seismogram>, svgG: any) :void {
+  drawSegments(segments: Array<Seismogram>, svgG: any) :void {
     let drawG = svgG;
     let mythis = this;
 
@@ -276,7 +277,7 @@ export class Seismograph {
     return (domain[1].getTime()-domain[0].getTime())/1000 / (range[1]-range[0]);
   }
 
-  segmentDrawLine(seg: miniseed.model.Seismogram, xScale: any) :void {
+  segmentDrawLine(seg: Seismogram, xScale: any) :void {
     let secondsPerPixel = this.calcSecondsPerPixel(xScale);
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
     this.lineFunc.x(function(d) { return xScale(d.time); });
@@ -724,11 +725,11 @@ export class Seismograph {
     }
     this.rescaleYAxis();
   }
-  getSeismograms() :Array<miniseed.model.Seismogram> {
+  getSeismograms() :Array<Seismogram> {
     return this.segments;
   }
   /** can append single seismogram segment or an array of segments. */
-  _internalAppend(seismogram: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram) :void {
+  _internalAppend(seismogram: Array<Seismogram> | Seismogram) :void {
     if (Array.isArray(seismogram)) {
       for(let s of seismogram) {
         this._internalAppend(s);
@@ -741,7 +742,7 @@ export class Seismograph {
     }
   }
   /** appends the seismogram(s) as separate time series. */
-  append(seismogram: Array<miniseed.model.Seismogram> | miniseed.model.Seismogram) {
+  append(seismogram: Array<Seismogram> | Seismogram) {
     this._internalAppend(seismogram);
     this.calcScaleDomain();
     if ( ! this.beforeFirstDraw) {

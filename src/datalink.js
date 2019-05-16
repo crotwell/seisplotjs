@@ -9,7 +9,7 @@
  * http://www.seis.sc.edu
  */
 
-import {dataViewToString} from './util';
+import {dataViewToString, stringify} from './util';
 import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
@@ -68,7 +68,7 @@ export class DataLinkConnection {
         that.handle(event);
       };
       webSocket.onerror = function(event) {
-        that.handleError(new Error(""+miniseed.model.stringify(event)));
+        that.handleError(new Error(""+stringify(event)));
         reject(event);
       };
       webSocket.onclose = function() {
@@ -123,7 +123,7 @@ export class DataLinkConnection {
           that.serverId = replyMsg;
           return replyMsg;
         } else {
-          throw new Error("not ID line: "+miniseed.model.stringify(replyMsg));
+          throw new Error("not ID line: "+stringify(replyMsg));
         }
     });
   }
