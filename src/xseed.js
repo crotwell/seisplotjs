@@ -5,47 +5,47 @@
  * http://www.seis.sc.edu
  */
 
-import * as seedcodec from 'seisplotjs-seedcodec';
-import * as model from 'seisplotjs-model';
-//import * as CBOR from 'cbor.js';
-import * as CRC from 'crc-32';
+import * as seedcodec from './seedcodec';
+import {Seismogram} from './seismogram';
+import * as CRC32 from 'crc-32';
 
-/* re-export */
-export { seedcodec, model };
 
 export const UNKNOWN_DATA_VERSION = 0;
-export const CRC_OFFSET = 29;
-export const FIXED_HEADER_SIZE=38;
+export const CRC_OFFSET = 28;
+export const FIXED_HEADER_SIZE=40;
 export const FDSN_PREFIX = 'FDSN';
 
-/** parse arrayBuffer into an array of DataRecords. */
-export function parseDataRecords(arrayBuffer) {
+/** parse arrayBuffer into an array of XSeedRecords. */
+export function parseXSeedRecords(arrayBuffer) {
   let dataRecords = [];
   let offset = 0;
   while (offset < arrayBuffer.byteLength) {
     let dataView = new DataView(arrayBuffer, offset);
-    let dr = new DataRecord(dataView);
+    if (! (dataView.getUint8(0) === 77 && dataView.getUint8(1) === 83)) {
+      throw new Error(`First byte must be M=77 S=83 at offset=${offset}, but was ${dataView.getUint8(0)} ${dataView.getUint8(1)}`);
+    }
+    let dr = new XSeedRecord(dataView);
     dataRecords.push(dr);
-    offset += dr.getRecordSize();
+    offset += dr.getSize();
   }
   return dataRecords;
 }
 
-/** Represents a SEED Data Record, with header, extras and data. 
+/** Represents a xSEED Data Record, with header, extras and data.
   */
-export class DataRecord {
+export class XSeedRecord {
   constructor(dataView) {
     if ( ! dataView) {
       // empty record
-      this.header = new DataHeader();
+      this.header = new XSeedHeader();
       return;
     }
-    this.header = new DataHeader(dataView);
+    this.header = new XSeedHeader(dataView);
     let extraDataView = new DataView(dataView.buffer,
                              dataView.byteOffset+this.header.getSize(),
                              this.header.extraHeadersLength);
     this.extraHeaders = parseExtraHeaders(extraDataView);
-    this.data = new DataView(dataView.buffer, 
+    this.data = new DataView(dataView.buffer,
                              dataView.byteOffset+this.header.getSize(),
                              this.header.dataLength);
     this.decompData = undefined;
@@ -82,14 +82,14 @@ export class DataRecord {
     }
     offset += this.data.byteLength;
 // CRC not yet working
-    let crc = CRC.buf(new Uint8Array(dataView.buffer, dataView.offset, dataView.offset+offset));
-console.log("CRC: "+crc);
+    let crc = CRC32.buf(new Uint8Array(dataView.buffer, dataView.offset, dataView.offset+offset));
+console.log("CRC32: "+crc);
     dataView.setUint32(CRC_OFFSET, crc, true);
     return offset;
   }
 }
 
-export class DataHeader {
+export class XSeedHeader {
 
   constructor(dataView) {
     if ( !dataView) {
@@ -97,54 +97,58 @@ export class DataHeader {
       this.recordIndicator = 'MS';
       this.formatVersion = 3;
       this.flags = 0;
+      this.nanosecond=0;
       this.year = 1970;
       this.dayOfYear=1;
       this.hour=0;
       this.minute=0;
       this.second=0;
-      this.nanosecond=0;
-      this.sampleRatePeriod = 1;
       this.encoding = 3; // 32 bit ints
-      this.publicationVersion = UNKNOWN_DATA_VERSION;
+      this.sampleRatePeriod = 1;
       this.numSamples = 0;
       this.crc = 0;
+      this.publicationVersion = UNKNOWN_DATA_VERSION;
       this.identifierLength = 0;
-      this.identifier = "";
       this.extraHeadersLength = 2;
+      this.identifier = "";
+      this.extraHeaders = {};
       this.dataLength = 0;
       return;
     }
     this.recordIndicator = makeString(dataView, 0,2);
-    if (this.recordIndicator != 'MS') {
+    if ( ! this.recordIndicator === 'MS') {
       throw new Error("First 2 bytes of record should be MS but found "+this.recordIndicator);
     }
     this.formatVersion = dataView.getUint8(2);
+    if (this.formatVersion != 3) {
+      throw new Error("Format Version should be 3, "+this.formatVersion);
+    }
     this.flags = dataView.getUint8(3);
     const headerLittleEndian = true;
-    this.year = dataView.getInt16(4, headerLittleEndian);
+    this.nanosecond = dataView.getInt32(4, headerLittleEndian);
+    this.year = dataView.getInt16(8, headerLittleEndian);
     if (checkByteSwap(this.year)) {
       throw new Error("Looks like wrong byte order, year="+this.year);
     }
-    this.dayOfYear = dataView.getInt16(6, headerLittleEndian);
-    this.hour = dataView.getUint8(8);
-    this.minute = dataView.getUint8(9);
-    this.second = dataView.getUint8(10);
-    this.nanosecond = dataView.getInt32(11, headerLittleEndian);
-    this.sampleRatePeriod = dataView.getFloat64(15, headerLittleEndian);
+    this.dayOfYear = dataView.getInt16(10, headerLittleEndian);
+    this.hour = dataView.getUint8(12);
+    this.minute = dataView.getUint8(13);
+    this.second = dataView.getUint8(14);
+    this.encoding = dataView.getUint8(15);
+    this.sampleRatePeriod = dataView.getFloat64(16, headerLittleEndian);
     if (this.sampleRatePeriod < 0) {
       this.sampleRate = 1 / this.sampleRatePeriod;
     } else {
       this.sampleRate = this.sampleRatePeriod;
     }
-    this.encoding = dataView.getUint8(23);
-    this.publicationVersion = dataView.getUint8(24);
-    this.numSamples = dataView.getUint32(25, headerLittleEndian);
-    this.crc = dataView.getUint32(29, headerLittleEndian);
+    this.numSamples = dataView.getUint32(24, headerLittleEndian);
+    this.crc = dataView.getUint32(28, headerLittleEndian);
+    this.publicationVersion = dataView.getUint8(32);
     this.identifierLength = dataView.getUint8(33);
     this.extraHeadersLength = dataView.getUint16(34, headerLittleEndian);
-    this.dataLength = dataView.getUint16(36, headerLittleEndian);
-    this.identifier = makeString(dataView, 38, this.identifierLength);
-
+    this.dataLength = dataView.getUint32(36, headerLittleEndian);
+    this.identifier = makeString(dataView, 40, this.identifierLength);
+    // lazily extract json and data
 
     this.start = new Date(Date.UTC(this.year, 0, this.dayOfYear, this.hour, this.minute, this.second, Math.round(this.nanosecond / 1000000)));
     this.end = this.timeOfSample(this.numSamples-1);
@@ -212,14 +216,13 @@ export class DataHeader {
 }
 
 export function parseExtraHeaders(dataView) {
+  if (dataView.byteLength === 0) {
+    return {};
+  }
   let firstChar = dataView.getUint8(0);
-  if (firstChar == 123) {
-    // looks like json, '{' is ascii 123 
+  if (firstChar === 123) {
+    // looks like json, '{' is ascii 123
     return JSON.parse(makeString(dataView, 0, dataView.byteLength));
-  } else if (firstChar & (7 << 5) === ( 5 << 5 )) {
-    // looks like cbor, first 3 bits are binary 5, ie 101
-//    return CBOR.decode(dataView.buffer.slice(dataView.offset, dataView.offset+this.extraHeaders.length));
-    throw new Error("cbor not yet impl");
   } else {
     throw new Error("do not understand extras with first char val: "+firstChar+" "+(firstChar===123));
   }
@@ -235,13 +238,15 @@ export function padZeros(val, len) {
 
 function makeString(dataView, offset, length) {
   let out = "";
+  let dbg = `dataview ${offset} ${length}: `;
   for (let i=offset; i<offset+length; i++) {
     let charCode = dataView.getUint8(i);
     if (charCode > 31) {
       out += String.fromCharCode(charCode);
+      dbg += ' '+charCode;
     }
   }
-  return out.trim();
+  return out.trim()+`  ${dbg}`;
 }
 
 
@@ -253,13 +258,13 @@ function checkByteSwap(year) {
 export function areContiguous(dr1, dr2) {
     let h1 = dr1.header;
     let h2 = dr2.header;
-    return h1.end.getTime() < h2.start.getTime() 
+    return h1.end.getTime() < h2.start.getTime()
         && h1.end.getTime() + 1000*1.5/h1.sampleRate > h2.start.getTime();
 }
 
-/** concatentates a sequence of DataRecords into a single seismogram object.
+/** concatentates a sequence of XSeedRecords into a single seismogram object.
   * Assumes that they are all contiguous and in order. Header values from the first
-  * DataRecord are used. */
+  * XSeedRecord are used. */
 export function createSeismogram(contig) {
   let y = [];
   for (let i=0; i<contig.length; i++) {
@@ -278,9 +283,9 @@ export function createSeismogram(contig) {
 
 
 /**
- * Merges data records into a arrary of seismogram segment objects 
+ * Merges data records into a arrary of seismogram segment objects
  * containing the data as a float array, y. Each seismogram has
- * sampleRate, start, end, netCode, staCode, locCode, chanCode as well 
+ * sampleRate, start, end, netCode, staCode, locCode, chanCode as well
  * as the function timeOfSample(integer) set.
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
@@ -343,7 +348,7 @@ export function byChannel(drList) {
     let currDR = drList[i];
     key = currDR.codes();
     if (! out[key]) {
-      out[key] = [currDR]; 
+      out[key] = [currDR];
     } else {
       out[key].push(currDR);
     }
@@ -362,7 +367,7 @@ export function convertMS2toMS3(mseed2) {
 }
 
 export function convertMS2Record(ms2record) {
-  let ms3Header = new DataHeader();
+  let ms3Header = new XSeedHeader();
   let ms3Extras = {};
   let ms2H = ms2record.header;
   ms3Header.flags = (ms2H.activityFlags & 1) *2
@@ -375,7 +380,7 @@ export function convertMS2Record(ms2record) {
   ms3Header.second = ms2H.startBTime.sec;
   ms3Header.nanosecond = ms2H.startBTime.tenthMilli*100000;
 // maybe can do better from factor and multiplier?
-  ms3Header.sampleRatePeriod = ms2H.sampleRate >= 1 ? ms2H.sampleRate : (-1.0 / ms2H.sampleRate);  
+  ms3Header.sampleRatePeriod = ms2H.sampleRate >= 1 ? ms2H.sampleRate : (-1.0 / ms2H.sampleRate);
   ms3Header.encoding = ms2record.header.encoding;
   ms3Header.publicationVersion = UNKNOWN_DATA_VERSION;
   ms3Header.dataLength = ms2record.data.byteLength;
@@ -421,7 +426,7 @@ export function convertMS2Record(ms2record) {
     }
   }
   ms3Header.extraHeadersLength = JSON.stringify(ms3Extras).length;
-  let out = new DataRecord();
+  let out = new XSeedRecord();
   out.header = ms3Header;
   out.extraHeaders = ms3Extras;
   // need to convert if not steim1 or 2

@@ -23,6 +23,7 @@ import * as stationxml     from './stationxml';
 import * as traveltime     from './traveltime';
 import * as util      from './util';
 import * as waveformplot   from './waveformplot/index';
+import * as xseed      from './xseed';
 
 
 const d3 = waveformplot.d3;
@@ -50,6 +51,7 @@ export { datalink,
          traveltime,
          util,
          waveformplot,
+         xseed,
          d3,
          moment,
          RSVP };
