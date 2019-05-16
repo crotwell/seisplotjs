@@ -28,3 +28,32 @@ export function dataViewToString(dataView :DataView) {
   }
   return out;
 }
+
+
+/** String representation of input. THis is kind of dumb but makes
+ *  flow happier.
+ */
+export function stringify(value: mixed): string {
+  if (typeof value === 'string') {
+    return value;
+  } else if (typeof value === 'number') {
+    return value.toString();
+  } else if (typeof value === 'boolean') {
+    return value ? "true" : "false";
+  } else if (typeof value === 'undefined') {
+    return "undefined";
+  } else if (typeof value === 'function') {
+    return "function "+value.name;
+  } else if (typeof value === 'object') {
+    if (value) {
+        return value.toString();
+    } else {
+      return "null";
+    }
+// symbol not yet supported by flow
+//  } else if (typeof value === 'symbol') {
+//    return value.toString();
+  } else {
+    return "<unknown"+(typeof value)+"???>";
+  }
+}

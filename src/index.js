@@ -16,7 +16,7 @@ import * as mseedarchive   from './mseedarchive';
 import * as ringserverweb  from './ringserver-web';
 import * as seedcodec      from './seedcodec';
 import * as seedlink       from './seedlink';
-import * as traveltime     from './traveltime/traveltime';
+import * as traveltime     from './traveltime';
 import * as util      from './util';
 import * as waveformplot   from './waveformplot/index';
 

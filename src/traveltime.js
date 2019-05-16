@@ -1,8 +1,8 @@
 // @flow
 
-import checkProtocol from '../checkProtocol.js';
+import checkProtocol from './checkProtocol.js';
 import RSVP from 'rsvp';
-import {hasArgs, hasNoArgs, isStringArg, isNumArg, stringify, isDef } from './util';
+import {hasArgs, stringify, isDef } from './util';
 
 export let IRIS_HOST = "service.iris.edu";
 
