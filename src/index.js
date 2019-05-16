@@ -5,8 +5,8 @@
  */
 
 import * as distaz         from './distaz';
-import * as fdsnevent      from './fdsnevent/fdsnevent';
-import * as fdsnstation    from './fdsnstation/fdsnstation';
+import * as fdsnevent      from './fdsnevent';
+import * as fdsnstation    from './fdsnstation';
 import * as fdsndataselect from './fdsndataselect';
 import * as filter         from './filter/index';
 import * as miniseed       from './miniseed';
