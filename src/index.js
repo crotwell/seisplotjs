@@ -16,9 +16,11 @@ import * as seedlink       from './seedlink/index';
 import * as datalink       from './seedlink/datalink';
 import * as traveltime     from './traveltime/traveltime';
 import * as waveformplot   from './waveformplot/index';
-const d3 = waveformplot.d3;
-const moment = model.moment;
-const RSVP = fdsndataselect.RSVP;
+
+import d3 from 'd3';
+import moment from 'moment';
+import RSVP from 'rsvp';
+
 
 /* reexport */
 export { distaz,

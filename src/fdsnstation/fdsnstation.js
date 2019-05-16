@@ -8,13 +8,10 @@ RSVP.on('error', function(reason) {
 
 import checkProtocol from '../checkProtocol.js';
 import * as model from '../model';
-import * as util from './util';
 import moment from 'moment';
 
 // special due to flow
 import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from '../model';
-
-export { RSVP, model };
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';
@@ -450,43 +447,43 @@ export class StationQuery {
     * returned is set. This is a crude, coarse check to make sure
     * the client doesn't ask for EVERYTHING the server has. */
   isSomeParameterSet(): boolean {
-    return util._isDef(this._networkCode) ||
-    util._isDef(this._stationCode) ||
-    util._isDef(this._locationCode) ||
-    util._isDef(this._channelCode) ||
-    util._isDef(this._startTime) ||
-    util._isDef(this._endTime) ||
-    util._isDef(this._startBefore) ||
-    util._isDef(this._endBefore) ||
-    util._isDef(this._startAfter) ||
-    util._isDef(this._endAfter) ||
-    util._isDef(this._minLat) ||
-    util._isDef(this._maxLat) ||
-    util._isDef(this._minLon) ||
-    util._isDef(this._maxLon) ||
-    util._isDef(this._latitude) ||
-    util._isDef(this._longitude) ||
-    util._isDef(this._minRadius) ||
-    util._isDef(this._maxRadius) ||
-    util._isDef(this._updatedAfter);
+    return _idDef(this._networkCode) ||
+    _idDef(this._stationCode) ||
+    _idDef(this._locationCode) ||
+    _idDef(this._channelCode) ||
+    _idDef(this._startTime) ||
+    _idDef(this._endTime) ||
+    _idDef(this._startBefore) ||
+    _idDef(this._endBefore) ||
+    _idDef(this._startAfter) ||
+    _idDef(this._endAfter) ||
+    _idDef(this._minLat) ||
+    _idDef(this._maxLat) ||
+    _idDef(this._minLon) ||
+    _idDef(this._maxLon) ||
+    _idDef(this._latitude) ||
+    _idDef(this._longitude) ||
+    _idDef(this._minRadius) ||
+    _idDef(this._maxRadius) ||
+    _idDef(this._updatedAfter);
   }
 
   /** Parses a FDSNStationXML Network xml element into a Network object.
    * @param xml the network xml Element
   */
   convertToNetwork(xml: Element): model.Network {
-    let out = new model.Network(util._grabAttribute(xml, "code"))
-    out.startDate = util._grabAttribute(xml, "startDate");
-    const rs = util._grabAttribute(xml, "restrictedStatus");
+    let out = new model.Network(_grabAttribute(xml, "code"))
+    out.startDate = _grabAttribute(xml, "startDate");
+    const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
-    const desc = util._grabFirstElText(xml, 'Description');
+    const desc = _grabFirstElText(xml, 'Description');
     if (desc) {out.description = desc;}
-    if (util._grabAttribute(xml, "endDate")) {
-      out.endDate = util._grabAttribute(xml, "endDate");
+    if (_grabAttribute(xml, "endDate")) {
+      out.endDate = _grabAttribute(xml, "endDate");
     }
     let totSta = xml.getElementsByTagNameNS(STAML_NS, "TotalNumberStations");
     if (totSta && totSta.length >0) {
-      out.totalNumberStations = parseInt(util._grabFirstElText(xml, "TotalNumberStations"));
+      out.totalNumberStations = parseInt(_grabFirstElText(xml, "TotalNumberStations"));
     }
     let staArray = xml.getElementsByTagNameNS(STAML_NS, "Station");
     let stations = [];
@@ -501,16 +498,16 @@ export class StationQuery {
    * @param xml the station xml Element
   */
   convertToStation(network: model.Network, xml: Element): model.Station {
-    let out = new model.Station(network, util._grabAttribute(xml, "code"))
-    out.startDate = util._grabAttribute(xml, "startDate");
-    const rs = util._grabAttribute(xml, "restrictedStatus");
+    let out = new model.Station(network, _grabAttribute(xml, "code"))
+    out.startDate = _grabAttribute(xml, "startDate");
+    const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
-    out.latitude = util._grabFirstElFloat(xml, 'Latitude');
-    out.longitude = util._grabFirstElFloat(xml, 'Longitude');
-    out.elevation = util._grabFirstElFloat(xml, 'Elevation');
-    out.name = util._grabFirstElText(util._grabFirstEl(xml, 'Site'), 'Name');
-    if (util._grabAttribute(xml, "endDate")) {
-      out.endDate = util._grabAttribute(xml, "endDate");
+    out.latitude = _grabFirstElFloat(xml, 'Latitude');
+    out.longitude = _grabFirstElFloat(xml, 'Longitude');
+    out.elevation = _grabFirstElFloat(xml, 'Elevation');
+    out.name = _grabFirstElText(_grabFirstEl(xml, 'Site'), 'Name');
+    if (_grabAttribute(xml, "endDate")) {
+      out.endDate = _grabAttribute(xml, "endDate");
     }
     let chanArray = xml.getElementsByTagNameNS(STAML_NS, "Channel");
     let channels = [];
@@ -525,19 +522,19 @@ export class StationQuery {
    * @param xml the channel xml Element
   */
   convertToChannel(station: model.Station, xml: Element): model.Channel {
-    let out = new model.Channel(station, util._grabAttribute(xml, "code"), util._grabAttribute(xml, "locationCode"))
-    out.startDate = util._grabAttribute(xml, "startDate");
-    const rs = util._grabAttribute(xml, "restrictedStatus");
+    let out = new model.Channel(station, _grabAttribute(xml, "code"), _grabAttribute(xml, "locationCode"))
+    out.startDate = _grabAttribute(xml, "startDate");
+    const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
-    out.latitude = util._grabFirstElFloat(xml, 'Latitude');
-    out.longitude = util._grabFirstElFloat(xml, 'Longitude');
-    out.elevation = util._grabFirstElFloat(xml, 'Elevation');
-    out.depth = util._grabFirstElFloat(xml, 'Depth');
-    out.azimuth = util._grabFirstElFloat(xml, 'Azimuth');
-    out.dip = util._grabFirstElFloat(xml, 'Dip');
-    out.sampleRate = util._grabFirstElFloat(xml, 'SampleRate');
-    if (util._grabAttribute(xml, "endDate")) {
-      out.endDate = util._grabAttribute(xml, "endDate");
+    out.latitude = _grabFirstElFloat(xml, 'Latitude');
+    out.longitude = _grabFirstElFloat(xml, 'Longitude');
+    out.elevation = _grabFirstElFloat(xml, 'Elevation');
+    out.depth = _grabFirstElFloat(xml, 'Depth');
+    out.azimuth = _grabFirstElFloat(xml, 'Azimuth');
+    out.dip = _grabFirstElFloat(xml, 'Dip');
+    out.sampleRate = _grabFirstElFloat(xml, 'SampleRate');
+    if (_grabAttribute(xml, "endDate")) {
+      out.endDate = _grabAttribute(xml, "endDate");
     }
     let responseXml = xml.getElementsByTagNameNS(STAML_NS, 'Response');
     if (responseXml && responseXml.length > 0 ) {
@@ -574,10 +571,10 @@ export class StationQuery {
    * @param xml the InstrumentSensitivity xml Element
   */
   convertToInstrumentSensitivity(xml: Element): model.InstrumentSensitivity {
-    let sensitivity: number = util._grabFirstElFloat(xml, 'Value');
-    let frequency = util._grabFirstElFloat(xml, 'Frequency');
-    let inputUnits = util._grabFirstElText(util._grabFirstEl(xml, 'InputUnits'), 'Name');
-    let outputUnits = util._grabFirstElText(util._grabFirstEl(xml, 'OutputUnits'), 'Name');
+    let sensitivity: number = _grabFirstElFloat(xml, 'Value');
+    let frequency = _grabFirstElFloat(xml, 'Frequency');
+    let inputUnits = _grabFirstElText(_grabFirstEl(xml, 'InputUnits'), 'Name');
+    let outputUnits = _grabFirstElText(_grabFirstEl(xml, 'OutputUnits'), 'Name');
     return new model.InstrumentSensitivity(sensitivity, frequency, inputUnits, outputUnits);
   }
 
@@ -591,29 +588,29 @@ export class StationQuery {
       throw new Error("Stage element has no child elements");
     }
     let filter: model.AbstractFilterType | null = null;
-    let inputUnits = util._grabFirstElText(util._grabFirstEl(stageXml, 'InputUnits'), 'Name');
-    let outputUnits = util._grabFirstElText(util._grabFirstEl(stageXml, 'OutputUnits'), 'Name');
+    let inputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'InputUnits'), 'Name');
+    let outputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'OutputUnits'), 'Name');
     if (subEl.localName == 'PolesZeros') {
       filter = new model.PolesZeros(inputUnits, outputUnits);
-      filter.pzTransferFunctionType = util._grabFirstElText(stageXml, 'PzTransferFunctionType');
-      filter.normalizationFactor = util._grabFirstElFloat(stageXml, 'NormalizationFactor');
-      filter.normalizationFrequency = util._grabFirstElFloat(stageXml, 'NormalizationFrequency');
+      filter.pzTransferFunctionType = _grabFirstElText(stageXml, 'PzTransferFunctionType');
+      filter.normalizationFactor = _grabFirstElFloat(stageXml, 'NormalizationFactor');
+      filter.normalizationFrequency = _grabFirstElFloat(stageXml, 'NormalizationFrequency');
       let zeros = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Zero'))
           .map(function(zeroEl) {
-            return model.createComplex(util._grabFirstElFloat(zeroEl, 'Real'),
-                               util._grabFirstElFloat(zeroEl, 'Imaginary'));
+            return model.createComplex(_grabFirstElFloat(zeroEl, 'Real'),
+                               _grabFirstElFloat(zeroEl, 'Imaginary'));
           });
       let poles = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Pole'))
           .map(function(poleEl) {
-            return model.createComplex(util._grabFirstElFloat(poleEl, 'Real'),
-                               util._grabFirstElFloat(poleEl, 'Imaginary'));
+            return model.createComplex(_grabFirstElFloat(poleEl, 'Real'),
+                               _grabFirstElFloat(poleEl, 'Imaginary'));
           });
       filter.zeros = zeros;
       filter.poles = poles;
     } else if (subEl.localName == 'Coefficients') {
       let coeffXml = subEl;
       filter = new model.CoefficientsFilter(inputUnits, outputUnits);
-      filter.cfTransferFunction = util._grabFirstElText(coeffXml, 'CfTransferFunctionType');
+      filter.cfTransferFunction = _grabFirstElText(coeffXml, 'CfTransferFunctionType');
       filter.numerator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Numerator'))
           .map(function(numerEl) {
             return parseFloat(numerEl.textContent);
@@ -627,7 +624,7 @@ export class StationQuery {
     } else if (subEl.localName == 'FIR') {
       let firXml = subEl;
       filter = new model.FIR(inputUnits, outputUnits);
-      filter.symmetry = util._grabFirstElText(firXml, 'Symmetry');
+      filter.symmetry = _grabFirstElText(firXml, 'Symmetry');
       filter.numerator = Array.from(firXml.getElementsByTagNameNS(STAML_NS, 'NumeratorCoefficient'))
           .map(function(numerEl) {
             return parseFloat(numerEl.textContent);
@@ -642,25 +639,25 @@ export class StationQuery {
 
     if (filter) {
       // add description and name if it was there
-      let description = util._grabFirstElText(subEl, 'Description');
+      let description = _grabFirstElText(subEl, 'Description');
       if (description) {
         filter.description = description;
       }
       if (subEl.hasAttribute('name')) {
-        filter.name = util._grabAttribute(subEl, 'name');
+        filter.name = _grabAttribute(subEl, 'name');
       }
     }
-    let decimationXml = util._grabFirstEl(stageXml, 'Decimation');
+    let decimationXml = _grabFirstEl(stageXml, 'Decimation');
     let decimation: model.Decimation | null = null;
     if (decimationXml) {
       decimation = this.convertToDecimation(decimationXml);
     }
-    let gainXml = util._grabFirstEl(stageXml, 'StageGain');
+    let gainXml = _grabFirstEl(stageXml, 'StageGain');
     let gain = null;
     if (gainXml) {
       gain = this.convertToGain(gainXml);
     } else {
-      throw new Error("Did not find Gain in stage number "+stringify(util._grabAttribute(stageXml, "number")));
+      throw new Error("Did not find Gain in stage number "+stringify(_grabAttribute(stageXml, "number")));
     }
     let out = new model.Stage(filter, decimation, gain);
 
@@ -672,11 +669,11 @@ export class StationQuery {
   */
   convertToDecimation(decXml: Element): model.Decimation {
     let out = new model.Decimation();
-    out.inputSampleRate = util._grabFirstElFloat(decXml, 'InputSampleRate');
-    out.factor = util._grabFirstElInt(decXml, 'Factor');
-    out.offset = util._grabFirstElInt(decXml, 'Offset');
-    out.delay = util._grabFirstElFloat(decXml, 'Delay');
-    out.correction = util._grabFirstElFloat(decXml, 'Correction');
+    out.inputSampleRate = _grabFirstElFloat(decXml, 'InputSampleRate');
+    out.factor = _grabFirstElInt(decXml, 'Factor');
+    out.offset = _grabFirstElInt(decXml, 'Offset');
+    out.delay = _grabFirstElFloat(decXml, 'Delay');
+    out.correction = _grabFirstElFloat(decXml, 'Correction');
     return out
   }
 
@@ -685,8 +682,8 @@ export class StationQuery {
   */
   convertToGain(gainXml: Element): model.Gain {
     let out = new model.Gain();
-    out.value = util._grabFirstElFloat(gainXml, 'Value');
-    out.frequency = util._grabFirstElFloat(gainXml, 'Frequency');
+    out.value = _grabFirstElFloat(gainXml, 'Value');
+    out.frequency = _grabFirstElFloat(gainXml, 'Frequency');
     return out;
   }
 
@@ -875,4 +872,72 @@ console.log("204 nodata so return empty xml");
     return url;
   }
 
+}
+
+
+// these are similar methods as in seisplotjs-fdsnstation
+// duplicate here to avoid dependency and diff NS, yes that is dumb...
+
+const _isDef = function(v: mixed) :boolean  %checks {
+  return typeof v !== 'undefined' && v !== null;
+}
+
+const _grabFirstEl = function(xml: Element | null | void, tagName: string) :Element | void {
+  let out = undefined;
+  if (_isDef(xml)) {
+    let el = xml.getElementsByTagName(tagName);
+    if (_isDef(el) && el.length > 0) {
+      out = el.item(0);
+    }
+  }
+  return out;
+}
+
+const _grabFirstElText = function _grabFirstElText(xml: Element | null | void, tagName: string) :string | void {
+  let out = undefined;
+  let el = _grabFirstEl(xml, tagName);
+  if (_isDef(el)) {
+    out = el.textContent;
+  }
+  return out;
+}
+
+const _grabFirstElFloat = function _grabFirstElFloat(xml: Element | null | void, tagName: string) :number | void {
+  let out = undefined;
+  let elText = _grabFirstElText(xml, tagName);
+  if (_isDef(elText)) {
+    out = parseFloat(elText);
+  }
+  return out;
+}
+
+const _grabFirstElInt = function _grabFirstElInt(xml: Element | null | void, tagName: string) :number | void {
+  let out = undefined;
+  let elText = _grabFirstElText(xml, tagName);
+  if (_isDef(elText)) {
+    out = parseInt(elText);
+  }
+  return out;
+}
+
+const _grabAttribute = function _grabAttribute(xml: Element | null | void, tagName: string) :string | void {
+  let out = undefined;
+  if (_isDef(xml)) {
+    let a = xml.getAttribute(tagName);
+    if (_isDef(a)) {
+      out = a;
+    }
+  }
+  return out;
+}
+
+const _grabAttributeNS = function(xml: Element | null | void, namespace: string, tagName: string) :string | void {
+  let out = undefined;
+  if (_isDef(xml)) {
+    let a = xml.getAttributeNS(namespace, tagName);
+    if (_isDef(a)) {
+      out = a;
+    }
+  }
+  return out;
 }

@@ -13,7 +13,6 @@ import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify}
 import * as miniseed from './miniseed';
 import { model } from './miniseed';
 
-export { RSVP, model, miniseed };
 import { moment } from './model';
 
 export class ChannelTimeRange {
