@@ -105,7 +105,7 @@ export class SeismographConfig {
   /** Sets the title as simple string or array of strings. If an array
   then each item will be in a separate tspan for easier formatting.
   */
-  set title(value :string | Array<string>) :Seismograph {
+  set title(value :string | Array<string>) {
     if (Array.isArray(value)) {
       this._title = value;
     } else {
