@@ -6,8 +6,8 @@ RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
-import checkProtocol from '../checkProtocol.js';
-import * as model from '../model';
+import checkProtocol from './checkProtocol.js';
+import * as model from './model';
 import moment from 'moment';
 
 // special due to flow

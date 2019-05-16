@@ -1,8 +1,8 @@
 // @flow
 
-import * as model from '../model';
-import { moment } from '../model';
-import checkProtocol from '../checkProtocol.js';
+import * as model from './model';
+import { moment } from './model';
+import checkProtocol from './checkProtocol.js';
 
 // special due to flow
 import {hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from '../model';
