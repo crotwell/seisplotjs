@@ -68,6 +68,8 @@ export function parseSingleDataRecordHeader(dataView: DataView) :DataHeader {
   let offset = out.blocketteOffset;
   out.blocketteList = [];
   out.recordSize = 4096;
+  out.sampleRate = out.calcSampleRate();
+  out.start = out.startBTime.toMoment();
   for (let i=0; i< out.numBlockettes; i++) {
     let nextOffset = dataView.getUint16(offset+2, headerByteSwap);
     if (nextOffset == 0) {
@@ -84,10 +86,12 @@ export function parseSingleDataRecordHeader(dataView: DataView) :DataHeader {
       out.recordSize = 1 << blockette.dataRecordLengthByte;
       out.encoding = blockette.encoding;
       out.littleEndian = (blockette.wordOrder === 0);
+    } else if(blockette instanceof Blockette1001) {
+      out.startBTime.microsecond = blockette.microsecond;
+    } else if(blockette instanceof Blockette100) {
+      out.sampleRate = blockette.sampleRate;
     }
   }
-  out.sampleRate = out.calcSampleRate();
-  out.start = out.startBTime.toMoment();
   out.end = out.timeOfSample(out.numSamples-1);
   return out;
 }
@@ -106,6 +110,16 @@ export function parseBlockette(dataView :DataView, offset: number, length :numbe
     const dataRecordLengthByte = body.getUint8(6);
     const wordOrder = body.getUint8(5);
     return new Blockette1000(type, body, encoding, dataRecordLengthByte, wordOrder);
+  } else if (type === 1001) {
+    const timeQual = body.getUint8(4);
+    const microsecond = body.getUint8(5);
+    const reserved = body.getUint8(6)
+    const frameCount = body.getUint8(7);
+    return new Blockette1001(type, body, timeQual, microsecond, frameCount);
+  } else if (type === 100) {
+    const sampleRate = body.getFloat32(4);
+    const flags = body.getUint8(8);
+    return new Blockette100(type, body, sampleRate, flags);
   } else {
     return new Blockette(type, body);
   }
@@ -253,6 +267,30 @@ export class Blockette1000 extends Blockette {
   }
 }
 
+export class Blockette1001 extends Blockette {
+  timeQual: number;
+  microSec: number;
+  frameCount: number;
+  constructor(type: number, body: DataView, timeQual: number, microSec: number, frameCount: number) {
+    super(type, body);
+    if (type != 1001) {throw new Error("Not a blockette1001: "+this.type);}
+    this.timeQual = timeQual;
+    this.microSec = microSec;
+    this.frameCount = frameCount;
+  }
+}
+
+export class Blockette100 extends Blockette {
+  sampleRate: number;
+  flags: number;
+  constructor(type: number, body: DataView, sampleRate: number, flags: number) {
+    super(type, body);
+    if (type != 100) {throw new Error("Not a blockette100: "+this.type);}
+    this.sampleRate = timeQual;
+    this.flags = microSec;
+  }
+}
+
 function makeString(dataView :DataView, offset :number, length :number) :string {
   let out = "";
   for (let i=offset; i<offset+length; i++) {
@@ -283,6 +321,7 @@ export class BTime {
   min: number;
   sec: number;
   tenthMilli: number;
+  microsecond: number; // -50 to 49, not part of BTime proper, but added in case of B1001
   length: number;
   constructor(year :number, jday :number, hour :number, min :number, sec :number, tenthMilli :number) {
     this.length = 10;
@@ -292,6 +331,7 @@ export class BTime {
     this.min = min;
     this.sec = sec;
     this.tenthMilli = tenthMilli;
+    this.microsecond = 0;
   }
   toString(): string {
     return this.year+"-"+this.jday+" "+this.hour+":"+this.min+":"+this.sec+"."+this.tenthMilli.toFixed().padStart(4,'0')+" "+this.toMoment().toISOString();
