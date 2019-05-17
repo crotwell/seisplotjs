@@ -93,8 +93,6 @@ export class EventQuery {
     this.host(host);
     if (! host) {
       this._host = USGS_HOST;
-      // usgs does 301 moved permanently to https
-      this._protocol = 'https:';
     }
     this._port = 80;
   }
@@ -527,7 +525,6 @@ export class EventQuery {
     for (let pNum=0; pNum < allPickEls.length; pNum++) {
       allPicks.push(this.convertToPick(allPickEls.item(pNum)));
     }
-    console.log(`convert ${allPicks.length} picks for quake`);
 
     let allOriginEls = qml.getElementsByTagNameNS(BED_NS, "origin");
     let allOrigins = [];
@@ -574,7 +571,7 @@ export class EventQuery {
         return eventId;
       }
     }
-    let publicid = _grabAttribute(qml, 'publicId');
+    let publicid = _grabAttribute(qml, 'publicID');
     if (publicid) {
       let re = /eventid=([\w\d]+)/;
       let parsed = re.exec(publicid);
@@ -603,7 +600,6 @@ export class EventQuery {
     out.publicId = _grabAttribute(qml, 'publicID');
 
     let allArrivalEls = qml.getElementsByTagNameNS(BED_NS, 'arrival');
-    console.log(`found ${allArrivalEls.length} arrival in origin`);
     let allArrivals = [];
     for ( let aNum=0; aNum < allArrivalEls.length; aNum++) {
       allArrivals.push(this.convertToArrival(allArrivalEls.item(aNum), allPicks));
@@ -620,7 +616,6 @@ export class EventQuery {
     if (mag && type) {
       let out = new Magnitude(mag, type);
       out.publicId = _grabAttribute(qml, 'publicID');
-      console.log(`convertToMagnitude ${out.publicId}`);
       return out;
     }
     throw new Error("Did not find mag and type in Element: ${mag} ${type}");
@@ -715,7 +710,6 @@ export class EventQuery {
 
       function handler() {
         if (this.readyState === this.DONE) {
-          console.log("handle: "+stringify(mythis.host())+" "+this.status);
           if (this.status === 200) {
             let out = new DOMParser().parseFromString(this.response, "text/xml");
             if (! out) {reject("out of DOMParser not defined");}
@@ -725,7 +719,6 @@ export class EventQuery {
 
             // 204 is nodata, so successful but empty
             if (DOMParser) {
-console.log("204 nodata so return empty xml");
               resolve(new DOMParser().parseFromString(FAKE_EMPTY_XML, "text/xml"));
             } else {
               throw new Error("Got 204 but can't find DOMParser to generate empty xml");
@@ -744,6 +737,11 @@ console.log("204 nodata so return empty xml");
   */
   formBaseURL() :string {
       let colon = ":";
+      if (! this.host || this._host === USGS_HOST) {
+        this._host = USGS_HOST;
+        // usgs does 301 moved permanently to https
+        this._protocol = 'https:';
+      }
       if (this._protocol.endsWith(colon)) {
         colon = "";
       }
@@ -772,7 +770,6 @@ console.log("204 nodata so return empty xml");
 
       function handler() {
         if (this.readyState === this.DONE) {
-          console.log("handle catalogs: "+stringify(mythis.host())+" "+this.status);
           if (this.status === 200) {
             resolve(this.response);
           } else {
@@ -814,7 +811,6 @@ console.log("204 nodata so return empty xml");
 
       function handler() {
         if (this.readyState === this.DONE) {
-          console.log("handle contributors: "+stringify(mythis.host())+" "+this.status);
           if (this.status === 200) { resolve(this.response); }
           else {
             console.log("Reject contributors: "+stringify(mythis.host())+" "+this.status);reject(this); }
@@ -855,7 +851,6 @@ console.log("204 nodata so return empty xml");
 
       function handler() {
         if (this.readyState === this.DONE) {
-          console.log("handle version: "+stringify(mythis.host())+" "+this.status);
           if (this.status === 200) { resolve(this.response); }
           else {
             console.log("Reject version: "+stringify(mythis.host())+" "+this.status);reject(this); }
@@ -898,7 +893,6 @@ console.log("204 nodata so return empty xml");
         if (_isDef(this._minRadius)) { url = url+this.makeParam("minradius", this.minRadius());}
         if (_isDef(this._maxRadius)) { url = url+this.makeParam("maxradius", this.maxRadius());}
       } else {
-        console.log("Cannot use minRadius or maxRadius without latitude and longitude: lat="+this._latitude+" lon="+this._longitude);
         throw new Error("Cannot use minRadius or maxRadius without latitude and longitude: lat="+this._latitude+" lon="+this._longitude);
       }
     }
@@ -975,6 +969,15 @@ const _grabFirstElText = function(xml: Element | null | void, tagName: string) :
   return out;
 }
 
+const _grabFirstElInt = function(xml: Element | null | void, tagName: string) :number | void {
+  let out = undefined;
+  let el = _grabFirstElText(xml, tagName);
+  if (_isDef(el)) {
+    out = parseInt(el);
+  }
+  return out;
+}
+
 const _grabFirstElFloat = function(xml: Element | null | void, tagName: string) :number | void {
   let out = undefined;
   let el = _grabFirstElText(xml, tagName);
@@ -1004,4 +1007,13 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
     }
   }
   return out;
+}
+
+export const util = {
+  "_grabFirstEl": _grabFirstEl,
+  "_grabFirstElText": _grabFirstElText,
+  "_grabFirstElFloat": _grabFirstElFloat,
+  "_grabFirstElInt": _grabFirstElInt,
+  "_grabAttribute": _grabAttribute,
+  "_grabAttributeNS": _grabAttributeNS
 }
