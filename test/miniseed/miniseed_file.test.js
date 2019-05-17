@@ -6,8 +6,9 @@ var fs = require('fs');
 test("load miniseed file", () => {
 
     let mseedData = fs.readFileSync('test/miniseed/CO_JSC.mseed');
+    let ab = mseedData.buffer.slice(mseedData.byteOffset, mseedData.byteOffset + mseedData.byteLength);
     expect(mseedData.length).toEqual(7168);
-    let parsed = miniseed.parseDataRecords(mseedData.buffer);
+    let parsed = miniseed.parseDataRecords(ab);
     expect(parsed.length).toEqual(14);
     let dr = parsed[0];
     expect(dr.header.staCode).toEqual("JSC");

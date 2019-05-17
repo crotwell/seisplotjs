@@ -82,7 +82,7 @@ export class XSeedRecord {
     }
     offset += this.data.byteLength;
 // CRC not yet working
-    let crc = CRC32.buf(new Uint8Array(dataView.buffer, dataView.offset, dataView.offset+offset));
+    let crc = CRC32.buf(new Uint8Array(dataView.buffer, 0, offset));
 console.log("CRC32: "+crc);
     dataView.setUint32(CRC_OFFSET, crc, true);
     return offset;
@@ -160,9 +160,9 @@ export class XSeedHeader {
     return this.identifier+" "+this.start.toISOString()+" "+this.encoding;
   }
   getStartFieldsAsISO() {
-    return ''+this.year+padZeros(this.dayOfYear, 3)
-      +'T'+padZeros(this.hour, 2)+padZeros(this.minute, 2)
-      +padZeros(this.second, 2)+"."+padZeros(this.nanosecond, 9);
+    return ''+this.year+'-'+padZeros(this.dayOfYear, 3)
+      +'T'+padZeros(this.hour, 2)+':'+padZeros(this.minute, 2)+":"
+      +padZeros(this.second, 2)+"."+padZeros(this.nanosecond, 9)+"Z";
   }
 
   timeOfSample(i) {
@@ -177,6 +177,8 @@ export class XSeedHeader {
     offset++;
     dataView.setInt8(offset, this.flags);
     offset++;
+    dataView.setUint32(offset, this.nanosecond, true);
+    offset+=4;
     dataView.setUint16(offset, this.year, true);
     offset+=2;
     dataView.setUint16(offset, this.dayOfYear, true);
@@ -187,18 +189,16 @@ export class XSeedHeader {
     offset++;
     dataView.setInt8(offset, this.second);
     offset++;
-    dataView.setUint32(offset, this.nanosecond, true);
-    offset+=4;
-    dataView.setFloat64(offset, this.sampleRatePeriod, true);
-    offset+=8;
     dataView.setInt8(offset, this.encoding);
     offset++;
-    dataView.setInt8(offset, this.publicationVersion);
-    offset++;
+    dataView.setFloat64(offset, this.sampleRatePeriod, true);
+    offset+=8;
     dataView.setUint32(offset, this.numSamples, true);
     offset += 4;
     dataView.setUint32(offset, this.crc, true);
     offset += 4;
+    dataView.setInt8(offset, this.publicationVersion);
+    offset++;
     dataView.setInt8(offset, this.identifier.length);
     offset++;
     dataView.setUint16(offset, this.extraHeadersLength, true);
@@ -246,7 +246,7 @@ function makeString(dataView, offset, length) {
       dbg += ' '+charCode;
     }
   }
-  return out.trim()+`  ${dbg}`;
+  return out.trim();
 }
 
 
@@ -356,9 +356,9 @@ export function byChannel(drList) {
   return out;
 }
 
-/* MSeed2 to MSeed3 converstion */
+/* MSeed2 to xSeed converstion */
 
-export function convertMS2toMS3(mseed2) {
+export function convertMS2toXSeed(mseed2) {
   let out = [];
   for (let i=0; i< mseed2.length; i++) {
     out.push(convertMS2Record(mseed2[i]));
@@ -367,69 +367,70 @@ export function convertMS2toMS3(mseed2) {
 }
 
 export function convertMS2Record(ms2record) {
-  let ms3Header = new XSeedHeader();
-  let ms3Extras = {};
+  let xHeader = new XSeedHeader();
+  let xExtras = {};
   let ms2H = ms2record.header;
-  ms3Header.flags = (ms2H.activityFlags & 1) *2
+  xHeader.flags = (ms2H.activityFlags & 1) *2
      + (ms2H.ioClockFlags & 64 ) * 4
      + (ms2H.dataQualityFlags & 16) * 8;
-  ms3Header.year = ms2H.startBTime.year;
-  ms3Header.dayOfYear = ms2H.startBTime.jday;
-  ms3Header.hour = ms2H.startBTime.hour;
-  ms3Header.minute = ms2H.startBTime.min;
-  ms3Header.second = ms2H.startBTime.sec;
-  ms3Header.nanosecond = ms2H.startBTime.tenthMilli*100000;
-// maybe can do better from factor and multiplier?
-  ms3Header.sampleRatePeriod = ms2H.sampleRate >= 1 ? ms2H.sampleRate : (-1.0 / ms2H.sampleRate);
-  ms3Header.encoding = ms2record.header.encoding;
-  ms3Header.publicationVersion = UNKNOWN_DATA_VERSION;
-  ms3Header.dataLength = ms2record.data.byteLength;
-  ms3Header.identifier = FDSN_PREFIX + ':' +ms2H.netCode + '.' + ms2H.staCode + '.' + ( ms2H.locCode ? (ms2H.locCode+':') : "" ) + ms2H.chanCode;
-  ms3Header.identifierLength = ms3Header.identifier.length;
+  xHeader.year = ms2H.startBTime.year;
+  xHeader.dayOfYear = ms2H.startBTime.jday;
+  xHeader.hour = ms2H.startBTime.hour;
+  xHeader.minute = ms2H.startBTime.min;
+  xHeader.second = ms2H.startBTime.sec;
+  xHeader.nanosecond = ms2H.startBTime.tenthMilli*100000+ms2H.startBTime.microsecond*1000;
+  xHeader.sampleRatePeriod = ms2H.sampleRate >= 1 ? ms2H.sampleRate : (-1.0 / ms2H.sampleRate);
+  xHeader.encoding = ms2record.header.encoding;
+  xHeader.publicationVersion = UNKNOWN_DATA_VERSION;
+  xHeader.dataLength = ms2record.data.byteLength;
+  xHeader.identifier = FDSN_PREFIX + ':' +ms2H.netCode + SEP + ms2H.staCode + SEP + ( ms2H.locCode ? ms2H.locCode : "" ) + SEP + ms2H.chanCode;
+  xHeader.identifierLength = xHeader.identifier.length;
 
-  ms3Header.numSamples = ms2H.numSamples;
-  ms3Header.crc = 0;
-  if (ms2H.typeCode && ms2H.typeCode != 'D') {
-    ms3Extras.QI = ms2H.typeCode;
-  }
-  let nanos = 0;
-  for (let i=0; i<ms2H.blocketteList.length; i++) {
-    let blockette = ms2H.blocketteList[i];
-    if (blockette.type === 100) {
-      ms3Header.sampleRatePeriod = blockette.body.getFloat32(4);
-    } else if (blockette.type === 1001) {
-      nanos = 1000 * blockette.body.getInt8(6);
-      ms3Extras.TQ = blockette.body.getUint8(4);
+  xHeader.numSamples = ms2H.numSamples;
+  xHeader.crc = 0;
+  if (ms2H.typeCode) {
+    if (ms2H.typeCode === 'R') {
+      xHeader.publicationVersion = 1;
+    } else if (ms2H.typeCode === 'D') {
+      xHeader.publicationVersion = 2;
+    } else if (ms2H.typeCode === 'Q') {
+      xHeader.publicationVersion = 3;
+    } else if (ms2H.typeCode === 'M') {
+      xHeader.publicationVersion = 4;
+    }
+    if (ms2H.typeCode !== 'D') {
+      xExtras.DataQuality = ms2H.typeCode;
     }
   }
-  ms3Header.nanosecond += nanos;
-  if (ms3Header.nanosecond < 0) {
-    ms3Header.second -= 1;
-    ms3Header.nanosecond += 1000000000;
-    if (ms3Header.second < 0) {
+  if (xHeader.nanosecond < 0) {
+    xHeader.second -= 1;
+    xHeader.nanosecond += 1000000000;
+    if (xHeader.second < 0) {
 // might be wrong for leap seconds
-      ms3Header.second += 60;
-      ms3Header.minute -= 1;
-      if (ms3Header.minute < 0) {
-        ms3Header.minute += 60;
-        ms3Header.hour -= 1;
-        if (ms3Header.hour < 0) {
-          ms3Header.hour += 24;
-          ms3Header.dayOfYear =- 1;
-          if (ms3Header.dayOfYear < 0) {
+      xHeader.second += 60;
+      xHeader.minute -= 1;
+      if (xHeader.minute < 0) {
+        xHeader.minute += 60;
+        xHeader.hour -= 1;
+        if (xHeader.hour < 0) {
+          xHeader.hour += 24;
+          xHeader.dayOfYear =- 1;
+          if (xHeader.dayOfYear < 0) {
 // wrong for leap years
-            ms3Header.dayOfYear += 365;
-            ms3Header.year -= 1;
+            xHeader.dayOfYear += 365;
+            xHeader.year -= 1;
           }
         }
       }
     }
   }
-  ms3Header.extraHeadersLength = JSON.stringify(ms3Extras).length;
+  xHeader.extraHeadersLength = JSON.stringify(xExtras).length;
   let out = new XSeedRecord();
-  out.header = ms3Header;
-  out.extraHeaders = ms3Extras;
+  out.header = xHeader;
+  out.extraHeaders = xExtras;
   // need to convert if not steim1 or 2
   out.data = ms2record.data;
   return out;
 }
+
+const SEP = '_';
