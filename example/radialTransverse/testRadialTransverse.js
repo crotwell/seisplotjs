@@ -10,11 +10,12 @@ let traveltime = seisplotjs.traveltime;
 let fdsnevent = seisplotjs.fdsnevent;
 let fdsnstation = seisplotjs.fdsnstation;
 let miniseed = seisplotjs.miniseed;
+let RSVP = seisplotjs.RSVP;
 
 let USGS = "earthquake.usgs.gov";
 let IRIS = "service.iris.edu";
 
-fdsnstation.RSVP.on('error', function(reason) {
+RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
@@ -71,7 +72,7 @@ let quakePromise = quakeQuery.query().then(function(quakes) {
   return q;
 });
 
-let bothPromise = fdsnstation.RSVP.hash({
+let bothPromise = RSVP.hash({
     station: stationPromise,
     quake: quakePromise
   }).then(function(hash) {
@@ -98,7 +99,7 @@ let bothPromise = fdsnstation.RSVP.hash({
           }
           return { firstP: firstP, firstS: firstS, arrivals: ttimes.arrivals };
         });
-    return fdsnstation.RSVP.hash(hash);
+    return RSVP.hash(hash);
   }).then(function(hash) {
     hash.S_arrival = new Date(hash.quake.time.valueOf()+(hash.traveltime.firstS.time)*1000);
     hash.P_arrival = new Date(hash.quake.time.valueOf()+(hash.traveltime.firstP.time)*1000);
@@ -113,7 +114,7 @@ let bothPromise = fdsnstation.RSVP.hash({
       .startTime(hash.seisDates.start)
       .endTime(hash.seisDates.end)
       .querySeismograms();
-    return fdsnstation.RSVP.hash(hash);
+    return RSVP.hash(hash);
   }).then(function(hash) {
     let div = seisplotjs.d3.select("div.seismograms");
     let svgDiv = div.append("div");
