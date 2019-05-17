@@ -4,6 +4,7 @@
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "lib/index.js",
   "dependencies": {
+    "@babel/runtime": "^7.4.4",
     "crc-32": "^1.2.0",
     "d3": "^5.9.0",
     "js-quantities": "^1.7.3",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.4.4",
     "@babel/preset-env": "^7.4.4",
     "@babel/preset-flow": "^7.0.0",
     "babel-core": "^7.0.0-bridge.0",
@@ -85,6 +87,7 @@
         }
       ],
       "@babel/preset-flow"
-    ]
+    ],
+    "plugins": ["@babel/plugin-transform-runtime"]
   }
 }
