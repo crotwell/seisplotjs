@@ -43,6 +43,10 @@ export class AvailabilityQuery {
   /** @private */
   _merge: string;
   /** @private */
+  _show: string;
+  /** @private */
+  _mergeGaps: number;
+  /** @private */
   _limit: number;
   /** @private */
   _orderby: string;
@@ -198,6 +202,26 @@ export class AvailabilityQuery {
       return this;
     } else if (hasNoArgs(value)) {
       return this._merge;
+    } else {
+      throw new Error('value argument is optional or string, but was '+value);
+    }
+  }
+  mergeGaps(value?: number) :number | AvailabilityQuery {
+    if (isNumArg(value)) {
+      this._mergeGaps = value;
+      return this;
+    } else if (hasNoArgs(value)) {
+      return this._mergeGaps;
+    } else {
+      throw new Error('value argument is optional or string, but was '+value);
+    }
+  }
+  show(value?: string) :string | AvailabilityQuery {
+    if (isStringArg(value)) {
+      this._show = value;
+      return this;
+    } else if (hasNoArgs(value)) {
+      return this._show;
     } else {
       throw new Error('value argument is optional or string, but was '+value);
     }
@@ -429,12 +453,12 @@ console.log("fdsnDataSelect URL: "+url);
     if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
     if (this._quality) { url = url+this.makeParam("quality", this.quality());}
     if (this._merge) { url = url+this.makeParam("merge", this.merge());}
+    if (this._mergeGaps) { url = url+this.makeParam("mergegaps", this.mergeGaps());}
+    if (this._show) { url = url+this.makeParam("show", this.show());}
     if (this._limit && this._limit>0) { url = url+this.makeParam("limit", this.limit());}
     if (this._orderby) { url = url+this.makeParam("orderby", this.orderby());}
     if (this._includerestricted) { url = url+this.makeParam("includerestricted", this.includeRestriced());}
-    if (this._minimumLength) { url = url+this.makeParam("minimumlength", this.minimumLength());}
     if (this._repository) { url = url+this.makeParam("repository", this.repository());}
-    if (this._longestOnly) { url = url+this.makeParam("longestonly", this.longestOnly());}
     if (this._format) { url = url+this.makeParam("format", this.format());}
     if (this._nodata) { url = url+this.makeParam("nodata", this.nodata());}
 
