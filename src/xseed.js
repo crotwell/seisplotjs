@@ -1,3 +1,5 @@
+// @flow
+
 /*global DataView*/
 /**
  * Philip Crotwell
@@ -16,7 +18,7 @@ export const FIXED_HEADER_SIZE=40;
 export const FDSN_PREFIX = 'FDSN';
 
 /** parse arrayBuffer into an array of XSeedRecords. */
-export function parseXSeedRecords(arrayBuffer) {
+export function parseXSeedRecords(arrayBuffer: ArrayBuffer) {
   let dataRecords = [];
   let offset = 0;
   while (offset < arrayBuffer.byteLength) {
@@ -34,7 +36,7 @@ export function parseXSeedRecords(arrayBuffer) {
 /** Represents a xSEED Data Record, with header, extras and data.
   */
 export class XSeedRecord {
-  constructor(dataView) {
+  constructor(dataView: DataView) {
     if ( ! dataView) {
       // empty record
       this.header = new XSeedHeader();

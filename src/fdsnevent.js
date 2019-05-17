@@ -137,7 +137,7 @@ export class EventQuery {
   }
   /** Gets/Sets the remote port to connect to.
   */
-  port(value?: number): number | DataSelectQuery {
+  port(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
       return this._port;
     } else if (hasArgs(value)) {

@@ -16,7 +16,7 @@ import { Seismogram, Trace } from './seismogram';
 import { moment } from './util';
 
 export class ChannelTimeRange {
-  channel: stationxml.Channel;
+  channel: Channel;
   startTime: moment;
   endTime: moment;
   constructor(channel: Channel, startTime: moment, endTime: moment) {
