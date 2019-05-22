@@ -71,6 +71,7 @@
     "flow-copy-source": "^2.0.6",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^24.8.0",
+    "jest-environment-jsdom-fourteen": "^0.1.0",
     "jest-extended": "^0.11.1"
   },
   "babel": {
@@ -88,6 +89,8 @@
       ],
       "@babel/preset-flow"
     ],
-    "plugins": ["@babel/plugin-transform-runtime"]
+    "plugins": [
+      "@babel/plugin-transform-runtime"
+    ]
   }
 }
