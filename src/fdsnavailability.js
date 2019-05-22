@@ -12,6 +12,11 @@ import {checkProtocol, moment, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumA
 import {ChannelTimeRange } from './fdsndataselect';
 
 export const FORMAT_JSON = 'json';
+export const FORMAT_TEXT = 'text';
+export const FORMAT_GEOCSV = 'geocsv';
+export const FORMAT_REQUEST = 'request';
+
+export const EMPTY_JSON = "{}";
 
 export const IRIS_HOST = "service.iris.edu";
 
@@ -267,7 +272,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  computeStartEnd(start ?:moment, end ?:moment, duration ?:number, clockOffset ?:number) :DataSelectQuery {
+  computeStartEnd(start ?:moment, end ?:moment, duration ?:number, clockOffset ?:number) :AvailabilityQuery {
     let se = new StartEndDuration(start, end, duration, clockOffset);
     this.startTime(se.start);
     this.endTime(se.end);
@@ -275,73 +280,87 @@ export class AvailabilityQuery {
   }
 
   query() :Promise<Array<ChannelTimeRange>> {
-    return this.queryRaw().then(function(rawBuffer) {
-        let dataRecords = miniseed.parseDataRecords(rawBuffer);
-        return dataRecords;
-    });
+    return this.queryJson().then(function(json) {
+          return this.extractFromJson(json);
+      });
   }
-  queryRaw() {
-    let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let client = new XMLHttpRequest();
-      let url = mythis.formURL();
-console.log("fdsnDataSelect URL: "+url);
-      client.open("GET", url);
-      client.ontimeout = function(e) {
-        this.statusText = "Timeout "+this.statusText;
-        reject(this);
-      };
-      client.onreadystatechange = handler;
-      client.responseType = "arraybuffer";
-      client.setRequestHeader("Accept", "application/vnd.fdsn.mseed");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
-          } else if (this.status === 204 || (mythis.nodata() && this.status === mythis.nodata())) {
-            // no data, so resolve success but with empty array
-            resolve( new ArrayBuffer(0) );
-          } else {
-            reject(this);
-          }
+  queryJson() {
+    this.format(FORMAT_JSON);
+    return this.queryRaw("query")
+    .then(function(response) {
+        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+          return EMPTY_JSON;
         }
-      }
-    });
-    return promise;
+        let contentType = response.headers.get('content-type');
+        if(contentType && contentType.includes('application/json')) {
+          return response.json();
+        }
+        throw new TypeError('Oops, we haven't got JSON!');
+      });
   }
 
-  postQueryDataRecords(channelTimeList: Array<ChannelTimeRange>) :Promise<Array<miniseed.DataRecord>> {
-    return this.postQueryRaw(channelTimeList)
-    .then( fetchResponse => {
-      if(fetchResponse.ok) {
-        return fetchResponse.arrayBuffer().then(ab => {
-          console.log(`fetch response ok, bytes=${ab.byteLength}  ${(typeof ab)}`)
-          return miniseed.parseDataRecords(ab);
-        });
-      } else {
-        console.log("fetchRespone not ok");
-        return [];
-      }
-    });
+  extent() :Promise<Array<ChannelTimeRange>> {
+    return this.queryJson().then(function(json) {
+          return this.extractFromJson(json);
+      });
   }
+  extentJson() {
+    this.format(FORMAT_JSON);
+    return this.queryRaw("extent")
+    .then(function(response) {
+        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+          return EMPTY_JSON;
+        }
+        let contentType = response.headers.get('content-type');
+        if(contentType && contentType.includes('application/json')) {
+          return response.json();
+        }
+        throw new TypeError('Oops, we haven't got JSON!');
+      });
+  }
+  getRaw(method: String) {
+    let url = this.formURL(method);
+    console.log("fdsnAvailability URL: "+url);
+    return fetch(url, {
+        cache: 'no-cache',
+        redirect: 'follow', // manual, *follow, error
+      }).then(function(response) {
+          if(response.ok) {
+            return response;
+          }
+          throw new Error('Network response was not ok.');
+        });
+  }
+
   postQuery(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<seismogram.Seismogram>>> {
-    return this.postQueryRaw(channelTimeList).then(jsonChanTimes => {
-      return miniseed.mergeByChannel(dataRecords);
+    return this.postQueryJson(channelTimeList).then(json => {
+      return return this.extractFromJson(json);
     });
   }
   postExtent(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<seismogram.Trace>>> {
-    return this.postExtentRaw(channelTimeList).then(jsonChanTimes => {
-      return miniseed.tracePerChannel(dataRecords);
+    return this.postExtentRaw(channelTimeList).then(json => {
+      return this.extractFromJson(json);
     });
   }
 
-  postExtentRaw(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
-    return postRaw(channelTimeList, 'extent');
+  postExtentJson(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
+    return postJson(channelTimeList, 'extent');
   }
-  postQueryRaw(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
-    return postRaw(channelTimeList, 'query');
+  postQueryJson(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
+    return postJson(channelTimeList, 'query');
+  }
+  postJson(channelTimeList: Array<ChannelTimeRange>, method: String) :Promise<Response> {
+    this.format(FORMAT_JSON);
+    return postRaw(channelTimeList, method).then(function(response) {
+        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+          return EMPTY_JSON;
+        }
+        let contentType = response.headers.get('content-type');
+        if(contentType && contentType.includes('application/json')) {
+          return response.json();
+        }
+        throw new TypeError('Oops, we haven't got JSON!');
+      });
   }
   postRaw(channelTimeList: Array<ChannelTimeRange>, method: String) :Promise<Response> {
     if (channelTimeList.length === 0) {
@@ -356,6 +375,11 @@ console.log("fdsnDataSelect URL: "+url);
           mode: "cors",
           referrer: "seisplotjs",
           body: this.createPostBody(channelTimeList),
+        }).then(function(response) {
+          if(response.ok) {
+            return response;
+          }
+          throw new Error('Fetch response was not ok.');
         });
     }
   }
@@ -391,6 +415,20 @@ console.log("fdsnDataSelect URL: "+url);
 
   createPostBody(channelTimeList: Array<ChannelTimeRange>) :string {
     let out = "";
+    if (this._quality) { out += this.makePostParm("quality", this.quality());}
+    if (this._merge) { out += this.makePostParm("merge", this.merge());}
+    if (this._mergeGaps && (this._format === 'query' || this._format === 'queryauth')) {
+      out += this.makePostParm("mergegaps", this.mergeGaps());
+    }
+    if (this._show && (this._format === 'query' || this._format === 'queryauth')) {
+      out += this.makePostParm("show", this.show());
+    }
+    if (this._limit && this._limit>0) { out += this.makePostParm("limit", this.limit());}
+    if (this._orderby) { out += this.makePostParm("orderby", this.orderby());}
+    if (this._includerestricted) { out += this.makePostParm("includerestricted", this.includeRestriced());}
+    if (this._format) { out += this.makePostParm("format", this.format());}
+    if (this._nodata) { out += this.makePostParm("nodata", this.nodata());}
+
     for (let ct of channelTimeList) {
       let sta = ct.channel.station;
       let net = sta.network;
@@ -439,12 +477,16 @@ console.log("fdsnDataSelect URL: "+url);
   makeParam(name :string, val :mixed) :string {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
+  makePostParm(name :string, val :mixed) :string {
+    return name+"="+stringify(val)+"\n";
+  }
 
   formURL(method :string) :string {
     if (hasNoArgs(method)) {
       method = "query";
     }
     let url = this.formBaseURL()+`/${method}?`;
+    if (method === 'query' || m)
     if (this._networkCode) { url = url+this.makeParam("net", this.networkCode());}
     if (this._stationCode) { url = url+this.makeParam("sta", this.stationCode());}
     if (this._locationCode) { url = url+this.makeParam("loc", this.locationCode());}
@@ -458,7 +500,6 @@ console.log("fdsnDataSelect URL: "+url);
     if (this._limit && this._limit>0) { url = url+this.makeParam("limit", this.limit());}
     if (this._orderby) { url = url+this.makeParam("orderby", this.orderby());}
     if (this._includerestricted) { url = url+this.makeParam("includerestricted", this.includeRestriced());}
-    if (this._repository) { url = url+this.makeParam("repository", this.repository());}
     if (this._format) { url = url+this.makeParam("format", this.format());}
     if (this._nodata) { url = url+this.makeParam("nodata", this.nodata());}
 
