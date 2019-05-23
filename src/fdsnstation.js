@@ -142,7 +142,7 @@ export class StationQuery {
   }
   /** Gets/Sets the remote port to connect to.
   */
-  port(value?: number): number | DataSelectQuery {
+  port(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._port;
     } else if (hasArgs(value)) {

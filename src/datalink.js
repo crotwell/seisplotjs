@@ -172,7 +172,7 @@ export class DataLinkConnection {
    * as the data section. Size of the data is appended
    * to the header before sending.
    */
-  sendDLBinary(header: string, data?: arrayBuffer): void {
+  sendDLBinary(header: string, data?: Uint8Array): void {
     console.log(`sendDLBinary: ${header} ${data ? data.length : 0}`);
     const rawPacket = this.encodeDL(header, data);
     if (this.webSocket) {
@@ -188,14 +188,14 @@ export class DataLinkConnection {
      */
   sendDLCommand(command: string, dataString?: string): void {
     console.log("send: "+command+" | "+(dataString ? dataString : ""));
-    this.sendDLBinary(command, stringToUnit8Array(dataString));
+    this.sendDLBinary(command, stringToUint8Array(dataString));
   }
 
   /**
   * Send a DataLink Command and await the response. Command is a string.
   * Returns a Promise that resolves with the webSocket MessageEvent.
   */
-  awaitDLBinary(header: string, data?: Unit8Array): Promise<string> {
+  awaitDLBinary(header: string, data?: Uint8Array): Promise<string> {
     let that = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       that.responseResolve = resolve;
@@ -219,10 +219,10 @@ export class DataLinkConnection {
   * Returns a Promise that resolves with the webSocket MessageEvent.
   */
   awaitDLCommand(command: string, dataString?: string): Promise<string> {
-    return this.awaitDLBinary(command, stringToUnit8Array(dataString));
+    return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
-  writeAck(streamid, hpdatastart, hpdataend, data) {
+  writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array) {
     let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`;
     console.log(`writeAck: header: ${header}`);
     return this.awaitDLBinary(header, data);
@@ -313,13 +313,13 @@ export class DataLinkPacket {
     }
   }
   get packetStart() {
-    return hpTimeToMoment(this.hppacketstart);
+    return hpTimeToMoment(parseInt(this.hppacketstart));
   }
   get packetEnd() {
-    return hpTimeToMoment(this.hppacketend);
+    return hpTimeToMoment(parseInt(this.hppacketend));
   }
   get packetTime() {
-    return hpTimeToMoment(this.hppackettime);
+    return hpTimeToMoment(parseInt(this.hppackettime));
   }
 
 }
@@ -332,7 +332,7 @@ export class DataLinkPacket {
     return moment.utc(hptime/1000);
   }
 
-  export function stringToUnit8Array(dataString?: string): Unit8Array {
+  export function stringToUint8Array(dataString?: string): Uint8Array | null {
     let binaryData = null;
     if (dataString) {
       binaryData = new Uint8Array(dataString.length);

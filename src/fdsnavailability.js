@@ -288,7 +288,7 @@ export class AvailabilityQuery {
   queryJson() {
     const mythis = this;
     this.format(FORMAT_JSON);
-    return this.queryRaw("query")
+    return this.getRaw("query")
     .then(function(response) {
         if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
           return EMPTY_JSON;
@@ -309,7 +309,7 @@ export class AvailabilityQuery {
   extentJson() {
     const mythis = this;
     this.format(FORMAT_JSON);
-    return this.queryRaw("extent")
+    return this.getRaw("extent")
     .then(function(response) {
         if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
           return EMPTY_JSON;
@@ -321,7 +321,7 @@ export class AvailabilityQuery {
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
   }
-  getRaw(method: String) {
+  getRaw(method: string): Promise<Response> {
     let url = this.formURL(method);
     console.log("fdsnAvailability URL: "+url);
     return fetch(url, {
@@ -335,12 +335,12 @@ export class AvailabilityQuery {
         });
   }
 
-  postQuery(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<seismogram.Seismogram>>> {
+  postQuery(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
     return this.postQueryJson(channelTimeList).then(json => {
       return this.extractFromJson(json);
     });
   }
-  postExtent(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<seismogram.Trace>>> {
+  postExtent(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
     return this.postExtentRaw(channelTimeList).then(json => {
       return this.extractFromJson(json);
     });
