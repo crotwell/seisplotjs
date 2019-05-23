@@ -1,12 +1,13 @@
 import {rotate, rotateSeismograms } from '../../src/filter/vector.js';
 import { Seismogram, Trace }  from "../../src/seismogram";
+import {moment} from '../../src/util';
 
 test("trace rotation", () => {
   let a = [ 1, 1, 0];
   let b = [ 2, 0, 2];
   let az = 0;
-  let rotToAz = 90;
-  let now = new Date();
+  let rotAzInc = 30;
+  let now = moment.utc();
   let seisA = new Seismogram(a, 1.0, now);
   seisA.networkCode = "XX";
   seisA.stationCode = "AAA";
@@ -19,10 +20,12 @@ test("trace rotation", () => {
   seisB.channelCode = "BHN";
   let traceA = new Trace(seisA);
   let traceB = new Trace(seisB);
-  let outTrace = rotate(traceA, az, traceB, az+90, az+30);
-  let outSeis = rotateSeismograms(seisA, az, seisB, az+90, az+30);
+  let outTrace = rotate(traceA, az, traceB, az+90, az+rotAzInc);
+  let outSeis = rotateSeismograms(seisA, az, seisB, az+90, az+rotAzInc);
   expect(outTrace.radial.segments.length).toBe(1);
   expect(outTrace.transverse.segments.length).toBe(1);
+  expect(outTrace.radial.segments[0].y[0]).toEqual(outSeis.radial.y[0]);
+  expect(outTrace.transverse.segments[0].y[0]).toEqual(outSeis.transverse.y[0]);
 });
 
 test("simple rotation", () => {
@@ -30,7 +33,7 @@ test("simple rotation", () => {
   let b = [ 2, 0, 2];
   let az = 0;
   let rotToAz = 90;
-  let now = new Date();
+  let now = moment.utc();
   let seisA = new Seismogram(a, 1.0, now);
   seisA.networkCode = "XX";
   seisA.stationCode = "AAA";
@@ -42,7 +45,7 @@ test("simple rotation", () => {
   seisB.locationCode = "00";
   seisB.channelCode = "BHN";
 
-  let out = rotateSeismograms(seisA, az, seisB, az+90, 90);
+  let out = rotateSeismograms(seisA, az, seisB, az+90, rotToAz);
   expect(out.radial.y.length).toBe(3);
   expect(out.transverse.y.length).toBe(3);
   expect(out.azimuthRadial).toBe(rotToAz);

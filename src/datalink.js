@@ -41,7 +41,7 @@ export class DataLinkConnection {
   responseResolve: null | (response: string) => void;
   responseReject: null | (error: Error) => void;
   webSocket: WebSocket | null;
-  constructor(url :string, packetHandler: (packet: DataLinkPacket) => void, errorHandler: (error: Error) => void) {
+  constructor(url: string, packetHandler: (packet: DataLinkPacket) => void, errorHandler: (error: Error) => void) {
     this.url = url;
     this.mode = QUERY_MODE;
     this.packetHandler = packetHandler;
@@ -73,7 +73,7 @@ export class DataLinkConnection {
       };
       webSocket.onclose = function() {
         that.webSocket = null; // clean up
-        this.mode = QUERY_MODE
+        this.mode = QUERY_MODE;
       };
       webSocket.onopen = function() {
         resolve(that);
@@ -86,23 +86,23 @@ export class DataLinkConnection {
     });
   }
 
-  isConnected() :boolean {
+  isConnected(): boolean {
     return this.webSocket !== null;
   }
 
-  stream() :void {
+  stream(): void {
     if (this.mode === STREAM_MODE) {return;}
     this.mode = STREAM_MODE;
     this.sendDLCommand(STREAM, "");
   }
 
-  endStream() :void {
+  endStream(): void {
     if (this.webSocket === null || this.mode === null || this.mode === QUERY_MODE) {return;}
     this.mode = QUERY_MODE;
     this.sendDLCommand(ENDSTREAM, "");
   }
 
-  close() :void {
+  close(): void {
     if (this.webSocket) {
       this.endStream(); // end streaming just in case
       if (this.webSocket) {this.webSocket.close();}
@@ -115,7 +115,7 @@ export class DataLinkConnection {
   * Send a ID Command. Command is a string.
   * Returns a Promise.
   */
-  sendId() :Promise<string> {
+  sendId(): Promise<string> {
     const that = this;
     return this.awaitDLCommand("ID seisplotjs:"+this.username+":"+this.clientIdNum+":javascript")
     .then(replyMsg => {
@@ -132,7 +132,7 @@ export class DataLinkConnection {
  * binary Uint8Array. Size of the binary data is appended
  * to the header.
  */
-  encodeDL(command :string, data ?:Uint8Array) :ArrayBuffer {
+  encodeDL(command: string, data?: Uint8Array): ArrayBuffer {
     let cmdLen = command.length;
     let len = 3+command.length;
     let lenStr = "";
@@ -144,7 +144,7 @@ export class DataLinkConnection {
 
     }
     let rawPacket = new ArrayBuffer(len);
-    const binaryPacket = new Uint8Array(rawPacket)
+    const binaryPacket = new Uint8Array(rawPacket);
     let packet = new DataView(rawPacket);
     packet.setUint8(0, 68); // ascii D
     packet.setUint8(1, 76); // ascii L
@@ -164,7 +164,7 @@ export class DataLinkConnection {
       }
       binaryPacket.set(data, i);
     }
-    console.log(`encodeDL: ${new TextDecoder("utf-8").decode(binaryPacket)}`)
+    console.log(`encodeDL: ${new TextDecoder("utf-8").decode(binaryPacket)}`);
     return rawPacket;
   }
 
@@ -172,8 +172,8 @@ export class DataLinkConnection {
    * as the data section. Size of the data is appended
    * to the header before sending.
    */
-  sendDLBinary(header :string, data ?:arrayBuffer) :void {
-    console.log(`sendDLBinary: ${header} ${data ? data.length : 0}`)
+  sendDLBinary(header: string, data?: arrayBuffer): void {
+    console.log(`sendDLBinary: ${header} ${data ? data.length : 0}`);
     const rawPacket = this.encodeDL(header, data);
     if (this.webSocket) {
       this.webSocket.send(rawPacket);
@@ -186,7 +186,7 @@ export class DataLinkConnection {
      * as the data section. Size of the dataString is appended
      * to the header before sending.
      */
-  sendDLCommand(command :string, dataString ?:string) :void {
+  sendDLCommand(command: string, dataString?: string): void {
     console.log("send: "+command+" | "+(dataString ? dataString : ""));
     this.sendDLBinary(command, stringToUnit8Array(dataString));
   }
@@ -195,7 +195,7 @@ export class DataLinkConnection {
   * Send a DataLink Command and await the response. Command is a string.
   * Returns a Promise that resolves with the webSocket MessageEvent.
   */
-  awaitDLBinary(header :string, data ?:Unit8Array) :Promise<string> {
+  awaitDLBinary(header: string, data?: Unit8Array): Promise<string> {
     let that = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       that.responseResolve = resolve;
@@ -218,18 +218,18 @@ export class DataLinkConnection {
   * Send a DataLink Command and await the response. Command is a string.
   * Returns a Promise that resolves with the webSocket MessageEvent.
   */
-  awaitDLCommand(command :string, dataString ?:string) :Promise<string> {
+  awaitDLCommand(command: string, dataString?: string): Promise<string> {
     return this.awaitDLBinary(command, stringToUnit8Array(dataString));
   }
 
   writeAck(streamid, hpdatastart, hpdataend, data) {
-    let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`
+    let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`;
     console.log(`writeAck: header: ${header}`);
-    return this.awaitDLBinary(header, data)
+    return this.awaitDLBinary(header, data);
   }
 
-  handle(wsEvent :MessageEvent ) {
-    const rawData :ArrayBuffer = ((wsEvent.data :any) :ArrayBuffer);
+  handle(wsEvent: MessageEvent ) {
+    const rawData: ArrayBuffer = ((wsEvent.data: any): ArrayBuffer);
     let dlPreHeader = new DataView(rawData, 0, 3);
     if ('D' === String.fromCharCode(dlPreHeader.getUint8(0))
         && 'L' === String.fromCharCode(dlPreHeader.getUint8(1))) {
@@ -295,7 +295,7 @@ export class DataLinkPacket {
   hppacketend: string;
   dataSize: number;
   miniseed: miniseed.DataRecord;
-  constructor(header :string, dataview :DataView) {
+  constructor(header: string, dataview: DataView) {
     this.header = header;
     this.data = dataview;
     let split = this.header.split(' ');
@@ -313,26 +313,26 @@ export class DataLinkPacket {
     }
   }
   get packetStart() {
-    return hpTimeToMoment(this.hppacketstart)
+    return hpTimeToMoment(this.hppacketstart);
   }
   get packetEnd() {
-    return hpTimeToMoment(this.hppacketend)
+    return hpTimeToMoment(this.hppacketend);
   }
   get packetTime() {
-    return hpTimeToMoment(this.hppackettime)
+    return hpTimeToMoment(this.hppackettime);
   }
 
 }
 
 
-  export function momentToHPTime(m :moment) :number {
+  export function momentToHPTime(m: moment): number {
     return m.valueOf()*1000;
   }
-  export function hpTimeToMoment(hptime :number) :moment {
+  export function hpTimeToMoment(hptime: number): moment {
     return moment.utc(hptime/1000);
   }
 
-  export function stringToUnit8Array(dataString ?:string) :Unit8Array {
+  export function stringToUnit8Array(dataString?: string): Unit8Array {
     let binaryData = null;
     if (dataString) {
       binaryData = new Uint8Array(dataString.length);

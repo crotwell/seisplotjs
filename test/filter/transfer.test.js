@@ -8,6 +8,7 @@ const ONE_COMPLEX = filter.createComplex(1, 0);
  * @author crotwell Created on Jul 27, 2005
  */
 
+const WRITE_TEST_DATA = false;
 
 test("test freq Taper", () => {
     expect(filter.transfer.freqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);
@@ -371,7 +372,7 @@ test("impulse one zero combina amp", () => {
       const bagAmPh = filter.ampPhase(outMulLength);
 
       let saveDataPromise = null;
-      if (false) {
+      if (WRITE_TEST_DATA) {
         // for debugging, save data as sac file
         saveDataPromise = readDataView("./test/filter/data/impulse_onezero_fftam.sac.am").then(dataView => {
             let inSac = parseSac(dataView);
@@ -441,7 +442,7 @@ test("impulse one zero", () => {
       const bagdata = bagtfr.y;
 
       let saveDataPromise = Promise.resolve(null);
-      if (false) {
+      if (WRITE_TEST_DATA) {
         // for debugging, save data to sac file
         saveDataPromise = saveDataPromise.then(() => {
           return readDataView("./test/filter/data/impulse_onezero.sac").then(dataView => {
@@ -482,7 +483,7 @@ test("impulse", () => {
       const bagdata = bagtfr.y;
 
       let saveDataPromise = Promise.resolve(null);
-      if (false) {
+      if (WRITE_TEST_DATA) {
         // for debugging, save data to sac file
         saveDataPromise = saveDataPromise.then(() => {
           return readDataView("./test/filter/data/impulse.sac").then(dataView => {
@@ -547,7 +548,7 @@ test("HRV test", () => {
       expect(bagdata).arrayToBeCloseToRatio(sacdata, 5, .0001, 5);
 
       let saveDataPromise = Promise.resolve(null);
-      if (false) {
+      if (WRITE_TEST_DATA) {
         // for debugging, save data to sac file
         saveDataPromise = saveDataPromise.then(() => {
           return readDataView("./test/filter/data/IU.HRV.__.BHE.SAC").then(dataView => {
@@ -561,10 +562,3 @@ test("HRV test", () => {
   });
 
 });
-
-
-
-function notest(name, fun) {
-  console.log("#### Warning: skipping test '"+name+"'");
-  return;
-}

@@ -64,7 +64,7 @@ export const knownDataCenters = {
     if ( ! knownDCs) {
       knownDCs = fetch(this.knownDataCentersJsonURL)
         .then(response => {
-          return (response : {json(): any}).json();
+          return (response: {json(): any}).json();
         }).then(function(json: any): KnownDCS_JSON {
           json.accesstime = moment.utc();
           return json;

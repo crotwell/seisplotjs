@@ -20,7 +20,7 @@ export class SacPoleZero {
     this.zeros = zeros;
     this.constant = constant;
   }
-  toString():string {
+  toString(): string {
     let s = ["sacPoleZero:"];
     s.push("ZEROS "+this.zeros.length);
     for(let i=0; i<this.zeros.length; i++ ) {
@@ -39,7 +39,7 @@ export class SacPoleZero {
     }
     return s.join('\n');
   }
-  toText():string {
+  toText(): string {
     let s = [];
     s.push("ZEROS "+this.zeros.length);
     for(let i=0; i<this.zeros.length; i++ ) {

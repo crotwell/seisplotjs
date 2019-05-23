@@ -8,7 +8,7 @@
  */
 
 // special due to flow
-import {moment, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {moment, stringify} from './util';
 
 import {Seismogram, Trace} from './seismogram';
 import * as seedcodec from './seedcodec';
@@ -38,7 +38,7 @@ export function parseSingleDataRecord(dataView: DataView) {
 }
 
 /** parse the DataHeader from a single DataRecord starting at the beginning of the DataView. */
-export function parseSingleDataRecordHeader(dataView: DataView) :DataHeader {
+export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   if (dataView.byteLength < 47) {
     throw new Error(`Not enought bytes for header, need 47, found ${dataView.byteLength}`);
   }
@@ -102,18 +102,18 @@ export function parseSingleDataRecordHeader(dataView: DataView) :DataHeader {
   * @param {number} length size in bytes of the Blockette
   * @param headerByteSwap true if byte swapping is needed
   */
-export function parseBlockette(dataView :DataView, offset: number, length :number, headerByteSwap: boolean) :Blockette {
+export function parseBlockette(dataView: DataView, offset: number, length: number, headerByteSwap: boolean): Blockette {
   const type = dataView.getUint16(offset, headerByteSwap);
   const body = new DataView(dataView.buffer, dataView.byteOffset+offset, length);
   if (type === 1000) {
     const encoding = body.getUint8(4);
-    const dataRecordLengthByte = body.getUint8(6);
     const wordOrder = body.getUint8(5);
+    const dataRecordLengthByte = body.getUint8(6);
     return new Blockette1000(type, body, encoding, dataRecordLengthByte, wordOrder);
   } else if (type === 1001) {
     const timeQual = body.getUint8(4);
     const microsecond = body.getUint8(5);
-    const reserved = body.getUint8(6)
+    //const reserved = body.getUint8(6)
     const frameCount = body.getUint8(7);
     return new Blockette1001(type, body, timeQual, microsecond, frameCount);
   } else if (type === 100) {
@@ -154,7 +154,7 @@ export class DataRecord {
     * separated by the given seperator, or periods if not given.
   */
   codes(sep) {
-    if ( ! sep) { sep = '.'};
+    if ( ! sep) { sep = '.';}
     return this.header.netCode+sep+this.header.staCode+sep+this.header.locCode+sep+this.header.chanCode;
   }
 }
@@ -222,7 +222,7 @@ export class DataHeader {
 
   /** Calculates the sample rate in hertz from the sampRateFac and sampRateMul
   parameters. This.sampleRate value is set to this value at construction. */
-  calcSampleRate() :number {
+  calcSampleRate(): number {
     let factor = this.sampRateFac;
     let multiplier = this.sampRateMul;
     let sampleRate = 10000.0; // default (impossible) value;
@@ -286,12 +286,12 @@ export class Blockette100 extends Blockette {
   constructor(type: number, body: DataView, sampleRate: number, flags: number) {
     super(type, body);
     if (type != 100) {throw new Error("Not a blockette100: "+this.type);}
-    this.sampleRate = timeQual;
-    this.flags = microSec;
+    this.sampleRate = sampleRate;
+    this.flags = flags;
   }
 }
 
-function makeString(dataView :DataView, offset :number, length :number) :string {
+function makeString(dataView: DataView, offset: number, length: number): string {
   let out = "";
   for (let i=offset; i<offset+length; i++) {
     let charCode = dataView.getUint8(i);
@@ -302,7 +302,7 @@ function makeString(dataView :DataView, offset :number, length :number) :string 
   return out.trim();
 }
 
-export function parseBTime(dataView: DataView, offset:number, byteSwap:?boolean) :BTime {
+export function parseBTime(dataView: DataView, offset: number, byteSwap?: boolean): BTime {
     if ( ! byteSwap ) { byteSwap = false; }
     let year = dataView.getInt16(offset, byteSwap);
     let jday = dataView.getInt16(offset+2, byteSwap);
@@ -323,7 +323,7 @@ export class BTime {
   tenthMilli: number;
   microsecond: number; // -50 to 49, not part of BTime proper, but added in case of B1001
   length: number;
-  constructor(year :number, jday :number, hour :number, min :number, sec :number, tenthMilli :number) {
+  constructor(year: number, jday: number, hour: number, min: number, sec: number, tenthMilli: number) {
     this.length = 10;
     this.year = year;
     this.jday = jday;
@@ -352,7 +352,7 @@ export class BTime {
 }
 
 
-function checkByteSwap(bTime :BTime): boolean {
+function checkByteSwap(bTime: BTime): boolean {
   return bTime.year < 1960 || bTime.year > 2055;
 }
 
@@ -425,7 +425,7 @@ export function merge(drList: Array<DataRecord>): Trace {
 
 /** Finds the min and max values of a Seismogram, with an optional
   * accumulator for use with gappy data. */
-export function segmentMinMax(segment: Seismogram, minMaxAccumulator:? Array<number>) :Array<number> {
+export function segmentMinMax(segment: Seismogram, minMaxAccumulator?: Array<number>): Array<number> {
   if ( ! segment.y) {
     throw new Error("Segment does not have a y field, doesn't look like a seismogram segment. "+stringify(segment));
   }
@@ -435,7 +435,7 @@ export function segmentMinMax(segment: Seismogram, minMaxAccumulator:? Array<num
     minAmp = minMaxAccumulator[0];
     maxAmp = minMaxAccumulator[1];
   }
-  let yData = ((segment.y :any) :Array<number>); // for flow
+  let yData = ((segment.y: any): Array<number>); // for flow
   for (let n = 0; n < yData.length; n++) {
     if (minAmp > yData[n]) {
       minAmp = yData[n];

@@ -27,8 +27,8 @@ export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
 }
 
-export function rMean(seis: Seismogram|Trace) :Seismogram {
-  console.log(`rMean input class is: ${(seis.constructor.name)}`)
+export function rMean(seis: Seismogram | Trace): Seismogram {
+  console.log(`rMean input class is: ${(seis.constructor.name)}`);
   if (seis instanceof Trace) {
     let meanVal = 0;
     let npts = seis.numPoints;
@@ -58,7 +58,7 @@ export function rMean(seis: Seismogram|Trace) :Seismogram {
   }
 }
 
-export function gainCorrect(instrumentSensitivity : model.InstrumentSensitivity, seis: Seismogram|Trace) {
+export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram | Trace) {
   if (seis instanceof Trace) {
     let gainTrace = new Trace(seis.seisArray.map(s =>{
       return gainCorrect(instrumentSensitivity, s);
@@ -77,7 +77,7 @@ export function gainCorrect(instrumentSensitivity : model.InstrumentSensitivity,
 }
 
 
-export function minMaxMean(seis: Seismogram|Trace): number {
+export function minMaxMean(seis: Seismogram | Trace): number {
   let meanVal = 0;
   let minVal = 9999999999;
   let maxVal = -9999999999;
@@ -100,7 +100,7 @@ export function minMaxMean(seis: Seismogram|Trace): number {
     mean: meanVal
   };
 }
-export function mean(waveform: Seismogram|Trace): number {
+export function mean(waveform: Seismogram | Trace): number {
   if (waveform instanceof Trace) {
     let meanVal = 0;
 
@@ -115,7 +115,7 @@ export function mean(waveform: Seismogram|Trace): number {
   }
 }
 
-function meanOfSlice(dataSlice: Array<number>, totalPts :number ):number {
+function meanOfSlice(dataSlice: Array<number>, totalPts: number ): number {
   if (dataSlice.length < 8) {
     return dataSlice.reduce(function(acc, val) {
        return acc + val;

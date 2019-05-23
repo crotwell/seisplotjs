@@ -3,7 +3,6 @@
 import {
     moment,
     d3,
-    miniseed,
     createPlotsBySelectorPromise,
     findMinMax
   } from './util';
@@ -11,7 +10,7 @@ import {
 import type { MarginType } from './waveformplot';
 import {Seismogram, Trace} from '../seismogram';
 
-export function createParticleMotionBySelector(selector: string) :void {
+export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)
     .then(function(resultArray) {
       resultArray.forEach(function(result) {
@@ -29,7 +28,7 @@ export function createParticleMotionBySelector(selector: string) :void {
     });
   }
 
-function addDivForParticleMotion(sa: Array<Seismogram>, sb: Array<Seismogram>, svgParent: any, startDate: moment, endDate: moment) :void {
+function addDivForParticleMotion(sa: Array<Seismogram>, sb: Array<Seismogram>, svgParent: any, startDate: moment, endDate: moment): void {
   svgParent.append("h5").text(sa[0].chanCode+" "+sb[0].chanCode);
   let svgDiv = svgParent.append("div");
   svgDiv.classed(sa[0].chanCode+" "+sb[0].chanCode, true);
@@ -55,7 +54,7 @@ export class ParticleMotion {
   yLabel: string;
   ySublabel: string;
   ySublabelTrans: number;
-  yScaleFormat: string | (value :number) => string;
+  yScaleFormat: string | (value: number) => string;
   xScale: any;
   xScaleRmean: any;
   xAxis: any;
@@ -66,7 +65,7 @@ export class ParticleMotion {
   svgParent: any;
   g: any;
   static _lastID: number;
-  constructor(inSvgParent: any, inSegments: Array<Seismogram>, plotStartDate: moment, plotEndDate: moment) :void {
+  constructor(inSvgParent: any, inSegments: Array<Seismogram>, plotStartDate: moment, plotEndDate: moment): void {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
     if (inSegments.length != 2) {throw new Error("inSegments should be lenght 2 but was "+inSegments.length);}
     this.plotId = ++ParticleMotion._lastID;

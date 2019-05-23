@@ -1,4 +1,5 @@
-import {ampPhase, FFTResult} from '../filter';
+import {FFTResult} from '../filter';
+import { d3 } from './util';
 
 export function createSimpleFFTPlot(fft, cssSelector, sps) {
   simpleOverlayFFTPlot( [ fft], cssSelector, sps);
@@ -29,13 +30,17 @@ export function simpleOverlayFFTPlot(fftArrays, cssSelector, sps, loglog) {
       }
       let currExtent = d3.extent(ap.ampSlice);
       if (extentFFTData) {
-        extentFFTData = d3.extent([extentFFTData[0], extentFFTData[1], currExtent[0], currExtent[1]], function(d, i) { return d; })
+        extentFFTData = d3.extent([ extentFFTData[0],
+                                    extentFFTData[1],
+                                    currExtent[0],
+                                    currExtent[1]],
+                                    function(d) { return d; });
       } else {
         extentFFTData = currExtent;
       }
     }
 
-console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`)
+console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
 
     let svgParent = d3.select(cssSelector);
     let svg = svgParent.append("svg");
@@ -65,7 +70,7 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`)
 
     let line = d3.line()
         .x(function(d, i, a) { return x((i+1)*sps/2/(a.length-1)); })
-        .y(function(d, i) { return y(d); });
+        .y(function(d) { return y(d); });
 
   // minus one as slice off zero freq above
   x.domain([sps/2/(maxFFTAmpLen-1), sps/2]);

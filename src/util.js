@@ -39,11 +39,11 @@ export function isNumArg(value: any): boolean %checks {
   return typeof value === 'number';
 }
 
-export function isDef(v: mixed) :boolean %checks {
+export function isDef(v: mixed): boolean %checks {
   return typeof v !== 'undefined' && v !== null;
 }
 
-export function dataViewToString(dataView :DataView) {
+export function dataViewToString(dataView: DataView) {
   let out = "";
   for (let i=0; i< dataView.byteLength; i++) {
     out += String.fromCharCode(dataView.getUint8(i));
@@ -108,7 +108,7 @@ export function checkStringOrDate(d: any): moment {
 
 /** converts to ISO8601 but removes the trailing Z as FDSN web services
   do not allow that. */
-export function toIsoWoZ(date:moment) :string {
+export function toIsoWoZ(date: moment): string {
   let out = date.toISOString();
   return out.substring(0, out.length-1);
 }
@@ -131,7 +131,7 @@ export type ComplexType = {
 // allow overriding the complex object to use
 // if OregonDSP is loaded we want to use
 // its Complex instead of the simple one defined here
-export function createComplex(real:number, imag:number): ComplexType {
+export function createComplex(real: number, imag: number): ComplexType {
   /*
   try {
     return new OregonDSP.filter.iir.Complex_init(real, imag);

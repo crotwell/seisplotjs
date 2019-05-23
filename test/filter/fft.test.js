@@ -1,5 +1,5 @@
 import * as filter from '../../src/filter/index.js';
-import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
+import {readSac, parseSac, readDataView, writeSac, replaceYData} from './sacfile';
 
 
 
@@ -32,7 +32,7 @@ test("Round Trip FFT HRV", () => {
         expect(out[i]/data.y[i]).toBeCloseTo(1, 3);
       }
     }
-  })
+  });
 });
 
 

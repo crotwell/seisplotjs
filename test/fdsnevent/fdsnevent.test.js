@@ -1,6 +1,7 @@
 
 import * as fdsnevent from '../../src/fdsnevent.js';
 import * as util from '../../src/util.js';
+let moment = util.moment;
 
 test( "query setter test", () => {
   let eventQuery = new fdsnevent.EventQuery();

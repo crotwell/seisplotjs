@@ -9,7 +9,8 @@ RSVP.on('error', function(reason: string) {
 // special due to flow
 import {checkProtocol, moment, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
-import {ChannelTimeRange } from './fdsndataselect';
+import {ChannelTimeRange, StartEndDuration } from './fdsndataselect';
+import {Network, Station, Channel} from './stationxml';
 
 export const FORMAT_JSON = 'json';
 export const FORMAT_TEXT = 'text';
@@ -86,7 +87,7 @@ export class AvailabilityQuery {
   /** Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
   */
-  protocol(value?: string) :string | AvailabilityQuery {
+  protocol(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._protocol = value;
       return this;
@@ -98,7 +99,7 @@ export class AvailabilityQuery {
   }
   /** Gets/Sets the remote host to connect to.
   */
-  host(value?: string) :string | AvailabilityQuery {
+  host(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._host = value;
       return this;
@@ -131,7 +132,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  networkCode(value?: string) :string | AvailabilityQuery {
+  networkCode(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._networkCode = value;
       return this;
@@ -141,7 +142,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  stationCode(value?: string) :string | AvailabilityQuery {
+  stationCode(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._stationCode = value;
       return this;
@@ -151,7 +152,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  locationCode(value?: string) :string | AvailabilityQuery {
+  locationCode(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._locationCode = value;
       return this;
@@ -161,7 +162,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  channelCode(value?: string) :string | AvailabilityQuery {
+  channelCode(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._channelCode = value;
       return this;
@@ -171,7 +172,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  startTime(value?: moment) :moment | AvailabilityQuery {
+  startTime(value?: moment): moment | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
     } else if (hasArgs(value)) {
@@ -181,7 +182,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
-  endTime(value?: moment) :moment | AvailabilityQuery {
+  endTime(value?: moment): moment | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
     } else if (hasArgs(value)) {
@@ -191,7 +192,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
-  quality(value?: string) :string | AvailabilityQuery {
+  quality(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._quality = value;
       return this;
@@ -201,7 +202,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  merge(value?: string) :string | AvailabilityQuery {
+  merge(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._merge = value;
       return this;
@@ -211,7 +212,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  mergeGaps(value?: number) :number | AvailabilityQuery {
+  mergeGaps(value?: number): number | AvailabilityQuery {
     if (isNumArg(value)) {
       this._mergeGaps = value;
       return this;
@@ -221,7 +222,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  show(value?: string) :string | AvailabilityQuery {
+  show(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._show = value;
       return this;
@@ -241,7 +242,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  orderby(value?: string) :string | AvailabilityQuery {
+  orderby(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._orderby = value;
       return this;
@@ -262,7 +263,7 @@ export class AvailabilityQuery {
     }
   }
 
-  format(value?: string) :string | AvailabilityQuery {
+  format(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._format = value;
       return this;
@@ -272,19 +273,20 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  computeStartEnd(start ?:moment, end ?:moment, duration ?:number, clockOffset ?:number) :AvailabilityQuery {
+  computeStartEnd(start?: moment, end?: moment, duration?: number, clockOffset?: number): AvailabilityQuery {
     let se = new StartEndDuration(start, end, duration, clockOffset);
     this.startTime(se.start);
     this.endTime(se.end);
     return this;
   }
 
-  query() :Promise<Array<ChannelTimeRange>> {
+  query(): Promise<Array<ChannelTimeRange>> {
     return this.queryJson().then(function(json) {
           return this.extractFromJson(json);
       });
   }
   queryJson() {
+    const mythis = this;
     this.format(FORMAT_JSON);
     return this.queryRaw("query")
     .then(function(response) {
@@ -295,16 +297,17 @@ export class AvailabilityQuery {
         if(contentType && contentType.includes('application/json')) {
           return response.json();
         }
-        throw new TypeError('Oops, we haven't got JSON!');
+        throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
   }
 
-  extent() :Promise<Array<ChannelTimeRange>> {
+  extent(): Promise<Array<ChannelTimeRange>> {
     return this.queryJson().then(function(json) {
           return this.extractFromJson(json);
       });
   }
   extentJson() {
+    const mythis = this;
     this.format(FORMAT_JSON);
     return this.queryRaw("extent")
     .then(function(response) {
@@ -315,7 +318,7 @@ export class AvailabilityQuery {
         if(contentType && contentType.includes('application/json')) {
           return response.json();
         }
-        throw new TypeError('Oops, we haven't got JSON!');
+        throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
   }
   getRaw(method: String) {
@@ -332,26 +335,27 @@ export class AvailabilityQuery {
         });
   }
 
-  postQuery(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<seismogram.Seismogram>>> {
+  postQuery(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<seismogram.Seismogram>>> {
     return this.postQueryJson(channelTimeList).then(json => {
-      return return this.extractFromJson(json);
+      return this.extractFromJson(json);
     });
   }
-  postExtent(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<seismogram.Trace>>> {
+  postExtent(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<seismogram.Trace>>> {
     return this.postExtentRaw(channelTimeList).then(json => {
       return this.extractFromJson(json);
     });
   }
 
-  postExtentJson(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
-    return postJson(channelTimeList, 'extent');
+  postExtentJson(channelTimeList: Array<ChannelTimeRange>): Promise<Response> {
+    return this.postJson(channelTimeList, 'extent');
   }
-  postQueryJson(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
-    return postJson(channelTimeList, 'query');
+  postQueryJson(channelTimeList: Array<ChannelTimeRange>): Promise<Response> {
+    return this.postJson(channelTimeList, 'query');
   }
-  postJson(channelTimeList: Array<ChannelTimeRange>, method: String) :Promise<Response> {
+  postJson(channelTimeList: Array<ChannelTimeRange>, method: String): Promise<Response> {
+    const mythis = this;
     this.format(FORMAT_JSON);
-    return postRaw(channelTimeList, method).then(function(response) {
+    return this.postRaw(channelTimeList, method).then(function(response) {
         if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
           return EMPTY_JSON;
         }
@@ -359,10 +363,10 @@ export class AvailabilityQuery {
         if(contentType && contentType.includes('application/json')) {
           return response.json();
         }
-        throw new TypeError('Oops, we haven't got JSON!');
+        throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
   }
-  postRaw(channelTimeList: Array<ChannelTimeRange>, method: String) :Promise<Response> {
+  postRaw(channelTimeList: Array<ChannelTimeRange>, method: String): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
       console.log("Empty chan length so return fake fetch promise");
@@ -389,7 +393,7 @@ export class AvailabilityQuery {
     let knownNets = new Map();
     for (let ds of jsonChanTimes.datasources) {
       if ( ! knownNets.has(ds.network)) {
-        knownNets.set(ds.network, new Network())
+        knownNets.set(ds.network, new Network(ds.network));
       }
       let n = knownNets.get(ds.network);
       let s = null;
@@ -402,7 +406,7 @@ export class AvailabilityQuery {
         s = new Station(n, ds.station);
         n.stations.push(s);
       }
-      let fake = new seisplotjs.stationxml.Channel(s, ds.channel, ds.locationCode);
+      let c = new Channel(s, ds.channel, ds.locationCode);
       if (ds.earliest && ds.latest){
         out.push(new ChannelTimeRange(c, moment.utc(ds.earliest), moment.utc(ds.latest)));
       } else if (ds.timespans) {
@@ -413,7 +417,7 @@ export class AvailabilityQuery {
     }
   }
 
-  createPostBody(channelTimeList: Array<ChannelTimeRange>) :string {
+  createPostBody(channelTimeList: Array<ChannelTimeRange>): string {
     let out = "";
     if (this._quality) { out += this.makePostParm("quality", this.quality());}
     if (this._merge) { out += this.makePostParm("merge", this.merge());}
@@ -438,7 +442,7 @@ export class AvailabilityQuery {
     return out;
   }
 
-  formBaseURL() :string {
+  formBaseURL(): string {
       let colon = ":";
       if (this._protocol.endsWith(colon)) {
         colon = "";
@@ -446,11 +450,11 @@ export class AvailabilityQuery {
       return this._protocol+colon+"//"+this._host+(this._port==80?"":(":"+this._port))+"/fdsnws/availability/"+this._specVersion;
   }
 
-  formVersionURL() :string {
+  formVersionURL(): string {
     return this.formBaseURL()+"/version";
   }
 
-  queryVersion() :Promise<string> {
+  queryVersion(): Promise<string> {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       let url = mythis.formVersionURL();
@@ -474,19 +478,18 @@ export class AvailabilityQuery {
     return promise;
   }
 
-  makeParam(name :string, val :mixed) :string {
+  makeParam(name: string, val: mixed): string {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
-  makePostParm(name :string, val :mixed) :string {
+  makePostParm(name: string, val: mixed): string {
     return name+"="+stringify(val)+"\n";
   }
 
-  formURL(method :string) :string {
+  formURL(method: string): string {
     if (hasNoArgs(method)) {
       method = "query";
     }
     let url = this.formBaseURL()+`/${method}?`;
-    if (method === 'query' || m)
     if (this._networkCode) { url = url+this.makeParam("net", this.networkCode());}
     if (this._stationCode) { url = url+this.makeParam("sta", this.stationCode());}
     if (this._locationCode) { url = url+this.makeParam("loc", this.locationCode());}

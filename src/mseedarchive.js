@@ -5,7 +5,7 @@ import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 
 import {ChannelTimeRange } from './fdsndataselect';
-import {Seismogram, Trace} from './seismogram';
+import {Trace} from './seismogram';
 import {Channel} from './stationxml';
 
 export const Allowed_Flags = [ 'n', 's', 'l', 'c', 'Y', 'j', 'H'];
@@ -28,13 +28,13 @@ export class MSeedArchive {
   }
   /** checks pattern for allowed flags as not all that are supported
     * by ringserver are supported here. Must only include:
-    * * n : network code, white space removed
-    * * s : station code, white space removed
-    * * l : location code, white space removed
-    * * c : channel code, white space removed
-    * * Y : year, 4 digits
-    * * j : day of year, 3 digits zero padded
-    * * H : hour, 2 digits zero padded
+    * * n network code, white space removed
+    * * s station code, white space removed
+    * * l  location code, white space removed
+    * * c  channel code, white space removed
+    * * Y  year, 4 digits
+    * * j  day of year, 3 digits zero padded
+    * * H  hour, 2 digits zero padded
     */
   checkPattern(p: string): boolean {
     let regexp = /%[a-zA-Z]/g;
@@ -51,10 +51,8 @@ export class MSeedArchive {
     }
     return true;
   }
-  loadTraces(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<Trace>>> {
+  loadTraces(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<Trace>>> {
     let promiseArray = channelTimeList.map(ct => {
-      let sta = ct.channel.station;
-      let net = sta.network;
       return this.loadDataForChannel(ct.channel, ct.startTime, ct.endTime);
       });
     return RSVP.all(promiseArray).then(pArray => {
@@ -97,7 +95,7 @@ export class MSeedArchive {
       let url = this.getRootUrl()+'/'+this.fillTimePattern(basePattern, t);
       promiseArray.push(fetch(url));
     }
-    promiseArray = promiseArray.map( (p, i) => {
+    promiseArray = promiseArray.map( (p) => {
       return p.then(fetchResponse => {
         if (fetchResponse.ok) {
           console.log("######  is ok "+fetchResponse.status);

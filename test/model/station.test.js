@@ -9,3 +9,18 @@ test("simple station", () => {
   expect(station.latitude).toBe(47);
   expect(station.stationCode).toBe(STA_CODE);
 });
+
+test("simple channel", () => {
+
+    const NET_CODE = "AA";
+    const STA_CODE = "JSC";
+    const LOC_CODE = "00";
+    const CHAN_CODE = "BHZ";
+    let net = new Network(NET_CODE);
+    let station = new Station(net, STA_CODE);
+    let channel = new Channel(station, CHAN_CODE, LOC_CODE);
+    expect(channel.station.stationCode).toBe(STA_CODE);
+    expect(channel.station.network.networkCode).toBe(NET_CODE);
+    expect(channel.locationCode).toBe(LOC_CODE);
+    expect(channel.channelCode).toBe(CHAN_CODE);
+});

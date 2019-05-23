@@ -1,6 +1,5 @@
 // @flow
 
-import RSVP from 'rsvp';
 import {checkProtocol, hasArgs, stringify, isDef } from './util';
 
 export let IRIS_HOST = "service.iris.edu";
@@ -38,7 +37,7 @@ export class TraveltimeQuery {
   _format: string;
   /** @private */
   _noheader: boolean;
-  constructor(host :?string) {
+  constructor(host: ?string) {
     this._specVersion = "1";
     this._protocol = checkProtocol();
     if (! host) {
@@ -49,46 +48,46 @@ export class TraveltimeQuery {
     this._format = JSON_FORMAT;
     this._noheader = false; // only for text format
   }
-  protocol(value?: string) :string | TraveltimeQuery {
+  protocol(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._protocol = value, this) : this._protocol;
   }
-  host(value?: string) :string | TraveltimeQuery {
+  host(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._host = value, this) : this._host;
   }
-  specVersion(value?: string) :string | TraveltimeQuery {
+  specVersion(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._specVersion = value, this) : this._specVersion;
   }
-  evdepth(value?: number) :number | TraveltimeQuery {
+  evdepth(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._evdepth = value, this) : this._evdepth;
   }
-  distdeg(value?: number) :number | TraveltimeQuery {
+  distdeg(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._distdeg = value, this) : this._distdeg;
   }
-  model(value?: string) :string | TraveltimeQuery {
+  model(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._model = value, this) : this._model;
   }
-  phases(value?: string) :string | TraveltimeQuery {
+  phases(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._phases = value, this) : this._phases;
   }
-  stalat(value?: number) :number | TraveltimeQuery {
+  stalat(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._stalat = value, this) : this._stalat;
   }
-  stalon(value?: number) :number | TraveltimeQuery {
+  stalon(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._stalon = value, this) : this._stalon;
   }
-  evlat(value?: number) :number | TraveltimeQuery {
+  evlat(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._evlat = value, this) : this._evlat;
   }
-  evlon(value?: number) :number | TraveltimeQuery {
+  evlon(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._evlon = value, this) : this._evlon;
   }
-  format(value?: string) :string | TraveltimeQuery {
+  format(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._format = value, this) : this._format;
   }
-  noheader(value?: boolean) :boolean | TraveltimeQuery {
+  noheader(value?: boolean): boolean | TraveltimeQuery {
     return hasArgs(value) ? (this._noheader = value, this) : this._noheader;
   }
-  convertToArrival(ttimeline :string) {
+  convertToArrival(ttimeline: string) {
     let items = ttimeline.trim().split(/\s+/);
     return {
       distdeg: parseFloat(items[0]),
@@ -102,7 +101,7 @@ export class TraveltimeQuery {
     };
   }
 
-  queryText() :Promise<string> {
+  queryText(): Promise<string> {
     this.format(TEXT_FORMAT);
     return fetch(this.formURL())
       .then(response => {
@@ -113,7 +112,7 @@ export class TraveltimeQuery {
         }
       });
   }
-  queryJson() :Promise<any> {
+  queryJson(): Promise<any> {
     this.format(JSON_FORMAT);
     return fetch(this.formURL())
       .then(response => {
@@ -124,7 +123,7 @@ export class TraveltimeQuery {
         }
       });
   }
-  querySvg() :Promise<Element> {
+  querySvg(): Promise<Element> {
     this.format(SVG_FORMAT);
     return fetch(this.formURL())
       .then(response => {
@@ -145,7 +144,7 @@ export class TraveltimeQuery {
         }
       });
   }
-  queryWadl() :Promise<Element> {
+  queryWadl(): Promise<Element> {
     return fetch(this.formWadlURL())
       .then(response => {
         if (response.ok) {
@@ -156,7 +155,7 @@ export class TraveltimeQuery {
         }
       });
   }
-  query() :Promise<any> {
+  query(): Promise<any> {
     if (this._format === JSON_FORMAT) {
       return this.queryJson();
     } else if (this._format === SVG_FORMAT) {
@@ -168,11 +167,11 @@ export class TraveltimeQuery {
     }
   }
 
-  makeParam(name :string, val :mixed) :string {
+  makeParam(name: string, val: mixed): string {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
 
-  formBaseURL() :string {
+  formBaseURL(): string {
     let colon = ":";
     if (this._protocol.endsWith(colon)) {
       colon = "";
@@ -181,7 +180,7 @@ export class TraveltimeQuery {
     return url;
   }
 
-  formURL() :string {
+  formURL(): string {
     let url = this.formBaseURL()+'query?';
     if (isDef(this._noheader) && this._noheader) {
       url = url +"noheader=true&";
@@ -204,7 +203,7 @@ export class TraveltimeQuery {
   }
 
 
-  queryTauPVersion() :Promise<string> {
+  queryTauPVersion(): Promise<string> {
     return fetch(this.formTauPVersionURL())
       .then(response => {
         if (response.ok) {
@@ -215,12 +214,12 @@ export class TraveltimeQuery {
       });
   }
 
-  formTauPVersionURL() :string {
+  formTauPVersionURL(): string {
     return this.formBaseURL()+'taupversion';
   }
 
 
-  formWadlURL() :string {
+  formWadlURL(): string {
     return this.formBaseURL()+'application.wadl';
   }
 }

@@ -1,6 +1,6 @@
 import * as filter from '../../src/filter/index.js';
 import {Seismogram, Trace} from '../../src/seismogram';
-import {readSac, readSacPoleZero} from './sacfile';
+import {readSac} from './sacfile';
 import  {moment} from '../../src/util';
 
 test("simple value taper", () => {
@@ -9,7 +9,7 @@ test("simple value taper", () => {
   expect(coeff[0]).toBeCloseTo(Math.PI / taperLen, 9);
   expect(coeff[1]).toBeCloseTo(.5, 9);
   expect(coeff[2]).toBeCloseTo(.5, 9);
-})
+});
 
 test("constant", () => {
   let dataLen = 100;

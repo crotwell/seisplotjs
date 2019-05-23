@@ -1,6 +1,6 @@
 // @flow
 
-import { checkStringOrDate, hasArgs, hasNoArgs, isStringArg, isNumArg, stringify } from './util';
+import { checkStringOrDate, stringify } from './util';
 
 // flow type for moment type
 import { moment } from './util';
@@ -31,7 +31,7 @@ export class Quake {
   get time(): moment {
     return this._time;
   }
-  set time(value:moment | string) {
+  set time(value: moment | string) {
     this._time = moment.utc(value);
   }
   get arrivals(): Array<Arrival> {
@@ -110,9 +110,9 @@ export class Pick {
   publicId: string;
   constructor(time: moment,
       networkCode: string,
-      stationCode:string,
-      locationCode:string,
-      channelCode:string) {
+      stationCode: string,
+      locationCode: string,
+      channelCode: string) {
     this.time = checkStringOrDate(time);
     this.networkCode = networkCode;
     this.stationCode = stationCode;

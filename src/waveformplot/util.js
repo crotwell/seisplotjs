@@ -3,6 +3,8 @@
 import * as dataselect from '../fdsndataselect';
 import * as miniseed from '../miniseed';
 import {Seismogram, Trace} from '../seismogram';
+import {SeismographConfig} from './seismographconfig';
+import {CanvasSeismograph} from './canvasSeismograph';
 import * as d3 from 'd3';
 let RSVP = dataselect.RSVP;
 import  {moment} from '../util';
@@ -21,7 +23,7 @@ export type PlotDataType = {
 
 /** Returns an array of Promises, one per selected element.
 */
-export function createPlotsBySelectorPromise(selector :string) :Promise<Array<PlotDataType>> {
+export function createPlotsBySelectorPromise(selector: string): Promise<Array<PlotDataType>> {
   let clockOffset = 0; // should set from server
   let out = [];
   d3.selectAll(selector).each(function() {
@@ -107,12 +109,11 @@ export function createPlotsBySelectorPromise(selector :string) :Promise<Array<Pl
 }
 
 
-export function createPlotsBySelector(selector :string) {
+export function createPlotsBySelector(selector: string) {
   return createPlotsBySelectorPromise(selector).then(function(resultArray){
-    resultArray.forEach(function(result :PlotDataType) {
+    resultArray.forEach(function(result: PlotDataType) {
       result.svgParent.append("p").text("Build plot");
         if (result.segments.size >0) {
-          let s = result.segments[0];
           let svgDiv = result.svgParent.append("div");
           svgDiv.classed("svg-container-wide", true);
           let seisConfig = new SeismographConfig();
@@ -129,7 +130,7 @@ export function createPlotsBySelector(selector :string) {
   });
 }
 
-export function calcClockOffset(serverTime :moment) {
+export function calcClockOffset(serverTime: moment) {
   return dataselect.calcClockOffset(serverTime);
 }
 
@@ -149,8 +150,8 @@ export function calcStartEndDates(start?: moment, end?: moment, duration?: numbe
 export type TimeWindow = {start: moment, end: moment};
 import type {TimeRangeType} from './chooser';
 
-export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram, accumulator?: TimeRangeType) :TimeRangeType {
-    let out :TimeRangeType;
+export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram, accumulator?: TimeRangeType): TimeRangeType {
+    let out: TimeRangeType;
     if ( ! accumulator && ! data) {
       throw new Error("data and accumulator are not defined");
     } else if ( ! accumulator) {
@@ -177,7 +178,7 @@ export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram
     return out;
   }
 
-export function findMinMax(data: Array<Seismogram> | Seismogram | Trace, minMaxAccumulator ?: Array<number>) :Array<number> {
+export function findMinMax(data: Array<Seismogram> | Seismogram | Trace, minMaxAccumulator ?: Array<number>): Array<number> {
     if ( Array.isArray(data)) {
        for(let i=0; i< data.length; i++) {
          minMaxAccumulator = findMinMax(data[i], minMaxAccumulator);

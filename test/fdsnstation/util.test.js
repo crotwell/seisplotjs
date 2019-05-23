@@ -11,7 +11,7 @@ test( "_grabFirstEl test", () => {
   let lat = fdsnstation.util._grabFirstEl(sta, LATITUDE);
   expect(lat).toBeDefined();
   expect(lat.textContent).toBe("34.2818");
-  expect(fdsnstation.util._grabFirstElText(sta, LATITUDE)).toBe("34.2818")
+  expect(fdsnstation.util._grabFirstElText(sta, LATITUDE)).toBe("34.2818");
   expect(fdsnstation.util._grabFirstElFloat(sta, LATITUDE)).toBe(34.2818);
 });
 

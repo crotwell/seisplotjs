@@ -23,7 +23,7 @@ export function fftInverse(fftResult: FFTResult) {
   return inverseDFT(fftResult.packedFreq, fftResult.origLength);
 }
 
-export function calcDFT(waveform: Array<number>, npts: number):Array<number> {
+export function calcDFT(waveform: Array<number>, npts: number): Array<number> {
   let log2N = 4;
   let N = 16;
   while(N < npts) { log2N += 1; N = 2 * N;}
@@ -39,7 +39,7 @@ export function calcDFT(waveform: Array<number>, npts: number):Array<number> {
   return out;
 }
 
-export function inverseDFT(packedFreq: Array<number>, npts: number):Array<number> {
+export function inverseDFT(packedFreq: Array<number>, npts: number): Array<number> {
   if (npts > packedFreq.length) {
     throw new Error("Not enough points in packed freq array for "+npts+", only "+packedFreq.length);
   }
@@ -64,7 +64,7 @@ export function ampPhase(packedFreq: Array<number>) {
     amp: [],
     phase: [],
     npts: 0
-  }
+  };
   let c = createComplex(packedFreq[0], 0);
   out.amp.push(c.abs());
   out.phase.push(c.angle());

@@ -1,6 +1,6 @@
 // @flow
 
-import { moment, checkStringOrDate, hasArgs, hasNoArgs, isStringArg } from './util';
+import { moment, checkStringOrDate } from './util';
 import * as miniseed from './miniseed';
 
 /**
@@ -14,15 +14,15 @@ export class Seismogram {
   _y: Array<number>;
   _compressed: Array<miniseed.DataRecord>;
   /** the sample rate in hertz */
-  sampleRate:number;
+  sampleRate: number;
   /** @private */
-  _start:moment;
-  networkCode:string;
-  stationCode:string;
-  locationCode:string;
-  channelCode:string;
-  yUnit:string;
-  constructor(yArray:Array<number>, sampleRate: number, start: moment) {
+  _start: moment;
+  networkCode: string;
+  stationCode: string;
+  locationCode: string;
+  channelCode: string;
+  yUnit: string;
+  constructor(yArray: Array<number>, sampleRate: number, start: moment) {
     if (yArray.length > 0 && yArray[0] instanceof miniseed.DataRecord) {
       this._compressed = yArray;
       this._y = null;
@@ -52,14 +52,14 @@ export class Seismogram {
     this._y = value;
     this._invalidate_end_cache();
   }
-  get start() :moment {
+  get start(): moment {
     return this._start;
   }
   set start(value: moment | string) {
     this._start = checkStringOrDate(value);
     this._invalidate_end_cache();
   }
-  get end() :moment {
+  get end(): moment {
     if ( ! this._end_cache || this._end_cache_numPoints !== this.numPoints) {
       // array length modified, recalc cached end time
       this._end_cache_numPoints = this.numPoints;
@@ -74,40 +74,40 @@ export class Seismogram {
     this._sampleRate = value;
     this._invalidate_end_cache();
   }
-  get numPoints() :number {
+  get numPoints(): number {
     return this.y.length;
   }
-  get netCode() :string {
+  get netCode(): string {
     return this.networkCode;
   }
-  get staCode() :string {
+  get staCode(): string {
     return this.stationCode;
   }
-  get locId() :string {
+  get locId(): string {
     return this.locationCode;
   }
-  get locCode() :string {
+  get locCode(): string {
     return this.locationCode;
   }
-  get chanCode() :string {
+  get chanCode(): string {
     return this.channelCode;
   }
-  yAtIndex(i: number) :number {
+  yAtIndex(i: number): number {
     return this.y[i];
   }
 
-  timeOfSample(i:number ) :moment {
+  timeOfSample(i: number ): moment {
     return moment.utc(this.start).add(i/this.sampleRate, 'seconds');
   }
   /** @return nslc codes separated by '.'
   */
-  codes() :string {
+  codes(): string {
     return this.networkCode+"."+this.stationCode+"."+this.locationCode+"."+this.channelCode;
   }
-  seisId() :string {
+  seisId(): string {
    return (this.codes()+"_"+this.start.toISOString()+"_"+this.end.toISOString()).replace(/\./g,'_').replace(/:/g,'');
   }
-  clone():Seismogram {
+  clone(): Seismogram {
     let out = new Seismogram(this.y.slice(),
                           this.sampleRate,
                           moment.utc(this._start));
@@ -199,31 +199,31 @@ export class Trace {
     this.end = moment.max(allEnd);
   }
 
-  get networkCode() :string {
+  get networkCode(): string {
     return this.seisArray[0].networkCode;
   }
-  get stationCode() :string {
+  get stationCode(): string {
     return this.seisArray[0].stationCode;
   }
-  get locationCode() :string {
+  get locationCode(): string {
     return this.seisArray[0].locationCode;
   }
-  get channelCode() :string {
+  get channelCode(): string {
     return this.seisArray[0].channelCode;
   }
-  get sampleRate() :string {
+  get sampleRate(): string {
     return this.seisArray[0].sampleRate;
   }
-  get yUnit() :string {
+  get yUnit(): string {
     return this.seisArray[0].yUnit;
   }
-  get numPoints() :number {
+  get numPoints(): number {
     return this.seisArray.reduce((accumulator, seis) => accumulator + seis.numPoints, 0);
   }
-  codes() :string {
+  codes(): string {
     return this.seisArray[0].codes();
   }
-  get segments() : Array<Seismogram> {
+  get segments(): Array<Seismogram> {
     return this.seisArray;
   }
   append(seismogram) {
@@ -236,7 +236,7 @@ export class Trace {
     * Creates a new Trace composed of all seismogram segments that overlap the
     * given time window. If none do, this returns null;
     */
-  trim(timeWindow: TimeRangeType) :Trace {
+  trim(timeWindow: TimeRangeType): Trace {
     let out = null;
     if (this.seisArray) {
       let trimSeisArray = this.seisArray.filter(function(d) {
@@ -263,7 +263,7 @@ export class Trace {
         breakStart.add(duration);
       }
       // check for null
-      out = out.filter(function(seis) { return seis;})
+      out = out.filter(function(seis) { return seis;});
       this.seisArray = out;
     }
     return this;
@@ -275,7 +275,7 @@ export class Trace {
   }
 }
 
-export function ensureIsTrace(seisTrace :Trace | Seismogram) {
+export function ensureIsTrace(seisTrace: Trace | Seismogram) {
   if (typeof seisTrace === "object") {
     if (seisTrace instanceof Trace) {
       return seisTrace;
@@ -288,7 +288,7 @@ export function ensureIsTrace(seisTrace :Trace | Seismogram) {
       } else {
         s += " "+seisTrace;
       }
-      throw new Error("must be Trace or Seismogram but "+s)
+      throw new Error("must be Trace or Seismogram but "+s);
     }
   } else {
     throw new Error("must be Trace or Seismogram but not an object");

@@ -1,17 +1,8 @@
 // @flow
 
-import {
-    moment,
-    d3,
-    miniseed,
-    createPlotsBySelectorPromise,
-    findStartEnd,
-    findMinMax
-  } from './util';
+import {moment} from './util';
 
-import type { PlotDataType } from './util';
-import type { TimeRangeType } from './chooser';
-import { Seismogram, Trace } from '../seismogram';
+import { Trace } from '../seismogram';
 import { CanvasSeismograph } from './canvasSeismograph';
 import { SeismographConfig } from './seismographconfig';
 
@@ -24,12 +15,12 @@ export class Helicorder {
   trace: Trace;
   xScaleArray: any;
   yScale: any;
-  plotStartDate :moment;
-  plotEndDate :moment;
-  constructor(inSvgParent :any,
+  plotStartDate: moment;
+  plotEndDate: moment;
+  constructor(inSvgParent: any,
               heliConfig: HelicorderConfig,
               trace: Trace,
-              plotStartDate :moment, plotEndDate :moment) {
+              plotStartDate: moment, plotEndDate: moment) {
     this.seismographArray = [];
     this.svgParent = inSvgParent;
     this.heliConfig = heliConfig;
@@ -41,7 +32,6 @@ export class Helicorder {
   draw() {
     let start = moment.utc(this.plotStartDate);
     this.seismographArray = new Array();
-    let minmax = findMinMax(this.trace.segments);
     let lineTimes = this.calcTimesForLines(start, this.secondsPerLine, this.heliConfig.numLines);
   //  while (start.isBefore(this.plotEndDate)) {
   //    let lineTime = lineTimes[0]; // temp, wrong, just for height
@@ -72,7 +62,7 @@ export class Helicorder {
       start = end;
     }
   }
-  calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number) :Array<HeliTimeRangeType> {
+  calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRangeType> {
     let out = [];
     let s = moment.utc(startTime);
     for (let lineNum=0; lineNum < numberOfLines; lineNum++) {
@@ -131,7 +121,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.ySublabel = ` `;
     this.lineSeisConfig.xLabel = ' ';
-    this.lineSeisConfig.yLabel = ''// replace later with `${start.format("HH.mm")}`;
+    this.lineSeisConfig.yLabel = '';// replace later with `${start.format("HH.mm")}`;
     this.lineSeisConfig.isXAxis = false;
     this.lineSeisConfig.isYAxis = false;
     this.lineSeisConfig.margin.top = 2;

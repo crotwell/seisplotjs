@@ -1,7 +1,7 @@
 // @flow
 import {Seismogram, Trace} from '../seismogram';
 
-export function taper(seis :Seismogram, width :number = 0.05, taperType :string = HANNING) :Seismogram {
+export function taper(seis: Seismogram, width: number = 0.05, taperType: string = HANNING): Seismogram {
   if (width > 0.5) {
     throw new Error("Taper width cannot be larger than 0.5, width="+width);
   }
@@ -26,7 +26,7 @@ export function taper(seis :Seismogram, width :number = 0.05, taperType :string 
 /**
  * Calculates the coefficients for tapering, [omega, f0, f1]
  */
-export function getCoefficients(type :string, length :number ) :Array<number> {
+export function getCoefficients(type: string, length: number ): Array<number> {
   let omega, f0, f1;
   if(type === HANNING) {
       omega = Math.PI / length;

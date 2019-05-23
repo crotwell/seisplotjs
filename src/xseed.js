@@ -9,7 +9,6 @@
 
 import * as seedcodec from './seedcodec';
 import {Seismogram} from './seismogram';
-//import * as CRC32C from 'fast-crc32c';
 
 
 export const UNKNOWN_DATA_VERSION = 0;
@@ -85,7 +84,7 @@ export class XSeedRecord {
     if ( typeof this.decompData === 'undefined') {
       this.decompress();
     }
-    return decompData;
+    return this.decompData;
   }
   codes() {
       return this.identifier;
@@ -244,8 +243,7 @@ export class XSeedHeader {
     dataView.setUint32(offset, this.numSamples, true);
     offset += 4;
     if (zeroCrc) {
-      console.log("set crc to zero to enable recalc")
-        dataView.setUint32(offset, 0, true);
+      dataView.setUint32(offset, 0, true);
     } else {
       dataView.setUint32(offset, this.crc, true);
     }
@@ -292,8 +290,6 @@ export function padZeros(val, len) {
 
 export function makeString(dataView, offset, length) {
   const utf8decoder = new TextDecoder('utf-8');
-  let out = "";
-  let dbg = `dataview ${offset} ${length}: `;
   let u8arr = new Uint8Array(dataView.buffer, dataView.byteOffset+offset, length);
   return utf8decoder.decode(u8arr).trim();
   // for (let i=offset; i<offset+length; i++) {
@@ -327,7 +323,7 @@ export function createSeismogram(contig) {
   for (let i=0; i<contig.length; i++) {
     y = y.concat(contig[i].decompress());
   }
-  let out = new model.Seismogram(y,
+  let out = new Seismogram(y,
                                  contig[0].header.sampleRate,
                                  contig[0].header.start);
   out.netCode(contig[0].header.netCode)
@@ -583,7 +579,7 @@ export function calculateCRC32C(buf, initial) {
   } else if ( buf instanceof Uint8Array) {
     // ok
   } else {
-    throw new Error("arg must be ArrayBuffer or Uint8Array")
+    throw new Error("arg must be ArrayBuffer or Uint8Array");
   }
   let crc = (initial | 0) ^ -1;
   for (let i = 0; i < buf.length; i++){
@@ -591,7 +587,7 @@ export function calculateCRC32C(buf, initial) {
     let tmp = crc;
     tmp = (tmp ^ -1) >>> 0;
     if (tmp < 0) {
-      tmp = 0xFFFFFFFF + tmp + 1
+      tmp = 0xFFFFFFFF + tmp + 1;
     }
   }
   return (crc ^ -1) >>> 0;

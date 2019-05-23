@@ -1,4 +1,6 @@
 import * as fdsndataselect from '../../src/fdsndataselect.js';
+import * as util from '../../src/util.js';
+let moment = util.moment;
 
 
 test( "query setter test", () => {
@@ -10,7 +12,6 @@ test( "query setter test", () => {
   const DURATION = 300;
   const timeWindow = fdsndataselect.calcStartEndDates(new moment.utc('2018-01-01T12:34:45.000Z'), null, DURATION, 0);
   const MIN_LENGTH = 120;
-  const MINMAG = 5.5;
   const QUALITY = 'D';
   const FORMAT = 'miniseed';
   expect(dsQuery.networkCode(NET)).toBe(dsQuery);

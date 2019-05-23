@@ -2,7 +2,6 @@
 import * as miniseed from '../../src/miniseed.js';
 import  {moment} from '../../src/util';
 
-var fs = require('fs');
 
 test("time of sample", () => {
   const dh = new miniseed.DataHeader();

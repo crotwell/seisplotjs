@@ -7,7 +7,7 @@ RSVP.on('error', function(reason: string) {
 });
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, checkStringOrDate, stringify} from './util';
 
 import * as miniseed from './miniseed';
 import { Channel } from './stationxml';
@@ -89,7 +89,7 @@ export class DataSelectQuery {
   /** Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
   */
-  protocol(value?: string) :string | DataSelectQuery {
+  protocol(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._protocol = value;
       return this;
@@ -101,7 +101,7 @@ export class DataSelectQuery {
   }
   /** Gets/Sets the remote host to connect to.
   */
-  host(value?: string) :string | DataSelectQuery {
+  host(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._host = value;
       return this;
@@ -136,7 +136,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  networkCode(value?: string) :string | DataSelectQuery {
+  networkCode(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._networkCode = value;
       return this;
@@ -146,7 +146,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  stationCode(value?: string) :string | DataSelectQuery {
+  stationCode(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._stationCode = value;
       return this;
@@ -156,7 +156,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  locationCode(value?: string) :string | DataSelectQuery {
+  locationCode(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._locationCode = value;
       return this;
@@ -166,7 +166,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  channelCode(value?: string) :string | DataSelectQuery {
+  channelCode(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._channelCode = value;
       return this;
@@ -176,7 +176,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  startTime(value?: moment) :moment | DataSelectQuery {
+  startTime(value?: moment): moment | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
     } else if (hasArgs(value)) {
@@ -186,7 +186,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
-  endTime(value?: moment) :moment | DataSelectQuery {
+  endTime(value?: moment): moment | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
     } else if (hasArgs(value)) {
@@ -196,7 +196,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
-  quality(value?: string) :string | DataSelectQuery {
+  quality(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._quality = value;
       return this;
@@ -230,7 +230,7 @@ export class DataSelectQuery {
   /** set or get the repository paramter. This is an IRIS-specific
   * parameter that will not work with other dataselect web services.
   */
-  repository(value?: string) :string | DataSelectQuery {
+  repository(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._repository = value;
       return this;
@@ -240,7 +240,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  format(value?: string) :string | DataSelectQuery {
+  format(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._format = value;
       return this;
@@ -250,7 +250,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  computeStartEnd(start ?:moment, end ?:moment, duration ?:number, clockOffset ?:number) :DataSelectQuery {
+  computeStartEnd(start?: moment, end?: moment, duration?: number, clockOffset?: number): DataSelectQuery {
     let se = new StartEndDuration(start, end, duration, clockOffset);
     this.startTime(se.start);
     this.endTime(se.end);
@@ -259,23 +259,23 @@ export class DataSelectQuery {
 
   /** @deprecated use queryDataRecords or querySeismograms instead
    */
-  query() :Promise<Array<miniseed.DataRecord>> {
+  query(): Promise<Array<miniseed.DataRecord>> {
     console.log("fdsndataselect.query() is deprecated, use queryDataRecords or querySeismograms.");
     return this.queryDataRecords();
   }
-  queryDataRecords() :Promise<Array<miniseed.DataRecord>> {
+  queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
     return this.queryRaw().then(function(rawBuffer) {
         let dataRecords = miniseed.parseDataRecords(rawBuffer);
         return dataRecords;
     });
   }
   /** @deprecated use queryTraces to handle gaps */
-  querySeismograms() :Promise<Map<string, Array<Seismogram>>> {
+  querySeismograms(): Promise<Map<string, Array<Seismogram>>> {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
   }
-  queryTraces() :Promise<Map<string, Array<Trace>>> {
+  queryTraces(): Promise<Map<string, Array<Trace>>> {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
@@ -287,7 +287,7 @@ export class DataSelectQuery {
       let url = mythis.formURL();
 console.log("fdsnDataSelect URL: "+url);
       client.open("GET", url);
-      client.ontimeout = function(e) {
+      client.ontimeout = function() {
         this.statusText = "Timeout "+this.statusText;
         reject(this);
       };
@@ -312,12 +312,12 @@ console.log("fdsnDataSelect URL: "+url);
     return promise;
   }
 
-  postQueryDataRecords(channelTimeList: Array<ChannelTimeRange>) :Promise<Array<miniseed.DataRecord>> {
+  postQueryDataRecords(channelTimeList: Array<ChannelTimeRange>): Promise<Array<miniseed.DataRecord>> {
     return this.postQueryRaw(channelTimeList)
     .then( fetchResponse => {
       if(fetchResponse.ok) {
         return fetchResponse.arrayBuffer().then(ab => {
-          console.log(`fetch response ok, bytes=${ab.byteLength}  ${(typeof ab)}`)
+          console.log(`fetch response ok, bytes=${ab.byteLength}  ${(typeof ab)}`);
           return miniseed.parseDataRecords(ab);
         });
       } else {
@@ -327,17 +327,17 @@ console.log("fdsnDataSelect URL: "+url);
     });
   }
   /** @deprecated use queryTraces to handle gaps */
-  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<Seismogram>>> {
+  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<Seismogram>>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
   }
-  postQueryTraces(channelTimeList: Array<ChannelTimeRange>) :Promise<Map<string, Array<Trace>>> {
+  postQueryTraces(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<Trace>>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.tracePerChannel(dataRecords);
     });
   }
-  postQueryRaw(channelTimeList: Array<ChannelTimeRange>) :Promise<Response> {
+  postQueryRaw(channelTimeList: Array<ChannelTimeRange>): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
       console.log("Empty chan length so return fake fetch promise");
@@ -354,7 +354,7 @@ console.log("fdsnDataSelect URL: "+url);
     }
   }
 
-  createPostBody(channelTimeList: Array<ChannelTimeRange>) :string {
+  createPostBody(channelTimeList: Array<ChannelTimeRange>): string {
     let out = "";
     for (let ct of channelTimeList) {
       let sta = ct.channel.station;
@@ -365,7 +365,7 @@ console.log("fdsnDataSelect URL: "+url);
     return out;
   }
 
-  formBaseURL() :string {
+  formBaseURL(): string {
       let colon = ":";
       if (this._protocol.endsWith(colon)) {
         colon = "";
@@ -373,11 +373,11 @@ console.log("fdsnDataSelect URL: "+url);
       return this._protocol+colon+"//"+this._host+(this._port==80?"":(":"+this._port))+"/fdsnws/dataselect/"+this._specVersion;
   }
 
-  formVersionURL() :string {
+  formVersionURL(): string {
     return this.formBaseURL()+"/version";
   }
 
-  queryVersion() :Promise<string> {
+  queryVersion(): Promise<string> {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       let url = mythis.formVersionURL();
@@ -401,11 +401,11 @@ console.log("fdsnDataSelect URL: "+url);
     return promise;
   }
 
-  makeParam(name :string, val :mixed) :string {
+  makeParam(name: string, val: mixed): string {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
 
-  formURL() :string {
+  formURL(): string {
     let url = this.formBaseURL()+"/query?";
     if (this._networkCode) { url = url+this.makeParam("net", this.networkCode());}
     if (this._stationCode) { url = url+this.makeParam("sta", this.stationCode());}
@@ -427,7 +427,7 @@ console.log("fdsnDataSelect URL: "+url);
   }
 }
 
-export function calcClockOffset(serverTime :moment) :number {
+export function calcClockOffset(serverTime: moment): number {
   return moment.utc().getTime() - serverTime.getTime();
 }
 
@@ -445,7 +445,7 @@ export class StartEndDuration {
   end: moment;
   duration: moment.duration;
   clockOffset: moment.duration;
-  constructor(start ?:moment, end ?:moment, duration ?:number, clockOffset ?:number) {
+  constructor(start?: moment, end?: moment, duration?: number, clockOffset?: number) {
 
     if (duration &&
       (typeof duration == "string" || duration instanceof String)) {
@@ -481,11 +481,12 @@ export class StartEndDuration {
   }
 }
 
-export function calcStartEndDates(start ?:moment, end ?:moment, duration ?:number, clockOffset ?:number): StartEndDuration {
+/** @deprecated*/
+export function calcStartEndDates(start?: moment, end?: moment, duration?: number, clockOffset?: number): StartEndDuration {
   return new StartEndDuration(start, end, duration, clockOffset);
 }
 
-export function createDataSelectQuery(params: Object) :DataSelectQuery {
+export function createDataSelectQuery(params: Object): DataSelectQuery {
   if ( ! params || typeof params != 'object' ) {
     throw new Error("params null or not an object");
   }

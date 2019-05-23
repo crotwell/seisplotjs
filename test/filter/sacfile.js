@@ -59,7 +59,7 @@ export function writeSac(sacDataView, filename) {
       if (err) reject(err);
       else resolve();
     });
-  })
+  });
 }
 
 export function readSacPoleZero(filename) {

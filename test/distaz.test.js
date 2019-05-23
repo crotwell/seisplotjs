@@ -1,5 +1,4 @@
 // @flow
-let { expect, test } = global;
 
 import {kmtodeg, degtokm, distaz } from '../src/distaz.js';
 

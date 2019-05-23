@@ -1,6 +1,7 @@
 //@flow
+import {Trace} from '../seismogram';
 
-export function alphabeticalSort(traceA : model.seismogram.Trace, traceB : model.seismogram.Trace) {
+export function alphabeticalSort(traceA: Trace, traceB: Trace) {
   if (traceA.codes() < traceB.codes()) {
     return -1;
   } else {

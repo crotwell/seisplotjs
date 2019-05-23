@@ -14,14 +14,14 @@ const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 // its Complex instead of the simple one defined in model
 export function createComplex(real: number, imag: number) {
   return OregonDSP.filter.iir.Complex_init(real, imag);
-};
+}
 
-export function transfer(seis :Seismogram,
-                        response :Response,
-                        lowCut :number,
-                        lowPass :number,
-                        highPass :number,
-                        highCut :number) {
+export function transfer(seis: Seismogram,
+                        response: Response,
+                        lowCut: number,
+                        lowPass: number,
+                        highPass: number,
+                        highCut: number) {
         if (! response) {
           throw new Error("Response not exist???");
         }
@@ -30,12 +30,12 @@ export function transfer(seis :Seismogram,
         return transferSacPZ(seis, sacPoleZero, lowCut, lowPass, highPass, highCut);
       }
 
-export function transferSacPZ(seis :Seismogram,
+export function transferSacPZ(seis: Seismogram,
                               sacPoleZero: SacPoleZero,
-                              lowCut :number,
-                              lowPass :number,
-                              highPass :number,
-                              highCut :number) {
+                              lowCut: number,
+                              lowPass: number,
+                              highPass: number,
+                              highCut: number) {
         const sampFreq = seis.sampleRate;
 
         let values = seis.y;
@@ -60,13 +60,13 @@ export function transferSacPZ(seis :Seismogram,
     }
 
 
-export function combine(freqValues :Array<number>,
-                        sampFreq :number,
+export function combine(freqValues: Array<number>,
+                        sampFreq: number,
                         sacPoleZero,
-                        lowCut :number,
-                        lowPass :number,
-                        highPass :number,
-                        highCut :number) {
+                        lowCut: number,
+                        lowPass: number,
+                        highPass: number,
+                        highCut: number) {
         const deltaF = sampFreq / freqValues.length;
 
         // handle zero freq, no imag, set real to 0
@@ -103,7 +103,7 @@ export function combine(freqValues :Array<number>,
      * 1/(pz(s) to avoid divide by zero issues. If there is a divide by zero
      * situation, then the response is set to be 0+0i.
      */
-  export function evalPoleZeroInverse(sacPoleZero: SacPoleZero, freq :number) {
+  export function evalPoleZeroInverse(sacPoleZero: SacPoleZero, freq: number) {
         const s = createComplex(0, 2 * Math.PI * freq);
         let zeroOut = createComplex(1, 0);
         let poleOut = createComplex(1, 0);
@@ -121,11 +121,11 @@ export function combine(freqValues :Array<number>,
         return out.overReal( sacPoleZero.constant);
     }
 
-export function freqTaper(freq :number,
-                          lowCut :number,
-                          lowPass :number,
-                          highPass :number,
-                          highCut :number) :number {
+export function freqTaper(freq: number,
+                          lowCut: number,
+                          lowPass: number,
+                          highPass: number,
+                          highCut: number): number {
     if (lowCut > lowPass || lowPass > highPass || highPass > highCut) {
         throw new Error("must be lowCut > lowPass > highPass > highCut: "+lowCut +" "+ lowPass +" "+ highPass +" "+ highCut);
     }
@@ -156,8 +156,8 @@ export const UNITS = {
   * converts the analog to digital stage (usually 0) along
   * with the overall gain, but does not include later FIR stages.
   */
-export function convertToSacPoleZero( response :Response) {
-    let polesZeros :PolesZeros;
+export function convertToSacPoleZero( response: Response) {
+    let polesZeros: PolesZeros;
     if (response.stages[0].filter instanceof PolesZeros) {
       polesZeros = response.stages[0].filter;
     } else {
@@ -225,9 +225,9 @@ export function convertToSacPoleZero( response :Response) {
     return sacPZ;
 }
 
-export function calc_A0(poles :Array<OregonDSP.filter.iir.Complex>,
-                        zeros :Array<OregonDSP.filter.iir.Complex>,
-                        ref_freq :number) {
+export function calc_A0(poles: Array<OregonDSP.filter.iir.Complex>,
+                        zeros: Array<OregonDSP.filter.iir.Complex>,
+                        ref_freq: number) {
     let numer = createComplex(1, 0);
     let denom = createComplex(1, 0);
     let f0;

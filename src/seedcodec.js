@@ -211,7 +211,7 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
   //    throw new SteimException("Last sample decompressed doesn't match value x(n) value in Steim1 record: "+samples[numSamples-1]+" != "+end);
   //}
   return samples;
-};
+}
 
 /**
  * Extracts differences from the next 64 byte frame of the given compressed
@@ -225,7 +225,7 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
  * @param swapBytes reverse the endian-ness of the compressed bytes being read
  * @return integer array of difference (and constant) values
  */
-function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian: boolean) :Array<number> {
+function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian: boolean): Array<number> {
   /* get nibbles */
   let nibbles = dataView.getInt32(offset, littleEndian);
   let currNibble = 0;
@@ -337,7 +337,7 @@ export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: 
   //    throw new SteimException("Last sample decompressed doesn't match value x(n) value in Steim2 record: "+samples[numSamples-1]+" != "+end);
   //}
   return samples;
-};
+}
 
 
 /**
@@ -352,7 +352,7 @@ export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: 
  * @param swapBytes reverse the endian-ness of the compressed bytes being read
  * @return integer array of difference (and constant) values
  */
-function extractSteim2Samples(dataView: DataView, offset: number, swapBytes: boolean) :Int32Array {
+function extractSteim2Samples(dataView: DataView, offset: number, swapBytes: boolean): Int32Array {
   /* get nibbles */
   let nibbles = dataView.getUint32(offset, swapBytes);
   let currNibble = 0;

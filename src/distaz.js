@@ -2,11 +2,11 @@
 
 export const kmPerDeg = 111.19;
 
-export function degtokm(deg :number) :number {
+export function degtokm(deg: number): number {
   return deg * kmPerDeg;
 }
 
-export function kmtodeg(km :number) :number {
+export function kmtodeg(km: number): number {
   return km / kmPerDeg;
 }
 
@@ -31,7 +31,7 @@ type DistAzOutput = {
  * azimuth is if you stand at point 2 and measure angle between north
  *   and point 1. I.E. point 1 is the station and point 2 is the event.
  */
-export function distaz(lat1 :number, lon1 :number, lat2 :number, lon2 :number) :DistAzOutput {
+export function distaz(lat1: number, lon1: number, lat2: number, lon2: number): DistAzOutput {
     let result = {
         stalat: lat1,
         stalon: lon1,

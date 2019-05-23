@@ -1,4 +1,4 @@
-import {Network, Station, Channel} from '../../src/stationxml';
+import {Network} from '../../src/stationxml';
 
 test("simple network", () => {
   let NET_CODE = "AA";

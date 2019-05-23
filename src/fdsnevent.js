@@ -1,7 +1,7 @@
 // @flow
 
 import { moment } from 'moment';
-import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml'
+import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml';
 
 // special due to flow
 import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
@@ -113,7 +113,7 @@ export class EventQuery {
   /** Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
   */
-  protocol(value?: string) :string | EventQuery {
+  protocol(value?: string): string | EventQuery {
     if (isStringArg(value)) {
       this._protocol = value;
       return this;
@@ -125,7 +125,7 @@ export class EventQuery {
   }
   /** Gets/Sets the remote host to connect to.
   */
-  host(value?: string) :string | EventQuery {
+  host(value?: string): string | EventQuery {
     if (isStringArg(value)) {
       this._host = value;
       return this;
@@ -162,7 +162,7 @@ export class EventQuery {
   }
   /** Get/Set the eventid query parameter.
   */
-  eventId(value?: string) :string | EventQuery {
+  eventId(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
       return this._eventId;
     } else if (isStringArg(value)) {
@@ -174,7 +174,7 @@ export class EventQuery {
   }
   /** Get/Set the starttime query parameter.
   */
-  startTime(value?: moment) :moment | EventQuery {
+  startTime(value?: moment): moment | EventQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
     } else if (hasArgs(value)) {
@@ -186,7 +186,7 @@ export class EventQuery {
   }
   /** Get/Set the endtime query parameter.
   */
-  endTime(value?: moment) :moment | EventQuery {
+  endTime(value?: moment): moment | EventQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
     } else if (hasArgs(value)) {
@@ -198,7 +198,7 @@ export class EventQuery {
   }
   /** Get/Set the updatedafter query parameter.
   */
-  updatedAfter(value?: moment) :moment | EventQuery {
+  updatedAfter(value?: moment): moment | EventQuery {
     if (hasNoArgs(value)) {
       return this._updatedAfter;
     } else if (hasArgs(value)) {
@@ -505,7 +505,7 @@ export class EventQuery {
   /** Parses a QuakeML event xml element into a Quake object.
    * @param qml the event xml Element
   */
-  convertToQuake(qml: Element) :Quake {
+  convertToQuake(qml: Element): Quake {
     let out = new Quake();
     out.publicId = _grabAttribute(qml, 'publicID');
     out.description = _grabFirstElText(_grabFirstEl(qml, 'description'), 'text');
@@ -546,7 +546,7 @@ export class EventQuery {
       if (o.publicId === out.preferredOriginId) {
         out.preferredOrigin = o;
       } else {
-        console.log(`no match: ${o.publicId} ${out.preferredOriginId}`)
+        console.log(`no match: ${o.publicId} ${out.preferredOriginId}`);
       }
     }
     if (allMags.length > 0) {out.magnitude = allMags[0];}
@@ -555,12 +555,12 @@ export class EventQuery {
         out.preferredMagnitude = m;
         out.magnitude = m;
       } else {
-        console.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`)
+        console.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`);
       }
     }
     return out;
   }
-  extractEventId(qml: Element) :string {
+  extractEventId(qml: Element): string {
     let eventId = _grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventid');
     let catalogEventSource = _grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventsource');
     if (eventId) {
@@ -586,7 +586,7 @@ export class EventQuery {
    * @param qml the origin xml Element
    * @param allPicks picks already extracted from the xml for linking arrivals with picks
   */
-  convertToOrigin(qml: Element, allPicks) :Origin {
+  convertToOrigin(qml: Element, allPicks): Origin {
     let out = new Origin();
     let otimeStr = _grabFirstElText(_grabFirstEl(qml, 'time'),'value');
     if (otimeStr ) {
@@ -610,7 +610,7 @@ export class EventQuery {
   /** Parses a QuakeML magnitude xml element into a Magnitude object.
    * @param qml the magnitude xml Element
   */
-  convertToMagnitude(qml: Element) :Magnitude {
+  convertToMagnitude(qml: Element): Magnitude {
     let mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, 'mag'), 'value');
     let type = _grabFirstElText(qml, 'type');
     if (mag && type) {
@@ -624,7 +624,7 @@ export class EventQuery {
    * @param arrivalQML the arrival xml Element
    * @param allPicks picks already extracted from the xml for linking arrivals with picks
   */
-  convertToArrival(arrivalQML: Element, allPicks: Array<Pick>) :Arrival {
+  convertToArrival(arrivalQML: Element, allPicks: Array<Pick>): Arrival {
     let pickId = _grabFirstElText(arrivalQML, 'pickID');
     let phase = _grabFirstElText(arrivalQML, 'phase');
     if (phase && pickId) {
@@ -642,7 +642,7 @@ export class EventQuery {
   /** Parses a QuakeML pick xml element into a Pick object.
    * @param pickQML the pick xml Element
   */
-  convertToPick(pickQML: Element) :Pick {
+  convertToPick(pickQML: Element): Pick {
     let otimeStr = _grabFirstElText(_grabFirstEl(pickQML, 'time'),'value');
     let time = checkStringOrDate(otimeStr);
     let waveformIdEl = _grabFirstEl(pickQML, 'waveformID');
@@ -677,7 +677,7 @@ export class EventQuery {
   *  @param rawXml the xml Document to parse
   *  @return array of Quake objects
   */
-  parseQuakeML(rawXml: Document) :Array<Quake> {
+  parseQuakeML(rawXml: Document): Array<Quake> {
     let top = rawXml.documentElement;
     if (! top) {
       throw new Error("Can't get documentElement");
@@ -693,13 +693,13 @@ export class EventQuery {
   /** Queries the remote server, to get QuakeML xml.
   * @return xml Document
   */
-  queryRawXml() :Promise<Document> {
+  queryRawXml(): Promise<Document> {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       let client = new XMLHttpRequest();
       let url = mythis.formURL();
       client.open("GET", url);
-      client.ontimeout = function(e) {
+      client.ontimeout = function() {
         this.statusText = "Timeout "+this.statusText;
         reject(this);
       };
@@ -735,7 +735,7 @@ export class EventQuery {
   /** Forms the basic URL to contact the web service, without any query paramters
    * @return the url
   */
-  formBaseURL() :string {
+  formBaseURL(): string {
       let colon = ":";
       if (! this.host || this._host === USGS_HOST) {
         this._host = USGS_HOST;
@@ -751,13 +751,13 @@ export class EventQuery {
   /** Forms the URL to get catalogs from the web service, without any query paramters
    * @return the url
   */
-  formCatalogsURL() :string {
+  formCatalogsURL(): string {
     return this.formBaseURL()+"/catalogs";
   }
   /** Queries the remote web service to get known catalogs
    * @return Promise to Array of catalog names
   */
-  queryCatalogs() :Promise<Array<string>> {
+  queryCatalogs(): Promise<Array<string>> {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       let url = mythis.formCatalogsURL();
@@ -792,13 +792,13 @@ export class EventQuery {
   /** Forms the URL to get contributors from the web service, without any query paramters
    * @return the url
   */
-  formContributorsURL() :string {
+  formContributorsURL(): string {
     return this.formBaseURL()+"/contributors";
   }
   /** Queries the remote web service to get known contributors
    * @return Promise to Array of contributor names
   */
-  queryContributors() :Promise<Array<string>> {
+  queryContributors(): Promise<Array<string>> {
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       let url = mythis.formContributorsURL();
@@ -831,14 +831,14 @@ export class EventQuery {
   /** Forms the URL to get version from the web service, without any query paramters
    * @return the url
   */
-  formVersionURL() :string {
+  formVersionURL(): string {
     return this.formBaseURL()+"/version";
   }
 
   /** Queries the remote web service to get its version
    * @return Promise to version string
   */
-  queryVersion() :Promise<string>{
+  queryVersion(): Promise<string>{
     let mythis = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
       let url = mythis.formVersionURL();
@@ -863,13 +863,13 @@ export class EventQuery {
   /**
   * Create a name=value parameter to add to a URL, including trailing ampersand
   */
-  makeParam(name: string, val: mixed) :string {
+  makeParam(name: string, val: mixed): string {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
 
   /** Form URL to query the remote web service, encoding the query parameters.
   */
-  formURL() :string {
+  formURL(): string {
     let colon = ":";
     if (this._protocol.endsWith(colon)) {
       colon = "";
@@ -933,12 +933,12 @@ export class EventQuery {
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
 
-const _isDef = function(v: mixed) :boolean %checks {
+const _isDef = function(v: mixed): boolean %checks {
   return typeof v !== 'undefined' && v !== null;
-}
+};
 
 
-const _grabFirstElNS = function(xml: Element | null | void, namespace: string, tagName: string) :Element | void {
+const _grabFirstElNS = function(xml: Element | null | void, namespace: string, tagName: string): Element | void {
   let out = undefined;
   if ( _isDef(xml)) {
     let elList = xml.getElementsByTagNameNS(namespace, tagName);
@@ -947,9 +947,9 @@ const _grabFirstElNS = function(xml: Element | null | void, namespace: string, t
     }
   }
   return out;
-}
+};
 
-const _grabFirstEl = function(xml: Element | null | void, tagName: string) :Element | void {
+const _grabFirstEl = function(xml: Element | null | void, tagName: string): Element | void {
   let out = undefined;
   if ( _isDef(xml)) {
     let elList = xml.getElementsByTagName(tagName);
@@ -958,36 +958,36 @@ const _grabFirstEl = function(xml: Element | null | void, tagName: string) :Elem
     }
   }
   return out;
-}
+};
 
-const _grabFirstElText = function(xml: Element | null | void, tagName: string) :string | void {
+const _grabFirstElText = function(xml: Element | null | void, tagName: string): string | void {
   let out = undefined;
   let el = _grabFirstEl(xml, tagName);
   if (_isDef(el)) {
     out = el.textContent;
   }
   return out;
-}
+};
 
-const _grabFirstElInt = function(xml: Element | null | void, tagName: string) :number | void {
+const _grabFirstElInt = function(xml: Element | null | void, tagName: string): number | void {
   let out = undefined;
   let el = _grabFirstElText(xml, tagName);
   if (_isDef(el)) {
     out = parseInt(el);
   }
   return out;
-}
+};
 
-const _grabFirstElFloat = function(xml: Element | null | void, tagName: string) :number | void {
+const _grabFirstElFloat = function(xml: Element | null | void, tagName: string): number | void {
   let out = undefined;
   let el = _grabFirstElText(xml, tagName);
   if (_isDef(el)) {
     out = parseFloat(el);
   }
   return out;
-}
+};
 
-const _grabAttribute = function(xml: Element | null | void, tagName: string) :string | void {
+const _grabAttribute = function(xml: Element | null | void, tagName: string): string | void {
   let out = undefined;
   if ( _isDef(xml)) {
     let a = xml.getAttribute(tagName);
@@ -996,9 +996,9 @@ const _grabAttribute = function(xml: Element | null | void, tagName: string) :st
     }
   }
   return out;
-}
+};
 
-const _grabAttributeNS = function(xml: Element | null | void, namespace: string, tagName: string) :string | void {
+const _grabAttributeNS = function(xml: Element | null | void, namespace: string, tagName: string): string | void {
   let out = undefined;
   if ( _isDef(xml)) {
     let a = xml.getAttributeNS(namespace, tagName);
@@ -1007,7 +1007,7 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
     }
   }
   return out;
-}
+};
 
 export const util = {
   "_grabFirstEl": _grabFirstEl,
@@ -1016,4 +1016,4 @@ export const util = {
   "_grabFirstElInt": _grabFirstElInt,
   "_grabAttribute": _grabAttribute,
   "_grabAttributeNS": _grabAttributeNS
-}
+};

@@ -1,6 +1,6 @@
 // @flow
 
-import { checkStringOrDate, hasArgs, hasNoArgs, isStringArg, isNumArg } from './util';
+import { checkStringOrDate } from './util';
 
 
 // flow type for moment type
@@ -63,19 +63,19 @@ export class Station {
     this.stationCode = stationCode;
     this.channels = [];
   }
-  get startDate() {
+  get startDate(): moment {
     return this._startDate;
   }
   set startDate(value?: moment | string) {
     this._startDate = checkStringOrDate(value);
   }
-  get endDate() {
+  get endDate(): moment {
     return this._endDate;
   }
   set endDate(value?: moment | string) {
     this._endDate = checkStringOrDate(value);
   }
-  codes():string {
+  codes(): string {
     return this.network.codes()+"."+this.stationCode;
   }
 }
@@ -100,11 +100,17 @@ export class Channel {
   response: Response;
   constructor(station: Station, channelCode: string, locationCode: string) {
     this.station = station;
+    if (channelCode.length !== 3) {
+      throw new Error(`Channel code must be 3 chars: ${channelCode}`);
+    }
     this.channelCode = channelCode;
     this.locationCode = locationCode;
     if (! locationCode) {
       // make sure "null" is encoded as empty string
       this.locationCode = '';
+    }
+    if (this.locationCode.length !== 2) {
+      throw new Error(`locationCode must be 2 chars, or empty: ${locationCode}`);
     }
   }
   get startDate() {
@@ -137,7 +143,7 @@ export class Channel {
     }
     return this;
   }
-  get instrumentSensitivity() :InstrumentSensitivity {
+  get instrumentSensitivity(): InstrumentSensitivity {
     if (this.response) {
       return this.response.instrumentSensitivity;
     } else {

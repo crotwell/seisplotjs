@@ -1,7 +1,5 @@
 //@flow
 
-import type { TimeRangeType } from './chooser';
-import {Seismogram, Trace} from '../seismogram';
 import {Channel, InstrumentSensitivity} from '../stationxml';
 import {Quake} from '../quakeml';
 import { d3, moment } from './util';
@@ -27,7 +25,7 @@ export const DRAW_BOTH = "both"; // for testing
 export class SeismographConfig {
   drawingType: string;
   xScaleFormat: (date: Date) => string;
-  yScaleFormat: string | (value :number) => string;
+  yScaleFormat: string | (value: number) => string;
   _title: Array<string>;
   isXAxis: boolean;
   xLabel: string;
@@ -50,7 +48,7 @@ export class SeismographConfig {
                                  // separated by pixels
 
   connectSegments: boolean;
-  lineColors :Array<string>;
+  lineColors: Array<string>;
   disableWheelZoom: boolean;
   doRMean: boolean;
   doGain: boolean;
@@ -99,13 +97,13 @@ export class SeismographConfig {
     this.lineWidth = 1;
   }
 
-  get title() :Array<string> {
+  get title(): Array<string> {
     return this._title;
   }
   /** Sets the title as simple string or array of strings. If an array
   then each item will be in a separate tspan for easier formatting.
   */
-  set title(value :string | Array<string>) {
+  set title(value: string | Array<string>) {
     if (Array.isArray(value)) {
       this._title = value;
     } else {
@@ -120,7 +118,7 @@ export class SeismographConfig {
         return "black";
     }
   }
-  clone() :SeismographConfig {
+  clone(): SeismographConfig {
     let out = new SeismographConfig();
     out.isXAxis = this.isXAxis;
     out.isYAxis = this.isYAxis;
@@ -147,7 +145,7 @@ export class SeismographConfig {
     out.lineColors = this.lineColors;
     return out;
   }
-};
+}
 
 export class SeismogramDisplayData {
   trace: Trace;
@@ -175,7 +173,7 @@ export const formatDay = d3.utcFormat("%m/%d");
 export const formatMonth = d3.utcFormat("%Y/%m");
 export const formatYear = d3.utcFormat("%Y");
 
-export const multiFormatHour = function(date: Date) :string {
+export const multiFormatHour = function(date: Date): string {
   return (d3.utcSecond(date) < date ? formatMillisecond
       : d3.utcMinute(date) < date ? formatSecond
       : d3.utcHour(date) < date ? formatMinute

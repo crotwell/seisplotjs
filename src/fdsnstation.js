@@ -118,7 +118,7 @@ export class StationQuery {
   /** Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
   */
-  protocol(value?: string) :string | StationQuery {
+  protocol(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._protocol = value;
       return this;
@@ -130,7 +130,7 @@ export class StationQuery {
   }
   /** Gets/Sets the remote host to connect to.
   */
-  host(value?: string) :string | StationQuery {
+  host(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._host = value;
       return this;
@@ -167,7 +167,7 @@ export class StationQuery {
   }
   /** Get/Set the network query parameter.
   */
-  networkCode(value?: string) :string | StationQuery {
+  networkCode(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._networkCode = value;
       return this;
@@ -179,7 +179,7 @@ export class StationQuery {
   }
   /** Get/Set the station query parameter.
   */
-  stationCode(value?: string) :string | StationQuery {
+  stationCode(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._stationCode = value;
       return this;
@@ -191,7 +191,7 @@ export class StationQuery {
   }
   /** Get/Set the location query parameter.
   */
-  locationCode(value?: string) :string | StationQuery {
+  locationCode(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._locationCode = value;
       return this;
@@ -203,7 +203,7 @@ export class StationQuery {
   }
   /** Get/Set the channel query parameter.
   */
-  channelCode(value?: string) :string | StationQuery {
+  channelCode(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._channelCode = value;
       return this;
@@ -215,7 +215,7 @@ export class StationQuery {
   }
   /** Get/Set the starttime query parameter.
   */
-  startTime(value?: moment) :moment | StationQuery {
+  startTime(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
     } else if (hasArgs(value)) {
@@ -227,7 +227,7 @@ export class StationQuery {
   }
   /** Get/Set the endtime query parameter.
   */
-  endTime(value?: moment) :moment | StationQuery {
+  endTime(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
     } else if (hasArgs(value)) {
@@ -239,7 +239,7 @@ export class StationQuery {
   }
   /** Get/Set the startbefore query parameter.
   */
-  startBefore(value?: moment) :moment | StationQuery {
+  startBefore(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startBefore;
     } else if (hasArgs(value)) {
@@ -251,7 +251,7 @@ export class StationQuery {
   }
   /** Get/Set the endbefore query parameter.
   */
-  endBefore(value?: moment) :moment | StationQuery {
+  endBefore(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endBefore;
     } else if (hasArgs(value)) {
@@ -263,7 +263,7 @@ export class StationQuery {
   }
   /** Get/Set the startafter query parameter.
   */
-  startAfter(value?: moment) :moment | StationQuery {
+  startAfter(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startAfter;
     } else if (hasArgs(value)) {
@@ -275,7 +275,7 @@ export class StationQuery {
   }
   /** Get/Set the endafter query parameter.
   */
-  endAfter(value?: moment) :moment | StationQuery {
+  endAfter(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endAfter;
     } else if (hasArgs(value)) {
@@ -407,7 +407,7 @@ export class StationQuery {
   }
   /** Get/Set the format query parameter.
   */
-  format(value?: string) :string | StationQuery {
+  format(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._format = value;
       return this;
@@ -419,7 +419,7 @@ export class StationQuery {
   }
   /** Get/Set the updatedafter query parameter.
   */
-  updatedAfter(value?: moment) :moment | StationQuery {
+  updatedAfter(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._updatedAfter;
     } else if (hasArgs(value)) {
@@ -446,32 +446,32 @@ export class StationQuery {
     * returned is set. This is a crude, coarse check to make sure
     * the client doesn't ask for EVERYTHING the server has. */
   isSomeParameterSet(): boolean {
-    return _idDef(this._networkCode) ||
-    _idDef(this._stationCode) ||
-    _idDef(this._locationCode) ||
-    _idDef(this._channelCode) ||
-    _idDef(this._startTime) ||
-    _idDef(this._endTime) ||
-    _idDef(this._startBefore) ||
-    _idDef(this._endBefore) ||
-    _idDef(this._startAfter) ||
-    _idDef(this._endAfter) ||
-    _idDef(this._minLat) ||
-    _idDef(this._maxLat) ||
-    _idDef(this._minLon) ||
-    _idDef(this._maxLon) ||
-    _idDef(this._latitude) ||
-    _idDef(this._longitude) ||
-    _idDef(this._minRadius) ||
-    _idDef(this._maxRadius) ||
-    _idDef(this._updatedAfter);
+    return _isDef(this._networkCode) ||
+    _isDef(this._stationCode) ||
+    _isDef(this._locationCode) ||
+    _isDef(this._channelCode) ||
+    _isDef(this._startTime) ||
+    _isDef(this._endTime) ||
+    _isDef(this._startBefore) ||
+    _isDef(this._endBefore) ||
+    _isDef(this._startAfter) ||
+    _isDef(this._endAfter) ||
+    _isDef(this._minLat) ||
+    _isDef(this._maxLat) ||
+    _isDef(this._minLon) ||
+    _isDef(this._maxLon) ||
+    _isDef(this._latitude) ||
+    _isDef(this._longitude) ||
+    _isDef(this._minRadius) ||
+    _isDef(this._maxRadius) ||
+    _isDef(this._updatedAfter);
   }
 
   /** Parses a FDSNStationXML Network xml element into a Network object.
    * @param xml the network xml Element
   */
   convertToNetwork(xml: Element): Network {
-    let out = new Network(_grabAttribute(xml, "code"))
+    let out = new Network(_grabAttribute(xml, "code"));
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
@@ -497,7 +497,7 @@ export class StationQuery {
    * @param xml the station xml Element
   */
   convertToStation(network: Network, xml: Element): Station {
-    let out = new Station(network, _grabAttribute(xml, "code"))
+    let out = new Station(network, _grabAttribute(xml, "code"));
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
@@ -521,7 +521,7 @@ export class StationQuery {
    * @param xml the channel xml Element
   */
   convertToChannel(station: Station, xml: Element): Channel {
-    let out = new Channel(station, _grabAttribute(xml, "code"), _grabAttribute(xml, "locationCode"))
+    let out = new Channel(station, _grabAttribute(xml, "code"), _grabAttribute(xml, "locationCode"));
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
@@ -581,7 +581,6 @@ export class StationQuery {
    * @param xml the Stage xml Element
   */
   convertToStage(stageXml: Element): Stage {
-    let mythis = this;
     let subEl = stageXml.firstElementChild;
     if (! subEl) {
       throw new Error("Stage element has no child elements");
@@ -673,7 +672,7 @@ export class StationQuery {
     out.offset = _grabFirstElInt(decXml, 'Offset');
     out.delay = _grabFirstElFloat(decXml, 'Delay');
     out.correction = _grabFirstElFloat(decXml, 'Correction');
-    return out
+    return out;
   }
 
   /** Parses a FDSNStationXML Gain xml element into a Gain object.
@@ -730,7 +729,7 @@ export class StationQuery {
   /** Parses the FDSN StationXML returned from a query.
    * @returns an Array of Network objects.
    */
-  parseRawXml(rawXml: Document) :Array<Network> {
+  parseRawXml(rawXml: Document): Array<Network> {
     let top = rawXml.documentElement;
     if (! top) {throw new Error("No documentElement in XML");}
     let netArray = top.getElementsByTagNameNS(STAML_NS, "Network");
@@ -751,7 +750,7 @@ export class StationQuery {
       let client = new XMLHttpRequest();
       let url = mythis.formURL(mylevel);
       client.open("GET", url);
-      client.ontimeout = function(e) {
+      client.ontimeout = function() {
         this.statusText = "Timeout "+this.statusText;
         reject(this);
       };
@@ -837,7 +836,7 @@ console.log("204 nodata so return empty xml");
   }
   /** Form URL to query the remote web service, encoding the query parameters.
   */
-  formURL(level:string) {
+  formURL(level: string) {
     let url = this.formBaseURL()+"/query?";
     if (! level) {throw new Error("level not specified, should be one of network, station, channel, response.");}
     url = url+this.makeParam("level", level);
@@ -877,11 +876,11 @@ console.log("204 nodata so return empty xml");
 // these are similar methods as in seisplotjs-fdsnstation
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
-const _isDef = function(v: mixed) :boolean  %checks {
+const _isDef = function(v: mixed): boolean  %checks {
   return typeof v !== 'undefined' && v !== null;
-}
+};
 
-const _grabFirstEl = function(xml: Element | null | void, tagName: string) :Element | void {
+const _grabFirstEl = function(xml: Element | null | void, tagName: string): Element | void {
   let out = undefined;
   if (_isDef(xml)) {
     let el = xml.getElementsByTagName(tagName);
@@ -890,36 +889,36 @@ const _grabFirstEl = function(xml: Element | null | void, tagName: string) :Elem
     }
   }
   return out;
-}
+};
 
-const _grabFirstElText = function _grabFirstElText(xml: Element | null | void, tagName: string) :string | void {
+const _grabFirstElText = function _grabFirstElText(xml: Element | null | void, tagName: string): string | void {
   let out = undefined;
   let el = _grabFirstEl(xml, tagName);
   if (_isDef(el)) {
     out = el.textContent;
   }
   return out;
-}
+};
 
-const _grabFirstElFloat = function _grabFirstElFloat(xml: Element | null | void, tagName: string) :number | void {
+const _grabFirstElFloat = function _grabFirstElFloat(xml: Element | null | void, tagName: string): number | void {
   let out = undefined;
   let elText = _grabFirstElText(xml, tagName);
   if (_isDef(elText)) {
     out = parseFloat(elText);
   }
   return out;
-}
+};
 
-const _grabFirstElInt = function _grabFirstElInt(xml: Element | null | void, tagName: string) :number | void {
+const _grabFirstElInt = function _grabFirstElInt(xml: Element | null | void, tagName: string): number | void {
   let out = undefined;
   let elText = _grabFirstElText(xml, tagName);
   if (_isDef(elText)) {
     out = parseInt(elText);
   }
   return out;
-}
+};
 
-const _grabAttribute = function _grabAttribute(xml: Element | null | void, tagName: string) :string | void {
+const _grabAttribute = function _grabAttribute(xml: Element | null | void, tagName: string): string | void {
   let out = undefined;
   if (_isDef(xml)) {
     let a = xml.getAttribute(tagName);
@@ -928,9 +927,9 @@ const _grabAttribute = function _grabAttribute(xml: Element | null | void, tagNa
     }
   }
   return out;
-}
+};
 
-const _grabAttributeNS = function(xml: Element | null | void, namespace: string, tagName: string) :string | void {
+const _grabAttributeNS = function(xml: Element | null | void, namespace: string, tagName: string): string | void {
   let out = undefined;
   if (_isDef(xml)) {
     let a = xml.getAttributeNS(namespace, tagName);
@@ -939,7 +938,7 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
     }
   }
   return out;
-}
+};
 
 export const util = {
   "_grabFirstEl": _grabFirstEl,
@@ -948,4 +947,4 @@ export const util = {
   "_grabFirstElInt": _grabFirstElInt,
   "_grabAttribute": _grabAttribute,
   "_grabAttributeNS": _grabAttributeNS
-}
+};

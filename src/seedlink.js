@@ -27,12 +27,12 @@ export type SequencedDataRecord = {
 };
 
 export class SeedlinkConnection {
-  url :string;
-  requestConfig :Array<string>;
-  receiveMiniseedFn :(packet: SequencedDataRecord) => void;
-  errorFn :(error: Error) => void;
-  webSocket :WebSocket;
-  command :string;
+  url: string;
+  requestConfig: Array<string>;
+  receiveMiniseedFn: (packet: SequencedDataRecord) => void;
+  errorFn: (error: Error) => void;
+  webSocket: WebSocket;
+  command: string;
   /** creates a seedlink websocket connection to the given url.
     * requestConfig is an array of seedlink commands
     * like:
@@ -44,7 +44,7 @@ export class SeedlinkConnection {
     * and 'miniseed', a single miniseed record.
     * The connection is not made until the connect() method is called.
     */
-  constructor(url :string, requestConfig :Array<string>, receiveMiniseedFn :(packet: SequencedDataRecord) => void, errorFn :(error: Error) => void) {
+  constructor(url: string, requestConfig: Array<string>, receiveMiniseedFn: (packet: SequencedDataRecord) => void, errorFn: (error: Error) => void) {
     this.url = url;
     this.requestConfig = requestConfig;
     this.receiveMiniseedFn = receiveMiniseedFn;
@@ -52,13 +52,13 @@ export class SeedlinkConnection {
     this.closeFn = null;
     this.command = 'DATA';
   }
-  setTimeCommand(startDate :moment) {
+  setTimeCommand(startDate: moment) {
     this.command = "TIME "+moment(startDate).format("YYYY,MM,DD,HH,mm,ss");
   }
-  setOnError(errorFn :(error: Error) => void) {
+  setOnError(errorFn: (error: Error) => void) {
     this.errorFn = errorFn;
   }
-  setOnClose(closeFn :(close: CloseEvent) => void) {
+  setOnClose(closeFn: (close: CloseEvent) => void) {
     this.closeFn = closeFn;
   }
 
@@ -102,18 +102,18 @@ export class SeedlinkConnection {
       if (this.webSocket) {
         this.webSocket = null;
       }
-    }
+    };
   }
 
-  close() :void {
+  close(): void {
     if (this.webSocket) {
       this.webSocket.close();
     }
   }
 
-  handle(event :MessageEvent ) :void {
+  handle(event: MessageEvent ): void {
     //for flow
-    const data = ((event.data : any) :ArrayBuffer);
+    const data = ((event.data: any): ArrayBuffer);
     if (data.byteLength < 64) {
       //assume text
     } else {
@@ -121,9 +121,9 @@ export class SeedlinkConnection {
     }
   }
 
-  handleMiniseed(event :MessageEvent) :void {
+  handleMiniseed(event: MessageEvent): void {
     //for flow
-    const data = ((event.data : any) :ArrayBuffer);
+    const data = ((event.data: any): ArrayBuffer);
     try {
        // let arrBuf = new ArrayBuffer(event.data);
         if (data.byteLength < 64) {
@@ -154,11 +154,11 @@ export class SeedlinkConnection {
      }
   }
 
-  sendHello(webSocket :WebSocket) :Promise<string> {
+  sendHello(webSocket: WebSocket): Promise<string> {
   let promise = new RSVP.Promise(function(resolve, reject) {
     webSocket.onmessage = function(event) {
       //for flow
-      const data = ((event.data : any) :ArrayBuffer);
+      const data = ((event.data: any): ArrayBuffer);
       let replyMsg = dataViewToString(new DataView(data));
       let lines = replyMsg.trim().split('\r');
       if (lines.length == 2) {
@@ -172,20 +172,20 @@ export class SeedlinkConnection {
   return promise;
 }
 
-  sendCmdArray(webSocket :WebSocket, cmd :Array<string>) :Promise<string> {
+  sendCmdArray(webSocket: WebSocket, cmd: Array<string>): Promise<string> {
     let that = this;
-    return cmd.reduce(function(accum :Promise<string>, next :string) {
+    return cmd.reduce(function(accum: Promise<string>, next: string) {
       return accum.then(function() {
         return that.createCmdPromise(webSocket, next);
       });
     }, RSVP.resolve());
   }
 
-  createCmdPromise(webSocket :WebSocket, mycmd :string) :Promise<string> {
+  createCmdPromise(webSocket: WebSocket, mycmd: string): Promise<string> {
     let promise = new RSVP.Promise(function(resolve, reject) {
       webSocket.onmessage = function(event) {
         //for flow
-        const data = ((event.data : any) :ArrayBuffer);
+        const data = ((event.data: any): ArrayBuffer);
         let replyMsg = dataViewToString(new DataView(data)).trim();
         if (replyMsg === 'OK') {
           resolve(replyMsg);

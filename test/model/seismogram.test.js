@@ -32,7 +32,7 @@ test("simple seismogram creation", () => {
 test("seismogram clone", () => {
   let yValues = [0, 1, 2];
   let sampleRate = 20.0;
-  let start = new Date();
+  let start = moment.utc();
   let netCode = "XX";
   let staCode = "ABCD";
   let locCode = "00";
@@ -73,4 +73,27 @@ test("seismogram clone", () => {
   expect(cloneSeis.yAtIndex(1)).toBe(x[1]);
   expect(cloneSeis.yAtIndex(2)).toBe(x[2]);
   expect(cloneSeis.yAtIndex(3)).toBe(x[3]);
+});
+
+
+test("simple Trace creation", () => {
+  let yValues = [0, 1, 2];
+  let sampleRate = 20.0;
+  let start = moment.utc();
+  let netCode = "XX";
+  let staCode = "ABCD";
+  let locCode = "00";
+  let chanCode = "BHZ";
+  let seis = new Seismogram(yValues.slice(), sampleRate, start);
+  seis.networkCode = netCode;
+  seis.stationCode = staCode;
+  seis.locationCode = locCode;
+  seis.channelCode = chanCode;
+  let trace = new Trace(seis);
+  expect(trace.networkCode).toBe(netCode);
+  expect(trace.stationCode).toBe(staCode);
+  expect(trace.locationCode).toBe(locCode);
+  expect(trace.channelCode).toBe(chanCode);
+  expect(trace.start).toEqual(start);
+  expect(trace.sampleRate).toBe(sampleRate);
 });
