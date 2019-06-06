@@ -30,6 +30,13 @@ let defaultHandleResponse = function(message) {
   console.log("Unhandled datalink response: "+message);
 };
 
+/**
+ * A websocket based Datalink connection to a ringserver.
+ *  https://raw.githubusercontent.com/iris-edu/libdali/master/doc/DataLink.protocol
+ * @param url websocket url to the ringserver
+ * @param packetHandler callback for packets as they arrive
+ * @param errorHandler callback for errors
+ */
 export class DataLinkConnection {
   url: string;
   mode: string | null;
@@ -86,22 +93,35 @@ export class DataLinkConnection {
     });
   }
 
+/**
+ * @returns true if the websocket is connected (non-null)
+ */
   isConnected(): boolean {
     return this.webSocket !== null;
   }
 
+/**
+ * Switches to streaming mode to receive data packets from the ringserver.
+ */
   stream(): void {
     if (this.mode === STREAM_MODE) {return;}
     this.mode = STREAM_MODE;
     this.sendDLCommand(STREAM, "");
   }
 
+  /**
+   * Switches back to query mode to enable commands to be sent to the ringserver.
+   */
   endStream(): void {
     if (this.webSocket === null || this.mode === null || this.mode === QUERY_MODE) {return;}
     this.mode = QUERY_MODE;
     this.sendDLCommand(ENDSTREAM, "");
   }
 
+  /**
+   * Closes the connection and the underlying websocket. No communication
+   * is possible until connect() is called again.
+   */
   close(): void {
     if (this.webSocket) {
       this.endStream(); // end streaming just in case
@@ -113,7 +133,7 @@ export class DataLinkConnection {
 
   /**
   * Send a ID Command. Command is a string.
-  * Returns a Promise.
+  * @return a Promise that resolves to the response from the ringserver.
   */
   sendId(): Promise<string> {
     const that = this;
@@ -130,7 +150,7 @@ export class DataLinkConnection {
 
 /** encodes as a Datalink packet, header with optional data section as
  * binary Uint8Array. Size of the binary data is appended
- * to the header.
+ * to the header if present.
  */
   encodeDL(command: string, data?: Uint8Array): ArrayBuffer {
     let cmdLen = command.length;
@@ -170,7 +190,9 @@ export class DataLinkConnection {
 
   /** sends the header with optional binary data
    * as the data section. Size of the data is appended
-   * to the header before sending.
+   * to the header before sending if present.
+   * @param header header to send
+   * @param data optional data to send
    */
   sendDLBinary(header: string, data?: Uint8Array): void {
     console.log(`sendDLBinary: ${header} ${data ? data.length : 0}`);
@@ -193,7 +215,7 @@ export class DataLinkConnection {
 
   /**
   * Send a DataLink Command and await the response. Command is a string.
-  * Returns a Promise that resolves with the webSocket MessageEvent.
+  * @returns a Promise that resolves with the webSocket MessageEvent.
   */
   awaitDLBinary(header: string, data?: Uint8Array): Promise<string> {
     let that = this;
@@ -222,6 +244,9 @@ export class DataLinkConnection {
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
+/** Writes data to the ringserver and awaits a acknowledgement.
+  *
+  */
   writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array) {
     let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`;
     console.log(`writeAck: header: ${header}`);
@@ -285,6 +310,10 @@ export class DataLinkConnection {
   }
 }
 
+/**
+ * Represents a Datalink packet from the ringserver.
+ *
+ */
 export class DataLinkPacket {
   header: string;
   data: DataView;
@@ -312,22 +341,43 @@ export class DataLinkPacket {
       this.miniseed = miniseed.parseSingleDataRecord(dataview);
     }
   }
-  get packetStart() {
+  /**
+   * Packet start time as a moment.
+   * @return start time
+   */
+  get packetStart(): moment {
     return hpTimeToMoment(parseInt(this.hppacketstart));
   }
-  get packetEnd() {
+  /**
+   * Packet end time as a moment.
+   * @return end time
+   */
+  get packetEnd(): moment {
     return hpTimeToMoment(parseInt(this.hppacketend));
   }
-  get packetTime() {
+  /**
+   * Packet time as a moment.
+   * @return packet time
+   */
+  get packetTime(): moment {
     return hpTimeToMoment(parseInt(this.hppackettime));
   }
 
 }
 
-
+/**
+ * Convert moment to a HPTime number.
+ * @param  {[type]} m moment to convert
+ * @return {[type]} microseconds since epoch
+ */
   export function momentToHPTime(m: moment): number {
     return m.valueOf()*1000;
   }
+  /**
+   * Convert moment to a HPTime number.
+   * @param  {[type]} m moment to convert
+   * @return {[type]} microseconds since epoch
+   */
   export function hpTimeToMoment(hptime: number): moment {
     return moment.utc(hptime/1000);
   }

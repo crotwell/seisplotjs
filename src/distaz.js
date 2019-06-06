@@ -2,10 +2,16 @@
 
 export const kmPerDeg = 111.19;
 
+/** Convert degrees into kilometers along the earth surface
+ * @param deg degrees to convert
+ */
 export function degtokm(deg: number): number {
   return deg * kmPerDeg;
 }
 
+/** Convert kilometers into degrees along the earth surface
+ * @param km kilometers to convert
+ */
 export function kmtodeg(km: number): number {
   return km / kmPerDeg;
 }
@@ -16,10 +22,10 @@ type DistAzOutput = {
   baz: number
 }
 /**
- * lat1 => Latitude of first point (+N, -S) in degrees
- * lon1 => Longitude of first point (+E, -W) in degrees
- * lat2 => Latitude of second point
- * lon2 => Longitude of second point
+ * @param lat1 Latitude of first point (station) (+N, -S) in degrees
+ * @param lon1 Longitude of first point(station) (+E, -W) in degrees
+ * @param lat2 Latitude of second point (event)
+ * @param lon2 Longitude of second point (event)
  *
  * Returns a simple object (DistAzOutput) with:
  ```
