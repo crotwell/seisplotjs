@@ -1,22 +1,26 @@
 module.exports = {
     "extends": [
       "eslint:recommended",
-      "plugin:flowtype/recommended"
+      "plugin:flowtype/recommended",
+      "plugin:jest/recommended"
     ],
     "plugins": [
       "flowtype",
-        "standard",
-        "promise"
+      "standard",
+      "promise",
+      "jest"
     ],
     "env": {
       "es6": true,
-      "browser": true
+      "browser": true,
+      "jest/globals": true
     },
     "parserOptions": {
         "ecmaVersion": 6,
         "sourceType": "module",
     },
     "rules": {
-      "semi": ["error", "always"]
+      "semi": ["error", "always"],
+      "no-console": [ "off"]
     }
 };
