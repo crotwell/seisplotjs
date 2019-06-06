@@ -1,5 +1,7 @@
 [ignore]
 <PROJECT_ROOT>/lib/.*
+<PROJECT_ROOT>/example/.*
+<PROJECT_ROOT>/pkg/.*
 
 [include]
 
