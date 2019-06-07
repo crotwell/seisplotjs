@@ -35,13 +35,15 @@ path.seispath {
 }
 
 svg.seismograph {
-  height: 450px;
-  width: 90%;
+  height: 100%;
+  width: 100%;
 }
+
 canvas.seismograph {
-  height: 450px;
-  width: 90%;
+  height: 100%;
+  width: 100%;
 }
+
 div.container-wide {
   display: inline-block;
   position: relative;
