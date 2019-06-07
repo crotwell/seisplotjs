@@ -9,7 +9,6 @@
     "d3": "^5.9.2",
     "js-quantities": "^1.7.3",
     "moment": "^2.24.0",
-    "moment-timezone": "^0.5.25",
     "oregondsp": "^1.1.1-alpha.1",
     "pikaday": "^1.8.0",
     "rsvp": "^4.8.4"
