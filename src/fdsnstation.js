@@ -7,10 +7,10 @@ RSVP.on('error', function(reason) {
 });
 
 import moment from 'moment';
-import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
+import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, AbstractFilterType, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
 
 // special due to flow
-import {checkProtocol, createComplex, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, createComplex, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';
@@ -471,7 +471,9 @@ export class StationQuery {
    * @param xml the network xml Element
   */
   convertToNetwork(xml: Element): Network {
-    let out = new Network(_grabAttribute(xml, "code"));
+    const netCode = _grabAttribute(xml, "code");
+    if (! netCode) {throw new Error("network code missing in network!");}
+    let out = new Network(netCode);
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
@@ -486,8 +488,8 @@ export class StationQuery {
     }
     let staArray = xml.getElementsByTagNameNS(STAML_NS, "Station");
     let stations = [];
-    for (let i=0; i<staArray.length; i++) {
-      stations.push(this.convertToStation(out, staArray.item(i)));
+    for (let s of staArray) {
+      stations.push(this.convertToStation(out, s));
     }
     out.stations = stations;
     return out;
@@ -497,21 +499,26 @@ export class StationQuery {
    * @param xml the station xml Element
   */
   convertToStation(network: Network, xml: Element): Station {
-    let out = new Station(network, _grabAttribute(xml, "code"));
+    let staCode = _grabAttribute(xml, "code");
+    if (! staCode) {throw new Error("station code missing in station!");}
+    let out = new Station(network, staCode);
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
-    out.latitude = _grabFirstElFloat(xml, 'Latitude');
-    out.longitude = _grabFirstElFloat(xml, 'Longitude');
-    out.elevation = _grabFirstElFloat(xml, 'Elevation');
-    out.name = _grabFirstElText(_grabFirstEl(xml, 'Site'), 'Name');
-    if (_grabAttribute(xml, "endDate")) {
-      out.endDate = _grabAttribute(xml, "endDate");
-    }
+    const lat =  _grabFirstElFloat(xml, 'Latitude');
+    if (isNumArg(lat)) {out.latitude = lat;}
+    const lon = _grabFirstElFloat(xml, 'Longitude');
+    if (isNumArg(lon)) {out.longitude = lon;}
+    const elev = _grabFirstElFloat(xml, 'Elevation');
+    if (isNumArg(elev)) {out.elevation = elev;}
+    const name = _grabFirstElText(_grabFirstEl(xml, 'Site'), 'Name');
+    if (isStringArg(name)) {out.name = name;}
+    const endDate = _grabAttribute(xml, "endDate");
+    if (isDef(endDate)) {out.endDate = _grabAttribute(xml, "endDate"); }
     let chanArray = xml.getElementsByTagNameNS(STAML_NS, "Channel");
     let channels = [];
-    for (let i=0; i<chanArray.length; i++) {
-      channels.push(this.convertToChannel(out, chanArray.item(i)));
+    for (let c of chanArray) {
+      channels.push(this.convertToChannel(out, c));
     }
     out.channels = channels;
     return out;
@@ -521,23 +528,38 @@ export class StationQuery {
    * @param xml the channel xml Element
   */
   convertToChannel(station: Station, xml: Element): Channel {
-    let out = new Channel(station, _grabAttribute(xml, "code"), _grabAttribute(xml, "locationCode"));
+    let locCode = _grabAttribute(xml, "locationCode");
+    if (! locCode) {locCode = '';}
+    let chanCode = _grabAttribute(xml, "code");
+    if (! chanCode) {throw new Error("channel code missing in channel!");}
+
+    let out = new Channel(station, chanCode, locCode);
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
     if (rs) { out.restrictedStatus = rs; }
-    out.latitude = _grabFirstElFloat(xml, 'Latitude');
-    out.longitude = _grabFirstElFloat(xml, 'Longitude');
-    out.elevation = _grabFirstElFloat(xml, 'Elevation');
-    out.depth = _grabFirstElFloat(xml, 'Depth');
-    out.azimuth = _grabFirstElFloat(xml, 'Azimuth');
-    out.dip = _grabFirstElFloat(xml, 'Dip');
-    out.sampleRate = _grabFirstElFloat(xml, 'SampleRate');
+
+    const lat =  _grabFirstElFloat(xml, 'Latitude');
+    if (isNumArg(lat)) {out.latitude = lat;}
+    const lon = _grabFirstElFloat(xml, 'Longitude');
+    if (isNumArg(lon)) {out.longitude = lon;}
+    const elev = _grabFirstElFloat(xml, 'Elevation');
+    if (isNumArg(elev)) {out.elevation = elev;}
+    const depth = _grabFirstElFloat(xml, 'Depth');
+    if (isNumArg(depth)) {out.depth = depth;}
+
+    const azimuth = _grabFirstElFloat(xml, 'Azimuth');
+    if (isNumArg(azimuth)) {out.azimuth = azimuth;}
+    const dip = _grabFirstElFloat(xml, 'Dip');
+    if (isNumArg(dip)) {out.dip = dip;}
+    const sampleRate = _grabFirstElFloat(xml, 'SampleRate');
+    if (isNumArg(sampleRate)) {out.sampleRate = sampleRate;}
     if (_grabAttribute(xml, "endDate")) {
       out.endDate = _grabAttribute(xml, "endDate");
     }
     let responseXml = xml.getElementsByTagNameNS(STAML_NS, 'Response');
     if (responseXml && responseXml.length > 0 ) {
-      out.response = this.convertToResponse(responseXml.item(0));
+      const r = responseXml.item(0);
+      if (r) {out.response = this.convertToResponse(r);}
     }
     return out;
   }
@@ -550,8 +572,10 @@ export class StationQuery {
     let out;
     let inst = responseXml.getElementsByTagNameNS(STAML_NS, 'InstrumentSensitivity');
     if (inst && inst.item(0)) {
-      out = new Response(this.convertToInstrumentSensitivity(inst.item(0)));
-    } else {
+      const i = inst.item(0);
+      if (i) {out = new Response(this.convertToInstrumentSensitivity(i));}
+    }
+    if (! out) {
       // DMC returns empty response element when they know nothing (instead
       // of just leaving it out). Return empty object in this case
       out = new Response();
@@ -570,10 +594,14 @@ export class StationQuery {
    * @param xml the InstrumentSensitivity xml Element
   */
   convertToInstrumentSensitivity(xml: Element): InstrumentSensitivity {
-    let sensitivity: number = _grabFirstElFloat(xml, 'Value');
+    let sensitivity = _grabFirstElFloat(xml, 'Value');
     let frequency = _grabFirstElFloat(xml, 'Frequency');
     let inputUnits = _grabFirstElText(_grabFirstEl(xml, 'InputUnits'), 'Name');
     let outputUnits = _grabFirstElText(_grabFirstEl(xml, 'OutputUnits'), 'Name');
+    if (! (isDef(sensitivity) && isDef(frequency) && isDef(inputUnits) && isDef(outputUnits))) {
+      // $FlowFixMe
+      throw new Error(`Not all elements of Sensitivity exist: ${sensitivity} ${frequency} ${inputUnits} ${outputUnits}`);
+    }
     return new InstrumentSensitivity(sensitivity, frequency, inputUnits, outputUnits);
   }
 
@@ -588,6 +616,12 @@ export class StationQuery {
     let filter: AbstractFilterType | null = null;
     let inputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'InputUnits'), 'Name');
     let outputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'OutputUnits'), 'Name');
+    if (! inputUnits) {
+      throw new Error("Stage inputUnits required");
+    }
+    if (! outputUnits) {
+      throw new Error("Stage outputUnits required");
+    }
     if (subEl.localName == 'PolesZeros') {
       filter = new PolesZeros(inputUnits, outputUnits);
       filter.pzTransferFunctionType = _grabFirstElText(stageXml, 'PzTransferFunctionType');

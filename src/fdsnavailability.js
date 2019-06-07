@@ -8,7 +8,8 @@ RSVP.on('error', function(reason: string) {
 });
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import type {RootType} from './fdsnws-availability-1.0.schema.json.flow.js';
 
 import {ChannelTimeRange, StartEndDuration } from './fdsndataselect';
 import {Network, Station, Channel} from './stationxml';
@@ -18,7 +19,7 @@ export const FORMAT_TEXT = 'text';
 export const FORMAT_GEOCSV = 'geocsv';
 export const FORMAT_REQUEST = 'request';
 
-export const EMPTY_JSON = "{}";
+export const EMPTY_JSON = JSON.parse('{}');
 
 export const IRIS_HOST = "service.iris.edu";
 
@@ -253,7 +254,7 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  includeResticted(value?: boolean): boolean | AvailabilityQuery {
+  includeRestricted(value?: boolean): boolean | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._includerestricted;
     } else if (hasArgs(value)) {
@@ -298,6 +299,7 @@ export class AvailabilityQuery {
         if(contentType && contentType.includes('application/json')) {
           return response.json();
         }
+        // $FlowFixMe
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
   }
@@ -319,6 +321,7 @@ export class AvailabilityQuery {
         if(contentType && contentType.includes('application/json')) {
           return response.json();
         }
+        // $FlowFixMe
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
   }
@@ -342,18 +345,18 @@ export class AvailabilityQuery {
     });
   }
   postExtent(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
-    return this.postExtentRaw(channelTimeList).then(json => {
+    return this.postExtentJson(channelTimeList).then(json => {
       return this.extractFromJson(json);
     });
   }
 
-  postExtentJson(channelTimeList: Array<ChannelTimeRange>): Promise<Response> {
+  postExtentJson(channelTimeList: Array<ChannelTimeRange>): Promise<RootType> {
     return this.postJson(channelTimeList, 'extent');
   }
-  postQueryJson(channelTimeList: Array<ChannelTimeRange>): Promise<Response> {
+  postQueryJson(channelTimeList: Array<ChannelTimeRange>): Promise<RootType> {
     return this.postJson(channelTimeList, 'query');
   }
-  postJson(channelTimeList: Array<ChannelTimeRange>, method: String): Promise<Response> {
+  postJson(channelTimeList: Array<ChannelTimeRange>, method: string): Promise<RootType> {
     const mythis = this;
     this.format(FORMAT_JSON);
     return this.postRaw(channelTimeList, method).then(function(response) {
@@ -364,10 +367,11 @@ export class AvailabilityQuery {
         if(contentType && contentType.includes('application/json')) {
           return response.json();
         }
+        // $FlowFixMe
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
   }
-  postRaw(channelTimeList: Array<ChannelTimeRange>, method: String): Promise<Response> {
+  postRaw(channelTimeList: Array<ChannelTimeRange>, method: string): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
       console.log("Empty chan length so return fake fetch promise");
@@ -389,33 +393,37 @@ export class AvailabilityQuery {
     }
   }
 
-  extractFromJson(jsonChanTimes) {
+  extractFromJson(jsonChanTimes: RootType): Array<ChannelTimeRange> {
     let out = [];
     let knownNets = new Map();
-    for (let ds of jsonChanTimes.datasources) {
-      if ( ! knownNets.has(ds.network)) {
-        knownNets.set(ds.network, new Network(ds.network));
-      }
-      let n = knownNets.get(ds.network);
-      let s = null;
-      for (let ss of n.stations) {
-        if (ss.stationCode === ds.station) {
-          s = ss;
+    if (isDef(jsonChanTimes.datasources)){
+      for (let ds of jsonChanTimes.datasources) {
+        let n = knownNets.get(ds.network);
+        if ( ! n) {
+          n = new Network(ds.network);
+          knownNets.set(ds.network, n);
         }
-      }
-      if ( ! s) {
-        s = new Station(n, ds.station);
-        n.stations.push(s);
-      }
-      let c = new Channel(s, ds.channel, ds.locationCode);
-      if (ds.earliest && ds.latest){
-        out.push(new ChannelTimeRange(c, moment.utc(ds.earliest), moment.utc(ds.latest)));
-      } else if (ds.timespans) {
-        for (let ts of ds.timespans) {
-          out.push(new ChannelTimeRange(c, moment.utc(ts[0]), moment.utc(ts[1])));
+        let s = null;
+        for (let ss of n.stations) {
+          if (ss.stationCode === ds.station) {
+            s = ss;
+          }
+        }
+        if ( ! s) {
+          s = new Station(n, ds.station);
+          n.stations.push(s);
+        }
+        let c = new Channel(s, ds.channel, ds.locationCode);
+        if (ds.earliest && ds.latest){
+          out.push(new ChannelTimeRange(c, moment.utc(ds.earliest), moment.utc(ds.latest)));
+        } else if (ds.timespans) {
+          for (let ts of ds.timespans) {
+            out.push(new ChannelTimeRange(c, moment.utc(ts[0]), moment.utc(ts[1])));
+          }
         }
       }
     }
+    return out;
   }
 
   createPostBody(channelTimeList: Array<ChannelTimeRange>): string {
@@ -430,7 +438,7 @@ export class AvailabilityQuery {
     }
     if (this._limit && this._limit>0) { out += this.makePostParm("limit", this.limit());}
     if (this._orderby) { out += this.makePostParm("orderby", this.orderby());}
-    if (this._includerestricted) { out += this.makePostParm("includerestricted", this.includeRestriced());}
+    if (this._includerestricted) { out += this.makePostParm("includerestricted", this.includeRestricted());}
     if (this._format) { out += this.makePostParm("format", this.format());}
     if (this._nodata) { out += this.makePostParm("nodata", this.nodata());}
 
@@ -503,7 +511,7 @@ export class AvailabilityQuery {
     if (this._show) { url = url+this.makeParam("show", this.show());}
     if (this._limit && this._limit>0) { url = url+this.makeParam("limit", this.limit());}
     if (this._orderby) { url = url+this.makeParam("orderby", this.orderby());}
-    if (this._includerestricted) { url = url+this.makeParam("includerestricted", this.includeRestriced());}
+    if (this._includerestricted) { url = url+this.makeParam("includerestricted", this.includeRestricted());}
     if (this._format) { url = url+this.makeParam("format", this.format());}
     if (this._nodata) { url = url+this.makeParam("nodata", this.nodata());}
 

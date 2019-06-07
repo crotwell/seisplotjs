@@ -507,34 +507,34 @@ export class EventQuery {
   */
   convertToQuake(qml: Element): Quake {
     let out = new Quake();
-    out.publicId = _grabAttribute(qml, 'publicID');
-    out.description = _grabFirstElText(_grabFirstEl(qml, 'description'), 'text');
+    let s = _grabAttribute(qml, 'publicID');
+    if (! s) {throw new Error("Quake/Event does not have publicID");}
+    out.publicId = s;
+    const desc = _grabFirstElText(_grabFirstEl(qml, 'description'), 'text');
+    if (isStringArg(desc)) {out.description = desc;}
     let otimeStr = _grabFirstElText(_grabFirstEl(_grabFirstEl(qml, 'origin'), 'time'),'value');
     if (otimeStr ) {
       out.time = otimeStr;
     } else {
       console.log("origintime is missing..."+out.description);
     }
-    out.latitude = _grabFirstElFloat(_grabFirstEl(_grabFirstEl(qml, 'origin'), 'latitude'), 'value');
-    out.longitude = _grabFirstElFloat(_grabFirstEl(_grabFirstEl(qml, 'origin'), 'longitude'), 'value');
-    out.depth = _grabFirstElFloat(_grabFirstEl(_grabFirstEl(qml, 'origin'), 'depth'), 'value');
 
     //need picks before can do origins
     let allPickEls = qml.getElementsByTagNameNS(BED_NS, 'pick');
     let allPicks = [];
-    for (let pNum=0; pNum < allPickEls.length; pNum++) {
-      allPicks.push(this.convertToPick(allPickEls.item(pNum)));
+    for (let pickEl of allPickEls) {
+      allPicks.push(this.convertToPick(pickEl));
     }
 
     let allOriginEls = qml.getElementsByTagNameNS(BED_NS, "origin");
     let allOrigins = [];
-    for (let oNum=0; oNum < allOriginEls.length; oNum++) {
-      allOrigins.push(this.convertToOrigin(allOriginEls.item(oNum), allPicks));
+    for (let originEl of allOriginEls) {
+      allOrigins.push(this.convertToOrigin(originEl, allPicks));
     }
     let allMagEls = qml.getElementsByTagNameNS(BED_NS, "magnitude");
     let allMags = [];
-    for (let mNum=0; mNum < allMagEls.length; mNum++) {
-      allMags.push(this.convertToMagnitude(allMagEls.item(mNum)));
+    for (let magEl of allMagEls) {
+      allMags.push(this.convertToMagnitude(magEl));
     }
     out.originList = allOrigins;
     out.magnitudeList = allMags;
@@ -542,20 +542,32 @@ export class EventQuery {
     out.eventId = this.extractEventId(qml);
     out.preferredOriginId = _grabFirstElText(qml, 'preferredOriginID');
     out.preferredMagnitudeId = _grabFirstElText(qml, 'preferredMagnitudeID');
-    for (let o of allOrigins) {
-      if (o.publicId === out.preferredOriginId) {
-        out.preferredOrigin = o;
-      } else {
-        console.log(`no match: ${o.publicId} ${out.preferredOriginId}`);
+    if (out.preferredOriginId) {
+      for (let o of allOrigins) {
+        if (o.publicId === out.preferredOriginId) {
+          out.preferredOrigin = o;
+          out.latitude = o.latitude;
+          out.longitude = o.longitude;
+          out.depth = o.depth;
+        } else {
+          console.log(`no match: ${o.publicId} ${out.preferredOriginId}`);
+        }
       }
+    } else if (out.originList.length > 1) {
+      const o = out.originList[0];
+      out.latitude = o.latitude;
+      out.longitude = o.longitude;
+      out.depth = o.depth;
     }
     if (allMags.length > 0) {out.magnitude = allMags[0];}
-    for (let m of allMags) {
-      if (m.publicId === out.preferredMagnitudeId) {
-        out.preferredMagnitude = m;
-        out.magnitude = m;
-      } else {
-        console.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`);
+    if (out.preferredMagnitudeId) {
+      for (let m of allMags) {
+        if (m.publicId === out.preferredMagnitudeId) {
+          out.preferredMagnitude = m;
+          out.magnitude = m;
+        } else {
+          console.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`);
+        }
       }
     }
     return out;
@@ -586,7 +598,7 @@ export class EventQuery {
    * @param qml the origin xml Element
    * @param allPicks picks already extracted from the xml for linking arrivals with picks
   */
-  convertToOrigin(qml: Element, allPicks): Origin {
+  convertToOrigin(qml: Element, allPicks: Array<Pick>): Origin {
     let out = new Origin();
     let otimeStr = _grabFirstElText(_grabFirstEl(qml, 'time'),'value');
     if (otimeStr ) {
@@ -594,15 +606,19 @@ export class EventQuery {
     } else {
       console.log("origintime is missing...");
     }
-    out.latitude = _grabFirstElFloat(_grabFirstEl(qml, 'latitude'), 'value');
-    out.longitude = _grabFirstElFloat(_grabFirstEl(qml, 'longitude'), 'value');
-    out.depth = _grabFirstElFloat(_grabFirstEl(qml, 'depth'), 'value');
-    out.publicId = _grabAttribute(qml, 'publicID');
+    const lat = _grabFirstElFloat(_grabFirstEl(qml, 'latitude'), 'value');
+    if (isNumArg(lat)) {out.latitude = lat;}
+    const lon = _grabFirstElFloat(_grabFirstEl(qml, 'longitude'), 'value');
+    if (isNumArg(lon)) {out.longitude = lon;}
+    const depth = _grabFirstElFloat(_grabFirstEl(qml, 'depth'), 'value');
+    if (isNumArg(depth)) {out.depth = depth;}
+    const pid = _grabAttribute(qml, 'publicID');
+    if (pid){out.publicId = pid;}
 
     let allArrivalEls = qml.getElementsByTagNameNS(BED_NS, 'arrival');
     let allArrivals = [];
-    for ( let aNum=0; aNum < allArrivalEls.length; aNum++) {
-      allArrivals.push(this.convertToArrival(allArrivalEls.item(aNum), allPicks));
+    for ( let arrivalEl of allArrivalEls) {
+      allArrivals.push(this.convertToArrival(arrivalEl, allPicks));
     }
     out.arrivalList = allArrivals;
     return out;
@@ -615,7 +631,8 @@ export class EventQuery {
     let type = _grabFirstElText(qml, 'type');
     if (mag && type) {
       let out = new Magnitude(mag, type);
-      out.publicId = _grabAttribute(qml, 'publicID');
+      const pid = _grabAttribute(qml, 'publicID');
+      if (pid){out.publicId = pid;}
       return out;
     }
     throw new Error("Did not find mag and type in Element: ${mag} ${type}");
@@ -633,7 +650,8 @@ export class EventQuery {
         throw new Error("Can't find pick with Id="+pickId+" for Arrival");
       }
       let out = new Arrival(phase, myPick);
-      out.publicId = _grabAttribute(arrivalQML, 'publicID');
+      const pid = _grabAttribute(arrivalQML, 'publicID');
+      if (pid){out.publicId = pid;}
       return out;
     } else {
       throw new Error("Arrival does not have phase or pickId: "+stringify(phase)+" "+stringify(pickId));
@@ -659,7 +677,8 @@ export class EventQuery {
                       +"."+ stringify(channelCode));
     }
     let out = new Pick(time, netCode, stationCode, locationCode, channelCode);
-    out.publicId = _grabAttribute(pickQML, "publicID");
+    const pid = _grabAttribute(pickQML, 'publicID');
+    if (pid){out.publicId = pid;}
     return out;
   }
 
@@ -684,8 +703,8 @@ export class EventQuery {
     }
     let eventArray = top.getElementsByTagName("event");
     let out = [];
-    for (let i=0; i<eventArray.length; i++) {
-      out[i] = this.convertToQuake(eventArray.item(i));
+    for (let eventEl of eventArray) {
+      out.push(this.convertToQuake(eventEl));
     }
     return out;
   }

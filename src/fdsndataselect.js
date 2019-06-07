@@ -257,25 +257,13 @@ export class DataSelectQuery {
     return this;
   }
 
-  /** @deprecated use queryDataRecords or querySeismograms instead
-   */
-  query(): Promise<Array<miniseed.DataRecord>> {
-    console.log("fdsndataselect.query() is deprecated, use queryDataRecords or querySeismograms.");
-    return this.queryDataRecords();
-  }
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
     return this.queryRaw().then(function(rawBuffer) {
         let dataRecords = miniseed.parseDataRecords(rawBuffer);
         return dataRecords;
     });
   }
-  /** @deprecated use queryTraces to handle gaps */
-  querySeismograms(): Promise<Map<string, Array<Seismogram>>> {
-    return this.queryDataRecords().then(dataRecords => {
-      return miniseed.mergeByChannel(dataRecords);
-    });
-  }
-  queryTraces(): Promise<Map<string, Array<Trace>>> {
+  queryTraces(): Promise<Map<string, Trace>> {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
@@ -326,13 +314,7 @@ console.log("fdsnDataSelect URL: "+url);
       }
     });
   }
-  /** @deprecated use queryTraces to handle gaps */
-  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<Seismogram>>> {
-    return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
-      return miniseed.mergeByChannel(dataRecords);
-    });
-  }
-  postQueryTraces(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<Trace>>> {
+  postQueryTraces(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Trace>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.tracePerChannel(dataRecords);
     });

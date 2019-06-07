@@ -21,9 +21,10 @@ export class Quake {
   magnitudeList: Array<Magnitude>;
   originList: Array<Origin>;
   pickList: Array<Pick>;
-  preferredOriginId: string;
+  preferredOriginId: ?string;
   preferredOrigin: Origin;
-  preferredMagnitudeId: string;
+  preferredMagnitudeId: ?string;
+  preferredMagnitude: Magnitude;
   constructor() {
 // what is essential???
   }

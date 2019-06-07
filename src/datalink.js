@@ -382,8 +382,8 @@ export class DataLinkPacket {
     return moment.utc(hptime/1000);
   }
 
-  export function stringToUint8Array(dataString?: string): Uint8Array | null {
-    let binaryData = null;
+  export function stringToUint8Array(dataString?: string): Uint8Array | void {
+    let binaryData = undefined;
     if (dataString) {
       binaryData = new Uint8Array(dataString.length);
       for (let i=0; i<dataString.length;i++) {
