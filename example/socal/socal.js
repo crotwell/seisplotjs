@@ -7,6 +7,7 @@ const fdsnevent = seisplotjs.fdsnevent;
 const fdsnstation = seisplotjs.fdsnstation;
 const fdsndataselect = seisplotjs.fdsndataselect;
 const d3 = seisplotjs.d3;
+const moment = seisplotjs.moment;
 
 seisplotjs.RSVP.on('error', function(reason) {
   console.assert(false, reason);

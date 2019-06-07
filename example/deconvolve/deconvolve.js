@@ -135,7 +135,7 @@ function processTraces(traceMap) {
 }
 
 if (doRunQuery) {
-  dsQuery.querySeismograms().then(traceMap => {
+  dsQuery.queryTraces().then(traceMap => {
     console.log("before process, traceMap.size="+traceMap.size);
     processTraces(traceMap);
     return traceMap;
