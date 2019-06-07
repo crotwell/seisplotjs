@@ -1,13 +1,13 @@
 // @flow
 
+import moment from 'moment';
+import * as d3 from 'd3';
 import * as dataselect from '../fdsndataselect';
 import * as miniseed from '../miniseed';
 import {Seismogram, Trace} from '../seismogram';
 import {SeismographConfig} from './seismographconfig';
 import {CanvasSeismograph} from './canvasSeismograph';
-import * as d3 from 'd3';
 let RSVP = dataselect.RSVP;
-import  {moment} from '../util';
 
 export { dataselect, miniseed, d3, RSVP, moment };
 

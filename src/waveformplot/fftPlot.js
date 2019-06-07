@@ -1,5 +1,6 @@
 import {FFTResult} from '../filter';
-import { d3 } from './util';
+
+import * as d3 from 'd3';
 
 export function createSimpleFFTPlot(fft, cssSelector, sps) {
   simpleOverlayFFTPlot( [ fft], cssSelector, sps);

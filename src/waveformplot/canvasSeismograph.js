@@ -7,9 +7,11 @@
  * http://www.seis.sc.edu
  */
 
+
+import moment from 'moment';
+import * as d3 from 'd3';
+
 import {
-    moment,
-    d3,
     miniseed,
     findStartEnd,
     findMinMax

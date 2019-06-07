@@ -2,10 +2,8 @@
 
 import Pikaday from 'pikaday';
 
-import {
-    d3,
-    moment
-} from './util';
+import moment from 'moment';
+import * as d3 from 'd3';
 
 export class HourMinChooser {
 

@@ -1,6 +1,6 @@
 // @flow
 
-import {moment} from './util';
+import moment from 'moment';
 
 import { Trace } from '../seismogram';
 import { CanvasSeismograph } from './canvasSeismograph';

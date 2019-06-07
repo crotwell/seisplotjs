@@ -2,7 +2,8 @@
 
 import {Channel, InstrumentSensitivity} from '../stationxml';
 import {Quake} from '../quakeml';
-import { d3, moment } from './util';
+import moment from 'moment';
+import * as d3 from 'd3';
 
 export type MarkerType = {
   name: string,

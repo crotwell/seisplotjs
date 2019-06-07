@@ -1,5 +1,6 @@
 // @flow
 
+import moment from 'moment';
 import RSVP from 'rsvp';
 
 RSVP.on('error', function(reason: string) {
@@ -7,7 +8,7 @@ RSVP.on('error', function(reason: string) {
 });
 
 // special due to flow
-import {checkProtocol, moment, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import {ChannelTimeRange, StartEndDuration } from './fdsndataselect';
 import {Network, Station, Channel} from './stationxml';

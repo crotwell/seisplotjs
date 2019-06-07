@@ -1,8 +1,9 @@
 // @flow
 
+import moment from 'moment';
+import * as d3 from 'd3';
+
 import {
-    moment,
-    d3,
     createPlotsBySelectorPromise,
     findMinMax
   } from './util';

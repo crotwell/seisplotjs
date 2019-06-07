@@ -2,8 +2,7 @@
 
 import { checkStringOrDate, stringify } from './util';
 
-// flow type for moment type
-import { moment } from './util';
+import moment from 'moment';
 
 // QuakeML classes
 

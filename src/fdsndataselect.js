@@ -1,5 +1,6 @@
 // @flow
 
+import moment from 'moment';
 import RSVP from 'rsvp';
 
 RSVP.on('error', function(reason: string) {
@@ -13,7 +14,6 @@ import * as miniseed from './miniseed';
 import { Channel } from './stationxml';
 import { Seismogram, Trace } from './seismogram';
 
-import { moment } from './util';
 
 export class ChannelTimeRange {
   channel: Channel;

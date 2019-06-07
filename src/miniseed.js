@@ -7,8 +7,9 @@
  * http://www.seis.sc.edu
  */
 
+ import moment from 'moment';
 // special due to flow
-import {moment, stringify} from './util';
+import { stringify} from './util';
 
 import {Seismogram, Trace} from './seismogram';
 import * as seedcodec from './seedcodec';

@@ -3,9 +3,7 @@
 import { checkStringOrDate } from './util';
 
 
-// flow type for moment type
-import { moment } from './util';
-//import type { moment as momentType } from 'moment';
+import moment from 'moment';
 import type {ComplexType } from './util';
 
 

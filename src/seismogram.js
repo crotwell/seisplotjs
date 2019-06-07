@@ -1,6 +1,7 @@
 // @flow
 
-import { moment, checkStringOrDate } from './util';
+import moment from 'moment';
+import { checkStringOrDate } from './util';
 import * as miniseed from './miniseed';
 
 /**

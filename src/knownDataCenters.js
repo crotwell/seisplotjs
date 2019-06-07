@@ -1,5 +1,7 @@
 // @flow
-import { moment, checkProtocol } from './util';
+
+import moment from 'moment';
+import { checkProtocol } from './util';
 
 // flow type for json known datacenters type
 //import type { moment as momentType } from 'moment';
