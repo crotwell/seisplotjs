@@ -1,4 +1,4 @@
-export const css = `
+export const pikaday_css = `
 @charset "UTF-8";
 
 /*!

@@ -1,5 +1,5 @@
 
-export const css = `
+export const chooser_css = `
 
 div.timeRangeChooser div div.hourminpopup {
     z-index: 9999;

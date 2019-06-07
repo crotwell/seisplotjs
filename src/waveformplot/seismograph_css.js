@@ -1,5 +1,5 @@
 
-export const css = `
+export const seismograph_css = `
 
 .predicted polygon {
   fill: rgba(220,220,220,.4);
