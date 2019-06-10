@@ -624,25 +624,27 @@ export class StationQuery {
     }
     if (subEl.localName == 'PolesZeros') {
       filter = new PolesZeros(inputUnits, outputUnits);
-      filter.pzTransferFunctionType = _grabFirstElText(stageXml, 'PzTransferFunctionType');
-      filter.normalizationFactor = _grabFirstElFloat(stageXml, 'NormalizationFactor');
-      filter.normalizationFrequency = _grabFirstElFloat(stageXml, 'NormalizationFrequency');
+      const pzt = _grabFirstElText(stageXml, 'PzTransferFunctionType');
+      if (pzt) { filter.pzTransferFunctionType = pzt; }
+      const nfa = _grabFirstElFloat(stageXml, 'NormalizationFactor');
+      if (_isDef(nfa)) { filter.normalizationFactor = nfa;}
+      const nfr = _grabFirstElFloat(stageXml, 'NormalizationFrequency');
+      if (_isDef(nfr)) {filter.normalizationFrequency = nfr;}
       let zeros = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Zero'))
           .map(function(zeroEl) {
-            return createComplex(_grabFirstElFloat(zeroEl, 'Real'),
-                               _grabFirstElFloat(zeroEl, 'Imaginary'));
+            return extractComplex(zeroEl);
           });
       let poles = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Pole'))
           .map(function(poleEl) {
-            return createComplex(_grabFirstElFloat(poleEl, 'Real'),
-                               _grabFirstElFloat(poleEl, 'Imaginary'));
+            return extractComplex(poleEl);
           });
       filter.zeros = zeros;
       filter.poles = poles;
     } else if (subEl.localName == 'Coefficients') {
       let coeffXml = subEl;
       filter = new CoefficientsFilter(inputUnits, outputUnits);
-      filter.cfTransferFunction = _grabFirstElText(coeffXml, 'CfTransferFunctionType');
+      const cft = _grabFirstElText(coeffXml, 'CfTransferFunctionType');
+      if (cft) {filter.cfTransferFunction = cft;}
       filter.numerator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Numerator'))
           .map(function(numerEl) {
             return parseFloat(numerEl.textContent);
@@ -656,7 +658,8 @@ export class StationQuery {
     } else if (subEl.localName == 'FIR') {
       let firXml = subEl;
       filter = new FIR(inputUnits, outputUnits);
-      filter.symmetry = _grabFirstElText(firXml, 'Symmetry');
+      const s = _grabFirstElText(firXml, 'Symmetry');
+      if (s) {filter.symmetry = s;}
       filter.numerator = Array.from(firXml.getElementsByTagNameNS(STAML_NS, 'NumeratorCoefficient'))
           .map(function(numerEl) {
             return parseFloat(numerEl.textContent);
@@ -676,7 +679,8 @@ export class StationQuery {
         filter.description = description;
       }
       if (subEl.hasAttribute('name')) {
-        filter.name = _grabAttribute(subEl, 'name');
+        const n = _grabAttribute(subEl, 'name');
+        if (n) {filter.name = n;}
       }
     }
     let decimationXml = _grabFirstEl(stageXml, 'Decimation');
@@ -701,8 +705,10 @@ export class StationQuery {
   */
   convertToDecimation(decXml: Element): Decimation {
     let out = new Decimation();
-    out.inputSampleRate = _grabFirstElFloat(decXml, 'InputSampleRate');
-    out.factor = _grabFirstElInt(decXml, 'Factor');
+    const insr = _grabFirstElFloat(decXml, 'InputSampleRate');
+    if (_isDef(insr)) {out.inputSampleRate = insr;}
+    const fac = _grabFirstElInt(decXml, 'Factor');
+    if (_isDef(fac)) {out.factor = fac;}
     out.offset = _grabFirstElInt(decXml, 'Offset');
     out.delay = _grabFirstElFloat(decXml, 'Delay');
     out.correction = _grabFirstElFloat(decXml, 'Correction');
@@ -714,8 +720,10 @@ export class StationQuery {
   */
   convertToGain(gainXml: Element): Gain {
     let out = new Gain();
-    out.value = _grabFirstElFloat(gainXml, 'Value');
-    out.frequency = _grabFirstElFloat(gainXml, 'Frequency');
+    const v = _grabFirstElFloat(gainXml, 'Value');
+    if (_isDef(v)) {out.value = v;}
+    const f = _grabFirstElFloat(gainXml, 'Frequency');
+    if (_isDef(f)) {out.frequency = f;}
     return out;
   }
 
@@ -768,8 +776,8 @@ export class StationQuery {
     if (! top) {throw new Error("No documentElement in XML");}
     let netArray = top.getElementsByTagNameNS(STAML_NS, "Network");
     let out = [];
-    for (let i=0; i<netArray.length; i++) {
-      out[i] = this.convertToNetwork(netArray.item(i));
+    for (let n of netArray) {
+      out.push(this.convertToNetwork(n));
     }
     return out;
   }
@@ -907,7 +915,7 @@ console.log("204 nodata so return empty xml");
 }
 
 
-// these are similar methods as in seisplotjs-fdsnstation
+// these are similar methods as in seisplotjs-fdsnevent
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
 const _isDef = function(v: mixed): boolean  %checks {
@@ -919,7 +927,10 @@ const _grabFirstEl = function(xml: Element | null | void, tagName: string): Elem
   if (_isDef(xml)) {
     let el = xml.getElementsByTagName(tagName);
     if (_isDef(el) && el.length > 0) {
-      out = el.item(0);
+      const e = el.item(0);
+      if (e) {
+        out = e;
+      }
     }
   }
   return out;
@@ -973,6 +984,17 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
   }
   return out;
 };
+
+function extractComplex(el: Element) {
+  const re = _grabFirstElFloat(el, 'Real');
+  const im = _grabFirstElFloat(el, 'Imaginary');
+  if (re && im) {
+    return createComplex(re, im);
+  } else {
+    // $FlowFixMe
+    throw new Error(`Both Real and Imaginary required: ${re} ${im}`);
+  }
+}
 
 export const util = {
   "_grabFirstEl": _grabFirstEl,

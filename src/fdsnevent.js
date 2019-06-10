@@ -962,7 +962,10 @@ const _grabFirstElNS = function(xml: Element | null | void, namespace: string, t
   if ( _isDef(xml)) {
     let elList = xml.getElementsByTagNameNS(namespace, tagName);
     if (_isDef(elList) && elList.length > 0) {
-      out = elList.item(0);
+      const e = elList.item(0);
+      if (e) {
+        out = e;
+      }
     }
   }
   return out;
@@ -973,7 +976,10 @@ const _grabFirstEl = function(xml: Element | null | void, tagName: string): Elem
   if ( _isDef(xml)) {
     let elList = xml.getElementsByTagName(tagName);
     if (_isDef(elList) && elList.length > 0) {
-      out = elList.item(0);
+      const e = elList.item(0);
+      if (e) {
+        out = e;
+      }
     }
   }
   return out;

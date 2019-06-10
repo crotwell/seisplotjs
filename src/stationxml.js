@@ -232,9 +232,9 @@ export class CoefficientsFilter extends AbstractFilterType {
 export class Decimation {
   inputSampleRate: number;
   factor: number;
-  offset: number;
-  delay: number;
-  correction: number;
+  offset: ?number;
+  delay: ?number;
+  correction: ?number;
 }
 
 export class Gain {
