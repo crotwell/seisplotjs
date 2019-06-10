@@ -248,13 +248,12 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
         "PArrival": PArrival,
         "startDate": startDate,
         "endDate": endDate,
-        "dataRecords": dsQuery.query(),
+        "byChannel": dsQuery.queryTraces(),
         "dsQuery": dsQuery
       });
     }).then(function(hash) {
-        let byChannel = seisplotjs.miniseed.mergeByChannel(hash.dataRecords);
+        let byChannel = hash.byChannel;
         let keys = Array.from(byChannel.keys());
-        console.log("Got "+hash.dataRecords.length+" data records for "+keys.length+" channels");
         for (let key of byChannel.keys()) {
           let segments = byChannel.get(key);
           div.append('p').html('Plot for ' + key);
