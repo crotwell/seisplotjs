@@ -27,7 +27,7 @@ export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
 }
 
-export function rMean(seis: Seismogram | Trace): Seismogram {
+export function rMean(seis: Seismogram | Trace): Seismogram | Trace {
   console.log(`rMean input class is: ${(seis.constructor.name)}`);
   if (seis instanceof Trace) {
     let meanVal = 0;
@@ -58,7 +58,7 @@ export function rMean(seis: Seismogram | Trace): Seismogram {
   }
 }
 
-export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram | Trace) {
+export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram | Trace): Seismogram | Trace {
   if (seis instanceof Trace) {
     let gainTrace = new Trace(seis.seisArray.map(s =>{
       return gainCorrect(instrumentSensitivity, s);
@@ -76,8 +76,13 @@ export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: 
   }
 }
 
+export type MinMaxMean = {
+  min: number;
+  max: number;
+  mean: number;
+};
 
-export function minMaxMean(seis: Seismogram | Trace): number {
+export function minMaxMean(seis: Seismogram | Trace): MinMaxMean {
   let meanVal = 0;
   let minVal = 9999999999;
   let maxVal = -9999999999;

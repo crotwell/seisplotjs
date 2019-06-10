@@ -4,6 +4,21 @@ import moment from 'moment';
 import { checkStringOrDate } from './util';
 import * as miniseed from './miniseed';
 
+
+export type TimeRangeType = {
+  duration: number,
+  start: moment,
+  end: moment
+};
+
+export type HighLowType = {
+      xScaleDomain: Array<number>;
+      xScaleRange: Array<number>;
+      secondsPerPixel: number;
+      samplesPerPixel: number;
+      highlowArray: Array<number>;
+};
+
 /**
 * A Seismogram object.
 * @param {Array} yArray array of Y sample values, ie the timeseries
@@ -12,25 +27,23 @@ import * as miniseed from './miniseed';
 */
 export class Seismogram {
   /** Array of y values */
-  _y: Array<number>;
-  _compressed: Array<miniseed.DataRecord>;
-  /** the sample rate in hertz */
-  sampleRate: number;
+  _y: null | Array<number>;
+  _compressed: null | Array<miniseed.DataRecord>;
+  /**  @private the sample rate in hertz */
+  _sampleRate: number;
   /** @private */
   _start: moment;
+  _end_cache: null | moment;
+  _end_cache_numPoints: number;
   networkCode: string;
   stationCode: string;
   locationCode: string;
   channelCode: string;
   yUnit: string;
-  constructor(yArray: Array<number>, sampleRate: number, start: moment) {
-    if (yArray.length > 0 && yArray[0] instanceof miniseed.DataRecord) {
-      this._compressed = yArray;
-      this._y = null;
-    } else {
-      this._compressed = null;
-      this._y = yArray;
-    }
+  _highlow: HighLowType;
+  constructor(yArray: null | Array<number>, sampleRate: number, start: moment) {
+    this._compressed = null;
+    if (yArray) { this._y = yArray; }
     this._sampleRate = sampleRate;
     this.start = checkStringOrDate(start);
     this.yUnit = 'count';
@@ -38,18 +51,23 @@ export class Seismogram {
     this._end_cache = null;
     this._end_cache_numPoints = 0;
   }
-  get y() {
-    if ( ! this._y && this._compressed) {
-      let out = [];
-      for (let i=0; i<this._compressed.length; i++) {
-        out = out.concat(this._compressed[i].decompress());
+  get y(): Array<number> {
+    let out = this._y;
+    if ( ! out) {
+      if (this._compressed) {
+        out = [];
+        for (let c of this._compressed) {
+          out = out.concat(c.decompress());
+        }
+        this._y = out;
+        this._compressed = null;
+      } else {
+        out = [];
       }
-      this._y = out;
-      this._compressed = null;
     }
-    return this._y;
+    return out;
   }
-  set y(value) {
+  set y(value: Array<number>) {
     this._y = value;
     this._invalidate_end_cache();
   }
@@ -120,7 +138,7 @@ export class Seismogram {
     return out;
   }
   trim(trimStart: moment, trimEnd: moment) {
-    if (trimEnd.isBefore(this._start) || trimStart.isAfter(this._end)) {
+    if (trimEnd.isBefore(this._start) || trimStart.isAfter(this.end)) {
       return null;
     }
     let sIndex = 0;
@@ -130,8 +148,8 @@ export class Seismogram {
       sIndex = Math.floor(offset);
     }
     let eIndex = 0;
-    if (trimEnd.isBefore(this._end)) {
-      let milliDiff = moment.utc(this._end).diff(trimEnd);
+    if (trimEnd.isBefore(this.end)) {
+      let milliDiff = moment.utc(this.end).diff(trimEnd);
       let offset = milliDiff * this.sampleRate /1000.0;
       eIndex = this.y.length - Math.floor(offset);
     }
@@ -160,6 +178,8 @@ export class Seismogram {
   * and sample rate, but cover different times. */
 export class Trace {
   seisArray: Array<Seismogram>;
+  _start: moment;
+  _end: moment;
   constructor(seisArray: Seismogram | Array<Seismogram>) {
     if ( Array.isArray(seisArray)) {
       this.seisArray = seisArray;
@@ -181,7 +201,7 @@ export class Trace {
       this.checkSimilar(f, s);
     });
   }
-  checkSimilar(f, s) {
+  checkSimilar(f: Seismogram, s: Seismogram) {
     if (s.networkCode !== f.networkCode) {throw new Error("NetworkCode not same: "+s.networkCode+" !== "+f.networkCode);}
     if (s.stationCode !== f.stationCode) {throw new Error("StationCode not same: "+s.stationCode+" !== "+f.stationCode);}
     if (s.locationCode !== f.locationCode) {throw new Error("LocationCode not same: "+s.locationCode+" !== "+f.locationCode);}
@@ -193,13 +213,19 @@ export class Trace {
     let allStart = this.seisArray.map(seis => {
       return moment.utc(seis.start);
     });
-    this.start = moment.min(allStart);
+    this._start = moment.min(allStart);
     let allEnd = this.seisArray.map(seis => {
       return moment.utc(seis.end);
     });
-    this.end = moment.max(allEnd);
+    this._end = moment.max(allEnd);
   }
 
+  get start(): moment {
+    return this._start;
+  }
+  get end(): moment {
+    return this._end;
+  }
   get networkCode(): string {
     return this.seisArray[0].networkCode;
   }
@@ -212,7 +238,7 @@ export class Trace {
   get channelCode(): string {
     return this.seisArray[0].channelCode;
   }
-  get sampleRate(): string {
+  get sampleRate(): number {
     return this.seisArray[0].sampleRate;
   }
   get yUnit(): string {
@@ -227,17 +253,17 @@ export class Trace {
   get segments(): Array<Seismogram> {
     return this.seisArray;
   }
-  append(seismogram) {
+  append(seismogram: Seismogram) {
     this.checkSimilar(this.seisArray[0], seismogram);
-    this.start = moment.min([ this.start, moment.utc(seismogram.start)]);
-    this.end = moment.max([ this.end, moment.utc(seismogram.end)]);
+    this._start = moment.min([ this.start, moment.utc(seismogram.start)]);
+    this._end = moment.max([ this.end, moment.utc(seismogram.end)]);
     this.seisArray.push(seismogram);
   }
   /**
     * Creates a new Trace composed of all seismogram segments that overlap the
     * given time window. If none do, this returns null;
     */
-  trim(timeWindow: TimeRangeType): Trace {
+  trim(timeWindow: TimeRangeType): null | Trace {
     let out = null;
     if (this.seisArray) {
       let trimSeisArray = this.seisArray.filter(function(d) {
@@ -270,9 +296,12 @@ export class Trace {
     return this;
   }
   merge() {
-    return this.seisArray.reduce((acc, s) => {
+    let initValue: Array<number> = [];
+    // $FlowFixMe
+    return this.seisArray.reduce((acc: Array<number>, s: Seismogram) => {
+                // $FlowFixMe
                 return acc.concat(s.y);
-              }, []);
+              }, initValue);
   }
 }
 

@@ -3,6 +3,7 @@
 import moment from 'moment';
 
 import { Trace } from '../seismogram';
+import type { MarginType, MarkerType } from './seismographconfig';
 import { CanvasSeismograph } from './canvasSeismograph';
 import { SeismographConfig } from './seismographconfig';
 
@@ -31,7 +32,7 @@ export class Helicorder {
   }
   draw() {
     let start = moment.utc(this.plotStartDate);
-    this.seismographArray = new Array();
+    this.seismographArray = [];
     let lineTimes = this.calcTimesForLines(start, this.secondsPerLine, this.heliConfig.numLines);
   //  while (start.isBefore(this.plotEndDate)) {
   //    let lineTime = lineTimes[0]; // temp, wrong, just for height
@@ -52,7 +53,7 @@ export class Helicorder {
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
       lineSeisConfig.minHeight = height;
       lineSeisConfig.maxHeight = height;
-      let seismograph = new CanvasSeismograph(seisDiv, lineSeisConfig, this.trace, start, end);
+      let seismograph = new CanvasSeismograph(seisDiv, lineSeisConfig, [this.trace], start, end);
       seismograph.disableWheelZoom();
       seismograph.draw();
       seismograph.canvas.style("height", `${height}px`);
@@ -87,8 +88,10 @@ export class Helicorder {
     }
   }
   appendMarkers(value: Array<MarkerType> | MarkerType) {
-    let markers = value;
-    if (! Array.isArray(value)) {
+    let markers;
+    if (Array.isArray(value)) {
+      markers = value;
+    } else {
       markers = [ value ];
     }
     for(let s of this.seismographArray) {

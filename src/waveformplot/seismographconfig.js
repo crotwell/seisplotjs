@@ -1,6 +1,7 @@
 //@flow
 
 import {Channel, InstrumentSensitivity} from '../stationxml';
+import {Seismogram, Trace} from '../seismogram';
 import {Quake} from '../quakeml';
 import moment from 'moment';
 import * as d3 from 'd3';
@@ -50,10 +51,11 @@ export class SeismographConfig {
 
   connectSegments: boolean;
   lineColors: Array<string>;
+  lineWidth: number;
   disableWheelZoom: boolean;
   doRMean: boolean;
   doGain: boolean;
-  fixedYScale: Array<number>;
+  fixedYScale: null | Array<number>;
 
   constructor() {
     this.drawingType = DRAW_CANVAS;
@@ -112,7 +114,7 @@ export class SeismographConfig {
     }
   }
 
-  getColorForIndex(i) {
+  getColorForIndex(i: number) {
     if (this.lineColors.length && this.lineColors.length > 0) {
       return this.lineColors[i%this.lineColors.length];
     } else {

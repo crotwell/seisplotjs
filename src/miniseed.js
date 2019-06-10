@@ -154,7 +154,7 @@ export class DataRecord {
   /** Concatenates the net, station, loc and channel codes,
     * separated by the given seperator, or periods if not given.
   */
-  codes(sep) {
+  codes(sep?: string) {
     if ( ! sep) { sep = '.';}
     return this.header.netCode+sep+this.header.staCode+sep+this.header.locCode+sep+this.header.chanCode;
   }
@@ -270,13 +270,13 @@ export class Blockette1000 extends Blockette {
 
 export class Blockette1001 extends Blockette {
   timeQual: number;
-  microSec: number;
+  microsecond: number;
   frameCount: number;
-  constructor(type: number, body: DataView, timeQual: number, microSec: number, frameCount: number) {
+  constructor(type: number, body: DataView, timeQual: number, microsecond: number, frameCount: number) {
     super(type, body);
     if (type != 1001) {throw new Error("Not a blockette1001: "+this.type);}
     this.timeQual = timeQual;
-    this.microSec = microSec;
+    this.microsecond = microsecond;
     this.frameCount = frameCount;
   }
 }
@@ -372,13 +372,10 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord) {
   * Assumes that they are all contiguous and in order. Header values from the first
   * DataRecord are used. */
 export function createSeismogram(contig: Array<DataRecord>): Seismogram {
-  let y = [];
-  for (let i=0; i<contig.length; i++) {
-    y = y.concat(contig[i].decompress());
-  }
-  let out = new Seismogram(y,
-                                 contig[0].header.sampleRate,
-                                 contig[0].header.start);
+  let out = new Seismogram(null,
+                           contig[0].header.sampleRate,
+                           contig[0].header.start);
+  out._compressed = contig;
   out.networkCode = contig[0].header.netCode;
   out.stationCode = contig[0].header.staCode;
   out.locationCode = contig[0].header.locCode;

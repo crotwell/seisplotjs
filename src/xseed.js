@@ -9,12 +9,15 @@
 
 import * as seedcodec from './seedcodec';
 import {Seismogram} from './seismogram';
+import {DataRecord} from './miniseed';
+import moment from 'moment';
 
 
 export const UNKNOWN_DATA_VERSION = 0;
 export const CRC_OFFSET = 28;
 export const FIXED_HEADER_SIZE=40;
 export const FDSN_PREFIX = 'FDSN';
+export const LITTLE_ENDIAN = true;
 
 /** parse arrayBuffer into an array of XSeedRecords. */
 export function parseXSeedRecords(arrayBuffer: ArrayBuffer) {
@@ -35,8 +38,14 @@ export function parseXSeedRecords(arrayBuffer: ArrayBuffer) {
 /** Represents a xSEED Data Record, with header, extras and data.
   */
 export class XSeedRecord {
-  constructor(dataView: DataView) {
-    this.decompData = undefined;
+  header: XSeedHeader;
+  decompData: null | Array<number>;
+  rawData: null | DataView;
+  rawExtraHeaders: null | string;
+  extraHeaders: any;
+  length: number;
+  constructor(dataView?: DataView) {
+    this.decompData = null;
     this.rawData = null;
     this.rawExtraHeaders = null;
     if ( ! dataView) {
@@ -55,7 +64,7 @@ export class XSeedRecord {
     console.log(`extraHeader size before= ${this.header.extraHeadersLength} after=${JSON.stringify(this.extraHeaders).length}`);
     let sliceStart = dataView.byteOffset+this.header.getSize()+this.header.extraHeadersLength;
     this.rawData = new DataView(dataView.buffer.slice(sliceStart, sliceStart+ this.header.dataLength));
-    this.decompData = undefined;
+    this.decompData = null;
     this.length = this.header.numSamples;
   }
   getSize() {
@@ -63,7 +72,7 @@ export class XSeedRecord {
     if (json.length > 2) {
       if (this.header.extraHeadersLength !== json.length) {
         console.log(`recalc header length: ${this.header.extraHeadersLength}  ${json.length}`);
-        console.log(this.origExtraHeaders);
+        console.log(this.rawExtraHeaders);
         console.log(json);
       }
       this.header.extraHeadersLength = json.length;
@@ -74,23 +83,28 @@ export class XSeedRecord {
   }
   decompress() {
     // only decompress once as it is expensive operation
-    if ( typeof this.decompData === 'undefined') {
-      this.decompData = seedcodec.decompress(this.header.encoding, this.rawData, this.header.numSamples, this.header.littleEndian);
-      this.decompData.header = this.header;
+    if ( this.decompData === null) {
+      if (! this.rawData) {
+        throw new Error("decompData and rawData are null");
+      }
+      this.decompData = seedcodec.decompress(this.header.encoding,
+                                             this.rawData,
+                                             this.header.numSamples,
+                                             LITTLE_ENDIAN);
     }
     return this.decompData;
   }
   get data() {
-    if ( typeof this.decompData === 'undefined') {
+    if ( this.decompData === null ) {
       this.decompress();
     }
     return this.decompData;
   }
   codes() {
-      return this.identifier;
+      return this.header.identifier;
 //    return this.header.netCode+"."+this.header.staCode+"."+this.header.locCode+"."+this.header.chanCode;
   }
-  save(dataView) {
+  save(dataView: DataView) {
     let json = JSON.stringify(this.extraHeaders);
     if (json.length > 2) {
       this.header.extraHeadersLength = json.length;
@@ -106,11 +120,14 @@ export class XSeedRecord {
         offset++;
       }
     }
-    for (let i=0; i< this.rawData.byteLength; i++) {
-      dataView.setUint8(offset+i, this.rawData.getUint8(i));
+    if (this.rawData !== null ) {
+      for (let i=0; i< this.rawData.byteLength; i++) {
+        dataView.setUint8(offset+i, this.rawData.getUint8(i));
+      }
+      offset += this.rawData.byteLength;
+    } else {
+      throw new Error("rawData is null");
     }
-    offset += this.rawData.byteLength;
-// CRC not yet working
 
     let dvcrc = dataView.getUint32(CRC_OFFSET, true);
     if (dvcrc != 0) {
@@ -122,7 +139,7 @@ export class XSeedRecord {
     return offset;
   }
 
-  calcCrc() {
+  calcCrc(): number {
     let size = this.getSize();
     let buff = new ArrayBuffer(this.getSize());
     let dataView = new DataView(buff);
@@ -137,8 +154,29 @@ export class XSeedRecord {
 }
 
 export class XSeedHeader {
-
-  constructor(dataView) {
+  recordIndicator: string;
+  formatVersion: number;
+  flags: number;
+  nanosecond: number;
+  year: number;
+  dayOfYear: number;
+  hour: number;
+  minute: number;
+  second: number;
+  encoding: number;
+  sampleRatePeriod: number;
+  sampleRate: number;
+  numSamples: number;
+  crc: number;
+  publicationVersion: number;
+  identifierLength: number;
+  extraHeadersLength: number;
+  identifier: string;
+  extraHeaders: any;
+  dataLength: number;
+  start: moment;
+  end: moment;
+  constructor(dataView?: DataView) {
     if ( !dataView) {
       // empty construction
       this.recordIndicator = 'MS';
@@ -197,7 +235,7 @@ export class XSeedHeader {
     this.identifier = makeString(dataView, 40, this.identifierLength);
     // lazily extract json and data
 
-    this.start = new Date(Date.UTC(this.year, 0, this.dayOfYear, this.hour, this.minute, this.second, Math.round(this.nanosecond / 1000000)));
+    this.start = this._startToMoment();
     this.end = this.timeOfSample(this.numSamples-1);
   }
   getSize() {
@@ -212,10 +250,10 @@ export class XSeedHeader {
       +padZeros(this.second, 2)+"."+padZeros(this.nanosecond, 9)+"Z";
   }
 
-  timeOfSample(i) {
+  timeOfSample(i: number) {
     return new Date(this.start.getTime() + 1000*i/this.sampleRate);
   }
-  save(dataView, offset=0, zeroCrc=false) {
+  save(dataView: DataView, offset: number =0, zeroCrc: boolean =false) {
     dataView.setInt8(offset, this.recordIndicator.charCodeAt(0));
     offset++;
     dataView.setInt8(offset, this.recordIndicator.charCodeAt(1));
@@ -264,9 +302,19 @@ export class XSeedHeader {
 
     return offset;
   }
+  _startToMoment(): moment {
+    let m = new moment.utc([this.year, 0, 1, this.hour, this.minute, this.second, 0]);
+    m.add(Math.round(this.nanosecond / 1000000), 'ms');
+    m.dayOfYear(this.dayOfYear);
+    if (m.isValid()) {
+      return m;
+    } else {
+      throw new Error(`Header start is invalid moment: ${this.year} ${this.dayOfYear} ${this.hour} ${this.minute} ${this.second} ${this.nanosecond}`);
+    }
+  }
 }
 
-export function parseExtraHeaders(dataView) {
+export function parseExtraHeaders(dataView: DataView) {
   if (dataView.byteLength === 0) {
     return {};
   }
@@ -275,11 +323,12 @@ export function parseExtraHeaders(dataView) {
     // looks like json, '{' is ascii 123
     return JSON.parse(makeString(dataView, 0, dataView.byteLength));
   } else {
+    // $FlowFixMe
     throw new Error("do not understand extras with first char val: "+firstChar+" "+(firstChar===123));
   }
 }
 
-export function padZeros(val, len) {
+export function padZeros(val: number, len: number) {
   let out = ""+val;
   while (out.length < len) {
     out = "0"+out;
@@ -288,7 +337,7 @@ export function padZeros(val, len) {
 }
 
 
-export function makeString(dataView, offset, length) {
+export function makeString(dataView: DataView, offset: number, length: number): string {
   const utf8decoder = new TextDecoder('utf-8');
   let u8arr = new Uint8Array(dataView.buffer, dataView.byteOffset+offset, length);
   return utf8decoder.decode(u8arr).trim();
@@ -304,11 +353,11 @@ export function makeString(dataView, offset, length) {
 
 
 
-function checkByteSwap(year) {
+function checkByteSwap(year: number) {
   return year < 1960 || year > 2055;
 }
 
-export function areContiguous(dr1, dr2) {
+export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord): boolean {
     let h1 = dr1.header;
     let h2 = dr2.header;
     return h1.end.getTime() < h2.start.getTime()
@@ -318,7 +367,7 @@ export function areContiguous(dr1, dr2) {
 /** concatentates a sequence of XSeedRecords into a single seismogram object.
   * Assumes that they are all contiguous and in order. Header values from the first
   * XSeedRecord are used. */
-export function createSeismogram(contig) {
+export function createSeismogram(contig: Array<XSeedRecord>): Seismogram {
   let y = [];
   for (let i=0; i<contig.length; i++) {
     y = y.concat(contig[i].decompress());
@@ -326,10 +375,11 @@ export function createSeismogram(contig) {
   let out = new Seismogram(y,
                                  contig[0].header.sampleRate,
                                  contig[0].header.start);
-  out.netCode(contig[0].header.netCode)
-    .staCode(contig[0].header.staCode)
-    .locId(contig[0].header.locCode)
-    .chanCode(contig[0].header.chanCode);
+  let codes = contig[0].header.identifier.slice(5).split('_');
+  out.networkCode = codes[0];
+  out.stationCode = codes[1];
+  out.locationCode = codes[2];
+  out.channelCode = codes[3]+codes[4]+codes[5];
 
   return out;
 }
@@ -343,7 +393,7 @@ export function createSeismogram(contig) {
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
  */
-export function merge(drList) {
+export function merge(drList: Array<XSeedRecord>) {
   let out = [];
   let currDR;
   drList.sort(function(a,b) {
@@ -371,22 +421,22 @@ export function merge(drList) {
 }
 
 
-export function segmentMinMax(segment, minMaxAccumulator) {
-if ( ! segment.y()) {
-throw new Error("Segment does not have a y field, doesn't look like a seismogram segment. "+Array.isArray(segment)+" "+segment);
-}
+export function segmentMinMax(segment: XSeedRecord, minMaxAccumulator?: Array<number>) {
   let minAmp = Number.MAX_SAFE_INTEGER;
   let maxAmp = -1 * (minAmp);
   if ( minMaxAccumulator) {
     minAmp = minMaxAccumulator[0];
     maxAmp = minMaxAccumulator[1];
   }
-  for (let n = 0; n < segment.y().length; n++) {
-    if (minAmp > segment.y()[n]) {
-      minAmp = segment.y()[n];
-    }
-    if (maxAmp < segment.y()[n]) {
-      maxAmp = segment.y()[n];
+  const data = segment.data;
+  if (data) {
+    for (let n = 0; n < data.length; n++) {
+      if (minAmp > data[n]) {
+        minAmp = data[n];
+      }
+      if (maxAmp < data[n]) {
+        maxAmp = data[n];
+      }
     }
   }
   return [ minAmp, maxAmp ];
@@ -394,7 +444,7 @@ throw new Error("Segment does not have a y field, doesn't look like a seismogram
 
 /** splits a list of data records by channel code, returning an object
   * with each NSLC mapped to an array of data records. */
-export function byChannel(drList) {
+export function byChannel(drList: Array<XSeedRecord>) {
   let out = {};
   let key;
   for (let i=0; i<drList.length; i++) {
@@ -411,7 +461,7 @@ export function byChannel(drList) {
 
 /* MSeed2 to xSeed converstion */
 
-export function convertMS2toXSeed(mseed2) {
+export function convertMS2toXSeed(mseed2: Array<DataRecord>) {
   let out = [];
   for (let i=0; i< mseed2.length; i++) {
     out.push(convertMS2Record(mseed2[i]));
@@ -419,7 +469,7 @@ export function convertMS2toXSeed(mseed2) {
   return out;
 }
 
-export function convertMS2Record(ms2record) {
+export function convertMS2Record(ms2record: DataRecord) {
   let xHeader = new XSeedHeader();
   let xExtras = {};
   let ms2H = ms2record.header;
@@ -482,7 +532,7 @@ export function convertMS2Record(ms2record) {
   out.header = xHeader;
   out.extraHeaders = xExtras;
   // need to convert if not steim1 or 2
-  out.data = ms2record.data;
+  out.rawData = ms2record.data;
   return out;
 }
 
@@ -573,7 +623,7 @@ const kCRCTable = new Int32Array([
  * './pycrc.py --model=crc-32c --generate c --algorithm=table-driven'
  */
 
-export function calculateCRC32C(buf, initial) {
+export function calculateCRC32C(buf: ArrayBuffer | Uint8Array, initial: number =0 ) {
   if ( buf instanceof ArrayBuffer){
     buf = new Uint8Array(buf);
   } else if ( buf instanceof Uint8Array) {
@@ -593,7 +643,7 @@ export function calculateCRC32C(buf, initial) {
   return (crc ^ -1) >>> 0;
 }
 
-export function crcToHexString(crc) {
+export function crcToHexString(crc: number): string {
   if (crc < 0) {
     crc = 0xFFFFFFFF + crc + 1;
   }

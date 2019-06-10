@@ -2,13 +2,14 @@
 
 import * as OregonDSPTop from 'oregondsp';
 import { calcDFT, inverseDFT } from './index';
-import {Seismogrm, Trace} from '../seismogram';
+import {Seismogram, Trace} from '../seismogram';
 import { SacPoleZero } from '../sacPoleZero';
 import {Response, PolesZeros } from '../stationxml';
 import Qty from 'js-quantities';
 
 
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
+export const Complex = OregonDSP.filter.iir.Complex;
 
 // if OregonDSP is loaded (here it is) we want to use
 // its Complex instead of the simple one defined in model
@@ -62,7 +63,7 @@ export function transferSacPZ(seis: Seismogram,
 
 export function combine(freqValues: Array<number>,
                         sampFreq: number,
-                        sacPoleZero,
+                        sacPoleZero: SacPoleZero,
                         lowCut: number,
                         lowPass: number,
                         highPass: number,

@@ -8,7 +8,7 @@ import {
     findMinMax
   } from './util';
 
-import type { MarginType } from './waveformplot';
+import type { MarginType, MarkerType } from './seismographconfig';
 import {Seismogram, Trace} from '../seismogram';
 
 export function createParticleMotionBySelector(selector: string): void {
@@ -16,27 +16,33 @@ export function createParticleMotionBySelector(selector: string): void {
     .then(function(resultArray) {
       resultArray.forEach(function(result) {
         result.svgParent.append("p").text("Build plot");
-          if (result.segments.length >1) {
-            addDivForParticleMotion(result.segments[0], result.segments[1], result.svgParent, result.startDate, result.endDate);
-            if (result.segments.length > 2) {
-              addDivForParticleMotion(result.segments[0], result.segments[2], result.svgParent, result.startDate, result.endDate);
-              addDivForParticleMotion(result.segments[1], result.segments[2], result.svgParent, result.startDate, result.endDate);
+        const traceArr = Array.from(result.traceMap.values());
+          if (traceArr.length >1) {
+            addDivForParticleMotion(traceArr[0], traceArr[1], result.svgParent, result.startDate, result.endDate);
+            if (traceArr.length > 2) {
+              addDivForParticleMotion(traceArr[0], traceArr[2], result.svgParent, result.startDate, result.endDate);
+              addDivForParticleMotion(traceArr[1], traceArr[2], result.svgParent, result.startDate, result.endDate);
             }
           } else {
-            result.svgParent.append("p").text("No Data");
+            result.svgParent.append("p").text(`Not Enough Data: ${traceArr.length}`);
           }
       });
     });
   }
 
-function addDivForParticleMotion(sa: Array<Seismogram>, sb: Array<Seismogram>, svgParent: any, startDate: moment, endDate: moment): void {
-  svgParent.append("h5").text(sa[0].chanCode+" "+sb[0].chanCode);
+function addDivForParticleMotion(ta: Trace, tb: Trace, svgParent: any, startDate: moment, endDate: moment): void {
+  if (ta.seisArray.length === 0 || tb.seisArray.length === 0) {
+    throw new Error(`Trace has no data: ${ta.seisArray.length} ${tb.seisArray.length}`);
+  }
+  const sa = ta.seisArray[0];
+  const sb = tb.seisArray[0];
+  svgParent.append("h5").text(sa.chanCode+" "+sb.chanCode);
   let svgDiv = svgParent.append("div");
-  svgDiv.classed(sa[0].chanCode+" "+sb[0].chanCode, true);
+  svgDiv.classed(sa.chanCode+" "+sb.chanCode, true);
   svgDiv.classed("svg-container-square", true);
-  let pmp = new ParticleMotion(svgDiv, [sa[0], sb[0]], startDate, endDate);
-  pmp.setXLabel(sa[0].chanCode);
-  pmp.setYLabel(sb[0].chanCode);
+  let pmp = new ParticleMotion(svgDiv, [sa, sb], startDate, endDate);
+  pmp.setXLabel(sa.chanCode);
+  pmp.setYLabel(sb.chanCode);
   pmp.draw();
 }
 

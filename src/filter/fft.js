@@ -1,6 +1,6 @@
 //@flow
 
-import {createComplex } from './transfer';
+import {createComplex, Complex } from './transfer';
 
 import * as OregonDSPTop from 'oregondsp';
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
@@ -10,8 +10,7 @@ const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
   * complex, amp, phase arrays. Calls calcDFT internally.
   */
 export function fftForward(timeseries: Array<number>) {
-  let result = new FFTResult(calcDFT(timeseries, timeseries.length));
-  result.origLength = timeseries.length;
+  let result = new FFTResult(calcDFT(timeseries, timeseries.length), timeseries.length);
   return result;
 }
 
@@ -84,8 +83,15 @@ export function ampPhase(packedFreq: Array<number>) {
 }
 
 export class FFTResult {
-  constructor(packedFreq: Array<number>) {
+  origLength: number;
+  packedFreq: Array<number>;
+  complex: Array<Complex>;
+  amp: Array<number>;
+  phase: Array<number>;
+  npts: number;
+  constructor(packedFreq: Array<number>, origLength: number) {
     this.packedFreq = packedFreq;
+    this.origLength = origLength;
     this._calcAmpPhase();
   }
   _calcAmpPhase() {
@@ -138,6 +144,6 @@ export class FFTResult {
     this.complex = modComplex;
   }
   clone() {
-    return new FFTResult(this.packedFreq.slice());
+    return new FFTResult(this.packedFreq.slice(), this.origLength);
   }
 }

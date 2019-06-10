@@ -1,18 +1,18 @@
 // @flow
 
 import moment from 'moment';
+import RSVP from 'rsvp';
 import * as d3 from 'd3';
 import * as dataselect from '../fdsndataselect';
 import * as miniseed from '../miniseed';
 import {Seismogram, Trace} from '../seismogram';
 import {SeismographConfig} from './seismographconfig';
 import {CanvasSeismograph} from './canvasSeismograph';
-let RSVP = dataselect.RSVP;
 
 export { dataselect, miniseed, d3, RSVP, moment };
 
 export type PlotDataType = {
-  "traceMap": Array<Array<Seismogram>>,
+  "traceMap": Map<String, Trace>,
   "startDate": moment,
   "endDate": moment,
   "request": dataselect.DataSelectQuery,
@@ -80,11 +80,9 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         .channelCode(chan)
         .startTime(startDate)
         .endTime(endDate);
-      out.push(request.query().then(function(dataRecords) {
-        return miniseed.mergeByChannel(dataRecords);
-      }).then(function(segments) {
+      out.push(request.queryTraces().then(function(traceMap) {
         return {
-          "traceMap": segments,
+          "traceMap": traceMap,
           "startDate": startDate,
           "endDate": endDate,
           "request": request,
@@ -113,11 +111,11 @@ export function createPlotsBySelector(selector: string) {
   return createPlotsBySelectorPromise(selector).then(function(resultArray){
     resultArray.forEach(function(result: PlotDataType) {
       result.svgParent.append("p").text("Build plot");
-        if (result.segments.size >0) {
+        if (result.traceMap.size >0) {
           let svgDiv = result.svgParent.append("div");
           svgDiv.classed("svg-container-wide", true);
           let seisConfig = new SeismographConfig();
-          let seismogram = new CanvasSeismograph(svgDiv, seisConfig, result.segments.values(), result.startDate, result.endDate);
+          let seismogram = new CanvasSeismograph(svgDiv, seisConfig, Array.from(result.traceMap.values()), result.startDate, result.endDate);
           seismogram.draw();
         } else {
           result.svgParent.append("p").text("No Data");
@@ -148,9 +146,9 @@ export function calcStartEndDates(start?: moment, end?: moment, duration?: numbe
 }
 
 export type TimeWindow = {start: moment, end: moment};
-import type {TimeRangeType} from './chooser';
+import type {TimeRangeType} from '../seismogram';
 
-export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram, accumulator?: TimeRangeType): TimeRangeType {
+export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram | Trace, accumulator?: TimeRangeType): TimeRangeType {
     let out: TimeRangeType;
     if ( ! accumulator && ! data) {
       throw new Error("data and accumulator are not defined");
@@ -178,7 +176,7 @@ export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram
     return out;
   }
 
-export function findMinMax(data: Array<Seismogram> | Seismogram | Trace, minMaxAccumulator ?: Array<number>): Array<number> {
+export function findMinMax(data: Array<Trace> | Seismogram | Trace, minMaxAccumulator ?: Array<number>): Array<number> {
     if ( Array.isArray(data)) {
        for(let i=0; i< data.length; i++) {
          minMaxAccumulator = findMinMax(data[i], minMaxAccumulator);

@@ -5,6 +5,8 @@ import Pikaday from 'pikaday';
 import moment from 'moment';
 import * as d3 from 'd3';
 
+import type {TimeRangeType} from '../seismogram';
+
 export class HourMinChooser {
 
   div: any; // d3 not yet in flow-typed :(
@@ -210,12 +212,6 @@ export class DateTimeChooser {
     this.picker.setMoment(moment([this.time.year(), this.time.month(), this.time.date()]));
   }
 }
-
-export type TimeRangeType = {
-  duration: number,
-  start: moment,
-  end: moment
-};
 
 export class TimeRangeChooser {
   div: any;

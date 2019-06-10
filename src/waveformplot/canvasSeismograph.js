@@ -20,7 +20,7 @@ import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismograph
 import type { MarginType, MarkerType } from './seismographconfig';
 import {Seismogram, Trace, ensureIsTrace } from '../seismogram';
 import {InstrumentSensitivity} from '../stationxml';
-import type { TimeRangeType } from './chooser';
+import type {TimeRangeType} from '../seismogram';
 
 
 
@@ -50,7 +50,7 @@ export class CanvasSeismograph {
   plotEndDate: moment;
 
   svgParent: any;
-  traces: Array<miniseed.Trace>;
+  traces: Array<Trace>;
   markers: Array<MarkerType>;
   width: number;
   height: number;
@@ -72,7 +72,11 @@ export class CanvasSeismograph {
   g: any;
   throttleRescale: any;
   throttleResize: any;
-  constructor(inSvgParent: any, seismographConfig, inSegments: Array<Trace>, plotStartDate: moment, plotEndDate: moment) {
+  constructor(inSvgParent: any,
+              seismographConfig: SeismographConfig,
+              inSegments: Array<Trace>,
+              plotStartDate: moment,
+              plotEndDate: moment) {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++CanvasSeismograph._lastID;
     this.beforeFirstDraw = true;
@@ -234,6 +238,7 @@ export class CanvasSeismograph {
   console.log("canvas.width "+this.canvas.node().width);
     console.log("this.outerHeight "+this.outerHeight);
     console.log("this.outerWidth "+this.outerWidth);
+    // $FlowFixMe
     console.log("this.margin "+this.seismographConfig.margin);
   }
   sizeCanvas(): void {
@@ -274,8 +279,13 @@ export class CanvasSeismograph {
       this.drawTracesSvg();
     }
   }
+  isVisible(): boolean {
+    const elem = this.canvas.node();
+    if (! elem) { return false; }
+    return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
+  }
   drawTracesCanvas(): void {
-    if (Document && Document.hidden) {
+    if (! this.isVisible()) {
       // no need to draw if we are not visible
       return;
     }
@@ -476,19 +486,20 @@ export class CanvasSeismograph {
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
     this.lineFunc.x(function(d) { return xScale(d.time); });
     if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
-if (! seg.y) {
-  console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Trace));
-return null;
-}
+      if (! seg.y) {
+        // $FlowFixMe
+        console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Trace));
+        return;
+      }
       return this.lineFunc(seg.y.map(function(d,i) {
         return {time: seg.timeOfSample(i).toDate(), y: d };
       }));
     } else {
       // lots of points per pixel so use high/low lines
       console.log('segmentDrawLine Lots points, draw using high/low');
-      if ( ! seg.highlow
-           || seg.highlow.secondsPerPixel != secondsPerPixel
-           || seg.highlow.xScaleDomain[1] != xScale.domain()[1]) {
+      if ( ! seg._highlow
+           || seg._highlow.secondsPerPixel != secondsPerPixel
+           || seg._highlow.xScaleDomain[1] != xScale.domain()[1]) {
         let highlow = [];
         let numHL = 2*Math.ceil(seg.y.length/samplesPerPixel);
         for(let i=0; i<numHL; i++) {
@@ -503,7 +514,7 @@ return null;
           }, snippet[0]);
           }
         }
-        seg.highlow = {
+        seg._highlow = {
             xScaleDomain: xScale.domain(),
             xScaleRange: xScale.range(),
             secondsPerPixel: secondsPerPixel,
@@ -511,7 +522,7 @@ return null;
             highlowArray: highlow
         };
       }
-      return this.lineFunc(seg.highlow.highlowArray.map(function(d: number,i: number) {
+      return this.lineFunc(seg._highlow.highlowArray.map(function(d: number,i: number) {
         return {time: new Date(seg.start.valueOf()+1000*((Math.floor(i/2)+.5)*secondsPerPixel)), y: d };
       }));
     }
@@ -951,12 +962,12 @@ return null;
     return this.traces;
   }
   /** can append single seismogram segment or an array of segments. */
-  _internalAppend(seismogram: Array<Seismogram> | Seismogram | Trace ): void {
+  _internalAppend(seismogram: Array<Trace> | Trace ): void {
     if ( ! seismogram) {
       // don't append a null
     } else if (Array.isArray(seismogram)) {
       for(let s of seismogram) {
-        this._internalAppend(s);
+        this.traces.push(ensureIsTrace(s));
       }
     } else {
       this.traces.push(ensureIsTrace(seismogram));
@@ -977,7 +988,7 @@ return null;
   remove(trace: Trace): void {
     this.traces = this.traces.filter( t => t !== trace);
   }
-  replace(oldTrace, newTrace): void {
+  replace(oldTrace: Trace, newTrace: Trace): void {
     let index = this.traces.findIndex(t => t === oldTrace);
     if (index !== -1) {
       this.traces[index] = newTrace;

@@ -2,6 +2,7 @@
 
 import * as OregonDSPTop from 'oregondsp';
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
+import {createComplex, Complex } from './transfer';
 import {Seismogram, Trace} from '../seismogram';
 
 /** Calculates the envelope, y_i = sqrt( y_i * y_i + h_i * h_i)
@@ -21,7 +22,7 @@ export function envelope(seis: Seismogram): Seismogram {
  *  and default low and high edge of 0.05 and 0.95. Low and high edge are
  *  given normalized 0 to 1.
  */
-export function hilbert(seis: Seismogram, n: number, lowEdge: number, highEdge: number ): Seismogram {
+export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge?: number ): Seismogram {
   if (! n) { n = 100;}
   if (! lowEdge) { lowEdge = .05;}
   if (! highEdge) { highEdge = .95;}

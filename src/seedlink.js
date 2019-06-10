@@ -31,6 +31,7 @@ export class SeedlinkConnection {
   requestConfig: Array<string>;
   receiveMiniseedFn: (packet: SequencedDataRecord) => void;
   errorFn: (error: Error) => void;
+  closeFn: null | (close: CloseEvent) => void;
   webSocket: WebSocket;
   command: string;
   /** creates a seedlink websocket connection to the given url.
