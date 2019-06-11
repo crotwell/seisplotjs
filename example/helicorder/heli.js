@@ -248,7 +248,7 @@ let timer = wp.d3.interval(function(elapsed) {
     }
   }
   nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
-  timeWindow = wp.calcStartEndDates(null, nowHour, duration, clockOffset);
+  timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, nowHour, duration, clockOffset);
   console.log("reset time window for "+timeWindow.start+" "+timeWindow.end );
 
   heli.setPlotStartEnd(timeWindow.start, timeWindow.end);

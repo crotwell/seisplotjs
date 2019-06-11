@@ -68,7 +68,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         protocol = 'https:';
       }
 
-      let seisDates = dataselect.calcStartEndDates(start, end, duration, clockOffset);
+      let seisDates = new dataselect.StartEndDuration(start, end, duration, clockOffset);
       startDate = seisDates.start;
       endDate = seisDates.end;
       let request = new dataselect.DataSelectQuery()
@@ -130,19 +130,6 @@ export function createPlotsBySelector(selector: string) {
 
 export function calcClockOffset(serverTime: moment) {
   return dataselect.calcClockOffset(serverTime);
-}
-
-/**
-Any two of start, end and duration can be specified, or just duration which
-then assumes end is now.
-start and end are Moment objects, duration is in seconds.
-clockOffset is the milliseconds that should be subtracted from the local time
- to get real world time, ie local - UTC
- or new Date().getTime() - serverDate.getTime()
- default is zero.
-*/
-export function calcStartEndDates(start?: moment, end?: moment, duration?: number, clockOffset?: number) {
-  return dataselect.calcStartEndDates(start, end, duration, clockOffset);
 }
 
 export type TimeWindow = {start: moment, end: moment};

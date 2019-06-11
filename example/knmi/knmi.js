@@ -183,7 +183,7 @@ return new traveltime.TraveltimeQuery()
     return { firstP: firstP, firstS: firstS };
   }).then(function(firstPS) {
     let PArrival = moment.utc(quake.time()).add(firstPS.firstP.time+pOffset, 'seconds');
-    let seisDates = wp.calcStartEndDates(PArrival, null, dur, clockOffset);
+    let seisDates = new seisplotjs.fdsndataselect.StartEndDuration(PArrival, null, dur, clockOffset);
     let startDate = seisDates.start;
     let endDate = seisDates.end;
 

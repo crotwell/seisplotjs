@@ -103,7 +103,7 @@ let bothPromise = RSVP.hash({
   }).then(function(hash) {
     hash.S_arrival = new Date(hash.quake.time.valueOf()+(hash.traveltime.firstS.time)*1000);
     hash.P_arrival = new Date(hash.quake.time.valueOf()+(hash.traveltime.firstP.time)*1000);
-    hash.seisDates = wp.calcStartEndDates(new Date(hash.S_arrival.getTime()-preOffset*1000), null, dur, 0);
+    hash.seisDates = new seisplotjs.fdsndataselect.StartEndDuration(new Date(hash.S_arrival.getTime()-preOffset*1000), null, dur, 0);
     hash.seismograms = new seisplotjs.fdsndataselect.DataSelectQuery()
       .host(IRIS)
       .nodata(404)

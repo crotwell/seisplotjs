@@ -427,7 +427,7 @@ export class StartEndDuration {
   end: moment;
   duration: moment.duration;
   clockOffset: moment.duration;
-  constructor(start?: moment, end?: moment, duration?: number, clockOffset?: number) {
+  constructor(start: moment | null, end: moment | null, duration: number|null, clockOffset?: ?number | null) {
 
     if (duration &&
       (typeof duration == "string" || duration instanceof String)) {
@@ -461,11 +461,6 @@ export class StartEndDuration {
       throw "need some combination of start, end and duration";
     }
   }
-}
-
-/** @deprecated*/
-export function calcStartEndDates(start?: moment, end?: moment, duration?: number, clockOffset?: number): StartEndDuration {
-  return new StartEndDuration(start, end, duration, clockOffset);
 }
 
 export function createDataSelectQuery(params: Object): DataSelectQuery {
