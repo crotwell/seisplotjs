@@ -1,6 +1,6 @@
 import * as filter from '../../src/filter/index.js';
-import {Seismogram, Trace} from '../../src/seismogram';
-import {readSac, readSacPoleZero} from './sacfile';
+import {Seismogram} from '../../src/seismogram';
+import {readSac} from './sacfile';
 import  {moment} from '../../src/util';
 
 test("simple hilbert", () => {

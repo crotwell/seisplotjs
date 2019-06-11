@@ -12,7 +12,7 @@ import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, checkStringOrD
 
 import * as miniseed from './miniseed';
 import { Channel } from './stationxml';
-import { Seismogram, Trace } from './seismogram';
+import { Trace } from './seismogram';
 
 
 export class ChannelTimeRange {
@@ -250,7 +250,7 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  computeStartEnd(start?: moment, end?: moment, duration?: number, clockOffset?: number): DataSelectQuery {
+  computeStartEnd(start?: moment, end?: moment, duration?: number | null =null, clockOffset?: number =0): DataSelectQuery {
     let se = new StartEndDuration(start, end, duration, clockOffset);
     this.startTime(se.start);
     this.endTime(se.end);
@@ -427,7 +427,7 @@ export class StartEndDuration {
   end: moment;
   duration: moment.duration;
   clockOffset: moment.duration;
-  constructor(start: moment | null, end: moment | null, duration: number|null, clockOffset?: ?number | null) {
+  constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
 
     if (duration &&
       (typeof duration == "string" || duration instanceof String)) {

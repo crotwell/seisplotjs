@@ -1,10 +1,7 @@
 // @flow
 
 import type {Complex } from 'oregondsp/com/oregondsp/signalProcessing/filter/iir';
-//import { Complex_init } from 'oregondsp/com/oregondsp/signalProcessing/filter/iir';
-import * as OregonDSPTop from 'oregondsp';
-const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
-const Complex_init = OregonDSP.filter.iir.Complex_init;
+
 
 export class SacPoleZero {
   poles: Array<Complex>;

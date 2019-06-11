@@ -1,7 +1,7 @@
 //@flow
 
 import {Channel, InstrumentSensitivity} from '../stationxml';
-import {Seismogram, Trace} from '../seismogram';
+import { Trace} from '../seismogram';
 import {Quake} from '../quakeml';
 import moment from 'moment';
 import * as d3 from 'd3';

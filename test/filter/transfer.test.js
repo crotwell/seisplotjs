@@ -1,5 +1,5 @@
 import * as filter from '../../src/filter/index.js';
-import {Seismogram, Trace} from '../../src/seismogram';
+import {Seismogram} from '../../src/seismogram';
 import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
 import  {moment} from '../../src/util';
 

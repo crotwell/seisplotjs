@@ -1,5 +1,5 @@
 // @flow
-import {Seismogram, Trace} from '../seismogram';
+import {Seismogram } from '../seismogram';
 
 export function taper(seis: Seismogram, width: number = 0.05, taperType: string = HANNING): Seismogram {
   if (width > 0.5) {
