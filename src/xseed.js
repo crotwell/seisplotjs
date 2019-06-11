@@ -251,7 +251,7 @@ export class XSeedHeader {
   }
 
   timeOfSample(i: number) {
-    return new Date(this.start.getTime() + 1000*i/this.sampleRate);
+    return moment.utc(this.start).add(1000*i/this.sampleRate, 'milliseconds');
   }
   save(dataView: DataView, offset: number =0, zeroCrc: boolean =false) {
     dataView.setInt8(offset, this.recordIndicator.charCodeAt(0));
