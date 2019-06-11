@@ -988,7 +988,7 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
 function extractComplex(el: Element) {
   const re = _grabFirstElFloat(el, 'Real');
   const im = _grabFirstElFloat(el, 'Imaginary');
-  if (re && im) {
+  if (_isDef(re) && _isDef(im)) {
     return createComplex(re, im);
   } else {
     // $FlowFixMe

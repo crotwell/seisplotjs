@@ -38,7 +38,7 @@ doPlot = function(config) {
   }
   let svgParent = wp.d3.select(`div.${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
-  let timeWindow = seisplotjs.fdsndataselect.calcStartEndDates(null, plotEnd, duration, clockOffset);
+  let timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, plotEnd, duration, clockOffset);
 
   let netCodeQuery = config.netCode;
   let staCodeQuery = config.station;
