@@ -295,6 +295,19 @@ export class Trace {
     }
     return this;
   }
+  isContiguous() {
+    if (this.seisArray.length === 1) {
+      return true;
+    }
+    let prev = null;
+    for (const s of this.seisArray) {
+      if (prev && ! (prev.end.isBefore(s.start)
+          && prev.end.add(1000*1.5/prev.sampleRate, 'ms').isAfter(s.start))) {
+        return false;
+      }
+    }
+    return true;
+  }
   merge() {
     let initValue: Array<number> = [];
     // $FlowFixMe
