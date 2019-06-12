@@ -53,7 +53,7 @@ for (let filename of fileList) {
       }
       hexStr += s;
     }
-    console.log(`record as hex (${hexStr.length}): ${hexStr}`);
+    //console.log(`record as hex (${hexStr.length}): ${hexStr}`);
     expect(xData[0]).toEqual(77);
     expect(xData[1]).toEqual(83);
     expect(xData[2]).toEqual(3);

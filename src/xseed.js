@@ -61,7 +61,6 @@ export class XSeedRecord {
         dataView.byteOffset+this.header.getSize(),
         this.header.extraHeadersLength);
     this.extraHeaders = parseExtraHeaders(extraDataView);
-    console.log(`extraHeader size before= ${this.header.extraHeadersLength} after=${JSON.stringify(this.extraHeaders).length}`);
     let sliceStart = dataView.byteOffset+this.header.getSize()+this.header.extraHeadersLength;
     this.rawData = new DataView(dataView.buffer.slice(sliceStart, sliceStart+ this.header.dataLength));
     this.decompData = null;
@@ -70,11 +69,6 @@ export class XSeedRecord {
   getSize() {
     let json = JSON.stringify(this.extraHeaders);
     if (json.length > 2) {
-      if (this.header.extraHeadersLength !== json.length) {
-        console.log(`recalc header length: ${this.header.extraHeadersLength}  ${json.length}`);
-        console.log(this.rawExtraHeaders);
-        console.log(json);
-      }
       this.header.extraHeadersLength = json.length;
     } else {
       this.header.extraHeadersLength = 0;
@@ -134,7 +128,6 @@ export class XSeedRecord {
       throw new Error(`CRC is not zero before calculate! ${dvcrc}`);
     }
     let crc = calculateCRC32C(dataView.buffer);
-    console.log("CRC32C calc: "+'0x'+crc.toString(16).toUpperCase()+"  size="+this.getSize());
     dataView.setUint32(CRC_OFFSET, crc, true);
     return offset;
   }
@@ -147,7 +140,6 @@ export class XSeedRecord {
     if (offset !== size) {
       throw new Error(`expect to write ${size} bytes but only ${offset}`);
     }
-    console.log(`calcCrc offset=${offset}  size=${size}`);
     let crc = dataView.getUint32(CRC_OFFSET, true);
     return crc;
   }
