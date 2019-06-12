@@ -45,7 +45,7 @@ export class SeismogramSegment {
     this._compressed = null;
     if (yArray) { this._y = yArray; }
     this._sampleRate = sampleRate;
-    this.start = checkStringOrDate(start);
+    this._start = checkStringOrDate(start);
     this.yUnit = 'count';
     // to avoid recalc of end time as it is kind of expensive
     this._end_cache = null;
@@ -127,9 +127,16 @@ export class SeismogramSegment {
    return (this.codes()+"_"+this.start.toISOString()+"_"+this.end.toISOString()).replace(/\./g,'_').replace(/:/g,'');
   }
   clone(): SeismogramSegment {
-    let out = new SeismogramSegment(this.y.slice(),
+    let newY = this._y;
+    if (newY) {
+      newY = newY.slice();
+    } else {
+      newY = null;
+    }
+    let out = new SeismogramSegment(newY,
                           this.sampleRate,
                           moment.utc(this._start));
+    out._compressed = this._compressed;
     out.networkCode = this.networkCode;
     out.stationCode = this.stationCode;
     out.locationCode = this.locationCode;
@@ -311,6 +318,7 @@ export class Seismogram {
           && prev.end.add(1000*1.5/prev.sampleRate, 'ms').isAfter(s.start))) {
         return false;
       }
+      prev = s;
     }
     return true;
   }

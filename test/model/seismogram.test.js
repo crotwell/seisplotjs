@@ -99,3 +99,24 @@ test("simple Seismogram creation", () => {
   expect(trace.start).toEqual(start);
   expect(trace.sampleRate).toBe(sampleRate);
 });
+
+test("seismogram isContiguous", () =>{
+  let yValues = new Array(10);
+  let sampleRate = 20.0;
+  let start = moment.utc("2013-02-08T09:30:26");
+  let secondStart = moment.utc(start).add(1000*yValues.length/sampleRate, 'milliseconds');
+  let laterStart = moment.utc(secondStart).add(10*1000*yValues.length/sampleRate, 'milliseconds');
+  let netCode = "XX";
+  let staCode = "ABCD";
+  let locCode = "00";
+  let chanCode = "BHZ";
+  let first = new SeismogramSegment(yValues, sampleRate, start);
+  let second = new SeismogramSegment(yValues, sampleRate, secondStart);
+  let seis = new Seismogram([first, second]);
+  expect(seis.isContiguous()).toBe(true);
+
+  let later = new SeismogramSegment(yValues, sampleRate, laterStart);
+  let nonContigSeis = new Seismogram([first, second, later]);
+
+  expect(nonContigSeis.isContiguous()).toBe(false);
+});
