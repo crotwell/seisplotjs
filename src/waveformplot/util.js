@@ -71,6 +71,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
       let seisDates = new dataselect.StartEndDuration(start, end, duration, clockOffset);
       startDate = seisDates.start;
       endDate = seisDates.end;
+      // $FlowFixMe
       let request = new dataselect.DataSelectQuery()
         .protocol(protocol)
         .host(host)
