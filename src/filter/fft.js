@@ -1,6 +1,6 @@
 //@flow
 
-import {createComplex, Complex } from './transfer';
+import {createComplex, Complex } from './filterUtil';
 
 import * as OregonDSPTop from 'oregondsp';
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;

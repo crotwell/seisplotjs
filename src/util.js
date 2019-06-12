@@ -114,30 +114,3 @@ export function checkProtocol() {
   }
   return _protocol;
 }
-
-
-export type ComplexType = {
-  real: number,
-  imag: number
-}
-
-// allow overriding the complex object to use
-// if OregonDSP is loaded we want to use
-// its Complex instead of the simple one defined here
-export function createComplex(real: number, imag: number): ComplexType {
-  /*
-  try {
-    return new OregonDSP.filter.iir.Complex_init(real, imag);
-  } catch(err) {
-  console.log("create complex default case "+err);
-  return {
-    real: real,
-    imag: imag
-  };
-}
-*/
-  return {
-    real: real,
-    imag: imag
-  };
-}

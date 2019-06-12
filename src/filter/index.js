@@ -11,11 +11,12 @@ import {hilbert, envelope} from './hilbert';
 import {calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult} from './fft';
 import {rotate, vectorMagnitude} from './vector';
 
-export const createComplex = transfer.createComplex;
+import {Complex, createComplex} from './filterUtil';
 
 let OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
-export { OregonDSP, taper, transfer, hilbert, envelope,
+export { OregonDSP, Complex, createComplex,
+  taper, transfer, hilbert, envelope,
   calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult,
   rotate, vectorMagnitude };
 

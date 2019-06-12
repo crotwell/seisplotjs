@@ -8,9 +8,10 @@ RSVP.on('error', function(reason) {
 
 import moment from 'moment';
 import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, AbstractFilterType, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
+import {createComplex} from './filter/filterUtil';
 
 // special due to flow
-import {checkProtocol, createComplex, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';
