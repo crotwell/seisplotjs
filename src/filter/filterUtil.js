@@ -1,4 +1,7 @@
+// @flow
 
+
+import * as OregonDSPTop from 'oregondsp';
 
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 export const Complex = OregonDSP.filter.iir.Complex;
