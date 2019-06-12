@@ -1,3 +1,5 @@
+// @flow
+
 import {Seismogram, Trace} from '../../src/seismogram';
 import  {moment} from '../../src/util';
 

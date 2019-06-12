@@ -1,3 +1,5 @@
+// @flow
+
 import {checkProtocol} from '../src/util.js';
 
 test("simple protocol check", () => {

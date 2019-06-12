@@ -1,3 +1,5 @@
+// @flow
+
 import {Network} from '../../src/stationxml';
 
 test("simple network", () => {

@@ -1,5 +1,8 @@
+// @flow
+
 import * as filter from '../../src/filter/index.js';
 import {Seismogram} from '../../src/seismogram';
+import {SacPoleZero} from '../../src/sacPoleZero';
 import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
 import  {moment} from '../../src/util';
 
@@ -108,11 +111,8 @@ test("testEvalPoleZero", () => {
     const poles =  [filter.createComplex(-0.0139, 0.0100),
                     filter.createComplex(-0.0139, -0.0100),
                     filter.createComplex(-31.4160, 0.0000) ];
-    let sacPoleZero = {
-      poles: poles,
-      zeros: zeros,
-      constant: 2.94283674E10
-    };
+    let sacPoleZero = new SacPoleZero(poles, zeros, 2.94283674E10);
+
     // separate test for zero freq due to polezero gives 0 here
     let dhi = filter.transfer.evalPoleZeroInverse(sacPoleZero, sacout[0][0]);
     expect(dhi.real()).toBeCloseTo(sacout[0][1], 4);
@@ -120,7 +120,9 @@ test("testEvalPoleZero", () => {
     for(let i = 1; i < sacout.length; i++) {
         let dhi = filter.transfer.evalPoleZeroInverse(sacPoleZero, sacout[i][0]);
         dhi = ONE_COMPLEX.overComplex(dhi);
+        // $FlowFixMe
         expect(dhi.real).toBeCloseToRatio(sacout[i][1], 5);
+        // $FlowFixMe
         expect(dhi.imag).toBeCloseToRatio(sacout[i][2], 5);
         // if (sacout[i][1] === 0) {
         //   expect(sacout[i][1] / dhi.real()).toBeCloseTo(1.0, 6);
@@ -212,6 +214,7 @@ test("PoleZeroTaper", () => {
       let calcImagArray = [];
       for(let i = 0; i < sacout.length; i++) {
           freq = i * deltaF;
+          // $FlowFixMe
           expect(freq).toBeCloseToRatio(sacout[i][0], 5);
           respAtS = filter.transfer.evalPoleZeroInverse(poleZero, freq);
           respAtS = respAtS.timesReal(deltaF*filter.transfer.freqTaper(freq,
@@ -225,7 +228,9 @@ test("PoleZeroTaper", () => {
           calcRealArray.push(respAtS.real());
           calcImagArray.push(respAtS.imag());
       }
+      // $FlowFixMe
       expect(calcRealArray).arrayToBeCloseToRatio(sacRealArray, 5);
+      // $FlowFixMe
       expect(calcImagArray).arrayToBeCloseToRatio(sacImagArray, 5);
 /*
           if(sacout[i][0] == 0 || respAtS.real() == 0) {
@@ -408,6 +413,7 @@ test("impulse one zero combina amp", () => {
       expect(bagAmp[4]).toBeCloseTo(sacAmp.y[4], 7);
       expect(bagAmp[5]).toBeCloseTo(sacAmp.y[5], 7);
 
+      // $FlowFixMe
       expect(bagAmp.slice(6, bagAmp.length-6)).arrayToBeCloseToRatio(sacAmp.y.slice(6, sacAmp.y.length-6), 5);
 
       expect(bagAmp[bagAmp.length-1]).toBeCloseTo(sacAmp.y[sacAmp.y.length-1], 9);
@@ -451,6 +457,7 @@ test("impulse one zero", () => {
         });
       }
       return saveDataPromise.then( () => {
+      // $FlowFixMe
         expect(bagdata).arrayToBeCloseToRatio(sacdata, 2 , 1e-2, 1e-3);
       }).catch(err => {
         console.log("Error write sac "+err);
@@ -492,6 +499,7 @@ test("impulse", () => {
         });
       }
       return saveDataPromise.then( () => {
+      // $FlowFixMe
         expect(bagdata).arrayToBeCloseToRatio(sacdata, 6);
       }).catch(err => {
         console.log("Error write sac "+err);
@@ -529,12 +537,14 @@ test("HRV test", () => {
       const bag_rmean = filter.rMean(origseis);
       const rmean_data = bag_rmean.y;
       let sacdata = rmean.y;
+      // $FlowFixMe
       expect(rmean_data).arrayToBeCloseToRatio(sacdata, 5);
 
       const bag_taper = filter.taper.taper(bag_rmean, 0.05, filter.taper.HANNING);
       const taper_data = bag_taper.y;
       sacdata = taper.y;
 
+      // $FlowFixMe
       expect(taper_data).arrayToBeCloseToRatio(sacdata, 5);
 
       let bagtfr = filter.transfer.transferSacPZ(bag_taper,
@@ -545,6 +555,7 @@ test("HRV test", () => {
                                       1e6);
       const bagdata = bagtfr.y;
       sacdata = transfer.y;
+      // $FlowFixMe
       expect(bagdata).arrayToBeCloseToRatio(sacdata, 5, .0001, 5);
 
       let saveDataPromise = Promise.resolve(null);
@@ -557,6 +568,7 @@ test("HRV test", () => {
         });
       }
       return saveDataPromise.then( () => {
+      // $FlowFixMe
         expect(bagdata).arrayToBeCloseToRatio(sacdata, 5, .0001, 5);
       });
   });

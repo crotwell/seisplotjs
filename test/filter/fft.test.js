@@ -1,3 +1,5 @@
+// @flow
+
 import * as filter from '../../src/filter/index.js';
 import {readSac, parseSac, readDataView, writeSac, replaceYData} from './sacfile';
 
@@ -127,8 +129,10 @@ test("FFT", () => {
           //         / out[i].imag(), 0.00001);
       }
       expect(bagAmp.length).toBe(sacAmp.y.length);
+      // $FlowFixMe
       expect(bagAmp).arrayToBeCloseToRatio(sacAmp.y, 2);
       expect(bagPhase.length).toBe(sacPhase.y.length);
+      // $FlowFixMe
       expect(bagPhase).arrayToBeCloseTo(sacPhase.y, 2);
     });
 });

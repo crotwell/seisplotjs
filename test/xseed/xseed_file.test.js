@@ -1,3 +1,6 @@
+// @flow
+
+// $FlowFixMe
 let TextDecoder = require('util').TextDecoder;
 global.TextDecoder = TextDecoder;
 

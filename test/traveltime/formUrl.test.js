@@ -1,3 +1,5 @@
+// @flow
+
 import * as traveltime from '../../src/traveltime';
 
 test("formURL", () => {

@@ -1,3 +1,5 @@
+// @flow
+
 import * as fdsndataselect from '../../src/fdsndataselect.js';
 import * as util from '../../src/util.js';
 let moment = util.moment;

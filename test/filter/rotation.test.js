@@ -1,3 +1,5 @@
+// @flow
+
 import {rotate, rotateSeismograms } from '../../src/filter/vector.js';
 import { Seismogram, Trace }  from "../../src/seismogram";
 import {moment} from '../../src/util';

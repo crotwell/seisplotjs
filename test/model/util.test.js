@@ -1,3 +1,4 @@
+// @flow
 
 import * as util from '../../src/util.js';
 

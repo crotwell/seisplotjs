@@ -1,3 +1,4 @@
+// @flow
 
 import * as fdsnevent from '../../src/fdsnevent.js';
 import * as util from '../../src/util.js';

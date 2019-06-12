@@ -1,3 +1,4 @@
+// @flow
 
 import * as fdsnstation from '../../src/fdsnstation.js';
 import * as util from '../../src/util.js';

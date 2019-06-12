@@ -1,3 +1,5 @@
+// @flow
+
 import * as miniseed from '../../src/miniseed.js';
 import  {moment} from '../../src/util';
 

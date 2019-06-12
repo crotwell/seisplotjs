@@ -1,3 +1,5 @@
+// @flow
+
 import { knownDataCenters } from '../../src/knownDataCenters.js';
 require('isomorphic-fetch');
 

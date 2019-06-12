@@ -1,3 +1,5 @@
+// @flow
+
 import * as filter from '../../src/filter/index.js';
 import {Seismogram} from '../../src/seismogram';
 import {readSac} from './sacfile';

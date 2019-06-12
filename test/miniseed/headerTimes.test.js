@@ -1,3 +1,4 @@
+// @flow
 
 import * as miniseed from '../../src/miniseed.js';
 import  {moment} from '../../src/util';
@@ -15,13 +16,14 @@ test("contig", () => {
   dhFirst.sampleRate = 1;
   dhFirst.numSamples = 100;
   dhFirst.end = dhFirst.timeOfSample(dhFirst.numSamples-1);
-  const drFirst = new miniseed.DataRecord(dhFirst, null);
+  const fakeData = new DataView(new ArrayBuffer(4*dhFirst.numSamples));
+  const drFirst = new miniseed.DataRecord(dhFirst, fakeData);
   const dhSecond = new miniseed.DataHeader();
   dhSecond.sampleRate = 1;
   dhSecond.numSamples = 100;
   dhSecond.start = moment.utc(dhFirst.start).add(dhFirst.numSamples, 'seconds');
   dhSecond.end = dhSecond.timeOfSample(dhSecond.numSamples-1);
-  const drSecond = new miniseed.DataRecord(dhSecond, null);
+  const drSecond = new miniseed.DataRecord(dhSecond, fakeData);
   expect(dhFirst.timeOfSample(dhFirst.numSamples)).toEqual(dhSecond.start);
   expect(miniseed.areContiguous(drFirst, drSecond)).toBe(true);
 });

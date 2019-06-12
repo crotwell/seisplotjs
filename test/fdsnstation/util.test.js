@@ -1,18 +1,23 @@
+// @flow
 
 import * as fdsnstation from '../../src/fdsnstation';
 
 test( "_grabFirstEl test", () => {
   const LATITUDE = "Latitude";
-  const xml = new DOMParser().parseFromString(rawXML, "text/xml");
+  let xml = new DOMParser().parseFromString(rawXML, "text/xml")
+    .documentElement;
   let net = fdsnstation.util._grabFirstEl(xml, "Network");
   expect(net).toBeDefined();
   let sta = fdsnstation.util._grabFirstEl(net, "Station");
   expect(sta).toBeDefined();
   let lat = fdsnstation.util._grabFirstEl(sta, LATITUDE);
   expect(lat).toBeDefined();
-  expect(lat.textContent).toBe("34.2818");
-  expect(fdsnstation.util._grabFirstElText(sta, LATITUDE)).toBe("34.2818");
-  expect(fdsnstation.util._grabFirstElFloat(sta, LATITUDE)).toBe(34.2818);
+  if (lat){
+    // always true, just for flow
+    expect(lat.textContent).toBe("34.2818");
+    expect(fdsnstation.util._grabFirstElText(sta, LATITUDE)).toBe("34.2818");
+    expect(fdsnstation.util._grabFirstElFloat(sta, LATITUDE)).toBe(34.2818);
+  }
 });
 
 const rawXML = `<?xml version="1.0" encoding="ISO-8859-1"?>
