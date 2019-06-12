@@ -11,7 +11,7 @@
 // special due to flow
 import { stringify} from './util';
 
-import {Seismogram, Trace} from './seismogram';
+import {SeismogramSegment, Trace} from './seismogram';
 import * as seedcodec from './seedcodec';
 
 
@@ -371,8 +371,8 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord) {
 /** Concatentates a sequence of DataRecords into a single seismogram object.
   * Assumes that they are all contiguous and in order. Header values from the first
   * DataRecord are used. */
-export function createSeismogram(contig: Array<DataRecord>): Seismogram {
-  let out = new Seismogram(null,
+export function createSeismogram(contig: Array<DataRecord>): SeismogramSegment {
+  let out = new SeismogramSegment(null,
                            contig[0].header.sampleRate,
                            contig[0].header.start);
   out._compressed = contig;
@@ -421,9 +421,9 @@ export function merge(drList: Array<DataRecord>): Trace {
 
 
 
-/** Finds the min and max values of a Seismogram, with an optional
+/** Finds the min and max values of a SeismogramSegment, with an optional
   * accumulator for use with gappy data. */
-export function segmentMinMax(segment: Seismogram, minMaxAccumulator?: Array<number>): Array<number> {
+export function segmentMinMax(segment: SeismogramSegment, minMaxAccumulator?: Array<number>): Array<number> {
   if ( ! segment.y) {
     throw new Error("Segment does not have a y field, doesn't look like a seismogram segment. "+stringify(segment));
   }

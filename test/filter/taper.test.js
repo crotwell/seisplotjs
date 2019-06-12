@@ -1,7 +1,7 @@
 // @flow
 
 import * as filter from '../../src/filter/index.js';
-import {Seismogram, ensureIsTrace } from '../../src/seismogram';
+import {SeismogramSegment, ensureIsTrace } from '../../src/seismogram';
 import {readSac} from './sacfile';
 import  {moment} from '../../src/util';
 
@@ -18,15 +18,18 @@ test("constant", () => {
   let taperWidth = 0.05;
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
-  const origseis = new Seismogram(orig, 1, moment.utc());
+  const origseis = new SeismogramSegment(orig, 1, moment.utc());
   let bagtaper = filter.taper.taper(origseis, taperWidth);
-  const omega = Math.PI / dataLen;
+  const omega = Math.PI / (dataLen * taperWidth);
   const f0 = .5;
   const f1 = .5;
   let expected = Array(dataLen).fill(dataVal);
   for (let i=0; i<dataLen*taperWidth; i++) {
     expected[i] = orig[i] * (f0 - f1 * Math.cos(omega * i));
     expected[dataLen-i-1] = orig[i] * (f0 - f1 * Math.cos(omega * i));
+    if (i < 10) {
+      console.log(`expect: ${expected[i]}  === ${bagtaper.y[i]}`);
+    }
   }
   // $FlowFixMe
   expect(bagtaper.y).arrayToBeCloseToRatio(expected, 5);
@@ -39,7 +42,7 @@ test("const100 taper", () => {
  .then ( result => {
      let orig = result[0];
      let sactaper = result[1];
-     const origseis = new Seismogram(orig.y, 1/orig.delta, moment.utc());
+     const origseis = new SeismogramSegment(orig.y, 1/orig.delta, moment.utc());
      let bagtaper = filter.taper.taper(origseis);
      const sacdata = sactaper.y;
      const bagdata = bagtaper.y;
@@ -82,7 +85,7 @@ test("HRV taper", () => {
   .then ( result => {
       let sactaper = result[0];
       let orig = result[1];
-      const origseis = new Seismogram(orig.y, 1/orig.delta, moment.utc());
+      const origseis = new SeismogramSegment(orig.y, 1/orig.delta, moment.utc());
       let bagtaper = filter.taper.taper(filter.rMean(ensureIsTrace(origseis)));
       const sacdata = sactaper.y;
       const bagdata = bagtaper.y;

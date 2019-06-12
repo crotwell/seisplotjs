@@ -1,6 +1,6 @@
 // @flow
 
-import {Seismogram, Trace} from '../../src/seismogram';
+import {SeismogramSegment, Trace} from '../../src/seismogram';
 import  {moment} from '../../src/util';
 
 test("simple seismogram creation", () => {
@@ -11,7 +11,7 @@ test("simple seismogram creation", () => {
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let seis = new Seismogram(yValues, sampleRate, start);
+  let seis = new SeismogramSegment(yValues, sampleRate, start);
   seis.networkCode = netCode;
   seis.stationCode = staCode;
   seis.locationCode = locCode;
@@ -39,7 +39,7 @@ test("seismogram clone", () => {
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let seis = new Seismogram(yValues.slice(), sampleRate, start);
+  let seis = new SeismogramSegment(yValues.slice(), sampleRate, start);
   seis.networkCode = netCode;
   seis.stationCode = staCode;
   seis.locationCode = locCode;
@@ -86,7 +86,7 @@ test("simple Trace creation", () => {
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let seis = new Seismogram(yValues.slice(), sampleRate, start);
+  let seis = new SeismogramSegment(yValues.slice(), sampleRate, start);
   seis.networkCode = netCode;
   seis.stationCode = staCode;
   seis.locationCode = locCode;

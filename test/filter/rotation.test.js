@@ -1,7 +1,7 @@
 // @flow
 
 import {rotate, rotateSeismograms } from '../../src/filter/vector.js';
-import { Seismogram, Trace }  from "../../src/seismogram";
+import { SeismogramSegment, Trace }  from "../../src/seismogram";
 import {moment} from '../../src/util';
 
 test("trace rotation", () => {
@@ -10,12 +10,12 @@ test("trace rotation", () => {
   let az = 0;
   let rotAzInc = 30;
   let now = moment.utc();
-  let seisA = new Seismogram(a, 1.0, now);
+  let seisA = new SeismogramSegment(a, 1.0, now);
   seisA.networkCode = "XX";
   seisA.stationCode = "AAA";
   seisA.locationCode = "00";
   seisA.channelCode = "BHE";
-  let seisB = new Seismogram(b, 1.0, now);
+  let seisB = new SeismogramSegment(b, 1.0, now);
   seisB.networkCode = "XX";
   seisB.stationCode = "AAA";
   seisB.locationCode = "00";
@@ -36,12 +36,12 @@ test("simple rotation", () => {
   let az = 0;
   let rotToAz = 90;
   let now = moment.utc();
-  let seisA = new Seismogram(a, 1.0, now);
+  let seisA = new SeismogramSegment(a, 1.0, now);
   seisA.networkCode = "XX";
   seisA.stationCode = "AAA";
   seisA.locationCode = "00";
   seisA.channelCode = "BHE";
-  let seisB = new Seismogram(b, 1.0, now);
+  let seisB = new SeismogramSegment(b, 1.0, now);
   seisB.networkCode = "XX";
   seisB.stationCode = "AAA";
   seisB.locationCode = "00";

@@ -1,9 +1,9 @@
 //@flow
-import {Seismogram, Trace, ensureIsTrace } from '../seismogram';
+import {SeismogramSegment, Trace, ensureIsTrace } from '../seismogram';
 
 export const DtoR = Math.PI / 180;
 
-export function rotate(seisA: Trace | Seismogram, azimuthA: number, seisB: Trace | Seismogram, azimuthB: number, azimuth: number) {
+export function rotate(seisA: Trace | SeismogramSegment, azimuthA: number, seisB: Trace | SeismogramSegment, azimuthB: number, azimuth: number) {
   const traceA = ensureIsTrace(seisA);
   const traceB = ensureIsTrace(seisB);
   if (traceA.segments.length !== traceB.segments.length) {
@@ -26,7 +26,7 @@ export function rotate(seisA: Trace | Seismogram, azimuthA: number, seisB: Trace
   return out;
 }
 
-export function rotateSeismograms(seisA: Seismogram, azimuthA: number, seisB: Seismogram, azimuthB: number, azimuth: number) {
+export function rotateSeismograms(seisA: SeismogramSegment, azimuthA: number, seisB: SeismogramSegment, azimuthB: number, azimuth: number) {
   if (seisA.y.length != seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);
@@ -66,7 +66,7 @@ export function rotateSeismograms(seisA: Seismogram, azimuthA: number, seisB: Se
   };
   return out;
 }
-export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Seismogram) {
+export function vectorMagnitude(seisA: SeismogramSegment, seisB: SeismogramSegment, seisC: SeismogramSegment) {
   if (seisA.y.length != seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);

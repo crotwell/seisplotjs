@@ -8,7 +8,7 @@
  */
 
 import * as seedcodec from './seedcodec';
-import {Seismogram} from './seismogram';
+import {SeismogramSegment} from './seismogram';
 import {DataRecord} from './miniseed';
 import moment from 'moment';
 
@@ -367,12 +367,12 @@ export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord): boolean {
 /** concatentates a sequence of XSeedRecords into a single seismogram object.
   * Assumes that they are all contiguous and in order. Header values from the first
   * XSeedRecord are used. */
-export function createSeismogram(contig: Array<XSeedRecord>): Seismogram {
+export function createSeismogram(contig: Array<XSeedRecord>): SeismogramSegment {
   let y = [];
   for (let i=0; i<contig.length; i++) {
     y = y.concat(contig[i].decompress());
   }
-  let out = new Seismogram(y,
+  let out = new SeismogramSegment(y,
                                  contig[0].header.sampleRate,
                                  contig[0].header.start);
   let codes = contig[0].header.identifier.slice(5).split('_');

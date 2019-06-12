@@ -20,12 +20,12 @@ export type HighLowType = {
 };
 
 /**
-* A Seismogram object.
+* A contiguous segment of a Seismogram.
 * @param {Array} yArray array of Y sample values, ie the timeseries
 * @param {number} sampleRate sample rate of the seismogram, hertz
 * @param {moment} start start time of seismogrm as a momentjs moment in utc or a string that can be parsed
 */
-export class Seismogram {
+export class SeismogramSegment {
   /** Array of y values */
   _y: null | Array<number>;
   _compressed: null | Array<miniseed.DataRecord>;
@@ -126,8 +126,8 @@ export class Seismogram {
   seisId(): string {
    return (this.codes()+"_"+this.start.toISOString()+"_"+this.end.toISOString()).replace(/\./g,'_').replace(/:/g,'');
   }
-  clone(): Seismogram {
-    let out = new Seismogram(this.y.slice(),
+  clone(): SeismogramSegment {
+    let out = new SeismogramSegment(this.y.slice(),
                           this.sampleRate,
                           moment.utc(this._start));
     out.networkCode = this.networkCode;
@@ -155,7 +155,7 @@ export class Seismogram {
     }
     let newY = this.y.slice(sIndex, eIndex);
 
-    let out = new Seismogram(newY,
+    let out = new SeismogramSegment(newY,
                           this.sampleRate,
                           moment.utc(this._start).add(sIndex / this.sampleRate, 'seconds'));
     out.networkCode = this.networkCode;
@@ -177,13 +177,13 @@ export class Seismogram {
   * the Trace will have the same units, channel identifiers
   * and sample rate, but cover different times. */
 export class Trace {
-  seisArray: Array<Seismogram>;
+  seisArray: Array<SeismogramSegment>;
   _start: moment;
   _end: moment;
-  constructor(seisArray: Seismogram | Array<Seismogram>) {
+  constructor(seisArray: SeismogramSegment | Array<SeismogramSegment>) {
     if ( Array.isArray(seisArray)) {
       this.seisArray = seisArray;
-    } else if ( seisArray instanceof Seismogram) {
+    } else if ( seisArray instanceof SeismogramSegment) {
       this.seisArray = [ seisArray ];
     } else {
       throw new Error("seisArray is not Array");
@@ -201,7 +201,7 @@ export class Trace {
       this.checkSimilar(f, s);
     });
   }
-  checkSimilar(f: Seismogram, s: Seismogram) {
+  checkSimilar(f: SeismogramSegment, s: SeismogramSegment) {
     if (s.networkCode !== f.networkCode) {throw new Error("NetworkCode not same: "+s.networkCode+" !== "+f.networkCode);}
     if (s.stationCode !== f.stationCode) {throw new Error("StationCode not same: "+s.stationCode+" !== "+f.stationCode);}
     if (s.locationCode !== f.locationCode) {throw new Error("LocationCode not same: "+s.locationCode+" !== "+f.locationCode);}
@@ -250,10 +250,10 @@ export class Trace {
   codes(): string {
     return this.seisArray[0].codes();
   }
-  get segments(): Array<Seismogram> {
+  get segments(): Array<SeismogramSegment> {
     return this.seisArray;
   }
-  append(seismogram: Seismogram) {
+  append(seismogram: SeismogramSegment) {
     this.checkSimilar(this.seisArray[0], seismogram);
     this._start = moment.min([ this.start, moment.utc(seismogram.start)]);
     this._end = moment.max([ this.end, moment.utc(seismogram.end)]);
@@ -311,18 +311,18 @@ export class Trace {
   merge() {
     let initValue: Array<number> = [];
     // $FlowFixMe
-    return this.seisArray.reduce((acc: Array<number>, s: Seismogram) => {
+    return this.seisArray.reduce((acc: Array<number>, s: SeismogramSegment) => {
                 // $FlowFixMe
                 return acc.concat(s.y);
               }, initValue);
   }
 }
 
-export function ensureIsTrace(seisTrace: Trace | Seismogram) {
+export function ensureIsTrace(seisTrace: Trace | SeismogramSegment) {
   if (typeof seisTrace === "object") {
     if (seisTrace instanceof Trace) {
       return seisTrace;
-    } else if (seisTrace instanceof Seismogram) {
+    } else if (seisTrace instanceof SeismogramSegment) {
       return new Trace([ seisTrace ]);
     } else {
       let s = typeof seisTrace;
@@ -331,9 +331,9 @@ export function ensureIsTrace(seisTrace: Trace | Seismogram) {
       } else {
         s += " "+seisTrace;
       }
-      throw new Error("must be Trace or Seismogram but "+s);
+      throw new Error("must be Trace or SeismogramSegment but "+s);
     }
   } else {
-    throw new Error("must be Trace or Seismogram but not an object");
+    throw new Error("must be Trace or SeismogramSegment but not an object");
   }
 }

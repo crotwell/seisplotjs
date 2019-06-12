@@ -2,7 +2,7 @@
 
 import * as OregonDSPTop from 'oregondsp';
 
-import {Seismogram, Trace} from '../seismogram';
+import {SeismogramSegment, Trace} from '../seismogram';
 import {InstrumentSensitivity} from '../stationxml';
 
 import * as transfer  from './transfer';
@@ -27,7 +27,7 @@ export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
 }
 
-export function rMean(seis: Seismogram | Trace): Seismogram | Trace {
+export function rMean(seis: SeismogramSegment | Trace): SeismogramSegment | Trace {
   console.log(`rMean input class is: ${(seis.constructor.name)}`);
   if (seis instanceof Trace) {
     let meanVal = 0;
@@ -45,7 +45,7 @@ export function rMean(seis: Seismogram | Trace): Seismogram | Trace {
         return out;
       }));
     return rmeanTrace;
-  } else if (seis instanceof Seismogram) {
+  } else if (seis instanceof SeismogramSegment) {
     let out = seis.clone();
     let meanVal = mean(seis);
     let demeanY = seis.y.map(function(d) {
@@ -54,11 +54,11 @@ export function rMean(seis: Seismogram | Trace): Seismogram | Trace {
     out.y = demeanY;
     return out;
   } else {
-    throw new Error("rMean arg not a Seismogram or Trace");
+    throw new Error("rMean arg not a SeismogramSegment or Trace");
   }
 }
 
-export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram | Trace): Seismogram | Trace {
+export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: SeismogramSegment | Trace): SeismogramSegment | Trace {
   if (seis instanceof Trace) {
     let gainTrace = new Trace(seis.seisArray.map(s =>{
       return gainCorrect(instrumentSensitivity, s);
@@ -82,7 +82,7 @@ export type MinMaxMean = {
   mean: number;
 };
 
-export function minMaxMean(seis: Seismogram | Trace): MinMaxMean {
+export function minMaxMean(seis: SeismogramSegment | Trace): MinMaxMean {
   let meanVal = 0;
   let minVal = 9999999999;
   let maxVal = -9999999999;
@@ -105,7 +105,7 @@ export function minMaxMean(seis: Seismogram | Trace): MinMaxMean {
     mean: meanVal
   };
 }
-export function mean(waveform: Seismogram | Trace): number {
+export function mean(waveform: SeismogramSegment | Trace): number {
   if (waveform instanceof Trace) {
     let meanVal = 0;
 

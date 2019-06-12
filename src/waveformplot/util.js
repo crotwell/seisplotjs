@@ -5,7 +5,7 @@ import RSVP from 'rsvp';
 import * as d3 from 'd3';
 import * as dataselect from '../fdsndataselect';
 import * as miniseed from '../miniseed';
-import {Seismogram, Trace} from '../seismogram';
+import {SeismogramSegment, Trace} from '../seismogram';
 import {SeismographConfig} from './seismographconfig';
 import {CanvasSeismograph} from './canvasSeismograph';
 
@@ -135,7 +135,7 @@ export function calcClockOffset(serverTime: moment) {
 export type TimeWindow = {start: moment, end: moment};
 import type {TimeRangeType} from '../seismogram';
 
-export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram | Trace, accumulator?: TimeRangeType): TimeRangeType {
+export function findStartEnd(data: Array<Trace> | Array<SeismogramSegment> | SeismogramSegment | Trace, accumulator?: TimeRangeType): TimeRangeType {
     let out: TimeRangeType;
     if ( ! accumulator && ! data) {
       throw new Error("data and accumulator are not defined");
@@ -163,7 +163,7 @@ export function findStartEnd(data: Array<Trace> | Array<Seismogram> | Seismogram
     return out;
   }
 
-export function findMinMax(data: Array<Trace> | Seismogram | Trace, minMaxAccumulator ?: Array<number>): Array<number> {
+export function findMinMax(data: Array<Trace> | SeismogramSegment | Trace, minMaxAccumulator ?: Array<number>): Array<number> {
     if ( Array.isArray(data)) {
        for(let i=0; i< data.length; i++) {
          minMaxAccumulator = findMinMax(data[i], minMaxAccumulator);

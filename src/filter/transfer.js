@@ -2,7 +2,7 @@
 
 import * as OregonDSPTop from 'oregondsp';
 import { calcDFT, inverseDFT } from './index';
-import {Seismogram } from '../seismogram';
+import {SeismogramSegment } from '../seismogram';
 import { SacPoleZero } from '../sacPoleZero';
 import {Response, PolesZeros } from '../stationxml';
 import Qty from 'js-quantities';
@@ -17,7 +17,7 @@ export function createComplex(real: number, imag: number) {
   return OregonDSP.filter.iir.Complex_init(real, imag);
 }
 
-export function transfer(seis: Seismogram,
+export function transfer(seis: SeismogramSegment,
                         response: Response,
                         lowCut: number,
                         lowPass: number,
@@ -31,7 +31,7 @@ export function transfer(seis: Seismogram,
         return transferSacPZ(seis, sacPoleZero, lowCut, lowPass, highPass, highCut);
       }
 
-export function transferSacPZ(seis: Seismogram,
+export function transferSacPZ(seis: SeismogramSegment,
                               sacPoleZero: SacPoleZero,
                               lowCut: number,
                               lowPass: number,

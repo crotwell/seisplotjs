@@ -9,7 +9,7 @@ import {
   } from './util';
 
 import type { MarginType } from './seismographconfig';
-import {Seismogram, Trace} from '../seismogram';
+import {SeismogramSegment, Trace} from '../seismogram';
 
 export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)
@@ -49,7 +49,7 @@ function addDivForParticleMotion(ta: Trace, tb: Trace, svgParent: any, startDate
 /** Particle motion. */
 export class ParticleMotion {
   plotId: number;
-  segments: Array<Seismogram>;
+  segments: Array<SeismogramSegment>;
   width: number;
   height: number;
   outerWidth: number;
@@ -72,7 +72,7 @@ export class ParticleMotion {
   svgParent: any;
   g: any;
   static _lastID: number;
-  constructor(inSvgParent: any, inSegments: Array<Seismogram>, plotStartDate: moment, plotEndDate: moment): void {
+  constructor(inSvgParent: any, inSegments: Array<SeismogramSegment>, plotStartDate: moment, plotEndDate: moment): void {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
     if (inSegments.length != 2) {throw new Error("inSegments should be lenght 2 but was "+inSegments.length);}
     this.plotId = ++ParticleMotion._lastID;
@@ -124,7 +124,7 @@ export class ParticleMotion {
     }
     return false;
   }
-  drawParticleMotion(segA: Seismogram, segB: Seismogram) {
+  drawParticleMotion(segA: SeismogramSegment, segB: SeismogramSegment) {
     let mythis = this;
     this.g.selectAll("g.particleMotion").remove();
     let lineG = this.g.append("g").classed("particleMotion", true);

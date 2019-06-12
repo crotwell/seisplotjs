@@ -1,7 +1,7 @@
 // @flow
-import {Seismogram } from '../seismogram';
+import {SeismogramSegment } from '../seismogram';
 
-export function taper(seis: Seismogram, width: number = 0.05, taperType: string = HANNING): Seismogram {
+export function taper(seis: SeismogramSegment, width: number = 0.05, taperType: string = HANNING): SeismogramSegment {
   if (width > 0.5) {
     throw new Error("Taper width cannot be larger than 0.5, width="+width);
   }

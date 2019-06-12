@@ -17,7 +17,7 @@ import {
   } from './util';
 import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
-import {Seismogram, Trace, ensureIsTrace } from '../seismogram';
+import {SeismogramSegment, Trace, ensureIsTrace } from '../seismogram';
 import {InstrumentSensitivity} from '../stationxml';
 import type {TimeRangeType} from '../seismogram';
 
@@ -480,7 +480,7 @@ export class CanvasSeismograph {
     return (domain[1].getTime()-domain[0].getTime())/1000 / (range[1]-range[0]);
   }
 
-  segmentDrawLine(seg: Seismogram, xScale: any): void {
+  segmentDrawLine(seg: SeismogramSegment, xScale: any): void {
     let secondsPerPixel = this.calcSecondsPerPixel(xScale);
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
     this.lineFunc.x(function(d) { return xScale(d.time); });
