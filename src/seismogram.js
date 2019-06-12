@@ -219,6 +219,12 @@ export class Seismogram {
     });
     this._end = moment.max(allEnd);
   }
+  findMinMax(minMaxAccumulator ?: Array<number>) {
+    for (let s of this.seisArray) {
+      minMaxAccumulator = miniseed.segmentMinMax(s, minMaxAccumulator);
+    }
+    return minMaxAccumulator;
+  }
 
   get start(): moment {
     return this._start;
@@ -335,5 +341,52 @@ export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegmen
     }
   } else {
     throw new Error("must be Seismogram or SeismogramSegment but not an object");
+  }
+}
+
+
+export function findStartEnd(data: Array<Seismogram>, accumulator?: TimeRangeType): TimeRangeType {
+  let out: TimeRangeType;
+  if ( ! accumulator && ! data) {
+    throw new Error("data and accumulator are not defined");
+  } else if ( ! accumulator) {
+    out = {start: moment.utc('2500-01-01'), end: moment.utc('1001-01-01'), duration: 0 };
+  } else {
+    out = accumulator;
+  }
+  if ( Array.isArray(data)) {
+    for (let s of data) {
+      if ( s.start < out.start) {
+        out.start = s.start;
+      }
+      if ( out.end < s.end ) {
+        out.end = s.end;
+      }
+    }
+  } else {
+    throw new Error(`Expected Array as first arg but was: ${typeof data}`);
+  }
+  return out;
+}
+
+
+export function findMinMax(data: Array<Seismogram> | SeismogramSegment | Seismogram, minMaxAccumulator ?: Array<number>): Array<number> {
+  if (! data) {
+    return [-1, 1];
+  }
+  if ( Array.isArray(data)) {
+     for(let i=0; i< data.length; i++) {
+       minMaxAccumulator = findMinMax(data[i], minMaxAccumulator);
+     }
+  } else if (data instanceof Seismogram) {
+    return data.findMinMax(minMaxAccumulator);
+  } else {
+     // assume single segment object
+     minMaxAccumulator = miniseed.segmentMinMax(data, minMaxAccumulator);
+  }
+  if (minMaxAccumulator) {
+    return minMaxAccumulator;
+  } else {
+    return [-1, 1];
   }
 }

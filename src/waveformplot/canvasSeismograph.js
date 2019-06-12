@@ -11,13 +11,9 @@
 import moment from 'moment';
 import * as d3 from 'd3';
 
-import {
-    findStartEnd,
-    findMinMax
-  } from './util';
 import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
-import {SeismogramSegment, Seismogram, ensureIsSeismogram } from '../seismogram';
+import {SeismogramSegment, Seismogram, ensureIsSeismogram, findStartEnd, findMinMax } from '../seismogram';
 import {InstrumentSensitivity} from '../stationxml';
 import type {TimeRangeType} from '../seismogram';
 

@@ -4,12 +4,11 @@ import moment from 'moment';
 import * as d3 from 'd3';
 
 import {
-    createPlotsBySelectorPromise,
-    findMinMax
+    createPlotsBySelectorPromise
   } from './util';
 
 import type { MarginType } from './seismographconfig';
-import {SeismogramSegment, Seismogram} from '../seismogram';
+import {SeismogramSegment, Seismogram, findMinMax} from '../seismogram';
 
 export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)

@@ -27,8 +27,6 @@ import {
   loadParseSplit,
   loadParse,
   loadParseSplitUrl,
-  findStartEnd,
-  findMinMax
 } from './util';
 
 /* re-export */
@@ -53,7 +51,5 @@ export {
     loadParseSplit,
     loadParse,
     loadParseSplitUrl,
-    findStartEnd,
-    findMinMax,
     chooser
 };
