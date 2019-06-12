@@ -11,7 +11,7 @@
 // special due to flow
 import { stringify} from './util';
 
-import {SeismogramSegment, Trace} from './seismogram';
+import {SeismogramSegment, Seismogram} from './seismogram';
 import * as seedcodec from './seedcodec';
 
 
@@ -386,13 +386,13 @@ export function createSeismogram(contig: Array<DataRecord>): SeismogramSegment {
 
 
 /**
- * Merges data records into a Trace object, each of
+ * Merges data records into a Seismogram object, each of
  * which consists of Seismogram segment objects
  * containing the data as a float array.
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
  */
-export function merge(drList: Array<DataRecord>): Trace {
+export function merge(drList: Array<DataRecord>): Seismogram {
   let out = [];
   let currDR;
   drList.sort(function(a,b) {
@@ -416,7 +416,7 @@ export function merge(drList: Array<DataRecord>): Trace {
       out.push(createSeismogram(contig));
       contig = [];
   }
-  return new Trace(out);
+  return new Seismogram(out);
 }
 
 
@@ -464,7 +464,7 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
   return out;
 }
 
-export function mergeByChannel(drList: Array<DataRecord> ): Map<string, Trace> {
+export function mergeByChannel(drList: Array<DataRecord> ): Map<string, Seismogram> {
   let out = new Map();
   let byChannelMap = this.byChannel(drList);
   console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
@@ -475,13 +475,13 @@ export function mergeByChannel(drList: Array<DataRecord> ): Map<string, Trace> {
   return out;
 }
 
-export function tracePerChannel(drList: Array<DataRecord>): Map<string, Trace> {
+export function tracePerChannel(drList: Array<DataRecord>): Map<string, Seismogram> {
   let out = new Map();
   let byChannelMap = this.byChannel(drList);
   console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
   for (let [key, seisArray] of byChannelMap) {
     seisArray = seisArray.map(dr => createSeismogram( [ dr ] ));
-    out.set(key, new Trace(seisArray));
+    out.set(key, new Seismogram(seisArray));
   }
   console.log("traceByChannel  out.size="+out.size);
   return out;

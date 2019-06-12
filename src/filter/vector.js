@@ -1,13 +1,13 @@
 //@flow
-import {SeismogramSegment, Trace, ensureIsTrace } from '../seismogram';
+import {SeismogramSegment, Seismogram, ensureIsSeismogram } from '../seismogram';
 
 export const DtoR = Math.PI / 180;
 
-export function rotate(seisA: Trace | SeismogramSegment, azimuthA: number, seisB: Trace | SeismogramSegment, azimuthB: number, azimuth: number) {
-  const traceA = ensureIsTrace(seisA);
-  const traceB = ensureIsTrace(seisB);
+export function rotate(seisA: Seismogram | SeismogramSegment, azimuthA: number, seisB: Seismogram | SeismogramSegment, azimuthB: number, azimuth: number) {
+  const traceA = ensureIsSeismogram(seisA);
+  const traceB = ensureIsSeismogram(seisB);
   if (traceA.segments.length !== traceB.segments.length) {
-    throw new Error("Traces do not have same number of segments: "+traceA.segments.length+" !== "+traceB.segments.length);
+    throw new Error("Seismograms do not have same number of segments: "+traceA.segments.length+" !== "+traceB.segments.length);
   }
   let rotOutRad = [];
   let rotOutTrans = [];
@@ -18,8 +18,8 @@ export function rotate(seisA: Trace | SeismogramSegment, azimuthA: number, seisB
     rotOutTrans.push(result.transverse);
   }
   let out = {
-    "radial": new Trace(rotOutRad),
-    "transverse": new Trace(rotOutTrans),
+    "radial": new Seismogram(rotOutRad),
+    "transverse": new Seismogram(rotOutTrans),
     "azimuthRadial": azimuth % 360,
     "azimuthTransverse": (azimuth + 90) % 360
   };

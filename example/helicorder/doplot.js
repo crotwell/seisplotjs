@@ -108,12 +108,12 @@ doPlot = function(config) {
            ct.endTime
         );
       });
-      hash.traceMap = minMaxQ.loadTraces(minMaxChanTR);
+      hash.traceMap = minMaxQ.loadSeismograms(minMaxChanTR);
     } else {
       let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
         "http://eeyore.seis.sc.edu/mseed",
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
-      hash.traceMap = mseedQ.loadTraces(hash.chanTR);
+      hash.traceMap = mseedQ.loadSeismograms(hash.chanTR);
     }
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
@@ -124,7 +124,7 @@ doPlot = function(config) {
       let dsQ = new seisplotjs.fdsndataselect.DataSelectQuery()
         .nodata(404);
       console.log(dsQ.createPostBody(hash.chanTR));
-      hash.traceMap = dsQ.postQueryTraces(hash.chanTR);
+      hash.traceMap = dsQ.postQuerySeismograms(hash.chanTR);
       hash.query = dsQ;
     }
     return seisplotjs.RSVP.hash(hash);
@@ -139,25 +139,25 @@ doPlot = function(config) {
       heliConfig.markerFlagpoleBase = 'center';
       heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
       heliConfig.numLines = 12;
-      let minMaxTrace = null;
+      let minMaxSeismogram = null;
       traceMap.forEach((value, key) => {
         if (key.endsWith(`L${hash.minMaxInstCode}${hash.chanOrient}`) || key.endsWith(`L${hash.minMaxInstCode}${hash.altChanOrient}`)) {
-          minMaxTrace = value;
+          minMaxSeismogram = value;
         } else if (key.endsWith(`${hash.bandCode}${hash.instCode}${hash.chanOrient}`) || key.endsWith(`${hash.bandCode}${hash.instCode}${hash.altChanOrient}`)) {
-          minMaxTrace = value;
+          minMaxSeismogram = value;
           d3.selectAll("span.textChanCode").text(key.slice(-3));
         } else {
           console.log(`does not match: ${key}`);
         }
       });
-      if (! minMaxTrace) {
+      if (! minMaxSeismogram) {
         throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient}`);
       }
-      hash.minMaxTrace = minMaxTrace;
+      hash.minMaxSeismogram = minMaxSeismogram;
       hash.traceMap = null;
       hash.heli = new wp.Helicorder(svgParent,
                                     heliConfig,
-                                    minMaxTrace,
+                                    minMaxSeismogram,
                                     hash.timeWindow.start,hash.timeWindow.end);
       svgParent.selectAll("*").remove(); // remove old data
       hash.heli.draw();

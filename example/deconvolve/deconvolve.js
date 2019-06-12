@@ -43,7 +43,7 @@ divP.append("a")
     .attr("href", url)
     .text(url);
 
-function processTraces(traceMap) {
+function processSeismograms(traceMap) {
       let trace = traceMap.values().next().value;
 
       let div = d3.select('div.rawseisplot');
@@ -135,9 +135,9 @@ function processTraces(traceMap) {
 }
 
 if (doRunQuery) {
-  dsQuery.queryTraces().then(traceMap => {
+  dsQuery.querySeismograms().then(traceMap => {
     console.log("before process, traceMap.size="+traceMap.size);
-    processTraces(traceMap);
+    processSeismograms(traceMap);
     return traceMap;
   }).catch( function(error) {
     d3.select("div.miniseed").append('p').html("Error loading data." +error);
@@ -152,7 +152,7 @@ if (doRunQuery) {
       return dataRecords;
     }).then(function(dataRecords) {
       let traceMap = miniseed.mergeByChannel(records);
-      processTraces(traceMap);
+      processSeismograms(traceMap);
       return traceMap;
     }).then(function(dataRecords) {
       console.log("After fetch promise resolve");

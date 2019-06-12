@@ -1,7 +1,7 @@
 // @flow
 
 import * as filter from '../../src/filter/index.js';
-import {SeismogramSegment, ensureIsTrace } from '../../src/seismogram';
+import {SeismogramSegment, ensureIsSeismogram } from '../../src/seismogram';
 import {readSac} from './sacfile';
 import  {moment} from '../../src/util';
 
@@ -86,7 +86,7 @@ test("HRV taper", () => {
       let sactaper = result[0];
       let orig = result[1];
       const origseis = new SeismogramSegment(orig.y, 1/orig.delta, moment.utc());
-      let bagtaper = filter.taper.taper(filter.rMean(ensureIsTrace(origseis)));
+      let bagtaper = filter.taper.taper(filter.rMean(ensureIsSeismogram(origseis)));
       const sacdata = sactaper.y;
       const bagdata = bagtaper.y;
       // $FlowFixMe

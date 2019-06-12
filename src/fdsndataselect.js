@@ -12,7 +12,7 @@ import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, checkStringOrD
 
 import * as miniseed from './miniseed';
 import { Channel } from './stationxml';
-import { Trace } from './seismogram';
+import { Seismogram } from './seismogram';
 
 
 export class ChannelTimeRange {
@@ -263,7 +263,7 @@ export class DataSelectQuery {
         return dataRecords;
     });
   }
-  queryTraces(): Promise<Map<string, Trace>> {
+  querySeismograms(): Promise<Map<string, Seismogram>> {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.mergeByChannel(dataRecords);
     });
@@ -314,7 +314,7 @@ console.log("fdsnDataSelect URL: "+url);
       }
     });
   }
-  postQueryTraces(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Trace>> {
+  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Seismogram>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.tracePerChannel(dataRecords);
     });

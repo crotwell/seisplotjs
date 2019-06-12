@@ -5,14 +5,14 @@ import RSVP from 'rsvp';
 import * as d3 from 'd3';
 import * as dataselect from '../fdsndataselect';
 import * as miniseed from '../miniseed';
-import {SeismogramSegment, Trace} from '../seismogram';
+import {SeismogramSegment, Seismogram} from '../seismogram';
 import {SeismographConfig} from './seismographconfig';
 import {CanvasSeismograph} from './canvasSeismograph';
 
 export { dataselect, miniseed, d3, RSVP, moment };
 
 export type PlotDataType = {
-  "traceMap": Map<String, Trace>,
+  "traceMap": Map<String, Seismogram>,
   "startDate": moment,
   "endDate": moment,
   "request": dataselect.DataSelectQuery,
@@ -80,7 +80,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         .channelCode(chan)
         .startTime(startDate)
         .endTime(endDate);
-      out.push(request.queryTraces().then(function(traceMap) {
+      out.push(request.querySeismograms().then(function(traceMap) {
         return {
           "traceMap": traceMap,
           "startDate": startDate,
@@ -135,7 +135,7 @@ export function calcClockOffset(serverTime: moment) {
 export type TimeWindow = {start: moment, end: moment};
 import type {TimeRangeType} from '../seismogram';
 
-export function findStartEnd(data: Array<Trace> | Array<SeismogramSegment> | SeismogramSegment | Trace, accumulator?: TimeRangeType): TimeRangeType {
+export function findStartEnd(data: Array<Seismogram> | Array<SeismogramSegment> | SeismogramSegment | Seismogram, accumulator?: TimeRangeType): TimeRangeType {
     let out: TimeRangeType;
     if ( ! accumulator && ! data) {
       throw new Error("data and accumulator are not defined");
@@ -163,12 +163,12 @@ export function findStartEnd(data: Array<Trace> | Array<SeismogramSegment> | Sei
     return out;
   }
 
-export function findMinMax(data: Array<Trace> | SeismogramSegment | Trace, minMaxAccumulator ?: Array<number>): Array<number> {
+export function findMinMax(data: Array<Seismogram> | SeismogramSegment | Seismogram, minMaxAccumulator ?: Array<number>): Array<number> {
     if ( Array.isArray(data)) {
        for(let i=0; i< data.length; i++) {
          minMaxAccumulator = findMinMax(data[i], minMaxAccumulator);
        }
-    } else if (data instanceof Trace) {
+    } else if (data instanceof Seismogram) {
       return findMinMax(data.seisArray, minMaxAccumulator);
     } else {
        // assume single segment object
@@ -180,3 +180,4 @@ export function findMinMax(data: Array<Trace> | SeismogramSegment | Trace, minMa
       return [-1, 1];
     }
   }
+Seismogram

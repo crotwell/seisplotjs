@@ -113,7 +113,7 @@ let bothPromise = RSVP.hash({
       .channelCode(chanCode)
       .startTime(hash.seisDates.start)
       .endTime(hash.seisDates.end)
-      .queryTraces();
+      .querySeismograms();
     return RSVP.hash(hash);
   }).then(function(hash) {
     let div = seisplotjs.d3.select("div.seismograms");

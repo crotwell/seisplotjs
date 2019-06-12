@@ -248,7 +248,7 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
         "PArrival": PArrival,
         "startDate": startDate,
         "endDate": endDate,
-        "byChannel": dsQuery.queryTraces(),
+        "byChannel": dsQuery.querySeismograms(),
         "dsQuery": dsQuery
       });
     }).then(function(hash) {

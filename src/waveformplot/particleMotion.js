@@ -9,7 +9,7 @@ import {
   } from './util';
 
 import type { MarginType } from './seismographconfig';
-import {SeismogramSegment, Trace} from '../seismogram';
+import {SeismogramSegment, Seismogram} from '../seismogram';
 
 export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)
@@ -30,9 +30,9 @@ export function createParticleMotionBySelector(selector: string): void {
     });
   }
 
-function addDivForParticleMotion(ta: Trace, tb: Trace, svgParent: any, startDate: moment, endDate: moment): void {
+function addDivForParticleMotion(ta: Seismogram, tb: Seismogram, svgParent: any, startDate: moment, endDate: moment): void {
   if (ta.seisArray.length === 0 || tb.seisArray.length === 0) {
-    throw new Error(`Trace has no data: ${ta.seisArray.length} ${tb.seisArray.length}`);
+    throw new Error(`Seismogram has no data: ${ta.seisArray.length} ${tb.seisArray.length}`);
   }
   const sa = ta.seisArray[0];
   const sb = tb.seisArray[0];

@@ -1,7 +1,7 @@
 //@flow
 
 import {Channel, InstrumentSensitivity} from '../stationxml';
-import { Trace} from '../seismogram';
+import { Seismogram} from '../seismogram';
 import {Quake} from '../quakeml';
 import moment from 'moment';
 import * as d3 from 'd3';
@@ -151,7 +151,7 @@ export class SeismographConfig {
 }
 
 export class SeismogramDisplayData {
-  trace: Trace;
+  trace: Seismogram;
   markers: Array<MarkerType>;
   channel: Channel;
   instrumentSensitivity: InstrumentSensitivity;

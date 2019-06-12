@@ -17,7 +17,7 @@ import {
   } from './util';
 import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
-import {SeismogramSegment, Trace, ensureIsTrace } from '../seismogram';
+import {SeismogramSegment, Seismogram, ensureIsSeismogram } from '../seismogram';
 import {InstrumentSensitivity} from '../stationxml';
 import type {TimeRangeType} from '../seismogram';
 
@@ -49,7 +49,7 @@ export class CanvasSeismograph {
   plotEndDate: moment;
 
   svgParent: any;
-  traces: Array<Trace>;
+  traces: Array<Seismogram>;
   markers: Array<MarkerType>;
   width: number;
   height: number;
@@ -73,7 +73,7 @@ export class CanvasSeismograph {
   throttleResize: any;
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
-              inSegments: Array<Trace>,
+              inSegments: Array<Seismogram>,
               plotStartDate: moment,
               plotEndDate: moment) {
     if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
@@ -212,7 +212,7 @@ export class CanvasSeismograph {
       }
       this.sizeCanvas();
     }
-    this.drawTraces();
+    this.drawSeismograms();
     this.drawAxis(this.g);
     this.drawAxisLabels();
     this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
@@ -270,12 +270,12 @@ export class CanvasSeismograph {
     }
   }
 
-  drawTraces() {
+  drawSeismograms() {
     if (this.seismographConfig.drawingType === DRAW_CANVAS || this.seismographConfig.drawingType === DRAW_BOTH) {
-      this.drawTracesCanvas();
+      this.drawSeismogramsCanvas();
     }
     if (this.seismographConfig.drawingType === DRAW_SVG || this.seismographConfig.drawingType === DRAW_BOTH) {
-      this.drawTracesSvg();
+      this.drawSeismogramsSvg();
     }
   }
   isVisible(): boolean {
@@ -283,7 +283,7 @@ export class CanvasSeismograph {
     if (! elem) { return false; }
     return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
   }
-  drawTracesCanvas(): void {
+  drawSeismogramsCanvas(): void {
     if (! this.isVisible()) {
       // no need to draw if we are not visible
       return;
@@ -447,7 +447,7 @@ export class CanvasSeismograph {
             .attr("width", this.width)
             .attr("height", this.height);
   }
-  drawTracesSvg() {
+  drawSeismogramsSvg() {
     const mythis = this;
     const allSegG = this.g.select("g.allsegments");
     const traceJoin = allSegG.selectAll("g")
@@ -487,7 +487,7 @@ export class CanvasSeismograph {
     if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
       if (! seg.y) {
         // $FlowFixMe
-        console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Trace));
+        console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Seismogram));
         return;
       }
       return this.lineFunc(seg.y.map(function(d,i) {
@@ -598,7 +598,7 @@ export class CanvasSeismograph {
       //        return mythis.segmentDrawLine(trace.segments[j], mythis.currZoomXScale);
       //      });
       // });
-    this.drawTraces();
+    this.drawSeismograms();
     //this.drawSegments(this.traces, this.g.select("g.allsegments"));
     this.g.select("g.allmarkers").selectAll("g.marker")
           .attr("transform", function(marker: MarkerType) {
@@ -957,46 +957,46 @@ export class CanvasSeismograph {
     this.rescaleYAxis();
     this.drawYSublabel();
   }
-  getSeismograms(): Array<Trace> {
+  getSeismograms(): Array<Seismogram> {
     return this.traces;
   }
   /** can append single seismogram segment or an array of segments. */
-  _internalAppend(seismogram: Array<Trace> | Trace ): void {
+  _internalAppend(seismogram: Array<Seismogram> | Seismogram ): void {
     if ( ! seismogram) {
       // don't append a null
     } else if (Array.isArray(seismogram)) {
       for(let s of seismogram) {
-        this.traces.push(ensureIsTrace(s));
+        this.traces.push(ensureIsSeismogram(s));
       }
     } else {
-      this.traces.push(ensureIsTrace(seismogram));
+      this.traces.push(ensureIsSeismogram(seismogram));
     }
   }
   /** appends the seismogram(s) as separate time series. */
-  append(seismogram: Array<Trace> | Trace) {
+  append(seismogram: Array<Seismogram> | Seismogram) {
     this._internalAppend(seismogram);
     this.calcScaleDomain();
     if ( ! this.beforeFirstDraw) {
       // only trigger a draw if appending after already drawn on screen
       // otherwise, just append the data and wait for outside to call first draw()
-      this.drawTraces();
+      this.drawSeismograms();
       //this.drawSegments(this.traces, this.g.select("g.allsegments"));
     }
     return this;
   }
-  remove(trace: Trace): void {
+  remove(trace: Seismogram): void {
     this.traces = this.traces.filter( t => t !== trace);
   }
-  replace(oldTrace: Trace, newTrace: Trace): void {
-    let index = this.traces.findIndex(t => t === oldTrace);
+  replace(oldSeismogram: Seismogram, newSeismogram: Seismogram): void {
+    let index = this.traces.findIndex(t => t === oldSeismogram);
     if (index !== -1) {
-      this.traces[index] = newTrace;
+      this.traces[index] = newSeismogram;
     } else {
-      index = this.traces.findIndex(t => t.codes() === oldTrace.codes());
+      index = this.traces.findIndex(t => t.codes() === oldSeismogram.codes());
       if (index !== -1) {
-        this.traces[index] = newTrace;
+        this.traces[index] = newSeismogram;
       } else {
-        this.traces.push(newTrace);
+        this.traces.push(newSeismogram);
       }
     }
   }
@@ -1007,7 +1007,7 @@ export class CanvasSeismograph {
       });
       if (this.traces.length > 0) {
         this.calcScaleDomain();
-        this.drawTraces();
+        this.drawSeismograms();
         //this.drawSegments(this.traces, this.g.select("g.allsegments"));
       }
     }

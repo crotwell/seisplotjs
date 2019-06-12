@@ -53,7 +53,7 @@ d3.selectAll('.textHost').text(host);
 
 let slConn = null;
 let allSeisPlots = new Map();
-let allTraces = new Map();
+let allSeismograms = new Map();
 let svgParent = wp.d3.select('div.realtime');
 let margin = {top: 20, right: 20, bottom: 50, left: 60};
 
@@ -99,20 +99,20 @@ doplot = function(sta) {
     let codes = slPacket.miniseed.codes();
     //console.log("seedlink: seq="+slPacket.sequence+" "+codes);
     let seismogram = wp.miniseed.createSeismogram([slPacket.miniseed]);
-    if (allSeisPlots.has(codes) && allTraces.has(codes)) {
-      const oldTrace = allTraces.get(codes);
-      oldTrace.append(seismogram);
+    if (allSeisPlots.has(codes) && allSeismograms.has(codes)) {
+      const oldSeismogram = allSeismograms.get(codes);
+      oldSeismogram.append(seismogram);
       const littleBitLarger = {'start': moment.utc(timeWindow.start).subtract(60, 'second'),
                               'end': moment.utc(timeWindow.end).add(180, 'second')};
-      const newTrace = oldTrace.trim(littleBitLarger);
-      if (newTrace) {
-        allTraces.set(codes, newTrace);
-        allSeisPlots.get(codes).replace(oldTrace, newTrace);
+      const newSeismogram = oldSeismogram.trim(littleBitLarger);
+      if (newSeismogram) {
+        allSeismograms.set(codes, newSeismogram);
+        allSeisPlots.get(codes).replace(oldSeismogram, newSeismogram);
         allSeisPlots.get(codes).calcScaleDomain();
       } else {
         // trim removed all data, nothing left in window
-        allTraces.delete(codes);
-        allSeisPlots.get(codes).remove(oldTrace);
+        allSeismograms.delete(codes);
+        allSeisPlots.get(codes).remove(oldSeismogram);
         console.log(`All data removed from trace ${codes}`);
       }
 //      allSeisPlots.get(codes).trim(timeWindow);
@@ -124,7 +124,7 @@ doplot = function(sta) {
       plotDiv.style("position", "relative");
       plotDiv.style("width", "100%");
       plotDiv.style("height", "150px");
-      let trace = new seisplotjs.seismogram.Trace(seismogram);
+      let trace = new seisplotjs.seismogram.Seismogram(seismogram);
       let seisPlotConfig = new wp.SeismographConfig();
       seisPlotConfig.xSublabel = codes;
       seisPlotConfig.margin = margin ;
@@ -133,7 +133,7 @@ doplot = function(sta) {
       seisPlot.disableWheelZoom();
       seisPlot.draw();
       allSeisPlots.set(slPacket.miniseed.codes(), seisPlot);
-      allTraces.set(codes, trace)
+      allSeismograms.set(codes, trace)
     }
   }
 

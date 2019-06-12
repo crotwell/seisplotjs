@@ -1,7 +1,7 @@
 // @flow
 
 import {rotate, rotateSeismograms } from '../../src/filter/vector.js';
-import { SeismogramSegment, Trace }  from "../../src/seismogram";
+import { SeismogramSegment, Seismogram }  from "../../src/seismogram";
 import {moment} from '../../src/util';
 
 test("trace rotation", () => {
@@ -20,14 +20,14 @@ test("trace rotation", () => {
   seisB.stationCode = "AAA";
   seisB.locationCode = "00";
   seisB.channelCode = "BHN";
-  let traceA = new Trace(seisA);
-  let traceB = new Trace(seisB);
-  let outTrace = rotate(traceA, az, traceB, az+90, az+rotAzInc);
+  let traceA = new Seismogram(seisA);
+  let traceB = new Seismogram(seisB);
+  let outSeismogram = rotate(traceA, az, traceB, az+90, az+rotAzInc);
   let outSeis = rotateSeismograms(seisA, az, seisB, az+90, az+rotAzInc);
-  expect(outTrace.radial.segments.length).toBe(1);
-  expect(outTrace.transverse.segments.length).toBe(1);
-  expect(outTrace.radial.segments[0].y[0]).toEqual(outSeis.radial.y[0]);
-  expect(outTrace.transverse.segments[0].y[0]).toEqual(outSeis.transverse.y[0]);
+  expect(outSeismogram.radial.segments.length).toBe(1);
+  expect(outSeismogram.transverse.segments.length).toBe(1);
+  expect(outSeismogram.radial.segments[0].y[0]).toEqual(outSeis.radial.y[0]);
+  expect(outSeismogram.transverse.segments[0].y[0]).toEqual(outSeis.transverse.y[0]);
 });
 
 test("simple rotation", () => {

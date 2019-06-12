@@ -174,9 +174,9 @@ export class SeismogramSegment {
   * contain gaps or overlaps, but is otherwise more or less
   * continuous, or at least adjacent data from the channel.
   * Each segment within
-  * the Trace will have the same units, channel identifiers
+  * the Seismogram will have the same units, channel identifiers
   * and sample rate, but cover different times. */
-export class Trace {
+export class Seismogram {
   seisArray: Array<SeismogramSegment>;
   _start: moment;
   _end: moment;
@@ -192,7 +192,7 @@ export class Trace {
     this.findStartEnd();
   }
   checkAllSimilar() {
-    if (this.seisArray.length == 0) {throw new Error("Trace is empty");}
+    if (this.seisArray.length == 0) {throw new Error("Seismogram is empty");}
     let f = this.seisArray[0];
     this.seisArray.forEach((s, i) => {
       if (! s) {
@@ -260,10 +260,10 @@ export class Trace {
     this.seisArray.push(seismogram);
   }
   /**
-    * Creates a new Trace composed of all seismogram segments that overlap the
+    * Creates a new Seismogram composed of all seismogram segments that overlap the
     * given time window. If none do, this returns null;
     */
-  trim(timeWindow: TimeRangeType): null | Trace {
+  trim(timeWindow: TimeRangeType): null | Seismogram {
     let out = null;
     if (this.seisArray) {
       let trimSeisArray = this.seisArray.filter(function(d) {
@@ -272,7 +272,7 @@ export class Trace {
         return d.start.isBefore(timeWindow.end);
       });
       if (trimSeisArray.length > 0) {
-        out = new Trace(trimSeisArray);
+        out = new Seismogram(trimSeisArray);
       }
     }
     return out;
@@ -318,22 +318,22 @@ export class Trace {
   }
 }
 
-export function ensureIsTrace(seisTrace: Trace | SeismogramSegment) {
-  if (typeof seisTrace === "object") {
-    if (seisTrace instanceof Trace) {
-      return seisTrace;
-    } else if (seisTrace instanceof SeismogramSegment) {
-      return new Trace([ seisTrace ]);
+export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegment) {
+  if (typeof seisSeismogram === "object") {
+    if (seisSeismogram instanceof Seismogram) {
+      return seisSeismogram;
+    } else if (seisSeismogram instanceof SeismogramSegment) {
+      return new Seismogram([ seisSeismogram ]);
     } else {
-      let s = typeof seisTrace;
-      if (seisTrace.prototype && seisTrace.prototype.constructor) {
-        s += " "+seisTrace.prototype.constructor.name;
+      let s = typeof seisSeismogram;
+      if (seisSeismogram.prototype && seisSeismogram.prototype.constructor) {
+        s += " "+seisSeismogram.prototype.constructor.name;
       } else {
-        s += " "+seisTrace;
+        s += " "+seisSeismogram;
       }
-      throw new Error("must be Trace or SeismogramSegment but "+s);
+      throw new Error("must be Seismogram or SeismogramSegment but "+s);
     }
   } else {
-    throw new Error("must be Trace or SeismogramSegment but not an object");
+    throw new Error("must be Seismogram or SeismogramSegment but not an object");
   }
 }

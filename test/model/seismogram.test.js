@@ -1,6 +1,6 @@
 // @flow
 
-import {SeismogramSegment, Trace} from '../../src/seismogram';
+import {SeismogramSegment, Seismogram} from '../../src/seismogram';
 import  {moment} from '../../src/util';
 
 test("simple seismogram creation", () => {
@@ -78,7 +78,7 @@ test("seismogram clone", () => {
 });
 
 
-test("simple Trace creation", () => {
+test("simple Seismogram creation", () => {
   let yValues = [0, 1, 2];
   let sampleRate = 20.0;
   let start = moment.utc();
@@ -91,7 +91,7 @@ test("simple Trace creation", () => {
   seis.stationCode = staCode;
   seis.locationCode = locCode;
   seis.channelCode = chanCode;
-  let trace = new Trace(seis);
+  let trace = new Seismogram(seis);
   expect(trace.networkCode).toBe(netCode);
   expect(trace.stationCode).toBe(staCode);
   expect(trace.locationCode).toBe(locCode);

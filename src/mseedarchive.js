@@ -5,7 +5,7 @@ import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 
 import {ChannelTimeRange } from './fdsndataselect';
-import {Trace} from './seismogram';
+import {Seismogram} from './seismogram';
 import {Channel} from './stationxml';
 
 export const Allowed_Flags = [ 'n', 's', 'l', 'c', 'Y', 'j', 'H'];
@@ -51,7 +51,7 @@ export class MSeedArchive {
     }
     return true;
   }
-  loadTraces(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<Trace>>> {
+  loadSeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<Seismogram>>> {
     let promiseArray = channelTimeList.map(ct => {
       return this.loadDataForChannel(ct.channel, ct.startTime, ct.endTime);
       });

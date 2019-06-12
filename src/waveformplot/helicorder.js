@@ -2,7 +2,7 @@
 
 import moment from 'moment';
 
-import { Trace } from '../seismogram';
+import { Seismogram } from '../seismogram';
 import type { MarginType, MarkerType } from './seismographconfig';
 import { CanvasSeismograph } from './canvasSeismograph';
 import { SeismographConfig } from './seismographconfig';
@@ -13,14 +13,14 @@ export class Helicorder {
   secondsPerLine: number;
   svgParent: any;
   heliConfig: HelicorderConfig;
-  trace: Trace;
+  trace: Seismogram;
   xScaleArray: any;
   yScale: any;
   plotStartDate: moment;
   plotEndDate: moment;
   constructor(inSvgParent: any,
               heliConfig: HelicorderConfig,
-              trace: Trace,
+              trace: Seismogram,
               plotStartDate: moment, plotEndDate: moment) {
     this.seismographArray = [];
     this.svgParent = inSvgParent;

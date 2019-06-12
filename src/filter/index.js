@@ -2,7 +2,7 @@
 
 import * as OregonDSPTop from 'oregondsp';
 
-import {SeismogramSegment, Trace} from '../seismogram';
+import {SeismogramSegment, Seismogram} from '../seismogram';
 import {InstrumentSensitivity} from '../stationxml';
 
 import * as transfer  from './transfer';
@@ -27,16 +27,16 @@ export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
 }
 
-export function rMean(seis: SeismogramSegment | Trace): SeismogramSegment | Trace {
+export function rMean(seis: SeismogramSegment | Seismogram): SeismogramSegment | Seismogram {
   console.log(`rMean input class is: ${(seis.constructor.name)}`);
-  if (seis instanceof Trace) {
+  if (seis instanceof Seismogram) {
     let meanVal = 0;
     let npts = seis.numPoints;
     for (let s of seis.seisArray) {
       meanVal += mean(s)*s.numPoints;
     }
     meanVal = meanVal / npts;
-    let rmeanTrace = new Trace(seis.seisArray.map(s =>{
+    let rmeanSeismogram = new Seismogram(seis.seisArray.map(s =>{
         let demeanY = s.y.map(function(d) {
           return d-meanVal;
         });
@@ -44,7 +44,7 @@ export function rMean(seis: SeismogramSegment | Trace): SeismogramSegment | Trac
         out.y = demeanY;
         return out;
       }));
-    return rmeanTrace;
+    return rmeanSeismogram;
   } else if (seis instanceof SeismogramSegment) {
     let out = seis.clone();
     let meanVal = mean(seis);
@@ -54,16 +54,16 @@ export function rMean(seis: SeismogramSegment | Trace): SeismogramSegment | Trac
     out.y = demeanY;
     return out;
   } else {
-    throw new Error("rMean arg not a SeismogramSegment or Trace");
+    throw new Error("rMean arg not a SeismogramSegment or Seismogram");
   }
 }
 
-export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: SeismogramSegment | Trace): SeismogramSegment | Trace {
-  if (seis instanceof Trace) {
-    let gainTrace = new Trace(seis.seisArray.map(s =>{
+export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: SeismogramSegment | Seismogram): SeismogramSegment | Seismogram {
+  if (seis instanceof Seismogram) {
+    let gainSeismogram = new Seismogram(seis.seisArray.map(s =>{
       return gainCorrect(instrumentSensitivity, s);
       }));
-    return gainTrace;
+    return gainSeismogram;
   } else {
       let out = seis.clone();
       let gain = instrumentSensitivity.sensitivity;
@@ -82,11 +82,11 @@ export type MinMaxMean = {
   mean: number;
 };
 
-export function minMaxMean(seis: SeismogramSegment | Trace): MinMaxMean {
+export function minMaxMean(seis: SeismogramSegment | Seismogram): MinMaxMean {
   let meanVal = 0;
   let minVal = 9999999999;
   let maxVal = -9999999999;
-  if (seis instanceof Trace) {
+  if (seis instanceof Seismogram) {
     let npts = seis.numPoints;
     for (let s of seis.seisArray) {
       meanVal += mean(s)*s.numPoints;
@@ -105,8 +105,8 @@ export function minMaxMean(seis: SeismogramSegment | Trace): MinMaxMean {
     mean: meanVal
   };
 }
-export function mean(waveform: SeismogramSegment | Trace): number {
-  if (waveform instanceof Trace) {
+export function mean(waveform: SeismogramSegment | Seismogram): number {
+  if (waveform instanceof Seismogram) {
     let meanVal = 0;
 
     let npts = waveform.numPoints;
