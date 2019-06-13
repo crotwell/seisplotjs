@@ -1,7 +1,7 @@
 // @flow
 
 import * as filter from '../../src/filter/index.js';
-import {SeismogramSegment} from '../../src/seismogram';
+import { Seismogram} from '../../src/seismogram';
 import {SacPoleZero} from '../../src/sacPoleZero';
 import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
 import  {moment} from '../../src/util';
@@ -354,7 +354,7 @@ test("impulse one zero combina amp", () => {
       let sactfr = result[1];
       let pz = result[2];
       let sacAmp = result[3];
-      const origseis = new SeismogramSegment(orig.y, 1/orig.delta, moment.utc());
+      const seis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
 
       expect(orig.y.length).toBe(1024);
       expect(orig.delta).toBe(1);
@@ -437,8 +437,8 @@ test("impulse one zero", () => {
       let sactfr = result[1];
       let pz = result[2];
       let sacAm = result[3];
-      const origseis = new SeismogramSegment(orig.y, 1/orig.delta, moment.utc());
-      let bagtfr = filter.transfer.transferSacPZ(origseis,
+      const seis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+      let bagtfr = filter.transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
                                       0.01,
@@ -479,8 +479,8 @@ test("impulse", () => {
       let orig = result[0];
       let sactfr = result[1];
       let pz = result[2];
-      const origseis = new SeismogramSegment(orig.y, 1/orig.delta, moment.utc());
-      let bagtfr = filter.transfer.transferSacPZ(origseis,
+      const seis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+      let bagtfr = filter.transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
                                       0.01,
@@ -533,8 +533,8 @@ test("HRV test", () => {
       let rmean = result[2];
       let taper = result[3];
       let transfer = result[4];
-      const origseis = new SeismogramSegment(orig.y, 1/orig.delta, moment.utc());
-      const bag_rmean = filter.rMean(origseis);
+      const seis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+      const bag_rmean = filter.rMean(seis);
       const rmean_data = bag_rmean.y;
       let sacdata = rmean.y;
       // $FlowFixMe

@@ -19,6 +19,7 @@ export type HighLowType = {
       highlowArray: Array<number>;
 };
 
+
 /**
 * A contiguous segment of a Seismogram.
 * @param {Array} yArray array of Y sample values, ie the timeseries
@@ -187,7 +188,9 @@ export class Seismogram {
   seisArray: Array<SeismogramSegment>;
   _start: moment;
   _end: moment;
+  _y: null | Array<number>;
   constructor(seisArray: SeismogramSegment | Array<SeismogramSegment>) {
+    this._y = null;
     if ( Array.isArray(seisArray)) {
       this.seisArray = seisArray;
     } else if ( seisArray instanceof SeismogramSegment) {
@@ -197,6 +200,13 @@ export class Seismogram {
     }
     this.checkAllSimilar();
     this.findStartEnd();
+  }
+  static createFromArray(yArray: null | Array<number>,
+                        sampleRate: number,
+                        start: moment) {
+    const seg = new SeismogramSegment(yArray, sampleRate, start);
+    const seis = new Seismogram(seg);
+    return seis;
   }
   checkAllSimilar() {
     if (this.seisArray.length == 0) {throw new Error("Seismogram is empty");}
@@ -330,8 +340,42 @@ export class Seismogram {
                 return acc.concat(s.y);
               }, initValue);
   }
+  /**
+   * Gets the timeseries as an array of number if it is contiguous.
+   * @throws {NonContiguousData} if data is not contiguous.
+   * @return  timeseries as array of number
+   */
+  get y(): Array<number> {
+    if ( ! this._y) {
+      if (this.isContiguous()) {
+        this._y = this.merge();
+      } else {
+        throw new Error("Seismogram is not contiguous.");
+      }
+    }
+    return this._y;
+  }
+  clone(): Seismogram {
+    let cloned = this.seisArray.map( s => s.clone());
+    return new Seismogram(cloned);
+  }
+  cloneWithNewY(newY?: Array<number>): Seismogram {
+    if (newY && newY.length > 0) {
+      let seg = this.seisArray[0].clone();
+      seg.y = newY;
+      return new Seismogram(seg);
+    } else {
+      throw new Error("Y value is empty");
+    }
+  }
 }
 
+export class NonContiguousData extends Error {
+  constructor(message) {
+    super(message);
+    this.name = this.constructor.name;
+  }
+}
 export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegment) {
   if (typeof seisSeismogram === "object") {
     if (seisSeismogram instanceof Seismogram) {

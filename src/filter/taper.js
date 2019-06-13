@@ -1,25 +1,26 @@
 // @flow
-import {SeismogramSegment } from '../seismogram';
+import {Seismogram } from '../seismogram';
 
-export function taper(seis: SeismogramSegment, width: number = 0.05, taperType: string = HANNING): SeismogramSegment {
+export function taper(seis: Seismogram, width: number = 0.05, taperType: string = HANNING): Seismogram {
   if (width > 0.5) {
     throw new Error("Taper width cannot be larger than 0.5, width="+width);
   }
-
-  let out = seis.clone();
-  let data = out.y;
-  let w = Math.floor(data.length * width);
-  let coeff = getCoefficients(taperType, w);
-  const omega = coeff[0];
-  const f0 = coeff[1];
-  const f1 = coeff[2];
-  for(let i = 0; i < w; i++) {
-    const taperFactor = (f0 - f1 * Math.cos(omega * i));
-    data[i] = data[i] * taperFactor;
-    data[data.length - i - 1] = data[data.length - i - 1] * taperFactor;
+  if (seis.isContiguous()) {
+    let data = seis.y;
+    let w = Math.floor(data.length * width);
+    let coeff = getCoefficients(taperType, w);
+    const omega = coeff[0];
+    const f0 = coeff[1];
+    const f1 = coeff[2];
+    for(let i = 0; i < w; i++) {
+      const taperFactor = (f0 - f1 * Math.cos(omega * i));
+      data[i] = data[i] * taperFactor;
+      data[data.length - i - 1] = data[data.length - i - 1] * taperFactor;
+    }
+    return seis.cloneWithNewY(data);
+  } else {
+    throw new Error("Cannot take taper of non-contiguous seismogram");
   }
-  out.y = data;
-  return out;
 }
 
 

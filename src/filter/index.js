@@ -28,15 +28,10 @@ export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
 }
 
-export function rMean(seis: SeismogramSegment | Seismogram): SeismogramSegment | Seismogram {
+export function rMean(seis: Seismogram): Seismogram {
   console.log(`rMean input class is: ${(seis.constructor.name)}`);
   if (seis instanceof Seismogram) {
-    let meanVal = 0;
-    let npts = seis.numPoints;
-    for (let s of seis.seisArray) {
-      meanVal += mean(s)*s.numPoints;
-    }
-    meanVal = meanVal / npts;
+    let meanVal = mean(seis);
     let rmeanSeismogram = new Seismogram(seis.seisArray.map(s =>{
         let demeanY = s.y.map(function(d) {
           return d-meanVal;
@@ -46,34 +41,27 @@ export function rMean(seis: SeismogramSegment | Seismogram): SeismogramSegment |
         return out;
       }));
     return rmeanSeismogram;
-  } else if (seis instanceof SeismogramSegment) {
-    let out = seis.clone();
-    let meanVal = mean(seis);
-    let demeanY = seis.y.map(function(d) {
-      return d-meanVal;
-    });
-    out.y = demeanY;
-    return out;
   } else {
-    throw new Error("rMean arg not a SeismogramSegment or Seismogram");
+    throw new Error("rMean arg not a Seismogram");
   }
 }
 
-export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: SeismogramSegment | Seismogram): SeismogramSegment | Seismogram {
+export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
+    let out = seis.clone();
+    let gain = instrumentSensitivity.sensitivity;
     let gainSeismogram = new Seismogram(seis.seisArray.map(s =>{
-      return gainCorrect(instrumentSensitivity, s);
+      let outS = s.clone();
+      let gainY = s.y.map(function(d) {
+        return d/gain;
+      });
+      outS.y = gainY;
+      outS.yUnit = instrumentSensitivity.inputUnits;
+      return outS;
       }));
     return gainSeismogram;
   } else {
-      let out = seis.clone();
-      let gain = instrumentSensitivity.sensitivity;
-      let gainY = seis.y.map(function(d) {
-        return d/gain;
-      });
-      out.y = gainY;
-      out.yUnit = instrumentSensitivity.inputUnits;
-      return out;
+      throw new Error(`Expected Seismogram but was ${typeof seis}`);
   }
 }
 
@@ -83,7 +71,7 @@ export type MinMaxMean = {
   mean: number;
 };
 
-export function minMaxMean(seis: SeismogramSegment | Seismogram): MinMaxMean {
+export function minMaxMean(seis: Seismogram): MinMaxMean {
   let meanVal = 0;
   let minVal = 9999999999;
   let maxVal = -9999999999;
@@ -96,9 +84,7 @@ export function minMaxMean(seis: SeismogramSegment | Seismogram): MinMaxMean {
     }
     meanVal = meanVal / npts;
   } else {
-    meanVal += mean(seis);
-    minVal = seis.y.reduce((acc, val) => {return Math.min(acc, val);}, minVal);
-    maxVal = seis.y.reduce((acc, val) => {return Math.max(acc, val);}, maxVal);
+    throw new Error("seis not instance of Seismogram");
   }
   return {
     min: minVal,
@@ -106,18 +92,18 @@ export function minMaxMean(seis: SeismogramSegment | Seismogram): MinMaxMean {
     mean: meanVal
   };
 }
-export function mean(waveform: SeismogramSegment | Seismogram): number {
-  if (waveform instanceof Seismogram) {
+export function mean(seis: Seismogram): number {
+  if (seis instanceof Seismogram) {
     let meanVal = 0;
 
-    let npts = waveform.numPoints;
-    for (let s of waveform.seisArray) {
-      meanVal += mean(s)*s.numPoints;
+    let npts = seis.numPoints;
+    for (let s of seis.seisArray) {
+      meanVal += meanOfSlice(s.y, s.y.length)*s.numPoints;
     }
     meanVal = meanVal / npts;
     return meanVal;
   } else {
-    return meanOfSlice(waveform.y, waveform.y.length);
+    throw new Error("seis not instance of Seismogram "+(typeof seis)+" "+(seis.constructor.name));
   }
 }
 

@@ -1,6 +1,6 @@
 // @flow
 
-import {rotate, rotateSeismograms } from '../../src/filter/vector.js';
+import {rotate, rotateSeismogramSegment } from '../../src/filter/vector.js';
 import { SeismogramSegment, Seismogram }  from "../../src/seismogram";
 import {moment} from '../../src/util';
 
@@ -23,7 +23,7 @@ test("trace rotation", () => {
   let traceA = new Seismogram(seisA);
   let traceB = new Seismogram(seisB);
   let outSeismogram = rotate(traceA, az, traceB, az+90, az+rotAzInc);
-  let outSeis = rotateSeismograms(seisA, az, seisB, az+90, az+rotAzInc);
+  let outSeis = rotateSeismogramSegment(seisA, az, seisB, az+90, az+rotAzInc);
   expect(outSeismogram.radial.segments.length).toBe(1);
   expect(outSeismogram.transverse.segments.length).toBe(1);
   expect(outSeismogram.radial.segments[0].y[0]).toEqual(outSeis.radial.y[0]);
@@ -47,7 +47,7 @@ test("simple rotation", () => {
   seisB.locationCode = "00";
   seisB.channelCode = "BHN";
 
-  let out = rotateSeismograms(seisA, az, seisB, az+90, rotToAz);
+  let out = rotateSeismogramSegment(seisA, az, seisB, az+90, rotToAz);
   expect(out.radial.y.length).toBe(3);
   expect(out.transverse.y.length).toBe(3);
   expect(out.azimuthRadial).toBe(rotToAz);
@@ -62,7 +62,7 @@ test("simple rotation", () => {
   expect(out.transverse.chanCode).toBe("BHT");
 
   // 0->360, nothing should change
-  let out360 = rotateSeismograms(seisA, az, seisB, az+90, az+360);
+  let out360 = rotateSeismogramSegment(seisA, az, seisB, az+90, az+360);
   expect(out360.radial.yAtIndex(0)).toBeCloseTo(seisA.yAtIndex(0), 9);
   expect(out360.radial.yAtIndex(1)).toBeCloseTo(seisA.yAtIndex(1), 9);
   expect(out360.radial.yAtIndex(2)).toBeCloseTo(seisA.yAtIndex(2), 9);
@@ -72,7 +72,7 @@ test("simple rotation", () => {
 
 
   // rotate to 30 az,
-  let out30 = rotateSeismograms(seisA, az, seisB, az+90, az+30);
+  let out30 = rotateSeismogramSegment(seisA, az, seisB, az+90, az+30);
   let sqrt3_2 = Math.sqrt(3)/2;
   expect(out30.radial.yAtIndex(0)).toBeCloseTo(sqrt3_2*seisA.yAtIndex(0) + .5*seisB.yAtIndex(0), 9);
   expect(out30.radial.yAtIndex(1)).toBeCloseTo(sqrt3_2*seisA.yAtIndex(1) + .5*seisB.yAtIndex(1), 9);

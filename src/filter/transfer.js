@@ -2,7 +2,7 @@
 
 import * as OregonDSPTop from 'oregondsp';
 import { calcDFT, inverseDFT } from './index';
-import {SeismogramSegment } from '../seismogram';
+import {SeismogramSegment, Seismogram } from '../seismogram';
 import { SacPoleZero } from '../sacPoleZero';
 import {Response, PolesZeros } from '../stationxml';
 import Qty from 'js-quantities';
@@ -24,7 +24,27 @@ export function transfer(seis: SeismogramSegment,
         return transferSacPZ(seis, sacPoleZero, lowCut, lowPass, highPass, highCut);
       }
 
-export function transferSacPZ(seis: SeismogramSegment,
+
+export function transferSacPZ(seis: Seismogram,
+                              sacPoleZero: SacPoleZero,
+                              lowCut: number,
+                              lowPass: number,
+                              highPass: number,
+                              highCut: number) {
+  let outSeis = [];
+  for( let i=0; i< seis.seisArray.length; i++) {
+    let result = transferSacPZSegment(seis.segments[i],
+                                      sacPoleZero,
+                                      lowCut,
+                                      lowPass,
+                                      highPass,
+                                      highCut);
+    outSeis.push(result);
+  }
+  return new Seismogram(outSeis);
+}
+
+export function transferSacPZSegment(seis: SeismogramSegment,
                               sacPoleZero: SacPoleZero,
                               lowCut: number,
                               lowPass: number,
