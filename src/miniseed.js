@@ -420,31 +420,6 @@ export function merge(drList: Array<DataRecord>): Seismogram {
 }
 
 
-
-/** Finds the min and max values of a SeismogramSegment, with an optional
-  * accumulator for use with gappy data. */
-export function segmentMinMax(segment: SeismogramSegment, minMaxAccumulator?: Array<number>): Array<number> {
-  if ( ! segment.y) {
-    throw new Error("Segment does not have a y field, doesn't look like a seismogram segment. "+stringify(segment));
-  }
-  let minAmp = Number.MAX_SAFE_INTEGER;
-  let maxAmp = -1 * (minAmp);
-  if ( minMaxAccumulator) {
-    minAmp = minMaxAccumulator[0];
-    maxAmp = minMaxAccumulator[1];
-  }
-  let yData = ((segment.y: any): Array<number>); // for flow
-  for (let n = 0; n < yData.length; n++) {
-    if (minAmp > yData[n]) {
-      minAmp = yData[n];
-    }
-    if (maxAmp < yData[n]) {
-      maxAmp = yData[n];
-    }
-  }
-  return [ minAmp, maxAmp ];
-}
-
 /** Splits a list of data records by channel code, returning a Map
   * with each NSLC string mapped to an array of data records. */
 export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataRecord>> {

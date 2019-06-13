@@ -166,11 +166,11 @@ export class ParticleMotion {
 }
 
   calcScaleDomain() {
-    let minMax = findMinMax(this.segments[0]);
+    let minMax = this.segments[0].findMinMax();
     this.xScale.domain(minMax).nice();
     let niceMinMax = this.xScale.domain();
     this.xScaleRmean.domain([ (niceMinMax[0]-niceMinMax[1])/2, (niceMinMax[1]-niceMinMax[0])/2 ]);
-    minMax = findMinMax(this.segments[1]);
+    minMax = this.segments[1].findMinMax();
     this.yScale.domain(minMax).nice();
     niceMinMax = this.yScale.domain();
     this.yScaleRmean.domain([ (niceMinMax[0]-niceMinMax[1])/2, (niceMinMax[1]-niceMinMax[0])/2 ]);

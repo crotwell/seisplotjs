@@ -115,7 +115,26 @@ export class SeismogramSegment {
   yAtIndex(i: number): number {
     return this.y[i];
   }
-
+  /** Finds the min and max values of a SeismogramSegment, with an optional
+    * accumulator for use with gappy data. */
+  findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
+    let minAmp = Number.MAX_SAFE_INTEGER;
+    let maxAmp = -1 * (minAmp);
+    if ( minMaxAccumulator) {
+      minAmp = minMaxAccumulator[0];
+      maxAmp = minMaxAccumulator[1];
+    }
+    let yData = ((this.y: any): Array<number>); // for flow
+    for (let n = 0; n < yData.length; n++) {
+      if (minAmp > yData[n]) {
+        minAmp = yData[n];
+      }
+      if (maxAmp < yData[n]) {
+        maxAmp = yData[n];
+      }
+    }
+    return [ minAmp, maxAmp ];
+  }
   timeOfSample(i: number ): moment {
     return moment.utc(this.start).add(i/this.sampleRate, 'seconds');
   }
@@ -236,11 +255,19 @@ export class Seismogram {
     });
     this._end = moment.max(allEnd);
   }
-  findMinMax(minMaxAccumulator ?: Array<number>) {
-    for (let s of this.seisArray) {
-      minMaxAccumulator = miniseed.segmentMinMax(s, minMaxAccumulator);
+  findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
+    if (this.seisArray.length === 0) {
+      throw new Error("No data");
     }
-    return minMaxAccumulator;
+    for (let s of this.seisArray) {
+      minMaxAccumulator = s.findMinMax(minMaxAccumulator);
+    }
+    if (minMaxAccumulator){
+      return minMaxAccumulator;
+    } else {
+      // should never happen, for flow
+      throw new Error("No data to calc minmax");
+    }
   }
 
   get start(): moment {
@@ -371,7 +398,7 @@ export class Seismogram {
 }
 
 export class NonContiguousData extends Error {
-  constructor(message) {
+  constructor(message?: string) {
     super(message);
     this.name = this.constructor.name;
   }
@@ -422,19 +449,9 @@ export function findStartEnd(data: Array<Seismogram>, accumulator?: TimeRangeTyp
 }
 
 
-export function findMinMax(data: Array<Seismogram> | SeismogramSegment | Seismogram, minMaxAccumulator ?: Array<number>): Array<number> {
-  if (! data) {
-    return [-1, 1];
-  }
-  if ( Array.isArray(data)) {
-     for(let i=0; i< data.length; i++) {
-       minMaxAccumulator = findMinMax(data[i], minMaxAccumulator);
-     }
-  } else if (data instanceof Seismogram) {
-    return data.findMinMax(minMaxAccumulator);
-  } else {
-     // assume single segment object
-     minMaxAccumulator = miniseed.segmentMinMax(data, minMaxAccumulator);
+export function findMinMax(data: Array<Seismogram> , minMaxAccumulator ?: Array<number>): Array<number> {
+  for(let s of data) {
+    minMaxAccumulator = s.findMinMax(minMaxAccumulator);
   }
   if (minMaxAccumulator) {
     return minMaxAccumulator;
