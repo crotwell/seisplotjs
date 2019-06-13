@@ -4,7 +4,7 @@ import { checkStringOrDate } from './util';
 
 
 import moment from 'moment';
-import type {ComplexType } from './filter/filterUtil';
+import type {Complex } from './filter/filterUtil';
 
 
 
@@ -205,8 +205,8 @@ export class PolesZeros extends AbstractFilterType {
   pzTransferFunctionType: string;
   normalizationFactor: number;
   normalizationFrequency: number;
-  zeros: Array<ComplexType>;
-  poles: Array<ComplexType>;
+  zeros: Array<Complex>;
+  poles: Array<Complex>;
   constructor(inputUnits: string, outputUnits: string) {
     super(inputUnits, outputUnits);
   }

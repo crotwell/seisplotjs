@@ -78,11 +78,10 @@ export function minMaxMean(seis: Seismogram): MinMaxMean {
   if (seis instanceof Seismogram) {
     let npts = seis.numPoints;
     for (let s of seis.seisArray) {
-      meanVal += mean(s)*s.numPoints;
       minVal = s.y.reduce((acc, val) => {return Math.min(acc, val);}, minVal);
       maxVal = s.y.reduce((acc, val) => {return Math.max(acc, val);}, maxVal);
     }
-    meanVal = meanVal / npts;
+    meanVal = mean(seis);
   } else {
     throw new Error("seis not instance of Seismogram");
   }

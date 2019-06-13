@@ -10,7 +10,7 @@ import {Complex, createComplex} from './filterUtil';
 
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
-export function transfer(seis: SeismogramSegment,
+export function transfer(seis: Seismogram,
                         response: Response,
                         lowCut: number,
                         lowPass: number,
