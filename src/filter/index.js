@@ -2,7 +2,7 @@
 
 import * as OregonDSPTop from 'oregondsp';
 
-import {SeismogramSegment, Seismogram} from '../seismogram';
+import {Seismogram} from '../seismogram';
 import {InstrumentSensitivity} from '../stationxml';
 
 import * as transfer  from './transfer';
@@ -48,7 +48,6 @@ export function rMean(seis: Seismogram): Seismogram {
 
 export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
-    let out = seis.clone();
     let gain = instrumentSensitivity.sensitivity;
     let gainSeismogram = new Seismogram(seis.seisArray.map(s =>{
       let outS = s.clone();
@@ -76,7 +75,6 @@ export function minMaxMean(seis: Seismogram): MinMaxMean {
   let minVal = 9999999999;
   let maxVal = -9999999999;
   if (seis instanceof Seismogram) {
-    let npts = seis.numPoints;
     for (let s of seis.seisArray) {
       minVal = s.y.reduce((acc, val) => {return Math.min(acc, val);}, minVal);
       maxVal = s.y.reduce((acc, val) => {return Math.max(acc, val);}, maxVal);

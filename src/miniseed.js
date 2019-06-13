@@ -8,8 +8,6 @@
  */
 
  import moment from 'moment';
-// special due to flow
-import { stringify} from './util';
 
 import {SeismogramSegment, Seismogram} from './seismogram';
 import * as seedcodec from './seedcodec';

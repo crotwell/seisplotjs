@@ -8,7 +8,7 @@ import {
   } from './util';
 
 import type { MarginType } from './seismographconfig';
-import {SeismogramSegment, Seismogram, findMinMax} from '../seismogram';
+import {SeismogramSegment, Seismogram} from '../seismogram';
 
 export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)

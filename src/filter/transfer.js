@@ -1,14 +1,11 @@
 //@flow
 
-import * as OregonDSPTop from 'oregondsp';
 import { calcDFT, inverseDFT } from './index';
 import {SeismogramSegment, Seismogram } from '../seismogram';
 import { SacPoleZero } from '../sacPoleZero';
 import {Response, PolesZeros } from '../stationxml';
 import Qty from 'js-quantities';
 import {Complex, createComplex} from './filterUtil';
-
-const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 export function transfer(seis: Seismogram,
                         response: Response,
@@ -239,8 +236,8 @@ export function convertToSacPoleZero( response: Response) {
     return sacPZ;
 }
 
-export function calc_A0(poles: Array<OregonDSP.filter.iir.Complex>,
-                        zeros: Array<OregonDSP.filter.iir.Complex>,
+export function calc_A0(poles: Array<Complex>,
+                        zeros: Array<Complex>,
                         ref_freq: number) {
     let numer = createComplex(1, 0);
     let denom = createComplex(1, 0);

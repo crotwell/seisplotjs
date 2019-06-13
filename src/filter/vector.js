@@ -1,5 +1,5 @@
 //@flow
-import {SeismogramSegment, Seismogram, ensureIsSeismogram } from '../seismogram';
+import {SeismogramSegment, Seismogram } from '../seismogram';
 
 export const DtoR = Math.PI / 180;
 
