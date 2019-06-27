@@ -201,16 +201,16 @@ export function convertToSacPoleZero( response: Response) {
     let zeros = [];
     // extra gamma zeros are (0,0)
     for (let i = 0; i < polesZeros.zeros.length; i++) {
-        zeros[i] = createComplex(polesZeros.zeros[i].real * mulFactor,
-                               polesZeros.zeros[i].imag * mulFactor);
+        zeros[i] = createComplex(polesZeros.zeros[i].real() * mulFactor,
+                               polesZeros.zeros[i].imag() * mulFactor);
     }
     for (let i=0; i<gamma; i++) {
       zeros.push(createComplex(0,0));
     }
     let poles = [];
     for (let i = 0; i < polesZeros.poles.length; i++) {
-        poles[i] = createComplex(polesZeros.poles[i].real * mulFactor,
-                               polesZeros.poles[i].imag * mulFactor);
+        poles[i] = createComplex(polesZeros.poles[i].real() * mulFactor,
+                               polesZeros.poles[i].imag() * mulFactor);
     }
     let constant = polesZeros.normalizationFactor;
     let sd = response.instrumentSensitivity.sensitivity;
