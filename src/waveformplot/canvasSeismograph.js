@@ -103,7 +103,7 @@ export class CanvasSeismograph {
     //this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
     this.svg.attr("plotId", this.plotId);
     if ( ! plotStartDate || ! plotEndDate) {
-      let st = findStartEnd(inSegments);
+      let st = findStartEnd(this.traces);
       plotStartDate = st.start;
       plotEndDate = st.end;
     }
