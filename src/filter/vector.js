@@ -25,14 +25,14 @@ export function rotate(seisA: Seismogram, azimuthA: number, seisB: Seismogram, a
 }
 
 export function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: number, seisB: SeismogramSegment, azimuthB: number, azimuth: number) {
-  if (seisA.y.length != seisB.y.length) {
+  if (seisA.y.length !== seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);
   }
-  if (seisA.start != seisB.start) {
+  if ( ! seisA.start.isSame(seisB.start)) {
     throw new Error("Expect start to be same, but was "+seisA.start.toISOString()+" "+seisB.start.toISOString());
   }
-  if (seisA.sampleRate != seisB.sampleRate) {
+  if (seisA.sampleRate !== seisB.sampleRate) {
     throw new Error("Expect sampleRate to be same, but was "+seisA.sampleRate+" "+seisB.sampleRate);
   }
   if ((azimuthA + 90) % 360 != azimuthB % 360) {
