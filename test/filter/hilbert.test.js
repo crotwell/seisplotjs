@@ -11,7 +11,7 @@ test("simple hilbert", () => {
         const origseis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
 
         let hilbertSeismogram = filter.hilbert(origseis);
-        expect(hilbertSeismogram.y.length).toBe(origseis.y.length+200);
+        expect(hilbertSeismogram.y.length).toBe(origseis.y.length);
       });
 });
 
@@ -22,7 +22,7 @@ test("simple envelope", () => {
         const origseis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
 
         let envelopeSeis = filter.envelope(origseis);
-        expect(envelopeSeis.y.length).toBe(origseis.y.length+200);
+        expect(envelopeSeis.y.length).toBe(origseis.y.length);
         for(let i=0; i<envelopeSeis.y.length; i++) {
           expect(envelopeSeis.y[i]).toBeGreaterThanOrEqual(0);
         }

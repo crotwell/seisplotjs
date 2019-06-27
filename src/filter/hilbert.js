@@ -11,9 +11,10 @@ import {Seismogram } from '../seismogram';
 export function envelope(seis: Seismogram): Seismogram {
   if (seis.isContiguous()) {
     let s = hilbert(seis);
+    let hilbertY = s.y;
     let seisY = seis.merge();
     for(let n=0; n<seisY.length; n++) {
-      s.y[n] = Math.sqrt(s.y[n]*s.y[n] + seisY[n]*seisY[n]);
+      seisY[n] = Math.sqrt(hilbertY[n]*hilbertY[n] + seisY[n]*seisY[n]);
     }
     return s;
   } else {
@@ -28,15 +29,19 @@ export function envelope(seis: Seismogram): Seismogram {
  */
 export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge?: number ): Seismogram {
   if (seis.isContiguous()) {
-    let seisY = seis.merge();
+    let seisY = seis.y;
     if (! n) { n = 100;}
     if (! lowEdge) { lowEdge = .05;}
     if (! highEdge) { highEdge = .95;}
     let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(100, .2, .8);
-    seisY = hilbert.filter(seisY);
-    let s = seis.seisArray[0].clone();
-    s.y = seisY;
-    return new Seismogram([s]);
+    let coeff = hilbert.getCoefficients();
+    for (let c of coeff) {
+      console.log(`hilbert: ${c}`);
+    }
+    let hilbertY = hilbert.filter(seisY);
+    let s = seis.cloneWithNewY(hilbertY);
+    console.log(`hilbert len: ${seis.y.length} ${seisY.length} ${hilbertY.length}  ${s.y.length},${s.y[0].length} ${s.segments.length} ${s.segments[0].y.length}`);
+    return s;
   } else {
     throw new Error("Cannot take hilbert of non-contiguous seismogram");
   }
