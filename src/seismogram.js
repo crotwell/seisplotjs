@@ -377,10 +377,14 @@ export class Seismogram {
       if (this.isContiguous()) {
         this._y = this.merge();
       } else {
-        throw new Error("Seismogram is not contiguous.");
+        throw new Error("Seismogram is not contiguous, acces each SeismogramSegment idividually.");
       }
     }
     return this._y;
+  }
+  set y(val: Array<number>) {
+    // ToDo
+    throw new Error("seismogram y setter not impl yet");
   }
   clone(): Seismogram {
     let cloned = this.seisArray.map( s => s.clone());
@@ -390,7 +394,7 @@ export class Seismogram {
     if (newY && newY.length > 0) {
       let seg = this.seisArray[0].clone();
       seg.y = newY;
-      return new Seismogram(seg);
+      return new Seismogram([seg]);
     } else {
       throw new Error("Y value is empty");
     }
