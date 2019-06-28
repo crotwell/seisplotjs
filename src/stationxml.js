@@ -134,7 +134,7 @@ export class Channel {
     }
   }
   set instrumentSensitivity(value: InstrumentSensitivity) {
-    if (typeof this.response == 'undefined') {
+    if (typeof this.response === 'undefined') {
       this.response = new Response(value);
     } else {
       this.response.instrumentSensitivity = value;

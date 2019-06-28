@@ -64,7 +64,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
       if (! host) {
           host = "service.iris.edu";
       }
-      if (document && "https:" == document.location.protocol) {
+      if (document && "https:" === document.location.protocol) {
         protocol = 'https:';
       }
 

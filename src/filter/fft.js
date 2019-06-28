@@ -45,7 +45,7 @@ export function inverseDFT(packedFreq: Array<number>, npts: number): Array<numbe
   let log2N = 4;
   let N = 16;
   while(N < packedFreq.length) { log2N += 1; N = 2 * N;}
-  if (N != packedFreq.length) {
+  if (N !== packedFreq.length) {
     throw new Error("power of two check fails: "+N+" "+packedFreq.length);
   }
   let dft = new OregonDSP.fft.RDFT(log2N);

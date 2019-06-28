@@ -141,7 +141,7 @@ export class RingserverConnection {
   }
 
   formBaseURL(): string {
-    return checkProtocol()+'//'+this._host+(this._port==80 ? '' : (':'+this._port));
+    return checkProtocol()+'//'+this._host+(this._port===80 ? '' : (':'+this._port));
   }
 
   formIdURL(): string {
@@ -216,16 +216,16 @@ export class StreamStat {
     this.key = key;
     this.startRaw = start;
     this.endRaw = end;
-    if (this.startRaw.indexOf('.') != -1 && this.startRaw.indexOf('.') < this.startRaw.length-4) {
+    if (this.startRaw.indexOf('.') !== -1 && this.startRaw.indexOf('.') < this.startRaw.length-4) {
       this.startRaw = this.startRaw.substring(0, this.startRaw.indexOf('.')+4);
     }
-    if (this.startRaw.charAt(this.startRaw.length-1) != 'Z') {
+    if (this.startRaw.charAt(this.startRaw.length-1) !== 'Z') {
       this.startRaw = this.startRaw+'Z';
     }
-    if (this.endRaw.indexOf('.') != -1 && this.endRaw.indexOf('.') < this.endRaw.length-4) {
+    if (this.endRaw.indexOf('.') !== -1 && this.endRaw.indexOf('.') < this.endRaw.length-4) {
       this.endRaw = this.endRaw.substring(0, this.endRaw.indexOf('.')+4);
     }
-    if (this.endRaw.charAt(this.endRaw.length-1) != 'Z') {
+    if (this.endRaw.charAt(this.endRaw.length-1) !== 'Z') {
       this.endRaw = this.endRaw+'Z';
     }
     this.start = moment.utc(this.startRaw);

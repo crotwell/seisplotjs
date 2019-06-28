@@ -162,7 +162,7 @@ export class SeedlinkConnection {
       const data = ((event.data: any): ArrayBuffer);
       let replyMsg = dataViewToString(new DataView(data));
       let lines = replyMsg.trim().split('\r');
-      if (lines.length == 2) {
+      if (lines.length === 2) {
         resolve(lines);
       } else {
         reject("not 2 lines: "+replyMsg);

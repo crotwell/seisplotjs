@@ -456,7 +456,7 @@ export class AvailabilityQuery {
       if (this._protocol.endsWith(colon)) {
         colon = "";
       }
-      return this._protocol+colon+"//"+this._host+(this._port==80?"":(":"+this._port))+"/fdsnws/availability/"+this._specVersion;
+      return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/fdsnws/availability/"+this._specVersion;
   }
 
   formVersionURL(): string {

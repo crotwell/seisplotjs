@@ -72,7 +72,7 @@ export class CanvasSeismograph {
               inSegments: Array<Seismogram>,
               plotStartDate: moment,
               plotEndDate: moment) {
-    if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
+    if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++CanvasSeismograph._lastID;
     this.beforeFirstDraw = true;
     this.seismographConfig = seismographConfig;
@@ -173,14 +173,14 @@ export class CanvasSeismograph {
 
   checkResize(): boolean {
     let rect = this.svg.node().getBoundingClientRect();
-    if (rect.width != this.outerWidth || rect.height != this.outerHeight) {
+    if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
       return true;
     }
     return false;
   }
   draw(): void {
     let rect = this.svg.node().getBoundingClientRect();
-    if ((rect.width != this.outerWidth || rect.height != this.outerHeight)) {
+    if ((rect.width !== this.outerWidth || rect.height !== this.outerHeight)) {
       if (rect.height < this.seismographConfig.minHeight) { rect.height = this.seismographConfig.minHeight; }
       if (rect.height > this.seismographConfig.maxHeight) { rect.height = this.seismographConfig.maxHeight; }
       this.setWidthHeight(rect.width, rect.height);
@@ -493,14 +493,14 @@ export class CanvasSeismograph {
       // lots of points per pixel so use high/low lines
       console.log('segmentDrawLine Lots points, draw using high/low');
       if ( ! seg._highlow
-           || seg._highlow.secondsPerPixel != secondsPerPixel
-           || seg._highlow.xScaleDomain[1] != xScale.domain()[1]) {
+           || seg._highlow.secondsPerPixel !== secondsPerPixel
+           || seg._highlow.xScaleDomain[1] !== xScale.domain()[1]) {
         let highlow = [];
         let numHL = 2*Math.ceil(seg.y.length/samplesPerPixel);
         for(let i=0; i<numHL; i++) {
           let snippet = seg.y.slice(i * samplesPerPixel,
                                     (i+1) * samplesPerPixel);
-          if (snippet.length != 0) {
+          if (snippet.length !== 0) {
           highlow[2*i] = snippet.reduce(function(acc, val) {
             return Math.min(acc, val);
           }, snippet[0]);
@@ -616,7 +616,7 @@ export class CanvasSeismograph {
            .x(function() {
              return 0; // g is translated so marker time is zero
            }).y(function(d, i) {
-             return (i==0) ? 0 : mythis.yScale.range()[0];
+             return (i===0) ? 0 : mythis.yScale.range()[0];
            }).curve(d3.curveLinear)([ mythis.yScale.domain()[0], mythis.yScale.domain()[1] ] ); // call the d3 function created by line with data
       });
     this.g.select(".axis--x").call(this.xAxis.scale(xt));
@@ -711,10 +711,10 @@ export class CanvasSeismograph {
                 }).y(function(d, i) {
                   let out = 0;
                   if (mythis.seismographConfig.markerFlagpoleBase === 'center') {
-                    out = (i==0) ? 0: (mythis.yScale.range()[0]+mythis.yScale.range()[1])/2 ;
+                    out = (i===0) ? 0: (mythis.yScale.range()[0]+mythis.yScale.range()[1])/2 ;
                   } else {
                     // mythis.seismographConfig.markerFlagpoleBase === 'bottom'
-                    out = (i==0) ? 0 : mythis.yScale.range()[0];
+                    out = (i===0) ? 0 : mythis.yScale.range()[0];
                   }
                   return out;
                 }).curve(d3.curveLinear)([ mythis.yScale.domain()[0], mythis.yScale.domain()[1] ] ); // call the d3 function created by line with data
@@ -920,7 +920,7 @@ export class CanvasSeismograph {
       this.yScale.domain(this.seismographConfig.fixedYScale);
     } else {
       let minMax = findMinMax(this.traces);
-      if (minMax[0] == minMax[1]) {
+      if (minMax[0] === minMax[1]) {
         // flatlined data, use -1, +1
         minMax = [ minMax[0]-1, minMax[1]+1];
       }

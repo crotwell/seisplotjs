@@ -222,7 +222,7 @@ export function convertToSacPoleZero( response: Response) {
     if (polesZeros.pzTransferFunctionType === "LAPLACE (HERTZ)") {
         A0 *= Math.pow(2 * Math.PI, polesZeros.poles.length - polesZeros.zeros.length);
     }
-    if (poles.length == 0 && zeros.length == 0) {
+    if (poles.length === 0 && zeros.length === 0) {
         constant = (sd * A0);
     } else {
         constant = (sd * calc_A0(poles, zeros, fs));

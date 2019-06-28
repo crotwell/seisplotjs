@@ -20,13 +20,13 @@ export {RSVP, };
 
 // flow predicate %check functions
 export function hasArgs(value: any): boolean %checks {
-  return arguments.length != 0 && typeof value != 'undefined';
+  return arguments.length !== 0 && typeof value !== 'undefined';
 }
 export function hasNoArgs(value: any): boolean %checks {
-  return arguments.length == 0 || typeof value === 'undefined';
+  return arguments.length === 0 || typeof value === 'undefined';
 }
 export function isStringArg(value: any): boolean %checks {
-  return arguments.length != 0 && typeof value === 'string';
+  return arguments.length !== 0 && typeof value === 'string';
 }
 export function isNumArg(value: any): boolean %checks {
   return typeof value === 'number';

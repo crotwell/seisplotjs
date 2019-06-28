@@ -233,7 +233,7 @@ test("PoleZeroTaper", () => {
       // $FlowFixMe
       expect(calcImagArray).arrayToBeCloseToRatio(sacImagArray, 5);
 /*
-          if(sacout[i][0] == 0 || respAtS.real() == 0) {
+          if(sacout[i][0] === 0 || respAtS.real() === 0) {
             expect(respAtS.real()).toBeCloseTo(sacout[i][1], 5);
               // assertEquals("real " + i + " " + respAtS.real()+"   "+sacout[i][1],
               //              sacout[i][1],
@@ -244,7 +244,7 @@ test("PoleZeroTaper", () => {
               // assertEquals("real " + i + " " + respAtS.real()+"   "+sacout[i][1], 1, sacout[i][1]
               //         / respAtS.real(), 0.00001);
           }
-          if(sacout[i][1] == 0 || respAtS.imag() == 0) {
+          if(sacout[i][1] === 0 || respAtS.imag() === 0) {
             expect(respAtS.imag()).toBeCloseTo(sacout[i][2], 5);
               // assertEquals("imag " + i + " " + respAtS.imag(),
               //              sacout[i][2],
@@ -305,7 +305,7 @@ test("Combine", () => {
                            [-1.5673e-07, 2.15609e-07]];
 
       for(let i = 0; i < sacout.length; i++) {
-          if(sacout[i][0] == 0 || out[i] == 0) {
+          if(sacout[i][0] === 0 || out[i] === 0) {
             expect(out[i]).toBeCloseTo(sacout[i][0]);
             //  assertEquals("real " + i + " " + out[i].real()+"  "+sacout[i][0],
             //               sacout[i][0],
@@ -319,7 +319,7 @@ test("Combine", () => {
           }
         }
         for(let i = 1; i < sacout.length; i++) {
-          if(sacout[i][1] == 0 || out[out.length-i] == 0) {
+          if(sacout[i][1] === 0 || out[out.length-i] === 0) {
             expect(out[out.length-i]).toBeCloseTo(sacout[i][1]);
               // assertEquals("imag " + i + " " + out[i].imag()+"  "+sacout[i][1],
               //              sacout[i][1],

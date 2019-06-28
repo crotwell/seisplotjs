@@ -764,7 +764,7 @@ export class EventQuery {
       if (this._protocol.endsWith(colon)) {
         colon = "";
       }
-      return this._protocol+colon+"//"+this._host+(this._port==80?"":(":"+this._port))+"/fdsnws/event/"+this._specVersion;
+      return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/fdsnws/event/"+this._specVersion;
   }
 
   /** Forms the URL to get catalogs from the web service, without any query paramters
@@ -916,7 +916,7 @@ export class EventQuery {
       }
     }
     if (this._includeArrivals) {
-      if (this._host != USGS_HOST) {
+      if (this._host !== USGS_HOST) {
         url = url+"includearrivals=true&";
       } else {
         // USGS does not support includearrivals, but does actually

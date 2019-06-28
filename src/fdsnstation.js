@@ -623,7 +623,7 @@ export class StationQuery {
     if (! outputUnits) {
       throw new Error("Stage outputUnits required");
     }
-    if (subEl.localName == 'PolesZeros') {
+    if (subEl.localName === 'PolesZeros') {
       filter = new PolesZeros(inputUnits, outputUnits);
       const pzt = _grabFirstElText(stageXml, 'PzTransferFunctionType');
       if (pzt) { filter.pzTransferFunctionType = pzt; }
@@ -641,7 +641,7 @@ export class StationQuery {
           });
       filter.zeros = zeros;
       filter.poles = poles;
-    } else if (subEl.localName == 'Coefficients') {
+    } else if (subEl.localName === 'Coefficients') {
       let coeffXml = subEl;
       filter = new CoefficientsFilter(inputUnits, outputUnits);
       const cft = _grabFirstElText(coeffXml, 'CfTransferFunctionType');
@@ -654,9 +654,9 @@ export class StationQuery {
           .map(function(denomEl) {
             return parseFloat(denomEl.textContent);
           });
-    } else if (subEl.localName == 'ResponseList') {
+    } else if (subEl.localName === 'ResponseList') {
       throw new Error("ResponseList not supported: ");
-    } else if (subEl.localName == 'FIR') {
+    } else if (subEl.localName === 'FIR') {
       let firXml = subEl;
       filter = new FIR(inputUnits, outputUnits);
       const s = _grabFirstElText(firXml, 'Symmetry');
@@ -665,9 +665,9 @@ export class StationQuery {
           .map(function(numerEl) {
             return parseFloat(numerEl.textContent);
           });
-    } else if (subEl.localName == 'Polynomial') {
+    } else if (subEl.localName === 'Polynomial') {
       throw new Error("Polynomial not supported: ");
-    } else if (subEl.localName == 'StageGain') {
+    } else if (subEl.localName === 'StageGain') {
       // gain only stage, pick it up below
     } else {
       throw new Error("Unknown Stage type: "+ subEl.localName);
@@ -875,7 +875,7 @@ console.log("204 nodata so return empty xml");
     if (this._protocol.endsWith(colon)) {
       colon = "";
     }
-    return this._protocol+colon+"//"+this._host+(this._port==80?"":(":"+this._port))+"/fdsnws/station/"+this._specVersion;
+    return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/fdsnws/station/"+this._specVersion;
   }
   /** Form URL to query the remote web service, encoding the query parameters.
   */

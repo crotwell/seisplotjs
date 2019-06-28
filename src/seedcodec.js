@@ -79,7 +79,7 @@ export class UnsupportedCompressionType extends Error {
 export function decompress(compressionType: number, dataView: DataView, numSamples: number, littleEndian: boolean): Array<number> {
   // in case of record with no data points, ex detection blockette, which often have compression type
   // set to 0, which messes up the decompresser even though it doesn't matter since there is no data.
-  if (numSamples == 0) {
+  if (numSamples === 0) {
     return [];
   }
 
@@ -173,7 +173,7 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
   // of samples.  swapBytes is set to true if the value words are to be byte swapped.  bias represents
   // a previous value which acts as a starting constant for continuing differences integration.  At the
   // very start, bias is set to 0.
-  if (dataView.byteLength % 64 != 0) {
+  if (dataView.byteLength % 64 !== 0) {
     throw new CodecException("encoded data length is not multiple of 64 bytes (" + dataView.byteLength + ")");
   }
   let samples = [];
@@ -188,14 +188,14 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
   for (i=0; i< numFrames; i++ ) {
     tempSamples = extractSteim1Samples(dataView, i*64, littleEndian);   // returns only differences except for frame 0
     firstData = 0; // d(0) is byte 0 by default
-    if (i==0) {   // special case for first frame
+    if (i===0) {   // special case for first frame
       lastValue = bias; // assign our X(-1)
       // x0 and xn are in 1 and 2 spots
       start = tempSamples[1];  // X(0) is byte 1 for frame 0
       //  end = tempSamples[2];    // X(n) is byte 2 for frame 0
       firstData = 3; // d(0) is byte 3 for frame 0
       // if bias was zero, then we want the first sample to be X(0) constant
-      if (bias == 0) lastValue = start - tempSamples[3];  // X(-1) = X(0) - d(0)
+      if (bias === 0) lastValue = start - tempSamples[3];  // X(-1) = X(0) - d(0)
     }
     for (j = firstData; j < tempSamples.length && current < numSamples; j++) {
       samples[current] = lastValue + tempSamples[j];  // X(n) = X(n-1) + d(n)
@@ -203,12 +203,12 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
       current++;
     }
   }  // end for each frame...
-  if (current != numSamples) {
-    throw new CodecException("Number of samples decompressed doesn't match number in header: "+current+" != "+numSamples);
+  if (current !== numSamples) {
+    throw new CodecException("Number of samples decompressed doesn't match number in header: "+current+" !== "+numSamples);
   }
   // ignore last sample check???
-  //if (end != samples[numSamples-1]) {
-  //    throw new SteimException("Last sample decompressed doesn't match value x(n) value in Steim1 record: "+samples[numSamples-1]+" != "+end);
+  //if (end !== samples[numSamples-1]) {
+  //    throw new SteimException("Last sample decompressed doesn't match value x(n) value in Steim1 record: "+samples[numSamples-1]+" !== "+end);
   //}
   return samples;
 }
@@ -247,7 +247,7 @@ function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian:
       case 0:
         //System.out.println("0 means header info");
         // only include header info if offset is 0
-        if (offset == 0) {
+        if (offset === 0) {
           temp[currNum++] = dataView.getInt32(offset+(i*4), littleEndian);
         }
         break;
@@ -294,7 +294,7 @@ function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian:
  *  bytes.
  */
 export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: boolean, bias: number): Array<number> {
-  if (dataView.byteLength % 64 != 0) {
+  if (dataView.byteLength % 64 !== 0) {
     throw new CodecException("encoded data length is not multiple of 64 bytes (" + dataView.byteLength + ")");
   }
   let samples = [];
@@ -309,8 +309,8 @@ export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: 
   for (let i=0; i< numFrames ; i++ ) {
     tempSamples = extractSteim2Samples(dataView, i*64, swapBytes);   // returns only differences except for frame 0
     firstData = 0; // d(0) is byte 0 by default
-    if (i==0) {   // special case for first frame
-      // console.log("i==0, special case for first frame")
+    if (i===0) {   // special case for first frame
+      // console.log("i===0, special case for first frame")
       lastValue = bias; // assign our X(-1)
       // x0 and xn are in 1 and 2 spots
       start = tempSamples[1];  // X(0) is byte 1 for frame 0
@@ -318,7 +318,7 @@ export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: 
       firstData = 3; // d(0) is byte 3 for frame 0
       //console.log("DEBUG: frame " + i + ", bias = " + bias + ", x(0) = " + start + ", x(n) = " + end);
       // if bias was zero, then we want the first sample to be X(0) constant
-      if (bias == 0) lastValue = start - tempSamples[3];  // X(-1) = X(0) - d(0)
+      if (bias === 0) lastValue = start - tempSamples[3];  // X(-1) = X(0) - d(0)
     }
     //System.err.print("DEBUG: ");
     for (let j = firstData; j < tempSamples.length && current < numSamples; j++) {
@@ -329,12 +329,12 @@ export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: 
     }
     //System.err.println("DEBUG: end of frame " + i);
   }  // end for each frame...
-  if (current != numSamples) {
-    throw new CodecException("Number of samples decompressed doesn't match number in header: "+current+" != "+numSamples);
+  if (current !== numSamples) {
+    throw new CodecException("Number of samples decompressed doesn't match number in header: "+current+" !== "+numSamples);
   }
   // ignore last sample check???
-  //if (end != samples[numSamples-1]) {
-  //    throw new SteimException("Last sample decompressed doesn't match value x(n) value in Steim2 record: "+samples[numSamples-1]+" != "+end);
+  //if (end !== samples[numSamples-1]) {
+  //    throw new SteimException("Last sample decompressed doesn't match value x(n) value in Steim2 record: "+samples[numSamples-1]+" !== "+end);
   //}
   return samples;
 }
@@ -369,7 +369,7 @@ function extractSteim2Samples(dataView: DataView, offset: number, swapBytes: boo
       case 0:
         //System.out.println("0 means header info");
         // only include header info if offset is 0
-        if (offset == 0) {
+        if (offset === 0) {
           temp[currNum++] = dataView.getInt32(offset+(i*4), swapBytes);
         }
         break;

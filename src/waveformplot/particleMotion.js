@@ -72,11 +72,11 @@ export class ParticleMotion {
   g: any;
   static _lastID: number;
   constructor(inSvgParent: any, inSegments: Array<SeismogramSegment>, plotStartDate: moment, plotEndDate: moment): void {
-    if (inSvgParent == null) {throw new Error("inSvgParent cannot be null");}
-    if (inSegments.length != 2) {throw new Error("inSegments should be lenght 2 but was "+inSegments.length);}
+    if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
+    if (inSegments.length !== 2) {throw new Error("inSegments should be lenght 2 but was "+inSegments.length);}
     this.plotId = ++ParticleMotion._lastID;
 // maybe don't need, just plot as many points as can
-//    if (inSegments[0].y().length != inSegments[1].y().length) {throw new Error("inSegments should be of same lenght but was "+inSegments[0].y().length+" "+inSegments[1].y().length);}
+//    if (inSegments[0].y().length !== inSegments[1].y().length) {throw new Error("inSegments should be of same lenght but was "+inSegments[0].y().length+" "+inSegments[1].y().length);}
     if ( ! plotStartDate) {plotStartDate = inSegments[0].start();}
     if ( ! plotEndDate) {plotEndDate = inSegments[0].end();}
     this.svg = inSvgParent.append("svg");
@@ -117,7 +117,7 @@ export class ParticleMotion {
   }
   checkResize(): boolean {
     let rect = this.svgParent.node().getBoundingClientRect();
-    if (rect.width != this.outerWidth || rect.height != this.outerHeight) {
+    if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
       this.setWidthHeight(rect.width, rect.height);
       return true;
     }

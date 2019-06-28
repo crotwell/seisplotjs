@@ -48,7 +48,7 @@ export function distaz(lat1: number, lon1: number, lat2: number, lon2: number): 
         baz: 0.0
     };
 
-    if ((lat1 == lat2)&&(lon1 == lon2)) {
+    if ((lat1 === lat2)&&(lon1 === lon2)) {
         // don't do calc, just return zero for idential points
         result.delta = 0;
         result.az = 0;

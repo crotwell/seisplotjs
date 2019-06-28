@@ -71,11 +71,11 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   out.start = out.startBTime.toMoment();
   for (let i=0; i< out.numBlockettes; i++) {
     let nextOffset = dataView.getUint16(offset+2, headerByteSwap);
-    if (nextOffset == 0) {
+    if (nextOffset === 0) {
       // last blockette
       nextOffset = out.dataOffset;
     }
-    if (nextOffset == 0) {
+    if (nextOffset === 0) {
       nextOffset = offset; // zero length, probably an error...
     }
     let blockette = parseBlockette(dataView, offset, nextOffset-offset, headerByteSwap);
@@ -225,7 +225,7 @@ export class DataHeader {
     let factor = this.sampRateFac;
     let multiplier = this.sampRateMul;
     let sampleRate = 10000.0; // default (impossible) value;
-    if((factor * multiplier) != 0.0) { // in the case of log records
+    if((factor * multiplier) !== 0.0) { // in the case of log records
         sampleRate = Math.pow(Math.abs(factor),
                               (factor / Math.abs(factor)))
                      * Math.pow(Math.abs(multiplier),
@@ -259,7 +259,7 @@ export class Blockette1000 extends Blockette {
   wordOrder: number;
   constructor(type: number, body: DataView, encoding: number, dataRecordLengthByte: number, wordOrder: number) {
     super(type, body);
-    if (type != 1000) {throw new Error("Not a blockette1000: "+this.type);}
+    if (type !== 1000) {throw new Error("Not a blockette1000: "+this.type);}
     this.encoding = encoding;
     this.dataRecordLengthByte = dataRecordLengthByte;
     this.wordOrder = wordOrder;
@@ -272,7 +272,7 @@ export class Blockette1001 extends Blockette {
   frameCount: number;
   constructor(type: number, body: DataView, timeQual: number, microsecond: number, frameCount: number) {
     super(type, body);
-    if (type != 1001) {throw new Error("Not a blockette1001: "+this.type);}
+    if (type !== 1001) {throw new Error("Not a blockette1001: "+this.type);}
     this.timeQual = timeQual;
     this.microsecond = microsecond;
     this.frameCount = frameCount;
@@ -284,7 +284,7 @@ export class Blockette100 extends Blockette {
   flags: number;
   constructor(type: number, body: DataView, sampleRate: number, flags: number) {
     super(type, body);
-    if (type != 100) {throw new Error("Not a blockette100: "+this.type);}
+    if (type !== 100) {throw new Error("Not a blockette100: "+this.type);}
     this.sampleRate = sampleRate;
     this.flags = flags;
   }
@@ -399,7 +399,7 @@ export function merge(drList: Array<DataRecord>): Seismogram {
   let contig = [];
   for (let i=0; i<drList.length; i++) {
     currDR = drList[i];
-    if ( contig.length == 0 ) {
+    if ( contig.length === 0 ) {
       contig.push(currDR);
     } else if (areContiguous(contig[contig.length-1], currDR)) {
       contig.push(currDR);

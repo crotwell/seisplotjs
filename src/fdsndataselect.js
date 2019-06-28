@@ -352,7 +352,7 @@ console.log("fdsnDataSelect URL: "+url);
       if (this._protocol.endsWith(colon)) {
         colon = "";
       }
-      return this._protocol+colon+"//"+this._host+(this._port==80?"":(":"+this._port))+"/fdsnws/dataselect/"+this._specVersion;
+      return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/fdsnws/dataselect/"+this._specVersion;
   }
 
   formVersionURL(): string {
@@ -430,11 +430,11 @@ export class StartEndDuration {
   constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
 
     if (duration &&
-      (typeof duration == "string" || duration instanceof String)) {
+      (typeof duration === "string" || duration instanceof String)) {
         this.duration = moment.duration(Number.parseFloat(duration), 'seconds');
     }
     if (duration &&
-      (typeof duration == "number" || duration instanceof Number)) {
+      (typeof duration === "number" || duration instanceof Number)) {
       this.duration = moment.duration(duration, 'seconds');
     }
     if (start && end) {
@@ -464,7 +464,7 @@ export class StartEndDuration {
 }
 
 export function createDataSelectQuery(params: Object): DataSelectQuery {
-  if ( ! params || typeof params != 'object' ) {
+  if ( ! params || typeof params !== 'object' ) {
     throw new Error("params null or not an object");
   }
   let out = new DataSelectQuery();

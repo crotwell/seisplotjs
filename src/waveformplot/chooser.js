@@ -74,7 +74,7 @@ export class HourMinChooser {
       .classed("hourSlider", true)
       .on("input", function() {
         let nHour = +this.value;
-        if (mythis.time.hours() != nHour) {
+        if (mythis.time.hours() !== nHour) {
           mythis.time.hours(nHour);
           mythis.hourSlider.property("value", nHour);
           mythis.timeModified();
@@ -89,7 +89,7 @@ export class HourMinChooser {
       .classed("minuteSlider", true)
       .on("input", function() {
         let nMinute = +this.value;
-        if (mythis.time.minutes() != nMinute) {
+        if (mythis.time.minutes() !== nMinute) {
           mythis.time.minutes(nMinute);
           mythis.minuteSlider.property("value", nMinute);
           mythis.timeModified();
@@ -110,7 +110,7 @@ export class HourMinChooser {
     this.updateCallback(this.time);
   }
   showHide(): void {
-    if (this.popupDiv.style("visibility") == "hidden") {
+    if (this.popupDiv.style("visibility") === "hidden") {
       this.popupDiv.style("visibility", "visible");
       window.document.addEventListener("click", this.myOnClick, false);
     } else {
@@ -182,7 +182,7 @@ export class DateTimeChooser {
                                 onSelect: function() {
                                   let pikaValue = this.getMoment();
                                   let origTime = moment.utc(mythis.time);
-                                  if (origTime.year() != pikaValue.year() || origTime.dayOfYear() != pikaValue.dayOfYear()) {
+                                  if (origTime.year() !== pikaValue.year() || origTime.dayOfYear() !== pikaValue.dayOfYear()) {
                                     mythis.time.year(pikaValue.year());
                                     mythis.time.dayOfYear(pikaValue.dayOfYear());
                                     mythis.timeModified();

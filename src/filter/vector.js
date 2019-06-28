@@ -35,7 +35,7 @@ export function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: numb
   if (seisA.sampleRate !== seisB.sampleRate) {
     throw new Error("Expect sampleRate to be same, but was "+seisA.sampleRate+" "+seisB.sampleRate);
   }
-  if ((azimuthA + 90) % 360 != azimuthB % 360) {
+  if ((azimuthA + 90) % 360 !== azimuthB % 360) {
     throw new Error("Expect azimuthB to be azimuthA + 90, but was "+azimuthA+" "+azimuthB);
   }
 //  [   cos(theta)    -sin(theta)    0   ]
@@ -85,18 +85,18 @@ export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Sei
 }
 
 export function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: SeismogramSegment, seisC: SeismogramSegment) {
-  if (seisA.y.length != seisB.y.length) {
+  if (seisA.y.length !== seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);
   }
-  if (seisA.sampleRate != seisB.sampleRate) {
+  if (seisA.sampleRate !== seisB.sampleRate) {
     throw new Error("Expect sampleRate to be same, but was "+seisA.sampleRate+" "+seisB.sampleRate);
   }
-  if (seisA.y.length != seisC.y.length) {
+  if (seisA.y.length !== seisC.y.length) {
     throw new Error("seisA and seisC should be of same lenght but was "
     +seisA.y.length+" "+seisC.y.length);
   }
-  if (seisA.sampleRate != seisC.sampleRate) {
+  if (seisA.sampleRate !== seisC.sampleRate) {
     throw new Error("Expect sampleRate to be same, but was "+seisA.sampleRate+" "+seisC.sampleRate);
   }
   let y = new Array(seisA.y.length);

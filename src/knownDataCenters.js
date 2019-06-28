@@ -102,7 +102,7 @@ export const knownDataCenters = {
    */
   doesSupport(dc: DataCenterType, type: string) {
     let out = dc.supports.find(function(s) { return s.type === type;});
-    return typeof out != 'undefined';
+    return typeof out !== 'undefined';
   },
 
   /** returns the hostname for type web service. In many cases this

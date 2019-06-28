@@ -124,7 +124,7 @@ export class XSeedRecord {
     }
 
     let dvcrc = dataView.getUint32(CRC_OFFSET, true);
-    if (dvcrc != 0) {
+    if (dvcrc !== 0) {
       throw new Error(`CRC is not zero before calculate! ${dvcrc}`);
     }
     let crc = calculateCRC32C(dataView.buffer);
@@ -197,7 +197,7 @@ export class XSeedHeader {
       throw new Error("First 2 bytes of record should be MS but found "+this.recordIndicator);
     }
     this.formatVersion = dataView.getUint8(2);
-    if (this.formatVersion != 3) {
+    if (this.formatVersion !== 3) {
       throw new Error("Format Version should be 3, "+this.formatVersion);
     }
     this.flags = dataView.getUint8(3);
@@ -394,7 +394,7 @@ export function merge(drList: Array<XSeedRecord>) {
   let contig = [];
   for (let i=0; i<drList.length; i++) {
     currDR = drList[i];
-    if ( contig.length == 0 ) {
+    if ( contig.length === 0 ) {
       contig.push(currDR);
     } else if (areContiguous(contig[contig.length-1], currDR)) {
       contig.push(currDR);

@@ -43,7 +43,7 @@ export class MSeedArchive {
       return false;
     } else {
       for( let f of allFlags) {
-        if (Allowed_Flags.indexOf(f.slice(1)) == -1) {
+        if (Allowed_Flags.indexOf(f.slice(1)) === -1) {
           console.log("Didn't find '"+f+"'");
           return false;
         }
@@ -99,7 +99,7 @@ export class MSeedArchive {
       return p.then(fetchResponse => {
         if (fetchResponse.ok) {
           console.log("######  is ok "+fetchResponse.status);
-          if (fetchResponse.status == 200 || fetchResponse.status == 304) {
+          if (fetchResponse.status === 200 || fetchResponse.status === 304) {
             return fetchResponse.arrayBuffer().then(ab => {
               console.log("got data for "+fetchResponse.url+" "+ab.byteLength);
               let dataRecords = [];

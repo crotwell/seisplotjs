@@ -228,7 +228,7 @@ export class Seismogram {
     return seis;
   }
   checkAllSimilar() {
-    if (this.seisArray.length == 0) {throw new Error("Seismogram is empty");}
+    if (this.seisArray.length === 0) {throw new Error("Seismogram is empty");}
     let f = this.seisArray[0];
     this.seisArray.forEach((s, i) => {
       if (! s) {
