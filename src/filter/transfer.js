@@ -1,6 +1,6 @@
 //@flow
 
-import { calcDFT, inverseDFT } from './index';
+import {calcDFT, inverseDFT } from './fft.js';
 import {SeismogramSegment, Seismogram } from '../seismogram';
 import { SacPoleZero } from '../sacPoleZero';
 import {Response, PolesZeros } from '../stationxml';
