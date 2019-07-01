@@ -3,7 +3,7 @@
 import * as miniseed from '../../src/miniseed.js';
 import  {moment} from '../../src/util';
 
-var fs = require('fs');
+const fs = require('fs');
 
 test("load miniseed file", () => {
 

@@ -6,7 +6,7 @@ global.TextDecoder = TextDecoder;
 
 import * as xseed from '../../src/xseed.js';
 
-var fs = require('fs');
+const fs = require('fs');
 
 let fileList = [
   'test/xseed/reference-data/reference-ascii.xseed',
@@ -82,7 +82,7 @@ for (let filename of fileList) {
     //expect(xr.getSize()).toEqual(jsonData.RecordLength);
     expect(xh.formatVersion).toEqual(jsonData.FormatVersion);
     //expect(xh.flags).toEqual(jsonData.Flags.ClockLocked);
-    var regex = /(\d\d\d\d),(\d\d\d),(\d\d:\d\d:\d\dZ)/gi;
+    const regex = /(\d\d\d\d),(\d\d\d),(\d\d:\d\d:\d\dZ)/gi;
     jsonData.StartTime = jsonData.StartTime.replace(regex, '$1-$2T$3');
     // json only has sec accuracy now, just compare yyyy-dddTHH:MM:ss => 17 chars
     expect(xh.getStartFieldsAsISO().slice(0,17)).toEqual(jsonData.StartTime.slice(0,17));

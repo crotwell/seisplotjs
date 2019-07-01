@@ -110,7 +110,7 @@ function meanOfSlice(dataSlice: Array<number>, totalPts: number ): number {
        return acc + val;
     }, 0) / totalPts;
   } else {
-    var byTwo = Math.floor(dataSlice.length / 2);
+    let byTwo = Math.floor(dataSlice.length / 2);
     return meanOfSlice(dataSlice.slice(0, byTwo), totalPts) + meanOfSlice(dataSlice.slice(byTwo, dataSlice.length), totalPts);
   }
 }

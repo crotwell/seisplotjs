@@ -49,7 +49,7 @@ export function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: numb
   const sinTheta = Math.sin(rotRadian);
   let x = new Array(seisA.y.length);
   let y = new Array(seisA.y.length);
-  for (var i = 0; i < seisA.y.length; i++) {
+  for (let i = 0; i < seisA.y.length; i++) {
     x[i] = cosTheta * seisB.yAtIndex(i) - sinTheta * seisA.yAtIndex(i);
     y[i] = sinTheta * seisB.yAtIndex(i) + cosTheta * seisA.yAtIndex(i);
   }
@@ -100,7 +100,7 @@ export function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: Seismogr
     throw new Error("Expect sampleRate to be same, but was "+seisA.sampleRate+" "+seisC.sampleRate);
   }
   let y = new Array(seisA.y.length);
-  for (var i = 0; i < seisA.y.length; i++) {
+  for (let i = 0; i < seisA.y.length; i++) {
     y[i] = Math.sqrt(seisA.yAtIndex(i) * seisA.yAtIndex(i)
       + seisB.yAtIndex(i) * seisB.yAtIndex(i)
       + seisC.yAtIndex(i) * seisC.yAtIndex(i));
