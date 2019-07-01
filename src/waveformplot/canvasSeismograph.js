@@ -37,6 +37,7 @@ export type ScaleChangeListenerType = {
   * in order to have the seismogram display.
   */
 export class CanvasSeismograph {
+  /** @private */
   static _lastID: number;
   plotId: number;
   beforeFirstDraw: boolean;
