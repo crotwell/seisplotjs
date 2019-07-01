@@ -1,32 +1,32 @@
 // @flow
-// 
+//
 /**
  * Philip Crotwell
  * University of South Carolina, 2016
  * http://www.seis.sc.edu
  */
 
-import * as datalink         from './datalink';
-import * as distaz         from './distaz';
-import * as fdsnavailability  from './fdsnavailability';
-import * as fdsnevent      from './fdsnevent';
-import * as fdsnstation    from './fdsnstation';
-import * as fdsndataselect from './fdsndataselect';
-import * as filter         from './filter/index';
-import * as knownDataCenters from './knownDataCenters';
-import * as miniseed       from './miniseed';
-import * as mseedarchive   from './mseedarchive';
-import * as quakeml        from './quakeml';
-import * as ringserverweb  from './ringserver-web';
-import * as sacPoleZero    from './sacPoleZero';
-import * as seedcodec      from './seedcodec';
-import * as seedlink       from './seedlink';
-import * as seismogram     from './seismogram';
-import * as stationxml     from './stationxml';
-import * as traveltime     from './traveltime';
-import * as util      from './util';
-import * as waveformplot   from './waveformplot/index';
-import * as xseed      from './xseed';
+import * as datalink         from './datalink.js';
+import * as distaz         from './distaz.js';
+import * as fdsnavailability  from './fdsnavailability.js';
+import * as fdsnevent      from './fdsnevent.js';
+import * as fdsnstation    from './fdsnstation.js';
+import * as fdsndataselect from './fdsndataselect.js';
+import * as filter         from './filter/index.js';
+import * as knownDataCenters from './knownDataCenters.js';
+import * as miniseed       from './miniseed.js';
+import * as mseedarchive   from './mseedarchive.js';
+import * as quakeml        from './quakeml.js';
+import * as ringserverweb  from './ringserver-web.js';
+import * as sacPoleZero    from './sacPoleZero.js';
+import * as seedcodec      from './seedcodec.js';
+import * as seedlink       from './seedlink.js';
+import * as seismogram     from './seismogram.js';
+import * as stationxml     from './stationxml.js';
+import * as traveltime     from './traveltime.js';
+import * as util      from './util.js';
+import * as waveformplot   from './waveformplot/index.js';
+import * as xseed      from './xseed.js';
 
 
 const d3 = waveformplot.d3;

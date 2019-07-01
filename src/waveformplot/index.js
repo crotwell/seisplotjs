@@ -1,33 +1,27 @@
 
 
 // for browserify-css
-import './inject_css_manual';
+import './inject_css_manual.js';
 
-import { CanvasSeismograph } from './canvasSeismograph';
-import {Helicorder, HelicorderConfig } from './helicorder';
-import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH } from './seismographconfig';
-import {createSimpleFFTPlot, simpleOverlayFFTPlot } from './fftPlot';
+import { CanvasSeismograph } from './canvasSeismograph.js';
+import {Helicorder, HelicorderConfig } from './helicorder.js';
+import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH } from './seismographconfig.js';
+import {createSimpleFFTPlot, simpleOverlayFFTPlot } from './fftPlot.js';
 
-import * as chooser from './chooser';
-import * as sort from './sort';
+import * as chooser from './chooser.js';
+import * as sort from './sort.js';
 
 import {
-  particleMotion,
+  ParticleMotion,
   createParticleMotionBySelector
-} from './particleMotion';
+} from './particleMotion.js';
 
 import {
   miniseed ,
   d3,
   RSVP,
   createPlotsBySelector,
-  createPlotsBySelectorWithCallback,
-  createPlotsBySelectorPromise,
-  formRequestUrl,
-  loadParseSplit,
-  loadParse,
-  loadParseSplitUrl,
-} from './util';
+} from './util.js';
 
 /* re-export */
 export {
@@ -43,13 +37,7 @@ export {
     createSimpleFFTPlot,
     simpleOverlayFFTPlot,
     sort,
-    particleMotion,
+    ParticleMotion,
     createParticleMotionBySelector,
-    createPlotsBySelectorPromise,
-    createPlotsBySelectorWithCallback,
-    formRequestUrl,
-    loadParseSplit,
-    loadParse,
-    loadParseSplitUrl,
     chooser
 };

@@ -1,4 +1,4 @@
-import {FFTResult} from '../filter';
+import {FFTResult} from '../filter/index.js';
 
 import * as d3 from 'd3';
 

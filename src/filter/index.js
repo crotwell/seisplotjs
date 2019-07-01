@@ -2,16 +2,16 @@
 
 import * as OregonDSPTop from 'oregondsp';
 
-import {Seismogram} from '../seismogram';
-import {InstrumentSensitivity} from '../stationxml';
+import {Seismogram} from '../seismogram.js';
+import {InstrumentSensitivity} from '../stationxml.js';
 
-import * as transfer  from './transfer';
-import * as taper  from './taper';
-import {hilbert, envelope} from './hilbert';
-import {calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult} from './fft';
-import {rotate, vectorMagnitude} from './vector';
+import * as transfer  from './transfer.js';
+import * as taper  from './taper.js';
+import {hilbert, envelope} from './hilbert.js';
+import {calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult} from './fft.js';
+import {rotate, vectorMagnitude} from './vector.js';
 
-import {Complex, createComplex} from './filterUtil';
+import {Complex, createComplex} from './filterUtil.js';
 
 let OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
