@@ -21,6 +21,7 @@ module.exports = {
     },
     "rules": {
       "semi": ["error", "always"],
+      "no-var": ["error"],
       "no-console": [ "off"],
       "eqeqeq": ["error", "always"]
     }
