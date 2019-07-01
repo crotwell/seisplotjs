@@ -6,7 +6,7 @@
   "dependencies": {
     "@babel/runtime": "^7.4.5",
     "crc-32": "^1.2.0",
-    "d3": "^5.9.4",
+    "d3": "^5.9.7",
     "js-quantities": "^1.7.4",
     "moment": "^2.24.0",
     "oregondsp": "^1.1.0",
@@ -69,11 +69,14 @@
     "eslint-plugin-standard": "^4.0.0",
     "flow-bin": "^0.102.0",
     "flow-copy-source": "^2.0.6",
+    "flow-remove-types": "^2.102.0-rc",
     "flowtypify": "^1.0.1",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^24.8.0",
     "jest-environment-jsdom-fourteen": "^0.1.0",
-    "jest-extended": "^0.11.1"
+    "jest-extended": "^0.11.1",
+    "rollup": "^1.16.3",
+    "rollup-plugin-babel": "^4.3.3"
   },
   "babel": {
     "presets": [
@@ -82,7 +85,9 @@
         {
           "targets": {
             "browsers": [
-              "last 2 versions"
+              "> 1% in US",
+              "not ie 11",
+              "not dead"
             ],
             "node": "current"
           }
