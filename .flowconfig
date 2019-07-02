@@ -1,5 +1,5 @@
 [ignore]
-<PROJECT_ROOT>/lib/.*
+<PROJECT_ROOT>/dist/.*
 <PROJECT_ROOT>/example/.*
 <PROJECT_ROOT>/pkg/.*
 <PROJECT_ROOT>/node_modules/module-deps/test/.*
