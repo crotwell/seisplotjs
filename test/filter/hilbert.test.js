@@ -9,7 +9,7 @@ const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 test("init hilbert filter", () => {
   const seisLen = 1024;
-  let seisY = Array[seisLen];
+  let seisY = new Array(seisLen);
   for(let i=0; i<seisLen; i++) {
     seisY[i] = Math.sin(47*i)+Math.sin(173*i);
   }
