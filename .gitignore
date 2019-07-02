@@ -1,4 +1,4 @@
-lib
+dist
 node_modules
 seisplotjs_*_standalone.js
 example/**/seisplotjs_*_standalone.js
