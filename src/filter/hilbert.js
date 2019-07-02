@@ -35,12 +35,8 @@ export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge
     if (! highEdge) { highEdge = .95;}
     let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(100, .2, .8);
     let coeff = hilbert.getCoefficients();
-    for (let c of coeff) {
-      console.log(`hilbert: ${c}`);
-    }
     let hilbertY = hilbert.filter(seisY);
     let s = seis.cloneWithNewY(hilbertY);
-    console.log(`hilbert len: ${seis.y.length} ${seisY.length} ${hilbertY.length}  ${s.y.length},${s.y[0].length} ${s.segments.length} ${s.segments[0].y.length}`);
     return s;
   } else {
     throw new Error("Cannot take hilbert of non-contiguous seismogram");
