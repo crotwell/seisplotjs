@@ -30,7 +30,7 @@ export function envelope(seis: Seismogram): Seismogram {
 export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge?: number ): Seismogram {
   if (seis.isContiguous()) {
     let seisY = seis.y;
-    if (! n) { n = 100;}
+    if (! n) { n = 10;}
     if (! lowEdge) { lowEdge = .05;}
     if (! highEdge) { highEdge = .95;}
     let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(100, .2, .8);

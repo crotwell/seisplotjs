@@ -13,10 +13,10 @@ test("init hilbert filter", () => {
   for(let i=0; i<seisLen; i++) {
     seisY[i] = Math.sin(47*i)+Math.sin(173*i);
   }
-  let n = 100;
+  let n = 10;
   let lowEdge = .05;
   let highEdge = .95;
-  let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(100, .2, .8);
+  let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
   let coeff = hilbert.getCoefficients();
   for (let c of coeff) {
     console.log(`hilbert: ${c}`);
@@ -36,9 +36,9 @@ test("simple hilbert", () => {
     return readSac("./test/filter/data/IU.HRV.__.BHE.SAC")
       .then( orig => {
         const origseis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
-
+        expect(origseis.y).toHaveLength(31450);
         let hilbertSeismogram = filter.hilbert(origseis);
-        expect(hilbertSeismogram.y.length).toBe(origseis.y.length);
+        expect(hilbertSeismogram.y).toHaveLength(origseis.y.length);
       });
 });
 
