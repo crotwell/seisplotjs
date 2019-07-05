@@ -14,7 +14,7 @@
     "d3": "^5.9.7",
     "js-quantities": "^1.7.4",
     "moment": "^2.24.0",
-    "oregondsp": "^1.1.0",
+    "oregondsp": "^1.2.2",
     "pikaday": "^1.8.0",
     "rsvp": "^4.8.5"
   },
@@ -76,7 +76,7 @@
     "jest": "^24.8.0",
     "jest-environment-jsdom-fourteen": "^0.1.0",
     "jest-extended": "^0.11.1",
-    "rollup": "^1.16.3",
+    "rollup": "^1.16.4",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-flow-entry": "^0.3.1"
   },
