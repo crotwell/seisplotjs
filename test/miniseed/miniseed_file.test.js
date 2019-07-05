@@ -1,6 +1,7 @@
 // @flow
 
 import * as miniseed from '../../src/miniseed.js';
+import * as seedcodec from '../../src/seedcodec.js';
 import  {moment} from '../../src/util';
 
 const fs = require('fs');
@@ -28,10 +29,32 @@ test("load miniseed file", () => {
     //startMoment.dayOfYear(265); day 265 = Sept 21, months zero based in moment
     expect(dr.header.start.toISOString()).toEqual(startMoment.toISOString());
     expect(dr.header.numSamples).toEqual(99);
+    expect(dr.header.encoding).toEqual(seedcodec.STEIM2);
     let decomp = parsed[0].decompress();
     expect(decomp).toBeDefined();
-    //let merged = miniseed.merge(parsed);
-    //expect(merged.length).toBe(1);
+    // msi -n 1 -pp -D  CO_JSC.mseed
+    let firstRecordData = [       -42,         411,         382,         106,          84,         488,
+       251,         -74,         378,         459,         -56,         211,
+       540,         -93,         264,         537,        -155,         354,
+       507,         -13,         312,         312,          99,         295,
+       307,          56,         253,         499,          25,         128,
+       617,          16,          60,         697,         -33,           2,
+       746,          55,        -164,         673,         309,        -273,
+       515,         425,        -180,         435,         503,        -152,
+       127,         713,          93,        -210,         632,         407,
+      -306,         474,         615,        -290,         328,         639,
+      -115,         106,         544,         241,         -92,         272,
+       584,        -130,         -11,         963,        -100,        -407,
+      1031,         253,        -535,         634,         694,        -504,
+       264,        1096,        -471,         -50,        1204,        -158,
+      -316,        1012,         219,        -455,         880,         451,
+      -371,         599,         498,        -141,         281,         728,
+       -15,           3,         942
+    ];
+    expect(decomp).toHaveLength(firstRecordData.length);
+    for(let i=0; i<firstRecordData.length; i++ ) {
+      expect(decomp[i]).toEqual(firstRecordData[i]);
+    }
 });
 
 test("contiguous miniseed file", () => {
