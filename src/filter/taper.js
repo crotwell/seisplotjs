@@ -17,7 +17,7 @@ export function taper(seis: Seismogram, width: number = 0.05, taperType: string 
       data[i] = data[i] * taperFactor;
       data[data.length - i - 1] = data[data.length - i - 1] * taperFactor;
     }
-    return seis.cloneWithNewY(data);
+    return seis.cloneWithNewData(data);
   } else {
     throw new Error("Cannot take taper of non-contiguous seismogram");
   }

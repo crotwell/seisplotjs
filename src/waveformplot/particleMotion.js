@@ -30,11 +30,11 @@ export function createParticleMotionBySelector(selector: string): void {
   }
 
 function addDivForParticleMotion(ta: Seismogram, tb: Seismogram, svgParent: any, startDate: moment, endDate: moment): void {
-  if (ta.seisArray.length === 0 || tb.seisArray.length === 0) {
-    throw new Error(`Seismogram has no data: ${ta.seisArray.length} ${tb.seisArray.length}`);
+  if (ta.segments.length === 0 || tb.segments.length === 0) {
+    throw new Error(`Seismogram has no data: ${ta.segments.length} ${tb.segments.length}`);
   }
-  const sa = ta.seisArray[0];
-  const sb = tb.seisArray[0];
+  const sa = ta.segments[0];
+  const sb = tb.segments[0];
   svgParent.append("h5").text(sa.chanCode+" "+sb.chanCode);
   let svgDiv = svgParent.append("div");
   svgDiv.classed(sa.chanCode+" "+sb.chanCode, true);

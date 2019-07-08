@@ -63,16 +63,15 @@ function processSeismograms(traceMap) {
         let channel = netArray[0].stations[0].channels[0];
         let response = netArray[0].stations[0].channels[0].response;
         console.log("resp2: "+response);
-        let correctedSeismogram = [];
-        for(let i=0; i<trace.segments.length; i++) {
-          let taperSeis = seisplotjs.filter.taper.taper(seisplotjs.filter.rMean(trace.segments[i]));
-          correctedSeismogram.push(seisplotjs.filter.transfer.transfer(taperSeis,
-                                            response,
-                                            .01,
-                                            .02,
-                                            25,
-                                            50));
-        }
+
+        let taperSeis = seisplotjs.filter.taper.taper(seisplotjs.filter.rMean(trace));
+        let correctedSeismogram = seisplotjs.filter.transfer.transfer(taperSeis,
+                                          response,
+                                          .01,
+                                          .02,
+                                          25,
+                                          50);
+
 
         let svgTransfer = d3.select('div.transferseisplot');
         let svgTransferDiv = svgTransfer.append("div");
@@ -81,7 +80,7 @@ function processSeismograms(traceMap) {
         svgTransferDiv.style("height", "450px");
         let transferConfig = new wp.SeismographConfig();
         let transferPlot = new wp.CanvasSeismograph(svgTransferDiv, transferConfig, correctedSeismogram);
-        transferConfig.ySublabel=correctedSeismogram[0].yUnit;
+        transferConfig.ySublabel=correctedSeismogram.yUnit;
         transferPlot.draw();
         return channel;
       }).then(channel => {
@@ -105,8 +104,8 @@ function processSeismograms(traceMap) {
         filteredSeismogram.push(s);
       }
 
-      let svgFiltered = d3.select('div.filterseisplot');
-
+      let svgFiltered = d3.select('div.filterseisplot').append('div');
+      svgFiltered.style("height", "300px");
       let filteredPlot = new wp.CanvasSeismograph(svgFiltered, seisConfig, filteredSeismogram);
       filteredPlot.draw();
 
@@ -115,20 +114,18 @@ function processSeismograms(traceMap) {
 
       simpleLogPlot(fftOut, "div.fftplot", trace.sampleRate);
 
-      let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(100, .2, .8);
-      let hilbertSeismogram = [];
-      for(let i=0; i< trace.segments.length; i++) {
-        hilbertSeismogram.push(seisplotjs.filter.hilbert(trace.segments[i]));
-      }
-      let svgHilbert = d3.select('div.hilbertseisplot');
+      let hilbertSeismogram = seisplotjs.filter.hilbert(trace);
+      let svgHilbert = d3.select('div.hilbertseisplot').append('div');
+      svgHilbert.style("height", "300px");
       let hilbertPlot = new wp.CanvasSeismograph(svgHilbert, seisConfig, hilbertSeismogram);
       hilbertPlot.draw();
 
-      let envelopeSeismogram = [];
-      for(let i=0; i< trace.segments.length; i++) {
-        envelopeSeismogram.push(seisplotjs.filter.envelope(trace.segments[i]));
-      }
-      let svgEnvelope = d3.select('div.envelopeseisplot');
+      let envelopeSeismogram = seisplotjs.filter.envelope(trace);
+      let svgEnvelope = d3.select('div.envelopeseisplot').append('div');
+      svgEnvelope.style("height", "300px");
+      let envConfig = seisConfig.clone();
+      envConfig.doRMean = false;
+      envConfig.doGain = false;
       let envelopePlot = new wp.CanvasSeismograph(svgEnvelope, seisConfig, envelopeSeismogram);
       envelopePlot.setDoRMean(false);
       envelopePlot.draw();

@@ -8,7 +8,7 @@ import {InstrumentSensitivity} from '../stationxml.js';
 import * as transfer  from './transfer.js';
 import * as taper  from './taper.js';
 import {hilbert, envelope} from './hilbert.js';
-import {calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult} from './fft.js';
+import {calcDFT, inverseDFT, fftForward, fftInverse, FFTResult} from './fft.js';
 import {rotate, vectorMagnitude} from './vector.js';
 
 import {Complex, createComplex} from './filterUtil.js';
@@ -17,7 +17,7 @@ let OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 export { OregonDSP, Complex, createComplex,
   taper, transfer, hilbert, envelope,
-  calcDFT, inverseDFT, ampPhase, fftForward, fftInverse, FFTResult,
+  calcDFT, inverseDFT, fftForward, fftInverse, FFTResult,
   rotate, vectorMagnitude };
 
 export let BAND_PASS = OregonDSP.filter.iir.PassbandType.BANDPASS;
@@ -32,12 +32,11 @@ export function rMean(seis: Seismogram): Seismogram {
   console.log(`rMean input class is: ${(seis.constructor.name)}`);
   if (seis instanceof Seismogram) {
     let meanVal = mean(seis);
-    let rmeanSeismogram = new Seismogram(seis.seisArray.map(s =>{
+    let rmeanSeismogram = new Seismogram(seis.segments.map(s =>{
         let demeanY = s.y.map(function(d) {
           return d-meanVal;
         });
-        let out = s.clone();
-        out.y = demeanY;
+        let out = s.cloneWithNewData(demeanY);
         return out;
       }));
     return rmeanSeismogram;
@@ -49,12 +48,11 @@ export function rMean(seis: Seismogram): Seismogram {
 export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
     let gain = instrumentSensitivity.sensitivity;
-    let gainSeismogram = new Seismogram(seis.seisArray.map(s =>{
-      let outS = s.clone();
+    let gainSeismogram = new Seismogram(seis.segments.map(s =>{
       let gainY = s.y.map(function(d) {
         return d/gain;
       });
-      outS.y = gainY;
+      let outS = s.cloneWithNewData(gainY);
       outS.yUnit = instrumentSensitivity.inputUnits;
       return outS;
       }));
@@ -75,7 +73,7 @@ export function minMaxMean(seis: Seismogram): MinMaxMean {
   let minVal = 9999999999;
   let maxVal = -9999999999;
   if (seis instanceof Seismogram) {
-    for (let s of seis.seisArray) {
+    for (let s of seis.segments) {
       minVal = s.y.reduce((acc, val) => {return Math.min(acc, val);}, minVal);
       maxVal = s.y.reduce((acc, val) => {return Math.max(acc, val);}, maxVal);
     }
@@ -94,7 +92,7 @@ export function mean(seis: Seismogram): number {
     let meanVal = 0;
 
     let npts = seis.numPoints;
-    for (let s of seis.seisArray) {
+    for (let s of seis.segments) {
       meanVal += meanOfSlice(s.y, s.y.length)*s.numPoints;
     }
     meanVal = meanVal / npts;
@@ -104,7 +102,7 @@ export function mean(seis: Seismogram): number {
   }
 }
 
-function meanOfSlice(dataSlice: Array<number>, totalPts: number ): number {
+function meanOfSlice(dataSlice: Int32Array | Float32Array | Float64Array, totalPts: number ): number {
   if (dataSlice.length < 8) {
     return dataSlice.reduce(function(acc, val) {
        return acc + val;

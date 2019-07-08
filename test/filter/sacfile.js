@@ -35,7 +35,7 @@ export function parseSac(dataView: DataView) {
   out.littleEndian = littleEndian;
   out.delta = dataView.getFloat32(0, littleEndian);
   out.npts = dataView.getUint32(NPTS_OFFSET, littleEndian);
-  let y = [];
+  let y = new Float32Array(out.npts);
   let j=0;
   for(let i=DATA_OFFSET; i < dataView.byteLength; i+=4, j++) {
     y[j] = dataView.getFloat32(i, littleEndian);
@@ -44,7 +44,7 @@ export function parseSac(dataView: DataView) {
   return out;
 }
 
-export function replaceYData(dataView: DataView, yData: Array<number>) {
+export function replaceYData(dataView: DataView, yData: Float32Array) {
   let littleEndian = false;
   let sacVer = dataView.getUint32(NVHDR_OFFSET, true);
   if (sacVer === 6) {

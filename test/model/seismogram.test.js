@@ -4,7 +4,7 @@ import {SeismogramSegment, Seismogram} from '../../src/seismogram';
 import  {moment} from '../../src/util';
 
 test("simple seismogram seg creation", () => {
-  let yValues = [0, 1, 2];
+  let yValues = Int32Array.from([0, 1, 2]);
   let sampleRate = 20.0;
   let start = moment.utc();
   let netCode = "XX";
@@ -32,7 +32,7 @@ test("simple seismogram seg creation", () => {
 });
 
 test("seismogram seg clone", () => {
-  let yValues = [0, 1, 2];
+  let yValues = Int32Array.from([0, 1, 2]);
   let sampleRate = 20.0;
   let start = moment.utc();
   let netCode = "XX";
@@ -64,7 +64,7 @@ test("seismogram seg clone", () => {
   expect(cloneSeg.codes()).toEqual(seisSeg.codes());
   expect(cloneSeg.end.toISOString()).toEqual(seisSeg.end.toISOString());
   // test after replace data Array
-  let x = new Array(seisSeg.y.length);
+  let x = new Int32Array(seisSeg.y.length);
   x[0] = 4;
   x[1] = 5;
   x[2] = 6;
@@ -80,7 +80,7 @@ test("seismogram seg clone", () => {
 
 
 test("simple Seismogram creation", () => {
-  let yValues = [0, 1, 2];
+  let yValues = Int32Array.from([0, 1, 2]);
   let sampleRate = 20.0;
   let start = moment.utc();
   let netCode = "XX";
@@ -102,7 +102,7 @@ test("simple Seismogram creation", () => {
 });
 
 test("seismogram isContiguous", () =>{
-  let yValues = new Array(10);
+  let yValues = new Int32Array(10);
   let sampleRate = 20.0;
   let start = moment.utc("2013-02-08T09:30:26");
   let secondStart = moment.utc(start).add(1000*yValues.length/sampleRate, 'milliseconds');
@@ -124,7 +124,8 @@ test("seismogram isContiguous", () =>{
 
 
 test("seismogram clone", () => {
-  let yValues = [0, 1, 2];
+  let yValues = Int32Array.from([0, 1, 2]);
+  expect(yValues[0]).toEqual(0);
   let sampleRate = 20.0;
   let start = moment.utc();
   let netCode = "XX";
@@ -135,8 +136,10 @@ test("seismogram clone", () => {
   let seis = new Seismogram([ seisSeg]);
 
   let cloneSeis = seis.clone();
+  expect(cloneSeis.segments[0].isEncoded()).toBe(seisSeg.isEncoded());
+  expect(cloneSeis.isContiguous()).toBe(seis.isContiguous());
   expect(cloneSeis.y.length).toBe(seis.y.length);
-  expect(cloneSeis.y[0]).toBe(yValues[0]);
+  expect(cloneSeis.y[0]).toEqual(yValues[0]);
   expect(cloneSeis.y[1]).toBe(yValues[1]);
   expect(cloneSeis.y[2]).toBe(yValues[2]);
   expect(cloneSeis.y[0]).toBe(seis.y[0]);
@@ -154,16 +157,16 @@ test("seismogram clone", () => {
   expect(cloneSeis.codes()).toEqual(seis.codes());
   expect(cloneSeis.end.toISOString()).toEqual(seis.end.toISOString());
   // test after replace data Array
-  let x = new Array(seis.y.length+1);
+  let x = new Int32Array(seis.y.length+1);
   x[0] = 4;
   x[1] = 5;
   x[2] = 6;
   x[3] = 7;
   x[4] = 8;
 
-  let cloneWithY = seis.cloneWithNewY(x);
+  let cloneWithY = seis.cloneWithNewData(x);
   expect(cloneWithY.numPoints).toBe(x.length);
-  expect(cloneWithY.y.length).toBe(x.length);
+  expect(cloneWithY.y).toHaveLength(x.length);
   expect(cloneWithY.y[0]).toBe(x[0]);
   expect(cloneWithY.y[1]).toBe(x[1]);
   expect(cloneWithY.y[2]).toBe(x[2]);
@@ -172,7 +175,8 @@ test("seismogram clone", () => {
 
 
 test("seismogram merge", () => {
-  let yValues = [0, 1, 2];
+  let yValues = Int32Array.from([0, 1, 2]);
+  expect(yValues).toHaveLength(3);
   let sampleRate = 20.0;
   let startA = moment.utc().subtract(yValues.length/sampleRate, 'seconds');
   let startB = moment.utc(startA).add(yValues.length/sampleRate, 'seconds');

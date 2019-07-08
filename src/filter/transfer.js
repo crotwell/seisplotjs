@@ -29,7 +29,7 @@ export function transferSacPZ(seis: Seismogram,
                               highPass: number,
                               highCut: number) {
   let outSeis = [];
-  for( let i=0; i< seis.seisArray.length; i++) {
+  for( let i=0; i< seis.segments.length; i++) {
     let result = transferSacPZSegment(seis.segments[i],
                                       sacPoleZero,
                                       lowCut,
@@ -63,15 +63,14 @@ export function transferSacPZSegment(seis: SeismogramSegment,
         values = inverseDFT(freqValues, values.length);
         // a extra factor of nfft gets in somehow???
         values = values.map(d => d * freqValues.length);
-        let out = seis.clone();
-        out.y = values;
+        let out = seis.cloneWithNewData(values);
         //out.y_unit = UNITS.METER;
         out.yUnit = 'm';
         return out;
     }
 
 
-export function combine(freqValues: Array<number>,
+export function combine(freqValues: Float32Array,
                         sampFreq: number,
                         sacPoleZero: SacPoleZero,
                         lowCut: number,

@@ -28,7 +28,7 @@ export function parseXSeedRecords(arrayBuffer: ArrayBuffer) {
     if (! (dataView.getUint8(0) === 77 && dataView.getUint8(1) === 83)) {
       throw new Error(`First byte must be M=77 S=83 at offset=${offset}, but was ${dataView.getUint8(0)} ${dataView.getUint8(1)}`);
     }
-    let dr = new XSeedRecord(dataView);
+    let dr = XSeedRecord.createFromDataView(dataView);
     dataRecords.push(dr);
     offset += dr.getSize();
   }
@@ -39,32 +39,31 @@ export function parseXSeedRecords(arrayBuffer: ArrayBuffer) {
   */
 export class XSeedRecord {
   header: XSeedHeader;
-  decompData: null | Array<number>;
-  rawData: null | DataView;
+  rawData: DataView;
   rawExtraHeaders: null | string;
   extraHeaders: any;
   length: number;
-  constructor(dataView?: DataView) {
-    this.decompData = null;
-    this.rawData = null;
+  constructor(header: XSeedHeader, extraHeaders: any, rawData: DataView) {
+    this.header = header;
+    this.rawData = rawData;
     this.rawExtraHeaders = null;
-    if ( ! dataView) {
-      // empty record
-      this.header = new XSeedHeader();
-      return;
-    }
-    this.header = new XSeedHeader(dataView);
+    this.extraHeaders = extraHeaders;
+  }
+  static createFromDataView(dataView: DataView): XSeedRecord {
+    const header = new XSeedHeader(dataView);
     let extraDataView = new DataView(dataView.buffer,
-                             dataView.byteOffset+this.header.getSize(),
-                             this.header.extraHeadersLength);
-    this.rawExtraHeaders = makeString(dataView,
-        dataView.byteOffset+this.header.getSize(),
-        this.header.extraHeadersLength);
-    this.extraHeaders = parseExtraHeaders(extraDataView);
-    let sliceStart = dataView.byteOffset+this.header.getSize()+this.header.extraHeadersLength;
-    this.rawData = new DataView(dataView.buffer.slice(sliceStart, sliceStart+ this.header.dataLength));
-    this.decompData = null;
-    this.length = this.header.numSamples;
+                             dataView.byteOffset+header.getSize(),
+                             header.extraHeadersLength);
+    const rawExtraHeaders = makeString(dataView,
+        dataView.byteOffset+header.getSize(),
+        header.extraHeadersLength);
+    const extraHeaders = parseExtraHeaders(extraDataView);
+    let sliceStart = dataView.byteOffset+header.getSize()+header.extraHeadersLength;
+    const rawData = new DataView(dataView.buffer.slice(sliceStart, sliceStart+ header.dataLength));
+
+    const xr = new XSeedRecord(header, extraHeaders, rawData);
+    xr.rawExtraHeaders = rawExtraHeaders;
+    return xr;
   }
   getSize() {
     let json = JSON.stringify(this.extraHeaders);
@@ -75,24 +74,17 @@ export class XSeedRecord {
     }
     return this.header.getSize()+this.header.extraHeadersLength+this.header.dataLength;
   }
+    /** Decompresses the data , if the compression
+     *  type is known.
+     */
   decompress() {
-    // only decompress once as it is expensive operation
-    if ( this.decompData === null) {
-      if (! this.rawData) {
-        throw new Error("decompData and rawData are null");
-      }
-      this.decompData = seedcodec.decompress(this.header.encoding,
-                                             this.rawData,
-                                             this.header.numSamples,
-                                             LITTLE_ENDIAN);
-    }
-    return this.decompData;
+    return this.asEncodedDataSegment().decode();
   }
-  get data() {
-    if ( this.decompData === null ) {
-      this.decompress();
-    }
-    return this.decompData;
+  asEncodedDataSegment() {
+    return new seedcodec.EncodedDataSegment(this.header.encoding,
+                                  this.rawData,
+                                  this.header.numSamples,
+                                  LITTLE_ENDIAN);
   }
   codes() {
       return this.header.identifier;
@@ -360,11 +352,8 @@ export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord): boolean {
   * Assumes that they are all contiguous and in order. Header values from the first
   * XSeedRecord are used. */
 export function createSeismogram(contig: Array<XSeedRecord>): SeismogramSegment {
-  let y = [];
-  for (let i=0; i<contig.length; i++) {
-    y = y.concat(contig[i].decompress());
-  }
-  let out = new SeismogramSegment(y,
+  let contigData = contig.map(dr => dr.asEncodedDataSegment());
+  let out = new SeismogramSegment(contigData,
                                  contig[0].header.sampleRate,
                                  contig[0].header.start);
   let codes = contig[0].header.identifier.slice(5).split('_');
@@ -420,7 +409,7 @@ export function segmentMinMax(segment: XSeedRecord, minMaxAccumulator?: Array<nu
     minAmp = minMaxAccumulator[0];
     maxAmp = minMaxAccumulator[1];
   }
-  const data = segment.data;
+  const data = segment.decompress();
   if (data) {
     for (let n = 0; n < data.length; n++) {
       if (minAmp > data[n]) {
@@ -520,11 +509,8 @@ export function convertMS2Record(ms2record: DataRecord) {
     }
   }
   xHeader.extraHeadersLength = JSON.stringify(xExtras).length;
-  let out = new XSeedRecord();
-  out.header = xHeader;
-  out.extraHeaders = xExtras;
   // need to convert if not steim1 or 2
-  out.rawData = ms2record.data;
+  let out = new XSeedRecord(xHeader, xExtras, ms2record.data);
   return out;
 }
 

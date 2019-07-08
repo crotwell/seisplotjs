@@ -47,17 +47,15 @@ export function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: numb
   const rotRadian = 1 * DtoR * (azimuth - azimuthA);
   const cosTheta = Math.cos(rotRadian);
   const sinTheta = Math.sin(rotRadian);
-  let x = new Array(seisA.y.length);
-  let y = new Array(seisA.y.length);
+  let x = new Float32Array(seisA.y.length);
+  let y = new Float32Array(seisA.y.length);
   for (let i = 0; i < seisA.y.length; i++) {
     x[i] = cosTheta * seisB.yAtIndex(i) - sinTheta * seisA.yAtIndex(i);
     y[i] = sinTheta * seisB.yAtIndex(i) + cosTheta * seisA.yAtIndex(i);
   }
-  let outSeisRad = seisA.clone();
-  outSeisRad.y = y;
+  let outSeisRad = seisA.cloneWithNewData(y);
   outSeisRad.channelCode = seisA.chanCode.slice(0,2)+"R";
-  let outSeisTan = seisA.clone();
-  outSeisTan.y = x;
+  let outSeisTan = seisA.cloneWithNewData(x);
   outSeisTan.channelCode = seisA.chanCode.slice(0,2)+"T";
   let out = {
     "radial": outSeisRad,
@@ -99,14 +97,18 @@ export function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: Seismogr
   if (seisA.sampleRate !== seisC.sampleRate) {
     throw new Error("Expect sampleRate to be same, but was "+seisA.sampleRate+" "+seisC.sampleRate);
   }
-  let y = new Array(seisA.y.length);
+  let y;
+  if (seisA.y instanceof Float64Array) {
+    y = new Float64Array(seisA.y.length);
+  } else {
+    y = new Float32Array(seisA.y.length);
+  }
   for (let i = 0; i < seisA.y.length; i++) {
     y[i] = Math.sqrt(seisA.yAtIndex(i) * seisA.yAtIndex(i)
       + seisB.yAtIndex(i) * seisB.yAtIndex(i)
       + seisC.yAtIndex(i) * seisC.yAtIndex(i));
   }
-  let outSeis = seisA.clone();
-  outSeis.y = y;
+  let outSeis = seisA.cloneWithNewData(y);
   outSeis.channelCode = seisA.chanCode.slice(0,2)+"M";
   return outSeis;
 }

@@ -2,7 +2,7 @@
 
 import moment from 'moment';
 import { checkStringOrDate } from './util';
-import * as miniseed from './miniseed';
+import * as seedcodec from './seedcodec';
 
 
 export type TimeRangeType = {
@@ -19,17 +19,16 @@ export type HighLowType = {
       highlowArray: Array<number>;
 };
 
-
 /**
 * A contiguous segment of a Seismogram.
-* @param {Array} yArray array of Y sample values, ie the timeseries
-* @param {number} sampleRate sample rate of the seismogram, hertz
-* @param {moment} start start time of seismogrm as a momentjs moment in utc or a string that can be parsed
+* @param  yArray array of Y sample values, ie the timeseries
+* @param  sampleRate sample rate of the seismogram, hertz
+* @param  start start time of seismogrm as a momentjs moment in utc or a string that can be parsed
 */
 export class SeismogramSegment {
   /** Array of y values */
-  _y: null | Array<number>;
-  _compressed: null | Array<miniseed.DataRecord>;
+  _y: null | Int32Array | Float32Array | Float64Array;
+  _compressed: null | Array<seedcodec.EncodedDataSegment>;
   /**  @private the sample rate in hertz */
   _sampleRate: number;
   /** @private */
@@ -42,9 +41,18 @@ export class SeismogramSegment {
   channelCode: string;
   yUnit: string;
   _highlow: HighLowType;
-  constructor(yArray: null | Array<number>, sampleRate: number, start: moment) {
-    this._compressed = null;
-    if (yArray) { this._y = yArray; }
+  constructor(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array, sampleRate: number, start: moment) {
+    if (yArray instanceof Int32Array || yArray instanceof Float32Array || yArray instanceof Float64Array) {
+      this._y = yArray;
+      this._compressed = null;
+    } else if (Array.isArray(yArray) && yArray.every( ee => ee instanceof seedcodec.EncodedDataSegment)) {
+        this._compressed = yArray;
+        this._y = null;
+    } else if (Array.isArray(yArray) && yArray.every( ee => typeof ee === 'number')) {
+      // numbers in js are 64bit, so...
+      this._y = Float64Array.from(((yArray: any):Array<number>));
+      this._compressed = null;
+    }
     this._sampleRate = sampleRate;
     this._start = checkStringOrDate(start);
     this.yUnit = 'count';
@@ -52,23 +60,44 @@ export class SeismogramSegment {
     this._end_cache = null;
     this._end_cache_numPoints = 0;
   }
-  get y(): Array<number> {
-    let out = this._y;
-    if ( ! out) {
-      if (this._compressed) {
-        out = [];
-        for (let c of this._compressed) {
-          out = out.concat(c.decompress());
-        }
-        this._y = out;
-        this._compressed = null;
-      } else {
-        out = [];
+  /** Y data of the seismogram. Decompresses data if needed.
+  */
+  get y(): Int32Array | Float32Array | Float64Array {
+    let out;
+    if (this._y) {
+      out = this._y;
+    } else {
+      if ( ! this.isEncoded()) {
+        throw new Error("Seismogram not y as TypedArray or encoded.");
       }
+      // data is still compressed
+      let outLen = this.numPoints;
+
+      if ( this._compressed === null) {
+        // for flow
+        throw new Error("Seismogram not y as TypedArray or encoded.");
+      }
+      if (this._compressed[0].compressionType === seedcodec.DOUBLE) {
+        out = new Float64Array(outLen);
+      } else if (this._compressed[0].compressionType === seedcodec.FLOAT) {
+        out = new Float32Array(outLen);
+      } else {
+        out = new Int32Array(outLen);
+      }
+      let currIdx = 0;
+      for (let c of this._compressed) {
+        const cData = c.decode();
+        for (let i=0; i<c.numSamples; i++) {
+          out[currIdx+i] = cData[i];
+        }
+        currIdx += c.numSamples;
+      }
+      this._y = out;
+      this._compressed = null;
     }
     return out;
   }
-  set y(value: Array<number>) {
+  set y(value: Int32Array | Float32Array | Float64Array) {
     this._y = value;
     this._invalidate_end_cache();
   }
@@ -95,7 +124,15 @@ export class SeismogramSegment {
     this._invalidate_end_cache();
   }
   get numPoints(): number {
-    return this.y.length;
+    let out = 0;
+    if (this._y) {
+      out = this._y.length;
+    } else if (this._compressed) {
+      for (let c of this._compressed) {
+        out += c.numSamples;
+      }
+    }
+    return out;
   }
   get netCode(): string {
     return this.networkCode;
@@ -111,6 +148,22 @@ export class SeismogramSegment {
   }
   get chanCode(): string {
     return this.channelCode;
+  }
+  isEncoded(): boolean {
+    if (this._y && this._y.length > 0) {
+      return false;
+    } else if (this._compressed && this._compressed.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  getEncoded(): Array<seedcodec.EncodedDataSegment> {
+    if (this.isEncoded()) {
+      return ((this._compressed: any): Array<seedcodec.EncodedDataSegment>);
+    } else {
+      throw new Error("Data is not encoded.");
+    }
   }
   yAtIndex(i: number): number {
     return this.y[i];
@@ -147,16 +200,22 @@ export class SeismogramSegment {
    return (this.codes()+"_"+this.start.toISOString()+"_"+this.end.toISOString()).replace(/\./g,'_').replace(/:/g,'');
   }
   clone(): SeismogramSegment {
-    let newY = this._y;
-    if (newY) {
-      newY = newY.slice();
+    let clonedData = this._y;
+    if (clonedData !== null) {
+      clonedData = clonedData.slice();
+    } else if (this.isEncoded()) {
+      // shallow copy array, assume Encoded is immutable
+      clonedData = Array.from(this.getEncoded());
     } else {
-      newY = null;
+      throw new Error("no _y and no _compressed");
     }
-    let out = new SeismogramSegment(newY,
+    return this.cloneWithNewData(clonedData);
+  }
+
+  cloneWithNewData(clonedData: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array): SeismogramSegment {
+    let out = new SeismogramSegment(clonedData,
                           this.sampleRate,
                           moment.utc(this._start));
-    out._compressed = this._compressed;
     out.networkCode = this.networkCode;
     out.stationCode = this.stationCode;
     out.locationCode = this.locationCode;
@@ -180,15 +239,16 @@ export class SeismogramSegment {
       let offset = milliDiff * this.sampleRate /1000.0;
       eIndex = this.y.length - Math.floor(offset);
     }
-    let newY = this.y.slice(sIndex, eIndex);
+    let trimY = this.y.slice(sIndex, eIndex);
 
-    let out = new SeismogramSegment(newY,
+    let out = new SeismogramSegment(trimY,
                           this.sampleRate,
                           moment.utc(this._start).add(sIndex / this.sampleRate, 'seconds'));
     out.networkCode = this.networkCode;
     out.stationCode = this.stationCode;
     out.locationCode = this.locationCode;
     out.channelCode = this.channelCode;
+    out.yUnit = this.yUnit;
     return out;
   }
   _invalidate_end_cache() {
@@ -204,33 +264,26 @@ export class SeismogramSegment {
   * the Seismogram will have the same units, channel identifiers
   * and sample rate, but cover different times. */
 export class Seismogram {
-  seisArray: Array<SeismogramSegment>;
+  _segmentArray: Array<SeismogramSegment>;
   _start: moment;
   _end: moment;
-  _y: null | Array<number>;
-  constructor(seisArray: SeismogramSegment | Array<SeismogramSegment>) {
+  _y: null | Int32Array | Float32Array | Float64Array;
+  constructor(segmentArray: SeismogramSegment | Array<SeismogramSegment>) {
     this._y = null;
-    if ( Array.isArray(seisArray)) {
-      this.seisArray = seisArray;
-    } else if ( seisArray instanceof SeismogramSegment) {
-      this.seisArray = [ seisArray ];
+    if ( Array.isArray(segmentArray) && segmentArray[0] instanceof SeismogramSegment) {
+      this._segmentArray = segmentArray;
+    } else if ( segmentArray instanceof SeismogramSegment) {
+      this._segmentArray = [ segmentArray ];
     } else {
-      throw new Error("seisArray is not Array");
+      throw new Error("segmentArray is not Array<SeismogramSegment> or SeismogramSegment");
     }
     this.checkAllSimilar();
     this.findStartEnd();
   }
-  static createFromArray(yArray: null | Array<number>,
-                        sampleRate: number,
-                        start: moment) {
-    const seg = new SeismogramSegment(yArray, sampleRate, start);
-    const seis = new Seismogram(seg);
-    return seis;
-  }
   checkAllSimilar() {
-    if (this.seisArray.length === 0) {throw new Error("Seismogram is empty");}
-    let f = this.seisArray[0];
-    this.seisArray.forEach((s, i) => {
+    if (this._segmentArray.length === 0) {throw new Error("Seismogram is empty");}
+    let f = this._segmentArray[0];
+    this._segmentArray.forEach((s, i) => {
       if (! s) {
         throw new Error(`index ${i} is null in trace`);
       }
@@ -246,20 +299,20 @@ export class Seismogram {
     if (s.sampleRate !== f.sampleRate) {throw new Error("SampleRate not same: "+s.sampleRate+" !== "+f.sampleRate);}
   }
   findStartEnd() {
-    let allStart = this.seisArray.map(seis => {
+    let allStart = this._segmentArray.map(seis => {
       return moment.utc(seis.start);
     });
     this._start = moment.min(allStart);
-    let allEnd = this.seisArray.map(seis => {
+    let allEnd = this._segmentArray.map(seis => {
       return moment.utc(seis.end);
     });
     this._end = moment.max(allEnd);
   }
   findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
-    if (this.seisArray.length === 0) {
+    if (this._segmentArray.length === 0) {
       throw new Error("No data");
     }
-    for (let s of this.seisArray) {
+    for (let s of this._segmentArray) {
       minMaxAccumulator = s.findMinMax(minMaxAccumulator);
     }
     if (minMaxAccumulator){
@@ -277,37 +330,37 @@ export class Seismogram {
     return this._end;
   }
   get networkCode(): string {
-    return this.seisArray[0].networkCode;
+    return this._segmentArray[0].networkCode;
   }
   get stationCode(): string {
-    return this.seisArray[0].stationCode;
+    return this._segmentArray[0].stationCode;
   }
   get locationCode(): string {
-    return this.seisArray[0].locationCode;
+    return this._segmentArray[0].locationCode;
   }
   get channelCode(): string {
-    return this.seisArray[0].channelCode;
+    return this._segmentArray[0].channelCode;
   }
   get sampleRate(): number {
-    return this.seisArray[0].sampleRate;
+    return this._segmentArray[0].sampleRate;
   }
   get yUnit(): string {
-    return this.seisArray[0].yUnit;
+    return this._segmentArray[0].yUnit;
   }
   get numPoints(): number {
-    return this.seisArray.reduce((accumulator, seis) => accumulator + seis.numPoints, 0);
+    return this._segmentArray.reduce((accumulator, seis) => accumulator + seis.numPoints, 0);
   }
   codes(): string {
-    return this.seisArray[0].codes();
+    return this._segmentArray[0].codes();
   }
   get segments(): Array<SeismogramSegment> {
-    return this.seisArray;
+    return this._segmentArray;
   }
   append(seismogram: SeismogramSegment) {
-    this.checkSimilar(this.seisArray[0], seismogram);
+    this.checkSimilar(this._segmentArray[0], seismogram);
     this._start = moment.min([ this.start, moment.utc(seismogram.start)]);
     this._end = moment.max([ this.end, moment.utc(seismogram.end)]);
-    this.seisArray.push(seismogram);
+    this._segmentArray.push(seismogram);
   }
   /**
     * Creates a new Seismogram composed of all seismogram segments that overlap the
@@ -315,8 +368,8 @@ export class Seismogram {
     */
   trim(timeWindow: TimeRangeType): null | Seismogram {
     let out = null;
-    if (this.seisArray) {
-      let trimSeisArray = this.seisArray.filter(function(d) {
+    if (this._segmentArray) {
+      let trimSeisArray = this._segmentArray.filter(function(d) {
         return d.end.isAfter(timeWindow.start);
       }).filter(function(d) {
         return d.start.isBefore(timeWindow.end);
@@ -328,12 +381,12 @@ export class Seismogram {
     return out;
   }
   break(duration: moment.Duration) {
-    if (this.seisArray) {
+    if (this._segmentArray) {
       let breakStart = moment.utc(this.start);
       let out = [];
       while (breakStart.isBefore(this.end)) {
         let breakEnd = moment.utc(breakStart).add(duration);
-        let trimSeisArray = this.seisArray.map(function(seis) {
+        let trimSeisArray = this._segmentArray.map(function(seis) {
           return seis.clone().trim(breakStart, breakEnd);
         });
         out = out.concat(trimSeisArray);
@@ -341,16 +394,16 @@ export class Seismogram {
       }
       // check for null
       out = out.filter(function(seis) { return seis;});
-      this.seisArray = out;
+      this._segmentArray = out;
     }
     return this;
   }
   isContiguous() {
-    if (this.seisArray.length === 1) {
+    if (this._segmentArray.length === 1) {
       return true;
     }
     let prev = null;
-    for (const s of this.seisArray) {
+    for (const s of this._segmentArray) {
       if (prev && ! (prev.end.isBefore(s.start)
           && prev.end.add(1000*1.5/prev.sampleRate, 'ms').isAfter(s.start))) {
         return false;
@@ -359,20 +412,32 @@ export class Seismogram {
     }
     return true;
   }
-  merge() {
-    let initValue: Array<number> = [];
-    // $FlowFixMe
-    return this.seisArray.reduce((acc: Array<number>, s: SeismogramSegment) => {
-                // $FlowFixMe
-                return acc.concat(s.y);
-              }, initValue);
+  merge(): Int32Array | Float32Array | Float64Array {
+    let outArray;
+    if (this._segmentArray[0].y instanceof Int32Array) {
+      outArray = new Int32Array(this.numPoints);
+    } else if (this._segmentArray[0].y instanceof Float32Array) {
+      outArray = new Float32Array(this.numPoints);
+    } else if (this._segmentArray[0].y instanceof Float64Array) {
+      outArray = new Float64Array(this.numPoints);
+    } else {
+      throw new Error(`data not one of Int32Array, Float32Array or Float64Array: ${this._segmentArray[0].y.constructor.name}`);
+    }
+    let i=0;
+    this._segmentArray.forEach( seg => {
+      for(let v of seg.y) {
+        outArray[i] = v;
+        i++;
+      }
+    });
+    return outArray;
   }
   /**
    * Gets the timeseries as an array of number if it is contiguous.
    * @throws {NonContiguousData} if data is not contiguous.
    * @return  timeseries as array of number
    */
-  get y(): Array<number> {
+  get y(): Int32Array | Float32Array | Float64Array {
     if ( ! this._y) {
       if (this.isContiguous()) {
         this._y = this.merge();
@@ -387,17 +452,24 @@ export class Seismogram {
     throw new Error("seismogram y setter not impl yet");
   }
   clone(): Seismogram {
-    let cloned = this.seisArray.map( s => s.clone());
+    let cloned = this._segmentArray.map( s => s.clone());
     return new Seismogram(cloned);
   }
-  cloneWithNewY(newY?: Array<number>): Seismogram {
+
+  cloneWithNewData(newY: Int32Array | Float32Array | Float64Array): Seismogram {
     if (newY && newY.length > 0) {
-      let seg = this.seisArray[0].clone();
-      seg.y = newY;
+      let seg = this._segmentArray[0].cloneWithNewData(newY);
       return new Seismogram([seg]);
     } else {
       throw new Error("Y value is empty");
     }
+  }
+  /** factory method to create a single segment Seismogram from either encoded data
+   *  or a TypedArray, along with sample rate and start time.
+  */
+  static createFromContiguousData(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array, sampleRate: number, start: moment) {
+    const seg = new SeismogramSegment(yArray, sampleRate, start);
+    return new Seismogram([seg]);
   }
 }
 

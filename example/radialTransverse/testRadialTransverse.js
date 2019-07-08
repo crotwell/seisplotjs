@@ -157,6 +157,9 @@ let bothPromise = RSVP.hash({
         let rotdiv = seisplotjs.d3.select("div.rotatedseismograms");
         let rotsvgDiv = rotdiv.append("div");
         rotsvgDiv.classed("svg-container-wide", true);
+        rotsvgDiv.style("position", "relative");
+        rotsvgDiv.style("width", "100%");
+        rotsvgDiv.style("height", "450px");
 
         let seisZ = null;
         let seisNorth = null;

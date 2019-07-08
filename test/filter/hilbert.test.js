@@ -35,10 +35,12 @@ test("init hilbert filter", () => {
 test("simple hilbert", () => {
     return readSac("./test/filter/data/IU.HRV.__.BHE.SAC")
       .then( orig => {
-        const origseis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+        const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
         expect(origseis.y).toHaveLength(31450);
         let hilbertSeismogram = filter.hilbert(origseis);
-        expect(hilbertSeismogram.y).toHaveLength(origseis.y.length);
+        // check first for NaN before array length
+        expect(hilbertSeismogram.y[0]).toBeFinite();
+        expect(hilbertSeismogram.y).toHaveLength(origseis.y.length+20);
       });
 });
 
@@ -46,7 +48,8 @@ test("simple hilbert", () => {
 test("simple envelope", () => {
     return readSac("./test/filter/data/IU.HRV.__.BHE.SAC")
       .then( orig => {
-        const origseis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+        const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
+        expect(origseis.y).toHaveLength(31450);
 
         let envelopeSeis = filter.envelope(origseis);
         expect(envelopeSeis.y.length).toBe(origseis.y.length);

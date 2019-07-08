@@ -31,6 +31,7 @@ test("load miniseed file", () => {
     expect(dr.header.numSamples).toEqual(99);
     expect(dr.header.encoding).toEqual(seedcodec.STEIM2);
     let decomp = parsed[0].decompress();
+    expect(decomp).toBeInstanceOf(Int32Array);
     expect(decomp).toBeDefined();
     // msi -n 1 -pp -D  CO_JSC.mseed
     let firstRecordData = [       -42,         411,         382,         106,          84,         488,

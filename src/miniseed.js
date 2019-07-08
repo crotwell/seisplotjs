@@ -130,23 +130,19 @@ export function parseBlockette(dataView: DataView, offset: number, length: numbe
 export class DataRecord {
   header: DataHeader;
   data: DataView;
-  decompData: Array<number> | void;
 
   constructor(header: DataHeader, data: DataView) {
     this.header = header;
     this.data = data;
-    this.decompData = undefined;
   }
-    /** Decompresses the data into the decompData field, if the compression
-     *  type is known. This only needs to be called once and the result will
-     *  be cached.
+    /** Decompresses the data , if the compression
+     *  type is known.
      */
   decompress() {
-    // only decompress once as it is expensive operation
-    if ( typeof this.decompData === 'undefined') {
-      this.decompData = seedcodec.decompress(this.header.encoding, this.data, this.header.numSamples, this.header.littleEndian);
-    }
-    return this.decompData;
+    return this.asEncodedDataSegment().decode();
+  }
+  asEncodedDataSegment() {
+    return new seedcodec.EncodedDataSegment(this.header.encoding, this.data, this.header.numSamples, this.header.littleEndian);
   }
 
   /** Concatenates the net, station, loc and channel codes,
@@ -370,10 +366,10 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord) {
   * Assumes that they are all contiguous and in order. Header values from the first
   * DataRecord are used. */
 export function createSeismogram(contig: Array<DataRecord>): SeismogramSegment {
-  let out = new SeismogramSegment(null,
+  let contigData = contig.map(dr => dr.asEncodedDataSegment());
+  let out = new SeismogramSegment(contigData,
                            contig[0].header.sampleRate,
                            contig[0].header.start);
-  out._compressed = contig;
   out.networkCode = contig[0].header.netCode;
   out.stationCode = contig[0].header.staCode;
   out.locationCode = contig[0].header.locCode;
@@ -441,8 +437,8 @@ export function mergeByChannel(drList: Array<DataRecord> ): Map<string, Seismogr
   let out = new Map();
   let byChannelMap = this.byChannel(drList);
   console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
-  for (let [key, seisArray] of byChannelMap) {
-    out.set(key, merge(seisArray));
+  for (let [key, segments] of byChannelMap) {
+    out.set(key, merge(segments));
   }
   console.log("mergeByChannel  out.size="+out.size);
   return out;
@@ -452,9 +448,9 @@ export function tracePerChannel(drList: Array<DataRecord>): Map<string, Seismogr
   let out = new Map();
   let byChannelMap = this.byChannel(drList);
   console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
-  for (let [key, seisArray] of byChannelMap) {
-    seisArray = seisArray.map(dr => createSeismogram( [ dr ] ));
-    out.set(key, new Seismogram(seisArray));
+  for (let [key, segments] of byChannelMap) {
+    segments = segments.map(dr => createSeismogram( [ dr ] ));
+    out.set(key, new Seismogram(segments));
   }
   console.log("traceByChannel  out.size="+out.size);
   return out;

@@ -13,6 +13,11 @@ const ONE_COMPLEX = filter.createComplex(1, 0);
 
 const WRITE_TEST_DATA = false;
 
+const ensureFloat32Array = function(a): Float32Array {
+  expect(a).toBeInstanceOf(Float32Array);
+  return ((a: any): Float32Array);
+}
+
 test("test freq Taper", () => {
     expect(filter.transfer.freqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);
     expect(filter.transfer.freqTaper(.9, 1, 2, 10, 20)).toBeCloseTo(0, 5);
@@ -354,7 +359,7 @@ test("impulse one zero combina amp", () => {
       let sactfr = result[1];
       let pz = result[2];
       let sacAmp = result[3];
-      const seis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+      const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
 
       expect(orig.y.length).toBe(1024);
       expect(orig.delta).toBe(1);
@@ -374,7 +379,7 @@ test("impulse one zero combina amp", () => {
       expect(out.length).toBe(1024);
       // sac and oregondsp differ by const len in fft
       let outMulLength = out.map(d => d * out.length);
-      const bagAmPh = filter.ampPhase(outMulLength);
+      const bagAmPh = new filter.FFTResult(outMulLength, data.length);
 
       let saveDataPromise = null;
       if (WRITE_TEST_DATA) {
@@ -437,7 +442,7 @@ test("impulse one zero", () => {
       let sactfr = result[1];
       let pz = result[2];
       let sacAm = result[3];
-      const seis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+      const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
       let bagtfr = filter.transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
@@ -445,7 +450,7 @@ test("impulse one zero", () => {
                                       1e5,
                                       1e6);
       const sacdata = sactfr.y;
-      const bagdata = bagtfr.y;
+      const bagdata: Float32Array = ensureFloat32Array(bagtfr.y);
 
       let saveDataPromise = Promise.resolve(null);
       if (WRITE_TEST_DATA) {
@@ -479,7 +484,7 @@ test("impulse", () => {
       let orig = result[0];
       let sactfr = result[1];
       let pz = result[2];
-      const seis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+      const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
       let bagtfr = filter.transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
@@ -487,7 +492,7 @@ test("impulse", () => {
                                       1e5,
                                       1e6);
       const sacdata = sactfr.y;
-      const bagdata = bagtfr.y;
+      const bagdata = ensureFloat32Array(bagtfr.y);
 
       let saveDataPromise = Promise.resolve(null);
       if (WRITE_TEST_DATA) {
@@ -533,7 +538,7 @@ test("HRV test", () => {
       let rmean = result[2];
       let taper = result[3];
       let transfer = result[4];
-      const seis = Seismogram.createFromArray(orig.y, 1/orig.delta, moment.utc());
+      const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
       const bag_rmean = filter.rMean(seis);
       const rmean_data = bag_rmean.y;
       let sacdata = rmean.y;
@@ -553,7 +558,7 @@ test("HRV test", () => {
                                       0.01,
                                       1e5,
                                       1e6);
-      const bagdata = bagtfr.y;
+      const bagdata = ensureFloat32Array(bagtfr.y);
       sacdata = transfer.y;
       // $FlowFixMe
       expect(bagdata).arrayToBeCloseToRatio(sacdata, 5, .0001, 5);

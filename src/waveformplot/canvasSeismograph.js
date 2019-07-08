@@ -312,7 +312,7 @@ export class CanvasSeismograph {
 //      const color = d3.select(`svg g.allsegments g:nth-child(9n+1) g path.seispath`)
       const color = this.seismographConfig.getColorForIndex(ti);
       let firstTime = true;
-      t.seisArray.forEach((s) => {
+      t.segments.forEach((s) => {
         if (s.start.isAfter(moment.utc(this.currZoomXScale.domain()[1])) ||
             s.end.isBefore(moment.utc(this.currZoomXScale.domain()[0]))) {
               // segment either totally off to left or right of visible
@@ -487,7 +487,7 @@ export class CanvasSeismograph {
         console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Seismogram));
         return;
       }
-      return this.lineFunc(seg.y.map(function(d,i) {
+      return this.lineFunc(Array.of(seg.y).map(function(d,i) {
         return {time: seg.timeOfSample(i).toDate(), y: d };
       }));
     } else {

@@ -6,11 +6,11 @@ import {readSac, parseSac, readDataView, writeSac, replaceYData} from './sacfile
 
 
 test("Round Trip FFT, Spike", () => {
-  const data = Array(128).fill(0);
+  const data = new Float32Array(128).fill(0);
   data[1] = 1/100;
   const fft = filter.calcDFT(data, data.length);
   const out = filter.inverseDFT(fft, data.length);
-  expect(out.length).toBe(data.length);
+  expect(out).toHaveLength(data.length);
   for(let i=0; i<out.length; i++) {
     if (data[i] === 0) {
       expect(out[i]).toBeCloseTo(data[i], 3);
@@ -56,28 +56,26 @@ test("FFT", () => {
       for(let i = 0; i < data.length; i++) {
           data[i] /= samprate;
       }
-      const out = filter.calcDFT(data, data.length);
-      const bagAmPh = filter.ampPhase(out);
+      const fftRes = filter.fftForward(data);
 
       let saveDataPromise = Promise.resolve(null);
       if (false) {
         saveDataPromise = readDataView("./test/filter/data/IU.HRV.__.BHE_fft.sac.am").then(dataView => {
           let inSac = parseSac(dataView);
-          expect(bagAmPh.amp.length).toBe(inSac.npts);
+          expect(fftRes.amp.length).toBe(inSac.npts);
           return Promise.all([
-              writeSac(replaceYData(dataView, bagAmPh.amp), "./test/filter/data/IU.HRV.__.BHE_fft.bag.am"),
-              writeSac(replaceYData(dataView, bagAmPh.phase), "./test/filter/data/IU.HRV.__.BHE_fft.bag.ph")
+              writeSac(replaceYData(dataView, fftRes.amp), "./test/filter/data/IU.HRV.__.BHE_fft.bag.am"),
+              writeSac(replaceYData(dataView, fftRes.phase), "./test/filter/data/IU.HRV.__.BHE_fft.bag.ph")
             ]);
         });
       }
-
       return Promise.all([
         sac,
         sacAmp,
         sacPhase,
-        bagAmPh.amp,
-        bagAmPh.phase,
-        out,
+        fftRes.amp,
+        fftRes.phase,
+        fftRes,
         saveDataPromise
       ]);
     }).then(result => {
@@ -86,7 +84,7 @@ test("FFT", () => {
         let sacPhase = result[2];
         let bagAmp= result[3];
         let bagPhase = result[4];
-        let out = result[5];
+        let fftRes: filter.FFTResult = result[5];
       const sacout =  [ [695917, 0],
                         [-34640.4, 7593.43],
                         [-28626.7, -34529.8],
@@ -108,30 +106,19 @@ test("FFT", () => {
                         [-11010.8, 4728.02],
                         [-15558.3, -24774.9]];
       // real
-      expect(out[0]).toBeCloseTo(sacout[0][0], 0);
+      expect(fftRes.packedFreq[0]).toBeCloseTo(sacout[0][0], 0);
       //imag
-      //expect(out[0].imag()).toBeCloseTo(sacout[0][1], 5);
-      // assertEquals("real " + 0 + " " + out[0].real(), 1, sacout[0][0]
-      //         / out[0].real() , 0.00001);
-      // assertEquals("imag " + 0 + " " + out[0].imag(),
-      //              sacout[0][1],
-      //              -out[0].imag() ,
-      //              0.00001);
       for(let i = 1; i < sacout.length; i++) {
         //real
-        expect(out[i]).toBeCloseTo(sacout[i][0], 1);
+        expect(fftRes.packedFreq[i]).toBeCloseTo(sacout[i][0], 0);
         //imag
-        expect(out[out.length-i]).toBeCloseTo(sacout[i][1], 1);
-          // assertEquals("real " + i + " " + out[i].real(), 1, sacout[i][0]
-          //         / out[i].real(), 0.00001);
-          // // sac fft is opposite sign imag, so ratio is -1
-          // assertEquals("imag " + i + " " + out[i].imag(), -1, sacout[i][1]
-          //         / out[i].imag(), 0.00001);
+        expect(fftRes.packedFreq[fftRes.packedFreq.length-i]).toBeCloseTo(sacout[i][1], 0);
+
       }
-      expect(bagAmp.length).toBe(sacAmp.y.length);
+      expect(bagAmp).toHaveLength(sacAmp.y.length);
       // $FlowFixMe
       expect(bagAmp).arrayToBeCloseToRatio(sacAmp.y, 2);
-      expect(bagPhase.length).toBe(sacPhase.y.length);
+      expect(bagPhase).toHaveLength(sacPhase.y.length);
       // $FlowFixMe
       expect(bagPhase).arrayToBeCloseTo(sacPhase.y, 2);
     });

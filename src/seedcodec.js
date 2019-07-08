@@ -1,6 +1,5 @@
 // @flow
 
-/*global Int32Array*/
 /*
  * Philip Crotwell
  * University of South Carolina, 2014
@@ -62,6 +61,38 @@ export class UnsupportedCompressionType extends Error {
   }
 }
 
+export function isFloatCompression(compressionType: number): boolean {
+  if (compressionType === FLOAT || compressionType === DOUBLE) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * A holder for compressed data independent of the file format.
+ */
+export class EncodedDataSegment {
+  compressionType: number;
+  dataView: DataView;
+  numSamples: number;
+  littleEndian: boolean;
+  constructor(compressionType: number, dataView: DataView, numSamples: number, littleEndian: boolean) {
+    this.compressionType = compressionType;
+    this.dataView = dataView;
+    this.numSamples = numSamples;
+    this.littleEndian = littleEndian;
+  }
+  isFloatCompression(): boolean {
+    return isFloatCompression(this.compressionType);
+  }
+  decode(): Int32Array | Float32Array | Float64Array {
+    return decompress(this.compressionType,
+      this.dataView,
+      this.numSamples,
+      this.littleEndian);
+  }
+}
+
 /**
  *  Decompress the samples from the provided DataView and
  *  return an array of the decompressed values.
@@ -76,14 +107,14 @@ export class UnsupportedCompressionType extends Error {
  *  @throws CodecException fail to decompress.
  *  @throws UnsupportedCompressionType unsupported compression type
  */
-export function decompress(compressionType: number, dataView: DataView, numSamples: number, littleEndian: boolean): Array<number> {
+export function decompress(compressionType: number, dataView: DataView, numSamples: number, littleEndian: boolean): Int32Array | Float32Array | Float64Array {
   // in case of record with no data points, ex detection blockette, which often have compression type
   // set to 0, which messes up the decompresser even though it doesn't matter since there is no data.
   if (numSamples === 0) {
-    return [];
+    return new Int32Array(0);
   }
 
-  let out = [];
+  let out;
   let offset = 0;
   let i;
   switch(compressionType){
@@ -95,6 +126,7 @@ export function decompress(compressionType: number, dataView: DataView, numSampl
                         + numSamples + " 16 bit data points, only "
                         + dataView.byteLength + " bytes.");
       }
+      out = new Int32Array(numSamples);
       for(i = 0; i < numSamples; i++) {
         out[i] = dataView.getInt16(offset, littleEndian);
         offset += 2;
@@ -107,6 +139,7 @@ export function decompress(compressionType: number, dataView: DataView, numSampl
                 + numSamples + " 32 bit data points, only "
                 + dataView.byteLength + " bytes.");
       }
+      out = new Int32Array(numSamples);
       for(i = 0; i < numSamples; i++) {
         out[i] = dataView.getInt32(offset, littleEndian);
         offset += 4;
@@ -119,6 +152,7 @@ export function decompress(compressionType: number, dataView: DataView, numSampl
               + numSamples + " 32 bit data points, only "
               + dataView.byteLength + " bytes.");
       }
+      out = new Float32Array(numSamples);
       for(i = 0; i < numSamples; i++) {
         out[i] = dataView.getFloat32(offset, littleEndian);
         offset += 4;
@@ -131,6 +165,7 @@ export function decompress(compressionType: number, dataView: DataView, numSampl
                 + numSamples + " 64 bit data points, only "
                 + dataView.byteLength + " bytes.");
       }
+      out = new Float64Array(numSamples);
       for(i = 0; i < numSamples; i++) {
         out[i] = dataView.getFloat64(offset, littleEndian);
         offset += 8;
@@ -168,7 +203,7 @@ export function decompress(compressionType: number, dataView: DataView, numSampl
  *  @throws CodecException - encoded data length is not multiple of 64
  *  bytes.
  */
-export function decodeSteim1(dataView: DataView, numSamples: number, littleEndian: boolean, bias: number) {
+export function decodeSteim1(dataView: DataView, numSamples: number, littleEndian: boolean, bias: number): Int32Array {
   // Decode Steim1 compression format from the provided byte array, which contains numSamples number
   // of samples.  swapBytes is set to true if the value words are to be byte swapped.  bias represents
   // a previous value which acts as a starting constant for continuing differences integration.  At the
@@ -176,7 +211,8 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
   if (dataView.byteLength % 64 !== 0) {
     throw new CodecException("encoded data length is not multiple of 64 bytes (" + dataView.byteLength + ")");
   }
-  let samples = [];
+  let buf = new ArrayBuffer(4 * numSamples);
+  let samples = new Int32Array(buf);
   let tempSamples;
   let numFrames = dataView.byteLength / 64;
   let current = 0;
@@ -293,11 +329,12 @@ function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian:
  *  @throws SteimException - encoded data length is not multiple of 64
  *  bytes.
  */
-export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: boolean, bias: number): Array<number> {
+export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: boolean, bias: number): Int32Array {
   if (dataView.byteLength % 64 !== 0) {
     throw new CodecException("encoded data length is not multiple of 64 bytes (" + dataView.byteLength + ")");
   }
-  let samples = [];
+  let buf = new ArrayBuffer(4 * numSamples);
+  let samples = new Int32Array(buf);
   let tempSamples;
   let numFrames = dataView.byteLength / 64;
   let current = 0;
@@ -440,9 +477,5 @@ function extractSteim2Samples(dataView: DataView, offset: number, swapBytes: boo
       }
     }
   }
-  let out = new Int32Array(currNum);
-  for(let i=0; i<currNum; i++) {
-    out[i] = temp[i];
-  }
-  return out;
+  return temp.slice(0, currNum);
 }

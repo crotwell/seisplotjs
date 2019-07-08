@@ -28,9 +28,9 @@ let ratioTest = function(received, argument, digits, closeZero, closeZeroDigits)
      return ratioTest(received, argument, digits, closeZero, closeZeroDigits)
    },
    arrayToBeCloseToRatio(received, argument, digits, closeZero=1e-10, closeZeroDigits=7) {
-     if ( ! (Array.isArray(received) && Array.isArray(argument)) ) {
+     if ( ! (isArrayOrTypedArray(received) && isArrayOrTypedArray(argument)) ) {
        return {
-         message: () => 'expect two arrays',
+         message: () => `expect two arrays ${isArrayOrTypedArray(received)} ${isArrayOrTypedArray(argument)}`,
          pass: false,
        };
      }
@@ -55,9 +55,9 @@ let ratioTest = function(received, argument, digits, closeZero, closeZeroDigits)
      };
    },
    arrayToBeCloseTo(received, argument, digits) {
-     if ( ! (Array.isArray(received) && Array.isArray(argument)) ) {
+     if ( ! (isArrayOrTypedArray(received) && isArrayOrTypedArray(argument)) ) {
        return {
-         message: () => 'expect two arrays',
+         message: () => `expect two arrays ${isArrayOrTypedArray(received)} ${isArrayOrTypedArray(argument)}`,
          pass: false,
        };
      }
@@ -82,3 +82,11 @@ let ratioTest = function(received, argument, digits, closeZero, closeZeroDigits)
      };
    },
  });
+
+ let isArrayOrTypedArray = function(a) {
+   if (Array.isArray(a)) {return true; }
+   if (a instanceof Float32Array) { return true;}
+   if (a instanceof Int32Array) { return true;}
+   if (a instanceof Float64Array) { return true;}
+   return false;
+ }
