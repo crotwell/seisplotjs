@@ -17,7 +17,7 @@ export function simpleOverlayFFTPlot(fftArrays, cssSelector, sps, loglog) {
         ap = fft;
       } else {
         // assume packed array
-        ap = new FFTResult(fft);
+        ap = FFTResult.createFromPackedFreq(fft);
       }
       ampPhaseList.push(ap);
       if (maxFFTAmpLen < ap.amp.length) {

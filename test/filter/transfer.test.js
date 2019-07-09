@@ -379,7 +379,7 @@ test("impulse one zero combina amp", () => {
       expect(out.length).toBe(1024);
       // sac and oregondsp differ by const len in fft
       let outMulLength = out.map(d => d * out.length);
-      const bagAmPh = new filter.FFTResult(outMulLength, data.length);
+      const bagAmPh = filter.FFTResult.createFromPackedFreq(outMulLength, data.length);
 
       let saveDataPromise = null;
       if (WRITE_TEST_DATA) {

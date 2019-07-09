@@ -10,7 +10,7 @@ const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
   * complex, amp, phase arrays. Calls calcDFT internally.
   */
 export function fftForward(timeseries: Int32Array | Float32Array | Float64Array) {
-  let result = new FFTResult(calcDFT(timeseries, timeseries.length), timeseries.length);
+  let result = FFTResult.createFromPackedFreq(calcDFT(timeseries, timeseries.length), timeseries.length);
   return result;
 }
 
@@ -64,12 +64,30 @@ export class FFTResult {
   amp: Float32Array;
   phase: Float32Array;
   npts: number;
-  constructor(packedFreq: Float32Array, origLength: number) {
-    this.packedFreq = packedFreq;
-    this.origLength = origLength;
-    this._calcAmpPhase();
+  constructor(origLength: number) {
+      this.origLength = origLength;
   }
-  _calcAmpPhase(): void {
+  static createFromPackedFreq(packedFreq: Float32Array, origLength: number) {
+    let fftResult = new FFTResult(origLength);
+    fftResult.packedFreq = packedFreq;
+    fftResult.recalcFromPackedFreq();
+    return fftResult;
+  }
+  static createFromComplex(complexArray: Array<Complex>, origLength: number) {
+    let fftResult = new FFTResult(origLength);
+    fftResult.complex = complexArray;
+    fftResult.recalcFromComplex();
+    return fftResult;
+  }
+  static createFromAmpPhase(amp: Float32Array, phase: Float32Array, origLength: number) {
+    let fftResult = new FFTResult(origLength);
+    if (amp.length != phase.length) {throw new Error(`amp and phase must be same length: ${amp.length} ${phase.length}`);}
+    fftResult.amp = amp;
+    fftResult.phase = phase;
+    fftResult.recalcFromAmpPhase();
+    return fftResult;
+  }
+  recalcFromPackedFreq(): void {
     this.complex = [];
     this.amp = new Float32Array(this.packedFreq.length/2+1);
     this.phase = new Float32Array(this.packedFreq.length/2+1);
@@ -118,6 +136,6 @@ export class FFTResult {
     this.complex = modComplex;
   }
   clone() {
-    return new FFTResult(this.packedFreq.slice(), this.origLength);
+    return FFTResult.createFromPackedFreq(this.packedFreq.slice(), this.origLength);
   }
 }
