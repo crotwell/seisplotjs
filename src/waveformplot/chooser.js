@@ -111,7 +111,9 @@ export class HourMinChooser {
   }
   showHide(): void {
     if (this.popupDiv.style("visibility") === "hidden") {
-      this.popupDiv.style("visibility", "visible");
+      this.popupDiv.style("visibility", "visible")
+        .classed("is-bound", true);
+      this._adjustPopupPosition();
       window.document.addEventListener("click", this.myOnClick, false);
     } else {
       this.popupDiv.style("visibility", "hidden");
@@ -119,18 +121,18 @@ export class HourMinChooser {
     }
   }
   hide(): void {
-    this.popupDiv.style("visibility", "hidden");
+    this.popupDiv.style("visibility", "hidden")
+      .classed("is-bound", false);
     window.document.removeEventListener("click", this.myOnClick);
   }
   _adjustPopupPosition(): void {
 
-      let field = this.hourMinField;
+      let field = this.hourMinField.node();
       let width = this.hourMinField.offsetWidth;
       let height = this.hourMinField.offsetHeight;
       let viewportWidth: number = window.innerWidth;
       let viewportHeight: number = window.innerHeight;
       let scrollTop: number = window.pageYOffset;
-
       let left = field.offsetLeft;
       let top  = field.offsetTop + field.offsetHeight;
       while((field = field.offsetParent)) {
@@ -146,7 +148,6 @@ export class HourMinChooser {
       if ((top + height > viewportHeight + scrollTop)) {
           top = top - height - field.offsetHeight;
       }
-
       this.popupDiv.style("left", left + 'px');
       this.popupDiv.style("top", top + 'px');
   }
@@ -229,7 +230,6 @@ export class TimeRangeChooser {
     let mythis = this;
     let startDiv = div.append("div").classed("start", true);
     this.startChooser = new DateTimeChooser(startDiv, "Start:", startTime, function(startTime) {
-      // console.log("start -> endChooser updateTime: "+startTime.toISOString()+" plus "+mythis.duration);
       mythis.endChooser.updateTime(moment.utc(startTime).add(mythis.duration, 'seconds'));
       mythis.callbackFunction(mythis.getTimeRange());
     });
@@ -242,14 +242,12 @@ export class TimeRangeChooser {
       .on("input", function() {
         let nDur = +Number.parseInt(this.value);
         mythis.duration = nDur;
-        // console.log("dur -> startChooser updateTime: "+mythis.endChooser.getTime().toISOString()+" minus "+mythis.duration);
         mythis.startChooser.updateTime(moment.utc(mythis.endChooser.getTime()).subtract(mythis.duration, 'seconds'));
         mythis.callbackFunction(mythis.getTimeRange());
       });
 
     let endDiv = div.append("div").classed("end", true);
     this.endChooser = new DateTimeChooser(endDiv, "End:", endTime, function(endTime) {
-      // console.log("end -> startChooser updateTime: "+endTime.toISOString()+" minus "+mythis.duration);
       mythis.startChooser.updateTime(moment.utc(endTime).subtract(mythis.duration, 'seconds'));
       mythis.callbackFunction(mythis.getTimeRange());
     });
