@@ -1,4 +1,5 @@
 
+const DEFAULT_DURATION = "P1D";
 
 doPlot = function(config) {
   // this global comes from the seisplotjs standalone js
@@ -12,12 +13,14 @@ doPlot = function(config) {
 
   let divClass = "heli";
   let clockOffset = 0; // should get from server somehow
-  let duration = 24*60*60;
   let overlap = 0.75;
   let maxSteps = -1; // max num of ticks of the timer before stopping, for debugin
   let nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
   //nowHour = moment.utc("2019-01-11T21:58:00Z").endOf('hour').add(1, 'millisecond');
 
+  if ( ! config.duration) {
+    config.duration = DEFAULT_DURATION;
+  }
   // stringify moment...
   let end = config.endTime;
   if (moment.isMoment(end)) {
@@ -38,7 +41,7 @@ doPlot = function(config) {
   }
   let svgParent = wp.d3.select(`div.${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
-  let timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, plotEnd, duration, clockOffset);
+  let timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, plotEnd, config.duration, clockOffset);
 
   let netCodeQuery = config.netCode;
   let staCodeQuery = config.station;

@@ -22,7 +22,8 @@ let state = {
   instCode: "H",
   orientationCode: 'Z',
   altOrientationCode: "",
-  endTime: null
+  endTime: "now",
+  duration: 'P1D'
 };
 
 // Check browser state, in case of back or forward buttons
@@ -78,6 +79,32 @@ let heli = null;
 let quakes = [];
 let station = null;
 
+
+let chooserEnd;
+if ( state.end) {
+  chooserEnd = moment.utc(state.end);
+} else {
+  chooserEnd = moment.utc();
+}
+const chooserStart = chooserEnd.subtract(moment.duration(state.duration))
+    .endOf('hour').add(1, 'millisecond');
+
+let dateChooserSpan = d3.select("#datechooser");
+let dateChooser = new wp.chooser.DateTimeChooser(dateChooserSpan,
+    "Start Time",
+    chooserStart,
+    time => {
+      state.endTime = time.endOf('hour').add(1, 'millisecond').add(moment.duration(state.duration));
+      doPlot(state);
+    });
+let updateDateChooser = function(state) {
+  if ( state.endTime && state.duration) {
+    dateChooser.updateTime(moment.utc(state.endTime).subtract(moment.duration(state.duration)));
+  } else {
+    throw new Error(`missing end/duration: ${state.endTime} ${state.duration}`);
+  }
+}
+
 let staButtonSpan = d3.select("#scsnStations")
   .select("form")
   .selectAll("span")
@@ -105,21 +132,29 @@ let staButtonSpan = d3.select("#scsnStations")
 
 wp.d3.select("button#loadNow").on("click", function(d) {
   state.endTime = moment.utc().endOf('hour').add(1, 'millisecond');
+  console.log(`now ${state.endTime}`);
+  updateDateChooser(state);
   doPlot(state);
 });
 
 wp.d3.select("button#loadToday").on("click", function(d) {
   state.endTime = moment.utc().endOf('day').add(1, 'millisecond');
+  console.log(`today ${state.endTime}`);
+  updateDateChooser(state);
   doPlot(state);
 });
 
 wp.d3.select("button#loadPrev").on("click", function(d) {
   state.endTime = moment.utc(state.endTime).subtract(1, 'day');
+  console.log(`prev ${state.endTime}`);
+  updateDateChooser(state);
   doPlot(state);
 });
 
 wp.d3.select("button#loadNext").on("click", function(d) {
   state.endTime = moment.utc(state.endTime).add(1, 'day');
+  console.log(`next ${state.endTime}`);
+  updateDateChooser(state);
   doPlot(state);
 });
 
