@@ -430,8 +430,12 @@ export class StartEndDuration {
   constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
 
     if (duration &&
-      (typeof duration === "string" || duration instanceof String)) {
+        (typeof duration === "string" || duration instanceof String)) {
+      if (duration.charAt(0) === 'P') {
+        this.duration = moment.duration(duration);
+      } else {
         this.duration = moment.duration(Number.parseFloat(duration), 'seconds');
+      }
     }
     if (duration &&
       (typeof duration === "number" || duration instanceof Number)) {
