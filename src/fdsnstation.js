@@ -611,77 +611,84 @@ export class StationQuery {
   */
   convertToStage(stageXml: Element): Stage {
     let subEl = stageXml.firstElementChild;
+    let filter: AbstractFilterType | null = null;
     if (! subEl) {
       throw new Error("Stage element has no child elements");
-    }
-    let filter: AbstractFilterType | null = null;
-    let inputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'InputUnits'), 'Name');
-    let outputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'OutputUnits'), 'Name');
-    if (! inputUnits) {
-      throw new Error("Stage inputUnits required");
-    }
-    if (! outputUnits) {
-      throw new Error("Stage outputUnits required");
-    }
-    if (subEl.localName === 'PolesZeros') {
-      filter = new PolesZeros(inputUnits, outputUnits);
-      const pzt = _grabFirstElText(stageXml, 'PzTransferFunctionType');
-      if (pzt) { filter.pzTransferFunctionType = pzt; }
-      const nfa = _grabFirstElFloat(stageXml, 'NormalizationFactor');
-      if (_isDef(nfa)) { filter.normalizationFactor = nfa;}
-      const nfr = _grabFirstElFloat(stageXml, 'NormalizationFrequency');
-      if (_isDef(nfr)) {filter.normalizationFrequency = nfr;}
-      let zeros = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Zero'))
-          .map(function(zeroEl) {
-            return extractComplex(zeroEl);
-          });
-      let poles = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Pole'))
-          .map(function(poleEl) {
-            return extractComplex(poleEl);
-          });
-      filter.zeros = zeros;
-      filter.poles = poles;
-    } else if (subEl.localName === 'Coefficients') {
-      let coeffXml = subEl;
-      filter = new CoefficientsFilter(inputUnits, outputUnits);
-      const cft = _grabFirstElText(coeffXml, 'CfTransferFunctionType');
-      if (cft) {filter.cfTransferFunction = cft;}
-      filter.numerator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Numerator'))
-          .map(function(numerEl) {
-            return parseFloat(numerEl.textContent);
-          });
-      filter.denominator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Denominator'))
-          .map(function(denomEl) {
-            return parseFloat(denomEl.textContent);
-          });
-    } else if (subEl.localName === 'ResponseList') {
-      throw new Error("ResponseList not supported: ");
-    } else if (subEl.localName === 'FIR') {
-      let firXml = subEl;
-      filter = new FIR(inputUnits, outputUnits);
-      const s = _grabFirstElText(firXml, 'Symmetry');
-      if (s) {filter.symmetry = s;}
-      filter.numerator = Array.from(firXml.getElementsByTagNameNS(STAML_NS, 'NumeratorCoefficient'))
-          .map(function(numerEl) {
-            return parseFloat(numerEl.textContent);
-          });
-    } else if (subEl.localName === 'Polynomial') {
-      throw new Error("Polynomial not supported: ");
-    } else if (subEl.localName === 'StageGain') {
-      // gain only stage, pick it up below
+    } else if (stageXml.childElementCount === 1 && subEl.localName === 'StageGain') {
+      // degenerate case of a gain only stage
+      // fix the lack of units after all stages are converted.
     } else {
-      throw new Error("Unknown Stage type: "+ subEl.localName);
-    }
-
-    if (filter) {
-      // add description and name if it was there
-      let description = _grabFirstElText(subEl, 'Description');
-      if (description) {
-        filter.description = description;
+      // shoudl be a filter of some kind, check for units
+      let inputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'InputUnits'), 'Name');
+      let outputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'OutputUnits'), 'Name');
+      if (! inputUnits) {
+        throw new Error("Stage inputUnits required");
       }
-      if (subEl.hasAttribute('name')) {
-        const n = _grabAttribute(subEl, 'name');
-        if (n) {filter.name = n;}
+      if (! outputUnits) {
+        throw new Error("Stage outputUnits required");
+      }
+      // here we assume there must be a filter, and so must have units
+
+      if (subEl.localName === 'PolesZeros') {
+        filter = new PolesZeros(inputUnits, outputUnits);
+        const pzt = _grabFirstElText(stageXml, 'PzTransferFunctionType');
+        if (pzt) { filter.pzTransferFunctionType = pzt; }
+        const nfa = _grabFirstElFloat(stageXml, 'NormalizationFactor');
+        if (_isDef(nfa)) { filter.normalizationFactor = nfa;}
+        const nfr = _grabFirstElFloat(stageXml, 'NormalizationFrequency');
+        if (_isDef(nfr)) {filter.normalizationFrequency = nfr;}
+        let zeros = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Zero'))
+            .map(function(zeroEl) {
+              return extractComplex(zeroEl);
+            });
+        let poles = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Pole'))
+            .map(function(poleEl) {
+              return extractComplex(poleEl);
+            });
+        filter.zeros = zeros;
+        filter.poles = poles;
+      } else if (subEl.localName === 'Coefficients') {
+        let coeffXml = subEl;
+        filter = new CoefficientsFilter(inputUnits, outputUnits);
+        const cft = _grabFirstElText(coeffXml, 'CfTransferFunctionType');
+        if (cft) {filter.cfTransferFunction = cft;}
+        filter.numerator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Numerator'))
+            .map(function(numerEl) {
+              return parseFloat(numerEl.textContent);
+            });
+        filter.denominator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Denominator'))
+            .map(function(denomEl) {
+              return parseFloat(denomEl.textContent);
+            });
+      } else if (subEl.localName === 'ResponseList') {
+        throw new Error("ResponseList not supported: ");
+      } else if (subEl.localName === 'FIR') {
+        let firXml = subEl;
+        filter = new FIR(inputUnits, outputUnits);
+        const s = _grabFirstElText(firXml, 'Symmetry');
+        if (s) {filter.symmetry = s;}
+        filter.numerator = Array.from(firXml.getElementsByTagNameNS(STAML_NS, 'NumeratorCoefficient'))
+            .map(function(numerEl) {
+              return parseFloat(numerEl.textContent);
+            });
+      } else if (subEl.localName === 'Polynomial') {
+        throw new Error("Polynomial not supported: ");
+      } else if (subEl.localName === 'StageGain') {
+        // gain only stage, pick it up below
+      } else {
+        throw new Error("Unknown Stage type: "+ subEl.localName);
+      }
+
+      if (filter) {
+        // add description and name if it was there
+        let description = _grabFirstElText(subEl, 'Description');
+        if (description) {
+          filter.description = description;
+        }
+        if (subEl.hasAttribute('name')) {
+          const n = _grabAttribute(subEl, 'name');
+          if (n) {filter.name = n;}
+        }
       }
     }
     let decimationXml = _grabFirstEl(stageXml, 'Decimation');
