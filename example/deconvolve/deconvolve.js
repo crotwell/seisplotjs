@@ -15,7 +15,7 @@ const moment = seisplotjs.moment;
 let doRunQuery = true;
 // doRunQuery = false;//for testing
 
-let eqTime = moment.utc('2018-07-13T09:46:49Z').add(60, 'seconds');
+let eqTime = moment.utc('2019-07-04T17:33:49Z').add(330, 'seconds');
 let times = new ds.StartEndDuration(eqTime, null, 300, 0);
 let dsQuery = new ds.DataSelectQuery()
   .nodata(404)
