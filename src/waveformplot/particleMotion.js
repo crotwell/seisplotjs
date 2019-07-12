@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 
 import {
     createPlotsBySelectorPromise
-  } from './util';
+  } from './plotutil.js';
 
 import type { MarginType } from './seismographconfig';
 import {SeismogramSegment, Seismogram} from '../seismogram';

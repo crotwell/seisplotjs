@@ -1,8 +1,6 @@
 // @flow
 
 
-// for browserify-css
-import './inject_css_manual.js';
 
 import { CanvasSeismograph } from './canvasSeismograph.js';
 import {Helicorder, HelicorderConfig } from './helicorder.js';
@@ -22,7 +20,7 @@ import {
   d3,
   RSVP,
   createPlotsBySelector,
-} from './util.js';
+} from './plotutil.js';
 
 /* re-export */
 export {
