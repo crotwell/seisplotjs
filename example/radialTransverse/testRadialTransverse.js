@@ -179,7 +179,7 @@ let bothPromise = RSVP.hash({
           throw new Error("unable to find ZNE: ${seisZ} ${seisNorth} ${seisEast}");
         }
 console.log("rotate to "+hash.distaz.baz+" "+((hash.distaz.baz+180)%360) );
-        let rotated = seisplotjs.filter.rotate(seisNorth, 0, seisEast, 90, (hash.distaz.baz+180)%360);
+        let rotated = seisplotjs.vector.rotate(seisNorth, 0, seisEast, 90, (hash.distaz.baz+180)%360);
         hash.rotatedSeismograms = [ seisZ, rotated.radial, rotated.transverse ];
         hash.rotatedSeismograms.sort(wp.sort.alphabeticalSort);
 console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.segments[0].yAtIndex(0)+" "+rotated.transverse.segments[0].yAtIndex(0))

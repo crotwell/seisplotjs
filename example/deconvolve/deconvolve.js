@@ -64,8 +64,8 @@ function processSeismograms(traceMap) {
         let response = netArray[0].stations[0].channels[0].response;
         console.log("resp2: "+response);
 
-        let taperSeis = seisplotjs.filter.taper.taper(seisplotjs.filter.rMean(trace));
-        let correctedSeismogram = seisplotjs.filter.transfer.transfer(taperSeis,
+        let taperSeis = seisplotjs.taper.taper(seisplotjs.filter.rMean(trace));
+        let correctedSeismogram = seisplotjs.transfer.transfer(taperSeis,
                                           response,
                                           .01,
                                           .02,
@@ -109,7 +109,7 @@ function processSeismograms(traceMap) {
       let filteredPlot = new wp.CanvasSeismograph(svgFiltered, seisConfig, filteredSeismogram);
       filteredPlot.draw();
 
-      let fftOut = seisplotjs.filter.calcDFT(trace.segments[0].y, trace.segments[0].numPoints );
+      let fftOut = seisplotjs.fft.calcDFT(trace.segments[0].y, trace.segments[0].numPoints );
 
 
       simpleLogPlot(fftOut, "div.fftplot", trace.sampleRate);
@@ -161,7 +161,7 @@ if (doRunQuery) {
 
 function calcInstResponseAtFreq(freq, sacPoleZero) {
   let ONE = seisplotjs.filter.createComplex(1, 0);
-  let respAtF = seisplotjs.filter.transfer.evalPoleZeroInverse(sacPoleZero, freq);
+  let respAtF = seisplotjs.transfer.evalPoleZeroInverse(sacPoleZero, freq);
   return ONE.overComplex(respAtF);
 }
 function calcInstResponse(channel, minFreq, maxFreq, numPoints) {
@@ -172,7 +172,7 @@ function calcInstResponse(channel, minFreq, maxFreq, numPoints) {
     data: [],
   }
   let sampRate = channel.sampleRate;
-  const sacPoleZero = seisplotjs.filter.transfer.convertToSacPoleZero(channel.response);
+  const sacPoleZero = seisplotjs.transfer.convertToSacPoleZero(channel.response);
   // make vel instead of disp
   sacPoleZero.zeros = sacPoleZero.zeros.slice(0, sacPoleZero.zeros.length-1);
   d3.select("div.sacpolezero").append("pre").text(sacPoleZero.toString());

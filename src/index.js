@@ -24,7 +24,8 @@ import * as seedcodec      from './seedcodec.js';
 import * as seedlink       from './seedlink.js';
 import * as seismogram     from './seismogram.js';
 import * as stationxml     from './stationxml.js';
-import * as taper     from './traveltime.js';
+import * as taper     from './taper.js';
+import * as transfer     from './transfer.js';
 import * as traveltime     from './traveltime.js';
 import * as util      from './util.js';
 import * as vector      from './vector.js';
@@ -44,6 +45,7 @@ export { datalink,
          fdsnevent,
          fdsnstation,
          fdsndataselect,
+         fft,
          filter,
          knownDataCenters,
          miniseed,
@@ -55,8 +57,11 @@ export { datalink,
          seedlink,
          seismogram,
          stationxml,
+         taper,
+         transfer,
          traveltime,
          util,
+         vector,
          waveformplot,
          xseed,
          d3,
