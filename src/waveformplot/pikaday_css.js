@@ -1,3 +1,5 @@
+// @flow
+
 export const pikaday_css = `
 @charset "UTF-8";
 

@@ -1,35 +1,39 @@
-import {FFTResult} from '../filter/index.js';
+// @flow
+
+import {FFTResult} from '../fft.js';
 
 import * as d3 from 'd3';
 
-export function createSimpleFFTPlot(fft, cssSelector, sps) {
+export function createSimpleFFTPlot(fft: FFTResult, cssSelector: string, sps: number) {
   simpleOverlayFFTPlot( [ fft], cssSelector, sps);
 }
 
-export function simpleOverlayFFTPlot(fftArrays, cssSelector, sps, loglog) {
+export function simpleOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: string, sps: number, loglog: boolean = false) {
     let T = 1/sps;
     let ampPhaseList = [];
+    let ampSliceMap = new Map();
     let maxFFTAmpLen = 0;
     let extentFFTData = null;
-    for (const fft of fftArrays) {
-      let ap;
-      if (fft instanceof FFTResult) {
-        ap = fft;
+    for (const fftA of fftArrays) {
+      let ap: FFTResult;
+      if (fftA instanceof FFTResult) {
+        ap = fftA;
       } else {
         // assume packed array
-        ap = FFTResult.createFromPackedFreq(fft);
+        ap = FFTResult.createFromPackedFreq(fftA, fftA.length);
       }
       ampPhaseList.push(ap);
       if (maxFFTAmpLen < ap.amp.length) {
         maxFFTAmpLen = ap.amp.length;
       }
-
+      let ampSlice;
       if (loglog) {
-        ap.ampSlice = ap.amp.slice(1); // don't plot zero freq amp
+        ampSlice = ap.amp.slice(1); // don't plot zero freq amp
       } else {
-        ap.ampSlice = ap.amp;
+        ampSlice = ap.amp;
       }
-      let currExtent = d3.extent(ap.ampSlice);
+      let currExtent = d3.extent(ampSlice);
+      ampSliceMap.set(ap, ampSlice);
       if (extentFFTData) {
         extentFFTData = d3.extent([ extentFFTData[0],
                                     extentFFTData[1],
@@ -107,8 +111,9 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
       .text("Amp");
   let pathg = g.append("g").classed("allfftpaths", true);
   for (const ap of ampPhaseList) {
+    let ampSlice = ampSliceMap.get(ap);
     pathg.append("g").append("path")
-        .datum(ap.ampSlice)
+        .datum(ampSlice)
         .attr("d", line);
   }
     return svg;

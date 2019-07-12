@@ -1,3 +1,4 @@
+// @flow
 
 export const seismograph_css = `
 

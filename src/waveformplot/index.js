@@ -1,3 +1,4 @@
+// @flow
 
 
 // for browserify-css
