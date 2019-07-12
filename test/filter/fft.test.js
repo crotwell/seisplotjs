@@ -18,6 +18,18 @@ test("Round Trip FFT, Spike", () => {
       expect(out[i]/data[i]).toBeCloseTo(1, 5);
     }
   }
+  const fftresult = filter.fftForward(data)
+  for(let i=0; i<fftresult.packedFreq.length; i++) {
+      expect(fftresult.packedFreq[i]).toBeCloseTo(fft[i], 5);
+  }
+  const invresult = fftresult.fftInverse()
+  for(let i=0; i<invresult.length; i++) {
+    if (data[i] === 0) {
+      expect(invresult[i]).toBeCloseTo(data[i], 3);
+    } else {
+      expect(invresult[i]/data[i]).toBeCloseTo(1, 5);
+    }
+  }
 });
 
 

@@ -14,14 +14,6 @@ export function fftForward(timeseries: Int32Array | Float32Array | Float64Array)
   return result;
 }
 
-/** A higher level function to calculate inverse DFT.
-  * Argument is a FFTResult output by fftForward.
-  * Calls inverseDFT internally.
-  */
-export function fftInverse(fftResult: FFTResult) {
-  return inverseDFT(fftResult.packedFreq, fftResult.origLength);
-}
-
 export function calcDFT(waveform: Int32Array | Float32Array | Float64Array, npts: number): Float32Array {
   let log2N = 4;
   let N = 16;
@@ -134,6 +126,11 @@ export class FFTResult {
       modComplex[i] = OregonDSP.filter.iir.Complex.Companion.ComplexFromPolar(this.amp[i], this.phase[i]);
     }
     this.complex = modComplex;
+  }
+  /** calculates the inverse fft of this.packedFreq
+  */
+  fftInverse() {
+    return inverseDFT(this.packedFreq, this.origLength);
   }
   clone() {
     return FFTResult.createFromPackedFreq(this.packedFreq.slice(), this.origLength);
