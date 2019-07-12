@@ -2,9 +2,6 @@
 
 //global document
 
-import {chooser_css,} from './chooser_css.js';
-import {seismograph_css,} from './seismograph_css.js';
-import {pikaday_css,} from './pikaday_css.js';
 
 export function insertCSS(cssText: string) {
   let head = document.head;
