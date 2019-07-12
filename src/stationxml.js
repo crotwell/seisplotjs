@@ -4,7 +4,7 @@ import { checkStringOrDate } from './util';
 
 
 import moment from 'moment';
-import type {Complex } from './filter/filterUtil';
+import type {Complex } from './filter.js';
 
 
 

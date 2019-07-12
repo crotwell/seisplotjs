@@ -1,11 +1,11 @@
 //@flow
 
 import {calcDFT, inverseDFT } from './fft.js';
-import {SeismogramSegment, Seismogram } from '../seismogram';
-import { SacPoleZero } from '../sacPoleZero';
-import {Response, PolesZeros } from '../stationxml';
+import {SeismogramSegment, Seismogram } from './seismogram.js';
+import { SacPoleZero } from './sacPoleZero.js';
+import {Response, PolesZeros } from './stationxml.js';
 import Qty from 'js-quantities';
-import {Complex, createComplex} from './filterUtil';
+import {Complex, createComplex} from './filter.js';
 
 export function transfer(seis: Seismogram,
                         response: Response,

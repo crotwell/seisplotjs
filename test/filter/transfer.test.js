@@ -1,11 +1,13 @@
 // @flow
 
-import * as filter from '../../src/filter/index.js';
+import * as fft from '../../src/fft.js';
+import * as filter from '../../src/filter.js';
 import * as taper from '../../src/taper.js';
-import { Seismogram} from '../../src/seismogram';
-import {SacPoleZero} from '../../src/sacPoleZero';
-import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
-import  {moment} from '../../src/util';
+import * as transfer from '../../src/transfer.js';
+import { Seismogram} from '../../src/seismogram.js';
+import {SacPoleZero} from '../../src/sacPoleZero.js';
+import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile.js';
+import moment from 'moment';
 
 const ONE_COMPLEX = filter.createComplex(1, 0);
 /**
@@ -20,16 +22,16 @@ const ensureFloat32Array = function(a): Float32Array {
 }
 
 test("test freq Taper", () => {
-    expect(filter.transfer.freqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);
-    expect(filter.transfer.freqTaper(.9, 1, 2, 10, 20)).toBeCloseTo(0, 5);
-    expect(filter.transfer.freqTaper(1, 1, 2, 10, 20)).toBeCloseTo(0, 5);
-    expect(filter.transfer.freqTaper(2, 1, 2, 10, 20)).toBeCloseTo(1, 5);
-    expect(filter.transfer.freqTaper(1.01, 1, 2, 10, 20)).toBeCloseTo(0, 3);
-    expect(filter.transfer.freqTaper(1.5, 1, 2, 10, 20)).toBeCloseTo(.5, 5);
-    expect(filter.transfer.freqTaper(1.99, 1, 2, 10, 20)).toBeCloseTo(1, 3);
-    expect(filter.transfer.freqTaper(5, 1, 2, 10, 20)).toBeCloseTo(1, 5);
-    expect(filter.transfer.freqTaper(10, 1, 2, 10, 20)).toBeCloseTo(1, 5);
-    expect(filter.transfer.freqTaper(20, 1, 2, 10, 20)).toBeCloseTo(0, 5);
+    expect(transfer.freqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);
+    expect(transfer.freqTaper(.9, 1, 2, 10, 20)).toBeCloseTo(0, 5);
+    expect(transfer.freqTaper(1, 1, 2, 10, 20)).toBeCloseTo(0, 5);
+    expect(transfer.freqTaper(2, 1, 2, 10, 20)).toBeCloseTo(1, 5);
+    expect(transfer.freqTaper(1.01, 1, 2, 10, 20)).toBeCloseTo(0, 3);
+    expect(transfer.freqTaper(1.5, 1, 2, 10, 20)).toBeCloseTo(.5, 5);
+    expect(transfer.freqTaper(1.99, 1, 2, 10, 20)).toBeCloseTo(1, 3);
+    expect(transfer.freqTaper(5, 1, 2, 10, 20)).toBeCloseTo(1, 5);
+    expect(transfer.freqTaper(10, 1, 2, 10, 20)).toBeCloseTo(1, 5);
+    expect(transfer.freqTaper(20, 1, 2, 10, 20)).toBeCloseTo(0, 5);
 });
 
 test("TaperVsSac", () => {
@@ -54,7 +56,7 @@ test("TaperVsSac", () => {
                           [ 0.0109863, 0.000610352, 0.000610352 ],
                           [ 0.0115967, 0.000610352, 0.000610352 ] ];
     for(let row of sacout) {
-        expect(row[1]*filter.transfer.freqTaper(row[0], .005, .01, 1e5, 1e6)).toBeCloseTo(row[2], 5);
+        expect(row[1]*transfer.freqTaper(row[0], .005, .01, 1e5, 1e6)).toBeCloseTo(row[2], 5);
 
     }
 });
@@ -120,11 +122,11 @@ test("testEvalPoleZero", () => {
     let sacPoleZero = new SacPoleZero(poles, zeros, 2.94283674E10);
 
     // separate test for zero freq due to polezero gives 0 here
-    let dhi = filter.transfer.evalPoleZeroInverse(sacPoleZero, sacout[0][0]);
+    let dhi = transfer.evalPoleZeroInverse(sacPoleZero, sacout[0][0]);
     expect(dhi.real()).toBeCloseTo(sacout[0][1], 4);
     expect(dhi.imag()).toBeCloseTo(sacout[0][2], 4);
     for(let i = 1; i < sacout.length; i++) {
-        let dhi = filter.transfer.evalPoleZeroInverse(sacPoleZero, sacout[i][0]);
+        let dhi = transfer.evalPoleZeroInverse(sacPoleZero, sacout[i][0]);
         dhi = ONE_COMPLEX.overComplex(dhi);
         // $FlowFixMe
         expect(dhi.real).toBeCloseToRatio(sacout[i][1], 5);
@@ -184,7 +186,7 @@ test("PoleZeroTaper", () => {
       for(let i = 0; i < data.length; i++) {
           data[i] /= samprate;
       }
-      let out = filter.calcDFT(data, data.length);
+      let out = fft.calcDFT(data, data.length);
       const sacout = [ [0, 0, 0],
                        [0.000610352, -0, 0],
                        [0.0012207, -0, 0],
@@ -222,8 +224,8 @@ test("PoleZeroTaper", () => {
           freq = i * deltaF;
           // $FlowFixMe
           expect(freq).toBeCloseToRatio(sacout[i][0], 5);
-          respAtS = filter.transfer.evalPoleZeroInverse(poleZero, freq);
-          respAtS = respAtS.timesReal(deltaF*filter.transfer.freqTaper(freq,
+          respAtS = transfer.evalPoleZeroInverse(poleZero, freq);
+          respAtS = respAtS.timesReal(deltaF*transfer.freqTaper(freq,
                                                  lowCut,
                                                  lowPass,
                                                  highPass,
@@ -283,12 +285,12 @@ test("Combine", () => {
       }
 
 
-      const outfft = filter.calcDFT(data, data.length);
+      const outfft = fft.calcDFT(data, data.length);
       expect(outfft.length).toBe(32768);
       //assertEquals("nfft", 32768, out.length);
       expect(samprate/outfft.length).toBeCloseTo(0.000610352, 9);
       //assertEquals("delfrq ", 0.000610352, samprate/out.length, 0.00001);
-      const out = filter.transfer.combine(outfft, samprate, pz, 0.005, 0.01, 1e5, 1e6);
+      const out = transfer.combine(outfft, samprate, pz, 0.005, 0.01, 1e5, 1e6);
       const sacout = [ [0, 0],
                            [0, -0],
                            [0, 0],
@@ -372,15 +374,15 @@ test("impulse one zero combina amp", () => {
       // }
 
 
-      const outfft = filter.calcDFT(data, data.length);
+      const outfft = fft.calcDFT(data, data.length);
       expect(outfft.length).toBe(1024);
       expect(samprate/outfft.length/2).toBeCloseTo(1/1024/2, 9);
       //assertEquals("delfrq ", 0.000610352, samprate/out.length, 0.00001);
-      const out = filter.transfer.combine(outfft.slice(), samprate, pz, 0.005, 0.01, 1e5, 1e6);
+      const out = transfer.combine(outfft.slice(), samprate, pz, 0.005, 0.01, 1e5, 1e6);
       expect(out.length).toBe(1024);
       // sac and oregondsp differ by const len in fft
       let outMulLength = out.map(d => d * out.length);
-      const bagAmPh = filter.FFTResult.createFromPackedFreq(outMulLength, data.length);
+      const bagAmPh = fft.FFTResult.createFromPackedFreq(outMulLength, data.length);
 
       let saveDataPromise = null;
       if (WRITE_TEST_DATA) {
@@ -444,7 +446,7 @@ test("impulse one zero", () => {
       let pz = result[2];
       let sacAm = result[3];
       const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
-      let bagtfr = filter.transfer.transferSacPZ(seis,
+      let bagtfr = transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
                                       0.01,
@@ -486,7 +488,7 @@ test("impulse", () => {
       let sactfr = result[1];
       let pz = result[2];
       const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
-      let bagtfr = filter.transfer.transferSacPZ(seis,
+      let bagtfr = transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
                                       0.01,
@@ -538,7 +540,7 @@ test("HRV test", () => {
       let pz = result[1];
       let rmean = result[2];
       let taperSeis = result[3];
-      let transfer = result[4];
+      let transferSeis = result[4];
       const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
       const bag_rmean = filter.rMean(seis);
       const rmean_data = bag_rmean.y;
@@ -553,14 +555,14 @@ test("HRV test", () => {
       // $FlowFixMe
       expect(taper_data).arrayToBeCloseToRatio(sacdata, 5);
 
-      let bagtfr = filter.transfer.transferSacPZ(bag_taper,
+      let bagtfr = transfer.transferSacPZ(bag_taper,
                                       pz,
                                       .005,
                                       0.01,
                                       1e5,
                                       1e6);
       const bagdata = ensureFloat32Array(bagtfr.y);
-      sacdata = transfer.y;
+      sacdata = transferSeis.y;
       // $FlowFixMe
       expect(bagdata).arrayToBeCloseToRatio(sacdata, 5, .0001, 5);
 

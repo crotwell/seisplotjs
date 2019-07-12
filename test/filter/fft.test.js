@@ -1,6 +1,7 @@
 // @flow
 
-import * as filter from '../../src/filter/index.js';
+import * as filter from '../../src/filter.js';
+import * as fft from '../../src/fft.js';
 import {readSac, parseSac, readDataView, writeSac, replaceYData} from './sacfile';
 
 
@@ -8,8 +9,8 @@ import {readSac, parseSac, readDataView, writeSac, replaceYData} from './sacfile
 test("Round Trip FFT, Spike", () => {
   const data = new Float32Array(128).fill(0);
   data[1] = 1/100;
-  const fft = filter.calcDFT(data, data.length);
-  const out = filter.inverseDFT(fft, data.length);
+  const fftout = fft.calcDFT(data, data.length);
+  const out = fft.inverseDFT(fftout, data.length);
   expect(out).toHaveLength(data.length);
   for(let i=0; i<out.length; i++) {
     if (data[i] === 0) {
@@ -18,9 +19,9 @@ test("Round Trip FFT, Spike", () => {
       expect(out[i]/data[i]).toBeCloseTo(1, 5);
     }
   }
-  const fftresult = filter.fftForward(data)
+  const fftresult = fft.fftForward(data)
   for(let i=0; i<fftresult.packedFreq.length; i++) {
-      expect(fftresult.packedFreq[i]).toBeCloseTo(fft[i], 5);
+      expect(fftresult.packedFreq[i]).toBeCloseTo(fftout[i], 5);
   }
   const invresult = fftresult.fftInverse()
   for(let i=0; i<invresult.length; i++) {
@@ -37,8 +38,8 @@ test("Round Trip FFT HRV", () => {
   return readSac("./test/filter/data/IU.HRV.__.BHE.SAC")
   .then(data => {
 
-    const fft = filter.calcDFT(data.y, data.y.length);
-    const out = filter.inverseDFT(fft, data.y.length);
+    const fftout = fft.calcDFT(data.y, data.y.length);
+    const out = fft.inverseDFT(fftout, data.y.length);
     for(let i=0; i<out.length; i++) {
       if (data.y[i] === 0) {
         expect(out[i]).toBeCloseTo(data.y[i], 3);
@@ -68,7 +69,7 @@ test("FFT", () => {
       for(let i = 0; i < data.length; i++) {
           data[i] /= samprate;
       }
-      const fftRes = filter.fftForward(data);
+      const fftRes = fft.fftForward(data);
 
       let saveDataPromise = Promise.resolve(null);
       if (false) {
@@ -96,7 +97,7 @@ test("FFT", () => {
         let sacPhase = result[2];
         let bagAmp= result[3];
         let bagPhase = result[4];
-        let fftRes: filter.FFTResult = result[5];
+        let fftRes: fft.FFTResult = result[5];
       const sacout =  [ [695917, 0],
                         [-34640.4, 7593.43],
                         [-28626.7, -34529.8],

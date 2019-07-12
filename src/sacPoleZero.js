@@ -1,6 +1,6 @@
 // @flow
 
-import {Complex, createComplex} from './filter/filterUtil';
+import {Complex, createComplex} from './filter.js';
 
 export class SacPoleZero {
   poles: Array<Complex>;

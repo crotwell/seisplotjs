@@ -4,8 +4,8 @@ import fs from 'fs';
 
 import * as fdsnstation from '../../src/fdsnstation.js';
 import {Response, PolesZeros, Network, Station, Channel } from '../../src/stationxml';
-import {convertToSacPoleZero} from '../../src/filter/transfer.js';
-import {Complex, createComplex} from '../../src/filter/filterUtil';
+import {convertToSacPoleZero} from '../../src/transfer.js';
+import {Complex, createComplex} from '../../src/filter.js';
 import * as util from '../../src/util.js';
 let moment = util.moment;
 
