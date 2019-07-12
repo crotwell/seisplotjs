@@ -11,6 +11,9 @@
 import moment from 'moment';
 import * as d3 from 'd3';
 
+// side effect loads css
+import * as injectCss from './inject_css_manual.js';
+
 import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
 import {SeismogramSegment, Seismogram, ensureIsSeismogram, findStartEnd, findMinMax } from '../seismogram';

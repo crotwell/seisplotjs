@@ -450,7 +450,8 @@ svg text a {
 
 `;
 
-
+if (document){
 insertCSS(chooser_css);
 insertCSS(seismograph_css);
 insertCSS(pikaday_css);
+}

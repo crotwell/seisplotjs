@@ -5,6 +5,9 @@ import Pikaday from 'pikaday';
 import moment from 'moment';
 import * as d3 from 'd3';
 
+// side effect loads css
+import * as injectCss from './inject_css_manual.js';
+
 import type {TimeRangeType} from '../seismogram';
 
 export class HourMinChooser {
