@@ -1,13 +1,14 @@
 // @flow
 
 import * as filter from '../../src/filter/index.js';
+import * as taper from '../../src/taper.js';
 import {Seismogram, ensureIsSeismogram } from '../../src/seismogram';
 import {readSac} from './sacfile';
 import  {moment} from '../../src/util';
 
 test("simple value taper", () => {
   let taperLen = 10;
-  let coeff = filter.taper.getCoefficients(filter.taper.HANNING, taperLen);
+  let coeff = taper.getCoefficients(taper.HANNING, taperLen);
   expect(coeff[0]).toBeCloseTo(Math.PI / taperLen, 9);
   expect(coeff[1]).toBeCloseTo(.5, 9);
   expect(coeff[2]).toBeCloseTo(.5, 9);
@@ -19,7 +20,7 @@ test("constant", () => {
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
   const origseis = Seismogram.createFromContiguousData(orig, 1, moment.utc());
-  let bagtaper = filter.taper.taper(origseis, taperWidth);
+  let bagtaper = taper.taper(origseis, taperWidth);
   const omega = Math.PI / (dataLen * taperWidth);
   const f0 = .5;
   const f1 = .5;
@@ -43,7 +44,7 @@ test("const100 taper", () => {
      let orig = result[0];
      let sactaper = result[1];
      const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
-     let bagtaper = filter.taper.taper(origseis);
+     let bagtaper = taper.taper(origseis);
      const sacdata = sactaper.y;
      const bagdata = bagtaper.y;
      // index 5 not effected by taper
@@ -86,7 +87,7 @@ test("HRV taper", () => {
       let sactaper = result[0];
       let orig = result[1];
       const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
-      let bagtaper = filter.taper.taper(filter.rMean(ensureIsSeismogram(origseis)));
+      let bagtaper = taper.taper(filter.rMean(ensureIsSeismogram(origseis)));
       const sacdata = sactaper.y;
       const bagdata = bagtaper.y;
       // $FlowFixMe

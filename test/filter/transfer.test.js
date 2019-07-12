@@ -1,6 +1,7 @@
 // @flow
 
 import * as filter from '../../src/filter/index.js';
+import * as taper from '../../src/taper.js';
 import { Seismogram} from '../../src/seismogram';
 import {SacPoleZero} from '../../src/sacPoleZero';
 import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
@@ -536,7 +537,7 @@ test("HRV test", () => {
       let orig = result[0];
       let pz = result[1];
       let rmean = result[2];
-      let taper = result[3];
+      let taperSeis = result[3];
       let transfer = result[4];
       const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
       const bag_rmean = filter.rMean(seis);
@@ -545,9 +546,9 @@ test("HRV test", () => {
       // $FlowFixMe
       expect(rmean_data).arrayToBeCloseToRatio(sacdata, 5);
 
-      const bag_taper = filter.taper.taper(bag_rmean, 0.05, filter.taper.HANNING);
+      const bag_taper = taper.taper(bag_rmean, 0.05, taper.HANNING);
       const taper_data = bag_taper.y;
-      sacdata = taper.y;
+      sacdata = taperSeis.y;
 
       // $FlowFixMe
       expect(taper_data).arrayToBeCloseToRatio(sacdata, 5);

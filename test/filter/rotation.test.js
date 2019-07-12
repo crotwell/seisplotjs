@@ -1,6 +1,6 @@
 // @flow
 
-import {rotate, rotateSeismogramSegment } from '../../src/filter/vector.js';
+import {rotate, rotateSeismogramSegment } from '../../src/vector.js';
 import { SeismogramSegment, Seismogram }  from "../../src/seismogram";
 import {moment} from '../../src/util';
 
