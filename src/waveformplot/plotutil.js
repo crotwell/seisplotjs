@@ -133,4 +133,22 @@ export function calcClockOffset(serverTime: moment) {
   return dataselect.calcClockOffset(serverTime);
 }
 
+export function alphabeticalSort(traceA: Seismogram, traceB: Seismogram) {
+  if (traceA.codes() < traceB.codes()) {
+    return -1;
+  } else {
+    return 1;
+  }
+}
+
+
+export function insertCSS(cssText: string) {
+  let head = document.head;
+  if (head === null) {throw new Error("document.head is null");}
+  let styleElement = document.createElement('style');
+  styleElement.type = 'text/css';
+  styleElement.appendChild(document.createTextNode(cssText));
+  head.insertBefore(styleElement, head.firstChild);
+}
+
 export type TimeWindow = {start: moment, end: moment};
