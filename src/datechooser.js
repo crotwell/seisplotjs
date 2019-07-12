@@ -7,7 +7,7 @@ import * as d3 from 'd3';
 
 import {insertCSS} from './plotutil.js';
 
-import type {TimeRangeType} from '../seismogram';
+import type {TimeRangeType} from './seismogram.js';
 
 export class HourMinChooser {
 

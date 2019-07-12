@@ -8,7 +8,7 @@ import {
   } from './plotutil.js';
 
 import type { MarginType } from './seismographconfig';
-import {SeismogramSegment, Seismogram} from '../seismogram';
+import {SeismogramSegment, Seismogram} from './seismogram.js';
 
 export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)

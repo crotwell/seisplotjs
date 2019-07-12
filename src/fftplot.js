@@ -1,6 +1,6 @@
 // @flow
 
-import {FFTResult} from '../fft.js';
+import {FFTResult} from './fft.js';
 
 import * as d3 from 'd3';
 

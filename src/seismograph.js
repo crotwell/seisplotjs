@@ -15,9 +15,9 @@ import {insertCSS} from './plotutil.js';
 
 import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
-import {SeismogramSegment, Seismogram, ensureIsSeismogram, findStartEnd, findMinMax } from '../seismogram';
-import {InstrumentSensitivity} from '../stationxml';
-import type {TimeRangeType} from '../seismogram';
+import {SeismogramSegment, Seismogram, ensureIsSeismogram, findStartEnd, findMinMax } from './seismogram.js';
+import {InstrumentSensitivity} from './stationxml.js';
+import type {TimeRangeType} from './seismogram.js';
 
 
 

@@ -2,9 +2,9 @@
 
 import moment from 'moment';
 
-import { Seismogram } from '../seismogram';
+import { Seismogram } from './seismogram.js';
 import type { MarginType, MarkerType } from './seismographconfig';
-import { CanvasSeismograph } from './canvasSeismograph';
+import { CanvasSeismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
 
 

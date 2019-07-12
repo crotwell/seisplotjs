@@ -3,11 +3,11 @@
 import moment from 'moment';
 import RSVP from 'rsvp';
 import * as d3 from 'd3';
-import * as dataselect from '../fdsndataselect';
-import * as miniseed from '../miniseed';
-import {Seismogram} from '../seismogram';
-import {SeismographConfig} from './seismographconfig';
-import {CanvasSeismograph} from './canvasSeismograph';
+import * as dataselect from './fdsndataselect.js';
+import * as miniseed from './miniseed.js';
+import {Seismogram} from './seismogram.js';
+import {SeismographConfig} from './seismographconfig.js';
+import {CanvasSeismograph} from './seismograph.js';
 
 export { dataselect, miniseed, d3, RSVP, moment };
 
