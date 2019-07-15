@@ -38,7 +38,7 @@ export type ScaleChangeListenerType = {
   * }<br/>
   * in order to have the seismogram display.
   */
-export class CanvasSeismograph {
+export class Seismograph {
   /** @private */
   static _lastID: number;
   plotId: number;
@@ -76,7 +76,7 @@ export class CanvasSeismograph {
               plotStartDate: moment,
               plotEndDate: moment) {
     if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
-    this.plotId = ++CanvasSeismograph._lastID;
+    this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
     this.seismographConfig = seismographConfig;
     this.plotStartDate = plotStartDate;
@@ -574,7 +574,7 @@ export class CanvasSeismograph {
   }
 
 
-  zoomed(mythis: CanvasSeismograph): void {
+  zoomed(mythis: Seismograph): void {
     console.log("zoomed");
     let t = d3.event.transform;
     let xt = t.rescaleX(this.xScale);
@@ -767,16 +767,16 @@ export class CanvasSeismograph {
   getPlotStart(): moment {
     return moment.utc(this.xScale.domain()[0]);
   }
-  setPlotStart(value: moment): CanvasSeismograph {
+  setPlotStart(value: moment): Seismograph {
     return this.setPlotStartEnd(value, this.xScale.domain()[1]);
   }
   getPlotEnd(): moment {
     return moment.utc(this.xScale.domain()[1]);
   }
-  setPlotEnd(value: moment): CanvasSeismograph {
+  setPlotEnd(value: moment): Seismograph {
     return this.setPlotStartEnd(this.xScale.domain()[0], value);
   }
-  setPlotStartEnd(startDate: moment, endDate: moment): CanvasSeismograph {
+  setPlotStartEnd(startDate: moment, endDate: moment): Seismograph {
     const plotStart = (startDate instanceof Date) ? startDate : moment.utc(startDate).toDate();
     const plotEnd = (endDate instanceof Date) ? endDate : moment.utc(endDate).toDate();
     this.xScale.domain([ plotStart, plotEnd ]);
@@ -785,16 +785,16 @@ export class CanvasSeismograph {
     }
     return this;
   }
-  setWidth(value: number): CanvasSeismograph {
+  setWidth(value: number): Seismograph {
     this.setWidthHeight(value, this.outerHeight);
     return this;
   }
-  setHeight(value: number): CanvasSeismograph {
+  setHeight(value: number): Seismograph {
     this.setWidthHeight(this.outerWidth, value);
     return this;
   }
 
-  setMargin(value: MarginType ): CanvasSeismograph {
+  setMargin(value: MarginType ): Seismograph {
     this.seismographConfig.margin = value;
     this.setWidthHeight(this.outerWidth, this.outerHeight);
     this.g.attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
@@ -816,7 +816,7 @@ export class CanvasSeismograph {
         .text(this.seismographConfig.title);
     }
   }
-  drawXLabel(): CanvasSeismograph {
+  drawXLabel(): Seismograph {
     this.svg.selectAll("g.xLabel").remove();
     if (this.seismographConfig.xLabel && this.seismographConfig.xLabel.length > 0) {
       this.svg.append("g")
@@ -828,7 +828,7 @@ export class CanvasSeismograph {
     }
     return this;
   }
-  drawYLabel(): CanvasSeismograph {
+  drawYLabel(): Seismograph {
     this.svg.selectAll('g.yLabel').remove();
     let svgText = this.svg.append("g")
        .classed("yLabel", true)
@@ -851,7 +851,7 @@ export class CanvasSeismograph {
     svgText.text(this.seismographConfig.yLabel);
     return this;
   }
-  drawXSublabel(): CanvasSeismograph {
+  drawXSublabel(): Seismograph {
     this.svg.selectAll('g.xSublabel').remove();
     this.svg.append("g")
        .classed("xSublabel", true)
@@ -861,7 +861,7 @@ export class CanvasSeismograph {
        .text(this.seismographConfig.xSublabel);
     return this;
   }
-  drawYSublabel(): CanvasSeismograph {
+  drawYSublabel(): Seismograph {
     this.svg.selectAll('g.ySublabel').remove();
     this.svg.append("g")
        .classed("ySublabel", true)
@@ -894,7 +894,7 @@ export class CanvasSeismograph {
     this.instrumentSensitivity = value;
     this.redoDisplayYScale();
   }
-  clearMarkers(): CanvasSeismograph {
+  clearMarkers(): Seismograph {
     this.markers.length = 0; //set array length to zero deletes all
     if ( ! this.beforeFirstDraw) {
       this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
@@ -904,7 +904,7 @@ export class CanvasSeismograph {
   getMarkers(): Array<MarkerType> {
     return this.markers;
   }
-  appendMarkers(value: Array<MarkerType> | MarkerType): CanvasSeismograph {
+  appendMarkers(value: Array<MarkerType> | MarkerType): Seismograph {
     if (Array.isArray(value)) {
       for( let m of value) {
         this.markers.push(m);
@@ -1015,7 +1015,7 @@ export class CanvasSeismograph {
 
 
 // static ID for seismogram
-CanvasSeismograph._lastID = 0;
+Seismograph._lastID = 0;
 
 
 export const seismograph_css = `

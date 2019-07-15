@@ -1,13 +1,15 @@
 
 
 // seisplotjs comes from the seisplotjs standalone bundle
-let wp = seisplotjs.waveformplot;
 let traveltime = seisplotjs.traveltime;
 let fdsnevent = seisplotjs.fdsnevent;
 let fdsnstation = seisplotjs.fdsnstation;
 let fdsndataselect = seisplotjs.fdsndataselect;
+const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
+const Seismograph = seisplotjs.seismograph.Seismograph;
 let moment = seisplotjs.moment;
 let RSVP = seisplotjs.RSVP;
+let d3 = seisplotjs.d3;
 
 let USGS = "earthquake.usgs.gov";
 let IRIS = "service.iris.edu";
@@ -47,7 +49,7 @@ let quakeQuery = new fdsnevent.EventQuery()
   .minLon(minLon).maxLon(maxLon)
   .startTime(moment.utc().subtract(daysAgo, 'days'))
   .endTime(moment.utc());
-wp.d3.select("div.recentQuakesUrl")
+d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
 
@@ -57,7 +59,7 @@ let stationQuery = new fdsnstation.StationQuery()
   .minLat(minLat).maxLat(maxLat)
   .minLon(minLon).maxLon(maxLon)
   .channelCode(chanCode);
-wp.d3.select("div.recentQuakesUrl")
+d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Stations URL: "+stationQuery.formURL(fdsnstation.LEVEL_STATION));
 let networkPromise = stationQuery.queryStations().then(function(netArray) {
@@ -68,7 +70,7 @@ let networkPromise = stationQuery.queryStations().then(function(netArray) {
           console.log("sta codes: "+staCodes.join());
           return netArray;
 }).then(function(netArray) {
-  wp.d3.select("ul.stations")
+  d3.select("ul.stations")
     .selectAll("li")
     .data(netArray[0].stations)
     .enter()
@@ -89,10 +91,10 @@ let networkPromise = stationQuery.queryStations().then(function(netArray) {
 });
 
 quakeQuery.query().then(function(quakes) {
-  let table = wp.d3.select("div.recentQuakes")
+  let table = d3.select("div.recentQuakes")
     .select("table");
   if ( table.empty()) {
-    table = wp.d3.select("div.recentQuakes")
+    table = d3.select("div.recentQuakes")
       .append("table");
     let th = table.append("thead").append("tr");
     th.append("th").text("Time");
@@ -150,17 +152,17 @@ quakeQuery.query().then(function(quakes) {
   tr.on("click", doEventClick);
   return quakes;
 }, function(request) {
-wp.d3.select("div.recentQuakes")
+d3.select("div.recentQuakes")
     .append("p")
     .text("Reject: "+request.statusText);
 });
 
 let doEventClick = function(d){
 console.log("click "+d.time.toISOString());
-    wp.d3.select("div.seismograms")
+    d3.select("div.seismograms")
       .selectAll("p")
       .remove();
-    wp.d3.select("div.seismograms")
+    d3.select("div.seismograms")
       .selectAll("p")
       .data([d])
       .enter()
@@ -190,7 +192,7 @@ console.log("click "+d.time.toISOString());
               .then(function(qArray) {return qArray[0];})
       }).then(function(hash) {
 console.log("quake network Promise then");
-        plotSeismograms(wp.d3.select("div.seismograms"),
+        plotSeismograms(d3.select("div.seismograms"),
                      hash.network[0].stations, locCode, chanCode, hash.quake, datahost, protocol);
         return hash;
       });
@@ -259,8 +261,8 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
           div.append('p').html('Plot for ' + key);
           let svgdiv = div.append('div').attr('class', 'myseisplot');
           if (segments) {
-              let seisConfig = new wp.SeismographConfig();
-              let seismogram = new wp.CanvasSeismograph(svgdiv, seisConfig, segments, hash.startDate, hash.endDate);
+              let seisConfig = new SeismographConfig();
+              let seismogram = new Seismograph(svgdiv, seisConfig, segments, hash.startDate, hash.endDate);
               let markers = [];
                 markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                 markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time).add(hash.firstPS.firstP.time, 'seconds') });

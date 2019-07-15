@@ -4,12 +4,12 @@ import moment from 'moment';
 
 import { Seismogram } from './seismogram.js';
 import type { MarginType, MarkerType } from './seismographconfig';
-import { CanvasSeismograph } from './seismograph.js';
+import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
 
 
 export class Helicorder {
-  seismographArray: Array<CanvasSeismograph>;
+  seismographArray: Array<Seismograph>;
   secondsPerLine: number;
   svgParent: any;
   heliConfig: HelicorderConfig;
@@ -53,7 +53,7 @@ export class Helicorder {
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
       lineSeisConfig.minHeight = height;
       lineSeisConfig.maxHeight = height;
-      let seismograph = new CanvasSeismograph(seisDiv, lineSeisConfig, [this.trace], start, end);
+      let seismograph = new Seismograph(seisDiv, lineSeisConfig, [this.trace], start, end);
       seismograph.disableWheelZoom();
       seismograph.draw();
       seismograph.canvas.style("height", `${height}px`);

@@ -1,13 +1,15 @@
 
 
 // seisplotjs comes from the seisplotjs bundle
-const wp = seisplotjs.waveformplot;
 const traveltime = seisplotjs.traveltime;
 const fdsnevent = seisplotjs.fdsnevent;
 const fdsnstation = seisplotjs.fdsnstation;
 const fdsndataselect = seisplotjs.fdsndataselect;
 const d3 = seisplotjs.d3;
 const moment = seisplotjs.moment;
+const miniseed = seisplotjs.miniseed;
+const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
+const Seismograph = seisplotjs.seismograph.Seismograph;
 
 seisplotjs.RSVP.on('error', function(reason) {
   console.assert(false, reason);
@@ -31,7 +33,7 @@ let quakeQuery = new fdsnevent.EventQuery()
   .minLon(-124).maxLon(-115)
   .startTime(moment.utc().subtract(daysAgo, 'days'))
   .endTime(moment.utc());
-wp.d3.select("div.recentQuakesUrl")
+d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
 
@@ -42,7 +44,7 @@ let stationQuery = new fdsnstation.StationQuery()
   .stationCode(staCodes)
   .channelCode(chanCode);
 
-wp.d3.select("div.recentQuakesUrl")
+d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Stations URL: "+stationQuery.formURL(fdsnstation.LEVEL_STATION));
 let networkPromise = stationQuery.queryStations().then(function(netArray) {
@@ -55,10 +57,10 @@ let networkPromise = stationQuery.queryStations().then(function(netArray) {
 });
 
 quakeQuery.query().then(function(quakes) {
-  let table = wp.d3.select("div.recentQuakes")
+  let table = d3.select("div.recentQuakes")
     .select("table");
   if ( table.empty()) {
-    table = wp.d3.select("div.recentQuakes")
+    table = d3.select("div.recentQuakes")
       .append("table");
     let th = table.append("thead").append("tr");
     th.append("th").text("Time");
@@ -99,10 +101,10 @@ quakeQuery.query().then(function(quakes) {
       });
   tr.on("click", function(d){
 console.log("click "+d.time.toISOString());
-      wp.d3.select("div.seismograms")
+      d3.select("div.seismograms")
         .selectAll("p")
         .remove();
-      wp.d3.select("div.seismograms")
+      d3.select("div.seismograms")
         .selectAll("p")
         .data([d])
         .enter()
@@ -127,7 +129,7 @@ console.log("click "+d.time.toISOString());
                 .then(function(qArray) {return qArray[0];})
         }).then(function(hash) {
 console.log("quake network Promise then");
-          hash.plotPromise = plotSeismograms(wp.d3.select("div.seismograms"),
+          hash.plotPromise = plotSeismograms(d3.select("div.seismograms"),
                        hash.network[0].stations, "--", chanCode, hash.quake, HOST, protocol);
           return seisplotjs.RSVP.hash(hash);
         });
@@ -136,7 +138,7 @@ console.log("quake network Promise then");
 }, function(reason) {
 console.assert(false, reason);
 console.log("Reject: "+reason);
-wp.d3.select("div.recentQuakes")
+d3.select("div.recentQuakes")
     .append("p")
     .text("Reject: "+reason);
 });
@@ -199,16 +201,16 @@ console.log("plotOneStation: "+mystation.codes());
       .endTime(endDate)
       .queryDataRecords()
       .then(dataRecords => {
-        let byChannel = wp.miniseed.byChannel(dataRecords);
+        let byChannel = miniseed.byChannel(dataRecords);
         let keys = Array.from(byChannel.keys());
         console.log("Got "+dataRecords.length+" data records for "+keys.length+" channels");
         for (let key of byChannel.keys()) {
-          let trace = wp.miniseed.merge(byChannel.get(key));
+          let trace = miniseed.merge(byChannel.get(key));
             div.append('p').html('Plot for ' + key);
             let svgdiv = div.append('div').attr('class', 'myseisplot');
             if (trace) {
-                let seisConfig = new wp.SeismographConfig()
-                let seismogram = new wp.CanvasSeismograph(svgdiv, seisConfig, trace, startDate, endDate);
+                let seisConfig = new SeismographConfig()
+                let seismogram = new Seismograph(svgdiv, seisConfig, trace, startDate, endDate);
                 let markers = [];
                   markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                   markers.push({ markertype: 'predicted', name: firstPS.firstP.phase, time: moment.utc(quake.time).add(firstPS.firstP.time, 'seconds') });

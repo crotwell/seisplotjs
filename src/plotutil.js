@@ -7,7 +7,7 @@ import * as dataselect from './fdsndataselect.js';
 import * as miniseed from './miniseed.js';
 import {Seismogram} from './seismogram.js';
 import {SeismographConfig} from './seismographconfig.js';
-import {CanvasSeismograph} from './seismograph.js';
+import {Seismograph} from './seismograph.js';
 
 export { dataselect, miniseed, d3, RSVP, moment };
 
@@ -116,7 +116,7 @@ export function createPlotsBySelector(selector: string) {
           let svgDiv = result.svgParent.append("div");
           svgDiv.classed("svg-container-wide", true);
           let seisConfig = new SeismographConfig();
-          let seismogram = new CanvasSeismograph(svgDiv, seisConfig, Array.from(result.traceMap.values()), result.startDate, result.endDate);
+          let seismogram = new Seismograph(svgDiv, seisConfig, Array.from(result.traceMap.values()), result.startDate, result.endDate);
           seismogram.draw();
         } else {
           result.svgParent.append("p").text("No Data");

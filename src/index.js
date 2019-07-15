@@ -39,6 +39,11 @@ import * as vector      from './vector.js';
 import * as xseed      from './xseed.js';
 
 
+import moment from 'moment';
+import RSVP from 'rsvp';
+import * as d3 from 'd3';
+
+
 /* reexport */
 export { datalink,
          datechooser,
@@ -70,4 +75,7 @@ export { datalink,
          traveltime,
          util,
          vector,
-         xseed};
+         xseed,
+         d3,
+         moment,
+         RSVP };

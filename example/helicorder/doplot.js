@@ -1,13 +1,14 @@
 
 const DEFAULT_DURATION = "P1D";
+const HelicorderConfig = seisplotjs.helicorder.HelicorderConfig;
+const Helicorder = seisplotjs.helicorder.Helicorder;
 
 doPlot = function(config) {
   // this global comes from the seisplotjs standalone js
   let moment = seisplotjs.moment;
 
-  //let wp = require('seisplotjs-waveformplot');
+
   // this global comes from the seisplotjs_waveformplot standalone js
-  let wp = seisplotjs.waveformplot;
   let d3 = seisplotjs.d3;
 
 
@@ -39,7 +40,7 @@ doPlot = function(config) {
   } else {
     plotEnd = config.endTime;
   }
-  let svgParent = wp.d3.select(`div.${divClass}`);
+  let svgParent = d3.select(`div.${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
   let timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, plotEnd, config.duration, clockOffset);
 
@@ -135,7 +136,7 @@ doPlot = function(config) {
     let traceMap = hash.traceMap;
     console.log(`got ${traceMap.size} channel-seismograms`);
     if (traceMap.size !== 0) {
-      let heliConfig = new wp.HelicorderConfig();
+      let heliConfig = new HelicorderConfig();
       heliConfig.overlap = overlap;
       heliConfig.lineSeisConfig.margin.left = 42;
       heliConfig.lineSeisConfig.yLabelOrientation = "horizontal";
@@ -158,7 +159,7 @@ doPlot = function(config) {
       }
       hash.minMaxSeismogram = minMaxSeismogram;
       hash.traceMap = null;
-      hash.heli = new wp.Helicorder(svgParent,
+      hash.heli = new Helicorder(svgParent,
                                     heliConfig,
                                     minMaxSeismogram,
                                     hash.timeWindow.start,hash.timeWindow.end);

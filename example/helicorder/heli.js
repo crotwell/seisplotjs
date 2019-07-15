@@ -4,9 +4,7 @@
 let seedlink = seisplotjs.seedlink
 let moment = seisplotjs.moment;
 
-//let wp = require('seisplotjs-waveformplot');
 // this global comes from the seisplotjs_waveformplot standalone js
-let wp = seisplotjs.waveformplot;
 let d3 = seisplotjs.d3;
 
 let staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
@@ -90,7 +88,7 @@ const chooserStart = chooserEnd.subtract(moment.duration(state.duration))
     .endOf('hour').add(1, 'millisecond');
 
 let dateChooserSpan = d3.select("#datechooser");
-let dateChooser = new wp.chooser.DateTimeChooser(dateChooserSpan,
+let dateChooser = new seisplotjs.datechooser.DateTimeChooser(dateChooserSpan,
     "Start Time",
     chooserStart,
     time => {
@@ -130,28 +128,28 @@ let staButtonSpan = d3.select("#scsnStations")
       console.log(this.value)
   });
 
-wp.d3.select("button#loadNow").on("click", function(d) {
+d3.select("button#loadNow").on("click", function(d) {
   state.endTime = moment.utc().endOf('hour').add(1, 'millisecond');
   console.log(`now ${state.endTime}`);
   updateDateChooser(state);
   doPlot(state);
 });
 
-wp.d3.select("button#loadToday").on("click", function(d) {
+d3.select("button#loadToday").on("click", function(d) {
   state.endTime = moment.utc().endOf('day').add(1, 'millisecond');
   console.log(`today ${state.endTime}`);
   updateDateChooser(state);
   doPlot(state);
 });
 
-wp.d3.select("button#loadPrev").on("click", function(d) {
+d3.select("button#loadPrev").on("click", function(d) {
   state.endTime = moment.utc(state.endTime).subtract(1, 'day');
   console.log(`prev ${state.endTime}`);
   updateDateChooser(state);
   doPlot(state);
 });
 
-wp.d3.select("button#loadNext").on("click", function(d) {
+d3.select("button#loadNext").on("click", function(d) {
   state.endTime = moment.utc(state.endTime).add(1, 'day');
   console.log(`next ${state.endTime}`);
   updateDateChooser(state);
@@ -232,11 +230,11 @@ let orientButtonSpan = d3.select("div#orientations")
 
 
 
-wp.d3.select("button#pause").on("click", function(d) {
+d3.select("button#pause").on("click", function(d) {
   doPause( ! paused);
 });
 
-wp.d3.select("button#disconnect").on("click", function(d) {
+d3.select("button#disconnect").on("click", function(d) {
   doDisconnect( ! stopped);
 });
 
@@ -244,9 +242,9 @@ let doPause = function(value) {
   console.log("Pause..."+paused+" -> "+value);
   paused = value;
   if (paused) {
-    wp.d3.select("button#pause").text("Play");
+    d3.select("button#pause").text("Play");
   } else {
-    wp.d3.select("button#pause").text("Pause");
+    d3.select("button#pause").text("Pause");
   }
 }
 
@@ -255,10 +253,10 @@ let doDisconnect = function(value) {
   stopped = value;
   if (stopped) {
     if (slConn) {slConn.close();}
-    wp.d3.select("button#disconnect").text("Reconnect");
+    d3.select("button#disconnect").text("Reconnect");
   } else {
     if (slConn) {slConn.connect();}
-    wp.d3.select("button#disconnect").text("Disconnect");
+    d3.select("button#disconnect").text("Disconnect");
   }
 }
 
@@ -269,7 +267,7 @@ let timerInterval = 300*1000;
 timerInterval = 10000;
 if (timerInterval < 10000) { timerInterval = 10000;}
 console.log("start time with interval "+timerInterval);
-let timer = wp.d3.interval(function(elapsed) {
+let timer = d3.interval(function(elapsed) {
   if ( ! heli) {return;}
   if ( paused) {
     return;

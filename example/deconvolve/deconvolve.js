@@ -6,11 +6,12 @@
 // this comes from the seisplotjs miniseed bundle
 const ds = seisplotjs.fdsndataselect;
 const st = seisplotjs.fdsnstation;
-const wp = seisplotjs.waveformplot;
-const d3 = wp.d3;
-const miniseed = wp.miniseed;
+const d3 = seisplotjs.d3;
+const miniseed = seisplotjs.miniseed;
 const OregonDSP = seisplotjs.filter.OregonDSP
 const moment = seisplotjs.moment;
+const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
+const Seismograph = seisplotjs.seismograph.Seismograph;
 
 let doRunQuery = true;
 // doRunQuery = false;//for testing
@@ -51,11 +52,11 @@ function processSeismograms(traceMap) {
       svgDiv.style("position", "relative");
       svgDiv.style("width", "100%");
       svgDiv.style("height", "450px");
-      let seisConfig = new wp.SeismographConfig();
+      let seisConfig = new SeismographConfig();
       seisConfig.ySublabel = trace.yUnit;
-      let seisConfigB = new wp.SeismographConfig();
+      let seisConfigB = new SeismographConfig();
       seisConfigB.ySublabel = trace.yUnit;
-      let seisplot = new wp.CanvasSeismograph(svgDiv, seisConfigB, trace);
+      let seisplot = new Seismograph(svgDiv, seisConfigB, trace);
       seisplot.setHeight(450);
       seisplot.draw();
 
@@ -78,8 +79,8 @@ function processSeismograms(traceMap) {
         svgTransferDiv.style("position", "relative");
         svgTransferDiv.style("width", "100%");
         svgTransferDiv.style("height", "450px");
-        let transferConfig = new wp.SeismographConfig();
-        let transferPlot = new wp.CanvasSeismograph(svgTransferDiv, transferConfig, correctedSeismogram);
+        let transferConfig = new SeismographConfig();
+        let transferPlot = new Seismograph(svgTransferDiv, transferConfig, correctedSeismogram);
         transferConfig.ySublabel=correctedSeismogram.yUnit;
         transferPlot.draw();
         return channel;
@@ -106,7 +107,7 @@ function processSeismograms(traceMap) {
 
       let svgFiltered = d3.select('div.filterseisplot').append('div');
       svgFiltered.style("height", "300px");
-      let filteredPlot = new wp.CanvasSeismograph(svgFiltered, seisConfig, filteredSeismogram);
+      let filteredPlot = new Seismograph(svgFiltered, seisConfig, filteredSeismogram);
       filteredPlot.draw();
 
       let fftOut = seisplotjs.fft.calcDFT(trace.segments[0].y, trace.segments[0].numPoints );
@@ -117,7 +118,7 @@ function processSeismograms(traceMap) {
       let hilbertSeismogram = seisplotjs.filter.hilbert(trace);
       let svgHilbert = d3.select('div.hilbertseisplot').append('div');
       svgHilbert.style("height", "300px");
-      let hilbertPlot = new wp.CanvasSeismograph(svgHilbert, seisConfig, hilbertSeismogram);
+      let hilbertPlot = new Seismograph(svgHilbert, seisConfig, hilbertSeismogram);
       hilbertPlot.draw();
 
       let envelopeSeismogram = seisplotjs.filter.envelope(trace);
@@ -126,7 +127,7 @@ function processSeismograms(traceMap) {
       let envConfig = seisConfig.clone();
       envConfig.doRMean = false;
       envConfig.doGain = false;
-      let envelopePlot = new wp.CanvasSeismograph(svgEnvelope, seisConfig, envelopeSeismogram);
+      let envelopePlot = new Seismograph(svgEnvelope, seisConfig, envelopeSeismogram);
       envelopePlot.setDoRMean(false);
       envelopePlot.draw();
 }

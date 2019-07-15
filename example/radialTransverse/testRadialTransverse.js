@@ -5,12 +5,14 @@
 //import * as seisplotjs from '../../src/index';
 
 // seisplotjs comes from the seisplotjs standalone bundle
-let wp = seisplotjs.waveformplot;
 let traveltime = seisplotjs.traveltime;
 let fdsnevent = seisplotjs.fdsnevent;
 let fdsnstation = seisplotjs.fdsnstation;
 let miniseed = seisplotjs.miniseed;
 let RSVP = seisplotjs.RSVP;
+const d3 = seisplotjs.d3;
+const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
+const Seismograph = seisplotjs.seismograph.Seismograph;
 
 let USGS = "earthquake.usgs.gov";
 let IRIS = "service.iris.edu";
@@ -42,7 +44,7 @@ let quakeQuery = new fdsnevent.EventQuery()
   .minLon(-4).maxLon(-3)
   .startTime(new Date("2010-04-11T22:08:00.000Z"))
   .endTime(new Date("2010-04-11T22:09:00.000Z"));
-wp.d3.select("div.recentQuakesUrl")
+d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
 
@@ -51,7 +53,7 @@ let stationQuery = new fdsnstation.StationQuery()
   .networkCode(netCode)
   .stationCode(staCode)
   .channelCode(chanCode);
-wp.d3.select("div.recentQuakesUrl")
+d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Stations URL: "+stationQuery.formURL(fdsnstation.LEVEL_STATION));
 
@@ -124,11 +126,11 @@ let bothPromise = RSVP.hash({
     console.log("hash.seismograms size: "+hash.seismograms.size);
     if (hash.seismograms.size > 0) {
       console.log("hash.seismograms "+hash.seismograms.size+" ");
-        let seisConfig = new wp.SeismographConfig();
+        let seisConfig = new SeismographConfig();
         let traceArray = Array.from(hash.seismograms.values());
-        traceArray.sort(wp.sort.alphabeticalSort);
+        traceArray.sort(seisplotjs.plotutil.alphabeticalSort);
         console.log("traceArray: "+traceArray.length+"  "+traceArray[0]+"  "+(typeof traceArray[0]))
-        let seismograph = new wp.CanvasSeismograph(svgDiv, seisConfig, traceArray, hash.seisDates.start, hash.seisDates.end);
+        let seismograph = new Seismograph(svgDiv, seisConfig, traceArray, hash.seisDates.start, hash.seisDates.end);
         let titles = [traceArray[0].codes(),
                   traceArray[1].channelCode,
                   traceArray[2].channelCode];
@@ -181,10 +183,10 @@ let bothPromise = RSVP.hash({
 console.log("rotate to "+hash.distaz.baz+" "+((hash.distaz.baz+180)%360) );
         let rotated = seisplotjs.vector.rotate(seisNorth, 0, seisEast, 90, (hash.distaz.baz+180)%360);
         hash.rotatedSeismograms = [ seisZ, rotated.radial, rotated.transverse ];
-        hash.rotatedSeismograms.sort(wp.sort.alphabeticalSort);
+        hash.rotatedSeismograms.sort(seisplotjs.plotutil.alphabeticalSort);
 console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.segments[0].yAtIndex(0)+" "+rotated.transverse.segments[0].yAtIndex(0))
-        let rotSeisConfig = new wp.SeismographConfig();
-        let rotatedSeismograph = new wp.CanvasSeismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
+        let rotSeisConfig = new SeismographConfig();
+        let rotatedSeismograph = new Seismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
         titles = [hash.rotatedSeismograms[0].codes(),
                   hash.rotatedSeismograms[1].channelCode+" "+rotated.azimuthRadial.toFixed(2),
                   hash.rotatedSeismograms[2].channelCode+" "+rotated.azimuthTransverse.toFixed(2)];
