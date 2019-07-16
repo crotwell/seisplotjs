@@ -11,7 +11,7 @@ import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, Abstr
 import {createComplex} from './filter.js';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, isObject, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';
@@ -447,25 +447,25 @@ export class StationQuery {
     * returned is set. This is a crude, coarse check to make sure
     * the client doesn't ask for EVERYTHING the server has. */
   isSomeParameterSet(): boolean {
-    return _isDef(this._networkCode) ||
-    _isDef(this._stationCode) ||
-    _isDef(this._locationCode) ||
-    _isDef(this._channelCode) ||
-    _isDef(this._startTime) ||
-    _isDef(this._endTime) ||
-    _isDef(this._startBefore) ||
-    _isDef(this._endBefore) ||
-    _isDef(this._startAfter) ||
-    _isDef(this._endAfter) ||
-    _isDef(this._minLat) ||
-    _isDef(this._maxLat) ||
-    _isDef(this._minLon) ||
-    _isDef(this._maxLon) ||
-    _isDef(this._latitude) ||
-    _isDef(this._longitude) ||
-    _isDef(this._minRadius) ||
-    _isDef(this._maxRadius) ||
-    _isDef(this._updatedAfter);
+    return isDef(this._networkCode) ||
+    isDef(this._stationCode) ||
+    isDef(this._locationCode) ||
+    isDef(this._channelCode) ||
+    isDef(this._startTime) ||
+    isDef(this._endTime) ||
+    isDef(this._startBefore) ||
+    isDef(this._endBefore) ||
+    isDef(this._startAfter) ||
+    isDef(this._endAfter) ||
+    isDef(this._minLat) ||
+    isDef(this._maxLat) ||
+    isDef(this._minLon) ||
+    isDef(this._maxLon) ||
+    isDef(this._latitude) ||
+    isDef(this._longitude) ||
+    isDef(this._minRadius) ||
+    isDef(this._maxRadius) ||
+    isDef(this._updatedAfter);
   }
 
   /** Parses a FDSNStationXML Network xml element into a Network object.
@@ -634,9 +634,9 @@ export class StationQuery {
         const pzt = _grabFirstElText(stageXml, 'PzTransferFunctionType');
         if (pzt) { filter.pzTransferFunctionType = pzt; }
         const nfa = _grabFirstElFloat(stageXml, 'NormalizationFactor');
-        if (_isDef(nfa)) { filter.normalizationFactor = nfa;}
+        if (isNumArg(nfa)) { filter.normalizationFactor = nfa;}
         const nfr = _grabFirstElFloat(stageXml, 'NormalizationFrequency');
-        if (_isDef(nfr)) {filter.normalizationFrequency = nfr;}
+        if (isNumArg(nfr)) {filter.normalizationFrequency = nfr;}
         let zeros = Array.from(stageXml.getElementsByTagNameNS(STAML_NS, 'Zero'))
             .map(function(zeroEl) {
               return extractComplex(zeroEl);
@@ -714,9 +714,9 @@ export class StationQuery {
   convertToDecimation(decXml: Element): Decimation {
     let out = new Decimation();
     const insr = _grabFirstElFloat(decXml, 'InputSampleRate');
-    if (_isDef(insr)) {out.inputSampleRate = insr;}
+    if (isNumArg(insr)) {out.inputSampleRate = insr;}
     const fac = _grabFirstElInt(decXml, 'Factor');
-    if (_isDef(fac)) {out.factor = fac;}
+    if (isNumArg(fac)) {out.factor = fac;}
     out.offset = _grabFirstElInt(decXml, 'Offset');
     out.delay = _grabFirstElFloat(decXml, 'Delay');
     out.correction = _grabFirstElFloat(decXml, 'Correction');
@@ -729,9 +729,9 @@ export class StationQuery {
   convertToGain(gainXml: Element): Gain {
     let out = new Gain();
     const v = _grabFirstElFloat(gainXml, 'Value');
-    if (_isDef(v)) {out.value = v;}
+    if (isNumArg(v)) {out.value = v;}
     const f = _grabFirstElFloat(gainXml, 'Frequency');
-    if (_isDef(f)) {out.frequency = f;}
+    if (isNumArg(f)) {out.frequency = f;}
     return out;
   }
 
@@ -926,15 +926,11 @@ console.log("204 nodata so return empty xml");
 // these are similar methods as in seisplotjs-fdsnevent
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
-const _isDef = function(v: mixed): boolean  %checks {
-  return typeof v !== 'undefined' && v !== null;
-};
-
 const _grabFirstEl = function(xml: Element | null | void, tagName: string): Element | void {
   let out = undefined;
-  if (_isDef(xml)) {
+  if (isObject(xml)) {
     let el = xml.getElementsByTagName(tagName);
-    if (_isDef(el) && el.length > 0) {
+    if (isObject(el) && el.length > 0) {
       const e = el.item(0);
       if (e) {
         out = e;
@@ -947,8 +943,10 @@ const _grabFirstEl = function(xml: Element | null | void, tagName: string): Elem
 const _grabFirstElText = function _grabFirstElText(xml: Element | null | void, tagName: string): string | void {
   let out = undefined;
   let el = _grabFirstEl(xml, tagName);
-  if (_isDef(el)) {
+  if (isObject(el)) {
     out = el.textContent;
+  } else {
+    throw new Error(`Expect string but was ${typeof el}`)
   }
   return out;
 };
@@ -956,7 +954,7 @@ const _grabFirstElText = function _grabFirstElText(xml: Element | null | void, t
 const _grabFirstElFloat = function _grabFirstElFloat(xml: Element | null | void, tagName: string): number | void {
   let out = undefined;
   let elText = _grabFirstElText(xml, tagName);
-  if (_isDef(elText)) {
+  if (isStringArg(elText)) {
     out = parseFloat(elText);
   }
   return out;
@@ -965,7 +963,7 @@ const _grabFirstElFloat = function _grabFirstElFloat(xml: Element | null | void,
 const _grabFirstElInt = function _grabFirstElInt(xml: Element | null | void, tagName: string): number | void {
   let out = undefined;
   let elText = _grabFirstElText(xml, tagName);
-  if (_isDef(elText)) {
+  if (isStringArg(elText)) {
     out = parseInt(elText);
   }
   return out;
@@ -973,9 +971,9 @@ const _grabFirstElInt = function _grabFirstElInt(xml: Element | null | void, tag
 
 const _grabAttribute = function _grabAttribute(xml: Element | null | void, tagName: string): string | void {
   let out = undefined;
-  if (_isDef(xml)) {
+  if (isObject(xml)) {
     let a = xml.getAttribute(tagName);
-    if (_isDef(a)) {
+    if (isStringArg(a)) {
       out = a;
     }
   }
@@ -984,9 +982,9 @@ const _grabAttribute = function _grabAttribute(xml: Element | null | void, tagNa
 
 const _grabAttributeNS = function(xml: Element | null | void, namespace: string, tagName: string): string | void {
   let out = undefined;
-  if (_isDef(xml)) {
+  if (isObject(xml)) {
     let a = xml.getAttributeNS(namespace, tagName);
-    if (_isDef(a)) {
+    if (isStringArg(a)) {
       out = a;
     }
   }
@@ -996,7 +994,7 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
 function extractComplex(el: Element) {
   const re = _grabFirstElFloat(el, 'Real');
   const im = _grabFirstElFloat(el, 'Imaginary');
-  if (_isDef(re) && _isDef(im)) {
+  if (isNumArg(re) && isNumArg(im)) {
     return createComplex(re, im);
   } else {
     // $FlowFixMe

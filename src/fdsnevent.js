@@ -4,7 +4,7 @@ import { moment } from 'moment';
 import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 
 import RSVP from 'rsvp';
@@ -481,25 +481,25 @@ export class EventQuery {
     * returned is set. This is a crude, coarse check to make sure
     * the client doesn't ask for EVERYTHING the server has. */
   isSomeParameterSet(): boolean {
-    return _isDef(this._eventId) ||
-      _isDef(this._startTime) ||
-      _isDef(this._endTime) ||
-      _isDef(this._minLat) ||
-      _isDef(this._maxLat) ||
-      _isDef(this._minLon) ||
-      _isDef(this._maxLon) ||
-      _isDef(this._latitude) ||
-      _isDef(this._longitude) ||
-      _isDef(this._minRadius) ||
-      _isDef(this._maxRadius) ||
-      _isDef(this.minDepth) ||
-      _isDef(this.maxDepth) ||
-      _isDef(this.limit) ||
-      _isDef(this.minMag) ||
-      _isDef(this.maxMag) ||
-      _isDef(this.updatedAfter) ||
-      _isDef(this.catalog) ||
-      _isDef(this.contributor);
+    return isDef(this._eventId) ||
+      isDef(this._startTime) ||
+      isDef(this._endTime) ||
+      isDef(this._minLat) ||
+      isDef(this._maxLat) ||
+      isDef(this._minLon) ||
+      isDef(this._maxLon) ||
+      isDef(this._latitude) ||
+      isDef(this._longitude) ||
+      isDef(this._minRadius) ||
+      isDef(this._maxRadius) ||
+      isDef(this.minDepth) ||
+      isDef(this.maxDepth) ||
+      isDef(this.limit) ||
+      isDef(this.minMag) ||
+      isDef(this.maxMag) ||
+      isDef(this.updatedAfter) ||
+      isDef(this.catalog) ||
+      isDef(this.contributor);
   }
 
   /** Parses a QuakeML event xml element into a Quake object.
@@ -897,20 +897,20 @@ export class EventQuery {
     if (this._eventId) { url = url+this.makeParam("eventid", this.eventId());}
     if (this._startTime) { url = url+this.makeParam("starttime", toIsoWoZ(this.startTime()));}
     if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
-    if (_isDef(this._minMag)) { url = url+this.makeParam("minmag", this.minMag());}
-    if (_isDef(this._maxMag)) { url = url+this.makeParam("maxmag", this.maxMag());}
-    if (_isDef(this._magnitudeType)) { url = url+this.makeParam("magnitudetype", this.magnitudeType());}
-    if (_isDef(this._minDepth)) { url = url+this.makeParam("mindepth", this.minDepth());}
-    if (_isDef(this._maxDepth)) { url = url+this.makeParam("maxdepth", this.maxDepth());}
-    if (_isDef(this._minLat)) { url = url+this.makeParam("minlat", this.minLat());}
-    if (_isDef(this._maxLat)) { url = url+this.makeParam("maxlat", this.maxLat());}
-    if (_isDef(this._minLon)) { url = url+this.makeParam("minlon", this.minLon());}
-    if (_isDef(this._maxLon)) { url = url+this.makeParam("maxlon", this.maxLon());}
-    if (_isDef(this._minRadius) || _isDef(this._maxRadius)) {
-      if (_isDef(this._latitude) && _isDef(this._longitude)) {
+    if (isNumArg(this._minMag)) { url = url+this.makeParam("minmag", this.minMag());}
+    if (isNumArg(this._maxMag)) { url = url+this.makeParam("maxmag", this.maxMag());}
+    if (isStringArg(this._magnitudeType)) { url = url+this.makeParam("magnitudetype", this.magnitudeType());}
+    if (isNumArg(this._minDepth)) { url = url+this.makeParam("mindepth", this.minDepth());}
+    if (isNumArg(this._maxDepth)) { url = url+this.makeParam("maxdepth", this.maxDepth());}
+    if (isNumArg(this._minLat)) { url = url+this.makeParam("minlat", this.minLat());}
+    if (isNumArg(this._maxLat)) { url = url+this.makeParam("maxlat", this.maxLat());}
+    if (isNumArg(this._minLon)) { url = url+this.makeParam("minlon", this.minLon());}
+    if (isNumArg(this._maxLon)) { url = url+this.makeParam("maxlon", this.maxLon());}
+    if (isNumArg(this._minRadius) || isNumArg(this._maxRadius)) {
+      if (isNumArg(this._latitude) && isNumArg(this._longitude)) {
         url = url+this.makeParam("latitude", this.latitude())+this.makeParam("longitude", this.longitude());
-        if (_isDef(this._minRadius)) { url = url+this.makeParam("minradius", this.minRadius());}
-        if (_isDef(this._maxRadius)) { url = url+this.makeParam("maxradius", this.maxRadius());}
+        if (isNumArg(this._minRadius)) { url = url+this.makeParam("minradius", this.minRadius());}
+        if (isNumArg(this._maxRadius)) { url = url+this.makeParam("maxradius", this.maxRadius());}
       } else {
         throw new Error("Cannot use minRadius or maxRadius without latitude and longitude: lat="+this._latitude+" lon="+this._longitude);
       }
@@ -928,17 +928,17 @@ export class EventQuery {
         }
       }
     }
-    if (_isDef(this._updatedAfter)) { url = url+this.makeParam("updatedafter", this.updatedAfter());}
-    if (_isDef(this._includeAllOrigins)) { url = url+this.makeParam("includeallorigins", this.includeAllOrigins());}
-    if (_isDef(this._includeAllMagnitudes)) { url = url+this.makeParam("includeallmagnitudes", this.includeAllMagnitudes());}
-    if (_isDef(this._format)) { url = url+this.makeParam("format", this.format());}
-    if (_isDef(this._limit)) { url = url+this.makeParam("limit", this.limit());}
-    if (_isDef(this._offset)) { url = url+this.makeParam("offset", this.offset());}
-    if (_isDef(this._orderBy)) { url = url+this.makeParam("orderby", this.orderBy());}
-    if (_isDef(this._catalog)) { url = url+this.makeParam("catalog", this.catalog());}
-    if (_isDef(this._contributor)) { url = url+this.makeParam("contributor", this.contributor());}
+    if (isObject(this._updatedAfter)) { url = url+this.makeParam("updatedafter", this.updatedAfter());}
+    if (isDef(this._includeAllOrigins)) { url = url+this.makeParam("includeallorigins", this.includeAllOrigins());}
+    if (isDef(this._includeAllMagnitudes)) { url = url+this.makeParam("includeallmagnitudes", this.includeAllMagnitudes());}
+    if (isStringArg(this._format)) { url = url+this.makeParam("format", this.format());}
+    if (isNumArg(this._limit)) { url = url+this.makeParam("limit", this.limit());}
+    if (isNumArg(this._offset)) { url = url+this.makeParam("offset", this.offset());}
+    if (isStringArg(this._orderBy)) { url = url+this.makeParam("orderby", this.orderBy());}
+    if (isStringArg(this._catalog)) { url = url+this.makeParam("catalog", this.catalog());}
+    if (isStringArg(this._contributor)) { url = url+this.makeParam("contributor", this.contributor());}
 
-    if (_isDef(this._nodata)) { url = url+this.makeParam("nodata", this.nodata());}
+    if (isDef(this._nodata)) { url = url+this.makeParam("nodata", this.nodata());}
     if (url.endsWith('&') || url.endsWith('?')) {
       url = url.substr(0, url.length-1); // zap last & or ?
     }
@@ -952,16 +952,11 @@ export class EventQuery {
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
 
-const _isDef = function(v: mixed): boolean %checks {
-  return typeof v !== 'undefined' && v !== null;
-};
-
-
 const _grabFirstElNS = function(xml: Element | null | void, namespace: string, tagName: string): Element | void {
   let out = undefined;
-  if ( _isDef(xml)) {
+  if ( isObject(xml)) {
     let elList = xml.getElementsByTagNameNS(namespace, tagName);
-    if (_isDef(elList) && elList.length > 0) {
+    if (isObject(elList) && elList.length > 0) {
       const e = elList.item(0);
       if (e) {
         out = e;
@@ -973,9 +968,9 @@ const _grabFirstElNS = function(xml: Element | null | void, namespace: string, t
 
 const _grabFirstEl = function(xml: Element | null | void, tagName: string): Element | void {
   let out = undefined;
-  if ( _isDef(xml)) {
+  if ( isObject(xml)) {
     let elList = xml.getElementsByTagName(tagName);
-    if (_isDef(elList) && elList.length > 0) {
+    if (isObject(elList) && elList.length > 0) {
       const e = elList.item(0);
       if (e) {
         out = e;
@@ -988,7 +983,7 @@ const _grabFirstEl = function(xml: Element | null | void, tagName: string): Elem
 const _grabFirstElText = function(xml: Element | null | void, tagName: string): string | void {
   let out = undefined;
   let el = _grabFirstEl(xml, tagName);
-  if (_isDef(el)) {
+  if (isObject(el)) {
     out = el.textContent;
   }
   return out;
@@ -997,7 +992,7 @@ const _grabFirstElText = function(xml: Element | null | void, tagName: string): 
 const _grabFirstElInt = function(xml: Element | null | void, tagName: string): number | void {
   let out = undefined;
   let el = _grabFirstElText(xml, tagName);
-  if (_isDef(el)) {
+  if (isStringArg(el)) {
     out = parseInt(el);
   }
   return out;
@@ -1006,7 +1001,7 @@ const _grabFirstElInt = function(xml: Element | null | void, tagName: string): n
 const _grabFirstElFloat = function(xml: Element | null | void, tagName: string): number | void {
   let out = undefined;
   let el = _grabFirstElText(xml, tagName);
-  if (_isDef(el)) {
+  if (isStringArg(el)) {
     out = parseFloat(el);
   }
   return out;
@@ -1014,9 +1009,9 @@ const _grabFirstElFloat = function(xml: Element | null | void, tagName: string):
 
 const _grabAttribute = function(xml: Element | null | void, tagName: string): string | void {
   let out = undefined;
-  if ( _isDef(xml)) {
+  if ( isObject(xml)) {
     let a = xml.getAttribute(tagName);
-    if (_isDef(a)) {
+    if (isStringArg(a)) {
       out = a;
     }
   }
@@ -1025,9 +1020,9 @@ const _grabAttribute = function(xml: Element | null | void, tagName: string): st
 
 const _grabAttributeNS = function(xml: Element | null | void, namespace: string, tagName: string): string | void {
   let out = undefined;
-  if ( _isDef(xml)) {
+  if ( isObject(xml)) {
     let a = xml.getAttributeNS(namespace, tagName);
-    if (_isDef(a)) {
+    if (isStringArg(a)) {
       out = a;
     }
   }
@@ -1036,6 +1031,7 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
 
 export const util = {
   "_grabFirstEl": _grabFirstEl,
+  "_grabFirstElNS": _grabFirstElNS,
   "_grabFirstElText": _grabFirstElText,
   "_grabFirstElFloat": _grabFirstElFloat,
   "_grabFirstElInt": _grabFirstElInt,

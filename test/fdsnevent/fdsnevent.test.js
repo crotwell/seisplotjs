@@ -99,6 +99,33 @@ test( "form url test", () => {
 });
 
 
+test( "qml util test", () => {
+  const xml = new DOMParser().parseFromString(RAW_XML_QML, "text/xml");
+  expect(util.isObject(xml)).toBeTrue();
+  let eventArray = xml.getElementsByTagName("event");
+  let out = [];
+  for (let eventEl of eventArray) {
+    expect(util.isObject(eventEl)).toBeTrue();
+
+    let allMagEls = eventEl.getElementsByTagNameNS(fdsnevent.BED_NS, "magnitude");
+    let allMags = [];
+    for (let magEl of allMagEls) {
+      expect(util.isObject(magEl)).toBeTrue();
+      let mag = fdsnevent.util._grabFirstElNS(magEl, fdsnevent.BED_NS, 'mag');
+      expect(util.isObject(mag)).toBeTrue();
+      expect(fdsnevent.util._grabFirstEl(mag, 'value')).toBeObject();
+      expect(fdsnevent.util._grabFirstElNS(mag, fdsnevent.BED_NS, 'value')).toBeObject();
+      expect(fdsnevent.util._grabFirstElText(mag, 'value')).toBeString();
+      expect(fdsnevent.util._grabFirstElFloat(mag, 'value')).toBeDefined();
+      let magVal = fdsnevent.util._grabFirstElFloat(mag, 'value');
+      expect(magVal).toBeFinite();
+      expect(magVal).toBeWithin(0, 10);
+      let type = fdsnevent.util._grabFirstElText(magEl, 'type');
+      expect(type).toBeString();
+    }
+  }
+});
+
 test( "qml parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_QML, "text/xml");
   let eventQuery = new fdsnevent.EventQuery();
