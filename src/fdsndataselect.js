@@ -29,6 +29,10 @@ export const FORMAT_MINISEED = 'mseed';
 
 export const IRIS_HOST = "service.iris.edu";
 
+/**
+ * Query to a FDSN Dataselect web service.
+ * @see http://www.fdsn.org/webservices/
+*/
 export class DataSelectQuery {
   /** @private */
   _specVersion: number;

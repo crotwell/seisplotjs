@@ -23,6 +23,10 @@ export const EMPTY_JSON = JSON.parse('{}');
 
 export const IRIS_HOST = "service.iris.edu";
 
+/**
+ * Query to a FDSN Availability web service.
+ * @see http://www.fdsn.org/webservices/
+*/
 export class AvailabilityQuery {
   /** @private */
   _specVersion: number;

@@ -148,10 +148,10 @@ export class DataLinkConnection {
     });
   }
 
-/** encodes as a Datalink packet, header with optional data section as
- * binary Uint8Array. Size of the binary data is appended
- * to the header if present.
- */
+  /** encodes as a Datalink packet, header with optional data section as
+   * binary Uint8Array. Size of the binary data is appended
+   * to the header if present.
+   */
   encodeDL(command: string, data?: Uint8Array): ArrayBuffer {
     let cmdLen = command.length;
     let len = 3+command.length;
@@ -204,10 +204,10 @@ export class DataLinkConnection {
     }
   }
 
-    /** sends the command as header with optional dataString
-     * as the data section. Size of the dataString is appended
-     * to the header before sending.
-     */
+  /** sends the command as header with optional dataString
+   * as the data section. Size of the dataString is appended
+   * to the header before sending.
+   */
   sendDLCommand(command: string, dataString?: string): void {
     console.log("send: "+command+" | "+(dataString ? dataString : ""));
     this.sendDLBinary(command, stringToUint8Array(dataString));
@@ -244,7 +244,7 @@ export class DataLinkConnection {
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
-/** Writes data to the ringserver and awaits a acknowledgement.
+  /** Writes data to the ringserver and awaits a acknowledgement.
   *
   */
   writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array) {
@@ -253,6 +253,10 @@ export class DataLinkConnection {
     return this.awaitDLBinary(header, data);
   }
 
+  /**
+   * Handles a web socket message from the data link connection.
+   * @private
+   */
   handle(wsEvent: MessageEvent ) {
     const rawData: ArrayBuffer = ((wsEvent.data: any): ArrayBuffer);
     let dlPreHeader = new DataView(rawData, 0, 3);
@@ -367,21 +371,26 @@ export class DataLinkPacket {
 
 /**
  * Convert moment to a HPTime number.
- * @param  {[type]} m moment to convert
- * @return {[type]} microseconds since epoch
+ * @param   m moment to convert
+ * @return  microseconds since epoch
  */
   export function momentToHPTime(m: moment): number {
     return m.valueOf()*1000;
   }
   /**
    * Convert moment to a HPTime number.
-   * @param  {[type]} m moment to convert
-   * @return {[type]} microseconds since epoch
+   * @param   m moment to convert
+   * @return  microseconds since epoch
    */
   export function hpTimeToMoment(hptime: number): moment {
     return moment.utc(hptime/1000);
   }
 
+  /**
+   * Encode string into a Uint8Array.
+   * @param   dataString String to encode.
+   * @return             String as bytes in Uint8Array.
+   */
   export function stringToUint8Array(dataString?: string): Uint8Array | void {
     let binaryData = undefined;
     if (dataString) {

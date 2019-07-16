@@ -12,15 +12,31 @@ export function createComplex(real: number, imag: number) {
   return OregonDSP.filter.iir.Complex_init(real, imag);
 }
 
-
+/**
+ * Constant for bandpass OregonDSP filter creation.
+ * @type string
+ */
 export let BAND_PASS = OregonDSP.filter.iir.PassbandType.BANDPASS;
+/**
+ * Constant for lowpass OregonDSP filter creation.
+ * @type string
+ */
 export let LOW_PASS = OregonDSP.filter.iir.PassbandType.LOWPASS;
+/**
+ * Constant for highpass OregonDSP filter creation.
+ * @type string
+ */
 export let HIGH_PASS = OregonDSP.filter.iir.PassbandType.HIGHPASS;
 
 export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
 }
 
+/**
+ * Remove the mean from a seismogram. Subtract the mean from each data point.
+ * @param  {[type]} seis input seismogram
+ * @return {[type]}      seismogram with mean of zero
+ */
 export function rMean(seis: Seismogram): Seismogram {
   console.log(`rMean input class is: ${(seis.constructor.name)}`);
   if (seis instanceof Seismogram) {
@@ -37,7 +53,14 @@ export function rMean(seis: Seismogram): Seismogram {
     throw new Error("rMean arg not a Seismogram");
   }
 }
-
+/**
+ * Apply the frequency independent overall gain to a seismogram. This does not
+ * do a full transfer using poles and zero, this only applies the scalar conversion
+ * factor to convert counts back to original real world units and update the units.
+ * @param  {[type]} instrumentSensitivity overall gain object, usually pulled from stationxml
+ * @param  {[type]} seis                  the seismogram to correct
+ * @return {[type]}                       new seismogram with original units, like m/s and gain applied.
+ */
 export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
     let gain = instrumentSensitivity.sensitivity;
@@ -61,6 +84,11 @@ export type MinMaxMean = {
   mean: number;
 };
 
+/**
+ * calculate the minimum, maximum and mean for a seismogram.
+ * @param  {[type]} seis input seismogram
+ * @return {[type]}      output object including min, max and mean
+ */
 export function minMaxMean(seis: Seismogram): MinMaxMean {
   let meanVal = 0;
   let minVal = 9999999999;
@@ -80,6 +108,11 @@ export function minMaxMean(seis: Seismogram): MinMaxMean {
     mean: meanVal
   };
 }
+/**
+ * calculates the mean of a seismogrma.
+ * @param  {[type]} seis input seismogram
+ * @return {[type]}      mean value
+ */
 export function mean(seis: Seismogram): number {
   if (seis instanceof Seismogram) {
     let meanVal = 0;
@@ -94,7 +127,13 @@ export function mean(seis: Seismogram): number {
     throw new Error("seis not instance of Seismogram "+(typeof seis)+" "+(seis.constructor.name));
   }
 }
-
+/**
+ * Recursively calculates the mean of a slice of a seismogram. This helps with
+ * very long seismograms to equally weight each sample point without overflowing.
+ * @param  {[type]} dataSlice slice of a seismogram
+ * @param  {[type]} totalPts  number of points in the original seismogram
+ * @return {[type]}           sum of slice data points divided by totalPts
+ */
 function meanOfSlice(dataSlice: Int32Array | Float32Array | Float64Array, totalPts: number ): number {
   if (dataSlice.length < 8) {
     return dataSlice.reduce(function(acc, val) {
@@ -106,7 +145,15 @@ function meanOfSlice(dataSlice: Int32Array | Float32Array | Float64Array, totalP
   }
 }
 
-
+/**
+ * Creates a Butterworth IIR filter using the OregonDSP library.
+ * @param  {[type]} numPoles       number of poles
+ * @param  {[type]} passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
+ * @param  {[type]} lowFreqCorner  low corner frequency
+ * @param  {[type]} highFreqCorner high corner frequency
+ * @param  {[type]} delta          delta, period, of timeseries
+ * @return {[type]}                Butterworth IIR filter
+ */
 export function createButterworth(numPoles: number,
                                   passband: string,
                                   lowFreqCorner: number,
@@ -119,6 +166,16 @@ export function createButterworth(numPoles: number,
                                      delta);
 }
 
+/**
+ * Creates a Chebyshev I IIR filter using the OregonDSP library.
+ * @param  {[type]} numPoles       number of poles
+ * @param  {[type]} epsilon        Chebyshev epsilon value
+ * @param  {[type]} passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
+ * @param  {[type]} lowFreqCorner  low corner frequency
+ * @param  {[type]} highFreqCorner high corner frequency
+ * @param  {[type]} delta          delta, period, of timeseries
+ * @return {[type]}                Chebyshev I IIR filter
+ */
 export function createChebyshevI(numPoles: number,
                                   epsilon: number,
                                   passband: string,
@@ -133,6 +190,16 @@ export function createChebyshevI(numPoles: number,
                                     delta);
 }
 
+/**
+ * Creates a Chebyshev II IIR filter using the OregonDSP library.
+ * @param  {[type]} numPoles       number of poles
+ * @param  {[type]} epsilon        Chebyshev epsilon value
+ * @param  {[type]} passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
+ * @param  {[type]} lowFreqCorner  low corner frequency
+ * @param  {[type]} highFreqCorner high corner frequency
+ * @param  {[type]} delta          delta, period, of timeseries
+ * @return {[type]}                Chebyshev II IIR filter
+ */
 export function createChebyshevII(numPoles: number,
                                   epsilon: number,
                                   passband: string,

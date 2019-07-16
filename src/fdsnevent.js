@@ -24,6 +24,10 @@ export let USGS_HOST = "earthquake.usgs.gov";
 
 export const FAKE_EMPTY_XML = '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
 
+/**
+ * Query to a FDSN Event web service.
+ * @see http://www.fdsn.org/webservices/
+*/
 export class EventQuery {
   /** @private */
   _specVersion: number;

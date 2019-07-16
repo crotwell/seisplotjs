@@ -14,6 +14,12 @@ export function fftForward(timeseries: Int32Array | Float32Array | Float64Array)
   return result;
 }
 
+/**
+ * Calculates the discrete fourier transform using the OregonDSP library.
+ * @param   waveform timeseries array
+ * @param   npts     number of points in timeseries array.
+ * @return           DFT as packed array Float32Array
+ */
 export function calcDFT(waveform: Int32Array | Float32Array | Float64Array, npts: number): Float32Array {
   let log2N = 4;
   let N = 16;
@@ -30,6 +36,12 @@ export function calcDFT(waveform: Int32Array | Float32Array | Float64Array, npts
   return out;
 }
 
+/**
+ * Calculates the inverse discrete fourier transform using the OregonDSP library.
+ * @param   packedFreq DFT as packed array Float32Array
+ * @param   npts     number of points in original timeseries array.
+ * @return           inverse of DFT as a timeseries array
+ */
 export function inverseDFT(packedFreq: Float32Array, npts: number): Float32Array {
   if (npts > packedFreq.length) {
     throw new Error("Not enough points in packed freq array for "+npts+", only "+packedFreq.length);
@@ -59,18 +71,37 @@ export class FFTResult {
   constructor(origLength: number) {
       this.origLength = origLength;
   }
+  /**
+   * Factory method to create FFTResult from packed array.
+   * @param   packedFreq real and imag values in packed format
+   * @param   origLength length of the original timeseries before padding.
+   * @return            FFTResult
+   */
   static createFromPackedFreq(packedFreq: Float32Array, origLength: number) {
     let fftResult = new FFTResult(origLength);
     fftResult.packedFreq = packedFreq;
     fftResult.recalcFromPackedFreq();
     return fftResult;
   }
+  /**
+   * Factory method to create from array of complex numbers.
+   * @param   complexArray real and imag values as array of Complex objects.
+   * @param   origLength   length of the original timeseries before padding.
+   * @return               FFTResult
+   */
   static createFromComplex(complexArray: Array<Complex>, origLength: number) {
     let fftResult = new FFTResult(origLength);
     fftResult.complex = complexArray;
     fftResult.recalcFromComplex();
     return fftResult;
   }
+  /**
+   * Factory method to create from amp and phase arrays
+   * @param   amp        amplitude values
+   * @param   phase      phase values
+   * @param   origLength length of the original timeseries before padding.
+   * @return             FFTResult
+   */
   static createFromAmpPhase(amp: Float32Array, phase: Float32Array, origLength: number) {
     let fftResult = new FFTResult(origLength);
     if (amp.length != phase.length) {throw new Error(`amp and phase must be same length: ${amp.length} ${phase.length}`);}

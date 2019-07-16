@@ -9,6 +9,9 @@ import {insertCSS} from './plotutil.js';
 
 import type {TimeRangeType} from './seismogram.js';
 
+/**
+ * Hour and Minute chooser using sliders.
+ */
 export class HourMinChooser {
 
   div: any; // d3 not yet in flow-typed :(
@@ -99,18 +102,28 @@ export class HourMinChooser {
       });
     this.minuteSlider.attr("value", time.minute());
   }
+  /**
+   * Updates the time without triggering the callback function.
+   * @param  newTime new time to update sliders
+   */
   updateTime(newTime: moment): void {
     this.time = newTime;
     this.hourMinField.property("value", this.time.format('HH:mm'));
     this.hourSlider.property("value", this.time.hour());
     this.minuteSlider.property("value", this.time.minute());
   }
+  /**
+   * Updates the sliders based on this.time and triggers the callback function.
+   */
   timeModified(): void {
     this.hourSlider.property("value", this.time.hour());
     this.minuteSlider.property("value", this.time.minute());
     this.hourMinField.property("value", this.time.format('HH:mm'));
     this.updateCallback(this.time);
   }
+  /**
+   * Shows or hides the popup based on current visibility style
+   */
   showHide(): void {
     if (this.popupDiv.style("visibility") === "hidden") {
       this.popupDiv.style("visibility", "visible")
@@ -122,11 +135,15 @@ export class HourMinChooser {
       window.document.removeEventListener("click", this.myOnClick);
     }
   }
+  /**
+   * Hides the popup with sliders.
+   */
   hide(): void {
     this.popupDiv.style("visibility", "hidden")
       .classed("is-bound", false);
     window.document.removeEventListener("click", this.myOnClick);
   }
+  /** @private */
   _adjustPopupPosition(): void {
 
       let field = this.hourMinField.node();
@@ -155,6 +172,10 @@ export class HourMinChooser {
   }
 }
 
+/**
+ * Date and Time chooser using pikaday for the date and the above
+ * HourMinChooser for the hour and minute of time.
+ */
 export class DateTimeChooser {
   div: any; // d3 not yet in flow-typed :(
   time: moment;
@@ -198,16 +219,24 @@ export class DateTimeChooser {
       mythis.timeModified();
     });
   }
+  /**
+   * Updates the time without triggering the callback function.
+   * @param  newTime new time to update sliders
+   */
   updateTime(newTime: moment): void {
     this._internalSetTime(newTime);
     this.hourMin.updateTime(newTime);
   }
+  /**
+   * triggers the callback function.
+   */
   timeModified(): void {
     this.updateCallback(this.time);
   }
   getTime(): moment {
     return this.time;
   }
+  /** @private */
   _internalSetTime(newTime: moment): void {
     this.time = newTime;
     this.dateField.attr("value", this.time.toISOString());
@@ -216,6 +245,9 @@ export class DateTimeChooser {
   }
 }
 
+/**
+ * Combination of two DateTimeChoosers to specify a start and end time.
+ */
 export class TimeRangeChooser {
   div: any;
   callbackFunction: (timerange: TimeRangeType) => void;
@@ -263,7 +295,10 @@ export class TimeRangeChooser {
   }
 }
 
-
+/**
+ * CSS for the parts of HourMin, DateTime and TimeRange choosers
+ * that are not using pikaday.
+ */
 export const chooser_css = `
 
 div.timeRangeChooser div div.hourminpopup {
@@ -317,6 +352,9 @@ input.pikatime {
 `;
 
 
+/**
+ * CSS for the pikaday chooser.
+ */
 export const pikaday_css = `
 @charset "UTF-8";
 
