@@ -1,14 +1,13 @@
 // @flow
 
-import * as filter from '../../src/filter.js';
-import fs from 'fs';
 import {SacPoleZero} from '../../src/sacPoleZero.js';
 import {readSacPoleZero} from './sacfile.js';
 
 
 test("parse sac polezero", () => {
-  expect.assertions(16);
+  expect.assertions(17);
   return readSacPoleZero("./test/filter/data/hrv.bhe.sacpz").then(pz => {
+    expect(pz).toBeInstanceOf(SacPoleZero);
     expect(pz).toBeDefined();
     expect(pz.poles.length).toEqual(3);
     expect(pz.poles[0].real()).toEqual(-0.0139);

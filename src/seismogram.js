@@ -50,7 +50,7 @@ export class SeismogramSegment {
         this._y = null;
     } else if (Array.isArray(yArray) && yArray.every( ee => typeof ee === 'number')) {
       // numbers in js are 64bit, so...
-      this._y = Float64Array.from(((yArray: any):Array<number>));
+      this._y = Float64Array.from(((yArray: any): Array<number>));
       this._compressed = null;
     }
     this._sampleRate = sampleRate;

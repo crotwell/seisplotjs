@@ -1,9 +1,9 @@
 // @flow
 
-import * as filter from '../../src/filter.js';
 import * as fft from '../../src/fft.js';
 import {readSac, parseSac, readDataView, writeSac, replaceYData} from './sacfile';
 
+const OVERWRITE_OUTPUT = false;
 
 
 test("Round Trip FFT, Spike", () => {
@@ -19,11 +19,11 @@ test("Round Trip FFT, Spike", () => {
       expect(out[i]/data[i]).toBeCloseTo(1, 5);
     }
   }
-  const fftresult = fft.fftForward(data)
+  const fftresult = fft.fftForward(data);
   for(let i=0; i<fftresult.packedFreq.length; i++) {
       expect(fftresult.packedFreq[i]).toBeCloseTo(fftout[i], 5);
   }
-  const invresult = fftresult.fftInverse()
+  const invresult = fftresult.fftInverse();
   for(let i=0; i<invresult.length; i++) {
     if (data[i] === 0) {
       expect(invresult[i]).toBeCloseTo(data[i], 3);
@@ -72,7 +72,7 @@ test("FFT", () => {
       const fftRes = fft.fftForward(data);
 
       let saveDataPromise = Promise.resolve(null);
-      if (false) {
+      if (OVERWRITE_OUTPUT) {
         saveDataPromise = readDataView("./test/filter/data/IU.HRV.__.BHE_fft.sac.am").then(dataView => {
           let inSac = parseSac(dataView);
           expect(fftRes.amp.length).toBe(inSac.npts);

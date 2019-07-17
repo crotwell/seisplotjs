@@ -1,6 +1,7 @@
 // @flow
 
-import * as filter from '../../src/filter.js';
+/* global Buffer */
+
 import fs from 'fs';
 import {SacPoleZero} from '../../src/sacPoleZero.js';
 

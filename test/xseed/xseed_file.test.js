@@ -53,6 +53,7 @@ for (let filename of fileList) {
       }
       hexStr += s;
     }
+    expect(hexStr).toBeString();
     //console.log(`record as hex (${hexStr.length}): ${hexStr}`);
     expect(xData[0]).toEqual(77);
     expect(xData[1]).toEqual(83);

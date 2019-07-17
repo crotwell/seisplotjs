@@ -946,7 +946,7 @@ const _grabFirstElText = function _grabFirstElText(xml: Element | null | void, t
   if (isObject(el)) {
     out = el.textContent;
   } else {
-    throw new Error(`Expect string but was ${typeof el}`)
+    throw new Error(`Expect string but was ${typeof el}`);
   }
   return out;
 };

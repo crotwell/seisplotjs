@@ -104,7 +104,7 @@ export class FFTResult {
    */
   static createFromAmpPhase(amp: Float32Array, phase: Float32Array, origLength: number) {
     let fftResult = new FFTResult(origLength);
-    if (amp.length != phase.length) {throw new Error(`amp and phase must be same length: ${amp.length} ${phase.length}`);}
+    if (amp.length !== phase.length) {throw new Error(`amp and phase must be same length: ${amp.length} ${phase.length}`);}
     fftResult.amp = amp;
     fftResult.phase = phase;
     fftResult.recalcFromAmpPhase();

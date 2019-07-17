@@ -33,7 +33,7 @@ export function isNumArg(value: any): boolean %checks {
 }
 
 export function isObject (obj: mixed): boolean %checks {
-  return obj !== null && typeof obj === 'object'
+  return obj !== null && typeof obj === 'object';
 }
 export function isDef(v: mixed): boolean %checks {
   return typeof v !== 'undefined' && v !== null;

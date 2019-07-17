@@ -19,7 +19,7 @@
     "rsvp": "^4.8.5"
   },
   "scripts": {
-    "lint": "eslint 'src/*.js' 'src/*/*.js' 'test/*.js' 'test/*/*.js' ",
+    "lint": "eslint 'src/*.js' 'test/*.js' 'test/*/*.js' ",
     "examplelint": "eslint  'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
     "test": "jest",
     "flow": "flow",

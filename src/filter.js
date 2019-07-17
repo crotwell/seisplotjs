@@ -1,6 +1,6 @@
 // @flow
 
-import {Seismogram, SeismogramSegment} from './seismogram.js';
+import {Seismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
 import * as OregonDSPTop from 'oregondsp';
 

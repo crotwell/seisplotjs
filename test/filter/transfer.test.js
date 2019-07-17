@@ -19,7 +19,7 @@ const WRITE_TEST_DATA = false;
 const ensureFloat32Array = function(a): Float32Array {
   expect(a).toBeInstanceOf(Float32Array);
   return ((a: any): Float32Array);
-}
+};
 
 test("test freq Taper", () => {
     expect(transfer.freqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);
@@ -362,8 +362,7 @@ test("impulse one zero combina amp", () => {
       let sactfr = result[1];
       let pz = result[2];
       let sacAmp = result[3];
-      const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
-
+      
       expect(orig.y.length).toBe(1024);
       expect(orig.delta).toBe(1);
       expect(sacAmp.y.length).toBe(1024/2+1);

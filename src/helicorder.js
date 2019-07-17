@@ -3,7 +3,7 @@
 import moment from 'moment';
 
 import { Seismogram } from './seismogram.js';
-import type { MarginType, MarkerType } from './seismographconfig';
+import type { MarkerType } from './seismographconfig';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
 

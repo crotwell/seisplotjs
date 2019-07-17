@@ -103,12 +103,10 @@ test( "qml util test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_QML, "text/xml");
   expect(util.isObject(xml)).toBeTrue();
   let eventArray = xml.getElementsByTagName("event");
-  let out = [];
   for (let eventEl of eventArray) {
     expect(util.isObject(eventEl)).toBeTrue();
 
     let allMagEls = eventEl.getElementsByTagNameNS(fdsnevent.BED_NS, "magnitude");
-    let allMags = [];
     for (let magEl of allMagEls) {
       expect(util.isObject(magEl)).toBeTrue();
       let mag = fdsnevent.util._grabFirstElNS(magEl, fdsnevent.BED_NS, 'mag');
