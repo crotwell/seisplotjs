@@ -2,7 +2,7 @@
 
 import {calcDFT, inverseDFT } from './fft.js';
 import {SeismogramSegment, Seismogram } from './seismogram.js';
-import { SacPoleZero } from './sacPoleZero.js';
+import { SacPoleZero } from './sacpolezero.js';
 import {Response, PolesZeros } from './stationxml.js';
 import Qty from 'js-quantities';
 import {Complex, createComplex} from './filter.js';
