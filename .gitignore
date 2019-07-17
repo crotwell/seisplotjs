@@ -1,12 +1,12 @@
 dist
+seisplotjs_1.2.0_standalone.js
 node_modules
-seisplotjs_*_standalone.js
 example/**/seisplotjs_*_standalone.js
-example/sis/
-example/testCss/
-example/uw/
 web_modules
 docs/api
 pkg
 test/xseed/reference-data
-docs/documentation
+example/huddle
+example/simpleHttp.sh
+jsonSchema
+es6example
