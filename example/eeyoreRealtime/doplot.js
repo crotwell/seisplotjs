@@ -223,6 +223,6 @@ let timer = d3.interval(function(elapsed) {
 }, timerInterval);
 
 let errorFn = function(error) {
-  console.log("error: "+error);
+  console.assert(false, error);
   svgParent.select("p").text("Error: "+error);
 };
