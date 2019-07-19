@@ -107,8 +107,8 @@ export class Channel {
       // make sure "null" is encoded as empty string
       this.locationCode = '';
     }
-    if (this.locationCode.length !== 2) {
-      throw new Error(`locationCode must be 2 chars, or empty: ${locationCode}`);
+    if ( ! (this.locationCode.length === 2 || this.locationCode.length === 0)) {
+      throw new Error(`locationCode must be 2 chars, or empty: "${locationCode}"`);
     }
   }
   get startDate() {
