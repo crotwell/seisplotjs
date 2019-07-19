@@ -54,6 +54,7 @@ window.onpopstate = function(event) {
   }
 };
 
+let locCodeList = ['00', '01', '99'];
 let orientList = ['Z', 'N/1', 'E/2'];
 let bandInstCodeList = [ 'HN', 'HH', 'LH'];
 
@@ -227,6 +228,33 @@ let orientButtonSpan = d3.select("div#orientations")
         doPlot(state);
       })
       .text(function(d) {return d;});
+
+
+      let loccodeButtonSpan = d3.select("div#loccode")
+        .select("form")
+        .selectAll("span")
+        .data(locCodeList)
+        .enter()
+        .append("span");
+        loccodeButtonSpan
+          .append("label")
+          .text(d => {return d;});
+        loccodeButtonSpan.insert("input", ":first-child")
+          .attr("type", "radio")
+          .attr("class", "shape")
+          .attr("name", "mode")
+          .attr("value", function(d, i) {return i;})
+          .property("checked", function(d, i) {
+            return d===state.locCode;
+          })
+          .on("click", function(d) {
+            let locCode = d3.select(this).text();
+            state.locCode = locCode;
+            console.log(`click ${state.locCode} ${state.bandCode}${state.instCode}`);
+            doPlot(state);
+          })
+          .text(function(d) {return d;});
+
 
 
 
