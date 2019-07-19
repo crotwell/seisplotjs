@@ -26,7 +26,7 @@
     "flow-copy": "flow-copy-source -v -i '**/__tests__/**' src dist/module",
     "rollup": "rollup --config rollup.config.js",
     "build:clean": "rimraf dist",
-    "compile": "npm run build:clean && npm run rollup && npm run flow-copy",
+    "compile": "npm run build:clean && npm run rollup && npm run flow-copy && npm run standalone",
     "standalone": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ]",
     "doc": "documentation build  src/*.js --github -o docs -f html --document-exported ",
     "apidoc": "npx documentation build -f html -o docs/docall --document-exported --github src/[a-h]*.js src/[j-z]*.js  src/filter/[a-h]*.js src/filter/[j-z]*.js src/waveformplot/[a-h]*.js src/waveformplot/[j-z]*.js",
