@@ -11,8 +11,9 @@ RSVP.on('error', function(reason: string) {
 import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 import type {RootType} from './fdsnws-availability-1.0.schema.json.flow.js';
 
-import {ChannelTimeRange, StartEndDuration } from './fdsndataselect';
-import {Network, Station, Channel} from './stationxml';
+import {ChannelTimeRange } from './fdsndataselect.js';
+import { StartEndDuration } from './util.js';
+import {Network, Station, Channel} from './stationxml.js';
 
 export const FORMAT_JSON = 'json';
 export const FORMAT_TEXT = 'text';

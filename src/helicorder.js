@@ -6,6 +6,7 @@ import { Seismogram } from './seismogram.js';
 import type { MarkerType } from './seismographconfig';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
+import {StartEndDuration} from './util.js';
 
 
 export class Helicorder {
@@ -63,17 +64,14 @@ export class Helicorder {
       start = end;
     }
   }
-  calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRangeType> {
+  calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRange> {
     let out = [];
     let s = moment.utc(startTime);
     for (let lineNum=0; lineNum < numberOfLines; lineNum++) {
       let e = moment.utc(s).add(secondsPerLine, 'seconds');
-      out.push({
-        lineNumber: lineNum,
-        start: s,
-        duration: moment.duration(secondsPerLine, 'seconds'),
-        end: e,
-      });
+      let startEnd = new HeliTimeRange(s, e);
+      startEnd.lineNumber = lineNum;
+      out.push(startEnd);
       s = e;
     }
     return out;
@@ -134,9 +132,9 @@ export class HelicorderConfig extends SeismographConfig {
   }
 }
 
-export type HeliTimeRangeType = {
-  lineNumber: number,
-  duration: number,
-  start: moment,
-  end: moment
+export class HeliTimeRange extends StartEndDuration {
+  lineNumber: number;
+  constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
+    super(start, end, duration, clockOffset);
+  }
 };

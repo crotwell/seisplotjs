@@ -8,6 +8,7 @@ import * as miniseed from './miniseed.js';
 import {Seismogram} from './seismogram.js';
 import {SeismographConfig} from './seismographconfig.js';
 import {Seismograph} from './seismograph.js';
+import {StartEndDuration, calcClockOffset} from './util.js';
 
 export { dataselect, miniseed, d3, RSVP, moment };
 
@@ -68,7 +69,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         protocol = 'https:';
       }
 
-      let seisDates = new dataselect.StartEndDuration(start, end, duration, clockOffset);
+      let seisDates = new StartEndDuration(start, end, duration, clockOffset);
       startDate = seisDates.start;
       endDate = seisDates.end;
       // $FlowFixMe
@@ -127,10 +128,6 @@ export function createPlotsBySelector(selector: string) {
       });
       return resultArray;
   });
-}
-
-export function calcClockOffset(serverTime: moment) {
-  return dataselect.calcClockOffset(serverTime);
 }
 
 export function alphabeticalSort(traceA: Seismogram, traceB: Seismogram) {

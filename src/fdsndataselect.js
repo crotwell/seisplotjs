@@ -13,16 +13,22 @@ import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, checkStringOrD
 import * as miniseed from './miniseed';
 import { Channel } from './stationxml';
 import { Seismogram } from './seismogram';
+import {StartEndDuration, calcClockOffset} from './util';
 
 
+/**
+ * Holds a Channels and a TimeRange and optionally the corresponding seismogram.
+ */
 export class ChannelTimeRange {
   channel: Channel;
   startTime: moment;
   endTime: moment;
+  seismogram: Seismogram | null;
   constructor(channel: Channel, startTime: moment, endTime: moment) {
     this.channel = channel;
     this.startTime = startTime;
     this.endTime = endTime;
+    this.seismogram = null;
   }
 }
 export const FORMAT_MINISEED = 'mseed';
@@ -318,9 +324,30 @@ console.log("fdsnDataSelect URL: "+url);
       }
     });
   }
-  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Seismogram>> {
+  /**
+   * query the dataselect server using post, which allows for multiple
+   * channel-timeranges at once. This assumes that there are not multiple
+   * time ranges for the same channel as the results are returned one seismogram
+   * per channels, which may contain gaps. The original channel timerange is
+   * also populated with the resulting seismogram.
+   * @param  {[type]} channelTimeList [description]
+   * @return {[type]}                 [description]
+   */
+  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
-      return miniseed.tracePerChannel(dataRecords);
+      return miniseed.seismogramPerChannel(dataRecords);
+    }).then(seisMap => {
+      for (let ct of channelTimeList) {
+        let codes = ct.channel.codes();
+        if (seisMap.has(codes)) {
+          // odd, but keeps flow happy
+          let seis = seisMap.get(ct.channel.codes())
+          if (seis) {
+            ct.seismogram = seis;
+          }
+        }
+      }
+      return channelTimeList;
     });
   }
   postQueryRaw(channelTimeList: Array<ChannelTimeRange>): Promise<Response> {
@@ -413,63 +440,6 @@ console.log("fdsnDataSelect URL: "+url);
   }
 }
 
-export function calcClockOffset(serverTime: moment): number {
-  return moment.utc().getTime() - serverTime.getTime();
-}
-
-/**
-Any two of start, end and duration can be specified, or just duration which
-then assumes end is now.
-start and end are Date objects, duration is in seconds.
-clockOffset is the milliseconds that should be subtracted from the local time
- to get real world time, ie local - UTC
- or new Date().getTime() - serverDate.getTime()
- default is zero.
-*/
-export class StartEndDuration {
-  start: moment;
-  end: moment;
-  duration: moment.duration;
-  clockOffset: moment.duration;
-  constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
-
-    if (duration &&
-        (typeof duration === "string" || duration instanceof String)) {
-      if (duration.charAt(0) === 'P') {
-        this.duration = moment.duration(duration);
-      } else {
-        this.duration = moment.duration(Number.parseFloat(duration), 'seconds');
-      }
-    }
-    if (duration &&
-      (typeof duration === "number" || duration instanceof Number)) {
-      this.duration = moment.duration(duration, 'seconds');
-    }
-    if (start && end) {
-      this.start = checkStringOrDate(start);
-      this.end = checkStringOrDate(end);
-      this.duration = moment.duration(this.end.diff(this.start));
-    } else if (start && this.duration) {
-      this.start = checkStringOrDate(start);
-      this.end = moment.utc(this.start).add(this.duration);
-    } else if (end && this.duration) {
-      this.end = checkStringOrDate(end);
-      this.start = moment.utc(this.end).subtract(this.duration);
-    } else if (this.duration) {
-      if (clockOffset === undefined) {
-        this.clockOffset = moment.duration(0, 'seconds');
-      } else if (clockOffset instanceof Number) {
-        this.clockOffset = moment.duration(clockOffset, 'seconds');
-      } else {
-        this.clockOffset = clockOffset;
-      }
-      this.end = moment.utc().subtract(clockOffset);
-      this.start = moment.utc(this.end).subtract(this.duration);
-    } else {
-      throw "need some combination of start, end and duration";
-    }
-  }
-}
 
 export function createDataSelectQuery(params: Object): DataSelectQuery {
   if ( ! params || typeof params !== 'object' ) {

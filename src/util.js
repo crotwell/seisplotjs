@@ -80,6 +80,65 @@ export function stringify(value: mixed): string {
   }
 }
 
+
+export function calcClockOffset(serverTime: moment): number {
+  return moment.utc().getTime() - serverTime.getTime();
+}
+
+/**
+Any two of start, end and duration can be specified, or just duration which
+then assumes end is now.
+start and end are Date objects, duration is in seconds.
+clockOffset is the milliseconds that should be subtracted from the local time
+ to get real world time, ie local - UTC
+ or new Date().getTime() - serverDate.getTime()
+ default is zero.
+*/
+export class StartEndDuration {
+  start: moment;
+  end: moment;
+  duration: moment.duration;
+  clockOffset: moment.duration;
+  constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
+
+    if (duration &&
+        (typeof duration === "string" || duration instanceof String)) {
+      if (duration.charAt(0) === 'P') {
+        this.duration = moment.duration(duration);
+      } else {
+        this.duration = moment.duration(Number.parseFloat(duration), 'seconds');
+      }
+    }
+    if (duration &&
+      (typeof duration === "number" || duration instanceof Number)) {
+      this.duration = moment.duration(duration, 'seconds');
+    }
+    if (start && end) {
+      this.start = checkStringOrDate(start);
+      this.end = checkStringOrDate(end);
+      this.duration = moment.duration(this.end.diff(this.start));
+    } else if (start && this.duration) {
+      this.start = checkStringOrDate(start);
+      this.end = moment.utc(this.start).add(this.duration);
+    } else if (end && this.duration) {
+      this.end = checkStringOrDate(end);
+      this.start = moment.utc(this.end).subtract(this.duration);
+    } else if (this.duration) {
+      if (clockOffset === undefined) {
+        this.clockOffset = moment.duration(0, 'seconds');
+      } else if (clockOffset instanceof Number) {
+        this.clockOffset = moment.duration(clockOffset, 'seconds');
+      } else {
+        this.clockOffset = clockOffset;
+      }
+      this.end = moment.utc().subtract(clockOffset);
+      this.start = moment.utc(this.end).subtract(this.duration);
+    } else {
+      throw "need some combination of start, end and duration";
+    }
+  }
+}
+
 /** converts the input value is a moment, throws Error if not
  * a string, Date or moment. Zero length string or "now" return
  * current time.

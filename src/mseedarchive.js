@@ -7,6 +7,7 @@ import * as RSVP from 'rsvp';
 import {ChannelTimeRange } from './fdsndataselect';
 import {Seismogram} from './seismogram';
 import {Channel} from './stationxml';
+import {StartEndDuration} from './util.js';
 
 export const Allowed_Flags = [ 'n', 's', 'l', 'c', 'Y', 'j', 'H'];
 
@@ -51,22 +52,29 @@ export class MSeedArchive {
     }
     return true;
   }
-  loadSeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Map<string, Array<Seismogram>>> {
+  loadSeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
     let promiseArray = channelTimeList.map(ct => {
-      return this.loadDataForChannel(ct.channel, ct.startTime, ct.endTime);
+      return RSVP.hash({
+          "request": ct,
+          "dataRecords": this.loadDataForChannel(ct.channel, ct.startTime, ct.endTime)
+        });
       });
     return RSVP.all(promiseArray).then(pArray => {
-        let dataRecords: Array<miniseed.DataRecord> = [];
         let index = 0;
+        let outMap = new Map();
+        let out = [];
         pArray.forEach(p => {
-          console.log(`${index} had ${p.length} data records`);
-          dataRecords = dataRecords.concat(p);
           index++;
+          let seisMap = miniseed.seismogramPerChannel(p.dataRecords);
+          // should only be one
+          for (let [key, seis] of seisMap) {
+            let trimSeis = seis.trim(new StartEndDuration(p.request.startTime, p.request.endTime));
+            outMap.set(key, trimSeis);
+            p.request.seismogram = trimSeis;
+            out.push(p.request);
+          }
         });
-        console.log(`Total: ${dataRecords.length}`);
-        return dataRecords;
-    }).then(dataRecords => {
-      return miniseed.tracePerChannel(dataRecords);
+        return out;
     });
   }
   loadDataForChannel(channel: Channel, start: moment, end: moment) {
@@ -98,10 +106,8 @@ export class MSeedArchive {
     promiseArray = promiseArray.map( (p) => {
       return p.then(fetchResponse => {
         if (fetchResponse.ok) {
-          console.log("######  is ok "+fetchResponse.status);
           if (fetchResponse.status === 200 || fetchResponse.status === 304) {
             return fetchResponse.arrayBuffer().then(ab => {
-              console.log("got data for "+fetchResponse.url+" "+ab.byteLength);
               let dataRecords = [];
               if (ab.byteLength > 0) {
                 dataRecords = miniseed.parseDataRecords(ab);
@@ -127,11 +133,9 @@ export class MSeedArchive {
         let dataRecords: Array<miniseed.DataRecord> = [];
         let index = 0;
         pArray.forEach(p => {
-          console.log(`${index} had ${p.length} data records`);
           dataRecords = dataRecords.concat(p);
           index++;
         });
-        console.log(`Total: ${dataRecords.length}`);
         return dataRecords;
     }).then(dataRecords => {
       if (dataRecords) {

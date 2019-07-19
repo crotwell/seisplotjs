@@ -17,7 +17,8 @@ import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismograph
 import type { MarginType, MarkerType } from './seismographconfig';
 import {SeismogramSegment, Seismogram, ensureIsSeismogram, findStartEnd, findMinMax } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
-import type {TimeRangeType} from './seismogram.js';
+
+import {StartEndDuration} from './util';
 
 
 
@@ -999,10 +1000,12 @@ export class Seismograph {
       }
     }
   }
-  trim(timeWindow: TimeRangeType): void {
+  trim(timeWindow: StartEndDuration): void {
     if (this.traces) {
       this.traces = this.traces.filter(function(d) {
         return d.end.isAfter(timeWindow.start);
+      }).filter(function(d) {
+        return d.start.isBefore(timeWindow.end);
       });
       if (this.traces.length > 0) {
         this.calcScaleDomain();

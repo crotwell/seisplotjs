@@ -444,9 +444,9 @@ export function mergeByChannel(drList: Array<DataRecord> ): Map<string, Seismogr
   return out;
 }
 
-export function tracePerChannel(drList: Array<DataRecord>): Map<string, Seismogram> {
+export function seismogramPerChannel(drList: Array<DataRecord>): Map<string, Seismogram> {
   let out = new Map();
-  let byChannelMap = this.byChannel(drList);
+  let byChannelMap = byChannel(drList);
   console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
   for (let [key, segments] of byChannelMap) {
     segments = segments.map(dr => createSeismogram( [ dr ] ));

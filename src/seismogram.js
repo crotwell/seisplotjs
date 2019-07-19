@@ -4,12 +4,7 @@ import moment from 'moment';
 import { checkStringOrDate } from './util';
 import * as seedcodec from './seedcodec';
 
-
-export type TimeRangeType = {
-  duration: number,
-  start: moment,
-  end: moment
-};
+import {StartEndDuration, calcClockOffset} from './util';
 
 export type HighLowType = {
       xScaleDomain: Array<number>;
@@ -366,7 +361,7 @@ export class Seismogram {
     * Creates a new Seismogram composed of all seismogram segments that overlap the
     * given time window. If none do, this returns null;
     */
-  trim(timeWindow: TimeRangeType): null | Seismogram {
+  trim(timeWindow: StartEndDuration): null | Seismogram {
     let out = null;
     if (this._segmentArray) {
       let trimSeisArray = this._segmentArray.filter(function(d) {
@@ -500,12 +495,12 @@ export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegmen
 }
 
 
-export function findStartEnd(data: Array<Seismogram>, accumulator?: TimeRangeType): TimeRangeType {
-  let out: TimeRangeType;
+export function findStartEnd(data: Array<Seismogram>, accumulator?: StartEndDuration): StartEndDuration {
+  let out: StartEndDuration;
   if ( ! accumulator && ! data) {
     throw new Error("data and accumulator are not defined");
   } else if ( ! accumulator) {
-    out = {start: moment.utc('2500-01-01'), end: moment.utc('1001-01-01'), duration: 0 };
+    out = new StartEndDuration( moment.utc('2500-01-01'), moment.utc('1001-01-01'));
   } else {
     out = accumulator;
   }

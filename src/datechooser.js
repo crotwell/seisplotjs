@@ -7,7 +7,7 @@ import * as d3 from 'd3';
 
 import {insertCSS} from './plotutil.js';
 
-import type {TimeRangeType} from './seismogram.js';
+import {StartEndDuration} from './util.js';
 
 /**
  * Hour and Minute chooser using sliders.
@@ -250,11 +250,11 @@ export class DateTimeChooser {
  */
 export class TimeRangeChooser {
   div: any;
-  callbackFunction: (timerange: TimeRangeType) => void;
+  callbackFunction: (timerange: StartEndDuration) => void;
   duration: number;
   startChooser: DateTimeChooser;
   endChooser: DateTimeChooser;
-  constructor(div: any, callbackFunction: (timerange: TimeRangeType) => void) {
+  constructor(div: any, callbackFunction: (timerange: StartEndDuration) => void) {
     this.callbackFunction = callbackFunction;
     let endTime = moment.utc();
     this.duration = 300;
@@ -286,12 +286,9 @@ export class TimeRangeChooser {
       mythis.callbackFunction(mythis.getTimeRange());
     });
   }
-  getTimeRange(): TimeRangeType {
-    return {
-      'start': this.startChooser.getTime(),
-      'duration': this.duration,
-      'end': this.endChooser.getTime()
-    };
+  getTimeRange(): StartEndDuration {
+    return new StartEndDuration(this.startChooser.getTime(),
+                                this.endChooser.getTime());
   }
 }
 
