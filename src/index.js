@@ -45,7 +45,7 @@ import * as d3 from 'd3';
 
 
 /* reexport */
-export { datalink,
+export default { datalink,
          datechooser,
          distaz,
          fdsnavailability,
