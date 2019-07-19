@@ -941,12 +941,17 @@ export class Seismograph {
         this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
       }
     } else {
-      if (this.seismographConfig.ySublabelIsUnits && ! this.seismographConfig.ySublabel && ! this.instrumentSensitivity ) {
+      if (this.seismographConfig.ySublabelIsUnits ) {
         this.seismographConfig.ySublabel = "";
+        let allUnits = [];
         for (let t of this.traces) {
+          allUnits.push(t.yUnit)
           this.seismographConfig.ySublabel += `${t.yUnit} `;
         }
-        //this.seismographConfig.ySublabel = "Count";
+        if (allUnits.length === 0) {
+          allUnits.push("Count");
+        }
+        this.seismographConfig.ySublabel = allUnits.join(' ');
       }
     }
     if (this.seismographConfig.doRMean) {
