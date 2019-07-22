@@ -230,7 +230,7 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
       return { firstP: firstP, firstS: firstS };
     }).then(function(firstPS) {
       let PArrival = moment(quake.time).add(firstPS.firstP.time+pOffset, 'seconds');
-      let seisDates = new seisplotjs.fdsndataselect.StartEndDuration(PArrival, null, dur, clockOffset);
+      let seisDates = new seisplotjs.util.StartEndDuration(PArrival, null, dur, clockOffset);
       let startDate = seisDates.start;
       let endDate = seisDates.end;
 

@@ -42,7 +42,7 @@ doPlot = function(config) {
   }
   let svgParent = d3.select(`div.${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
-  let timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, plotEnd, config.duration, clockOffset);
+  let timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, config.duration, clockOffset);
 
   let netCodeQuery = config.netCode;
   let staCodeQuery = config.station;
@@ -112,30 +112,30 @@ doPlot = function(config) {
            ct.endTime
         );
       });
-      hash.traceMap = minMaxQ.loadSeismograms(minMaxChanTR);
+      hash.chantrList = minMaxQ.loadSeismograms(minMaxChanTR);
     } else {
       let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
         "http://eeyore.seis.sc.edu/mseed",
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
-      hash.traceMap = mseedQ.loadSeismograms(hash.chanTR);
+      hash.chantrList = mseedQ.loadSeismograms(hash.chanTR);
     }
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    if (hash.traceMap.size == 0) {
+    if (hash.chantrList.length == 0) {
       svgParent.append("p").text("No Data Found").style("color", "red");
       console.log("min max data from miniseedArchive found none");
       throw new Error("min max data from miniseedArchive found none");
       let dsQ = new seisplotjs.fdsndataselect.DataSelectQuery()
         .nodata(404);
       console.log(dsQ.createPostBody(hash.chanTR));
-      hash.traceMap = dsQ.postQuerySeismograms(hash.chanTR);
+      hash.chantrList = dsQ.postQuerySeismograms(hash.chanTR);
       hash.query = dsQ;
     }
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    let traceMap = hash.traceMap;
-    console.log(`got ${traceMap.size} channel-seismograms`);
-    if (traceMap.size !== 0) {
+    let chantrList = hash.chantrList;
+    console.log(`got ${chantrList.length} channel-seismograms`);
+    if (chantrList.length !== 0) {
       let heliConfig = new HelicorderConfig();
       heliConfig.overlap = overlap;
       heliConfig.lineSeisConfig.margin.left = 42;
@@ -143,22 +143,24 @@ doPlot = function(config) {
       heliConfig.markerFlagpoleBase = 'center';
       heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
       heliConfig.numLines = 12;
+      heliConfig.doRMean = true;
       let minMaxSeismogram = null;
-      traceMap.forEach((value, key) => {
-        if (key.endsWith(`L${hash.minMaxInstCode}${hash.chanOrient}`) || key.endsWith(`L${hash.minMaxInstCode}${hash.altChanOrient}`)) {
-          minMaxSeismogram = value;
-        } else if (key.endsWith(`${hash.bandCode}${hash.instCode}${hash.chanOrient}`) || key.endsWith(`${hash.bandCode}${hash.instCode}${hash.altChanOrient}`)) {
+      chantrList.forEach(ctr => {
+        console.log(`seis: ${ctr.channel.codes()}`)
+        if (ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.chanOrient}` || ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.altChanOrient}`) {
+          minMaxSeismogram = ctr.seismogram;
+        } else if (ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.chanOrient}` || ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.altChanOrient}`) {
           minMaxSeismogram = value;
           d3.selectAll("span.textChanCode").text(key.slice(-3));
         } else {
-          console.log(`does not match: ${key}`);
+          console.log(`does not match: ${ctr.channel.channelCode}`);
         }
       });
       if (! minMaxSeismogram) {
         throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient}`);
       }
       hash.minMaxSeismogram = minMaxSeismogram;
-      hash.traceMap = null;
+      hash.chantrList = null;
       hash.heli = new Helicorder(svgParent,
                                     heliConfig,
                                     minMaxSeismogram,

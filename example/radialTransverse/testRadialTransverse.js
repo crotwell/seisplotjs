@@ -9,6 +9,7 @@ let traveltime = seisplotjs.traveltime;
 let fdsnevent = seisplotjs.fdsnevent;
 let fdsnstation = seisplotjs.fdsnstation;
 let miniseed = seisplotjs.miniseed;
+const moment = seisplotjs.moment;
 let RSVP = seisplotjs.RSVP;
 const d3 = seisplotjs.d3;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
@@ -103,9 +104,9 @@ let bothPromise = RSVP.hash({
         });
     return RSVP.hash(hash);
   }).then(function(hash) {
-    hash.S_arrival = new Date(hash.quake.time.valueOf()+(hash.traveltime.firstS.time)*1000);
-    hash.P_arrival = new Date(hash.quake.time.valueOf()+(hash.traveltime.firstP.time)*1000);
-    hash.seisDates = new seisplotjs.fdsndataselect.StartEndDuration(new Date(hash.S_arrival.getTime()-preOffset*1000), null, dur, 0);
+    hash.S_arrival = moment.utc(hash.quake.time).add(hash.traveltime.firstS.time,'seconds');
+    hash.P_arrival = moment.utc(hash.quake.time).add(hash.traveltime.firstP.time, 'seconds');
+    hash.seisDates = new seisplotjs.util.StartEndDuration(moment.utc(hash.S_arrival).subtract(preOffset, 'seconds'), null, dur, 0);
     hash.seismograms = new seisplotjs.fdsndataselect.DataSelectQuery()
       .host(IRIS)
       .nodata(404)

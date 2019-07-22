@@ -3,12 +3,11 @@
 // just to get flow working...
 //import * as seisplotjs from '../../src/index';
 
-// this comes from the seisplotjs miniseed bundle
+// this comes from the seisplotjs bundle
 const ds = seisplotjs.fdsndataselect;
 const st = seisplotjs.fdsnstation;
 const d3 = seisplotjs.d3;
 const miniseed = seisplotjs.miniseed;
-const OregonDSP = seisplotjs.filter.OregonDSP
 const moment = seisplotjs.moment;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
 const Seismograph = seisplotjs.seismograph.Seismograph;
@@ -17,7 +16,7 @@ let doRunQuery = true;
 // doRunQuery = false;//for testing
 
 let eqTime = moment.utc('2019-07-04T17:33:49Z').add(330, 'seconds');
-let times = new ds.StartEndDuration(eqTime, null, 300, 0);
+let times = new seisplotjs.util.StartEndDuration(eqTime, null, 300, 0);
 let dsQuery = new ds.DataSelectQuery()
   .nodata(404)
   .networkCode('CO')
