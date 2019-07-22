@@ -137,4 +137,4 @@ export class HeliTimeRange extends StartEndDuration {
   constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
     super(start, end, duration, clockOffset);
   }
-};
+}
