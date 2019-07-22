@@ -77,7 +77,7 @@ do
     descArg=""
     descVarName="desc_${jsfile}"
     if [ -n "${descVarName}" ]; then
-      descText="'${!descVarName}'"
+      descText="${!descVarName}"
       descArg='--project-description'
     fi
     if [ 'index' != $jsfile ]
@@ -105,7 +105,7 @@ EOF
   then
     # entry of index.html
     cat >> docs/api/index.html <<EOF
-      <li><a href="${jsfile}${md}.html">${jsfile}</a></li>
+      <li><a href="${jsfile}${md}.html">${jsfile}</a> - ${descText}</li>
 EOF
   fi
 done
