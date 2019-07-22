@@ -77,19 +77,23 @@ do
     descArg=""
     descVarName="desc_${jsfile}"
     if [ -n "${descVarName}" ]; then
-      descText="${!descVarName}"
+      descText="'${!descVarName}'"
       descArg='--project-description'
     fi
-
-    echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} ${descArg} ${descText} src/${jsfile}.js
-    npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile}  ${descArg} \'${descText}\' src/${jsfile}.js
-
+    if [ 'index' != $jsfile ]
+    then
+      echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
+      npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
+      if [[ 'html' == "$format"  ]]
+      then
+        mv docs/api/${jsfile}/index.html docs/api/${jsfile}.html
+      fi
       # modules links for README.md
       cat >> README_part.md <<EOF
   * [${jsfile}](https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.js) ${descText}
 EOF
 
-
+    fi
   elif [ -d src/${jsfile} ]
   then
     echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile} src/${jsfile}/[a-hj-z]*.js
@@ -101,7 +105,7 @@ EOF
   then
     # entry of index.html
     cat >> docs/api/index.html <<EOF
-      <li><a href="${jsfile}${md}/index.html">${jsfile}</a></li>
+      <li><a href="${jsfile}${md}.html">${jsfile}</a></li>
 EOF
   fi
 done
@@ -115,4 +119,18 @@ cat >> docs/api/index.html <<EOF
 </body>
 </html>
 EOF
+fi
+
+# copy assets
+if [[ 'html' == "$format"  ]]
+then
+  mv docs/api/helicorder/assets docs/api/.
+  for f in src/*
+  do
+    jsfile=`basename ${f} .js`
+    if [ -d docs/api/${jsfile} ]
+    then
+      rm -r docs/api/${jsfile}
+    fi
+  done
 fi
