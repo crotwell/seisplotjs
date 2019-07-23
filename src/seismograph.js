@@ -13,7 +13,7 @@ import * as d3 from 'd3';
 
 import {insertCSS} from './plotutil.js';
 
-import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH} from './seismographconfig';
+import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH, DRAW_BOTH_ALIGN} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
 import {SeismogramSegment, Seismogram, ensureIsSeismogram, findStartEnd, findMinMax } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
@@ -216,7 +216,6 @@ export class Seismograph {
     this.drawAxis(this.g);
     this.drawAxisLabels();
     this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
-    //this.drawCanvasAlignment();
     this.beforeFirstDraw = false;
   }
   printSizes(): void {
@@ -271,11 +270,18 @@ export class Seismograph {
   }
 
   drawSeismograms() {
-    if (this.seismographConfig.drawingType === DRAW_CANVAS || this.seismographConfig.drawingType === DRAW_BOTH) {
+    if (this.seismographConfig.drawingType === DRAW_CANVAS
+      || this.seismographConfig.drawingType === DRAW_BOTH
+      || this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
       this.drawSeismogramsCanvas();
     }
-    if (this.seismographConfig.drawingType === DRAW_SVG || this.seismographConfig.drawingType === DRAW_BOTH) {
+    if (this.seismographConfig.drawingType === DRAW_SVG
+      || this.seismographConfig.drawingType === DRAW_BOTH
+      || this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
       this.drawSeismogramsSvg();
+    }
+    if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
+      this.drawCanvasAlignment();
     }
   }
   isVisible(): boolean {
@@ -465,7 +471,7 @@ export class Seismograph {
          .attr("class", "segment")
     .append("path")
       .attr("class", function(seg) {
-          return "seispath "+seg.codes()+" orient"+seg.chanCode.charAt(2);
+          return "seispath "+seg.codes()+(seg.chanCode ? " orient"+seg.chanCode.charAt(2) : "");
       })
       .attr("style", "clip-path: url(#"+CLIP_PREFIX+mythis.plotId+")")
       .merge(subtraceJoin)
@@ -490,7 +496,7 @@ export class Seismograph {
         console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Seismogram));
         return;
       }
-      return this.lineFunc(Array.of(seg.y).map(function(d,i) {
+      return this.lineFunc(Array.from(seg.y, function(d,i) {
         return {time: seg.timeOfSample(i).toDate(), y: d };
       }));
     } else {
@@ -1062,11 +1068,6 @@ path.seispath {
 }
 
 svg.seismograph {
-  height: 100%;
-  width: 100%;
-}
-
-canvas.seismograph {
   height: 100%;
   width: 100%;
 }
