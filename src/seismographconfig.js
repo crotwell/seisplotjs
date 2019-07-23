@@ -20,9 +20,14 @@ export type MarginType = {
   left: number
 };
 
+/** Constant for drawing seismogram using svg. */
 export const DRAW_SVG = "svg";
+/** Constant for drawing seismogram using canvas, axies are still svg. */
 export const DRAW_CANVAS = "canvas";
+/** Constant for drawing seismogram using both canvas and svg, for testing. */
 export const DRAW_BOTH = "both"; // for testing
+/** Constant for drawing seismogram using both canvas and svg plus alignment markers, for testing. */
+export const DRAW_BOTH_ALIGN = "alignment"; // for testing
 
 export class SeismographConfig {
   drawingType: string;
