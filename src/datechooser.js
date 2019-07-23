@@ -405,7 +405,6 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 
 .pika-label {
     display: inline-block;
-    *display: inline;
     position: relative;
     z-index: 9999;
     overflow: hidden;
@@ -446,8 +445,6 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     background-repeat: no-repeat;
     background-size: 75% 75%;
     opacity: .5;
-    *position: absolute;
-    *top: 0;
 }
 
 .pika-prev:hover,
@@ -459,14 +456,12 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 .is-rtl .pika-next {
     float: left;
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAAAUklEQVR42u3VMQoAIBADQf8Pgj+OD9hG2CtONJB2ymQkKe0HbwAP0xucDiQWARITIDEBEnMgMQ8S8+AqBIl6kKgHiXqQqAeJepBo/z38J/U0uAHlaBkBl9I4GwAAAABJRU5ErkJggg==');
-    *left: 0;
 }
 
 .pika-next,
 .is-rtl .pika-prev {
     float: right;
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAAAU0lEQVR42u3VOwoAMAgE0dwfAnNjU26bYkBCFGwfiL9VVWoO+BJ4Gf3gtsEKKoFBNTCoCAYVwaAiGNQGMUHMkjGbgjk2mIONuXo0nC8XnCf1JXgArVIZAQh5TKYAAAAASUVORK5CYII=');
-    *right: 0;
 }
 
 .pika-prev.is-disabled,
@@ -477,7 +472,6 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 
 .pika-select {
     display: inline-block;
-    *display: inline;
 }
 
 .pika-table {
