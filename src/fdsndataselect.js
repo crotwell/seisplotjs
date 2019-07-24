@@ -342,7 +342,7 @@ console.log("fdsnDataSelect URL: "+url);
         let codes = ct.channel.codes();
         if (seisMap.has(codes)) {
           // odd, but keeps flow happy
-          let seis = seisMap.get(ct.channel.codes())
+          let seis = seisMap.get(ct.channel.codes());
           if (seis) {
             ct.seismogram = seis;
           }

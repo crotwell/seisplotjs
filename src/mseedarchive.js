@@ -1,4 +1,4 @@
-startTime// @flow
+// @flow
 import moment from 'moment';
 import * as util from './util';
 import * as miniseed from './miniseed';

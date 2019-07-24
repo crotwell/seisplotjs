@@ -951,7 +951,7 @@ export class Seismograph {
         this.seismographConfig.ySublabel = "";
         let allUnits = [];
         for (let t of this.traces) {
-          allUnits.push(t.yUnit)
+          allUnits.push(t.yUnit);
           this.seismographConfig.ySublabel += `${t.yUnit} `;
         }
         if (allUnits.length === 0) {
