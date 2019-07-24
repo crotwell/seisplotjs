@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <style>
+      div.seismograph {
+        height: 450px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>A Seismograph recorded at <span id="stationCode"></span> for the <span id="earthquakeDescription"></span>!</h3>
+    <div class="seismograph" id="myseismograph">
+    </div>
+
+    <script src="seisplotjs_2.0.0-alpha.3_standalone.js"></script>
+    <script>
+    let eventQuery = new seisplotjs.fdsnevent.EventQuery()
+      .startTime('2019-07-01')
+      .endTime('2019-07-31')
+      .minMag(7)
+      .latitude(35).longitude(-118)
+      .maxRadius(3);
+    let stationQuery = new seisplotjs.fdsnstation.StationQuery()
+      .networkCode('CO')
+      .stationCode('HAW')
+      .locationCode('00')
+      .channelCode('HH?')
+      .startTime('2019-07-01')
+      .endTime('2019-07-31');
+    Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
+      .then( result => {
+        let events = result[0];
+        let networks = result[1];
+        let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
+        let chanTRList = allChannels.map(c => {
+          return new seisplotjs.fdsndataselect.ChannelTimeRange(c, events[0].time, null, 1800);
+        });
+        let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+        return Promise.all([ events, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
+      }).then( result => {
+        let events = result[0];
+        let networks = result[1];
+        let chanTRList = result[2];
+        let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
+        let startTime = chanTRList[0].startTime;
+        let endTime = chanTRList[0].endTime;
+        let div = seisplotjs.d3.select('div#myseismograph');
+        let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+        seisConfig.title = chanTRList.map(ctr => ctr.channel.codes());
+        let graph = new seisplotjs.seismograph.Seismograph(div,
+                                                           seisConfig,
+                                                           seismogramList,
+                                                           startTime,
+                                                           endTime);
+        graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
+        graph.draw();
+        seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
+        seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(events[0].description);
+      }).catch( function(error) {
+        seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+        console.assert(false, error);
+      });
+    </script>
+  </body>
+</html>

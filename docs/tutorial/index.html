@@ -8,6 +8,7 @@
     <link href='../api/assets/style.css' rel='stylesheet'>
     <link href='../api/assets/github.css' rel='stylesheet'>
     <link href='../api/assets/split.css' rel='stylesheet'>
+    <link href="../prism.css" rel="stylesheet" />
   </head>
   <body>
     <div class='flex'>
@@ -30,14 +31,14 @@
           <p>Lets start by plotting a seismogram. First we need an html file to
             put the plot in, something like this:
           </p>
-          <pre><code class="html hljs">
+          <pre><code class="language-html">
 &lt;html lang="en">
   &lt;head>
     &lt;meta charset='utf-8'>
   &lt;/head>
   &lt;body>
     &lt;h3>A Seismograph!&lt;/h3>
-    &lt;div class="seismograph" id="sinewave">
+    &lt;div class="seismograph" id="myseismograph">
     &lt;/div>
 
     &lt;script src="seisplotjs_2.0.0-alpha.3_standalone.js">&lt;/script>
@@ -62,7 +63,7 @@
             for now we will just put out javascript directly inside the
             bottom <code>script</code> element.
           </p>
-          <pre><code class="javascript hljs">
+          <pre><code class="language-javascript">
 let dataArray = new Float32Array(1000).map(function(d, i) {
   return Math.sin(2*Math.PI*i/100) * 3;
 });
@@ -78,9 +79,9 @@ let seismogram = seisplotjs.seismogram.Seismogram.createFromContiguousData(dataA
             <code>Seismograph</code> to put it in and a
             <code>SeismographConfig</code> to configure the Seismograph.
           </p>
-          <pre><code class="javascript hljs">
+          <pre><code class="language-javascript">
 let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-let div = seisplotjs.d3.select('div#sinewave');
+let div = seisplotjs.d3.select('div#myseismograph');
 let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
 graph.draw();
           </code></pre>
@@ -91,9 +92,10 @@ graph.draw();
             <code>&lt;style></code> element
             to make the height be 450 pixels and the width be 100% of the
             space available.
+            The page with all of this is in <a href="tutorial1.html">tutorial1.html</a>.
           </p>
 
-          <pre><code class="html hljs">
+          <pre><code class="language-html">
 &lt;style>
   div.seismograph {
     height: 450px;
@@ -101,23 +103,121 @@ graph.draw();
 &lt;/style>
           </code></pre>
           <p>
-            The page with all of this is <a href="tutorial1.html">tutorial1.html</a>.
             A sine wave is kind of boring, so perhaps some real data would be
-            more interesting. We will use the
-            <a href="http://service.iris.edu/fdsnws/dataselect/1/">IRIS FDSNWS
-              dataselect</a> web service to grab some actual seismic data.
+            more interesting. We will use the IRIS
+            <a href="http://service.iris.edu/fdsnws/dataselect/1/">FDSNWS
+            dataselect</a> web service to grab some actual seismic data.
+            StartEndDuration makes it easy to get start and end times from
+            any combination of start, end and duration. The parameters
+            for the DataSelectQuery match those listed in the
+            <a href="http://www.fdsn.org/webservices/">fdsnws-dataselect</a>
+            specification. This example only uses the simple
+            <code class="language-html">GET</code> style query, and so
+            is limited to a single channels and single time range.
+            <code class="language-javascript">DataSelectQuery</code> also
+            supports the <code class="language-html">POST</code> style query
+            that allows many channel-time range pairs to be requested at once.
+            One important difference here is that unlike the previous example
+            getting data remotely is inherantly an asynchronis operation, and
+            so rather than return seismograms, the
+            <code class="language-javascript">querySeismograms()</code>
+            method returns a
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>.
+            The <code class="language-javascript">then()</code> method of the
+            promise is executed <em>after</em> the request returns. We expect
+            there to only be one seismogram returned from this, so we only try
+            to display the first one.
+            The page with all of this is in <a href="tutorial2.html">tutorial2.html</a>.
           </p>
-          <pre><code class="javascript hljs">
-let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 600);
+          <pre><code class="language-javascript">
+let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
 let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
 dsQuery.networkCode('CO')
   .stationCode('JSC')
   .locationCode('00')
   .channelCode('LHZ')
-  .start
-let div = seisplotjs.d3.select('div#sinewave');
-let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
-graph.draw();
+  .startTime(times.startTime)
+  .endTime(times.endTime);
+  dsQuery.querySeismograms().then(seisMap => {
+    // only plot the first seismogram
+    let seismogram = seisMap.values().next().value;
+    let div = seisplotjs.d3.select('div#myseismograph');
+    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+    let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
+    graph.draw();
+  }).catch( function(error) {
+    d3.select("div.miniseed").append('p').html("Error loading data." +error);
+    console.assert(false, error);
+  });
+          </code></pre>
+          <p>
+            It would be nicer if we could add some useful labels to this instead
+            of just a raw seismogram. Perhaps getting some information about
+            this particular earthquake and the station it was recorded at. We
+            will use the IRIS
+            <a href="http://service.iris.edu/fdsnws/station/1/">FDSNWS
+            station</a> web service to get the station and channels and the USGS
+           <a href="http://earthquake.usgs.gov/fdsnws/event/1/">FDSNWS
+           event</a> web service to get the earthquake. Again, both of these
+           are asynchronis and so we will have to use promises. We first create
+           both the <code>EventQuery</code> and <code>StationQuery</code> objects,
+           and call their <code>query</code> methods with a <code>Promise.all()</code>
+           which will wait until both of these return before calling the
+           <code>then()</code> function. We will also use the more powerful
+           <code>POST</code> method to get the seismograms. Because we have the
+           channel, we can also plot the seismograms corrected for overall
+           gain and in units of m/s. We also added a couple of <code>&lt;span></code>
+           elements to hold the station codes and earthquake description.
+           All of this is in
+           <a href="tutorial3.html">tutorial3.html</a>.
+          </p>
+          <pre><code class="language-javascript">
+let eventQuery = new seisplotjs.fdsnevent.EventQuery()
+  .startTime('2019-07-01')
+  .endTime('2019-07-31')
+  .minMag(7)
+  .latitude(35).longitude(-118)
+  .maxRadius(3);
+let stationQuery = new seisplotjs.fdsnstation.StationQuery()
+  .networkCode('CO')
+  .stationCode('HAW')
+  .locationCode('00')
+  .channelCode('HH?')
+  .startTime('2019-07-01')
+  .endTime('2019-07-31');
+Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
+  .then( result => {
+    let events = result[0];
+    let networks = result[1];
+    let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
+    let chanTRList = allChannels.map(c => {
+      return new seisplotjs.fdsndataselect.ChannelTimeRange(c, events[0].time, null, 1800);
+    });
+    let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+    return Promise.all([ events, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
+  }).then( result => {
+    let events = result[0];
+    let networks = result[1];
+    let chanTRList = result[2];
+    let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
+    let startTime = chanTRList[0].startTime;
+    let endTime = chanTRList[0].endTime;
+    let div = seisplotjs.d3.select('div#myseismograph');
+    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+    seisConfig.title = chanTRList.map(ctr => ctr.channel.codes());
+    let graph = new seisplotjs.seismograph.Seismograph(div,
+                                                       seisConfig,
+                                                       seismogramList,
+                                                       startTime,
+                                                       endTime);
+    graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
+    graph.draw();
+    seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
+    seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(events[0].description);
+  }).catch( function(error) {
+    seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+    console.assert(false, error);
+  });
           </code></pre>
           <div>
           </div>
@@ -125,7 +225,6 @@ graph.draw();
       </div>
     </div>
 
-    <script src="../dist/seisplotjs_2.0.0-alpha.3_standalone.js"></script>
-    <script></script>
+    <script src="../prism.js"></script>
   </body>
 </html>
