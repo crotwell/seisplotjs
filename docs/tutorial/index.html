@@ -4,10 +4,10 @@
     <title>seisplotjs.fdsnstation 2.0.0-alpha.3 | Documentation</title>
     <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
     <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='api/assets/bass.css' rel='stylesheet'>
-    <link href='api/assets/style.css' rel='stylesheet'>
-    <link href='api/assets/github.css' rel='stylesheet'>
-    <link href='api/assets/split.css' rel='stylesheet'>
+    <link href='../api/assets/bass.css' rel='stylesheet'>
+    <link href='../api/assets/style.css' rel='stylesheet'>
+    <link href='../api/assets/github.css' rel='stylesheet'>
+    <link href='../api/assets/split.css' rel='stylesheet'>
   </head>
   <body>
     <div class='flex'>
@@ -30,7 +30,7 @@
           <p>Lets start by plotting a seismogram. First we need an html file to
             put the plot in, something like this:
           </p>
-          <pre><code class="html">
+          <pre><code class="html hljs">
 &lt;html lang="en">
   &lt;head>
     &lt;meta charset='utf-8'>
@@ -78,7 +78,7 @@ let seismogram = seisplotjs.seismogram.Seismogram.createFromContiguousData(dataA
             <code>Seismograph</code> to put it in and a
             <code>SeismographConfig</code> to configure the Seismograph.
           </p>
-          <pre><code class="javascript">
+          <pre><code class="javascript hljs">
 let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
 let div = seisplotjs.d3.select('div#sinewave');
 let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
@@ -93,12 +93,31 @@ graph.draw();
             space available.
           </p>
 
-          <pre><code class="html">
+          <pre><code class="html hljs">
 &lt;style>
   div.seismograph {
     height: 450px;
   }
 &lt;/style>
+          </code></pre>
+          <p>
+            The page with all of this is <a href="tutorial1.html">tutorial1.html</a>.
+            A sine wave is kind of boring, so perhaps some real data would be
+            more interesting. We will use the
+            <a href="http://service.iris.edu/fdsnws/dataselect/1/">IRIS FDSNWS
+              dataselect</a> web service to grab some actual seismic data.
+          </p>
+          <pre><code class="javascript hljs">
+let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 600);
+let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+dsQuery.networkCode('CO')
+  .stationCode('JSC')
+  .locationCode('00')
+  .channelCode('LHZ')
+  .start
+let div = seisplotjs.d3.select('div#sinewave');
+let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
+graph.draw();
           </code></pre>
           <div>
           </div>
