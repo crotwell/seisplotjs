@@ -270,6 +270,7 @@ export class Seismograph {
   }
 
   drawSeismograms() {
+    this.svg.classed("overlayPlot", this.traces.length > 1);
     if (this.seismographConfig.drawingType === DRAW_CANVAS
       || this.seismographConfig.drawingType === DRAW_BOTH
       || this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
@@ -1127,11 +1128,11 @@ svg.overlayPlot g.title tspan:nth-child(9n+1)  {
   fill: skyblue;
 }
 
-svg.overlayPlot g.title tspan:nth-child(9n+2)  {
+svg.overlayPlot g.title text tspan:nth-child(9n+2)  {
   stroke: olivedrab;
 }
 
-svg.overlayPlot g.title tspan:nth-child(9n+3)  {
+svg.overlayPlot g.title text tspan:nth-child(9n+3)  {
   stroke: goldenrod;
 }
 
