@@ -17,10 +17,10 @@ export function createParticleMotionBySelector(selector: string): void {
         result.svgParent.append("p").text("Build plot");
         const traceArr = Array.from(result.traceMap.values());
           if (traceArr.length >1) {
-            addDivForParticleMotion(traceArr[0], traceArr[1], result.svgParent, result.startDate, result.endDate);
+            addDivForParticleMotion(traceArr[0], traceArr[1], result.svgParent, result.startTime, result.endTime);
             if (traceArr.length > 2) {
-              addDivForParticleMotion(traceArr[0], traceArr[2], result.svgParent, result.startDate, result.endDate);
-              addDivForParticleMotion(traceArr[1], traceArr[2], result.svgParent, result.startDate, result.endDate);
+              addDivForParticleMotion(traceArr[0], traceArr[2], result.svgParent, result.startTime, result.endTime);
+              addDivForParticleMotion(traceArr[1], traceArr[2], result.svgParent, result.startTime, result.endTime);
             }
           } else {
             result.svgParent.append("p").text(`Not Enough Data: ${traceArr.length}`);
@@ -29,7 +29,7 @@ export function createParticleMotionBySelector(selector: string): void {
     });
   }
 
-function addDivForParticleMotion(ta: Seismogram, tb: Seismogram, svgParent: any, startDate: moment, endDate: moment): void {
+function addDivForParticleMotion(ta: Seismogram, tb: Seismogram, svgParent: any, startTime: moment, endTime: moment): void {
   if (ta.segments.length === 0 || tb.segments.length === 0) {
     throw new Error(`Seismogram has no data: ${ta.segments.length} ${tb.segments.length}`);
   }
@@ -39,7 +39,7 @@ function addDivForParticleMotion(ta: Seismogram, tb: Seismogram, svgParent: any,
   let svgDiv = svgParent.append("div");
   svgDiv.classed(sa.chanCode+" "+sb.chanCode, true);
   svgDiv.classed("svg-container-square", true);
-  let pmp = new ParticleMotion(svgDiv, [sa, sb], startDate, endDate);
+  let pmp = new ParticleMotion(svgDiv, [sa, sb], startTime, endTime);
   pmp.setXLabel(sa.chanCode);
   pmp.setYLabel(sb.chanCode);
   pmp.draw();
@@ -77,8 +77,8 @@ export class ParticleMotion {
     this.plotId = ++ParticleMotion._lastID;
 // maybe don't need, just plot as many points as can
 //    if (inSegments[0].y().length !== inSegments[1].y().length) {throw new Error("inSegments should be of same lenght but was "+inSegments[0].y().length+" "+inSegments[1].y().length);}
-    if ( ! plotStartDate) {plotStartDate = inSegments[0].start();}
-    if ( ! plotEndDate) {plotEndDate = inSegments[0].end();}
+    if ( ! plotStartDate) {plotStartDate = inSegments[0].startTime();}
+    if ( ! plotEndDate) {plotEndDate = inSegments[0].endTime();}
     this.svg = inSvgParent.append("svg");
     this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");

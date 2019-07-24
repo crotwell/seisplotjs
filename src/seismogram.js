@@ -18,7 +18,7 @@ export type HighLowType = {
 * A contiguous segment of a Seismogram.
 * @param  yArray array of Y sample values, ie the timeseries
 * @param  sampleRate sample rate of the seismogram, hertz
-* @param  start start time of seismogrm as a momentjs moment in utc or a string that can be parsed
+* @param  startTime start time of seismogrm as a momentjs moment in utc or a string that can be parsed
 */
 export class SeismogramSegment {
   /** Array of y values */
@@ -27,16 +27,16 @@ export class SeismogramSegment {
   /**  @private the sample rate in hertz */
   _sampleRate: number;
   /** @private */
-  _start: moment;
-  _end_cache: null | moment;
-  _end_cache_numPoints: number;
+  _startTime: moment;
+  _endTime_cache: null | moment;
+  _endTime_cache_numPoints: number;
   networkCode: string;
   stationCode: string;
   locationCode: string;
   channelCode: string;
   yUnit: string;
   _highlow: HighLowType;
-  constructor(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array, sampleRate: number, start: moment) {
+  constructor(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array, sampleRate: number, startTime: moment) {
     if (yArray instanceof Int32Array || yArray instanceof Float32Array || yArray instanceof Float64Array) {
       this._y = yArray;
       this._compressed = null;
@@ -49,11 +49,11 @@ export class SeismogramSegment {
       this._compressed = null;
     }
     this._sampleRate = sampleRate;
-    this._start = checkStringOrDate(start);
+    this._startTime = checkStringOrDate(startTime);
     this.yUnit = 'count';
     // to avoid recalc of end time as it is kind of expensive
-    this._end_cache = null;
-    this._end_cache_numPoints = 0;
+    this._endTime_cache = null;
+    this._endTime_cache_numPoints = 0;
   }
   /** Y data of the seismogram. Decompresses data if needed.
   */
@@ -94,29 +94,29 @@ export class SeismogramSegment {
   }
   set y(value: Int32Array | Float32Array | Float64Array) {
     this._y = value;
-    this._invalidate_end_cache();
+    this._invalidate_endTime_cache();
   }
-  get start(): moment {
-    return this._start;
+  get startTime(): moment {
+    return this._startTime;
   }
-  set start(value: moment | string) {
-    this._start = checkStringOrDate(value);
-    this._invalidate_end_cache();
+  set startTime(value: moment | string) {
+    this._startTime = checkStringOrDate(value);
+    this._invalidate_endTime_cache();
   }
-  get end(): moment {
-    if ( ! this._end_cache || this._end_cache_numPoints !== this.numPoints) {
+  get endTime(): moment {
+    if ( ! this._endTime_cache || this._endTime_cache_numPoints !== this.numPoints) {
       // array length modified, recalc cached end time
-      this._end_cache_numPoints = this.numPoints;
-      this._end_cache = this.timeOfSample(this._end_cache_numPoints-1);
+      this._endTime_cache_numPoints = this.numPoints;
+      this._endTime_cache = this.timeOfSample(this._endTime_cache_numPoints-1);
     }
-    return this._end_cache;
+    return this._endTime_cache;
   }
   get sampleRate() {
     return this._sampleRate;
   }
   set sampleRate(value: number) {
     this._sampleRate = value;
-    this._invalidate_end_cache();
+    this._invalidate_endTime_cache();
   }
   get numPoints(): number {
     let out = 0;
@@ -184,7 +184,7 @@ export class SeismogramSegment {
     return [ minAmp, maxAmp ];
   }
   timeOfSample(i: number ): moment {
-    return moment.utc(this.start).add(i/this.sampleRate, 'seconds');
+    return moment.utc(this.startTime).add(i/this.sampleRate, 'seconds');
   }
   /** @return nslc codes separated by '.'
   */
@@ -192,7 +192,7 @@ export class SeismogramSegment {
     return this.networkCode+"."+this.stationCode+"."+this.locationCode+"."+this.channelCode;
   }
   seisId(): string {
-   return (this.codes()+"_"+this.start.toISOString()+"_"+this.end.toISOString()).replace(/\./g,'_').replace(/:/g,'');
+   return (this.codes()+"_"+this.startTime.toISOString()+"_"+this.endTime.toISOString()).replace(/\./g,'_').replace(/:/g,'');
   }
   clone(): SeismogramSegment {
     let clonedData = this._y;
@@ -210,7 +210,7 @@ export class SeismogramSegment {
   cloneWithNewData(clonedData: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array): SeismogramSegment {
     let out = new SeismogramSegment(clonedData,
                           this.sampleRate,
-                          moment.utc(this._start));
+                          moment.utc(this._startTime));
     out.networkCode = this.networkCode;
     out.stationCode = this.stationCode;
     out.locationCode = this.locationCode;
@@ -219,18 +219,18 @@ export class SeismogramSegment {
     return out;
   }
   trim(trimStart: moment, trimEnd: moment) {
-    if (trimEnd.isBefore(this._start) || trimStart.isAfter(this.end)) {
+    if (trimEnd.isBefore(this._startTime) || trimStart.isAfter(this.endTime)) {
       return null;
     }
     let sIndex = 0;
-    if (trimStart.isAfter(this._start)) {
-      let milliDiff = trimStart.diff(this._start);
+    if (trimStart.isAfter(this._startTime)) {
+      let milliDiff = trimStart.diff(this._startTime);
       let offset = milliDiff * this.sampleRate /1000.0;
       sIndex = Math.floor(offset);
     }
     let eIndex = 0;
-    if (trimEnd.isBefore(this.end)) {
-      let milliDiff = moment.utc(this.end).diff(trimEnd);
+    if (trimEnd.isBefore(this.endTime)) {
+      let milliDiff = moment.utc(this.endTime).diff(trimEnd);
       let offset = milliDiff * this.sampleRate /1000.0;
       eIndex = this.y.length - Math.floor(offset);
     }
@@ -238,7 +238,7 @@ export class SeismogramSegment {
 
     let out = new SeismogramSegment(trimY,
                           this.sampleRate,
-                          moment.utc(this._start).add(sIndex / this.sampleRate, 'seconds'));
+                          moment.utc(this._startTime).add(sIndex / this.sampleRate, 'seconds'));
     out.networkCode = this.networkCode;
     out.stationCode = this.stationCode;
     out.locationCode = this.locationCode;
@@ -246,9 +246,9 @@ export class SeismogramSegment {
     out.yUnit = this.yUnit;
     return out;
   }
-  _invalidate_end_cache() {
-    this._end_cache = null;
-    this._end_cache_numPoints = 0;
+  _invalidate_endTime_cache() {
+    this._endTime_cache = null;
+    this._endTime_cache_numPoints = 0;
   }
 }
 
@@ -260,8 +260,8 @@ export class SeismogramSegment {
   * and sample rate, but cover different times. */
 export class Seismogram {
   _segmentArray: Array<SeismogramSegment>;
-  _start: moment;
-  _end: moment;
+  _startTime: moment;
+  _endTime: moment;
   _y: null | Int32Array | Float32Array | Float64Array;
   constructor(segmentArray: SeismogramSegment | Array<SeismogramSegment>) {
     this._y = null;
@@ -295,13 +295,13 @@ export class Seismogram {
   }
   findStartEnd() {
     let allStart = this._segmentArray.map(seis => {
-      return moment.utc(seis.start);
+      return moment.utc(seis.startTime);
     });
-    this._start = moment.min(allStart);
+    this._startTime = moment.min(allStart);
     let allEnd = this._segmentArray.map(seis => {
-      return moment.utc(seis.end);
+      return moment.utc(seis.endTime);
     });
-    this._end = moment.max(allEnd);
+    this._endTime = moment.max(allEnd);
   }
   findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
     if (this._segmentArray.length === 0) {
@@ -318,11 +318,11 @@ export class Seismogram {
     }
   }
 
-  get start(): moment {
-    return this._start;
+  get startTime(): moment {
+    return this._startTime;
   }
-  get end(): moment {
-    return this._end;
+  get endTime(): moment {
+    return this._endTime;
   }
   get networkCode(): string {
     return this._segmentArray[0].networkCode;
@@ -353,8 +353,8 @@ export class Seismogram {
   }
   append(seismogram: SeismogramSegment) {
     this.checkSimilar(this._segmentArray[0], seismogram);
-    this._start = moment.min([ this.start, moment.utc(seismogram.start)]);
-    this._end = moment.max([ this.end, moment.utc(seismogram.end)]);
+    this._startTime = moment.min([ this.startTime, moment.utc(seismogram.startTime)]);
+    this._endTime = moment.max([ this.endTime, moment.utc(seismogram.endTime)]);
     this._segmentArray.push(seismogram);
   }
   /**
@@ -365,9 +365,9 @@ export class Seismogram {
     let out = null;
     if (this._segmentArray) {
       let trimSeisArray = this._segmentArray.filter(function(d) {
-        return d.end.isAfter(timeWindow.start);
+        return d.endTime.isAfter(timeWindow.startTime);
       }).filter(function(d) {
-        return d.start.isBefore(timeWindow.end);
+        return d.startTime.isBefore(timeWindow.endTime);
       });
       if (trimSeisArray.length > 0) {
         out = new Seismogram(trimSeisArray);
@@ -377,9 +377,9 @@ export class Seismogram {
   }
   break(duration: moment.Duration) {
     if (this._segmentArray) {
-      let breakStart = moment.utc(this.start);
+      let breakStart = moment.utc(this.startTime);
       let out = [];
-      while (breakStart.isBefore(this.end)) {
+      while (breakStart.isBefore(this.endTime)) {
         let breakEnd = moment.utc(breakStart).add(duration);
         let trimSeisArray = this._segmentArray.map(function(seis) {
           return seis.clone().trim(breakStart, breakEnd);
@@ -399,8 +399,8 @@ export class Seismogram {
     }
     let prev = null;
     for (const s of this._segmentArray) {
-      if (prev && ! (prev.end.isBefore(s.start)
-          && prev.end.add(1000*1.5/prev.sampleRate, 'ms').isAfter(s.start))) {
+      if (prev && ! (prev.endTime.isBefore(s.startTime)
+          && prev.endTime.add(1000*1.5/prev.sampleRate, 'ms').isAfter(s.startTime))) {
         return false;
       }
       prev = s;
@@ -462,8 +462,8 @@ export class Seismogram {
   /** factory method to create a single segment Seismogram from either encoded data
    *  or a TypedArray, along with sample rate and start time.
   */
-  static createFromContiguousData(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array, sampleRate: number, start: moment) {
-    const seg = new SeismogramSegment(yArray, sampleRate, start);
+  static createFromContiguousData(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array, sampleRate: number, startTime: moment) {
+    const seg = new SeismogramSegment(yArray, sampleRate, startTime);
     return new Seismogram([seg]);
   }
 }
@@ -506,11 +506,11 @@ export function findStartEnd(data: Array<Seismogram>, accumulator?: StartEndDura
   }
   if ( Array.isArray(data)) {
     for (let s of data) {
-      if ( s.start < out.start) {
-        out.start = s.start;
+      if ( s.startTime < out.startTime) {
+        out.startTime = s.startTime;
       }
-      if ( out.end < s.end ) {
-        out.end = s.end;
+      if ( out.endTime < s.endTime ) {
+        out.endTime = s.endTime;
       }
     }
   } else {

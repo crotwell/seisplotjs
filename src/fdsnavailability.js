@@ -280,10 +280,10 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  computeStartEnd(start?: moment, end?: moment, duration?: number | null = null, clockOffset?: number =0): AvailabilityQuery {
-    let se = new StartEndDuration(start, end, duration, clockOffset);
-    this.startTime(se.start);
-    this.endTime(se.end);
+  computeStartEnd(startTime?: moment, endTime?: moment, duration?: number | null = null, clockOffset?: number =0): AvailabilityQuery {
+    let se = new StartEndDuration(startTime, endTime, duration, clockOffset);
+    this.startTime(se.startTime);
+    this.endTime(se.endTime);
     return this;
   }
 

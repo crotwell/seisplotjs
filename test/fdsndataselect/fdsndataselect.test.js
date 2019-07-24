@@ -24,10 +24,10 @@ test( "query setter test", () => {
   expect(dsQuery.locationCode()).toBe(LOC);
   expect(dsQuery.channelCode(CHAN)).toBe(dsQuery);
   expect(dsQuery.channelCode()).toBe(CHAN);
-  expect(dsQuery.startTime(timeWindow.start)).toBe(dsQuery);
-  expect(dsQuery.startTime()).toBe(timeWindow.start);
-  expect(dsQuery.endTime(timeWindow.end)).toBe(dsQuery);
-  expect(dsQuery.endTime()).toBe(timeWindow.end);
+  expect(dsQuery.startTime(timeWindow.startTime)).toBe(dsQuery);
+  expect(dsQuery.startTime()).toBe(timeWindow.startTime);
+  expect(dsQuery.endTime(timeWindow.endTime)).toBe(dsQuery);
+  expect(dsQuery.endTime()).toBe(timeWindow.endTime);
   expect(dsQuery.minimumLength(MIN_LENGTH)).toBe(dsQuery);
   expect(dsQuery.minimumLength()).toBe(MIN_LENGTH);
   expect(dsQuery.longestOnly(true)).toBe(dsQuery);

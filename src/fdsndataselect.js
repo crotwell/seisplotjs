@@ -19,15 +19,16 @@ import {StartEndDuration, calcClockOffset} from './util';
 /**
  * Holds a Channels and a TimeRange and optionally the corresponding seismogram.
  */
-export class ChannelTimeRange {
+export class ChannelTimeRange extends StartEndDuration {
   channel: Channel;
-  startTime: moment;
-  endTime: moment;
   seismogram: Seismogram | null;
-  constructor(channel: Channel, startTime: moment, endTime: moment) {
+  constructor(channel: Channel,
+              startTime: moment | null,
+              endTime: moment | null,
+              duration: number | null =null,
+              clockOffset?: number | null =0) {
+    super(startTime, endTime, duration, clockOffset);
     this.channel = channel;
-    this.startTime = startTime;
-    this.endTime = endTime;
     this.seismogram = null;
   }
 }
@@ -260,10 +261,10 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  computeStartEnd(start?: moment, end?: moment, duration?: number | null =null, clockOffset?: number =0): DataSelectQuery {
-    let se = new StartEndDuration(start, end, duration, clockOffset);
-    this.startTime(se.start);
-    this.endTime(se.end);
+  computeStartEnd(startTime?: moment, endTime?: moment, duration?: number | null =null, clockOffset?: number =0): DataSelectQuery {
+    let se = new StartEndDuration(startTime, endTime, duration, clockOffset);
+    this.startTime(se.startTime);
+    this.endTime(se.endTime);
     return this;
   }
 

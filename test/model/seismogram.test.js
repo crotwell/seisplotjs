@@ -6,12 +6,12 @@ import  {moment} from '../../src/util';
 test("simple seismogram seg creation", () => {
   let yValues = Int32Array.from([0, 1, 2]);
   let sampleRate = 20.0;
-  let start = moment.utc();
+  let startTime = moment.utc();
   let netCode = "XX";
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let seis = new SeismogramSegment(yValues, sampleRate, start);
+  let seis = new SeismogramSegment(yValues, sampleRate, startTime);
   seis.networkCode = netCode;
   seis.stationCode = staCode;
   seis.locationCode = locCode;
@@ -21,25 +21,25 @@ test("simple seismogram seg creation", () => {
   expect(seis.yAtIndex(1)).toBe(1);
   expect(seis.yAtIndex(2)).toBe(2);
   expect(seis.sampleRate).toBe(sampleRate);
-  expect(seis.start).toBe(start);
+  expect(seis.startTime).toBe(startTime);
   expect(seis.netCode).toBe(netCode);
   expect(seis.staCode).toBe(staCode);
   expect(seis.locCode).toBe(locCode);
   expect(seis.chanCode).toBe(chanCode);
   expect(seis.numPoints).toBe(yValues.length);
-  expect(seis.timeOfSample(0).toISOString()).toEqual(start.toISOString());
+  expect(seis.timeOfSample(0).toISOString()).toEqual(startTime.toISOString());
   expect(seis.codes()).toBe(netCode+"."+staCode+"."+locCode+"."+chanCode);
 });
 
 test("seismogram seg clone", () => {
   let yValues = Int32Array.from([0, 1, 2]);
   let sampleRate = 20.0;
-  let start = moment.utc();
+  let startTime = moment.utc();
   let netCode = "XX";
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, start);
+  let seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, startTime);
   seisSeg.networkCode = netCode;
   seisSeg.stationCode = staCode;
   seisSeg.locationCode = locCode;
@@ -53,8 +53,8 @@ test("seismogram seg clone", () => {
   expect(cloneSeg.yAtIndex(1)).toBe(seisSeg.yAtIndex(1));
   expect(cloneSeg.yAtIndex(2)).toBe(seisSeg.yAtIndex(2));
   expect(cloneSeg.sampleRate).toBe(seisSeg.sampleRate);
-  expect(cloneSeg.start).toEqual(seisSeg.start);
-  expect(cloneSeg.start.toISOString()).toEqual(seisSeg.start.toISOString());
+  expect(cloneSeg.startTime).toEqual(seisSeg.startTime);
+  expect(cloneSeg.startTime.toISOString()).toEqual(seisSeg.startTime.toISOString());
   expect(cloneSeg.netCode).toBe(seisSeg.netCode);
   expect(cloneSeg.staCode).toBe(seisSeg.staCode);
   expect(cloneSeg.locCode).toBe(seisSeg.locCode);
@@ -62,7 +62,7 @@ test("seismogram seg clone", () => {
   expect(cloneSeg.numPoints).toBe(seisSeg.numPoints);
   expect(cloneSeg.timeOfSample(0).toISOString()).toEqual(seisSeg.timeOfSample(0).toISOString());
   expect(cloneSeg.codes()).toEqual(seisSeg.codes());
-  expect(cloneSeg.end.toISOString()).toEqual(seisSeg.end.toISOString());
+  expect(cloneSeg.endTime.toISOString()).toEqual(seisSeg.endTime.toISOString());
   // test after replace data Array
   let x = new Int32Array(seisSeg.y.length);
   x[0] = 4;
@@ -82,12 +82,12 @@ test("seismogram seg clone", () => {
 test("simple Seismogram creation", () => {
   let yValues = Int32Array.from([0, 1, 2]);
   let sampleRate = 20.0;
-  let start = moment.utc();
+  let startTime = moment.utc();
   let netCode = "XX";
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let seis = new SeismogramSegment(yValues.slice(), sampleRate, start);
+  let seis = new SeismogramSegment(yValues.slice(), sampleRate, startTime);
   seis.networkCode = netCode;
   seis.stationCode = staCode;
   seis.locationCode = locCode;
@@ -97,21 +97,21 @@ test("simple Seismogram creation", () => {
   expect(trace.stationCode).toBe(staCode);
   expect(trace.locationCode).toBe(locCode);
   expect(trace.channelCode).toBe(chanCode);
-  expect(trace.start).toEqual(start);
+  expect(trace.startTime).toEqual(startTime);
   expect(trace.sampleRate).toBe(sampleRate);
 });
 
 test("seismogram isContiguous", () =>{
   let yValues = new Int32Array(10);
   let sampleRate = 20.0;
-  let start = moment.utc("2013-02-08T09:30:26");
-  let secondStart = moment.utc(start).add(1000*yValues.length/sampleRate, 'milliseconds');
+  let startTime = moment.utc("2013-02-08T09:30:26");
+  let secondStart = moment.utc(startTime).add(1000*yValues.length/sampleRate, 'milliseconds');
   let laterStart = moment.utc(secondStart).add(10*1000*yValues.length/sampleRate, 'milliseconds');
   let netCode = "XX";
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let first = new SeismogramSegment(yValues, sampleRate, start);
+  let first = new SeismogramSegment(yValues, sampleRate, startTime);
   let second = new SeismogramSegment(yValues, sampleRate, secondStart);
   let seis = new Seismogram([first, second]);
   expect(seis.isContiguous()).toBe(true);
@@ -127,12 +127,12 @@ test("seismogram clone", () => {
   let yValues = Int32Array.from([0, 1, 2]);
   expect(yValues[0]).toEqual(0);
   let sampleRate = 20.0;
-  let start = moment.utc();
+  let startTime = moment.utc();
   let netCode = "XX";
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, start);
+  let seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, startTime);
   let seis = new Seismogram([ seisSeg]);
 
   let cloneSeis = seis.clone();
@@ -146,8 +146,8 @@ test("seismogram clone", () => {
   expect(cloneSeis.y[1]).toBe(seis.y[1]);
   expect(cloneSeis.y[2]).toBe(seis.y[2]);
   expect(cloneSeis.sampleRate).toBe(seis.sampleRate);
-  expect(cloneSeis.start).toEqual(seis.start);
-  expect(cloneSeis.start.toISOString()).toEqual(seis.start.toISOString());
+  expect(cloneSeis.startTime).toEqual(seis.startTime);
+  expect(cloneSeis.startTime.toISOString()).toEqual(seis.startTime.toISOString());
   expect(cloneSeis.networkCode).toBe(seis.networkCode);
   expect(cloneSeis.stationCode).toBe(seis.stationCode);
   expect(cloneSeis.locationCode).toBe(seis.locationCode);
@@ -155,7 +155,7 @@ test("seismogram clone", () => {
   expect(cloneSeis.numPoints).toBe(seis.numPoints);
 //  expect(cloneSeis.timeOfSample(0).toISOString()).toEqual(seis.timeOfSample(0).toISOString());
   expect(cloneSeis.codes()).toEqual(seis.codes());
-  expect(cloneSeis.end.toISOString()).toEqual(seis.end.toISOString());
+  expect(cloneSeis.endTime.toISOString()).toEqual(seis.endTime.toISOString());
   // test after replace data Array
   let x = new Int32Array(seis.y.length+1);
   x[0] = 4;
@@ -178,14 +178,14 @@ test("seismogram merge", () => {
   let yValues = Int32Array.from([0, 1, 2]);
   expect(yValues).toHaveLength(3);
   let sampleRate = 20.0;
-  let startA = moment.utc().subtract(yValues.length/sampleRate, 'seconds');
-  let startB = moment.utc(startA).add(yValues.length/sampleRate, 'seconds');
+  let startTimeA = moment.utc().subtract(yValues.length/sampleRate, 'seconds');
+  let startTimeB = moment.utc(startTimeA).add(yValues.length/sampleRate, 'seconds');
   let netCode = "XX";
   let staCode = "ABCD";
   let locCode = "00";
   let chanCode = "BHZ";
-  let seisSegA = new SeismogramSegment(yValues.slice(), sampleRate, startA);
-  let seisSegB = new SeismogramSegment(yValues.slice(), sampleRate, startB);
+  let seisSegA = new SeismogramSegment(yValues.slice(), sampleRate, startTimeA);
+  let seisSegB = new SeismogramSegment(yValues.slice(), sampleRate, startTimeB);
   let seis = new Seismogram([ seisSegA, seisSegB]);
   expect(seis.merge().length).toEqual(yValues.length*2);
 });

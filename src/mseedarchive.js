@@ -1,4 +1,4 @@
-// @flow
+startTime// @flow
 import moment from 'moment';
 import * as util from './util';
 import * as miniseed from './miniseed';
@@ -77,29 +77,29 @@ export class MSeedArchive {
         return out;
     });
   }
-  loadDataForChannel(channel: Channel, start: moment, end: moment) {
+  loadDataForChannel(channel: Channel, startTime: moment, endTime: moment) {
     return this.loadData(channel.station.network.networkCode,
                     channel.station.stationCode,
                     channel.locationCode,
                     channel.channelCode,
-                    start,
-                    end,
+                    startTime,
+                    endTime,
                     channel.sampleRate);
   }
-  loadData(net: string, sta: string, loc: string, chan: string, start: moment, end: moment, sampleRate: number) {
+  loadData(net: string, sta: string, loc: string, chan: string, startTime: moment, endTime: moment, sampleRate: number) {
     let basePattern = this.fillBasePattern(net, sta, loc, chan);
     if ( ! util.isDef(sampleRate)) {
       sampleRate = minSampleRate(chan);
     }
     let recordTime = maxTimeForRecord(this._recordSize, sampleRate);
-    let t = moment.utc(start).subtract(recordTime, 'seconds');
+    let t = moment.utc(startTime).subtract(recordTime, 'seconds');
     let promiseArray = [];
-    while (t.isBefore(end)) {
+    while (t.isBefore(endTime)) {
       let url = this.getRootUrl()+'/'+this.fillTimePattern(basePattern, t);
       promiseArray.push(fetch(url));
       t.add(1, 'hour');
     }
-    if (moment.utc(t).add(recordTime, 'seconds').isAfter(end)) {
+    if (moment.utc(t).add(recordTime, 'seconds').isAfter(endTime)) {
       let url = this.getRootUrl()+'/'+this.fillTimePattern(basePattern, t);
       promiseArray.push(fetch(url));
     }
@@ -139,8 +139,8 @@ export class MSeedArchive {
         return dataRecords;
     }).then(dataRecords => {
       if (dataRecords) {
-        dataRecords =  dataRecords.filter(dr => dr.header.end.isSameOrAfter(start) &&
-                                        dr.header.start.isSameOrBefore(end));
+        dataRecords =  dataRecords.filter(dr => dr.header.endTime.isSameOrAfter(startTime) &&
+                                        dr.header.start.isSameOrBefore(endTime));
 
         console.log(`Have dr, after filter Total: ${dataRecords.length}`);
       } else {

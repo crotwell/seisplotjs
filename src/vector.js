@@ -29,8 +29,8 @@ export function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: numb
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);
   }
-  if ( ! seisA.start.isSame(seisB.start)) {
-    throw new Error("Expect start to be same, but was "+seisA.start.toISOString()+" "+seisB.start.toISOString());
+  if ( ! seisA.startTime.isSame(seisB.startTime)) {
+    throw new Error("Expect startTime to be same, but was "+seisA.startTime.toISOString()+" "+seisB.startTime.toISOString());
   }
   if (seisA.sampleRate !== seisB.sampleRate) {
     throw new Error("Expect sampleRate to be same, but was "+seisA.sampleRate+" "+seisB.sampleRate);

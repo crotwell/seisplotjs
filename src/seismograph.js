@@ -108,8 +108,8 @@ export class Seismograph {
     this.svg.attr("plotId", this.plotId);
     if ( ! plotStartDate || ! plotEndDate) {
       let st = findStartEnd(this.traces);
-      plotStartDate = st.start;
-      plotEndDate = st.end;
+      plotStartDate = st.startTime;
+      plotEndDate = st.endTime;
     }
 
     this.xScale = d3.scaleUtc()
@@ -322,15 +322,15 @@ export class Seismograph {
       const color = this.seismographConfig.getColorForIndex(ti);
       let firstTime = true;
       t.segments.forEach((s) => {
-        if (s.start.isAfter(moment.utc(this.currZoomXScale.domain()[1])) ||
-            s.end.isBefore(moment.utc(this.currZoomXScale.domain()[0]))) {
+        if (s.startTime.isAfter(moment.utc(this.currZoomXScale.domain()[1])) ||
+            s.endTime.isBefore(moment.utc(this.currZoomXScale.domain()[0]))) {
               // segment either totally off to left or right of visible
               return;
         }
         const samplesPerPixel = 1.0*s.sampleRate*secondsPerPixel;
         const pixelsPerSample = 1.0/samplesPerPixel;
-        const startPixel = this.currZoomXScale(s.start.toDate());
-        const endPixel = this.currZoomXScale(s.end.toDate());
+        const startPixel = this.currZoomXScale(s.startTime.toDate());
+        const endPixel = this.currZoomXScale(s.endTime.toDate());
         let leftVisibleSample = 0;
         let rightVisibleSample = s.y.length;
         let leftVisiblePixel = startPixel;
@@ -528,7 +528,7 @@ export class Seismograph {
         };
       }
       return this.lineFunc(seg._highlow.highlowArray.map(function(d: number,i: number) {
-        return {time: new Date(seg.start.valueOf()+1000*((Math.floor(i/2)+.5)*secondsPerPixel)), y: d };
+        return {time: new Date(seg.startTime.valueOf()+1000*((Math.floor(i/2)+.5)*secondsPerPixel)), y: d };
       }));
     }
   }
@@ -783,9 +783,9 @@ export class Seismograph {
   setPlotEnd(value: moment): Seismograph {
     return this.setPlotStartEnd(this.xScale.domain()[0], value);
   }
-  setPlotStartEnd(startDate: moment, endDate: moment): Seismograph {
-    const plotStart = (startDate instanceof Date) ? startDate : moment.utc(startDate).toDate();
-    const plotEnd = (endDate instanceof Date) ? endDate : moment.utc(endDate).toDate();
+  setPlotStartEnd(startTime: moment, endTime: moment): Seismograph {
+    const plotStart = (startTime instanceof Date) ? startTime : moment.utc(startTime).toDate();
+    const plotEnd = (endTime instanceof Date) ? endTime : moment.utc(endTime).toDate();
     this.xScale.domain([ plotStart, plotEnd ]);
     if ( ! this.beforeFirstDraw) {
       this.redrawWithXScale(this.xScale);
@@ -1014,9 +1014,9 @@ export class Seismograph {
   trim(timeWindow: StartEndDuration): void {
     if (this.traces) {
       this.traces = this.traces.filter(function(d) {
-        return d.end.isAfter(timeWindow.start);
+        return d.endTime.isAfter(timeWindow.startTime);
       }).filter(function(d) {
-        return d.start.isBefore(timeWindow.end);
+        return d.startTime.isBefore(timeWindow.endTime);
       });
       if (this.traces.length > 0) {
         this.calcScaleDomain();

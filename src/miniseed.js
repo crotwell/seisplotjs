@@ -68,7 +68,7 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   out.blocketteList = [];
   out.recordSize = 4096;
   out.sampleRate = out.calcSampleRate();
-  out.start = out.startBTime.toMoment();
+  out.startTime = out.startBTime.toMoment();
   for (let i=0; i< out.numBlockettes; i++) {
     let nextOffset = dataView.getUint16(offset+2, headerByteSwap);
     if (nextOffset === 0) {
@@ -91,7 +91,7 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
       out.sampleRate = blockette.sampleRate;
     }
   }
-  out.end = out.timeOfSample(out.numSamples-1);
+  out.endTime = out.timeOfSample(out.numSamples-1);
   return out;
 }
 
@@ -181,8 +181,8 @@ export class DataHeader {
   blocketteOffset: number;
   recordSize: number;
   blocketteList: Array<Blockette>;
-  start: moment;
-  end: moment;
+  startTime: moment;
+  endTime: moment;
   constructor() {
     this.seq = "      ";
     this.typeCode = 68; // D
@@ -207,12 +207,12 @@ export class DataHeader {
     this.encoding = 0;
     this.littleEndian = false;
     this.sampleRate = 0;
-    this.start = this.startBTime.toMoment();
-    this.end = moment.utc(this.start);
+    this.startTime = this.startBTime.toMoment();
+    this.endTime = moment.utc(this.startTime);
   }
 
   toString() {
-    return this.netCode+"."+this.staCode+"."+this.locCode+"."+this.chanCode+" "+this.start.toISOString()+" "+this.encoding;
+    return this.netCode+"."+this.staCode+"."+this.locCode+"."+this.chanCode+" "+this.startTime.toISOString()+" "+this.encoding;
   }
 
   /** Calculates the sample rate in hertz from the sampRateFac and sampRateMul
@@ -234,7 +234,7 @@ export class DataHeader {
    *  so timeOfSample(0) is the start and timeOfSample(this.numSamples-1) is end.
   */
   timeOfSample(i: number): moment {
-    return moment.utc(this.start).add(i/this.sampleRate, 'second');
+    return moment.utc(this.startTime).add(i/this.sampleRate, 'second');
   }
 }
 
@@ -342,7 +342,7 @@ export class BTime {
     }
   }
   toDate(): Date {
-    return new Date(this.year, 0, this.jday, this.hour, this.min, this.sec, this.tenthMilli/10);
+    return this.toMoment().toDate();
   }
 }
 
@@ -358,8 +358,8 @@ function checkByteSwap(bTime: BTime): boolean {
 export function areContiguous(dr1: DataRecord, dr2: DataRecord) {
     let h1 = dr1.header;
     let h2 = dr2.header;
-    return h1.end.isBefore(h2.start)
-        && h1.end.valueOf() + 1000*1.5/h1.sampleRate > h2.start.valueOf();
+    return h1.endTime.isBefore(h2.startTime)
+        && h1.endTime.valueOf() + 1000*1.5/h1.sampleRate > h2.startTime.valueOf();
 }
 
 /** Concatentates a sequence of DataRecords into a single seismogram object.
@@ -369,7 +369,7 @@ export function createSeismogram(contig: Array<DataRecord>): SeismogramSegment {
   let contigData = contig.map(dr => dr.asEncodedDataSegment());
   let out = new SeismogramSegment(contigData,
                            contig[0].header.sampleRate,
-                           contig[0].header.start);
+                           contig[0].header.startTime);
   out.networkCode = contig[0].header.netCode;
   out.stationCode = contig[0].header.staCode;
   out.locationCode = contig[0].header.locCode;
@@ -390,7 +390,7 @@ export function merge(drList: Array<DataRecord>): Seismogram {
   let out = [];
   let currDR;
   drList.sort(function(a,b) {
-      return a.header.start.diff(b.header.start);
+      return a.header.startTime.diff(b.header.startTime);
   });
   let contig = [];
   for (let i=0; i<drList.length; i++) {

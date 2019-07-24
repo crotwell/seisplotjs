@@ -32,15 +32,12 @@ export class Helicorder {
     this.trace = trace;
   }
   draw() {
-    let start = moment.utc(this.plotStartDate);
+    let startTime = moment.utc(this.plotStartDate);
     this.seismographArray = [];
-    let lineTimes = this.calcTimesForLines(start, this.secondsPerLine, this.heliConfig.numLines);
-  //  while (start.isBefore(this.plotEndDate)) {
-  //    let lineTime = lineTimes[0]; // temp, wrong, just for height
-  //    let end = moment.utc(start).add(this.secondsPerLine, 'seconds');
+    let lineTimes = this.calcTimesForLines(startTime, this.secondsPerLine, this.heliConfig.numLines);
     for(let lineTime of lineTimes) {
-      let start = lineTime.start;
-      let end = lineTime.end;
+      let startTime = lineTime.startTime;
+      let endTime = lineTime.endTime;
       let seisDiv = this.svgParent.append('div');
       let nl = this.heliConfig.numLines;
       let height = this.heliConfig.maxHeight/(nl-(nl-1)*this.heliConfig.overlap);
@@ -50,18 +47,18 @@ export class Helicorder {
         .style('height', height+'px')
         .style('margin-top', `${marginTop}px`);
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
-      lineSeisConfig.yLabel = `${start.format("HH.mm")}`;
+      lineSeisConfig.yLabel = `${startTime.format("HH.mm")}`;
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
       lineSeisConfig.minHeight = height;
       lineSeisConfig.maxHeight = height;
-      let seismograph = new Seismograph(seisDiv, lineSeisConfig, [this.trace], start, end);
+      let seismograph = new Seismograph(seisDiv, lineSeisConfig, [this.trace], startTime, endTime);
       seismograph.disableWheelZoom();
       seismograph.draw();
       seismograph.canvas.style("height", `${height}px`);
       seismograph.svg.style("height", `${height}px`);
 
       this.seismographArray.push(seismograph);
-      start = end;
+      startTime = endTime;
     }
   }
   calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRange> {
@@ -81,7 +78,7 @@ export class Helicorder {
     this.plotEndDate = endTime;
     let lineTimes = this.calcTimesForLines(startTime, this.secondsPerLine, 3);
     for(let i=0; i< lineTimes.length; i++) {
-      this.seismographArray[i].setPlotStartEnd(lineTimes[i].start, lineTimes[i].end);
+      this.seismographArray[i].setPlotStartEnd(lineTimes[i].startTime, lineTimes[i].endTime);
       this.seismographArray[i].draw();
     }
   }
@@ -122,7 +119,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.ySublabel = ` `;
     this.lineSeisConfig.xLabel = ' ';
-    this.lineSeisConfig.yLabel = '';// replace later with `${start.format("HH.mm")}`;
+    this.lineSeisConfig.yLabel = '';// replace later with `${startTime.format("HH.mm")}`;
     this.lineSeisConfig.isXAxis = false;
     this.lineSeisConfig.isYAxis = false;
     this.lineSeisConfig.margin.top = 2;
@@ -134,7 +131,7 @@ export class HelicorderConfig extends SeismographConfig {
 
 export class HeliTimeRange extends StartEndDuration {
   lineNumber: number;
-  constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
-    super(start, end, duration, clockOffset);
+  constructor(startTime: moment | null, endTime: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
+    super(startTime, endTime, duration, clockOffset);
   }
 }

@@ -81,25 +81,25 @@ export function stringify(value: mixed): string {
 }
 
 
-export function calcClockOffset(serverTime: moment): number {
-  return moment.utc().getTime() - serverTime.getTime();
+export function calcClockOffset(serverTimeUTC: moment): number {
+  return moment.utc().diff(serverTimeUTC, 'seconds', true);
 }
 
 /**
-Any two of start, end and duration can be specified, or just duration which
-then assumes end is now.
-start and end are Date objects, duration is in seconds.
-clockOffset is the milliseconds that should be subtracted from the local time
- to get real world time, ie local - UTC
- or new Date().getTime() - serverDate.getTime()
+Any two of startTime, endTime and duration can be specified, or just duration which
+then assumes endTime is now.
+startTime and endTime are moment objects, duration is in seconds.
+clockOffset is the seconds that should be subtracted from the computer time
+ to get real world time, ie computerUTC - UTC
+ or moment.utc().diff(serverTimeUTC, 'seconds', true).
  default is zero.
 */
 export class StartEndDuration {
-  start: moment;
-  end: moment;
+  startTime: moment;
+  endTime: moment;
   duration: moment.duration;
   clockOffset: moment.duration;
-  constructor(start: moment | null, end: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
+  constructor(startTime: moment | null, endTime: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
 
     if (duration &&
         (typeof duration === "string" || duration instanceof String)) {
@@ -113,16 +113,16 @@ export class StartEndDuration {
       (typeof duration === "number" || duration instanceof Number)) {
       this.duration = moment.duration(duration, 'seconds');
     }
-    if (start && end) {
-      this.start = checkStringOrDate(start);
-      this.end = checkStringOrDate(end);
-      this.duration = moment.duration(this.end.diff(this.start));
-    } else if (start && this.duration) {
-      this.start = checkStringOrDate(start);
-      this.end = moment.utc(this.start).add(this.duration);
-    } else if (end && this.duration) {
-      this.end = checkStringOrDate(end);
-      this.start = moment.utc(this.end).subtract(this.duration);
+    if (startTime && endTime) {
+      this.startTime = checkStringOrDate(startTime);
+      this.endTime = checkStringOrDate(endTime);
+      this.duration = moment.duration(this.endTime.diff(this.startTime));
+    } else if (startTime && this.duration) {
+      this.startTime = checkStringOrDate(startTime);
+      this.endTime = moment.utc(this.startTime).add(this.duration);
+    } else if (endTime && this.duration) {
+      this.endTime = checkStringOrDate(endTime);
+      this.startTime = moment.utc(this.endTime).subtract(this.duration);
     } else if (this.duration) {
       if (clockOffset === undefined) {
         this.clockOffset = moment.duration(0, 'seconds');
@@ -131,10 +131,10 @@ export class StartEndDuration {
       } else {
         this.clockOffset = clockOffset;
       }
-      this.end = moment.utc().subtract(clockOffset);
-      this.start = moment.utc(this.end).subtract(this.duration);
+      this.endTime = moment.utc().subtract(clockOffset);
+      this.startTime = moment.utc(this.endTime).subtract(this.duration);
     } else {
-      throw "need some combination of start, end and duration";
+      throw "need some combination of startTime, endTime and duration";
     }
   }
 }

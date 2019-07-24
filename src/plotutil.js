@@ -14,8 +14,8 @@ export { dataselect, miniseed, d3, RSVP, moment };
 
 export type PlotDataType = {
   "traceMap": Map<String, Seismogram>,
-  "startDate": moment,
-  "endDate": moment,
+  "startTime": moment,
+  "endTime": moment,
   "request": dataselect.DataSelectQuery,
   "svgParent": any,
   "responseText": string,
@@ -30,12 +30,12 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
   d3.selectAll(selector).each(function() {
     let svgParent = d3.select(this);
     let url;
-    let start = svgParent.attr("start") ? svgParent.attr("start") : null;
-    let end = svgParent.attr("end") ? svgParent.attr("end") : null;
-    console.log("start end attr: ${start} ${end} "+(typeof end));
+    let startAttr = svgParent.attr("start") ? svgParent.attr("start") : null;
+    let endAttr = svgParent.attr("end") ? svgParent.attr("end") : null;
+    console.log("start end attr: ${startAttr} ${endAttr} "+(typeof endAttr));
     let duration = svgParent.attr("duration");
-    let startDate = null;
-    let endDate = null;
+    let startTime = null;
+    let endTime = null;
     if (svgParent.attr("href")) {
       url = svgParent.attr("href");
       return fetch(url)
@@ -49,8 +49,8 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         .then(ab => {
           return {
             "traceMap": miniseed.mergeByChannel(miniseed.parseDataRecords(ab)),
-            "startDate": startDate,
-            "endDate": endDate,
+            "startTime": startTime,
+            "endTime": endTime,
             "request": null,
             "svgParent": svgParent
           };
@@ -69,9 +69,9 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         protocol = 'https:';
       }
 
-      let seisDates = new StartEndDuration(start, end, duration, clockOffset);
-      startDate = seisDates.start;
-      endDate = seisDates.end;
+      let seisDates = new StartEndDuration(startAttr, endAttr, duration, clockOffset);
+      startTime = seisDates.startTime;
+      endTime = seisDates.endTime;
       // $FlowFixMe
       let request = new dataselect.DataSelectQuery()
         .protocol(protocol)
@@ -80,13 +80,13 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         .stationCode(sta)
         .locationCode(loc)
         .channelCode(chan)
-        .startTime(startDate)
-        .endTime(endDate);
+        .startTime(startTime)
+        .endTime(endTime);
       out.push(request.querySeismograms().then(function(traceMap) {
         return {
           "traceMap": traceMap,
-          "startDate": startDate,
-          "endDate": endDate,
+          "startTime": startTime,
+          "endTime": endTime,
           "request": request,
           "svgParent": svgParent
         };
@@ -95,8 +95,8 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         // but may need others to display message
         return {
           "traceMap": new Map(),
-          "startDate": start,
-          "endDate": end,
+          "startTime": startAttr,
+          "endTime": endAttr,
           "request": request,
           "svgParent": svgParent,
           "responseText": String.fromCharCode.apply(null, new Uint8Array(result.response)),
@@ -117,7 +117,7 @@ export function createPlotsBySelector(selector: string) {
           let svgDiv = result.svgParent.append("div");
           svgDiv.classed("svg-container-wide", true);
           let seisConfig = new SeismographConfig();
-          let seismogram = new Seismograph(svgDiv, seisConfig, Array.from(result.traceMap.values()), result.startDate, result.endDate);
+          let seismogram = new Seismograph(svgDiv, seisConfig, Array.from(result.traceMap.values()), result.startTime, result.endTime);
           seismogram.draw();
         } else {
           result.svgParent.append("p").text("No Data");
@@ -148,4 +148,4 @@ export function insertCSS(cssText: string) {
   head.insertBefore(styleElement, head.firstChild);
 }
 
-export type TimeWindow = {start: moment, end: moment};
+export type TimeWindow = {startTime: moment, endTime: moment};

@@ -27,7 +27,7 @@ test("load miniseed file", () => {
     expect(btime.tenthMilli).toEqual(84);
     let startMoment = moment.utc([2016, 8, 21, 13, 48, 0, 8]);
     //startMoment.dayOfYear(265); day 265 = Sept 21, months zero based in moment
-    expect(dr.header.start.toISOString()).toEqual(startMoment.toISOString());
+    expect(dr.header.startTime.toISOString()).toEqual(startMoment.toISOString());
     expect(dr.header.numSamples).toEqual(99);
     expect(dr.header.encoding).toEqual(seedcodec.STEIM2);
     let decomp = parsed[0].decompress();
@@ -65,7 +65,7 @@ test("contiguous miniseed file", () => {
     expect(parsed.length).toEqual(14);
     let drFirst = parsed[0];
     let drSecond = parsed[1];
-    console.log("drFirst: "+drFirst.header.start.toISOString()+" "+drFirst.header.numSamples+" "+drFirst.header.sampleRate);
-    console.log("drFirst.end="+drFirst.header.end.toISOString()+" drSecond.start="+drSecond.header.start.toISOString());
+    console.log("drFirst: "+drFirst.header.startTime.toISOString()+" "+drFirst.header.numSamples+" "+drFirst.header.sampleRate);
+    console.log("drFirst.endTime="+drFirst.header.endTime.toISOString()+" drSecond.startTime="+drSecond.header.startTime.toISOString());
     expect(miniseed.areContiguous(drFirst, drSecond)).toBe(true);
 });
