@@ -241,3 +241,31 @@ export class Gain {
   value: number;
   frequency: number;
 }
+
+/**
+ * Extract all stations from all networks in the input array.
+ * @param   networks Array of networks.
+ * @return           Array of stations.
+ */
+export function extractAllStations(networks: Array<Network>): Array<Station> {
+  let out = [];
+  for (let n of networks) {
+    out = out.concat(n.stations);
+  }
+  return out;
+}
+
+/**
+ * Extract all channels from all stations from all networks in the input array.
+ * @param   networks Array of networks.
+ * @return           Array of channels.
+ */
+export function extractAllChannels(networks: Array<Network>): Array<Channel> {
+    let out = [];
+    for (let n of networks) {
+      for (let s of n.stations) {
+        out = out.concat(s.channels);
+      }
+    }
+    return out;
+}
