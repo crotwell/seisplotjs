@@ -17,22 +17,22 @@ export class Helicorder {
   trace: Seismogram;
   xScaleArray: any;
   yScale: any;
-  plotStartDate: moment;
-  plotEndDate: moment;
+  plotStartTime: moment;
+  plotEndTime: moment;
   constructor(inSvgParent: any,
               heliConfig: HelicorderConfig,
               trace: Seismogram,
-              plotStartDate: moment, plotEndDate: moment) {
+              plotStartTime: moment, plotEndTime: moment) {
     this.seismographArray = [];
     this.svgParent = inSvgParent;
     this.heliConfig = heliConfig;
-    this.secondsPerLine = moment.duration(plotEndDate.diff(plotStartDate, 'seconds'))/heliConfig.numLines;
-    this.plotStartDate = plotStartDate;
-    this.plotEndDate = plotEndDate;
+    this.secondsPerLine = moment.duration(plotEndTime.diff(plotStartTime, 'seconds'))/heliConfig.numLines;
+    this.plotStartTime = plotStartTime;
+    this.plotEndTime = plotEndTime;
     this.trace = trace;
   }
   draw() {
-    let startTime = moment.utc(this.plotStartDate);
+    let startTime = moment.utc(this.plotStartTime);
     this.seismographArray = [];
     let lineTimes = this.calcTimesForLines(startTime, this.secondsPerLine, this.heliConfig.numLines);
     for(let lineTime of lineTimes) {
@@ -74,8 +74,8 @@ export class Helicorder {
     return out;
   }
   setPlotStartEnd(startTime: moment, endTime: moment) {
-    this.plotStartDate = startTime;
-    this.plotEndDate = endTime;
+    this.plotStartTime = startTime;
+    this.plotEndTime = endTime;
     let lineTimes = this.calcTimesForLines(startTime, this.secondsPerLine, 3);
     for(let i=0; i< lineTimes.length; i++) {
       this.seismographArray[i].setPlotStartEnd(lineTimes[i].startTime, lineTimes[i].endTime);
@@ -91,7 +91,7 @@ export class Helicorder {
     }
     for(let s of this.seismographArray) {
       for(let m of markers) {
-        if (m.time.isAfter(s.plotStartDate) && m.time.isBefore(s.plotEndDate)) {
+        if (m.time.isAfter(s.plotStartTime) && m.time.isBefore(s.plotEndTime)) {
           s.appendMarkers(m);
         }
       }

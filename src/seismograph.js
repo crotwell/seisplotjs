@@ -45,8 +45,8 @@ export class Seismograph {
   plotId: number;
   beforeFirstDraw: boolean;
   seismographConfig: SeismographConfig;
-  plotStartDate: moment;
-  plotEndDate: moment;
+  plotStartTime: moment;
+  plotEndTime: moment;
 
   svgParent: any;
   traces: Array<Seismogram>;
@@ -74,14 +74,14 @@ export class Seismograph {
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
               inSegments: Array<Seismogram>,
-              plotStartDate: moment,
-              plotEndDate: moment) {
+              plotStartTime: moment,
+              plotEndTime: moment) {
     if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
     this.seismographConfig = seismographConfig;
-    this.plotStartDate = plotStartDate;
-    this.plotEndDate = plotEndDate;
+    this.plotStartTime = plotStartTime;
+    this.plotEndTime = plotEndTime;
     this.width = 200;
     this.height = 100;
 
@@ -106,14 +106,14 @@ export class Seismograph {
     //this.svg.attr("preserveAspectRatio", "xMinYMin meet");
     //this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
     this.svg.attr("plotId", this.plotId);
-    if ( ! plotStartDate || ! plotEndDate) {
+    if ( ! plotStartTime || ! plotEndTime) {
       let st = findStartEnd(this.traces);
-      plotStartDate = st.startTime;
-      plotEndDate = st.endTime;
+      plotStartTime = st.startTime;
+      plotEndTime = st.endTime;
     }
 
     this.xScale = d3.scaleUtc()
-      .domain([plotStartDate, plotEndDate]);
+      .domain([plotStartTime, plotEndTime]);
     this.origXScale = this.xScale;
     this.currZoomXScale = this.xScale;
     this.yScale = d3.scaleLinear();

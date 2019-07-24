@@ -161,8 +161,8 @@ export class SeismogramDisplayData {
   channel: Channel;
   instrumentSensitivity: InstrumentSensitivity;
   quake: Quake;
-  startDate: moment;
-  endDate: moment;
+  startTime: moment;
+  endTime: moment;
   doShow: boolean;
   _statsCache: SeismogramDisplayStats;
 }

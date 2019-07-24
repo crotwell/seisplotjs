@@ -71,14 +71,14 @@ export class ParticleMotion {
   svgParent: any;
   g: any;
   static _lastID: number;
-  constructor(inSvgParent: any, inSegments: Array<SeismogramSegment>, plotStartDate: moment, plotEndDate: moment): void {
+  constructor(inSvgParent: any, inSegments: Array<SeismogramSegment>, plotStartTime: moment, plotEndTime: moment): void {
     if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
     if (inSegments.length !== 2) {throw new Error("inSegments should be lenght 2 but was "+inSegments.length);}
     this.plotId = ++ParticleMotion._lastID;
 // maybe don't need, just plot as many points as can
 //    if (inSegments[0].y().length !== inSegments[1].y().length) {throw new Error("inSegments should be of same lenght but was "+inSegments[0].y().length+" "+inSegments[1].y().length);}
-    if ( ! plotStartDate) {plotStartDate = inSegments[0].startTime();}
-    if ( ! plotEndDate) {plotEndDate = inSegments[0].endTime();}
+    if ( ! plotStartTime) {plotStartTime = inSegments[0].startTime();}
+    if ( ! plotEndTime) {plotEndTime = inSegments[0].endTime();}
     this.svg = inSvgParent.append("svg");
     this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
