@@ -28,8 +28,8 @@
     "build:clean": "rimraf dist",
     "compile": "npm run build:clean && npm run rollup && npm run flow-copy && npm run standalone",
     "standalone": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ]",
-    "doc": "documentation build  src/*.js --github -o docs -f html --document-exported ",
-    "apidoc": "npx documentation build -f html -o docs/docall --document-exported --github src/[a-h]*.js src/[j-z]*.js  src/filter/[a-h]*.js src/filter/[j-z]*.js src/waveformplot/[a-h]*.js src/waveformplot/[j-z]*.js",
+    "doc": "npm run apidoc && cp node_modules/prismjs/prism.js node_modules/prismjs/themes/prism.css docs/.",
+    "apidoc": "./createApiDocs.sh",
     "prepare": "npm run compile",
     "version": "npm run compile && npm run standalone",
     "postversion": "git push && git push --tags"
@@ -76,6 +76,7 @@
     "jest": "^24.8.0",
     "jest-environment-jsdom-fourteen": "^0.1.0",
     "jest-extended": "^0.11.2",
+    "prismjs": "^1.17.1",
     "rollup": "^1.17.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-flow-entry": "^0.3.1"

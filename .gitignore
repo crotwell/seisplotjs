@@ -10,3 +10,5 @@ example/huddle
 example/simpleHttp.sh
 jsonSchema
 es6example
+docs/prism.js
+docs/prism.css
