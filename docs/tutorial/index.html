@@ -27,7 +27,8 @@
               <section class='p2 mb2 clearfix bg-white minishadow'>
         <div class='clearfix'>
 
-          <h3>Seisplotjs Tutorial</h3>
+          <h1>Seisplotjs Tutorial</h1>
+          <h3>Draw a Sine Wave:</h3>
           <p>Lets start by plotting a seismogram. First we need an html file to
             put the plot in, something like this:
           </p>
@@ -87,7 +88,7 @@ graph.draw();
           </code></pre>
           <p>
             We should have a seismograph displayed. But it might be a bit small,
-            so lets make it bigger. We will style it with CSS. In the
+            so let's make it bigger. We will style it with CSS. In the
             <code>&lt;head></code> near the top we will add a
             <code>&lt;style></code> element
             to make the height be 450 pixels and the width be 100% of the
@@ -95,6 +96,7 @@ graph.draw();
             The page with all of this is in <a href="tutorial1.html">tutorial1.html</a>.
           </p>
 
+          <h3>Let's Get Some Real Data:</h3>
           <pre><code class="language-html">
 &lt;style>
   div.seismograph {
@@ -118,7 +120,7 @@ graph.draw();
             supports the <code class="language-html">POST</code> style query
             that allows many channel-time range pairs to be requested at once.
             One important difference here is that unlike the previous example
-            getting data remotely is inherantly an asynchronis operation, and
+            getting data remotely is inherently an asynchronous operation, and
             so rather than return seismograms, the
             <code class="language-javascript">querySeismograms()</code>
             method returns a
@@ -150,6 +152,9 @@ dsQuery.networkCode('CO')
     console.assert(false, error);
   });
           </code></pre>
+
+
+          <h3>Quakes and Channels:</h3>
           <p>
             It would be nicer if we could add some useful labels to this instead
             of just a raw seismogram. Perhaps getting some information about
@@ -159,7 +164,7 @@ dsQuery.networkCode('CO')
             station</a> web service to get the station and channels and the USGS
            <a href="http://earthquake.usgs.gov/fdsnws/event/1/">FDSNWS
            event</a> web service to get the earthquake. Again, both of these
-           are asynchronis and so we will have to use promises. We first create
+           are asynchronous and so we will have to use promises. We first create
            both the <code>EventQuery</code> and <code>StationQuery</code> objects,
            and call their <code>query</code> methods with a <code>Promise.all()</code>
            which will wait until both of these return before calling the
