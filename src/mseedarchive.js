@@ -140,7 +140,7 @@ export class MSeedArchive {
     }).then(dataRecords => {
       if (dataRecords) {
         dataRecords =  dataRecords.filter(dr => dr.header.endTime.isSameOrAfter(startTime) &&
-                                        dr.header.start.isSameOrBefore(endTime));
+                                        dr.header.startTime.isSameOrBefore(endTime));
 
         console.log(`Have dr, after filter Total: ${dataRecords.length}`);
       } else {

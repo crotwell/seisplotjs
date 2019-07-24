@@ -22,7 +22,7 @@ let timerInProgress = false;
 let clockOffset = 0; // should get from server somehow
 let duration = 300;
 let maxSteps = -1; // max num of ticks of the timer before stopping, for debugin
-let timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, null, duration, clockOffset);
+let timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration, clockOffset);
 let protocol = 'http:';
 if ("https:" == document.location.protocol) {
   protocol = 'https:'
@@ -210,7 +210,7 @@ let timer = d3.interval(function(elapsed) {
       slConn.close();
     }
   }
-  timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, null, duration, clockOffset);
+  timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration, clockOffset);
   //console.log("reset time window for "+timeWindow.startTime+" "+timeWindow.endTime );
   window.requestAnimationFrame(timestamp => {
     allSeisPlots.forEach(function(value, key) {
