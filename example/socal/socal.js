@@ -187,8 +187,8 @@ console.log("plotOneStation: "+mystation.codes());
     }).then(function(firstPS) {
     let PArrival = moment.utc(quake.time).add((firstPS.firstP.time+pOffset), 'seconds');
     let seisDates = new seisplotjs.util.StartEndDuration(PArrival, null, dur, clockOffset);
-    let startDate = seisDates.start;
-    let endDate = seisDates.end;
+    let startDate = seisDates.startTime;
+    let endDate = seisDates.endTime;
 
     console.log("Start end: "+startDate.toISOString()+" "+endDate.toISOString());
     return new fdsndataselect.DataSelectQuery(host)

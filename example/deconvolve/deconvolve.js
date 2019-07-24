@@ -23,8 +23,8 @@ let dsQuery = new ds.DataSelectQuery()
   .stationCode('JSC')
   .locationCode('00')
   .channelCode('HHZ')
-  .startTime(times.start)
-  .endTime(times.end);
+  .startTime(times.startTime)
+  .endTime(times.endTime);
 
 let responseQuery = new st.StationQuery()
   .nodata(404)
@@ -32,8 +32,8 @@ let responseQuery = new st.StationQuery()
   .stationCode('JSC')
   .locationCode('00')
   .channelCode('HHZ')
-  .startTime(times.start)
-  .endTime(times.end);
+  .startTime(times.startTime)
+  .endTime(times.endTime);
 
 let div = d3.select('div.miniseed');
 let divP = div.append('p');

@@ -80,8 +80,8 @@ let station = null;
 
 
 let chooserEnd;
-if ( state.end) {
-  chooserEnd = moment.utc(state.end);
+if ( state.endTime) {
+  chooserEnd = moment.utc(state.endTime);
 } else {
   chooserEnd = moment.utc();
 }
@@ -310,9 +310,9 @@ let timer = d3.interval(function(elapsed) {
   }
   nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
   timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, nowHour, duration, clockOffset);
-  console.log("reset time window for "+timeWindow.start+" "+timeWindow.end );
+  console.log("reset time window for "+timeWindow.startTime+" "+timeWindow.endTime );
 
-  heli.setPlotStartEnd(timeWindow.start, timeWindow.end);
+  heli.setPlotStartEnd(timeWindow.startTime, timeWindow.endTime);
 }, timerInterval);
 
 let errorFn = function(error) {

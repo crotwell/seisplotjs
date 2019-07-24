@@ -74,7 +74,7 @@ doplot = function(sta) {
   if (slConn) {slConn.close(); slConn = null;}
   doDisconnect(false);
   doPause(false);
-  console.log("do plot, timeWindow: "+timeWindow.start+" "+timeWindow.end);
+  console.log("do plot, timeWindow: "+timeWindow.startTime+" "+timeWindow.endTime);
 
   d3.selectAll('.textStaCode').text(sta);
   d3.selectAll('.textNetCode').text(net);
@@ -95,7 +95,7 @@ doplot = function(sta) {
   }
 
   slConn = new seedlink.SeedlinkConnection(seedlinkUrl, config, callbackFn, errorFn);
-  slConn.setTimeCommand(timeWindow.start);
+  slConn.setTimeCommand(timeWindow.startTime);
   slConn.setOnClose( closeEvent => {
     console.log(`doplot: Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
     stopped = true;
@@ -112,8 +112,8 @@ let callbackFn = function(slPacket) {
   if (allSeisPlots.has(codes) && allSeismograms.has(codes)) {
     const oldSeismogram = allSeismograms.get(codes);
     oldSeismogram.append(seismogram);
-    const littleBitLarger = {'start': moment.utc(timeWindow.start).subtract(60, 'second'),
-                            'end': moment.utc(timeWindow.end).add(180, 'second')};
+    const littleBitLarger = {'startTime': moment.utc(timeWindow.startTime).subtract(60, 'second'),
+                            'endTime': moment.utc(timeWindow.endTime).add(180, 'second')};
     const newSeismogram = oldSeismogram.trim(littleBitLarger);
     if (newSeismogram) {
       allSeismograms.set(codes, newSeismogram);
@@ -154,7 +154,7 @@ let callbackFn = function(slPacket) {
     let seisPlotConfig = new SeismographConfig();
     seisPlotConfig.xSublabel = codes;
     seisPlotConfig.margin = margin ;
-    let seisPlot = new Seismograph(plotDiv, seisPlotConfig, [trace], timeWindow.start, timeWindow.end);
+    let seisPlot = new Seismograph(plotDiv, seisPlotConfig, [trace], timeWindow.startTime, timeWindow.endTime);
     seisPlot.svg.classed('realtimePlot', true).classed('overlayPlot', false)
     seisPlot.disableWheelZoom();
     seisPlot.draw();
@@ -193,7 +193,7 @@ let doDisconnect = function(value) {
   }
 }
 
-let timerInterval = (timeWindow.end.valueOf()-timeWindow.start.valueOf())/
+let timerInterval = (timeWindow.endTime.valueOf()-timeWindow.startTime.valueOf())/
                     (parseInt(svgParent.style("width"))-margin.left-margin.right);
                     console.log("start time with interval "+timerInterval);
 while (timerInterval < 100) { timerInterval *= 2;}
@@ -211,10 +211,10 @@ let timer = d3.interval(function(elapsed) {
     }
   }
   timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, null, duration, clockOffset);
-  //console.log("reset time window for "+timeWindow.start+" "+timeWindow.end );
+  //console.log("reset time window for "+timeWindow.startTime+" "+timeWindow.endTime );
   window.requestAnimationFrame(timestamp => {
     allSeisPlots.forEach(function(value, key) {
-        value.setPlotStartEnd(timeWindow.start, timeWindow.end);
+        value.setPlotStartEnd(timeWindow.startTime, timeWindow.endTime);
         //console.log(`${key} tw: ${value.xScale.domain()}  width: ${value.width}  xScale range: ${value.xScale.range()}`);
     });
     timerInProgress = false

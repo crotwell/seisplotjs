@@ -43,8 +43,8 @@ let quakeQuery = new fdsnevent.EventQuery()
   .protocol(protocol)
   .minLat(36).maxLat(37)
   .minLon(-4).maxLon(-3)
-  .startTime(new Date("2010-04-11T22:08:00.000Z"))
-  .endTime(new Date("2010-04-11T22:09:00.000Z"));
+  .startTime(moment.utc("2010-04-11T22:08:00.000Z"))
+  .endTime(moment.utc("2010-04-11T22:09:00.000Z"));
 d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
@@ -114,8 +114,8 @@ let bothPromise = RSVP.hash({
       .stationCode(hash.station.stationCode)
       .locationCode(locCode)
       .channelCode(chanCode)
-      .startTime(hash.seisDates.start)
-      .endTime(hash.seisDates.end)
+      .startTime(hash.seisDates.startTime)
+      .endTime(hash.seisDates.endTime)
       .querySeismograms();
     return RSVP.hash(hash);
   }).then(function(hash) {
@@ -131,7 +131,7 @@ let bothPromise = RSVP.hash({
         let traceArray = Array.from(hash.seismograms.values());
         traceArray.sort(seisplotjs.plotutil.alphabeticalSort);
         console.log("traceArray: "+traceArray.length+"  "+traceArray[0]+"  "+(typeof traceArray[0]))
-        let seismograph = new Seismograph(svgDiv, seisConfig, traceArray, hash.seisDates.start, hash.seisDates.end);
+        let seismograph = new Seismograph(svgDiv, seisConfig, traceArray, hash.seisDates.startTime, hash.seisDates.endTime);
         let titles = [traceArray[0].codes(),
                   traceArray[1].channelCode,
                   traceArray[2].channelCode];
@@ -187,7 +187,7 @@ console.log("rotate to "+hash.distaz.baz+" "+((hash.distaz.baz+180)%360) );
         hash.rotatedSeismograms.sort(seisplotjs.plotutil.alphabeticalSort);
 console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.segments[0].yAtIndex(0)+" "+rotated.transverse.segments[0].yAtIndex(0))
         let rotSeisConfig = new SeismographConfig();
-        let rotatedSeismograph = new Seismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.start, hash.seisDates.end);
+        let rotatedSeismograph = new Seismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.startTime, hash.seisDates.endTime);
         titles = [hash.rotatedSeismograms[0].codes(),
                   hash.rotatedSeismograms[1].channelCode+" "+rotated.azimuthRadial.toFixed(2),
                   hash.rotatedSeismograms[2].channelCode+" "+rotated.azimuthTransverse.toFixed(2)];

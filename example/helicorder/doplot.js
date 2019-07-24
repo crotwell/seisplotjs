@@ -55,16 +55,16 @@ doPlot = function(config) {
   d3.selectAll("span.textStaCode").text(staCodeQuery);
   d3.selectAll("span.textLocCode").text(locCodeQuery);
   d3.selectAll("span.textChanCode").text(chanCodeQuery);
-  d3.selectAll("span.startTime").text(timeWindow.start.format('ddd, MMM D, YYYY HH:mm [GMT]'));
-  d3.selectAll("span.endTime").text(timeWindow.end.format('ddd, MMM D, YYYY HH:mm [GMT]'));
+  d3.selectAll("span.startTime").text(timeWindow.startTime.format('ddd, MMM D, YYYY HH:mm [GMT]'));
+  d3.selectAll("span.endTime").text(timeWindow.endTime.format('ddd, MMM D, YYYY HH:mm [GMT]'));
   let channelQuery = new seisplotjs.fdsnstation.StationQuery()
     .nodata(404)
     .networkCode(netCodeQuery)
     .stationCode(staCodeQuery)
     .locationCode(locCodeQuery)
     .channelCode(chanCodeQuery)
-    .startTime(timeWindow.start)
-    .endTime(timeWindow.end);
+    .startTime(timeWindow.startTime)
+    .endTime(timeWindow.endTime);
   let hash = {
     timeWindow: timeWindow,
     staCode: staCodeQuery,
@@ -90,8 +90,8 @@ doPlot = function(config) {
         .map(c => {
           chanTR.push({
             channel: c,
-            startTime: timeWindow.start,
-            endTime: timeWindow.end
+            startTime: timeWindow.startTime,
+            endTime: timeWindow.endTime
           });
         });
       });
@@ -164,7 +164,7 @@ doPlot = function(config) {
       hash.heli = new Helicorder(svgParent,
                                     heliConfig,
                                     minMaxSeismogram,
-                                    hash.timeWindow.start,hash.timeWindow.end);
+                                    hash.timeWindow.startTime,hash.timeWindow.endTime);
       svgParent.selectAll("*").remove(); // remove old data
       hash.heli.draw();
     } else {
@@ -174,8 +174,8 @@ doPlot = function(config) {
   }).then(hash => {
     let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     localQuakesQuery
-      .startTime(hash.timeWindow.start)
-      .endTime(hash.timeWindow.end)
+      .startTime(hash.timeWindow.startTime)
+      .endTime(hash.timeWindow.endTime)
       .minLat(31.75)
       .maxLat(35.5)
       .minLon(-84)
@@ -185,8 +185,8 @@ doPlot = function(config) {
   }).then(hash => {
     let regionalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     regionalQuakesQuery
-      .startTime(hash.timeWindow.start)
-      .endTime(hash.timeWindow.end)
+      .startTime(hash.timeWindow.startTime)
+      .endTime(hash.timeWindow.endTime)
       .latitude(33)
       .longitude(-81)
       .maxRadius(10)
@@ -196,8 +196,8 @@ doPlot = function(config) {
   }).then(hash => {
     let globalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     globalQuakesQuery
-      .startTime(hash.timeWindow.start)
-      .endTime(hash.timeWindow.end)
+      .startTime(hash.timeWindow.startTime)
+      .endTime(hash.timeWindow.endTime)
       .minMag(6);
     hash.globalQuakes = globalQuakesQuery.query();
     return seisplotjs.RSVP.hash(hash);
