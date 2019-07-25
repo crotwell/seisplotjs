@@ -96,7 +96,6 @@ graph.draw();
             The page with all of this is in <a href="tutorial1.html">tutorial1.html</a>.
           </p>
 
-          <h3>Let's Get Some Real Data:</h3>
           <pre><code class="language-html">
 &lt;style>
   div.seismograph {
@@ -104,6 +103,8 @@ graph.draw();
   }
 &lt;/style>
           </code></pre>
+
+          <h3>Let's Get Some Real Data:</h3>
           <p>
             A sine wave is kind of boring, so perhaps some real data would be
             more interesting. We will use the IRIS
@@ -135,7 +136,7 @@ graph.draw();
 let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
 let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
 dsQuery.networkCode('CO')
-  .stationCode('JSC')
+  .stationCode('HAW')
   .locationCode('00')
   .channelCode('LHZ')
   .startTime(times.startTime)
@@ -169,7 +170,13 @@ dsQuery.networkCode('CO')
            and call their <code>query</code> methods with a <code>Promise.all()</code>
            which will wait until both of these return before calling the
            <code>then()</code> function. We will also use the more powerful
-           <code>POST</code> method to get the seismograms. Because we have the
+           <code>POST</code> method to get the seismograms. The
+           <code>ChannelTimeRange</code> works just like the
+           <code>StartEndDuration</code> but also hold the channel that the
+           time rage corresponds to. In this case they are all the same, but
+           might be different if we were using multiple stations and predicted
+           arrival times. Note that we use the event time as the start and
+           ask for a duration of 1800 seconds. Because we have the
            channel, we can also plot the seismograms corrected for overall
            gain and in units of m/s. We also added a couple of <code>&lt;span></code>
            elements to hold the station codes and earthquake description.
@@ -187,34 +194,30 @@ let stationQuery = new seisplotjs.fdsnstation.StationQuery()
   .networkCode('CO')
   .stationCode('HAW')
   .locationCode('00')
-  .channelCode('HH?')
+  .channelCode('LH?')
   .startTime('2019-07-01')
   .endTime('2019-07-31');
 Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
-  .then( result => {
-    let events = result[0];
-    let networks = result[1];
+  .then( ev_sta_result => {
+    let events = ev_sta_result[0];
+    let networks = ev_sta_result[1];
     let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
     let chanTRList = allChannels.map(c => {
-      return new seisplotjs.fdsndataselect.ChannelTimeRange(c, events[0].time, null, 1800);
+      return new seisplotjs.fdsndataselect.ChannelTimeRange(c, events[0].time, null, 2400);
     });
     let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
     return Promise.all([ events, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
-  }).then( result => {
-    let events = result[0];
-    let networks = result[1];
-    let chanTRList = result[2];
+  }).then( ev_sta_seis_result => {
+    let events = ev_sta_seis_result[0];
+    let networks = ev_sta_seis_result[1];
+    let chanTRList = ev_sta_seis_result[2];
     let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
-    let startTime = chanTRList[0].startTime;
-    let endTime = chanTRList[0].endTime;
     let div = seisplotjs.d3.select('div#myseismograph');
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
     seisConfig.title = chanTRList.map(ctr => ctr.channel.codes());
     let graph = new seisplotjs.seismograph.Seismograph(div,
                                                        seisConfig,
-                                                       seismogramList,
-                                                       startTime,
-                                                       endTime);
+                                                       seismogramList);
     graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
     graph.draw();
     seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
