@@ -151,7 +151,7 @@ export class Seismograph {
     this.g = this.svg.append("g")
       .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
     this.g.append("g").attr("class", "allsegments");
-  //  this.svg.call(this.zoom);
+    this.svg.call(this.zoom);
 
     this.calcScaleDomain();
     //this.setWidthHeight(this.width, this.height);
@@ -583,7 +583,6 @@ export class Seismograph {
 
 
   zoomed(mythis: Seismograph): void {
-    console.log("zoomed");
     let t = d3.event.transform;
     let xt = t.rescaleX(this.xScale);
     mythis.redrawWithXScale(xt);
