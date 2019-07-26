@@ -99,7 +99,7 @@ graph.draw();
           <pre><code class="language-html">
 &lt;style>
   div.seismograph {
-    height: 450px;
+    height: 300px;
   }
 &lt;/style>
           </code></pre>
@@ -226,6 +226,68 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
     seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
     console.assert(false, error);
   });
+          </code></pre>
+
+          <h3>Predicted Phase Arrival Times:</h3>
+          <p>
+            It would be nice to know where the P and S wave are predicted to
+            arrive. We can use the IRIS
+            <a href="http://service.iris.edu/irisws/traveltime/1/">traveltime</a>
+            web service to to get travel times for seismic phases. The traveltime
+            web service uses <a href="http://www.seis.sc.edu/TauP/">The TauP Toolkit</a>
+            under the hood, and so the documentation for it can help. We will
+            keep things simple and just ask for <em>P</em> and <em>S</em> phases.
+            Again, this is a remote service, therefore asynchronous, and we
+            will need to
+            use promises again. We put an additional <code>then()</code> call
+            after we get the quake and station but before we ask for the
+            seismograms. This allows us to use the predicted travel times to
+            pick the time window starting 30 seconds prior to the first P
+            arrival.
+         </p>
+         <pre><code class="language-javascript">
+Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
+.then( ev_sta_result => {
+  let quakeList = ev_sta_result[0];
+  let networks = ev_sta_result[1];
+  let taupQuery = new seisplotjs.traveltime.TraveltimeQuery();
+  taupQuery.latLonFromStation(networks[0].stations[0])
+    .latLonFromQuake(quakeList[0])
+    .phases("P,S");
+  return Promise.all([ quakeList, networks, taupQuery.queryJson() ]);
+          </code></pre>
+          <p>
+            Now in the third then, we can use add the travel time to the
+            origin time to get a start for our request. One important thing
+            to keep in mind with time is that the moment objects from the
+            <a href="https://momentjs.com/docs/">momentjs</a> library that we
+            use are mutible, and so you should always create a copy before
+            modifying like <code>moment.utc(quakeList[0].time)</code> as
+            otherwise you will change the origin time of the quake.
+          </p>
+          <pre><code class="language-javascript">
+}).then( ev_sta_result => {
+  let quakeList = ev_sta_result[0];
+  let networks = ev_sta_result[1];
+  let ttimes = ev_sta_result[2];
+  let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
+  let firstP = ttimes.arrivals.filter(a => a.phase.startsWith('P'))[0];
+  let startTime = moment.utc(quakeList[0].time)
+    .add(firstP.time, 'seconds')
+    .subtract(30, 'seconds');
+  let chanTRList = allChannels.map(c => {
+    return new seisplotjs.fdsndataselect.ChannelTimeRange(c, startTime, null, 2400);
+  });
+  let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+  return Promise.all([ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ]);
+}).then( ev_sta_seis_result => {
+          </code></pre>
+          <p>
+            Now that we have travel times and seismograms, we can plot both. The
+            little flags for phase arrivals are <code>Marker<code> objects.
+          </p>
+          <pre><code class="language-javascript">
+
           </code></pre>
           <div>
           </div>
