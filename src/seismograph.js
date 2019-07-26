@@ -17,6 +17,7 @@ import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH, DRAW_BOTH_ALIGN} fr
 import type { MarginType, MarkerType } from './seismographconfig';
 import {SeismogramSegment, Seismogram, ensureIsSeismogram, findStartEnd, findMinMax } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
+import {Quake} from './quakeml.js';
 
 import {StartEndDuration} from './util';
 
@@ -1031,6 +1032,23 @@ export class Seismograph {
 // static ID for seismogram
 Seismograph._lastID = 0;
 
+/**
+ * Creates Markers for all of the arrivals in ttime.arrivals, relative
+ * to the given Quake.
+ * @param  {[type]} quake quake the travel times are relative to
+ * @param  {[type]} ttime travel times json object as returned from the
+ * IRIS traveltime web service, or the json output of TauP
+ * @return {[type]}       array of Markers suitable for adding to a seismograph
+ */
+export function createMarkersForTravelTimes(quake: Quake, ttime: any): Array<MarkerType> {
+  return ttime.arrivals.map( a => {
+    return {
+      markertype: 'predicted',
+      name: a.phase,
+      time: moment.utc(quake.time).add(a.time, 'seconds')
+    };
+  });
+}
 
 export const seismograph_css = `
 

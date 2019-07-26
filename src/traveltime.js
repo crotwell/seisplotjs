@@ -1,6 +1,8 @@
 // @flow
 
 import {checkProtocol, hasArgs, stringify, isDef } from './util';
+import {Station} from './stationxml.js';
+import {Quake} from './quakeml.js';
 
 export let IRIS_HOST = "service.iris.edu";
 
@@ -75,11 +77,22 @@ export class TraveltimeQuery {
   stalon(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._stalon = value, this) : this._stalon;
   }
+  latLonFromStation(station: Station): TraveltimeQuery {
+    this.stalat(station.latitude);
+    this.stalon(station.longitude);
+    return this;
+  }
   evlat(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._evlat = value, this) : this._evlat;
   }
   evlon(value?: number): number | TraveltimeQuery {
     return hasArgs(value) ? (this._evlon = value, this) : this._evlon;
+  }
+  latLonFromQuake(quake: Quake): TraveltimeQuery {
+    this.evlat(quake.latitude);
+    this.evlon(quake.longitude);
+    this.evdepth(quake.depth/1000);
+    return this;
   }
   format(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._format = value, this) : this._format;
