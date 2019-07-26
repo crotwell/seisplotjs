@@ -285,9 +285,30 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
           <p>
             Now that we have travel times and seismograms, we can plot both. The
             little flags for phase arrivals are <code>Marker<code> objects.
+            We link the seismographs so that they keep aligned in time.
           </p>
           <pre><code class="language-javascript">
-
+}).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
+  let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
+  let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
+  let div = seisplotjs.d3.select('div#myseismograph');
+  let graphList = [];
+  for( let ctr of chanTRList) {
+    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+    seisConfig.title = ctr.channel.codes();
+    let subdiv = div.append('div').classed('seismograph', true);
+    let graph = new seisplotjs.seismograph.Seismograph(subdiv,
+                                                       seisConfig,
+                                                       [ ctr.seismogram ]);
+    graphList.forEach(g => g.linkXScaleTo(graph));
+    graphList.push(graph);
+    graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
+    graph.appendMarkers(phaseMarkers);
+    graph.draw();
+  }
+  seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
+  seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
+}).catch( function(error) {
           </code></pre>
           <div>
           </div>

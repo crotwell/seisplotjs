@@ -28,19 +28,14 @@
       .channelCode('LH?')
       .startTime('2019-07-01')
       .endTime('2019-07-31');
-    Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
-      .then( ev_sta_result => {
-        let quakeList = ev_sta_result[0];
-        let networks = ev_sta_result[1];
+    Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
+      .then( ( [ quakeList, networks ] ) => {
         let taupQuery = new seisplotjs.traveltime.TraveltimeQuery();
         taupQuery.latLonFromStation(networks[0].stations[0])
           .latLonFromQuake(quakeList[0])
           .phases("P,S");
-        return Promise.all([ quakeList, networks, taupQuery.queryJson() ]);
-      }).then( ev_sta_result => {
-        let quakeList = ev_sta_result[0];
-        let networks = ev_sta_result[1];
-        let ttimes = ev_sta_result[2];
+        return Promise.all( [ quakeList, networks, taupQuery.queryJson() ] );
+      }).then( ( [ quakeList, networks, ttimes ] ) => {
         let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
         let firstP = ttimes.arrivals.filter(a => a.phase.startsWith('P'))[0];
         let startTime = seisplotjs.moment.utc(quakeList[0].time)
@@ -50,16 +45,12 @@
           return new seisplotjs.fdsndataselect.ChannelTimeRange(c, startTime, null, 1800);
         });
         let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-        return Promise.all([ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ]);
-      }).then( ev_sta_seis_result => {
-        let quakeList = ev_sta_seis_result[0];
-        let networks = ev_sta_seis_result[1];
-        let ttimes = ev_sta_seis_result[2];
-        let chanTRList = ev_sta_seis_result[3];
+        return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
+      }).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
         let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
         let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
         let div = seisplotjs.d3.select('div#myseismograph');
-        let sharedXScale = null;
+        let graphList = [];
         for( let ctr of chanTRList) {
           let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
           seisConfig.title = ctr.channel.codes();
@@ -67,11 +58,8 @@
           let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                              seisConfig,
                                                              [ ctr.seismogram ]);
-
-          if ( ! sharedXScale) {
-            sharedXScale = graph.xScale;
-          }
-          graph.xScale = sharedXScale;
+          graphList.forEach(g => g.linkXScaleTo(graph));
+          graphList.push(graph);
           graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
           graph.appendMarkers(phaseMarkers);
           graph.draw();

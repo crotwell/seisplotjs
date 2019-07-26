@@ -72,6 +72,8 @@ export class Seismograph {
   g: any;
   throttleRescale: any;
   throttleResize: any;
+  linkedXScaleSet: Set<any>;
+  linkedYScaleSet: Set<any>;
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
               inSegments: Array<Seismogram>,
@@ -590,6 +592,9 @@ export class Seismograph {
   }
 
   redrawWithXScale(xt: any): void {
+    if (xt === this.currZoomXScale) {
+      return;
+    }
     this.currZoomXScale = xt;
     let mythis = this;
     this.g.select("g.allsegments").selectAll("g.trace").remove();
@@ -1025,6 +1030,28 @@ export class Seismograph {
         //this.drawSegments(this.traces, this.g.select("g.allsegments"));
       }
     }
+  }
+  linkXScaleTo(seismograph: Seismograph) {
+    let mythis = this;
+    this.origXScale = seismograph.origXScale;
+    this.xScale = seismograph.xScale;
+    this.currZoomXScale = seismograph.currZoomXScale;
+    if ( ! this.scaleChangeListeners.find(l => l.seismograph === seismograph)) {
+      this.scaleChangeListeners.push({
+          seismograph: seismograph,
+          notifyScaleChange: function(xScale) {
+            console.log(`notify xscale: ${xScale.domain()}`)
+            seismograph.xScale = mythis.xScale;
+            seismograph.redrawWithXScale(xScale);
+          }
+        });
+    }
+    if (! seismograph.scaleChangeListeners.find(l => l.seismograph === this)) {
+      seismograph.linkXScaleTo(this);
+    }
+  }
+  unlinkXScaleTo(seismograph: Seismograph) {
+    this.scaleChangeListeners = this.scaleChangeListeners.filter( l => l.seismograph !==seismograph);
   }
 }
 
