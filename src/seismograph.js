@@ -27,6 +27,7 @@ const CLIP_PREFIX = "seismographclip";
 
 
 export type ScaleChangeListenerType = {
+  destinationKey: any,
   notifyScaleChange: (value: any) => void
 }
 
@@ -56,7 +57,6 @@ export class Seismograph {
   height: number;
   outerWidth: number;
   outerHeight: number;
-  scaleChangeListeners: Array<ScaleChangeListenerType>;
   svg: any;
   canvas: any;
   xScale: any;
@@ -72,8 +72,8 @@ export class Seismograph {
   g: any;
   throttleRescale: any;
   throttleResize: any;
-  linkedXScaleSet: Set<any>;
-  linkedYScaleSet: Set<any>;
+  xScaleChangeListeners: Array<ScaleChangeListenerType>;
+  yScaleChangeListeners: Array<ScaleChangeListenerType>;
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
               inSegments: Array<Seismogram>,
@@ -122,7 +122,8 @@ export class Seismograph {
     this.yScale = d3.scaleLinear();
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.yScaleRmean = d3.scaleLinear();
-    this.scaleChangeListeners = [];
+    this.xScaleChangeListeners = [];
+    this.yScaleChangeListeners = [];
 
     this.xAxis = d3.axisBottom(this.xScale).tickFormat(this.seismographConfig.xScaleFormat);
     this.yAxis = d3.axisLeft(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
@@ -163,7 +164,6 @@ export class Seismograph {
     this.g.append("g").attr("class", "allmarkers")
         .attr("style", "clip-path: url(#"+CLIP_PREFIX+this.plotId+")");
     d3.select(window).on('resize.canvasseismograph'+mythis.plotId, function() {
-      console.log('canvas resize.seismograph'+mythis.plotId+" ");
       if ( ! mythis.beforeFirstDraw && mythis.checkResize() ) {
         mythis.draw();
       }
@@ -222,25 +222,27 @@ export class Seismograph {
     this.beforeFirstDraw = false;
   }
   printSizes(): void {
+    let out = "";
     let rect = this.svg.node().getBoundingClientRect();
-    console.log("svg rect.height "+rect.height);
-    console.log("svg rect.width "+rect.width);
+    out += "svg rect.height "+rect.height+"\n";
+    out += "svg rect.width "+rect.width+"\n";
     let grect = this.svgParent.node().getBoundingClientRect();
-    console.log("parent rect.height "+grect.height);
-    console.log("parent rect.width "+grect.width);
+    out += "parent rect.height "+grect.height+"\n";
+    out += "parent rect.width "+grect.width+"\n";
       let crect = this.canvas.node().getBoundingClientRect();
-      console.log("c rect.height "+crect.height);
-      console.log("c rect.width "+crect.width);
-        console.log("c style.height "+this.canvas.style("height"));
-        console.log("c style.width "+this.canvas.style("width"));
-    console.log("this.height "+this.height);
-    console.log("this.width "+this.width);
-  console.log("canvas.height "+this.canvas.node().height);
-  console.log("canvas.width "+this.canvas.node().width);
-    console.log("this.outerHeight "+this.outerHeight);
-    console.log("this.outerWidth "+this.outerWidth);
+      out += "c rect.height "+crect.height+"\n";
+      out += "c rect.width "+crect.width+"\n";
+        out += "c style.height "+this.canvas.style("height")+"\n";
+        out += "c style.width "+this.canvas.style("width")+"\n";
+    out += "this.height "+this.height+"\n";
+    out += "this.width "+this.width+"\n";
+  out += "canvas.height "+this.canvas.node().height+"\n";
+  out += "canvas.width "+this.canvas.node().width+"\n";
+    out += "this.outerHeight "+this.outerHeight+"\n";
+    out += "this.outerWidth "+this.outerWidth+"\n";
     // $FlowFixMe
-    console.log("this.margin "+this.seismographConfig.margin);
+    out += "this.margin "+this.seismographConfig.margin+"\n";
+    console.log(out);
   }
   sizeCanvas(): void {
     // resize canvas if exists
@@ -345,7 +347,6 @@ export class Seismograph {
         if (endPixel > this.width) {
           rightVisibleSample = leftVisibleSample+Math.ceil((this.width+1)*samplesPerPixel) +1;
         }
-        //console.log(`${ti} ${si} ls${leftVisibleSample} rs${rightVisibleSample}  lp${leftVisiblePixel} rp${rightVisiblePixel} `);
         if (firstTime || ! this.seismographConfig.connectSegments ){
           context.beginPath();
           context.strokeStyle = color;
@@ -387,7 +388,6 @@ export class Seismograph {
       .attr('cx', function(d){  return mythis.currZoomXScale(d[0]);})
       .attr('cy', function(d){  return mythis.yScale(d[1]);})
       .attr('r', radius+2);
-      console.log("svg draw red: "+mythis.currZoomXScale(maxX)+", "+mythis.yScale(minY));
 
     this.g.selectAll("path.diagonal").remove();
     this.g.append("path").attr("class",  "seispath diagonal").attr("d", "M0,0L"+mythis.currZoomXScale(maxX)+", "+mythis.yScale(minY));
@@ -413,7 +413,6 @@ export class Seismograph {
     context.fill();
     context.beginPath();
     context.fillStyle = "red";
-    console.log("draw red: "+this.xScale(this.xScale.domain()[1])+", "+this.yScale(this.yScale.domain()[0]));
     context.arc(this.xScale(maxX), this.yScale(minY), radius, 0, 2*Math.PI, true);
     //context.arc(this.width-10, 10, radius, 0, 2*Math.PI, true);
     context.fill();
@@ -469,7 +468,7 @@ export class Seismograph {
 
     const subtraceJoin = allSegG.selectAll("g")
       .selectAll('g')
-       .data(function(trace) {console.log(`segG trace seg: ${trace.segments.length}`);return trace.segments;});
+       .data(function(trace) {return trace.segments;});
     subtraceJoin.enter()
        .append("g")
          .attr("class", "segment")
@@ -592,51 +591,49 @@ export class Seismograph {
   }
 
   redrawWithXScale(xt: any): void {
-    if (xt === this.currZoomXScale) {
+    if (xt.domain()[0].getTime() === this.currZoomXScale.domain()[0].getTime()
+        && xt.domain()[1].getTime() === this.currZoomXScale.domain()[1].getTime()) {
       return;
+    }
+
+    if ( ! (xt.domain()[0]
+        && xt.domain()[1]
+        && Number.isFinite(xt.range()[0])
+        && Number.isFinite(xt.range()[1]))) {
+          console.assert(false, `xScale Nan: ${xt.domain()} ${xt.range()}`);
     }
     this.currZoomXScale = xt;
     let mythis = this;
-    this.g.select("g.allsegments").selectAll("g.trace").remove();
-      //
-      // .each(function(d, i) {
-      //   console.log(`redrawWithXScale trace ${i}`);
-      //   let trace = mythis.traces[i];
-      //   let segG = d3.select(this)
-      //     .selectAll("g.segment")
-      //     .select("path")
-      //     .attr("d", function(dd, j) {
-      //       console.log(`redrawWithXScale trace ${i} seg ${j}`);
-      //        return mythis.segmentDrawLine(trace.segments[j], mythis.currZoomXScale);
-      //      });
-      // });
-    this.drawSeismograms();
-    //this.drawSegments(this.traces, this.g.select("g.allsegments"));
-    this.g.select("g.allmarkers").selectAll("g.marker")
-          .attr("transform", function(marker: MarkerType) {
-            let textx = xt( marker.time);
-            return  "translate("+textx+","+0+")";});
+    if (! this.beforeFirstDraw) {
+      this.g.select("g.allsegments").selectAll("g.trace").remove();
 
-     this.g.select("g.allmarkers").selectAll("g.markertext")
-         .attr("transform", function(marker: MarkerType) {
-             // shift up by this.seismographConfig.markerTextOffset percentage
-             let maxY = mythis.yScale.range()[0];
-             let deltaY = mythis.yScale.range()[0]-mythis.yScale.range()[1];
-             let texty = maxY - mythis.seismographConfig.markerTextOffset*(deltaY);
-             return  "translate("+0+","+texty+") rotate("+mythis.seismographConfig.markerTextAngle+")";
-           });
+      this.drawSeismograms();
+      this.g.select("g.allmarkers").selectAll("g.marker")
+            .attr("transform", function(marker: MarkerType) {
+              let textx = xt( marker.time);
+              return  "translate("+textx+","+0+")";});
 
-     this.g.select("g.allmarkers").selectAll("path.markerpath")
-       .attr("d", function(marker: MarkerType) {
-         return d3.line()
-           .x(function() {
-             return 0; // g is translated so marker time is zero
-           }).y(function(d, i) {
-             return (i===0) ? 0 : mythis.yScale.range()[0];
-           }).curve(d3.curveLinear)([ mythis.yScale.domain()[0], mythis.yScale.domain()[1] ] ); // call the d3 function created by line with data
-      });
-    this.g.select(".axis--x").call(this.xAxis.scale(xt));
-    this.scaleChangeListeners.forEach(l => l.notifyScaleChange(xt));
+       this.g.select("g.allmarkers").selectAll("g.markertext")
+           .attr("transform", function(marker: MarkerType) {
+               // shift up by this.seismographConfig.markerTextOffset percentage
+               let maxY = mythis.yScale.range()[0];
+               let deltaY = mythis.yScale.range()[0]-mythis.yScale.range()[1];
+               let texty = maxY - mythis.seismographConfig.markerTextOffset*(deltaY);
+               return  "translate("+0+","+texty+") rotate("+mythis.seismographConfig.markerTextAngle+")";
+             });
+
+       this.g.select("g.allmarkers").selectAll("path.markerpath")
+         .attr("d", function(marker: MarkerType) {
+           return d3.line()
+             .x(function() {
+               return 0; // g is translated so marker time is zero
+             }).y(function(d, i) {
+               return (i===0) ? 0 : mythis.yScale.range()[0];
+             }).curve(d3.curveLinear)([ mythis.yScale.domain()[0], mythis.yScale.domain()[1] ] ); // call the d3 function created by line with data
+        });
+      this.g.select(".axis--x").call(this.xAxis.scale(xt));
+    }
+    this.xScaleChangeListeners.forEach(l => l.notifyScaleChange(xt));
   }
 
   drawMarkers(markers: Array<MarkerType>, markerG: any) {
@@ -740,14 +737,11 @@ export class Seismograph {
   }
 
   setWidthHeight(nOuterWidth: number, nOuterHeight: number): void {
-    //console.log("setWidthHeight: outer: "+nOuterWidth+" "+nOuterHeight);
     this.outerWidth = Math.round(nOuterWidth ? Math.max(200, nOuterWidth) : 200);
     this.outerHeight = Math.round(nOuterHeight ? Math.max(100, nOuterHeight): 100);
     this.height = this.outerHeight - this.seismographConfig.margin.top - this.seismographConfig.margin.bottom;
     this.width = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
 
-      //console.log("setWidthHeight: inner: "+this.width+" "+this.height);
-    //this.svg.attr("viewBox", "0 0 "+this.outerWidth+" "+this.outerHeight);
     this.origXScale.range([0, this.width]);
     this.xScale.range([0, this.width]);
     this.currZoomXScale.range([0, this.width]);
@@ -941,6 +935,7 @@ export class Seismograph {
         minMax = [ minMax[0]-1, minMax[1]+1];
       }
       this.yScale.domain(minMax).nice();
+      this.yScaleChangeListeners.forEach(l => l.notifyScaleChange(this.yScale));
     }
     this.redoDisplayYScale();
   }
@@ -1033,25 +1028,94 @@ export class Seismograph {
   }
   linkXScaleTo(seismograph: Seismograph) {
     let mythis = this;
-    this.origXScale = seismograph.origXScale;
-    this.xScale = seismograph.xScale;
-    this.currZoomXScale = seismograph.currZoomXScale;
-    if ( ! this.scaleChangeListeners.find(l => l.seismograph === seismograph)) {
-      this.scaleChangeListeners.push({
-          seismograph: seismograph,
+    this.origXScale.domain(seismograph.origXScale.domain());
+    this.xScale.domain(seismograph.xScale.domain());
+    if ( ! this.beforeFirstDraw && seismograph.currZoomXScale.range()[1] != 1) {
+      // default range is 0,1, so don't draw then.
+      this.redrawWithXScale(seismograph.currZoomXScale);
+    }
+    if ( ! this.xScaleChangeListeners.find(l => l.destinationKey === seismograph)) {
+      this.xScaleChangeListeners.push({
+          destinationKey: seismograph,
           notifyScaleChange: function(xScale) {
-            console.log(`notify xscale: ${xScale.domain()}`)
-            seismograph.xScale = mythis.xScale;
-            seismograph.redrawWithXScale(xScale);
+            if ( ! seismograph.beforeFirstDraw) {
+              seismograph.redrawWithXScale(xScale);
+            }
           }
         });
     }
-    if (! seismograph.scaleChangeListeners.find(l => l.seismograph === this)) {
+    if (! seismograph.xScaleChangeListeners.find(l => l.destinationKey === this)) {
       seismograph.linkXScaleTo(this);
     }
   }
   unlinkXScaleTo(seismograph: Seismograph) {
-    this.scaleChangeListeners = this.scaleChangeListeners.filter( l => l.seismograph !==seismograph);
+    this.xScaleChangeListeners = this.xScaleChangeListeners.filter( l => l.destinationKey !==seismograph);
+  }
+  linkYScaleTo(seismograph: Seismograph) {
+    let mythis = this;
+    if ( ! this.yScaleChangeListeners.find(l => l.destinationKey === seismograph)) {
+      let schangeListen = {
+          destinationKey: seismograph,
+          notifyScaleChange: function(yScale) {
+            if (Number.isFinite(yScale.domain()[0])
+                && Number.isFinite(yScale.domain()[1])
+                && Number.isFinite(mythis.yScale.domain()[0])
+                && Number.isFinite(mythis.yScale.domain()[1])) {
+              seismograph.updateYScaleLinkedTo(yScale);
+            }
+          }
+        };
+        mythis.updateYScaleLinkedTo(seismograph.yScale);
+        this.yScaleChangeListeners.push(schangeListen);
+        schangeListen.notifyScaleChange(this.yScale);
+    }
+    if (! seismograph.yScaleChangeListeners.find(l => l.destinationKey === this)) {
+      seismograph.linkYScaleTo(this);
+    }
+  }
+  unlinkYScaleTo(seismograph: Seismograph) {
+    this.yScaleChangeListeners = this.yScaleChangeListeners.filter( l => l.destinationKey !==seismograph);
+  }
+  updateYScaleLinkedTo(otherYScale: any) {
+    if (Number.isFinite(otherYScale.domain()[0])
+          && Number.isFinite(otherYScale.domain()[1])) {
+
+      let didModify = false;
+      if( ! (Number.isFinite(this.yScale.domain()[0])
+          && Number.isFinite(this.yScale.domain()[1]))) {
+        this.yScale = otherYScale;
+        didModify = true;
+      } else {
+
+        if (this.isDoRMean()) {
+          let seisYInterval = otherYScale.domain()[1]-otherYScale.domain()[0];
+          let myYInterval = this.yScale.domain()[1]-this.yScale.domain()[0];
+          if (seisYInterval > myYInterval){
+            let center = this.yScale.domain()[0]+myYInterval/2;
+            this.yScale.domain([ center - seisYInterval/2, center + seisYInterval/2]);
+            didModify = true;
+          }
+        } else {
+          let max = this.yScale.domain()[1];
+          let min = this.yScale.domain()[0];
+          if (max < otherYScale.domain()[1]) {
+            max = otherYScale.domain()[1];
+            didModify = true;
+          }
+          if (min > otherYScale.domain()[0]) {
+            min = otherYScale.domain()[0];
+            didModify = true;
+          }
+          if (didModify) {
+            this.yScale.domain([min, max]);
+          }
+        }
+      }
+      if (didModify && ! this.beforeFirstDraw ) {
+        this.redoDisplayYScale();
+        this.drawSeismograms();
+      }
+    }
   }
 }
 
