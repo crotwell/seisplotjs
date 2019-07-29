@@ -90,7 +90,7 @@ export class SeismographConfig {
                                      // separated by pixels
 
     this.disableWheelZoom = false;
-    this.connectSegments = false;
+    this.connectSegments = true;
     this.lineColors = [
        "skyblue",
        "olivedrab",
