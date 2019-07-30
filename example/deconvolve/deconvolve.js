@@ -110,9 +110,7 @@ function processSeismograms(traceMap) {
       filteredPlot.draw();
 
       let fftOut = seisplotjs.fft.calcDFT(trace.segments[0].y, trace.segments[0].numPoints );
-
-
-      simpleLogPlot(fftOut, "div.fftplot", trace.sampleRate);
+      seisplotjs.fftplot.createSimpleFFTPlot(fftOut, "div.fftplot", trace.sampleRate, true)
 
       let hilbertSeismogram = seisplotjs.filter.hilbert(trace);
       let svgHilbert = d3.select('div.hilbertseisplot').append('div');

@@ -4,11 +4,13 @@ import {FFTResult} from './fft.js';
 
 import * as d3 from 'd3';
 
-export function createSimpleFFTPlot(fft: FFTResult, cssSelector: string, sps: number) {
-  simpleOverlayFFTPlot( [ fft], cssSelector, sps);
+import {insertCSS} from './plotutil.js';
+
+export function createSimpleFFTPlot(fft: FFTResult, cssSelector: string, sps: number, loglog: boolean = true) {
+  simpleOverlayFFTPlot( [ fft], cssSelector, sps, loglog);
 }
 
-export function simpleOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: string, sps: number, loglog: boolean = false) {
+export function simpleOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: string, sps: number, loglog: boolean = true) {
     let T = 1/sps;
     let ampPhaseList = [];
     let ampSliceMap = new Map();
@@ -63,23 +65,26 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
     let g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     let x;
+    let line = d3.line();
     if (loglog) {
       x = d3.scaleLog()
           .rangeRound([0, width]);
+      line.x(function(d, i, a) { return x((i+1)*sps/2/(a.length-1)); });
+      // minus one as slice off zero freq above
+      x.domain([sps/2/(maxFFTAmpLen-1), sps/2]);
     } else {
       x = d3.scaleLinear()
           .rangeRound([0, width]);
+      line.x(function(d, i, a) { return x((i  )*sps/2.0/(a.length-1)); });
+      x.domain([0, sps/2]);
     }
     let y = d3.scaleLog()
         .rangeRound([height, 0]);
 
-    let line = d3.line()
-        .x(function(d, i, a) { return x((i+1)*sps/2/(a.length-1)); })
-        .y(function(d) { return y(d); });
 
-  // minus one as slice off zero freq above
-  x.domain([sps/2/(maxFFTAmpLen-1), sps/2]);
-//  x.domain(d3.extent(fftAmp, function(d, i) { return i; }));
+    line.y(function(d) { return y(d); });
+console.log(`x scale ${loglog}  ${x.domain()} ${x.range()}`)
+
   y.domain(extentFFTData);
   if (y.domain()[0] === y.domain()[1]) {
     y.domain( [ y.domain()[0]/2, y.domain()[1]*2]);
@@ -88,7 +93,7 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
   g.append("g")
-      .attr("transform", "translate(0," + height+ margin.bottom + ")")
+      .attr("transform", `translate(0, ${height+ +margin.bottom} )`)
     .append("text")
       .attr("fill", "#000")
       .attr("y", 0)
@@ -96,7 +101,7 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
       .attr("dy", "0.71em")
       .attr("text-anchor", "end")
       .text("Hertz");
-
+console.log(`height: ${height}   margin.bottom ${margin.bottom}`)
 //    .select(".domain")
 //      .remove();
 
@@ -113,8 +118,111 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
   for (const ap of ampPhaseList) {
     let ampSlice = ampSliceMap.get(ap);
     pathg.append("g").append("path")
+        .classed("fftpath", true)
         .datum(ampSlice)
         .attr("d", line);
   }
     return svg;
+}
+
+
+export const fftplot_css = `
+
+
+path.fftpath {
+  stroke: skyblue;
+  fill: none;
+  stroke-width: 1px;
+}
+
+svg.fftplot {
+  height: 100%;
+  width: 100%;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+1) path.seispath {
+  stroke: skyblue;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+2) path.seispath {
+  stroke: olivedrab;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+3) path.seispath {
+  stroke: goldenrod;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+4) path.seispath {
+  stroke: firebrick;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+5) path.seispath {
+  stroke: darkcyan;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+6) path.seispath {
+  stroke: orange;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+7) path.seispath {
+  stroke: darkmagenta;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+8) path.seispath {
+  stroke: mediumvioletred;
+}
+
+svg.fftplot.overlayPlot g.allfftpaths g:nth-child(9n+9) path.seispath {
+  stroke: sienna;
+}
+
+/* same colors for titles */
+
+svg.fftplot.overlayPlot g.title tspan:nth-child(9n+1)  {
+  fill: skyblue;
+}
+
+svg.fftplot.overlayPlot g.title text tspan:nth-child(9n+2)  {
+  stroke: olivedrab;
+}
+
+svg.fftplot.overlayPlot g.title text tspan:nth-child(9n+3)  {
+  stroke: goldenrod;
+}
+
+svg.fftplot.overlayPlot g.title tspan:nth-child(9n+4)  {
+  stroke: firebrick;
+}
+
+svg.fftplot.overlayPlot g.title tspan:nth-child(9n+5)  {
+  stroke: darkcyan;
+}
+
+svg.fftplot.overlayPlot g.title tspan:nth-child(9n+6)  {
+  stroke: orange;
+}
+
+svg.fftplot.overlayPlot g.title tspan:nth-child(9n+7)  {
+  stroke: darkmagenta;
+}
+
+svg.fftplot.overlayPlot g.title tspan:nth-child(9n+8)  {
+  stroke: mediumvioletred;
+}
+
+svg.fftplot.overlayPlot g.title tspan:nth-child(9n+9)  {
+  stroke: sienna;
+}
+
+
+/* links in svg */
+svg.fftplot text a {
+  fill: #0000EE;
+  text-decoration: underline;
+}
+
+`;
+
+if (document){
+  insertCSS(fftplot_css);
 }
