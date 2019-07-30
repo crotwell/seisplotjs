@@ -52,7 +52,6 @@ export class Helicorder {
       lineSeisConfig.minHeight = height;
       lineSeisConfig.maxHeight = height;
       let seismograph = new Seismograph(seisDiv, lineSeisConfig, [this.trace], startTime, endTime);
-      seismograph.disableWheelZoom();
       seismograph.draw();
       seismograph.canvas.style("height", `${height}px`);
       seismograph.svg.style("height", `${height}px`);
@@ -110,6 +109,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.yLabel = '';
     this.xSublabel = '';
     this.ySublabel = ' ';
+    this.ySublabelIsUnits = false;
     this.isXAxis = false;
     this.isYAxis = false;
     this.overlap = 0.5;
@@ -120,12 +120,13 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.ySublabel = ` `;
     this.lineSeisConfig.xLabel = ' ';
     this.lineSeisConfig.yLabel = '';// replace later with `${startTime.format("HH.mm")}`;
+    this.lineSeisConfig.ySublabelIsUnits = false;
     this.lineSeisConfig.isXAxis = false;
     this.lineSeisConfig.isYAxis = false;
     this.lineSeisConfig.margin.top = 2;
     this.lineSeisConfig.margin.bottom = 2;
     this.lineSeisConfig.margin.left = 32;
-    this.lineSeisConfig.disableWheelZoom = true;
+    this.lineSeisConfig.wheelZoom = false;
   }
 }
 

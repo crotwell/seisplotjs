@@ -146,16 +146,16 @@ export class Seismograph {
       maxZoom = Math.max(maxZoom,
                          Math.pow(2, Math.ceil(Math.log(zoomLevelFactor)/Math.log(2))));
     }
-    this.zoom = d3.zoom()
-            .scaleExtent([1/4, maxZoom ] )
-            .on("zoom", function() {
-                mythis.zoomed(mythis);
-              });
 
     this.g = this.svg.append("g")
       .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
     this.g.append("g").attr("class", "allsegments");
-    this.svg.call(this.zoom);
+    let z = this.svg.call(d3.zoom().on("zoom", function () {
+        mythis.zoomed(mythis);
+      }));
+    if ( ! this.seismographConfig.wheelZoom) {
+      z.on("wheel.zoom", null);
+    }
 
     this.calcScaleDomain();
     //this.setWidthHeight(this.width, this.height);
@@ -169,13 +169,6 @@ export class Seismograph {
       }
     });
 
-  }
-
-  disableWheelZoom(): void {
-    this.svg.call(this.zoom).on("wheel.zoom", null);
-    if (this.canvas) {
-      this.canvas.call(this.zoom).on("wheel.zoom", null);
-    }
   }
 
   checkResize(): boolean {
@@ -195,12 +188,12 @@ export class Seismograph {
     if ( ! this.canvas ) {
       this.canvas = this.svgParent.insert("canvas",":first-child").classed("seismograph", true);
       const mythis = this;
-      this.canvas.call(d3.zoom().on("zoom", function () {
-        mythis.zoomed(mythis);
-     }));
-     if (this.seismographConfig.disableWheelZoom) {
-       this.disableWheelZoom();
-     }
+      let z = this.canvas.call(d3.zoom().on("zoom", function () {
+          mythis.zoomed(mythis);
+        }));
+      if ( ! this.seismographConfig.wheelZoom) {
+        z.on("wheel.zoom", null);
+      }
       this.canvas.attr("height", this.outerHeight)
         .attr("width", this.outerWidth)
         .style("z-index", "-1"); // make sure canvas is below svg
@@ -441,9 +434,6 @@ export class Seismograph {
   }
   calcScaleAndZoom(): void {
     this.rescaleYAxis();
-    this.zoom = d3.zoom()
-          .translateExtent([[0, 0], [this.width, this.height]])
-          .extent([[0, 0], [this.width, this.height]]);
     // check if clip exists, wonky d3 convention
     let container = this.svg.select("defs").select("#"+CLIP_PREFIX+this.plotId);
     if (container.empty()) {

@@ -57,7 +57,7 @@ export class SeismographConfig {
   connectSegments: boolean;
   lineColors: Array<string>;
   lineWidth: number;
-  disableWheelZoom: boolean;
+  wheelZoom: boolean;
   doRMean: boolean;
   doGain: boolean;
   fixedYScale: null | Array<number>;
@@ -89,7 +89,7 @@ export class SeismographConfig {
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample
                                      // separated by pixels
 
-    this.disableWheelZoom = false;
+    this.wheelZoom = true;
     this.connectSegments = true;
     this.lineColors = [
        "skyblue",
@@ -128,6 +128,7 @@ export class SeismographConfig {
   }
   clone(): SeismographConfig {
     let out = new SeismographConfig();
+    out.drawingType = this.drawingType;
     out.isXAxis = this.isXAxis;
     out.isYAxis = this.isYAxis;
     out.xScaleFormat = this.xScaleFormat;
@@ -139,6 +140,7 @@ export class SeismographConfig {
     out.yLabel = this.yLabel;
     out.yLabelOrientation = this.yLabelOrientation;
     out.ySublabel = this.ySublabel;
+    out.ySublabelIsUnits = this.ySublabelIsUnits;
     out.ySublabelTrans = this.ySublabelTrans;
     out.doRMean = this.doRMean;
     out.doGain = this.doGain;
@@ -146,10 +148,12 @@ export class SeismographConfig {
     out.markerTextOffset = this.markerTextOffset;
     out.markerTextAngle = this.markerTextAngle;
     out.markerFlagpoleBase = this.markerFlagpoleBase;
+    out.minHeight=this.minHeight;
     out.margin = this.margin;
     out.segmentDrawCompressedCutoff = this.segmentDrawCompressedCutoff;
     out.maxZoomPixelPerSample = this.maxZoomPixelPerSample;
-    out.disableWheelZoom = this.disableWheelZoom;
+    out.wheelZoom = this.wheelZoom;
+    out.connectSegments = this.connectSegments;
     out.lineColors = this.lineColors;
     return out;
   }
