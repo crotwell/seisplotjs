@@ -30,14 +30,14 @@
       .endTime('2019-07-31');
     Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
       .then( ( [ quakeList, networks ] ) => {
-        let taupQuery = new seisplotjs.traveltime.TraveltimeQuery();
-        taupQuery.latLonFromStation(networks[0].stations[0])
+        let taupQuery = new seisplotjs.traveltime.TraveltimeQuery()
+          .latLonFromStation(networks[0].stations[0])
           .latLonFromQuake(quakeList[0])
           .phases("P,S");
         return Promise.all( [ quakeList, networks, taupQuery.queryJson() ] );
       }).then( ( [ quakeList, networks, ttimes ] ) => {
         let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
-        let firstP = ttimes.arrivals.filter(a => a.phase.startsWith('P'))[0];
+        let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
         let startTime = seisplotjs.moment.utc(quakeList[0].time)
           .add(firstP.time, 'seconds')
           .subtract(30, 'seconds');
@@ -48,12 +48,18 @@
         return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
       }).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
         let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
+        phaseMarkers.push({
+          markertype: 'predicted',
+          name: "origin",
+          time: seisplotjs.moment.utc(quakeList[0].time)
+        });
         let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
         let div = seisplotjs.d3.select('div#myseismograph');
         let graphList = [];
         for( let ctr of chanTRList) {
           let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
           seisConfig.title = ctr.channel.codes();
+          seisConfig.wheelZoom = false;
           let subdiv = div.append('div').classed('seismograph', true);
           let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                              seisConfig,

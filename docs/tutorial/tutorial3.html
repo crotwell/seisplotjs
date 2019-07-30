@@ -29,19 +29,14 @@
       .startTime('2019-07-01')
       .endTime('2019-07-31');
     Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
-      .then( ev_sta_result => {
-        let events = ev_sta_result[0];
-        let networks = ev_sta_result[1];
+    .then( ( [ quakeList, networks ] ) => {
         let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
         let chanTRList = allChannels.map(c => {
-          return new seisplotjs.fdsndataselect.ChannelTimeRange(c, events[0].time, null, 2400);
+          return new seisplotjs.fdsndataselect.ChannelTimeRange(c, quakeList[0].time, null, 2400);
         });
         let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-        return Promise.all([ events, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
-      }).then( ev_sta_seis_result => {
-        let events = ev_sta_seis_result[0];
-        let networks = ev_sta_seis_result[1];
-        let chanTRList = ev_sta_seis_result[2];
+        return Promise.all([ quakeList, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
+      }).then( ( [ quakeList, networks, chanTRList ] ) => {
         let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
         let div = seisplotjs.d3.select('div#myseismograph');
         let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
@@ -52,7 +47,7 @@
         graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
         graph.draw();
         seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
-        seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(events[0].description);
+        seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
       }).catch( function(error) {
         seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
         console.assert(false, error);
