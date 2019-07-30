@@ -381,7 +381,6 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     display: table;
 }
 .pika-single:after { clear: both }
-.pika-single { *zoom: 1 }
 
 .pika-single.is-hidden {
     display: none;
@@ -422,7 +421,6 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     margin: 0;
     left: 0;
     top: 5px;
-    filter: alpha(opacity=0);
     opacity: 0;
 }
 
