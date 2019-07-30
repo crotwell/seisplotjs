@@ -67,6 +67,8 @@ d3.select("button#load").on("click", function(d) {
   let staCode = selectEl.options[selectedIndex].value;
 
   console.log("Load..."+staCode);
+  allSeisPlots.clear();
+  allSeismograms.clear();
   doplot(staCode);
 });
 
@@ -88,13 +90,23 @@ doplot = function(sta) {
 
   console.log("before select");
   svgParent.selectAll("*").remove();
+
+  allSeisPlots.clear();
+  allSeismograms.clear();
+
   if (wsProtocol == 'wss:' && host == IRIS_HOST) {
     svgParent.append("h3").attr('class', 'waitingondata').text("IRIS currently does not support connections from https pages, try from a http page instead.");
   } else {
     svgParent.append("p").attr('class', 'waitingondata').text("waiting on first data");
   }
 
-  slConn = new seedlink.SeedlinkConnection(seedlinkUrl, config, callbackFn, errorFn);
+  slConn = new seedlink.SeedlinkConnection(seedlinkUrl, config, slp => {
+    try {
+      callbackFn(slp);
+    } catch(err) {
+      console.error(err);
+    }
+  }, errorFn);
   slConn.setTimeCommand(timeWindow.startTime);
   slConn.setOnClose( closeEvent => {
     console.log(`doplot: Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
@@ -154,12 +166,12 @@ let callbackFn = function(slPacket) {
     let seisPlotConfig = new SeismographConfig();
     seisPlotConfig.xSublabel = codes;
     seisPlotConfig.margin = margin ;
+    seisPlotConfig.wheelZoom = false ;
     let seisPlot = new Seismograph(plotDiv, seisPlotConfig, [trace], timeWindow.startTime, timeWindow.endTime);
     seisPlot.svg.classed('realtimePlot', true).classed('overlayPlot', false)
-    seisPlot.disableWheelZoom();
     seisPlot.draw();
     allSeisPlots.set(codes, seisPlot);
-    allSeismograms.set(codes, trace)
+    allSeismograms.set(codes, trace);
   }
 }
 
@@ -173,6 +185,7 @@ d3.select("button#disconnect").on("click", function(d) {
 
 let doPause = function(value) {
   console.log("Pause..."+paused+" -> "+value);
+  errorFn(`Pause...${paused} -> ${value}`)
   paused = value;
   if (paused) {
     d3.select("button#pause").text("Play");
@@ -183,6 +196,7 @@ let doPause = function(value) {
 
 let doDisconnect = function(value) {
   console.log("disconnect..."+stopped+" -> "+value);
+  errorFn(`disconnect...${stopped} -> ${value}`)
   stopped = value;
   if (stopped) {
     if (slConn) {slConn.close();}
@@ -215,6 +229,7 @@ let timer = d3.interval(function(elapsed) {
   window.requestAnimationFrame(timestamp => {
     allSeisPlots.forEach(function(value, key) {
         value.setPlotStartEnd(timeWindow.startTime, timeWindow.endTime);
+        value.draw();
         //console.log(`${key} tw: ${value.xScale.domain()}  width: ${value.width}  xScale range: ${value.xScale.range()}`);
     });
     timerInProgress = false
@@ -224,5 +239,7 @@ let timer = d3.interval(function(elapsed) {
 
 let errorFn = function(error) {
   console.assert(false, error);
-  svgParent.select("p").text("Error: "+error);
+  d3.select("p#error").text("Error: "+error);
 };
+
+errorFn("Hi Beck")
