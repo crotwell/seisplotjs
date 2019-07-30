@@ -91,7 +91,7 @@ export class SeedlinkConnection {
       if (this.errorFn) {
         this.errorFn(err);
       } else {
-        console.log(err);
+        console.assert(false, err);
       }
     };
     this.webSocket.onclose = function(closeEvent) {

@@ -245,13 +245,11 @@ export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge
     if (! n) { n = 10;}
     if (! lowEdge) { lowEdge = .05;}
     if (! highEdge) { highEdge = .95;}
-    console.log(`hilbert: ${n}  ${lowEdge}  ${highEdge}`);
     let hilbert = new CenteredHilbertTransform(n, lowEdge, highEdge);
     let coeff = hilbert.getCoefficients();
     for (let c of coeff) {
-      console.log(`coeff: ${c}`);
       if ( Number.isNaN(c)) {
-        throw new Error("Hilbert FIR coeff includes NaN: ${coeff.join()}");
+        throw new Error(`Hilbert FIR coeff includes NaN: ${coeff.join()}`);
       }
     }
     let hilbertY = hilbert.filter(seisY);
