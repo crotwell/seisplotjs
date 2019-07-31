@@ -18,10 +18,7 @@ test("init hilbert filter", () => {
   let highEdge = .95;
   let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
   let coeff = hilbert.getCoefficients();
-  for (let c of coeff) {
-    console.log(`hilbert: ${c}`);
-
-  }
+  
   coeff.forEach( c => {
     expect(c).toBeFinite();
   });
