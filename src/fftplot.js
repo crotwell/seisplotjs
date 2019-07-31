@@ -83,7 +83,6 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
 
 
     line.y(function(d) { return y(d); });
-console.log(`x scale ${loglog}  ${x.domain()} ${x.range()}`)
 
   y.domain(extentFFTData);
   if (y.domain()[0] === y.domain()[1]) {
