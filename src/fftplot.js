@@ -47,8 +47,6 @@ export function simpleOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: s
       }
     }
 
-console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
-
     let svgParent = d3.select(cssSelector);
     let svg = svgParent.append("svg");
     svg.classed("fftplot", true);
@@ -59,7 +57,6 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
     const styleHeight = 500;
     const styleWidth = 900;
     svg.attr("width", styleWidth).attr("height", styleHeight);
-    console.log(`style width: ${styleWidth} height ${styleHeight}`);
     let width = +styleWidth - margin.left - margin.right;
     let height = +styleHeight - margin.top - margin.bottom;
     let g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");

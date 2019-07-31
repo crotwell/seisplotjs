@@ -38,7 +38,6 @@ fileSizeMap.set('test/xseed/reference-data/reference-sinusoid-steim2.xseed',956)
 
 for (let filename of fileList) {
   test("ref xseed file vs json"+filename, () => {
-    console.log("test xseed "+filename);
     expect(fs.existsSync(filename)).toEqual(true);
     let xData = fs.readFileSync(filename);
     expect(xData.length).toEqual(fileSizeMap.get(filename));
@@ -54,7 +53,6 @@ for (let filename of fileList) {
       hexStr += s;
     }
     expect(hexStr).toBeString();
-    //console.log(`record as hex (${hexStr.length}): ${hexStr}`);
     expect(xData[0]).toEqual(77);
     expect(xData[1]).toEqual(83);
     expect(xData[2]).toEqual(3);
@@ -73,7 +71,6 @@ for (let filename of fileList) {
 
     let jsonFilename = filename.slice(0, -5)+'json';
 
-    console.log("test json "+jsonFilename);
     expect(fs.existsSync(jsonFilename)).toEqual(true);
     let jsonData = JSON.parse(fs.readFileSync(jsonFilename, 'utf8'));
     expect(xh.identifier).toEqual(jsonData.SID);
@@ -114,5 +111,5 @@ test("crc-32c of a string", () => {
     buf[i] = s.charCodeAt(i);
   }
   let crc = xseed.calculateCRC32C(buf);
-  console.log("crc="+'0x'+crc.toString(16).toUpperCase());
+  //console.log("crc="+'0x'+crc.toString(16).toUpperCase());
 });

@@ -54,7 +54,7 @@ export class Helicorder {
       let nl = this.heliConfig.numLines;
       let height = this.heliConfig.maxHeight/(nl-(nl-1)*this.heliConfig.overlap);
       let marginTop = lineTime.lineNumber===0?0:Math.round(-1.0*height*this.heliConfig.overlap);
-      console.log(`line ${lineTime.lineNumber} height: ${height}  marginTop: ${marginTop}  ${this.heliConfig.overlap}`);
+      //console.log(`line ${lineTime.lineNumber} height: ${height}  marginTop: ${marginTop}  ${this.heliConfig.overlap}`);
       seisDiv.classed('heliLine', true)
         .style('height', height+'px')
         .style('margin-top', `${marginTop}px`);

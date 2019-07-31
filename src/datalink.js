@@ -184,7 +184,7 @@ export class DataLinkConnection {
       }
       binaryPacket.set(data, i);
     }
-    console.log(`encodeDL: ${new TextDecoder("utf-8").decode(binaryPacket)}`);
+    //console.log(`encodeDL: ${new TextDecoder("utf-8").decode(binaryPacket)}`);
     return rawPacket;
   }
 
@@ -195,7 +195,7 @@ export class DataLinkConnection {
    * @param data optional data to send
    */
   sendDLBinary(header: string, data?: Uint8Array): void {
-    console.log(`sendDLBinary: ${header} ${data ? data.length : 0}`);
+    //console.log(`sendDLBinary: ${header} ${data ? data.length : 0}`);
     const rawPacket = this.encodeDL(header, data);
     if (this.webSocket) {
       this.webSocket.send(rawPacket);
@@ -209,7 +209,7 @@ export class DataLinkConnection {
    * to the header before sending.
    */
   sendDLCommand(command: string, dataString?: string): void {
-    console.log("send: "+command+" | "+(dataString ? dataString : ""));
+    //console.log("send: "+command+" | "+(dataString ? dataString : ""));
     this.sendDLBinary(command, stringToUint8Array(dataString));
   }
 
@@ -249,7 +249,7 @@ export class DataLinkConnection {
   */
   writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array) {
     let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`;
-    console.log(`writeAck: header: ${header}`);
+    //console.log(`writeAck: header: ${header}`);
     return this.awaitDLBinary(header, data);
   }
 
@@ -288,9 +288,9 @@ export class DataLinkConnection {
         } else if (header.startsWith("OK")) {
           if (this.responseResolve) {
             this.responseResolve(header+" | "+message);
-            console.log(header+" | "+message);
+            //console.log(header+" | "+message);
           } else {
-            console.log("OK without responseResolve");
+            //console.log("OK without responseResolve");
           }
         }
       } else if (this.responseResolve) {

@@ -38,7 +38,6 @@ export function amplitude(real: number, imag: number) {
  * @return {[type]}      seismogram with mean of zero
  */
 export function rMean(seis: Seismogram): Seismogram {
-  console.log(`rMean input class is: ${(seis.constructor.name)}`);
   if (seis instanceof Seismogram) {
     let meanVal = mean(seis);
     let rmeanSeismogram = new Seismogram(seis.segments.map(s =>{

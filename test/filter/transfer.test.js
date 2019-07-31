@@ -362,7 +362,7 @@ test("impulse one zero combina amp", () => {
       let sactfr = result[1];
       let pz = result[2];
       let sacAmp = result[3];
-      
+
       expect(orig.y.length).toBe(1024);
       expect(orig.delta).toBe(1);
       expect(sacAmp.y.length).toBe(1024/2+1);

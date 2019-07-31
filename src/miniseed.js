@@ -15,7 +15,6 @@ import * as seedcodec from './seedcodec';
 
 /** parse arrayBuffer into an array of DataRecords. */
 export function parseDataRecords(arrayBuffer: ArrayBuffer) {
-  console.log(`Parse Data Records, arrayBuffer length = ${arrayBuffer.byteLength}`);
   let dataRecords = [];
   let offset = 0;
   while (offset < arrayBuffer.byteLength) {
@@ -436,22 +435,18 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
 export function mergeByChannel(drList: Array<DataRecord> ): Map<string, Seismogram> {
   let out = new Map();
   let byChannelMap = this.byChannel(drList);
-  console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
   for (let [key, segments] of byChannelMap) {
     out.set(key, merge(segments));
   }
-  console.log("mergeByChannel  out.size="+out.size);
   return out;
 }
 
 export function seismogramPerChannel(drList: Array<DataRecord>): Map<string, Seismogram> {
   let out = new Map();
   let byChannelMap = byChannel(drList);
-  console.log("mergeByChannel  byChannelMap.size="+byChannelMap.size);
   for (let [key, segments] of byChannelMap) {
     segments = segments.map(dr => createSeismogram( [ dr ] ));
     out.set(key, new Seismogram(segments));
   }
-  console.log("traceByChannel  out.size="+out.size);
   return out;
 }

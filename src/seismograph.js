@@ -259,9 +259,6 @@ export class Seismograph {
           //    .style('position', 'absolute')
 
       const canvasNode = this.canvas.node();
-      if ( ! canvasNode) {
-        console.log("sizeCanvas Canvas.node() is null: "+canvasNode);
-      }
       canvasNode.height = this.outerHeight;
       canvasNode.width = this.outerWidth;
     }
@@ -295,9 +292,6 @@ export class Seismograph {
     }
     // get the canvas drawing context
     const canvasNode = this.canvas.node();
-    if ( ! canvasNode) {
-      console.log("Canvas.node() is null: "+canvasNode);
-    }
     const context = canvasNode.getContext("2d");
     context.save();
     // clear the canvas from previous drawing
@@ -387,9 +381,6 @@ export class Seismograph {
 
     // get the canvas drawing context
     const canvasNode = this.canvas.node();
-    if ( ! canvasNode) {
-      console.log("Canvas.node() is null: "+canvasNode);
-    }
     //canvasNode.height = this.height;
     //canvasNode.width = this.width;
     const context = canvasNode.getContext("2d");
@@ -494,7 +485,6 @@ export class Seismograph {
       }));
     } else {
       // lots of points per pixel so use high/low lines
-      console.log('segmentDrawLine Lots points, draw using high/low');
       if ( ! seg._highlow
            || seg._highlow.secondsPerPixel !== secondsPerPixel
            || seg._highlow.xScaleDomain[1] !== xScale.domain()[1]) {
@@ -1017,10 +1007,9 @@ export class Seismograph {
     }
   }
   linkXScaleTo(seismograph: Seismograph) {
-    let mythis = this;
     this.origXScale.domain(seismograph.origXScale.domain());
     this.xScale.domain(seismograph.xScale.domain());
-    if ( ! this.beforeFirstDraw && seismograph.currZoomXScale.range()[1] != 1) {
+    if ( ! this.beforeFirstDraw && seismograph.currZoomXScale.range()[1] !== 1) {
       // default range is 0,1, so don't draw then.
       this.redrawWithXScale(seismograph.currZoomXScale);
     }

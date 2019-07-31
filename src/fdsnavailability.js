@@ -379,7 +379,6 @@ export class AvailabilityQuery {
   postRaw(channelTimeList: Array<ChannelTimeRange>, method: string): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
-      console.log("Empty chan length so return fake fetch promise");
       return RSVP.hash({
         ok: false
       });

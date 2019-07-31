@@ -819,7 +819,6 @@ export class StationQuery {
 
             // 204 is nodata, so successful but empty
             if (DOMParser) {
-console.log("204 nodata so return empty xml");
               resolve(new DOMParser().parseFromString(FAKE_EMPTY_XML, "text/xml"));
             } else {
               throw new Error("Got 204 but can't find DOMParser to generate empty xml");
@@ -856,11 +855,9 @@ console.log("204 nodata so return empty xml");
 
       function handler() {
         if (this.readyState === this.DONE) {
-          console.log("handle version: "+stringify(mythis.host())+" "+this.status);
           if (this.status === 200) {
             resolve(this.response);
           } else {
-            console.log("Reject version: "+stringify(mythis.host())+" "+this.status);
             reject(this);
           }
         }

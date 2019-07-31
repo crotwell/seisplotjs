@@ -316,7 +316,6 @@ console.log("fdsnDataSelect URL: "+url);
     .then( fetchResponse => {
       if(fetchResponse.ok) {
         return fetchResponse.arrayBuffer().then(ab => {
-          console.log(`fetch response ok, bytes=${ab.byteLength}  ${(typeof ab)}`);
           return miniseed.parseDataRecords(ab);
         });
       } else {
@@ -354,7 +353,6 @@ console.log("fdsnDataSelect URL: "+url);
   postQueryRaw(channelTimeList: Array<ChannelTimeRange>): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
-      console.log("Empty chan length so return fake fetch promise");
       return RSVP.hash({
         ok: false
       });
