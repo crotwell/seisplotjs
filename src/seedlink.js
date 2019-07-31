@@ -65,45 +65,57 @@ export class SeedlinkConnection {
 
   connect() {
     if (this.webSocket) {this.webSocket.close();}
-    this.webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
-    this.webSocket.binaryType = 'arraybuffer';
-    const that = this;
-    this.webSocket.onopen = function() {
-      that.sendHello(that.webSocket)
-      .then(function() {
-        return that.sendCmdArray(that.webSocket, that.requestConfig);
-      })
-      .then(function() {
-        return that.sendCmdArray(that.webSocket, [ that.command ]);
-      })
-      .then(function(val) {
-        that.webSocket.onmessage = function(event) {
-          that.handle(event);
-        };
-        that.webSocket.send('END\r');
-        return val;
-      }, function(err) {
-        console.assert(false, "reject: "+err);
-        that.close();
-      });
-    };
-    this.webSocket.onerror = function(err) {
+    try {
+      this.webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
+      this.webSocket.binaryType = 'arraybuffer';
+      const that = this;
+      this.webSocket.onopen = function() {
+        that.sendHello(that.webSocket)
+        .then(function() {
+          return that.sendCmdArray(that.webSocket, that.requestConfig);
+        })
+        .then(function() {
+          return that.sendCmdArray(that.webSocket, [ that.command ]);
+        })
+        .then(function(val) {
+          that.webSocket.onmessage = function(event) {
+            that.handle(event);
+          };
+          that.webSocket.send('END\r');
+          return val;
+        }, function(err) {
+          if (this.errorFn) {
+            this.errorFn(err);
+          } else {
+            console.assert(false, err);
+          }
+          that.close();
+        });
+      };
+      this.webSocket.onerror = function(err) {
+        if (this.errorFn) {
+          this.errorFn(err);
+        } else {
+          console.assert(false, err);
+        }
+      };
+      this.webSocket.onclose = function(closeEvent) {
+        if (this.closeFn) {
+          this.closeFn(closeEvent);
+        } else {
+          console.log(`Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
+        }
+        if (this.webSocket) {
+          this.webSocket = null;
+        }
+      };
+    } catch(err) {
       if (this.errorFn) {
         this.errorFn(err);
       } else {
         console.assert(false, err);
       }
-    };
-    this.webSocket.onclose = function(closeEvent) {
-      if (this.closeFn) {
-        this.closeFn(closeEvent);
-      } else {
-        console.log(`Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
-      }
-      if (this.webSocket) {
-        this.webSocket = null;
-      }
-    };
+    }
   }
 
   close(): void {
