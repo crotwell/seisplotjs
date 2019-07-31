@@ -8,8 +8,9 @@ let moment = seisplotjs.moment;
 let d3 = seisplotjs.d3;
 
 let staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
-let netCode = 'CO';
-let locCode = '00';
+let locCodeList = ['00', '01'];
+let orientList = ['Z', 'N/1', 'E/2'];
+let bandInstCodeList = [ 'HN', 'HH', 'LH'];
 
 // also see near bottom where we check if page history has state obj and use that
 let state = {
@@ -54,9 +55,6 @@ window.onpopstate = function(event) {
   }
 };
 
-let locCodeList = ['00', '01', '99'];
-let orientList = ['Z', 'N/1', 'E/2'];
-let bandInstCodeList = [ 'HN', 'HH', 'LH'];
 
 let protocol = 'http:';
 if ("https:" == document.location.protocol) {
@@ -81,7 +79,11 @@ let station = null;
 
 let chooserEnd;
 if ( state.endTime) {
-  chooserEnd = moment.utc(state.endTime);
+  if (state.endTime === "now") {
+    chooserEnd = moment.utc();
+  } else {
+    chooserEnd = moment.utc(state.endTime);
+  }
 } else {
   chooserEnd = moment.utc();
 }

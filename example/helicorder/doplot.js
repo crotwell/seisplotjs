@@ -277,7 +277,9 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
       markers.push({ markertype: 'predicted', name: tt.firstP.phase, time: tt.firstPTime });
       markers.push({ markertype: 'predicted', name: tt.firstS.phase, time: tt.firstSTime });
     });
+    markers.push({ markertype: 'predicted', name: "now", time: moment.utc() });
     hash.heli.appendMarkers(markers);
+
     return hash;
   });
 };
