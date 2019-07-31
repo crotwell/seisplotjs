@@ -16,9 +16,9 @@
         <div class='py1 px2'>
           <div id='toc'>
             <ul class='list-reset h5 py1-ul'>
-              <li><a href="api/index.html" class="">API JS Docs</a></li>
-              <li><a href="examples/index.html" class="">Examples</a></li>
-              <li><a href="tutorial/index.html" class="">Tutorial</a></li>
+              <li><a href="../api/index.html" class="">API JS Docs</a></li>
+              <li><a href="../examples/index.html" class="">Examples</a></li>
+              <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
             </ul>
           </div>
         </div>
@@ -192,25 +192,20 @@ let eventQuery = new seisplotjs.fdsnevent.EventQuery()
   .maxRadius(3);
 let stationQuery = new seisplotjs.fdsnstation.StationQuery()
   .networkCode('CO')
-  .stationCode('HAW')
+  .stationCode('HODGE')
   .locationCode('00')
   .channelCode('LH?')
   .startTime('2019-07-01')
   .endTime('2019-07-31');
 Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
-  .then( ev_sta_result => {
-    let events = ev_sta_result[0];
-    let networks = ev_sta_result[1];
+.then( ( [ quakeList, networks ] ) => {
     let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
     let chanTRList = allChannels.map(c => {
-      return new seisplotjs.fdsndataselect.ChannelTimeRange(c, events[0].time, null, 2400);
+      return new seisplotjs.fdsndataselect.ChannelTimeRange(c, quakeList[0].time, null, 2400);
     });
     let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-    return Promise.all([ events, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
-  }).then( ev_sta_seis_result => {
-    let events = ev_sta_seis_result[0];
-    let networks = ev_sta_seis_result[1];
-    let chanTRList = ev_sta_seis_result[2];
+    return Promise.all([ quakeList, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
+  }).then( ( [ quakeList, networks, chanTRList ] ) => {
     let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
     let div = seisplotjs.d3.select('div#myseismograph');
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
@@ -221,7 +216,7 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
     graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
     graph.draw();
     seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
-    seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(events[0].description);
+    seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
   }).catch( function(error) {
     seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
     console.assert(false, error);
@@ -246,15 +241,13 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
             arrival.
          </p>
          <pre><code class="language-javascript">
-Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
-.then( ev_sta_result => {
-  let quakeList = ev_sta_result[0];
-  let networks = ev_sta_result[1];
-  let taupQuery = new seisplotjs.traveltime.TraveltimeQuery();
-  taupQuery.latLonFromStation(networks[0].stations[0])
-    .latLonFromQuake(quakeList[0])
-    .phases("P,S");
-  return Promise.all([ quakeList, networks, taupQuery.queryJson() ]);
+ Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
+ .then( ( [ quakeList, networks ] ) => {
+   let taupQuery = new seisplotjs.traveltime.TraveltimeQuery()
+     .latLonFromStation(networks[0].stations[0])
+     .latLonFromQuake(quakeList[0])
+     .phases("P,S");
+   return Promise.all( [ quakeList, networks, taupQuery.queryJson() ] );
           </code></pre>
           <p>
             Now in the third then, we can use add the travel time to the
@@ -266,21 +259,18 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
             otherwise you will change the origin time of the quake.
           </p>
           <pre><code class="language-javascript">
-}).then( ev_sta_result => {
-  let quakeList = ev_sta_result[0];
-  let networks = ev_sta_result[1];
-  let ttimes = ev_sta_result[2];
+}).then( ( [ quakeList, networks, ttimes ] ) => {
   let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
-  let firstP = ttimes.arrivals.filter(a => a.phase.startsWith('P'))[0];
-  let startTime = moment.utc(quakeList[0].time)
+  let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
+  let startTime = seisplotjs.moment.utc(quakeList[0].time)
     .add(firstP.time, 'seconds')
     .subtract(30, 'seconds');
   let chanTRList = allChannels.map(c => {
-    return new seisplotjs.fdsndataselect.ChannelTimeRange(c, startTime, null, 2400);
+    return new seisplotjs.fdsndataselect.ChannelTimeRange(c, startTime, null, 1800);
   });
   let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-  return Promise.all([ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ]);
-}).then( ev_sta_seis_result => {
+  return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
+}).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
           </code></pre>
           <p>
             Now that we have travel times and seismograms, we can plot both. The
@@ -291,12 +281,18 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
           <pre><code class="language-javascript">
 }).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
   let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
+  phaseMarkers.push({
+    markertype: 'predicted',
+    name: "origin",
+    time: seisplotjs.moment.utc(quakeList[0].time)
+  });
   let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
   let div = seisplotjs.d3.select('div#myseismograph');
   let graphList = [];
   for( let ctr of chanTRList) {
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
     seisConfig.title = ctr.channel.codes();
+    seisConfig.wheelZoom = false;
     let subdiv = div.append('div').classed('seismograph', true);
     let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                        seisConfig,
@@ -311,6 +307,9 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
   seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
   seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
 }).catch( function(error) {
+  seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+  console.assert(false, error);
+});
           </code></pre>
           <div>
           </div>
