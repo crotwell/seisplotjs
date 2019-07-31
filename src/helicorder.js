@@ -6,6 +6,7 @@ import { Seismogram } from './seismogram.js';
 import type { MarkerType } from './seismographconfig';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
+import {minMaxMean, mean } from './filter.js';
 import {StartEndDuration} from './util.js';
 
 
@@ -19,6 +20,7 @@ export class Helicorder {
   yScale: any;
   plotStartTime: moment;
   plotEndTime: moment;
+  maxVariation: number;
   constructor(inSvgParent: any,
               heliConfig: HelicorderConfig,
               trace: Seismogram,
@@ -29,15 +31,25 @@ export class Helicorder {
     this.secondsPerLine = moment.duration(plotEndTime.diff(plotStartTime, 'seconds'))/heliConfig.numLines;
     this.plotStartTime = plotStartTime;
     this.plotEndTime = plotEndTime;
-    this.trace = trace;
+    let cutSeis = trace.cut(new StartEndDuration(plotStartTime, plotEndTime));
+    if (cutSeis) { this.trace = cutSeis;} // check for null for flow
+    let minMax = minMaxMean(this.trace);
+    let posOffset = minMax.max - minMax.mean;
+    let negOffset = minMax.mean = minMax.min;
+    this.maxVariation = Math.max(posOffset, negOffset);
   }
   draw() {
+    if ( ! this.trace) {
+      // no data
+      return;
+    }
     let startTime = moment.utc(this.plotStartTime);
     this.seismographArray = [];
     let lineTimes = this.calcTimesForLines(startTime, this.secondsPerLine, this.heliConfig.numLines);
     for(let lineTime of lineTimes) {
       let startTime = lineTime.startTime;
       let endTime = lineTime.endTime;
+      let timeWindow = new StartEndDuration(lineTime.startTime, lineTime.endTime);
       let seisDiv = this.svgParent.append('div');
       let nl = this.heliConfig.numLines;
       let height = this.heliConfig.maxHeight/(nl-(nl-1)*this.heliConfig.overlap);
@@ -51,7 +63,16 @@ export class Helicorder {
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
       lineSeisConfig.minHeight = height;
       lineSeisConfig.maxHeight = height;
-      let seismograph = new Seismograph(seisDiv, lineSeisConfig, [this.trace], startTime, endTime);
+
+      let trimSeisArr = [  ];
+      let lineCutSeis = this.trace.cut(timeWindow);
+      let lineMean = 0;
+      if (lineCutSeis) {
+        lineMean = mean(lineCutSeis);
+        trimSeisArr.push(lineCutSeis);
+      }
+      lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
+      let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisArr, startTime, endTime);
       seismograph.draw();
       seismograph.canvas.style("height", `${height}px`);
       seismograph.svg.style("height", `${height}px`);
