@@ -139,7 +139,7 @@ let callbackFn = function(slPacket) {
     }
 //      allSeisPlots.get(codes).trim(timeWindow);
   } else {
-    svgParent.select("p.waitingondata").remove();
+    svgParent.selectAll("p.waitingondata").remove();
     // try to insert in alpha order by codes
     console.log(`allSeisPlots ${allSeisPlots.size} keys: ${Array.from(allSeisPlots.keys()).join(' ')}`);
     let allAfterCodes = Array.from(allSeisPlots.keys()).filter(c => c > codes);
