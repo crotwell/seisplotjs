@@ -68,9 +68,9 @@ export class MSeedArchive {
           let seisMap = miniseed.seismogramPerChannel(p.dataRecords);
           // should only be one
           for (let [key, seis] of seisMap) {
-            let trimSeis = seis.trim(new StartEndDuration(p.request.startTime, p.request.endTime));
-            outMap.set(key, trimSeis);
-            p.request.seismogram = trimSeis;
+            let cutSeis = seis.cut(new StartEndDuration(p.request.startTime, p.request.endTime));
+            outMap.set(key, cutSeis);
+            p.request.seismogram = cutSeis;
             out.push(p.request);
           }
         });

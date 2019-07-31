@@ -36,7 +36,9 @@ export class SeismogramSegment {
   channelCode: string;
   yUnit: string;
   _highlow: HighLowType;
-  constructor(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array, sampleRate: number, startTime: moment) {
+  constructor(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
+    sampleRate: number,
+    startTime: moment) {
     if (yArray instanceof Int32Array || yArray instanceof Float32Array || yArray instanceof Float64Array) {
       this._y = yArray;
       this._compressed = null;
@@ -207,10 +209,11 @@ export class SeismogramSegment {
     return this.cloneWithNewData(clonedData);
   }
 
-  cloneWithNewData(clonedData: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array): SeismogramSegment {
+  cloneWithNewData(clonedData: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
+    clonedStartTime: moment = this._startTime): SeismogramSegment {
     let out = new SeismogramSegment(clonedData,
                           this.sampleRate,
-                          moment.utc(this._startTime));
+                          moment.utc(clonedStartTime));
     out.networkCode = this.networkCode;
     out.stationCode = this.stationCode;
     out.locationCode = this.locationCode;
@@ -218,25 +221,26 @@ export class SeismogramSegment {
     out.yUnit = this.yUnit;
     return out;
   }
-  trim(trimStart: moment, trimEnd: moment) {
-    if (trimEnd.isBefore(this._startTime) || trimStart.isAfter(this.endTime)) {
+  cut(timeWindow: StartEndDuration): SeismogramSegment | null {
+    if (timeWindow.endTime.isBefore(this._startTime) || timeWindow.startTime.isAfter(this.endTime)) {
       return null;
     }
     let sIndex = 0;
-    if (trimStart.isAfter(this._startTime)) {
-      let milliDiff = trimStart.diff(this._startTime);
+    if (timeWindow.startTime.isAfter(this._startTime)) {
+      let milliDiff = timeWindow.startTime.diff(this._startTime);
       let offset = milliDiff * this.sampleRate /1000.0;
       sIndex = Math.floor(offset);
     }
-    let eIndex = 0;
-    if (trimEnd.isBefore(this.endTime)) {
-      let milliDiff = moment.utc(this.endTime).diff(trimEnd);
+    let eIndex = this.y.length;
+    if (timeWindow.endTime.isBefore(this.endTime)) {
+      let milliDiff = moment.utc(this.endTime).diff(timeWindow.endTime);
       let offset = milliDiff * this.sampleRate /1000.0;
       eIndex = this.y.length - Math.floor(offset);
     }
-    let trimY = this.y.slice(sIndex, eIndex);
+    let cutY = this.y.slice(sIndex, eIndex);
+    console.log(`slice seg  ${sIndex}  ${eIndex}`)
 
-    let out = new SeismogramSegment(trimY,
+    let out = new SeismogramSegment(cutY,
                           this.sampleRate,
                           moment.utc(this._startTime).add(sIndex / this.sampleRate, 'seconds'));
     out.networkCode = this.networkCode;
@@ -358,8 +362,29 @@ export class Seismogram {
     this._segmentArray.push(seismogram);
   }
   /**
+   * Cut the seismogram. Creates a new seismogram with all datapoints
+   * contained in the time window.
+   * @param  timeWindow start and end of cut
+   * @return            new seismogram
+   */
+  cut(timeWindow: StartEndDuration): null | Seismogram {
+    // coarse trim first
+    let out = this.trim(timeWindow);
+    if (out && out._segmentArray) {
+      let cutSeisArray = this._segmentArray.map(seg => seg.cut(timeWindow)).filter(Boolean);
+      if (cutSeisArray.length > 0) {
+        out = new Seismogram(cutSeisArray);
+      }
+    }
+    return out;
+  }
+  /**
     * Creates a new Seismogram composed of all seismogram segments that overlap the
-    * given time window. If none do, this returns null;
+    * given time window. If none do, this returns null. This is a faster but coarser
+    * version of cut as it only removes whole segments that do not overlap the
+    * time window. For most seismograms that consist of a single contiguous
+    * data segment, this will do nothing.
+    * @see cut
     */
   trim(timeWindow: StartEndDuration): null | Seismogram {
     let out = null;
@@ -380,15 +405,13 @@ export class Seismogram {
       let breakStart = moment.utc(this.startTime);
       let out = [];
       while (breakStart.isBefore(this.endTime)) {
-        let breakEnd = moment.utc(breakStart).add(duration);
-        let trimSeisArray = this._segmentArray.map(function(seis) {
-          return seis.clone().trim(breakStart, breakEnd);
-        });
-        out = out.concat(trimSeisArray);
+        let breakWindow = new StartEndDuration(breakStart, null, duration);
+        let cutSeisArray = this._segmentArray.map(seg => seg.cut(breakWindow));
+        out = out.concat(cutSeisArray);
         breakStart.add(duration);
       }
-      // check for null
-      out = out.filter(function(seis) { return seis;});
+      // check for null, filter true if seg not null
+      out = out.filter(Boolean);
       this._segmentArray = out;
     }
     return this;
