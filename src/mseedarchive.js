@@ -5,7 +5,6 @@ import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 
 import {ChannelTimeRange } from './fdsndataselect';
-import {Seismogram} from './seismogram';
 import {Channel} from './stationxml';
 import {StartEndDuration} from './util.js';
 

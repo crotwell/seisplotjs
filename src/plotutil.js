@@ -8,7 +8,7 @@ import * as miniseed from './miniseed.js';
 import {Seismogram} from './seismogram.js';
 import {SeismographConfig} from './seismographconfig.js';
 import {Seismograph} from './seismograph.js';
-import {StartEndDuration, calcClockOffset} from './util.js';
+import {StartEndDuration} from './util.js';
 
 export { dataselect, miniseed, d3, RSVP, moment };
 

@@ -100,7 +100,6 @@ console.log(`FFT len:${ampPhaseList.length} T: ${T} sps: ${sps}`);
       .attr("dy", "0.71em")
       .attr("text-anchor", "end")
       .text("Hertz");
-console.log(`height: ${height}   margin.bottom ${margin.bottom}`)
 //    .select(".domain")
 //      .remove();
 
