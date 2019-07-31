@@ -238,16 +238,10 @@ export class SeismogramSegment {
       eIndex = this.y.length - Math.floor(offset);
     }
     let cutY = this.y.slice(sIndex, eIndex);
-    console.log(`slice seg  ${sIndex}  ${eIndex}`)
 
-    let out = new SeismogramSegment(cutY,
-                          this.sampleRate,
-                          moment.utc(this._startTime).add(sIndex / this.sampleRate, 'seconds'));
-    out.networkCode = this.networkCode;
-    out.stationCode = this.stationCode;
-    out.locationCode = this.locationCode;
-    out.channelCode = this.channelCode;
-    out.yUnit = this.yUnit;
+    let out = this.cloneWithNewData(cutY,
+        moment.utc(this._startTime).add(sIndex / this.sampleRate, 'seconds'));
+    
     return out;
   }
   _invalidate_endTime_cache() {
