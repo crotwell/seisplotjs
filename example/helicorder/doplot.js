@@ -151,7 +151,7 @@ doPlot = function(config) {
           minMaxSeismogram = ctr.seismogram;
         } else if (ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.chanOrient}` || ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.altChanOrient}`) {
           minMaxSeismogram = ctr.seismogram;
-          d3.selectAll("span.textChanCode").text(key.slice(-3));
+          d3.selectAll("span.textChanCode").text(ctr.channel.channelCode);
         } else {
           console.log(`does not match: ${ctr.channel.channelCode}`);
         }
