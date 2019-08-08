@@ -8,7 +8,7 @@
  */
 
 import * as seedcodec from './seedcodec';
-import {SeismogramSegment} from './seismogram';
+import {SeismogramSegment, Seismogram} from './seismogram';
 import {DataRecord} from './miniseed';
 import moment from 'moment';
 
@@ -351,7 +351,7 @@ export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord): boolean {
 /** concatentates a sequence of XSeedRecords into a single seismogram object.
   * Assumes that they are all contiguous and in order. Header values from the first
   * XSeedRecord are used. */
-export function createSeismogram(contig: Array<XSeedRecord>): SeismogramSegment {
+export function createSeismogramSegment(contig: Array<XSeedRecord>): SeismogramSegment {
   let contigData = contig.map(dr => dr.asEncodedDataSegment());
   let out = new SeismogramSegment(contigData,
                                  contig[0].header.sampleRate,
@@ -374,7 +374,7 @@ export function createSeismogram(contig: Array<XSeedRecord>): SeismogramSegment 
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
  */
-export function merge(drList: Array<XSeedRecord>) {
+export function merge(drList: Array<XSeedRecord>): Seismogram {
   let out = [];
   let currDR;
   drList.sort(function(a,b) {
@@ -389,16 +389,16 @@ export function merge(drList: Array<XSeedRecord>) {
       contig.push(currDR);
     } else {
       //found a gap
-      out.push(createSeismogram(contig));
+      out.push(createSeismogramSegment(contig));
       contig = [ currDR ];
     }
   }
   if (contig.length > 0) {
       // last segment
-      out.push(createSeismogram(contig));
+      out.push(createSeismogramSegment(contig));
       contig = [];
   }
-  return out;
+  return new Seismogram(out);
 }
 
 
@@ -425,24 +425,36 @@ export function segmentMinMax(segment: XSeedRecord, minMaxAccumulator?: Array<nu
 
 /** splits a list of data records by channel code, returning an object
   * with each NSLC mapped to an array of data records. */
-export function byChannel(drList: Array<XSeedRecord>) {
-  let out = {};
+export function byChannel(drList: Array<XSeedRecord>): Map<string, Array<XSeedRecord>> {
+  let out: Map<string, Array<XSeedRecord>> = new Map();
   let key;
   for (let i=0; i<drList.length; i++) {
     let currDR = drList[i];
     key = currDR.codes();
-    if (! out[key]) {
-      out[key] = [currDR];
+    let drArray = out.get(key);
+    if ( ! drArray) {
+      drArray = [currDR];
+      out.set(key, drArray);
     } else {
-      out[key].push(currDR);
+      drArray.push(currDR);
     }
   }
   return out;
 }
 
+export function seismogramPerChannel(drList: Array<XSeedRecord> ): Map<string, Seismogram> {
+  let out = new Map();
+  let byChannelMap = byChannel(drList);
+  for (let [key, segments] of byChannelMap) {
+    out.set(key, merge(segments));
+  }
+  return out;
+}
+
+
 /* MSeed2 to xSeed converstion */
 
-export function convertMS2toXSeed(mseed2: Array<DataRecord>) {
+export function convertMS2toXSeed(mseed2: Array<DataRecord>): Array<XSeedRecord> {
   let out = [];
   for (let i=0; i< mseed2.length; i++) {
     out.push(convertMS2Record(mseed2[i]));
@@ -450,7 +462,7 @@ export function convertMS2toXSeed(mseed2: Array<DataRecord>) {
   return out;
 }
 
-export function convertMS2Record(ms2record: DataRecord) {
+export function convertMS2Record(ms2record: DataRecord): XSeedRecord {
   let xHeader = new XSeedHeader();
   let xExtras = {};
   let ms2H = ms2record.header;

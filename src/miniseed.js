@@ -14,7 +14,7 @@ import * as seedcodec from './seedcodec';
 
 
 /** parse arrayBuffer into an array of DataRecords. */
-export function parseDataRecords(arrayBuffer: ArrayBuffer) {
+export function parseDataRecords(arrayBuffer: ArrayBuffer): Array<DataRecord> {
   let dataRecords = [];
   let offset = 0;
   while (offset < arrayBuffer.byteLength) {
@@ -27,7 +27,7 @@ export function parseDataRecords(arrayBuffer: ArrayBuffer) {
 }
 
 /** parse a single DataRecord starting at the beginning of the DataView. */
-export function parseSingleDataRecord(dataView: DataView) {
+export function parseSingleDataRecord(dataView: DataView): DataRecord {
   let header = parseSingleDataRecordHeader(dataView);
   let data = new DataView(dataView.buffer,
                           dataView.byteOffset+header.dataOffset,
@@ -147,7 +147,7 @@ export class DataRecord {
   /** Concatenates the net, station, loc and channel codes,
     * separated by the given seperator, or periods if not given.
   */
-  codes(sep?: string) {
+  codes(sep?: string): string {
     if ( ! sep) { sep = '.';}
     return this.header.netCode+sep+this.header.staCode+sep+this.header.locCode+sep+this.header.chanCode;
   }
@@ -354,7 +354,7 @@ function checkByteSwap(bTime: BTime): boolean {
   * after the end of the first and the start time of the second is within
   * 1.5 times the sample period of the end of the first.
   */
-export function areContiguous(dr1: DataRecord, dr2: DataRecord) {
+export function areContiguous(dr1: DataRecord, dr2: DataRecord): boolean {
     let h1 = dr1.header;
     let h2 = dr2.header;
     return h1.endTime.isBefore(h2.startTime)
@@ -364,7 +364,7 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord) {
 /** Concatentates a sequence of DataRecords into a single seismogram object.
   * Assumes that they are all contiguous and in order. Header values from the first
   * DataRecord are used. */
-export function createSeismogram(contig: Array<DataRecord>): SeismogramSegment {
+export function createSeismogramSegment(contig: Array<DataRecord>): SeismogramSegment {
   let contigData = contig.map(dr => dr.asEncodedDataSegment());
   let out = new SeismogramSegment(contigData,
                            contig[0].header.sampleRate,
@@ -380,8 +380,8 @@ export function createSeismogram(contig: Array<DataRecord>): SeismogramSegment {
 
 /**
  * Merges data records into a Seismogram object, each of
- * which consists of Seismogram segment objects
- * containing the data as a float array.
+ * which consists of SeismogramSegment objects
+ * containing the data as EncodedDataSegment objects.
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
  */
@@ -400,13 +400,13 @@ export function merge(drList: Array<DataRecord>): Seismogram {
       contig.push(currDR);
     } else {
       //found a gap
-      out.push(createSeismogram(contig));
+      out.push(createSeismogramSegment(contig));
       contig = [ currDR ];
     }
   }
   if (contig.length > 0) {
       // last segment
-      out.push(createSeismogram(contig));
+      out.push(createSeismogramSegment(contig));
       contig = [];
   }
   return new Seismogram(out);
@@ -416,37 +416,27 @@ export function merge(drList: Array<DataRecord>): Seismogram {
 /** Splits a list of data records by channel code, returning a Map
   * with each NSLC string mapped to an array of data records. */
 export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataRecord>> {
-  let out = new Map();
+  let out: Map<string, Array<DataRecord>> = new Map();
   let key;
   for (let i=0; i<drList.length; i++) {
     let currDR = drList[i];
     key = currDR.codes();
-    let array = out.get(key);
-    if ( ! array) {
-      array = [currDR];
-      out.set(key, array);
+    let drArray = out.get(key);
+    if ( ! drArray) {
+      drArray = [currDR];
+      out.set(key, drArray);
     } else {
-      array.push(currDR);
+      drArray.push(currDR);
     }
   }
   return out;
 }
 
-export function mergeByChannel(drList: Array<DataRecord> ): Map<string, Seismogram> {
-  let out = new Map();
-  let byChannelMap = this.byChannel(drList);
-  for (let [key, segments] of byChannelMap) {
-    out.set(key, merge(segments));
-  }
-  return out;
-}
-
-export function seismogramPerChannel(drList: Array<DataRecord>): Map<string, Seismogram> {
+export function seismogramPerChannel(drList: Array<DataRecord> ): Map<string, Seismogram> {
   let out = new Map();
   let byChannelMap = byChannel(drList);
   for (let [key, segments] of byChannelMap) {
-    segments = segments.map(dr => createSeismogram( [ dr ] ));
-    out.set(key, new Seismogram(segments));
+    out.set(key, merge(segments));
   }
   return out;
 }

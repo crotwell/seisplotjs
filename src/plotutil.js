@@ -48,7 +48,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         })
         .then(ab => {
           return {
-            "traceMap": miniseed.mergeByChannel(miniseed.parseDataRecords(ab)),
+            "traceMap": miniseed.seismogramPerChannel(miniseed.parseDataRecords(ab)),
             "startTime": startTime,
             "endTime": endTime,
             "request": null,

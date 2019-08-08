@@ -146,7 +146,7 @@ if (doRunQuery) {
       let dataRecords = miniseed.parseDataRecords(rawBuffer);
       return dataRecords;
     }).then(function(dataRecords) {
-      let traceMap = miniseed.mergeByChannel(records);
+      let traceMap = miniseed.seismogramPerChannel(records);
       processSeismograms(traceMap);
       return traceMap;
     }).then(function(dataRecords) {

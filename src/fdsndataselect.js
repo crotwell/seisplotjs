@@ -276,7 +276,7 @@ export class DataSelectQuery {
   }
   querySeismograms(): Promise<Map<string, Seismogram>> {
     return this.queryDataRecords().then(dataRecords => {
-      return miniseed.mergeByChannel(dataRecords);
+      return miniseed.seismogramPerChannel(dataRecords);
     });
   }
   queryRaw() {
