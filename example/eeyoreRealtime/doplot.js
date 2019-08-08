@@ -120,7 +120,7 @@ doplot = function(sta) {
 let callbackFn = function(slPacket) {
   let codes = slPacket.miniseed.codes();
   //console.log("seedlink: seq="+slPacket.sequence+" "+codes);
-  let seismogram = miniseed.createSeismogram([slPacket.miniseed]);
+  let seismogram = miniseed.createSeismogramSegment([slPacket.miniseed]);
   if (allSeisPlots.has(codes) && allSeismograms.has(codes)) {
     const oldSeismogram = allSeismograms.get(codes);
     oldSeismogram.append(seismogram);
@@ -241,5 +241,3 @@ let errorFn = function(error) {
   console.assert(false, error);
   d3.select("p#error").text("Error: "+error);
 };
-
-errorFn("Hi Beck")
