@@ -381,7 +381,8 @@ export function createSeismogramSegment(contig: Array<DataRecord>): SeismogramSe
 /**
  * Merges data records into a Seismogram object, each of
  * which consists of SeismogramSegment objects
- * containing the data as EncodedDataSegment objects.
+ * containing the data as EncodedDataSegment objects. DataRecords are
+ * sorted by startTime.
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
  */
@@ -432,6 +433,12 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
   return out;
 }
 
+/**
+ * splits the DataRecords by channel and creates a single
+ * Seismogram for each channel.
+ * @param   drList DataRecords array
+ * @return         Map of code to Seismogram
+ */
 export function seismogramPerChannel(drList: Array<DataRecord> ): Map<string, Seismogram> {
   let out = new Map();
   let byChannelMap = byChannel(drList);

@@ -442,6 +442,12 @@ export function byChannel(drList: Array<XSeedRecord>): Map<string, Array<XSeedRe
   return out;
 }
 
+/**
+ * splits the XSeedRecords by channel and creates a single
+ * Seismogram for each channel.
+ * @param   drList XSeedRecords array
+ * @return         Map of code to Seismogram
+ */
 export function seismogramPerChannel(drList: Array<XSeedRecord> ): Map<string, Seismogram> {
   let out = new Map();
   let byChannelMap = byChannel(drList);
@@ -454,6 +460,11 @@ export function seismogramPerChannel(drList: Array<XSeedRecord> ): Map<string, S
 
 /* MSeed2 to xSeed converstion */
 
+/**
+ * Convert array of Miniseed2 DataRecords into an array of XSeedRecords.
+ * @param  {[type]} mseed2 array of DataRecords
+ * @return {[type]}        array of XSeedRecords
+ */
 export function convertMS2toXSeed(mseed2: Array<DataRecord>): Array<XSeedRecord> {
   let out = [];
   for (let i=0; i< mseed2.length; i++) {
@@ -462,6 +473,11 @@ export function convertMS2toXSeed(mseed2: Array<DataRecord>): Array<XSeedRecord>
   return out;
 }
 
+/**
+ * Converts a single miniseed2 DataRecord into a single XSeedRecord.
+ * @param   ms2record Miniseed2 DataRecord to convert
+ * @return            XSeedRecord
+ */
 export function convertMS2Record(ms2record: DataRecord): XSeedRecord {
   let xHeader = new XSeedHeader();
   let xExtras = {};
@@ -536,7 +552,6 @@ const SEP = '_';
  * pycrc 0.7.1 (http://www.tty1.net/pycrc/). Command line used:
  * './pycrc.py --model=crc-32c --generate c --algorithm=table-driven'
  */
-
 const kCRCTable = new Int32Array([
   0x00000000, 0xf26b8303, 0xe13b70f7, 0x1350f3f4,
   0xc79a971f, 0x35f1141c, 0x26a1e7e8, 0xd4ca64eb,
@@ -612,7 +627,6 @@ const kCRCTable = new Int32Array([
  * pycrc 0.7.1 (http://www.tty1.net/pycrc/). Command line used:
  * './pycrc.py --model=crc-32c --generate c --algorithm=table-driven'
  */
-
 export function calculateCRC32C(buf: ArrayBuffer | Uint8Array, initial: number =0 ) {
   if ( buf instanceof ArrayBuffer){
     buf = new Uint8Array(buf);
