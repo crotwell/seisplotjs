@@ -384,8 +384,6 @@ export class Seismograph {
     //canvasNode.height = this.height;
     //canvasNode.width = this.width;
     const context = canvasNode.getContext("2d");
-    // clear the canvas from previous drawing
-    context.clearRect(0, 0, canvasNode.width, canvasNode.height);
     context.translate(this.seismographConfig.margin.left, this.seismographConfig.margin.top);
     // Create clipping path
     //  context.beginPath();
