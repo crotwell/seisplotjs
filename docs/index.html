@@ -5,9 +5,12 @@
     <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
     <meta name='viewport' content='width=device-width,initial-scale=1'>
     <link href='api/assets/bass.css' rel='stylesheet'>
-    <link href='api/assets/style.css' rel='stylesheet'>
-    <link href='api/assets/github.css' rel='stylesheet'>
     <link href='api/assets/split.css' rel='stylesheet'>
+    <style>
+      div#myseismograph {
+        height: 300px;
+      }
+    </style>
   </head>
   <body>
     <div class='flex'>
@@ -30,13 +33,34 @@
           <p>Seisplotjs is a collection of javascript routines for requesting,
             manipulating and plotting seismic data.
           </p>
-          <div>
+          <div class="seismograph" id="myseismograph">
           </div>
         </div>
       </div>
     </div>
 
-    <script src="../dist/seisplotjs_2.0.0-alpha.3_standalone.js"></script>
-    <script></script>
+    <script src="tutorial/seisplotjs_2.0.0-alpha.4_standalone.js"></script>
+    <script>
+    let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
+    let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+    dsQuery.networkCode('CO')
+      .stationCode('HODGE')
+      .locationCode('00')
+      .channelCode('LHZ')
+      .startTime(times.startTime)
+      .endTime(times.endTime);
+      dsQuery.querySeismograms().then(seisMap => {
+        // only plot the first seismogram
+        let seismogram = seisMap.values().next().value;
+        console.log(`seismogram with ${seismogram.numPoints} pts`)
+        let div = seisplotjs.d3.select('div#myseismograph');
+        let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+        let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
+        graph.draw();
+      }).catch( function(error) {
+        seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+        console.assert(false, error);
+      });
+    </script>
   </body>
 </html>
