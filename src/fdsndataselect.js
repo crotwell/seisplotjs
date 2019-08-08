@@ -8,12 +8,12 @@ RSVP.on('error', function(reason: string) {
 });
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import * as miniseed from './miniseed';
 import { Channel } from './stationxml';
 import { Seismogram } from './seismogram';
-import {StartEndDuration, calcClockOffset} from './util';
+import {XML_MIME, TEXT_MIME, StartEndDuration, calcClockOffset, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 
 /**
@@ -73,6 +73,8 @@ export class DataSelectQuery {
   _repository: string;
   /** @private */
   _format: string;
+  /** @private */
+  _timeoutSec: number;
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
@@ -82,6 +84,7 @@ export class DataSelectQuery {
       this._host = IRIS_HOST;
     }
     this._port = 80;
+    this._timeoutSec = 30;
   }
   /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
@@ -261,6 +264,18 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the timeout in seconds for the request. Default is 30.
+  */
+  timeout(value?: number): number | DataSelectQuery {
+    if (hasNoArgs(value)) {
+      return this._timeoutSec;
+    } else if (isNumArg(value)) {
+      this._timeoutSec = value;
+      return this;
+    } else {
+      throw new Error('value argument is optional or number, but was '+typeof value);
+    }
+  }
   computeStartEnd(startTime?: moment, endTime?: moment, duration?: number | null =null, clockOffset?: number =0): DataSelectQuery {
     let se = new StartEndDuration(startTime, endTime, duration, clockOffset);
     this.startTime(se.startTime);
@@ -269,7 +284,18 @@ export class DataSelectQuery {
   }
 
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
-    return this.queryRaw().then(function(rawBuffer) {
+    const mythis = this;
+    const url = this.formURL();
+    const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(function(response) {
+        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+          // no data
+          return new ArrayBuffer(0);
+        } else {
+          return response.arrayBuffer();
+        }
+      }).then(function(rawBuffer) {
         let dataRecords = miniseed.parseDataRecords(rawBuffer);
         return dataRecords;
     });
@@ -278,37 +304,6 @@ export class DataSelectQuery {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.seismogramPerChannel(dataRecords);
     });
-  }
-  queryRaw() {
-    let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let client = new XMLHttpRequest();
-      let url = mythis.formURL();
-console.log("fdsnDataSelect URL: "+url);
-      client.open("GET", url);
-      client.ontimeout = function() {
-        this.statusText = "Timeout "+this.statusText;
-        reject(this);
-      };
-      client.onreadystatechange = handler;
-      client.responseType = "arraybuffer";
-      client.setRequestHeader("Accept", "application/vnd.fdsn.mseed");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
-          } else if (this.status === 204 || (mythis.nodata() && this.status === mythis.nodata())) {
-            // no data, so resolve success but with empty array
-            resolve( new ArrayBuffer(0) );
-          } else {
-            reject(this);
-          }
-        }
-      }
-    });
-    return promise;
   }
 
   postQueryDataRecords(channelTimeList: Array<ChannelTimeRange>): Promise<Array<miniseed.DataRecord>> {
@@ -357,12 +352,10 @@ console.log("fdsnDataSelect URL: "+url);
         ok: false
       });
     } else {
-      return fetch(this.formURL(), {
-          method: "POST",
-          mode: "cors",
-          referrer: "seisplotjs",
-          body: this.createPostBody(channelTimeList),
-        });
+      const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
+      fetchInit.method = "POST";
+      fetchInit.body = this.createPostBody(channelTimeList);
+      return doFetchWithTimeout(this.formURL(), fetchInit, this._timeoutSec * 1000 );
     }
   }
 
@@ -389,28 +382,20 @@ console.log("fdsnDataSelect URL: "+url);
     return this.formBaseURL()+"/version";
   }
 
+  /** Queries the remote web service to get its version
+   * @return Promise to version string
+  */
   queryVersion(): Promise<string> {
-    let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let url = mythis.formVersionURL();
-      let client = new XMLHttpRequest();
-      client.open("GET", url);
-      client.onreadystatechange = handler;
-      client.responseType = "text";
-      client.setRequestHeader("Accept", "text/plain");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
+    let url = this.formVersionURL();
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          if (response.status === 200) {
+            return response.text();
           } else {
-            reject(this);
+            throw new Error(`Status not 200: ${response.status}`);
           }
-        }
-      }
-    });
-    return promise;
+      });
   }
 
   makeParam(name: string, val: mixed): string {

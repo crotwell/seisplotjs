@@ -12,6 +12,7 @@
 import {SeismogramSegment, Seismogram} from './seismogram';
 import * as seedcodec from './seedcodec';
 
+export const MINISEED_MIME = "application/vnd.fdsn.mseed";
 
 /** parse arrayBuffer into an array of DataRecords. */
 export function parseDataRecords(arrayBuffer: ArrayBuffer): Array<DataRecord> {

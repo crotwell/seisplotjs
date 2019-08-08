@@ -12,7 +12,7 @@ import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumAr
 import type {RootType} from './fdsnws-availability-1.0.schema.json.flow.js';
 
 import {ChannelTimeRange } from './fdsndataselect.js';
-import { StartEndDuration } from './util.js';
+import { TEXT_MIME, JSON_MIME, StartEndDuration , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 import {Network, Station, Channel} from './stationxml.js';
 
 export const FORMAT_JSON = 'json';
@@ -67,6 +67,8 @@ export class AvailabilityQuery {
   _includerestricted: boolean;
   /** @private */
   _format: string;
+  /** @private */
+  _timeoutSec: number;
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
@@ -76,6 +78,7 @@ export class AvailabilityQuery {
       this._host = IRIS_HOST;
     }
     this._port = 80;
+    this._timeoutSec = 30;
   }
   /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
@@ -280,6 +283,18 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the timeout in seconds for the request. Default is 30.
+  */
+  timeout(value?: number): number | AvailabilityQuery {
+    if (hasNoArgs(value)) {
+      return this._timeoutSec;
+    } else if (isNumArg(value)) {
+      this._timeoutSec = value;
+      return this;
+    } else {
+      throw new Error('value argument is optional or number, but was '+typeof value);
+    }
+  }
   computeStartEnd(startTime?: moment, endTime?: moment, duration?: number | null = null, clockOffset?: number =0): AvailabilityQuery {
     let se = new StartEndDuration(startTime, endTime, duration, clockOffset);
     this.startTime(se.startTime);
@@ -295,13 +310,15 @@ export class AvailabilityQuery {
   queryJson() {
     const mythis = this;
     this.format(FORMAT_JSON);
-    return this.getRaw("query")
-    .then(function(response) {
+    const url = this.formURL("query");
+    const fetchInit = defaultFetchInitObj(JSON_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(function(response) {
         if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
           return EMPTY_JSON;
         }
         let contentType = response.headers.get('content-type');
-        if(contentType && contentType.includes('application/json')) {
+        if(contentType && contentType.includes(JSON_MIME)) {
           return response.json();
         }
         // $FlowFixMe
@@ -317,31 +334,20 @@ export class AvailabilityQuery {
   extentJson() {
     const mythis = this;
     this.format(FORMAT_JSON);
-    return this.getRaw("extent")
+    const url = this.formURL("extent");
+    const fetchInit = defaultFetchInitObj(JSON_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
     .then(function(response) {
         if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
           return EMPTY_JSON;
         }
         let contentType = response.headers.get('content-type');
-        if(contentType && contentType.includes('application/json')) {
+        if(contentType && contentType.includes(JSON_MIME)) {
           return response.json();
         }
         // $FlowFixMe
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
-  }
-  getRaw(method: string): Promise<Response> {
-    let url = this.formURL(method);
-    console.log("fdsnAvailability URL: "+url);
-    return fetch(url, {
-        cache: 'no-cache',
-        redirect: 'follow', // manual, *follow, error
-      }).then(function(response) {
-          if(response.ok) {
-            return response;
-          }
-          throw new Error('Network response was not ok.');
-        });
   }
 
   postQuery(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
@@ -369,7 +375,7 @@ export class AvailabilityQuery {
           return EMPTY_JSON;
         }
         let contentType = response.headers.get('content-type');
-        if(contentType && contentType.includes('application/json')) {
+        if(contentType && contentType.includes(JSON_MIME)) {
           return response.json();
         }
         // $FlowFixMe
@@ -383,12 +389,10 @@ export class AvailabilityQuery {
         ok: false
       });
     } else {
-      return fetch(this.formBaseURL()+`/${method}?`, {
-          method: "POST",
-          mode: "cors",
-          referrer: "seisplotjs",
-          body: this.createPostBody(channelTimeList),
-        }).then(function(response) {
+      const fetchInit = defaultFetchInitObj(JSON_MIME);
+      fetchInit.method = "POST";
+      fetchInit.body = this.createPostBody(channelTimeList);
+      return fetch(this.formBaseURL()+`/${method}?`, fetchInit).then(function(response) {
           if(response.ok) {
             return response;
           }
@@ -466,29 +470,20 @@ export class AvailabilityQuery {
   formVersionURL(): string {
     return this.formBaseURL()+"/version";
   }
-
+  /** Queries the remote web service to get its version
+   * @return Promise to version string
+  */
   queryVersion(): Promise<string> {
-    let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let url = mythis.formVersionURL();
-      let client = new XMLHttpRequest();
-      client.open("GET", url);
-      client.onreadystatechange = handler;
-      client.responseType = "text";
-      client.setRequestHeader("Accept", "text/plain");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
+    let url = this.formVersionURL();
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          if (response.status === 200) {
+            return response.text();
           } else {
-            reject(this);
+            throw new Error(`Status not 200: ${response.status}`);
           }
-        }
-      }
-    });
-    return promise;
+      });
   }
 
   makeParam(name: string, val: mixed): string {

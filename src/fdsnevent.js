@@ -2,6 +2,7 @@
 
 import { moment } from 'moment';
 import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml';
+import {XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
 import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
@@ -91,6 +92,8 @@ export class EventQuery {
   _catalog: string;
   /** @private */
   _format: string;
+  /** @private */
+  _timeoutSec: number;
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
@@ -99,6 +102,7 @@ export class EventQuery {
       this._host = USGS_HOST;
     }
     this._port = 80;
+    this._timeoutSec = 30;
   }
   /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
@@ -480,6 +484,18 @@ export class EventQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
+  /** Get/Set the timeout in seconds for the request. Default is 30.
+  */
+  timeout(value?: number): number | EventQuery {
+    if (hasNoArgs(value)) {
+      return this._timeoutSec;
+    } else if (isNumArg(value)) {
+      this._timeoutSec = value;
+      return this;
+    } else {
+      throw new Error('value argument is optional or number, but was '+typeof value);
+    }
+  }
 
   /** Checks to see if any parameter that would limit the data
     * returned is set. This is a crude, coarse check to make sure
@@ -691,7 +707,7 @@ export class EventQuery {
   */
   query(): Promise<Array<Quake>> {
     let mythis = this;
-    return this.queryRawXml().then(function(rawXml) {
+    return this.queryRawXml().then(rawXml => {
         return mythis.parseQuakeML(rawXml);
     });
   }
@@ -718,41 +734,21 @@ export class EventQuery {
   */
   queryRawXml(): Promise<Document> {
     let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let client = new XMLHttpRequest();
-      let url = mythis.formURL();
-      client.open("GET", url);
-      client.ontimeout = function() {
-        this.statusText = "Timeout "+this.statusText;
-        reject(this);
-      };
-      client.onreadystatechange = handler;
-      client.responseType = "text";
-      client.setRequestHeader("Accept", "application/xml");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            let out = new DOMParser().parseFromString(this.response, "text/xml");
-            if (! out) {reject("out of DOMParser not defined");}
-            resolve(out);
-//            resolve(this.responseXML);
-          } else if (this.status === 204 || (mythis.nodata() && this.status === mythis.nodata())) {
-
-            // 204 is nodata, so successful but empty
-            if (DOMParser) {
-              resolve(new DOMParser().parseFromString(FAKE_EMPTY_XML, "text/xml"));
-            } else {
-              throw new Error("Got 204 but can't find DOMParser to generate empty xml");
-            }
-          } else {
-            console.log("Reject: "+stringify(mythis.host())+" "+this.status);reject(this);
-          }
+    const url = this.formURL();
+    const fetchInit = defaultFetchInitObj(XML_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+    .then(response => {
+        if (response.status === 200) {
+          return response.text()
+        } else if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+          // 204 is nodata, so successful but empty
+          return FAKE_EMPTY_XML;
+        } else {
+          throw new Error(`Status not successful: ${response.status}`);
         }
-      }
+    }).then(function(rawXmlText) {
+      return new DOMParser().parseFromString(rawXmlText, XML_MIME);
     });
-    return promise;
   }
 
   /** Forms the basic URL to contact the web service, without any query paramters
@@ -782,34 +778,36 @@ export class EventQuery {
   */
   queryCatalogs(): Promise<Array<string>> {
     let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let url = mythis.formCatalogsURL();
-      let client = new XMLHttpRequest();
-      client.open("GET", url);
-      client.onreadystatechange = handler;
-      client.responseType = "document";
-      client.setRequestHeader("Accept", "application/xml");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
+    let url = mythis.formCatalogsURL();
+    const fetchInit = defaultFetchInitObj(XML_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          if (response.status === 200) {
+            return response.text();
           } else {
-            reject(this);
+            throw new Error(`Status not 200: ${response.status}`);
           }
-        }
-      }
-    });
-    return promise.then(function(rawXml) {
-        let top = rawXml.documentElement;
-        let catalogArray = top.getElementsByTagName("Catalog");
-        let out = [];
-        for (let i=0; i<catalogArray.length; i++) {
-          out[i] = catalogArray.item(i).textContent;
-        }
-        return out;
-    });
+      }).then(function(rawXmlText) {
+        return new DOMParser().parseFromString(rawXmlText, XML_MIME);
+      }).then(function(rawXml) {
+          // for flow
+          if ( ! rawXml) { throw new Error("raw xml from DOMParser is null.");}
+          let top = rawXml.documentElement;
+          // for flow
+          if ( ! top) { throw new Error("documentElement in xml from DOMParser is null.");}
+          let catalogArray = top.getElementsByTagName("Catalog");
+          let out = [];
+          if (catalogArray){
+            for (let i=0; i<catalogArray.length; i++) {
+              // for flow
+              let item = catalogArray.item(i);
+              if (item) {
+                out.push(item.textContent);
+              }
+            }
+          }
+          return out;
+      });
   }
 
   /** Forms the URL to get contributors from the web service, without any query paramters
@@ -822,33 +820,34 @@ export class EventQuery {
    * @return Promise to Array of contributor names
   */
   queryContributors(): Promise<Array<string>> {
-    let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let url = mythis.formContributorsURL();
-      let client = new XMLHttpRequest();
-      client.open("GET", url);
-      client.onreadystatechange = handler;
-      client.responseType = "document";
-      client.setRequestHeader("Accept", "application/xml");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) { resolve(this.response); }
-          else {
-            console.log("Reject contributors: "+stringify(mythis.host())+" "+this.status);reject(this); }
-        }
-      }
-    });
-    return promise.then(function(rawXml) {
-        let top = rawXml.documentElement;
-        let contribArray = top.getElementsByTagName("Contributor");
-        let out = [];
-        for (let i=0; i<contribArray.length; i++) {
-          out[i] = contribArray.item(i).textContent;
-        }
-        return out;
-    });
+    let url = this.formContributorsURL();
+    const fetchInit = defaultFetchInitObj(XML_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          if (response.status === 200) {
+            return response.text();
+          } else {
+            throw new Error(`Status not 200: ${response.status}`);
+          }
+      }).then(function(rawXmlText) {
+        return new DOMParser().parseFromString(rawXmlText, XML_MIME);
+      }).then(function(rawXml) {
+          let top = rawXml.documentElement;
+          // for flow
+          if ( ! top) { throw new Error("documentElement in xml from DOMParser is null.");}
+          let contributorArray = top.getElementsByTagName("Contributor");
+          let out = [];
+          if (contributorArray){
+            for (let i=0; i<contributorArray.length; i++) {
+              // for flow
+              let item = contributorArray.item(i);
+              if (item) {
+                out.push(item.textContent);
+              }
+            }
+          }
+          return out;
+      });
   }
 
   /** Forms the URL to get version from the web service, without any query paramters
@@ -861,26 +860,17 @@ export class EventQuery {
   /** Queries the remote web service to get its version
    * @return Promise to version string
   */
-  queryVersion(): Promise<string>{
-    let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let url = mythis.formVersionURL();
-      let client = new XMLHttpRequest();
-      client.open("GET", url);
-      client.onreadystatechange = handler;
-      client.responseType = "text";
-      client.setRequestHeader("Accept", "text/plain");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) { resolve(this.response); }
-          else {
-            console.log("Reject version: "+stringify(mythis.host())+" "+this.status);reject(this); }
-        }
-      }
-    });
-    return promise;
+  queryVersion(): Promise<string> {
+    let url = this.formVersionURL();
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          if (response.status === 200) {
+            return response.text();
+          } else {
+            throw new Error(`Status not 200: ${response.status}`);
+          }
+      });
   }
 
   /**

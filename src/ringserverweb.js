@@ -9,7 +9,8 @@
 import RSVP from 'rsvp';
 import moment from 'moment';
 
-import { checkProtocol, hasArgs, isDef } from './util';
+import { checkProtocol, hasArgs, hasNoArgs, isNumArg, isDef, XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+
 
 export type RingserverVersion = {
   'ringserverVersion': string,
@@ -26,11 +27,16 @@ export const IRIS_HOST = 'rtserve.iris.washington.edu';
 const ORG = 'Organization: ';
 
 export class RingserverConnection {
+  /** @private */
   _host: string;
+  /** @private */
   _port: number;
+  /** @private */
+  _timeoutSec: number;
   constructor(host?: string, port?: number) {
     this._host = (host ? host : IRIS_HOST);
     this._port = (port ? port : 80);
+    this._timeoutSec = 30;
   }
 
   host(value?: string): string | RingserverConnection {
@@ -39,6 +45,19 @@ export class RingserverConnection {
 
   port(value?: number): number | RingserverConnection {
     return hasArgs(value) ? (this._port = value, this) : this._port;
+  }
+
+  /** Get/Set the timeout in seconds for the request. Default is 30.
+  */
+  timeout(value?: number): number | RingserverConnection {
+    if (hasNoArgs(value)) {
+      return this._timeoutSec;
+    } else if (isNumArg(value)) {
+      this._timeoutSec = value;
+      return this;
+    } else {
+      throw new Error('value argument is optional or number, but was '+typeof value);
+    }
   }
 
 
@@ -118,26 +137,15 @@ export class RingserverConnection {
     * Result returned is an RSVP Promise.
     */
   pullRaw(url: string): Promise<string>{
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let client = new XMLHttpRequest();
-      client.open("GET", url);
-      client.onreadystatechange = handler;
-      client.responseType = "text";
-      client.setRequestHeader("Accept", "text/plain");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          if (response.status === 200) {
+            return response.text();
           } else {
-            console.log("Reject pullRaw: "+url+" "+this.status);
-            reject(this);
+            throw new Error(`Status not 200: ${response.status}`);
           }
-        }
-      }
-    });
-    return promise;
+      });
   }
 
   formBaseURL(): string {

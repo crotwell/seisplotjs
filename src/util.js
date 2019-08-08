@@ -17,6 +17,9 @@ RSVP.on('error', function(reason: string) {
 //reexport
 export {RSVP, };
 
+export const XML_MIME = "application/xml";
+export const JSON_MIME = "application/json";
+export const TEXT_MIME = "text/plain";
 
 // flow predicate %check functions
 export function hasArgs(value: any): boolean %checks {
@@ -175,4 +178,33 @@ export function checkProtocol() {
     _protocol = 'https:';
   }
   return _protocol;
+}
+
+export function defaultFetchInitObj(mimeType: string): { [key: string]: any } {
+  let headers = {};
+  if (isStringArg(mimeType)) {
+    headers.Accept = mimeType;
+  }
+  return {
+        cache: 'no-cache',
+        redirect: 'follow', // manual, *follow, error
+        mode: "cors",
+        referrer: "seisplotjs",
+        headers: headers
+  };
+}
+export function doFetchWithTimeout(url: string,
+                                   fetchInit: { [key: string]: any },
+                                   timeoutSec: number): Promise<Response> {
+  console.log("fetch URL: "+url);
+  const controller = new AbortController();
+  const signal = controller.signal;
+  setTimeout(() => controller.abort(), timeoutSec * 1000);
+  fetchInit.signal = signal;
+  return fetch(url, fetchInit).then(function(response) {
+    if(response.ok) {
+      return response;
+    }
+    throw new Error('fetch response was not ok.');
+  });
 }

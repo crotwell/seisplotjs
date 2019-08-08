@@ -9,6 +9,7 @@ RSVP.on('error', function(reason) {
 import moment from 'moment';
 import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, AbstractFilterType, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
 import {createComplex} from './filter.js';
+import {XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
 import {checkProtocol, toIsoWoZ, isObject, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
@@ -90,6 +91,8 @@ export class StationQuery {
   _updatedAfter: moment;
   /** @private */
   _matchTimeseries: boolean;
+  /** @private */
+  _timeoutSec: number;
   /** Construct a query
    * @param host the host to connect to , defaults to service.iris.edu
    */
@@ -101,6 +104,7 @@ export class StationQuery {
       this._host = IRIS_HOST;
     }
     this._port = 80;
+    this._timeoutSec = 30;
   }
   /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
@@ -440,6 +444,18 @@ export class StationQuery {
       return this;
     } else {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
+    }
+  }
+  /** Get/Set the timeout in seconds for the request. Default is 30.
+  */
+  timeout(value?: number): number | StationQuery {
+    if (hasNoArgs(value)) {
+      return this._timeoutSec;
+    } else if (isNumArg(value)) {
+      this._timeoutSec = value;
+      return this;
+    } else {
+      throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
 
@@ -794,43 +810,24 @@ export class StationQuery {
    * @returns a Promise to an xml Document.
    */
   queryRawXml(level: string): Promise<Document> {
-    let mythis = this;
-    let mylevel = level;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let client = new XMLHttpRequest();
-      let url = mythis.formURL(mylevel);
-      client.open("GET", url);
-      client.ontimeout = function() {
-        this.statusText = "Timeout "+this.statusText;
-        reject(this);
-      };
-      client.onreadystatechange = handler;
-      client.responseType = "text"; // use text so error isn't parsed as xml
-      client.setRequestHeader("Accept", "application/xml");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-              let out = new DOMParser().parseFromString(this.response, "text/xml");
-              resolve(out);
-//            resolve(this.responseXML);
-          } else if (this.status === 204 || (mythis.nodata() && this.status === mythis.nodata())) {
-
+    const mythis = this;
+    const url = this.formURL(level);
+    const fetchInit = defaultFetchInitObj(XML_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          if (response.status === 200) {
+            return response.text();
+          } else if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
             // 204 is nodata, so successful but empty
-            if (DOMParser) {
-              resolve(new DOMParser().parseFromString(FAKE_EMPTY_XML, "text/xml"));
-            } else {
-              throw new Error("Got 204 but can't find DOMParser to generate empty xml");
-            }
+            return FAKE_EMPTY_XML;
           } else {
-            reject(this);
+            throw new Error(`Status not successful: ${response.status}`);
           }
-        }
-      }
-    });
-    return promise;
+      }).then(function(rawXmlText) {
+        return new DOMParser().parseFromString(rawXmlText, "text/xml");
+      });
   }
+
   /** Forms the URL to get version from the web service, without any query paramters
    * @return the url
   */
@@ -842,28 +839,17 @@ export class StationQuery {
   /** Queries the remote web service to get its version
    * @return Promise to version string
   */
-  queryVersion() {
-    let mythis = this;
-    let promise = new RSVP.Promise(function(resolve, reject) {
-      let url = mythis.formVersionURL();
-      let client = new XMLHttpRequest();
-      client.open("GET", url);
-      client.onreadystatechange = handler;
-      client.responseType = "text";
-      client.setRequestHeader("Accept", "text/plain");
-      client.send();
-
-      function handler() {
-        if (this.readyState === this.DONE) {
-          if (this.status === 200) {
-            resolve(this.response);
+  queryVersion(): Promise<string> {
+    let url = this.formVersionURL();
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          if (response.status === 200) {
+            return response.text();
           } else {
-            reject(this);
+            throw new Error(`Status not 200: ${response.status}`);
           }
-        }
-      }
-    });
-    return promise;
+      });
   }
   /**
   * Create a name=value parameter to add to a URL, including trailing ampersand
