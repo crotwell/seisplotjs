@@ -113,14 +113,17 @@ export class MSeedArchive {
               }
               return dataRecords;
             });
+          } else if (fetchResponse.status === 404 ) {
+            return []; // empty array means no data
           } else {
             console.log("no data: status="+fetchResponse.status+" "+fetchResponse.url);
             return [];
           }
-        } else {
-          console.log("###### not ok, return [] "+fetchResponse.status);
+        } else if (fetchResponse.status === 404 ) {
           return []; // empty array means no data
-          //throw new Error("no data returned: "+fetchResponse.ok+" "+fetchResponse.url);
+        } else {
+          // $FlowFixMe
+          throw new Error("fetch error: "+fetchResponse.ok+" "+fetchResponse.status+" "+fetchResponse.url);
         }
       }).catch(err => {
         console.log("caught fetch err, continuing with empty: "+err);

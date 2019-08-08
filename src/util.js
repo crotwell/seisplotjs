@@ -201,10 +201,16 @@ export function doFetchWithTimeout(url: string,
   const signal = controller.signal;
   setTimeout(() => controller.abort(), timeoutSec * 1000);
   fetchInit.signal = signal;
-  return fetch(url, fetchInit).then(function(response) {
+  return fetch(url, fetchInit)
+  .catch(err => {
+    console.log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
+    console.assert(false, err);
+    throw err;
+  }).then(function(response) {
     if(response.ok) {
       return response;
     }
-    throw new Error('fetch response was not ok.');
+    // $FlowFixMe
+    throw new Error(`fetch response was not ok. ${response.ok} ${response.status}`);
   });
 }
