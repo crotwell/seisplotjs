@@ -10,7 +10,5 @@ example/huddle
 example/simpleHttp.sh
 jsonSchema
 es6example
-docs/prism.js
-docs/prism.css
 docs/*/seisplotjs_*_standalone.js
 README_part.md
