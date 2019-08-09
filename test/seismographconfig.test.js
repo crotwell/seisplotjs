@@ -9,7 +9,7 @@ test("simple seismographconfig clone", () => {
   seisConfig.drawingType = DRAW_BOTH;
   seisConfig.isXAxis = false;
   seisConfig.isYAxis = false;
-  seisConfig.xScaleFormat = "3e";
+  seisConfig.xScaleFormat = function() { return "3e";};
   seisConfig.yScaleFormat = "4e";
   seisConfig._title = [ 'Bla bla'];
   seisConfig.xLabel = "BigTime";
@@ -42,6 +42,7 @@ test("simple seismographconfig clone", () => {
   const cloned = seisConfig.clone();
   Object.getOwnPropertyNames(seisConfig).forEach( name => {
     if (name !== 'margin') {
+      // $FlowFixMe
       expect(cloned[name]).toEqual(seisConfig[name]);
     } else {
       expect(cloned.margin.top).toEqual(seisConfig.margin.top);

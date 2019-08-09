@@ -130,11 +130,16 @@ export class SeismographConfig {
   clone(): SeismographConfig {
     let out = new SeismographConfig();
     Object.getOwnPropertyNames(this).forEach( name => {
+      // $FlowFixMe
       if (this[name] instanceof moment) {
+        // $FlowFixMe
         out[name] = moment.utc(this[name]);
+        // $FlowFixMe
       } else if ( Array.isArray(this[name]) ) {
+        // $FlowFixMe
         out[name] = this[name].slice();
       } else {
+        // $FlowFixMe
         out[name] = this[name];
       }
       // handle margin separately
