@@ -13,9 +13,10 @@ import * as d3 from 'd3';
 
 import {insertCSS} from './plotutil.js';
 
-import {SeismographConfig, DRAW_SVG, DRAW_CANVAS, DRAW_BOTH, DRAW_BOTH_ALIGN} from './seismographconfig';
+import {SeismographConfig, SeismogramDisplayData, findStartEnd, findMinMax,
+        DRAW_SVG, DRAW_CANVAS, DRAW_BOTH, DRAW_BOTH_ALIGN} from './seismographconfig';
 import type { MarginType, MarkerType } from './seismographconfig';
-import {SeismogramSegment, Seismogram, ensureIsSeismogram, findStartEnd, findMinMax } from './seismogram.js';
+import {SeismogramSegment, Seismogram, ensureIsSeismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
 
@@ -31,7 +32,7 @@ export type ScaleChangeListenerType = {
   notifyScaleChange: (value: any) => void
 }
 
-/** A seismogram plot, using d3. The actual waveform can be drawn
+/* A seismogram plot, using d3. The actual waveform can be drawn
   * with a separate Canvas (default) or with SVG.
   * Note that for SVG you must have
   * stroke and fill set in css like:<br>
@@ -51,7 +52,7 @@ export class Seismograph {
   plotEndTime: moment;
 
   svgParent: any;
-  traces: Array<Seismogram>;
+  seisDataList: Array<SeismogramDisplayData>;
   markers: Array<MarkerType>;
   width: number;
   height: number;
@@ -76,9 +77,9 @@ export class Seismograph {
   yScaleChangeListeners: Array<ScaleChangeListenerType>;
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
-              inSegments: Array<Seismogram>,
-              plotStartTime: moment,
-              plotEndTime: moment) {
+              inSegments: Array<SeismogramDisplayData> | Array<Seismogram> | SeismogramDisplayData | Seismogram,
+              plotStartTime?: moment,
+              plotEndTime?: moment) {
     if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
@@ -92,7 +93,7 @@ export class Seismograph {
     // need relative position in parent div to allow absolute position
     // of svg and canvas for overlaying
     this.svgParent.style("position", "relative");
-    this.traces = [];
+    this.seisDataList = [];
     this._internalAppend(inSegments);
     this.markers = [];
 
@@ -110,7 +111,7 @@ export class Seismograph {
     //this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
     this.svg.attr("plotId", this.plotId);
     if ( ! plotStartTime || ! plotEndTime) {
-      let st = findStartEnd(this.traces);
+      let st = findStartEnd(this.seisDataList);
       plotStartTime = st.startTime;
       plotEndTime = st.endTime;
     }
@@ -135,11 +136,14 @@ export class Seismograph {
       .y(function(d) {return mythis.yScale(d.y); });
 
     let maxZoom = 8;
-    if (this.traces && this.traces.length>0) {
+    if (this.seisDataList && this.seisDataList.length>0) {
       let maxSps = 1;
-      maxSps = this.traces.reduce(function(accum, seg) {
-        return Math.max(accum, seg.sampleRate);
-      }, maxSps);
+      maxSps = this.seisDataList.filter(sdd => sdd.seismogram !== null)
+          .reduce(function(accum, sdd) {
+            // for flow
+            if ( ! sdd.seismogram) {return 1;}
+            return Math.max(accum, sdd.seismogram.sampleRate);
+          }, maxSps);
       let secondsPerPixel = this.calcSecondsPerPixel( mythis.xScale);
       let samplesPerPixel = maxSps * secondsPerPixel;
       let zoomLevelFactor = samplesPerPixel*this.seismographConfig.maxZoomPixelPerSample;
@@ -169,6 +173,17 @@ export class Seismograph {
       }
     });
 
+  }
+  static fromSeismograms(inSvgParent: any,
+                seismographConfig: SeismographConfig,
+                inSegments: Array<Seismogram>,
+                plotStartTime?: moment,
+                plotEndTime?: moment) {
+    return new Seismograph(inSvgParent,
+                           seismographConfig,
+                           inSegments.map(s => SeismogramDisplayData.fromSeismogram(s)),
+                           plotStartTime,
+                           plotEndTime);
   }
 
   checkResize(): boolean {
@@ -265,7 +280,7 @@ export class Seismograph {
   }
 
   drawSeismograms() {
-    this.svg.classed("overlayPlot", this.traces.length > 1);
+    this.svg.classed("overlayPlot", this.seisDataList.length > 1);
     if (this.seismographConfig.drawingType === DRAW_CANVAS
       || this.seismographConfig.drawingType === DRAW_BOTH
       || this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
@@ -310,45 +325,47 @@ export class Seismograph {
     const secondsPerPixel = plotDuration.asSeconds()/
         (this.currZoomXScale.range()[1]-this.currZoomXScale.range()[0]);
 
-    this.traces.forEach( (t,ti) => {
+    this.seisDataList.forEach( (t,ti) => {
 //      const color = d3.select(`svg g.allsegments g:nth-child(9n+1) g path.seispath`)
       const color = this.seismographConfig.getColorForIndex(ti);
       let firstTime = true;
-      t.segments.forEach((s) => {
-        if (s.startTime.isAfter(moment.utc(this.currZoomXScale.domain()[1])) ||
-            s.endTime.isBefore(moment.utc(this.currZoomXScale.domain()[0]))) {
-              // segment either totally off to left or right of visible
-              return;
-        }
-        const samplesPerPixel = 1.0*s.sampleRate*secondsPerPixel;
-        const pixelsPerSample = 1.0/samplesPerPixel;
-        const startPixel = this.currZoomXScale(s.startTime.toDate());
-        const endPixel = this.currZoomXScale(s.endTime.toDate());
-        let leftVisibleSample = 0;
-        let rightVisibleSample = s.y.length;
-        let leftVisiblePixel = startPixel;
-        if (startPixel < 0) {
-          leftVisibleSample = Math.floor(-1*startPixel*samplesPerPixel) -1;
-          leftVisiblePixel = 0;
-        }
-        if (endPixel > this.width) {
-          rightVisibleSample = leftVisibleSample+Math.ceil((this.width+1)*samplesPerPixel) +1;
-        }
-        if (firstTime || ! this.seismographConfig.connectSegments ){
-          context.beginPath();
-          context.strokeStyle = color;
-          //context.lineWidth = 5;
-          context.moveTo(leftVisiblePixel, this.yScale(s.y[leftVisibleSample]));
-          firstTime = false;
-        }
-        for(let i=leftVisibleSample; i<rightVisibleSample && i<s.y.length; i++) {
+      if ( t.seismogram) {
+        t.seismogram.segments.forEach((s) => {
+          if (s.startTime.isAfter(plotEnd) ||
+              s.endTime.isBefore(plotStart)) {
+                // segment either totally off to left or right of visible
+                return;
+          }
+          const samplesPerPixel = 1.0*s.sampleRate*secondsPerPixel;
+          const pixelsPerSample = 1.0/samplesPerPixel;
+          const startPixel = this.currZoomXScale(s.startTime.toDate());
+          const endPixel = this.currZoomXScale(s.endTime.toDate());
+          let leftVisibleSample = 0;
+          let rightVisibleSample = s.y.length;
+          let leftVisiblePixel = startPixel;
+          if (startPixel < 0) {
+            leftVisibleSample = Math.floor(-1*startPixel*samplesPerPixel) -1;
+            leftVisiblePixel = 0;
+          }
+          if (endPixel > this.width) {
+            rightVisibleSample = leftVisibleSample+Math.ceil((this.width+1)*samplesPerPixel) +1;
+          }
+          if (firstTime || ! this.seismographConfig.connectSegments ){
+            context.beginPath();
+            context.strokeStyle = color;
+            //context.lineWidth = 5;
+            context.moveTo(leftVisiblePixel, this.yScale(s.y[leftVisibleSample]));
+            firstTime = false;
+          }
+          for(let i=leftVisibleSample; i<rightVisibleSample && i<s.y.length; i++) {
 
-          context.lineTo(startPixel+i*pixelsPerSample, this.yScale(s.y[i]));
-        }
-        if (! this.seismographConfig.connectSegments ){
-          context.stroke();
-        }
-      });
+            context.lineTo(startPixel+i*pixelsPerSample, this.yScale(s.y[i]));
+          }
+          if (! this.seismographConfig.connectSegments ){
+            context.stroke();
+          }
+        });
+      }
 
       if (this.seismographConfig.connectSegments ){
         context.stroke();
@@ -439,7 +456,7 @@ export class Seismograph {
     const mythis = this;
     const allSegG = this.g.select("g.allsegments");
     const traceJoin = allSegG.selectAll("g")
-      .data(this.traces);
+      .data(this.seisDataList);
     traceJoin.exit().remove();
     traceJoin.enter()
       .append("g")
@@ -907,7 +924,7 @@ export class Seismograph {
     if (this.seismographConfig.fixedYScale) {
       this.yScale.domain(this.seismographConfig.fixedYScale);
     } else {
-      let minMax = findMinMax(this.traces);
+      let minMax = findMinMax(this.seisDataList);
       if (minMax[0] === minMax[1]) {
         // flatlined data, use -1, +1
         minMax = [ minMax[0]-1, minMax[1]+1];
@@ -929,9 +946,12 @@ export class Seismograph {
       if (this.seismographConfig.ySublabelIsUnits ) {
         this.seismographConfig.ySublabel = "";
         let allUnits = [];
-        for (let t of this.traces) {
-          allUnits.push(t.yUnit);
-          this.seismographConfig.ySublabel += `${t.yUnit} `;
+        for (let t of this.seisDataList) {
+          if (t.seismogram){
+            let u = t.seismogram.yUnit;
+            allUnits.push(u);
+            this.seismographConfig.ySublabel += `${u} `;
+          }
         }
         if (allUnits.length === 0) {
           allUnits.push("Count");
@@ -947,60 +967,60 @@ export class Seismograph {
     this.rescaleYAxis();
     this.drawYSublabel();
   }
-  getSeismograms(): Array<Seismogram> {
-    return this.traces;
+  getSeismogramData(): Array<SeismogramDisplayData> {
+    return this.seisDataList;
   }
   /** can append single seismogram segment or an array of segments. */
-  _internalAppend(seismogram: Array<Seismogram> | Seismogram ): void {
-    if ( ! seismogram) {
+  _internalAppend(sddList: Array<SeismogramDisplayData> | SeismogramDisplayData | Array<Seismogram> | Seismogram  ): void {
+    if ( ! sddList) {
       // don't append a null
-    } else if (Array.isArray(seismogram)) {
-      for(let s of seismogram) {
-        this.traces.push(ensureIsSeismogram(s));
+    } else if (Array.isArray(sddList)) {
+      for(let s of sddList) {
+        if (s instanceof SeismogramDisplayData ) {
+          this.seisDataList.push(s);
+        } else {
+          this.seisDataList.push(SeismogramDisplayData.fromSeismogram(s));
+        }
       }
     } else {
-      this.traces.push(ensureIsSeismogram(seismogram));
+      if (sddList instanceof SeismogramDisplayData ) {
+        this.seisDataList.push(sddList);
+      } else {
+        this.seisDataList.push(SeismogramDisplayData.fromSeismogram(sddList));
+      }
     }
   }
   /** appends the seismogram(s) as separate time series. */
   append(seismogram: Array<Seismogram> | Seismogram) {
-    this._internalAppend(seismogram);
+    if (Array.isArray(seismogram)) {
+      let sdd = seismogram.map(s => new SeismogramDisplayData.fromSeismogram(s));
+      this._internalAppend(sdd);
+    } else {
+      this._internalAppend(new SeismogramDisplayData.fromSeismogram(seismogram));
+    }
     this.calcScaleDomain();
     if ( ! this.beforeFirstDraw) {
       // only trigger a draw if appending after already drawn on screen
       // otherwise, just append the data and wait for outside to call first draw()
       this.drawSeismograms();
-      //this.drawSegments(this.traces, this.g.select("g.allsegments"));
     }
     return this;
   }
-  remove(trace: Seismogram): void {
-    this.traces = this.traces.filter( t => t !== trace);
+  getDisplayDataForSeismogram(seis: Seismogram): SeismogramDisplayData | null {
+    let out = this.seisDataList.find(sd => sd.seismogram === seis);
+    if (out) {return out; } else { return null;}
   }
-  replace(oldSeismogram: Seismogram, newSeismogram: Seismogram): void {
-    let index = this.traces.findIndex(t => t === oldSeismogram);
-    if (index !== -1) {
-      this.traces[index] = newSeismogram;
-    } else {
-      index = this.traces.findIndex(t => t.codes() === oldSeismogram.codes());
-      if (index !== -1) {
-        this.traces[index] = newSeismogram;
-      } else {
-        this.traces.push(newSeismogram);
-      }
-    }
+  remove(seisData: SeismogramDisplayData): void {
+    this.seisDataList = this.seisDataList.filter( sd => sd !== seisData);
   }
   trim(timeWindow: StartEndDuration): void {
-    if (this.traces) {
-      this.traces = this.traces.filter(function(d) {
-        return d.endTime.isAfter(timeWindow.startTime);
-      }).filter(function(d) {
-        return d.startTime.isBefore(timeWindow.endTime);
+    if (this.seisDataList) {
+      this.seisDataList = this.seisDataList.filter(function(d) {
+        return d.startEndDur.overlaps(timeWindow);
       });
-      if (this.traces.length > 0) {
+      if (this.seisDataList.length > 0) {
         this.calcScaleDomain();
         this.drawSeismograms();
-        //this.drawSegments(this.traces, this.g.select("g.allsegments"));
       }
     }
   }

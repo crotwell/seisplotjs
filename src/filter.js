@@ -3,6 +3,7 @@
 import {Seismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
 import * as OregonDSPTop from 'oregondsp';
+import {meanOfSlice} from './util.js';
 
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 const CenteredHilbertTransform = OregonDSP.filter.fir.equiripple.CenteredHilbertTransform;
@@ -87,6 +88,7 @@ export type MinMaxMean = {
  * calculate the minimum, maximum and mean for a seismogram.
  * @param  {[type]} seis input seismogram
  * @return {[type]}      output object including min, max and mean
+ * @deprecated see findMinMax in Seismogram
  */
 export function minMaxMean(seis: Seismogram): MinMaxMean {
   let meanVal = 0;
@@ -124,23 +126,6 @@ export function mean(seis: Seismogram): number {
     return meanVal;
   } else {
     throw new Error("seis not instance of Seismogram "+(typeof seis)+" "+(seis.constructor.name));
-  }
-}
-/**
- * Recursively calculates the mean of a slice of a seismogram. This helps with
- * very long seismograms to equally weight each sample point without overflowing.
- * @param  {[type]} dataSlice slice of a seismogram
- * @param  {[type]} totalPts  number of points in the original seismogram
- * @return {[type]}           sum of slice data points divided by totalPts
- */
-function meanOfSlice(dataSlice: Int32Array | Float32Array | Float64Array, totalPts: number ): number {
-  if (dataSlice.length < 8) {
-    return dataSlice.reduce(function(acc, val) {
-       return acc + val;
-    }, 0) / totalPts;
-  } else {
-    let byTwo = Math.floor(dataSlice.length / 2);
-    return meanOfSlice(dataSlice.slice(0, byTwo), totalPts) + meanOfSlice(dataSlice.slice(byTwo, dataSlice.length), totalPts);
   }
 }
 
@@ -211,6 +196,16 @@ export function createChebyshevII(numPoles: number,
                                      lowFreqCorner,
                                      highFreqCorner,
                                      delta);
+}
+
+export function applyFilter(iirFilter: OregonDSP.filter.iir.IIRFilter, seis: Seismogram): Seismogram {
+  let filteredSegments = [];
+  for(let i=0; i<seis.segments.length; i++) {
+    let s = seis.segments[i].clone();
+    iirFilter.filterInPlace(s.y);
+    filteredSegments.push(s);
+  }
+  return new Seismogram(filteredSegments);
 }
 
 

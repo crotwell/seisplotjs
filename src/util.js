@@ -70,7 +70,7 @@ export function stringify(value: mixed): string {
       if (value instanceof moment) {
         return value.toISOString();
       } else {
-        return value.toString();
+        return value.constructor.name+ " "+value.toString();
       }
     } else {
       return "null";
@@ -139,6 +139,13 @@ export class StartEndDuration {
     } else {
       throw "need some combination of startTime, endTime and duration";
     }
+  }
+  overlaps(other: StartEndDuration): boolean {
+    if (this.startTime.isAfter(other.endTime)
+        || this.endTime.isBefore(other.startTime)) {
+      return false;
+    }
+    return true;
   }
 }
 
@@ -214,4 +221,23 @@ export function doFetchWithTimeout(url: string,
     // $FlowFixMe
     throw new Error(`fetch response was not ok. ${response.ok} ${response.status}`);
   });
+}
+
+
+/**
+ * Recursively calculates the mean of a slice of an array. This helps with
+ * very long seismograms to equally weight each sample point without overflowing.
+ * @param   dataSlice slice of a seismogram
+ * @param   totalPts  number of points in the original seismogram
+ * @return            sum of slice data points divided by totalPts
+ */
+export function meanOfSlice(dataSlice: Int32Array | Float32Array | Float64Array, totalPts: number ): number {
+  if (dataSlice.length < 8) {
+    return dataSlice.reduce(function(acc, val) {
+       return acc + val;
+    }, 0) / totalPts;
+  } else {
+    let byTwo = Math.floor(dataSlice.length / 2);
+    return meanOfSlice(dataSlice.slice(0, byTwo), totalPts) + meanOfSlice(dataSlice.slice(byTwo, dataSlice.length), totalPts);
+  }
 }

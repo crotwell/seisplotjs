@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 import * as dataselect from './fdsndataselect.js';
 import * as miniseed from './miniseed.js';
 import {Seismogram} from './seismogram.js';
-import {SeismographConfig} from './seismographconfig.js';
+import { SeismographConfig, SeismogramDisplayData } from './seismographconfig';
 import {Seismograph} from './seismograph.js';
 import {StartEndDuration} from './util.js';
 
@@ -117,7 +117,8 @@ export function createPlotsBySelector(selector: string) {
           let svgDiv = result.svgParent.append("div");
           svgDiv.classed("svg-container-wide", true);
           let seisConfig = new SeismographConfig();
-          let seismogram = new Seismograph(svgDiv, seisConfig, Array.from(result.traceMap.values()), result.startTime, result.endTime);
+          let seisData = Array.from(result.traceMap.values()).map(s => SeismogramDisplayData.fromSeismogram(s));
+          let seismogram = new Seismograph(svgDiv, seisConfig, seisData, result.startTime, result.endTime);
           seismogram.draw();
         } else {
           result.svgParent.append("p").text("No Data");

@@ -5,7 +5,7 @@ import moment from 'moment';
 import { Seismogram } from './seismogram.js';
 import type { MarkerType } from './seismographconfig';
 import { Seismograph } from './seismograph.js';
-import { SeismographConfig } from './seismographconfig';
+import { SeismographConfig, SeismogramDisplayData } from './seismographconfig';
 import {minMaxMean, mean } from './filter.js';
 import {StartEndDuration} from './util.js';
 
@@ -49,7 +49,6 @@ export class Helicorder {
     for(let lineTime of lineTimes) {
       let startTime = lineTime.startTime;
       let endTime = lineTime.endTime;
-      let timeWindow = new StartEndDuration(lineTime.startTime, lineTime.endTime);
       let seisDiv = this.svgParent.append('div');
       let nl = this.heliConfig.numLines;
       let height = this.heliConfig.maxHeight/(nl-(nl-1)*this.heliConfig.overlap);
@@ -64,12 +63,14 @@ export class Helicorder {
       lineSeisConfig.minHeight = height;
       lineSeisConfig.maxHeight = height;
 
-      let trimSeisArr = [  ];
-      let lineCutSeis = this.trace.cut(timeWindow);
+      let trimSeisArr: Array<SeismogramDisplayData> = [  ];
+      let lineCutSeis = this.trace.cut(lineTime);
       let lineMean = 0;
       if (lineCutSeis) {
+        let seisData = SeismogramDisplayData.fromSeismogram(lineCutSeis);
+        seisData.startEndDur = lineTime;
         lineMean = mean(lineCutSeis);
-        trimSeisArr.push(lineCutSeis);
+        trimSeisArr.push(seisData);
       }
       lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
       let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisArr, startTime, endTime);
@@ -85,11 +86,10 @@ export class Helicorder {
     let out = [];
     let s = moment.utc(startTime);
     for (let lineNum=0; lineNum < numberOfLines; lineNum++) {
-      let e = moment.utc(s).add(secondsPerLine, 'seconds');
-      let startEnd = new HeliTimeRange(s, e);
+      let startEnd = new HeliTimeRange(s, null, secondsPerLine);
       startEnd.lineNumber = lineNum;
       out.push(startEnd);
-      s = e;
+      s = moment.utc(startEnd.endTime);
     }
     return out;
   }

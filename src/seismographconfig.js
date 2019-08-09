@@ -1,9 +1,10 @@
 //@flow
 
 import {Channel, InstrumentSensitivity} from './stationxml.js';
-import { Seismogram} from './seismogram.js';
+import { Seismogram, SeismogramSegment} from './seismogram.js';
 import {Quake} from './quakeml.js';
 import {ChannelTimeRange} from './fdsndataselect.js';
+import {StartEndDuration, stringify} from './util.js';
 import moment from 'moment';
 import * as d3 from 'd3';
 
@@ -155,49 +156,135 @@ export class SeismographConfig {
   }
 }
 
-export class SeismogramDisplayData extends ChannelTimeRange {
-  seismogram: Seismogram;
+export class SeismogramDisplayData {
+  /** @private */
+  _seismogram: Seismogram | null;
   markers: Array<MarkerType>;
-  channel: Channel;
-  instrumentSensitivity: InstrumentSensitivity;
-  quake: Array<Quake>;
-  startTime: moment;
-  endTime: moment;
-  alignmentTime: moment;
+  channel: Channel | null;
+  instrumentSensitivity: InstrumentSensitivity | null;
+  quakeList: Array<Quake>;
+  startEndDur: StartEndDuration;
+  alignmentTime: moment | null;
   doShow: boolean;
-  _statsCache: SeismogramDisplayStats;
-  constructor() {
-    this.seismogram = null;
+  _statsCache: SeismogramDisplayStats | null;
+  constructor(startEndDur: StartEndDuration) {
+    if ( ! startEndDur) {
+      throw new Error("StartEndDuration must not be missing.");
+    }
+    this._seismogram = null;
     this.markers = [];
     this.channel = null;
     this.instrumentSensitivity = null;
     this.quakeList = [];
-    this.startTime = null;
-    this.endTime = null;
+    this.startEndDur = startEndDur;
     this.alignmentTime = null;
     this.doShow = true;
-    this._statsCache
+    this._statsCache = null;
   }
-  static createFromSeismogram(seismogram: Seismogram): SeismogramDisplayData {
-    const out = new SeismogramDisplayData();
-    out.seismogram = seismogram;
-    out.startTime = seismogram.startTime;
-    out.endTime = seismogram.endTime;
+  static fromChannelTimeRange(chanTR: ChannelTimeRange): SeismogramDisplayData {
+    const out = new SeismogramDisplayData(new StartEndDuration(chanTR.startTime, chanTR.endTime, null, chanTR.clockOffset));
+    out.channel = chanTR.channel;
+    if (chanTR.seismogram) {
+      out.seismogram = chanTR.seismogram;
+    }
     return out;
   }
-  static createFromChannelTimeRange(channel: Channel, startEndDur: StartEndDuration): SeismogramDisplayData {
-    const out = new SeismogramDisplayData();
+  static fromSeismogram(seismogram: Seismogram | SeismogramSegment): SeismogramDisplayData {
+    if (seismogram instanceof SeismogramSegment) {
+      console.assert(false, new Error("SeismogramDisplayData created with a SeismogramSegment "));
+      seismogram = new Seismogram( [ seismogram ]);
+    }
+    const out = new SeismogramDisplayData(new StartEndDuration(seismogram.startTime, seismogram.endTime, null, null));
     out.seismogram = seismogram;
-    out.startTime = seismogram.startTime;
-    out.endTime = seismogram.endTime;
     return out;
+  }
+  static fromChannelTimes(channel: Channel, startEndDur: StartEndDuration): SeismogramDisplayData {
+    const out = new SeismogramDisplayData(startEndDur);
+    out.channel = channel;
+    return out;
+  }
+  addQuake(quake: Quake) {
+    this.quakeList.push(quake);
+  }
+  hasQuake() {
+    return this.quakeList.length > 0;
+  }
+  get min() {
+    if ( ! this._statsCache ) {
+      this._statsCache = this.calcStats();
+    }
+    return this._statsCache.min;
+  }
+  get max() {
+    if ( ! this._statsCache ) {
+      this._statsCache = this.calcStats();
+    }
+    return this._statsCache.max;
+  }
+  get mean() {
+    if ( ! this._statsCache ) {
+      this._statsCache = this.calcStats();
+    }
+    return this._statsCache.mean;
+  }
+  get seismogram() {
+    return this._seismogram;
+  }
+  set seismogram(value: Seismogram) {
+    this._seismogram = value;
+    this._statsCache = null;
+  }
+  calcStats() {
+    let stats = new SeismogramDisplayStats();
+    if (this.seismogram) {
+      let minMax = this.seismogram.findMinMax();
+      stats.min = minMax[0];
+      stats.max = minMax[1];
+      // $FlowFixMe  know seismogram is not null
+      stats.mean = this.seismogram.mean();
+    }
+    this._statsCache = stats;
+    return stats;
   }
 }
 
 class SeismogramDisplayStats {
+  min: number;
+  max: number;
   mean: number;
   trendSlope: number;
+  constructor() {
+    this.min = 0;
+    this.max = 0;
+    this.mean = 0;
+    this.trendSlope = 0;
+  }
+}
 
+export function findStartEnd(sddList: Array<SeismogramDisplayData>): StartEndDuration {
+  let allStart = sddList.map(sdd => {
+    return moment.utc(sdd.startEndDur.startTime);
+  });
+  let startTime = moment.min(allStart);
+  let allEnd = sddList.map(sdd => {
+    return moment.utc(sdd.startEndDur.endTime);
+  });
+  let endTime = moment.max(allEnd);
+  return new StartEndDuration(startTime, endTime);
+}
+
+export function findMinMax(sddList: Array<SeismogramDisplayData>): Array<number> {
+  let min = sddList.map(sdd => {
+    return sdd.min;
+  }).reduce(function (p, v) {
+    return ( p < v ? p : v );
+  });
+  let max = sddList.map(sdd => {
+    return sdd.max;
+  }).reduce(function (p, v) {
+    return ( p > v ? p : v );
+  });
+  return [min, max];
 }
 
 export const formatMillisecond = d3.utcFormat(".%L");

@@ -10,7 +10,9 @@ const d3 = seisplotjs.d3;
 const miniseed = seisplotjs.miniseed;
 const moment = seisplotjs.moment;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
+const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
 const Seismograph = seisplotjs.seismograph.Seismograph;
+const Seismogram = seisplotjs.seismogram.Seismogram;
 
 let doRunQuery = true;
 // doRunQuery = false;//for testing
@@ -55,7 +57,8 @@ function processSeismograms(traceMap) {
       seisConfig.ySublabel = trace.yUnit;
       let seisConfigB = new SeismographConfig();
       seisConfigB.ySublabel = trace.yUnit;
-      let seisplot = new Seismograph(svgDiv, seisConfigB, trace);
+      let seisData = SeismogramDisplayData.fromSeismogram(trace);
+      let seisplot = new Seismograph(svgDiv, seisConfigB, seisData);
       seisplot.setHeight(450);
       seisplot.draw();
 
@@ -97,12 +100,7 @@ function processSeismograms(traceMap) {
 
                                  1/trace.sampleRate // delta (period)
                         );
-      let filteredSeismogram = [];
-      for(let i=0; i<trace.segments.length; i++) {
-        let s = trace.segments[i].clone();
-        butterworth.filterInPlace(s.y);
-        filteredSeismogram.push(s);
-      }
+      let filteredSeismogram = seisplotjs.filter.applyFilter(butterworth, trace);
 
       let svgFiltered = d3.select('div.filterseisplot').append('div');
       svgFiltered.style("height", "300px");

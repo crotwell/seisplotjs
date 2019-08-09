@@ -1,7 +1,7 @@
 // @flow
 
 import moment from 'moment';
-import { checkStringOrDate } from './util';
+import { checkStringOrDate, meanOfSlice } from './util';
 import * as seedcodec from './seedcodec';
 
 import {StartEndDuration, calcClockOffset} from './util';
@@ -241,7 +241,7 @@ export class SeismogramSegment {
 
     let out = this.cloneWithNewData(cutY,
         moment.utc(this._startTime).add(sIndex / this.sampleRate, 'seconds'));
-    
+
     return out;
   }
   _invalidate_endTime_cache() {
@@ -314,6 +314,21 @@ export class Seismogram {
       // should never happen, for flow
       throw new Error("No data to calc minmax");
     }
+  }
+  /**
+   * calculates the mean of a seismogrma.
+   * @param  {[type]} seis input seismogram
+   * @return {[type]}      mean value
+   */
+  mean(): number {
+    let meanVal = 0;
+
+    let npts = this.numPoints;
+    for (let s of this.segments) {
+      meanVal += meanOfSlice(s.y, s.y.length)*s.numPoints;
+    }
+    meanVal = meanVal / npts;
+    return meanVal;
   }
 
   get startTime(): moment {

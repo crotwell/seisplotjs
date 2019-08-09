@@ -1,4 +1,5 @@
-
+// @flow
+//
 // this global comes from the seisplotjs_seedlink standalone js
 let seedlink = seisplotjs.seedlink
 
@@ -122,19 +123,19 @@ let callbackFn = function(slPacket) {
   //console.log("seedlink: seq="+slPacket.sequence+" "+codes);
   let seismogram = miniseed.createSeismogramSegment([slPacket.miniseed]);
   if (allSeisPlots.has(codes) && allSeismograms.has(codes)) {
-    const oldSeismogram = allSeismograms.get(codes);
+    const oldSeismogramData = allSeismograms.get(codes);
+    const oldSeismogram = oldSeismogramData.seismogram;
     oldSeismogram.append(seismogram);
     const littleBitLarger = {'startTime': moment.utc(timeWindow.startTime).subtract(60, 'second'),
                             'endTime': moment.utc(timeWindow.endTime).add(180, 'second')};
     const newSeismogram = oldSeismogram.trim(littleBitLarger);
     if (newSeismogram) {
-      allSeismograms.set(codes, newSeismogram);
-      allSeisPlots.get(codes).replace(oldSeismogram, newSeismogram);
+      oldSeismogramData.seismogram = newSeismogram;
       allSeisPlots.get(codes).calcScaleDomain();
     } else {
       // trim removed all data, nothing left in window
       allSeismograms.delete(codes);
-      allSeisPlots.get(codes).remove(oldSeismogram);
+      allSeisPlots.get(codes).remove(oldSeismogramData);
       console.log(`All data removed from trace ${codes}`);
     }
 //      allSeisPlots.get(codes).trim(timeWindow);
@@ -167,11 +168,18 @@ let callbackFn = function(slPacket) {
     seisPlotConfig.xSublabel = codes;
     seisPlotConfig.margin = margin ;
     seisPlotConfig.wheelZoom = false ;
-    let seisPlot = new Seismograph(plotDiv, seisPlotConfig, [trace], timeWindow.startTime, timeWindow.endTime);
+    if (codes.charAt(codes.length-2) === 'H' || codes.charAt(codes.length-2) === 'N') {
+      // seismic H or strong motion N channels
+    } else {
+      seisPlotConfig.doRMean = false ;
+      seisPlotConfig.doGain = false;
+    }
+    let seisData = seisplotjs.seismographconfig.SeismogramDisplayData.fromSeismogram(trace);
+    let seisPlot = new Seismograph(plotDiv, seisPlotConfig, seisData, timeWindow.startTime, timeWindow.endTime);
     seisPlot.svg.classed('realtimePlot', true).classed('overlayPlot', false)
     seisPlot.draw();
     allSeisPlots.set(codes, seisPlot);
-    allSeismograms.set(codes, trace);
+    allSeismograms.set(codes, seisData);
   }
 }
 
