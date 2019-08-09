@@ -38,22 +38,8 @@
            <a href="http://earthquake.usgs.gov/fdsnws/event/1/">FDSNWS
            event</a> web service to get the earthquake. Again, both of these
            are asynchronous and so we will have to use promises. We first create
-           both the <code>EventQuery</code> and <code>StationQuery</code> objects,
-           and call their <code>query</code> methods with a <code>Promise.all()</code>
-           which will wait until both of these return before calling the
-           <code>then()</code> function. We will also use the more powerful
-           <code>POST</code> method to get the seismograms. The
-           <code>ChannelTimeRange</code> works just like the
-           <code>StartEndDuration</code> but also hold the channel that the
-           time rage corresponds to. In this case they are all the same, but
-           might be different if we were using multiple stations and predicted
-           arrival times. Note that we use the event time as the start and
-           ask for a duration of 1800 seconds. Because we have the
-           channel, we can also plot the seismograms corrected for overall
-           gain and in units of m/s. We also added a couple of <code>&lt;span></code>
-           elements to hold the station codes and earthquake description.
-           All of this is in
-           <a href="tutorial3.html">tutorial3.html</a>.
+           both the <code>EventQuery</code> and <code>StationQuery</code> objects.
+
           </p>
           <pre><code class="language-javascript">
 let eventQuery = new seisplotjs.fdsnevent.EventQuery()
@@ -69,6 +55,21 @@ let stationQuery = new seisplotjs.fdsnstation.StationQuery()
   .channelCode('LH?')
   .startTime('2019-07-01')
   .endTime('2019-07-31');
+
+          </code></pre>
+          <p>
+            Then we call their <code>query</code> methods with a <code>Promise.all()</code>
+            which will wait until both of these return before calling the
+            <code>then()</code> function. We will also use the more powerful
+            <code>POST</code> method to get the seismograms. The
+            <code>ChannelTimeRange</code> works just like the
+            <code>StartEndDuration</code> but also hold the channel that the
+            time rage corresponds to. In this case they are all the same, but
+            might be different if we were using multiple stations and predicted
+            arrival times. Note that we use the event time as the start and
+            ask for a duration of 2400 seconds.
+          </p>
+          <pre><code class="language-javascript">
 Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
 .then( ( [ quakeList, networks ] ) => {
     let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
@@ -77,6 +78,15 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
     });
     let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
     return Promise.all([ quakeList, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
+            </code></pre>
+            <p>Because we have the
+            channel, we can also plot the seismograms corrected for overall
+            gain and in units of m/s. We also added a couple of <code>&lt;span></code>
+            elements to hold the station codes and earthquake description.
+            All of this is in
+            <a href="tutorial3.html">tutorial3.html</a>.
+          </p>
+          <pre><code class="language-javascript">
   }).then( ( [ quakeList, networks, chanTRList ] ) => {
     let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
     let div = seisplotjs.d3.select('div#myseismograph');
@@ -106,7 +116,10 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-indent': false
+      	'remove-trailing': true,
+      	'remove-indent': false,
+      	'left-trim': true,
+      	'right-trim': true
       });
     </script>
   </body>

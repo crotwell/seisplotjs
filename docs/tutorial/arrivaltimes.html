@@ -127,7 +127,10 @@
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-indent': false
+      	'remove-trailing': true,
+      	'remove-indent': false,
+      	'left-trim': true,
+      	'right-trim': true
       });
     </script>
   </body>
