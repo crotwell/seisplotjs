@@ -67,7 +67,7 @@
           graphList.forEach(g => graph.linkXScaleTo(g));
           graphList.forEach(g => graph.linkYScaleTo(g));
           graphList.push(graph);
-          graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
+          graph.setYAxisSensitivity(chanTRList[0].channel.instrumentSensitivity);
           graph.appendMarkers(phaseMarkers);
           graph.draw();
         }

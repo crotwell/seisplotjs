@@ -44,7 +44,7 @@
         let graph = new seisplotjs.seismograph.Seismograph(div,
                                                            seisConfig,
                                                            seismogramList);
-        graph.setInstrumentSensitivity(chanTRList[0].channel.instrumentSensitivity);
+        graph.setYAxisSensitivity(chanTRList[0].channel.instrumentSensitivity);
         graph.draw();
         seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
         seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);

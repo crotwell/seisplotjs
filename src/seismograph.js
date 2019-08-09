@@ -64,7 +64,7 @@ export class Seismograph {
   currZoomXScale: any;
   yScale: any;
   yScaleRmean: any;
-  instrumentSensitivity: InstrumentSensitivity;
+  yAxisSensitivity: InstrumentSensitivity;
   lineFunc: any;
   zoom: any;
   xAxis: any;
@@ -875,8 +875,8 @@ export class Seismograph {
     this.seismographConfig.doGain = value;
     this.redoDisplayYScale();
   }
-  setInstrumentSensitivity(value: InstrumentSensitivity) {
-    this.instrumentSensitivity = value;
+  setYAxisSensitivity(value: InstrumentSensitivity) {
+    this.yAxisSensitivity = value;
     this.redoDisplayYScale();
   }
   clearMarkers(): Seismograph {
@@ -919,11 +919,11 @@ export class Seismograph {
   }
   redoDisplayYScale(): void {
     let niceMinMax = this.yScale.domain();
-    if (this.seismographConfig.doGain && this.instrumentSensitivity) {
-      niceMinMax[0] = niceMinMax[0] / this.instrumentSensitivity.sensitivity;
-      niceMinMax[1] = niceMinMax[1] / this.instrumentSensitivity.sensitivity;
+    if (this.seismographConfig.doGain && this.yAxisSensitivity) {
+      niceMinMax[0] = niceMinMax[0] / this.yAxisSensitivity.sensitivity;
+      niceMinMax[1] = niceMinMax[1] / this.yAxisSensitivity.sensitivity;
       if (this.seismographConfig.ySublabelIsUnits) {
-        this.seismographConfig.ySublabel = this.instrumentSensitivity.inputUnits;
+        this.seismographConfig.ySublabel = this.yAxisSensitivity.inputUnits;
       }
     } else {
       if (this.seismographConfig.ySublabelIsUnits ) {
