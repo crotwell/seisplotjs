@@ -76,7 +76,7 @@ doPlot = function(config) {
   };
   return channelQuery.queryChannels()
   .catch(e => {
-      svgParent.append("h3").text("Error Loading Data, retrying... ").style("color", "red");
+      svgParent.append("h3").classed("error", true).text("Error Loading Data, retrying... ").style("color", "red");
       svgParent.append("p").text(`e`);
       return new Promise(resolve => setTimeout(resolve, 2000, channelQuery.queryChannels()));
   })
@@ -165,7 +165,9 @@ doPlot = function(config) {
                                     heliConfig,
                                     minMaxSeismogram,
                                     hash.timeWindow.startTime,hash.timeWindow.endTime);
-      svgParent.selectAll("*").remove(); // remove old data
+      svgParent.selectAll("div").remove(); // remove old data
+      svgParent.selectAll("p").remove(); // remove old data
+      svgParent.selectAll("h3").remove(); // remove old data
       hash.heli.draw();
     } else {
       svgParent.append("p").text("No Data.")
@@ -281,5 +283,7 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
     hash.heli.appendMarkers(markers);
 
     return hash;
+  }).catch(err => {
+    console.assert(false, err);
   });
 };
