@@ -193,6 +193,7 @@ export function defaultFetchInitObj(mimeType: string): { [key: string]: any } {
         headers: headers
   };
 }
+
 export function doFetchWithTimeout(url: string,
                                    fetchInit: { [key: string]: any },
                                    timeoutSec: number): Promise<Response> {

@@ -3,6 +3,7 @@
 import {Channel, InstrumentSensitivity} from './stationxml.js';
 import { Seismogram} from './seismogram.js';
 import {Quake} from './quakeml.js';
+import {ChannelTimeRange} from './fdsndataselect.js';
 import moment from 'moment';
 import * as d3 from 'd3';
 
@@ -128,47 +129,64 @@ export class SeismographConfig {
   }
   clone(): SeismographConfig {
     let out = new SeismographConfig();
-    out.drawingType = this.drawingType;
-    out.isXAxis = this.isXAxis;
-    out.isYAxis = this.isYAxis;
-    out.xScaleFormat = this.xScaleFormat;
-    out.yScaleFormat = this.yScaleFormat;
-    out._title = this._title;
-    out.xLabel = this.xLabel;
-    out.xLabelOrientation = this.xLabelOrientation;
-    out.xSublabel = this.xSublabel;
-    out.yLabel = this.yLabel;
-    out.yLabelOrientation = this.yLabelOrientation;
-    out.ySublabel = this.ySublabel;
-    out.ySublabelIsUnits = this.ySublabelIsUnits;
-    out.ySublabelTrans = this.ySublabelTrans;
-    out.doRMean = this.doRMean;
-    out.doGain = this.doGain;
-    out.fixedYScale = this.fixedYScale;
-    out.markerTextOffset = this.markerTextOffset;
-    out.markerTextAngle = this.markerTextAngle;
-    out.markerFlagpoleBase = this.markerFlagpoleBase;
-    out.minHeight=this.minHeight;
-    out.margin = this.margin;
-    out.segmentDrawCompressedCutoff = this.segmentDrawCompressedCutoff;
-    out.maxZoomPixelPerSample = this.maxZoomPixelPerSample;
-    out.wheelZoom = this.wheelZoom;
-    out.connectSegments = this.connectSegments;
-    out.lineColors = this.lineColors;
+    Object.getOwnPropertyNames(this).forEach( name => {
+      if (this[name] instanceof moment) {
+        out[name] = moment.utc(this[name]);
+      } else if ( Array.isArray(this[name]) ) {
+        out[name] = this[name].slice();
+      } else {
+        out[name] = this[name];
+      }
+      // handle margin separately
+      out.margin = {
+        top: this.margin.top,
+        right: this.margin.right,
+        bottom: this.margin.bottom,
+        left: this.margin.left,
+        toString: function() {return "t:"+this.top+" l:"+this.left+" b:"+this.bottom+" r:"+this.right;}
+      };
+    });
     return out;
   }
 }
 
-export class SeismogramDisplayData {
-  trace: Seismogram;
+export class SeismogramDisplayData extends ChannelTimeRange {
+  seismogram: Seismogram;
   markers: Array<MarkerType>;
   channel: Channel;
   instrumentSensitivity: InstrumentSensitivity;
-  quake: Quake;
+  quake: Array<Quake>;
   startTime: moment;
   endTime: moment;
+  alignmentTime: moment;
   doShow: boolean;
   _statsCache: SeismogramDisplayStats;
+  constructor() {
+    this.seismogram = null;
+    this.markers = [];
+    this.channel = null;
+    this.instrumentSensitivity = null;
+    this.quakeList = [];
+    this.startTime = null;
+    this.endTime = null;
+    this.alignmentTime = null;
+    this.doShow = true;
+    this._statsCache
+  }
+  static createFromSeismogram(seismogram: Seismogram): SeismogramDisplayData {
+    const out = new SeismogramDisplayData();
+    out.seismogram = seismogram;
+    out.startTime = seismogram.startTime;
+    out.endTime = seismogram.endTime;
+    return out;
+  }
+  static createFromChannelTimeRange(channel: Channel, startEndDur: StartEndDuration): SeismogramDisplayData {
+    const out = new SeismogramDisplayData();
+    out.seismogram = seismogram;
+    out.startTime = seismogram.startTime;
+    out.endTime = seismogram.endTime;
+    return out;
+  }
 }
 
 class SeismogramDisplayStats {
