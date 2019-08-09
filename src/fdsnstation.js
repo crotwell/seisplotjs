@@ -150,7 +150,7 @@ export class StationQuery {
   port(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._port;
-    } else if (hasArgs(value)) {
+    } else if (isNumArg(value)) {
       this._port = value;
       return this;
     } else {

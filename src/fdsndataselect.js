@@ -143,7 +143,7 @@ export class DataSelectQuery {
   port(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._port;
-    } else if (hasArgs(value)) {
+    } else if (isNumArg(value)) {
       this._port = value;
       return this;
     } else {

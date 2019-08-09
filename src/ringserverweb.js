@@ -9,7 +9,7 @@
 import RSVP from 'rsvp';
 import moment from 'moment';
 
-import { checkProtocol, hasArgs, hasNoArgs, isNumArg, isDef, XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import { checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, isDef, XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 
 export type RingserverVersion = {
@@ -39,12 +39,30 @@ export class RingserverConnection {
     this._timeoutSec = 30;
   }
 
+  /** Gets/Sets the remote host to connect to.
+  */
   host(value?: string): string | RingserverConnection {
-    return hasArgs(value) ? (this._host = value, this) : this._host;
+    if (isStringArg(value)) {
+      this._host = value;
+      return this;
+    } else if (hasNoArgs(value)) {
+      return this._host;
+    } else {
+      throw new Error('value argument is optional or string, but was '+typeof value);
+    }
   }
 
+  /** Gets/Sets the remote port to connect to.
+  */
   port(value?: number): number | RingserverConnection {
-    return hasArgs(value) ? (this._port = value, this) : this._port;
+    if (hasNoArgs(value)) {
+      return this._port;
+    } else if (isNumArg(value)) {
+      this._port = value;
+      return this;
+    } else {
+      throw new Error('value argument is optional or number, but was '+typeof value);
+    }
   }
 
   /** Get/Set the timeout in seconds for the request. Default is 30.
