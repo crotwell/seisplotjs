@@ -83,37 +83,38 @@
             and amplitude. This is available as <a href="tutorial4.html">tutorial4</a>.
           </p>
           <pre><code class="language-javascript">
-}).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
-  let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
-  phaseMarkers.push({
-    markertype: 'predicted',
-    name: "origin",
-    time: seisplotjs.moment.utc(quakeList[0].time)
-  });
-  let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
-  let div = seisplotjs.d3.select('div#myseismograph');
-  let graphList = [];
-  for( let ctr of chanTRList) {
-    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    seisConfig.title = ctr.channel.codes();
-    seisConfig.wheelZoom = false;
-    let subdiv = div.append('div').classed('seismograph', true);
-    let graph = new seisplotjs.seismograph.Seismograph(subdiv,
-                                                       seisConfig,
-                                                       [ ctr.seismogram ]);
-    graphList.forEach(g => graph.linkXScaleTo(g));
-    graphList.forEach(g => graph.linkYScaleTo(g));
-    graphList.push(graph);
-    graph.setYAxisSensitivity(chanTRList[0].channel.instrumentSensitivity);
-    graph.appendMarkers(phaseMarkers);
-    graph.draw();
-  }
-  seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
-  seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
-}).catch( function(error) {
-  seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
-  console.assert(false, error);
-});
+          }).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
+            let seismogramDataList = chanTRList.map(ctr =>  seisplotjs.seismographconfig.SeismogramDisplayData.fromChannelTimeRange(ctr));
+            let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
+            phaseMarkers.push({
+              markertype: 'predicted',
+              name: "origin",
+              time: seisplotjs.moment.utc(quakeList[0].time)
+            });
+            let div = seisplotjs.d3.select('div#myseismograph');
+            let graphList = [];
+            for( let sdd of seismogramDataList) {
+              sdd.addQuake(quakeList);
+              sdd.addMarkers(phaseMarkers);
+              let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+              seisConfig.title = sdd.channel.codes();
+              seisConfig.wheelZoom = false;
+              let subdiv = div.append('div').classed('seismograph', true);
+              let graph = new seisplotjs.seismograph.Seismograph(subdiv,
+                                                                 seisConfig,
+                                                                 sdd);
+              graphList.forEach(g => graph.linkXScaleTo(g));
+              graphList.forEach(g => graph.linkYScaleTo(g));
+              graphList.push(graph);
+              //graph.setYAxisSensitivity(chanTRList[0].channel.instrumentSensitivity);
+              graph.draw();
+            }
+            seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
+            seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
+          }).catch( function(error) {
+            seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+            console.assert(false, error);
+          });
           </code></pre>
 
           <p>Previous: <a href="quakesandchannels.html">Quakes and Channels</a></p>

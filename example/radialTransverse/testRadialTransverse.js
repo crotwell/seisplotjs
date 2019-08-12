@@ -13,6 +13,7 @@ const moment = seisplotjs.moment;
 let RSVP = seisplotjs.RSVP;
 const d3 = seisplotjs.d3;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
+const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
 const Seismograph = seisplotjs.seismograph.Seismograph;
 
 let USGS = "earthquake.usgs.gov";
@@ -128,19 +129,10 @@ let bothPromise = RSVP.hash({
     if (hash.seismograms.size > 0) {
       console.log("hash.seismograms "+hash.seismograms.size+" ");
         let seisConfig = new SeismographConfig();
-        let traceArray = Array.from(hash.seismograms.values());
-        traceArray.sort(seisplotjs.plotutil.alphabeticalSort);
-        console.log("traceArray: "+traceArray.length+"  "+traceArray[0]+"  "+(typeof traceArray[0]))
-        let seismograph = new Seismograph(svgDiv, seisConfig, traceArray, hash.seisDates.startTime, hash.seisDates.endTime);
-        let titles = [traceArray[0].codes(),
-                  traceArray[1].channelCode,
-                  traceArray[2].channelCode];
-        seisConfig.title = titles;
         let markers = [];
-          markers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time });
-          markers.push({ markertype: 'predicted', name: hash.traveltime.firstP.phase, time: hash.P_arrival });
-          markers.push({ markertype: 'predicted', name: hash.traveltime.firstS.phase, time: hash.S_arrival });
-
+        markers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time });
+        markers.push({ markertype: 'predicted', name: hash.traveltime.firstP.phase, time: hash.P_arrival });
+        markers.push({ markertype: 'predicted', name: hash.traveltime.firstS.phase, time: hash.S_arrival });
         if (hash.quake.arrivals) {
           for ( let aNum=0; aNum < hash.quake.arrivals.length; aNum++) {
             let arrival = hash.quake.arrivals[aNum];
@@ -151,7 +143,23 @@ let bothPromise = RSVP.hash({
             }
           }
         }
-        seismograph.appendMarkers(markers);
+
+        let traceArray = Array.from(hash.seismograms.values());
+        traceArray.sort(seisplotjs.plotutil.alphabeticalSort);
+        console.log("traceArray: "+traceArray.length+"  "+traceArray[0]+"  "+(typeof traceArray[0]))
+        let seisData = traceArray.map( s => {
+            let sdd = SeismogramDisplayData.fromSeismogram(s);
+            sdd.addQuake(hash.quake);
+            sdd.addMarkers(markers);
+            return sdd;
+          });
+
+        let seismograph = new Seismograph(svgDiv, seisConfig, seisData, hash.seisDates.startTime, hash.seisDates.endTime);
+        let titles = [traceArray[0].codes(),
+                  traceArray[1].channelCode,
+                  traceArray[2].channelCode];
+        seisConfig.title = titles;
+
         seismograph.draw();
 
         // rotated
@@ -187,27 +195,17 @@ console.log("rotate to "+hash.distaz.baz+" "+((hash.distaz.baz+180)%360) );
         hash.rotatedSeismograms.sort(seisplotjs.plotutil.alphabeticalSort);
 console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.segments[0].yAtIndex(0)+" "+rotated.transverse.segments[0].yAtIndex(0))
         let rotSeisConfig = new SeismographConfig();
-        let rotatedSeismograph = new Seismograph(rotsvgDiv, rotSeisConfig, hash.rotatedSeismograms, hash.seisDates.startTime, hash.seisDates.endTime);
+        let rotData = hash.rotatedSeismograms.map( s => {
+            let sdd = SeismogramDisplayData.fromSeismogram(s);
+            sdd.addQuake(hash.quake);
+            sdd.addMarkers(markers);
+            return sdd;
+          });
+        let rotatedSeismograph = new Seismograph(rotsvgDiv, rotSeisConfig, rotData, hash.seisDates.startTime, hash.seisDates.endTime);
         titles = [hash.rotatedSeismograms[0].codes(),
                   hash.rotatedSeismograms[1].channelCode+" "+rotated.azimuthRadial.toFixed(2),
                   hash.rotatedSeismograms[2].channelCode+" "+rotated.azimuthTransverse.toFixed(2)];
         rotSeisConfig.title = titles;
-        let rotateMarkers = [];
-          rotateMarkers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time });
-          rotateMarkers.push({ markertype: 'predicted', name: hash.traveltime.firstP.phase, time: hash.P_arrival });
-          rotateMarkers.push({ markertype: 'predicted', name: hash.traveltime.firstS.phase, time: hash.S_arrival });
-
-        if (hash.quake.arrivals) {
-          for ( let aNum=0; aNum < hash.quake.arrivals.length; aNum++) {
-            let arrival = hash.quake.arrivals[aNum];
-            if (! arrival) {console.log("arrival is undef??? "+aNum); }
-            if (arrival && arrival.pick.stationCode == hash.station.stationCode) {
-            rotateMarkers.push({ markertype: 'pick', name: arrival.phase, time: arrival.pick.time });
-            console.log("rotateMarkers.push({ markertype: 'pick', name: "+arrival.phase+", time: "+arrival.pick.time );
-            }
-          }
-        }
-        rotatedSeismograph.appendMarkers(rotateMarkers);
         rotatedSeismograph.draw();
     } else{
       div.append('p').html('No data found for '+hash.station.codes());

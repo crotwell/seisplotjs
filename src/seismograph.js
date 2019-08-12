@@ -20,7 +20,7 @@ import {SeismogramSegment, Seismogram, ensureIsSeismogram } from './seismogram.j
 import {InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
 
-import {StartEndDuration} from './util';
+import {StartEndDuration, isDef} from './util';
 
 
 
@@ -47,13 +47,13 @@ export class Seismograph {
   static _lastID: number;
   plotId: number;
   beforeFirstDraw: boolean;
+
+  svgParent: any;
   seismographConfig: SeismographConfig;
+  seisDataList: Array<SeismogramDisplayData>;
   plotStartTime: moment;
   plotEndTime: moment;
 
-  svgParent: any;
-  seisDataList: Array<SeismogramDisplayData>;
-  markers: Array<MarkerType>;
   width: number;
   height: number;
   outerWidth: number;
@@ -77,13 +77,15 @@ export class Seismograph {
   yScaleChangeListeners: Array<ScaleChangeListenerType>;
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
-              inSegments: Array<SeismogramDisplayData> | Array<Seismogram> | SeismogramDisplayData | Seismogram,
+              seisData: Array<SeismogramDisplayData> | Array<Seismogram> | SeismogramDisplayData | Seismogram,
               plotStartTime?: moment,
               plotEndTime?: moment) {
     if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
     this.seismographConfig = seismographConfig;
+    this.seisDataList = [];
+    this._internalAppend(seisData);
     this.plotStartTime = plotStartTime;
     this.plotEndTime = plotEndTime;
     this.width = 200;
@@ -93,9 +95,6 @@ export class Seismograph {
     // need relative position in parent div to allow absolute position
     // of svg and canvas for overlaying
     this.svgParent.style("position", "relative");
-    this.seisDataList = [];
-    this._internalAppend(inSegments);
-    this.markers = [];
 
     this.canvas = null;
 
@@ -176,12 +175,12 @@ export class Seismograph {
   }
   static fromSeismograms(inSvgParent: any,
                 seismographConfig: SeismographConfig,
-                inSegments: Array<Seismogram>,
+                seismogramList: Array<Seismogram>,
                 plotStartTime?: moment,
                 plotEndTime?: moment) {
     return new Seismograph(inSvgParent,
                            seismographConfig,
-                           inSegments.map(s => SeismogramDisplayData.fromSeismogram(s)),
+                           seismogramList.map(s => SeismogramDisplayData.fromSeismogram(s)),
                            plotStartTime,
                            plotEndTime);
   }
@@ -226,7 +225,7 @@ export class Seismograph {
     this.drawSeismograms();
     this.drawAxis(this.g);
     this.drawAxisLabels();
-    this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
+    this.drawMarkers();
     this.beforeFirstDraw = false;
   }
   printSizes(): void {
@@ -311,6 +310,7 @@ export class Seismograph {
     context.save();
     // clear the canvas from previous drawing
     context.clearRect(0, 0, canvasNode.width, canvasNode.height);
+
     context.translate(this.seismographConfig.margin.left, this.seismographConfig.margin.top);
     // Create clipping path
     context.beginPath();
@@ -365,6 +365,8 @@ export class Seismograph {
             context.stroke();
           }
         });
+      } else {
+        console.log(`seisdta has no seismogram ${ti}`);
       }
 
       if (this.seismographConfig.connectSegments ){
@@ -631,12 +633,16 @@ export class Seismograph {
     this.xScaleChangeListeners.forEach(l => l.notifyScaleChange(xt));
   }
 
-  drawMarkers(markers: Array<MarkerType>, markerG: any) {
-    if ( ! markers) { markers = []; }
+  drawMarkers() {
+    let allMarkers = this.seisDataList.reduce((acc, sdd) => {
+        sdd.markerList.forEach(m => acc.push(m));
+        return acc;
+      }, []);
     // marker overlay
     let mythis = this;
+    let markerG = this.g.select("g.allmarkers");
     let labelSelection = markerG.selectAll("g.marker")
-        .data(markers, function(d) {
+        .data(allMarkers, function(d) {
               // key for data
               return d.name+"_"+d.time.valueOf();
             });
@@ -896,29 +902,6 @@ export class Seismograph {
     this.yAxisSensitivity = value;
     this.redoDisplayYScale();
   }
-  clearMarkers(): Seismograph {
-    this.markers.length = 0; //set array length to zero deletes all
-    if ( ! this.beforeFirstDraw) {
-      this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
-    }
-    return this;
-  }
-  getMarkers(): Array<MarkerType> {
-    return this.markers;
-  }
-  appendMarkers(value: Array<MarkerType> | MarkerType): Seismograph {
-    if (Array.isArray(value)) {
-      for( let m of value) {
-        this.markers.push(m);
-      }
-    } else {
-      this.markers.push(value);
-    }
-    if ( ! this.beforeFirstDraw) {
-      this.drawMarkers(this.markers, this.g.select("g.allmarkers"));
-    }
-    return this;
-  }
 
   calcScaleDomain(): void {
     if (this.seismographConfig.fixedYScale) {
@@ -941,6 +924,25 @@ export class Seismograph {
       niceMinMax[1] = niceMinMax[1] / this.yAxisSensitivity.sensitivity;
       if (this.seismographConfig.ySublabelIsUnits) {
         this.seismographConfig.ySublabel = this.yAxisSensitivity.inputUnits;
+      }
+    } else if (this.seismographConfig.doGain
+        && this.seisDataList.length > 1
+        && this.seisDataList.every(sdd => sdd.hasSensitivity())) {
+      // each has seisitivity
+      let firstSensitivity = this.seisDataList[0].sensitivity;
+      if (isDef(firstSensitivity) && this.seisDataList.every(sdd => (
+          isDef(firstSensitivity) && sdd.sensitivity
+          && firstSensitivity.sensitivity===sdd.sensitivity.sensitivity
+          && firstSensitivity.inputUnits===sdd.sensitivity.inputUnits
+          && firstSensitivity.outputUnits===sdd.sensitivity.outputUnits
+        ))) {
+          niceMinMax[0] = niceMinMax[0] / firstSensitivity.sensitivity;
+          niceMinMax[1] = niceMinMax[1] / firstSensitivity.sensitivity;
+          if (this.seismographConfig.ySublabelIsUnits) {
+            this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
+          }
+      } else {
+        throw new Error("doGain with different seisitivities not yet implemented.");
       }
     } else {
       if (this.seismographConfig.ySublabelIsUnits ) {

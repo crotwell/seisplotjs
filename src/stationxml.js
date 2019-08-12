@@ -1,6 +1,6 @@
 // @flow
 
-import { checkStringOrDate } from './util';
+import { checkStringOrDate, isDef } from './util';
 
 
 import moment from 'moment';
@@ -132,6 +132,13 @@ export class Channel {
       // make sure "null" is encoded as empty string
       this._locationCode = '';
     }
+  }
+  /**
+   * Checks if this channel has sensitivity defined, within the response.
+   * @return {Boolean}         true if instrumentSensitivity exits
+   */
+  hasInstrumentSensitivity(): boolean {
+    return isDef(this.response) && isDef(this.response.instrumentSensitivity);
   }
   set instrumentSensitivity(value: InstrumentSensitivity) {
     if (typeof this.response === 'undefined') {

@@ -6,6 +6,7 @@ let fdsnevent = seisplotjs.fdsnevent;
 let fdsnstation = seisplotjs.fdsnstation;
 let fdsndataselect = seisplotjs.fdsndataselect;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
+const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
 const Seismograph = seisplotjs.seismograph.Seismograph;
 let moment = seisplotjs.moment;
 let RSVP = seisplotjs.RSVP;
@@ -230,11 +231,9 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
       return { firstP: firstP, firstS: firstS };
     }).then(function(firstPS) {
       let PArrival = moment(quake.time).add(firstPS.firstP.time+pOffset, 'seconds');
-      let seisDates = new seisplotjs.util.StartEndDuration(PArrival, null, dur, clockOffset);
-      let startDate = seisDates.startTime;
-      let endDate = seisDates.endTime;
+      let queryWindow = new seisplotjs.util.StartEndDuration(PArrival, null, dur, clockOffset);
 
-      console.log("Start end: "+startDate+" "+endDate);
+      console.log("Start end: "+queryWindow.startTime+" "+queryWindow.endTime);
 
       let dsQuery = new fdsndataselect.DataSelectQuery()
           .protocol(protocol)
@@ -243,13 +242,12 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
           .stationCode(mystation.stationCode)
           .locationCode(loc)
           .channelCode(chan)
-          .startTime(startDate)
-          .endTime(endDate);
+          .startTime(queryWindow.startTime)
+          .endTime(queryWindow.endTime);
       return RSVP.hash({
         "firstPS": firstPS,
         "PArrival": PArrival,
-        "startDate": startDate,
-        "endDate": endDate,
+        "queryWindow": queryWindow,
         "byChannel": dsQuery.querySeismograms(),
         "dsQuery": dsQuery
       });
@@ -257,12 +255,13 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
         let byChannel = hash.byChannel;
         let keys = Array.from(byChannel.keys());
         for (let key of byChannel.keys()) {
-          let segments = byChannel.get(key);
+          let seismogram = byChannel.get(key);
           div.append('p').html('Plot for ' + key);
           let svgdiv = div.append('div').attr('class', 'myseisplot');
-          if (segments) {
-              let seisConfig = new SeismographConfig();
-              let seismogram = new Seismograph(svgdiv, seisConfig, segments, hash.startDate, hash.endDate);
+          if (seismogram) {
+              let seisData = SeismogramDisplayData.fromSeismogram(seismogram);
+              seisData.addQuake(quake);
+              seisData.startEndDur = hash.queryWindow;
               let markers = [];
                 markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                 markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time).add(hash.firstPS.firstP.time, 'seconds') });
@@ -277,11 +276,12 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
                   }
                 }
               }
-
-              seismogram.appendMarkers(markers);
-              seismogram.draw();
+              seisData.addMarkers(markers);
+              let seisConfig = new SeismographConfig();
+              let seismograph = new Seismograph(svgdiv, seisConfig, seisData);
+              seismograph.draw();
           } else {
-            console.log(`no segments for ${key}`)
+            console.log(`no seismogram for ${key}`)
           }
         }
         if (keys.length==0){

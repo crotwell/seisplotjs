@@ -15,7 +15,7 @@ export class Helicorder {
   secondsPerLine: number;
   svgParent: any;
   heliConfig: HelicorderConfig;
-  trace: Seismogram;
+  seisData: SeismogramDisplayData;
   xScaleArray: any;
   yScale: any;
   plotStartTime: moment;
@@ -23,23 +23,28 @@ export class Helicorder {
   maxVariation: number;
   constructor(inSvgParent: any,
               heliConfig: HelicorderConfig,
-              trace: Seismogram,
+              seisData: SeismogramDisplayData,
               plotStartTime: moment, plotEndTime: moment) {
     this.seismographArray = [];
+    this.seisData = seisData;
     this.svgParent = inSvgParent;
     this.heliConfig = heliConfig;
     this.secondsPerLine = moment.duration(plotEndTime.diff(plotStartTime, 'seconds'))/heliConfig.numLines;
     this.plotStartTime = plotStartTime;
     this.plotEndTime = plotEndTime;
-    let cutSeis = trace.cut(new StartEndDuration(plotStartTime, plotEndTime));
-    if (cutSeis) { this.trace = cutSeis;} // check for null for flow
-    let minMax = minMaxMean(this.trace);
-    let posOffset = minMax.max - minMax.mean;
-    let negOffset = minMax.mean = minMax.min;
-    this.maxVariation = Math.max(posOffset, negOffset);
+    this.maxVariation = 1;
+    if (seisData.seismogram) {
+      let cutSeis = seisData.seismogram.cut(new StartEndDuration(plotStartTime, plotEndTime));
+      if (cutSeis) {
+        let minMax = minMaxMean(cutSeis);
+        let posOffset = minMax.max - minMax.mean;
+        let negOffset = minMax.mean = minMax.min;
+        this.maxVariation = Math.max(posOffset, negOffset);
+      }
+    }
   }
   draw() {
-    if ( ! this.trace) {
+    if ( ! this.seisData) {
       // no data
       return;
     }
@@ -63,17 +68,22 @@ export class Helicorder {
       lineSeisConfig.minHeight = height;
       lineSeisConfig.maxHeight = height;
 
-      let trimSeisArr: Array<SeismogramDisplayData> = [  ];
-      let lineCutSeis = this.trace.cut(lineTime);
+      let trimSeisDataList: Array<SeismogramDisplayData> = [  ];
+      let lineCutSeis = null;
+      if (this.seisData.seismogram) {lineCutSeis = this.seisData.seismogram.cut(lineTime);}
       let lineMean = 0;
       if (lineCutSeis) {
         let seisData = SeismogramDisplayData.fromSeismogram(lineCutSeis);
         seisData.startEndDur = lineTime;
+        seisData.addMarkers(this.seisData.markerList);
+        seisData.addQuake(this.seisData.quakeList);
+        seisData.channel = this.seisData.channel;
+        seisData.sensitivity = this.seisData.sensitivity;
         lineMean = mean(lineCutSeis);
-        trimSeisArr.push(seisData);
+        trimSeisDataList.push(seisData);
       }
       lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
-      let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisArr, startTime, endTime);
+      let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisDataList, startTime, endTime);
       seismograph.draw();
       seismograph.canvas.style("height", `${height}px`);
       seismograph.svg.style("height", `${height}px`);
@@ -102,20 +112,11 @@ export class Helicorder {
       this.seismographArray[i].draw();
     }
   }
-  appendMarkers(value: Array<MarkerType> | MarkerType) {
-    let markers;
-    if (Array.isArray(value)) {
-      markers = value;
-    } else {
-      markers = [ value ];
-    }
-    for(let s of this.seismographArray) {
-      for(let m of markers) {
-        if (m.time.isAfter(s.plotStartTime) && m.time.isBefore(s.plotEndTime)) {
-          s.appendMarkers(m);
-        }
-      }
-    }
+  drawMarkers() {
+    this.seismographArray.forEach(h => {
+      h.seisDataList.forEach(sd => sd.markerList = this.seisData.markerList);
+      h.drawMarkers()
+    });
   }
 }
 

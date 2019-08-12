@@ -1,5 +1,6 @@
 
 const DEFAULT_DURATION = "P1D";
+const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
 const HelicorderConfig = seisplotjs.helicorder.HelicorderConfig;
 const Helicorder = seisplotjs.helicorder.Helicorder;
 
@@ -159,11 +160,11 @@ doPlot = function(config) {
       if (! minMaxSeismogram) {
         throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient}`);
       }
-      hash.minMaxSeismogram = minMaxSeismogram;
+      hash.seisData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
       hash.chantrList = null;
       hash.heli = new Helicorder(svgParent,
                                     heliConfig,
-                                    minMaxSeismogram,
+                                    hash.seisData,
                                     hash.timeWindow.startTime,hash.timeWindow.endTime);
       svgParent.selectAll("div").remove(); // remove old data
       svgParent.selectAll("p").remove(); // remove old data
@@ -213,7 +214,7 @@ doPlot = function(config) {
     if (hash.localQuakes.length > 0)hash.quakes = hash.localQuakes;
     if (hash.regionalQuakes.length > 0)hash.quakes = hash.quakes.concat(hash.regionalQuakes);
     if (hash.globalQuakes.length > 0)hash.quakes = hash.quakes.concat(hash.globalQuakes);
-
+    hash.seisData.addQuake(hash.quakes);
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
     let traveltimes = [];
@@ -280,8 +281,8 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
       markers.push({ markertype: 'predicted', name: tt.firstS.phase, time: tt.firstSTime });
     });
     markers.push({ markertype: 'predicted', name: "now", time: moment.utc() });
-    hash.heli.appendMarkers(markers);
-
+    hash.seisData.addMarkers(markers);
+    hash.heli.drawMarkers();
     return hash;
   }).catch(err => {
     console.assert(false, err);

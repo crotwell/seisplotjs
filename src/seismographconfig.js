@@ -4,7 +4,7 @@ import {Channel, InstrumentSensitivity} from './stationxml.js';
 import { Seismogram, SeismogramSegment} from './seismogram.js';
 import {Quake} from './quakeml.js';
 import {ChannelTimeRange} from './fdsndataselect.js';
-import {StartEndDuration, stringify} from './util.js';
+import {StartEndDuration, stringify, isDef} from './util.js';
 import moment from 'moment';
 import * as d3 from 'd3';
 
@@ -46,6 +46,7 @@ export class SeismographConfig {
   ySublabel: string;
   ySublabelTrans: number;
   ySublabelIsUnits: boolean;
+  doMarkers: boolean;
   markerTextOffset: number;
   markerTextAngle: number;
   markerFlagpoleBase: string;
@@ -82,6 +83,7 @@ export class SeismographConfig {
     this.doRMean = true;
     this.doGain = true;
     this.fixedYScale = null;
+    this.doMarkers = true;
     this.markerTextOffset = .85;
     this.markerTextAngle = 45;
     this.markerFlagpoleBase = "bottom"; // bottom or center
@@ -159,9 +161,9 @@ export class SeismographConfig {
 export class SeismogramDisplayData {
   /** @private */
   _seismogram: Seismogram | null;
-  markers: Array<MarkerType>;
+  markerList: Array<MarkerType>;
   channel: Channel | null;
-  instrumentSensitivity: InstrumentSensitivity | null;
+  _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
   startEndDur: StartEndDuration;
   alignmentTime: moment | null;
@@ -172,9 +174,9 @@ export class SeismogramDisplayData {
       throw new Error("StartEndDuration must not be missing.");
     }
     this._seismogram = null;
-    this.markers = [];
+    this.markerList = [];
     this.channel = null;
-    this.instrumentSensitivity = null;
+    this._instrumentSensitivity = null;
     this.quakeList = [];
     this.startEndDur = startEndDur;
     this.alignmentTime = null;
@@ -185,7 +187,7 @@ export class SeismogramDisplayData {
     const out = new SeismogramDisplayData(new StartEndDuration(chanTR.startTime, chanTR.endTime, null, chanTR.clockOffset));
     out.channel = chanTR.channel;
     if (chanTR.seismogram) {
-      out.seismogram = chanTR.seismogram;
+      out._seismogram = chanTR.seismogram;
     }
     return out;
   }
@@ -198,16 +200,46 @@ export class SeismogramDisplayData {
     out.seismogram = seismogram;
     return out;
   }
-  static fromChannelTimes(channel: Channel, startEndDur: StartEndDuration): SeismogramDisplayData {
+  static fromChannelAndTimes(channel: Channel, startEndDur: StartEndDuration): SeismogramDisplayData {
     const out = new SeismogramDisplayData(startEndDur);
     out.channel = channel;
     return out;
   }
-  addQuake(quake: Quake) {
-    this.quakeList.push(quake);
+  addQuake(quake: Quake | Array<Quake> ) {
+    if (Array.isArray(quake)) {
+      quake.forEach(q => this.quakeList.push(q));
+    } else {
+      this.quakeList.push(quake);
+    }
   }
-  hasQuake() {
+  addMarkers(markers: MarkerType | Array<MarkerType>) {
+      if (Array.isArray(markers)) {
+        markers.forEach(m => this.markerList.push(m));
+      } else {
+        this.markerList.push(markers);
+      }
+  }
+  hasQuake(): boolean {
     return this.quakeList.length > 0;
+  }
+  hasChannel(): boolean {
+    return this.channel !== null;
+  }
+  hasSensitivity(): boolean {
+    return this._instrumentSensitivity !== null
+        || (isDef(this.channel) && this.channel.hasInstrumentSensitivity());
+  }
+  get sensitivity(): InstrumentSensitivity | null {
+    if (this._instrumentSensitivity) {
+      return this._instrumentSensitivity;
+    } else if (isDef(this.channel) && this.channel.hasInstrumentSensitivity()) {
+      return this.channel.instrumentSensitivity;
+    } else {
+      return null;
+    }
+  }
+  set sensitivity(value: InstrumentSensitivity | null) {
+    this._instrumentSensitivity = value;
   }
   get min() {
     if ( ! this._statsCache ) {

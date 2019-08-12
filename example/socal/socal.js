@@ -9,6 +9,7 @@ const d3 = seisplotjs.d3;
 const moment = seisplotjs.moment;
 const miniseed = seisplotjs.miniseed;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
+const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
 const Seismograph = seisplotjs.seismograph.Seismograph;
 
 seisplotjs.RSVP.on('error', function(reason) {
@@ -209,8 +210,9 @@ console.log("plotOneStation: "+mystation.codes());
             div.append('p').html('Plot for ' + key);
             let svgdiv = div.append('div').attr('class', 'myseisplot');
             if (trace) {
+                let seisData = SeismogramDisplayData.fromSeismogram(trace);
                 let seisConfig = new SeismographConfig()
-                let seismogram = new Seismograph(svgdiv, seisConfig, trace, startDate, endDate);
+                let seismograph = new Seismograph(svgdiv, seisConfig, seisData, startDate, endDate);
                 let markers = [];
                   markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                   markers.push({ markertype: 'predicted', name: firstPS.firstP.phase, time: moment.utc(quake.time).add(firstPS.firstP.time, 'seconds') });
@@ -226,9 +228,9 @@ if (! arrival) {console.log("arrival is undef??? "+aNum); }
                     }
                   }
                 }
-                seismogram.appendMarkers(markers);
+                seisData.addMarkers(markers);
                 console.log("draw");
-                seismogram.draw();
+                seismograph.draw();
             } else {
               div.append('p').html('Empty trace, No data found for '+mystation.codes());
             }
