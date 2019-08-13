@@ -13,10 +13,12 @@ import * as d3 from 'd3';
 
 import {insertCSS} from './plotutil.js';
 
-import {SeismographConfig, SeismogramDisplayData, findStartEnd, findMinMax,
+import {SeismographConfig,
         DRAW_SVG, DRAW_CANVAS, DRAW_BOTH, DRAW_BOTH_ALIGN} from './seismographconfig';
-import type { MarginType, MarkerType } from './seismographconfig';
-import {SeismogramSegment, Seismogram, ensureIsSeismogram } from './seismogram.js';
+import type { MarkerType } from './seismogram.js';
+import type { MarginType } from './seismographconfig';
+import {SeismogramDisplayData, findStartEnd, findMinMax,
+        SeismogramSegment, Seismogram, ensureIsSeismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
 

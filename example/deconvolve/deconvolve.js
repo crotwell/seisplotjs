@@ -10,7 +10,7 @@ const d3 = seisplotjs.d3;
 const miniseed = seisplotjs.miniseed;
 const moment = seisplotjs.moment;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
-const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
+const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const Seismograph = seisplotjs.seismograph.Seismograph;
 const Seismogram = seisplotjs.seismogram.Seismogram;
 

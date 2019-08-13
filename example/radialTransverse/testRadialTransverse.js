@@ -13,7 +13,7 @@ const moment = seisplotjs.moment;
 let RSVP = seisplotjs.RSVP;
 const d3 = seisplotjs.d3;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
-const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
+const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const Seismograph = seisplotjs.seismograph.Seismograph;
 
 let USGS = "earthquake.usgs.gov";
@@ -206,6 +206,8 @@ console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.se
                   hash.rotatedSeismograms[1].channelCode+" "+rotated.azimuthRadial.toFixed(2),
                   hash.rotatedSeismograms[2].channelCode+" "+rotated.azimuthTransverse.toFixed(2)];
         rotSeisConfig.title = titles;
+        rotatedSeismograph.linkXScaleTo(seismograph);
+        rotatedSeismograph.linkYScaleTo(seismograph);
         rotatedSeismograph.draw();
     } else{
       div.append('p').html('No data found for '+hash.station.codes());

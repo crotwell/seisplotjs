@@ -12,26 +12,9 @@ import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, chec
 
 import * as miniseed from './miniseed';
 import { Channel } from './stationxml';
-import { Seismogram } from './seismogram';
-import {XML_MIME, TEXT_MIME, StartEndDuration, calcClockOffset, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import { Seismogram, SeismogramDisplayData } from './seismogram';
+import {XML_MIME, TEXT_MIME, StartEndDuration, calcClockOffset, doFetchWithTimeout, defaultFetchInitObj, isDef} from './util.js';
 
-
-/**
- * Holds a Channels and a TimeRange and optionally the corresponding seismogram.
- */
-export class ChannelTimeRange extends StartEndDuration {
-  channel: Channel;
-  seismogram: Seismogram | null;
-  constructor(channel: Channel,
-              startTime: moment | null,
-              endTime: moment | null,
-              duration: number | null =null,
-              clockOffset?: number | null =0) {
-    super(startTime, endTime, duration, clockOffset);
-    this.channel = channel;
-    this.seismogram = null;
-  }
-}
 export const FORMAT_MINISEED = 'mseed';
 
 export const IRIS_HOST = "service.iris.edu";
@@ -306,7 +289,7 @@ export class DataSelectQuery {
     });
   }
 
-  postQueryDataRecords(channelTimeList: Array<ChannelTimeRange>): Promise<Array<miniseed.DataRecord>> {
+  postQueryDataRecords(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<miniseed.DataRecord>> {
     return this.postQueryRaw(channelTimeList)
     .then( fetchResponse => {
       if(fetchResponse.ok) {
@@ -328,24 +311,29 @@ export class DataSelectQuery {
    * @param  {[type]} channelTimeList [description]
    * @return {[type]}                 [description]
    */
-  postQuerySeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
+  postQuerySeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.seismogramPerChannel(dataRecords);
     }).then(seisMap => {
       for (let ct of channelTimeList) {
-        let codes = ct.channel.codes();
-        if (seisMap.has(codes)) {
-          // odd, but keeps flow happy
-          let seis = seisMap.get(ct.channel.codes());
-          if (seis) {
-            ct.seismogram = seis;
+        if (isDef(ct.channel)) {
+          let channel = ct.channel;
+          let codes = channel.codes();
+          if (seisMap.has(codes)) {
+            // odd, but keeps flow happy
+            let seis = seisMap.get(channel.codes());
+            if (seis) {
+              ct.seismogram = seis;
+            }
           }
+        } else {
+          throw new Error("Channel in missing in postQuerySeismograms");
         }
       }
       return channelTimeList;
     });
   }
-  postQueryRaw(channelTimeList: Array<ChannelTimeRange>): Promise<Response> {
+  postQueryRaw(channelTimeList: Array<SeismogramDisplayData>): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
       return RSVP.hash({
@@ -359,13 +347,18 @@ export class DataSelectQuery {
     }
   }
 
-  createPostBody(channelTimeList: Array<ChannelTimeRange>): string {
+  createPostBody(channelTimeList: Array<SeismogramDisplayData>): string {
     let out = "";
     for (let ct of channelTimeList) {
-      let sta = ct.channel.station;
-      let net = sta.network;
-      out += `${net.networkCode} ${sta.stationCode} ${ct.channel.locationCode} ${ct.channel.channelCode} ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}`;
-      out += '\n';
+      if (isDef(ct.channel)) {
+        let channel = ct.channel;
+        let sta = channel.station;
+        let net = sta.network;
+        out += `${net.networkCode} ${sta.stationCode} ${channel.locationCode} ${channel.channelCode} ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}`;
+        out += '\n';
+      } else {
+        throw new Error("Channel in missing in createPostBody");
+      }
     }
     return out;
   }

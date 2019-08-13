@@ -11,7 +11,7 @@ RSVP.on('error', function(reason: string) {
 import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 import type {RootType} from './fdsnws-availability-1.0.schema.json.flow.js';
 
-import {ChannelTimeRange } from './fdsndataselect.js';
+import {SeismogramDisplayData } from './seismogram.js';
 import { TEXT_MIME, JSON_MIME, StartEndDuration , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 import {Network, Station, Channel} from './stationxml.js';
 
@@ -302,7 +302,7 @@ export class AvailabilityQuery {
     return this;
   }
 
-  query(): Promise<Array<ChannelTimeRange>> {
+  query(): Promise<Array<SeismogramDisplayData>> {
     return this.queryJson().then(function(json) {
           return this.extractFromJson(json);
       });
@@ -326,7 +326,7 @@ export class AvailabilityQuery {
       });
   }
 
-  extent(): Promise<Array<ChannelTimeRange>> {
+  extent(): Promise<Array<SeismogramDisplayData>> {
     return this.queryJson().then(function(json) {
           return this.extractFromJson(json);
       });
@@ -350,24 +350,24 @@ export class AvailabilityQuery {
       });
   }
 
-  postQuery(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
+  postQuery(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     return this.postQueryJson(channelTimeList).then(json => {
       return this.extractFromJson(json);
     });
   }
-  postExtent(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
+  postExtent(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     return this.postExtentJson(channelTimeList).then(json => {
       return this.extractFromJson(json);
     });
   }
 
-  postExtentJson(channelTimeList: Array<ChannelTimeRange>): Promise<RootType> {
+  postExtentJson(channelTimeList: Array<SeismogramDisplayData>): Promise<RootType> {
     return this.postJson(channelTimeList, 'extent');
   }
-  postQueryJson(channelTimeList: Array<ChannelTimeRange>): Promise<RootType> {
+  postQueryJson(channelTimeList: Array<SeismogramDisplayData>): Promise<RootType> {
     return this.postJson(channelTimeList, 'query');
   }
-  postJson(channelTimeList: Array<ChannelTimeRange>, method: string): Promise<RootType> {
+  postJson(channelTimeList: Array<SeismogramDisplayData>, method: string): Promise<RootType> {
     const mythis = this;
     this.format(FORMAT_JSON);
     return this.postRaw(channelTimeList, method).then(function(response) {
@@ -382,7 +382,7 @@ export class AvailabilityQuery {
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       });
   }
-  postRaw(channelTimeList: Array<ChannelTimeRange>, method: string): Promise<Response> {
+  postRaw(channelTimeList: Array<SeismogramDisplayData>, method: string): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
       return RSVP.hash({
@@ -401,7 +401,7 @@ export class AvailabilityQuery {
     }
   }
 
-  extractFromJson(jsonChanTimes: RootType): Array<ChannelTimeRange> {
+  extractFromJson(jsonChanTimes: RootType): Array<SeismogramDisplayData> {
     let out = [];
     let knownNets = new Map();
     if (isDef(jsonChanTimes.datasources)){
@@ -423,10 +423,10 @@ export class AvailabilityQuery {
         }
         let c = new Channel(s, ds.channel, ds.locationCode);
         if (ds.earliest && ds.latest){
-          out.push(new ChannelTimeRange(c, moment.utc(ds.earliest), moment.utc(ds.latest)));
+          out.push( SeismogramDisplayData.fromChannelAndTimes(c, moment.utc(ds.earliest), moment.utc(ds.latest)));
         } else if (ds.timespans) {
           for (let ts of ds.timespans) {
-            out.push(new ChannelTimeRange(c, moment.utc(ts[0]), moment.utc(ts[1])));
+            out.push(SeismogramDisplayData.fromChannelAndTimes(c,  moment.utc(ts[0]), moment.utc(ts[1])));
           }
         }
       }
@@ -434,7 +434,7 @@ export class AvailabilityQuery {
     return out;
   }
 
-  createPostBody(channelTimeList: Array<ChannelTimeRange>): string {
+  createPostBody(channelTimeList: Array<SeismogramDisplayData>): string {
     let out = "";
     if (this._quality) { out += this.makePostParm("quality", this.quality());}
     if (this._merge) { out += this.makePostParm("merge", this.merge());}
@@ -451,10 +451,14 @@ export class AvailabilityQuery {
     if (this._nodata) { out += this.makePostParm("nodata", this.nodata());}
 
     for (let ct of channelTimeList) {
-      let sta = ct.channel.station;
-      let net = sta.network;
-      out += `${net.networkCode} ${sta.stationCode} ${ct.channel.locationCode} ${ct.channel.channelCode} ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}`;
-      out += '\n';
+      if ( isDef(ct.channel)) {
+        let sta = ct.channel.station;
+        let net = sta.network;
+        out += `${net.networkCode} ${sta.stationCode} ${ct.channel.locationCode} ${ct.channel.channelCode} ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}`;
+        out += '\n';
+      } else {
+        throw new Error("Channel in missing in createPostBody");
+      }
     }
     return out;
   }

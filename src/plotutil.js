@@ -5,8 +5,8 @@ import RSVP from 'rsvp';
 import * as d3 from 'd3';
 import * as dataselect from './fdsndataselect.js';
 import * as miniseed from './miniseed.js';
-import {Seismogram} from './seismogram.js';
-import { SeismographConfig, SeismogramDisplayData } from './seismographconfig';
+import {Seismogram, SeismogramDisplayData} from './seismogram.js';
+import { SeismographConfig } from './seismographconfig';
 import {Seismograph} from './seismograph.js';
 import {StartEndDuration} from './util.js';
 

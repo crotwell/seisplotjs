@@ -174,7 +174,7 @@ let callbackFn = function(slPacket) {
       seisPlotConfig.doRMean = false ;
       seisPlotConfig.doGain = false;
     }
-    let seisData = seisplotjs.seismographconfig.SeismogramDisplayData.fromSeismogram(trace);
+    let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(trace);
     let seisPlot = new Seismograph(plotDiv, seisPlotConfig, seisData, timeWindow.startTime, timeWindow.endTime);
     seisPlot.svg.classed('realtimePlot', true).classed('overlayPlot', false)
     seisPlot.draw();

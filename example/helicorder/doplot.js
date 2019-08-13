@@ -1,6 +1,6 @@
 
 const DEFAULT_DURATION = "P1D";
-const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
+const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const HelicorderConfig = seisplotjs.helicorder.HelicorderConfig;
 const Helicorder = seisplotjs.helicorder.Helicorder;
 
@@ -107,7 +107,7 @@ doPlot = function(config) {
         let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
         let fake = new seisplotjs.stationxml.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
         fake.sampleRate = 2;
-        return new seisplotjs.fdsndataselect.ChannelTimeRange(
+        return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimes(
           fake,
            ct.startTime,
            ct.endTime

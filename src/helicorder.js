@@ -2,10 +2,10 @@
 
 import moment from 'moment';
 
-import { Seismogram } from './seismogram.js';
-import type { MarkerType } from './seismographconfig';
+import { Seismogram, SeismogramDisplayData } from './seismogram.js';
+import type { MarkerType } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
-import { SeismographConfig, SeismogramDisplayData } from './seismographconfig';
+import { SeismographConfig } from './seismographconfig';
 import {minMaxMean, mean } from './filter.js';
 import {StartEndDuration} from './util.js';
 

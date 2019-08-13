@@ -4,9 +4,9 @@ import * as util from './util';
 import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 
-import {ChannelTimeRange } from './fdsndataselect';
+import {SeismogramDisplayData } from './seismogram';
 import {Channel} from './stationxml';
-import {StartEndDuration} from './util.js';
+import {StartEndDuration, isDef} from './util.js';
 
 export const Allowed_Flags = [ 'n', 's', 'l', 'c', 'Y', 'j', 'H'];
 
@@ -51,12 +51,17 @@ export class MSeedArchive {
     }
     return true;
   }
-  loadSeismograms(channelTimeList: Array<ChannelTimeRange>): Promise<Array<ChannelTimeRange>> {
+  loadSeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     let promiseArray = channelTimeList.map(ct => {
-      return RSVP.hash({
-          "request": ct,
-          "dataRecords": this.loadDataForChannel(ct.channel, ct.startTime, ct.endTime)
-        });
+      if (isDef(ct.channel)) {
+        const channel = ct.channel;
+        return RSVP.hash({
+            "request": ct,
+            "dataRecords": this.loadDataForChannel(channel, ct.startTime, ct.endTime)
+          });
+        } else {
+          throw new Error("channel is missing in loadSeismograms ");
+        }
       });
     return RSVP.all(promiseArray).then(pArray => {
         let index = 0;

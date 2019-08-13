@@ -1,9 +1,11 @@
 // @flow
 
 import moment from 'moment';
-import { checkStringOrDate, meanOfSlice } from './util';
+import { checkStringOrDate, meanOfSlice, isDef } from './util';
 import * as seedcodec from './seedcodec';
 
+import {Channel, InstrumentSensitivity} from './stationxml.js';
+import {Quake} from './quakeml.js';
 import {StartEndDuration, calcClockOffset} from './util';
 
 export type HighLowType = {
@@ -12,6 +14,13 @@ export type HighLowType = {
       secondsPerPixel: number;
       samplesPerPixel: number;
       highlowArray: Array<number>;
+};
+
+export type MarkerType = {
+  name: string,
+  time: moment,
+  type: string,
+  description: string
 };
 
 /**
@@ -460,7 +469,7 @@ export class Seismogram {
     return outArray;
   }
   /**
-   * Gets the timeseries as an array of number if it is contiguous.
+   * Gets the timeseries as an typed array if it is contiguous.
    * @throws {NonContiguousData} if data is not contiguous.
    * @return  timeseries as array of number
    */
@@ -474,9 +483,9 @@ export class Seismogram {
     }
     return this._y;
   }
-  set y(val: Array<number>) {
+  set y(val: Int32Array | Float32Array | Float64Array ) {
     // ToDo
-    throw new Error("seismogram y setter not impl yet");
+    throw new Error("seismogram y setter not impl, see cloneWithNewData()");
   }
   clone(): Seismogram {
     let cloned = this._segmentArray.map( s => s.clone());
@@ -506,6 +515,7 @@ export class NonContiguousData extends Error {
     this.name = this.constructor.name;
   }
 }
+
 export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegment) {
   if (typeof seisSeismogram === "object") {
     if (seisSeismogram instanceof Seismogram) {
@@ -527,7 +537,173 @@ export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegmen
 }
 
 
-export function findStartEnd(data: Array<Seismogram>, accumulator?: StartEndDuration): StartEndDuration {
+export class SeismogramDisplayData {
+  /** @private */
+  _seismogram: Seismogram | null;
+  markerList: Array<MarkerType>;
+  channel: Channel | null;
+  _instrumentSensitivity: InstrumentSensitivity | null;
+  quakeList: Array<Quake>;
+  startEndDur: StartEndDuration;
+  alignmentTime: moment | null;
+  doShow: boolean;
+  _statsCache: SeismogramDisplayStats | null;
+  constructor(startEndDur: StartEndDuration) {
+    if ( ! startEndDur) {
+      throw new Error("StartEndDuration must not be missing.");
+    }
+    this._seismogram = null;
+    this.markerList = [];
+    this.channel = null;
+    this._instrumentSensitivity = null;
+    this.quakeList = [];
+    this.startEndDur = startEndDur;
+    this.alignmentTime = null;
+    this.doShow = true;
+    this._statsCache = null;
+  }
+  static fromSeismogram(seismogram: Seismogram | SeismogramSegment): SeismogramDisplayData {
+    if (seismogram instanceof SeismogramSegment) {
+      console.assert(false, new Error("SeismogramDisplayData created with a SeismogramSegment "));
+      seismogram = new Seismogram( [ seismogram ]);
+    }
+    const out = new SeismogramDisplayData(new StartEndDuration(seismogram.startTime, seismogram.endTime, null, null));
+    out.seismogram = seismogram;
+    return out;
+  }
+  static fromChannelAndTimeWindow(channel: Channel, startEndDur: StartEndDuration): SeismogramDisplayData {
+    const out = new SeismogramDisplayData(startEndDur);
+    out.channel = channel;
+    return out;
+  }
+  static fromChannelAndTimes(channel: Channel, startTime: moment, endTime: moment): SeismogramDisplayData {
+    const out = new SeismogramDisplayData(new StartEndDuration(startTime, endTime));
+    out.channel = channel;
+    return out;
+  }
+  addQuake(quake: Quake | Array<Quake> ) {
+    if (Array.isArray(quake)) {
+      quake.forEach(q => this.quakeList.push(q));
+    } else {
+      this.quakeList.push(quake);
+    }
+  }
+  addMarkers(markers: MarkerType | Array<MarkerType>) {
+      if (Array.isArray(markers)) {
+        markers.forEach(m => this.markerList.push(m));
+      } else {
+        this.markerList.push(markers);
+      }
+  }
+  hasQuake(): boolean {
+    return this.quakeList.length > 0;
+  }
+  hasChannel(): boolean {
+    return this.channel !== null;
+  }
+  hasSensitivity(): boolean {
+    return this._instrumentSensitivity !== null
+        || (isDef(this.channel) && this.channel.hasInstrumentSensitivity());
+  }
+  get startTime(): moment {
+    return this.startEndDur.startTime;
+  }
+  get endTime(): moment {
+    return this.startEndDur.endTime;
+  }
+  get sensitivity(): InstrumentSensitivity | null {
+    const channel = this.channel;
+    if (this._instrumentSensitivity) {
+      return this._instrumentSensitivity;
+    } else if (isDef(channel) && channel.hasInstrumentSensitivity()) {
+      return channel.instrumentSensitivity;
+    } else {
+      return null;
+    }
+  }
+  set sensitivity(value: InstrumentSensitivity | null) {
+    this._instrumentSensitivity = value;
+  }
+  get min() {
+    if ( ! this._statsCache ) {
+      this._statsCache = this.calcStats();
+    }
+    return this._statsCache.min;
+  }
+  get max() {
+    if ( ! this._statsCache ) {
+      this._statsCache = this.calcStats();
+    }
+    return this._statsCache.max;
+  }
+  get mean() {
+    if ( ! this._statsCache ) {
+      this._statsCache = this.calcStats();
+    }
+    return this._statsCache.mean;
+  }
+  get seismogram() {
+    return this._seismogram;
+  }
+  set seismogram(value: Seismogram) {
+    this._seismogram = value;
+    this._statsCache = null;
+  }
+  calcStats() {
+    let stats = new SeismogramDisplayStats();
+    if (this.seismogram) {
+      let minMax = this.seismogram.findMinMax();
+      stats.min = minMax[0];
+      stats.max = minMax[1];
+      // $FlowFixMe  know seismogram is not null
+      stats.mean = this.seismogram.mean();
+    }
+    this._statsCache = stats;
+    return stats;
+  }
+}
+
+export class SeismogramDisplayStats {
+  min: number;
+  max: number;
+  mean: number;
+  trendSlope: number;
+  constructor() {
+    this.min = 0;
+    this.max = 0;
+    this.mean = 0;
+    this.trendSlope = 0;
+  }
+}
+
+export function findStartEnd(sddList: Array<SeismogramDisplayData>): StartEndDuration {
+  let allStart = sddList.map(sdd => {
+    return moment.utc(sdd.startEndDur.startTime);
+  });
+  let startTime = moment.min(allStart);
+  let allEnd = sddList.map(sdd => {
+    return moment.utc(sdd.startEndDur.endTime);
+  });
+  let endTime = moment.max(allEnd);
+  return new StartEndDuration(startTime, endTime);
+}
+
+export function findMinMax(sddList: Array<SeismogramDisplayData>): Array<number> {
+  let min = sddList.map(sdd => {
+    return sdd.min;
+  }).reduce(function (p, v) {
+    return ( p < v ? p : v );
+  });
+  let max = sddList.map(sdd => {
+    return sdd.max;
+  }).reduce(function (p, v) {
+    return ( p > v ? p : v );
+  });
+  return [min, max];
+}
+
+
+export function findStartEndOfSeismograms(data: Array<Seismogram>, accumulator?: StartEndDuration): StartEndDuration {
   let out: StartEndDuration;
   if ( ! accumulator && ! data) {
     throw new Error("data and accumulator are not defined");
@@ -552,7 +728,7 @@ export function findStartEnd(data: Array<Seismogram>, accumulator?: StartEndDura
 }
 
 
-export function findMinMax(data: Array<Seismogram> , minMaxAccumulator ?: Array<number>): Array<number> {
+export function findMinMaxOfSeismograms(data: Array<Seismogram> , minMaxAccumulator ?: Array<number>): Array<number> {
   for(let s of data) {
     minMaxAccumulator = s.findMinMax(minMaxAccumulator);
   }

@@ -9,7 +9,7 @@ const d3 = seisplotjs.d3;
 const moment = seisplotjs.moment;
 const miniseed = seisplotjs.miniseed;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
-const SeismogramDisplayData = seisplotjs.seismographconfig.SeismogramDisplayData;
+const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const Seismograph = seisplotjs.seismograph.Seismograph;
 
 seisplotjs.RSVP.on('error', function(reason) {
