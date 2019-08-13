@@ -72,14 +72,15 @@ let stationQuery = new seisplotjs.fdsnstation.StationQuery()
             ask for a duration of 2400 seconds.
           </p>
           <pre><code class="language-javascript">
-Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
-.then( ( [ quakeList, networks ] ) => {
-    let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
-    let chanTRList = allChannels.map(c => {
-      return new seisplotjs.fdsndataselect.ChannelTimeRange(c, quakeList[0].time, null, 2400);
-    });
-    let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-    return Promise.all([ quakeList, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
+            Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
+            .then( ( [ quakeList, networks ] ) => {
+                let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
+                let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
+                let seismogramDataList = allChannels.map(c => {
+                  return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
+                });
+                let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+                return Promise.all([ quakeList, networks, dsQuery.postQuerySeismograms(seismogramDataList) ]);
             </code></pre>
             <p>Because we have the
             channel, we can also plot the seismograms corrected for overall
@@ -88,22 +89,21 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
             elements to hold the station codes and earthquake description.
           </p>
           <pre><code class="language-javascript">
-  }).then( ( [ quakeList, networks, chanTRList ] ) => {
-    let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
-    let div = seisplotjs.d3.select('div#myseismograph');
-    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    seisConfig.title = chanTRList.map(ctr => ctr.channel.codes());
-    let graph = new seisplotjs.seismograph.Seismograph(div,
-                                                       seisConfig,
-                                                       seismogramList);
-    graph.setYAxisSensitivity(chanTRList[0].channel.instrumentSensitivity);
-    graph.draw();
-    seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
-    seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
-  }).catch( function(error) {
-    seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
-    console.assert(false, error);
-  });
+          }).then( ( [ quakeList, networks, seismogramDataList ] ) => {
+            let div = seisplotjs.d3.select('div#myseismograph');
+            let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+            seisConfig.title = seismogramDataList.map(ctr => ctr.channel.codes());
+            let graph = new seisplotjs.seismograph.Seismograph(div,
+                                                               seisConfig,
+                                                               seismogramDataList);
+            graph.setYAxisSensitivity(seismogramDataList[0].channel.instrumentSensitivity);
+            graph.draw();
+            seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
+            seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
+          }).catch( function(error) {
+            seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+            console.assert(false, error);
+          });
           </code></pre>
 
           <p>See it live in <a href="tutorial3.html">tutorial3.html</a>.</p>
@@ -119,7 +119,7 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
       	'remove-trailing': true,
-      	'remove-indent': false,
+      	'remove-indent': true,
       	'left-trim': true,
       	'right-trim': true
       });
