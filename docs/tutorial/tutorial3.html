@@ -31,20 +31,20 @@
     Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
     .then( ( [ quakeList, networks ] ) => {
         let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
-        let chanTRList = allChannels.map(c => {
-          return new seisplotjs.fdsndataselect.ChannelTimeRange(c, quakeList[0].time, null, 2400);
+        let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
+        let seismogramDataList = allChannels.map(c => {
+          return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
         });
         let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-        return Promise.all([ quakeList, networks, dsQuery.postQuerySeismograms(chanTRList) ]);
-      }).then( ( [ quakeList, networks, chanTRList ] ) => {
-        let seismogramList = chanTRList.map(ctr =>  ctr.seismogram);
+        return Promise.all([ quakeList, networks, dsQuery.postQuerySeismograms(seismogramDataList) ]);
+      }).then( ( [ quakeList, networks, seismogramDataList ] ) => {
         let div = seisplotjs.d3.select('div#myseismograph');
         let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-        seisConfig.title = chanTRList.map(ctr => ctr.channel.codes());
+        seisConfig.title = seismogramDataList.map(ctr => ctr.channel.codes());
         let graph = new seisplotjs.seismograph.Seismograph(div,
                                                            seisConfig,
-                                                           seismogramList);
-        graph.setYAxisSensitivity(chanTRList[0].channel.instrumentSensitivity);
+                                                           seismogramDataList);
+        graph.setYAxisSensitivity(seismogramDataList[0].channel.instrumentSensitivity);
         graph.draw();
         seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
         seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);

@@ -38,7 +38,8 @@
            <a href="http://earthquake.usgs.gov/fdsnws/event/1/">FDSNWS
            event</a> web service to get the earthquake. Again, both of these
            are asynchronous and so we will have to use promises. We first create
-           both the <code>EventQuery</code> and <code>StationQuery</code> objects.
+           both the <code class="language-javascript">EventQuery</code>
+           and <code class="language-javascript">StationQuery</code> objects.
 
           </p>
           <pre><code class="language-javascript">
@@ -58,12 +59,13 @@ let stationQuery = new seisplotjs.fdsnstation.StationQuery()
 
           </code></pre>
           <p>
-            Then we call their <code>query</code> methods with a <code>Promise.all()</code>
+            Then we call their <code class="language-javascript">query</code>
+            methods with a <code class="language-javascript">Promise.all()</code>
             which will wait until both of these return before calling the
-            <code>then()</code> function. We will also use the more powerful
-            <code>POST</code> method to get the seismograms. The
-            <code>ChannelTimeRange</code> works just like the
-            <code>StartEndDuration</code> but also hold the channel that the
+            <code class="language-javascript">then()</code> function. We will also use the more powerful
+            <code class="language-http">POST</code> method to get the seismograms. The
+            <code class="language-javascript">ChannelTimeRange</code> works just like the
+            <code class="language-javascript">StartEndDuration</code> but also hold the channel that the
             time rage corresponds to. In this case they are all the same, but
             might be different if we were using multiple stations and predicted
             arrival times. Note that we use the event time as the start and
@@ -81,10 +83,9 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
             </code></pre>
             <p>Because we have the
             channel, we can also plot the seismograms corrected for overall
-            gain and in units of m/s. We also added a couple of <code>&lt;span></code>
+            gain and in units of m/s. We also added a couple of
+            <code class="language-html">&lt;span></code>
             elements to hold the station codes and earthquake description.
-            All of this is in
-            <a href="tutorial3.html">tutorial3.html</a>.
           </p>
           <pre><code class="language-javascript">
   }).then( ( [ quakeList, networks, chanTRList ] ) => {
@@ -105,6 +106,7 @@ Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
   });
           </code></pre>
 
+          <p>See it live in <a href="tutorial3.html">tutorial3.html</a>.</p>
           <p>Previous: <a href="realdata.html">Let's get some real data</a></p>
           <p>Next: <a href="arrivaltimes.html">Predicted phase arrival times</a></p>
 

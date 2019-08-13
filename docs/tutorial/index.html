@@ -80,14 +80,24 @@ let seismogram = seisplotjs.seismogram.Seismogram.createFromContiguousData(dataA
             sample rate of 20 samples per second. So this sine wave should have
             a period of 5 seconds. The start time is given in UTC as all seismic
             data should be. To display this data we need a
-            <code>Seismograph</code> to put it in and a
-            <code>SeismographConfig</code> to configure the Seismograph.
+            <code class="language-javascript">Seismograph</code> to put it in and a
+            <code class="language-javascript">SeismographConfig</code>
+            to configure the Seismograph.
+            We also put the seismogram inside a
+            <code class="language-javascript">SeismogramDisplayData</code>
+            object. In this case it doesn't matter much, but later we will want
+            to attach the <code class="language-javascript">Channel</code>,
+            a <code class="language-javascript">Quake</code> and maybe
+            other items to the seismogram and the
+            <code class="language-javascript">SeismogramDisplayData</code>
+            object allows that.
           </p>
           <pre><code class="language-javascript">
-let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-let div = seisplotjs.d3.select('div#myseismograph');
-let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
-graph.draw();
+            let div = seisplotjs.d3.select('div#sinewave');
+            let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+            let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+            let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
+            graph.draw();
           </code></pre>
           <p>
             We should have a seismograph displayed. But it might be a bit small,
@@ -96,7 +106,7 @@ graph.draw();
             <code>&lt;style></code> element
             to make the height be 450 pixels and the width be 100% of the
             space available.
-            The page with all of this is in <a href="tutorial1.html">tutorial1.html</a>.
+
           </p>
 
           <pre><code class="language-html">
@@ -107,6 +117,7 @@ graph.draw();
 &lt;/style>
           </code></pre>
 
+          <p>See it live in <a href="tutorial1.html">tutorial1.html</a>.</p>
           <p>Next: <a href="realdata.html">Let's get some real data</a></p>
 
 
@@ -114,7 +125,7 @@ graph.draw();
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
       	'remove-trailing': true,
-      	'remove-indent': false,
+      	'remove-indent': true,
       	'left-trim': true,
       	'right-trim': true
       });

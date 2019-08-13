@@ -45,13 +45,14 @@
             arrival.
          </p>
          <pre><code class="language-javascript">
- Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
- .then( ( [ quakeList, networks ] ) => {
-   let taupQuery = new seisplotjs.traveltime.TraveltimeQuery()
-     .latLonFromStation(networks[0].stations[0])
-     .latLonFromQuake(quakeList[0])
-     .phases("P,S");
-   return Promise.all( [ quakeList, networks, taupQuery.queryJson() ] );
+           Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
+             .then( ( [ quakeList, networks ] ) => {
+               let taupQuery = new seisplotjs.traveltime.TraveltimeQuery()
+                 .latLonFromStation(networks[0].stations[0])
+                 .latLonFromQuake(quakeList[0])
+                 .phases("P,S");
+               return Promise.all( [ quakeList, networks, taupQuery.queryJson() ] );
+
           </code></pre>
           <p>
             Now in the third then, we can use add the travel time to the
@@ -63,18 +64,19 @@
             otherwise you will change the origin time of the quake.
           </p>
           <pre><code class="language-javascript">
-}).then( ( [ quakeList, networks, ttimes ] ) => {
-  let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
-  let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
-  let startTime = seisplotjs.moment.utc(quakeList[0].time)
-    .add(firstP.time, 'seconds')
-    .subtract(30, 'seconds');
-  let chanTRList = allChannels.map(c => {
-    return new seisplotjs.fdsndataselect.ChannelTimeRange(c, startTime, null, 1800);
-  });
-  let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-  return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
-}).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
+          }).then( ( [ quakeList, networks, ttimes ] ) => {
+            let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
+            let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
+            let startTime = seisplotjs.moment.utc(quakeList[0].time)
+              .add(firstP.time, 'seconds')
+              .subtract(30, 'seconds');
+            let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 1800);
+            let chanTRList = allChannels.map(c => {
+              return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
+            });
+            let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+            return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
+
           </code></pre>
           <p>
             Now that we have travel times and seismograms, we can plot both. The
@@ -83,8 +85,7 @@
             and amplitude. This is available as <a href="tutorial4.html">tutorial4</a>.
           </p>
           <pre><code class="language-javascript">
-          }).then( ( [ quakeList, networks, ttimes, chanTRList ] ) => {
-            let seismogramDataList = chanTRList.map(ctr =>  seisplotjs.seismographconfig.SeismogramDisplayData.fromChannelTimeRange(ctr));
+          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
             let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
             phaseMarkers.push({
               markertype: 'predicted',
@@ -129,7 +130,7 @@
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
       	'remove-trailing': true,
-      	'remove-indent': false,
+      	'remove-indent': true,
       	'left-trim': true,
       	'right-trim': true
       });

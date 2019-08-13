@@ -28,7 +28,8 @@
         let seismogram = seisMap.values().next().value;
         let div = seisplotjs.d3.select('div#myseismograph');
         let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-        let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
+        let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+        let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
         graph.draw();
       }).catch( function(error) {
         seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);

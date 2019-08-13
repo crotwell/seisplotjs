@@ -39,7 +39,7 @@
             <a href="http://www.fdsn.org/webservices/">fdsnws-dataselect</a>
             specification. This example only uses the simple
             <code class="language-html">GET</code> style query, and so
-            is limited to a single channels and single time range.
+            is limited to a single channel (maybe wildcarded) and single time range.
             <code class="language-javascript">DataSelectQuery</code> also
             supports the <code class="language-html">POST</code> style query
             that allows many channel-time range pairs to be requested at once.
@@ -56,7 +56,7 @@
               .endTime(times.endTime);
           </code></pre>
           <p>
-            One important difference here is that unlike the previous example
+            One important difference here is that, unlike the previous example,
             getting data remotely is inherently an asynchronous operation, and
             so rather than return seismograms, the
             <code class="language-javascript">querySeismograms()</code>
@@ -66,23 +66,23 @@
             promise is executed <em>after</em> the request returns. We expect
             there to only be one seismogram returned from this, so we only try
             to display the first one.
-            The page with all of this is in <a href="tutorial2.html">tutorial2.html</a>.
           </p>
           <pre><code class="language-javascript">
-              dsQuery.querySeismograms().then(seisMap => {
-                // only plot the first seismogram
-                let seismogram = seisMap.values().next().value;
-                let div = seisplotjs.d3.select('div#myseismograph');
-                let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-                let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seismogram);
-                graph.draw();
-              }).catch( function(error) {
-                seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
-                console.assert(false, error);
-              });
+            dsQuery.querySeismograms().then(seisMap => {
+              // only plot the first seismogram
+              let seismogram = seisMap.values().next().value;
+              let div = seisplotjs.d3.select('div#myseismograph');
+              let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+              let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+              let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
+              graph.draw();
+            }).catch( function(error) {
+              seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+              console.assert(false, error);
+            });
           </code></pre>
 
-
+          <p>See it live in <a href="tutorial2.html">tutorial2.html</a>.</p>
           <p>Previous: <a href="index.html">Sine wave</a></p>
           <p>Next: <a href="quakesandchannels.html">Quakes and Channels</a></p>
 
