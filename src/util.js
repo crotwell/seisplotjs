@@ -98,47 +98,59 @@ clockOffset is the seconds that should be subtracted from the computer time
  default is zero.
 */
 export class StartEndDuration {
-  startTime: moment;
-  endTime: moment;
-  duration: moment.duration;
-  clockOffset: moment.duration;
+  _startTime: moment;
+  _endTime: moment;
+  _duration: moment.duration;
+  _clockOffset: moment.duration;
   constructor(startTime: moment | null, endTime: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
 
     if (duration &&
         (typeof duration === "string" || duration instanceof String)) {
       if (duration.charAt(0) === 'P') {
-        this.duration = moment.duration(duration);
+        this._duration = moment.duration(duration);
       } else {
-        this.duration = moment.duration(Number.parseFloat(duration), 'seconds');
+        this._duration = moment.duration(Number.parseFloat(duration), 'seconds');
       }
     }
     if (duration &&
       (typeof duration === "number" || duration instanceof Number)) {
-      this.duration = moment.duration(duration, 'seconds');
+      this._duration = moment.duration(duration, 'seconds');
     }
     if (startTime && endTime) {
-      this.startTime = checkStringOrDate(startTime);
-      this.endTime = checkStringOrDate(endTime);
-      this.duration = moment.duration(this.endTime.diff(this.startTime));
-    } else if (startTime && this.duration) {
-      this.startTime = checkStringOrDate(startTime);
-      this.endTime = moment.utc(this.startTime).add(this.duration);
-    } else if (endTime && this.duration) {
-      this.endTime = checkStringOrDate(endTime);
-      this.startTime = moment.utc(this.endTime).subtract(this.duration);
-    } else if (this.duration) {
+      this._startTime = checkStringOrDate(startTime);
+      this._endTime = checkStringOrDate(endTime);
+      this._duration = moment.duration(this.endTime.diff(this.startTime));
+    } else if (startTime && this._duration) {
+      this._startTime = checkStringOrDate(startTime);
+      this._endTime = moment.utc(this.startTime).add(this.duration);
+    } else if (endTime && this._duration) {
+      this._endTime = checkStringOrDate(endTime);
+      this._startTime = moment.utc(this.endTime).subtract(this.duration);
+    } else if (this._duration) {
       if (clockOffset === undefined) {
-        this.clockOffset = moment.duration(0, 'seconds');
+        this._clockOffset = moment.duration(0, 'seconds');
       } else if (clockOffset instanceof Number) {
-        this.clockOffset = moment.duration(clockOffset, 'seconds');
+        this._clockOffset = moment.duration(clockOffset, 'seconds');
       } else {
-        this.clockOffset = clockOffset;
+        this._clockOffset = clockOffset;
       }
-      this.endTime = moment.utc().subtract(clockOffset);
-      this.startTime = moment.utc(this.endTime).subtract(this.duration);
+      this._endTime = moment.utc().subtract(clockOffset);
+      this._startTime = moment.utc(this.endTime).subtract(this.duration);
     } else {
       throw "need some combination of startTime, endTime and duration";
     }
+  }
+  get startTime() {
+    return this._startTime;
+  }
+  get endTime() {
+    return this._endTime;
+  }
+  get duration() {
+    return this._duration;
+  }
+  get clockOffset() {
+    return this._clockOffset;
   }
   overlaps(other: StartEndDuration): boolean {
     if (this.startTime.isAfter(other.endTime)

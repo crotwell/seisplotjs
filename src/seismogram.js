@@ -715,10 +715,10 @@ export function findStartEndOfSeismograms(data: Array<Seismogram>, accumulator?:
   if ( Array.isArray(data)) {
     for (let s of data) {
       if ( s.startTime < out.startTime) {
-        out.startTime = s.startTime;
+        out = new StartEndDuration( moment.utc(s.startTime), out.endTime);
       }
       if ( out.endTime < s.endTime ) {
-        out.endTime = s.endTime;
+        out = new StartEndDuration( out.startTime, moment.utc(s.endTime));
       }
     }
   } else {
