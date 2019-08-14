@@ -971,7 +971,7 @@ export class Seismograph {
   trim(timeWindow: StartEndDuration): void {
     if (this.seisDataList) {
       this.seisDataList = this.seisDataList.filter(function(d) {
-        return d.startEndDur.overlaps(timeWindow);
+        return d.timeWindow.overlaps(timeWindow);
       });
       if (this.seisDataList.length > 0) {
         this.calcAmpScaleDomain();

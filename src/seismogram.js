@@ -544,12 +544,12 @@ export class SeismogramDisplayData {
   channel: Channel | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
-  startEndDur: StartEndDuration;
+  timeWindow: StartEndDuration;
   alignmentTime: moment | null;
   doShow: boolean;
   _statsCache: SeismogramDisplayStats | null;
-  constructor(startEndDur: StartEndDuration) {
-    if ( ! startEndDur) {
+  constructor(timeWindow: StartEndDuration) {
+    if ( ! timeWindow) {
       throw new Error("StartEndDuration must not be missing.");
     }
     this._seismogram = null;
@@ -557,7 +557,7 @@ export class SeismogramDisplayData {
     this.channel = null;
     this._instrumentSensitivity = null;
     this.quakeList = [];
-    this.startEndDur = startEndDur;
+    this.timeWindow = timeWindow;
     this.alignmentTime = null;
     this.doShow = true;
     this._statsCache = null;
@@ -571,8 +571,8 @@ export class SeismogramDisplayData {
     out.seismogram = seismogram;
     return out;
   }
-  static fromChannelAndTimeWindow(channel: Channel, startEndDur: StartEndDuration): SeismogramDisplayData {
-    const out = new SeismogramDisplayData(startEndDur);
+  static fromChannelAndTimeWindow(channel: Channel, timeWindow: StartEndDuration): SeismogramDisplayData {
+    const out = new SeismogramDisplayData(timeWindow);
     out.channel = channel;
     return out;
   }
@@ -606,10 +606,10 @@ export class SeismogramDisplayData {
         || (isDef(this.channel) && this.channel.hasInstrumentSensitivity());
   }
   get startTime(): moment {
-    return this.startEndDur.startTime;
+    return this.timeWindow.startTime;
   }
   get endTime(): moment {
-    return this.startEndDur.endTime;
+    return this.timeWindow.endTime;
   }
   get sensitivity(): InstrumentSensitivity | null {
     const channel = this.channel;
@@ -678,11 +678,11 @@ export class SeismogramDisplayStats {
 
 export function findStartEnd(sddList: Array<SeismogramDisplayData>): StartEndDuration {
   let allStart = sddList.map(sdd => {
-    return moment.utc(sdd.startEndDur.startTime);
+    return moment.utc(sdd.timeWindow.startTime);
   });
   let startTime = moment.min(allStart);
   let allEnd = sddList.map(sdd => {
-    return moment.utc(sdd.startEndDur.endTime);
+    return moment.utc(sdd.timeWindow.endTime);
   });
   let endTime = moment.max(allEnd);
   return new StartEndDuration(startTime, endTime);

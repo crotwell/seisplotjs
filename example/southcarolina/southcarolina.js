@@ -261,7 +261,7 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
           if (seismogram) {
               let seisData = SeismogramDisplayData.fromSeismogram(seismogram);
               seisData.addQuake(quake);
-              seisData.startEndDur = hash.queryWindow;
+              seisData.timeWindow = hash.queryWindow;
               let markers = [];
                 markers.push({ markertype: 'predicted', name: "origin", time: quake.time });
                 markers.push({ markertype: 'predicted', name: hash.firstPS.firstP.phase, time: moment(quake.time).add(hash.firstPS.firstP.time, 'seconds') });

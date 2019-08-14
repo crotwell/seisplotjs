@@ -79,7 +79,7 @@ export class Helicorder {
       let lineMean = 0;
       if (lineCutSeis) {
         let seisData = SeismogramDisplayData.fromSeismogram(lineCutSeis);
-        seisData.startEndDur = lineTime;
+        seisData.timeWindow = lineTime;
         seisData.addMarkers(this.seisData.markerList);
         seisData.addQuake(this.seisData.quakeList);
         seisData.channel = this.seisData.channel;
