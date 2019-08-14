@@ -123,7 +123,6 @@ function processSeismograms(traceMap) {
       envConfig.doRMean = false;
       envConfig.doGain = false;
       let envelopePlot = new Seismograph(svgEnvelope, seisConfig, envelopeSeismogram);
-      envelopePlot.setDoRMean(false);
       envelopePlot.draw();
 }
 

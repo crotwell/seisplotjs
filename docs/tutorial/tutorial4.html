@@ -62,6 +62,7 @@
           let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
           seisConfig.title = sdd.channel.codes();
           seisConfig.wheelZoom = false;
+          seisConfig.doGain = true;
           let subdiv = div.append('div').classed('seismograph', true);
           let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                              seisConfig,
@@ -69,7 +70,6 @@
           graphList.forEach(g => graph.linkXScaleTo(g));
           graphList.forEach(g => graph.linkYScaleTo(g));
           graphList.push(graph);
-          //graph.setYAxisSensitivity(chanTRList[0].channel.instrumentSensitivity);
           graph.draw();
         }
         seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());

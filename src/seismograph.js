@@ -65,7 +65,6 @@ export class Seismograph {
   currZoomXScale: any;
   yScale: any;
   yScaleRmean: any;
-  yAxisSensitivity: InstrumentSensitivity;
   lineFunc: any;
   zoom: any;
   xAxis: any;
@@ -849,24 +848,6 @@ export class Seismograph {
        .text(this.seismographConfig.ySublabel);
     return this;
   }
-  isDoRMean(): boolean {
-    return this.seismographConfig.doRMean;
-  }
-  setDoRMean(value: boolean) {
-    this.seismographConfig.doRMean = value;
-    this.redoDisplayYScale();
-  }
-  isDoGain(): boolean {
-    return this.seismographConfig.doGain;
-  }
-  setDoGain(value: boolean) {
-    this.seismographConfig.doGain = value;
-    this.redoDisplayYScale();
-  }
-  setYAxisSensitivity(value: InstrumentSensitivity) {
-    this.yAxisSensitivity = value;
-    this.redoDisplayYScale();
-  }
   calcTimeScaleDomain(): void {
       let timeWindow;
       if (this.seismographConfig.fixedTimeScale) {
@@ -897,14 +878,8 @@ export class Seismograph {
   }
   redoDisplayYScale(): void {
     let niceMinMax = this.yScale.domain();
-    if (this.seismographConfig.doGain && this.yAxisSensitivity) {
-      niceMinMax[0] = niceMinMax[0] / this.yAxisSensitivity.sensitivity;
-      niceMinMax[1] = niceMinMax[1] / this.yAxisSensitivity.sensitivity;
-      if (this.seismographConfig.ySublabelIsUnits) {
-        this.seismographConfig.ySublabel = this.yAxisSensitivity.inputUnits;
-      }
-    } else if (this.seismographConfig.doGain
-        && this.seisDataList.length > 1
+    if (this.seismographConfig.doGain
+        && this.seisDataList.length > 0
         && this.seisDataList.every(sdd => sdd.hasSensitivity())) {
       // each has seisitivity
       let firstSensitivity = this.seisDataList[0].sensitivity;
@@ -1064,7 +1039,7 @@ export class Seismograph {
         didModify = true;
       } else {
 
-        if (this.isDoRMean()) {
+        if (this.seismographConfig.doRMean) {
           let seisYInterval = otherYScale.domain()[1]-otherYScale.domain()[0];
           let myYInterval = this.yScale.domain()[1]-this.yScale.domain()[0];
           if (seisYInterval > myYInterval){
