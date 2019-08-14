@@ -15,14 +15,14 @@
 
     <script src="seisplotjs_2.0.0-alpha.4_standalone.js"></script>
     <script>
-    let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
+    let timeWindow = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
     let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
     dsQuery.networkCode('CO')
       .stationCode('HODGE')
       .locationCode('00')
       .channelCode('LHZ')
-      .startTime(times.startTime)
-      .endTime(times.endTime);
+      .startTime(timeWindow.startTime)
+      .endTime(timeWindow.endTime);
       dsQuery.querySeismograms().then(seisMap => {
         // only plot the first seismogram
         let seismogram = seisMap.values().next().value;

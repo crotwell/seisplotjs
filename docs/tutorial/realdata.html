@@ -46,14 +46,14 @@
 
           </p>
           <pre><code class="language-javascript">
-            let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
+            let timeWindow = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
             let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
             dsQuery.networkCode('CO')
               .stationCode('HODGE')
               .locationCode('00')
               .channelCode('LHZ')
-              .startTime(times.startTime)
-              .endTime(times.endTime);
+              .startTime(timeWindow.startTime)
+              .endTime(timeWindow.endTime);
           </code></pre>
           <p>
             One important difference here is that, unlike the previous example,
