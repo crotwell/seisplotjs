@@ -7,7 +7,7 @@ import type { MarkerType } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
 import {minMaxMean, mean } from './filter.js';
-import {StartEndDuration} from './util.js';
+import {StartEndDuration, isDef} from './util.js';
 
 
 export class Helicorder {
@@ -18,23 +18,23 @@ export class Helicorder {
   seisData: SeismogramDisplayData;
   xScaleArray: any;
   yScale: any;
-  plotStartTime: moment;
-  plotEndTime: moment;
   maxVariation: number;
   constructor(inSvgParent: any,
               heliConfig: HelicorderConfig,
-              seisData: SeismogramDisplayData,
-              plotStartTime: moment, plotEndTime: moment) {
+              seisData: SeismogramDisplayData) {
     this.seismographArray = [];
     this.seisData = seisData;
     this.svgParent = inSvgParent;
     this.heliConfig = heliConfig;
-    this.secondsPerLine = moment.duration(plotEndTime.diff(plotStartTime, 'seconds'))/heliConfig.numLines;
-    this.plotStartTime = plotStartTime;
-    this.plotEndTime = plotEndTime;
+    let timeWindow = heliConfig.fixedTimeScale;
+    if (isDef(timeWindow)){
+      this.secondsPerLine = timeWindow.duration.asSeconds()/heliConfig.numLines;
+    } else {
+      throw new Error("Helicorder config must have fixedTimeScale set");
+    }
     this.maxVariation = 1;
     if (seisData.seismogram) {
-      let cutSeis = seisData.seismogram.cut(new StartEndDuration(plotStartTime, plotEndTime));
+      let cutSeis = seisData.seismogram.cut(timeWindow);
       if (cutSeis) {
         let minMax = minMaxMean(cutSeis);
         let posOffset = minMax.max - minMax.mean;
@@ -48,7 +48,11 @@ export class Helicorder {
       // no data
       return;
     }
-    let startTime = moment.utc(this.plotStartTime);
+    const timeWindow = this.heliConfig.fixedTimeScale;
+    if ( ! isDef(timeWindow)){
+      throw new Error("Helicorder config must have fixedTimeScale set");
+    }
+    let startTime = moment.utc(timeWindow.startTime);
     this.seismographArray = [];
     let lineTimes = this.calcTimesForLines(startTime, this.secondsPerLine, this.heliConfig.numLines);
     for(let lineTime of lineTimes) {
@@ -63,6 +67,7 @@ export class Helicorder {
         .style('height', height+'px')
         .style('margin-top', `${marginTop}px`);
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
+      lineSeisConfig.fixedTimeScale = lineTime;
       lineSeisConfig.yLabel = `${startTime.format("HH.mm")}`;
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
       lineSeisConfig.minHeight = height;
@@ -83,7 +88,7 @@ export class Helicorder {
         trimSeisDataList.push(seisData);
       }
       lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
-      let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisDataList, startTime, endTime);
+      let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisDataList);
       seismograph.draw();
       seismograph.canvas.style("height", `${height}px`);
       seismograph.svg.style("height", `${height}px`);
@@ -103,15 +108,6 @@ export class Helicorder {
     }
     return out;
   }
-  setPlotStartEnd(startTime: moment, endTime: moment) {
-    this.plotStartTime = startTime;
-    this.plotEndTime = endTime;
-    let lineTimes = this.calcTimesForLines(startTime, this.secondsPerLine, 3);
-    for(let i=0; i< lineTimes.length; i++) {
-      this.seismographArray[i].setPlotStartEnd(lineTimes[i].startTime, lineTimes[i].endTime);
-      this.seismographArray[i].draw();
-    }
-  }
   drawMarkers() {
     this.seismographArray.forEach(h => {
       h.seisDataList.forEach(sd => sd.markerList = this.seisData.markerList);
@@ -124,8 +120,9 @@ export class HelicorderConfig extends SeismographConfig {
   lineSeisConfig: SeismographConfig;
   overlap: number;
   numLines: number;
-  constructor() {
+  constructor(timeWindow: StartEndDuration) {
     super();
+    this.fixedTimeScale = timeWindow;
     this.maxHeight = 600;
     this.xLabel = '';
     this.yLabel = '';

@@ -117,8 +117,9 @@ export function createPlotsBySelector(selector: string) {
           let svgDiv = result.svgParent.append("div");
           svgDiv.classed("svg-container-wide", true);
           let seisConfig = new SeismographConfig();
+          seisConfig.fixedTimeScale = new StartEndDuration(result.startTime, result.endTime);
           let seisData = Array.from(result.traceMap.values()).map(s => SeismogramDisplayData.fromSeismogram(s));
-          let seismogram = new Seismograph(svgDiv, seisConfig, seisData, result.startTime, result.endTime);
+          let seismogram = new Seismograph(svgDiv, seisConfig, seisData);
           seismogram.draw();
         } else {
           result.svgParent.append("p").text("No Data");

@@ -314,7 +314,8 @@ let timer = d3.interval(function(elapsed) {
   timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, nowHour, duration, clockOffset);
   console.log("reset time window for "+timeWindow.startTime+" "+timeWindow.endTime );
 
-  heli.setPlotStartEnd(timeWindow.startTime, timeWindow.endTime);
+  heli.config.fixedTimeScale = timeWindow;
+  heli.draw();
 }, timerInterval);
 
 let errorFn = function(error) {

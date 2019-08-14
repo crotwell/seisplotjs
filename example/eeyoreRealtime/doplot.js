@@ -10,6 +10,10 @@ let miniseed = seisplotjs.miniseed;
 const SeismographConfig = seisplotjs.seismographconfig.SeismographConfig;
 const Seismograph = seisplotjs.seismograph.Seismograph;
 
+seisplotjs.RSVP.on('error', function(reason) {
+  console.assert(false, reason);
+});
+
 let net = 'CO';
 let staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
 d3.select('#stationChoice')
@@ -131,7 +135,7 @@ let callbackFn = function(slPacket) {
     const newSeismogram = oldSeismogram.trim(littleBitLarger);
     if (newSeismogram) {
       oldSeismogramData.seismogram = newSeismogram;
-      allSeisPlots.get(codes).calcScaleDomain();
+      allSeisPlots.get(codes).calcAmpScaleDomain();
     } else {
       // trim removed all data, nothing left in window
       allSeismograms.delete(codes);
@@ -165,6 +169,7 @@ let callbackFn = function(slPacket) {
     plotDiv.style("height", "150px");
     let trace = new seisplotjs.seismogram.Seismogram(seismogram);
     let seisPlotConfig = new SeismographConfig();
+    seisPlotConfig.fixedTimeScale = timeWindow;
     seisPlotConfig.xSublabel = codes;
     seisPlotConfig.margin = margin ;
     seisPlotConfig.wheelZoom = false ;
@@ -175,7 +180,7 @@ let callbackFn = function(slPacket) {
       seisPlotConfig.doGain = false;
     }
     let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(trace);
-    let seisPlot = new Seismograph(plotDiv, seisPlotConfig, seisData, timeWindow.startTime, timeWindow.endTime);
+    let seisPlot = new Seismograph(plotDiv, seisPlotConfig, seisData);
     seisPlot.svg.classed('realtimePlot', true).classed('overlayPlot', false)
     seisPlot.draw();
     allSeisPlots.set(codes, seisPlot);
@@ -235,12 +240,18 @@ let timer = d3.interval(function(elapsed) {
   timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration, clockOffset);
   //console.log("reset time window for "+timeWindow.startTime+" "+timeWindow.endTime );
   window.requestAnimationFrame(timestamp => {
-    allSeisPlots.forEach(function(value, key) {
-        value.setPlotStartEnd(timeWindow.startTime, timeWindow.endTime);
-        value.draw();
-        //console.log(`${key} tw: ${value.xScale.domain()}  width: ${value.width}  xScale range: ${value.xScale.range()}`);
-    });
-    timerInProgress = false
+    try {
+      console.log(`animationFrame: ${timeWindow.endTime}`)
+      allSeisPlots.forEach(function(value, key) {
+          value.seismographConfig.fixedTimeScale = timeWindow;
+          value.calcTimeScaleDomain();
+          value.draw();
+          //console.log(`${key} tw: ${value.xScale.domain()}  width: ${value.width}  xScale range: ${value.xScale.range()}`);
+      });
+      timerInProgress = false;
+    } catch(err) {
+      console.assert(false, err);
+    }
   });
 
 }, timerInterval);

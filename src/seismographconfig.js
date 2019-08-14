@@ -56,6 +56,7 @@ export class SeismographConfig {
   doRMean: boolean;
   doGain: boolean;
   fixedYScale: null | Array<number>;
+  fixedTimeScale: null | StartEndDuration;
 
   constructor() {
     this.drawingType = DRAW_CANVAS;
@@ -75,6 +76,7 @@ export class SeismographConfig {
     this.doRMean = true;
     this.doGain = true;
     this.fixedYScale = null;
+    this.fixedTimeScale = null;
     this.doMarkers = true;
     this.markerTextOffset = .85;
     this.markerTextAngle = 45;

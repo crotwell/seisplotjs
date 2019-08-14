@@ -53,8 +53,6 @@ export class Seismograph {
   svgParent: any;
   seismographConfig: SeismographConfig;
   seisDataList: Array<SeismogramDisplayData>;
-  plotStartTime: moment;
-  plotEndTime: moment;
 
   width: number;
   height: number;
@@ -79,17 +77,14 @@ export class Seismograph {
   yScaleChangeListeners: Array<ScaleChangeListenerType>;
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
-              seisData: Array<SeismogramDisplayData> | Array<Seismogram> | SeismogramDisplayData | Seismogram,
-              plotStartTime?: moment,
-              plotEndTime?: moment) {
+              seisData: Array<SeismogramDisplayData> | Array<Seismogram> | SeismogramDisplayData | Seismogram) {
     if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
     this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
     this.seismographConfig = seismographConfig;
     this.seisDataList = [];
     this._internalAppend(seisData);
-    this.plotStartTime = plotStartTime;
-    this.plotEndTime = plotEndTime;
+
     this.width = 200;
     this.height = 100;
 
@@ -111,16 +106,9 @@ export class Seismograph {
     //this.svg.attr("preserveAspectRatio", "xMinYMin meet");
     //this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
     this.svg.attr("plotId", this.plotId);
-    if ( ! plotStartTime || ! plotEndTime) {
-      let st = findStartEnd(this.seisDataList);
-      plotStartTime = st.startTime;
-      plotEndTime = st.endTime;
-    }
 
-    this.xScale = d3.scaleUtc()
-      .domain([plotStartTime, plotEndTime]);
-    this.origXScale = this.xScale;
-    this.currZoomXScale = this.xScale;
+
+    this.calcTimeScaleDomain();
     this.yScale = d3.scaleLinear();
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.yScaleRmean = d3.scaleLinear();
@@ -162,7 +150,7 @@ export class Seismograph {
       z.on("wheel.zoom", null);
     }
 
-    this.calcScaleDomain();
+    this.calcAmpScaleDomain();
     //this.setWidthHeight(this.width, this.height);
 
     // create marker g
@@ -177,14 +165,10 @@ export class Seismograph {
   }
   static fromSeismograms(inSvgParent: any,
                 seismographConfig: SeismographConfig,
-                seismogramList: Array<Seismogram>,
-                plotStartTime?: moment,
-                plotEndTime?: moment) {
+                seismogramList: Array<Seismogram>) {
     return new Seismograph(inSvgParent,
                            seismographConfig,
-                           seismogramList.map(s => SeismogramDisplayData.fromSeismogram(s)),
-                           plotStartTime,
-                           plotEndTime);
+                           seismogramList.map(s => SeismogramDisplayData.fromSeismogram(s)));
   }
 
   checkResize(): boolean {
@@ -224,6 +208,7 @@ export class Seismograph {
       }
       this.sizeCanvas();
     }
+    this.calcTimeScaleDomain();
     this.drawSeismograms();
     this.drawAxis(this.g);
     this.drawAxisLabels();
@@ -360,7 +345,6 @@ export class Seismograph {
             firstTime = false;
           }
           for(let i=leftVisibleSample; i<rightVisibleSample && i<s.y.length; i++) {
-
             context.lineTo(startPixel+i*pixelsPerSample, this.yScale(s.y[i]));
           }
           if (! this.seismographConfig.connectSegments ){
@@ -774,27 +758,6 @@ export class Seismograph {
     }, 250);
   }
 
-  getPlotStart(): moment {
-    return moment.utc(this.xScale.domain()[0]);
-  }
-  setPlotStart(value: moment): Seismograph {
-    return this.setPlotStartEnd(value, this.xScale.domain()[1]);
-  }
-  getPlotEnd(): moment {
-    return moment.utc(this.xScale.domain()[1]);
-  }
-  setPlotEnd(value: moment): Seismograph {
-    return this.setPlotStartEnd(this.xScale.domain()[0], value);
-  }
-  setPlotStartEnd(startTime: moment, endTime: moment): Seismograph {
-    const plotStart = (startTime instanceof Date) ? startTime : moment.utc(startTime).toDate();
-    const plotEnd = (endTime instanceof Date) ? endTime : moment.utc(endTime).toDate();
-    this.xScale.domain([ plotStart, plotEnd ]);
-    if ( ! this.beforeFirstDraw) {
-      this.redrawWithXScale(this.xScale);
-    }
-    return this;
-  }
   setWidth(value: number): Seismograph {
     this.setWidthHeight(value, this.outerHeight);
     return this;
@@ -904,8 +867,21 @@ export class Seismograph {
     this.yAxisSensitivity = value;
     this.redoDisplayYScale();
   }
-
-  calcScaleDomain(): void {
+  calcTimeScaleDomain(): void {
+      let timeWindow;
+      if (this.seismographConfig.fixedTimeScale) {
+        timeWindow = this.seismographConfig.fixedTimeScale;
+      } else {
+        timeWindow = findStartEnd(this.seisDataList);
+      }
+      if ( ! isDef(this.xScale)) {
+        this.xScale = d3.scaleUtc();
+      }
+      this.xScale.domain([timeWindow.startTime.toDate(), timeWindow.endTime.toDate()]);
+      this.origXScale = this.xScale;
+      this.currZoomXScale = this.xScale;
+  }
+  calcAmpScaleDomain(): void {
     if (this.seismographConfig.fixedYScale) {
       this.yScale.domain(this.seismographConfig.fixedYScale);
     } else {
@@ -1002,7 +978,7 @@ export class Seismograph {
     } else {
       this._internalAppend(new SeismogramDisplayData.fromSeismogram(seismogram));
     }
-    this.calcScaleDomain();
+    this.calcAmpScaleDomain();
     if ( ! this.beforeFirstDraw) {
       // only trigger a draw if appending after already drawn on screen
       // otherwise, just append the data and wait for outside to call first draw()
@@ -1023,7 +999,7 @@ export class Seismograph {
         return d.startEndDur.overlaps(timeWindow);
       });
       if (this.seisDataList.length > 0) {
-        this.calcScaleDomain();
+        this.calcAmpScaleDomain();
         this.drawSeismograms();
       }
     }
