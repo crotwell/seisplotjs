@@ -193,6 +193,16 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /**
+   * Sets startTime and endTime using the given time window
+   * @param   se time window
+   * @return     this
+   */
+  timeWindow(se: StartEndDuration) {
+    this.startTime(se.startTime);
+    this.endTime(se.endTime);
+    return this;
+  }
   quality(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._quality = value;
@@ -258,12 +268,6 @@ export class DataSelectQuery {
     } else {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
-  }
-  computeStartEnd(startTime?: moment, endTime?: moment, duration?: number | null =null, clockOffset?: number =0): DataSelectQuery {
-    let se = new StartEndDuration(startTime, endTime, duration, clockOffset);
-    this.startTime(se.startTime);
-    this.endTime(se.endTime);
-    return this;
   }
 
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {

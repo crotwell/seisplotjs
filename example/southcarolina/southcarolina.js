@@ -43,13 +43,13 @@ if ("https:" == document.location.protocol) {
 }
 console.log("Protocol: "+protocol+"  host: "+quakehost);
 
+let quakeTimeWindow = new seisplotjs.util.StartEndDuration(null, moment.utc(), moment.duration(daysAgo, 'days'));
 let quakeQuery = new fdsnevent.EventQuery()
   .host(quakehost)
   .protocol(protocol)
   .minLat(minLat).maxLat(maxLat)
   .minLon(minLon).maxLon(maxLon)
-  .startTime(moment.utc().subtract(daysAgo, 'days'))
-  .endTime(moment.utc());
+  .timeWindow(quakeTimeWindow);
 d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
@@ -59,7 +59,8 @@ let stationQuery = new fdsnstation.StationQuery()
   .networkCode(netCode)
   .minLat(minLat).maxLat(maxLat)
   .minLon(minLon).maxLon(maxLon)
-  .channelCode(chanCode);
+  .channelCode(chanCode)
+  .timeWindow(quakeTimeWindow);
 d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Stations URL: "+stationQuery.formURL(fdsnstation.LEVEL_STATION));

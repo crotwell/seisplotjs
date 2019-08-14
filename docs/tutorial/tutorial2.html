@@ -21,8 +21,7 @@
       .stationCode('HODGE')
       .locationCode('00')
       .channelCode('LHZ')
-      .startTime(timeWindow.startTime)
-      .endTime(timeWindow.endTime);
+      .timeWindow(timeWindow);
       dsQuery.querySeismograms().then(seisMap => {
         // only plot the first seismogram
         let seismogram = seisMap.values().next().value;

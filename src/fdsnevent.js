@@ -2,7 +2,7 @@
 
 import { moment } from 'moment';
 import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml';
-import {XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import {XML_MIME, TEXT_MIME, StartEndDuration, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
 import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
@@ -203,6 +203,16 @@ export class EventQuery {
     } else {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
+  }
+  /**
+   * Sets startTime and endTime using the given time window
+   * @param   se time window
+   * @return     this
+   */
+  timeWindow(se: StartEndDuration) {
+    this.startTime(se.startTime);
+    this.endTime(se.endTime);
+    return this;
   }
   /** Get/Set the updatedafter query parameter.
   */

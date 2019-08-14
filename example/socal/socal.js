@@ -27,13 +27,13 @@ if ("https:" == document.location.protocol) {
   protocol = 'https:'
 }
 
+let quakeTimeWindow = new StartEndDuration(null, moment.utc(), moment.duration(daysAgo, 'days'));
 let quakeQuery = new fdsnevent.EventQuery()
   .protocol(protocol)
   .host(HOST)
   .minLat(32).maxLat(35)
   .minLon(-124).maxLon(-115)
-  .startTime(moment.utc().subtract(daysAgo, 'days'))
-  .endTime(moment.utc());
+  .timeWindow(quakeTimeWindow);
 d3.select("div.recentQuakesUrl")
     .append("p")
     .text("Quakes URL: "+quakeQuery.formURL());
@@ -43,7 +43,8 @@ let stationQuery = new fdsnstation.StationQuery()
   .host(HOST)
   .networkCode(netCode)
   .stationCode(staCodes)
-  .channelCode(chanCode);
+  .channelCode(chanCode)
+  .timeWindow(quakeTimeWindow);
 
 d3.select("div.recentQuakesUrl")
     .append("p")

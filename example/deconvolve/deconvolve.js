@@ -18,15 +18,14 @@ let doRunQuery = true;
 // doRunQuery = false;//for testing
 
 let eqTime = moment.utc('2019-07-04T17:33:49Z').add(330, 'seconds');
-let times = new seisplotjs.util.StartEndDuration(eqTime, null, 300, 0);
+let timeWindow = new seisplotjs.util.StartEndDuration(eqTime, null, 300, 0);
 let dsQuery = new ds.DataSelectQuery()
   .nodata(404)
   .networkCode('CO')
   .stationCode('JSC')
   .locationCode('00')
   .channelCode('HHZ')
-  .startTime(times.startTime)
-  .endTime(times.endTime);
+  .timeWindow(timeWindow);
 
 let responseQuery = new st.StationQuery()
   .nodata(404)
@@ -34,8 +33,7 @@ let responseQuery = new st.StationQuery()
   .stationCode('JSC')
   .locationCode('00')
   .channelCode('HHZ')
-  .startTime(times.startTime)
-  .endTime(times.endTime);
+  .timeWindow(timeWindow);
 
 let div = d3.select('div.miniseed');
 let divP = div.append('p');

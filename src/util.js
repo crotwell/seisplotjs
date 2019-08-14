@@ -102,19 +102,21 @@ export class StartEndDuration {
   _endTime: moment;
   _duration: moment.duration;
   _clockOffset: moment.duration;
-  constructor(startTime: moment | null, endTime: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
-
-    if (duration &&
-        (typeof duration === "string" || duration instanceof String)) {
-      if (duration.charAt(0) === 'P') {
+  constructor(startTime: moment | null, endTime: moment | null, duration: moment.duration | number | null =null, clockOffset?: number | null =0) {
+    if (duration) {
+      if ((typeof duration === "string" || duration instanceof String)) {
+        if (duration.charAt(0) === 'P') {
+          this._duration = moment.duration(duration);
+        } else {
+          this._duration = moment.duration(Number.parseFloat(duration), 'seconds');
+        }
+      } else if ((typeof duration === "number" || duration instanceof Number)) {
+        this._duration = moment.duration(duration, 'seconds');
+      } else if ((moment.isDuration(duration))) {
         this._duration = moment.duration(duration);
       } else {
-        this._duration = moment.duration(Number.parseFloat(duration), 'seconds');
+        throw new Error(`Unknown type for duration: ${typeof duration}  ${JSON.stringify(duration)}`);
       }
-    }
-    if (duration &&
-      (typeof duration === "number" || duration instanceof Number)) {
-      this._duration = moment.duration(duration, 'seconds');
     }
     if (startTime && endTime) {
       this._startTime = checkStringOrDate(startTime);

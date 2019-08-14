@@ -15,9 +15,9 @@
 
     <script src="seisplotjs_2.0.0-alpha.4_standalone.js"></script>
     <script>
+    let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
     let eventQuery = new seisplotjs.fdsnevent.EventQuery()
-      .startTime('2019-07-01')
-      .endTime('2019-07-31')
+      .timeWindow(queryTimeWindow)
       .minMag(7)
       .latitude(35).longitude(-118)
       .maxRadius(3);
@@ -26,8 +26,7 @@
       .stationCode('HODGE')
       .locationCode('00')
       .channelCode('LH?')
-      .startTime('2019-07-01')
-      .endTime('2019-07-31');
+      .timeWindow(queryTimeWindow);
     Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
     .then( ( [ quakeList, networks ] ) => {
         let allChannels = seisplotjs.stationxml.extractAllChannels(networks);

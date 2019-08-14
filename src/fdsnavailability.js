@@ -202,6 +202,16 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /**
+   * Sets startTime and endTime using the given time window
+   * @param   se time window
+   * @return     this
+   */
+  timeWindow(se: StartEndDuration) {
+    this.startTime(se.startTime);
+    this.endTime(se.endTime);
+    return this;
+  }
   quality(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._quality = value;
@@ -294,12 +304,6 @@ export class AvailabilityQuery {
     } else {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
-  }
-  computeStartEnd(startTime?: moment, endTime?: moment, duration?: number | null = null, clockOffset?: number =0): AvailabilityQuery {
-    let se = new StartEndDuration(startTime, endTime, duration, clockOffset);
-    this.startTime(se.startTime);
-    this.endTime(se.endTime);
-    return this;
   }
 
   query(): Promise<Array<SeismogramDisplayData>> {

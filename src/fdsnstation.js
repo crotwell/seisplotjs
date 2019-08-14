@@ -9,7 +9,7 @@ RSVP.on('error', function(reason) {
 import moment from 'moment';
 import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, AbstractFilterType, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
 import {createComplex} from './filter.js';
-import {XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import {XML_MIME, TEXT_MIME, StartEndDuration, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
 import {checkProtocol, toIsoWoZ, isObject, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
@@ -241,6 +241,16 @@ export class StationQuery {
     } else {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
+  }
+  /**
+   * Sets startTime and endTime using the given time window
+   * @param   se time window
+   * @return     this
+   */
+  timeWindow(se: StartEndDuration) {
+    this.startTime(se.startTime);
+    this.endTime(se.endTime);
+    return this;
   }
   /** Get/Set the startbefore query parameter.
   */
