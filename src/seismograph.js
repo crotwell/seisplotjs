@@ -1063,9 +1063,11 @@ export class Seismograph {
           }
         }
       }
-      if (didModify && ! this.beforeFirstDraw ) {
+      if (didModify) {
         this.redoDisplayYScale();
-        this.drawSeismograms();
+        if ( ! this.beforeFirstDraw ) {
+          this.drawSeismograms();
+        }
       }
     }
   }
