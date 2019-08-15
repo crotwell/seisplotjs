@@ -7,6 +7,7 @@ export function taper(seis: Seismogram, width: number = 0.05, taperType: string 
   }
   if (seis.isContiguous()) {
     let data = seis.y;
+    let outData = Float32Array.from(data);
     let w = Math.floor(data.length * width);
     let coeff = getCoefficients(taperType, w);
     const omega = coeff[0];
@@ -14,10 +15,10 @@ export function taper(seis: Seismogram, width: number = 0.05, taperType: string 
     const f1 = coeff[2];
     for(let i = 0; i < w; i++) {
       const taperFactor = (f0 - f1 * Math.cos(omega * i));
-      data[i] = data[i] * taperFactor;
-      data[data.length - i - 1] = data[data.length - i - 1] * taperFactor;
+      outData[i] = outData[i] * taperFactor;
+      outData[outData.length - i - 1] = outData[outData.length - i - 1] * taperFactor;
     }
-    return seis.cloneWithNewData(data);
+    return seis.cloneWithNewData(outData);
   } else {
     throw new Error("Cannot take taper of non-contiguous seismogram");
   }

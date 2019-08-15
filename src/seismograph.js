@@ -17,7 +17,7 @@ import {SeismographConfig,
         DRAW_SVG, DRAW_CANVAS, DRAW_BOTH, DRAW_BOTH_ALIGN} from './seismographconfig';
 import type { MarkerType } from './seismogram.js';
 import type { MarginType } from './seismographconfig';
-import {SeismogramDisplayData, findStartEnd, findMinMax,
+import {SeismogramDisplayData, findStartEnd, findMinMax, findMinMaxOverTimeRange,
         SeismogramSegment, Seismogram, ensureIsSeismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
@@ -588,7 +588,9 @@ export class Seismograph {
     let mythis = this;
     if (! this.beforeFirstDraw) {
       this.g.select("g.allsegments").selectAll("g.trace").remove();
-
+      if (this.seismographConfig.windowAmp) {
+        this.calcAmpScaleDomain();
+      }
       this.drawSeismograms();
       this.g.select("g.allmarkers").selectAll("g.marker")
             .attr("transform", function(marker: MarkerType) {
@@ -866,7 +868,13 @@ export class Seismograph {
     if (this.seismographConfig.fixedYScale) {
       this.yScale.domain(this.seismographConfig.fixedYScale);
     } else {
-      let minMax = findMinMax(this.seisDataList);
+      let minMax;
+      if (this.seismographConfig.windowAmp) {
+        let timeWindow = new StartEndDuration(this.currZoomXScale.domain()[0], this.currZoomXScale.domain()[1]);
+        minMax = findMinMaxOverTimeRange(this.seisDataList, timeWindow);
+      } else {
+        minMax = findMinMax(this.seisDataList);
+      }
       if (minMax[0] === minMax[1]) {
         // flatlined data, use -1, +1
         minMax = [ minMax[0]-1, minMax[1]+1];

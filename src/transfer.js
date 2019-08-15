@@ -50,20 +50,21 @@ export function transferSacPZSegment(seis: SeismogramSegment,
         const sampFreq = seis.sampleRate;
 
         let values = seis.y;
+        let outData = new Float32Array(values.length);
         /* sac premultiplies the data by the sample period before doing the fft. Later it
          * seems to be cancled out by premultiplying the pole zeros by a similar factor.
          * I don't understand why they do this, but am reproducing it in order to be
          * compatible.
          */
-        values = values.map(d => d/sampFreq);
+        outData = values.map(d => d/sampFreq);
 
-        let freqValues = calcDFT(values, values.length);
+        let freqValues = calcDFT(outData, outData.length);
         freqValues = combine(freqValues, sampFreq, sacPoleZero, lowCut, lowPass, highPass, highCut);
 
-        values = inverseDFT(freqValues, values.length);
+        outData = inverseDFT(freqValues, values.length);
         // a extra factor of nfft gets in somehow???
-        values = values.map(d => d * freqValues.length);
-        let out = seis.cloneWithNewData(values);
+        outData = outData.map(d => d * freqValues.length);
+        let out = seis.cloneWithNewData(outData);
         //out.y_unit = UNITS.METER;
         out.yUnit = 'm';
         return out;

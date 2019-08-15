@@ -786,7 +786,7 @@ export class StationQuery {
    * which are in Stations which are in Networks.
    * @returns a Promise to an Array of Network objects.
    */
-  queryResponse(): Promise<Array<Network>> {
+  queryResponses(): Promise<Array<Network>> {
     return this.query(LEVEL_RESPONSE);
   }
 

@@ -3,7 +3,6 @@
 import {Seismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
 import * as OregonDSPTop from 'oregondsp';
-import {meanOfSlice} from './util.js';
 
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 const CenteredHilbertTransform = OregonDSP.filter.fir.equiripple.CenteredHilbertTransform;
@@ -40,7 +39,7 @@ export function amplitude(real: number, imag: number) {
  */
 export function rMean(seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
-    let meanVal = mean(seis);
+    let meanVal = seis.mean();
     let rmeanSeismogram = new Seismogram(seis.segments.map(s =>{
         let demeanY = s.y.map(function(d) {
           return d-meanVal;
@@ -84,50 +83,6 @@ export type MinMaxMean = {
   mean: number;
 };
 
-/**
- * calculate the minimum, maximum and mean for a seismogram.
- * @param  {[type]} seis input seismogram
- * @return {[type]}      output object including min, max and mean
- * @deprecated see findMinMax in Seismogram
- */
-export function minMaxMean(seis: Seismogram): MinMaxMean {
-  let meanVal = 0;
-  let minVal = 9999999999;
-  let maxVal = -9999999999;
-  if (seis instanceof Seismogram) {
-    for (let s of seis.segments) {
-      minVal = s.y.reduce((acc, val) => {return Math.min(acc, val);}, minVal);
-      maxVal = s.y.reduce((acc, val) => {return Math.max(acc, val);}, maxVal);
-    }
-    meanVal = mean(seis);
-  } else {
-    throw new Error("seis not instance of Seismogram");
-  }
-  return {
-    min: minVal,
-    max: maxVal,
-    mean: meanVal
-  };
-}
-/**
- * calculates the mean of a seismogrma.
- * @param  {[type]} seis input seismogram
- * @return {[type]}      mean value
- */
-export function mean(seis: Seismogram): number {
-  if (seis instanceof Seismogram) {
-    let meanVal = 0;
-
-    let npts = seis.numPoints;
-    for (let s of seis.segments) {
-      meanVal += meanOfSlice(s.y, s.y.length)*s.numPoints;
-    }
-    meanVal = meanVal / npts;
-    return meanVal;
-  } else {
-    throw new Error("seis not instance of Seismogram "+(typeof seis)+" "+(seis.constructor.name));
-  }
-}
 
 /**
  * Creates a Butterworth IIR filter using the OregonDSP library.
@@ -201,9 +156,9 @@ export function createChebyshevII(numPoles: number,
 export function applyFilter(iirFilter: OregonDSP.filter.iir.IIRFilter, seis: Seismogram): Seismogram {
   let filteredSegments = [];
   for(let i=0; i<seis.segments.length; i++) {
-    let s = seis.segments[i].clone();
-    iirFilter.filterInPlace(s.y);
-    filteredSegments.push(s);
+    let outData = Float32Array.from(seis.segments[i].y);
+    iirFilter.filterInPlace(outData);
+    filteredSegments.push(seis.segments[i].cloneWithNewData(outData));
   }
   return new Seismogram(filteredSegments);
 }

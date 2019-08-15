@@ -6,7 +6,6 @@ import { Seismogram, SeismogramDisplayData } from './seismogram.js';
 import type { MarkerType } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
-import {minMaxMean, mean } from './filter.js';
 import {StartEndDuration, isDef} from './util.js';
 
 
@@ -36,9 +35,10 @@ export class Helicorder {
     if (seisData.seismogram) {
       let cutSeis = seisData.seismogram.cut(timeWindow);
       if (cutSeis) {
-        let minMax = minMaxMean(cutSeis);
-        let posOffset = minMax.max - minMax.mean;
-        let negOffset = minMax.mean = minMax.min;
+        let [min,max] = cutSeis.findMinMax();
+        let mean = cutSeis.mean();
+        let posOffset = max - mean;
+        let negOffset = mean = min;
         this.maxVariation = Math.max(posOffset, negOffset);
       }
     }
@@ -84,7 +84,7 @@ export class Helicorder {
         seisData.addQuake(this.seisData.quakeList);
         seisData.channel = this.seisData.channel;
         seisData.sensitivity = this.seisData.sensitivity;
-        lineMean = mean(lineCutSeis);
+        lineMean = lineCutSeis.mean();
         trimSeisDataList.push(seisData);
       }
       lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];

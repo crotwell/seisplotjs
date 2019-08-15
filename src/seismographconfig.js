@@ -55,6 +55,7 @@ export class SeismographConfig {
   wheelZoom: boolean;
   doRMean: boolean;
   doGain: boolean;
+  windowAmp: boolean;
   fixedYScale: null | Array<number>;
   fixedTimeScale: null | StartEndDuration;
 
@@ -75,6 +76,7 @@ export class SeismographConfig {
     this.ySublabelIsUnits = true;
     this.doRMean = true;
     this.doGain = true;
+    this.windowAmp = true;
     this.fixedYScale = null;
     this.fixedTimeScale = null;
     this.doMarkers = true;

@@ -183,7 +183,7 @@ export class SeismogramSegment {
       minAmp = minMaxAccumulator[0];
       maxAmp = minMaxAccumulator[1];
     }
-    let yData = ((this.y: any): Array<number>); // for flow
+    let yData = this.y;
     for (let n = 0; n < yData.length; n++) {
       if (minAmp > yData[n]) {
         minAmp = yData[n];
@@ -696,6 +696,32 @@ export function findMinMax(sddList: Array<SeismogramDisplayData>): Array<number>
   });
   let max = sddList.map(sdd => {
     return sdd.max;
+  }).reduce(function (p, v) {
+    return ( p > v ? p : v );
+  });
+  return [min, max];
+}
+
+const initial_minAmp = Number.MAX_SAFE_INTEGER;
+const initial_maxAmp = -1 * (initial_minAmp);
+
+export function findMinMaxOverTimeRange(sddList: Array<SeismogramDisplayData>, timeWindow: StartEndDuration): Array<number> {
+  let minMaxArr = sddList.map(sdd => {
+      if (sdd.seismogram) {
+        const cutSeis = sdd.seismogram.cut(timeWindow);
+        if (cutSeis) {
+          return cutSeis.findMinMax();
+        }
+      }
+      return [initial_minAmp,initial_maxAmp];
+    });
+  let min = minMaxArr.map(mm => {
+    return mm[0];
+  }).reduce(function (p, v) {
+    return ( p < v ? p : v );
+  });
+  let max = minMaxArr.map(mm => {
+    return mm[1];
   }).reduce(function (p, v) {
     return ( p > v ? p : v );
   });
