@@ -38,7 +38,8 @@
             keep things simple and just ask for <em>P</em> and <em>S</em> phases.
             Again, this is a remote service, therefore asynchronous, and we
             will need to
-            use promises again. We put an additional <code>then()</code> call
+            use promises again. We put an additional
+            <code class="language-javascript">then()</code> call
             after we get the quake and station but before we ask for the
             seismograms. This allows us to use the predicted travel times to
             pick the time window starting 30 seconds prior to the first P
@@ -56,71 +57,80 @@
           </code></pre>
           <p>
             Now in the third then, we can use add the travel time to the
-            origin time to get a start for our request. One important thing
+            origin time to get a start for our request.
+            The little flags for phase arrivals are <code>Marker</code> objects
+            and we put them and the quake into our
+            <code class="language-javascript">SeismogramDisplayData</code> objects.
+            One important thing
             to keep in mind with time is that the moment objects from the
             <a href="https://momentjs.com/docs/">momentjs</a> library that we
             use are mutible, and so you should always create a copy before
-            modifying like <code>moment.utc(quakeList[0].time)</code> as
-            otherwise you will change the origin time of the quake.
+            modifying like <code class="language-javascript">seisplotjs.moment.utc(quakeList[0].time)</code> as
+            otherwise you will change the origin time of the quake. The
+            <code class="language-javascript">postQuerySeismograms()</code>
+            will parse the miniseed in the response and then create seismograms
+            within each
+            <code class="language-javascript">SeismogramDisplayData</code> object,
+            making it easy to associate the new waveform with the request time
+            window, channel, and quake.
           </p>
           <pre><code class="language-javascript">
-          }).then( ( [ quakeList, networks, ttimes ] ) => {
-            let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
-            let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
-            let startTime = seisplotjs.moment.utc(quakeList[0].time)
-              .add(firstP.time, 'seconds')
-              .subtract(30, 'seconds');
-            let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 1800);
-            let chanTRList = allChannels.map(c => {
-              return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
-            });
-            let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-            return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
-
+        }).then( ( [ quakeList, networks, ttimes ] ) => {
+          let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
+          phaseMarkers.push({
+            markertype: 'predicted',
+            name: "origin",
+            time: seisplotjs.moment.utc(quakeList[0].time)
+          });
+          let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
+          let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
+          let startTime = seisplotjs.moment.utc(quakeList[0].time)
+            .add(firstP.time, 'seconds').subtract(30, 'seconds');
+          let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 1800);
+          let chanTRList = allChannels.map(c => {
+            let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
+            sdd.addQuake(quakeList);
+            sdd.addMarkers(phaseMarkers);
+            return sdd;
+          });
+          let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+          return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
           </code></pre>
           <p>
-            Now that we have travel times and seismograms, we can plot both. The
-            little flags for phase arrivals are <code>Marker</code> objects.
-            We also link the seismographs so that they keep aligned in time
-            and amplitude. This is available as <a href="tutorial4.html">tutorial4</a>.
+            Now that we have travel times and seismograms, we can plot both.
+            We also link the seismographs so that they keep aligned with
+            each other in time
+            and amplitude.
           </p>
           <pre><code class="language-javascript">
-          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
-            let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
-            phaseMarkers.push({
-              markertype: 'predicted',
-              name: "origin",
-              time: seisplotjs.moment.utc(quakeList[0].time)
-            });
-            let div = seisplotjs.d3.select('div#myseismograph');
-            let graphList = [];
-            for( let sdd of seismogramDataList) {
-              sdd.addQuake(quakeList);
-              sdd.addMarkers(phaseMarkers);
-              let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-              seisConfig.title = sdd.channel.codes();
-              seisConfig.wheelZoom = false;
-              seisConfig.doGain = true;
-              let subdiv = div.append('div').classed('seismograph', true);
-              let graph = new seisplotjs.seismograph.Seismograph(subdiv,
-                                                                 seisConfig,
-                                                                 sdd);
-              graphList.forEach(g => graph.linkXScaleTo(g));
-              graphList.forEach(g => graph.linkYScaleTo(g));
-              graphList.push(graph);
-              graph.draw();
-            }
-            seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
-            seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
-          }).catch( function(error) {
-            seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
-            console.assert(false, error);
-          });
+        }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+          let div = seisplotjs.d3.select('div#myseismograph');
+          let graphList = [];
+          for( let sdd of seismogramDataList) {
+            let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+            seisConfig.title = sdd.channel.codes();
+            seisConfig.wheelZoom = false;
+            seisConfig.doGain = true;
+            let subdiv = div.append('div').classed('seismograph', true);
+            let graph = new seisplotjs.seismograph.Seismograph(subdiv,
+                                                               seisConfig,
+                                                               sdd);
+            graphList.forEach(g => graph.linkXScaleTo(g));
+            graphList.forEach(g => graph.linkYScaleTo(g));
+            graphList.push(graph);
+            graph.draw();
+          }
+          seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
+          seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
+        }).catch( function(error) {
+          seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+          console.assert(false, error);
+        });
           </code></pre>
 
           <p>See it live in <a href="tutorial4.html">tutorial4.html</a>.</p>
           <p>Previous: <a href="quakesandchannels.html">Quakes and Channels</a></p>
-          <p>Next: <a href="tutorial_template.html">template</a></p>
+          <p>Next: <a href="5_filter.html">Deconvolution and Filtering</a></p>
 
 
         </div>

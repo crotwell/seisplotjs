@@ -1,0 +1,120 @@
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>seisplotjs.fdsnstation 2.0.0-alpha.4 | Documentation</title>
+    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link href='../api/assets/bass.css' rel='stylesheet'>
+    <link href='../api/assets/split.css' rel='stylesheet'>
+    <link href="../prism.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
+        <div class='py1 px2'>
+          <div id='toc'>
+            <ul class='list-reset h5 py1-ul'>
+              <li><a href="../api/index.html" class="">API JS Docs</a></li>
+              <li><a href="../examples/index.html" class="">Examples</a></li>
+              <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+              <section class='p2 mb2 clearfix bg-white minishadow'>
+        <div class='clearfix'>
+
+          <h1>Seisplotjs Tutorial</h1>
+
+          <h3>Filtering</h3>
+
+          <p>Maybe we would like to see the body waves more clearly and filter out
+            the surface waves. And instead of the raw velocity data, lets
+            apply the full instrument response to correct to displacement.
+            First, lets switch from the LH? channels, recorded
+            at one sample per second, to the HH? channels, recorded at 100 sps
+            to give us a wider frequency band to play with. Since we will need
+            the response information as well, we will need to change from
+            using <code class="language-javascript">queryChannels()</code>
+            to <code class="language-javascript">queryResponses()</code>
+            in the <code class="language-javascript">stationQuery</code>. This
+            will return stationXML with the full response filled in for each
+            channel.
+          </p>
+          <pre><code class="language-javascript">
+            let stationQuery = new seisplotjs.fdsnstation.StationQuery()
+              .networkCode('CO')
+              .stationCode('HODGE')
+              .locationCode('00')
+              .channelCode('HH?')
+              .timeWindow(queryTimeWindow);
+            Promise.all( [ eventQuery.query(), stationQuery.queryResponses() ] )
+          </code></pre>
+          <p>
+            Of course 100 sps means that we will have 100 times as many samples, so
+            lets reduce the time window to just the region where the P and S
+            arrivals are, say 300 seconds instead of 1800.
+          </p>
+          <pre><code class="language-javascript">
+          let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 300);
+          </code></pre>
+          <p>
+            Now we insert the filtering code after the seismograms have arrived
+            but before we plot them. We will insert another
+            <code class="language-javascript">then()</code> call even though
+            we could just add to the existing one. We create a butterworth
+            filter using the sampling rate of the seismogram, with a passband
+            of 1 to 10 Hz. Removing the mean is usually a good idea, then
+            we apply the filter. Tapering is important before a deconvolution
+            and then we <code class="language-javascript">transfer</code>
+            the instrument response for the channel.
+          </p>
+          <pre><code class="language-javascript">
+        }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+          seismogramDataList.forEach(sdd => {
+            let butterworth = seisplotjs.filter.createButterworth(
+                                   2, // poles
+                                   seisplotjs.filter.BAND_PASS,
+                                   1, // low corner
+                                   10, // high corner
+                                   1/sdd.seismogram.sampleRate // delta (period)
+                          );
+            let rmeanSeis = seisplotjs.filter.rMean(sdd.seismogram);
+            let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
+            let taperSeis = seisplotjs.taper.taper(filteredSeis);
+            taperSeis = seisplotjs.filter.rMean(taperSeis);
+            let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
+                sdd.channel.response, .01, .02, 25, 50);
+            sdd.seismogram = correctedSeis;
+          });
+          return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
+          </code></pre>
+          <p>
+            Lastly, just to make sure we don't correct the data twice, we
+            disable the gain correction.
+          </p>
+          <pre><code class="language-javascript">
+            seisConfig.doGain = false;
+          </code></pre>
+
+          <p>See it live in <a href="tutorial5.html">tutorial5.html</a>.</p>
+          <p>Previous:  <a href="arrivaltimes.html">Predicted phase arrival times</a></p>
+          <p>Next: </p>
+
+
+        </div>
+      </div>
+    </div>
+
+    <script src="../prism.js"></script>
+    <script>
+      Prism.plugins.NormalizeWhitespace.setDefaults({
+      	'remove-trailing': true,
+      	'remove-indent': false,
+      	'left-trim': true,
+      	'right-trim': true
+      });
+    </script>
+  </body>
+</html>

@@ -25,9 +25,9 @@
       .networkCode('CO')
       .stationCode('HODGE')
       .locationCode('00')
-      .channelCode('LH?')
+      .channelCode('HH?')
       .timeWindow(queryTimeWindow);
-    Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
+    Promise.all( [ eventQuery.query(), stationQuery.queryResponses() ] )
       .then( ( [ quakeList, networks ] ) => {
         let taupQuery = new seisplotjs.traveltime.TraveltimeQuery()
           .latLonFromStation(networks[0].stations[0])
@@ -45,7 +45,7 @@
         let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
         let startTime = seisplotjs.moment.utc(quakeList[0].time)
           .add(firstP.time, 'seconds').subtract(30, 'seconds');
-        let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 1800);
+        let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 300);
         let chanTRList = allChannels.map(c => {
           let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
           sdd.addQuake(quakeList);
@@ -55,13 +55,32 @@
         let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
         return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
       }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+        seismogramDataList.forEach(sdd => {
+          let butterworth = seisplotjs.filter.createButterworth(
+                                 2, // poles
+                                 seisplotjs.filter.BAND_PASS,
+                                 1, // low corner
+                                 10, // high corner
+                                 1/sdd.seismogram.sampleRate // delta (period)
+                        );
+          let rmeanSeis = seisplotjs.filter.rMean(sdd.seismogram);
+          let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
+          let taperSeis = seisplotjs.taper.taper(filteredSeis);
+          taperSeis = seisplotjs.filter.rMean(taperSeis);
+          let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
+              sdd.channel.response, .01, .02, 25, 50);
+          sdd.seismogram = correctedSeis;
+        });
+        return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
+      }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
         let div = seisplotjs.d3.select('div#myseismograph');
         let graphList = [];
         for( let sdd of seismogramDataList) {
           let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
           seisConfig.title = sdd.channel.codes();
           seisConfig.wheelZoom = false;
-          seisConfig.doGain = true;
+          seisConfig.doGain = false;
+          seisConfig.doRMean = false;
           let subdiv = div.append('div').classed('seismograph', true);
           let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                              seisConfig,
