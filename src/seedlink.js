@@ -84,8 +84,8 @@ export class SeedlinkConnection {
           that.webSocket.send('END\r');
           return val;
         }, function(err) {
-          if (this.errorFn) {
-            this.errorFn(err);
+          if (that.errorFn) {
+            that.errorFn(err);
           } else {
             console.assert(false, err);
           }
@@ -93,20 +93,20 @@ export class SeedlinkConnection {
         });
       };
       this.webSocket.onerror = function(err) {
-        if (this.errorFn) {
-          this.errorFn(err);
+        if (that.errorFn) {
+          that.errorFn(err);
         } else {
           console.assert(false, err);
         }
       };
       this.webSocket.onclose = function(closeEvent) {
-        if (this.closeFn) {
-          this.closeFn(closeEvent);
+        if (that.closeFn) {
+          that.closeFn(closeEvent);
         } else {
           console.log(`Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
         }
-        if (this.webSocket) {
-          this.webSocket = null;
+        if (that.webSocket) {
+          that.webSocket = null;
         }
       };
     } catch(err) {
