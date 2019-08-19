@@ -32,7 +32,7 @@ export class SeedlinkConnection {
   receiveMiniseedFn: (packet: SequencedDataRecord) => void;
   errorFn: (error: Error) => void;
   closeFn: null | (close: CloseEvent) => void;
-  webSocket: WebSocket;
+  webSocket: null | WebSocket;
   command: string;
   /** creates a seedlink websocket connection to the given url.
     * requestConfig is an array of seedlink commands
@@ -66,22 +66,23 @@ export class SeedlinkConnection {
   connect() {
     if (this.webSocket) {this.webSocket.close();}
     try {
-      this.webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
-      this.webSocket.binaryType = 'arraybuffer';
+      const webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
+      this.webSocket = webSocket
+      webSocket.binaryType = 'arraybuffer';
       const that = this;
-      this.webSocket.onopen = function() {
-        that.sendHello(that.webSocket)
+      webSocket.onopen = function() {
+        that.sendHello(webSocket)
         .then(function() {
-          return that.sendCmdArray(that.webSocket, that.requestConfig);
+          return that.sendCmdArray(webSocket, that.requestConfig);
         })
         .then(function() {
-          return that.sendCmdArray(that.webSocket, [ that.command ]);
+          return that.sendCmdArray(webSocket, [ that.command ]);
         })
         .then(function(val) {
-          that.webSocket.onmessage = function(event) {
+          webSocket.onmessage = function(event) {
             that.handle(event);
           };
-          that.webSocket.send('END\r');
+          webSocket.send('END\r');
           return val;
         }, function(err) {
           if (that.errorFn) {
@@ -92,14 +93,14 @@ export class SeedlinkConnection {
           that.close();
         });
       };
-      this.webSocket.onerror = function(err) {
+      webSocket.onerror = function(err) {
         if (that.errorFn) {
           that.errorFn(err);
         } else {
           console.assert(false, err);
         }
       };
-      this.webSocket.onclose = function(closeEvent) {
+      webSocket.onclose = function(closeEvent) {
         if (that.closeFn) {
           that.closeFn(closeEvent);
         } else {
