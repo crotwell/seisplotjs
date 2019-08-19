@@ -42,6 +42,7 @@ export class DataLinkConnection {
   mode: string | null;
   packetHandler: (packet: DataLinkPacket) => void;
   errorHandler: (error: Error) => void;
+  closeHandler: null | (close: CloseEvent) => void;
   serverId: string | null;
   clientIdNum: number;
   username: string;
@@ -53,6 +54,7 @@ export class DataLinkConnection {
     this.mode = QUERY_MODE;
     this.packetHandler = packetHandler;
     this.errorHandler = errorHandler;
+    this.closeHandler = null;
     this.serverId = null;
     // meant to be processId, so use 1 <= num <= 2^15 to be safe
     this.clientIdNum = Math.floor(Math.random() * MAX_PROC_NUM)+1;
@@ -61,10 +63,14 @@ export class DataLinkConnection {
     this.responseReject = null;
   }
 
-/** creates the websocket connection and sends the client
-*  ID. Returns a Promise that resolves to the server's
-* ID.
-*/
+  setOnClose(closeHandler: (close: CloseEvent) => void) {
+    this.closeHandler = closeHandler;
+  }
+
+  /** creates the websocket connection and sends the client
+  *  ID. Returns a Promise that resolves to the server's
+  * ID.
+  */
   connect() {
     const that = this;
     return new RSVP.Promise(function(resolve, reject) {
@@ -78,9 +84,14 @@ export class DataLinkConnection {
         that.handleError(new Error(""+stringify(event)));
         reject(event);
       };
-      webSocket.onclose = function() {
+      webSocket.onclose = function(closeEvent) {
         that.webSocket = null; // clean up
-        this.mode = QUERY_MODE;
+        that.mode = QUERY_MODE;
+        if (that.closeHandler) {
+          that.closeHandler(closeEvent);
+        } else {
+          console.log(`Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
+        }
       };
       webSocket.onopen = function() {
         resolve(that);
