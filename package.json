@@ -28,7 +28,7 @@
     "build:clean": "rimraf dist",
     "compile": "npm run build:clean && npm run rollup && npm run flow-copy && npm run standalone",
     "standalone": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ]",
-    "doc": "npm run apidoc && cp node_modules/prismjs/prism.js node_modules/prismjs/themes/prism.css docs/.",
+    "doc": "npm run apidoc",
     "apidoc": "./createApiDocs.sh",
     "prepare": "npm run compile",
     "version": "npm run compile && npm run standalone",
