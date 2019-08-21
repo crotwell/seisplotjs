@@ -124,6 +124,7 @@ fi
 # copy assets
 if [[ 'html' == "$format"  ]]
 then
+  rm -rf docs/api/assets
   mv docs/api/helicorder/assets docs/api/.
   for f in src/*
   do
