@@ -327,6 +327,10 @@ export class DataLinkConnection {
 
 /**
  * Represents a Datalink packet from the ringserver.
+ * Note this cannot connect directly to a native TCP socket, instead it
+ * sends the datalink protocol over a websocket. Currently only the IRIS
+ * ringserver supports websockets, but it may be possible to use thrid party
+ * tools to proxy the websocket to a TCP datalink socket.
  *
  */
 export class DataLinkPacket {
@@ -338,7 +342,7 @@ export class DataLinkPacket {
   hppacketstart: string;
   hppacketend: string;
   dataSize: number;
-  miniseed: miniseed.DataRecord;
+  _miniseed: null | miniseed.DataRecord;
   constructor(header: string, dataview: DataView) {
     this.header = header;
     this.data = dataview;
@@ -351,9 +355,6 @@ export class DataLinkPacket {
     this.dataSize = Number.parseInt(split[6]);
     if (dataview.byteLength < this.dataSize) {
       throw new Error("not enough bytes in dataview for packet: "+this.dataSize);
-    }
-    if (this.streamId.endsWith(MSEED_TYPE)) {
-      this.miniseed = miniseed.parseSingleDataRecord(dataview);
     }
   }
   /**
@@ -377,7 +378,20 @@ export class DataLinkPacket {
   get packetTime(): moment {
     return hpTimeToMoment(parseInt(this.hppackettime));
   }
-
+  /**
+   * Parsed payload as a miniseed data record, if the streamid
+   * ends with '/MSEED', null otherwise.
+   */
+  get miniseed() {
+    if ( !this._miniseed ) {
+      if (this.streamId.endsWith(MSEED_TYPE)) {
+        this._miniseed = miniseed.parseSingleDataRecord(this.data);
+      } else {
+        this._miniseed = null;
+      }
+    }
+    return this._miniseed;
+  }
 }
 
 /**

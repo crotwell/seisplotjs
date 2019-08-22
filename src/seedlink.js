@@ -26,25 +26,32 @@ export type SequencedDataRecord = {
   miniseed: miniseed.DataRecord
 };
 
+/**
+  * A seedlink websocket connection to the given url.
+  * The connection is not made until the connect() method is called.
+  * Note this cannot connect directly to a native TCP socket, instead it
+  * sends the seedlink protocol over a websocket. Currently only the IRIS
+  * ringserver supports websockets, but it may be possible to use thrid party
+  * tools to proxy the websocket to a TCP seedlink socket.
+  * @param url websocket URL to connect to
+  * @param requestConfig an array of seedlink commands
+  * like:<pre><code>
+  *   [ 'STATION JSC CO',
+  *     'SELECT 00BHZ.D' ]
+  *     </pre></code>
+  * @param receiveMiniseedFn the callback function that
+  * will be invoked for each seedlink packet received
+  * which contains 'sequence', a sequence number
+  * and 'miniseed', a single miniseed record.
+  */
 export class SeedlinkConnection {
   url: string;
   requestConfig: Array<string>;
   receiveMiniseedFn: (packet: SequencedDataRecord) => void;
   errorFn: (error: Error) => void;
   closeFn: null | (close: CloseEvent) => void;
-  webSocket: null | WebSocket;
+  webSocket: null| WebSocket;
   command: string;
-  /** creates a seedlink websocket connection to the given url.
-    * requestConfig is an array of seedlink commands
-    * like:
-    *   [ 'STATION JSC CO',
-    *     'SELECT 00BHZ.D' ]
-    * and receiveMiniseedFn is the callback function that
-    * will be invoked for each seedlink packet received
-    * which contains 'sequence', a sequence number
-    * and 'miniseed', a single miniseed record.
-    * The connection is not made until the connect() method is called.
-    */
   constructor(url: string, requestConfig: Array<string>, receiveMiniseedFn: (packet: SequencedDataRecord) => void, errorFn: (error: Error) => void) {
     this.url = url;
     this.requestConfig = requestConfig;
@@ -64,19 +71,22 @@ export class SeedlinkConnection {
   }
 
   connect() {
-    if (this.webSocket) {this.webSocket.close();}
+    if (this.webSocket) {
+      this.webSocket.close();
+      this.webSocket = null;
+    }
     try {
       const webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
       this.webSocket = webSocket
       webSocket.binaryType = 'arraybuffer';
       const that = this;
       webSocket.onopen = function() {
-        that.sendHello(webSocket)
+        that.sendHello()
         .then(function() {
-          return that.sendCmdArray(webSocket, that.requestConfig);
+          return that.sendCmdArray(that.requestConfig);
         })
         .then(function() {
-          return that.sendCmdArray(webSocket, [ that.command ]);
+          return that.sendCmdArray([ that.command ]);
         })
         .then(function(val) {
           webSocket.onmessage = function(event) {
@@ -139,7 +149,6 @@ export class SeedlinkConnection {
     //for flow
     const data = ((event.data: any): ArrayBuffer);
     try {
-       // let arrBuf = new ArrayBuffer(event.data);
         if (data.byteLength < 64) {
           this.errorFn(new Error("message too small to be miniseed: "+data.byteLength +" "+dataViewToString(new DataView(data))));
           return;
@@ -167,47 +176,78 @@ export class SeedlinkConnection {
         this.close();
      }
   }
+  isConnected(): boolean  {
+    return this.webSocket !== null;
+  }
 
-  sendHello(webSocket: WebSocket): Promise<string> {
-  let promise = new RSVP.Promise(function(resolve, reject) {
-    webSocket.onmessage = function(event) {
-      //for flow
-      const data = ((event.data: any): ArrayBuffer);
-      let replyMsg = dataViewToString(new DataView(data));
-      let lines = replyMsg.trim().split('\r');
-      if (lines.length === 2) {
-        resolve(lines);
+  /**
+   * Sends initial HELLO to server and waits for response.
+   * @return {[type]}           Promise that resolves to the response from the server.
+   */
+  sendHello(): Promise<string> {
+    let that = this;
+    let webSocket = this.webSocket;
+    let promise = new RSVP.Promise(function(resolve, reject) {
+      if (webSocket) {
+        webSocket.onmessage = function(event) {
+          //for flow
+          const data = ((event.data: any): ArrayBuffer);
+          let replyMsg = dataViewToString(new DataView(data));
+          let lines = replyMsg.trim().split('\r');
+          if (lines.length === 2) {
+            resolve(lines);
+          } else {
+            reject("not 2 lines: "+replyMsg);
+          }
+        };
+        webSocket.send("HELLO\r");
       } else {
-        reject("not 2 lines: "+replyMsg);
+        reject("webSocket has been closed");
       }
-    };
-    webSocket.send("HELLO\r");
-  });
-  return promise;
-}
+    });
+    return promise;
+  }
 
-  sendCmdArray(webSocket: WebSocket, cmd: Array<string>): Promise<string> {
+  /**
+   * Sends an array of commands, each as a Promise waiting for the 'OK' response
+   * before sending the next.
+   * @param  {[type]} cmd array of commands to send
+   * @return {[type]}     Promise that resolves to the 'OK' returned by the last
+   *   command if successful, or rejects on the first failure.
+   */
+  sendCmdArray(cmd: Array<string>): Promise<string> {
     let that = this;
     return cmd.reduce(function(accum: Promise<string>, next: string) {
       return accum.then(function() {
-        return that.createCmdPromise(webSocket, next);
+        return that.createCmdPromise(next);
       });
     }, RSVP.resolve());
   }
 
-  createCmdPromise(webSocket: WebSocket, mycmd: string): Promise<string> {
+  /**
+   * creates a Promise that sends a command and waits resolved with the result.
+   * @param  {[type]} mycmd command string to send.
+   * @return {[type]}       Promise that resolves to the reply from the server.
+   */
+  createCmdPromise(mycmd: string): Promise<string> {
+    let that = this;
+    let webSocket = this.webSocket;
     let promise = new RSVP.Promise(function(resolve, reject) {
-      webSocket.onmessage = function(event) {
-        //for flow
-        const data = ((event.data: any): ArrayBuffer);
-        let replyMsg = dataViewToString(new DataView(data)).trim();
-        if (replyMsg === 'OK') {
-          resolve(replyMsg);
-        } else {
-          reject("msg not OK: "+replyMsg);
-        }
-      };
-      webSocket.send(mycmd+'\r\n');
+      if (webSocket) {
+        webSocket.onmessage = function(event) {
+          //for flow
+          const data = ((event.data: any): ArrayBuffer);
+          let replyMsg = dataViewToString(new DataView(data)).trim();
+          if (replyMsg === 'OK') {
+            resolve(replyMsg);
+          } else {
+            reject("msg not OK: "+replyMsg);
+          }
+        };
+        webSocket.send(mycmd+'\r\n');
+      } else {
+        reject("webSocket has been closed");
+      }
     });
     return promise;
   }
