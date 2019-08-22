@@ -92,8 +92,8 @@
           graphList.push(graph);
           graph.draw();
         }
-        seisplotjs.d3.select('h3').select('span#stationCode').text(networks[0].stations[0].codes());
-        seisplotjs.d3.select('h3').select('span#earthquakeDescription').text(quakeList[0].description);
+        seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
+        seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
       }).catch( function(error) {
         seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
         console.assert(false, error);
