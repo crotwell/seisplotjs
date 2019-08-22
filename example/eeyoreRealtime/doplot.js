@@ -66,6 +66,8 @@ let paused = false;
 let stopped = false;
 let numSteps = 0;
 
+let dataBuffer = [];
+
 d3.select("button#load").on("click", function(d) {
   let selectEl = document.getElementById("stationChoice");
   let selectedIndex = selectEl.selectedIndex;
@@ -109,6 +111,7 @@ doplot = function(sta) {
     try {
       callbackFn(slp);
     } catch(err) {
+      console.assert(false, err);
       console.error(err);
     }
   }, errorFn);
@@ -123,6 +126,15 @@ doplot = function(sta) {
 
 
 let callbackFn = function(slPacket) {
+  dataBuffer.push(slPacket);
+  setTimeout(processDataBuffer, 0);
+}
+let processDataBuffer = function() {
+  let dataBufCopy = dataBuffer;
+  dataBuffer = [];
+  dataBufCopy.forEach(slp => processPacket(slp));
+}
+let processPacket = function(slPacket) {
   let codes = slPacket.miniseed.codes();
   //console.log("seedlink: seq="+slPacket.sequence+" "+codes);
   let seismogram = miniseed.createSeismogramSegment([slPacket.miniseed]);
@@ -197,8 +209,6 @@ d3.select("button#disconnect").on("click", function(d) {
 });
 
 let doPause = function(value) {
-  console.log("Pause..."+paused+" -> "+value);
-  errorFn(`Pause...${paused} -> ${value}`)
   paused = value;
   if (paused) {
     d3.select("button#pause").text("Play");
@@ -208,8 +218,6 @@ let doPause = function(value) {
 }
 
 let doDisconnect = function(value) {
-  console.log("disconnect..."+stopped+" -> "+value);
-  errorFn(`disconnect...${stopped} -> ${value}`)
   stopped = value;
   if (stopped) {
     if (slConn) {slConn.close();}
@@ -241,7 +249,6 @@ let timer = d3.interval(function(elapsed) {
   //console.log("reset time window for "+timeWindow.startTime+" "+timeWindow.endTime );
   window.requestAnimationFrame(timestamp => {
     try {
-      console.log(`animationFrame: ${timeWindow.endTime}`)
       allSeisPlots.forEach(function(value, key) {
           value.seismographConfig.fixedTimeScale = timeWindow;
           value.calcTimeScaleDomain();
