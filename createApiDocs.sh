@@ -63,8 +63,37 @@ then
 # top of index.html
 cat > docs/api/index.html <<EOF
 <html>
+  <head>
+    <meta charset='utf-8'>
+    <title>Seisplotjs 2.0 API Documentation</title>
+    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link href='../api/assets/bass.css' rel='stylesheet'>
+    <link href='../api/assets/split.css' rel='stylesheet'>
+  </head>
   <body>
-    <ul>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
+        <div class='py1 px2'>
+          <div id='toc'>
+            <ul class='list-reset h5 py1-ul'>
+              <li><a href="../api/index.html" class="">API JS Docs</a></li>
+              <li><a href="../examples/index.html" class="">Examples</a></li>
+              <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+              <section class='p2 mb2 clearfix bg-white minishadow'>
+        <div class='clearfix'>
+
+          <h3>Seisplotjs API Documentation</h3>
+          <p>Seisplotjs is a collection of javascript routines for requesting,
+            manipulating and plotting seismic data. It is divided into submodules,
+            which are listed below.
+          </p>
+          <ul>
 EOF
 fi
 
@@ -80,7 +109,7 @@ do
       descText="${!descVarName}"
       descArg='--project-description'
     fi
-    if [ 'index' != $jsfile ]
+    if [ 'index' != "$jsfile" ]
     then
       echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
       npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
@@ -115,7 +144,10 @@ if [[ 'html' == "$format" ]]
 then
 # bottom of index.html
 cat >> docs/api/index.html <<EOF
-  </ul>
+          </ul>
+        </div>
+      </div>
+    </div>
 </body>
 </html>
 EOF
