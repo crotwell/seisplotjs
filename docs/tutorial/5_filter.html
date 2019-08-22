@@ -71,24 +71,24 @@
             the instrument response for the channel.
           </p>
           <pre><code class="language-javascript">
-        }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
-          seismogramDataList.forEach(sdd => {
-            let butterworth = seisplotjs.filter.createButterworth(
-                                   2, // poles
-                                   seisplotjs.filter.BAND_PASS,
-                                   1, // low corner
-                                   10, // high corner
-                                   1/sdd.seismogram.sampleRate // delta (period)
-                          );
-            let rmeanSeis = seisplotjs.filter.rMean(sdd.seismogram);
-            let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
-            let taperSeis = seisplotjs.taper.taper(filteredSeis);
-            taperSeis = seisplotjs.filter.rMean(taperSeis);
-            let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
-                sdd.channel.response, .01, .02, 25, 50);
-            sdd.seismogram = correctedSeis;
-          });
-          return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
+          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+            seismogramDataList.forEach(sdd => {
+              let butterworth = seisplotjs.filter.createButterworth(
+                                     2, // poles
+                                     seisplotjs.filter.BAND_PASS,
+                                     1, // low corner
+                                     10, // high corner
+                                     1/sdd.seismogram.sampleRate // delta (period)
+                            );
+              let rmeanSeis = seisplotjs.filter.rMean(sdd.seismogram);
+              let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
+              let taperSeis = seisplotjs.taper.taper(filteredSeis);
+              taperSeis = seisplotjs.filter.rMean(taperSeis);
+              let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
+                  sdd.channel.response, .01, .02, 25, 50);
+              sdd.seismogram = correctedSeis;
+            });
+            return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
           </code></pre>
           <p>
             Lastly, just to make sure we don't correct the data twice, we

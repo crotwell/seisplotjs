@@ -43,19 +43,18 @@
 
           </p>
           <pre><code class="language-javascript">
-let eventQuery = new seisplotjs.fdsnevent.EventQuery()
-  .startTime('2019-07-01')
-  .endTime('2019-07-31')
-  .minMag(7)
-  .latitude(35).longitude(-118)
-  .maxRadius(3);
-let stationQuery = new seisplotjs.fdsnstation.StationQuery()
-  .networkCode('CO')
-  .stationCode('HODGE')
-  .locationCode('00')
-  .channelCode('LH?')
-  .startTime('2019-07-01')
-  .endTime('2019-07-31');
+            let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
+            let eventQuery = new seisplotjs.fdsnevent.EventQuery()
+              .timeWindow(queryTimeWindow)
+              .minMag(7)
+              .latitude(35).longitude(-118)
+              .maxRadius(3);
+            let stationQuery = new seisplotjs.fdsnstation.StationQuery()
+              .networkCode('CO')
+              .stationCode('HODGE')
+              .locationCode('00')
+              .channelCode('LH?')
+              .timeWindow(queryTimeWindow);
 
           </code></pre>
           <p>
