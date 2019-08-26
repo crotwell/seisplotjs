@@ -16,19 +16,19 @@ export function fftForward(timeseries: Int32Array | Float32Array | Float64Array)
 
 /**
  * Calculates the discrete fourier transform using the OregonDSP library.
- * @param   waveform timeseries array
+ * @param   timeseries timeseries array
  * @param   npts     number of points in timeseries array.
  * @return           DFT as packed array Float32Array
  */
-export function calcDFT(waveform: Int32Array | Float32Array | Float64Array, npts: number): Float32Array {
+export function calcDFT(timeseries: Int32Array | Float32Array | Float64Array, npts: number): Float32Array {
   let log2N = 4;
   let N = 16;
   while(N < npts) { log2N += 1; N = 2 * N;}
   let dft = new OregonDSP.fft.RDFT(log2N);
   let inArray = new Float32Array(N);
   inArray.fill(0);
-  for(let i=0; i<waveform.length; i++) {
-    inArray[i] = waveform[i];
+  for(let i=0; i<timeseries.length; i++) {
+    inArray[i] = timeseries[i];
   }
 
   let out = new Float32Array(N).fill(0);
@@ -152,8 +152,8 @@ export class FFTResult {
     * to the amp and/or phase arrays.
     */
   recalcFromAmpPhase() {
-    let modComplex = new Array(this.complex.length);
-    for (let i=0; i< this.complex.length; i++) {
+    let modComplex = new Array(this.amp.length);
+    for (let i=0; i< this.amp.length; i++) {
       modComplex[i] = OregonDSP.filter.iir.Complex.Companion.ComplexFromPolar(this.amp[i], this.phase[i]);
     }
     this.complex = modComplex;

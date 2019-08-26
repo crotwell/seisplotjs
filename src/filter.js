@@ -56,15 +56,21 @@ export function rMean(seis: Seismogram): Seismogram {
  * Apply the frequency independent overall gain to a seismogram. This does not
  * do a full transfer using poles and zero, this only applies the scalar conversion
  * factor to convert counts back to original real world units and update the units.
- * @param  {[type]} instrumentSensitivity overall gain object, usually pulled from stationxml
  * @param  {[type]} seis                  the seismogram to correct
+ * @param  {[type]} instrumentSensitivity overall gain object, usually pulled from stationxml
  * @return {[type]}                       new seismogram with original units, like m/s and gain applied.
  */
-export function gainCorrect(instrumentSensitivity: InstrumentSensitivity, seis: Seismogram): Seismogram {
+export function gainCorrect(seis: Seismogram, instrumentSensitivity: InstrumentSensitivity): Seismogram {
   if (seis instanceof Seismogram) {
     let gain = instrumentSensitivity.sensitivity;
-    let gainSeismogram = new Seismogram(seis.segments.map(s =>{
-      let gainY = s.y.map(function(d) {
+    let gainSeismogram = new Seismogram(seis.segments.map(s => {
+      let gainY;
+      if (typeof s.y === "Int32Array" || typeof s.y === "Float32Array") {
+        gainY = Float32Array.from(s.y);
+      } else {
+        gainY = Float64Array.from(s.y)
+      }
+      gainY = gainY.map(function(d) {
         return d/gain;
       });
       let outS = s.cloneWithNewData(gainY);
@@ -170,14 +176,19 @@ export function applyFilter(iirFilter: OregonDSP.filter.iir.IIRFilter, seis: Sei
  */
 export function envelope(seis: Seismogram): Seismogram {
   if (seis.isContiguous()) {
-    let seisY = seis.merge();
+    let seisY = seis.y;
     let s = hilbert(seis);
     let hilbertY = s.y;
-    let out = seisY.slice();
-    for(let n=0; n<seisY.length; n++) {
-      out[n] = Math.sqrt(hilbertY[n]*hilbertY[n] + seisY[n]*seisY[n]);
+    let outY;
+    if (typeof seisY === "Int32Array" || typeof seisY === "Float32Array") {
+      outY = new Float32Array(seisY.length);
+    } else {
+      outY = new Float64Array(seisY.length);
     }
-    return seis.cloneWithNewData(out);
+    for(let n=0; n<seisY.length; n++) {
+      outY[n] = Math.sqrt(hilbertY[n]*hilbertY[n] + seisY[n]*seisY[n]);
+    }
+    return seis.cloneWithNewData(outY);
   } else {
     throw new Error("Cannot take envelope of non-contiguous seismogram");
   }
