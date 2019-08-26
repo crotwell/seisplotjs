@@ -5,6 +5,26 @@ import {readSac, parseSac, readDataView, writeSac, replaceYData} from './sacfile
 
 const OVERWRITE_OUTPUT = false;
 
+test("real small fft, Lyons p 64-72", () => {
+  // OregonDSP smallest is 16 point FFT, so pad and only look at even indices
+  const data =  Float32Array.from([ 0.3535, 0.3535, 0.6464, 1.0607, 0.3535, -1.0607, -1.3535, -0.3535, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const ansReal =  Float32Array.from([ 0.0, 0.0, 1.414, 0.0, 0.0, 0.0, 1.414, 0.0]);
+  const ansImg =  Float32Array.from([ 0.0, -4.0, 1.414, 0.0, 0.0, 0.0, -1.414, 4.0]);
+  const fftout = fft.calcDFT(data, data.length);
+  expect(fftout[0]).toBeCloseTo(ansReal[0], 3);
+  expect(fftout[2]).toBeCloseTo(ansReal[1], 3);
+  expect(fftout[4]).toBeCloseTo(ansReal[2], 3);
+  expect(fftout[6]).toBeCloseTo(ansReal[3], 3);
+  expect(fftout[8]).toBeCloseTo(ansReal[4], 3);
+  expect(fftout[16-2]).toBeCloseTo(ansImg[1], 3);
+  expect(fftout[16-4]).toBeCloseTo(ansImg[2], 3);
+  expect(fftout[16-6]).toBeCloseTo(ansImg[3], 3);
+
+  const out = fft.inverseDFT(fftout, data.length);
+  for(let i=0; i<out.length; i++) {
+    expect(out[i]).toBeCloseTo(data[i], 3);
+  }
+});
 
 test("Round Trip FFT, Spike", () => {
   const data = new Float32Array(128).fill(0);

@@ -22,17 +22,60 @@ const ensureFloat32Array = function(a): Float32Array {
 };
 
 test("test freq Taper", () => {
-    expect(transfer.freqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);
-    expect(transfer.freqTaper(.9, 1, 2, 10, 20)).toBeCloseTo(0, 5);
-    expect(transfer.freqTaper(1, 1, 2, 10, 20)).toBeCloseTo(0, 5);
-    expect(transfer.freqTaper(2, 1, 2, 10, 20)).toBeCloseTo(1, 5);
-    expect(transfer.freqTaper(1.01, 1, 2, 10, 20)).toBeCloseTo(0, 3);
-    expect(transfer.freqTaper(1.5, 1, 2, 10, 20)).toBeCloseTo(.5, 5);
-    expect(transfer.freqTaper(1.99, 1, 2, 10, 20)).toBeCloseTo(1, 3);
-    expect(transfer.freqTaper(5, 1, 2, 10, 20)).toBeCloseTo(1, 5);
-    expect(transfer.freqTaper(10, 1, 2, 10, 20)).toBeCloseTo(1, 5);
-    expect(transfer.freqTaper(20, 1, 2, 10, 20)).toBeCloseTo(0, 5);
+    expect(transfer.calcFreqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);
+    expect(transfer.calcFreqTaper(.9, 1, 2, 10, 20)).toBeCloseTo(0, 5);
+    expect(transfer.calcFreqTaper(1, 1, 2, 10, 20)).toBeCloseTo(0, 5);
+    expect(transfer.calcFreqTaper(2, 1, 2, 10, 20)).toBeCloseTo(1, 5);
+    expect(transfer.calcFreqTaper(1.01, 1, 2, 10, 20)).toBeCloseTo(0, 3);
+    expect(transfer.calcFreqTaper(1.5, 1, 2, 10, 20)).toBeCloseTo(.5, 5);
+    expect(transfer.calcFreqTaper(1.99, 1, 2, 10, 20)).toBeCloseTo(1, 3);
+    expect(transfer.calcFreqTaper(5, 1, 2, 10, 20)).toBeCloseTo(1, 5);
+    expect(transfer.calcFreqTaper(10, 1, 2, 10, 20)).toBeCloseTo(1, 5);
+    expect(transfer.calcFreqTaper(20, 1, 2, 10, 20)).toBeCloseTo(0, 5);
 });
+
+test("applyFreqTaper to FFTResult", () => {
+  let numPoints = 512;
+  let inDataAmp = new Float32Array(numPoints/2).fill(1);
+  let inDataPhase = new Float32Array(numPoints/2).fill(0);
+  let inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase);
+
+  // IU.HRV.BHE response
+  const zeros =  [filter.createComplex(0, 0),
+  filter.createComplex(0, 0),
+  filter.createComplex(0, 0) ];
+  const poles =  [filter.createComplex(-0.0139, 0.0100),
+  filter.createComplex(-0.0139, -0.0100),
+  filter.createComplex(-31.4160, 0.0000) ];
+  let sacPoleZero = new SacPoleZero(poles, zeros, 2.94283674E10);
+  let sampRate = 100;
+  let lowCut = .2;
+  let lowPass = .4;
+  let highPass = 20;
+  let highCut = 40;
+  let ftaper = transfer.applyFreqTaper(inFFT, sampRate, lowCut, lowPass, highPass, highCut);
+  let deltaF = sampRate/numPoints;
+
+  inFFT.amp.forEach((v,i) => {
+    console.log(`${i} ${deltaF*i} ${v}`);
+  });
+  ftaper.amp.forEach((v,i) => {
+    let F = deltaF*i;
+    if (i===0) {
+      expect(v).toEqual(0);
+    } else {
+      if (F < lowCut || F > highCut) {
+        console.log(`zeroed, ${i} ${F} ${v}`);
+          expect(v).toBeCloseTo(0, 2);
+      } else if (F > lowPass && F < highPass ) {
+        console.log(`one, ${i} ${F}  ${v}  ${inFFT.amp[i]} ${transfer.calcFreqTaper(F, lowCut, lowPass, highPass, highCut)}`);
+        expect(v).toBeCloseTo(1, 2);
+      } else {
+
+      }
+    }
+    })
+  });
 
 test("TaperVsSac", () => {
     let sacout = [ [ 0, 0.000610352, 0 ],
@@ -56,7 +99,7 @@ test("TaperVsSac", () => {
                           [ 0.0109863, 0.000610352, 0.000610352 ],
                           [ 0.0115967, 0.000610352, 0.000610352 ] ];
     for(let row of sacout) {
-        expect(row[1]*transfer.freqTaper(row[0], .005, .01, 1e5, 1e6)).toBeCloseTo(row[2], 5);
+        expect(row[1]*transfer.calcFreqTaper(row[0], .005, .01, 1e5, 1e6)).toBeCloseTo(row[2], 5);
 
     }
 });
@@ -225,7 +268,7 @@ test("PoleZeroTaper", () => {
           // $FlowFixMe
           expect(freq).toBeCloseToRatio(sacout[i][0], 5);
           respAtS = transfer.evalPoleZeroInverse(poleZero, freq);
-          respAtS = respAtS.timesReal(deltaF*transfer.freqTaper(freq,
+          respAtS = respAtS.timesReal(deltaF*transfer.calcFreqTaper(freq,
                                                  lowCut,
                                                  lowPass,
                                                  highPass,
