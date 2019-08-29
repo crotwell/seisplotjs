@@ -10,6 +10,7 @@ import * as datalink         from './datalink.js';
 import * as datechooser      from './datechooser.js';
 import * as distaz         from './distaz.js';
 import * as fdsnavailability  from './fdsnavailability.js';
+import * as fdsndatacenters      from './fdsndatacenters.js';
 import * as fdsnevent      from './fdsnevent.js';
 import * as fdsnstation    from './fdsnstation.js';
 import * as fdsndataselect from './fdsndataselect.js';
@@ -49,6 +50,7 @@ export { datalink,
          datechooser,
          distaz,
          fdsnavailability,
+         fdsndatacenters,
          fdsnevent,
          fdsnstation,
          fdsndataselect,

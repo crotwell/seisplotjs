@@ -14,6 +14,17 @@ RSVP.on('error', function(reason) {
   console.assert(false, reason);
 });
 
+/**
+ * Major version of the FDSN spec supported here.
+ * Currently is 1.
+ */
+export const SERVICE_VERSION = 1;
+/**
+ * Service name as used in the FDSN DataCenters registry,
+ * http://www.fdsn.org/datacenters
+ */
+export const SERVICE_NAME = `fdsnws-event-${SERVICE_VERSION}`;
+
 
 export let QML_NS = 'http://quakeml.org/xmlns/quakeml/1.2';
 export let BED_NS = 'http://quakeml.org/xmlns/bed/1.2';

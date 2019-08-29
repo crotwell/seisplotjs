@@ -17,6 +17,17 @@ import {XML_MIME, TEXT_MIME, StartEndDuration, calcClockOffset, doFetchWithTimeo
 
 export const FORMAT_MINISEED = 'mseed';
 
+/**
+ * Major version of the FDSN spec supported here.
+ * Currently is 1.
+ */
+export const SERVICE_VERSION = 1;
+/**
+ * Service name as used in the FDSN DataCenters registry,
+ * http://www.fdsn.org/datacenters
+ */
+export const SERVICE_NAME = `fdsnws-dataselect-${SERVICE_VERSION}`;
+
 export const IRIS_HOST = "service.iris.edu";
 
 /**
