@@ -477,11 +477,13 @@ export class Seismogram {
     if ( ! this._y) {
       if (this.isContiguous()) {
         this._y = this.merge();
-      } else {
-        throw new Error("Seismogram is not contiguous, acces each SeismogramSegment idividually.");
       }
     }
-    return this._y;
+    if (this._y) {
+      return this._y;
+    } else {
+      throw new Error("Seismogram is not contiguous, acces each SeismogramSegment idividually.");
+    }
   }
   set y(val: Int32Array | Float32Array | Float64Array ) {
     // ToDo
@@ -540,6 +542,7 @@ export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegmen
 export class SeismogramDisplayData {
   /** @private */
   _seismogram: Seismogram | null;
+  label: string | null;
   markerList: Array<MarkerType>;
   channel: Channel | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
@@ -553,6 +556,7 @@ export class SeismogramDisplayData {
       throw new Error("StartEndDuration must not be missing.");
     }
     this._seismogram = null;
+    this.label = null;
     this.markerList = [];
     this.channel = null;
     this._instrumentSensitivity = null;
@@ -660,6 +664,24 @@ export class SeismogramDisplayData {
     }
     this._statsCache = stats;
     return stats;
+  }
+  clone(): SeismogramDisplayData {
+    let out = new SeismogramDisplayData(this.timeWindow);
+    Object.getOwnPropertyNames(this).forEach( name => {
+      // $FlowFixMe
+      if (this[name] instanceof moment) {
+        // $FlowFixMe
+        out[name] = moment.utc(this[name]);
+        // $FlowFixMe
+      } else if ( Array.isArray(this[name]) ) {
+        // $FlowFixMe
+        out[name] = this[name].slice();
+      } else {
+        // $FlowFixMe
+        out[name] = this[name];
+      }
+    });
+    return out;
   }
 }
 
