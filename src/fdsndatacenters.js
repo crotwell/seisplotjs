@@ -244,7 +244,7 @@ export class DataCentersQuery {
     });
   }
 
-  extractCompatibleServices( json: JSON, compatibleName: string, repoName?: string): Array<> {
+  extractCompatibleServices( json: RootType, compatibleName: string, repoName?: string): Array<any> {
     let out = [];
       console.log(`json dc ${json.datacenters.length}`)
     json.datacenters.forEach( dc => {
@@ -253,7 +253,8 @@ export class DataCentersQuery {
         if (repoName && repoName === repo.name) {
           console.log(`repo servicess ${repo.services.length}`)
           repo.services.forEach( service => {
-            if (service.name === compatibleName || service.compatibleWith.includes(compatibleName)) {
+            if (service.name === compatibleName || (
+              isDef(service.compatibleWith) && service.compatibleWith.includes(compatibleName)) ) {
               out.push(service);
             }
           });
