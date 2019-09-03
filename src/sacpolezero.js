@@ -2,14 +2,24 @@
 
 import {Complex, createComplex} from './filter.js';
 
+/**
+ * SAC style response file. This contains poles and zeros to represent the
+ * analog stage, plus a constant for the overall gain. See
+ * seisplotjs.transfer.convertToSacPoleZero() for conversion from a
+ * StationXML response to SacPoleZero.
+ * @type {[type]}
+ */
 export class SacPoleZero {
   poles: Array<Complex>;
   zeros: Array<Complex>;
   constant: number;
-  /** for debugging */
+  /** number of zeros added to convert to displacement, for debugging */
   gamma: number;
+  /** hertz/radian factor, for debugging */
   mulFactor: number;
+  /** sensitivity accounting for gamma, for debugging */
   sd: number;
+  /** normalization factor for poles and zeros accounting for gamma, for debugging */
   A0: number;
   constructor(poles: Array<Complex>, zeros: Array<Complex>, constant: number) {
     this.poles = poles;

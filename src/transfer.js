@@ -1,11 +1,12 @@
 //@flow
 
-import {calcDFT, inverseDFT } from './fft.js';
+import {calcDFT, inverseDFT, FFTResult } from './fft.js';
 import {SeismogramSegment, Seismogram } from './seismogram.js';
 import { SacPoleZero } from './sacpolezero.js';
 import {Response, PolesZeros } from './stationxml.js';
 import Qty from 'js-quantities';
 import {Complex, createComplex} from './filter.js';
+import {stringify} from './util.js';
 
 export function transfer(seis: Seismogram,
                         response: Response,
@@ -71,6 +72,65 @@ export function transferSacPZSegment(seis: SeismogramSegment,
     }
 
 
+export function calcResponse(response: Response, numPoints: number, sampleRate: number, unit: string | Qty ="m"): FFTResult {
+  const sacPoleZero = convertToSacPoleZero(response);
+
+  const unitQty = new Qty(unit);
+  let gamma = 0;
+  if (unitQty.isCompatible(UNITS.METER)) {
+      gamma = 0;
+  } else if (unitQty.isCompatible(UNITS.METER_PER_SECOND)) {
+      gamma = 1;
+  } else if (unitQty.isCompatible(UNITS.METER_PER_SECOND_PER_SECOND)) {
+      gamma = 2;
+  } else {
+      throw new Error("response unit is not displacement (m), velocity (m/s) or acceleration (m/s^2): "+unit);
+  }
+  for(let i=0; i<gamma; i++) {
+    let z = sacPoleZero.zeros[sacPoleZero.zeros.length-1-i];
+    if (z.real() !== 0 || z.imag() !== 0) {
+      throw new Error(`Attempt to trim ${gamma} zeros from SacPoleZero, but zero isn't 0+i0: ${z}`);
+    }
+  }
+  // subtract gama zeros, ex 1 to get
+  let trimmedZeros = sacPoleZero.zeros.slice().reverse();
+  for(let i=0; i<gamma; i++) {
+    let idx = trimmedZeros.findIndex((d) => d.real() === 0 && d.imag() === 0);
+    trimmedZeros.splice(idx, 1);
+  }
+  trimmedZeros = trimmedZeros.reverse();
+  sacPoleZero.zeros = trimmedZeros;
+  console.log(`sacPoleZero after gamma corrections for ${unit} is ${stringify(sacPoleZero)}`);
+  return calcResponseFromSacPoleZero( sacPoleZero, numPoints, sampleRate);
+}
+
+export function calcResponseFromSacPoleZero(sacPoleZero: SacPoleZero, numPoints: number, sampleRate: number): FFTResult {
+  // inst response as packed frequency array
+  let freqValues = new Float32Array(numPoints);
+  const deltaF = sampleRate / freqValues.length;
+  // zero freq
+  freqValues[0] = 0;
+  // nyquist
+  let freq = sampleRate / 2;
+  let respAtS = evalPoleZeroInverse(sacPoleZero, freq);
+  respAtS = createComplex(1, 0).overComplex(respAtS);
+  freqValues[freqValues.length/2 ] = respAtS.real();
+  for(let i = 1; i < freqValues.length / 2 ; i++) {
+    freq = i * deltaF;
+    respAtS = evalPoleZeroInverse(sacPoleZero, freq);
+    //respAtS = respAtS.timesReal(deltaF*i);
+    respAtS = createComplex(1, 0).overComplex(respAtS);
+    if (respAtS.real() !== 0 && respAtS.imag() !== 0) {
+      freqValues[i] = respAtS.real();
+      freqValues[freqValues.length-i] = respAtS.imag();
+    } else {
+      freqValues[i] = 1e-10;
+      freqValues[freqValues.length-i] = 0;
+    }
+  }
+  return FFTResult.createFromPackedFreq(freqValues, numPoints);
+}
+
 export function combine(freqValues: Float32Array,
                         sampFreq: number,
                         sacPoleZero: SacPoleZero,
@@ -85,7 +145,7 @@ export function combine(freqValues: Float32Array,
         // handle nyquist
         let freq = sampFreq / 2;
         let respAtS = evalPoleZeroInverse(sacPoleZero, freq);
-        respAtS = respAtS.timesReal(deltaF*freqTaper(freq,
+        respAtS = respAtS.timesReal(deltaF*calcFreqTaper(freq,
                                                lowCut,
                                                lowPass,
                                                highPass,
@@ -94,7 +154,7 @@ export function combine(freqValues: Float32Array,
         for(let i = 1; i < freqValues.length / 2 ; i++) {
             freq = i * deltaF;
             respAtS = evalPoleZeroInverse(sacPoleZero, freq);
-            respAtS = respAtS.timesReal(deltaF*freqTaper(freq,
+            respAtS = respAtS.timesReal(deltaF*calcFreqTaper(freq,
                                                                lowCut,
                                                                lowPass,
                                                                highPass,
@@ -103,8 +163,6 @@ export function combine(freqValues: Float32Array,
                 .timesComplex(respAtS);
             freqValues[i] = freqComplex.real();
             freqValues[freqValues.length-i] = freqComplex.imag();
-            // fft in sac has opposite sign on imag, so take conjugate to make same
-            //freqValues[freqValues.length - i] = freqValues[i].conjg();
         }
         return freqValues;
     }
@@ -132,7 +190,7 @@ export function combine(freqValues: Float32Array,
         return out.overReal( sacPoleZero.constant);
     }
 
-export function freqTaper(freq: number,
+export function calcFreqTaper(freq: number,
                           lowCut: number,
                           lowPass: number,
                           highPass: number,
@@ -155,6 +213,18 @@ export function freqTaper(freq: number,
             / (highPass - highCut)));
 }
 
+export function applyFreqTaper(fftResult: FFTResult,
+                          sampleRate: number,
+                          lowCut: number,
+                          lowPass: number,
+                          highPass: number,
+                          highCut: number): FFTResult {
+
+  const deltaF = sampleRate / fftResult.amp.length / 2;
+  return FFTResult.createFromAmpPhase(fftResult.amp.map( (v,i) => i === 0 ? 0 : v*calcFreqTaper(i*deltaF, lowCut, lowPass, highPass, highCut)),
+                                      fftResult.phase, fftResult.origLength);
+}
+
 // common units
 export const UNITS = {
   COUNT: new Qty('count'),
@@ -166,6 +236,9 @@ export const UNITS = {
 /** Converts a StationXML response to SAC PoleZero style. This
   * converts the analog to digital stage (usually 0) along
   * with the overall gain, but does not include later FIR stages.
+  * To maintain compatibility with SAC, this includes extra zeros
+  * if needed to convert to displacement. The number of extra zeros
+  * added is kept as gamma in the result.
   */
 export function convertToSacPoleZero( response: Response) {
     let polesZeros: PolesZeros;

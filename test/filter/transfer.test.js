@@ -38,7 +38,7 @@ test("applyFreqTaper to FFTResult", () => {
   let numPoints = 512;
   let inDataAmp = new Float32Array(numPoints/2).fill(1);
   let inDataPhase = new Float32Array(numPoints/2).fill(0);
-  let inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase);
+  let inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase, numPoints);
 
   // IU.HRV.BHE response
   const zeros =  [filter.createComplex(0, 0),

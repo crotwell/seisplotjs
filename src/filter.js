@@ -65,7 +65,7 @@ export function gainCorrect(seis: Seismogram, instrumentSensitivity: InstrumentS
     let gain = instrumentSensitivity.sensitivity;
     let gainSeismogram = new Seismogram(seis.segments.map(s => {
       let gainY;
-      if (typeof s.y === "Int32Array" || typeof s.y === "Float32Array") {
+      if ( s.y instanceof Int32Array || s.y instanceof Float32Array) {
         gainY = Float32Array.from(s.y);
       } else {
         gainY = Float64Array.from(s.y)
@@ -180,7 +180,7 @@ export function envelope(seis: Seismogram): Seismogram {
     let s = hilbert(seis);
     let hilbertY = s.y;
     let outY;
-    if (typeof seisY === "Int32Array" || typeof seisY === "Float32Array") {
+    if ( seis.y instanceof Int32Array || seis.y instanceof Float32Array) {
       outY = new Float32Array(seisY.length);
     } else {
       outY = new Float64Array(seisY.length);
