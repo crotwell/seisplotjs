@@ -97,9 +97,15 @@ cat > docs/api/index.html <<EOF
 EOF
 fi
 
-for f in src/*
+for path in src/*.js
 do
-  jsfile=`basename ${f} .js`
+  f=${path##*/}
+  jsfile=${f%.js}
+  flowfile=${jsfile%.flow}
+  if [ "${jsfile}" != "${flowfile}" ] || [ "${jsfile}" == "index" ]; then
+    # skip .flow.js files
+    continue
+  fi
   if [ -e src/${jsfile}.js ]
   then
     descText=""
