@@ -24,7 +24,7 @@ import * as fdsnstation from './fdsnstation.js';
 export const FDSN_HOST = "www.fdsn.org";
 
 /**
- * Query to a FDSN Availability web service.
+ * Query to a FDSN Data Centers Registry web service.
  * @see http://www.fdsn.org/webservices/
 */
 export class DataCentersQuery {
@@ -120,7 +120,7 @@ export class DataCentersQuery {
   }
   /**
    * limits results to the named data center, default is all data centers
-   * @param   value names to
+   * @param   value names to search for
    * @return the query when setting, the current value os services if no arguments
    */
   name(value?: string): string | DataCentersQuery {
@@ -151,7 +151,7 @@ export class DataCentersQuery {
   /**
    * whether the results include detailed information about
    * the data sets offered by each center, default is false
-   * @param  {[type]} value true to include datasets
+   * @param  value true to include datasets
    * @return the query when setting, the current value os services if no arguments
    */
   includeDataSets(value?: boolean): boolean | DataCentersQuery {
@@ -166,7 +166,7 @@ export class DataCentersQuery {
   }
 
   /** Get/Set the timeout in seconds for the request. Default is 30.
-  * @param  {[type]} value timeout seconds
+  * @param  value timeout seconds
   * @return the query when setting, the current value os services if no arguments
   */
   timeout(value?: number): number | DataCentersQuery {
