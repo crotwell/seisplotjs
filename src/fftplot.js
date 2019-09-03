@@ -100,7 +100,7 @@ export function createOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: s
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
   g.append("g")
-      .attr("transform", `translate(0, ${height+ +margin.bottom} )`)
+      .attr("transform", `translate(0, ${height+ margin.bottom} )`)
     .append("text")
       .attr("fill", "#000")
       .attr("y", 0)
@@ -111,11 +111,12 @@ export function createOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: s
 
   g.append("g")
       .call(d3.axisLeft(y))
+  svg.append("g")
+      .attr("transform", `translate(0, ${margin.top+height/2} )`)
     .append("text")
       .attr("fill", "#000")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
       .attr("dy", "0.71em")
+      .attr("transform", "rotate(-90)")
       .attr("text-anchor", "end")
       .text("Amp");
   let pathg = g.append("g").classed("allfftpaths", true);
