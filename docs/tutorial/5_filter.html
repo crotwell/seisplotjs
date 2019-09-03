@@ -53,8 +53,8 @@
           </code></pre>
           <p>
             Of course 100 sps means that we will have 100 times as many samples, so
-            lets reduce the time window to just the region where the P and S
-            arrivals are, say 300 seconds instead of 1800.
+            lets reduce the time window to just the region where the P
+            arrival is, say 300 seconds instead of 1800.
           </p>
           <pre><code class="language-javascript">
           let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 300);
@@ -65,7 +65,7 @@
             <code class="language-javascript">then()</code> call even though
             we could just add to the existing one. We create a butterworth
             filter using the sampling rate of the seismogram, with a passband
-            of 1 to 10 Hz. Removing the mean is usually a good idea, then
+            of .5 to 10 Hz. Removing the mean is usually a good idea, then
             we apply the filter. Tapering is important before a deconvolution
             and then we <code class="language-javascript">transfer</code>
             the instrument response for the channel.
@@ -76,16 +76,15 @@
               let butterworth = seisplotjs.filter.createButterworth(
                                      2, // poles
                                      seisplotjs.filter.BAND_PASS,
-                                     1, // low corner
+                                     .5, // low corner
                                      10, // high corner
                                      1/sdd.seismogram.sampleRate // delta (period)
                             );
               let rmeanSeis = seisplotjs.filter.rMean(sdd.seismogram);
               let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
               let taperSeis = seisplotjs.taper.taper(filteredSeis);
-              taperSeis = seisplotjs.filter.rMean(taperSeis);
               let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
-                  sdd.channel.response, .01, .02, 25, 50);
+                  sdd.channel.response, .001, .02, 25, 50);
               sdd.seismogram = correctedSeis;
             });
             return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );

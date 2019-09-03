@@ -61,16 +61,15 @@
           let butterworth = seisplotjs.filter.createButterworth(
                                  2, // poles
                                  seisplotjs.filter.BAND_PASS,
-                                 1, // low corner
+                                 .5, // low corner
                                  10, // high corner
                                  1/sdd.seismogram.sampleRate // delta (period)
                         );
           let rmeanSeis = seisplotjs.filter.rMean(sdd.seismogram);
           let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
           let taperSeis = seisplotjs.taper.taper(filteredSeis);
-          taperSeis = seisplotjs.filter.rMean(taperSeis);
           let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
-              sdd.channel.response, .01, .02, 25, 50);
+              sdd.channel.response, .001, .02, 25, 50);
           sdd.seismogram = correctedSeis;
         });
         return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
