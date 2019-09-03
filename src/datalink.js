@@ -39,7 +39,8 @@ let defaultHandleResponse = function(message) {
  */
 export class DataLinkConnection {
   url: string;
-  mode: string | null;
+  /** @private */
+  _mode: string | null;
   packetHandler: (packet: DataLinkPacket) => void;
   errorHandler: (error: Error) => void;
   closeHandler: null | (close: CloseEvent) => void;
@@ -51,7 +52,7 @@ export class DataLinkConnection {
   webSocket: WebSocket | null;
   constructor(url: string, packetHandler: (packet: DataLinkPacket) => void, errorHandler: (error: Error) => void) {
     this.url = url;
-    this.mode = QUERY_MODE;
+    this._mode = QUERY_MODE;
     this.packetHandler = packetHandler;
     this.errorHandler = errorHandler;
     this.closeHandler = null;
@@ -86,7 +87,7 @@ export class DataLinkConnection {
       };
       webSocket.onclose = function(closeEvent) {
         that.webSocket = null; // clean up
-        that.mode = QUERY_MODE;
+        that._mode = QUERY_MODE;
         if (that.closeHandler) {
           that.closeHandler(closeEvent);
         } else {
@@ -110,13 +111,17 @@ export class DataLinkConnection {
   isConnected(): boolean {
     return this.webSocket !== null;
   }
+  /**
+   * gets the current mode, QUERY_MODE or STREAM_MODE
+   */
+get mode() { return this._mode;}
 
 /**
  * Switches to streaming mode to receive data packets from the ringserver.
  */
   stream(): void {
-    if (this.mode === STREAM_MODE) {return;}
-    this.mode = STREAM_MODE;
+    if (this._mode === STREAM_MODE) {return;}
+    this._mode = STREAM_MODE;
     this.sendDLCommand(STREAM, "");
   }
 
@@ -124,8 +129,8 @@ export class DataLinkConnection {
    * Switches back to query mode to enable commands to be sent to the ringserver.
    */
   endStream(): void {
-    if (this.webSocket === null || this.mode === null || this.mode === QUERY_MODE) {return;}
-    this.mode = QUERY_MODE;
+    if (this.webSocket === null || this._mode === null || this._mode === QUERY_MODE) {return;}
+    this._mode = QUERY_MODE;
     this.sendDLCommand(ENDSTREAM, "");
   }
 
@@ -138,7 +143,7 @@ export class DataLinkConnection {
       this.endStream(); // end streaming just in case
       if (this.webSocket) {this.webSocket.close();}
       this.webSocket = null;
-      this.mode = null;
+      this._mode = null;
     }
   }
 
