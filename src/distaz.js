@@ -1,5 +1,11 @@
 // @flow
 
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 export const kmPerDeg = 111.19;
 
 /** Convert degrees into kilometers along the earth surface

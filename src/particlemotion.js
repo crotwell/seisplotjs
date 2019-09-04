@@ -1,5 +1,11 @@
 // @flow
 
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import moment from 'moment';
 import * as d3 from 'd3';
 

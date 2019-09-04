@@ -1,5 +1,11 @@
 // @flow
 
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import {Complex, createComplex} from './filter.js';
 
 /**

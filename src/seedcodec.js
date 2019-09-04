@@ -1,10 +1,11 @@
 // @flow
 
-/*
+/**
  * Philip Crotwell
- * University of South Carolina, 2014
+ * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+
 // converted from Steim2.java in seedCodec
 // http://github.com/crotwell/seedcodec/
 

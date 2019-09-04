@@ -1,5 +1,11 @@
 //@flow
 
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import {Channel, InstrumentSensitivity} from './stationxml.js';
 import { Seismogram, SeismogramSegment} from './seismogram.js';
 import {Quake} from './quakeml.js';

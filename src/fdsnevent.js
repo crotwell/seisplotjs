@@ -1,5 +1,11 @@
 // @flow
 
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import { moment } from 'moment';
 import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, doFetchWithTimeout, defaultFetchInitObj} from './util.js';

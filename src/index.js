@@ -1,8 +1,9 @@
 // @flow
 //
+
 /**
  * Philip Crotwell
- * University of South Carolina, 2016
+ * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
 

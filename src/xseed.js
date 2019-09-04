@@ -3,7 +3,7 @@
 /*global DataView*/
 /**
  * Philip Crotwell
- * University of South Carolina, 2017
+ * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
 
@@ -12,11 +12,15 @@ import {SeismogramSegment, Seismogram} from './seismogram';
 import {DataRecord} from './miniseed';
 import moment from 'moment';
 
-
+/** const for unknown data version, 0 */
 export const UNKNOWN_DATA_VERSION = 0;
+/** const for offset to crc in record, 28 */
 export const CRC_OFFSET = 28;
+/** const for size of fixed header part of record, 40 */
 export const FIXED_HEADER_SIZE=40;
+/** const for fdsn prefix for extra headers, FDSN */
 export const FDSN_PREFIX = 'FDSN';
+/** const for little endian, true */
 export const LITTLE_ENDIAN = true;
 
 /** parse arrayBuffer into an array of XSeedRecords. */

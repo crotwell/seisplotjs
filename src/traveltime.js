@@ -1,5 +1,11 @@
 // @flow
 
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import {checkProtocol, hasArgs, stringify, isDef } from './util';
 import {Station} from './stationxml.js';
 import {Quake} from './quakeml.js';

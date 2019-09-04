@@ -1,5 +1,11 @@
 //@flow
 
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import {calcDFT, inverseDFT, FFTResult } from './fft.js';
 import {SeismogramSegment, Seismogram } from './seismogram.js';
 import { SacPoleZero } from './sacpolezero.js';

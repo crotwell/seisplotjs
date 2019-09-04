@@ -1,5 +1,11 @@
 // @flow
 
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import {Seismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
 import * as OregonDSPTop from 'oregondsp';

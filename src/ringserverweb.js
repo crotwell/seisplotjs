@@ -2,7 +2,7 @@
 
 /**
  * Philip Crotwell
- * University of South Carolina, 2017
+ * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
 

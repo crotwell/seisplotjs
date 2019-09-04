@@ -1,4 +1,11 @@
 // @flow
+
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import {Seismogram } from './seismogram.js';
 
 export function taper(seis: Seismogram, width: number = 0.05, taperType: string = HANNING): Seismogram {

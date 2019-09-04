@@ -1,4 +1,11 @@
 //@flow
+
+/**
+ * Philip Crotwell
+ * University of South Carolina, 2019
+ * http://www.seis.sc.edu
+ */
+
 import {SeismogramSegment, Seismogram } from './seismogram.js';
 
 export const DtoR = Math.PI / 180;
