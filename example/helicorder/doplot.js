@@ -137,8 +137,7 @@ doPlot = function(config) {
     let chantrList = hash.chantrList;
     console.log(`got ${chantrList.length} channel-seismograms`);
     if (chantrList.length !== 0) {
-      let heliConfig = new HelicorderConfig();
-      heliConfig.fixedTimeScale = hash.timeWindow;
+      let heliConfig = new HelicorderConfig(hash.timeWindow);
       heliConfig.overlap = overlap;
       heliConfig.lineSeisConfig.margin.left = 42;
       heliConfig.lineSeisConfig.yLabelOrientation = "horizontal";

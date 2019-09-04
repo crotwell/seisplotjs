@@ -17,7 +17,6 @@ import {StartEndDuration, isDef} from './util.js';
 
 export class Helicorder {
   seismographArray: Array<Seismograph>;
-  secondsPerLine: number;
   svgParent: any;
   heliConfig: HelicorderConfig;
   seisData: SeismogramDisplayData;
@@ -31,14 +30,9 @@ export class Helicorder {
     this.seisData = seisData;
     this.svgParent = inSvgParent;
     this.heliConfig = heliConfig;
-    let timeWindow = heliConfig.fixedTimeScale;
-    if (isDef(timeWindow)){
-      this.secondsPerLine = timeWindow.duration.asSeconds()/heliConfig.numLines;
-    } else {
-      throw new Error("Helicorder config must have fixedTimeScale set");
-    }
     this.maxVariation = 1;
     if (seisData.seismogram) {
+      const timeWindow = this.heliConfig.fixedTimeScale;
       let cutSeis = seisData.seismogram.cut(timeWindow);
       if (cutSeis) {
         let [min,max] = cutSeis.findMinMax();
@@ -60,7 +54,9 @@ export class Helicorder {
     }
     let startTime = moment.utc(timeWindow.startTime);
     this.seismographArray = [];
-    let lineTimes = this.calcTimesForLines(startTime, this.secondsPerLine, this.heliConfig.numLines);
+    const secondsPerLine = timeWindow.duration.asSeconds()/this.heliConfig.numLines;
+
+    let lineTimes = this.calcTimesForLines(startTime, secondsPerLine, this.heliConfig.numLines);
     for(let lineTime of lineTimes) {
       let startTime = lineTime.startTime;
       let endTime = lineTime.endTime;
@@ -128,6 +124,9 @@ export class HelicorderConfig extends SeismographConfig {
   numLines: number;
   constructor(timeWindow: StartEndDuration) {
     super();
+    if ( ! isDef(timeWindow)){
+      throw new Error("Helicorder config must have fixedTimeScale set");
+    }
     this.fixedTimeScale = timeWindow;
     this.maxHeight = 600;
     this.xLabel = '';

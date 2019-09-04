@@ -27,11 +27,14 @@ export class MSeedArchive {
     this._recordSize = 512;
     this.checkPattern(this._pattern);
   }
-  getRootUrl(): string {
+  get rootUrl(): string {
     return this._rootUrl;
   }
-  getPattern(): string {
+  get pattern(): string {
     return this._pattern;
+  }
+  get recordSize(): number {
+    return this._recordSize;
   }
   /** checks pattern for allowed flags as not all that are supported
     * by ringserver are supported here. Must only include:
@@ -104,12 +107,12 @@ export class MSeedArchive {
     let t = moment.utc(startTime).subtract(recordTime, 'seconds');
     let promiseArray = [];
     while (t.isBefore(endTime)) {
-      let url = this.getRootUrl()+'/'+this.fillTimePattern(basePattern, t);
+      let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
       promiseArray.push(fetch(url));
       t.add(1, 'hour');
     }
     if (moment.utc(t).add(recordTime, 'seconds').isAfter(endTime)) {
-      let url = this.getRootUrl()+'/'+this.fillTimePattern(basePattern, t);
+      let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
       promiseArray.push(fetch(url));
     }
     promiseArray = promiseArray.map( (p) => {
@@ -164,7 +167,7 @@ export class MSeedArchive {
     });
   }
   fillBasePattern(net: string, sta: string, loc: string, chan: string): string {
-    return this.getPattern().replace(/%n/g, net)
+    return this.pattern.replace(/%n/g, net)
       .replace(/%s/g, sta)
       .replace(/%l/g, loc)
       .replace(/%c/g, chan);
