@@ -14,7 +14,12 @@ import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
 import {StartEndDuration, isDef} from './util.js';
 
-
+/**
+ * A helicorder-like multi-line seismogram display usually covering 24 hours
+ * @param inSvgParent the parent element, usually a div tag
+ * @param heliConfig configuration object
+ * @param seisData the data to display
+ */
 export class Helicorder {
   seismographArray: Array<Seismograph>;
   svgParent: any;
@@ -32,8 +37,13 @@ export class Helicorder {
     this.heliConfig = heliConfig;
     this.maxVariation = 1;
     if (seisData.seismogram) {
+      const seis = seisData.seismogram; // for flow
       const timeWindow = this.heliConfig.fixedTimeScale;
-      let cutSeis = seisData.seismogram.cut(timeWindow);
+      // for flow
+      if ( ! isDef(timeWindow)){
+        throw new Error("Helicorder config must have fixedTimeScale set");
+      }
+      let cutSeis = seis.cut(timeWindow);
       if (cutSeis) {
         let [min,max] = cutSeis.findMinMax();
         let mean = cutSeis.mean();
@@ -43,6 +53,9 @@ export class Helicorder {
       }
     }
   }
+  /**
+   * draws, or redraws, the helicorder.
+   */
   draw() {
     if ( ! this.seisData) {
       // no data
@@ -99,6 +112,13 @@ export class Helicorder {
       startTime = endTime;
     }
   }
+  /**
+   * Calculates the time range covered by each line of the display
+   * @param  {[type]} startTime      start of display
+   * @param  {[type]} secondsPerLine seconds covered by each line
+   * @param  {[type]} numberOfLines  number of lines
+   * @return Array of HeliTimeRange, one per line
+   */
   calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRange> {
     let out = [];
     let s = moment.utc(startTime);
@@ -118,6 +138,10 @@ export class Helicorder {
   }
 }
 
+/**
+ * Configuration of the helicorder
+ * @param timeWindow the time range covered by the helicorder, required
+ */
 export class HelicorderConfig extends SeismographConfig {
   lineSeisConfig: SeismographConfig;
   overlap: number;
@@ -154,6 +178,10 @@ export class HelicorderConfig extends SeismographConfig {
   }
 }
 
+/**
+ * Time range for a single line of the helicorder, extends StartEndDuration
+ * to add the line number
+ */
 export class HeliTimeRange extends StartEndDuration {
   lineNumber: number;
   constructor(startTime: moment | null, endTime: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
