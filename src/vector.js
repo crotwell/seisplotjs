@@ -8,9 +8,31 @@
 
 import {SeismogramSegment, Seismogram } from './seismogram.js';
 
+/**
+ * const for degrees to radians, pi/180
+ */
 export const DtoR = Math.PI / 180;
 
-export function rotate(seisA: Seismogram, azimuthA: number, seisB: Seismogram, azimuthB: number, azimuth: number) {
+export class RotatedSeismograms {
+  radial: Seismogram;
+  transverse: Seismogram;
+  azimuthRadial: number;
+  azimuthTransverse: number;
+  rotation: number;
+  constructor(radial: Seismogram,
+              azimuthRadial: number,
+              transverse: Seismogram,
+              azimuthTransverse: number,
+              rotation: number) {
+    this.radial = radial;
+    this.azimuthRadial = azimuthRadial;
+    this.transverse = transverse;
+    this.azimuthTransverse = azimuthTransverse;
+    this.rotation = rotation;
+  }
+}
+
+export function rotate(seisA: Seismogram, azimuthA: number, seisB: Seismogram, azimuthB: number, azimuth: number): RotatedSeismograms {
   if (seisA.segments.length !== seisB.segments.length) {
     throw new Error("Seismograms do not have same number of segments: "+seisA.segments.length+" !== "+seisB.segments.length);
   }
@@ -22,12 +44,11 @@ export function rotate(seisA: Seismogram, azimuthA: number, seisB: Seismogram, a
     rotOutRad.push(result.radial);
     rotOutTrans.push(result.transverse);
   }
-  let out = {
-    "radial": new Seismogram(rotOutRad),
-    "transverse": new Seismogram(rotOutTrans),
-    "azimuthRadial": azimuth % 360,
-    "azimuthTransverse": (azimuth + 90) % 360
-  };
+  let out = new RotatedSeismograms(new Seismogram(rotOutRad),
+                                   azimuth % 360,
+                                   new Seismogram(rotOutTrans),
+                                   (azimuth + 90) % 360,
+                                   azimuth - azimuthA);
   return out;
 }
 
@@ -72,6 +93,21 @@ export function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: numb
   };
   return out;
 }
+
+/**
+ * creates a new Seismogram where the value at each sample is the
+ * vector magnitude of the 3 corresponding data points from each seismogram.
+ * Each of the 3 seismograms are assumed to be mutually perpendicular so
+ * that each set of samples gives a vector in 3-dimensional space. In particular
+ * all three seismograms must have the same number of samples and sample rate.
+ * It is assumed, but not checked, that they will be the three components of
+ * motion at a station (ie matching network, station and location codes)
+ * and have the same start time.
+ * @param   seisA first seismogram
+ * @param   seisB second seismogram
+ * @param   seisC third seismogram
+ * @return Seismogram of vector magnitudes
+ */
 export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Seismogram) {
   if (seisA.segments.length !== seisB.segments.length) {
     throw new Error("Seismograms do not have same number of segments: "+seisA.segments.length+" !== "+seisB.segments.length+" !== "+seisC.segments.length);
@@ -111,9 +147,9 @@ export function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: Seismogr
     y = new Float32Array(seisA.y.length);
   }
   for (let i = 0; i < seisA.y.length; i++) {
-    y[i] = Math.sqrt(seisA.yAtIndex(i) * seisA.yAtIndex(i)
-      + seisB.yAtIndex(i) * seisB.yAtIndex(i)
-      + seisC.yAtIndex(i) * seisC.yAtIndex(i));
+    y[i] = Math.sqrt(seisA.y[i] * seisA.y[i]
+      + seisB.y[i] * seisB.y[i]
+      + seisC.y[i] * seisC.y[i]);
   }
   let outSeis = seisA.cloneWithNewData(y);
   outSeis.channelCode = seisA.chanCode.slice(0,2)+"M";
