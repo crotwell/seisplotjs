@@ -52,8 +52,8 @@ export class SeismogramSegment {
   yUnit: string;
   _highlow: HighLowType;
   constructor(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
-    sampleRate: number,
-    startTime: moment) {
+              sampleRate: number,
+              startTime: moment) {
     if (yArray instanceof Int32Array || yArray instanceof Float32Array || yArray instanceof Float64Array) {
       this._y = yArray;
       this._compressed = null;
@@ -355,14 +355,26 @@ export class Seismogram {
   get networkCode(): string {
     return this._segmentArray[0].networkCode;
   }
+  set networkCode(value: string) {
+    this._segmentArray.forEach(s => s.networkCode = value);
+  }
   get stationCode(): string {
     return this._segmentArray[0].stationCode;
+  }
+  set stationCode(value: string) {
+    this._segmentArray.forEach(s => s.stationCode = value);
   }
   get locationCode(): string {
     return this._segmentArray[0].locationCode;
   }
+  set locationCode(value: string) {
+    this._segmentArray.forEach(s => s.locationCode = value);
+  }
   get channelCode(): string {
     return this._segmentArray[0].channelCode;
+  }
+  set channelCode(value: string) {
+    this._segmentArray.forEach(s => s.channelCode = value);
   }
   get sampleRate(): number {
     return this._segmentArray[0].sampleRate;
@@ -511,7 +523,9 @@ export class Seismogram {
   /** factory method to create a single segment Seismogram from either encoded data
    *  or a TypedArray, along with sample rate and start time.
   */
-  static createFromContiguousData(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array, sampleRate: number, startTime: moment) {
+  static createFromContiguousData(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
+                                  sampleRate: number,
+                                  startTime: moment) {
     const seg = new SeismogramSegment(yArray, sampleRate, startTime);
     return new Seismogram([seg]);
   }
