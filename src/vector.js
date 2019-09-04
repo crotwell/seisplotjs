@@ -13,6 +13,9 @@ import {SeismogramSegment, Seismogram } from './seismogram.js';
  */
 export const DtoR = Math.PI / 180;
 
+/**
+ * Result of rotation for 2 seismograms.
+ */
 export class RotatedSeismograms {
   radial: Seismogram;
   transverse: Seismogram;
@@ -32,6 +35,16 @@ export class RotatedSeismograms {
   }
 }
 
+/**
+ * Rotates the given seismograms from their given azimuths so the output radial
+ * is along the new azimuth and the output transverse is perpendicular to it.
+ * @param   seisA    first seismogram
+ * @param   azimuthA azimuth of first seismogram
+ * @param   seisB    second seismogram
+ * @param   azimuthB azimuth of second seismogram
+ * @param   azimuth  output radial azimuth to rotate to
+ * @return radial and transverse seismograms
+ */
 export function rotate(seisA: Seismogram, azimuthA: number, seisB: Seismogram, azimuthB: number, azimuth: number): RotatedSeismograms {
   if (seisA.segments.length !== seisB.segments.length) {
     throw new Error("Seismograms do not have same number of segments: "+seisA.segments.length+" !== "+seisB.segments.length);
@@ -52,7 +65,8 @@ export function rotate(seisA: Seismogram, azimuthA: number, seisB: Seismogram, a
   return out;
 }
 
-export function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: number, seisB: SeismogramSegment, azimuthB: number, azimuth: number) {
+
+function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: number, seisB: SeismogramSegment, azimuthB: number, azimuth: number) {
   if (seisA.y.length !== seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);
@@ -125,7 +139,7 @@ export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Sei
   return new Seismogram(outSeis);
 }
 
-export function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: SeismogramSegment, seisC: SeismogramSegment) {
+function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: SeismogramSegment, seisC: SeismogramSegment) {
   if (seisA.y.length !== seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);
