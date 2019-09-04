@@ -437,13 +437,13 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
  * splits the DataRecords by channel and creates a single
  * Seismogram for each channel.
  * @param   drList DataRecords array
- * @return         Map of code to Seismogram
+ * @return         Array of Seismogram
  */
-export function seismogramPerChannel(drList: Array<DataRecord> ): Map<string, Seismogram> {
-  let out = new Map();
+export function seismogramPerChannel(drList: Array<DataRecord> ): Array<Seismogram> {
+  let out = [];
   let byChannelMap = byChannel(drList);
   for (let [key, segments] of byChannelMap) {
-    out.set(key, merge(segments));
+    out.push(merge(segments));
   }
   return out;
 }

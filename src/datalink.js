@@ -9,28 +9,29 @@
 /*global DataView */
 /*global WebSocket */
 
-/**
- * Philip Crotwell
- * University of South Carolina, 2016
- * http://www.seis.sc.edu
- */
 
-import {dataViewToString, stringify} from './util';
+import {dataViewToString, stringify, isDef} from './util';
 import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
 
+/** const for datalink protocol for web sockets, DataLink1.0 */
 export const DATALINK_PROTOCOL = "DataLink1.0";
+/** const for query mode, QUERY */
 export const QUERY_MODE = "QUERY";
+/** const for streaming mode, STREAM */
 export const STREAM_MODE = "STREAM";
+/** const for maximum process number to create fake number for datalink id, 2^16-2 */
 export const MAX_PROC_NUM = Math.pow(2, 16)-2;
+/** const for fake user name for datalink id, browser */
 export const USER_BROWSER = "browser";
 
+/** const for error response, ERROR */
 export const ERROR = "ERROR";
 export const PACKET = "PACKET";
 export const STREAM = "STREAM";
 export const ENDSTREAM = "ENDSTREAM";
-export const MSEED_TYPE = "MSEED";
+export const MSEED_TYPE = "/MSEED";
 
 let defaultHandleResponse = function(message) {
   console.log("Unhandled datalink response: "+message);
@@ -388,6 +389,13 @@ export class DataLinkPacket {
    */
   get packetTime(): moment {
     return hpTimeToMoment(parseInt(this.hppackettime));
+  }
+  /**
+   * is this packet a miniseed packet
+   * @return {Boolean}         true if it is miniseed
+   */
+  isMiniseed(): boolean {
+    return isDef(this._miniseed) || this.streamId.endsWith(MSEED_TYPE);
   }
   /**
    * Parsed payload as a miniseed data record, if the streamid

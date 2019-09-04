@@ -1,6 +1,6 @@
 // @flow
 
-/**
+/*
  * Philip Crotwell
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
@@ -21,7 +21,8 @@ import { Channel } from './stationxml';
 import { Seismogram, SeismogramDisplayData } from './seismogram';
 import {XML_MIME, TEXT_MIME, StartEndDuration, calcClockOffset, doFetchWithTimeout, defaultFetchInitObj, isDef} from './util.js';
 
-export const FORMAT_MINISEED = 'mseed';
+/** const for miniseed format, mseed */
+export const FORMAT_MINISEED = 'miniseed';
 
 /**
  * Major version of the FDSN spec supported here.
@@ -34,6 +35,7 @@ export const SERVICE_VERSION = 1;
  */
 export const SERVICE_NAME = `fdsnws-dataselect-${SERVICE_VERSION}`;
 
+/** const for the default IRIS web service host, service.iris.edu */
 export const IRIS_HOST = "service.iris.edu";
 
 /**
@@ -287,8 +289,14 @@ export class DataSelectQuery {
     }
   }
 
+  /**
+   * queries the web service using the configured parameters, parsing the response
+   * into miniseed data records.
+   * @return Promise to Array of miniseed.DataRecords
+   */
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
     const mythis = this;
+    this.format(FORMAT_MINISEED);
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
@@ -304,7 +312,14 @@ export class DataSelectQuery {
         return dataRecords;
     });
   }
-  querySeismograms(): Promise<Map<string, Seismogram>> {
+
+  /**
+   * queries the web service using the configured parameters, parsing the response
+   * into miniseed data records and then combining the data records into
+   * Seismogram objects.
+   * @return Promise to Array of Seismogram objects
+   */
+  querySeismograms(): Promise<Array<Seismogram>> {
     return this.queryDataRecords().then(dataRecords => {
       return miniseed.seismogramPerChannel(dataRecords);
     });
@@ -335,17 +350,14 @@ export class DataSelectQuery {
   postQuerySeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
       return miniseed.seismogramPerChannel(dataRecords);
-    }).then(seisMap => {
+    }).then(seisArray => {
       for (let ct of channelTimeList) {
         if (isDef(ct.channel)) {
           let channel = ct.channel;
           let codes = channel.codes();
-          if (seisMap.has(codes)) {
-            // odd, but keeps flow happy
-            let seis = seisMap.get(channel.codes());
-            if (seis) {
-              ct.seismogram = seis;
-            }
+          let seis = seisArray.find(s => s.codes() === codes);
+          if (seis) {
+            ct.seismogram = seis;
           }
         } else {
           throw new Error("Channel in missing in postQuerySeismograms");

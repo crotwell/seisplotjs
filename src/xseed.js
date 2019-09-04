@@ -422,11 +422,11 @@ export function byChannel(drList: Array<XSeedRecord>): Map<string, Array<XSeedRe
  * @param   drList XSeedRecords array
  * @return         Map of code to Seismogram
  */
-export function seismogramPerChannel(drList: Array<XSeedRecord> ): Map<string, Seismogram> {
-  let out = new Map();
+export function seismogramPerChannel(drList: Array<XSeedRecord> ): Array<Seismogram> {
+  let out = [];
   let byChannelMap = byChannel(drList);
   for (let [key, segments] of byChannelMap) {
-    out.set(key, merge(segments));
+    out.push(merge(segments));
   }
   return out;
 }

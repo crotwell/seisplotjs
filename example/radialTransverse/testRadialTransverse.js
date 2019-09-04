@@ -126,8 +126,8 @@ let bothPromise = RSVP.hash({
     svgDiv.style("width", "100%");
     svgDiv.style("height", "450px");
     console.log("hash.seismograms size: "+hash.seismograms.size);
-    if (hash.seismograms.size > 0) {
-      console.log("hash.seismograms "+hash.seismograms.size+" ");
+    if (hash.seismograms.length > 0) {
+      console.log("hash.seismograms "+hash.seismograms.length+" ");
         let seisConfig = new SeismographConfig();
         let markers = [];
         markers.push({ markertype: 'predicted', name: "origin", time: hash.quake.time });
@@ -144,7 +144,7 @@ let bothPromise = RSVP.hash({
           }
         }
 
-        let traceArray = Array.from(hash.seismograms.values());
+        let traceArray = Array.from(hash.seismograms);
         traceArray.sort(seisplotjs.plotutil.alphabeticalSort);
         console.log("traceArray: "+traceArray.length+"  "+traceArray[0]+"  "+(typeof traceArray[0]))
         let seisData = traceArray.map( s => {
@@ -175,7 +175,7 @@ let bothPromise = RSVP.hash({
         let seisZ = null;
         let seisNorth = null;
         let seisEast = null;
-        for (let [key, trace] of hash.seismograms) {
+        for (let trace of hash.seismograms) {
           if (trace.channelCode.charAt(2) === "Z") {
             seisZ = trace;
           }
@@ -211,6 +211,6 @@ console.log("first points: "+seisZ.segments[0].yAtIndex(0)+" "+rotated.radial.se
         rotatedSeismograph.draw();
     } else{
       div.append('p').html('No data found for '+hash.station.codes());
-      console.log("hash.seismograms: "+hash.seismograms.size);
+      console.log("hash.seismograms: "+hash.seismograms.length);
     }
   });

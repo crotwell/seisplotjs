@@ -93,6 +93,7 @@
         }
         seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
         seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
+        return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
       }).catch( function(error) {
         seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
         console.assert(false, error);

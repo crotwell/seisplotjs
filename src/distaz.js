@@ -1,11 +1,12 @@
 // @flow
 
-/**
+/*
  * Philip Crotwell
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
 
+/** const for kilometers per degree on the earth, 111.19 */
 export const kmPerDeg = 111.19;
 
 /** Convert degrees into kilometers along the earth surface
@@ -27,6 +28,7 @@ type DistAzOutput = {
   az: number,
   baz: number
 }
+
 /**
  * @param lat1 Latitude of first point (station) (+N, -S) in degrees
  * @param lon1 Longitude of first point(station) (+E, -W) in degrees

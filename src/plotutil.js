@@ -19,7 +19,7 @@ import {StartEndDuration} from './util.js';
 export { dataselect, miniseed, d3, RSVP, moment };
 
 export type PlotDataType = {
-  "traceMap": Map<String, Seismogram>,
+  "seismograms": Array<Seismogram>,
   "startTime": moment,
   "endTime": moment,
   "request": dataselect.DataSelectQuery,
@@ -43,6 +43,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
     let startTime = null;
     let endTime = null;
     if (svgParent.attr("href")) {
+      // url to miniseed file
       url = svgParent.attr("href");
       return fetch(url)
         .then(response => {
@@ -54,7 +55,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         })
         .then(ab => {
           return {
-            "traceMap": miniseed.seismogramPerChannel(miniseed.parseDataRecords(ab)),
+            "seismograms": miniseed.seismogramPerChannel(miniseed.parseDataRecords(ab)),
             "startTime": startTime,
             "endTime": endTime,
             "request": null,
@@ -88,9 +89,9 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         .channelCode(chan)
         .startTime(startTime)
         .endTime(endTime);
-      out.push(request.querySeismograms().then(function(traceMap) {
+      out.push(request.querySeismograms().then(seismograms => {
         return {
-          "traceMap": traceMap,
+          "seismograms": seismograms,
           "startTime": startTime,
           "endTime": endTime,
           "request": request,
@@ -100,7 +101,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
         // rejection, so no inSegments
         // but may need others to display message
         return {
-          "traceMap": new Map(),
+          "seismograms": [],
           "startTime": startAttr,
           "endTime": endAttr,
           "request": request,
@@ -119,12 +120,12 @@ export function createPlotsBySelector(selector: string) {
   return createPlotsBySelectorPromise(selector).then(function(resultArray){
     resultArray.forEach(function(result: PlotDataType) {
       result.svgParent.append("p").text("Build plot");
-        if (result.traceMap.size >0) {
+        if (result.seismograms.length >0) {
           let svgDiv = result.svgParent.append("div");
           svgDiv.classed("svg-container-wide", true);
           let seisConfig = new SeismographConfig();
           seisConfig.fixedTimeScale = new StartEndDuration(result.startTime, result.endTime);
-          let seisData = Array.from(result.traceMap.values()).map(s => SeismogramDisplayData.fromSeismogram(s));
+          let seisData = result.seismograms.map(s => SeismogramDisplayData.fromSeismogram(s));
           let seismogram = new Seismograph(svgDiv, seisConfig, seisData);
           seismogram.draw();
         } else {

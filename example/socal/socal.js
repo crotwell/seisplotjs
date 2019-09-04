@@ -27,7 +27,7 @@ if ("https:" == document.location.protocol) {
   protocol = 'https:'
 }
 
-let quakeTimeWindow = new StartEndDuration(null, moment.utc(), moment.duration(daysAgo, 'days'));
+let quakeTimeWindow = new seisplotjs.util.StartEndDuration(null, moment.utc(), moment.duration(daysAgo, 'days'));
 let quakeQuery = new fdsnevent.EventQuery()
   .protocol(protocol)
   .host(HOST)

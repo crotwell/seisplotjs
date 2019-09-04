@@ -249,15 +249,12 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
         "firstPS": firstPS,
         "PArrival": PArrival,
         "queryWindow": queryWindow,
-        "byChannel": dsQuery.querySeismograms(),
+        "seismograms": dsQuery.querySeismograms(),
         "dsQuery": dsQuery
       });
     }).then(function(hash) {
-        let byChannel = hash.byChannel;
-        let keys = Array.from(byChannel.keys());
-        for (let key of byChannel.keys()) {
-          let seismogram = byChannel.get(key);
-          div.append('p').html('Plot for ' + key);
+        for (let seismogram of hash.seismograms) {
+          div.append('p').html('Plot for ' + seismogram.codes());
           let svgdiv = div.append('div').attr('class', 'myseisplot');
           if (seismogram) {
               let seisData = SeismogramDisplayData.fromSeismogram(seismogram);
@@ -282,10 +279,10 @@ let plotOneStation = function(div, mystation, loc, chan, quake, pOffset, dur, cl
               let seismograph = new Seismograph(svgdiv, seisConfig, seisData);
               seismograph.draw();
           } else {
-            console.log(`no seismogram for ${key}`)
+            console.log(`no seismogram???`)
           }
         }
-        if (keys.length==0){
+        if (hash.seismograms.length==0){
             div.append('p').html('No data found for '+mystation.codes);
         }
         return hash;

@@ -1,6 +1,6 @@
 // @flow
 
-/**
+/*
  * Philip Crotwell
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
@@ -26,7 +26,7 @@ import * as fdsndataselect from './fdsndataselect.js';
 import * as fdsnevent from './fdsnevent.js';
 import * as fdsnstation from './fdsnstation.js';
 
-
+/** const for fdsn web service host, www.fdsn.org */
 export const FDSN_HOST = "www.fdsn.org";
 
 /**
@@ -186,6 +186,10 @@ export class DataCentersQuery {
     }
   }
 
+  /**
+   * queries the fdsn registry web service, returning the result as a parsed json object.
+   * @return Promise to the json object.
+   */
   queryJson(): Promise<RootType> {
     const mythis = this;
     const url = this.formURL();
@@ -201,6 +205,14 @@ export class DataCentersQuery {
       });
   }
 
+  /**
+   * queries the registry to find fdsn dataselect compatible web services within
+   * a datacenter of the given name, optionally within the repository with
+   * the repo name.
+    * @param   name     datacenter name
+    * @param   repoName optional repository name
+    * @return           Promise to Array of fdsndataselect.DataSelectQuery objects
+    */
   findFdsnDataSelect(name: string, repoName?: string): Promise<Array<fdsndataselect.DataSelectQuery>> {
     if (name && name.length > 0) {
       this.name(name);
@@ -217,6 +229,14 @@ export class DataCentersQuery {
     });
   }
 
+  /**
+   * queries the registry to find a fdsn event compatible web services within
+   * a datacenter of the given name, optionally within the repository with
+   * the repo name.
+    * @param   name     datacenter name
+    * @param   repoName optional repository name
+    * @return           Promise to Array of fdsnevent.EventQuery objects
+    */
   findFdsnEvent(dcname: string, repoName?: string ): Promise<Array<fdsnevent.EventQuery>> {
     if (dcname && dcname.length > 0) {
       this.name(dcname);
@@ -233,7 +253,14 @@ export class DataCentersQuery {
     });
   }
 
-
+  /**
+   * queries the registry to find a fdsn station compatible web services within
+   * a datacenter of the given name, optionally within the repository with
+   * the repo name.
+    * @param   name     datacenter name
+    * @param   repoName optional repository name
+    * @return           Promise to Array of fdsnstation.StationQuery objects
+    */
   findFdsnStation(dcname: string, repoName?: string ): Promise<Array<fdsnstation.StationQuery>> {
     if (dcname && dcname.length > 0) {
       this.name(dcname);
@@ -302,6 +329,10 @@ export class DataCentersQuery {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
 
+  /**
+   * forms a url to the fdsn registry based on the configured parameters.
+   * @return the url
+   */
   formURL(): string {
     const method = "query";
     let url = this.formBaseURL()+`/${method}?`;

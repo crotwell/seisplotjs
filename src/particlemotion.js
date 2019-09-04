@@ -21,7 +21,7 @@ export function createParticleMotionBySelector(selector: string): void {
     .then(function(resultArray) {
       resultArray.forEach(function(result) {
         result.svgParent.append("p").text("Build plot");
-        const traceArr = Array.from(result.traceMap.values());
+        const traceArr = result.seismograms;
           if (traceArr.length >1) {
             addDivForParticleMotion(traceArr[0], traceArr[1], result.svgParent, result.startTime, result.endTime);
             if (traceArr.length > 2) {

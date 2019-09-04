@@ -24,9 +24,9 @@
       .locationCode('00')
       .channelCode('LHZ')
       .timeWindow(timeWindow);
-    dsQuery.querySeismograms().then(seisMap => {
+    dsQuery.querySeismograms().then(seisArray => {
         // only plot the first seismogram
-        let seismogram = seisMap.values().next().value;
+        let seismogram = seisArray[0];
         let div = seisplotjs.d3.select('div#myseismograph');
         let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
         let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);

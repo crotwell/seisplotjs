@@ -1,6 +1,6 @@
 // @flow
 
-/**
+/*
  * Philip Crotwell
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
@@ -21,11 +21,16 @@ import {SeismogramDisplayData } from './seismogram.js';
 import { TEXT_MIME, JSON_MIME, StartEndDuration , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 import {Network, Station, Channel} from './stationxml.js';
 
+/** const for json format, json */
 export const FORMAT_JSON = 'json';
+/** const for text format, text */
 export const FORMAT_TEXT = 'text';
+/** const for geocsv format, geocsv */
 export const FORMAT_GEOCSV = 'geocsv';
+/** const for request format, request */
 export const FORMAT_REQUEST = 'request';
 
+/** const of completely empty json, {} */
 export const EMPTY_JSON = JSON.parse('{}');
 
 /**

@@ -72,15 +72,13 @@ export class MSeedArchive {
       });
     return RSVP.all(promiseArray).then(pArray => {
         let index = 0;
-        let outMap = new Map();
         let out = [];
         pArray.forEach(p => {
           index++;
-          let seisMap = miniseed.seismogramPerChannel(p.dataRecords);
+          let seisArray = miniseed.seismogramPerChannel(p.dataRecords);
           // should only be one
-          for (let [key, seis] of seisMap) {
+          for (let seis of seisArray) {
             let cutSeis = seis.cut(new StartEndDuration(p.request.startTime, p.request.endTime));
-            outMap.set(key, cutSeis);
             p.request.seismogram = cutSeis;
             out.push(p.request);
           }
