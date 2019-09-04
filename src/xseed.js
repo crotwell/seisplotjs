@@ -325,14 +325,6 @@ export function makeString(dataView: DataView, offset: number, length: number): 
   const utf8decoder = new TextDecoder('utf-8');
   let u8arr = new Uint8Array(dataView.buffer, dataView.byteOffset+offset, length);
   return utf8decoder.decode(u8arr).trim();
-  // for (let i=offset; i<offset+length; i++) {
-  //   let charCode = dataView.getUint8(i);
-  //   if (charCode > 31) {
-  //     out += String.fromCharCode(charCode);
-  //     dbg += ' '+charCode;
-  //   }
-  // }
-  // return out.trim();
 }
 
 
@@ -367,12 +359,12 @@ export function createSeismogramSegment(contig: Array<XSeedRecord>): SeismogramS
 
 
 /**
- * Merges data records into a arrary of seismogram segment objects
- * containing the data as a float array, y. Each seismogram has
- * sampleRate, start, end, netCode, staCode, locCode, chanCode as well
- * as the function timeOfSample(integer) set.
- * This assumes all data records are from the same channel, byChannel
- * can be used first if multiple channels may be present.
+  * Merges xseed records into a Seismogram object, each of
+  * which consists of SeismogramSegment objects
+  * containing the data as EncodedDataSegment objects. DataRecords are
+  * sorted by startTime.
+  * This assumes all data records are from the same channel, byChannel
+  * can be used first if multiple channels may be present.
  */
 export function merge(drList: Array<XSeedRecord>): Seismogram {
   let out = [];
@@ -399,28 +391,6 @@ export function merge(drList: Array<XSeedRecord>): Seismogram {
       contig = [];
   }
   return new Seismogram(out);
-}
-
-
-export function segmentMinMax(segment: XSeedRecord, minMaxAccumulator?: Array<number>) {
-  let minAmp = Number.MAX_SAFE_INTEGER;
-  let maxAmp = -1 * (minAmp);
-  if ( minMaxAccumulator) {
-    minAmp = minMaxAccumulator[0];
-    maxAmp = minMaxAccumulator[1];
-  }
-  const data = segment.decompress();
-  if (data) {
-    for (let n = 0; n < data.length; n++) {
-      if (minAmp > data[n]) {
-        minAmp = data[n];
-      }
-      if (maxAmp < data[n]) {
-        maxAmp = data[n];
-      }
-    }
-  }
-  return [ minAmp, maxAmp ];
 }
 
 /** splits a list of data records by channel code, returning an object
