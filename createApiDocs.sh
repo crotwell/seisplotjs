@@ -23,6 +23,7 @@ desc_datalink='datalink protocol over web socket to a [Ringserver](https://seisc
 desc_datechooser='widget to choose dates and times'
 desc_distaz='calculates distance between to lat/lon points'
 desc_fdsnavailability='query data availability from an FDSN availability web service'
+desc_fdsndatacenters='query FDSN data center registry'
 desc_fdsndataselect='query seismograms from an FDSN web service'
 desc_fdsnevent='query earthquakes from an FDSN web service'
 desc_fdsnstation='query networks, stations and channels from an FDSN web service'
