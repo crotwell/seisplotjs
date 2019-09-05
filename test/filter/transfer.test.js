@@ -38,7 +38,8 @@ test("applyFreqTaper to FFTResult", () => {
   let numPoints = 512;
   let inDataAmp = new Float32Array(numPoints/2).fill(1);
   let inDataPhase = new Float32Array(numPoints/2).fill(0);
-  let inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase, numPoints);
+  let sampRate = 100;
+  let inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase, numPoints, sampRate);
 
   // IU.HRV.BHE response
   const zeros =  [filter.createComplex(0, 0),
@@ -48,7 +49,6 @@ test("applyFreqTaper to FFTResult", () => {
   filter.createComplex(-0.0139, -0.0100),
   filter.createComplex(-31.4160, 0.0000) ];
   let sacPoleZero = new SacPoleZero(poles, zeros, 2.94283674E10);
-  let sampRate = 100;
   let lowCut = .2;
   let lowPass = .4;
   let highPass = 20;
@@ -229,7 +229,7 @@ test("PoleZeroTaper", () => {
       for(let i = 0; i < data.length; i++) {
           data[i] /= samprate;
       }
-      let out = fft.calcDFT(data, data.length);
+      let out = fft.calcDFT(data);
       const sacout = [ [0, 0, 0],
                        [0.000610352, -0, 0],
                        [0.0012207, -0, 0],
@@ -328,7 +328,7 @@ test("Combine", () => {
       }
 
 
-      const outfft = fft.calcDFT(data, data.length);
+      const outfft = fft.calcDFT(data);
       expect(outfft.length).toBe(32768);
       //assertEquals("nfft", 32768, out.length);
       expect(samprate/outfft.length).toBeCloseTo(0.000610352, 9);
@@ -416,7 +416,7 @@ test("impulse one zero combina amp", () => {
       // }
 
 
-      const outfft = fft.calcDFT(data, data.length);
+      const outfft = fft.calcDFT(data);
       expect(outfft.length).toBe(1024);
       expect(samprate/outfft.length/2).toBeCloseTo(1/1024/2, 9);
       //assertEquals("delfrq ", 0.000610352, samprate/out.length, 0.00001);
@@ -424,7 +424,7 @@ test("impulse one zero combina amp", () => {
       expect(out.length).toBe(1024);
       // sac and oregondsp differ by const len in fft
       let outMulLength = out.map(d => d * out.length);
-      const bagAmPh = fft.FFTResult.createFromPackedFreq(outMulLength, data.length);
+      const bagAmPh = fft.FFTResult.createFromPackedFreq(outMulLength, data.length, samprate);
 
       let saveDataPromise = null;
       if (WRITE_TEST_DATA) {

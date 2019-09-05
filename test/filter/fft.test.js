@@ -1,7 +1,9 @@
 // @flow
 
 import * as fft from '../../src/fft.js';
-import {readSac, parseSac, readDataView, writeSac, replaceYData} from './sacfile';
+import {Seismogram, ensureIsSeismogram } from '../../src/seismogram.js';
+import {readSac, parseSac, readDataView, writeSac, replaceYData, asSeismogram} from './sacfile';
+import moment from 'moment';
 
 const OVERWRITE_OUTPUT = false;
 
@@ -10,7 +12,7 @@ test("real small fft, Lyons p 64-72", () => {
   const data =  Float32Array.from([ 0.3535, 0.3535, 0.6464, 1.0607, 0.3535, -1.0607, -1.3535, -0.3535, 0, 0, 0, 0, 0, 0, 0, 0]);
   const ansReal =  Float32Array.from([ 0.0, 0.0, 1.414, 0.0, 0.0, 0.0, 1.414, 0.0]);
   const ansImg =  Float32Array.from([ 0.0, -4.0, 1.414, 0.0, 0.0, 0.0, -1.414, 4.0]);
-  const fftout = fft.calcDFT(data, data.length);
+  const fftout = fft.calcDFT(data);
   expect(fftout[0]).toBeCloseTo(ansReal[0], 3);
   expect(fftout[2]).toBeCloseTo(ansReal[1], 3);
   expect(fftout[4]).toBeCloseTo(ansReal[2], 3);
@@ -29,7 +31,7 @@ test("real small fft, Lyons p 64-72", () => {
 test("Round Trip FFT, Spike", () => {
   const data = new Float32Array(128).fill(0);
   data[1] = 1/100;
-  const fftout = fft.calcDFT(data, data.length);
+  const fftout = fft.calcDFT(data);
   const out = fft.inverseDFT(fftout, data.length);
   expect(out).toHaveLength(data.length);
   for(let i=0; i<out.length; i++) {
@@ -39,7 +41,10 @@ test("Round Trip FFT, Spike", () => {
       expect(out[i]/data[i]).toBeCloseTo(1, 5);
     }
   }
-  const fftresult = fft.fftForward(data);
+  let sampleRate = 1;
+  let start = moment.utc();
+  let seis = Seismogram.createFromContiguousData(data, sampleRate, start);
+  const fftresult = fft.fftForward(seis);
   for(let i=0; i<fftresult.packedFreq.length; i++) {
       expect(fftresult.packedFreq[i]).toBeCloseTo(fftout[i], 5);
   }
@@ -57,8 +62,8 @@ test("Round Trip FFT, Spike", () => {
 test("Round Trip FFT HRV", () => {
   return readSac("./test/filter/data/IU.HRV.__.BHE.SAC")
   .then(data => {
-
-    const fftout = fft.calcDFT(data.y, data.y.length);
+    const seis = asSeismogram(data);
+    const fftout = fft.calcDFT(data.y);
     const out = fft.inverseDFT(fftout, data.y.length);
     for(let i=0; i<out.length; i++) {
       if (data.y[i] === 0) {
@@ -76,10 +81,10 @@ test("FFT", () => {
                       readSac("./test/filter/data/IU.HRV.__.BHE_fft.sac.am"),
                       readSac("./test/filter/data/IU.HRV.__.BHE_fft.sac.ph")])
   .then ( result => {
-      let sac = result[0];
-      let sacAmp = result[1];
-      let sacPhase = result[2];
-      const samprate = 1/ sac.delta;
+      let sac = asSeismogram(result[0]);
+      let sacAmp = asSeismogram(result[1]);
+      let sacPhase = asSeismogram(result[2]);
+      const samprate = sac.sampleRate;
       let data = sac.y;
       /* sac premultiplies the data by the sample period before doing the fft. Later it
        * seems to be cancled out by premultiplying the pole zeros by a similar factor.
@@ -89,7 +94,7 @@ test("FFT", () => {
       for(let i = 0; i < data.length; i++) {
           data[i] /= samprate;
       }
-      const fftRes = fft.fftForward(data);
+      const fftRes = fft.fftForward(sac);
 
       let saveDataPromise = Promise.resolve(null);
       if (OVERWRITE_OUTPUT) {
@@ -155,4 +160,21 @@ test("FFT", () => {
       // $FlowFixMe
       expect(bagPhase).arrayToBeCloseTo(sacPhase.y, 2);
     });
+});
+
+
+test("fftForward", () => {
+  const dataLen = 1000;
+  const nextPowerTwo = 1024;
+  let rawData = new Float32Array(dataLen);
+  rawData[500] = 1;
+  const sampleRate = 1;
+  const start = moment.utc();
+  const origseis = Seismogram.createFromContiguousData(rawData, sampleRate, start);
+  const freqData = fft.fftForward(origseis);
+  expect(freqData.origLength).toEqual(dataLen);
+  expect(freqData.numPoints).toEqual(nextPowerTwo);
+  expect(freqData.sampleRate).toEqual(origseis.sampleRate);
+  expect(freqData.fundamentalFrequency).toBeCloseTo(sampleRate/nextPowerTwo);
+  expect(freqData.amp.length).toEqual(nextPowerTwo/2 +1);
 });

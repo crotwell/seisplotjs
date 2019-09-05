@@ -12,25 +12,31 @@ import * as d3 from 'd3';
 
 import {insertCSS} from './plotutil.js';
 
-export function createSimpleFFTPlot(fft: FFTResult, cssSelector: string, sps: number, loglog: boolean = true) {
-  let svg = createOverlayFFTPlot( [ fft], cssSelector, sps, loglog);
+export function createSimpleFFTPlot(cssSelector: string, fft: FFTResult, sps: number, loglog: boolean = true) {
+  let svg = createOverlayFFTPlot(cssSelector,  [ fft], sps, loglog);
   svg.classed("overlayplot", false);
   return svg;
 }
 
-export function createOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: string, sps: number, loglog: boolean = true) {
+export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTResult>, sps: number, loglog: boolean = true) {
     let T = 1/sps;
     let ampPhaseList = [];
     let ampSliceMap = new Map();
     let maxFFTAmpLen = 0;
     let extentFFTData = null;
+    let freqMinMax = [];
     for (const fftA of fftArrays) {
+      if (loglog) {
+        freqMinMax.push(fftA.fundamentalFrequency); // min freq
+      } else {
+        freqMinMax.push(0);
+      }
+      freqMinMax.push(fftA.sampleRate/2); // max freq
       let ap: FFTResult;
       if (fftA instanceof FFTResult) {
         ap = fftA;
       } else {
-        // assume packed array
-        ap = FFTResult.createFromPackedFreq(fftA, fftA.length);
+        throw new Error("fftArrays must be array of FFTResult");
       }
       ampPhaseList.push(ap);
       if (maxFFTAmpLen < ap.amp.length) {
@@ -81,23 +87,16 @@ export function createOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: s
     let g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     let x;
-    let line = d3.line();
     if (loglog) {
       x = d3.scaleLog()
           .rangeRound([0, width]);
-      line.x(function(d, i, a) { return x((i+1)*sps/2/(a.length-1)); });
-      // minus one as slice off zero freq above
-      x.domain([sps/2/(maxFFTAmpLen-1), sps/2]);
     } else {
       x = d3.scaleLinear()
           .rangeRound([0, width]);
-      line.x(function(d, i, a) { return x((i  )*sps/2.0/(a.length-1)); });
-      x.domain([0, sps/2]);
     }
+    x.domain(d3.extent(freqMinMax));
     let y = d3.scaleLog()
         .rangeRound([height, 0]);
-    //  line.y(function(d) { return d===0 ? y.range()[0] : y(d); });
-  line.y(function(d) { if (d !== 0.0 && ! isNaN(d)) {return y(d);} else {return y.range()[0]} });
   y.domain(extentFFTData);
   if (y.domain()[0] === y.domain()[1]) {
     y.domain( [ y.domain()[0]/2, y.domain()[1]*2]);
@@ -128,6 +127,16 @@ export function createOverlayFFTPlot(fftArrays: Array<FFTResult>, cssSelector: s
   let pathg = g.append("g").classed("allfftpaths", true);
   for (const ap of ampPhaseList) {
     let ampSlice = ampSliceMap.get(ap);
+    console.log(`fft  sampleRate: ${ap.sampleRate}  ${ap.numPoints}`)
+    let minFreq = ap.fundamentalFrequency;
+    let line = d3.line();
+    if (loglog) {
+      line.x(function(d, i, a) { return x((i+1)*minFreq); });
+      // minus one as slice off zero freq above
+    } else {
+      line.x(function(d, i, a) { return x((i  )*minFreq); });
+    }
+    line.y(function(d) { if (d !== 0.0 && ! isNaN(d)) {return y(d);} else {return y.range()[0]} });
     pathg.append("g").append("path")
         .classed("fftpath", true)
         .datum(ampSlice)

@@ -65,7 +65,7 @@ export function transferSacPZSegment(seis: SeismogramSegment,
          */
         outData.forEach((d,i) => outData[i] = d/sampFreq);
 
-        let freqValues = calcDFT(outData, outData.length);
+        let freqValues = calcDFT(outData);
         freqValues = combine(freqValues, sampFreq, sacPoleZero, lowCut, lowPass, highPass, highCut);
 
         outData = inverseDFT(freqValues, values.length);
@@ -107,7 +107,8 @@ export function calcResponse(response: Response, numPoints: number, sampleRate: 
   trimmedZeros = trimmedZeros.reverse();
   sacPoleZero.zeros = trimmedZeros;
   console.log(`sacPoleZero after gamma corrections for ${unit} is ${stringify(sacPoleZero)}`);
-  return calcResponseFromSacPoleZero( sacPoleZero, numPoints, sampleRate);
+  let out = calcResponseFromSacPoleZero( sacPoleZero, numPoints, sampleRate);
+  return out;
 }
 
 export function calcResponseFromSacPoleZero(sacPoleZero: SacPoleZero, numPoints: number, sampleRate: number): FFTResult {
@@ -134,7 +135,8 @@ export function calcResponseFromSacPoleZero(sacPoleZero: SacPoleZero, numPoints:
       freqValues[freqValues.length-i] = 0;
     }
   }
-  return FFTResult.createFromPackedFreq(freqValues, numPoints);
+  let out = FFTResult.createFromPackedFreq(freqValues, numPoints, sampleRate);
+  return out;
 }
 
 export function combine(freqValues: Float32Array,
@@ -228,7 +230,7 @@ export function applyFreqTaper(fftResult: FFTResult,
 
   const deltaF = sampleRate / fftResult.amp.length / 2;
   return FFTResult.createFromAmpPhase(fftResult.amp.map( (v,i) => i === 0 ? 0 : v*calcFreqTaper(i*deltaF, lowCut, lowPass, highPass, highCut)),
-                                      fftResult.phase, fftResult.origLength);
+                                      fftResult.phase, fftResult.origLength, fftResult.sampleRate);
 }
 
 // common units
