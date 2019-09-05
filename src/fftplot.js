@@ -77,13 +77,11 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
     svg.classed("fftplot", true).classed("overlayplot", true);
 
     let margin = {top: 20, right: 20, bottom: 30, left: 50};
-    //const styleHeight = svgParent.style("height");
-    //const styleWidth = svgParent.style("width");
-    const styleHeight = 500;
-    const styleWidth = 900;
-    svg.attr("width", styleWidth).attr("height", styleHeight);
-    let width = +styleWidth - margin.left - margin.right;
-    let height = +styleHeight - margin.top - margin.bottom;
+
+    let rect = svg.node().getBoundingClientRect();
+
+    let width = +rect.width - margin.left - margin.right;
+    let height = +rect.height - margin.top - margin.bottom;
     let g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     let x;
