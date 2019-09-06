@@ -669,7 +669,7 @@ export class SeismogramDisplayData {
   get seismogram() {
     return this._seismogram;
   }
-  set seismogram(value: Seismogram) {
+  set seismogram(value: Seismogram | null) {
     this._seismogram = value;
     this._statsCache = null;
   }
