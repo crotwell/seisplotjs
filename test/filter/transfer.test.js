@@ -74,7 +74,7 @@ test("applyFreqTaper to FFTResult", () => {
 
       }
     }
-    })
+    });
   });
 
 test("TaperVsSac", () => {

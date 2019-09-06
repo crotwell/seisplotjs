@@ -112,7 +112,7 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
       .text("Hertz");
 
   g.append("g")
-      .call(d3.axisLeft(y))
+      .call(d3.axisLeft(y));
   svg.append("g")
       .attr("transform", `translate(0, ${margin.top+height/2} )`)
     .append("text")
@@ -124,7 +124,6 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
   let pathg = g.append("g").classed("allfftpaths", true);
   for (const ap of ampPhaseList) {
     let ampSlice = ampSliceMap.get(ap);
-    console.log(`fft  sampleRate: ${ap.sampleRate}  ${ap.numPoints}`)
     let minFreq = ap.fundamentalFrequency;
     let line = d3.line();
     if (loglog) {
@@ -133,7 +132,7 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
     } else {
       line.x(function(d, i, a) { return x((i  )*minFreq); });
     }
-    line.y(function(d) { if (d !== 0.0 && ! isNaN(d)) {return y(d);} else {return y.range()[0]} });
+    line.y(function(d) { if (d !== 0.0 && ! isNaN(d)) {return y(d);} else {return y.range()[0];} });
     pathg.append("g").append("path")
         .classed("fftpath", true)
         .datum(ampSlice)

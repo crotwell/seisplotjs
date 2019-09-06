@@ -35,7 +35,7 @@ test( "vector magnitude test", () => {
 
 let magFunc = function(a, b, c) {
   return Math.sqrt(a*a+b*b+c*c);
-}
+};
 
 
 test("trace rotation", () => {

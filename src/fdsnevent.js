@@ -766,7 +766,7 @@ export class EventQuery {
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
     .then(response => {
         if (response.status === 200) {
-          return response.text()
+          return response.text();
         } else if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
           // 204 is nodata, so successful but empty
           return FAKE_EMPTY_XML;

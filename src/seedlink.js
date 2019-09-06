@@ -50,7 +50,7 @@ export class SeedlinkConnection {
   receiveMiniseedFn: (packet: SequencedDataRecord) => void;
   errorFn: (error: Error) => void;
   closeFn: null | (close: CloseEvent) => void;
-  webSocket: null| WebSocket;
+  webSocket: null | WebSocket;
   command: string;
   constructor(url: string, requestConfig: Array<string>, receiveMiniseedFn: (packet: SequencedDataRecord) => void, errorFn: (error: Error) => void) {
     this.url = url;
@@ -77,7 +77,7 @@ export class SeedlinkConnection {
     }
     try {
       const webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
-      this.webSocket = webSocket
+      this.webSocket = webSocket;
       webSocket.binaryType = 'arraybuffer';
       const that = this;
       webSocket.onopen = function() {
@@ -185,7 +185,6 @@ export class SeedlinkConnection {
    * @return {[type]}           Promise that resolves to the response from the server.
    */
   sendHello(): Promise<string> {
-    let that = this;
     let webSocket = this.webSocket;
     let promise = new RSVP.Promise(function(resolve, reject) {
       if (webSocket) {
@@ -230,7 +229,6 @@ export class SeedlinkConnection {
    * @return {[type]}       Promise that resolves to the reply from the server.
    */
   createCmdPromise(mycmd: string): Promise<string> {
-    let that = this;
     let webSocket = this.webSocket;
     let promise = new RSVP.Promise(function(resolve, reject) {
       if (webSocket) {

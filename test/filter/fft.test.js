@@ -1,7 +1,7 @@
 // @flow
 
 import * as fft from '../../src/fft.js';
-import {Seismogram, ensureIsSeismogram } from '../../src/seismogram.js';
+import {Seismogram } from '../../src/seismogram.js';
 import {readSac, parseSac, readDataView, writeSac, replaceYData, asSeismogram} from './sacfile';
 import moment from 'moment';
 

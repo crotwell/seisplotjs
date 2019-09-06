@@ -157,12 +157,6 @@ export class Helicorder {
     }
     return out;
   }
-  drawMarkers() {
-    this.seismographArray.forEach(h => {
-      h.seisDataList.forEach(sd => sd.markerList = this.seisData.markerList);
-      h.drawMarkers()
-    });
-  }
 }
 
 /**

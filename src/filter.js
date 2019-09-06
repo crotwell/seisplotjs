@@ -74,7 +74,7 @@ export function gainCorrect(seis: Seismogram, instrumentSensitivity: InstrumentS
       if ( s.y instanceof Int32Array || s.y instanceof Float32Array) {
         gainY = Float32Array.from(s.y);
       } else {
-        gainY = Float64Array.from(s.y)
+        gainY = Float64Array.from(s.y);
       }
       gainY = gainY.map(function(d) {
         return d/gain;
