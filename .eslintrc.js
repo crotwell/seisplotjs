@@ -23,6 +23,7 @@ module.exports = {
       "semi": ["error", "always"],
       "no-var": ["error"],
       "no-console": [ "off"],
+      "no-unused-vars": [ "off"],
       "eqeqeq": ["error", "always"]
     }
 };
