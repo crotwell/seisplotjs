@@ -206,6 +206,31 @@ export class DataCentersQuery {
   }
 
   /**
+   * queries the registry to find fdsn availability compatible web services within
+   * a datacenter of the given name, optionally within the repository with
+   * the repo name.
+    * @param   name     datacenter name
+    * @param   repoName optional repository name
+    * @return           Promise to Array of fdsnavailability.AvailabilityQuery objects
+    */
+  findFdsnAvailability(name: string, repoName?: string): Promise<Array<fdsnavailability.AvailabilityQuery>> {
+    if (name && name.length > 0) {
+      this.name(name);
+    }
+    this.services(fdsnavailability.SERVICE_NAME);
+    return this.queryJson().then(json => {
+      console.log(`returned json: ${JSON.stringify(json)}`);
+      let out = this.extractCompatibleServices(json, fdsnavailability.SERVICE_NAME, repoName);
+      return out.map(service => {
+        let url = new URL(service.url);
+        let q = new fdsnavailability.AvailabilityQuery(url.hostname);
+        if (url.port && url.port.length > 0) {q.port(Number.parseInt(url.port));}
+        return q;
+      });
+    });
+  }
+
+  /**
    * queries the registry to find fdsn dataselect compatible web services within
    * a datacenter of the given name, optionally within the repository with
    * the repo name.
