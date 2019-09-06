@@ -84,22 +84,59 @@
               let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
               let taperSeis = seisplotjs.taper.taper(filteredSeis);
               let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
-                  sdd.channel.response, .001, .02, 25, 50);
+                  sdd.channel.response, .001, .02, 250, 500);
               sdd.seismogram = correctedSeis;
             });
             return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
           </code></pre>
           <p>
-            Lastly, just to make sure we don't correct the data twice, we
+            Then, just to make sure we don't correct the data twice, we
             disable the gain correction.
           </p>
           <pre><code class="language-javascript">
             seisConfig.doGain = false;
           </code></pre>
+          <p>
+            Perhaps just for fun we can also plot the amplitude spectra for the
+            three seismograms. We need to add an additional div to hold them.
+          </p>
+          <pre><code class="language-html">
+            &lt;div id="fftplot">
+            &lt;/div>
+          </code></pre>
+          <p>
+            And an additional style to size it.
+          </p>
+          <pre><code class="language-css">
+            div#fftplot {
+              height: 600px;
+            }
+          </code></pre>
+          <p>
+            Then we calculate the fft and plot it. Because the resulting plot is
+            just an svg element created with d3, we can add a plot label by
+            modifying it with normal d3 techniques.
+          </p>
+          <pre><code class="language-javascript">
+          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+            let div = seisplotjs.d3.select('div#fftplot');
+            let fftList = seismogramDataList.map(sdd => seisplotjs.fft.fftForward(sdd.seismogram));
+            let svg = seisplotjs.fftplot.createOverlayFFTPlot('div#fftplot', fftList, true);
+            svg.append("g").classed("title", true)
+              .attr("transform", "translate(700, 100)")
+              .append("text").classed("title label", true)
+              .selectAll("tspan")
+              .data(seismogramDataList)
+              .enter()
+              .append("tspan")
+              .text(sdd => " "+sdd.seismogram.channelCode+" ");
+
+            return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
+          </code></pre>
 
           <h3>See it live in <a href="tutorial5.html">tutorial5.html</a>.</h3>
           <p>Previous:  <a href="4_arrivaltimes.html">Predicted phase arrival times</a></p>
-          <p>Next: </p>
+          <p>Next:  <a href="6_helicorder.html">Helicorder</a></p>
 
 
         </div>

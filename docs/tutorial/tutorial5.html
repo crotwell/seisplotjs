@@ -7,12 +7,17 @@
       div.seismograph {
         height: 300px;
       }
+      div#fftplot {
+        height: 600px;
+      }
     </style>
   </head>
   <body>
     <h3>Tutorial 5: Filtering</h3>
     <h3>A Seismograph recorded at <span id="stationCode"></span> for the <span id="earthquakeDescription"></span>!</h3>
-    <div class="seismograph" id="myseismograph">
+    <div id="myseismograph">
+    </div>
+    <div id="fftplot">
     </div>
 
     <script src="seisplotjs_2.0.0-alpha.4_standalone.js"></script>
@@ -69,7 +74,7 @@
           let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
           let taperSeis = seisplotjs.taper.taper(filteredSeis);
           let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
-              sdd.channel.response, .001, .02, 25, 50);
+              sdd.channel.response, .001, .02, 250, 500);
           sdd.seismogram = correctedSeis;
         });
         return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
@@ -93,6 +98,20 @@
         }
         seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
         seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
+        return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
+      }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+        let div = seisplotjs.d3.select('div#fftplot');
+        let fftList = seismogramDataList.map(sdd => seisplotjs.fft.fftForward(sdd.seismogram));
+        let svg = seisplotjs.fftplot.createOverlayFFTPlot('div#fftplot', fftList, true);
+        svg.append("g").classed("title", true)
+          .attr("transform", "translate(700, 100)")
+          .append("text").classed("title label", true)
+          .selectAll("tspan")
+          .data(seismogramDataList)
+          .enter()
+          .append("tspan")
+          .text(sdd => " "+sdd.seismogram.channelCode+" ");
+
         return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
       }).catch( function(error) {
         seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);

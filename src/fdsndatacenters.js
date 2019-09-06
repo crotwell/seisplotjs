@@ -219,6 +219,7 @@ export class DataCentersQuery {
     }
     this.services(fdsndataselect.SERVICE_NAME);
     return this.queryJson().then(json => {
+      console.log(`returned json: ${JSON.stringify(json)}`);
       let out = this.extractCompatibleServices(json, fdsndataselect.SERVICE_NAME, repoName);
       return out.map(service => {
         let url = new URL(service.url);
@@ -283,14 +284,18 @@ export class DataCentersQuery {
     json.datacenters.forEach( dc => {
       console.log(`dc repos ${dc.repositories.length}`)
       dc.repositories.forEach( repo => {
-        if (repoName && repoName === repo.name) {
+        if ( ! isDef(repoName) || repoName === repo.name) {
           console.log(`repo servicess ${repo.services.length}`)
           repo.services.forEach( service => {
             if (service.name === compatibleName || (
               isDef(service.compatibleWith) && service.compatibleWith.includes(compatibleName)) ) {
               out.push(service);
+            } else {
+              console.log(`no compatible: ${compatibleName} ${service.name}  ${service.compatibleWith}`)
             }
           });
+        } else {
+          console.log(`no match repo: ${repoName}  ${repo.name}`)
         }
       });
     });

@@ -6,8 +6,10 @@
  * http://www.seis.sc.edu
  */
 
+import * as d3 from 'd3';
 import moment from 'moment';
 
+import {insertCSS} from './plotutil.js';
 import { Seismogram, SeismogramDisplayData } from './seismogram.js';
 import type { MarkerType } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
@@ -33,7 +35,7 @@ export class Helicorder {
               seisData: SeismogramDisplayData) {
     this.seismographArray = [];
     this.seisData = seisData;
-    this.svgParent = inSvgParent;
+    this.svgParent = d3.select(inSvgParent).append('div').classed('helicorder', true);
     this.heliConfig = heliConfig;
     this.maxVariation = 1;
     if (seisData.seismogram) {
@@ -57,6 +59,20 @@ export class Helicorder {
    * draws, or redraws, the helicorder.
    */
   draw() {
+    this.drawTitle();
+    this.drawSeismograms();
+  }
+  drawTitle() {
+    let titleEl = this.svgParent.append('h3').classed("helicordertitle", true);
+    if (Array.isArray(this.heliConfig.title)) {
+      this.heliConfig.title.forEach( s => {
+        titleEl.append("span").text(s+" ");
+      });
+    } else {
+      titleEl.text(this.heliConfig.title);
+    }
+  }
+  drawSeismograms() {
     if ( ! this.seisData) {
       // no data
       return;
@@ -73,12 +89,13 @@ export class Helicorder {
     for(let lineTime of lineTimes) {
       let startTime = lineTime.startTime;
       let endTime = lineTime.endTime;
-      let seisDiv = this.svgParent.append('div');
       let nl = this.heliConfig.numLines;
       let height = this.heliConfig.maxHeight/(nl-(nl-1)*this.heliConfig.overlap);
       let marginTop = lineTime.lineNumber===0?0:Math.round(-1.0*height*this.heliConfig.overlap);
       //console.log(`line ${lineTime.lineNumber} height: ${height}  marginTop: ${marginTop}  ${this.heliConfig.overlap}`);
-      seisDiv.classed('heliLine', true)
+
+      let seisDiv = this.svgParent.append('div')
+        .classed('heliLine', true)
         .style('height', height+'px')
         .style('margin-top', `${marginTop}px`);
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
@@ -92,22 +109,32 @@ export class Helicorder {
       let lineCutSeis = null;
       if (this.seisData.seismogram) {lineCutSeis = this.seisData.seismogram.cut(lineTime);}
       let lineMean = 0;
+      let seisData = this.seisData.clone();
       if (lineCutSeis) {
-        let seisData = SeismogramDisplayData.fromSeismogram(lineCutSeis);
-        seisData.timeWindow = lineTime;
-        seisData.addMarkers(this.seisData.markerList);
-        seisData.addQuake(this.seisData.quakeList);
-        seisData.channel = this.seisData.channel;
-        seisData.sensitivity = this.seisData.sensitivity;
+        seisData.seismogram = lineCutSeis;
         lineMean = lineCutSeis.mean();
-        trimSeisDataList.push(seisData);
+      } else {
+        seisData.seismogram = null;
       }
+      seisData.timeWindow = lineTime;
+      trimSeisDataList.push(seisData);
+
       lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
       let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisDataList);
       seismograph.draw();
       seismograph.canvas.style("height", `${height}px`);
       seismograph.svg.style("height", `${height}px`);
-
+      if (lineTime.lineNumber===0) {
+        // add UTC to top left
+        seismograph.svg.append("g")
+        .classed("yLabel", true)
+        .classed("utcLabel", true)
+        .append("text")
+        .attr("x", 0).attr("y",0)
+        .attr("text-anchor", "start")
+        .attr("dy", ".75em")
+        .text("UTC");
+      }
       this.seismographArray.push(seismograph);
       startTime = endTime;
     }
@@ -168,12 +195,13 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.ySublabel = ` `;
     this.lineSeisConfig.xLabel = ' ';
     this.lineSeisConfig.yLabel = '';// replace later with `${startTime.format("HH.mm")}`;
+    this.lineSeisConfig.yLabelOrientation = 'horizontal';
     this.lineSeisConfig.ySublabelIsUnits = false;
     this.lineSeisConfig.isXAxis = false;
     this.lineSeisConfig.isYAxis = false;
     this.lineSeisConfig.margin.top = 2;
     this.lineSeisConfig.margin.bottom = 2;
-    this.lineSeisConfig.margin.left = 32;
+    this.lineSeisConfig.margin.left = 37;
     this.lineSeisConfig.wheelZoom = false;
   }
 }
@@ -187,4 +215,48 @@ export class HeliTimeRange extends StartEndDuration {
   constructor(startTime: moment | null, endTime: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
     super(startTime, endTime, duration, clockOffset);
   }
+}
+
+export const helicorder_css = `
+
+div.heliLine {
+  height: 100px;
+  margin-top: -50px;
+  color: black;
+}
+
+div.helicorder div.heliLine .yLabel text {
+  font-size: smaller;
+}
+
+div.helicorder div.heliLine:first-child {
+  margin-top: 0;
+}
+
+div.helicorder div.heliLine:nth-child(3n+1) {
+  color: skyblue;
+}
+div.helicorder div.heliLine:nth-child(3n+2) {
+  color: olivedrab;
+}
+div.helicorder div.heliLine:nth-child(3n) {
+  color: goldenrod;
+}
+div.helicorder div.heliLine:nth-child(3n+1) .yLabel text {
+  fill: skyblue;
+}
+div.helicorder div.heliLine:nth-child(3n+2) .yLabel text {
+  fill: olivedrab;
+}
+div.helicorder div.heliLine:nth-child(3n) .yLabel text {
+  fill: goldenrod;
+}
+
+h3.helicordertitle {
+  text-align: center;
+}
+`;
+
+if (document){
+  insertCSS(helicorder_css);
 }

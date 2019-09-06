@@ -98,7 +98,7 @@ export class Seismograph {
     this.svg.classed("seismograph", true);
     //this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
-    this.svg.style("postition", "absolute");
+    this.svg.style("position", "absolute");
     this.svg.style("top", "0px");
     this.svg.style("left", "0px");
     //this.svg.attr("preserveAspectRatio", "xMinYMin meet");
@@ -210,7 +210,9 @@ export class Seismograph {
     this.drawSeismograms();
     this.drawAxis(this.g);
     this.drawAxisLabels();
-    this.drawMarkers();
+    if (this.seismographConfig.doMarkers) {
+      this.drawMarkers();
+    }
     this.beforeFirstDraw = false;
   }
   printSizes(): void {
@@ -809,17 +811,17 @@ export class Seismograph {
        .attr("transform", "translate(0, "+(this.seismographConfig.margin.top+(this.height)/2)+")")
        .append("text");
     svgText
-       .classed("y label", true)
-       .attr("dy", ".75em");
+       .classed("y label", true);
     if (this.seismographConfig.yLabelOrientation === "vertical") {
       // vertical
       svgText
         .attr("text-anchor", "middle")
-        .attr("transform-origin", "center center")
-        .attr("transform", "rotate(-90)");
+        .attr("dy", ".75em")
+        .attr("transform", "rotate(-90, 0, 0)");
     } else {
       // horizontal
-      svgText.attr("text-anchor", "start");
+      svgText.attr("text-anchor", "start")
+      .attr("dominant-baseline", "central");
     }
     svgText.text(this.seismographConfig.yLabel);
     return this;

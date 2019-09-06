@@ -148,8 +148,14 @@ export class StartEndDuration {
       throw "need some combination of startTime, endTime and duration";
     }
   }
+  get start() {
+    return this._startTime;
+  }
   get startTime() {
     return this._startTime;
+  }
+  get end() {
+    return this._endTime;
   }
   get endTime() {
     return this._endTime;

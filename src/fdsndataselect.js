@@ -341,11 +341,14 @@ export class DataSelectQuery {
   /**
    * query the dataselect server using post, which allows for multiple
    * channel-timeranges at once. This assumes that there are not multiple
-   * time ranges for the same channel as the results are returned one seismogram
-   * per channels, which may contain gaps. The original channel timerange is
-   * also populated with the resulting seismogram.
-   * @param  {[type]} channelTimeList [description]
-   * @return {[type]}                 [description]
+   * time ranges for the same channel as the results, encapsulated as
+   * SeismogramDisplayData objects, are returned one seismogram
+   * per channel, which may contain gaps. The original channel and timerange are
+   * also populated with each result.
+   * @param  {[type]} channelTimeList array of SeismogramDisplayData objects
+   * that will be filled in with the resulting seismogram
+   * @return Promise to the input Array of SeismogramDisplayData objects, each with the
+   * seismogram containing the data returned from the server
    */
   postQuerySeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     return this.postQueryDataRecords(channelTimeList).then(dataRecords => {

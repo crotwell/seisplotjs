@@ -12,14 +12,13 @@ import * as d3 from 'd3';
 
 import {insertCSS} from './plotutil.js';
 
-export function createSimpleFFTPlot(cssSelector: string, fft: FFTResult, sps: number, loglog: boolean = true) {
-  let svg = createOverlayFFTPlot(cssSelector,  [ fft], sps, loglog);
+export function createSimpleFFTPlot(cssSelector: string, fft: FFTResult, loglog: boolean = true) {
+  let svg = createOverlayFFTPlot(cssSelector,  [ fft], loglog);
   svg.classed("overlayplot", false);
   return svg;
 }
 
-export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTResult>, sps: number, loglog: boolean = true) {
-    let T = 1/sps;
+export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTResult>, loglog: boolean = true) {
     let ampPhaseList = [];
     let ampSliceMap = new Map();
     let maxFFTAmpLen = 0;
