@@ -26,10 +26,11 @@
     "flow-copy": "flow-copy-source -v -i '**/__tests__/**' src dist/module",
     "rollup": "rollup --config rollup.config.js",
     "build:clean": "rimraf dist",
-    "compile": "npm run build:clean && npm run rollup && npm run flow-copy && npm run standalone",
+    "apidoc:clean": "rimraf docs/api",
+    "compile": "npm run build:clean && npm run rollup && npm run flow-copy && npm run standalone && npm run doc",
     "standalone": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ]",
     "doc": "npm run apidoc",
-    "apidoc": "./createApiDocs.sh",
+    "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
     "prepare": "npm run compile",
     "version": "npm run compile && npm run standalone",
     "postversion": "git push && git push --tags"
