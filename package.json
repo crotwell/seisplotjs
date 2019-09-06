@@ -31,7 +31,7 @@
     "standalone": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ]",
     "doc": "npm run apidoc",
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
-    "prepare": "npm run compile",
+    "prepare": "npm run flow && npm run test && npm run compile",
     "version": "npm run compile && npm run standalone",
     "postversion": "git push && git push --tags"
   },
