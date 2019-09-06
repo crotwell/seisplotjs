@@ -109,15 +109,12 @@ export class Helicorder {
       let lineCutSeis = null;
       if (this.seisData.seismogram) {lineCutSeis = this.seisData.seismogram.cut(lineTime);}
       let lineMean = 0;
-      let seisData = this.seisData.clone();
+      let lineSeisData = this.seisData.cloneWithNewSeismogram(lineCutSeis);
       if (lineCutSeis) {
-        seisData.seismogram = lineCutSeis;
         lineMean = lineCutSeis.mean();
-      } else {
-        seisData.seismogram = null;
       }
-      seisData.timeWindow = lineTime;
-      trimSeisDataList.push(seisData);
+      lineSeisData.timeWindow = lineTime;
+      trimSeisDataList.push(lineSeisData);
 
       lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
       let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisDataList);

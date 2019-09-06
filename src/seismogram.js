@@ -686,22 +686,27 @@ export class SeismogramDisplayData {
     return stats;
   }
   clone(): SeismogramDisplayData {
-    let out = new SeismogramDisplayData(this.timeWindow);
-    Object.getOwnPropertyNames(this).forEach( name => {
-      // $FlowFixMe
-      if (this[name] instanceof moment) {
+    return this.cloneWithNewSeismogram(this.seismogram.clone());
+  }
+  cloneWithNewSeismogram(seis: Seismogram): SeismogramDisplayData {
+      let out = new SeismogramDisplayData(this.timeWindow);
+      Object.getOwnPropertyNames(this).forEach( name => {
+        if (name === 'seismogram') {
+          out.seismogram = seis;
         // $FlowFixMe
-        out[name] = moment.utc(this[name]);
-        // $FlowFixMe
-      } else if ( Array.isArray(this[name]) ) {
-        // $FlowFixMe
-        out[name] = this[name].slice();
-      } else {
-        // $FlowFixMe
-        out[name] = this[name];
-      }
-    });
-    return out;
+        } else if (this[name] instanceof moment) {
+          // $FlowFixMe
+          out[name] = moment.utc(this[name]);
+          // $FlowFixMe
+        } else if ( Array.isArray(this[name]) ) {
+          // $FlowFixMe
+          out[name] = this[name].slice();
+        } else {
+          // $FlowFixMe
+          out[name] = this[name];
+        }
+      });
+      return out;
   }
 }
 
