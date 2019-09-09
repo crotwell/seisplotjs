@@ -1144,6 +1144,11 @@ svg.seismograph {
   width: 100%;
 }
 
+canvas.seismograph {
+  height: 100%;
+  width: 100%;
+}
+
 div.container-wide {
   display: inline-block;
   position: relative;

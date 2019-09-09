@@ -227,11 +227,20 @@ div.helicorder div.heliLine:first-child {
 div.helicorder div.heliLine:nth-child(3n+1) {
   color: skyblue;
 }
+div.helicorder div.heliLine:nth-child(3n+1) path.seispath {
+  stroke: skyblue;
+}
 div.helicorder div.heliLine:nth-child(3n+2) {
   color: olivedrab;
 }
+div.helicorder div.heliLine:nth-child(3n+2) path.seispath {
+  stroke: olivedrab;
+}
 div.helicorder div.heliLine:nth-child(3n) {
   color: goldenrod;
+}
+div.helicorder div.heliLine:nth-child(3n) path.seispath {
+  stroke: goldenrod;
 }
 div.helicorder div.heliLine:nth-child(3n+1) .yLabel text {
   fill: skyblue;
