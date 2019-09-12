@@ -829,7 +829,7 @@ export class Seismograph {
     this.svg.selectAll("g.title").remove();
     let titleSVGText = this.svg.append("g")
        .classed("title", true)
-       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+( this.seismographConfig.margin.top  )+")")
+       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+0+")")
        .append("text").classed("title label", true)
        .attr("x",0).attr("y",0)
        .attr("text-anchor", "middle");
@@ -1216,6 +1216,7 @@ svg.seismograph text.title {
   font: bold 18px sans-serif;
   fill: black;
   color: black;
+  dominant-baseline: hanging;
 }
 
 svg.realtimePlot g.allseismograms path.seispath {
