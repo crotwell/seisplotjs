@@ -75,18 +75,19 @@
             to display the first one.
           </p>
           <pre><code class="language-javascript">
-              dsQuery.querySeismograms().then(seisArray => {
-              // only plot the first seismogram
-              let seismogram = seisArray[0];
-              let div = seisplotjs.d3.select('div#myseismograph');
-              let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-              let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-              let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
-              graph.draw();
-            }).catch( function(error) {
-              seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
-              console.assert(false, error);
-            });
+            dsQuery.querySeismograms().then(seisArray => {
+                // only plot the first seismogram
+                let seismogram = seisArray[0];
+                let div = seisplotjs.d3.select('div#myseismograph');
+                let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+                seisConfig.title = seismogram.codes();
+                let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+                let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
+                graph.draw();
+              }).catch( function(error) {
+                seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+                console.assert(false, error);
+              });
           </code></pre>
 
           <h3>See it live in <a href="tutorial2.html">tutorial2.html</a>.</h3>

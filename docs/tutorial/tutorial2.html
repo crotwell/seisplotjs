@@ -29,6 +29,7 @@
         let seismogram = seisArray[0];
         let div = seisplotjs.d3.select('div#myseismograph');
         let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+        seisConfig.title = seismogram.codes();
         let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
         let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
         graph.draw();

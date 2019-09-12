@@ -48,14 +48,14 @@
         let startTime = seisplotjs.moment.utc(quakeList[0].time)
           .add(firstP.time, 'seconds').subtract(30, 'seconds');
         let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 1800);
-        let chanTRList = allChannels.map(c => {
+        let seismogramDataList = allChannels.map(c => {
           let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
           sdd.addQuake(quakeList);
           sdd.addMarkers(phaseMarkers);
           return sdd;
         });
         let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-        return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
+        return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(seismogramDataList) ] );
       }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
         let div = seisplotjs.d3.select('div#myseismograph');
         let graphList = [];

@@ -63,7 +63,7 @@
                return Promise.all( [ quakeList, networks, taupQuery.queryJson() ] );
           </code></pre>
           <p>
-            Now in the third then, we can use add the travel time to the
+            Now in the next <code>then</code>, we can use add the travel time to the
             origin time to get a start for our request.
             The little flags for phase arrivals are <code>Marker</code> objects
             and we put them and the quake into our
@@ -94,18 +94,18 @@
             let startTime = seisplotjs.moment.utc(quakeList[0].time)
               .add(firstP.time, 'seconds').subtract(30, 'seconds');
             let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 1800);
-            let chanTRList = allChannels.map(c => {
+            let seismogramDataList = allChannels.map(c => {
               let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
               sdd.addQuake(quakeList);
               sdd.addMarkers(phaseMarkers);
               return sdd;
             });
             let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-            return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(chanTRList) ] );
+            return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(seismogramDataList) ] );
           </code></pre>
           <p>
             Now that we have travel times and seismograms, we can plot both.
-            We also link the seismographs so that they keep aligned with
+            We also link the seismographs so that they stay aligned with
             each other in time
             and amplitude.
           </p>

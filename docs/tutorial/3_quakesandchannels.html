@@ -94,12 +94,15 @@
             gain and in units of m/s. We also added a couple of
             <code class="language-html">&lt;span></code>
             elements to hold the station codes and earthquake description.
+            The default text coloring colors the seismograms and the corresponding
+            array of strings in the title the same color, making them easier to
+            identify. Note the units on the left hand side are now m/s.
           </p>
           <pre><code class="language-javascript">
           }).then( ( [ quakeList, networks, seismogramDataList ] ) => {
             let div = seisplotjs.d3.select('div#myseismograph');
             let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-            seisConfig.title = seismogramDataList.map(ctr => ctr.channel.codes());
+            seisConfig.title = seismogramDataList.map((sdd, i) => i===0?sdd.channel.codes():sdd.channel.channelCode);
             seisConfig.doGain = true;
             let graph = new seisplotjs.seismograph.Seismograph(div,
                                                                seisConfig,

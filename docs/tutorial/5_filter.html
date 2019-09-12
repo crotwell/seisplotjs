@@ -105,7 +105,7 @@
             seisConfig.doGain = false;
           </code></pre>
           <p>
-            Perhaps just for fun we can also plot the amplitude spectra for the
+            We can also plot the amplitude spectra for the
             three seismograms. We need to add an additional div to hold them.
           </p>
           <pre><code class="language-html">
@@ -131,7 +131,7 @@
             let fftList = seismogramDataList.map(sdd => seisplotjs.fft.fftForward(sdd.seismogram));
             let svg = seisplotjs.fftplot.createOverlayFFTPlot('div#fftplot', fftList, true);
             svg.append("g").classed("title", true)
-              .attr("transform", "translate(700, 100)")
+              .attr("transform", "translate(600, 100)")
               .append("text").classed("title label", true)
               .selectAll("tspan")
               .data(seismogramDataList)

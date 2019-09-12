@@ -111,7 +111,7 @@
             seisplotjs.d3.select("span#starttime").text(timeWindow.start.format('YYYY-MM-DD HH:mm')+"Z");
             seisplotjs.d3.select("span#endtime").text(timeWindow.end.format('YYYY-MM-DD HH:mm')+"Z");
             let heliConfig = new seisplotjs.helicorder.HelicorderConfig(timeWindow);
-            heliConfig.title = "Helicorder";
+            heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
             heliConfig.yLabelOrientation = "horizontal";
             let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
             seisData.addMarkers([ { markertype: 'predicted', name: "now", time: seisplotjs.moment.utc() } ]);

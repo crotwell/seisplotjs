@@ -104,7 +104,7 @@
         let fftList = seismogramDataList.map(sdd => seisplotjs.fft.fftForward(sdd.seismogram));
         let svg = seisplotjs.fftplot.createOverlayFFTPlot('div#fftplot', fftList, true);
         svg.append("g").classed("title", true)
-          .attr("transform", "translate(700, 100)")
+          .attr("transform", "translate(600, 100)")
           .append("text").classed("title label", true)
           .selectAll("tspan")
           .data(seismogramDataList)

@@ -41,7 +41,7 @@
       }).then( ( [ quakeList, networks, seismogramDataList ] ) => {
         let div = seisplotjs.d3.select('div#myseismograph');
         let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-        seisConfig.title = seismogramDataList.map(ctr => ctr.channel.codes());
+        seisConfig.title = seismogramDataList.map((sdd, i) => i===0?sdd.channel.codes():sdd.channel.channelCode);
         seisConfig.doGain = true;
         let graph = new seisplotjs.seismograph.Seismograph(div,
                                                            seisConfig,
