@@ -1213,7 +1213,7 @@ div.container-wide {
 }
 
 svg.seismograph text.title {
-  font: bold 18px sans-serif;
+  font: bold 14px;
   fill: black;
   color: black;
   dominant-baseline: hanging;
