@@ -56,20 +56,15 @@ test("applyFreqTaper to FFTResult", () => {
   let ftaper = transfer.applyFreqTaper(inFFT, sampRate, lowCut, lowPass, highPass, highCut);
   let deltaF = sampRate/numPoints;
 
-  inFFT.amp.forEach((v,i) => {
-    console.log(`${i} ${deltaF*i} ${v}`);
-  });
   ftaper.amp.forEach((v,i) => {
     let F = deltaF*i;
     if (i===0) {
       expect(v).toEqual(0);
     } else {
       if (F < lowCut || F > highCut) {
-        console.log(`zeroed, ${i} ${F} ${v}`);
           expect(v).toBeCloseTo(0, 2);
       } else if (F > lowPass && F < highPass ) {
-        console.log(`one, ${i} ${F}  ${v}  ${inFFT.amp[i]} ${transfer.calcFreqTaper(F, lowCut, lowPass, highPass, highCut)}`);
-        expect(v).toBeCloseTo(1, 2);
+          expect(v).toBeCloseTo(1, 2);
       } else {
 
       }
