@@ -9,6 +9,7 @@
 /*global DataView*/
 
 import moment from 'moment';
+import * as d3 from 'd3';
 
 //reexport
 export { moment, };
@@ -56,6 +57,11 @@ export function dataViewToString(dataView: DataView) {
   return out;
 }
 
+export function log(msg: string) {
+  console.log(`${stringify(msg)}`);
+  d3.select("div#debug").append("p").text(`${stringify(msg)}`);
+
+}
 
 /** String representation of input. THis is kind of dumb but makes
  *  flow happier.
@@ -166,12 +172,22 @@ export class StartEndDuration {
   get clockOffset() {
     return this._clockOffset;
   }
+  contains(other: moment): boolean {
+    if (this.startTime.isAfter(other)
+        || this.endTime.isBefore(other)) {
+      return false;
+    }
+    return true;
+  }
   overlaps(other: StartEndDuration): boolean {
     if (this.startTime.isAfter(other.endTime)
         || this.endTime.isBefore(other.startTime)) {
       return false;
     }
     return true;
+  }
+  toString() {
+    return `StartEndDuration: ${toIsoWoZ(this.startTime)} to ${toIsoWoZ(this.endTime)} ${this.duration}`;
   }
 }
 
