@@ -203,10 +203,19 @@ export class SeismogramSegment {
   timeOfSample(i: number ): moment {
     return moment.utc(this.startTime).add(i/this.sampleRate, 'seconds');
   }
+  hasCodes(): boolean {
+    return isDef(this.networkCode)
+      || isDef(this.stationCode)
+      || isDef(this.locationCode)
+      || isDef(this.channelCode);
+  }
   /** @return nslc codes separated by '.'
   */
-  codes(): string {
-    return this.networkCode+"."+this.stationCode+"."+this.locationCode+"."+this.channelCode;
+  codes(sep: string = '.'): string {
+    return (this.networkCode ? this.networkCode : '')
+    +sep+(this.stationCode ? this.stationCode : '')
+    +sep+(this.locationCode ? this.locationCode : '')
+    +sep+(this.channelCode ? this.channelCode : '');
   }
   seisId(): string {
    return (this.codes()+"_"+this.startTime.toISOString()+"_"+this.endTime.toISOString()).replace(/\./g,'_').replace(/:/g,'');
@@ -384,6 +393,9 @@ export class Seismogram {
   }
   get numPoints(): number {
     return this._segmentArray.reduce((accumulator, seis) => accumulator + seis.numPoints, 0);
+  }
+  hasCodes(): boolean {
+    return this._segmentArray[0].hasCodes();
   }
   codes(): string {
     return this._segmentArray[0].codes();
@@ -586,11 +598,7 @@ export class SeismogramDisplayData {
     this.doShow = true;
     this._statsCache = null;
   }
-  static fromSeismogram(seismogram: Seismogram | SeismogramSegment): SeismogramDisplayData {
-    if (seismogram instanceof SeismogramSegment) {
-      console.assert(false, new Error("SeismogramDisplayData created with a SeismogramSegment "));
-      seismogram = new Seismogram( [ seismogram ]);
-    }
+  static fromSeismogram(seismogram: Seismogram ): SeismogramDisplayData {
     const out = new SeismogramDisplayData(new StartEndDuration(seismogram.startTime, seismogram.endTime, null, null));
     out.seismogram = seismogram;
     return out;
@@ -686,9 +694,9 @@ export class SeismogramDisplayData {
     return stats;
   }
   clone(): SeismogramDisplayData {
-    return this.cloneWithNewSeismogram(this.seismogram.clone());
+    return this.cloneWithNewSeismogram(this.seismogram ? this.seismogram.clone() : null);
   }
-  cloneWithNewSeismogram(seis: Seismogram): SeismogramDisplayData {
+  cloneWithNewSeismogram(seis: Seismogram | null): SeismogramDisplayData {
       let out = new SeismogramDisplayData(this.timeWindow);
       Object.getOwnPropertyNames(this).forEach( name => {
         if (name === 'seismogram') {

@@ -13,7 +13,7 @@ import {insertCSS} from './plotutil.js';
 import { Seismogram, SeismogramDisplayData } from './seismogram.js';
 import type { MarkerType } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
-import { SeismographConfig } from './seismographconfig';
+import { SeismographConfig, DRAW_BOTH_ALIGN, DRAW_SVG, DRAW_BOTH } from './seismographconfig';
 import {StartEndDuration, isDef} from './util.js';
 
 /**
@@ -59,24 +59,14 @@ export class Helicorder {
    * draws, or redraws, the helicorder.
    */
   draw() {
-    this.drawTitle();
     this.drawSeismograms();
-  }
-  drawTitle() {
-    let titleEl = this.svgParent.append('h3').classed("helicordertitle", true);
-    if (Array.isArray(this.heliConfig.title)) {
-      this.heliConfig.title.forEach( s => {
-        titleEl.append("span").text(s+" ");
-      });
-    } else {
-      titleEl.text(this.heliConfig.title);
-    }
   }
   drawSeismograms() {
     if ( ! this.seisData) {
       // no data
       return;
     }
+
     const timeWindow = this.heliConfig.fixedTimeScale;
     if ( ! isDef(timeWindow)){
       throw new Error("Helicorder config must have fixedTimeScale set");
@@ -90,37 +80,54 @@ export class Helicorder {
       let startTime = lineTime.startTime;
       let endTime = lineTime.endTime;
       let nl = this.heliConfig.numLines;
-      let height = this.heliConfig.maxHeight/(nl-(nl-1)*this.heliConfig.overlap);
+      let height = (this.heliConfig.maxHeight-this.heliConfig.margin.bottom)/(nl-(nl-1)*this.heliConfig.overlap) ;
       let marginTop = lineTime.lineNumber===0?0:Math.round(-1.0*height*this.heliConfig.overlap);
-      //console.log(`line ${lineTime.lineNumber} height: ${height}  marginTop: ${marginTop}  ${this.heliConfig.overlap}`);
 
       let seisDiv = this.svgParent.append('div')
         .classed('heliLine', true)
         .style('height', height+'px')
         .style('margin-top', `${marginTop}px`);
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
+      if (lineTime.lineNumber===0) {
+        lineSeisConfig.title = this.heliConfig.title;
+        lineSeisConfig.isXAxisTop = true;
+        lineSeisConfig.margin.top += this.heliConfig.margin.top;
+        height += this.heliConfig.margin.top;
+        seisDiv.style('height', height+'px');
+      } else if (lineTime.lineNumber === nl-1) {
+        lineSeisConfig.isXAxis = true;
+        lineSeisConfig.margin.bottom += this.heliConfig.margin.bottom;
+        height += this.heliConfig.margin.bottom;
+        seisDiv.style('height', height+'px');
+      }
       lineSeisConfig.fixedTimeScale = lineTime;
       lineSeisConfig.yLabel = `${startTime.format("HH.mm")}`;
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
-      lineSeisConfig.minHeight = height;
-      lineSeisConfig.maxHeight = height;
 
       let trimSeisDataList: Array<SeismogramDisplayData> = [  ];
       let lineCutSeis = null;
-      if (this.seisData.seismogram) {lineCutSeis = this.seisData.seismogram.cut(lineTime);}
       let lineMean = 0;
-      let lineSeisData = this.seisData.cloneWithNewSeismogram(lineCutSeis);
-      if (lineCutSeis) {
-        lineMean = lineCutSeis.mean();
+      let lineSeisData;
+      if (this.seisData.seismogram) {
+        lineCutSeis = this.seisData.seismogram.cut(lineTime);
+        lineSeisData = this.seisData.cloneWithNewSeismogram(lineCutSeis);
+        if (lineCutSeis) {
+          lineMean = lineCutSeis.mean();
+        }
+      } else {
+        // no data in window, but keep seisData in case of markers, etc
+        lineSeisData = this.seisData.clone();
       }
       lineSeisData.timeWindow = lineTime;
       trimSeisDataList.push(lineSeisData);
 
-      lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
+      if (this.heliConfig.fixedYScale) {
+        lineSeisConfig.fixedYScale = this.heliConfig.fixedYScale;
+      } else {
+        lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
+      }
       let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisDataList);
       seismograph.draw();
-      seismograph.canvas.style("height", `${height}px`);
-      seismograph.svg.style("height", `${height}px`);
       if (lineTime.lineNumber===0) {
         // add UTC to top left
         seismograph.svg.append("g")
@@ -181,6 +188,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.overlap = 0.5;
     this.numLines = 12;
     this.margin.left = 20;
+    this.margin.top = 20;
 
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.ySublabel = ` `;
@@ -190,8 +198,8 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.ySublabelIsUnits = false;
     this.lineSeisConfig.isXAxis = false;
     this.lineSeisConfig.isYAxis = false;
-    this.lineSeisConfig.margin.top = 2;
-    this.lineSeisConfig.margin.bottom = 2;
+    this.lineSeisConfig.margin.top = 0;
+    this.lineSeisConfig.margin.bottom = 0;
     this.lineSeisConfig.margin.left = 37;
     this.lineSeisConfig.wheelZoom = false;
   }
@@ -211,9 +219,14 @@ export class HeliTimeRange extends StartEndDuration {
 export const helicorder_css = `
 
 div.heliLine {
-  height: 100px;
+  height: 75px;
   margin-top: -50px;
   color: black;
+}
+
+div.heliLine:last-child {
+  height: 135px;
+  margin-bottom: 35px;
 }
 
 div.helicorder div.heliLine .yLabel text {
@@ -252,9 +265,6 @@ div.helicorder div.heliLine:nth-child(3n) .yLabel text {
   fill: goldenrod;
 }
 
-h3.helicordertitle {
-  text-align: center;
-}
 `;
 
 if (document){

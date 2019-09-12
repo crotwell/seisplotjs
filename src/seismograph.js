@@ -21,6 +21,7 @@ import {SeismogramDisplayData, findStartEnd, findMinMax, findMinMaxOverTimeRange
 import {InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
 
+import * as util from './util.js';
 import {StartEndDuration, isDef} from './util';
 
 
@@ -52,18 +53,19 @@ export class Seismograph {
   svgParent: any;
   seismographConfig: SeismographConfig;
   seisDataList: Array<SeismogramDisplayData>;
+  alignmentSeisData: Array<SeismogramDisplayData>;
 
   width: number;
   height: number;
   outerWidth: number;
   outerHeight: number;
   svg: any;
+  canvasHolder: any;
   canvas: any;
-  xScale: any;
-  origXScale: any;
+  origXScale: d3.scale;
   currZoomXScale: any;
-  yScale: any;
-  yScaleRmean: any;
+  yScale: d3.scale;
+  yScaleRmean: d3.scale;
   lineFunc: any;
   zoom: any;
   xAxis: any;
@@ -82,6 +84,7 @@ export class Seismograph {
     this.seismographConfig = seismographConfig;
     this.seisDataList = [];
     this._internalAppend(seisData);
+    this.alignmentSeisData = [];
 
     this.width = 200;
     this.height = 100;
@@ -95,6 +98,12 @@ export class Seismograph {
 
     this.svg = this.svgParent.append("svg")
       .style("z-index", 100);
+    if (this.seismographConfig.minHeight && this.seismographConfig.minHeight > 0) {
+      this.svg.style("min-height", this.seismographConfig.minHeight+'px');
+    }
+    if (this.seismographConfig.maxHeight && this.seismographConfig.maxHeight > 0) {
+      this.svg.style("max-height", this.seismographConfig.maxHeight+'px');
+    }
     this.svg.classed("seismograph", true);
     //this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
@@ -113,14 +122,10 @@ export class Seismograph {
     this.xScaleChangeListeners = [];
     this.yScaleChangeListeners = [];
 
-    this.xAxis = d3.axisBottom(this.xScale).tickFormat(this.seismographConfig.xScaleFormat);
+    this.xAxis = d3.axisBottom(this.currZoomXScale).tickFormat(this.seismographConfig.xScaleFormat);
     this.yAxis = d3.axisLeft(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
 
     let mythis = this;
-    this.lineFunc = d3.line()
-      .curve(d3.curveLinear)
-      .x(function(d) {return mythis.xScale(d.time); })
-      .y(function(d) {return mythis.yScale(d.y); });
 
     let maxZoom = 8;
     if (this.seisDataList && this.seisDataList.length>0) {
@@ -131,7 +136,7 @@ export class Seismograph {
             if ( ! sdd.seismogram) {return 1;}
             return Math.max(accum, sdd.seismogram.sampleRate);
           }, maxSps);
-      let secondsPerPixel = this.calcSecondsPerPixel( mythis.xScale);
+      let secondsPerPixel = this.calcSecondsPerPixel( mythis.currZoomXScale);
       let samplesPerPixel = maxSps * secondsPerPixel;
       let zoomLevelFactor = samplesPerPixel*this.seismographConfig.maxZoomPixelPerSample;
       maxZoom = Math.max(maxZoom,
@@ -139,8 +144,10 @@ export class Seismograph {
     }
 
     this.g = this.svg.append("g")
-      .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
-    this.g.append("g").attr("class", "allsegments");
+      .classed("marginTransform", true)
+      .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + (this.seismographConfig.margin.top) + ")");
+    this.g.append("g").classed("allseismograms", true);
+
     let z = this.svg.call(d3.zoom().on("zoom", function () {
         mythis.zoomed(mythis);
       }));
@@ -179,12 +186,27 @@ export class Seismograph {
   draw(): void {
     let rect = this.svg.node().getBoundingClientRect();
     if ((rect.width !== this.outerWidth || rect.height !== this.outerHeight)) {
-      if (rect.height < this.seismographConfig.minHeight) { rect.height = this.seismographConfig.minHeight; }
-      if (rect.height > this.seismographConfig.maxHeight) { rect.height = this.seismographConfig.maxHeight; }
+      if (rect.height < this.seismographConfig.minHeight) {
+        rect.height = this.seismographConfig.minHeight;
+      }
+      if (rect.height > this.seismographConfig.maxHeight) {
+        rect.height = this.seismographConfig.maxHeight;
+      }
       this.setWidthHeight(rect.width, rect.height);
     }
     if ( ! this.canvas ) {
-      this.canvas = this.svgParent.insert("canvas",":first-child").classed("seismograph", true);
+      this.canvasHolder = this.g
+        .insert("foreignObject",":first-child").classed("seismograph", true)
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", this.width)
+        .attr("height", this.height+1);
+      this.canvas = this.canvasHolder.append("xhtml:canvas").classed("seismograph", true)
+        .attr("xmlns", "http://www.w3.org/1999/xhtml")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", this.width)
+        .attr("height", this.height+1);
       const mythis = this;
       let z = this.canvas.call(d3.zoom().on("zoom", function () {
           mythis.zoomed(mythis);
@@ -192,10 +214,8 @@ export class Seismograph {
       if ( ! this.seismographConfig.wheelZoom) {
         z.on("wheel.zoom", null);
       }
-      this.canvas.attr("height", this.outerHeight)
-        .attr("width", this.outerWidth)
-        .style("z-index", "-1"); // make sure canvas is below svg
-      let style = window.getComputedStyle(this.canvas.node());
+
+      let style = window.getComputedStyle(this.svg.node());
       let padTop = style.getPropertyValue('padding-top');
       if (padTop.endsWith("px")) {
         padTop = Number(padTop.replace("px", ""));
@@ -204,9 +224,14 @@ export class Seismograph {
       if (borderTop.endsWith("px")) {
         borderTop = Number(borderTop.replace("px", ""));
       }
-      this.sizeCanvas();
+    } else {
+      if (this.canvas) {
+        this.canvasHolder.attr("width", this.width)
+          .attr("height", this.height);
+        this.canvas.attr("width", this.width)
+          .attr("height", this.height);
+      }
     }
-    this.calcTimeScaleDomain();
     this.drawSeismograms();
     this.drawAxis(this.g);
     this.drawAxisLabels();
@@ -236,37 +261,20 @@ export class Seismograph {
     out += "this.outerWidth "+this.outerWidth+"\n";
     // $FlowFixMe
     out += "this.margin "+this.seismographConfig.margin+"\n";
-    console.log(out);
-  }
-  sizeCanvas(): void {
-    // resize canvas if exists
-    if ( this.canvas) {
-      // this.canvas
-      //     .attr('height', this.outerHeight- this.seismographConfig.margin.top- this.seismographConfig.margin.bottom)
-      //.attr('width', this.outerWidth- this.seismographConfig.margin.left- this.seismographConfig.margin.right)
-      //.style('position', 'absolute')
-      //     .style('top', Math.round(1.0*this.outerHeight/this.height*this.seismographConfig.margin.top) + 'px')
-      //     .style('left', Math.round(1.0*this.outerWidth/this.width*this.seismographConfig.margin.left) + 'px');
-      //this.svg.attr('height', this.outerHeight+'px').attr('width', this.outerWidth+'px');
-
-      this.canvas
-        .style('position', 'absolute')
-        .style('top', (0) + 'px')
-        .style('left', (0) + 'px');
-        //.style('top', (this.seismographConfig.margin.top) + 'px')
-        //.style('left', (this.seismographConfig.margin.left) + 'px');
-            //  .attr('height', (this.height)+'px')
-            //  .attr('width', (this.width)+'px');
-          //    .style('position', 'absolute')
-
-      const canvasNode = this.canvas.node();
-      canvasNode.height = this.outerHeight;
-      canvasNode.width = this.outerWidth;
-    }
+    util.log(out);
   }
 
   drawSeismograms() {
     this.svg.classed("overlayPlot", this.seisDataList.length > 1);
+    if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
+      if (this.alignmentSeisData.length === 0) {
+        const startenddur = new StartEndDuration(this.currZoomXScale.domain()[0], this.currZoomXScale.domain()[1]);
+        const fakeSDD = this.seismographConfig.createAlignmentData(startenddur);
+        this.alignmentSeisData.push(fakeSDD);
+      }
+    } else {
+      this.alignmentSeisData = [];
+    }
     if (this.seismographConfig.drawingType === DRAW_CANVAS
       || this.seismographConfig.drawingType === DRAW_BOTH
       || this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
@@ -287,6 +295,7 @@ export class Seismograph {
     return !!( elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length );
   }
   drawSeismogramsCanvas(): void {
+    const mythis = this;
     if (! this.isVisible()) {
       // no need to draw if we are not visible
       return;
@@ -298,23 +307,25 @@ export class Seismograph {
     // clear the canvas from previous drawing
     context.clearRect(0, 0, canvasNode.width, canvasNode.height);
 
-    context.translate(this.seismographConfig.margin.left, this.seismographConfig.margin.top);
-    // Create clipping path
-    context.beginPath();
-    context.rect(0, 0, this.width, this.height);
-    context.clip();
-
     context.lineWidth = this.seismographConfig.lineWidth;
+    if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
+      context.lineWidth = this.seismographConfig.lineWidth *2;
+    }
 
     const plotStart = moment.utc(this.currZoomXScale.domain()[0]);
     const plotEnd = moment.utc(this.currZoomXScale.domain()[1]);
     const plotDuration = moment.duration(plotEnd.diff(plotStart));
     const secondsPerPixel = plotDuration.asSeconds()/
         (this.currZoomXScale.range()[1]-this.currZoomXScale.range()[0]);
+    const sddList = this.seisDataList.concat(this.alignmentSeisData);
+    sddList.forEach( (t,ti) => {
+      let color;
+      if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
+        color = mythis.seismographConfig.getColorForIndex(ti + sddList.length);
+      } else {
+        color = mythis.seismographConfig.getColorForIndex(ti);
+      }
 
-    this.seisDataList.forEach( (t,ti) => {
-//      const color = d3.select(`svg g.allsegments g:nth-child(9n+1) g path.seispath`)
-      const color = this.seismographConfig.getColorForIndex(ti);
       let firstTime = true;
       if ( t.seismogram) {
         t.seismogram.segments.forEach((s) => {
@@ -334,7 +345,7 @@ export class Seismograph {
             leftVisibleSample = Math.floor(-1*startPixel*samplesPerPixel) -1;
             leftVisiblePixel = 0;
           }
-          if (endPixel > this.width) {
+          if (endPixel > this.currZoomXScale.range()[1]+1) {
             rightVisibleSample = leftVisibleSample+Math.ceil((this.width+1)*samplesPerPixel) +1;
           }
           if (firstTime || ! this.seismographConfig.connectSegments ){
@@ -344,7 +355,7 @@ export class Seismograph {
             context.moveTo(leftVisiblePixel, this.yScale(s.y[leftVisibleSample]));
             firstTime = false;
           }
-          for(let i=leftVisibleSample; i<rightVisibleSample && i<s.y.length; i++) {
+          for(let i=leftVisibleSample; i<rightVisibleSample+2 && i<s.y.length; i++) {
             context.lineTo(startPixel+i*pixelsPerSample, this.yScale(s.y[i]));
           }
           if (! this.seismographConfig.connectSegments ){
@@ -352,7 +363,7 @@ export class Seismograph {
           }
         });
       } else {
-        console.log(`seisdta has no seismogram ${ti}`);
+        util.log(`seisdata has no seismogram ${util.stringify(ti)}`);
       }
 
       if (this.seismographConfig.connectSegments ){
@@ -377,52 +388,66 @@ export class Seismograph {
     circles.exit().remove();
     circles
       .enter().append("circle")
+      .attr('fill-opacity', '0.4')
       .attr('cx', function(d){  return mythis.currZoomXScale(d[0]);})
       .attr('cy', function(d){  return mythis.yScale(d[1]);})
-      .attr('r', radius+2);
+      .attr('r', radius-2);
 
     this.g.selectAll("path.diagonal").remove();
     this.g.append("path").attr("class",  "seispath diagonal").attr("d", "M0,0L"+mythis.currZoomXScale(maxX)+", "+mythis.yScale(minY));
+
+
+    // svg text color
+    let textcolor = this.seismographConfig.getColorForIndex(this.seisDataList.length);
+    let textcolorArr = [ textcolor];
+    this.g.selectAll("text").data(textcolorArr).enter().append("text").style("fill", textcolor).text("svg "+textcolor).attr("x", this.width*3/4).attr("y", this.height/4+20);
+
 
     // get the canvas drawing context
     const canvasNode = this.canvas.node();
     //canvasNode.height = this.height;
     //canvasNode.width = this.width;
     const context = canvasNode.getContext("2d");
-    context.translate(this.seismographConfig.margin.left, this.seismographConfig.margin.top);
+
+    // canvas text color
+    textcolor = this.seismographConfig.getColorForIndex(2*this.seisDataList.length+this.alignmentSeisData.length);
+    context.strokeStyle=textcolor;
+    context.strokeText("canvas "+textcolor, this.width*3/4, this.height/4);
+
+    context.beginPath();
+    context.fillStyle = "lightblue";
+    context.arc(this.currZoomXScale((minX+maxX)/2), this.yScale((minY+maxY)/2), radius, 0, 2*Math.PI, true);
+    context.fill();
+
+    //context.translate(this.seismographConfig.margin.left, this.seismographConfig.margin.top);
     // Create clipping path
     //  context.beginPath();
     //  context.rect(0, 0, this.width, this.height);
     //  context.clip();
     context.beginPath();
     context.fillStyle = "lightblue";
-    context.arc(this.xScale(minX), this.yScale(minY), radius, 0, 2*Math.PI, true);
+    context.arc(this.currZoomXScale(minX), this.yScale(minY), radius, 0, 2*Math.PI, true);
     context.fill();
     context.beginPath();
     context.fillStyle = "red";
-    context.arc(this.xScale(maxX), this.yScale(minY), radius, 0, 2*Math.PI, true);
+    context.arc(this.currZoomXScale(maxX), this.yScale(minY), radius, 0, 2*Math.PI, true);
     //context.arc(this.width-10, 10, radius, 0, 2*Math.PI, true);
     context.fill();
     context.beginPath();
     context.fillStyle = "green";
-    context.arc(this.xScale(minX), this.yScale(maxY), radius, 0, 2*Math.PI, true);
+    context.arc(this.currZoomXScale(minX), this.yScale(maxY), radius, 0, 2*Math.PI, true);
     //context.arc(this.width-10, this.height-10, radius, 0, 2*Math.PI, true);
     context.fill();
     context.beginPath();
     context.fillStyle = "black";
-    context.arc(this.xScale(maxX), this.yScale(maxY), radius, 0, 2*Math.PI, true);
+    context.arc(this.currZoomXScale(maxX), this.yScale(maxY), radius, 0, 2*Math.PI, true);
     //context.arc(10, this.height-10, radius, 0, 2*Math.PI, true);
     context.fill();
     context.beginPath();
-    context.moveTo(this.xScale(this.xScale.domain()[0]), this.yScaleRmean(0));
-    context.lineTo(this.xScale(this.xScale.domain()[1]), this.yScaleRmean(0));
+    context.moveTo(this.currZoomXScale(this.currZoomXScale.domain()[0]), this.yScaleRmean(0));
+    context.lineTo(this.currZoomXScale(this.currZoomXScale.domain()[1]), this.yScaleRmean(0));
     context.moveTo(0,0);
     context.lineTo(this.width, this.height);
-    context.stroke();
-    context.beginPath();
-    context.strokeStyle = "red";
-    context.moveTo(this.xScale(this.xScale.domain()[1]), this.yScaleRmean(this.yScaleRmean.domain()[0]));
-    context.lineTo(this.xScale(this.xScale.domain()[0]), this.yScaleRmean(this.yScaleRmean.domain()[1]));
     context.stroke();
   //  this.printSizes();
   }
@@ -441,30 +466,30 @@ export class Seismograph {
             .attr("height", this.height);
   }
   drawSeismogramsSvg() {
+    const sddList = this.seisDataList.concat(this.alignmentSeisData);
     const mythis = this;
-    const allSegG = this.g.select("g.allsegments");
-    const traceJoin = allSegG.selectAll("g")
-      .data(this.seisDataList);
-    traceJoin.exit().remove();
-    traceJoin.enter()
+    const allSegG = this.g.select("g.allseismograms");
+    const traceJoin = allSegG.selectAll("g.seismogram")
+      .data(sddList)
+      .enter()
       .append("g")
-        .attr("class", "trace");
+        .attr("label", s => s ? s.label : 'none')
+        .attr("codes", s => s.seismogram && s.seismogram.hasCodes() ? s.seismogram.codes() : 'none')
+        .classed("seismogram", true);
+    traceJoin.exit().remove();
 
-    const subtraceJoin = allSegG.selectAll("g")
-      .selectAll('g')
-       .data(function(trace) {return trace.segments;});
+    const subtraceJoin = traceJoin
+      .selectAll('path')
+       .data(sdd => sdd.seismogram ? sdd.seismogram.segments : []);
     subtraceJoin.enter()
-       .append("g")
-         .attr("class", "segment")
-    .append("path")
-      .attr("class", function(seg) {
-          return "seispath "+seg.codes()+(seg.chanCode ? " orient"+seg.chanCode.charAt(2) : "");
-      })
-      .attr("style", "clip-path: url(#"+CLIP_PREFIX+mythis.plotId+")")
-      .merge(subtraceJoin)
-      .attr("d", function(seg) {
-         return mythis.segmentDrawLine(seg, mythis.currZoomXScale);
-       });
+      .append("path")
+        .classed("seispath", true)
+        .classed(DRAW_BOTH_ALIGN, this.seismographConfig.drawingType === DRAW_BOTH_ALIGN)
+        .attr("style", "clip-path: url(#"+CLIP_PREFIX+mythis.plotId+")")
+        .attr("shape-rendering", "crispEdges")
+        .attr("d", function(seg) {
+           return mythis.segmentDrawLine(seg, mythis.currZoomXScale);
+         });
   }
 
   calcSecondsPerPixel(xScale: any): number {
@@ -474,16 +499,20 @@ export class Seismograph {
   }
 
   segmentDrawLine(seg: SeismogramSegment, xScale: any): void {
+    const mythis = this;
     let secondsPerPixel = this.calcSecondsPerPixel(xScale);
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
-    this.lineFunc.x(function(d) { return xScale(d.time); });
+    let lineFunc = d3.line()
+      .curve(d3.curveLinear)
+      .x(function(d) {return xScale(d.time); })
+      .y(function(d) {return mythis.yScale(d.y); });
     if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
       if (! seg.y) {
         // $FlowFixMe
-        console.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Seismogram));
+        util.log("canvasSeis seg.y not defined: "+(typeof seg)+" "+(seg instanceof Seismogram));
         return;
       }
-      return this.lineFunc(Array.from(seg.y, function(d,i) {
+      return lineFunc(Array.from(seg.y, function(d,i) {
         return {time: seg.timeOfSample(i).toDate(), y: d };
       }));
     } else {
@@ -513,13 +542,14 @@ export class Seismograph {
             highlowArray: highlow
         };
       }
-      return this.lineFunc(seg._highlow.highlowArray.map(function(d: number,i: number) {
+      return lineFunc(seg._highlow.highlowArray.map(function(d: number,i: number) {
         return {time: new Date(seg.startTime.valueOf()+1000*((Math.floor(i/2)+.5)*secondsPerPixel)), y: d };
       }));
     }
   }
 
   drawAxis(svgG: any): void {
+    this.xAxis.scale(this.currZoomXScale);
     this.xAxis.tickFormat(this.seismographConfig.xScaleFormat);
     this.yAxis.ticks(8, this.seismographConfig.yScaleFormat);
     svgG.selectAll("g.axis").remove();
@@ -559,22 +589,30 @@ export class Seismograph {
     this.drawYSublabel();
   }
 
+  cloneXScale(scale: d3.scale): d3.scale {
+    let outxScale = d3.scaleUtc();
+    outxScale.domain([scale.domain()[0], scale.domain()[1]]);
+    outxScale.range([scale.range()[0], scale.range()[1]]);
+    return outxScale;
+  }
   resetZoom(): void {
-    this.xScale = this.origXScale;
+    this.currZoomXScale = this.cloneXScale(this.origXScale);
     if ( ! this.beforeFirstDraw) {
-      this.redrawWithXScale(this.xScale);
+      this.redrawWithXScale(this.currZoomXScale);
     }
   }
 
 
   zoomed(mythis: Seismograph): void {
     let t = d3.event.transform;
-    let xt = t.rescaleX(this.xScale);
+    let xt = t.rescaleX(this.origXScale);
     mythis.redrawWithXScale(xt);
   }
 
   redrawWithXScale(xt: any): void {
-    if (xt.domain()[0].getTime() === this.currZoomXScale.domain()[0].getTime()
+    if (xt.range()[0] === this.currZoomXScale.range()[0]
+        && xt.range()[1] === this.currZoomXScale.range()[1]
+        && xt.domain()[0].getTime() === this.currZoomXScale.domain()[0].getTime()
         && xt.domain()[1].getTime() === this.currZoomXScale.domain()[1].getTime()) {
       return;
     }
@@ -588,7 +626,7 @@ export class Seismograph {
     this.currZoomXScale = xt;
     let mythis = this;
     if (! this.beforeFirstDraw) {
-      this.g.select("g.allsegments").selectAll("g.trace").remove();
+      this.g.select("g.allseismograms").selectAll("g.seismogram").remove();
       if (this.seismographConfig.windowAmp) {
         this.calcAmpScaleDomain();
       }
@@ -622,10 +660,11 @@ export class Seismograph {
   }
 
   drawMarkers() {
+    let startEnd = new StartEndDuration(this.currZoomXScale.domain()[0], this.currZoomXScale.domain()[1]);
     let allMarkers = this.seisDataList.reduce((acc, sdd) => {
         sdd.markerList.forEach(m => acc.push(m));
         return acc;
-      }, []);
+      }, []).filter( m => startEnd.contains(m.time));
     // marker overlay
     let mythis = this;
     let markerG = this.g.select("g.allmarkers");
@@ -726,21 +765,32 @@ export class Seismograph {
   }
 
   setWidthHeight(nOuterWidth: number, nOuterHeight: number): void {
-    this.outerWidth = Math.round(nOuterWidth ? Math.max(200, nOuterWidth) : 200);
-    this.outerHeight = Math.round(nOuterHeight ? Math.max(100, nOuterHeight): 100);
+    this.outerWidth = nOuterWidth;
+    this.outerHeight = nOuterHeight;
+    const resizeWidth = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
     this.height = this.outerHeight - this.seismographConfig.margin.top - this.seismographConfig.margin.bottom;
     this.width = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
 
     this.origXScale.range([0, this.width]);
-    this.xScale.range([0, this.width]);
-    this.currZoomXScale.range([0, this.width]);
     this.yScale.range([this.height, 0]);
     this.yScaleRmean.range([this.height, 0]);
     this.yAxis.scale(this.yScaleRmean);
     this.calcScaleAndZoom();
-    this.sizeCanvas();
+    if (this.canvas) {
+      this.canvasHolder.attr("width", this.width)
+        .attr("height", this.height+1);
+      this.canvas.attr("width", this.width)
+        .attr("height", this.height+1);
+    }
     if ( ! this.beforeFirstDraw) {
-      this.redrawWithXScale(this.xScale);
+      const resizeXScale = this.cloneXScale(this.currZoomXScale);
+      // keep same time window
+      // but use new pixel range
+      resizeXScale.range([0, this.width]);
+      // this updates currZoomXScale
+      this.redrawWithXScale(resizeXScale);
+    } else {
+      this.currZoomXScale.range([0, this.width]);
     }
   }
 
@@ -779,8 +829,9 @@ export class Seismograph {
     this.svg.selectAll("g.title").remove();
     let titleSVGText = this.svg.append("g")
        .classed("title", true)
-       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+( this.seismographConfig.margin.bottom/3  )+")")
+       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+( this.seismographConfig.margin.top  )+")")
        .append("text").classed("title label", true)
+       .attr("x",0).attr("y",0)
        .attr("text-anchor", "middle");
     if (Array.isArray(this.seismographConfig.title)) {
       this.seismographConfig.title.forEach(function(s) {
@@ -858,12 +909,12 @@ export class Seismograph {
       } else {
         timeWindow = findStartEnd(this.seisDataList);
       }
-      if ( ! isDef(this.xScale)) {
-        this.xScale = d3.scaleUtc();
+      if ( ! isDef(this.origXScale)) {
+        this.origXScale = d3.scaleUtc();
       }
-      this.xScale.domain([timeWindow.startTime.toDate(), timeWindow.endTime.toDate()]);
-      this.origXScale = this.xScale;
-      this.currZoomXScale = this.xScale;
+      this.origXScale.domain([timeWindow.startTime.toDate(), timeWindow.endTime.toDate()]);
+      // force to be same but not to share same array
+      this.currZoomXScale = this.cloneXScale(this.origXScale);
   }
   calcAmpScaleDomain(): void {
     if (this.seismographConfig.fixedYScale) {
@@ -880,7 +931,10 @@ export class Seismograph {
         // flatlined data, use -1, +1
         minMax = [ minMax[0]-1, minMax[1]+1];
       }
-      this.yScale.domain(minMax).nice();
+      this.yScale.domain(minMax);
+      if (this.seismographConfig.isYAxisNice && ! this.seismographConfig.fixedYScale) {
+        this.yScale.nice();
+      }
       this.yScaleChangeListeners.forEach(l => l.notifyScaleChange(this.yScale));
     }
     this.redoDisplayYScale();
@@ -891,7 +945,7 @@ export class Seismograph {
         && this.seisDataList.length > 0
         && this.seisDataList.every(sdd => sdd.hasSensitivity())) {
       // each has seisitivity
-      let firstSensitivity = this.seisDataList[0].sensitivity;
+      const firstSensitivity = this.seisDataList[0].sensitivity;
       if (isDef(firstSensitivity) && this.seisDataList.every(sdd => (
           isDef(firstSensitivity) && sdd.sensitivity
           && firstSensitivity.sensitivity===sdd.sensitivity.sensitivity
@@ -990,7 +1044,7 @@ export class Seismograph {
   }
   linkXScaleTo(seismograph: Seismograph) {
     this.origXScale.domain(seismograph.origXScale.domain());
-    this.xScale.domain(seismograph.xScale.domain());
+    this.currZoomXScale.domain(seismograph.currZoomXScale.domain());
     if ( ! this.beforeFirstDraw && seismograph.currZoomXScale.range()[1] !== 1) {
       // default range is 0,1, so don't draw then.
       this.redrawWithXScale(seismograph.currZoomXScale);
@@ -1132,16 +1186,16 @@ path.orientE {
   stroke: orange;
 }
 
-
-path.seispath {
-  stroke: skyblue;
-  fill: none;
-  stroke-width: 1px;
+path.alignment {
+  stroke-dasharray: 8;
+  stroke-width: 2px;
 }
 
 svg.seismograph {
   height: 100%;
   width: 100%;
+  min-height: 25px;
+  min-width: 25px;
 }
 
 canvas.seismograph {
@@ -1158,81 +1212,87 @@ div.container-wide {
   overflow: hidden;
 }
 
-svg.realtimePlot g.allsegments g path.seispath {
+svg.seismograph text.title {
+  font: bold 18px sans-serif;
+  fill: black;
+  color: black;
+}
+
+svg.realtimePlot g.allseismograms path.seispath {
   stroke: skyblue;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+1) path.seispath {
+svg g.allseismograms g:nth-child(9n+1) path.seispath {
   stroke: skyblue;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+2) path.seispath {
+svg g.allseismograms g:nth-child(9n+2) path.seispath {
   stroke: olivedrab;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+3) path.seispath {
+svg g.allseismograms g:nth-child(9n+3) path.seispath {
   stroke: goldenrod;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+4) path.seispath {
+svg g.allseismograms g:nth-child(9n+4) path.seispath {
   stroke: firebrick;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+5) path.seispath {
+svg g.allseismograms g:nth-child(9n+5) path.seispath {
   stroke: darkcyan;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+6) path.seispath {
+svg g.allseismograms g:nth-child(9n+6) path.seispath {
   stroke: orange;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+7) path.seispath {
+svg g.allseismograms g:nth-child(9n+7) path.seispath {
   stroke: darkmagenta;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+8) path.seispath {
+svg g.allseismograms g:nth-child(9n+8) path.seispath {
   stroke: mediumvioletred;
 }
 
-svg.overlayPlot g.allsegments g:nth-child(9n+9) path.seispath {
+svg g.allseismograms g:nth-child(9n+9) path.seispath {
   stroke: sienna;
 }
 
 /* same colors for titles */
 
-svg.overlayPlot g.title tspan:nth-child(9n+1)  {
+svg g.title text tspan:nth-child(9n+1)  {
   fill: skyblue;
 }
 
-svg.overlayPlot g.title text tspan:nth-child(9n+2)  {
+svg g.title text tspan:nth-child(9n+2)  {
   stroke: olivedrab;
 }
 
-svg.overlayPlot g.title text tspan:nth-child(9n+3)  {
+svg g.title text tspan:nth-child(9n+3)  {
   stroke: goldenrod;
 }
 
-svg.overlayPlot g.title tspan:nth-child(9n+4)  {
+svg g.title tspan:nth-child(9n+4)  {
   stroke: firebrick;
 }
 
-svg.overlayPlot g.title tspan:nth-child(9n+5)  {
+svg g.title tspan:nth-child(9n+5)  {
   stroke: darkcyan;
 }
 
-svg.overlayPlot g.title tspan:nth-child(9n+6)  {
+svg g.title tspan:nth-child(9n+6)  {
   stroke: orange;
 }
 
-svg.overlayPlot g.title tspan:nth-child(9n+7)  {
+svg g.title tspan:nth-child(9n+7)  {
   stroke: darkmagenta;
 }
 
-svg.overlayPlot g.title tspan:nth-child(9n+8)  {
+svg g.title tspan:nth-child(9n+8)  {
   stroke: mediumvioletred;
 }
 
-svg.overlayPlot g.title tspan:nth-child(9n+9)  {
+svg g.title tspan:nth-child(9n+9)  {
   stroke: sienna;
 }
 

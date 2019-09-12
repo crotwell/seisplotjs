@@ -7,7 +7,7 @@
  */
 
 import {Channel, InstrumentSensitivity} from './stationxml.js';
-import { Seismogram, SeismogramSegment} from './seismogram.js';
+import { SeismogramDisplayData, Seismogram, SeismogramSegment} from './seismogram.js';
 import {Quake} from './quakeml.js';
 import {StartEndDuration, stringify, isDef} from './util.js';
 import moment from 'moment';
@@ -125,7 +125,28 @@ export class SeismographConfig {
     }
   }
 
-  getColorForIndex(i: number) {
+  /** Fake data to use to test alignment of seismograph axis and between canvas
+   *  and svg drawing.
+   * @param   timeWindow start and end of fake data
+   * @param   min        min amplitude for fake data, default is -100
+   * @param   max        max amplitude for fake data, default is 100
+   * @return             fake data
+   */
+  createAlignmentData(timeWindow: StartEndDuration,
+        min: number = -100,
+        max: number = 100): SeismogramDisplayData {
+    const mid = (max+min)/2;
+    const fakeData = Float32Array.from([max, min, max, min, mid, mid, max, mid, mid, min]);
+
+    const fakeSampleRate = 1/(timeWindow.duration.asSeconds()/(fakeData.length-1));
+    const fakeSeis = Seismogram.createFromContiguousData(fakeData,
+                                          fakeSampleRate,
+                                          timeWindow.startTime );
+    const fakeSDD = SeismogramDisplayData.fromSeismogram(fakeSeis);
+    return fakeSDD;
+  }
+
+  getColorForIndex(i: number): string {
     if (this.lineColors.length && this.lineColors.length > 0) {
       return this.lineColors[i%this.lineColors.length];
     } else {
@@ -157,6 +178,14 @@ export class SeismographConfig {
       };
     });
     return out;
+  }
+  toString() {
+    let outS = "";
+    Object.getOwnPropertyNames(this).forEach( name => {
+      // $FlowFixMe
+      outS += `  seisConfig.${name} = ${JSON.stringify(this[name])}\n`;
+    });
+    return outS;
   }
 }
 
