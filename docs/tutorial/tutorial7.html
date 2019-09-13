@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <title>Tutorial 7: Realtime</title>
+    <style>
+      div#realtime div.seismograph {
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Tutorial 7: Realtime</h3>
+    <h3>Realtime display for <span id="channel"></span>!</h3>
+
+    <button id="load">Load</button>
+    <button id="pause">Pause</button>
+    <div id="realtime">
+    </div>
+
+    <div id="debug">
+    </div>
+    <script src="seisplotjs_2.0.0-alpha.5_standalone.js"></script>
+    <script>
+const errorFn = function(error) {
+  console.assert(false, error);
+  if (datalink) {datalink.close();}
+  seisplotjs.d3.select("p#error").text("Error: "+error);
+};
+const matchPattern = `CO_JSC_00_HH./MSEED`;
+seisplotjs.d3.select('span#channel').text(matchPattern);
+const duration = seisplotjs.moment.duration(5, 'minutes');
+const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
+const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
+let graphList = new Map();
+const datalink = new seisplotjs.datalink.DataLinkConnection(
+    seisplotjs.datalink.IRIS_RINGSERVER_URL,
+    packet => {
+      try {
+      if (packet.isMiniseed()) {
+        console.log(`miniseed: ${packet.miniseed.codes()}`)
+        for (const s of seisplotjs.miniseed.seismogramPerChannel([packet.miniseed])) {
+          let seisPlot = graphList.get(s.codes());
+          if ( ! graphList.has(s.codes())) {
+            let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(s);
+            let plotDiv = seisplotjs.d3.select("div#realtime").append("div").classed("seismograph", true);
+            seisPlot = new seisplotjs.seismograph.Seismograph(plotDiv, seisPlotConfig, seisData);
+            seisPlot.svg.classed('realtimePlot', true).classed('overlayPlot', false)
+            seisPlot.draw();
+            graphList.set(s.codes(), seisPlot);
+            console.log(`new plot: ${s.codes()}`)
+          } else {
+            seisPlot.seisDataList[0].seismogram.append(s);
+          }
+          seisPlot.draw();
+        }
+      } else {
+        console.log(`not a mseed packet: ${packet.streamId}`)
+      }
+    } catch (err) {
+      errorFn(err)
+      throw err;
+    }
+    },
+    errorFn);
+  datalink.connect()
+  .then(serverId => {
+    console.log(`id response: ${serverId}`);
+    return datalink.match(matchPattern);
+  }).then(response => {
+    console.log(`match response: ${response}`)
+    return datalink.positionAfter(timeWindow.start);
+  }).then(response => {
+    console.log(`positionAfter response: ${response}`)
+    return datalink.stream();
+  }).catch( function(error) {
+    seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+    console.assert(false, error);
+  });
+  const timerInterval = 1000; //milliseconds
+  let paused = false;
+  let stopped = true;
+  let timerInProgress = false;
+  let tick = 0;
+  let timer = seisplotjs.d3.interval(function(elapsed) {
+    if ( paused || timerInProgress) {
+      return;
+    }
+    timerInProgress = true;
+    window.requestAnimationFrame(timestamp => {
+      try {
+        seisPlotConfig.fixedTimeScale = new seisplotjs.util.StartEndDuration(null, null, duration);
+        graphList.forEach(function(value, key) {
+            value.calcTimeScaleDomain();
+            value.calcAmpScaleDomain();
+            value.draw();
+        });
+        timerInProgress = false;
+      } catch(err) {
+        console.assert(false, err);
+      }
+    });
+
+    }, timerInterval);
+
+    seisplotjs.d3.select("button#pause").on("click", function(d) {
+      doPause( ! paused);
+    });
+
+    seisplotjs.d3.select("button#disconnect").on("click", function(d) {
+      doDisconnect( ! stopped);
+    });
+
+    let doPause = function(value) {
+      paused = value;
+      if (paused) {
+        seisplotjs.d3.select("button#pause").text("Play");
+      } else {
+        seisplotjs.d3.select("button#pause").text("Pause");
+      }
+    }
+
+    let doDisconnect = function(value) {
+      stopped = value;
+      if (stopped) {
+        if (datalink) {datalink.endStream();datalink.close();}
+        seisplotjs.d3.select("button#disconnect").text("Reconnect");
+      } else {
+        if (datalink) {
+          datalink.connect()
+          .then(serverId => {
+            datalink.match
+          });}
+        seisplotjs.d3.select("button#disconnect").text("Disconnect");
+      }
+    }
+    </script>
+  </body>
+</html>
