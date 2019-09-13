@@ -54,8 +54,7 @@ export class MSeedArchive {
     } else {
       for( let f of allFlags) {
         if (Allowed_Flags.indexOf(f.slice(1)) === -1) {
-          console.log("Didn't find '"+f+"'");
-          return false;
+          throw new Error(`${f} not allowed in pattern`);
         }
       }
     }
@@ -129,7 +128,7 @@ export class MSeedArchive {
           } else if (fetchResponse.status === 404 ) {
             return []; // empty array means no data
           } else {
-            console.log("no data: status="+fetchResponse.status+" "+fetchResponse.url);
+            util.log("no data: status="+fetchResponse.status+" "+fetchResponse.url);
             return [];
           }
         } else if (fetchResponse.status === 404 ) {
@@ -139,7 +138,7 @@ export class MSeedArchive {
           throw new Error("fetch error: "+fetchResponse.ok+" "+fetchResponse.status+" "+fetchResponse.url);
         }
       }).catch(err => {
-        console.log("caught fetch err, continuing with empty: "+err);
+        util.log("caught fetch err, continuing with empty: "+err);
         return [];
       });
     });
@@ -156,11 +155,7 @@ export class MSeedArchive {
       if (dataRecords) {
         dataRecords =  dataRecords.filter(dr => dr.header.endTime.isSameOrAfter(startTime) &&
                                         dr.header.startTime.isSameOrBefore(endTime));
-
-        console.log(`Have dr, after filter Total: ${dataRecords.length}`);
       } else {
-
-        console.log(`dataRecords is false: Total: ${dataRecords.length}`);
         dataRecords = []; // for flow
       }
       return dataRecords;

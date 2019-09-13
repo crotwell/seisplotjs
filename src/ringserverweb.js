@@ -9,6 +9,7 @@
 import RSVP from 'rsvp';
 import moment from 'moment';
 
+import * as util from './util.js'; // for util.log
 import { checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, isDef, XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 
@@ -143,7 +144,7 @@ export class RingserverConnection {
         } else if (vals.length >= 2) {
           out.streams.push(new StreamStat(vals[0], vals[1], vals[2]));
         } else {
-          console.log("Bad /streams line, skipping: '"+line+"'");
+          util.log("Bad /streams line, skipping: '"+line+"'");
         }
       }
       return out;

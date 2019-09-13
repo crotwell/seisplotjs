@@ -2,6 +2,7 @@
 
 // $FlowFixMe
 let TextDecoder = require('util').TextDecoder;
+// eslint-disable-next-line no-undef
 global.TextDecoder = TextDecoder;
 
 import * as xseed from '../../src/xseed.js';
@@ -111,5 +112,4 @@ test("crc-32c of a string", () => {
     buf[i] = s.charCodeAt(i);
   }
   let crc = xseed.calculateCRC32C(buf);
-  //console.log("crc="+'0x'+crc.toString(16).toUpperCase());
 });

@@ -8,10 +8,6 @@
 
 import RSVP from 'rsvp';
 
-RSVP.on('error', function(reason) {
-  console.assert(false, reason);
-});
-
 import moment from 'moment';
 import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, AbstractFilterType, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
 import {createComplex} from './filter.js';

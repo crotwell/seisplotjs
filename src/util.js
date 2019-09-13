@@ -6,7 +6,6 @@
  * http://www.seis.sc.edu
  */
 
-/*global DataView*/
 
 import moment from 'moment';
 import * as d3 from 'd3';
@@ -18,6 +17,7 @@ export { moment, };
 import RSVP from 'rsvp';
 
 RSVP.on('error', function(reason: string) {
+  // eslint-disable-next-line no-console
   console.assert(false, reason);
 });
 
@@ -58,7 +58,8 @@ export function dataViewToString(dataView: DataView) {
 }
 
 export function log(msg: string) {
-  console.log(`${stringify(msg)}`);
+  // eslint-disable-next-line no-console
+  if (console) {console.log(`${stringify(msg)}`);}
   d3.select("div#debug").append("p").text(`${stringify(msg)}`);
 
 }
@@ -246,15 +247,13 @@ export function defaultFetchInitObj(mimeType: string): { [key: string]: any } {
 export function doFetchWithTimeout(url: string,
                                    fetchInit: { [key: string]: any },
                                    timeoutSec: number): Promise<Response> {
-  console.log("fetch URL: "+url);
   const controller = new AbortController();
   const signal = controller.signal;
   setTimeout(() => controller.abort(), timeoutSec * 1000);
   fetchInit.signal = signal;
   return fetch(url, fetchInit)
   .catch(err => {
-    console.log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
-    console.assert(false, err);
+    log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
     throw err;
   }).then(function(response) {
     if(response.ok) {

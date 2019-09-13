@@ -10,15 +10,11 @@ import { moment } from 'moment';
 import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
+import * as util from './util.js'; // for util.log
 // special due to flow
 import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
-
 import RSVP from 'rsvp';
-
-RSVP.on('error', function(reason) {
-  console.assert(false, reason);
-});
 
 /**
  * Major version of the FDSN spec supported here.
@@ -562,8 +558,6 @@ export class EventQuery {
     let otimeStr = _grabFirstElText(_grabFirstEl(_grabFirstEl(qml, 'origin'), 'time'),'value');
     if (otimeStr ) {
       out.time = otimeStr;
-    } else {
-      console.log("origintime is missing..."+out.description);
     }
 
     //need picks before can do origins
@@ -596,8 +590,9 @@ export class EventQuery {
           out.latitude = o.latitude;
           out.longitude = o.longitude;
           out.depth = o.depth;
+          out.time = o.time;
         } else {
-          console.log(`no match: ${o.publicId} ${out.preferredOriginId}`);
+          util.log(`no preferredOriginId match: ${o.publicId} ${out.preferredOriginId}`);
         }
       }
     } else if (out.originList.length > 1) {
@@ -613,7 +608,7 @@ export class EventQuery {
           out.preferredMagnitude = m;
           out.magnitude = m;
         } else {
-          console.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`);
+          util.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`);
         }
       }
     }
@@ -651,7 +646,7 @@ export class EventQuery {
     if (otimeStr ) {
       out.time = otimeStr;
     } else {
-      console.log("origintime is missing...");
+      util.log("origintime is missing...");
     }
     const lat = _grabFirstElFloat(_grabFirstEl(qml, 'latitude'), 'value');
     if (isNumArg(lat)) {out.latitude = lat;}
@@ -1050,7 +1045,7 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
   return out;
 };
 
-export const util = {
+export const parseUtil = {
   "_grabFirstEl": _grabFirstEl,
   "_grabFirstElNS": _grabFirstElNS,
   "_grabFirstElText": _grabFirstElText,

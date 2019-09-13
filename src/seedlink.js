@@ -6,19 +6,14 @@
  * http://www.seis.sc.edu
  */
 
- /*global DataView*/
-
 import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
 
+import * as util from './util.js'; // for util.log
 import {dataViewToString} from './util';
 
 export const SEEDLINK_PROTOCOL = "SeedLink3.1";
-
-RSVP.on('error', function(reason) {
-  console.assert(false, reason);
-});
 
 export type SequencedDataRecord = {
   rawsequence: string,
@@ -94,11 +89,11 @@ export class SeedlinkConnection {
           };
           webSocket.send('END\r');
           return val;
-        }, function(err) {
+        }).catch(err => {
           if (that.errorFn) {
             that.errorFn(err);
           } else {
-            console.assert(false, err);
+            throw err;
           }
           that.close();
         });
@@ -107,14 +102,12 @@ export class SeedlinkConnection {
         if (that.errorFn) {
           that.errorFn(err);
         } else {
-          console.assert(false, err);
+          throw err;
         }
       };
       webSocket.onclose = function(closeEvent) {
         if (that.closeFn) {
           that.closeFn(closeEvent);
-        } else {
-          console.log(`Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
         }
         if (that.webSocket) {
           that.webSocket = null;
@@ -124,7 +117,7 @@ export class SeedlinkConnection {
       if (this.errorFn) {
         this.errorFn(err);
       } else {
-        console.assert(false, err);
+        throw err;
       }
     }
   }
@@ -168,10 +161,9 @@ export class SeedlinkConnection {
           };
           this.receiveMiniseedFn(out);
         } else {
-          this.errorFn(new Error("Not a seedlink packet, no starting SL: "+slHeader.getInt8(0)+' '+slHeader.getInt8(1)));
+          throw new Error("Not a seedlink packet, no starting SL: "+slHeader.getInt8(0)+' '+slHeader.getInt8(1));
         }
      } catch(e) {
-        console.assert(false, e);
         this.errorFn("Error, closing seedlink. "+e);
         this.close();
      }

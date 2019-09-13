@@ -106,7 +106,6 @@ export function calcResponse(response: Response, numPoints: number, sampleRate: 
   }
   trimmedZeros = trimmedZeros.reverse();
   sacPoleZero.zeros = trimmedZeros;
-  console.log(`sacPoleZero after gamma corrections for ${unit} is ${stringify(sacPoleZero)}`);
   let out = calcResponseFromSacPoleZero( sacPoleZero, numPoints, sampleRate);
   return out;
 }

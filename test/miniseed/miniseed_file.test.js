@@ -65,7 +65,5 @@ test("contiguous miniseed file", () => {
     expect(parsed.length).toEqual(14);
     let drFirst = parsed[0];
     let drSecond = parsed[1];
-    console.log("drFirst: "+drFirst.header.startTime.toISOString()+" "+drFirst.header.numSamples+" "+drFirst.header.sampleRate);
-    console.log("drFirst.endTime="+drFirst.header.endTime.toISOString()+" drSecond.startTime="+drSecond.header.startTime.toISOString());
     expect(miniseed.areContiguous(drFirst, drSecond)).toBe(true);
 });

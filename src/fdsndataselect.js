@@ -9,10 +9,7 @@
 import moment from 'moment';
 import RSVP from 'rsvp';
 
-RSVP.on('error', function(reason: string) {
-  console.assert(false, reason);
-});
-
+import * as util from './util.js'; // for util.log
 // special due to flow
 import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
@@ -333,7 +330,7 @@ export class DataSelectQuery {
           return miniseed.parseDataRecords(ab);
         });
       } else {
-        console.log("fetchRespone not ok");
+        util.log("fetchRespone not ok");
         return [];
       }
     });

@@ -9,10 +9,6 @@
 import moment from 'moment';
 import RSVP from 'rsvp';
 
-RSVP.on('error', function(reason: string) {
-  console.assert(false, reason);
-});
-
 // special due to flow
 import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 import type {RootType} from './FDSN-datacenter-registry-1.0.schema.json.flow.js';
@@ -219,7 +215,6 @@ export class DataCentersQuery {
     }
     this.services(fdsnavailability.SERVICE_NAME);
     return this.queryJson().then(json => {
-      console.log(`returned json: ${JSON.stringify(json)}`);
       let out = this.extractCompatibleServices(json, fdsnavailability.SERVICE_NAME, repoName);
       return out.map(service => {
         let url = new URL(service.url);
@@ -244,7 +239,6 @@ export class DataCentersQuery {
     }
     this.services(fdsndataselect.SERVICE_NAME);
     return this.queryJson().then(json => {
-      console.log(`returned json: ${JSON.stringify(json)}`);
       let out = this.extractCompatibleServices(json, fdsndataselect.SERVICE_NAME, repoName);
       return out.map(service => {
         let url = new URL(service.url);

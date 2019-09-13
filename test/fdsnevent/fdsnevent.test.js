@@ -109,16 +109,16 @@ test( "qml util test", () => {
     let allMagEls = eventEl.getElementsByTagNameNS(fdsnevent.BED_NS, "magnitude");
     for (let magEl of allMagEls) {
       expect(util.isObject(magEl)).toBeTrue();
-      let mag = fdsnevent.util._grabFirstElNS(magEl, fdsnevent.BED_NS, 'mag');
+      let mag = fdsnevent.parseUtil._grabFirstElNS(magEl, fdsnevent.BED_NS, 'mag');
       expect(util.isObject(mag)).toBeTrue();
-      expect(fdsnevent.util._grabFirstEl(mag, 'value')).toBeObject();
-      expect(fdsnevent.util._grabFirstElNS(mag, fdsnevent.BED_NS, 'value')).toBeObject();
-      expect(fdsnevent.util._grabFirstElText(mag, 'value')).toBeString();
-      expect(fdsnevent.util._grabFirstElFloat(mag, 'value')).toBeDefined();
-      let magVal = fdsnevent.util._grabFirstElFloat(mag, 'value');
+      expect(fdsnevent.parseUtil._grabFirstEl(mag, 'value')).toBeObject();
+      expect(fdsnevent.parseUtil._grabFirstElNS(mag, fdsnevent.BED_NS, 'value')).toBeObject();
+      expect(fdsnevent.parseUtil._grabFirstElText(mag, 'value')).toBeString();
+      expect(fdsnevent.parseUtil._grabFirstElFloat(mag, 'value')).toBeDefined();
+      let magVal = fdsnevent.parseUtil._grabFirstElFloat(mag, 'value');
       expect(magVal).toBeFinite();
       expect(magVal).toBeWithin(0, 10);
-      let type = fdsnevent.util._grabFirstElText(magEl, 'type');
+      let type = fdsnevent.parseUtil._grabFirstElText(magEl, 'type');
       expect(type).toBeString();
     }
   }

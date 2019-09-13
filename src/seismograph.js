@@ -580,7 +580,7 @@ export class Seismograph {
           .call(this.yAxis);
     }
     if (this.seismographConfig.isYAxisRight) {
-      this.yAxisRight.scale(this.yScaleRmean)
+      this.yAxisRight.scale(this.yScaleRmean);
       this.yAxisRight.ticks(8, this.seismographConfig.yScaleFormat);
       svgG.append("g")
           .attr("class", "axis axis--y-right")
@@ -641,12 +641,6 @@ export class Seismograph {
       return;
     }
 
-    if ( ! (xt.domain()[0]
-        && xt.domain()[1]
-        && Number.isFinite(xt.range()[0])
-        && Number.isFinite(xt.range()[1]))) {
-          console.assert(false, `xScale Nan: ${xt.domain()} ${xt.range()}`);
-    }
     this.currZoomXScale = xt;
     let mythis = this;
     if (! this.beforeFirstDraw) {
@@ -751,6 +745,7 @@ export class Seismograph {
                     try {
                       t.bbox = this.getBBox();
                     } catch(error) {
+                      // eslint-disable-next-line no-console
                       console.assert(false, error);
                       // this happens if the text is not yet in the DOM, I think
                       //  https://bugzilla.mozilla.org/show_bug.cgi?id=612118

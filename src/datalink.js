@@ -6,10 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-/*global DataView */
-/*global WebSocket */
-
-
+import * as util from './util.js'; // for util.log
 import {dataViewToString, stringify, isDef} from './util';
 import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
@@ -34,7 +31,7 @@ export const ENDSTREAM = "ENDSTREAM";
 export const MSEED_TYPE = "/MSEED";
 
 let defaultHandleResponse = function(message) {
-  console.log("Unhandled datalink response: "+message);
+  util.log("Unhandled datalink response: "+message);
 };
 
 /**
@@ -97,8 +94,6 @@ export class DataLinkConnection {
         that._mode = QUERY_MODE;
         if (that.closeHandler) {
           that.closeHandler(closeEvent);
-        } else {
-          console.log(`Received webSocket close: ${closeEvent.code} ${closeEvent.reason}`);
         }
       };
       webSocket.onopen = function() {
@@ -207,7 +202,6 @@ get mode() { return this._mode;}
       }
       binaryPacket.set(data, i);
     }
-    //console.log(`encodeDL: ${new TextDecoder("utf-8").decode(binaryPacket)}`);
     return rawPacket;
   }
 
@@ -218,7 +212,6 @@ get mode() { return this._mode;}
    * @param data optional data to send
    */
   sendDLBinary(header: string, data?: Uint8Array): void {
-    //console.log(`sendDLBinary: ${header} ${data ? data.length : 0}`);
     const rawPacket = this.encodeDL(header, data);
     if (this.webSocket) {
       this.webSocket.send(rawPacket);
@@ -232,7 +225,6 @@ get mode() { return this._mode;}
    * to the header before sending.
    */
   sendDLCommand(command: string, dataString?: string): void {
-    //console.log("send: "+command+" | "+(dataString ? dataString : ""));
     this.sendDLBinary(command, stringToUint8Array(dataString));
   }
 
@@ -272,7 +264,6 @@ get mode() { return this._mode;}
   */
   writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array) {
     let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`;
-    //console.log(`writeAck: header: ${header}`);
     return this.awaitDLBinary(header, data);
   }
 
@@ -287,7 +278,6 @@ get mode() { return this._mode;}
         && 'L' === String.fromCharCode(dlPreHeader.getUint8(1))) {
       const headerLen = dlPreHeader.getUint8(2);
       const header = dataViewToString(new DataView(rawData, 3, headerLen));
-      //console.log("handle wsEvent   header: '"+header+"'");
       if (header.startsWith(PACKET)) {
         if (this.packetHandler) {
           try {
@@ -311,9 +301,6 @@ get mode() { return this._mode;}
         } else if (header.startsWith("OK")) {
           if (this.responseResolve) {
             this.responseResolve(header+" | "+message);
-            //console.log(header+" | "+message);
-          } else {
-            //console.log("OK without responseResolve");
           }
         }
       } else if (this.responseResolve) {
@@ -332,8 +319,9 @@ get mode() { return this._mode;}
     }
     if (this.errorHandler) {
       this.errorHandler(error);
+    } else {
+      util.log("datalink handleError: "+error.message);
     }
-    console.log("handleError: "+error.message);
   }
 }
 

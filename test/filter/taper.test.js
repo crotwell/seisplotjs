@@ -28,9 +28,6 @@ test("constant", () => {
   for (let i=0; i<dataLen*taperWidth; i++) {
     expected[i] = orig[i] * (f0 - f1 * Math.cos(omega * i));
     expected[dataLen-i-1] = orig[i] * (f0 - f1 * Math.cos(omega * i));
-    if (i < 10) {
-      console.log(`expect: ${expected[i]}  === ${bagtaper.y[i]}`);
-    }
   }
   // $FlowFixMe
   expect(bagtaper.y).arrayToBeCloseToRatio(expected, 5);

@@ -38,7 +38,6 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
     let url;
     let startAttr = svgParent.attr("start") ? svgParent.attr("start") : null;
     let endAttr = svgParent.attr("end") ? svgParent.attr("end") : null;
-    console.log("start end attr: ${startAttr} ${endAttr} "+(typeof endAttr));
     let duration = svgParent.attr("duration");
     let startTime = null;
     let endTime = null;

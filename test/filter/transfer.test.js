@@ -65,8 +65,6 @@ test("applyFreqTaper to FFTResult", () => {
           expect(v).toBeCloseTo(0, 2);
       } else if (F > lowPass && F < highPass ) {
           expect(v).toBeCloseTo(1, 2);
-      } else {
-
       }
     }
     });
@@ -504,8 +502,6 @@ test("impulse one zero", () => {
       return saveDataPromise.then( () => {
       // $FlowFixMe
         expect(bagdata).arrayToBeCloseToRatio(sacdata, 2 , 1e-2, 1e-3);
-      }).catch(err => {
-        console.log("Error write sac "+err);
       });
     });
 
@@ -546,8 +542,6 @@ test("impulse", () => {
       return saveDataPromise.then( () => {
       // $FlowFixMe
         expect(bagdata).arrayToBeCloseToRatio(sacdata, 6);
-      }).catch(err => {
-        console.log("Error write sac "+err);
       });
 
   });
