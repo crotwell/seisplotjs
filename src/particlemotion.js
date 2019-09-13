@@ -169,7 +169,7 @@ export class ParticleMotion {
     this.g.select(".axis--y").transition().duration(delay/2).call(this.yAxis);
     this.g.select(".axis--x").transition().duration(delay/2).call(this.xAxis);
     return this;
-}
+  }
 
   calcScaleDomain() {
     let minMax = this.segments[0].findMinMax();
