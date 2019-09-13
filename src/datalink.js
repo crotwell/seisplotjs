@@ -30,6 +30,8 @@ export const STREAM = "STREAM";
 export const ENDSTREAM = "ENDSTREAM";
 export const MSEED_TYPE = "/MSEED";
 
+export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
+
 let defaultHandleResponse = function(message) {
   util.log("Unhandled datalink response: "+message);
 };
@@ -51,8 +53,8 @@ export class DataLinkConnection {
   serverId: string | null;
   clientIdNum: number;
   username: string;
-  responseResolve: null | (response: string) => void;
-  responseReject: null | (error: Error) => void;
+  _responseResolve: null | (response: DataLinkResponse) => void;
+  _responseReject: null | (error: Error) => void;
   webSocket: WebSocket | null;
   constructor(url: string, packetHandler: (packet: DataLinkPacket) => void, errorHandler: (error: Error) => void) {
     this.url = url;
@@ -64,8 +66,8 @@ export class DataLinkConnection {
     // meant to be processId, so use 1 <= num <= 2^15 to be safe
     this.clientIdNum = Math.floor(Math.random() * MAX_PROC_NUM)+1;
     this.username = USER_BROWSER;
-    this.responseResolve = null;
-    this.responseReject = null;
+    this._responseResolve = null;
+    this._responseReject = null;
   }
 
   setOnClose(closeHandler: (close: CloseEvent) => void) {
@@ -155,14 +157,15 @@ get mode() { return this._mode;}
   */
   sendId(): Promise<string> {
     const that = this;
-    return this.awaitDLCommand("ID seisplotjs:"+this.username+":"+this.clientIdNum+":javascript")
-    .then(replyMsg => {
-        if (replyMsg.startsWith("ID DataLink ")) {
-          that.serverId = replyMsg;
-          return replyMsg;
-        } else {
-          throw new Error("not ID line: "+stringify(replyMsg));
-        }
+    return this.id("seisplotjs", this.username, stringify(this.clientIdNum), "javascript")
+    .then(this.ensureDataLinkResponse)
+    .then(dlResponse => {
+      if (dlResponse.type === 'ID') {
+        that.serverId = ''+dlResponse.message;
+        return that.serverId;
+      } else {
+        throw new Error("not ID response: "+stringify(dlResponse.type));
+      }
     });
   }
 
@@ -232,19 +235,19 @@ get mode() { return this._mode;}
   * Send a DataLink Command and await the response. Command is a string.
   * @returns a Promise that resolves with the webSocket MessageEvent.
   */
-  awaitDLBinary(header: string, data?: Uint8Array): Promise<string> {
+  awaitDLBinary(header: string, data?: Uint8Array): Promise<DataLinkResponse> |  Promise<DataLinkPacket> {
     let that = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
-      that.responseResolve = resolve;
-      that.responseReject = reject;
+      that._responseResolve = resolve;
+      that._responseReject = reject;
       that.sendDLBinary(header, data);
     }).then(response => {
-      that.responseResolve = null;
-      that.responseReject = null;
+      that._responseResolve = null;
+      that._responseReject = null;
       return response;
     }).catch(error => {
-      that.responseResolve = null;
-      that.responseReject = null;
+      that._responseResolve = null;
+      that._responseReject = null;
       throw error;
     });
     return promise;
@@ -255,7 +258,8 @@ get mode() { return this._mode;}
   * Send a DataLink Command and await the response. Command is a string.
   * Returns a Promise that resolves with the webSocket MessageEvent.
   */
-  awaitDLCommand(command: string, dataString?: string): Promise<string> {
+  awaitDLCommand(command: string, dataString?: string): Promise<DataLinkResponse> |  Promise<DataLinkPacket> {
+    console.log(`send ${command} | ${dataString?dataString:''}`)
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
@@ -265,6 +269,54 @@ get mode() { return this._mode;}
   writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array) {
     let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`;
     return this.awaitDLBinary(header, data);
+  }
+
+  ensureDataLinkResponse(dl: DataLinkResponse | DataLinkPacket): DataLinkResponse {
+    if (dl instanceof DataLinkResponse) {
+      return dl;
+    }
+    throw new Error(`Expected DataLinkResponse but got ${dl.header}`);
+  }
+
+  ensureDataLinkPacket(dl: DataLinkResponse | DataLinkPacket): DataLinkPacket {
+    if (dl instanceof DataLinkPacket) {
+      return dl;
+    }
+    throw new Error(`Expected DataLinkPacket but got ${dl.type}`);
+  }
+
+  id(programname: string, username: string, processid: string, architecture: string): Promise<DataLinkResponse> {
+    let command = `ID ${programname}:${username}:${processid}:${architecture}`;
+    return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
+  }
+
+  info(infoType: string): Promise<DataLinkResponse> {
+    let command = `INFO ${infoType}`;
+    return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
+  }
+
+  positionAfter(time: moment): Promise<DataLinkResponse> {
+    return this.positionAfterHPTime(momentToHPTime(time)).then(this.ensureDataLinkResponse);
+  }
+
+  positionAfterHPTime(hpTime: number): Promise<DataLinkResponse> {
+    let command = `POSITION AFTER ${hpTime}`;
+    return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
+  }
+
+  match(pattern: string): Promise<DataLinkResponse> {
+    let command = `MATCH`;
+    return this.awaitDLCommand(command, pattern).then(this.ensureDataLinkResponse);
+  }
+
+  reject(pattern: string): Promise<DataLinkResponse> {
+    let command = `REJECT ${pattern}`;
+    return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
+  }
+
+  read(packetId: string): Promise<DataLinkPacket> {
+    let command = `READ ${packetId}`;
+    return this.awaitDLBinary(command).then(this.ensureDataLinkPacket);
   }
 
   /**
@@ -279,10 +331,10 @@ get mode() { return this._mode;}
       const headerLen = dlPreHeader.getUint8(2);
       const header = dataViewToString(new DataView(rawData, 3, headerLen));
       if (header.startsWith(PACKET)) {
+        let packet = new DataLinkPacket(header,
+                new DataView(rawData, 3+headerLen));
         if (this.packetHandler) {
           try {
-            let packet = new DataLinkPacket(header,
-                    new DataView(rawData, 3+headerLen));
             this.packetHandler(packet);
           } catch (e) {
             this.errorHandler(e);
@@ -290,23 +342,21 @@ get mode() { return this._mode;}
         } else {
           this.errorHandler(new Error("packetHandler not defined"));
         }
-      } else if (header.startsWith(ERROR) || header.startsWith("OK")) {
-        const split = header.split(' ');
-        const value = split[1];
-        // not needed as one datalink packet per web socket event
-        // const dataSize = Number.parseInt(split[2]);
-        const message = dataViewToString(new DataView(rawData, 3+headerLen));
-        if (header.startsWith(ERROR)) {
-          this.handleError(new Error("value="+value+" "+message));
-        } else if (header.startsWith("OK")) {
-          if (this.responseResolve) {
-            this.responseResolve(header+" | "+message);
+      } else {
+        let dv;
+        if (rawData.byteLength > 3+headerLen) {
+          dv = new DataView(rawData, 3+headerLen);
+        }
+        const dlResponse = DataLinkResponse.parse(header, dv);
+        if (dlResponse.type === 'ERROR') {
+          this.handleError(new Error(`value=${dlResponse.value} ${dlResponse.message}`));
+        } else {
+          if (this._responseResolve) {
+            this._responseResolve(dlResponse);
+          } else {
+            defaultHandleResponse(header);
           }
         }
-      } else if (this.responseResolve) {
-        this.responseResolve(header);
-      } else {
-        defaultHandleResponse(header);
       }
     } else {
       throw new Error("DataLink Packet did not start with DL");
@@ -314,14 +364,50 @@ get mode() { return this._mode;}
   }
 
   handleError(error: Error) {
-    if (this.responseReject) {
-      this.responseReject(error);
+    if (this._responseReject) {
+      this._responseReject(error);
     }
     if (this.errorHandler) {
       this.errorHandler(error);
     } else {
       util.log("datalink handleError: "+error.message);
     }
+  }
+}
+
+/**
+ * Datalink response, used for ID, INFO, OK and ERROR responses.
+ * @type {[type]}
+ */
+export class DataLinkResponse {
+  type: string;
+  value: string;
+  message: string;
+  constructor(type: string, value: string, message: string) {
+    this.type = type;
+    this.value = value;
+    this.message = message;
+  }
+  toString(): string {
+    return `${this.type} ${this.value} | ${this.message}`;
+  }
+  static parse(header: string, data?: DataView): DataLinkResponse {
+    let value = ""
+    let s = header.split(' ');
+    let type = s[0];
+    let message = '';
+    if (type === 'ID') {
+      message = ''+header.substring[3];
+    } else if (type === 'INFO' || type === 'OK' || type === 'ERROR') {
+      value = s[1];
+      if (data) {
+        message = dataViewToString(new DataView(data.buffer, 3+header.length));
+      }
+      const dSize = parseInt(s[2]);
+    } else {
+      console.log(`unknown DataLink response type: ${type}  ${header}`);
+    }
+    return new DataLinkResponse(type, value, message)
   }
 }
 
@@ -344,6 +430,7 @@ export class DataLinkPacket {
   dataSize: number;
   _miniseed: null | miniseed.DataRecord;
   constructor(header: string, dataview: DataView) {
+    this._miniseed = null;
     this.header = header;
     this.data = dataview;
     let split = this.header.split(' ');
@@ -390,7 +477,7 @@ export class DataLinkPacket {
    * ends with '/MSEED', null otherwise.
    */
   get miniseed() {
-    if ( !this._miniseed ) {
+    if ( ! isDef(this._miniseed) ) {
       if (this.streamId.endsWith(MSEED_TYPE)) {
         this._miniseed = miniseed.parseSingleDataRecord(this.data);
       } else {
