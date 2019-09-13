@@ -91,7 +91,11 @@ export class Seismograph {
     this.width = 200;
     this.height = 100;
 
-    this.svgParent = inSvgParent;
+    if (typeof inSvgParent === 'string') {
+      this.svgParent = d3.select(inSvgParent);
+    } else {
+      this.svgParent = inSvgParent;
+    }
     // need relative position in parent div to allow absolute position
     // of svg and canvas for overlaying
     this.svgParent.style("position", "relative");
