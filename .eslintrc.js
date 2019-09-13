@@ -22,7 +22,7 @@ module.exports = {
     "rules": {
       "semi": ["error", "always"],
       "no-var": ["error"],
-      "no-console": [ "off"],
+      "no-console": [ "error"],
       "no-unused-vars": [ "off"],
       "eqeqeq": ["error", "always"]
     }
