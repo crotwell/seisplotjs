@@ -69,7 +69,9 @@ export class Seismograph {
   lineFunc: any;
   zoom: any;
   xAxis: any;
+  xAxisTop: any;
   yAxis: any;
+  yAxisRight: any;
   g: any;
   throttleRescale: any;
   throttleResize: any;
@@ -122,8 +124,18 @@ export class Seismograph {
     this.xScaleChangeListeners = [];
     this.yScaleChangeListeners = [];
 
-    this.xAxis = d3.axisBottom(this.currZoomXScale).tickFormat(this.seismographConfig.xScaleFormat);
-    this.yAxis = d3.axisLeft(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
+    if (this.seismographConfig.isXAxis) {
+      this.xAxis = d3.axisBottom(this.currZoomXScale).tickFormat(this.seismographConfig.xScaleFormat);
+    }
+    if (this.seismographConfig.isXAxisTop) {
+      this.xAxisTop = d3.axisTop(this.currZoomXScale).tickFormat(this.seismographConfig.xScaleFormat);
+    }
+    if (this.seismographConfig.isYAxis) {
+      this.yAxis = d3.axisLeft(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
+    }
+    if (this.seismographConfig.isYAxisRight) {
+      this.yAxisRight = d3.axisRight(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
+    }
 
     let mythis = this;
 
@@ -419,11 +431,6 @@ export class Seismograph {
     context.arc(this.currZoomXScale((minX+maxX)/2), this.yScale((minY+maxY)/2), radius, 0, 2*Math.PI, true);
     context.fill();
 
-    //context.translate(this.seismographConfig.margin.left, this.seismographConfig.margin.top);
-    // Create clipping path
-    //  context.beginPath();
-    //  context.rect(0, 0, this.width, this.height);
-    //  context.clip();
     context.beginPath();
     context.fillStyle = "lightblue";
     context.arc(this.currZoomXScale(minX), this.yScale(minY), radius, 0, 2*Math.PI, true);
@@ -549,20 +556,36 @@ export class Seismograph {
   }
 
   drawAxis(svgG: any): void {
-    this.xAxis.scale(this.currZoomXScale);
-    this.xAxis.tickFormat(this.seismographConfig.xScaleFormat);
-    this.yAxis.ticks(8, this.seismographConfig.yScaleFormat);
     svgG.selectAll("g.axis").remove();
     if (this.seismographConfig.isXAxis) {
+      this.xAxis.scale(this.currZoomXScale);
+      this.xAxis.tickFormat(this.seismographConfig.xScaleFormat);
       svgG.append("g")
           .attr("class", "axis axis--x")
           .attr("transform", "translate(0," + this.height + ")")
           .call(this.xAxis);
     }
+    if (this.seismographConfig.isXAxisTop) {
+      this.xAxisTop.scale(this.currZoomXScale);
+      this.xAxisTop.tickFormat(this.seismographConfig.xScaleFormat);
+      svgG.append("g")
+          .attr("class", "axis axis--x")
+          .call(this.xAxisTop);
+    }
     if (this.seismographConfig.isYAxis) {
+      this.yAxis.scale(this.yScaleRmean);
+      this.yAxis.ticks(8, this.seismographConfig.yScaleFormat);
       svgG.append("g")
           .attr("class", "axis axis--y")
           .call(this.yAxis);
+    }
+    if (this.seismographConfig.isYAxisRight) {
+      this.yAxisRight.scale(this.yScaleRmean)
+      this.yAxisRight.ticks(8, this.seismographConfig.yScaleFormat);
+      svgG.append("g")
+          .attr("class", "axis axis--y-right")
+          .attr("transform", "translate(" + this.width + ",0)")
+          .call(this.yAxisRight);
     }
   }
 
@@ -575,7 +598,12 @@ export class Seismograph {
       }
       this.throttleRescale = window.setTimeout(
         function(){
-          myThis.g.select(".axis--y").transition().duration(delay/2).call(myThis.yAxis);
+          if (myThis.seismographConfig.isYAxis) {
+            myThis.g.select(".axis--y").transition().duration(delay/2).call(myThis.yAxis);
+          }
+          if (myThis.seismographConfig.isYAxisRight) {
+            myThis.g.select(".axis--y-right").transition().duration(delay/2).call(myThis.yAxisRight);
+          }
           myThis.throttleRescale = null;
         }, delay);
     }
@@ -596,12 +624,8 @@ export class Seismograph {
     return outxScale;
   }
   resetZoom(): void {
-    this.currZoomXScale = this.cloneXScale(this.origXScale);
-    if ( ! this.beforeFirstDraw) {
-      this.redrawWithXScale(this.currZoomXScale);
-    }
+    this.redrawWithXScale(this.cloneXScale(this.origXScale));
   }
-
 
   zoomed(mythis: Seismograph): void {
     let t = d3.event.transform;
@@ -654,7 +678,12 @@ export class Seismograph {
                return (i===0) ? 0 : mythis.yScale.range()[0];
              }).curve(d3.curveLinear)([ mythis.yScale.domain()[0], mythis.yScale.domain()[1] ] ); // call the d3 function created by line with data
         });
-      this.g.select(".axis--x").call(this.xAxis.scale(xt));
+      if (this.seismographConfig.isXAxis) {
+        this.g.select(".axis--x").call(this.xAxis.scale(xt));
+      }
+      if (this.seismographConfig.isXAxisTop) {
+        this.g.select(".axis--x-top").call(this.xAxisTop.scale(xt));
+      }
     }
     this.xScaleChangeListeners.forEach(l => l.notifyScaleChange(xt));
   }
@@ -774,7 +803,12 @@ export class Seismograph {
     this.origXScale.range([0, this.width]);
     this.yScale.range([this.height, 0]);
     this.yScaleRmean.range([this.height, 0]);
-    this.yAxis.scale(this.yScaleRmean);
+    if (this.seismographConfig.isYAxis) {
+      this.yAxis.scale(this.yScaleRmean);
+    }
+    if (this.seismographConfig.isYAxisRight) {
+      this.yAxisRight.scale(this.yScaleRmean);
+    }
     this.calcScaleAndZoom();
     if (this.canvas) {
       this.canvasHolder.attr("width", this.width)
@@ -782,16 +816,12 @@ export class Seismograph {
       this.canvas.attr("width", this.width)
         .attr("height", this.height+1);
     }
-    if ( ! this.beforeFirstDraw) {
-      const resizeXScale = this.cloneXScale(this.currZoomXScale);
-      // keep same time window
-      // but use new pixel range
-      resizeXScale.range([0, this.width]);
-      // this updates currZoomXScale
-      this.redrawWithXScale(resizeXScale);
-    } else {
-      this.currZoomXScale.range([0, this.width]);
-    }
+    const resizeXScale = this.cloneXScale(this.currZoomXScale);
+    // keep same time window
+    // but use new pixel range
+    resizeXScale.range([0, this.width]);
+    // this updates currZoomXScale
+    this.redrawWithXScale(resizeXScale);
   }
 
 

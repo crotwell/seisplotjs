@@ -35,10 +35,13 @@ export class SeismographConfig {
   yScaleFormat: string | (value: number) => string;
   _title: Array<string>;
   isXAxis: boolean;
+  isXAxisTop: boolean;
   xLabel: string;
   xLabelOrientation: string;
   xSublabel: string;
   isYAxis: boolean;
+  isYAxisRight: boolean;
+  isYAxisNice: boolean;
   yLabel: string;
   yLabelOrientation: string;
   ySublabel: string;
@@ -68,7 +71,10 @@ export class SeismographConfig {
   constructor() {
     this.drawingType = DRAW_CANVAS;
     this.isXAxis = true;
+    this.isXAxisTop = false;
+    this.isYAxisNice = true;
     this.isYAxis = true;
+    this.isYAxisRight = false;
     this.xScaleFormat = multiFormatHour;
     this.yScaleFormat = "3e";
     this._title = [ ];

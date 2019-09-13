@@ -90,12 +90,12 @@ export class Helicorder {
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
       if (lineTime.lineNumber===0) {
         lineSeisConfig.title = this.heliConfig.title;
-        lineSeisConfig.isXAxisTop = true;
+        lineSeisConfig.isXAxisTop = this.heliConfig.isXAxisTop;
         lineSeisConfig.margin.top += this.heliConfig.margin.top;
         height += this.heliConfig.margin.top;
         seisDiv.style('height', height+'px');
       } else if (lineTime.lineNumber === nl-1) {
-        lineSeisConfig.isXAxis = true;
+        lineSeisConfig.isXAxis = this.heliConfig.isXAxis;
         lineSeisConfig.margin.bottom += this.heliConfig.margin.bottom;
         height += this.heliConfig.margin.bottom;
         seisDiv.style('height', height+'px');
@@ -183,12 +183,13 @@ export class HelicorderConfig extends SeismographConfig {
     this.xSublabel = '';
     this.ySublabel = ' ';
     this.ySublabelIsUnits = false;
-    this.isXAxis = false;
+    this.isXAxis = true;
+    this.isXAxisTop = true;
     this.isYAxis = false;
     this.overlap = 0.5;
     this.numLines = 12;
     this.margin.left = 20;
-    this.margin.top = 20;
+    this.margin.top = 40;
 
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.ySublabel = ` `;
