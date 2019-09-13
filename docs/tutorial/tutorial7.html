@@ -13,7 +13,7 @@
     <h3>Tutorial 7: Realtime</h3>
     <h3>Realtime display for <span id="channel"></span>!</h3>
 
-    <button id="load">Load</button>
+    <button id="disconnect">Disconnect</button>
     <button id="pause">Pause</button>
     <div id="realtime">
     </div>
@@ -31,6 +31,7 @@ const matchPattern = `CO_JSC_00_HH./MSEED`;
 seisplotjs.d3.select('span#channel').text(matchPattern);
 const duration = seisplotjs.moment.duration(5, 'minutes');
 const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
+seisPlotConfig.wheelZoom = false;
 const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
 let graphList = new Map();
 const datalink = new seisplotjs.datalink.DataLinkConnection(
@@ -63,23 +64,9 @@ const datalink = new seisplotjs.datalink.DataLinkConnection(
     }
     },
     errorFn);
-  datalink.connect()
-  .then(serverId => {
-    console.log(`id response: ${serverId}`);
-    return datalink.match(matchPattern);
-  }).then(response => {
-    console.log(`match response: ${response}`)
-    return datalink.positionAfter(timeWindow.start);
-  }).then(response => {
-    console.log(`positionAfter response: ${response}`)
-    return datalink.stream();
-  }).catch( function(error) {
-    seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
-    console.assert(false, error);
-  });
   const timerInterval = 1000; //milliseconds
   let paused = false;
-  let stopped = true;
+  let stopped = false;
   let timerInProgress = false;
   let tick = 0;
   let timer = seisplotjs.d3.interval(function(elapsed) {
@@ -123,17 +110,33 @@ const datalink = new seisplotjs.datalink.DataLinkConnection(
     let doDisconnect = function(value) {
       stopped = value;
       if (stopped) {
-        if (datalink) {datalink.endStream();datalink.close();}
+        if (datalink) {
+          datalink.endStream();
+          datalink.close();
+        }
         seisplotjs.d3.select("button#disconnect").text("Reconnect");
       } else {
         if (datalink) {
           datalink.connect()
           .then(serverId => {
-            datalink.match
-          });}
+            console.log(`id response: ${serverId}`);
+            return datalink.match(matchPattern);
+          }).then(response => {
+            console.log(`match response: ${response}`)
+            return datalink.positionAfter(timeWindow.start);
+          }).then(response => {
+            console.log(`positionAfter response: ${response}`)
+            return datalink.stream();
+          }).catch( function(error) {
+            seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+            console.assert(false, error);
+          });
+        }
         seisplotjs.d3.select("button#disconnect").text("Disconnect");
       }
     }
+
+    doDisconnect(stopped);
     </script>
   </body>
 </html>
