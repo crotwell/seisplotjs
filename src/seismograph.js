@@ -1228,22 +1228,9 @@ svg.seismograph {
   min-width: 25px;
 }
 
-canvas.seismograph {
-  height: 100%;
-  width: 100%;
-}
-
-div.container-wide {
-  display: inline-block;
-  position: relative;
-  width: 100%;
-  padding-bottom: 40%; /* aspect ratio */
-  vertical-align: top;
-  overflow: hidden;
-}
-
 svg.seismograph text.title {
-  font: bold 14px;
+  font-size: larger;
+  font-weight: bold;
   fill: black;
   color: black;
   dominant-baseline: hanging;
