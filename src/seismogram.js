@@ -7,7 +7,7 @@
  */
 
 import moment from 'moment';
-import { checkStringOrDate, meanOfSlice, isDef } from './util';
+import { checkStringOrDate, meanOfSlice, isDef, stringify } from './util';
 import * as seedcodec from './seedcodec';
 
 import {Channel, InstrumentSensitivity} from './stationxml.js';
@@ -292,7 +292,7 @@ export class Seismogram {
     } else if ( segmentArray instanceof SeismogramSegment) {
       this._segmentArray = [ segmentArray ];
     } else {
-      throw new Error("segmentArray is not Array<SeismogramSegment> or SeismogramSegment");
+      throw new Error(`segmentArray is not Array<SeismogramSegment> or SeismogramSegment: ${stringify(segmentArray)}`);
     }
     this.checkAllSimilar();
     this.findStartEnd();
@@ -403,11 +403,15 @@ export class Seismogram {
   get segments(): Array<SeismogramSegment> {
     return this._segmentArray;
   }
-  append(seismogram: SeismogramSegment) {
-    this.checkSimilar(this._segmentArray[0], seismogram);
-    this._startTime = moment.min([ this.startTime, moment.utc(seismogram.startTime)]);
-    this._endTime = moment.max([ this.endTime, moment.utc(seismogram.endTime)]);
-    this._segmentArray.push(seismogram);
+  append(seismogram: SeismogramSegment | Seismogram) {
+    if (seismogram instanceof Seismogram) {
+      seismogram._segmentArray.forEach(s => this.append(s));
+    } else {
+      this.checkSimilar(this._segmentArray[0], seismogram);
+      this._startTime = moment.min([ this.startTime, moment.utc(seismogram.startTime)]);
+      this._endTime = moment.max([ this.endTime, moment.utc(seismogram.endTime)]);
+      this._segmentArray.push(seismogram);
+    }
   }
   /**
    * Cut the seismogram. Creates a new seismogram with all datapoints
