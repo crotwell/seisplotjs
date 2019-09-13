@@ -364,7 +364,8 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord): boolean {
 /** Concatentates a sequence of DataRecords into a single seismogram object.
   * Assumes that they are all contiguous and in order. Header values from the first
   * DataRecord are used. */
-export function createSeismogramSegment(contig: Array<DataRecord>): SeismogramSegment {
+export function createSeismogramSegment(contig: Array<DataRecord> | DataRecord): SeismogramSegment {
+  if ( ! Array.isArray(contig)) { contig = [ contig ];}
   let contigData = contig.map(dr => dr.asEncodedDataSegment());
   let out = new SeismogramSegment(contigData,
                            contig[0].header.sampleRate,
