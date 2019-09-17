@@ -101,7 +101,8 @@ export class Helicorder {
         seisDiv.style('height', height+'px');
       }
       lineSeisConfig.fixedTimeScale = lineTime;
-      lineSeisConfig.yLabel = `${startTime.format("HH.mm")}`;
+      lineSeisConfig.yLabel = `${startTime.format("HH:mm")}`;
+      lineSeisConfig.yLabelRight = `${endTime.format("HH:mm")}`;
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
 
       let trimSeisDataList: Array<SeismogramDisplayData> = [  ];
@@ -194,7 +195,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.ySublabel = ` `;
     this.lineSeisConfig.xLabel = ' ';
-    this.lineSeisConfig.yLabel = '';// replace later with `${startTime.format("HH.mm")}`;
+    this.lineSeisConfig.yLabel = '';// replace later with `${startTime.format("HH:mm")}`;
     this.lineSeisConfig.yLabelOrientation = 'horizontal';
     this.lineSeisConfig.ySublabelIsUnits = false;
     this.lineSeisConfig.isXAxis = false;
