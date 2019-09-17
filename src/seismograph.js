@@ -1038,12 +1038,16 @@ export class Seismograph {
     }
   }
   /** appends the seismogram(s) as separate time series. */
-  append(seismogram: Array<Seismogram> | Seismogram) {
-    if (Array.isArray(seismogram)) {
-      let sdd = seismogram.map(s => new SeismogramDisplayData.fromSeismogram(s));
+  append(seismogram: Array<Seismogram> | Seismogram | SeismogramDisplayData) {
+    if (seismogram instanceof SeismogramDisplayData) {
+      this._internalAppend(seismogram);
+    } else if (Array.isArray(seismogram)) {
+      let sdd = seismogram.map(s => SeismogramDisplayData.fromSeismogram(s));
       this._internalAppend(sdd);
+    } else if (seismogram instanceof Seismogram) {
+      this._internalAppend(SeismogramDisplayData.fromSeismogram(seismogram));
     } else {
-      this._internalAppend(new SeismogramDisplayData.fromSeismogram(seismogram));
+      throw new Error(`Unable to append, doesn't look like Array of Seismogram, Seismogram or SeismogramDisplayData: ${seismogram.constructor.name}`);
     }
     this.calcAmpScaleDomain();
     if ( ! this.beforeFirstDraw) {
