@@ -33,7 +33,7 @@
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
     "prepare": "npm run flow && npm run test && npm run compile",
     "version": "npm run compile && npm run standalone",
-    "postversion": "git push && git push --tags"
+    "postversion": "echo git push && echo git push --tags"
   },
   "repository": {
     "type": "git",
