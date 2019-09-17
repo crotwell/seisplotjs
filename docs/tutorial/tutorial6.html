@@ -38,7 +38,6 @@ new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
     let heliConfig = new seisplotjs.helicorder.HelicorderConfig(timeWindow);
 
     heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
-    heliConfig.yLabelOrientation = "horizontal";
     let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
     seisData.addMarkers([ { markertype: 'predicted', name: "now", time: seisplotjs.moment.utc() } ]);
     let helicorder = new seisplotjs.helicorder.Helicorder("div#helicorder",

@@ -78,6 +78,7 @@ cat > docs/api/index.html <<EOF
         <div class='py1 px2'>
           <div id='toc'>
             <ul class='list-reset h5 py1-ul'>
+              <li><a href="./index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
               <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
@@ -141,7 +142,7 @@ EOF
   then
     # entry of index.html
     cat >> docs/api/index.html <<EOF
-      <li><a href="${jsfile}${md}.html">${jsfile}</a> - ${descText}</li>
+      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.js">source</a> ) - ${descText}</li>
 EOF
   fi
 done

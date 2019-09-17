@@ -26,6 +26,7 @@
               <li class="sub"><a href="../tutorial/5_filter.html" class="sub">Filtering</a></li>
               <li class="sub"><a href="../tutorial/6_helicorder.html" class="sub">Helicorder</a></li>
               <li class="sub"><a href="../tutorial/7_realtime.html" class="sub">Realtime</a></li>
+              <li class="sub"><a href="../tutorial/8_andmore.html" class="sub">...and more</a></li>
             </ul>
           </div>
         </div>
@@ -113,7 +114,6 @@
             seisplotjs.d3.select("span#endtime").text(timeWindow.end.format('YYYY-MM-DD HH:mm')+"Z");
             let heliConfig = new seisplotjs.helicorder.HelicorderConfig(timeWindow);
             heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
-            heliConfig.yLabelOrientation = "horizontal";
             let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
             seisData.addMarkers([ { markertype: 'predicted', name: "now", time: seisplotjs.moment.utc() } ]);
             let helicorder = new seisplotjs.helicorder.Helicorder("div#helicorder",
@@ -128,7 +128,7 @@
 
           <p>See it live in <a href="tutorial6.html">tutorial6.html</a>.</p>
           <p>Previous: <a href="5_filter.html">Deconvolution and Filtering</a></p>
-          <p>Next: </p>
+          <p>Next: <a href="7_realtime.html" class="sub">Realtime Data</a></p>
 
 
         </div>
