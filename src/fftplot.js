@@ -13,7 +13,7 @@ import * as d3 from 'd3';
 import {insertCSS} from './plotutil.js';
 
 export function createSimpleFFTPlot(cssSelector: string, fft: FFTResult, loglog: boolean = true) {
-  let svg = createOverlayFFTPlot(cssSelector,  [ fft], loglog);
+  let svg = createOverlayFFTPlot(cssSelector,  [ fft ], loglog);
   svg.classed("overlayplot", false);
   return svg;
 }
@@ -49,7 +49,7 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
         ampSlice = ap.amp;
       }
       let currExtent = d3.extent(ampSlice);
-      if (loglog && currExtent[0] === 0) {
+      if (currExtent[0] === 0) {
         // replace zero with smallest non-zero / 10 for loglog plot
         currExtent[0] = 0.1 * ampSlice.reduce((acc, curr) => {
           if (curr > 0 && curr < acc) {
@@ -132,7 +132,7 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
     } else {
       line.x(function(d, i, a) { return x((i  )*minFreq); });
     }
-    line.y(function(d) { if (d !== 0.0 && ! isNaN(d)) {return y(d);} else {return y.range()[0];} });
+    line.y(function(d) {if (d !== 0.0 && ! isNaN(d)) {return y(d);} else {return y.range()[0];} });
     pathg.append("g").append("path")
         .classed("fftpath", true)
         .datum(ampSlice)
