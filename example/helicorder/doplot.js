@@ -164,8 +164,7 @@ doPlot = function(config) {
       hash.chantrList = null;
       hash.heli = new Helicorder(svgParent,
                                     heliConfig,
-                                    hash.seisData,
-                                    hash.timeWindow.startTime,hash.timeWindow.endTime);
+                                    hash.seisData);
       svgParent.selectAll("div").remove(); // remove old data
       svgParent.selectAll("p").remove(); // remove old data
       svgParent.selectAll("h3").remove(); // remove old data
