@@ -885,25 +885,33 @@ export class Seismograph {
   }
   drawYLabel(): Seismograph {
     this.svg.selectAll('g.yLabel').remove();
-    let svgText = this.svg.append("g")
-       .classed("yLabel", true)
-       .attr("x", 0)
-       .attr("transform", "translate(0, "+(this.seismographConfig.margin.top+(this.height)/2)+")")
-       .append("text");
-    svgText
-       .classed("y label", true);
-    if (this.seismographConfig.yLabelOrientation === "vertical") {
-      // vertical
+    for(let side of [ 'left', 'right']) {
+      let hTranslate = (side==="left"?0:this.seismographConfig.margin.left+this.width+1);
+      let svgText = this.svg.append("g")
+         .classed("yLabel", true)
+         .classed(side, true)
+         .attr("x", 0)
+         .attr("transform", `translate(${hTranslate}, ${(this.seismographConfig.margin.top+(this.height)/2)})`)
+         .append("text");
       svgText
-        .attr("text-anchor", "middle")
-        .attr("dy", ".75em")
-        .attr("transform", "rotate(-90, 0, 0)");
-    } else {
-      // horizontal
-      svgText.attr("text-anchor", "start")
-      .attr("dominant-baseline", "central");
+         .classed("y label", true);
+      if (this.seismographConfig.yLabelOrientation === "vertical") {
+        // vertical
+        svgText
+          .attr("text-anchor", "middle")
+          .attr("dy", ".75em")
+          .attr("transform", "rotate(-90, 0, 0)");
+      } else {
+        // horizontal
+        svgText.attr("text-anchor", "start")
+        .attr("dominant-baseline", "central");
+      }
+      if (side==="left") {
+        svgText.text(this.seismographConfig.yLabel);
+      } else {
+        svgText.text(this.seismographConfig.yLabelRight);
+      }
     }
-    svgText.text(this.seismographConfig.yLabel);
     return this;
   }
   drawXSublabel(): Seismograph {

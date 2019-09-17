@@ -190,6 +190,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.overlap = 0.5;
     this.numLines = 12;
     this.margin.left = 20;
+    this.margin.right = 20;
     this.margin.top = 40;
 
     this.lineSeisConfig = new SeismographConfig();
@@ -203,6 +204,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.margin.top = 0;
     this.lineSeisConfig.margin.bottom = 0;
     this.lineSeisConfig.margin.left = 37;
+    this.lineSeisConfig.margin.right = 37;
     this.lineSeisConfig.wheelZoom = false;
   }
 }

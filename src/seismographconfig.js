@@ -43,6 +43,7 @@ export class SeismographConfig {
   isYAxisRight: boolean;
   isYAxisNice: boolean;
   yLabel: string;
+  yLabelRight: string;
   yLabelOrientation: string;
   ySublabel: string;
   ySublabelTrans: number;
