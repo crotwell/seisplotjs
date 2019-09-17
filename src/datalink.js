@@ -259,7 +259,6 @@ get mode() { return this._mode;}
   * Returns a Promise that resolves with the webSocket MessageEvent.
   */
   awaitDLCommand(command: string, dataString?: string): Promise<DataLinkResponse> |  Promise<DataLinkPacket> {
-    console.log(`send ${command} | ${dataString?dataString:''}`)
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
@@ -392,12 +391,12 @@ export class DataLinkResponse {
     return `${this.type} ${this.value} | ${this.message}`;
   }
   static parse(header: string, data?: DataView): DataLinkResponse {
-    let value = ""
+    let value = "";
     let s = header.split(' ');
     let type = s[0];
     let message = '';
     if (type === 'ID') {
-      message = ''+header.substring[3];
+      message = ''+header.substring(3);
     } else if (type === 'INFO' || type === 'OK' || type === 'ERROR') {
       value = s[1];
       if (data) {
@@ -405,9 +404,10 @@ export class DataLinkResponse {
       }
       const dSize = parseInt(s[2]);
     } else {
-      console.log(`unknown DataLink response type: ${type}  ${header}`);
+      util.log(`unknown DataLink response type: ${type}  ${header}`);
+      message = header.substring(type.length+1);
     }
-    return new DataLinkResponse(type, value, message)
+    return new DataLinkResponse(type, value, message);
   }
 }
 
