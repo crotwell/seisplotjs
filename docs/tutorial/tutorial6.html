@@ -3,11 +3,6 @@
   <head>
     <meta charset='utf-8'>
     <title>Tutorial 6: Helicorder</title>
-    <style>
-      div#helicorder {
-        height: 600px;
-      }
-    </style>
   </head>
   <body>
     <h3>Tutorial 6: Helicorder</h3>
@@ -18,7 +13,7 @@
 
     <div id="debug">
     </div>
-    <script src="seisplotjs_2.0.0-alpha.5_standalone.js"></script>
+    <script src="seisplotjs_2.0.0-alpha.6_standalone.js"></script>
     <script>
 const plotEnd = seisplotjs.moment.utc().endOf('hour').add(1, 'millisecond');
 if (plotEnd.hour() % 2 === 1) {plotEnd.add(1, 'hour');}

@@ -96,7 +96,7 @@ export class SeismographConfig {
     this.markerTextOffset = .85;
     this.markerTextAngle = 45;
     this.markerFlagpoleBase = "bottom"; // bottom or center
-    this.minHeight=100;
+    this.minHeight=0;
     this.margin = {top: 20, right: 20, bottom: 42, left: 85, toString: function() {return "t:"+this.top+" l:"+this.left+" b:"+this.bottom+" r:"+this.right;}};
     this.segmentDrawCompressedCutoff=10;//below this draw all points, above draw minmax
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample

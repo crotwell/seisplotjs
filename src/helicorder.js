@@ -35,7 +35,13 @@ export class Helicorder {
               seisData: SeismogramDisplayData) {
     this.seismographArray = [];
     this.seisData = seisData;
-    this.svgParent = d3.select(inSvgParent).append('div').classed('helicorder', true);
+
+    if (typeof inSvgParent === 'string') {
+      this.svgParent = d3.select(inSvgParent);
+    } else {
+      this.svgParent = inSvgParent;
+    }
+    this.svgParent = this.svgParent.append('div').classed('helicorder', true);
     this.heliConfig = heliConfig;
     this.maxVariation = 1;
     if (seisData.seismogram) {
@@ -74,7 +80,7 @@ export class Helicorder {
     let startTime = moment.utc(timeWindow.startTime);
     this.seismographArray = [];
     const secondsPerLine = timeWindow.duration.asSeconds()/this.heliConfig.numLines;
-
+    this.svgParent.selectAll("div.heliLine").remove();
     let lineTimes = this.calcTimesForLines(startTime, secondsPerLine, this.heliConfig.numLines);
     for(let lineTime of lineTimes) {
       let startTime = lineTime.startTime;
@@ -83,23 +89,21 @@ export class Helicorder {
       let height = (this.heliConfig.maxHeight-this.heliConfig.margin.bottom)/(nl-(nl-1)*this.heliConfig.overlap) ;
       let marginTop = lineTime.lineNumber===0?0:Math.round(-1.0*height*this.heliConfig.overlap);
 
-      let seisDiv = this.svgParent.append('div')
-        .classed('heliLine', true)
-        .style('height', height+'px')
-        .style('margin-top', `${marginTop}px`);
+
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
       if (lineTime.lineNumber===0) {
         lineSeisConfig.title = this.heliConfig.title;
         lineSeisConfig.isXAxisTop = this.heliConfig.isXAxisTop;
         lineSeisConfig.margin.top += this.heliConfig.margin.top;
         height += this.heliConfig.margin.top;
-        seisDiv.style('height', height+'px');
       } else if (lineTime.lineNumber === nl-1) {
         lineSeisConfig.isXAxis = this.heliConfig.isXAxis;
         lineSeisConfig.margin.bottom += this.heliConfig.margin.bottom;
         height += this.heliConfig.margin.bottom;
-        seisDiv.style('height', height+'px');
       }
+      let seisDiv = this.svgParent.append('div')
+        .classed('heliLine', true)
+        .style('height', height+'px');
       lineSeisConfig.fixedTimeScale = lineTime;
       lineSeisConfig.yLabel = `${startTime.format("HH:mm")}`;
       lineSeisConfig.yLabelRight = `${endTime.format("HH:mm")}`;
@@ -222,14 +226,17 @@ export class HeliTimeRange extends StartEndDuration {
 
 export const helicorder_css = `
 
+div.helicorder {
+  height: 100%;
+  width: 100%;
+}
+
 div.heliLine {
-  height: 75px;
   margin-top: -50px;
   color: black;
 }
 
 div.heliLine:last-child {
-  height: 135px;
   margin-bottom: 35px;
 }
 

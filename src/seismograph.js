@@ -111,13 +111,10 @@ export class Seismograph {
       this.svg.style("max-height", this.seismographConfig.maxHeight+'px');
     }
     this.svg.classed("seismograph", true);
-    //this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
     this.svg.style("position", "absolute");
     this.svg.style("top", "0px");
     this.svg.style("left", "0px");
-    //this.svg.attr("preserveAspectRatio", "xMinYMin meet");
-    //this.svg.attr("viewBox", `0 0 ${this.width} ${this.height}`);
     this.svg.attr("plotId", this.plotId);
 
 
@@ -172,7 +169,6 @@ export class Seismograph {
     }
 
     this.calcAmpScaleDomain();
-    //this.setWidthHeight(this.width, this.height);
 
     // create marker g
     this.g.append("g").attr("class", "allmarkers")
@@ -208,9 +204,14 @@ export class Seismograph {
       if (rect.height > this.seismographConfig.maxHeight) {
         rect.height = this.seismographConfig.maxHeight;
       }
-      this.setWidthHeight(rect.width, rect.height);
+      this.calcWidthHeight(rect.width, rect.height);
     }
-    if ( ! this.canvas ) {
+    if (this.canvas) {
+      this.canvasHolder.attr("width", this.width)
+         .attr("height", this.height);
+      this.canvas.attr("width", this.width)
+         .attr("height", this.height);
+    } else {
       this.canvasHolder = this.g
         .insert("foreignObject",":first-child").classed("seismograph", true)
         .attr("x", 0)
@@ -239,13 +240,6 @@ export class Seismograph {
       let borderTop = style.getPropertyValue('border-top-width');
       if (borderTop.endsWith("px")) {
         borderTop = Number(borderTop.replace("px", ""));
-      }
-    } else {
-      if (this.canvas) {
-        this.canvasHolder.attr("width", this.width)
-          .attr("height", this.height);
-        this.canvas.attr("width", this.width)
-          .attr("height", this.height);
       }
     }
     this.drawSeismograms();
@@ -442,17 +436,14 @@ export class Seismograph {
     context.beginPath();
     context.fillStyle = "red";
     context.arc(this.currZoomXScale(maxX), this.yScale(minY), radius, 0, 2*Math.PI, true);
-    //context.arc(this.width-10, 10, radius, 0, 2*Math.PI, true);
     context.fill();
     context.beginPath();
     context.fillStyle = "green";
     context.arc(this.currZoomXScale(minX), this.yScale(maxY), radius, 0, 2*Math.PI, true);
-    //context.arc(this.width-10, this.height-10, radius, 0, 2*Math.PI, true);
     context.fill();
     context.beginPath();
     context.fillStyle = "black";
     context.arc(this.currZoomXScale(maxX), this.yScale(maxY), radius, 0, 2*Math.PI, true);
-    //context.arc(10, this.height-10, radius, 0, 2*Math.PI, true);
     context.fill();
     context.beginPath();
     context.moveTo(this.currZoomXScale(this.currZoomXScale.domain()[0]), this.yScaleRmean(0));
@@ -750,7 +741,7 @@ export class Seismograph {
                       t.bbox = this.getBBox();
                     } catch(error) {
                       // eslint-disable-next-line no-console
-                      console.assert(false, error);
+                      console.warn(error);
                       // this happens if the text is not yet in the DOM, I think
                       //  https://bugzilla.mozilla.org/show_bug.cgi?id=612118
                     }
@@ -792,13 +783,11 @@ export class Seismograph {
         });
   }
 
-  setWidthHeight(nOuterWidth: number, nOuterHeight: number): void {
+  calcWidthHeight(nOuterWidth: number, nOuterHeight: number): void {
     this.outerWidth = nOuterWidth;
     this.outerHeight = nOuterHeight;
-    const resizeWidth = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
     this.height = this.outerHeight - this.seismographConfig.margin.top - this.seismographConfig.margin.bottom;
     this.width = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
-
     this.origXScale.range([0, this.width]);
     this.yScale.range([this.height, 0]);
     this.yScaleRmean.range([this.height, 0]);
@@ -839,18 +828,9 @@ export class Seismograph {
     }, 250);
   }
 
-  setWidth(value: number): Seismograph {
-    this.setWidthHeight(value, this.outerHeight);
-    return this;
-  }
-  setHeight(value: number): Seismograph {
-    this.setWidthHeight(this.outerWidth, value);
-    return this;
-  }
-
   setMargin(value: MarginType ): Seismograph {
     this.seismographConfig.margin = value;
-    this.setWidthHeight(this.outerWidth, this.outerHeight);
+    this.calcWidthHeight(this.outerWidth, this.outerHeight);
     this.g.attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
     return this;
   }

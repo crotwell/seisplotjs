@@ -36,6 +36,7 @@ doPlot = function(config) {
     plotEnd = end;
   } else if( ! end || end.length === 0 || end === 'now') {
     plotEnd = moment.utc().endOf('hour').add(1, 'millisecond');
+    if (plotEnd.hour() % 2 === 1) {plotEnd.add(1, 'hour');}
   } else if( end === 'today') {
     plotEnd = moment.utc().endOf('day').add(1, 'millisecond');
   } else {
@@ -138,12 +139,8 @@ doPlot = function(config) {
     console.log(`got ${chantrList.length} channel-seismograms`);
     if (chantrList.length !== 0) {
       let heliConfig = new HelicorderConfig(hash.timeWindow);
-      heliConfig.overlap = overlap;
-      heliConfig.lineSeisConfig.margin.left = 42;
-      heliConfig.lineSeisConfig.yLabelOrientation = "horizontal";
       heliConfig.markerFlagpoleBase = 'center';
       heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
-      heliConfig.numLines = 12;
       heliConfig.doRMean = true;
       let minMaxSeismogram = null;
       chantrList.forEach(ctr => {
@@ -161,13 +158,15 @@ doPlot = function(config) {
         throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient}`);
       }
       hash.seisData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
+      let nowMarker = { markertype: 'predicted', name: "now", time: moment.utc() };
+      hash.seisData.addMarkers(nowMarker);
       hash.chantrList = null;
-      hash.heli = new Helicorder(svgParent,
-                                    heliConfig,
-                                    hash.seisData);
       svgParent.selectAll("div").remove(); // remove old data
       svgParent.selectAll("p").remove(); // remove old data
       svgParent.selectAll("h3").remove(); // remove old data
+      hash.heli = new Helicorder(svgParent,
+                                    heliConfig,
+                                    hash.seisData);
       hash.heli.draw();
     } else {
       svgParent.append("p").text("No Data.")
@@ -281,7 +280,7 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
     });
     markers.push({ markertype: 'predicted', name: "now", time: moment.utc() });
     hash.seisData.addMarkers(markers);
-    hash.heli.drawMarkers();
+    hash.heli.draw();
     return hash;
   }).catch(err => {
     console.assert(false, err);
