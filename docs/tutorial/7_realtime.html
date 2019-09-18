@@ -88,7 +88,9 @@
                     let seismogram = new seisplotjs.seismogram.Seismogram( [ seisSegment ]);
                     let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
                     let plotDiv = realtimeDiv.append("div").classed("seismograph", true);
-                    seisPlot = new seisplotjs.seismograph.Seismograph(plotDiv, seisPlotConfig, seisData);
+                    let myseisPlotConfig = seisPlotConfig.clone();
+                    myseisPlotConfig.title = codes;
+                    seisPlot = new seisplotjs.seismograph.Seismograph(plotDiv, myseisPlotConfig, seisData);
                     graphList.set(codes, seisPlot);
                     console.log(`new plot: ${codes}`)
                   } else {
