@@ -103,7 +103,8 @@ export class Helicorder {
       }
       let seisDiv = this.svgParent.append('div')
         .classed('heliLine', true)
-        .style('height', height+'px');
+        .style('height', height+'px')
+        .style('margin-top', marginTop+'px');
       lineSeisConfig.fixedTimeScale = lineTime;
       lineSeisConfig.yLabel = `${startTime.format("HH:mm")}`;
       lineSeisConfig.yLabelRight = `${endTime.format("HH:mm")}`;
@@ -231,21 +232,8 @@ div.helicorder {
   width: 100%;
 }
 
-div.heliLine {
-  margin-top: -50px;
-  color: black;
-}
-
-div.heliLine:last-child {
-  margin-bottom: 35px;
-}
-
 div.helicorder div.heliLine .yLabel text {
   font-size: smaller;
-}
-
-div.helicorder div.heliLine:first-child {
-  margin-top: 0;
 }
 
 div.helicorder div.heliLine:nth-child(3n+1) {
