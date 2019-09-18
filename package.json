@@ -33,7 +33,8 @@
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
     "prepare": "npm run flow && npm run test && npm run compile",
     "version": "npm run compile && npm run standalone",
-    "postversion": "echo git push && echo git push --tags"
+    "postversion": "echo git push && echo git push --tags",
+    "bumpversion": "replace-in-file seisplotjs_2.0.0-alpha.5_standalone.js seisplotjs_2.0.0-alpha.6_standalone.js docs/tutorial/tutorial*.html example/*/*.html  docs/index.html"
   },
   "repository": {
     "type": "git",
@@ -78,6 +79,7 @@
     "jest-environment-jsdom-fourteen": "^0.1.0",
     "jest-extended": "^0.11.2",
     "prismjs": "^1.17.1",
+    "replace-in-file": "^4.1.3",
     "rollup": "^1.21.4",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-flow-entry": "^0.3.1"
