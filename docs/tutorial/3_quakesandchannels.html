@@ -38,6 +38,7 @@
           <h1>Seisplotjs Tutorial</h1>
 
           <h3>Quakes and Channels:</h3>
+          <h5>See it live in <a href="tutorial3.html">tutorial3.html</a>.</h5>
           <p>
             It would be nicer if we could add some useful labels to this instead
             of just a raw seismogram. Perhaps getting some information about
@@ -46,13 +47,59 @@
             <a href="http://service.iris.edu/fdsnws/station/1/">FDSNWS
             station</a> web service to get the station and channels and the USGS
            <a href="http://earthquake.usgs.gov/fdsnws/event/1/">FDSNWS
-           event</a> web service to get the earthquake. Again, both of these
-           are asynchronous and so we will have to use promises. We first create
-           both the <code class="language-javascript">EventQuery</code>
-           and <code class="language-javascript">StationQuery</code> objects.
-
+           event</a> web service to get the earthquake. Since we will have the
+           locations for the quake and station, we might as well plot them on a
+           map. We can use <a href="https://leafletjs.com">Leaflet</a>, a
+           javascript map library
+           that creates nice looking maps and has lots of flexibility, for this.
+          </p>
+          <p>Within the &lt;head>, we need to add a link for the Leaflet's style sheet.</p>
+          <pre><code class="language-html">
+            &lt;link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+              integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+              crossorigin=""/>
+          </code></pre>
+          <p>
+            And some additional styling to size the map. Because the quake and
+            the station are more or less east west of each other, we can use a
+            map that is relatively narrow vertically, but spans the entire window.
+          </p>
+          <pre><code class="language-css">
+          &lt;style>
+            div#mapid {
+              height: 300px;
+              width: 100%;
+            }
+          </code></pre>
+          <p>
+            We just need to include the leaflet javascript file
+            before our code.
+          </p>
+          <pre><code class="language-html">
+          &lt;script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+             integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+             crossorigin="">&lt;/script>
+          </code></pre>
+          <p>
+            First, we will create the map, centering it on 35/-100 and at zoom level 5.
+            The <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">
+            World Ocean Base</a> tile layer gives a nice background.
+            Then we will create the queries for the quake and station.
+            Again, both of these queries
+            are asynchronous and so we will have to use promises. We first create
+            both the <code class="language-javascript">EventQuery</code>
+            and <code class="language-javascript">StationQuery</code> objects.
           </p>
           <pre><code class="language-javascript">
+            const centerLat = 35;
+            const centerLon = -100;
+            const mapZoomLevel = 5;
+            const mymap = L.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
+            let OpenTopoMap = L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
+            	maxZoom: 17,
+            	attribution: 'Map data: &copy; <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
+            }).addTo(mymap);
+
             let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
             let eventQuery = new seisplotjs.fdsnevent.EventQuery()
               .timeWindow(queryTimeWindow)
@@ -71,11 +118,19 @@
             Then we call their <code class="language-javascript">query</code>
             methods with a <code class="language-javascript">Promise.all()</code>
             which will wait until both of these return before calling the
-            <code class="language-javascript">then()</code> function. We will also use the more powerful
+            <code class="language-javascript">then()</code> function. Once we have
+            the quake and station results, we plot them on the map. Even though
+            we only expect one station and one quake to be returned, we will
+            plot them as if there might be many for easier reuse. The station is
+            a generic map marker, but the quake is
+            plotted as a circle with the radius scaled by the magnitude.
+            We then will use the more powerful
             <code class="language-http">POST</code> method to get the seismograms. The
-            <code class="language-javascript">ChannelTimeRange</code> works just like the
-            <code class="language-javascript">StartEndDuration</code> but also hold the channel that the
-            time rage corresponds to. In this case they are all the same, but
+            <code class="language-javascript">SeismogramDisplayData</code> works just like the
+            <code class="language-javascript">StartEndDuration</code> but
+            also holds the channel that the
+            time rage corresponds to and will contain the resulting seismogram.
+            In this case the times are all the same, but
             might be different if we were using multiple stations and predicted
             arrival times. Note that we use the event time as the start and
             ask for a duration of 2400 seconds.
@@ -83,6 +138,21 @@
           <pre><code class="language-javascript">
             Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
             .then( ( [ quakeList, networks ] ) => {
+                for (const q of quakeList) {
+                  let circle = L.circleMarker([q.latitude, q.longitude], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.15,
+                    radius: q.magnitude ? (q.magnitude.mag*5) : 3 // in case no mag
+                  }).addTo(mymap);
+                  circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
+                }
+                for (let s of seisplotjs.stationxml.extractAllStations(networks)) {
+                  let m = L.marker([s.latitude, s.longitude]);
+                  m.addTo(mymap);
+                  m.bindTooltip(s.codes());
+                }
+
                 let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
                 let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
                 let seismogramDataList = allChannels.map(c => {

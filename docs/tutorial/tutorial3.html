@@ -3,7 +3,14 @@
   <head>
     <meta charset='utf-8'>
     <title>Tutorial 3: Quakes and Channels</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+      integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+      crossorigin=""/>
     <style>
+      div#mapid {
+        height: 300px;
+        width: 100%;
+      }
       div.seismograph {
         height: 300px;
       }
@@ -11,12 +18,27 @@
   </head>
   <body>
     <h3>Tutorial 3: Quakes and Channels</h3>
+    <h3>Map</h3>
+    <div id="mapid">
+    </div>
     <h3>A Seismograph recorded at <span id="stationCode"></span> for the <span id="earthquakeDescription"></span>!</h3>
     <div class="seismograph" id="myseismograph">
     </div>
 
     <script src="seisplotjs_2.0.0-alpha.6_standalone.js"></script>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+       integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+       crossorigin=""></script>
     <script>
+    const centerLat = 35;
+    const centerLon = -100;
+    const mapZoomLevel = 5;
+    const mymap = L.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
+    let OpenTopoMap = L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
+    	maxZoom: 17,
+    	attribution: 'Map data: &copy; <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
+    }).addTo(mymap);
+
     let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
     let eventQuery = new seisplotjs.fdsnevent.EventQuery()
       .timeWindow(queryTimeWindow)
@@ -31,6 +53,21 @@
       .timeWindow(queryTimeWindow);
     Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
     .then( ( [ quakeList, networks ] ) => {
+        for (const q of quakeList) {
+          let circle = L.circleMarker([q.latitude, q.longitude], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.15,
+            radius: q.magnitude ? (q.magnitude.mag*5) : 3 // in case no mag
+          }).addTo(mymap);
+          circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
+        }
+        for (let s of seisplotjs.stationxml.extractAllStations(networks)) {
+          let m = L.marker([s.latitude, s.longitude]);
+          m.addTo(mymap);
+          m.bindTooltip(s.codes());
+        }
+        
         let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
         let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
         let seismogramDataList = allChannels.map(c => {
