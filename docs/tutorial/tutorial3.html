@@ -32,11 +32,11 @@
     <script>
     const centerLat = 35;
     const centerLon = -100;
-    const mapZoomLevel = 5;
+    const mapZoomLevel = 4;
     const mymap = L.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
     let OpenTopoMap = L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
     	maxZoom: 17,
-    	attribution: 'Map data: &copy; <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
+    	attribution: 'Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
     }).addTo(mymap);
 
     let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
@@ -67,7 +67,7 @@
           m.addTo(mymap);
           m.bindTooltip(s.codes());
         }
-        
+
         let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
         let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
         let seismogramDataList = allChannels.map(c => {

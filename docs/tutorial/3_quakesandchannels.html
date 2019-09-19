@@ -81,7 +81,7 @@
              crossorigin="">&lt;/script>
           </code></pre>
           <p>
-            First, we will create the map, centering it on 35/-100 and at zoom level 5.
+            First, we will create the map, centering it on 35/-100 and at zoom level 4.
             The <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">
             World Ocean Base</a> tile layer gives a nice background.
             Then we will create the queries for the quake and station.
@@ -93,11 +93,11 @@
           <pre><code class="language-javascript">
             const centerLat = 35;
             const centerLon = -100;
-            const mapZoomLevel = 5;
+            const mapZoomLevel = 4;
             const mymap = L.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
             let OpenTopoMap = L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
             	maxZoom: 17,
-            	attribution: 'Map data: &copy; <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
+            	attribution: 'Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
             }).addTo(mymap);
 
             let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
