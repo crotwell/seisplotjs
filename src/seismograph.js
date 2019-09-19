@@ -96,9 +96,6 @@ export class Seismograph {
     } else {
       this.svgParent = inSvgParent;
     }
-    // need relative position in parent div to allow absolute position
-    // of svg and canvas for overlaying
-    this.svgParent.style("position", "relative");
 
     this.canvas = null;
 
@@ -112,9 +109,6 @@ export class Seismograph {
     }
     this.svg.classed("seismograph", true);
     this.svg.attr("version", "1.1");
-    this.svg.style("position", "absolute");
-    this.svg.style("top", "0px");
-    this.svg.style("left", "0px");
     this.svg.attr("plotId", this.plotId);
 
 
@@ -212,10 +206,10 @@ export class Seismograph {
       this.canvas.attr("width", this.width)
          .attr("height", this.height);
     } else {
-      this.canvasHolder = this.g
+      this.canvasHolder = this.svg
         .insert("foreignObject",":first-child").classed("seismograph", true)
-        .attr("x", 0)
-        .attr("y", 0)
+        .attr("x", this.seismographConfig.margin.left)
+        .attr("y", this.seismographConfig.margin.top)
         .attr("width", this.width)
         .attr("height", this.height+1);
       this.canvas = this.canvasHolder.append("xhtml:canvas").classed("seismograph", true)
