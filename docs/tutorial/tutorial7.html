@@ -86,16 +86,16 @@ const datalink = new seisplotjs.datalink.DataLinkConnection(
     redrawInProgress = true;
     window.requestAnimationFrame(timestamp => {
       try {
-        seisPlotConfig.fixedTimeScale = new seisplotjs.util.StartEndDuration(null, null, duration);
         graphList.forEach(function(value, key) {
+            value.seismographConfig.fixedTimeScale = new seisplotjs.util.StartEndDuration(null, null, duration);
             value.calcTimeScaleDomain();
             value.calcAmpScaleDomain();
             value.draw();
         });
-        redrawInProgress = false;
       } catch(err) {
         console.assert(false, err);
       }
+      redrawInProgress = false;
     });
 
     }, timerInterval);
