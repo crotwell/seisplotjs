@@ -26,7 +26,8 @@ export type SequencedDataRecord = {
   * The connection is not made until the connect() method is called.
   * Note this cannot connect directly to a native TCP socket, instead it
   * sends the seedlink protocol over a websocket. Currently only the IRIS
-  * ringserver supports websockets, but it may be possible to use thrid party
+  * ringserver, https://github.com/iris-edu/ringserver,
+  * supports websockets, but it may be possible to use thrid party
   * tools to proxy the websocket to a TCP seedlink socket.
   * @param url websocket URL to connect to
   * @param requestConfig an array of seedlink commands

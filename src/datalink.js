@@ -38,7 +38,13 @@ let defaultHandleResponse = function(message) {
 
 /**
  * A websocket based Datalink connection to a ringserver.
+ * Currently only the IRIS
+ * ringserver, https://github.com/iris-edu/ringserver,
+ * supports websockets, but it may be possible to use thrid party
+ * tools to proxy the websocket to a TCP datalink socket.
+ * The datalink protocol is documented here
  *  https://raw.githubusercontent.com/iris-edu/libdali/master/doc/DataLink.protocol
+ *
  * @param url websocket url to the ringserver
  * @param packetHandler callback for packets as they arrive
  * @param errorHandler callback for errors
