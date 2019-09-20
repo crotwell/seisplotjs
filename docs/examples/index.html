@@ -1,0 +1,71 @@
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>seisplotjs 2.0 Tutorial, p000000000</title>
+    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link href='../api/assets/bass.css' rel='stylesheet'>
+    <link href='../api/assets/split.css' rel='stylesheet'>
+    <link href="../prism.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
+        <div class='py1 px2'>
+          <div id='toc'>
+            <ul class='list-reset h5 py1-ul'>
+              <li><a href="../index.html" class="">Seisplotjs</a></li>
+              <li><a href="../api/index.html" class="">API JS Docs</a></li>
+              <li><a href="../examples/index.html" class="">Examples</a></li>
+              <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+              <section class='p2 mb2 clearfix bg-white minishadow'>
+        <div class='clearfix'>
+
+          <h1>Seisplotjs Examples</h1>
+          <p>These are larger examples of web applications using seisplotjs.</p>
+
+          <ul>
+
+            <li>
+              <h3>SCSN Helicorder</h3>
+              <h5>See it live in <a href="helicorder">helicorder/index.html</a>.</h5>
+              <p>This is the public
+                <a href="http://eeyore.seis.sc.edu/earthworm/heli/">helicorder</a>
+                for the South Carolina Seismic Network. It is similar to the
+                <a href="../tutorial/6_helicorder.html">helicorder</a> in the
+                tutorial, but includes the selection of the time window and
+                station to display. It also uses the
+                <a href="../api/mseedarchive.html">mseedarchive</a> module
+                to directly load one hour miniseed records saved by the
+                <a href="https://github.com/iris-edu/ringserver">ringserver</a>
+                for the CO network. The South Carolina archiving system also
+                includes a process that saves the minimum and maximum values
+                for each second as a 2 sample per second data stream. This
+                derived channel effectively allows the helicorder to plot the
+                100 samples per second HHZ data streams without being overwhelmed
+                but the data volume.
+              </p>
+            </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="../prism.js"></script>
+    <script>
+      Prism.plugins.NormalizeWhitespace.setDefaults({
+      	'remove-trailing': true,
+      	'remove-indent': true,
+      	'left-trim': true,
+      	'right-trim': true
+      });
+    </script>
+  </body>
+</html>
