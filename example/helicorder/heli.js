@@ -15,7 +15,7 @@ let bandInstCodeList = [ 'HN', 'HH', 'LH'];
 // also see near bottom where we check if page history has state obj and use that
 let state = {
   netCode: 'CO',
-  station: "HAW",
+  station: null,
   locCode: '00',
   bandCode: "H",
   instCode: "H",

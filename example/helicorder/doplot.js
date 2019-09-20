@@ -44,6 +44,8 @@ doPlot = function(config) {
   }
   let svgParent = d3.select(`div.${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
+
+  svgParent.append("p").text(`...loading ${config.netCode}.${config.station}.`);
   let timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, config.duration, clockOffset);
 
   let netCodeQuery = config.netCode;
