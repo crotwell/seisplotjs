@@ -45,6 +45,7 @@ import moment from 'moment';
 import RSVP from 'rsvp';
 import * as d3 from 'd3';
 
+const version = '2.0.0-alpha.6';
 
 /* reexport */
 export { datalink,
@@ -78,6 +79,7 @@ export { datalink,
          traveltime,
          util,
          vector,
+         version,
          xseed,
          d3,
          moment,

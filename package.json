@@ -28,13 +28,18 @@
     "build:clean": "rimraf dist",
     "apidoc:clean": "rimraf docs/api",
     "compile": "npm run build:clean && npm run rollup && npm run flow-copy && npm run standalone && npm run doc",
-    "standalone": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ]",
+    "browserify": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ] && npm run example_standalone && npm run tutorial_standalone",
+    "tutorial_standalone": "cd docs/tutorial ; rm seisplotjs_*_standalone.js ; ln -s ../../dist/seisplotjs_${npm_package_version}_standalone.js ;  cd ../..",
+    "example_standalone": "cd docs/examples/helicorder ; rm seisplotjs_*_standalone.js ; ln -s ../../../dist/seisplotjs_${npm_package_version}_standalone.js ; cd ../../..",
+    "standalone": "npm run browserify && npm run tutorial_standalone && npm run example_standalone",
     "doc": "npm run apidoc",
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
     "prepare": "npm run flow && npm run lint && npm run test && npm run compile",
     "version": "npm run compile && npm run standalone",
     "postversion": "echo git push && echo git push --tags",
-    "bumpversion": "replace-in-file seisplotjs_2.0.0-alpha.5_standalone.js seisplotjs_2.0.0-alpha.6_standalone.js docs/tutorial/tutorial*.html example/*/*.html  docs/index.html"
+    "bumpversion": "npm run bumpversion_standalone && npm run bumpversion_version",
+    "bumpversion_standalone": "replace-in-file seisplotjs_2.0.0-alpha.5_standalone.js seisplotjs_${npm_package_version}_standalone.js docs/tutorial/*.html docs/example/*/*.html example/*/*.html  docs/index.html --verbose ",
+    "bumpversion_version": "replace-in-file 2.0.0-alpha.5 ${npm_package_version} src/index.js docs/example/*/index.html --verbose "
   },
   "repository": {
     "type": "git",
