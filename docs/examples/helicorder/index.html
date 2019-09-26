@@ -3,6 +3,7 @@
 <head>
    <meta charset="utf-8" />
    <link rel="stylesheet" href="style.css">
+   <title>SCSN Helicorder</title>
 </head>
 <body>
 
@@ -22,19 +23,38 @@
 <button id="loadNext">Next</button>
 <span id="datechooser"/>
 </div>
+<div id="amp"><label title="Amplitude Range">Amp Range: </label>
+  <span><input type="radio" id="maxAmp" class="shape" name="ampMode" value="0" checked="true">Max Value </input></span>
+  <span>
+    <input type="radio" id="fixedAmp" class="shape" name="ampMode" value="1">
+    <label>Fixed: </label><input type="text" id="fixedAmpText" name="fixedAmp" pattern="[1-9][0-9]*" value="10000"></input>
+  </span>
+  <span>
+    <input type="radio" id="percentAmp" class="shape" name="ampMode" value="2">
+    <label>Percent: </label><input type="range" min="1" max="100" id="percentAmpSlider" value="100"><span id="percentValue">100</span>
+  </span>
+</div>
 
 <h3><span class="textNetCode"></span>.<span class="textStaCode"></span>.<span class="textLocCode">00</span>.<span class="textChanCode">H??</span> channels from <span class="startTime"></span> to <span class="endTime"></span>.</h3>
 
 <div class='heli' >
 </div>
-
+<div id="minmax">
+  Min: <span id="minAmp"></span>
+  Max: <span id="maxAmp"></span>
+  Mean: <span id="meanAmp"></span>
+  Display+-: <span id="varyAmp"></span>
+</div>
 <p>Note that data may be delayed up to 15 minutes due to buffering.</p>
 
-<p>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs</a>.</p>
+<p>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">2</span></a>.</p>
 
 
 <script src="seisplotjs_2.0.0-alpha.6_standalone.js"></script>
 <script src="doplot.js"></script>
 <script src="heli.js"></script>
+<script>
+  seisplotjs.d3.select("#version").text(seisplotjs.version);
+</script>
 </body>
 </html>

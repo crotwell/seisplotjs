@@ -4,22 +4,22 @@ const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const HelicorderConfig = seisplotjs.helicorder.HelicorderConfig;
 const Helicorder = seisplotjs.helicorder.Helicorder;
 
+const QUAKE_START_OFFSET = seisplotjs.moment.duration(1, 'hours');
+const divClass = "heli";
+
 doPlot = function(config) {
   // this global comes from the seisplotjs standalone js
-  let moment = seisplotjs.moment;
-
-
+  const moment = seisplotjs.moment;
   // this global comes from the seisplotjs_waveformplot standalone js
-  let d3 = seisplotjs.d3;
+  const d3 = seisplotjs.d3;
 
 
-  let divClass = "heli";
-  let clockOffset = 0; // should get from server somehow
-  let overlap = 0.75;
-  let maxSteps = -1; // max num of ticks of the timer before stopping, for debugin
   let nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
   //nowHour = moment.utc("2019-01-11T21:58:00Z").endOf('hour').add(1, 'millisecond');
 
+  if ( ! config.station) {
+    return;
+  }
   if ( ! config.duration) {
     config.duration = DEFAULT_DURATION;
   }
@@ -46,7 +46,7 @@ doPlot = function(config) {
   svgParent.selectAll("*").remove(); // remove old data
 
   svgParent.append("p").text(`...loading ${config.netCode}.${config.station}.`);
-  let timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, config.duration, clockOffset);
+  let timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, config.duration);
 
   let netCodeQuery = config.netCode;
   let staCodeQuery = config.station;
@@ -76,7 +76,8 @@ doPlot = function(config) {
     altChanOrient: config.altOrientationCode ? config.altOrientationCode : "",
     bandCode: config.bandCode,
     instCode: config.instCode,
-    minMaxInstCode: config.instCode === 'H' ? 'X' : 'Y'
+    minMaxInstCode: config.instCode === 'H' ? 'X' : 'Y',
+    amp: config.amp ? config.amp : "max"
   };
   return channelQuery.queryChannels()
   .catch(e => {
@@ -137,47 +138,32 @@ doPlot = function(config) {
     }
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    let chantrList = hash.chantrList;
-    console.log(`got ${chantrList.length} channel-seismograms`);
-    if (chantrList.length !== 0) {
-      let heliConfig = new HelicorderConfig(hash.timeWindow);
-      heliConfig.markerFlagpoleBase = 'center';
-      heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
-      heliConfig.doRMean = true;
-      let minMaxSeismogram = null;
-      chantrList.forEach(ctr => {
-        console.log(`seis: ${ctr.channel.codes()}`)
-        if (ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.chanOrient}` || ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.altChanOrient}`) {
-          minMaxSeismogram = ctr.seismogram;
-        } else if (ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.chanOrient}` || ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.altChanOrient}`) {
-          minMaxSeismogram = ctr.seismogram;
-          d3.selectAll("span.textChanCode").text(ctr.channel.channelCode);
-        } else {
-          console.log(`does not match: ${ctr.channel.channelCode}`);
-        }
-      });
-      if (! minMaxSeismogram) {
-        throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient}`);
+    console.log(`got ${hash.chantrList.length} channel-seismograms`);
+    let minMaxSeismogram = null;
+    hash.chantrList.forEach(ctr => {
+      console.log(`seis: ${ctr.channel.codes()}`)
+      if (ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.chanOrient}` || ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.altChanOrient}`) {
+        minMaxSeismogram = ctr.seismogram;
+      } else if (ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.chanOrient}` || ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.altChanOrient}`) {
+        minMaxSeismogram = ctr.seismogram;
+        d3.selectAll("span.textChanCode").text(ctr.channel.channelCode);
+      } else {
+        console.log(`does not match: ${ctr.channel.channelCode}`);
       }
-      hash.seisData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
-      let nowMarker = { markertype: 'predicted', name: "now", time: moment.utc() };
-      hash.seisData.addMarkers(nowMarker);
-      hash.chantrList = null;
-      svgParent.selectAll("div").remove(); // remove old data
-      svgParent.selectAll("p").remove(); // remove old data
-      svgParent.selectAll("h3").remove(); // remove old data
-      hash.heli = new Helicorder(svgParent,
-                                    heliConfig,
-                                    hash.seisData);
-      hash.heli.draw();
-    } else {
-      svgParent.append("p").text("No Data.")
+    });
+    if (! minMaxSeismogram) {
+      throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient}`);
     }
+    hash.seisData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
+    let nowMarker = { markertype: 'predicted', name: "now", time: moment.utc() };
+    hash.seisData.addMarkers(nowMarker);
+    redrawHeli(hash);
     return hash;
   }).then(hash => {
+    let quakeStart = moment.utc(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
     let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     localQuakesQuery
-      .startTime(hash.timeWindow.startTime)
+      .startTime(quakeStart)
       .endTime(hash.timeWindow.endTime)
       .minLat(31.75)
       .maxLat(35.5)
@@ -186,9 +172,10 @@ doPlot = function(config) {
     hash.localQuakes = localQuakesQuery.query();
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
+    let quakeStart = moment.utc(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
     let regionalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     regionalQuakesQuery
-      .startTime(hash.timeWindow.startTime)
+      .startTime(quakeStart)
       .endTime(hash.timeWindow.endTime)
       .latitude(33)
       .longitude(-81)
@@ -197,9 +184,10 @@ doPlot = function(config) {
     hash.regionalQuakes = regionalQuakesQuery.query();
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
+    let quakeStart = moment.utc(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
     let globalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     globalQuakesQuery
-      .startTime(hash.timeWindow.startTime)
+      .startTime(quakeStart)
       .endTime(hash.timeWindow.endTime)
       .minMag(6);
     hash.globalQuakes = globalQuakesQuery.query();
@@ -288,3 +276,53 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
     console.assert(false, err);
   });
 };
+
+redrawHeli = function(hash) {
+  console.log(`heli redraw... ${hash.amp}`)
+  // this global comes from the seisplotjs standalone js
+  const moment = seisplotjs.moment;
+  // this global comes from the seisplotjs_waveformplot standalone js
+  const d3 = seisplotjs.d3;
+
+  let svgParent = d3.select(`div.${divClass}`);
+  svgParent.selectAll("*").remove(); // remove old data
+  if (hash.seisData) {
+    let heliConfig = new HelicorderConfig(hash.timeWindow);
+    heliConfig.markerFlagpoleBase = 'center';
+    heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
+    if (hash.amp === 'max') {
+      console.log(`amp max`)
+      heliConfig.fixedYScale = null;
+      heliConfig.maxVariation = 0;
+    } else if (typeof hash.amp === 'string' && hash.amp.endsWith('%')) {
+      heliConfig.fixedYScale = null;
+      const precent = Number(hash.amp.substring(0, hash.amp.length-1))/100;
+      heliConfig.maxVariation = precent*(hash.seisData.max-hash.seisData.mean);
+        console.log(`default amp precent a=${hash.amp}  p=${precent}  mv=${heliConfig.maxVariation}`)
+    } else if (Number.isFinite(hash.amp)) {
+      console.log(`amp range ${hash.amp}`)
+      heliConfig.fixedYScale = null;
+      heliConfig.maxVariation = hash.amp;
+    } else {
+      console.log(`default amp max`)
+      heliConfig.fixedYScale = null;
+      heliConfig.maxVariation = 0;
+    }
+    heliConfig.doRMean = true;
+
+    svgParent.selectAll("div").remove(); // remove old data
+    svgParent.selectAll("p").remove(); // remove old data
+    svgParent.selectAll("h3").remove(); // remove old data
+    hash.heli = new Helicorder(svgParent,
+                                  heliConfig,
+                                  hash.seisData);
+    hash.heli.draw();
+    d3.select("span#minAmp").text(hash.seisData.min.toFixed(0));
+    d3.select("span#maxAmp").text(hash.seisData.max.toFixed(0));
+    d3.select("span#meanAmp").text(hash.seisData.mean.toFixed(0));
+    d3.select("span#varyAmp").text(hash.amp);
+  } else {
+    svgParent.append("p").text("No Data.")
+  }
+  return hash;
+}

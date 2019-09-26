@@ -29,7 +29,6 @@ export class Helicorder {
   seisData: SeismogramDisplayData;
   xScaleArray: any;
   yScale: any;
-  maxVariation: number;
   constructor(inSvgParent: any,
               heliConfig: HelicorderConfig,
               seisData: SeismogramDisplayData) {
@@ -43,28 +42,12 @@ export class Helicorder {
     }
     this.svgParent = this.svgParent.append('div').classed('helicorder', true);
     this.heliConfig = heliConfig;
-    this.maxVariation = 1;
-    if (seisData.seismogram) {
-      const seis = seisData.seismogram; // for flow
-      const timeWindow = this.heliConfig.fixedTimeScale;
-      // for flow
-      if ( ! isDef(timeWindow)){
-        throw new Error("Helicorder config must have fixedTimeScale set");
-      }
-      let cutSeis = seis.cut(timeWindow);
-      if (cutSeis) {
-        let [min,max] = cutSeis.findMinMax();
-        let mean = cutSeis.mean();
-        let posOffset = max - mean;
-        let negOffset = mean = min;
-        this.maxVariation = Math.max(posOffset, negOffset);
-      }
-    }
   }
   /**
    * draws, or redraws, the helicorder.
    */
   draw() {
+    this.heliConfig.lineSeisConfig.doRMean = this.heliConfig.doRMean;
     this.drawSeismograms();
   }
   drawSeismograms() {
@@ -77,18 +60,39 @@ export class Helicorder {
     if ( ! isDef(timeWindow)){
       throw new Error("Helicorder config must have fixedTimeScale set");
     }
+    let maxVariation = 1;
+    if (this.seisData.seismogram) {
+      const seis = this.seisData.seismogram; // for flow
+      if ( ! this.heliConfig.fixedYScale) {
+        if ( this.heliConfig.maxVariation === 0) {
+          let cutSeis = seis.cut(timeWindow);
+          if (cutSeis) {
+            let [min,max] = cutSeis.findMinMax();
+            let mean = cutSeis.mean();
+            let posOffset = max - mean;
+            let negOffset = mean - min;
+            maxVariation = Math.max(posOffset, negOffset);
+          }
+        } else {
+          maxVariation = this.heliConfig.maxVariation;
+        }
+      }
+    }
+
     let startTime = moment.utc(timeWindow.startTime);
     this.seismographArray = [];
     const secondsPerLine = timeWindow.duration.asSeconds()/this.heliConfig.numLines;
     this.svgParent.selectAll("div.heliLine").remove();
     let lineTimes = this.calcTimesForLines(startTime, secondsPerLine, this.heliConfig.numLines);
+    const margin = this.heliConfig.margin;
+    const nl = this.heliConfig.numLines;
+    const baseHeight = (this.heliConfig.maxHeight-margin.top-margin.bottom) /
+                       (nl-(nl-1)*this.heliConfig.overlap) ;
     for(let lineTime of lineTimes) {
       let startTime = lineTime.startTime;
       let endTime = lineTime.endTime;
-      let nl = this.heliConfig.numLines;
-      let height = (this.heliConfig.maxHeight-this.heliConfig.margin.bottom)/(nl-(nl-1)*this.heliConfig.overlap) ;
+      let height = baseHeight;
       let marginTop = lineTime.lineNumber===0?0:Math.round(-1.0*height*this.heliConfig.overlap);
-
 
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
       if (lineTime.lineNumber===0) {
@@ -112,27 +116,28 @@ export class Helicorder {
 
       let trimSeisDataList: Array<SeismogramDisplayData> = [  ];
       let lineCutSeis = null;
-      let lineMean = 0;
       let lineSeisData;
+      let lineMean = 0;
       if (this.seisData.seismogram) {
         lineCutSeis = this.seisData.seismogram.cut(lineTime);
         lineSeisData = this.seisData.cloneWithNewSeismogram(lineCutSeis);
-        if (lineCutSeis) {
-          lineMean = lineCutSeis.mean();
-        }
+        lineMean = lineSeisData.mean;
       } else {
         // no data in window, but keep seisData in case of markers, etc
         lineSeisData = this.seisData.clone();
       }
       lineSeisData.timeWindow = lineTime;
-      trimSeisDataList.push(lineSeisData);
 
       if (this.heliConfig.fixedYScale) {
         lineSeisConfig.fixedYScale = this.heliConfig.fixedYScale;
       } else {
-        lineSeisConfig.fixedYScale = [lineMean-this.maxVariation, lineMean+this.maxVariation];
+        if (this.heliConfig.doRMean) {
+          lineSeisConfig.fixedYScale = [lineMean-maxVariation, lineMean+maxVariation];
+        } else {
+          lineSeisConfig.fixedYScale = [lineMean-maxVariation, lineMean+maxVariation];
+        }
       }
-      let seismograph = new Seismograph(seisDiv, lineSeisConfig, trimSeisDataList);
+      let seismograph = new Seismograph(seisDiv, lineSeisConfig, lineSeisData);
       seismograph.draw();
       if (lineTime.lineNumber===0) {
         // add UTC to top left
@@ -177,12 +182,14 @@ export class HelicorderConfig extends SeismographConfig {
   lineSeisConfig: SeismographConfig;
   overlap: number;
   numLines: number;
+  maxVariation: number;
   constructor(timeWindow: StartEndDuration) {
     super();
     if ( ! isDef(timeWindow)){
       throw new Error("Helicorder config must have fixedTimeScale set");
     }
     this.fixedTimeScale = timeWindow;
+    this.maxVariation = 0;
     this.maxHeight = 600;
     this.xLabel = '';
     this.yLabel = '';
@@ -211,6 +218,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.margin.left = 37;
     this.lineSeisConfig.margin.right = 37;
     this.lineSeisConfig.wheelZoom = false;
+    this.lineSeisConfig.doRMean = true;
   }
 }
 

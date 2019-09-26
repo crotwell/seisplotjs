@@ -11,6 +11,7 @@ let staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', '
 let locCodeList = ['00', '01'];
 let orientList = ['Z', 'N/1', 'E/2'];
 let bandInstCodeList = [ 'HN', 'HH', 'LH'];
+const DEFAULT_FIXED_AMP = 10000;
 
 // also see near bottom where we check if page history has state obj and use that
 let state = {
@@ -22,16 +23,67 @@ let state = {
   orientationCode: 'Z',
   altOrientationCode: "",
   endTime: "now",
-  duration: 'P1D'
+  duration: 'P1D',
+  amp: "max"
+};
+
+let heliHash = null;
+
+let loadAndPlot = function(state) {
+  updateAmpRadioButtons(state);
+  doPlot(state).then(hash => heliHash = hash);
+}
+
+let updateAmpRadioButtons = function(currentState) {
+  d3.select("div#amp")
+    .select("input#maxAmp").attr("checked", "false");
+  d3.select("div#amp")
+    .select("input#fixedAmp").attr("checked", "false");
+  d3.select("div#amp")
+    .select("input#percentAmp").attr("checked", "false");
+  if (currentState) {
+    console.log(`updateAmpRadioButtons: ${currentState.amp}`)
+    if (typeof currentState.amp === 'string' && currentState.amp.endsWith('%')) {
+      let percent = Number(currentState.amp.substring(0, currentState.amp.length-1));
+      d3.select("input#percentAmpSlider").property("value", percent);
+      d3.select("div#amp")
+        .select("input#percentAmp").attr("checked", "true");
+    } else if (currentState.amp === "max") {
+      d3.select("div#amp")
+        .select("input#maxAmp").attr("checked", "true");
+      currentState.amp = "max";
+    } else if ( Number.isFinite(Number(currentState.amp))) {
+      d3.select("div#amp")
+        .select("input#fixedAmp").attr("checked", "true");
+      d3.select("div#amp")
+        .select("input#fixedAmpText").property("value", currentState.amp);
+      d3.select("div#amp")
+        .select("input#fixedAmpText").text(currentState.amp);
+    } else {
+      // default to max?
+        d3.select("div#amp")
+          .select("input#maxAmp").attr("checked", "true");
+        currentState.amp = "max";
+    }
+  } else {
+    // default to max?
+      d3.select("div#amp")
+        .select("input#maxAmp").attr("checked", "true");
+      currentState.amp = "max";
+  }
 };
 
 // Check browser state, in case of back or forward buttons
 
 let currentState = window.history.state;
-if (currentState && currentState.station) {
-  console.log(`load existing state: ${JSON.stringify(currentState, null, 2)}`);
-  state = currentState;
-  doPlot(state);
+
+if (currentState) {
+  updateAmpRadioButtons(currentState);
+  if (currentState.station) {
+    console.log(`load existing state: ${JSON.stringify(currentState, null, 2)}`);
+    state = currentState;
+    loadAndPlot(state);
+  }
 }
 // also register for events that change state
 window.onpopstate = function(event) {
@@ -51,7 +103,7 @@ window.onpopstate = function(event) {
       .property("checked", function(d, i) {
         return d.charAt(0)===state.bandCode && d.charAt(1)===state.instCode;
       });
-    doPlot(state);
+    loadAndPlot(state);
   }
 };
 
@@ -96,7 +148,7 @@ let dateChooser = new seisplotjs.datechooser.DateTimeChooser(dateChooserSpan,
     chooserStart,
     time => {
       state.endTime = time.endOf('hour').add(1, 'millisecond').add(moment.duration(state.duration));
-      doPlot(state);
+      loadAndPlot(state);
     });
 let updateDateChooser = function(state) {
   if ( state.endTime && state.duration) {
@@ -124,7 +176,7 @@ let staButtonSpan = d3.select("#scsnStations")
     .on("click", function(d) {
       state.station = d3.select(this).text();
       console.log(`click ${station}`);
-      doPlot(state);
+      loadAndPlot(state);
     })
     .text(function(d) {return d;});
   d3.select("#scsnStations").selectAll("input").on("change", function(){
@@ -135,30 +187,42 @@ d3.select("button#loadNow").on("click", function(d) {
   state.endTime = moment.utc().endOf('hour').add(1, 'millisecond');
   console.log(`now ${state.endTime}`);
   updateDateChooser(state);
-  doPlot(state);
+  loadAndPlot(state);
 });
 
 d3.select("button#loadToday").on("click", function(d) {
   state.endTime = moment.utc().endOf('day').add(1, 'millisecond');
   console.log(`today ${state.endTime}`);
   updateDateChooser(state);
-  doPlot(state);
+  loadAndPlot(state);
 });
 
 d3.select("button#loadPrev").on("click", function(d) {
-  state.endTime = moment.utc(state.endTime).subtract(1, 'day');
+  let e = state.endTime;
+  if (  !e || e === 'now' ) {
+    e = getNowTime();
+  }
+  state.endTime = moment.utc(e).subtract(1, 'day');
   console.log(`prev ${state.endTime}`);
   updateDateChooser(state);
-  doPlot(state);
+  loadAndPlot(state);
 });
 
 d3.select("button#loadNext").on("click", function(d) {
-  state.endTime = moment.utc(state.endTime).add(1, 'day');
+  let e = state.endTime;
+  if ( !e || e === 'now' ) {
+    e = getNowTime();
+  }
+  state.endTime = moment.utc(e).add(1, 'day');
   console.log(`next ${state.endTime}`);
   updateDateChooser(state);
-  doPlot(state);
+  loadAndPlot(state);
 });
 
+const getNowTime = function() {
+  let e = moment.utc().endOf('hour').add(1, 'millisecond');
+  e.add(e.hour() % 2, 'hours');
+}
 
 let orientButtonSpan = d3.select("div#orientations")
   .select("form")
@@ -187,7 +251,7 @@ let orientButtonSpan = d3.select("div#orientations")
         state.altOrientationCode = "";
       }
       console.log(`click ${state.orientationCode} ${state.altOrientationCode}`);
-      doPlot(state);
+      loadAndPlot(state);
     })
     .text(function(d) {return d;});
   d3.select("div.orientations").selectAll("input").on("change", function(){
@@ -227,7 +291,7 @@ let orientButtonSpan = d3.select("div#orientations")
         state.bandCode = bandInst.charAt(0);
         state.instCode = bandInst.charAt(1);
         console.log(`click ${state.bandCode}${state.instCode}`);
-        doPlot(state);
+        loadAndPlot(state);
       })
       .text(function(d) {return d;});
 
@@ -253,11 +317,72 @@ let orientButtonSpan = d3.select("div#orientations")
             let locCode = d3.select(this).text();
             state.locCode = locCode;
             console.log(`click ${state.locCode} ${state.bandCode}${state.instCode}`);
-            doPlot(state);
+            loadAndPlot(state);
           })
           .text(function(d) {return d;});
 
+const handleAmpChange = function(value) {
+  console.log(`handleAmpChange ${value}`)
+  if (value === "max") {
+    state.amp = value;
+  } else if (typeof value === 'string' && value.endsWith('%')) {
+    state.amp = value;
+  } else if (Number.isFinite(value)) {
+    state.amp = value;
+  } else {
+    // assume empty/bad value in text box
+    state.amp = 10000;
+    d3.select("div#amp")
+      .select("input#fixedAmpText").property("value", state.amp);
+  }
+  if (heliHash) {
+    // already have data
+    heliHash.amp = state.amp;
+    seisplotjs.RSVP.hash(heliHash).then(h => redrawHeli(h));
+  } else {
+    loadAndPlot(state);
+  }
+}
+d3.select("div#amp")
+  .select("input#maxAmp")
+  .on("click", d => {
+    handleAmpChange("max");
+  });
 
+d3.select("div#amp")
+  .select("input#fixedAmp")
+  .on("click", d => {
+    let value = Number(d3.select("input#fixedAmpText").property("value"));
+    handleAmpChange(value);
+  });
+d3.select("div#amp")
+  .select("input#fixedAmpText")
+  .on("keypress", function() {
+    if(d3.event.keyCode === 13) {
+      // return  is 13
+      let value = Number(d3.select("input#fixedAmpText").property("value"));
+      handleAmpChange(value);
+    }
+}).on("change", () => {
+  let value = Number(d3.select("input#fixedAmpText").property("value"));
+  handleAmpChange(value);
+});
+
+d3.select("div#amp")
+  .select("input#percentAmp")
+  .on("click", d => {
+    let value = d3.select("input#percentAmpSlider").property("value");
+    handleAmpChange(`${value}%`);
+  });
+d3.select("#percentAmpSlider").on("input", function() {
+  d3.select("div#amp")
+    .select("input#maxAmp").attr("checked", "false");
+  d3.select("div#amp")
+    .select("input#fixedAmp").attr("checked", "false");
+  d3.select("div#amp")
+    .select("input#percentAmp").attr("checked", "true");
+  handleAmpChange(`${this.value}%`);
+});
 
 
 d3.select("button#pause").on("click", function(d) {
