@@ -1,18 +1,16 @@
 
-//let seedlink = require('seisplotjs-seedlink');
-// this global comes from the seisplotjs_seedlink standalone js
-let seedlink = seisplotjs.seedlink
-let moment = seisplotjs.moment;
+// this global comes from the seisplotjs_ standalone js
+const d3 = seisplotjs.d3;
+const moment = seisplotjs.moment;
 
-// this global comes from the seisplotjs_waveformplot standalone js
-let d3 = seisplotjs.d3;
-
-let staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
-let locCodeList = ['00', '01'];
-let orientList = ['Z', 'N/1', 'E/2'];
-let bandInstCodeList = [ 'HN', 'HH', 'LH'];
+const staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
+const locCodeList = ['00', '01'];
+const orientList = ['Z', 'N/1', 'E/2'];
+const bandInstCodeList = [ 'HN', 'HH', 'LH'];
 const DEFAULT_FIXED_AMP = 10000;
+const HOURS_PER_LINE = 2;
 
+// state preserved for browser history
 // also see near bottom where we check if page history has state obj and use that
 let state = {
   netCode: 'CO',
@@ -74,7 +72,6 @@ let updateAmpRadioButtons = function(currentState) {
 };
 
 // Check browser state, in case of back or forward buttons
-
 let currentState = window.history.state;
 
 if (currentState) {
@@ -117,38 +114,40 @@ if (protocol == 'https:') {
   wsProtocol = 'wss:';
 }
 
-let allSeisPlots = new Map();
-let margin = {top: 20, right: 20, bottom: 50, left: 60};
-
 let paused = false;
 let stopped = false;
 let numSteps = 0;
 
 let heli = null;
-let quakes = [];
-let station = null;
-
 
 let chooserEnd;
 if ( state.endTime) {
   if (state.endTime === "now") {
-    chooserEnd = moment.utc();
+    chooserEnd = getNowTime();
   } else {
     chooserEnd = moment.utc(state.endTime);
   }
 } else {
   chooserEnd = moment.utc();
 }
-const chooserStart = chooserEnd.subtract(moment.duration(state.duration))
-    .endOf('hour').add(1, 'millisecond');
+const chooserStart = chooserEnd.subtract(moment.duration(state.duration));
+
+let throttleRedisplay = null;
+let throttleRedisplayDelay = 500;
 
 let dateChooserSpan = d3.select("#datechooser");
 let dateChooser = new seisplotjs.datechooser.DateTimeChooser(dateChooserSpan,
     "Start Time",
     chooserStart,
     time => {
-      state.endTime = time.endOf('hour').add(1, 'millisecond').add(moment.duration(state.duration));
-      loadAndPlot(state);
+      if (throttleRedisplay) {
+        window.clearTimeout(throttleRedisplay);
+      }
+      throttleRedisplay = window.setTimeout(() => {
+        let updatedTime = moment(time).add(moment.duration(state.duration));
+        state.endTime = updatedTime;
+        loadAndPlot(state);
+      }, throttleRedisplayDelay);
     });
 let updateDateChooser = function(state) {
   if ( state.endTime && state.duration) {
@@ -175,7 +174,6 @@ let staButtonSpan = d3.select("#scsnStations")
     .property("checked", function(d, i) {return d===state.station;})
     .on("click", function(d) {
       state.station = d3.select(this).text();
-      console.log(`click ${station}`);
       loadAndPlot(state);
     })
     .text(function(d) {return d;});
@@ -184,7 +182,7 @@ let staButtonSpan = d3.select("#scsnStations")
   });
 
 d3.select("button#loadNow").on("click", function(d) {
-  state.endTime = moment.utc().endOf('hour').add(1, 'millisecond');
+  state.endTime = getNowTime();
   console.log(`now ${state.endTime}`);
   updateDateChooser(state);
   loadAndPlot(state);
@@ -221,7 +219,8 @@ d3.select("button#loadNext").on("click", function(d) {
 
 const getNowTime = function() {
   let e = moment.utc().endOf('hour').add(1, 'millisecond');
-  e.add(e.hour() % 2, 'hours');
+  e.add(e.hour() % HOURS_PER_LINE, 'hours');
+  return e;
 }
 
 let orientButtonSpan = d3.select("div#orientations")
@@ -427,15 +426,7 @@ let timer = d3.interval(function(elapsed) {
   if ( paused) {
     return;
   }
-  if ( allSeisPlots.size > 1) {
-    numSteps++;
-    if (maxSteps > 0 && numSteps > maxSteps ) {
-      console.log("quit after max steps: "+maxSteps);
-      timer.stop();
-      slConn.close();
-    }
-  }
-  nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
+  nowHour = getNowTime();
   timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, nowHour, duration, clockOffset);
   console.log("reset time window for "+timeWindow.startTime+" "+timeWindow.endTime );
 

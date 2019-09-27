@@ -57,7 +57,7 @@ export class SeedlinkConnection {
     this.command = 'DATA';
   }
   setTimeCommand(startTime: moment) {
-    this.command = "TIME "+moment(startTime).format("YYYY,MM,DD,HH,mm,ss");
+    this.command = "TIME "+moment.utc(startTime).format("YYYY,MM,DD,HH,mm,ss");
   }
   setOnError(errorFn: (error: Error) => void) {
     this.errorFn = errorFn;

@@ -34,7 +34,7 @@ export class HourMinChooser {
   constructor(div: any, time: moment, updateCallback: ( time: moment) => void) {
     let mythis = this;
     this.div = div;
-    this.time = time;
+    this.time = moment.utc(time);
     this.updateCallback = updateCallback;
     this.hourMinRegEx = /^([0-1]?[0-9]):([0-5]?[0-9])$/;
     this.myOnClick = function(e) {
@@ -244,9 +244,9 @@ export class DateTimeChooser {
   }
   /** @private */
   _internalSetTime(newTime: moment): void {
-    this.time = newTime;
+    this.time = moment.utc(newTime);
     this.dateField.attr("value", this.time.toISOString());
-    // re-moment to avoid utc issue in
+    // re-moment to avoid utc issue, using utc messes up picker, so pretend
     this.picker.setMoment(moment([this.time.year(), this.time.month(), this.time.date()]));
   }
 }

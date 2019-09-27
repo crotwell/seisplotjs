@@ -133,7 +133,7 @@ export class RingserverConnection {
     return this.pullRaw(url).then(raw => {
       let lines = raw.split('\n');
       let out = {};
-      out.accessTime = moment().utc();
+      out.accessTime = moment.utc();
       out.streams = [];
       for(let line of lines) {
         if(line.length === 0 ) {continue;}
