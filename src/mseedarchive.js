@@ -17,6 +17,25 @@ import {StartEndDuration, isDef} from './util.js';
 
 export const Allowed_Flags = [ 'n', 's', 'l', 'c', 'Y', 'j', 'H'];
 
+/**
+ * A web based connection to an archive of miniseed files
+ * arranged based on a pattern using n, s, l, c, Y, j, H
+ * for network, station, locid, channel, year, day of year
+ * and hour. This is a subset of the options available within
+ * the IRIS Ringserver MSeedArchive option, on which this
+ * is based. Retrieved seismograms are cut from the larger
+ * miniseed files retrieved via http(s), and so there is
+ * wasted bandwidth to the server. On the other hand this
+ * requires no extra software on the server side beyond
+ * a directory structure with suitably small miniseed files.
+ * Generally we find channel-hour is a reasonable size for
+ * most seismic channels. The URL to needed files is
+ * constructed by concatenating the rootUrl with the pattern
+ * using a time range large enough to get all overlaps
+ * based on the smallest sample rate per channel band code
+ * and record size, which defaults to 512.
+ *
+ */
 export class MSeedArchive {
   _rootUrl: string;
   _pattern: string;
@@ -60,6 +79,15 @@ export class MSeedArchive {
     }
     return true;
   }
+  /**
+   * Loads seismograms from the remote miniseed archive via
+   * http(s). Files downloaded include all that might overlap
+   * the given time window based on record size,
+   * the minimum sample rate
+   * for the channel band code and the given time window.
+   * @param   channelTimeList requst channels and time windows
+   * @return Promise to the same SeismogramDisplayData array, but with seismograms populated
+   */
   loadSeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     let promiseArray = channelTimeList.map(ct => {
       if (isDef(ct.channel)) {
@@ -86,7 +114,14 @@ export class MSeedArchive {
         return out;
     });
   }
-  loadDataForChannel(channel: Channel, startTime: moment, endTime: moment) {
+  /**
+   * Loads miniseed records based on channel and time window.
+   * @param   channel   channel to request
+   * @param   startTime start time
+   * @param   endTime   end time
+   * @return Promise to array of miniseed records
+   */
+  loadDataForChannel(channel: Channel, startTime: moment, endTime: moment): Promise<Array<miniseed.DataRecord>> {
     return this.loadData(channel.station.network.networkCode,
                     channel.station.stationCode,
                     channel.locationCode,
@@ -95,7 +130,18 @@ export class MSeedArchive {
                     endTime,
                     channel.sampleRate);
   }
-  loadData(net: string, sta: string, loc: string, chan: string, startTime: moment, endTime: moment, sampleRate: number) {
+  /**
+   * Loads miniseed records based on string channel codes.
+   * @param   net        network code
+   * @param   sta        station code
+   * @param   loc        location code
+   * @param   chan       channel code
+   * @param   startTime  start time
+   * @param   endTime    end time
+   * @param   sampleRate known sample rate for this channel
+   * @return             Promise to array of miniseed records
+   */
+  loadData(net: string, sta: string, loc: string, chan: string, startTime: moment, endTime: moment, sampleRate: number): Promise<Array<miniseed.DataRecord>> {
     let basePattern = this.fillBasePattern(net, sta, loc, chan);
     if ( ! util.isDef(sampleRate)) {
       sampleRate = minSampleRate(chan);
@@ -248,6 +294,6 @@ export function minSampleRate(chan: string): number {
   * This assumes 40 bytes of header and maximum compression of 2 samples
   * per byte (4 bit per sample) which is the best Steim2.
   */
-export function maxTimeForRecord(recordSize: number, sampleRate: number) {
+export function maxTimeForRecord(recordSize: number, sampleRate: number): number {
   return (recordSize-40)*2/sampleRate;
 }
