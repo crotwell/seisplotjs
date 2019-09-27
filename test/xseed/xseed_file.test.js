@@ -106,10 +106,11 @@ for (let filename of fileList) {
 }
 
 test("crc-32c of a string", () => {
-  let s = "hi12345";
+  let s = "123456789";
   let buf = new Uint8Array(new ArrayBuffer(s.length));
   for (let i=0; i<s.length; i++) {
     buf[i] = s.charCodeAt(i);
   }
   let crc = xseed.calculateCRC32C(buf);
+  expect(crc).toEqual(0xe3069283);
 });
