@@ -14,8 +14,6 @@ import * as util from './util.js'; // for util.log
 // special due to flow
 import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
-import RSVP from 'rsvp';
-
 /**
  * Major version of the FDSN spec supported here.
  * Currently is 1.

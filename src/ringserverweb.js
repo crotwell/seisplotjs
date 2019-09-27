@@ -6,11 +6,10 @@
  * http://www.seis.sc.edu
  */
 
-import RSVP from 'rsvp';
 import moment from 'moment';
 
 import * as util from './util.js'; // for util.log
-import { checkProtocol, hasArgs, hasNoArgs, isStringArg, isNumArg, isDef, XML_MIME, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import { checkProtocol, hasNoArgs, isStringArg, isNumArg, isDef, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 
 export type RingserverVersion = {

@@ -10,10 +10,9 @@ import * as d3 from 'd3';
 import moment from 'moment';
 
 import {insertCSS} from './plotutil.js';
-import { Seismogram, SeismogramDisplayData } from './seismogram.js';
-import type { MarkerType } from './seismogram.js';
+import { SeismogramDisplayData } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
-import { SeismographConfig, DRAW_BOTH_ALIGN, DRAW_SVG, DRAW_BOTH } from './seismographconfig';
+import { SeismographConfig } from './seismographconfig';
 import {StartEndDuration, isDef} from './util.js';
 
 /**
@@ -114,7 +113,6 @@ export class Helicorder {
       lineSeisConfig.yLabelRight = `${endTime.format("HH:mm")}`;
       lineSeisConfig.lineColors = [ seisDiv.style("color")];
 
-      let trimSeisDataList: Array<SeismogramDisplayData> = [  ];
       let lineCutSeis = null;
       let lineSeisData;
       let lineMean = 0;

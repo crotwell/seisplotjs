@@ -41,14 +41,6 @@ test("applyFreqTaper to FFTResult", () => {
   let sampRate = 100;
   let inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase, numPoints, sampRate);
 
-  // IU.HRV.BHE response
-  const zeros =  [filter.createComplex(0, 0),
-  filter.createComplex(0, 0),
-  filter.createComplex(0, 0) ];
-  const poles =  [filter.createComplex(-0.0139, 0.0100),
-  filter.createComplex(-0.0139, -0.0100),
-  filter.createComplex(-31.4160, 0.0000) ];
-  let sacPoleZero = new SacPoleZero(poles, zeros, 2.94283674E10);
   let lowCut = .2;
   let lowPass = .4;
   let highPass = 20;
@@ -440,13 +432,13 @@ test("impulse one zero combina amp", () => {
         saveDataPromise
       ]);
     }).then(result => {
-        let orig = result[0];
-        let sactfr = result[1];
-        let pz = result[2];
+        //let orig = result[0];
+        //let sactfr = result[1];
+        //let pz = result[2];
         let sacAmp = result[3];
         let bagAmp= result[4];
-        let bagPhase = result[5];
-        let out = result[6];
+        //let bagPhase = result[5];
+        //let out = result[6];
       // freq below lowcut should be zero, but sac has very small non-zero value,
       // so check first 6 values (all below lowcut) and last value separately
       expect(bagAmp[0]).toBeCloseTo(sacAmp.y[0], 9);
@@ -479,7 +471,7 @@ test("impulse one zero", () => {
       let orig = result[0];
       let sactfr = result[1];
       let pz = result[2];
-      let sacAm = result[3];
+      //let sacAm = result[3];
       const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
       let bagtfr = transfer.transferSacPZ(seis,
                                       pz,

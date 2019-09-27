@@ -12,7 +12,7 @@ import * as seedcodec from './seedcodec';
 
 import {Channel, InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
-import {StartEndDuration, calcClockOffset} from './util';
+import {StartEndDuration } from './util';
 
 export type HighLowType = {
       xScaleDomain: Array<number>;

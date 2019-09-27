@@ -6,16 +6,11 @@
  * http://www.seis.sc.edu
  */
 
-import moment from 'moment';
-import RSVP from 'rsvp';
-
 // special due to flow
-import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, stringify} from './util';
 import type {RootType} from './FDSN-datacenter-registry-1.0.schema.json.flow.js';
 
-import {SeismogramDisplayData } from './seismogram.js';
-import { TEXT_MIME, JSON_MIME, StartEndDuration , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
-import {Network, Station, Channel} from './stationxml.js';
+import { TEXT_MIME, JSON_MIME , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 import * as fdsnavailability from './fdsnavailability.js';
 import * as fdsndataselect from './fdsndataselect.js';
@@ -187,7 +182,6 @@ export class DataCentersQuery {
    * @return Promise to the json object.
    */
   queryJson(): Promise<RootType> {
-    const mythis = this;
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )

@@ -6,8 +6,6 @@
  * http://www.seis.sc.edu
  */
 
-import RSVP from 'rsvp';
-
 import moment from 'moment';
 import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, AbstractFilterType, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
 import {createComplex} from './filter.js';

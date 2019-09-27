@@ -127,10 +127,10 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
     let minFreq = ap.fundamentalFrequency;
     let line = d3.line();
     if (loglog) {
-      line.x(function(d, i, a) { return x((i+1)*minFreq); });
+      line.x(function(d, i) { return x((i+1)*minFreq); });
       // minus one as slice off zero freq above
     } else {
-      line.x(function(d, i, a) { return x((i  )*minFreq); });
+      line.x(function(d, i) { return x((i  )*minFreq); });
     }
     line.y(function(d) {if (d !== 0.0 && ! isNaN(d)) {return y(d);} else {return y.range()[0];} });
     pathg.append("g").append("path")

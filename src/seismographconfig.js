@@ -6,10 +6,8 @@
  * http://www.seis.sc.edu
  */
 
-import {Channel, InstrumentSensitivity} from './stationxml.js';
-import { SeismogramDisplayData, Seismogram, SeismogramSegment} from './seismogram.js';
-import {Quake} from './quakeml.js';
-import {StartEndDuration, stringify, isDef} from './util.js';
+import { SeismogramDisplayData, Seismogram } from './seismogram.js';
+import {StartEndDuration} from './util.js';
 import moment from 'moment';
 import * as d3 from 'd3';
 

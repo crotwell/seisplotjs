@@ -12,7 +12,6 @@ import { SacPoleZero } from './sacpolezero.js';
 import {Response, PolesZeros } from './stationxml.js';
 import Qty from 'js-quantities';
 import {Complex, createComplex} from './filter.js';
-import {stringify} from './util.js';
 
 export function transfer(seis: Seismogram,
                         response: Response,

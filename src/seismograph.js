@@ -17,8 +17,7 @@ import {SeismographConfig,
 import type { MarkerType } from './seismogram.js';
 import type { MarginType } from './seismographconfig';
 import {SeismogramDisplayData, findStartEnd, findMinMax, findMinMaxOverTimeRange,
-        SeismogramSegment, Seismogram, ensureIsSeismogram } from './seismogram.js';
-import {InstrumentSensitivity} from './stationxml.js';
+        SeismogramSegment, Seismogram } from './seismogram.js';
 import {Quake} from './quakeml.js';
 
 import * as util from './util.js';
@@ -133,22 +132,6 @@ export class Seismograph {
     }
 
     let mythis = this;
-
-    let maxZoom = 8;
-    if (this.seisDataList && this.seisDataList.length>0) {
-      let maxSps = 1;
-      maxSps = this.seisDataList.filter(sdd => sdd.seismogram !== null)
-          .reduce(function(accum, sdd) {
-            // for flow
-            if ( ! sdd.seismogram) {return 1;}
-            return Math.max(accum, sdd.seismogram.sampleRate);
-          }, maxSps);
-      let secondsPerPixel = this.calcSecondsPerPixel( mythis.currZoomXScale);
-      let samplesPerPixel = maxSps * secondsPerPixel;
-      let zoomLevelFactor = samplesPerPixel*this.seismographConfig.maxZoomPixelPerSample;
-      maxZoom = Math.max(maxZoom,
-                         Math.pow(2, Math.ceil(Math.log(zoomLevelFactor)/Math.log(2))));
-    }
 
     this.g = this.svg.append("g")
       .classed("marginTransform", true)
@@ -644,7 +627,7 @@ export class Seismograph {
               return  "translate("+textx+","+0+")";});
 
        this.g.select("g.allmarkers").selectAll("g.markertext")
-           .attr("transform", function(marker: MarkerType) {
+           .attr("transform", function() {
                // shift up by this.seismographConfig.markerTextOffset percentage
                let maxY = mythis.yScale.range()[0];
                let deltaY = mythis.yScale.range()[0]-mythis.yScale.range()[1];
@@ -653,7 +636,7 @@ export class Seismograph {
              });
 
        this.g.select("g.allmarkers").selectAll("path.markerpath")
-         .attr("d", function(marker: MarkerType) {
+         .attr("d", () => {
            return d3.line()
              .x(function() {
                return 0; // g is translated so marker time is zero
@@ -702,13 +685,13 @@ export class Seismograph {
 
           let innerTextG = drawG.append("g")
             .attr("class", "markertext")
-            .attr("transform", function(marker) {
+            .attr("transform", () => {
               // shift up by this.seismographConfig.markerTextOffset percentage
               let maxY = mythis.yScale.range()[0];
               let deltaY = mythis.yScale.range()[0]-mythis.yScale.range()[1];
               let texty = maxY - mythis.seismographConfig.markerTextOffset*(deltaY);
               return  "translate("+0+","+texty+") rotate("+mythis.seismographConfig.markerTextAngle+")";});
-          innerTextG.append("title").text(function(marker) {
+          innerTextG.append("title").text( marker => {
             if (marker.description) {
               return marker.description;
             } else {
@@ -758,11 +741,10 @@ export class Seismograph {
             .style("fill", "none")
             .style("stroke", "black")
             .style("stroke-width", "1px")
-            .attr("d", function(marker) {
+            .attr("d", () => {
               return d3.line()
-                .x(function(d) {
-                  return 0; // g is translated so marker time is zero
-                }).y(function(d, i) {
+                .x(0) // g is translated so marker time is zero
+                .y(function(d, i) {
                   let out = 0;
                   if (mythis.seismographConfig.markerFlagpoleBase === 'center') {
                     out = (i===0) ? 0: (mythis.yScale.range()[0]+mythis.yScale.range()[1])/2 ;

@@ -1,7 +1,6 @@
 // @flow
 
 import {SeismographConfig, DRAW_BOTH} from '../src/seismographconfig.js';
-import  {moment, StartEndDuration} from '../src/util.js';
 
 test("simple seismographconfig clone", () => {
   let seisConfig = new SeismographConfig();

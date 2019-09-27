@@ -408,7 +408,6 @@ export class DataLinkResponse {
       if (data) {
         message = dataViewToString(new DataView(data.buffer, 3+header.length));
       }
-      const dSize = parseInt(s[2]);
     } else {
       util.log(`unknown DataLink response type: ${type}  ${header}`);
       message = header.substring(type.length+1);

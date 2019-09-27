@@ -107,10 +107,7 @@ test("seismogram isContiguous", () =>{
   let startTime = moment.utc("2013-02-08T09:30:26");
   let secondStart = moment.utc(startTime).add(1000*yValues.length/sampleRate, 'milliseconds');
   let laterStart = moment.utc(secondStart).add(10*1000*yValues.length/sampleRate, 'milliseconds');
-  let netCode = "XX";
-  let staCode = "ABCD";
-  let locCode = "00";
-  let chanCode = "BHZ";
+
   let first = new SeismogramSegment(yValues, sampleRate, startTime);
   let second = new SeismogramSegment(yValues, sampleRate, secondStart);
   let seis = new Seismogram([first, second]);
@@ -133,6 +130,10 @@ test("seismogram clone", () => {
   let locCode = "00";
   let chanCode = "BHZ";
   let seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, startTime);
+  seisSeg.networkCode = netCode;
+  seisSeg.stationCode = staCode;
+  seisSeg.locationCode = locCode;
+  seisSeg.channelCode = chanCode;
   let seis = new Seismogram([ seisSeg]);
 
   let cloneSeis = seis.clone();
@@ -180,10 +181,7 @@ test("seismogram merge", () => {
   let sampleRate = 20.0;
   let startTimeA = moment.utc().subtract(yValues.length/sampleRate, 'seconds');
   let startTimeB = moment.utc(startTimeA).add(yValues.length/sampleRate, 'seconds');
-  let netCode = "XX";
-  let staCode = "ABCD";
-  let locCode = "00";
-  let chanCode = "BHZ";
+  
   let seisSegA = new SeismogramSegment(yValues.slice(), sampleRate, startTimeA);
   let seisSegB = new SeismogramSegment(yValues.slice(), sampleRate, startTimeB);
   let seis = new Seismogram([ seisSegA, seisSegB]);

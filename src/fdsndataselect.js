@@ -14,9 +14,8 @@ import * as util from './util.js'; // for util.log
 import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import * as miniseed from './miniseed';
-import { Channel } from './stationxml';
 import { Seismogram, SeismogramDisplayData } from './seismogram';
-import {XML_MIME, TEXT_MIME, StartEndDuration, calcClockOffset, doFetchWithTimeout, defaultFetchInitObj, isDef} from './util.js';
+import { TEXT_MIME, StartEndDuration, doFetchWithTimeout, defaultFetchInitObj, isDef} from './util.js';
 
 /** const for miniseed format, mseed */
 export const FORMAT_MINISEED = 'miniseed';

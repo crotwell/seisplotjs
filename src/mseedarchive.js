@@ -73,10 +73,8 @@ export class MSeedArchive {
         }
       });
     return RSVP.all(promiseArray).then(pArray => {
-        let index = 0;
         let out = [];
         pArray.forEach(p => {
-          index++;
           let seisArray = miniseed.seismogramPerChannel(p.dataRecords);
           // should only be one
           for (let seis of seisArray) {
@@ -145,10 +143,8 @@ export class MSeedArchive {
 
     return RSVP.all(promiseArray).then(pArray => {
         let dataRecords: Array<miniseed.DataRecord> = [];
-        let index = 0;
         pArray.forEach(p => {
           dataRecords = dataRecords.concat(p);
-          index++;
         });
         return dataRecords;
     }).then(dataRecords => {

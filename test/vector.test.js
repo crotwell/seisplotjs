@@ -4,7 +4,7 @@ import * as vector from '../src/vector.js';
 import * as util from '../src/util.js';
 let moment = util.moment;
 
-import { SeismogramSegment, Seismogram }  from "../src/seismogram";
+import { Seismogram }  from "../src/seismogram";
 
 const a = Float32Array.from([ 1, 1, 0]);
 const b = Float32Array.from([ 2, 0, 2]);

@@ -9,7 +9,6 @@
 import moment from 'moment';
 import RSVP from 'rsvp';
 
-import * as util from './util.js'; // for util.log
 // special due to flow
 import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 import type {RootType} from './fdsnws-availability-1.0.schema.json.flow.js';

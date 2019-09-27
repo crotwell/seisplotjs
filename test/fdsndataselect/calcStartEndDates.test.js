@@ -1,6 +1,6 @@
 // @flow
 
-import {StartEndDuration, calcClockOffset} from '../../src/util.js';
+import {StartEndDuration} from '../../src/util.js';
 
 test("calcStartEndDates", () => {
   const duration = 300;

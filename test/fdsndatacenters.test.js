@@ -1,8 +1,6 @@
 // @flow
 
 import * as fdsndatacenters from '../src/fdsndatacenters.js';
-import * as util from '../src/util.js';
-let moment = util.moment;
 
 
 test( "form url test", () => {
@@ -11,7 +9,6 @@ test( "form url test", () => {
   const SERVICES = "fdsnws-dataselect-1";
   const INCLUDE_DATASETS = true;
   const FDNS_HOST = "www.fdsn.org";
-  const MAG_TYPE = "mw";
   expect(query.host(FDNS_HOST)).toBe(query);
   expect(query.host()).toBe(FDNS_HOST);
   expect(query.name(NAME)).toBe(query);

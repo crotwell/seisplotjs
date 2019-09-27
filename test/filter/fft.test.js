@@ -62,7 +62,6 @@ test("Round Trip FFT, Spike", () => {
 test("Round Trip FFT HRV", () => {
   return readSac("./test/filter/data/IU.HRV.__.BHE.SAC")
   .then(data => {
-    const seis = asSeismogram(data);
     const fftout = fft.calcDFT(data.y);
     const out = fft.inverseDFT(fftout, data.y.length);
     for(let i=0; i<out.length; i++) {
@@ -117,7 +116,7 @@ test("FFT", () => {
         saveDataPromise
       ]);
     }).then(result => {
-        let sac = result[0];
+        //let sac = result[0];
         let sacAmp = result[1];
         let sacPhase = result[2];
         let bagAmp= result[3];

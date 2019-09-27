@@ -443,8 +443,6 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
 export function seismogramPerChannel(drList: Array<DataRecord> ): Array<Seismogram> {
   let out = [];
   let byChannelMap = byChannel(drList);
-  for (let [key, segments] of byChannelMap) {
-    out.push(merge(segments));
-  }
+  byChannelMap.forEach(segments => out.push(merge(segments)));
   return out;
 }

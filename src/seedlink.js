@@ -10,7 +10,6 @@ import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
 
-import * as util from './util.js'; // for util.log
 import {dataViewToString} from './util';
 
 export const SEEDLINK_PROTOCOL = "SeedLink3.1";
