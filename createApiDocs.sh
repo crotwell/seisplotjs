@@ -117,6 +117,13 @@ do
       descText="${!descVarName}"
       descArg='--project-description'
     fi
+    # fix markdown style links with html
+    re="(.*)\[(.+)\]\((.+)\)(.*)"
+    descTextHtml="${descText}"
+    while [[ $descTextHtml =~ $re ]]; do
+      descTextHtml="${BASH_REMATCH[1]}<a href=\"${BASH_REMATCH[3]}\">${BASH_REMATCH[2]}</a>${BASH_REMATCH[4]}"
+    done
+    echo $descTextHtml
     if [ 'index' != "$jsfile" ]
     then
       echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
@@ -142,7 +149,7 @@ EOF
   then
     # entry of index.html
     cat >> docs/api/index.html <<EOF
-      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.js">source</a> ) - ${descText}</li>
+      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.js">source</a> ) - ${descTextHtml}</li>
 EOF
   fi
 done
