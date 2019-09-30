@@ -79,75 +79,75 @@ const datalink = new seisplotjs.datalink.DataLinkConnection(
     errorFn);
 
 
-  let timer = seisplotjs.d3.interval(function(elapsed) {
-    if ( paused || redrawInProgress) {
-      return;
+let timer = seisplotjs.d3.interval(function(elapsed) {
+  if ( paused || redrawInProgress) {
+    return;
+  }
+  redrawInProgress = true;
+  window.requestAnimationFrame(timestamp => {
+    try {
+      graphList.forEach(function(value, key) {
+          value.seismographConfig.fixedTimeScale = new seisplotjs.util.StartEndDuration(null, null, duration);
+          value.calcTimeScaleDomain();
+          value.calcAmpScaleDomain();
+          value.draw();
+      });
+    } catch(err) {
+      console.assert(false, err);
     }
-    redrawInProgress = true;
-    window.requestAnimationFrame(timestamp => {
-      try {
-        graphList.forEach(function(value, key) {
-            value.seismographConfig.fixedTimeScale = new seisplotjs.util.StartEndDuration(null, null, duration);
-            value.calcTimeScaleDomain();
-            value.calcAmpScaleDomain();
-            value.draw();
-        });
-      } catch(err) {
-        console.assert(false, err);
-      }
-      redrawInProgress = false;
-    });
+    redrawInProgress = false;
+  });
 
-    }, timerInterval);
+  }, timerInterval);
 
-    seisplotjs.d3.select("button#pause").on("click", function(d) {
-      togglePause( );
-    });
+seisplotjs.d3.select("button#pause").on("click", function(d) {
+  togglePause( );
+});
 
-    let togglePause = function() {
-      paused = ! paused;
-      if (paused) {
-        seisplotjs.d3.select("button#pause").text("Play");
-      } else {
-        seisplotjs.d3.select("button#pause").text("Pause");
-      }
+let togglePause = function() {
+  paused = ! paused;
+  if (paused) {
+    seisplotjs.d3.select("button#pause").text("Play");
+  } else {
+    seisplotjs.d3.select("button#pause").text("Pause");
+  }
+}
+
+
+seisplotjs.d3.select("button#disconnect").on("click", function(d) {
+  toggleConnect();
+});
+
+let toggleConnect = function() {
+  stopped = ! stopped;
+  if (stopped) {
+    if (datalink) {
+      datalink.endStream();
+      datalink.close();
     }
-
-
-    seisplotjs.d3.select("button#disconnect").on("click", function(d) {
-      toggleConnect();
-    });
-
-    let toggleConnect = function() {
-      stopped = ! stopped;
-      if (stopped) {
-        if (datalink) {
-          datalink.endStream();
-          datalink.close();
-        }
-        seisplotjs.d3.select("button#disconnect").text("Reconnect");
-      } else {
-        if (datalink) {
-          datalink.connect()
-          .then(serverId => {
-            console.log(`id response: ${serverId}`);
-            return datalink.match(matchPattern);
-          }).then(response => {
-            console.log(`match response: ${response}`)
-            return datalink.positionAfter(timeWindow.start);
-          }).then(response => {
-            console.log(`positionAfter response: ${response}`)
-            return datalink.stream();
-          }).catch( function(error) {
-            seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
-            console.assert(false, error);
-          });
-        }
-        seisplotjs.d3.select("button#disconnect").text("Disconnect");
-      }
+    seisplotjs.d3.select("button#disconnect").text("Reconnect");
+  } else {
+    if (datalink) {
+      datalink.connect()
+      .then(serverId => {
+        console.log(`id response: ${serverId}`);
+        return datalink.match(matchPattern);
+      }).then(response => {
+        console.log(`match response: ${response}`)
+        return datalink.positionAfter(timeWindow.start);
+      }).then(response => {
+        console.log(`positionAfter response: ${response}`)
+        return datalink.stream();
+      }).catch( function(error) {
+        seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+        console.assert(false, error);
+      });
     }
+    seisplotjs.d3.select("button#disconnect").text("Disconnect");
+  }
+}
 
-    toggleConnect();
+toggleConnect();
     </script>
   </body>
 </html>
