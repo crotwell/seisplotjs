@@ -120,6 +120,12 @@ let numSteps = 0;
 
 let heli = null;
 
+const getNowTime = function() {
+  let e = moment.utc().endOf('hour').add(1, 'millisecond');
+  e.add(e.hour() % HOURS_PER_LINE, 'hours');
+  return e;
+}
+
 let chooserEnd;
 if ( state.endTime) {
   if (state.endTime === "now") {
@@ -216,12 +222,6 @@ d3.select("button#loadNext").on("click", function(d) {
   updateDateChooser(state);
   loadAndPlot(state);
 });
-
-const getNowTime = function() {
-  let e = moment.utc().endOf('hour').add(1, 'millisecond');
-  e.add(e.hour() % HOURS_PER_LINE, 'hours');
-  return e;
-}
 
 let orientButtonSpan = d3.select("div#orientations")
   .select("form")
