@@ -5,6 +5,18 @@ div.heli {
 div form span {
   margin-right: 10px;
 }
+div span span {
+  margin-right: 10px;
+}
+label.rbgroup {
+  color: darkgrey;
+  margin-right: 5px;
+  margin-left: 10px;
+}
+
+input#percentAmpSlider {
+	vertical-align:middle;
+}
 
 text.sublabel {
   font-size: x-small;

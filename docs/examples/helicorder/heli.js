@@ -33,40 +33,45 @@ let loadAndPlot = function(state) {
 }
 
 let updateAmpRadioButtons = function(currentState) {
-  d3.select("div#amp")
-    .select("input#maxAmp").attr("checked", "false");
-  d3.select("div#amp")
-    .select("input#fixedAmp").attr("checked", "false");
-  d3.select("div#amp")
-    .select("input#percentAmp").attr("checked", "false");
+  console.log(`updateAmpRadioButtons:  ${currentState.amp}`)
+  d3.select("#amp")
+    .select("input#maxAmp").property("checked", "false");
+  d3.select("#amp")
+    .select("input#fixedAmp").property("checked", "false");
+  d3.select("#amp")
+    .select("input#percentAmp").property("checked", "false");
   if (currentState) {
     console.log(`updateAmpRadioButtons: ${currentState.amp}`)
     if (typeof currentState.amp === 'string' && currentState.amp.endsWith('%')) {
+      console.log(`percent`)
       let percent = Number(currentState.amp.substring(0, currentState.amp.length-1));
       d3.select("input#percentAmpSlider").property("value", percent);
-      d3.select("div#amp")
-        .select("input#percentAmp").attr("checked", "true");
+      d3.select("#amp")
+        .select("input#percentAmp").property("checked", "true");
     } else if (currentState.amp === "max") {
-      d3.select("div#amp")
-        .select("input#maxAmp").attr("checked", "true");
+      console.log(`max`)
+      d3.select("#amp")
+        .select("input#maxAmp").property("checked", "true");
       currentState.amp = "max";
     } else if ( Number.isFinite(Number(currentState.amp))) {
-      d3.select("div#amp")
-        .select("input#fixedAmp").attr("checked", "true");
-      d3.select("div#amp")
+      console.log(`fixed`)
+      d3.select("#amp")
+        .select("input#fixedAmp").property("checked", "true");
+      d3.select("#amp")
         .select("input#fixedAmpText").property("value", currentState.amp);
-      d3.select("div#amp")
+      d3.select("#amp")
         .select("input#fixedAmpText").text(currentState.amp);
     } else {
       // default to max?
-        d3.select("div#amp")
-          .select("input#maxAmp").attr("checked", "true");
+        console.log(`default max`)
+        d3.select("#amp")
+          .select("input#maxAmp").property("checked", "true");
         currentState.amp = "max";
     }
   } else {
     // default to max?
-      d3.select("div#amp")
-        .select("input#maxAmp").attr("checked", "true");
+      d3.select("#amp")
+        .select("input#maxAmp").property("checked", "true");
       currentState.amp = "max";
   }
 };
@@ -175,7 +180,7 @@ let staButtonSpan = d3.select("#scsnStations")
   staButtonSpan.insert("input", ":first-child")
     .attr("type", "radio")
     .attr("class", "shape")
-    .attr("name", "mode")
+    .attr("name", "station")
     .attr("value", function(d, i) {return i;})
     .property("checked", function(d, i) {return d===state.station;})
     .on("click", function(d) {
@@ -223,8 +228,7 @@ d3.select("button#loadNext").on("click", function(d) {
   loadAndPlot(state);
 });
 
-let orientButtonSpan = d3.select("div#orientations")
-  .select("form")
+let orientButtonSpan = d3.select("#orientations")
   .selectAll("span")
   .data(orientList)
   .enter()
@@ -235,7 +239,7 @@ let orientButtonSpan = d3.select("div#orientations")
   orientButtonSpan.insert("input", ":first-child")
     .attr("type", "radio")
     .attr("class", "shape")
-    .attr("name", "mode")
+    .attr("name", "orientation")
     .attr("value", function(d, i) {return i;})
     .property("checked", function(d, i) {
       return d.charAt(0)===state.orientationCode;
@@ -258,8 +262,7 @@ let orientButtonSpan = d3.select("div#orientations")
   });
 
 
-  let instButtonSpan = d3.select("div#instruments")
-    .select("form")
+  let instButtonSpan = d3.select("#instruments")
     .selectAll("span")
     .data(bandInstCodeList)
     .enter()
@@ -280,7 +283,7 @@ let orientButtonSpan = d3.select("div#orientations")
     instButtonSpan.insert("input", ":first-child")
       .attr("type", "radio")
       .attr("class", "shape")
-      .attr("name", "mode")
+      .attr("name", "instrument")
       .attr("value", function(d, i) {return i;})
       .property("checked", function(d, i) {
         return d.charAt(0)===state.bandCode && d.charAt(1)===state.instCode;
@@ -295,8 +298,7 @@ let orientButtonSpan = d3.select("div#orientations")
       .text(function(d) {return d;});
 
 
-      let loccodeButtonSpan = d3.select("div#loccode")
-        .select("form")
+      let loccodeButtonSpan = d3.select("#loccode")
         .selectAll("span")
         .data(locCodeList)
         .enter()
@@ -307,7 +309,7 @@ let orientButtonSpan = d3.select("div#orientations")
         loccodeButtonSpan.insert("input", ":first-child")
           .attr("type", "radio")
           .attr("class", "shape")
-          .attr("name", "mode")
+          .attr("name", "loccode")
           .attr("value", function(d, i) {return i;})
           .property("checked", function(d, i) {
             return d===state.locCode;
@@ -331,9 +333,10 @@ const handleAmpChange = function(value) {
   } else {
     // assume empty/bad value in text box
     state.amp = 10000;
-    d3.select("div#amp")
+    d3.select("#amp")
       .select("input#fixedAmpText").property("value", state.amp);
   }
+  updateAmpRadioButtons(state);
   if (heliHash) {
     // already have data
     heliHash.amp = state.amp;
@@ -342,19 +345,19 @@ const handleAmpChange = function(value) {
     loadAndPlot(state);
   }
 }
-d3.select("div#amp")
+d3.select("#amp")
   .select("input#maxAmp")
   .on("click", d => {
     handleAmpChange("max");
   });
 
-d3.select("div#amp")
+d3.select("#amp")
   .select("input#fixedAmp")
   .on("click", d => {
     let value = Number(d3.select("input#fixedAmpText").property("value"));
     handleAmpChange(value);
   });
-d3.select("div#amp")
+d3.select("#amp")
   .select("input#fixedAmpText")
   .on("keypress", function() {
     if(d3.event.keyCode === 13) {
@@ -367,19 +370,13 @@ d3.select("div#amp")
   handleAmpChange(value);
 });
 
-d3.select("div#amp")
+d3.select("#amp")
   .select("input#percentAmp")
   .on("click", d => {
     let value = d3.select("input#percentAmpSlider").property("value");
     handleAmpChange(`${value}%`);
   });
 d3.select("#percentAmpSlider").on("input", function() {
-  d3.select("div#amp")
-    .select("input#maxAmp").attr("checked", "false");
-  d3.select("div#amp")
-    .select("input#fixedAmp").attr("checked", "false");
-  d3.select("div#amp")
-    .select("input#percentAmp").attr("checked", "true");
   handleAmpChange(`${this.value}%`);
 });
 

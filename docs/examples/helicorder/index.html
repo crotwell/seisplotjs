@@ -9,21 +9,15 @@
 
 <h3>Helicorder Plots for South Carolina Seismic Network Stations:</h3>
 <div id="scsnStations">
-  <form><label title="Stations within the South Carolina Seismic Network">Stations:</label>
+  <form><label class="rbgroup" title="Stations within the South Carolina Seismic Network">Stations:</label>
   </form>
 </div>
-<div id="orientations"><form><label>Orientation: </label></form></form></div>
-<div id="instruments"><form><label>Instrument: </label></form></form></div>
-<div id="loccode"><form><label>Loc Code: </label></form></form></div>
-<div id="times">
-  <label>Time Range: </label>
-<button id="loadToday">Today</button>
-<button id="loadNow">Now</button>
-<button id="loadPrev">Previous</button>
-<button id="loadNext">Next</button>
-<span id="datechooser"/>
+<div>
+  <span id="loccode"><label class="rbgroup">Loc Code: </label></span>
+  <span id="instruments"><label class="rbgroup">Instrument: </label></span>
+  <span id="orientations"><label class="rbgroup">Orientation: </label></span>
 </div>
-<div id="amp"><label title="Amplitude Range">Amp Range: </label>
+<div id="amp"><label class="rbgroup" title="Amplitude Range">Amp Range: </label>
   <span><input type="radio" id="maxAmp" class="shape" name="ampMode" value="0" checked="true">Max Value </input></span>
   <span>
     <input type="radio" id="fixedAmp" class="shape" name="ampMode" value="1">
@@ -33,6 +27,14 @@
     <input type="radio" id="percentAmp" class="shape" name="ampMode" value="2">
     <label>Percent: </label><input type="range" min="1" max="100" id="percentAmpSlider" value="100"><span id="percentValue">100</span>
   </span>
+</div>
+<div id="times">
+  <label class="rbgroup">Time Range: </label>
+  <button id="loadToday">Today</button>
+  <button id="loadNow">Now</button>
+  <button id="loadPrev">Previous</button>
+  <button id="loadNext">Next</button>
+  <span id="datechooser"/>
 </div>
 
 <h3><span class="textNetCode"></span>.<span class="textStaCode"></span>.<span class="textLocCode">00</span>.<span class="textChanCode">H??</span> channels from <span class="startTime"></span> to <span class="endTime"></span>.</h3>
