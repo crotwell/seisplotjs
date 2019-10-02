@@ -16,6 +16,12 @@ export const TEXT_FORMAT = "text";
 export const JSON_FORMAT = "json";
 export const SVG_FORMAT = "svg";
 
+/**
+ * Query to the IRIS traveltime webservice, based on the TauP Toolkit. See
+ * http://service.iris.edu/irisws/traveltime/1/ and
+ * https://www.seis.sc.edu/TauP/
+ * @type {[type]}
+ */
 export class TraveltimeQuery {
   /** @private */
   _specVersion: string;
