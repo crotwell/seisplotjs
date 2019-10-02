@@ -1,7 +1,7 @@
 // @flow
 
-import {SeismogramSegment, Seismogram} from '../../src/seismogram';
-import  {moment} from '../../src/util';
+import {SeismogramSegment, Seismogram} from '../src/seismogram';
+import  {moment} from '../src/util';
 
 test("simple seismogram seg creation", () => {
   let yValues = Int32Array.from([0, 1, 2]);
@@ -181,7 +181,7 @@ test("seismogram merge", () => {
   let sampleRate = 20.0;
   let startTimeA = moment.utc().subtract(yValues.length/sampleRate, 'seconds');
   let startTimeB = moment.utc(startTimeA).add(yValues.length/sampleRate, 'seconds');
-  
+
   let seisSegA = new SeismogramSegment(yValues.slice(), sampleRate, startTimeA);
   let seisSegB = new SeismogramSegment(yValues.slice(), sampleRate, startTimeB);
   let seis = new Seismogram([ seisSegA, seisSegB]);
