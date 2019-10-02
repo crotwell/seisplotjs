@@ -11,7 +11,6 @@ import RSVP from 'rsvp';
 
 // special due to flow
 import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
-import type {RootType} from './fdsnws-availability-1.0.schema.json.flow.js';
 
 import {SeismogramDisplayData } from './seismogram.js';
 import { TEXT_MIME, JSON_MIME, StartEndDuration , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
@@ -546,3 +545,32 @@ export class AvailabilityQuery {
     return url;
   }
 }
+
+/* The below are slighly modified from json schema to flow autogenerator.
+*
+* */
+
+/**
+ * Root type of availablility json query.
+ */
+export type RootType = {
+  created?: FdsnDateTime,
+  version: Object,
+  datasources: Array<Datasource>
+} & Object;
+export type FdsnDateTime = string;
+export type Datasource = ({
+  network: string,
+  station: string,
+  location: string,
+  channel: string,
+  quality?: string,
+  samplerate?: number,
+  timespans?: Array<Array<FdsnDateTime>>,
+  earliest?: FdsnDateTime,
+  latest?: FdsnDateTime,
+  updated?: FdsnDateTime,
+  timespanCount?: number,
+  restriction?: string
+} & Object) &
+  (({ timespans: any } & Object) | ({ earliest: any, latest: any } & Object));
