@@ -13,7 +13,6 @@ import {Complex, createComplex} from './filter.js';
  * analog stage, plus a constant for the overall gain. See
  * seisplotjs.transfer.convertToSacPoleZero() for conversion from a
  * StationXML response to SacPoleZero.
- * @type {[type]}
  */
 export class SacPoleZero {
   poles: Array<Complex>;

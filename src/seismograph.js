@@ -1140,10 +1140,10 @@ Seismograph._lastID = 0;
 /**
  * Creates Markers for all of the arrivals in ttime.arrivals, relative
  * to the given Quake.
- * @param  {[type]} quake quake the travel times are relative to
- * @param  {[type]} ttime travel times json object as returned from the
+ * @param   quake quake the travel times are relative to
+ * @param   ttime travel times json object as returned from the
  * IRIS traveltime web service, or the json output of TauP
- * @return {[type]}       array of Markers suitable for adding to a seismograph
+ * @return        array of Markers suitable for adding to a seismograph
  */
 export function createMarkersForTravelTimes(quake: Quake, ttime: any): Array<MarkerType> {
   return ttime.arrivals.map( a => {

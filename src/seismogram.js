@@ -341,8 +341,8 @@ export class Seismogram {
   }
   /**
    * calculates the mean of a seismogrma.
-   * @param  {[type]} seis input seismogram
-   * @return {[type]}      mean value
+   * @param   seis input seismogram
+   * @return       mean value
    */
   mean(): number {
     let meanVal = 0;

@@ -26,7 +26,10 @@ export function parseDataRecords(arrayBuffer: ArrayBuffer): Array<DataRecord> {
   return dataRecords;
 }
 
-/** parse a single DataRecord starting at the beginning of the DataView. */
+/** parse a single DataRecord starting at the beginning of the DataView.
+ *  Currently only some blockettes are parsed, 100, 1000, 1001, others are separated,
+ * but left as just a DataView.
+ */
 export function parseSingleDataRecord(dataView: DataView): DataRecord {
   let header = parseSingleDataRecordHeader(dataView);
   let data = new DataView(dataView.buffer,
@@ -124,8 +127,7 @@ export function parseBlockette(dataView: DataView, offset: number, length: numbe
 }
 
 /** Represents a SEED Data Record, with header, blockettes and data.
-  * Currently only blockette 1000 is parsed, others are separated,
-  * but left as just a DataView. */
+  *  */
 export class DataRecord {
   header: DataHeader;
   data: DataView;
@@ -345,8 +347,13 @@ export class BTime {
   }
 }
 
-
-function checkByteSwap(bTime: BTime): boolean {
+/**
+ * Sanity checks on a BTime to see if a record might be in the wrong byte order
+ * and so need to be byte swapped before parsing. Checks year betwee 1960 and 2055.
+ * @param   bTime
+ * @return        true is byte order appears to be wrong, false if it seems ok
+ */
+export function checkByteSwap(bTime: BTime): boolean {
   return bTime.year < 1960 || bTime.year > 2055;
 }
 

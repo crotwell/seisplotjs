@@ -433,8 +433,8 @@ export function seismogramPerChannel(drList: Array<XSeedRecord> ): Array<Seismog
 
 /**
  * Convert array of Miniseed2 DataRecords into an array of XSeedRecords.
- * @param  {[type]} mseed2 array of DataRecords
- * @return {[type]}        array of XSeedRecords
+ * @param   mseed2 array of DataRecords
+ * @return         array of XSeedRecords
  */
 export function convertMS2toXSeed(mseed2: Array<DataRecord>): Array<XSeedRecord> {
   let out = [];

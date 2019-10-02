@@ -40,8 +40,8 @@ export function amplitude(real: number, imag: number) {
 
 /**
  * Remove the mean from a seismogram. Subtract the mean from each data point.
- * @param  {[type]} seis input seismogram
- * @return {[type]}      seismogram with mean of zero
+ * @param   seis input seismogram
+ * @return       seismogram with mean of zero
  */
 export function rMean(seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
@@ -58,13 +58,14 @@ export function rMean(seis: Seismogram): Seismogram {
     throw new Error("rMean arg not a Seismogram");
   }
 }
+
 /**
  * Apply the frequency independent overall gain to a seismogram. This does not
  * do a full transfer using poles and zero, this only applies the scalar conversion
  * factor to convert counts back to original real world units and update the units.
- * @param  {[type]} seis                  the seismogram to correct
- * @param  {[type]} instrumentSensitivity overall gain object, usually pulled from stationxml
- * @return {[type]}                       new seismogram with original units, like m/s and gain applied.
+ * @param   seis                  the seismogram to correct
+ * @param   instrumentSensitivity overall gain object, usually pulled from stationxml
+ * @return                        new seismogram with original units, like m/s and gain applied.
  */
 export function gainCorrect(seis: Seismogram, instrumentSensitivity: InstrumentSensitivity): Seismogram {
   if (seis instanceof Seismogram) {
@@ -98,12 +99,12 @@ export type MinMaxMean = {
 
 /**
  * Creates a Butterworth IIR filter using the OregonDSP library.
- * @param  {[type]} numPoles       number of poles
- * @param  {[type]} passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
- * @param  {[type]} lowFreqCorner  low corner frequency
- * @param  {[type]} highFreqCorner high corner frequency
- * @param  {[type]} delta          delta, period, of timeseries
- * @return {[type]}                Butterworth IIR filter
+ * @param   numPoles       number of poles
+ * @param   passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
+ * @param   lowFreqCorner  low corner frequency
+ * @param   highFreqCorner high corner frequency
+ * @param   delta          delta, period, of timeseries
+ * @return                 Butterworth IIR filter
  */
 export function createButterworth(numPoles: number,
                                   passband: string,
@@ -119,13 +120,13 @@ export function createButterworth(numPoles: number,
 
 /**
  * Creates a Chebyshev I IIR filter using the OregonDSP library.
- * @param  {[type]} numPoles       number of poles
- * @param  {[type]} epsilon        Chebyshev epsilon value
- * @param  {[type]} passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
- * @param  {[type]} lowFreqCorner  low corner frequency
- * @param  {[type]} highFreqCorner high corner frequency
- * @param  {[type]} delta          delta, period, of timeseries
- * @return {[type]}                Chebyshev I IIR filter
+ * @param   numPoles       number of poles
+ * @param   epsilon        Chebyshev epsilon value
+ * @param   passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
+ * @param   lowFreqCorner  low corner frequency
+ * @param   highFreqCorner high corner frequency
+ * @param   delta          delta, period, of timeseries
+ * @return                 Chebyshev I IIR filter
  */
 export function createChebyshevI(numPoles: number,
                                   epsilon: number,
@@ -143,13 +144,13 @@ export function createChebyshevI(numPoles: number,
 
 /**
  * Creates a Chebyshev II IIR filter using the OregonDSP library.
- * @param  {[type]} numPoles       number of poles
- * @param  {[type]} epsilon        Chebyshev epsilon value
- * @param  {[type]} passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
- * @param  {[type]} lowFreqCorner  low corner frequency
- * @param  {[type]} highFreqCorner high corner frequency
- * @param  {[type]} delta          delta, period, of timeseries
- * @return {[type]}                Chebyshev II IIR filter
+ * @param   numPoles       number of poles
+ * @param   epsilon        Chebyshev epsilon value
+ * @param   passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
+ * @param   lowFreqCorner  low corner frequency
+ * @param   highFreqCorner high corner frequency
+ * @param   delta          delta, period, of timeseries
+ * @return                 Chebyshev II IIR filter
  */
 export function createChebyshevII(numPoles: number,
                                   epsilon: number,

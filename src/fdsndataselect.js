@@ -341,7 +341,7 @@ export class DataSelectQuery {
    * SeismogramDisplayData objects, are returned one seismogram
    * per channel, which may contain gaps. The original channel and timerange are
    * also populated with each result.
-   * @param  {[type]} channelTimeList array of SeismogramDisplayData objects
+   * @param   channelTimeList array of SeismogramDisplayData objects
    * that will be filled in with the resulting seismogram
    * @return Promise to the input Array of SeismogramDisplayData objects, each with the
    * seismogram containing the data returned from the server

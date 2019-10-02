@@ -154,9 +154,9 @@ export class Helicorder {
   }
   /**
    * Calculates the time range covered by each line of the display
-   * @param  {[type]} startTime      start of display
-   * @param  {[type]} secondsPerLine seconds covered by each line
-   * @param  {[type]} numberOfLines  number of lines
+   * @param   startTime      start of display
+   * @param   secondsPerLine seconds covered by each line
+   * @param   numberOfLines  number of lines
    * @return Array of HeliTimeRange, one per line
    */
   calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRange> {
@@ -231,6 +231,7 @@ export class HeliTimeRange extends StartEndDuration {
   }
 }
 
+/** default styling for helicorder plots. */
 export const helicorder_css = `
 
 div.helicorder {

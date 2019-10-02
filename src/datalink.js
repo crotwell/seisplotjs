@@ -124,11 +124,11 @@ export class DataLinkConnection {
   /**
    * gets the current mode, QUERY_MODE or STREAM_MODE
    */
-get mode() { return this._mode;}
+  get mode() { return this._mode;}
 
-/**
- * Switches to streaming mode to receive data packets from the ringserver.
- */
+  /**
+   * Switches to streaming mode to receive data packets from the ringserver.
+   */
   stream(): void {
     if (this._mode === STREAM_MODE) {return;}
     this._mode = STREAM_MODE;
@@ -382,7 +382,6 @@ get mode() { return this._mode;}
 
 /**
  * Datalink response, used for ID, INFO, OK and ERROR responses.
- * @type {[type]}
  */
 export class DataLinkResponse {
   type: string;
