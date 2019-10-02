@@ -21,6 +21,7 @@ export const FDSN_HOST = "www.fdsn.org";
 
 /**
  * Query to a FDSN Data Centers Registry web service.
+ *
  * @see http://www.fdsn.org/webservices/
 */
 export class DataCentersQuery {
@@ -57,8 +58,8 @@ export class DataCentersQuery {
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
    *
-   * @return the query when setting, the current value os services if no arguments
-  */
+   * @returns the query when setting, the current value os services if no arguments
+   */
   specVersion(value?: number): number | DataCentersQuery {
     if (hasArgs(value)) {
       this._specVersion = value;
@@ -72,8 +73,8 @@ export class DataCentersQuery {
   /** Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
    *
-   * @return the query when setting, the current value os services if no arguments
-  */
+   * @returns the query when setting, the current value os services if no arguments
+   */
   protocol(value?: string): string | DataCentersQuery {
     if (isStringArg(value)) {
       this._protocol = value;
@@ -87,7 +88,7 @@ export class DataCentersQuery {
   /** Gets/Sets the remote host to connect to. This defaults to
    * www.fdsn.org and generally should not be set.
    *
-   * @return the query when setting, the current value os services if no arguments
+   * @returns the query when setting, the current value os services if no arguments
   */
   host(value?: string): string | DataCentersQuery {
     if (isStringArg(value)) {
@@ -102,8 +103,8 @@ export class DataCentersQuery {
   /** Gets/Sets the remote port to connect to. This defaults to
    * the standard port for the protocol and generally should not be set.
    *
-   * @return the query when setting, the current value os services if no arguments
-  */
+   * @returns the query when setting, the current value os services if no arguments
+   */
   port(value?: number): number | DataCentersQuery {
     if (hasNoArgs(value)) {
       return this._port;
@@ -117,7 +118,7 @@ export class DataCentersQuery {
   /**
    * limits results to the named data center, default is all data centers
    * @param   value names to search for
-   * @return the query when setting, the current value os services if no arguments
+   * @returns the query when setting, the current value os services if no arguments
    */
   name(value?: string): string | DataCentersQuery {
     if (isStringArg(value)) {
@@ -132,7 +133,7 @@ export class DataCentersQuery {
   /**
    * limits results to services that match the glob style pattern
    * @param  value glob style pattern to match against
-   * @return the query when setting, the current value os services if no arguments
+   * @returns the query when setting, the current value os services if no arguments
    */
   services(value?: string): string | DataCentersQuery {
     if (isStringArg(value)) {
@@ -148,7 +149,7 @@ export class DataCentersQuery {
    * whether the results include detailed information about
    * the data sets offered by each center, default is false
    * @param  value true to include datasets
-   * @return the query when setting, the current value os services if no arguments
+   * @returns the query when setting, the current value os services if no arguments
    */
   includeDataSets(value?: boolean): boolean | DataCentersQuery {
     if (hasNoArgs(value)) {
@@ -163,7 +164,7 @@ export class DataCentersQuery {
 
   /** Get/Set the timeout in seconds for the request. Default is 30.
   * @param  value timeout seconds
-  * @return the query when setting, the current value os services if no arguments
+  * @returns the query when setting, the current value os services if no arguments
   */
   timeout(value?: number): number | DataCentersQuery {
     if (hasNoArgs(value)) {
@@ -178,7 +179,7 @@ export class DataCentersQuery {
 
   /**
    * queries the fdsn registry web service, returning the result as a parsed json object.
-   * @return Promise to the json object.
+   * @returns Promise to the json object.
    */
   queryJson(): Promise<RootType> {
     const url = this.formURL();
@@ -200,7 +201,7 @@ export class DataCentersQuery {
    * the repo name.
     * @param   name     datacenter name
     * @param   repoName optional repository name
-    * @return           Promise to Array of fdsnavailability.AvailabilityQuery objects
+    * @returns           Promise to Array of fdsnavailability.AvailabilityQuery objects
     */
   findFdsnAvailability(name: string, repoName?: string): Promise<Array<fdsnavailability.AvailabilityQuery>> {
     if (name && name.length > 0) {
@@ -224,7 +225,7 @@ export class DataCentersQuery {
    * the repo name.
     * @param   name     datacenter name
     * @param   repoName optional repository name
-    * @return           Promise to Array of fdsndataselect.DataSelectQuery objects
+    * @returns           Promise to Array of fdsndataselect.DataSelectQuery objects
     */
   findFdsnDataSelect(name: string, repoName?: string): Promise<Array<fdsndataselect.DataSelectQuery>> {
     if (name && name.length > 0) {
@@ -248,7 +249,7 @@ export class DataCentersQuery {
    * the repo name.
     * @param   name     datacenter name
     * @param   repoName optional repository name
-    * @return           Promise to Array of fdsnevent.EventQuery objects
+    * @returns           Promise to Array of fdsnevent.EventQuery objects
     */
   findFdsnEvent(dcname: string, repoName?: string ): Promise<Array<fdsnevent.EventQuery>> {
     if (dcname && dcname.length > 0) {
@@ -272,7 +273,7 @@ export class DataCentersQuery {
    * the repo name.
     * @param   name     datacenter name
     * @param   repoName optional repository name
-    * @return           Promise to Array of fdsnstation.StationQuery objects
+    * @returns           Promise to Array of fdsnstation.StationQuery objects
     */
   findFdsnStation(dcname: string, repoName?: string ): Promise<Array<fdsnstation.StationQuery>> {
     if (dcname && dcname.length > 0) {
@@ -320,7 +321,7 @@ export class DataCentersQuery {
     return this.formBaseURL()+"/version";
   }
   /** Queries the remote web service to get its version
-   * @return Promise to version string
+   * @returns Promise to version string
   */
   queryVersion(): Promise<string> {
     let url = this.formVersionURL();
@@ -341,7 +342,8 @@ export class DataCentersQuery {
 
   /**
    * forms a url to the fdsn registry based on the configured parameters.
-   * @return the url
+   *
+   * @returns the url
    */
   formURL(): string {
     const method = "query";

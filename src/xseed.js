@@ -22,8 +22,13 @@ export const FDSN_PREFIX = 'FDSN';
 /** const for little endian, true */
 export const LITTLE_ENDIAN = true;
 
-/** parse arrayBuffer into an array of XSeedRecords. */
-export function parseXSeedRecords(arrayBuffer: ArrayBuffer) {
+/**
+ * parse arrayBuffer into an array of XSeedRecords.
+ *
+ * @param arrayBuffer bytes to extract xseed records from
+ * @returns array of all xseed records contained in the buffer
+ */
+export function parseXSeedRecords(arrayBuffer: ArrayBuffer): Array<XSeedRecord> {
   let dataRecords = [];
   let offset = 0;
   while (offset < arrayBuffer.byteLength) {
@@ -38,8 +43,9 @@ export function parseXSeedRecords(arrayBuffer: ArrayBuffer) {
   return dataRecords;
 }
 
-/** Represents a xSEED Data Record, with header, extras and data.
-  */
+/**
+ * Represents a xSEED Data Record, with header, extras and data.
+ */
 export class XSeedRecord {
   header: XSeedHeader;
   rawData: DataView;
@@ -78,11 +84,14 @@ export class XSeedRecord {
     return this.header.getSize()+this.header.extraHeadersLength+this.header.dataLength;
   }
     /** Decompresses the data , if the compression
-     *  type is known.
+     *  type is known
+     *
+     * @returns decompressed data as a typed array, usually Int32Array or Float32Array
      */
   decompress() {
     return this.asEncodedDataSegment().decode();
   }
+
   asEncodedDataSegment() {
     return new seedcodec.EncodedDataSegment(this.header.encoding,
                                   this.rawData,
@@ -93,7 +102,15 @@ export class XSeedRecord {
       return this.header.identifier;
 //    return this.header.netCode+"."+this.header.staCode+"."+this.header.locCode+"."+this.header.chanCode;
   }
-  save(dataView: DataView) {
+
+  /**
+   * Saves xseed record into a DataView, recalculating crc.
+   *
+   * @param   dataView DataView to save into, must be large enough to hold the record.
+   * @returns the number of bytes written to the DataView, can be used as offset
+   * for writting the next record.
+   */
+  save(dataView: DataView): number {
     let json = JSON.stringify(this.extraHeaders);
     if (json.length > 2) {
       this.header.extraHeadersLength = json.length;
@@ -127,6 +144,12 @@ export class XSeedRecord {
     return offset;
   }
 
+  /**
+   * Calculates crc by saving to a DataView, which sets the crc header to zero
+   * and then calculates it based on the rest of the record.
+   *
+   * @returns         crc pulled from saved xseed record
+   */
   calcCrc(): number {
     let size = this.getSize();
     let buff = new ArrayBuffer(this.getSize());
@@ -301,6 +324,12 @@ export class XSeedHeader {
   }
 }
 
+/**
+ * Parses extra headers as json.
+ *
+ * @param   dataView json bytes as DataView
+ * @returns           json object
+ */
 export function parseExtraHeaders(dataView: DataView) {
   if (dataView.byteLength === 0) {
     return {};
@@ -315,6 +344,14 @@ export function parseExtraHeaders(dataView: DataView) {
   }
 }
 
+/**
+ * Creates a string version of a number with zero prefix padding. For example
+ * padZeros(5, 3) is 005.
+ *
+ * @param   val number to stringify
+ * @param   len total length of string
+ * @returns      zero padded string
+ */
 export function padZeros(val: number, len: number) {
   let out = ""+val;
   while (out.length < len) {
@@ -323,7 +360,14 @@ export function padZeros(val: number, len: number) {
   return out;
 }
 
-
+/**
+ * creates a string from bytes in a DataView.
+ *
+ * @param   dataView data bytes
+ * @param   offset   offset to first byte to use
+ * @param   length   number of bytes to convert
+ * @returns           string resulting from utf-8 conversion
+ */
 export function makeString(dataView: DataView, offset: number, length: number): string {
   const utf8decoder = new TextDecoder('utf-8');
   let u8arr = new Uint8Array(dataView.buffer, dataView.byteOffset+offset, length);
@@ -332,20 +376,39 @@ export function makeString(dataView: DataView, offset: number, length: number): 
 
 
 
+/**
+ * Sanity checks on year to see if a record might be in the wrong byte order.
+ * Checks year betwee 1960 and 2055.
+ *
+ * @param   year year as number to test
+ * @returns        true is byte order appears to be wrong, false if it seems ok
+ */
 function checkByteSwap(year: number) {
   return year < 1960 || year > 2055;
 }
 
-export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord): boolean {
+/**
+ * Checks if two xseed records are (nearly) contiguous.
+ *
+ * @param   dr1 first record
+ * @param   dr2 second record
+ * @param   sampRatio tolerence expressed as ratio of sample period, default 1.5
+ * @returns      true if contiguous
+ */
+export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord, sampRatio: number =1.5): boolean {
     let h1 = dr1.header;
     let h2 = dr2.header;
-    return h1.end.getTime() < h2.start.getTime()
-        && h1.end.getTime() + 1000*1.5/h1.sampleRate > h2.start.getTime();
+    return h1.end.isBefore( h2.start )
+        && moment.utc(h1.end).add(sampRatio/h1.sampleRate, 'seconds').isSameOrAfter(h2.start);
 }
 
-/** concatentates a sequence of XSeedRecords into a single seismogram object.
-  * Assumes that they are all contiguous and in order. Header values from the first
-  * XSeedRecord are used. */
+ /** concatentates a sequence of XSeedRecords into a single seismogram object.
+  * Assumes that they are all contiguous (no gaps or overlaps) and in order.
+  * Header values from the first XSeedRecord are used.
+  *
+  * @param contig array of xseed records
+  * @returns seismogram segment for the records
+  */
 export function createSeismogramSegment(contig: Array<XSeedRecord>): SeismogramSegment {
   let contigData = contig.map(dr => dr.asEncodedDataSegment());
   let out = new SeismogramSegment(contigData,
@@ -361,14 +424,17 @@ export function createSeismogramSegment(contig: Array<XSeedRecord>): SeismogramS
 }
 
 
-/**
+ /**
   * Merges xseed records into a Seismogram object, each of
   * which consists of SeismogramSegment objects
   * containing the data as EncodedDataSegment objects. DataRecords are
   * sorted by startTime.
   * This assumes all data records are from the same channel, byChannel
-  * can be used first if multiple channels may be present.
- */
+  * can be used first if multiple channels may be present. Gaps may be present.
+  *
+  * @param drList list of xseed records to convert
+  * @returns the seismogram
+  */
 export function merge(drList: Array<XSeedRecord>): Seismogram {
   let out = [];
   let currDR;
@@ -396,8 +462,13 @@ export function merge(drList: Array<XSeedRecord>): Seismogram {
   return new Seismogram(out);
 }
 
-/** splits a list of data records by channel code, returning an object
-  * with each NSLC mapped to an array of data records. */
+/**
+ * splits a list of data records by channel identifier, returning an object
+ * with each NSLC mapped to an array of data records.
+ *
+ * @param drList array of xseed records
+ * @returns map of channel id to array of xseed records, possibly not contiguous
+ */
 export function byChannel(drList: Array<XSeedRecord>): Map<string, Array<XSeedRecord>> {
   let out: Map<string, Array<XSeedRecord>> = new Map();
   let key;
@@ -418,8 +489,9 @@ export function byChannel(drList: Array<XSeedRecord>): Map<string, Array<XSeedRe
 /**
  * splits the XSeedRecords by channel and creates a single
  * Seismogram for each channel.
+ *
  * @param   drList XSeedRecords array
- * @return         Map of code to Seismogram
+ * @returns         Map of code to Seismogram
  */
 export function seismogramPerChannel(drList: Array<XSeedRecord> ): Array<Seismogram> {
   let out = [];
@@ -433,8 +505,9 @@ export function seismogramPerChannel(drList: Array<XSeedRecord> ): Array<Seismog
 
 /**
  * Convert array of Miniseed2 DataRecords into an array of XSeedRecords.
+ *
  * @param   mseed2 array of DataRecords
- * @return         array of XSeedRecords
+ * @returns         array of XSeedRecords
  */
 export function convertMS2toXSeed(mseed2: Array<DataRecord>): Array<XSeedRecord> {
   let out = [];
@@ -446,8 +519,9 @@ export function convertMS2toXSeed(mseed2: Array<DataRecord>): Array<XSeedRecord>
 
 /**
  * Converts a single miniseed2 DataRecord into a single XSeedRecord.
+ *
  * @param   ms2record Miniseed2 DataRecord to convert
- * @return            XSeedRecord
+ * @returns            XSeedRecord
  */
 export function convertMS2Record(ms2record: DataRecord): XSeedRecord {
   let xHeader = new XSeedHeader();
@@ -513,6 +587,9 @@ export function convertMS2Record(ms2record: DataRecord): XSeedRecord {
   return out;
 }
 
+/**
+ * Default separator for channel id.
+ */
 const SEP = '_';
 
 /**
@@ -597,6 +674,11 @@ const kCRCTable = new Int32Array([
  * This code is a manual javascript translation of c code generated by
  * pycrc 0.7.1 (http://www.tty1.net/pycrc/). Command line used:
  * './pycrc.py --model=crc-32c --generate c --algorithm=table-driven'
+ *
+ * @param buf input data
+ * @param initial starting value, from earlier data
+ *
+ * @returns calculated crc32c value
  */
 export function calculateCRC32C(buf: ArrayBuffer | Uint8Array, initial: number =0 ) {
   if ( buf instanceof ArrayBuffer){
@@ -618,6 +700,12 @@ export function calculateCRC32C(buf: ArrayBuffer | Uint8Array, initial: number =
   return (crc ^ -1) >>> 0;
 }
 
+/**
+ * Convert crc as a number into a hex string.
+ *
+ * @param   crc crc as a number
+ * @returns      hex representation
+ */
 export function crcToHexString(crc: number): string {
   if (crc < 0) {
     crc = 0xFFFFFFFF + crc + 1;

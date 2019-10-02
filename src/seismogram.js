@@ -30,11 +30,12 @@ export type MarkerType = {
 };
 
 /**
-* A contiguous segment of a Seismogram.
-* @param  yArray array of Y sample values, ie the timeseries
-* @param  sampleRate sample rate of the seismogram, hertz
-* @param  startTime start time of seismogrm as a momentjs moment in utc or a string that can be parsed
-*/
+ * A contiguous segment of a Seismogram.
+ *
+ * @param  yArray array of Y sample values, ie the timeseries
+ * @param  sampleRate sample rate of the seismogram, hertz
+ * @param  startTime start time of seismogrm as a momentjs moment in utc or a string that can be parsed
+ */
 export class SeismogramSegment {
   /** Array of y values */
   _y: null | Int32Array | Float32Array | Float64Array;
@@ -72,8 +73,9 @@ export class SeismogramSegment {
     this._endTime_cache = null;
     this._endTime_cache_numPoints = 0;
   }
-  /** Y data of the seismogram. Decompresses data if needed.
-  */
+  /**
+   * Y data of the seismogram. Decompresses data if needed.
+   */
   get y(): Int32Array | Float32Array | Float64Array {
     let out;
     if (this._y) {
@@ -180,8 +182,10 @@ export class SeismogramSegment {
   yAtIndex(i: number): number {
     return this.y[i];
   }
-  /** Finds the min and max values of a SeismogramSegment, with an optional
-    * accumulator for use with gappy data. */
+  /**
+   * Finds the min and max values of a SeismogramSegment, with an optional
+   * accumulator for use with gappy data.
+   */
   findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
     let minAmp = Number.MAX_SAFE_INTEGER;
     let maxAmp = -1 * (minAmp);
@@ -209,7 +213,7 @@ export class SeismogramSegment {
       || isDef(this.locationCode)
       || isDef(this.channelCode);
   }
-  /** @return nslc codes separated by '.'
+  /** @returns nslc codes separated by '.'
   */
   codes(sep: string = '.'): string {
     return (this.networkCode ? this.networkCode : '')
@@ -279,7 +283,8 @@ export class SeismogramSegment {
   * continuous, or at least adjacent data from the channel.
   * Each segment within
   * the Seismogram will have the same units, channel identifiers
-  * and sample rate, but cover different times. */
+  * and sample rate, but cover different times.
+  */
 export class Seismogram {
   _segmentArray: Array<SeismogramSegment>;
   _startTime: moment;
@@ -341,8 +346,9 @@ export class Seismogram {
   }
   /**
    * calculates the mean of a seismogrma.
+   *
    * @param   seis input seismogram
-   * @return       mean value
+   * @returns       mean value
    */
   mean(): number {
     let meanVal = 0;
@@ -417,7 +423,7 @@ export class Seismogram {
    * Cut the seismogram. Creates a new seismogram with all datapoints
    * contained in the time window.
    * @param  timeWindow start and end of cut
-   * @return            new seismogram
+   * @returns            new seismogram
    */
   cut(timeWindow: StartEndDuration): null | Seismogram {
     // coarse trim first
@@ -505,7 +511,7 @@ export class Seismogram {
   /**
    * Gets the timeseries as an typed array if it is contiguous.
    * @throws {NonContiguousData} if data is not contiguous.
-   * @return  timeseries as array of number
+   * @returns  timeseries as array of number
    */
   get y(): Int32Array | Float32Array | Float64Array {
     if ( ! this._y) {

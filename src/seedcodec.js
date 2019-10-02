@@ -104,7 +104,7 @@ export class EncodedDataSegment {
  *  @param numSamples the number of samples that can be decoded from array
  *  <b>b</b>
  *  @param littleEndian if true, dataView is little-endian (intel byte order) <b>b</b>.
- *  @return array of length <b>numSamples</b>.
+ *  @returns array of length <b>numSamples</b>.
  *  @throws CodecException fail to decompress.
  *  @throws UnsupportedCompressionType unsupported compression type
  */
@@ -200,7 +200,7 @@ export function decompress(compressionType: number, dataView: DataView, numSampl
  *  @param littleEndian if true, dataView is little-endian (intel byte order) <b>b</b>.
  *  @param bias the first difference value will be computed from this value.
  *  If set to 0, the method will attempt to use the X(0) constant instead.
- *  @return int array of length <b>numSamples</b>.
+ *  @returns int array of length <b>numSamples</b>.
  *  @throws CodecException - encoded data length is not multiple of 64
  *  bytes.
  */
@@ -260,7 +260,7 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
  * @param bytes byte array of compressed data differences
  * @param offset index to begin reading compressed bytes for decoding
  * @param swapBytes reverse the endian-ness of the compressed bytes being read
- * @return integer array of difference (and constant) values
+ * @returns integer array of difference (and constant) values
  */
 function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian: boolean): Array<number> {
   /* get nibbles */
@@ -326,7 +326,7 @@ function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian:
  *  dataview
  *  @param bias the first difference value will be computed from this value.
  *  If set to 0, the method will attempt to use the X(0) constant instead.
- *  @return int array of length <b>numSamples</b>.
+ *  @returns int array of length <b>numSamples</b>.
  *  @throws SteimException - encoded data length is not multiple of 64
  *  bytes.
  */
@@ -388,7 +388,7 @@ export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: 
  * @param bytes byte array of compressed data differences
  * @param offset index to begin reading compressed bytes for decoding
  * @param swapBytes reverse the endian-ness of the compressed bytes being read
- * @return integer array of difference (and constant) values
+ * @returns integer array of difference (and constant) values
  */
 function extractSteim2Samples(dataView: DataView, offset: number, swapBytes: boolean): Int32Array {
   /* get nibbles */

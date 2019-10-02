@@ -9,15 +9,21 @@
 /** const for kilometers per degree on the earth, 111.19 */
 export const kmPerDeg = 111.19;
 
-/** Convert degrees into kilometers along the earth surface
+/**
+ * Convert degrees into kilometers along the earth surface
+ *
  * @param deg degrees to convert
+ * @returns kilometers
  */
 export function degtokm(deg: number): number {
   return deg * kmPerDeg;
 }
 
-/** Convert kilometers into degrees along the earth surface
+/**
+ * Convert kilometers into degrees along the earth surface
+ *
  * @param km kilometers to convert
+ * @returns degrees
  */
 export function kmtodeg(km: number): number {
   return km / kmPerDeg;
@@ -30,20 +36,22 @@ type DistAzOutput = {
 }
 
 /**
+ *
+ * Returns a simple object (DistAzOutput) with:
+ *```
+ *     delta       => Great Circle Arc distance in degrees
+ *     az          => Azimuth of pt. 1 wrt pt. 2 in degrees
+ *     baz         => Azimuth of pt. 2 wrt pt. 1 in degrees
+ *```
+ *
+ * azimuth is if you stand at point 2 and measure angle between north
+ *   and point 1. I.E. point 1 is the station and point 2 is the event.
+ *
  * @param lat1 Latitude of first point (station) (+N, -S) in degrees
  * @param lon1 Longitude of first point(station) (+E, -W) in degrees
  * @param lat2 Latitude of second point (event)
  * @param lon2 Longitude of second point (event)
- *
- * Returns a simple object (DistAzOutput) with:
- ```
- *     delta       => Great Circle Arc distance in degrees
- *     az          => Azimuth of pt. 1 wrt pt. 2 in degrees
- *     baz         => Azimuth of pt. 2 wrt pt. 1 in degrees
- ```
- *
- * azimuth is if you stand at point 2 and measure angle between north
- *   and point 1. I.E. point 1 is the station and point 2 is the event.
+ * @returns delta, az, baz in a DistAzOutput
  */
 export function distaz(lat1: number, lon1: number, lat2: number, lon2: number): DistAzOutput {
     let result = {

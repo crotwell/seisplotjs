@@ -29,7 +29,7 @@ export function fftForward(seis: Seismogram) {
 /**
  * Calculates the discrete fourier transform using the OregonDSP library.
  * @param   timeseries timeseries array
- * @return           DFT as packed array Float32Array
+ * @returns           DFT as packed array Float32Array
  */
 export function calcDFT(timeseries: Int32Array | Float32Array | Float64Array): Float32Array {
   let log2N = 4;
@@ -52,7 +52,7 @@ export function calcDFT(timeseries: Int32Array | Float32Array | Float64Array): F
  * Calculates the inverse discrete fourier transform using the OregonDSP library.
  * @param   packedFreq DFT as packed array Float32Array
  * @param   numPoints     number of points in original timeseries array.
- * @return           inverse of DFT as a timeseries array
+ * @returns           inverse of DFT as a timeseries array
  */
 export function inverseDFT(packedFreq: Float32Array, numPoints: number): Float32Array {
   if (numPoints > packedFreq.length) {
@@ -92,7 +92,7 @@ export class FFTResult {
    * Factory method to create FFTResult from packed array.
    * @param   packedFreq real and imag values in packed format
    * @param   origLength length of the original timeseries before padding.
-   * @return            FFTResult
+   * @returns            FFTResult
    */
   static createFromPackedFreq(packedFreq: Float32Array, origLength: number, sampleRate: number) {
     let fftResult = new FFTResult(origLength, sampleRate);
@@ -104,7 +104,7 @@ export class FFTResult {
    * Factory method to create from array of complex numbers.
    * @param   complexArray real and imag values as array of Complex objects.
    * @param   origLength   length of the original timeseries before padding.
-   * @return               FFTResult
+   * @returns               FFTResult
    */
   static createFromComplex(complexArray: Array<Complex>, origLength: number, sampleRate: number) {
     let fftResult = new FFTResult(origLength, sampleRate);
@@ -117,7 +117,7 @@ export class FFTResult {
    * @param   amp        amplitude values
    * @param   phase      phase values
    * @param   origLength length of the original timeseries before padding.
-   * @return             FFTResult
+   * @returns             FFTResult
    */
   static createFromAmpPhase(amp: Float32Array, phase: Float32Array, origLength: number, sampleRate: number) {
     let fftResult = new FFTResult(origLength, sampleRate);

@@ -218,7 +218,7 @@ export class EventQuery {
   /**
    * Sets startTime and endTime using the given time window
    * @param   se time window
-   * @return     this
+   * @returns     this
    */
   timeWindow(se: StartEndDuration) {
     this.startTime(se.startTime);
@@ -723,7 +723,7 @@ export class EventQuery {
   }
 
   /** Queries the remote service and parses the returned xml.
-   *  @return Promise to an Array of Quake objects.
+   *  @returns Promise to an Array of Quake objects.
   */
   query(): Promise<Array<Quake>> {
     let mythis = this;
@@ -734,7 +734,7 @@ export class EventQuery {
 
   /** Parses a QuakeML xml document into seisplotjs objects
   *  @param rawXml the xml Document to parse
-  *  @return array of Quake objects
+  *  @returns array of Quake objects
   */
   parseQuakeML(rawXml: Document): Array<Quake> {
     let top = rawXml.documentElement;
@@ -750,7 +750,7 @@ export class EventQuery {
   }
 
   /** Queries the remote server, to get QuakeML xml.
-  * @return xml Document
+  * @returns xml Document
   */
   queryRawXml(): Promise<Document> {
     let mythis = this;
@@ -772,7 +772,7 @@ export class EventQuery {
   }
 
   /** Forms the basic URL to contact the web service, without any query paramters
-   * @return the url
+   * @returns the url
   */
   formBaseURL(): string {
       let colon = ":";
@@ -788,13 +788,13 @@ export class EventQuery {
   }
 
   /** Forms the URL to get catalogs from the web service, without any query paramters
-   * @return the url
+   * @returns the url
   */
   formCatalogsURL(): string {
     return this.formBaseURL()+"/catalogs";
   }
   /** Queries the remote web service to get known catalogs
-   * @return Promise to Array of catalog names
+   * @returns Promise to Array of catalog names
   */
   queryCatalogs(): Promise<Array<string>> {
     let mythis = this;
@@ -831,13 +831,13 @@ export class EventQuery {
   }
 
   /** Forms the URL to get contributors from the web service, without any query paramters
-   * @return the url
+   * @returns the url
   */
   formContributorsURL(): string {
     return this.formBaseURL()+"/contributors";
   }
   /** Queries the remote web service to get known contributors
-   * @return Promise to Array of contributor names
+   * @returns Promise to Array of contributor names
   */
   queryContributors(): Promise<Array<string>> {
     let url = this.formContributorsURL();
@@ -871,14 +871,14 @@ export class EventQuery {
   }
 
   /** Forms the URL to get version from the web service, without any query paramters
-   * @return the url
+   * @returns the url
   */
   formVersionURL(): string {
     return this.formBaseURL()+"/version";
   }
 
   /** Queries the remote web service to get its version
-   * @return Promise to version string
+   * @returns Promise to version string
   */
   queryVersion(): Promise<string> {
     let url = this.formVersionURL();

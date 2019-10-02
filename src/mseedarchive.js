@@ -86,7 +86,7 @@ export class MSeedArchive {
    * the minimum sample rate
    * for the channel band code and the given time window.
    * @param   channelTimeList requst channels and time windows
-   * @return Promise to the same SeismogramDisplayData array, but with seismograms populated
+   * @returns Promise to the same SeismogramDisplayData array, but with seismograms populated
    */
   loadSeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     let promiseArray = channelTimeList.map(ct => {
@@ -119,7 +119,7 @@ export class MSeedArchive {
    * @param   channel   channel to request
    * @param   startTime start time
    * @param   endTime   end time
-   * @return Promise to array of miniseed records
+   * @returns Promise to array of miniseed records
    */
   loadDataForChannel(channel: Channel, startTime: moment, endTime: moment): Promise<Array<miniseed.DataRecord>> {
     return this.loadData(channel.station.network.networkCode,
@@ -139,7 +139,7 @@ export class MSeedArchive {
    * @param   startTime  start time
    * @param   endTime    end time
    * @param   sampleRate known sample rate for this channel
-   * @return             Promise to array of miniseed records
+   * @returns             Promise to array of miniseed records
    */
   loadData(net: string, sta: string, loc: string, chan: string, startTime: moment, endTime: moment, sampleRate: number): Promise<Array<miniseed.DataRecord>> {
     let basePattern = this.fillBasePattern(net, sta, loc, chan);

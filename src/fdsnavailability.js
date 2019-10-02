@@ -43,8 +43,9 @@ export const IRIS_HOST = "service.iris.edu";
 
 /**
  * Query to a FDSN Availability web service.
+ *
  * @see http://www.fdsn.org/webservices/
-*/
+ */
 export class AvailabilityQuery {
   /** @private */
   _specVersion: number;
@@ -97,10 +98,14 @@ export class AvailabilityQuery {
     this._port = 80;
     this._timeoutSec = 30;
   }
-  /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+  /**
+   * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
-  */
+   *
+   * @param value spec version, usually 1
+   * @returns the query when setting, the current value when no argument
+   */
   specVersion(value?: number): number | AvailabilityQuery {
     if (hasArgs(value)) {
       this._specVersion = value;
@@ -111,9 +116,13 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  /** Gets/Sets the protocol, http or https. This should match the protocol
+  /**
+   * Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
-  */
+   *
+   * @param value protocol, usually http or https
+   * @returns the query when setting, the current value when no argument
+   */
   protocol(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._protocol = value;
@@ -124,8 +133,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
-  /** Gets/Sets the remote host to connect to.
-  */
+  /**
+   * Gets/Sets the remote host to connect to.
+   *
+   * @param value host
+   * @returns the query when setting, the current value when no argument
+   */
   host(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._host = value;
@@ -136,8 +149,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
-  /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
+  /**
+   * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.
+   *
+   * @param value number for nodata, usually 404 or 204
+   * @returns the query when setting, the current value when no argument
    */
   nodata(value?: number): number | AvailabilityQuery {
     if (hasNoArgs(value)) {
@@ -149,6 +166,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /**
+   * Gets/Sets the port, not usually set unless not on standard http or https ports
+   *
+   * @param value port
+   * @returns the query when setting, the current value when no argument
+   */
   port(value?: number): number | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._port;
@@ -159,6 +182,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /**
+   * Gets/Sets the network code to check.
+   *
+   * @param value network code like IU
+   * @returns the query when setting, the current value when no argument
+   */
   networkCode(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._networkCode = value;
@@ -169,6 +198,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the station code to check.
+   *
+   * @param value station code like ANMO
+   * @returns the query when setting, the current value when no argument
+   */
   stationCode(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._stationCode = value;
@@ -179,6 +214,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the location code to check.
+   *
+   * @param value location code like 00
+   * @returns the query when setting, the current value when no argument
+   */
   locationCode(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._locationCode = value;
@@ -189,6 +230,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the channel code to check.
+   *
+   * @param value channel code like BHZ
+   * @returns the query when setting, the current value when no argument
+   */
   channelCode(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._channelCode = value;
@@ -199,6 +246,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the start time parameter for the query.
+   *
+   * @param value start time
+   * @returns the query when setting, the current value when no argument
+   */
   startTime(value?: moment): moment | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
@@ -209,6 +262,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /**
+   * Gets/Sets the end time parameter for the query.
+   *
+   * @param value end time
+   * @returns the query when setting, the current value when no argument
+   */
   endTime(value?: moment): moment | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
@@ -221,14 +280,21 @@ export class AvailabilityQuery {
   }
   /**
    * Sets startTime and endTime using the given time window
+   *
    * @param   se time window
-   * @return     this
+   * @returns    the query
    */
-  timeWindow(se: StartEndDuration) {
+  timeWindow(se: StartEndDuration): AvailabilityQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;
   }
+  /**
+   * Gets/Sets the quality parameter for the query.
+   *
+   * @param value quality
+   * @returns the query when setting, the current value when no argument
+   */
   quality(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._quality = value;
@@ -239,6 +305,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the merge parameter for the query.
+   *
+   * @param value merge
+   * @returns the query when setting, the current value when no argument
+   */
   merge(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._merge = value;
@@ -249,6 +321,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the mergegaps parameter for the query.
+   *
+   * @param value merge gaps
+   * @returns the query when setting, the current value when no argument
+   */
   mergeGaps(value?: number): number | AvailabilityQuery {
     if (isNumArg(value)) {
       this._mergeGaps = value;
@@ -259,6 +337,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the show parameter for the query.
+   *
+   * @param value show
+   * @returns the query when setting, the current value when no argument
+   */
   show(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._show = value;
@@ -269,6 +353,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the limit parameter for the query.
+   *
+   * @param value limit
+   * @returns the query when setting, the current value when no argument
+   */
   limit(value?: number): number | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._limit;
@@ -279,6 +369,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /**
+   * Gets/Sets the order by parameter for the query.
+   *
+   * @param value order by
+   * @returns the query when setting, the current value when no argument
+   */
   orderby(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._orderby = value;
@@ -289,6 +385,12 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /**
+   * Gets/Sets the include restricted data parameter for the query.
+   *
+   * @param value true to include restricted data
+   * @returns the query when setting, the current value when no argument
+   */
   includeRestricted(value?: boolean): boolean | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._includerestricted;
@@ -300,6 +402,13 @@ export class AvailabilityQuery {
     }
   }
 
+  /**
+   * Gets/Sets the format parameter for the query. Usually not needed as is set
+   * by the various query methods.
+   *
+   * @param value format
+   * @returns the query when setting, the current value when no argument
+   */
   format(value?: string): string | AvailabilityQuery {
     if (isStringArg(value)) {
       this._format = value;
@@ -311,7 +420,10 @@ export class AvailabilityQuery {
     }
   }
   /** Get/Set the timeout in seconds for the request. Default is 30.
-  */
+   *
+   * @param value timeout in seconds
+   * @returns the query when setting, the current value when no argument
+   */
   timeout(value?: number): number | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._timeoutSec;
@@ -322,13 +434,25 @@ export class AvailabilityQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-
+  /**
+   * Calls query on the remote service, using configured parameters. Calls
+   * queryJson internally, then unpacks the result into array of SeismogramDisplayData
+   * objects.
+   *
+   * @returns          promise to array of SeismogramDisplayData, each representing
+   * a channel-time window
+   */
   query(): Promise<Array<SeismogramDisplayData>> {
     return this.queryJson().then(function(json) {
           return this.extractFromJson(json);
       });
   }
-  queryJson() {
+  /**
+   * Calls the query function the remote server and parses the returned data as json.
+   *
+   * @returns promise to the result as json
+   */
+  queryJson(): Promise<string> {
     const mythis = this;
     this.format(FORMAT_JSON);
     const url = this.formURL("query");
@@ -347,11 +471,24 @@ export class AvailabilityQuery {
       });
   }
 
+  /**
+   * Calls extent on the remote service, using configured parameters. Calls
+   * extentJson internally, then unpacks the result into array of SeismogramDisplayData
+   * objects.
+   *
+   * @returns          promise to array of SeismogramDisplayData, each representing
+   * a channel-time window
+   */
   extent(): Promise<Array<SeismogramDisplayData>> {
-    return this.queryJson().then(function(json) {
+    return this.extentJson().then(function(json) {
           return this.extractFromJson(json);
       });
   }
+  /**
+   * Call the extend function on the remote server and parses the returned data as json.
+   *
+   * @returns promise to the result as json
+   */
   extentJson() {
     const mythis = this;
     this.format(FORMAT_JSON);
@@ -371,6 +508,16 @@ export class AvailabilityQuery {
       });
   }
 
+  /**
+   * Calls query on the remote service using POST, using configured parameters
+   * and forms the POST body using the channelTimeList. Calls
+   * postQueryJson internally, then unpacks the result into array of SeismogramDisplayData
+   * objects.
+   *
+   * @param channelTimeList array of channel-time windows for the request
+   * @returns          promise to array of SeismogramDisplayData, each representing
+   * a channel-time window
+   */
   postQuery(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     return this.postQueryJson(channelTimeList).then(json => {
       return this.extractFromJson(json);
@@ -495,9 +642,11 @@ export class AvailabilityQuery {
   formVersionURL(): string {
     return this.formBaseURL()+"/version";
   }
-  /** Queries the remote web service to get its version
-   * @return Promise to version string
-  */
+  /**
+   * Queries the remote web service to get its version
+   * 
+   * @returns Promise to version string
+   */
   queryVersion(): Promise<string> {
     let url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);

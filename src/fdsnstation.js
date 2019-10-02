@@ -256,7 +256,7 @@ export class StationQuery {
   /**
    * Sets startTime and endTime using the given time window
    * @param   se time window
-   * @return     this
+   * @returns     this
    */
   timeWindow(se: StartEndDuration) {
     this.startTime(se.startTime);
@@ -850,7 +850,7 @@ export class StationQuery {
   }
 
   /** Forms the URL to get version from the web service, without any query paramters
-   * @return the url
+   * @returns the url
   */
   formVersionURL() {
       return this.formBaseURL()+"/version";
@@ -858,7 +858,7 @@ export class StationQuery {
 
 
   /** Queries the remote web service to get its version
-   * @return Promise to version string
+   * @returns Promise to version string
   */
   queryVersion(): Promise<string> {
     let url = this.formVersionURL();
@@ -879,7 +879,7 @@ export class StationQuery {
     return name+"="+encodeURIComponent(stringify(val))+"&";
   }
   /** Forms the basic URL to contact the web service, without any query paramters
-   * @return the url
+   * @returns the url
   */
   formBaseURL() {
     let colon = ":";

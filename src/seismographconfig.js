@@ -132,10 +132,11 @@ export class SeismographConfig {
 
   /** Fake data to use to test alignment of seismograph axis and between canvas
    *  and svg drawing.
+   *  
    * @param   timeWindow start and end of fake data
    * @param   min        min amplitude for fake data, default is -100
    * @param   max        max amplitude for fake data, default is 100
-   * @return             fake data
+   * @returns             fake data
    */
   createAlignmentData(timeWindow: StartEndDuration,
         min: number = -100,

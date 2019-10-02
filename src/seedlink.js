@@ -174,7 +174,7 @@ export class SeedlinkConnection {
 
   /**
    * Sends initial HELLO to server and waits for response.
-   * @return            Promise that resolves to the response from the server.
+   * @returns            Promise that resolves to the response from the server.
    */
   sendHello(): Promise<string> {
     let webSocket = this.webSocket;
@@ -203,7 +203,7 @@ export class SeedlinkConnection {
    * Sends an array of commands, each as a Promise waiting for the 'OK' response
    * before sending the next.
    * @param   cmd array of commands to send
-   * @return      Promise that resolves to the 'OK' returned by the last
+   * @returns      Promise that resolves to the 'OK' returned by the last
    *   command if successful, or rejects on the first failure.
    */
   sendCmdArray(cmd: Array<string>): Promise<string> {
@@ -218,7 +218,7 @@ export class SeedlinkConnection {
   /**
    * creates a Promise that sends a command and waits resolved with the result.
    * @param   mycmd command string to send.
-   * @return        Promise that resolves to the reply from the server.
+   * @returns        Promise that resolves to the reply from the server.
    */
   createCmdPromise(mycmd: string): Promise<string> {
     let webSocket = this.webSocket;

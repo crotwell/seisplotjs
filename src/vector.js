@@ -38,12 +38,13 @@ export class RotatedSeismograms {
 /**
  * Rotates the given seismograms from their given azimuths so the output radial
  * is along the new azimuth and the output transverse is perpendicular to it.
+ *
  * @param   seisA    first seismogram
  * @param   azimuthA azimuth of first seismogram
  * @param   seisB    second seismogram
  * @param   azimuthB azimuth of second seismogram
  * @param   azimuth  output radial azimuth to rotate to
- * @return radial and transverse seismograms
+ * @returns radial and transverse seismograms
  */
 export function rotate(seisA: Seismogram, azimuthA: number, seisB: Seismogram, azimuthB: number, azimuth: number): RotatedSeismograms {
   if (seisA.segments.length !== seisB.segments.length) {
@@ -65,7 +66,16 @@ export function rotate(seisA: Seismogram, azimuthA: number, seisB: Seismogram, a
   return out;
 }
 
-
+/**
+ * Rotates two seismogram segments, checking for same length and time alignment.
+ *
+ * @param   seisA    first seismogram
+ * @param   azimuthA azimuth of first
+ * @param   seisB    second seismogram
+ * @param   azimuthB azimuth of second
+ * @param   azimuth  azimuth to rotate to as radial, transverse will be +90 deg
+ * @returns           rotated seismogram segments along with their aziumths
+ */
 function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: number, seisB: SeismogramSegment, azimuthB: number, azimuth: number) {
   if (seisA.y.length !== seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
@@ -117,10 +127,11 @@ function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: number, sei
  * It is assumed, but not checked, that they will be the three components of
  * motion at a station (ie matching network, station and location codes)
  * and have the same start time.
+ *
  * @param   seisA first seismogram
  * @param   seisB second seismogram
  * @param   seisC third seismogram
- * @return Seismogram of vector magnitudes
+ * @returns Seismogram of vector magnitudes
  */
 export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Seismogram) {
   if (seisA.segments.length !== seisB.segments.length) {
@@ -139,6 +150,15 @@ export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Sei
   return new Seismogram(outSeis);
 }
 
+/**
+ * Calculates the vector magnitude of three components of motion. Each of the three
+ * should be mutually perpendicular.
+ *
+ * @param   seisA first seismogram
+ * @param   seisB second perpendicular seismogram
+ * @param   seisC thrid perpendicular seismogram
+ * @returns         seismogram representing the vector magnitude, sqrt(x*x+y*y+z*z)
+ */
 function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: SeismogramSegment, seisC: SeismogramSegment) {
   if (seisA.y.length !== seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "

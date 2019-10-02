@@ -211,7 +211,7 @@ export class DataSelectQuery {
   /**
    * Sets startTime and endTime using the given time window
    * @param   se time window
-   * @return     this
+   * @returns     this
    */
   timeWindow(se: StartEndDuration) {
     this.startTime(se.startTime);
@@ -288,7 +288,7 @@ export class DataSelectQuery {
   /**
    * queries the web service using the configured parameters, parsing the response
    * into miniseed data records.
-   * @return Promise to Array of miniseed.DataRecords
+   * @returns Promise to Array of miniseed.DataRecords
    */
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
     const mythis = this;
@@ -313,7 +313,7 @@ export class DataSelectQuery {
    * queries the web service using the configured parameters, parsing the response
    * into miniseed data records and then combining the data records into
    * Seismogram objects.
-   * @return Promise to Array of Seismogram objects
+   * @returns Promise to Array of Seismogram objects
    */
   querySeismograms(): Promise<Array<Seismogram>> {
     return this.queryDataRecords().then(dataRecords => {
@@ -343,7 +343,7 @@ export class DataSelectQuery {
    * also populated with each result.
    * @param   channelTimeList array of SeismogramDisplayData objects
    * that will be filled in with the resulting seismogram
-   * @return Promise to the input Array of SeismogramDisplayData objects, each with the
+   * @returns Promise to the input Array of SeismogramDisplayData objects, each with the
    * seismogram containing the data returned from the server
    */
   postQuerySeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
@@ -408,7 +408,7 @@ export class DataSelectQuery {
   }
 
   /** Queries the remote web service to get its version
-   * @return Promise to version string
+   * @returns Promise to version string
   */
   queryVersion(): Promise<string> {
     let url = this.formVersionURL();

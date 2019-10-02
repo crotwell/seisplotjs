@@ -41,7 +41,7 @@ export function amplitude(real: number, imag: number) {
 /**
  * Remove the mean from a seismogram. Subtract the mean from each data point.
  * @param   seis input seismogram
- * @return       seismogram with mean of zero
+ * @returns       seismogram with mean of zero
  */
 export function rMean(seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
@@ -65,7 +65,7 @@ export function rMean(seis: Seismogram): Seismogram {
  * factor to convert counts back to original real world units and update the units.
  * @param   seis                  the seismogram to correct
  * @param   instrumentSensitivity overall gain object, usually pulled from stationxml
- * @return                        new seismogram with original units, like m/s and gain applied.
+ * @returns                        new seismogram with original units, like m/s and gain applied.
  */
 export function gainCorrect(seis: Seismogram, instrumentSensitivity: InstrumentSensitivity): Seismogram {
   if (seis instanceof Seismogram) {
@@ -104,7 +104,7 @@ export type MinMaxMean = {
  * @param   lowFreqCorner  low corner frequency
  * @param   highFreqCorner high corner frequency
  * @param   delta          delta, period, of timeseries
- * @return                 Butterworth IIR filter
+ * @returns                 Butterworth IIR filter
  */
 export function createButterworth(numPoles: number,
                                   passband: string,
@@ -126,7 +126,7 @@ export function createButterworth(numPoles: number,
  * @param   lowFreqCorner  low corner frequency
  * @param   highFreqCorner high corner frequency
  * @param   delta          delta, period, of timeseries
- * @return                 Chebyshev I IIR filter
+ * @returns                 Chebyshev I IIR filter
  */
 export function createChebyshevI(numPoles: number,
                                   epsilon: number,
@@ -150,7 +150,7 @@ export function createChebyshevI(numPoles: number,
  * @param   lowFreqCorner  low corner frequency
  * @param   highFreqCorner high corner frequency
  * @param   delta          delta, period, of timeseries
- * @return                 Chebyshev II IIR filter
+ * @returns                 Chebyshev II IIR filter
  */
 export function createChebyshevII(numPoles: number,
                                   epsilon: number,

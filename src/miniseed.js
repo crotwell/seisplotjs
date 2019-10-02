@@ -351,7 +351,7 @@ export class BTime {
  * Sanity checks on a BTime to see if a record might be in the wrong byte order
  * and so need to be byte swapped before parsing. Checks year betwee 1960 and 2055.
  * @param   bTime
- * @return        true is byte order appears to be wrong, false if it seems ok
+ * @returns        true is byte order appears to be wrong, false if it seems ok
  */
 export function checkByteSwap(bTime: BTime): boolean {
   return bTime.year < 1960 || bTime.year > 2055;
@@ -445,7 +445,7 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
  * splits the DataRecords by channel and creates a single
  * Seismogram for each channel.
  * @param   drList DataRecords array
- * @return         Array of Seismogram
+ * @returns         Array of Seismogram
  */
 export function seismogramPerChannel(drList: Array<DataRecord> ): Array<Seismogram> {
   let out = [];

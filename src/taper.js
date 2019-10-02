@@ -10,10 +10,11 @@ import {Seismogram } from './seismogram.js';
 
 /**
  * Applies a time domain taper of the given type.
+ * 
  * @param   seis      Seismogram to taper
  * @param   width     width as a fraction of seismogram length, default is 0.05
  * @param   taperType taper type, default is HANNING, others are HAMMING and COSINE
- * @return            copy of seismogram with taper applied.
+ * @returns            copy of seismogram with taper applied.
  */
 export function taper(seis: Seismogram, width: number = 0.05, taperType: string = HANNING): Seismogram {
   if (width > 0.5) {

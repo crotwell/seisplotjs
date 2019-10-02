@@ -2,13 +2,15 @@ module.exports = {
     "extends": [
       "eslint:recommended",
       "plugin:flowtype/recommended",
-      "plugin:jest/recommended"
+      "plugin:jest/recommended",
+      "plugin:jsdoc/recommended"
     ],
     "plugins": [
       "flowtype",
       "standard",
       "promise",
-      "jest"
+      "jest",
+      "jsdoc"
     ],
     "env": {
       "es6": true,
@@ -24,6 +26,8 @@ module.exports = {
       "no-var": ["error"],
       "no-console": [ "error"],
       "no-unused-vars": [ "error"],
-      "eqeqeq": ["error", "always"]
+      "eqeqeq": ["error", "always"],
+      "jsdoc/require-param-type": ["off"],
+      "jsdoc/require-returns-type": ["off"]
     }
 };

@@ -110,6 +110,7 @@ export class HourMinChooser {
   }
   /**
    * Updates the time without triggering the callback function.
+   *
    * @param  newTime new time to update sliders
    */
   updateTime(newTime: moment): void {
@@ -227,6 +228,7 @@ export class DateTimeChooser {
   }
   /**
    * Updates the time without triggering the callback function.
+   *
    * @param  newTime new time to update sliders
    */
   updateTime(newTime: moment): void {
@@ -242,7 +244,13 @@ export class DateTimeChooser {
   getTime(): moment {
     return this.time;
   }
-  /** @private */
+  
+  /**
+   * internal time set
+   *
+   * @private
+   * @param  newTime new time to update
+   */
   _internalSetTime(newTime: moment): void {
     this.time = moment.utc(newTime);
     this.dateField.attr("value", this.time.toISOString());

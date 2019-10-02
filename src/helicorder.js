@@ -157,7 +157,7 @@ export class Helicorder {
    * @param   startTime      start of display
    * @param   secondsPerLine seconds covered by each line
    * @param   numberOfLines  number of lines
-   * @return Array of HeliTimeRange, one per line
+   * @returns Array of HeliTimeRange, one per line
    */
   calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRange> {
     let out = [];

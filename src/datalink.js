@@ -22,6 +22,10 @@ export const STREAM_MODE = "STREAM";
 export const MAX_PROC_NUM = Math.pow(2, 16)-2;
 /** const for fake user name for datalink id, browser */
 export const USER_BROWSER = "browser";
+/** const for fake program name for datalink id, seisplotjs */
+export const DEFAULT_PROGRAM = "seisplotjs";
+/** const for fake architecture for datalink id, javascript */
+export const DEFAULT_ARCH = "javascript";
 
 /** const for error response, ERROR */
 export const ERROR = "ERROR";
@@ -58,7 +62,9 @@ export class DataLinkConnection {
   closeHandler: null | (close: CloseEvent) => void;
   serverId: string | null;
   clientIdNum: number;
+  programname: string;
   username: string;
+  architecture: string;
   _responseResolve: null | (response: DataLinkResponse) => void;
   _responseReject: null | (error: Error) => void;
   webSocket: WebSocket | null;
@@ -71,7 +77,9 @@ export class DataLinkConnection {
     this.serverId = null;
     // meant to be processId, so use 1 <= num <= 2^15 to be safe
     this.clientIdNum = Math.floor(Math.random() * MAX_PROC_NUM)+1;
+    this.programname = DEFAULT_PROGRAM;
     this.username = USER_BROWSER;
+    this.architecture = DEFAULT_ARCH;
     this._responseResolve = null;
     this._responseReject = null;
   }
@@ -80,10 +88,11 @@ export class DataLinkConnection {
     this.closeHandler = closeHandler;
   }
 
-  /** creates the websocket connection and sends the client
-  *  ID. Returns a Promise that resolves to the server's
-  * ID.
-  */
+  /**
+   * creates the websocket connection and sends the client ID.
+   *
+   *  @returns a Promise that resolves to the server's ID.
+   */
   connect() {
     const that = this;
     return new RSVP.Promise(function(resolve, reject) {
@@ -122,7 +131,8 @@ export class DataLinkConnection {
     return this.webSocket !== null;
   }
   /**
-   * gets the current mode, QUERY_MODE or STREAM_MODE
+   * @returns the current mode, QUERY_MODE or STREAM_MODE
+   *
    */
   get mode() { return this._mode;}
 
@@ -158,12 +168,13 @@ export class DataLinkConnection {
   }
 
   /**
-  * Send a ID Command. Command is a string.
-  * @return a Promise that resolves to the response from the ringserver.
-  */
+   * Send a ID Command. Command is a string.
+   *
+   * @returns a Promise that resolves to the response from the ringserver.
+   */
   sendId(): Promise<string> {
     const that = this;
-    return this.id("seisplotjs", this.username, stringify(this.clientIdNum), "javascript")
+    return this.id(this.programname, this.username, stringify(this.clientIdNum), this.architecture)
     .then(this.ensureDataLinkResponse)
     .then(dlResponse => {
       if (dlResponse.type === 'ID') {
@@ -175,13 +186,18 @@ export class DataLinkConnection {
     });
   }
 
-  /** encodes as a Datalink packet, header with optional data section as
+  /**
+   * encodes as a Datalink packet, header with optional data section as
    * binary Uint8Array. Size of the binary data is appended
    * to the header if present.
+   *
+   * @param header the command/header string
+   * @param data optional data portion
+   * @returns datalink packet as an ArrayBuffer
    */
-  encodeDL(command: string, data?: Uint8Array): ArrayBuffer {
-    let cmdLen = command.length;
-    let len = 3+command.length;
+  encodeDL(header: string, data?: Uint8Array): ArrayBuffer {
+    let cmdLen = header.length;
+    let len = 3+header.length;
     let lenStr = "";
     if (data && data.length > 0) {
       lenStr = String(data.length);
@@ -197,7 +213,7 @@ export class DataLinkConnection {
     packet.setUint8(1, 76); // ascii L
     packet.setUint8(2, cmdLen);
     let i = 3;
-    for (const c of command) {
+    for (const c of header) {
       packet.setUint8(i, c.charCodeAt(0));
       i++;
     }
@@ -217,6 +233,7 @@ export class DataLinkConnection {
   /** sends the header with optional binary data
    * as the data section. Size of the data is appended
    * to the header before sending if present.
+   *
    * @param header header to send
    * @param data optional data to send
    */
@@ -232,15 +249,21 @@ export class DataLinkConnection {
   /** sends the command as header with optional dataString
    * as the data section. Size of the dataString is appended
    * to the header before sending.
+   *
+   * @param command the command/header string
+   * @param dataString optional data portion of packet
    */
   sendDLCommand(command: string, dataString?: string): void {
     this.sendDLBinary(command, stringToUint8Array(dataString));
   }
 
   /**
-  * Send a DataLink Command and await the response. Command is a string.
-  * @returns a Promise that resolves with the webSocket MessageEvent.
-  */
+   * Send a DataLink Command and await the response. Command is a string.
+   *
+   * @param header packet header
+   * @param data optional data portion of packet
+   * @returns a Promise that resolves with the webSocket MessageEvent.
+   */
   awaitDLBinary(header: string, data?: Uint8Array): Promise<DataLinkResponse> |  Promise<DataLinkPacket> {
     let that = this;
     let promise = new RSVP.Promise(function(resolve, reject) {
@@ -261,21 +284,38 @@ export class DataLinkConnection {
 
 
   /**
-  * Send a DataLink Command and await the response. Command is a string.
-  * Returns a Promise that resolves with the webSocket MessageEvent.
-  */
+   * Send a DataLink Command and await the response. Command is a string.
+   * Returns a Promise that resolves with the webSocket MessageEvent.
+   *
+   * @param command the command/header string
+   * @param dataString optional data portion of packet
+   * @returns promise to server's response
+   */
   awaitDLCommand(command: string, dataString?: string): Promise<DataLinkResponse> |  Promise<DataLinkPacket> {
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
-  /** Writes data to the ringserver and awaits a acknowledgement.
-  *
-  */
-  writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array) {
+  /**
+   * Writes data to the ringserver and awaits a acknowledgement.
+   *
+   * @param   streamid    stream id for packet header
+   * @param   hpdatastart start of timewindow the packet covers
+   * @param   hpdataend   end of timewindow the packet covers
+   * @param   data        optional data to send
+   * @returns             promise to server's response
+   */
+  writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array): Promise<DataLinkResponse> |  Promise<DataLinkPacket>  {
     let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`;
     return this.awaitDLBinary(header, data);
   }
 
+  /**
+   * Makes sure a response actually is a DataLinkResponse
+   *
+   * @param   dl datalink packet/response
+   * @returns DataLinkResponse after checking instanceof
+   * @throws Error if not a DataLinkResponse
+   */
   ensureDataLinkResponse(dl: DataLinkResponse | DataLinkPacket): DataLinkResponse {
     if (dl instanceof DataLinkResponse) {
       return dl;
@@ -283,6 +323,13 @@ export class DataLinkConnection {
     throw new Error(`Expected DataLinkResponse but got ${dl.header}`);
   }
 
+  /**
+   * Makes sure a response actually is a DataLinkPacket
+   *
+   * @param   dl datalink packet/response
+   * @returns DataLinkPacket after checking instanceof
+   * @throws Error if not a DataLinkPacket
+   */
   ensureDataLinkPacket(dl: DataLinkResponse | DataLinkPacket): DataLinkPacket {
     if (dl instanceof DataLinkPacket) {
       return dl;
@@ -290,35 +337,82 @@ export class DataLinkConnection {
     throw new Error(`Expected DataLinkPacket but got ${dl.type}`);
   }
 
+  /**
+   * Send id and await server's response. All of these are can more or less
+   * be filled with dummy values. They are mostly used for logging and debugging
+   * on the server side.
+   *
+   * @param programname name of program, ex seisplotjs
+   * @param username name of user, ex browser
+   * @param processid process number, used to differentiate between multiple running instances
+   * @param architecture cpu architecture, ex javascript
+   * @returns promise to servers response
+   */
   id(programname: string, username: string, processid: string, architecture: string): Promise<DataLinkResponse> {
     let command = `ID ${programname}:${username}:${processid}:${architecture}`;
     return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
   }
 
+  /**
+   * Send info command for infoType.
+   *
+   * @param infoType type to get info for
+   * @returns promise to server's response
+   */
   info(infoType: string): Promise<DataLinkResponse> {
     let command = `INFO ${infoType}`;
     return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
   }
 
+  /**
+   * Send position after command.
+   *
+   * @param time time to position after
+   * @returns promise to server's response
+   */
   positionAfter(time: moment): Promise<DataLinkResponse> {
     return this.positionAfterHPTime(momentToHPTime(time)).then(this.ensureDataLinkResponse);
   }
 
+  /**
+   * Send position after command.
+   *
+   * @param hpTime time to position after
+   * @returns promise to server's response
+   */
   positionAfterHPTime(hpTime: number): Promise<DataLinkResponse> {
     let command = `POSITION AFTER ${hpTime}`;
     return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
   }
 
+  /**
+   * Send match command.
+   *
+   * @param pattern regular expression to match streams
+   * @returns promise to server's response
+   */
   match(pattern: string): Promise<DataLinkResponse> {
     let command = `MATCH`;
     return this.awaitDLCommand(command, pattern).then(this.ensureDataLinkResponse);
   }
 
+  /**
+   * Send reject command.
+   *
+   * @param pattern regular expression to reject streams
+   * @returns promise to server's response
+   */
   reject(pattern: string): Promise<DataLinkResponse> {
     let command = `REJECT ${pattern}`;
     return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
   }
 
+  /**
+   * Read a single packet for the given id.
+   *
+   * @param packetId id of the packet of interest
+   * @returns promise to server's response
+   */
   read(packetId: string): Promise<DataLinkPacket> {
     let command = `READ ${packetId}`;
     return this.awaitDLBinary(command).then(this.ensureDataLinkPacket);
@@ -326,9 +420,11 @@ export class DataLinkConnection {
 
   /**
    * Handles a web socket message from the data link connection.
+   *
    * @private
+   * @param wsEvent web socket event to handle
    */
-  handle(wsEvent: MessageEvent ) {
+  handle(wsEvent: MessageEvent ): void {
     const rawData: ArrayBuffer = ((wsEvent.data: any): ArrayBuffer);
     let dlPreHeader = new DataView(rawData, 0, 3);
     if ('D' === String.fromCharCode(dlPreHeader.getUint8(0))
@@ -368,7 +464,13 @@ export class DataLinkConnection {
     }
   }
 
-  handleError(error: Error) {
+  /**
+   * handle errors that arise
+   *
+   * @private
+   * @param   error the error
+   */
+  handleError(error: Error): void {
     if (this._responseReject) {
       this._responseReject(error);
     }
@@ -450,28 +552,32 @@ export class DataLinkPacket {
   }
   /**
    * Packet start time as a moment.
-   * @return start time
+   *
+   * @returns start time
    */
   get packetStart(): moment {
     return hpTimeToMoment(parseInt(this.hppacketstart));
   }
   /**
    * Packet end time as a moment.
-   * @return end time
+   *
+   * @returns end time
    */
   get packetEnd(): moment {
     return hpTimeToMoment(parseInt(this.hppacketend));
   }
   /**
    * Packet time as a moment.
-   * @return packet time
+   *
+   * @returns packet time
    */
   get packetTime(): moment {
     return hpTimeToMoment(parseInt(this.hppackettime));
   }
   /**
    * is this packet a miniseed packet
-   * @return {Boolean}         true if it is miniseed
+   *
+   * @returns          true if it is miniseed
    */
   isMiniseed(): boolean {
     return isDef(this._miniseed) || this.streamId.endsWith(MSEED_TYPE);
@@ -479,6 +585,8 @@ export class DataLinkPacket {
   /**
    * Parsed payload as a miniseed data record, if the streamid
    * ends with '/MSEED', null otherwise.
+   *
+   * @returns miniseed DataRecord or null
    */
   get miniseed() {
     if ( ! isDef(this._miniseed) ) {
@@ -494,16 +602,18 @@ export class DataLinkPacket {
 
 /**
  * Convert moment to a HPTime number.
+ *
  * @param   m moment to convert
- * @return  microseconds since epoch
+ * @returns  microseconds since epoch
  */
   export function momentToHPTime(m: moment): number {
     return m.valueOf()*1000;
   }
   /**
-   * Convert moment to a HPTime number.
-   * @param   m moment to convert
-   * @return  microseconds since epoch
+   * Convert hptime number to a moment.
+   *
+   * @param   hptime hptime to convert
+   * @returns  moment in utc for the hptime
    */
   export function hpTimeToMoment(hptime: number): moment {
     return moment.utc(hptime/1000);
@@ -511,8 +621,9 @@ export class DataLinkPacket {
 
   /**
    * Encode string into a Uint8Array.
+   *
    * @param   dataString String to encode.
-   * @return             String as bytes in Uint8Array.
+   * @returns             String as bytes in Uint8Array.
    */
   export function stringToUint8Array(dataString?: string): Uint8Array | void {
     let binaryData = undefined;

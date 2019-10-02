@@ -49,6 +49,12 @@ export function isDef(v: mixed): boolean %checks {
   return typeof v !== 'undefined' && v !== null;
 }
 
+/**
+ * Converts entire DataView to a string as utf-8.
+ *
+ * @param   dataView bytes to convert
+ * @returns           the string
+ */
 export function dataViewToString(dataView: DataView) {
   let out = "";
   for (let i=0; i< dataView.byteLength; i++) {
@@ -57,15 +63,25 @@ export function dataViewToString(dataView: DataView) {
   return out;
 }
 
-export function log(msg: string) {
+/**
+ * Log a message to the console. Put here to limit lint console errors
+ * for the times we really do want to use console.log. Will also append a
+ * p tag to a div#debug if it exists.
+ *
+ * @param   msg the message to log
+ */
+export function log(msg: string): void {
   // eslint-disable-next-line no-console
   if (console) {console.log(`${stringify(msg)}`);}
   d3.select("div#debug").append("p").text(`${stringify(msg)}`);
-
 }
 
-/** String representation of input. THis is kind of dumb but makes
+/**
+ * String representation of input. This is kind of dumb but makes
  *  flow happier.
+ *
+ * @param value any kind of thing that can be turned into a string
+ * @returns a string
  */
 export function stringify(value: mixed): string {
   if (typeof value === 'string') {
@@ -96,20 +112,26 @@ export function stringify(value: mixed): string {
   }
 }
 
-
+/**
+ * Calculates offset of remote server versus local time. It is assumed that the
+ * argument was acquired as close in time to calling this as possible.
+ *
+ * @param  serverTimeUTC now as reported by remote server
+ * @returns offset in seconds to now on local machine
+ */
 export function calcClockOffset(serverTimeUTC: moment): number {
   return moment.utc().diff(serverTimeUTC, 'seconds', true);
 }
 
 /**
-Any two of startTime, endTime and duration can be specified, or just duration which
-then assumes endTime is now.
-startTime and endTime are moment objects, duration is in seconds.
-clockOffset is the seconds that should be subtracted from the computer time
- to get real world time, ie computerUTC - UTC
- or moment.utc().diff(serverTimeUTC, 'seconds', true).
- default is zero.
-*/
+ * Any two of startTime, endTime and duration can be specified, or just duration which
+ * then assumes endTime is now.
+ * startTime and endTime are moment objects, duration is in seconds.
+ * clockOffset is the seconds that should be subtracted from the computer time
+ * to get real world time, ie computerUTC - UTC
+ * or moment.utc().diff(serverTimeUTC, 'seconds', true).
+ * default is zero.
+ */
 export class StartEndDuration {
   _startTime: moment;
   _endTime: moment;
@@ -230,6 +252,13 @@ export function checkProtocol() {
   return _protocol;
 }
 
+/**
+ * Create default fetch init object with the given mimeType. Sets
+ * no-cache, follow redirects, cors mode, referrer as seisplotjs and mimetype as a header.
+ *
+ * @param   mimeType requested mime type
+ * @returns           object with fetch configuration parameters
+ */
 export function defaultFetchInitObj(mimeType: string): { [key: string]: any } {
   let headers = {};
   if (isStringArg(mimeType)) {
@@ -244,6 +273,15 @@ export function defaultFetchInitObj(mimeType: string): { [key: string]: any } {
   };
 }
 
+/**
+ * Does a fetch, but times out if it takes too long.
+ *
+ * @param   url        url to retrieve
+ * @param   fetchInit  fetch configuration, initialization
+ * @param   timeoutSec maximum time to wait in seconds
+ * @returns             promise to the result
+ * @throws Error if time out or other failure
+ */
 export function doFetchWithTimeout(url: string,
                                    fetchInit: { [key: string]: any },
                                    timeoutSec: number): Promise<Response> {
@@ -268,9 +306,10 @@ export function doFetchWithTimeout(url: string,
 /**
  * Recursively calculates the mean of a slice of an array. This helps with
  * very long seismograms to equally weight each sample point without overflowing.
+ *
  * @param   dataSlice slice of a seismogram
  * @param   totalPts  number of points in the original seismogram
- * @return            sum of slice data points divided by totalPts
+ * @returns            sum of slice data points divided by totalPts
  */
 export function meanOfSlice(dataSlice: Int32Array | Float32Array | Float64Array, totalPts: number ): number {
   if (dataSlice.length < 8) {
