@@ -10,7 +10,7 @@
 import moment from 'moment';
 import * as d3 from 'd3';
 
-import {insertCSS} from './plotutil.js';
+import {insertCSS} from './cssutil.js';
 
 import {SeismographConfig,
         DRAW_SVG, DRAW_CANVAS, DRAW_BOTH, DRAW_BOTH_ALIGN} from './seismographconfig';

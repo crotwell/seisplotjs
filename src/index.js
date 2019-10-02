@@ -7,6 +7,7 @@
  * http://www.seis.sc.edu
  */
 
+import * as cssutil        from './cssutil.js';
 import * as datalink         from './datalink.js';
 import * as datechooser      from './datechooser.js';
 import * as distaz         from './distaz.js';
@@ -48,7 +49,8 @@ import * as d3 from 'd3';
 const version = '2.0.0-alpha.6';
 
 /* reexport */
-export { datalink,
+export { cssutil,
+         datalink,
          datechooser,
          distaz,
          fdsnavailability,

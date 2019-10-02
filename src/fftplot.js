@@ -10,7 +10,7 @@ import {FFTResult} from './fft.js';
 
 import * as d3 from 'd3';
 
-import {insertCSS} from './plotutil.js';
+import {insertCSS} from './cssutil.js';
 
 export function createSimpleFFTPlot(cssSelector: string, fft: FFTResult, loglog: boolean = true) {
   let svg = createOverlayFFTPlot(cssSelector,  [ fft ], loglog);

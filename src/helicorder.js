@@ -9,7 +9,7 @@
 import * as d3 from 'd3';
 import moment from 'moment';
 
-import {insertCSS} from './plotutil.js';
+import {insertCSS} from './cssutil.js';
 import { SeismogramDisplayData } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';

@@ -146,14 +146,4 @@ export function alphabeticalSort(traceA: Seismogram, traceB: Seismogram) {
   }
 }
 
-
-export function insertCSS(cssText: string) {
-  let head = document.head;
-  if (head === null) {throw new Error("document.head is null");}
-  let styleElement = document.createElement('style');
-  styleElement.type = 'text/css';
-  styleElement.appendChild(document.createTextNode(cssText));
-  head.insertBefore(styleElement, head.firstChild);
-}
-
 export type TimeWindow = {startTime: moment, endTime: moment};

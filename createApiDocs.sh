@@ -19,6 +19,7 @@ if [ ! -e docs/api ]; then
 fi
 
 # descriptions of each module
+desc_cssutil='simple util to inject css into web document'
 desc_datalink='datalink protocol over web socket to a [Ringserver](https://seiscode.iris.washington.edu/projects/ringserver) datalink server'
 desc_datechooser='widget to choose dates and times'
 desc_distaz='calculates distance between to lat/lon points'
@@ -123,7 +124,6 @@ do
     while [[ $descTextHtml =~ $re ]]; do
       descTextHtml="${BASH_REMATCH[1]}<a href=\"${BASH_REMATCH[3]}\">${BASH_REMATCH[2]}</a>${BASH_REMATCH[4]}"
     done
-    echo $descTextHtml
     if [ 'index' != "$jsfile" ]
     then
       echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js

@@ -11,7 +11,7 @@ import Pikaday from 'pikaday';
 import moment from 'moment';
 import * as d3 from 'd3';
 
-import {insertCSS} from './plotutil.js';
+import {insertCSS} from './cssutil.js';
 
 import {StartEndDuration} from './util.js';
 
