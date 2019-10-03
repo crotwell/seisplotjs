@@ -118,8 +118,8 @@ export class SeismographConfig {
 
 /**
  * gets the current title
- * 
- * @return        title as an array of strings
+ *
+ * @returns        title as an array of strings
  */
   get title(): Array<string> {
     return this._title;

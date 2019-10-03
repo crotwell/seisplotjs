@@ -23,7 +23,7 @@ export const FDSN_HOST = "www.fdsn.org";
  * Query to a FDSN Data Centers Registry web service.
  *
  * @see http://www.fdsn.org/webservices/
-*/
+ */
 export class DataCentersQuery {
   /** @private */
   _specVersion: number;
@@ -58,6 +58,7 @@ export class DataCentersQuery {
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
    *
+   * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
    */
   specVersion(value?: number): number | DataCentersQuery {

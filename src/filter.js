@@ -20,19 +20,16 @@ export function createComplex(real: number, imag: number) {
 
 /**
  * Constant for bandpass OregonDSP filter creation.
- * @type string
  */
-export let BAND_PASS = OregonDSP.filter.iir.PassbandType.BANDPASS;
+export const BAND_PASS = OregonDSP.filter.iir.PassbandType.BANDPASS;
 /**
  * Constant for lowpass OregonDSP filter creation.
- * @type string
  */
-export let LOW_PASS = OregonDSP.filter.iir.PassbandType.LOWPASS;
+export const LOW_PASS = OregonDSP.filter.iir.PassbandType.LOWPASS;
 /**
  * Constant for highpass OregonDSP filter creation.
- * @type string
  */
-export let HIGH_PASS = OregonDSP.filter.iir.PassbandType.HIGHPASS;
+export const HIGH_PASS = OregonDSP.filter.iir.PassbandType.HIGHPASS;
 
 export function amplitude(real: number, imag: number) {
   return Math.hypot(real, imag);
@@ -40,6 +37,7 @@ export function amplitude(real: number, imag: number) {
 
 /**
  * Remove the mean from a seismogram. Subtract the mean from each data point.
+ *
  * @param   seis input seismogram
  * @returns       seismogram with mean of zero
  */
@@ -63,6 +61,7 @@ export function rMean(seis: Seismogram): Seismogram {
  * Apply the frequency independent overall gain to a seismogram. This does not
  * do a full transfer using poles and zero, this only applies the scalar conversion
  * factor to convert counts back to original real world units and update the units.
+ *
  * @param   seis                  the seismogram to correct
  * @param   instrumentSensitivity overall gain object, usually pulled from stationxml
  * @returns                        new seismogram with original units, like m/s and gain applied.
@@ -99,6 +98,7 @@ export type MinMaxMean = {
 
 /**
  * Creates a Butterworth IIR filter using the OregonDSP library.
+ *
  * @param   numPoles       number of poles
  * @param   passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
  * @param   lowFreqCorner  low corner frequency
@@ -120,6 +120,7 @@ export function createButterworth(numPoles: number,
 
 /**
  * Creates a Chebyshev I IIR filter using the OregonDSP library.
+ *
  * @param   numPoles       number of poles
  * @param   epsilon        Chebyshev epsilon value
  * @param   passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
@@ -144,6 +145,7 @@ export function createChebyshevI(numPoles: number,
 
 /**
  * Creates a Chebyshev II IIR filter using the OregonDSP library.
+ *
  * @param   numPoles       number of poles
  * @param   epsilon        Chebyshev epsilon value
  * @param   passband       type, use constants of BAND_PASS, LOW_PASS, HIGH_PASS
@@ -166,6 +168,13 @@ export function createChebyshevII(numPoles: number,
                                      delta);
 }
 
+/**
+ * Applies the filter to the given seismogram.
+ *
+ * @param   iirFilter filter to apply
+ * @param   seis      seismogram to apply filter to
+ * @return            filtered seismogram
+ */
 export function applyFilter(iirFilter: OregonDSP.filter.iir.IIRFilter, seis: Seismogram): Seismogram {
   let filteredSegments = [];
   for(let i=0; i<seis.segments.length; i++) {
@@ -177,9 +186,13 @@ export function applyFilter(iirFilter: OregonDSP.filter.iir.IIRFilter, seis: Sei
 }
 
 
-/** Calculates the envelope, y_i = sqrt( y_i * y_i + h_i * h_i)
+/**
+ * Calculates the envelope, y_i = sqrt( y_i * y_i + h_i * h_i)
  *  where h is the hilber transform of y. The default configuration
  *  for the hilbet transform is n=100, lowEdge=.05 and highEdge = 0.95
+ *
+ * @param seis seismogram to apply envelope to
+ * @returns seismogram cloned but with data as the envelope
  */
 export function envelope(seis: Seismogram): Seismogram {
   if (seis.isContiguous()) {
@@ -201,10 +214,17 @@ export function envelope(seis: Seismogram): Seismogram {
   }
 }
 
-/** Calculates the hilbert transform using the OregonDSP library
+/**
+ * Calculates the hilbert transform using the OregonDSP library
  *  with default number of points, n=10 (to yield a 21 pt FIR transform)
  *  and default low and high edge of 0.05 and 0.95. Low and high edge are
  *  given normalized 0 to 1.
+ *
+ * @param seis seismogram to calculate from
+ * @param n optional number of points in transform, default is 10
+ * @param lowEdge low edge of filter, normailized to 0-1, default is 0.05
+ * @param highEdge high edge of filter, normailized to 0-1, default is 0.95
+ *
  */
 export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge?: number ): Seismogram {
   if (seis.isContiguous()) {

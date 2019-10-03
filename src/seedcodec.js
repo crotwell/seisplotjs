@@ -99,7 +99,7 @@ export class EncodedDataSegment {
  *  return an array of the decompressed values.
  *  Only 16 bit short, 32 bit int, 32 bit float and 64 bit double
  *  along with Steim1 and Steim2 are supported.
- *  
+ *
  *  @param compressionType compression format as defined in SEED blockette 1000
  *  @param dataView input DataView to be decoded
  *  @param numSamples the number of samples that can be decoded from array
@@ -260,9 +260,9 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
  * bytes in the returned int array...else, do not include the header bytes
  * in the returned array.
  *
- * @param bytes byte array of compressed data differences
+ * @param dataView byte array of compressed data differences
  * @param offset index to begin reading compressed bytes for decoding
- * @param swapBytes reverse the endian-ness of the compressed bytes being read
+ * @param littleEndian reverse the endian-ness of the compressed bytes being read
  * @returns integer array of difference (and constant) values
  */
 function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian: boolean): Array<number> {
@@ -390,7 +390,7 @@ export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: 
  * bytes in the returned int array...else, do not include the header bytes
  * in the returned array.
  *
- * @param bytes byte array of compressed data differences
+ * @param dataView byte array of compressed data differences
  * @param offset index to begin reading compressed bytes for decoding
  * @param swapBytes reverse the endian-ness of the compressed bytes being read
  * @returns integer array of difference (and constant) values

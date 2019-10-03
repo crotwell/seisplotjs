@@ -20,7 +20,7 @@ export type SequencedDataRecord = {
   miniseed: miniseed.DataRecord
 };
 
-/**
+ /**
   * A seedlink websocket connection to the given url.
   * The connection is not made until the connect() method is called.
   * Note this cannot connect directly to a native TCP socket, instead it
@@ -28,6 +28,7 @@ export type SequencedDataRecord = {
   * ringserver, https://github.com/iris-edu/ringserver,
   * supports websockets, but it may be possible to use thrid party
   * tools to proxy the websocket to a TCP seedlink socket.
+  *
   * @param url websocket URL to connect to
   * @param requestConfig an array of seedlink commands
   * like:<pre><code>
@@ -174,6 +175,7 @@ export class SeedlinkConnection {
 
   /**
    * Sends initial HELLO to server and waits for response.
+   *
    * @returns            Promise that resolves to the response from the server.
    */
   sendHello(): Promise<string> {
@@ -202,6 +204,7 @@ export class SeedlinkConnection {
   /**
    * Sends an array of commands, each as a Promise waiting for the 'OK' response
    * before sending the next.
+   *
    * @param   cmd array of commands to send
    * @returns      Promise that resolves to the 'OK' returned by the last
    *   command if successful, or rejects on the first failure.
@@ -217,6 +220,7 @@ export class SeedlinkConnection {
 
   /**
    * creates a Promise that sends a command and waits resolved with the result.
+   *
    * @param   mycmd command string to send.
    * @returns        Promise that resolves to the reply from the server.
    */

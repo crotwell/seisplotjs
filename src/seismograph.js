@@ -1036,7 +1036,7 @@ export class Seismograph {
    * Seismogram.
    *
    * @param   seis seismogram to search for
-   * @return       SeismogramDisplayData if found or null if not
+   * @returns       SeismogramDisplayData if found or null if not
    */
   getDisplayDataForSeismogram(seis: Seismogram): SeismogramDisplayData | null {
     let out = this.seisDataList.find(sd => sd.seismogram === seis);

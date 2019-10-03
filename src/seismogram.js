@@ -163,6 +163,11 @@ export class SeismogramSegment {
   get chanCode(): string {
     return this.channelCode;
   }
+  /**
+   * Checks if the data is encoded
+   *
+   * @returns true if encoded, false otherwise
+   */
   isEncoded(): boolean {
     if (this._y && this._y.length > 0) {
       return false;
@@ -172,6 +177,12 @@ export class SeismogramSegment {
       return false;
     }
   }
+  /**
+   * Gets encoded data, if it is.
+   *
+   * @returns array of encoded data segments
+   * @throws Error if data is not encoded
+   */
   getEncoded(): Array<seedcodec.EncodedDataSegment> {
     if (this.isEncoded()) {
       return ((this._compressed: any): Array<seedcodec.EncodedDataSegment>);
@@ -185,6 +196,9 @@ export class SeismogramSegment {
   /**
    * Finds the min and max values of a SeismogramSegment, with an optional
    * accumulator for use with gappy data.
+   *
+   * @param minMaxAccumulator optional initialized accumulator as an array
+   * of two numbers, min and max
    */
   findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
     let minAmp = Number.MAX_SAFE_INTEGER;

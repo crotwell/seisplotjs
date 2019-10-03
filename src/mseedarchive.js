@@ -132,6 +132,7 @@ export class MSeedArchive {
   }
   /**
    * Loads miniseed records based on string channel codes.
+   *
    * @param   net        network code
    * @param   sta        station code
    * @param   loc        location code
@@ -203,12 +204,28 @@ export class MSeedArchive {
       return dataRecords;
     });
   }
+  /**
+   * Replaces codes from channel in base pattern.
+   *
+   * @param   net  string to replace '%n'
+   * @param   sta  string to replace '%s'
+   * @param   loc  string to replace '%l'
+   * @param   chan string to replace '%c'
+   * @return       new string with channel replacements made
+   */
   fillBasePattern(net: string, sta: string, loc: string, chan: string): string {
     return this.pattern.replace(/%n/g, net)
       .replace(/%s/g, sta)
       .replace(/%l/g, loc)
       .replace(/%c/g, chan);
   }
+  /**
+   * Replaces time entries ( %Y, %j, %H ) in pattern.
+   *
+   * @param   basePattern pattern to replace in
+   * @param   t           moment in time
+   * @return              string with time replaces
+   */
   fillTimePattern(basePattern: string, t: moment): string {
     return basePattern.replace(/%Y/g, t.format('YYYY'))
       .replace(/%j/g, t.format('DDDD'))
@@ -217,8 +234,13 @@ export class MSeedArchive {
   }
 }
 
-/** Gives the maximum sample rate for the channel, based on the
-  * band code, first char, of the channel code. */
+/**
+  * Gives the maximum sample rate for the channel, based on the
+  * band code, first char, of the channel code.
+  *
+  * @param chan channel code like BHZ, only the first letter is used
+  * @returns mimumum sample rate this could be
+  */
 export function maxSampleRate(chan: string): number {
   let f = chan.slice(0,1);
   switch(f) {
@@ -254,8 +276,13 @@ export function maxSampleRate(chan: string): number {
 }
 
 
-/** Gives the minimum sample rate for the channel, based on the
-  * band code, first char, of the channel code. */
+ /**
+  * Gives the minimum sample rate for the channel, based on the
+  * band code, first char, of the channel code.
+  *
+  * @param chan channel code like BHZ, only the first letter is used
+  * @returns mimumum sample rate this could be
+  **/
 export function minSampleRate(chan: string): number {
   let f = chan.slice(0,1);
   switch(f) {
@@ -289,10 +316,15 @@ export function minSampleRate(chan: string): number {
       throw new Error("Unknown band code "+f+" in "+chan);
   }
 }
-/** Calculates the maximum time coverage for a single miniseed record
+ /** Calculates the maximum time coverage for a single miniseed record
   * given the record size (usually 512 or 4096) and the sample rate (Hertz).
   * This assumes 40 bytes of header and maximum compression of 2 samples
   * per byte (4 bit per sample) which is the best Steim2.
+  *
+  * @param recordSize record size (usually 512 or 4096)
+  * @param sampleRate sample rate of record
+  * @returns maximum interval of time that a full record could cover when
+  * compression is at its most efficient
   */
 export function maxTimeForRecord(recordSize: number, sampleRate: number): number {
   return (recordSize-40)*2/sampleRate;

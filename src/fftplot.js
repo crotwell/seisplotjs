@@ -12,12 +12,28 @@ import * as d3 from 'd3';
 
 import {insertCSS} from './cssutil.js';
 
+/**
+ * Create a single amplitude plot of FFT data.
+ *
+ * @param   cssSelector selection of the containing element, usually a div
+ * @param   fft         data to plot
+ * @param   loglog      true for loglog plot, false for linlog
+ * @return              the svg element containing the plot
+ */
 export function createSimpleFFTPlot(cssSelector: string, fft: FFTResult, loglog: boolean = true) {
   let svg = createOverlayFFTPlot(cssSelector,  [ fft ], loglog);
   svg.classed("overlayplot", false);
   return svg;
 }
 
+/**
+ * Create a amplitude plot of multiple FFT data.
+ *
+ * @param   cssSelector selection of the containing element, usually a div
+ * @param   fft         array of FFT data to plot
+ * @param   loglog      true for loglog plot, false for linlog
+ * @return              the svg element containing the plot
+ */
 export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTResult>, loglog: boolean = true) {
     let ampPhaseList = [];
     let ampSliceMap = new Map();
@@ -141,7 +157,9 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
   return svg;
 }
 
-
+/**
+ * Defualt CSS for styling fft plots.
+ */
 export const fftplot_css = `
 
 

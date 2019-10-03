@@ -84,10 +84,11 @@ export class DataSelectQuery {
     this._port = 80;
     this._timeoutSec = 30;
   }
-  /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+  /**
+   * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
-  */
+   */
   specVersion(value?: number): number | DataSelectQuery {
     if (hasArgs(value)) {
       this._specVersion = value;
@@ -98,9 +99,10 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  /** Gets/Sets the protocol, http or https. This should match the protocol
+  /**
+   * Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
-  */
+   */
   protocol(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._protocol = value;
@@ -111,8 +113,9 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
-  /** Gets/Sets the remote host to connect to.
-  */
+  /**
+   * Gets/Sets the remote host to connect to.
+   */
   host(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._host = value;
@@ -123,7 +126,8 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+typeof value);
     }
   }
-  /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
+  /**
+   * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.
    */
   nodata(value?: number): number | DataSelectQuery {
@@ -136,8 +140,9 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  /** Gets/Sets the remote port to connect to.
-  */
+  /**
+   * Gets/Sets the remote port to connect to.
+   */
   port(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._port;
@@ -249,9 +254,11 @@ export class DataSelectQuery {
     }
   }
 
-  /** set or get the repository paramter. This is an IRIS-specific
-  * parameter that will not work with other dataselect web services.
-  */
+  /**
+   * set or get the repository paramter. This is an IRIS-specific
+   * parameter that will not work with other dataselect web services.
+   *
+   */
   repository(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._repository = value;
@@ -272,8 +279,9 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  /** Get/Set the timeout in seconds for the request. Default is 30.
-  */
+  /**
+   * Get/Set the timeout in seconds for the request. Default is 30.
+   */
   timeout(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._timeoutSec;
@@ -288,6 +296,7 @@ export class DataSelectQuery {
   /**
    * queries the web service using the configured parameters, parsing the response
    * into miniseed data records.
+   *
    * @returns Promise to Array of miniseed.DataRecords
    */
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
@@ -313,6 +322,7 @@ export class DataSelectQuery {
    * queries the web service using the configured parameters, parsing the response
    * into miniseed data records and then combining the data records into
    * Seismogram objects.
+   *
    * @returns Promise to Array of Seismogram objects
    */
   querySeismograms(): Promise<Array<Seismogram>> {
@@ -341,6 +351,7 @@ export class DataSelectQuery {
    * SeismogramDisplayData objects, are returned one seismogram
    * per channel, which may contain gaps. The original channel and timerange are
    * also populated with each result.
+   *
    * @param   channelTimeList array of SeismogramDisplayData objects
    * that will be filled in with the resulting seismogram
    * @returns Promise to the input Array of SeismogramDisplayData objects, each with the
@@ -406,10 +417,11 @@ export class DataSelectQuery {
   formVersionURL(): string {
     return this.formBaseURL()+"/version";
   }
-
-  /** Queries the remote web service to get its version
+  /**
+   * Queries the remote web service to get its version
+   *
    * @returns Promise to version string
-  */
+   */
   queryVersion(): Promise<string> {
     let url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
