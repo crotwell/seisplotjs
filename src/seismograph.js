@@ -981,7 +981,12 @@ export class Seismograph {
   getSeismogramData(): Array<SeismogramDisplayData> {
     return this.seisDataList;
   }
-  /** can append single seismogram segment or an array of segments. */
+  /**
+   * can append single seismogram segment or an array of segments.
+   *
+   * @param sddList array or single SeismogramDisplayData or Seismogram
+   * @private
+   */
   _internalAppend(sddList: Array<SeismogramDisplayData> | SeismogramDisplayData | Array<Seismogram> | Seismogram  ): void {
     if ( ! sddList) {
       // don't append a null
@@ -1001,7 +1006,12 @@ export class Seismograph {
       }
     }
   }
-  /** appends the seismogram(s) as separate time series. */
+  /**
+   * appends the seismogram(s) or SeismogramDisplayData as separate time series.
+   *
+   * @param seismogram data to append
+   * @returns this Seismograph
+   */
   append(seismogram: Array<Seismogram> | Seismogram | SeismogramDisplayData) {
     if (seismogram instanceof SeismogramDisplayData) {
       this._internalAppend(seismogram);
@@ -1021,13 +1031,30 @@ export class Seismograph {
     }
     return this;
   }
+  /**
+   * Finds the SeismogramDisplayData within the display containing the given
+   * Seismogram.
+   *
+   * @param   seis seismogram to search for
+   * @return       SeismogramDisplayData if found or null if not
+   */
   getDisplayDataForSeismogram(seis: Seismogram): SeismogramDisplayData | null {
     let out = this.seisDataList.find(sd => sd.seismogram === seis);
     if (out) {return out; } else { return null;}
   }
+  /**
+   * Removes a seismogram from the display.
+   *
+   * @param   seisData seis data to remove
+   */
   remove(seisData: SeismogramDisplayData): void {
     this.seisDataList = this.seisDataList.filter( sd => sd !== seisData);
   }
+  /**
+   * Removes seismograms that do not overlap the window.
+   *
+   * @param   timeWindow overlap data to keep
+   */
   trim(timeWindow: StartEndDuration): void {
     if (this.seisDataList) {
       this.seisDataList = this.seisDataList.filter(function(d) {
@@ -1140,7 +1167,7 @@ Seismograph._lastID = 0;
 /**
  * Creates Markers for all of the arrivals in ttime.arrivals, relative
  * to the given Quake.
- * 
+ *
  * @param   quake quake the travel times are relative to
  * @param   ttime travel times json object as returned from the
  * IRIS traveltime web service, or the json output of TauP

@@ -195,6 +195,13 @@ export class StartEndDuration {
   get clockOffset() {
     return this._clockOffset;
   }
+  /**
+   * Check if this time window contains the given moment. Equality to start
+   * or end is considered being contained in.
+   *
+   * @param   other moment to check
+   * @returns        true if moment is inside this time range
+   */
   contains(other: moment): boolean {
     if (this.startTime.isAfter(other)
         || this.endTime.isBefore(other)) {
@@ -214,9 +221,13 @@ export class StartEndDuration {
   }
 }
 
-/** converts the input value is a moment, throws Error if not
+/**
+ * converts the input value is a moment, throws Error if not
  * a string, Date or moment. Zero length string or "now" return
  * current time.
+ *
+ * @param d 'now', string time, Date, number of milliseconds since epoch, or moment
+ * @returns moment created from argument
  */
 export function checkStringOrDate(d: any): moment {
   if (moment.isMoment(d)) {
@@ -236,15 +247,22 @@ export function checkStringOrDate(d: any): moment {
   throw new Error("unknown date type: "+d+" "+(typeof d));
 }
 
-/** converts to ISO8601 but removes the trailing Z as FDSN web services
-  do not allow that. */
+/**
+ * converts to ISO8601 but removes the trailing Z as FDSN web services
+ * do not allow that.
+ *
+ * @param  date moment to convert to string
+ * @returns ISO8601 without timezone Z
+ **/
 export function toIsoWoZ(date: moment): string {
   let out = date.toISOString();
   return out.substring(0, out.length-1);
 }
 
-/** returns the protocol, http or https for the document if possible. */
-export function checkProtocol() {
+/**
+ * @returns the protocol, http or https for the document if possible.
+ **/
+export function checkProtocol(): string {
   let _protocol = 'http:';
   if (typeof document !== 'undefined' && document.location && "https:" === document.location.protocol) {
     _protocol = 'https:';

@@ -99,6 +99,7 @@ export class EncodedDataSegment {
  *  return an array of the decompressed values.
  *  Only 16 bit short, 32 bit int, 32 bit float and 64 bit double
  *  along with Steim1 and Steim2 are supported.
+ *  
  *  @param compressionType compression format as defined in SEED blockette 1000
  *  @param dataView input DataView to be decoded
  *  @param numSamples the number of samples that can be decoded from array
@@ -194,6 +195,7 @@ export function decompress(compressionType: number, dataView: DataView, numSampl
  *  compression, there may be an offset carried over from a previous data
  *  record.  This offset value can be placed in <b>bias</b>, otherwise leave
  *  the value as 0.
+ *
  *  @param dataView input DataView to be decoded
  *  @param numSamples the number of samples that can be decoded from array
  *  <b>b</b>
@@ -257,6 +259,7 @@ export function decodeSteim1(dataView: DataView, numSamples: number, littleEndia
  * An offset of 0 means that we are at the first frame, so include the header
  * bytes in the returned int array...else, do not include the header bytes
  * in the returned array.
+ *
  * @param bytes byte array of compressed data differences
  * @param offset index to begin reading compressed bytes for decoding
  * @param swapBytes reverse the endian-ness of the compressed bytes being read
@@ -320,6 +323,7 @@ function extractSteim1Samples(dataView: DataView, offset: number,  littleEndian:
  *  compression, there may be an offset carried over from a previous data
  *  record.  This offset value can be placed in <b>bias</b>, otherwise leave
  *  the value as 0.
+ *
  *  @param dataView input byte array to be decoded
  *  @param numSamples the number of samples that can be decoded from array
  *  @param swapBytes if true, swap reverse the endian-ness of the elements of
@@ -385,6 +389,7 @@ export function decodeSteim2(dataView: DataView, numSamples: number, swapBytes: 
  * An offset of 0 means that we are at the first frame, so include the header
  * bytes in the returned int array...else, do not include the header bytes
  * in the returned array.
+ *
  * @param bytes byte array of compressed data differences
  * @param offset index to begin reading compressed bytes for decoding
  * @param swapBytes reverse the endian-ness of the compressed bytes being read

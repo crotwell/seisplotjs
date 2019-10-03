@@ -49,7 +49,12 @@ export class Helicorder {
     this.heliConfig.lineSeisConfig.doRMean = this.heliConfig.doRMean;
     this.drawSeismograms();
   }
-  drawSeismograms() {
+  /**
+   * draws or redraws the seismograms in the helicorder
+   *
+   * @private
+   */
+  drawSeismograms(): void {
     if ( ! this.seisData) {
       // no data
       return;
@@ -154,6 +159,7 @@ export class Helicorder {
   }
   /**
    * Calculates the time range covered by each line of the display
+   *
    * @param   startTime      start of display
    * @param   secondsPerLine seconds covered by each line
    * @param   numberOfLines  number of lines
@@ -174,6 +180,7 @@ export class Helicorder {
 
 /**
  * Configuration of the helicorder
+ *
  * @param timeWindow the time range covered by the helicorder, required
  */
 export class HelicorderConfig extends SeismographConfig {

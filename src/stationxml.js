@@ -141,6 +141,7 @@ export class Channel {
   }
   /**
    * Checks if this channel has sensitivity defined, within the response.
+   * 
    * @returns          true if instrumentSensitivity exits
    */
   hasInstrumentSensitivity(): boolean {
@@ -271,7 +272,7 @@ export function extractAllStations(networks: Array<Network>): Array<Station> {
 
 /**
  * Extract all channels from all stations from all networks in the input array.
- * 
+ *
  * @param   networks Array of networks.
  * @returns           Array of channels.
  */

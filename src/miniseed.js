@@ -98,9 +98,9 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
 }
 
 /** parses a Blockette within the DataView.
-  * @param {DataView} dataView containing the data
-  * @param {number} offset offset into the DataView to start
-  * @param {number} length size in bytes of the Blockette
+  * @param  dataView containing the data
+  * @param  offset offset into the DataView to start
+  * @param  length size in bytes of the Blockette
   * @param headerByteSwap true if byte swapping is needed
   */
 export function parseBlockette(dataView: DataView, offset: number, length: number, headerByteSwap: boolean): Blockette {

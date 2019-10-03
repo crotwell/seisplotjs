@@ -173,11 +173,15 @@ export function combine(freqValues: Float32Array,
         return freqValues;
     }
 
-    /**
-     * Evaluates the poles and zeros at the given value. The return value is
-     * 1/(pz(s) to avoid divide by zero issues. If there is a divide by zero
-     * situation, then the response is set to be 0+0i.
-     */
+  /**
+   * Evaluates the poles and zeros at the given value. The return value is
+   * 1/(pz(s) to avoid divide by zero issues. If there is a divide by zero
+   * situation, then the response is set to be 0+0i.
+   *
+   * @param sacPoleZero SAC PoleZero response
+   * @param freq frequency to evaluate
+   * @returns complex frequency domain value for this frequency
+   */
   export function evalPoleZeroInverse(sacPoleZero: SacPoleZero, freq: number) {
         const s = createComplex(0, 2 * Math.PI * freq);
         let zeroOut = createComplex(1, 0);
@@ -231,7 +235,9 @@ export function applyFreqTaper(fftResult: FFTResult,
                                       fftResult.phase, fftResult.origLength, fftResult.sampleRate);
 }
 
-// common units
+/**
+ * commonly used units as Qty
+ */
 export const UNITS = {
   COUNT: new Qty('count'),
   METER: new Qty('m'),
@@ -239,12 +245,16 @@ export const UNITS = {
   METER_PER_SECOND_PER_SECOND: new Qty('m/s2'),
 };
 
-/** Converts a StationXML response to SAC PoleZero style. This
+ /**
+  * Converts a StationXML response to SAC PoleZero style. This
   * converts the analog to digital stage (usually 0) along
   * with the overall gain, but does not include later FIR stages.
   * To maintain compatibility with SAC, this includes extra zeros
   * if needed to convert to displacement. The number of extra zeros
   * added is kept as gamma in the result.
+  *
+  * @param response stationxml Response to convert
+  * @returns SAC PoleZero style version of the response
   */
 export function convertToSacPoleZero( response: Response) {
     let polesZeros: PolesZeros;

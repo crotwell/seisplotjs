@@ -116,12 +116,20 @@ export class SeismographConfig {
     this.lineWidth = 1;
   }
 
+/**
+ * gets the current title
+ * 
+ * @return        title as an array of strings
+ */
   get title(): Array<string> {
     return this._title;
   }
-  /** Sets the title as simple string or array of strings. If an array
-  then each item will be in a separate tspan for easier formatting.
-  */
+  /**
+   * Sets the title as simple string or array of strings. If an array
+   * then each item will be in a separate tspan for easier formatting.
+   *
+   * @param value string or array of strings to be the title
+   */
   set title(value: string | Array<string>) {
     if (Array.isArray(value)) {
       this._title = value;
@@ -132,7 +140,7 @@ export class SeismographConfig {
 
   /** Fake data to use to test alignment of seismograph axis and between canvas
    *  and svg drawing.
-   *  
+   *
    * @param   timeWindow start and end of fake data
    * @param   min        min amplitude for fake data, default is -100
    * @param   max        max amplitude for fake data, default is 100

@@ -213,8 +213,12 @@ export class SeismogramSegment {
       || isDef(this.locationCode)
       || isDef(this.channelCode);
   }
-  /** @returns nslc codes separated by '.'
-  */
+  /**
+   * return network, station, location and channels codes as one string
+   *
+   * @param sep separator, defaults to '.'
+   * @returns nslc codes separated by sep
+   */
   codes(sep: string = '.'): string {
     return (this.networkCode ? this.networkCode : '')
     +sep+(this.stationCode ? this.stationCode : '')
@@ -278,7 +282,7 @@ export class SeismogramSegment {
   }
 }
 
-/** Represents time window for a single channel that may
+ /** Represents time window for a single channel that may
   * contain gaps or overlaps, but is otherwise more or less
   * continuous, or at least adjacent data from the channel.
   * Each segment within
@@ -347,7 +351,6 @@ export class Seismogram {
   /**
    * calculates the mean of a seismogrma.
    *
-   * @param   seis input seismogram
    * @returns       mean value
    */
   mean(): number {
@@ -422,6 +425,7 @@ export class Seismogram {
   /**
    * Cut the seismogram. Creates a new seismogram with all datapoints
    * contained in the time window.
+   *
    * @param  timeWindow start and end of cut
    * @returns            new seismogram
    */
@@ -442,6 +446,9 @@ export class Seismogram {
     * version of cut as it only removes whole segments that do not overlap the
     * time window. For most seismograms that consist of a single contiguous
     * data segment, this will do nothing.
+    *
+    * @param timeWindow time range to trim to
+    * @returns seismogram if data in the window, null otherwise
     * @see cut
     */
   trim(timeWindow: StartEndDuration): null | Seismogram {
@@ -510,6 +517,7 @@ export class Seismogram {
   }
   /**
    * Gets the timeseries as an typed array if it is contiguous.
+   *
    * @throws {NonContiguousData} if data is not contiguous.
    * @returns  timeseries as array of number
    */
@@ -542,9 +550,15 @@ export class Seismogram {
       throw new Error("Y value is empty");
     }
   }
-  /** factory method to create a single segment Seismogram from either encoded data
+  /**
+   * factory method to create a single segment Seismogram from either encoded data
    *  or a TypedArray, along with sample rate and start time.
-  */
+   *
+   * @param yArray array of encoded data or typed array
+   * @param sampleRate sample rate, samples per second of the data
+   * @param startTime time of first sample
+   * @returns seismogram initialized with the data
+   */
   static createFromContiguousData(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
                                   sampleRate: number,
                                   startTime: moment) {
