@@ -28,6 +28,8 @@ module.exports = {
       "no-unused-vars": [ "error"],
       "eqeqeq": ["error", "always"],
       "jsdoc/require-param-type": ["off"],
-      "jsdoc/require-returns-type": ["off"]
+      "jsdoc/require-returns-type": ["off"],
+      "jsdoc/no-types": ["error"],
+      "jsdoc/require-jsdoc": ["warn", {"require":{"MethodDefinition":true}}]
     }
 };
