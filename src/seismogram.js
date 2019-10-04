@@ -469,9 +469,9 @@ export class Seismogram {
     let out = null;
     if (this._segmentArray) {
       let trimSeisArray = this._segmentArray.filter(function(d) {
-        return d.endTime.isAfter(timeWindow.startTime);
+        return d.endTime.isSameOrAfter(timeWindow.startTime);
       }).filter(function(d) {
-        return d.startTime.isBefore(timeWindow.endTime);
+        return d.startTime.isSameOrBefore(timeWindow.endTime);
       });
       if (trimSeisArray.length > 0) {
         out = new Seismogram(trimSeisArray);
