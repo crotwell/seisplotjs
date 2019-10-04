@@ -469,6 +469,7 @@ export class Seismograph {
         .attr("d", function(seg) {
            return mythis.segmentDrawLine(seg, mythis.currZoomXScale);
          });
+    subtraceJoin.exit().remove();
   }
 
   calcSecondsPerPixel(xScale: any): number {
