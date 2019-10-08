@@ -664,6 +664,7 @@ export class Seismograph {
     // marker overlay
     let mythis = this;
     let markerG = this.g.select("g.allmarkers");
+    markerG.selectAll("g.marker").remove();
     let labelSelection = markerG.selectAll("g.marker")
         .data(allMarkers, function(d) {
               // key for data
@@ -675,10 +676,10 @@ export class Seismograph {
 
     labelSelection.enter()
         .append("g")
-        .attr("class", function(m) { return "marker "+m.name+" "+m.markertype;})
+        .attr("class", function(m) { return "marker "+m.name+" "+m.type;})
            // translate so marker time is zero
         .attr("transform", function(marker) {
-            let textx = mythis.currZoomXScale( marker.time);
+            let textx = mythis.currZoomXScale( marker.time.toDate());
             return  "translate("+textx+","+0+")";
           })
         .each(function(marker) {
@@ -739,9 +740,6 @@ export class Seismograph {
 //              .style("fill", "rgba(220,220,220,.4)");
           drawG.append("path")
             .classed("markerpath", true)
-            .style("fill", "none")
-            .style("stroke", "black")
-            .style("stroke-width", "1px")
             .attr("d", () => {
               return d3.line()
                 .x(0) // g is translated so marker time is zero
@@ -1186,11 +1184,22 @@ export function createMarkersForTravelTimes(quake: Quake, ttime: any): Array<Mar
 
 export const seismograph_css = `
 
-.predicted polygon {
+
+.marker .markerpath {
+  fill: none;
+  stroke: black;
+  stroke-width: 1px;
+}
+
+.marker polygon {
+  fill: rgba(150,220,150,.4);
+}
+
+.marker.predicted polygon {
   fill: rgba(220,220,220,.4);
 }
 
-.pick polygon {
+.marker.pick polygon {
   fill: rgba(255,100,100,.4);
 }
 
