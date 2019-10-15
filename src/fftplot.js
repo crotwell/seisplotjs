@@ -18,7 +18,7 @@ import {insertCSS} from './cssutil.js';
  * @param   cssSelector selection of the containing element, usually a div
  * @param   fft         data to plot
  * @param   loglog      true for loglog plot, false for linlog
- * @return              the svg element containing the plot
+ * @returns              the svg element containing the plot
  */
 export function createSimpleFFTPlot(cssSelector: string, fft: FFTResult, loglog: boolean = true) {
   let svg = createOverlayFFTPlot(cssSelector,  [ fft ], loglog);
@@ -30,9 +30,9 @@ export function createSimpleFFTPlot(cssSelector: string, fft: FFTResult, loglog:
  * Create a amplitude plot of multiple FFT data.
  *
  * @param   cssSelector selection of the containing element, usually a div
- * @param   fft         array of FFT data to plot
+ * @param   fftArrays   array of FFT data to plot
  * @param   loglog      true for loglog plot, false for linlog
- * @return              the svg element containing the plot
+ * @returns             the svg element containing the plot
  */
 export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTResult>, loglog: boolean = true) {
     let ampPhaseList = [];

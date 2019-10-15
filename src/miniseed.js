@@ -13,7 +13,12 @@ import * as seedcodec from './seedcodec';
 
 export const MINISEED_MIME = "application/vnd.fdsn.mseed";
 
-/** parse arrayBuffer into an array of DataRecords. */
+/**
+ * parse arrayBuffer into an array of DataRecords.
+ *
+ * @param arrayBuffer bytes to parse
+ * @returns arry of data records
+ */
 export function parseDataRecords(arrayBuffer: ArrayBuffer): Array<DataRecord> {
   let dataRecords = [];
   let offset = 0;
@@ -26,9 +31,13 @@ export function parseDataRecords(arrayBuffer: ArrayBuffer): Array<DataRecord> {
   return dataRecords;
 }
 
-/** parse a single DataRecord starting at the beginning of the DataView.
- *  Currently only some blockettes are parsed, 100, 1000, 1001, others are separated,
+/**
+ * parse a single DataRecord starting at the beginning of the DataView.
+ * Currently only some blockettes are parsed, 100, 1000, 1001, others are separated,
  * but left as just a DataView.
+ *
+ * @param dataView bytes as DataView
+ * @returns data record
  */
 export function parseSingleDataRecord(dataView: DataView): DataRecord {
   let header = parseSingleDataRecordHeader(dataView);
@@ -38,7 +47,12 @@ export function parseSingleDataRecord(dataView: DataView): DataRecord {
   return new DataRecord(header, data);
 }
 
-/** parse the DataHeader from a single DataRecord starting at the beginning of the DataView. */
+/**
+ * parse the DataHeader from a single DataRecord starting at the beginning of the DataView.
+ *
+ * @param dataView bytes as DataView
+ * @returns data record header
+ */
 export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   if (dataView.byteLength < 47) {
     throw new Error(`Not enought bytes for header, need 47, found ${dataView.byteLength}`);
@@ -97,12 +111,15 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   return out;
 }
 
-/** parses a Blockette within the DataView.
-  * @param  dataView containing the data
-  * @param  offset offset into the DataView to start
-  * @param  length size in bytes of the Blockette
-  * @param headerByteSwap true if byte swapping is needed
-  */
+/**
+ * parses a Blockette within the DataView.
+ *
+ * @param  dataView containing the data
+ * @param  offset offset into the DataView to start
+ * @param  length size in bytes of the Blockette
+ * @param headerByteSwap true if byte swapping is needed
+ * @returns Blockette instance
+ */
 export function parseBlockette(dataView: DataView, offset: number, length: number, headerByteSwap: boolean): Blockette {
   const type = dataView.getUint16(offset, headerByteSwap);
   const body = new DataView(dataView.buffer, dataView.byteOffset+offset, length);
@@ -126,8 +143,9 @@ export function parseBlockette(dataView: DataView, offset: number, length: numbe
   }
 }
 
-/** Represents a SEED Data Record, with header, blockettes and data.
-  *  */
+/**
+ * Represents a SEED Data Record, with header, blockettes and data.
+ *  */
 export class DataRecord {
   header: DataHeader;
   data: DataView;
@@ -136,9 +154,11 @@ export class DataRecord {
     this.header = header;
     this.data = data;
   }
-    /** Decompresses the data , if the compression
-     *  type is known.
-     */
+  /**
+   * Decompresses the data , if the compression type is known.
+   *
+   * @returns decompressed data
+   */
   decompress() {
     return this.asEncodedDataSegment().decode();
   }
@@ -146,16 +166,21 @@ export class DataRecord {
     return new seedcodec.EncodedDataSegment(this.header.encoding, this.data, this.header.numSamples, this.header.littleEndian);
   }
 
-  /** Concatenates the net, station, loc and channel codes,
-    * separated by the given seperator, or periods if not given.
-  */
+  /**
+   * Concatenates the net, station, loc and channel codes,
+   * separated by the given seperator, or periods if not given.
+   *
+   * @param sep optional separater, defaults to .
+   * @returns string of codes
+   */
   codes(sep?: string): string {
     if ( ! sep) { sep = '.';}
     return this.header.netCode+sep+this.header.staCode+sep+this.header.locCode+sep+this.header.chanCode;
   }
 }
 
-/** Represents the header part of the DataRecord, including all the actual
+/**
+ * Represents the header part of the DataRecord, including all the actual
  *  fixed header plus fields pulled from a blockette 1000 if present.
  */
 export class DataHeader {
@@ -216,8 +241,12 @@ export class DataHeader {
     return this.netCode+"."+this.staCode+"."+this.locCode+"."+this.chanCode+" "+this.startTime.toISOString()+" "+this.encoding;
   }
 
-  /** Calculates the sample rate in hertz from the sampRateFac and sampRateMul
-  parameters. This.sampleRate value is set to this value at construction. */
+  /**
+   * Calculates the sample rate in hertz from the sampRateFac and sampRateMul
+   * parameters. This.sampleRate value is set to this value at construction.
+   *
+   * @returns sample rate
+   */
   calcSampleRate(): number {
     let factor = this.sampRateFac;
     let multiplier = this.sampRateMul;
@@ -231,9 +260,13 @@ export class DataHeader {
     return sampleRate;
   }
 
-  /** Calculates the time of the i-th sample in the record, zero based,
+  /**
+   * Calculates the time of the i-th sample in the record, zero based,
    *  so timeOfSample(0) is the start and timeOfSample(this.numSamples-1) is end.
-  */
+   *
+   * @param i sample index
+   * @returns time at i-th sample as moment
+   */
   timeOfSample(i: number): moment {
     return moment.utc(this.startTime).add(i/this.sampleRate, 'second');
   }
@@ -350,7 +383,8 @@ export class BTime {
 /**
  * Sanity checks on a BTime to see if a record might be in the wrong byte order
  * and so need to be byte swapped before parsing. Checks year betwee 1960 and 2055.
- * @param   bTime
+ *
+ * @param   bTime  time
  * @returns        true is byte order appears to be wrong, false if it seems ok
  */
 export function checkByteSwap(bTime: BTime): boolean {
@@ -358,9 +392,13 @@ export function checkByteSwap(bTime: BTime): boolean {
 }
 
 /** Determines if two DataRecords are contiguous, ie if the second starts
-  * after the end of the first and the start time of the second is within
-  * 1.5 times the sample period of the end of the first.
-  */
+ * after the end of the first and the start time of the second is within
+ * 1.5 times the sample period of the end of the first.
+ *
+ * @param dr1 first data record
+ * @param dr2 seconds data record
+ * @returns true if contiguous
+ */
 export function areContiguous(dr1: DataRecord, dr2: DataRecord): boolean {
     let h1 = dr1.header;
     let h2 = dr2.header;
@@ -368,9 +406,14 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord): boolean {
         && h1.endTime.valueOf() + 1000*1.5/h1.sampleRate > h2.startTime.valueOf();
 }
 
-/** Concatentates a sequence of DataRecords into a single seismogram object.
-  * Assumes that they are all contiguous and in order. Header values from the first
-  * DataRecord are used. */
+/**
+ * Concatentates a sequence of DataRecords into a single seismogram object.
+ * Assumes that they are all contiguous and in order. Header values from the first
+ * DataRecord are used.
+ *
+ * @param contig array of data records
+ * @returns SeismogramSegment instance
+ * */
 export function createSeismogramSegment(contig: Array<DataRecord> | DataRecord): SeismogramSegment {
   if ( ! Array.isArray(contig)) { contig = [ contig ];}
   let contigData = contig.map(dr => dr.asEncodedDataSegment());
@@ -393,6 +436,9 @@ export function createSeismogramSegment(contig: Array<DataRecord> | DataRecord):
  * sorted by startTime.
  * This assumes all data records are from the same channel, byChannel
  * can be used first if multiple channels may be present.
+ *
+ * @param drList array of data records
+ * @returns Seismogram instance
  */
 export function merge(drList: Array<DataRecord>): Seismogram {
   let out = [];
@@ -422,8 +468,13 @@ export function merge(drList: Array<DataRecord>): Seismogram {
 }
 
 
-/** Splits a list of data records by channel code, returning a Map
-  * with each NSLC string mapped to an array of data records. */
+/**
+ * Splits a list of data records by channel code, returning a Map
+ * with each NSLC string mapped to an array of data records.
+ *
+ * @param drList array of data records
+ * @returns map of arrays of data records keyed by channel
+ * */
 export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataRecord>> {
   let out: Map<string, Array<DataRecord>> = new Map();
   let key;
@@ -444,6 +495,7 @@ export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataReco
 /**
  * splits the DataRecords by channel and creates a single
  * Seismogram for each channel.
+ *
  * @param   drList DataRecords array
  * @returns         Array of Seismogram
  */

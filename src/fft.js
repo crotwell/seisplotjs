@@ -13,10 +13,13 @@ import * as OregonDSPTop from 'oregondsp';
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 /** A higher level function to calculate DFT. Returns a
-  * FFTResult for easier access to the result as
-  * complex, amp, phase arrays. Calls calcDFT internally.
-  * Inverse FFT is available as FFTResult.fftInverse().
-  */
+ * FFTResult for easier access to the result as
+ * complex, amp, phase arrays. Calls calcDFT internally.
+ * Inverse FFT is available as FFTResult.fftInverse().
+ *
+ * @param seis seismogram to transform
+ * @returns fft of seismogram
+ */
 export function fftForward(seis: Seismogram) {
   if ( seis.isContiguous()) {
     let result = FFTResult.createFromPackedFreq(calcDFT(seis.y), seis.numPoints, seis.sampleRate);
@@ -28,6 +31,7 @@ export function fftForward(seis: Seismogram) {
 
 /**
  * Calculates the discrete fourier transform using the OregonDSP library.
+ *
  * @param   timeseries timeseries array
  * @returns           DFT as packed array Float32Array
  */
@@ -50,6 +54,7 @@ export function calcDFT(timeseries: Int32Array | Float32Array | Float64Array): F
 
 /**
  * Calculates the inverse discrete fourier transform using the OregonDSP library.
+ *
  * @param   packedFreq DFT as packed array Float32Array
  * @param   numPoints     number of points in original timeseries array.
  * @returns           inverse of DFT as a timeseries array
@@ -70,7 +75,8 @@ export function inverseDFT(packedFreq: Float32Array, numPoints: number): Float32
   return out.slice(0, numPoints);
 }
 
-/** Results of FFT calculateion. Allows convertion of the packed real/imag array output from calcDFT into
+/**
+ * Results of FFT calculateion. Allows convertion of the packed real/imag array output from calcDFT into
  * amplitude and phase.
  */
 export class FFTResult {
@@ -90,8 +96,10 @@ export class FFTResult {
   }
   /**
    * Factory method to create FFTResult from packed array.
+   *
    * @param   packedFreq real and imag values in packed format
    * @param   origLength length of the original timeseries before padding.
+   * @param   sampleRate sample rate of original data
    * @returns            FFTResult
    */
   static createFromPackedFreq(packedFreq: Float32Array, origLength: number, sampleRate: number) {
@@ -102,8 +110,10 @@ export class FFTResult {
   }
   /**
    * Factory method to create from array of complex numbers.
+   *
    * @param   complexArray real and imag values as array of Complex objects.
    * @param   origLength   length of the original timeseries before padding.
+   * @param   sampleRate sample rate of original data
    * @returns               FFTResult
    */
   static createFromComplex(complexArray: Array<Complex>, origLength: number, sampleRate: number) {
@@ -114,9 +124,11 @@ export class FFTResult {
   }
   /**
    * Factory method to create from amp and phase arrays
+   *
    * @param   amp        amplitude values
    * @param   phase      phase values
    * @param   origLength length of the original timeseries before padding.
+   * @param   sampleRate sample rate of original data
    * @returns             FFTResult
    */
   static createFromAmpPhase(amp: Float32Array, phase: Float32Array, origLength: number, sampleRate: number) {
@@ -127,7 +139,11 @@ export class FFTResult {
     fftResult.recalcFromAmpPhase();
     return fftResult;
   }
-  /** The minimum non-zero frequency in the fft */
+  /**
+   * The minimum non-zero frequency in the fft
+   *
+   * @returns fundamental frequency
+   */
   get fundamentalFrequency() {
     if (this.sampleRate) {
       return this.sampleRate/this.numPoints;
@@ -157,8 +173,10 @@ export class FFTResult {
     this.amp[this.packedFreq.length/2] = c.abs();
     this.phase[this.packedFreq.length/2] = c.angle();
   }
-  /** recalculate the packedFreq array after modifications
-    * to the complex array. */
+  /**
+   * recalculate the packedFreq array after modifications
+   * to the complex array.
+   * */
   recalcFromComplex() {
     const N = this.complex.length;
     let modFreq = new Float32Array(N).fill(0);
@@ -171,9 +189,10 @@ export class FFTResult {
     this.packedFreq = modFreq;
     this.numPoints = this.packedFreq.length;
   }
-  /** recalculate the packedFreq array after modifications
-    * to the amp and/or phase arrays.
-    */
+  /**
+   * recalculate the packedFreq array after modifications
+   * to the amp and/or phase arrays.
+   */
   recalcFromAmpPhase() {
     let modComplex = new Array(this.amp.length);
     for (let i=0; i< this.amp.length; i++) {
@@ -182,8 +201,11 @@ export class FFTResult {
     this.complex = modComplex;
     this.recalcFromComplex();
   }
-  /** calculates the inverse fft of this.packedFreq
-  */
+  /**
+   * calculates the inverse fft of this.packedFreq
+   *
+   * @returns time domain representation
+   */
   fftInverse() {
     return inverseDFT(this.packedFreq, this.origLength);
   }

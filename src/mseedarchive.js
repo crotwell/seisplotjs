@@ -55,16 +55,20 @@ export class MSeedArchive {
   get recordSize(): number {
     return this._recordSize;
   }
-  /** checks pattern for allowed flags as not all that are supported
-    * by ringserver are supported here. Must only include:
-    * * n network code, white space removed
-    * * s station code, white space removed
-    * * l  location code, white space removed
-    * * c  channel code, white space removed
-    * * Y  year, 4 digits
-    * * j  day of year, 3 digits zero padded
-    * * H  hour, 2 digits zero padded
-    */
+  /**
+   * checks pattern for allowed flags as not all that are supported
+   * by ringserver are supported here. Must only include:
+   * * n network code, white space removed
+   * * s station code, white space removed
+   * * l  location code, white space removed
+   * * c  channel code, white space removed
+   * * Y  year, 4 digits
+   * * j  day of year, 3 digits zero padded
+   * * H  hour, 2 digits zero padded
+   *
+   * @param p mseed archive pattern string
+   * @returns true if all flags are allowed
+   */
   checkPattern(p: string): boolean {
     let regexp = /%[a-zA-Z]/g;
     let allFlags = p.match(regexp);
@@ -85,6 +89,7 @@ export class MSeedArchive {
    * the given time window based on record size,
    * the minimum sample rate
    * for the channel band code and the given time window.
+   *
    * @param   channelTimeList requst channels and time windows
    * @returns Promise to the same SeismogramDisplayData array, but with seismograms populated
    */
@@ -116,6 +121,7 @@ export class MSeedArchive {
   }
   /**
    * Loads miniseed records based on channel and time window.
+   *
    * @param   channel   channel to request
    * @param   startTime start time
    * @param   endTime   end time
@@ -211,7 +217,7 @@ export class MSeedArchive {
    * @param   sta  string to replace '%s'
    * @param   loc  string to replace '%l'
    * @param   chan string to replace '%c'
-   * @return       new string with channel replacements made
+   * @returns       new string with channel replacements made
    */
   fillBasePattern(net: string, sta: string, loc: string, chan: string): string {
     return this.pattern.replace(/%n/g, net)
@@ -224,7 +230,7 @@ export class MSeedArchive {
    *
    * @param   basePattern pattern to replace in
    * @param   t           moment in time
-   * @return              string with time replaces
+   * @returns              string with time replaces
    */
   fillTimePattern(basePattern: string, t: moment): string {
     return basePattern.replace(/%Y/g, t.format('YYYY'))
@@ -235,12 +241,12 @@ export class MSeedArchive {
 }
 
 /**
-  * Gives the maximum sample rate for the channel, based on the
-  * band code, first char, of the channel code.
-  *
-  * @param chan channel code like BHZ, only the first letter is used
-  * @returns mimumum sample rate this could be
-  */
+ * Gives the maximum sample rate for the channel, based on the
+ * band code, first char, of the channel code.
+ *
+ * @param chan channel code like BHZ, only the first letter is used
+ * @returns mimumum sample rate this could be
+ */
 export function maxSampleRate(chan: string): number {
   let f = chan.slice(0,1);
   switch(f) {

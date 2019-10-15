@@ -173,7 +173,7 @@ export function createChebyshevII(numPoles: number,
  *
  * @param   iirFilter filter to apply
  * @param   seis      seismogram to apply filter to
- * @return            filtered seismogram
+ * @returns            filtered seismogram
  */
 export function applyFilter(iirFilter: OregonDSP.filter.iir.IIRFilter, seis: Seismogram): Seismogram {
   let filteredSegments = [];
@@ -224,6 +224,7 @@ export function envelope(seis: Seismogram): Seismogram {
  * @param n optional number of points in transform, default is 10
  * @param lowEdge low edge of filter, normailized to 0-1, default is 0.05
  * @param highEdge high edge of filter, normailized to 0-1, default is 0.95
+ * @returns hilbert transformed data
  *
  */
 export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge?: number ): Seismogram {

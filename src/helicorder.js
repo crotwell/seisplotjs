@@ -17,6 +17,7 @@ import {StartEndDuration, isDef} from './util.js';
 
 /**
  * A helicorder-like multi-line seismogram display usually covering 24 hours
+ * 
  * @param inSvgParent the parent element, usually a div tag
  * @param heliConfig configuration object
  * @param seisData the data to display
