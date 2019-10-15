@@ -11,11 +11,11 @@ import RSVP from 'rsvp';
 
 import * as util from './util.js'; // for util.log
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate} from './util';
 
 import * as miniseed from './miniseed';
 import { Seismogram, SeismogramDisplayData } from './seismogram';
-import { TEXT_MIME, StartEndDuration, doFetchWithTimeout, defaultFetchInitObj, isDef} from './util.js';
+import { TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj, isDef} from './util.js';
 
 /** const for miniseed format, mseed */
 export const FORMAT_MINISEED = 'miniseed';
@@ -36,8 +36,9 @@ export const IRIS_HOST = "service.iris.edu";
 
 /**
  * Query to a FDSN Dataselect web service.
+ *
  * @see http://www.fdsn.org/webservices/
-*/
+ */
 export class DataSelectQuery {
   /** @private */
   _specVersion: number;
@@ -88,6 +89,9 @@ export class DataSelectQuery {
    * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
+   *
+   * @param value spec version, usually 1
+   * @returns new value if getting, this if setting
    */
   specVersion(value?: number): number | DataSelectQuery {
     if (hasArgs(value)) {
@@ -102,6 +106,9 @@ export class DataSelectQuery {
   /**
    * Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   protocol(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
@@ -115,6 +122,9 @@ export class DataSelectQuery {
   }
   /**
    * Gets/Sets the remote host to connect to.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   host(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
@@ -129,6 +139,9 @@ export class DataSelectQuery {
   /**
    * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   nodata(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
@@ -142,6 +155,9 @@ export class DataSelectQuery {
   }
   /**
    * Gets/Sets the remote port to connect to.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   port(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
@@ -153,6 +169,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the network query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   networkCode(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._networkCode = value;
@@ -163,6 +184,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the station query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   stationCode(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._stationCode = value;
@@ -173,6 +199,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the location code query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   locationCode(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._locationCode = value;
@@ -183,6 +214,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the channel query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   channelCode(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._channelCode = value;
@@ -193,6 +229,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the starttime query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   startTime(value?: moment): moment | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
@@ -203,6 +244,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or moment or string, but was '+typeof value);
     }
   }
+  /** Get/Set the endtime query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   endTime(value?: moment): moment | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
@@ -215,6 +261,7 @@ export class DataSelectQuery {
   }
   /**
    * Sets startTime and endTime using the given time window
+   *
    * @param   se time window
    * @returns     this
    */
@@ -223,6 +270,11 @@ export class DataSelectQuery {
     this.endTime(se.endTime);
     return this;
   }
+  /** Get/Set the quality query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   quality(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._quality = value;
@@ -233,6 +285,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the minimum length query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   minimumLength(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._minimumLength;
@@ -243,6 +300,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
+  /** Get/Set the longest only query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   longestOnly(value?: boolean): boolean | DataSelectQuery {
     if (hasNoArgs(value)) {
       return this._longestOnly;
@@ -258,6 +320,9 @@ export class DataSelectQuery {
    * set or get the repository paramter. This is an IRIS-specific
    * parameter that will not work with other dataselect web services.
    *
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   repository(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
@@ -269,6 +334,11 @@ export class DataSelectQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
+  /** Get/Set the format query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   format(value?: string): string | DataSelectQuery {
     if (isStringArg(value)) {
       this._format = value;
@@ -281,6 +351,9 @@ export class DataSelectQuery {
   }
   /**
    * Get/Set the timeout in seconds for the request. Default is 30.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   timeout(value?: number): number | DataSelectQuery {
     if (hasNoArgs(value)) {
@@ -435,24 +508,20 @@ export class DataSelectQuery {
       });
   }
 
-  makeParam(name: string, val: mixed): string {
-    return name+"="+encodeURIComponent(stringify(val))+"&";
-  }
-
   formURL(): string {
     let url = this.formBaseURL()+"/query?";
-    if (this._networkCode) { url = url+this.makeParam("net", this.networkCode());}
-    if (this._stationCode) { url = url+this.makeParam("sta", this.stationCode());}
-    if (this._locationCode) { url = url+this.makeParam("loc", this.locationCode());}
-    if (this._channelCode) { url = url+this.makeParam("cha", this.channelCode());}
-    if (this._startTime) { url = url+this.makeParam("starttime", toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
-    if (this._quality) { url = url+this.makeParam("quality", this.quality());}
-    if (this._minimumLength) { url = url+this.makeParam("minimumlength", this.minimumLength());}
-    if (this._repository) { url = url+this.makeParam("repository", this.repository());}
-    if (this._longestOnly) { url = url+this.makeParam("longestonly", this.longestOnly());}
-    if (this._format) { url = url+this.makeParam("format", this.format());}
-    if (this._nodata) { url = url+this.makeParam("nodata", this.nodata());}
+    if (this._networkCode) { url = url+makeParam("net", this.networkCode());}
+    if (this._stationCode) { url = url+makeParam("sta", this.stationCode());}
+    if (this._locationCode) { url = url+makeParam("loc", this.locationCode());}
+    if (this._channelCode) { url = url+makeParam("cha", this.channelCode());}
+    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
+    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
+    if (this._quality) { url = url+makeParam("quality", this.quality());}
+    if (this._minimumLength) { url = url+makeParam("minimumlength", this.minimumLength());}
+    if (this._repository) { url = url+makeParam("repository", this.repository());}
+    if (this._longestOnly) { url = url+makeParam("longestonly", this.longestOnly());}
+    if (this._format) { url = url+makeParam("format", this.format());}
+    if (this._nodata) { url = url+makeParam("nodata", this.nodata());}
 
     if (url.endsWith('&') || url.endsWith('?')) {
       url = url.substr(0, url.length-1); // zap last & or ?

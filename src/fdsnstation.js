@@ -9,7 +9,7 @@
 import moment from 'moment';
 import {Network, Station, Channel, InstrumentSensitivity, Response, Stage, AbstractFilterType, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
 import {createComplex} from './filter.js';
-import {XML_MIME, TEXT_MIME, StartEndDuration, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
 import {checkProtocol, toIsoWoZ, isObject, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
@@ -43,8 +43,9 @@ export const FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSN
 
 /**
  * Query to a FDSN Station web service.
+ *
  * @see http://www.fdsn.org/webservices/
-*/
+ */
 export class StationQuery {
   /** @private */
   _specVersion: number;
@@ -105,6 +106,7 @@ export class StationQuery {
   /** @private */
   _timeoutSec: number;
   /** Construct a query
+   *
    * @param host the host to connect to , defaults to service.iris.edu
    */
   constructor(host?: string) {
@@ -120,7 +122,10 @@ export class StationQuery {
   /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   specVersion(value?: number): number | StationQuery {
     if (hasArgs(value)) {
       this._specVersion = value;
@@ -133,7 +138,10 @@ export class StationQuery {
   }
   /** Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   protocol(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._protocol = value;
@@ -145,7 +153,10 @@ export class StationQuery {
     }
   }
   /** Gets/Sets the remote host to connect to.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   host(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._host = value;
@@ -157,7 +168,10 @@ export class StationQuery {
     }
   }
   /** Gets/Sets the remote port to connect to.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   port(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._port;
@@ -170,6 +184,9 @@ export class StationQuery {
   }
   /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   nodata(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
@@ -182,7 +199,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the network query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   networkCode(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._networkCode = value;
@@ -194,7 +214,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the station query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   stationCode(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._stationCode = value;
@@ -205,8 +228,11 @@ export class StationQuery {
       throw new Error('value argument is optional or string, but was '+value);
     }
   }
-  /** Get/Set the location query parameter.
-  */
+  /** Get/Set the location code query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   locationCode(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._locationCode = value;
@@ -218,7 +244,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the channel query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   channelCode(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._channelCode = value;
@@ -230,7 +259,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the starttime query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   startTime(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
@@ -242,7 +274,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the endtime query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   endTime(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
@@ -255,6 +290,7 @@ export class StationQuery {
   }
   /**
    * Sets startTime and endTime using the given time window
+   *
    * @param   se time window
    * @returns     this
    */
@@ -264,7 +300,10 @@ export class StationQuery {
     return this;
   }
   /** Get/Set the startbefore query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   startBefore(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startBefore;
@@ -276,7 +315,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the endbefore query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   endBefore(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endBefore;
@@ -288,7 +330,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the startafter query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   startAfter(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._startAfter;
@@ -300,7 +345,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the endafter query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   endAfter(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._endAfter;
@@ -312,7 +360,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the minlat query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   minLat(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._minLat;
@@ -324,7 +375,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the maxlon query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   maxLat(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._maxLat;
@@ -336,7 +390,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the minlon query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   minLon(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._minLon;
@@ -348,7 +405,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the maxlon query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   maxLon(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._maxLon;
@@ -360,7 +420,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the latitude query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   latitude(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._latitude;
@@ -372,7 +435,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the longitude query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   longitude(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._longitude;
@@ -384,7 +450,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the minradius query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   minRadius(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._minRadius;
@@ -396,7 +465,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the maxradius query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   maxRadius(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._maxRadius;
@@ -408,7 +480,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the includerestricted query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   includeRestricted(value?: boolean): boolean | StationQuery {
     if (hasNoArgs(value)) {
       return this._includeRestricted;
@@ -420,7 +495,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the includeavailability query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   includeAvailability(value?: boolean): boolean | StationQuery {
     if (hasNoArgs(value)) {
       return this._includeAvailability;
@@ -432,7 +510,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the format query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   format(value?: string): string | StationQuery {
     if (isStringArg(value)) {
       this._format = value;
@@ -444,7 +525,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the updatedafter query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   updatedAfter(value?: moment): moment | StationQuery {
     if (hasNoArgs(value)) {
       return this._updatedAfter;
@@ -456,7 +540,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the matchtimeseries query parameter.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   matchTimeseries(value?: boolean): boolean | StationQuery {
     if (hasNoArgs(value)) {
       return this._matchTimeseries;
@@ -468,7 +555,10 @@ export class StationQuery {
     }
   }
   /** Get/Set the timeout in seconds for the request. Default is 30.
-  */
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   timeout(value?: number): number | StationQuery {
     if (hasNoArgs(value)) {
       return this._timeoutSec;
@@ -481,8 +571,11 @@ export class StationQuery {
   }
 
   /** Checks to see if any parameter that would limit the data
-    * returned is set. This is a crude, coarse check to make sure
-    * the client doesn't ask for EVERYTHING the server has. */
+   * returned is set. This is a crude, coarse check to make sure
+   * the client doesn't ask for EVERYTHING the server has.
+   *
+   * @returns true if some parameter set
+   * */
   isSomeParameterSet(): boolean {
     return isDef(this._networkCode) ||
     isDef(this._stationCode) ||
@@ -506,8 +599,10 @@ export class StationQuery {
   }
 
   /** Parses a FDSNStationXML Network xml element into a Network object.
+   *
    * @param xml the network xml Element
-  */
+   * @returns Network instance
+   */
   convertToNetwork(xml: Element): Network {
     const netCode = _grabAttribute(xml, "code");
     if (! netCode) {throw new Error("network code missing in network!");}
@@ -532,10 +627,13 @@ export class StationQuery {
     out.stations = stations;
     return out;
   }
-  /** Parses a FDSNStationXML Station xml element into a Station object.
+  /**
+   * Parses a FDSNStationXML Station xml element into a Station object.
+   *
    * @param network the containing network
    * @param xml the station xml Element
-  */
+   * @returns Station instance
+   */
   convertToStation(network: Network, xml: Element): Station {
     let staCode = _grabAttribute(xml, "code");
     if (! staCode) {throw new Error("station code missing in station!");}
@@ -561,10 +659,13 @@ export class StationQuery {
     out.channels = channels;
     return out;
   }
-  /** Parses a FDSNStationXML Channel xml element into a Channel object.
+  /**
+   * Parses a FDSNStationXML Channel xml element into a Channel object.
+   *
    * @param station the containing staton
    * @param xml the channel xml Element
-  */
+   * @returns Channel instance
+   */
   convertToChannel(station: Station, xml: Element): Channel {
     let locCode = _grabAttribute(xml, "locationCode");
     if (! locCode) {locCode = '';}
@@ -603,8 +704,10 @@ export class StationQuery {
   }
 
   /** Parses a FDSNStationXML Response xml element into a Response object.
+   *
    * @param responseXml the response xml Element
-  */
+   * @returns Response instance
+   */
   convertToResponse(responseXml: Element): Response {
     let mythis = this;
     let out;
@@ -628,9 +731,12 @@ export class StationQuery {
     return out;
   }
 
-  /** Parses a FDSNStationXML InstrumentSensitivity xml element into a InstrumentSensitivity object.
+  /**
+   * Parses a FDSNStationXML InstrumentSensitivity xml element into a InstrumentSensitivity object.
+   *
    * @param xml the InstrumentSensitivity xml Element
-  */
+   * @returns InstrumentSensitivity instance
+   */
   convertToInstrumentSensitivity(xml: Element): InstrumentSensitivity {
     let sensitivity = _grabFirstElFloat(xml, 'Value');
     let frequency = _grabFirstElFloat(xml, 'Frequency');
@@ -643,9 +749,12 @@ export class StationQuery {
     return new InstrumentSensitivity(sensitivity, frequency, inputUnits, outputUnits);
   }
 
-  /** Parses a FDSNStationXML Stage xml element into a Stage object.
-   * @param xml the Stage xml Element
-  */
+  /**
+   * Parses a FDSNStationXML Stage xml element into a Stage object.
+   *
+   * @param stageXml the Stage xml Element
+   * @returns Stage instance
+   */
   convertToStage(stageXml: Element): Stage {
     let subEl = stageXml.firstElementChild;
     let filter: AbstractFilterType | null = null;
@@ -745,9 +854,12 @@ export class StationQuery {
     return out;
   }
 
-  /** Parses a FDSNStationXML Decimation xml element into a Decimation object.
-   * @param xml the Decimation xml Element
-  */
+  /**
+   * Parses a FDSNStationXML Decimation xml element into a Decimation object.
+   *
+   * @param decXml the Decimation xml Element
+   * @returns Decimation instance
+   */
   convertToDecimation(decXml: Element): Decimation {
     let out = new Decimation();
     const insr = _grabFirstElFloat(decXml, 'InputSampleRate');
@@ -760,9 +872,12 @@ export class StationQuery {
     return out;
   }
 
-  /** Parses a FDSNStationXML Gain xml element into a Gain object.
-   * @param xml the Gain xml Element
-  */
+  /**
+   * Parses a FDSNStationXML Gain xml element into a Gain object.
+   *
+   * @param gainXml the Gain xml Element
+   * @returns Gain instance
+   */
   convertToGain(gainXml: Element): Gain {
     let out = new Gain();
     const v = _grabFirstElFloat(gainXml, 'Value');
@@ -772,36 +887,46 @@ export class StationQuery {
     return out;
   }
 
-  /** Queries the remote web service for networks.
+  /**
+   * Queries the remote web service for networks.
+   *
    * @returns a Promise to an Array of Network objects.
    */
   queryNetworks(): Promise<Array<Network>> {
     return this.query(LEVEL_NETWORK);
   }
-  /** Queries the remote web service for stations. The stations
+  /**
+   * Queries the remote web service for stations. The stations
    * are contained within their respective Networks.
+   *
    * @returns a Promise to an Array of Network objects.
    */
   queryStations(): Promise<Array<Network>> {
     return this.query(LEVEL_STATION);
   }
-  /** Queries the remote web service for channels. The Channels
+  /**
+   * Queries the remote web service for channels. The Channels
    * are contained within their respective Stations which are in Networks.
+   *
    * @returns a Promise to an Array of Network objects.
    */
   queryChannels(): Promise<Array<Network>> {
     return this.query(LEVEL_CHANNEL);
   }
-  /** Queries the remote web service for responses. The Responses
+  /**
+   * Queries the remote web service for responses. The Responses
    * are contained within their respective Channels,
    * which are in Stations which are in Networks.
+   *
    * @returns a Promise to an Array of Network objects.
    */
   queryResponses(): Promise<Array<Network>> {
     return this.query(LEVEL_RESPONSE);
   }
 
-  /** Queries the remote web service at the given level.
+  /**
+   * Queries the remote web service at the given level.
+   *
    * @param level the level to query at, networ, station, channel or response.
    * @returns a Promise to an Array of Network objects.
    */
@@ -813,7 +938,10 @@ export class StationQuery {
     });
   }
 
-  /** Parses the FDSN StationXML returned from a query.
+  /**
+   * Parses the FDSN StationXML returned from a query.
+   *
+   * @param rawXml parsed xml to extract objects from
    * @returns an Array of Network objects.
    */
   parseRawXml(rawXml: Document): Array<Network> {
@@ -826,7 +954,9 @@ export class StationQuery {
     }
     return out;
   }
-  /** Queries the remote web service at the given level for raw xml.
+  /**
+   * Queries the remote web service at the given level for raw xml.
+   *
    * @param level the level to query at, network, station, channel or response.
    * @returns a Promise to an xml Document.
    */
@@ -849,17 +979,21 @@ export class StationQuery {
       });
   }
 
-  /** Forms the URL to get version from the web service, without any query paramters
+  /**
+   * Forms the URL to get version from the web service, without any query paramters
+   *
    * @returns the url
-  */
+   */
   formVersionURL() {
       return this.formBaseURL()+"/version";
   }
 
 
-  /** Queries the remote web service to get its version
+  /**
+   * Queries the remote web service to get its version
+   *
    * @returns Promise to version string
-  */
+   */
   queryVersion(): Promise<string> {
     let url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
@@ -873,14 +1007,10 @@ export class StationQuery {
       });
   }
   /**
-  * Create a name=value parameter to add to a URL, including trailing ampersand
-  */
-  makeParam(name: string, val: mixed) {
-    return name+"="+encodeURIComponent(stringify(val))+"&";
-  }
-  /** Forms the basic URL to contact the web service, without any query paramters
+   * Forms the basic URL to contact the web service, without any query paramters
+   *
    * @returns the url
-  */
+   */
   formBaseURL() {
     let colon = ":";
     if (this._protocol.endsWith(colon)) {
@@ -888,36 +1018,40 @@ export class StationQuery {
     }
     return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/fdsnws/station/"+this._specVersion;
   }
-  /** Form URL to query the remote web service, encoding the query parameters.
-  */
+  /**
+   * Form URL to query the remote web service, encoding the query parameters.
+   *
+   * @param level network, station, channel or response
+   * @returns url
+   */
   formURL(level: string) {
     let url = this.formBaseURL()+"/query?";
     if (! level) {throw new Error("level not specified, should be one of network, station, channel, response.");}
-    url = url+this.makeParam("level", level);
-    if (this._networkCode) { url = url+this.makeParam("net", this.networkCode());}
-    if (this._stationCode) { url = url+this.makeParam("sta", this.stationCode());}
-    if (this._locationCode) { url = url+this.makeParam("loc", this.locationCode());}
-    if (this._channelCode) { url = url+this.makeParam("cha", this.channelCode());}
-    if (this._startTime) { url = url+this.makeParam("starttime", toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
-    if (this._startBefore) { url = url+this.makeParam("startbefore", toIsoWoZ(this.startBefore()));}
-    if (this._startAfter) { url = url+this.makeParam("startafter", toIsoWoZ(this.startAfter()));}
-    if (this._endBefore) { url = url+this.makeParam("endbefore", toIsoWoZ(this.endBefore()));}
-    if (this._endAfter) { url = url+this.makeParam("endafter", toIsoWoZ(this.endAfter()));}
-    if (this._minLat) { url = url+this.makeParam("minlat", this.minLat());}
-    if (this._maxLat) { url = url+this.makeParam("maxlat", this.maxLat());}
-    if (this._minLon) { url = url+this.makeParam("minlon", this.minLon());}
-    if (this._maxLon) { url = url+this.makeParam("maxlon", this.maxLon());}
-    if (this._latitude) { url = url+this.makeParam("lat", this.latitude());}
-    if (this._longitude) { url = url+this.makeParam("lon", this.longitude());}
-    if (this._minRadius) { url = url+this.makeParam("minradius", this.minRadius());}
-    if (this._maxRadius) { url = url+this.makeParam("maxradius", this.maxRadius());}
-    if (this._includeRestricted) { url = url+this.makeParam("includerestricted", this.includeRestricted());}
-    if (this._includeAvailability) { url = url+this.makeParam("includeavailability", this.includeAvailability());}
-    if (this._updatedAfter) { url = url+this.makeParam("updatedafter", toIsoWoZ(this.updatedAfter()));}
-    if (this._matchTimeseries) { url = url+this.makeParam("matchtimeseries", this.matchTimeseries());}
-    if (this._format) { url = url+this.makeParam("format", this.format());}
-    if (this._nodata) { url = url+this.makeParam("nodata", this.nodata());}
+    url = url+makeParam("level", level);
+    if (this._networkCode) { url = url+makeParam("net", this.networkCode());}
+    if (this._stationCode) { url = url+makeParam("sta", this.stationCode());}
+    if (this._locationCode) { url = url+makeParam("loc", this.locationCode());}
+    if (this._channelCode) { url = url+makeParam("cha", this.channelCode());}
+    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
+    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
+    if (this._startBefore) { url = url+makeParam("startbefore", toIsoWoZ(this.startBefore()));}
+    if (this._startAfter) { url = url+makeParam("startafter", toIsoWoZ(this.startAfter()));}
+    if (this._endBefore) { url = url+makeParam("endbefore", toIsoWoZ(this.endBefore()));}
+    if (this._endAfter) { url = url+makeParam("endafter", toIsoWoZ(this.endAfter()));}
+    if (this._minLat) { url = url+makeParam("minlat", this.minLat());}
+    if (this._maxLat) { url = url+makeParam("maxlat", this.maxLat());}
+    if (this._minLon) { url = url+makeParam("minlon", this.minLon());}
+    if (this._maxLon) { url = url+makeParam("maxlon", this.maxLon());}
+    if (this._latitude) { url = url+makeParam("lat", this.latitude());}
+    if (this._longitude) { url = url+makeParam("lon", this.longitude());}
+    if (this._minRadius) { url = url+makeParam("minradius", this.minRadius());}
+    if (this._maxRadius) { url = url+makeParam("maxradius", this.maxRadius());}
+    if (this._includeRestricted) { url = url+makeParam("includerestricted", this.includeRestricted());}
+    if (this._includeAvailability) { url = url+makeParam("includeavailability", this.includeAvailability());}
+    if (this._updatedAfter) { url = url+makeParam("updatedafter", toIsoWoZ(this.updatedAfter()));}
+    if (this._matchTimeseries) { url = url+makeParam("matchtimeseries", this.matchTimeseries());}
+    if (this._format) { url = url+makeParam("format", this.format());}
+    if (this._nodata) { url = url+makeParam("nodata", this.nodata());}
     if (url.endsWith('&') || url.endsWith('?')) {
       url = url.substr(0, url.length-1); // zap last & or ?
     }
@@ -995,6 +1129,12 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
   return out;
 };
 
+/**
+ * Extracts a complex number from an xml element.
+ *
+ * @param   el xml element
+ * @returns     Complex instance
+ */
 function extractComplex(el: Element) {
   const re = _grabFirstElFloat(el, 'Real');
   const im = _grabFirstElFloat(el, 'Imaginary');

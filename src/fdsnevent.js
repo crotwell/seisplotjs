@@ -8,7 +8,7 @@
 
 import { moment } from 'moment';
 import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml';
-import {XML_MIME, TEXT_MIME, StartEndDuration, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 import * as util from './util.js'; // for util.log
 // special due to flow
@@ -38,6 +38,7 @@ export const FAKE_EMPTY_XML = '<?xml version="1.0"?><q:quakeml xmlns="http://qua
 
 /**
  * Query to a FDSN Event web service.
+ * 
  * @see http://www.fdsn.org/webservices/
  */
 export class EventQuery {
@@ -119,6 +120,9 @@ export class EventQuery {
    * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   specVersion(value?: number): number | EventQuery {
     if (hasArgs(value)) {
@@ -133,6 +137,9 @@ export class EventQuery {
   /**
    * Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   protocol(value?: string): string | EventQuery {
     if (isStringArg(value)) {
@@ -146,6 +153,9 @@ export class EventQuery {
   }
   /**
    * Gets/Sets the remote host to connect to.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   host(value?: string): string | EventQuery {
     if (isStringArg(value)) {
@@ -159,6 +169,9 @@ export class EventQuery {
   }
   /**
    * Gets/Sets the remote port to connect to.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   port(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -173,6 +186,9 @@ export class EventQuery {
   /**
    * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   nodata(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -186,6 +202,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the eventid query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   eventId(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
@@ -199,6 +218,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the starttime query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   startTime(value?: moment): moment | EventQuery {
     if (hasNoArgs(value)) {
@@ -211,7 +233,10 @@ export class EventQuery {
     }
   }
   /**
-   * et/Set the endtime query parameter.
+   * Get/Set the endtime query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   endTime(value?: moment): moment | EventQuery {
     if (hasNoArgs(value)) {
@@ -236,6 +261,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the updatedafter query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   updatedAfter(value?: moment): moment | EventQuery {
     if (hasNoArgs(value)) {
@@ -249,6 +277,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the minmag query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   minMag(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -262,6 +293,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the maxmag query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   maxMag(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -275,6 +309,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the magnitudetype query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   magnitudeType(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
@@ -288,6 +325,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the mindepth query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   minDepth(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -301,6 +341,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the maxdepth query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   maxDepth(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -314,6 +357,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the minlat query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   minLat(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -327,6 +373,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the maxlat query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   maxLat(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -340,6 +389,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the minlon query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   minLon(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -353,6 +405,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the maxlon query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   maxLon(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -366,6 +421,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the latitude query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   latitude(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -379,6 +437,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the longitude query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   longitude(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -392,6 +453,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the minradius query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   minRadius(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -405,6 +469,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the maxradius query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   maxRadius(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -418,6 +485,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the includearrivals query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   includeArrivals(value?: boolean): boolean | EventQuery {
     if (hasNoArgs(value)) {
@@ -431,6 +501,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the includeallorigins query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   includeAllOrigins(value?: boolean): boolean | EventQuery {
     if (hasNoArgs(value)) {
@@ -444,6 +517,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the includeallmagnitudes query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   includeAllMagnitudes(value?: boolean): boolean | EventQuery {
     if (hasNoArgs(value)) {
@@ -457,6 +533,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the format query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   format(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
@@ -470,6 +549,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the limit query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   limit(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -483,6 +565,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the offset query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   offset(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -496,6 +581,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the orderby query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   orderBy(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
@@ -509,6 +597,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the catalog query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   catalog(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
@@ -522,6 +613,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the contributor query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   contributor(value?: string): string | EventQuery {
     if (hasNoArgs(value)) {
@@ -535,6 +629,9 @@ export class EventQuery {
   }
   /**
    * Get/Set the timeout in seconds for the request. Default is 30.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   timeout(value?: number): number | EventQuery {
     if (hasNoArgs(value)) {
@@ -550,6 +647,8 @@ export class EventQuery {
    * Checks to see if any parameter that would limit the data
    * returned is set. This is a crude, coarse check to make sure
    * the client doesn't ask for EVERYTHING the server has.
+   *
+   * @returns true is some parameter is set
    */
   isSomeParameterSet(): boolean {
     return isDef(this._eventId) ||
@@ -577,6 +676,7 @@ export class EventQuery {
    * Parses a QuakeML event xml element into a Quake object.
    *
    * @param qml the event xml Element
+   * @returns QuakeML Quake(Event) object
    */
   convertToQuake(qml: Element): Quake {
     let out = new Quake();
@@ -644,6 +744,13 @@ export class EventQuery {
     }
     return out;
   }
+  /**
+   * Extracts the EventId from a QuakeML element, guessing from one of several
+   * incompatible (grumble grumble) formats.
+   *
+   * @param   qml Quake(Event) to extract from
+   * @returns     Extracted Id, or "unknownEventId" if we can't figure it out
+   */
   extractEventId(qml: Element): string {
     let eventId = _grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventid');
     let catalogEventSource = _grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventsource');
@@ -671,7 +778,8 @@ export class EventQuery {
    *
    * @param qml the origin xml Element
    * @param allPicks picks already extracted from the xml for linking arrivals with picks
-  */
+   * @returns Origin instance
+   */
   convertToOrigin(qml: Element, allPicks: Array<Pick>): Origin {
     let out = new Origin();
     let otimeStr = _grabFirstElText(_grabFirstEl(qml, 'time'),'value');
@@ -701,6 +809,7 @@ export class EventQuery {
    * Parses a QuakeML magnitude xml element into a Magnitude object.
    *
    * @param qml the magnitude xml Element
+   * @returns Magnitude instance
    */
   convertToMagnitude(qml: Element): Magnitude {
     let mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, 'mag'), 'value');
@@ -718,6 +827,7 @@ export class EventQuery {
    *
    * @param arrivalQML the arrival xml Element
    * @param allPicks picks already extracted from the xml for linking arrivals with picks
+   * @returns Arrival instance
    */
   convertToArrival(arrivalQML: Element, allPicks: Array<Pick>): Arrival {
     let pickId = _grabFirstElText(arrivalQML, 'pickID');
@@ -739,6 +849,7 @@ export class EventQuery {
    * Parses a QuakeML pick xml element into a Pick object.
    *
    * @param pickQML the pick xml Element
+   * @returns Pick instance
    */
   convertToPick(pickQML: Element): Pick {
     let otimeStr = _grabFirstElText(_grabFirstEl(pickQML, 'time'),'value');
@@ -815,6 +926,7 @@ export class EventQuery {
   }
   /**
    * Forms the basic URL to contact the web service, without any query paramters
+   *
    * @returns the url
    */
   formBaseURL(): string {
@@ -831,6 +943,7 @@ export class EventQuery {
   }
   /**
    * Forms the URL to get catalogs from the web service, without any query paramters
+   *
    * @returns the url
    */
   formCatalogsURL(): string {
@@ -838,6 +951,7 @@ export class EventQuery {
   }
   /**
    * Queries the remote web service to get known catalogs
+   *
    * @returns Promise to Array of catalog names
    */
   queryCatalogs(): Promise<Array<string>> {
@@ -942,13 +1056,9 @@ export class EventQuery {
       });
   }
   /**
-   * Create a name=value parameter to add to a URL, including trailing ampersand
-   */
-  makeParam(name: string, val: mixed): string {
-    return name+"="+encodeURIComponent(stringify(val))+"&";
-  }
-  /**
    * Form URL to query the remote web service, encoding the query parameters.
+   *
+   * @returns url
    */
   formURL(): string {
     let colon = ":";
@@ -956,23 +1066,23 @@ export class EventQuery {
       colon = "";
     }
     let url = this.formBaseURL()+"/query?";
-    if (this._eventId) { url = url+this.makeParam("eventid", this.eventId());}
-    if (this._startTime) { url = url+this.makeParam("starttime", toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
-    if (isNumArg(this._minMag)) { url = url+this.makeParam("minmag", this.minMag());}
-    if (isNumArg(this._maxMag)) { url = url+this.makeParam("maxmag", this.maxMag());}
-    if (isStringArg(this._magnitudeType)) { url = url+this.makeParam("magnitudetype", this.magnitudeType());}
-    if (isNumArg(this._minDepth)) { url = url+this.makeParam("mindepth", this.minDepth());}
-    if (isNumArg(this._maxDepth)) { url = url+this.makeParam("maxdepth", this.maxDepth());}
-    if (isNumArg(this._minLat)) { url = url+this.makeParam("minlat", this.minLat());}
-    if (isNumArg(this._maxLat)) { url = url+this.makeParam("maxlat", this.maxLat());}
-    if (isNumArg(this._minLon)) { url = url+this.makeParam("minlon", this.minLon());}
-    if (isNumArg(this._maxLon)) { url = url+this.makeParam("maxlon", this.maxLon());}
+    if (this._eventId) { url = url+makeParam("eventid", this.eventId());}
+    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
+    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
+    if (isNumArg(this._minMag)) { url = url+makeParam("minmag", this.minMag());}
+    if (isNumArg(this._maxMag)) { url = url+makeParam("maxmag", this.maxMag());}
+    if (isStringArg(this._magnitudeType)) { url = url+makeParam("magnitudetype", this.magnitudeType());}
+    if (isNumArg(this._minDepth)) { url = url+makeParam("mindepth", this.minDepth());}
+    if (isNumArg(this._maxDepth)) { url = url+makeParam("maxdepth", this.maxDepth());}
+    if (isNumArg(this._minLat)) { url = url+makeParam("minlat", this.minLat());}
+    if (isNumArg(this._maxLat)) { url = url+makeParam("maxlat", this.maxLat());}
+    if (isNumArg(this._minLon)) { url = url+makeParam("minlon", this.minLon());}
+    if (isNumArg(this._maxLon)) { url = url+makeParam("maxlon", this.maxLon());}
     if (isNumArg(this._minRadius) || isNumArg(this._maxRadius)) {
       if (isNumArg(this._latitude) && isNumArg(this._longitude)) {
-        url = url+this.makeParam("latitude", this.latitude())+this.makeParam("longitude", this.longitude());
-        if (isNumArg(this._minRadius)) { url = url+this.makeParam("minradius", this.minRadius());}
-        if (isNumArg(this._maxRadius)) { url = url+this.makeParam("maxradius", this.maxRadius());}
+        url = url+makeParam("latitude", this.latitude())+makeParam("longitude", this.longitude());
+        if (isNumArg(this._minRadius)) { url = url+makeParam("minradius", this.minRadius());}
+        if (isNumArg(this._maxRadius)) { url = url+makeParam("maxradius", this.maxRadius());}
       } else {
         throw new Error("Cannot use minRadius or maxRadius without latitude and longitude: lat="+this._latitude+" lon="+this._longitude);
       }
@@ -990,17 +1100,17 @@ export class EventQuery {
         }
       }
     }
-    if (isObject(this._updatedAfter)) { url = url+this.makeParam("updatedafter", this.updatedAfter());}
-    if (isDef(this._includeAllOrigins)) { url = url+this.makeParam("includeallorigins", this.includeAllOrigins());}
-    if (isDef(this._includeAllMagnitudes)) { url = url+this.makeParam("includeallmagnitudes", this.includeAllMagnitudes());}
-    if (isStringArg(this._format)) { url = url+this.makeParam("format", this.format());}
-    if (isNumArg(this._limit)) { url = url+this.makeParam("limit", this.limit());}
-    if (isNumArg(this._offset)) { url = url+this.makeParam("offset", this.offset());}
-    if (isStringArg(this._orderBy)) { url = url+this.makeParam("orderby", this.orderBy());}
-    if (isStringArg(this._catalog)) { url = url+this.makeParam("catalog", this.catalog());}
-    if (isStringArg(this._contributor)) { url = url+this.makeParam("contributor", this.contributor());}
+    if (isObject(this._updatedAfter)) { url = url+makeParam("updatedafter", this.updatedAfter());}
+    if (isDef(this._includeAllOrigins)) { url = url+makeParam("includeallorigins", this.includeAllOrigins());}
+    if (isDef(this._includeAllMagnitudes)) { url = url+makeParam("includeallmagnitudes", this.includeAllMagnitudes());}
+    if (isStringArg(this._format)) { url = url+makeParam("format", this.format());}
+    if (isNumArg(this._limit)) { url = url+makeParam("limit", this.limit());}
+    if (isNumArg(this._offset)) { url = url+makeParam("offset", this.offset());}
+    if (isStringArg(this._orderBy)) { url = url+makeParam("orderby", this.orderBy());}
+    if (isStringArg(this._catalog)) { url = url+makeParam("catalog", this.catalog());}
+    if (isStringArg(this._contributor)) { url = url+makeParam("contributor", this.contributor());}
 
-    if (isDef(this._nodata)) { url = url+this.makeParam("nodata", this.nodata());}
+    if (isDef(this._nodata)) { url = url+makeParam("nodata", this.nodata());}
     if (url.endsWith('&') || url.endsWith('?')) {
       url = url.substr(0, url.length-1); // zap last & or ?
     }

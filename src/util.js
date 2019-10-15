@@ -247,6 +247,18 @@ export function checkStringOrDate(d: any): moment {
   throw new Error("unknown date type: "+d+" "+(typeof d));
 }
 
+
+/**
+ * Converts name and value into a html query parameter, with appending ampersand.
+ *
+ * @param   name parameter name
+ * @param   val  parameter value
+ * @returns      formated query parameter
+ */
+export function makeParam(name: string, val: mixed): string {
+  return name+"="+encodeURIComponent(stringify(val))+"&";
+}
+
 /**
  * converts to ISO8601 but removes the trailing Z as FDSN web services
  * do not allow that.

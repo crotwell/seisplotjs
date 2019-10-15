@@ -13,7 +13,7 @@ import RSVP from 'rsvp';
 import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import {SeismogramDisplayData } from './seismogram.js';
-import { TEXT_MIME, JSON_MIME, StartEndDuration , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import { TEXT_MIME, JSON_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 import {Network, Station, Channel} from './stationxml.js';
 
 /** const for json format, json */
@@ -644,7 +644,7 @@ export class AvailabilityQuery {
   }
   /**
    * Queries the remote web service to get its version
-   * 
+   *
    * @returns Promise to version string
    */
   queryVersion(): Promise<string> {
@@ -660,9 +660,6 @@ export class AvailabilityQuery {
       });
   }
 
-  makeParam(name: string, val: mixed): string {
-    return name+"="+encodeURIComponent(stringify(val))+"&";
-  }
   makePostParm(name: string, val: mixed): string {
     return name+"="+stringify(val)+"\n";
   }
@@ -672,21 +669,21 @@ export class AvailabilityQuery {
       method = "query";
     }
     let url = this.formBaseURL()+`/${method}?`;
-    if (this._networkCode) { url = url+this.makeParam("net", this.networkCode());}
-    if (this._stationCode) { url = url+this.makeParam("sta", this.stationCode());}
-    if (this._locationCode) { url = url+this.makeParam("loc", this.locationCode());}
-    if (this._channelCode) { url = url+this.makeParam("cha", this.channelCode());}
-    if (this._startTime) { url = url+this.makeParam("starttime", toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+this.makeParam("endtime", toIsoWoZ(this.endTime()));}
-    if (this._quality) { url = url+this.makeParam("quality", this.quality());}
-    if (this._merge) { url = url+this.makeParam("merge", this.merge());}
-    if (this._mergeGaps) { url = url+this.makeParam("mergegaps", this.mergeGaps());}
-    if (this._show) { url = url+this.makeParam("show", this.show());}
-    if (this._limit && this._limit>0) { url = url+this.makeParam("limit", this.limit());}
-    if (this._orderby) { url = url+this.makeParam("orderby", this.orderby());}
-    if (this._includerestricted) { url = url+this.makeParam("includerestricted", this.includeRestricted());}
-    if (this._format) { url = url+this.makeParam("format", this.format());}
-    if (this._nodata) { url = url+this.makeParam("nodata", this.nodata());}
+    if (this._networkCode) { url = url+makeParam("net", this.networkCode());}
+    if (this._stationCode) { url = url+makeParam("sta", this.stationCode());}
+    if (this._locationCode) { url = url+makeParam("loc", this.locationCode());}
+    if (this._channelCode) { url = url+makeParam("cha", this.channelCode());}
+    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
+    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
+    if (this._quality) { url = url+makeParam("quality", this.quality());}
+    if (this._merge) { url = url+makeParam("merge", this.merge());}
+    if (this._mergeGaps) { url = url+makeParam("mergegaps", this.mergeGaps());}
+    if (this._show) { url = url+makeParam("show", this.show());}
+    if (this._limit && this._limit>0) { url = url+makeParam("limit", this.limit());}
+    if (this._orderby) { url = url+makeParam("orderby", this.orderby());}
+    if (this._includerestricted) { url = url+makeParam("includerestricted", this.includeRestricted());}
+    if (this._format) { url = url+makeParam("format", this.format());}
+    if (this._nodata) { url = url+makeParam("nodata", this.nodata());}
 
     if (url.endsWith('&') || url.endsWith('?')) {
       url = url.substr(0, url.length-1); // zap last & or ?

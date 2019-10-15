@@ -7,7 +7,7 @@
  */
 
 // special due to flow
-import {checkProtocol, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, stringify} from './util';
+import {checkProtocol, makeParam, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg} from './util';
 
 import { TEXT_MIME, JSON_MIME , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
@@ -74,6 +74,7 @@ export class DataCentersQuery {
   /** Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
    *
+   * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
    */
   protocol(value?: string): string | DataCentersQuery {
@@ -89,8 +90,9 @@ export class DataCentersQuery {
   /** Gets/Sets the remote host to connect to. This defaults to
    * www.fdsn.org and generally should not be set.
    *
+   * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
-  */
+   */
   host(value?: string): string | DataCentersQuery {
     if (isStringArg(value)) {
       this._host = value;
@@ -104,6 +106,7 @@ export class DataCentersQuery {
   /** Gets/Sets the remote port to connect to. This defaults to
    * the standard port for the protocol and generally should not be set.
    *
+   * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
    */
   port(value?: number): number | DataCentersQuery {
@@ -118,6 +121,7 @@ export class DataCentersQuery {
   }
   /**
    * limits results to the named data center, default is all data centers
+   *
    * @param   value names to search for
    * @returns the query when setting, the current value os services if no arguments
    */
@@ -133,6 +137,7 @@ export class DataCentersQuery {
   }
   /**
    * limits results to services that match the glob style pattern
+   *
    * @param  value glob style pattern to match against
    * @returns the query when setting, the current value os services if no arguments
    */
@@ -149,6 +154,7 @@ export class DataCentersQuery {
   /**
    * whether the results include detailed information about
    * the data sets offered by each center, default is false
+   *
    * @param  value true to include datasets
    * @returns the query when setting, the current value os services if no arguments
    */
@@ -163,10 +169,11 @@ export class DataCentersQuery {
     }
   }
 
-  /** Get/Set the timeout in seconds for the request. Default is 30.
-  * @param  value timeout seconds
-  * @returns the query when setting, the current value os services if no arguments
-  */
+   /** Get/Set the timeout in seconds for the request. Default is 30.
+    *
+    * @param  value timeout seconds
+    * @returns the query when setting, the current value os services if no arguments
+    */
   timeout(value?: number): number | DataCentersQuery {
     if (hasNoArgs(value)) {
       return this._timeoutSec;
@@ -180,6 +187,7 @@ export class DataCentersQuery {
 
   /**
    * queries the fdsn registry web service, returning the result as a parsed json object.
+   *
    * @returns Promise to the json object.
    */
   queryJson(): Promise<RootType> {
@@ -196,10 +204,11 @@ export class DataCentersQuery {
       });
   }
 
-  /**
-   * queries the registry to find fdsn availability compatible web services within
-   * a datacenter of the given name, optionally within the repository with
-   * the repo name.
+   /**
+    * queries the registry to find fdsn availability compatible web services within
+    * a datacenter of the given name, optionally within the repository with
+    * the repo name.
+    *
     * @param   name     datacenter name
     * @param   repoName optional repository name
     * @returns           Promise to Array of fdsnavailability.AvailabilityQuery objects
@@ -220,10 +229,11 @@ export class DataCentersQuery {
     });
   }
 
-  /**
-   * queries the registry to find fdsn dataselect compatible web services within
-   * a datacenter of the given name, optionally within the repository with
-   * the repo name.
+   /**
+    * queries the registry to find fdsn dataselect compatible web services within
+    * a datacenter of the given name, optionally within the repository with
+    * the repo name.
+    *
     * @param   name     datacenter name
     * @param   repoName optional repository name
     * @returns           Promise to Array of fdsndataselect.DataSelectQuery objects
@@ -248,10 +258,11 @@ export class DataCentersQuery {
    * queries the registry to find a fdsn event compatible web services within
    * a datacenter of the given name, optionally within the repository with
    * the repo name.
-    * @param   name     datacenter name
-    * @param   repoName optional repository name
-    * @returns           Promise to Array of fdsnevent.EventQuery objects
-    */
+   *
+   * @param   dcname     datacenter name
+   * @param   repoName optional repository name
+   * @returns           Promise to Array of fdsnevent.EventQuery objects
+   */
   findFdsnEvent(dcname: string, repoName?: string ): Promise<Array<fdsnevent.EventQuery>> {
     if (dcname && dcname.length > 0) {
       this.name(dcname);
@@ -268,11 +279,12 @@ export class DataCentersQuery {
     });
   }
 
-  /**
-   * queries the registry to find a fdsn station compatible web services within
-   * a datacenter of the given name, optionally within the repository with
-   * the repo name.
-    * @param   name     datacenter name
+   /**
+    * queries the registry to find a fdsn station compatible web services within
+    * a datacenter of the given name, optionally within the repository with
+    * the repo name.
+    *
+    * @param   dcname     datacenter name
     * @param   repoName optional repository name
     * @returns           Promise to Array of fdsnstation.StationQuery objects
     */
@@ -292,6 +304,15 @@ export class DataCentersQuery {
     });
   }
 
+/**
+ * Extracts services comaptible with the given service name, optionally within
+ * the given repository, from the json.
+ *
+ * @param   json           json containing services
+ * @param   compatibleName service name to be compatible with
+ * @param   repoName       optional repository within the json to search
+ * @returns                array of services found
+ */
   extractCompatibleServices( json: RootType, compatibleName: string, repoName?: string): Array<any> {
     let out = [];
     json.datacenters.forEach( dc => {
@@ -309,7 +330,11 @@ export class DataCentersQuery {
     return out;
   }
 
-
+/**
+ * Forms the base of the url for accessing the datacenters service.
+ *
+ * @returns         URL
+ */
   formBaseURL(): string {
       let colon = ":";
       if (this._protocol.endsWith(colon)) {
@@ -318,12 +343,19 @@ export class DataCentersQuery {
       return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/ws/datacenters/"+this._specVersion;
   }
 
+  /**
+   * Forms version url, not part of spec and so may not be supported.
+   *
+   * @returns         version
+   */
   formVersionURL(): string {
     return this.formBaseURL()+"/version";
   }
+
   /** Queries the remote web service to get its version
+   *
    * @returns Promise to version string
-  */
+   */
   queryVersion(): Promise<string> {
     let url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
@@ -337,9 +369,6 @@ export class DataCentersQuery {
       });
   }
 
-  makeParam(name: string, val: mixed): string {
-    return name+"="+encodeURIComponent(stringify(val))+"&";
-  }
 
   /**
    * forms a url to the fdsn registry based on the configured parameters.
@@ -349,9 +378,9 @@ export class DataCentersQuery {
   formURL(): string {
     const method = "query";
     let url = this.formBaseURL()+`/${method}?`;
-    if (this._name) { url = url+this.makeParam("name", this.name());}
-    if (this._services) { url = url+this.makeParam("services", this.services());}
-    if (this._includedatasets) { url = url+this.makeParam("includedatasets", this.includeDataSets());}
+    if (this._name) { url = url+makeParam("name", this.name());}
+    if (this._services) { url = url+makeParam("services", this.services());}
+    if (this._includedatasets) { url = url+makeParam("includedatasets", this.includeDataSets());}
 
     if (url.endsWith('&') || url.endsWith('?')) {
       url = url.substr(0, url.length-1); // zap last & or ?
