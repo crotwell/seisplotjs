@@ -79,7 +79,7 @@ cat > docs/api/index.html <<EOF
         <div class='py1 px2'>
           <div id='toc'>
             <ul class='list-reset h5 py1-ul'>
-              <li><a href="./index.html" class="">Seisplotjs</a></li>
+              <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
               <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
@@ -167,6 +167,9 @@ cat >> docs/api/index.html <<EOF
 </html>
 EOF
 fi
+
+# fix up links
+python3 replaceInHtml.py
 
 # copy assets
 if [[ 'html' == "$format"  ]]
