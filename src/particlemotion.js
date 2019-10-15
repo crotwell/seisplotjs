@@ -60,7 +60,7 @@ export class ParticleMotion {
   outerWidth: number;
   outerHeight: number;
   margin: MarginType;
-  title: string;
+  title: string | Array<string>;
   xLabel: string;
   xSublabel: string;
   yLabel: string;
