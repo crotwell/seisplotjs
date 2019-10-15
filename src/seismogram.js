@@ -75,6 +75,8 @@ export class SeismogramSegment {
   }
   /**
    * Y data of the seismogram. Decompresses data if needed.
+   *
+   * @returns y data as typed array
    */
   get y(): Int32Array | Float32Array | Float64Array {
     let out;
@@ -199,6 +201,7 @@ export class SeismogramSegment {
    *
    * @param minMaxAccumulator optional initialized accumulator as an array
    * of two numbers, min and max
+   * @returns min, max as arry of length two
    */
   findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
     let minAmp = Number.MAX_SAFE_INTEGER;
@@ -454,16 +457,16 @@ export class Seismogram {
     return out;
   }
   /**
-    * Creates a new Seismogram composed of all seismogram segments that overlap the
-    * given time window. If none do, this returns null. This is a faster but coarser
-    * version of cut as it only removes whole segments that do not overlap the
-    * time window. For most seismograms that consist of a single contiguous
-    * data segment, this will do nothing.
-    *
-    * @param timeWindow time range to trim to
-    * @returns seismogram if data in the window, null otherwise
-    * @see cut
-    */
+   * Creates a new Seismogram composed of all seismogram segments that overlap the
+   * given time window. If none do, this returns null. This is a faster but coarser
+   * version of cut as it only removes whole segments that do not overlap the
+   * time window. For most seismograms that consist of a single contiguous
+   * data segment, this will do nothing.
+   *
+   * @param timeWindow time range to trim to
+   * @returns seismogram if data in the window, null otherwise
+   * @see cut
+   */
   trim(timeWindow: StartEndDuration): null | Seismogram {
     let out = null;
     if (this._segmentArray) {

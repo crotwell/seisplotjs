@@ -196,10 +196,14 @@ export class ParticleMotion {
     this.yScaleRmean.range([this.height, 0]);
     return this;
   }
-  /** Sets the title as simple string or array of strings. If an array
-  then each item will be in a separate tspan for easier formatting.
-  */
-  setTitle(value: string) {
+  /**
+   * Sets the title as simple string or array of strings. If an array
+   * then each item will be in a separate tspan for easier formatting.
+   *
+   * @param value new title
+   * @returns this
+   */
+  setTitle(value: string | Array<string>): ParticleMotion {
     this.title = value;
     this.svg.selectAll("g.title").remove();
     let titleSVGText = this.svg.append("g")

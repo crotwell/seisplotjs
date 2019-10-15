@@ -28,8 +28,12 @@ export type PlotDataType = {
   "statusCode": number
 };
 
-/** Returns an array of Promises, one per selected element.
-*/
+/**
+ * Returns an array of Promises, one per selected element.
+ *
+ * @param selector css selector
+ * @returns promise to array of plot data types
+ */
 export function createPlotsBySelectorPromise(selector: string): Promise<Array<PlotDataType>> {
   let clockOffset = 0; // should set from server
   let out = [];

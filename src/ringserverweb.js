@@ -39,8 +39,12 @@ export class RingserverConnection {
     this._timeoutSec = 30;
   }
 
-  /** Gets/Sets the remote host to connect to.
-  */
+  /**
+   * Gets/Sets the remote host to connect to.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   host(value?: string): string | RingserverConnection {
     if (isStringArg(value)) {
       this._host = value;
@@ -52,8 +56,12 @@ export class RingserverConnection {
     }
   }
 
-  /** Gets/Sets the remote port to connect to.
-  */
+  /**
+   * Gets/Sets the remote port to connect to.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   port(value?: number): number | RingserverConnection {
     if (hasNoArgs(value)) {
       return this._port;
@@ -65,8 +73,12 @@ export class RingserverConnection {
     }
   }
 
-  /** Get/Set the timeout in seconds for the request. Default is 30.
-  */
+  /**
+   * Get/Set the timeout in seconds for the request. Default is 30.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
   timeout(value?: number): number | RingserverConnection {
     if (hasNoArgs(value)) {
       return this._timeoutSec;
@@ -79,10 +91,12 @@ export class RingserverConnection {
   }
 
 
-  /** Pulls id result from ringserver /id parsed into an object with
-    * 'ringserverVersion' and 'serverId' fields.
-    * Result returned is an RSVP Promise.
-    */
+  /**
+   * Pulls id result from ringserver /id parsed into an object with
+   * 'ringserverVersion' and 'serverId' fields.
+   *
+   * @returns Result as an RSVP Promise.
+   */
   pullId(): Promise<RingserverVersion> {
     return this.pullRaw(this.formIdURL()).then(raw => {
       let lines = raw.split('\n');
@@ -107,7 +121,10 @@ export class RingserverConnection {
    *  If level is falsy/missing, level=6 is used.
    *  The optional matchPattern is a regular expression, so for example
    *  '.+_JSC_00_HH.' would get all HH? channels from any station name JSC.
-   *  Result returned is an RSVP Promise.
+   *
+   * @param level 1-6
+   * @param matchPattern regular expression to match
+   * @returns Result as an RSVP Promise.
    */
   pullStreamIds(level: number, matchPattern: string): Promise<Array<string>> {
     let queryParams = 'level=6';
@@ -120,11 +137,14 @@ export class RingserverConnection {
   }
 
   /**
-    * Pull streams, including start and end times, from the ringserver.
-    * The optional matchPattern is a regular expression, so for example
-    * '.+_JSC_00_HH.' would get all HH? channels from any station name JSC.
-    * Result returned is an RSVP Promise.
-    */
+   * Pull streams, including start and end times, from the ringserver.
+   * The optional matchPattern is a regular expression, so for example
+   * '.+_JSC_00_HH.' would get all HH? channels from any station name JSC.
+   * Result returned is an RSVP Promise.
+   *
+   * @param matchPattern regular expression to match
+   * @returns promise to streams
+   */
   pullStreams(matchPattern: string ): Promise<StreamsResult> {
     let queryParams = "";
     if (matchPattern) { queryParams = 'match='+matchPattern; }
@@ -150,10 +170,14 @@ export class RingserverConnection {
     });
   }
 
-  /** Pulls raw result from ringserver /streams. QueryParams should
-    * be formatted like URL query parameters, ie 'name=value&name=value'.
-    * Result returned is an RSVP Promise.
-    */
+  /**
+   * Pulls raw result from ringserver /streams. QueryParams should
+   * be formatted like URL query parameters, ie 'name=value&name=value'.
+   * Result returned is an RSVP Promise.
+   *
+   * @param url the url
+   * @returns promise to string result
+   */
   pullRaw(url: string): Promise<string>{
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )

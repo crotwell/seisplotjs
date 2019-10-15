@@ -63,8 +63,12 @@ export class SacPoleZero {
     s.push("CONSTANT "+this.constant);
     return s.join('\n');
   }
-  /** Parses a string in sac polezero format into a SacPoleZero.
-  */
+  /**
+   * Parses a string in sac polezero format into a SacPoleZero.
+   *
+   * @param data string to parse
+   * @returns SacPoleZero instance
+   */
   static parse(data: string) {
       let pz = {
         zeros: [],

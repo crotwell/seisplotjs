@@ -13,8 +13,8 @@ import moment from 'moment';
 // QuakeML classes
 
 /** Represent a QuakeML Event. Renamed to Quake as Event conflicts with
-  * other uses in javascript.
-  */
+ * other uses in javascript.
+ */
 export class Quake {
   eventId: string;
   publicId: string;
