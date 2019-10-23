@@ -13,60 +13,76 @@ import {
     createPlotsBySelectorPromise
   } from './plotutil.js';
 
+import {insertCSS} from './cssutil.js';
 import type { MarginType } from './seismographconfig';
-import {SeismogramSegment, Seismogram} from './seismogram.js';
+import { SeismographConfig } from './seismographconfig';
+import {SeismogramSegment, Seismogram, SeismogramDisplayData } from './seismogram.js';
+import { isDef, StartEndDuration } from './util.js';
 
 export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)
     .then(function(resultArray) {
       resultArray.forEach(function(result) {
         result.svgParent.append("p").text("Build plot");
-        const traceArr = result.seismograms;
-          if (traceArr.length >1) {
-            addDivForParticleMotion(traceArr[0], traceArr[1], result.svgParent, result.startTime, result.endTime);
-            if (traceArr.length > 2) {
-              addDivForParticleMotion(traceArr[0], traceArr[2], result.svgParent, result.startTime, result.endTime);
-              addDivForParticleMotion(traceArr[1], traceArr[2], result.svgParent, result.startTime, result.endTime);
+        const sddList = result.sddList;
+          if (sddList.length >1) {
+            addDivForParticleMotion(result.svgParent, sddList[0], sddList[1]);
+            if (sddList.length > 2) {
+              addDivForParticleMotion(result.svgParent, sddList[0], sddList[2]);
+              addDivForParticleMotion(result.svgParent, sddList[1], sddList[2]);
             }
           } else {
-            result.svgParent.append("p").text(`Not Enough Data: ${traceArr.length}`);
+            result.svgParent.append("p").text(`Not Enough Data: ${sddList.length}`);
           }
       });
     });
   }
 
-function addDivForParticleMotion(ta: Seismogram, tb: Seismogram, svgParent: any, startTime: moment, endTime: moment): void {
-  if (ta.segments.length === 0 || tb.segments.length === 0) {
-    throw new Error(`Seismogram has no data: ${ta.segments.length} ${tb.segments.length}`);
-  }
-  const sa = ta.segments[0];
-  const sb = tb.segments[0];
-  svgParent.append("h5").text(sa.chanCode+" "+sb.chanCode);
+export function addDivForParticleMotion(svgParent: any, xSeisData: SeismogramDisplayData, ySeisData: SeismogramDisplayData, timeWindow?: StartEndDuration): void {
   let svgDiv = svgParent.append("div");
-  svgDiv.classed(sa.chanCode+" "+sb.chanCode, true);
-  svgDiv.classed("svg-container-square", true);
-  let pmp = new ParticleMotion(svgDiv, [sa, sb], startTime, endTime);
-  pmp.setXLabel(sa.chanCode);
-  pmp.setYLabel(sb.chanCode);
+  if ( ! isDef(xSeisData)) {throw new Error("xSeisData cannot be null");}
+  if ( ! isDef(ySeisData)) {throw new Error("ySeisData cannot be null");}
+  const xSeis = xSeisData.seismogram;
+  const ySeis = ySeisData.seismogram;
+  const xLabel = xSeis ? xSeis.channelCode : "unknown";
+  const yLabel = ySeis ? ySeis.channelCode : "unknown";
+  svgDiv.classed(xLabel+" "+yLabel, true);
+  svgDiv.classed("particleMotionContainer", true);
+  addParticleMotion(svgDiv, xSeisData, ySeisData, timeWindow);
+}
+
+export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayData, ySeisData: SeismogramDisplayData, timeWindow?: StartEndDuration): void {
+  if ( ! isDef(xSeisData.seismogram) || ! isDef(ySeisData.seismogram)) {
+    // $FlowFixMe
+    throw new Error(`Seismogram has no data: ${xSeisData.seismogram} ${ySeisData.seismogram}`);
+  }
+  const xSeis = xSeisData.seismogram;
+  const ySeis = ySeisData.seismogram;
+
+  let seisConfig = new SeismographConfig();
+  if (isDef(timeWindow)) {
+    seisConfig.fixedTimeScale = timeWindow;
+  }
+  seisConfig.title = xSeis.channelCode+" "+ySeis.channelCode;
+  seisConfig.xLabel = xSeis.channelCode;
+  seisConfig.yLabel = ySeis.channelCode;
+  seisConfig.margin.top = seisConfig.margin.bottom;
+  seisConfig.margin.right = seisConfig.margin.left;
+  let pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
   pmp.draw();
 }
 
 /** Particle motion. */
 export class ParticleMotion {
   plotId: number;
-  segments: Array<SeismogramSegment>;
+  xSeisData: SeismogramDisplayData;
+  ySeisData: SeismogramDisplayData;
+  seismographConfig: SeismographConfig;
+  timeWindow: StartEndDuration;
   width: number;
   height: number;
   outerWidth: number;
   outerHeight: number;
-  margin: MarginType;
-  title: string | Array<string>;
-  xLabel: string;
-  xSublabel: string;
-  yLabel: string;
-  ySublabel: string;
-  ySublabelTrans: number;
-  yScaleFormat: string | (value: number) => string;
   xScale: any;
   xScaleRmean: any;
   xAxis: any;
@@ -77,20 +93,39 @@ export class ParticleMotion {
   svgParent: any;
   g: any;
   static _lastID: number;
-  constructor(inSvgParent: any, inSegments: Array<SeismogramSegment>, plotStartTime: moment, plotEndTime: moment): void {
-    if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
-    if (inSegments.length !== 2) {throw new Error("inSegments should be lenght 2 but was "+inSegments.length);}
+  constructor(inSvgParent: any,
+              seismographConfig: SeismographConfig,
+              xSeisData: SeismogramDisplayData | Seismogram,
+              ySeisData: SeismogramDisplayData | Seismogram): void {
+    if ( ! isDef(inSvgParent)) {throw new Error("inSvgParent cannot be null");}
+    if ( ! isDef(xSeisData)) {throw new Error("xSeisData cannot be null");}
+    if ( ! isDef(ySeisData)) {throw new Error("ySeisData cannot be null");}
     this.plotId = ++ParticleMotion._lastID;
-// maybe don't need, just plot as many points as can
-//    if (inSegments[0].y().length !== inSegments[1].y().length) {throw new Error("inSegments should be of same lenght but was "+inSegments[0].y().length+" "+inSegments[1].y().length);}
-    if ( ! plotStartTime) {plotStartTime = inSegments[0].startTime();}
-    if ( ! plotEndTime) {plotEndTime = inSegments[0].endTime();}
+    if ( xSeisData instanceof Seismogram) {
+      this.xSeisData = SeismogramDisplayData.fromSeismogram(xSeisData);
+    } else if ( xSeisData instanceof SeismogramDisplayData) {
+      this.xSeisData = xSeisData;
+    }
+    if ( ySeisData instanceof Seismogram) {
+      this.ySeisData = SeismogramDisplayData.fromSeismogram(ySeisData);
+    } else if ( ySeisData instanceof SeismogramDisplayData) {
+      this.ySeisData = ySeisData;
+    }
+    if (isDef(seismographConfig)) {
+      this.seismographConfig = seismographConfig;
+    } else {
+      this.seismographConfig = new SeismographConfig();
+      this.seismographConfig.xLabel = this.xSeisData.channelCode;
+      this.seismographConfig.yLabel = this.ySeisData.channelCode;
+      this.seismographConfig.margin.left = 40;
+      this.seismographConfig.margin.top = this.seismographConfig.margin.bottom;
+      this.seismographConfig.margin.right = this.seismographConfig.margin.left;
+    }
+    this.calcTimeWindow();
     this.svg = inSvgParent.append("svg");
-    this.svg.classed("svg-content-responsive", true);
     this.svg.attr("version", "1.1");
-    this.svg.attr("preserveAspectRatio", "xMinYMin meet");
-    this.svg.attr("viewBox", "0 0 400 400")
-      .attr("plotId", this.plotId);
+    this.svg.classed("particleMotion", true);
+    this.svg.attr("plotId", this.plotId);
     this.xScale = d3.scaleLinear();
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.xScaleRmean = d3.scaleLinear();
@@ -98,19 +133,15 @@ export class ParticleMotion {
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.yScaleRmean = d3.scaleLinear();
     this.svgParent = inSvgParent;
-    this.segments = inSegments;
 
-    this.yScaleFormat = "3e";
-    this.xAxis = d3.axisBottom(this.xScaleRmean).ticks(8, this.yScaleFormat);
-    this.yAxis = d3.axisLeft(this.yScaleRmean).ticks(8, this.yScaleFormat);
-    this.margin = {top: 20, right: 20, bottom: 42, left: 65};
+    this.xAxis = d3.axisBottom(this.xScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
+    this.yAxis = d3.axisLeft(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
     this.width = 100;
     this.height = 100;
-    this.ySublabelTrans = 10;
     let mythis = this;
 
     this.g = this.svg.append("g")
-        .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+        .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
     this.calcScaleDomain();
     d3.select(window).on('resize.particleMotion'+this.plotId, function() {if (mythis.checkResize()) {mythis.draw();}});
   }
@@ -118,19 +149,33 @@ export class ParticleMotion {
     this.checkResize();
     this.drawAxis(this.g);
     this.drawAxisLabels();
-    this.drawParticleMotion(this.segments[0], this.segments[1]);
+    this.drawParticleMotion();
     return this;
   }
   checkResize(): boolean {
     let rect = this.svgParent.node().getBoundingClientRect();
     if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
-      this.setWidthHeight(rect.width, rect.height);
+      this.calcWidthHeight(rect.width, rect.height);
       return true;
     }
     return false;
   }
-  drawParticleMotion(segA: SeismogramSegment, segB: SeismogramSegment) {
+  drawParticleMotion() {
+    // for flow
+    let xSegments = this.xSeisData.seismogram ? this.xSeisData.seismogram.segments : [];
+    let ySegments = this.ySeisData.seismogram ? this.ySeisData.seismogram.segments : [];
+    xSegments.forEach(segX => {
+        ySegments.forEach(segY => {
+          if (segX.timeWindow.overlaps(segY.timeWindow)) {
+            this.drawParticleMotionForSegment(segX, segY);
+          }
+        });
+      });
+  }
+  drawParticleMotionForSegment(segA: SeismogramSegment, segB: SeismogramSegment) {
     let mythis = this;
+    let timeWindow = segA.timeWindow.intersect(segB.timeWindow);
+    console.log("FIX ME: drawParticleMotionForSegment assumes segments align in time...");
     this.g.selectAll("g.particleMotion").remove();
     let lineG = this.g.append("g").classed("particleMotion", true);
     let path = lineG.selectAll("path").data( [ segA.y ] );
@@ -156,11 +201,11 @@ export class ParticleMotion {
         .call(this.yAxis);
   }
   drawAxisLabels() {
-    this.setTitle(this.title);
-    this.setXLabel(this.xLabel);
-    this.setXSublabel(this.xSublabel);
-    this.setYLabel(this.yLabel);
-    this.setYSublabel(this.ySublabel);
+    this.drawTitle();
+    this.drawXLabel();
+    this.drawXSublabel();
+    this.drawYLabel();
+    this.drawYSublabel();
     return this;
   }
 
@@ -172,120 +217,166 @@ export class ParticleMotion {
   }
 
   calcScaleDomain() {
-    let minMax = this.segments[0].findMinMax();
-    this.xScale.domain(minMax).nice();
-    let niceMinMax = this.xScale.domain();
-    this.xScaleRmean.domain([ (niceMinMax[0]-niceMinMax[1])/2, (niceMinMax[1]-niceMinMax[0])/2 ]);
-    minMax = this.segments[1].findMinMax();
-    this.yScale.domain(minMax).nice();
-    niceMinMax = this.yScale.domain();
-    this.yScaleRmean.domain([ (niceMinMax[0]-niceMinMax[1])/2, (niceMinMax[1]-niceMinMax[0])/2 ]);
+    let halfDomainDelta = 1;
+    if (this.seismographConfig.fixedYScale) {
+      halfDomainDelta = (this.seismographConfig.fixedYScale[1] - this.seismographConfig.fixedYScale[0])/2;
+      this.xScale.domain(this.seismographConfig.fixedYScale).nice();
+      this.yScale.domain(this.seismographConfig.fixedYScale).nice();
+    } else {
+      let xMinMax = [this.xSeisData.min, this.xSeisData.max];
+      let yMinMax = [this.ySeisData.min, this.ySeisData.max];
+      halfDomainDelta = (xMinMax[1] - xMinMax[0])/2;
+      if (yMinMax[1]-yMinMax[0] > xMinMax[1] - xMinMax[0]) {
+        halfDomainDelta = (yMinMax[1]-yMinMax[0])/2;
+      }
+      let xMid = (xMinMax[1] + xMinMax[0])/2;
+      let yMid = (yMinMax[1] + yMinMax[0])/2;
+      xMinMax = [xMid - halfDomainDelta, xMid + halfDomainDelta ];
+      yMinMax = [yMid - halfDomainDelta, yMid + halfDomainDelta ];
+      this.xScale.domain(xMinMax).nice();
+      this.yScale.domain(yMinMax).nice();
+    }
+    let xNiceMinMax = this.xScale.domain();
+    this.xScaleRmean.domain([ -1 * halfDomainDelta,  halfDomainDelta ]);
+
+    let yNiceMinMax = this.yScale.domain();
+    this.yScaleRmean.domain([ -1 * halfDomainDelta,  halfDomainDelta ]);
     this.rescaleAxis();
     return this;
   }
 
-  setWidthHeight(nOuterWidth: number, nOuterHeight: number) {
+  calcTimeWindow(): void {
+    let tw = null;
+    if ( this.seismographConfig.fixedTimeScale) {
+      tw = this.seismographConfig.fixedTimeScale;
+    } else {
+      tw = this.xSeisData.timeWindow.intersect(this.ySeisData.timeWindow);
+    }
+    if ( ! tw) {
+      // intersection might be null
+      throw new Error(`Seismograms do not overlap: ${this.xSeisData.timeWindow.toString()} ${this.ySeisData.timeWindow.toString()}`);
+    }
+    this.timeWindow = tw;
+  }
+
+  calcWidthHeight(nOuterWidth: number, nOuterHeight: number) {
     this.outerWidth = nOuterWidth ? Math.max(100, nOuterWidth) : 100;
     this.outerHeight = nOuterHeight ? Math.max(100, nOuterHeight) : 100;
-    this.height = this.outerHeight - this.margin.top - this.margin.bottom;
-    this.width = this.outerWidth - this.margin.left - this.margin.right;
-    this.svg.attr("viewBox", "0 0 "+this.outerWidth+" "+this.outerHeight);
+    this.height = this.outerHeight - this.seismographConfig.margin.top - this.seismographConfig.margin.bottom;
+    this.width = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
     this.xScale.range([0, this.width]);
     this.yScale.range([this.height, 0]);
-    this.xScaleRmean.range([this.width, 0]);
+    this.xScaleRmean.range([0, this.width]);
     this.yScaleRmean.range([this.height, 0]);
     return this;
   }
   /**
-   * Sets the title as simple string or array of strings. If an array
+   * Draws the title as simple string or array of strings. If an array
    * then each item will be in a separate tspan for easier formatting.
    *
-   * @param value new title
    * @returns this
    */
-  setTitle(value: string | Array<string>): ParticleMotion {
-    this.title = value;
+  drawTitle(): ParticleMotion {
     this.svg.selectAll("g.title").remove();
     let titleSVGText = this.svg.append("g")
        .classed("title", true)
-       .attr("transform", "translate("+(this.margin.left+(this.width)/2)+", "+( this.margin.bottom/3  )+")")
+       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+( this.seismographConfig.margin.bottom/3  )+")")
        .append("text").classed("title label", true)
        .attr("text-anchor", "middle");
-    if (Array.isArray(value)) {
-      value.forEach(function(s) {
+    if (Array.isArray(this.seismographConfig.title)) {
+      this.seismographConfig.title.forEach(function(s) {
         titleSVGText.append("tspan").text(s+" ");
       });
     } else {
       titleSVGText
-        .text(this.title);
+        .text(this.seismographConfig.title);
     }
     return this;
   }
-  setXLabel(value: string) {
-    if (!arguments.length)
-      return this.xLabel;
-    this.xLabel = value;
+  drawXLabel() {
     this.svg.selectAll("g.xLabel").remove();
     if (this.width && this.outerWidth) {
     this.svg.append("g")
        .classed("xLabel", true)
-       .attr("transform", "translate("+(this.margin.left+(this.width)/2)+", "+(this.outerHeight - this.margin.bottom/3  )+")")
+       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight - this.seismographConfig.margin.bottom/3  )+")")
        .append("text").classed("x label", true)
        .attr("text-anchor", "middle")
-       .text(this.xLabel);
+       .text(this.seismographConfig.xLabel);
     }
     return this;
   }
-  setYLabel(value: string) {
-    if (!arguments.length)
-      return this.yLabel;
-    this.yLabel = value;
+  drawYLabel() {
     this.svg.selectAll('g.yLabel').remove();
     if (this.height) {
       this.svg.append("g")
        .classed("yLabel", true)
        .attr("x", 0)
-       .attr("transform", "translate(0, "+(this.margin.top+(this.height)/2)+")")
+       .attr("transform", "translate(0, "+(this.seismographConfig.margin.top+(this.height)/2)+")")
        .append("text")
        .classed("y label", true)
        .attr("text-anchor", "middle")
        .attr("dy", ".75em")
        .attr("transform-origin", "center center")
        .attr("transform", "rotate(-90)")
-       .text(this.yLabel);
+       .text(this.seismographConfig.yLabel);
      }
     return this;
   }
-  setXSublabel(value: string) {
-    if (!arguments.length)
-      return this.xSublabel;
-    this.xSublabel = value;
+  drawXSublabel() {
     this.svg.selectAll('g.xSublabel').remove();
     this.svg.append("g")
        .classed("xSublabel", true)
-       .attr("transform", "translate("+(this.margin.left+(this.width)/2)+", "+(this.outerHeight  )+")")
+       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight  )+")")
        .append("text").classed("x label sublabel", true)
        .attr("text-anchor", "middle")
-       .text(this.xSublabel);
+       .text(this.seismographConfig.xSublabel);
     return this;
   }
-  setYSublabel(value: string)  {
-    this.ySublabel = value;
+  drawYSublabel()  {
     this.svg.selectAll('g.ySublabel').remove();
 
     this.svg.append("g")
        .classed("ySublabel", true)
        .attr("x", 0)
-       .attr("transform", "translate( "+this.ySublabelTrans+" , "+(this.margin.top+(this.height)/2)+")")
+       .attr("transform", "translate( "+this.seismographConfig.ySublabelTrans+" , "+(this.seismographConfig.margin.top+(this.height)/2)+")")
        .append("text")
        .classed("y label sublabel", true)
        .attr("text-anchor", "middle")
        .attr("dy", ".75em")
        .attr("transform-origin", "center center")
        .attr("transform", "rotate(-90)")
-       .text(this.ySublabel);
+       .text(this.seismographConfig.ySublabel);
     return this;
   }
 }
+
+export const particleMotion_css = `
+.particleMotionContainer {
+  height: 100%;
+  width: 100%;
+  min-height: 25px;
+  min-width: 25px;
+}
+
+svg.particleMotion {
+  height: 100%;
+  width: 100%;
+  min-height: 25px;
+  min-width: 25px;
+}
+
+svg.particleMotion text.title {
+  font-size: larger;
+  font-weight: bold;
+  fill: black;
+  color: black;
+  dominant-baseline: hanging;
+}
+`;
+
+if (document){
+  insertCSS(particleMotion_css);
+}
+
 // static ID for particle motion
 ParticleMotion._lastID = 0;
