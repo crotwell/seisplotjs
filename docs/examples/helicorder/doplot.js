@@ -4,6 +4,9 @@ const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
 const HelicorderConfig = seisplotjs.helicorder.HelicorderConfig;
 const Helicorder = seisplotjs.helicorder.Helicorder;
 
+const MINMAX_URL = "http://eeyore.seis.sc.edu/minmax";
+const MSEED_URL = "http://eeyore.seis.sc.edu/mseed";
+
 const QUAKE_START_OFFSET = seisplotjs.moment.duration(1, 'hours');
 const divClass = "heli";
 
@@ -105,7 +108,7 @@ doPlot = function(config) {
   }).then(hash => {
     if (hash.bandCode == 'H') {
       let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
-        "http://eeyore.seis.sc.edu/minmax",
+        MINMAX_URL,
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
       let minMaxChanTR = hash.chanTR.map( ct => {
         let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
@@ -120,7 +123,7 @@ doPlot = function(config) {
       hash.chantrList = minMaxQ.loadSeismograms(minMaxChanTR);
     } else {
       let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
-        "http://eeyore.seis.sc.edu/mseed",
+        MSEED_URL,
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
       hash.chantrList = mseedQ.loadSeismograms(hash.chanTR);
     }
