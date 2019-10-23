@@ -132,11 +132,85 @@
             }
             seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
             seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
-          }).catch( function(error) {
-            seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
-            console.assert(false, error);
-          });
+            return Promise.all([ quakeList, networks, ttimes, seismogramDataList ]);
           </code></pre>
+          <p>
+            For a little extra, we also can plot the particle motion around the
+            P wave for these seismograms. First we need to add a div to to the html.
+          </p>
+
+          <pre><code class="language-html">
+            &lt;div  id="particlemotion">
+            &lt;/div>
+          </code></pre>
+          <p>
+            And some styling in the &lt;style> at the top.
+          </p>
+
+          <pre><code class="language-css">
+          div.particlemotionContainer  {
+            float:left;
+            height: 300px;
+            width: 320px;
+          }
+          </code></pre>
+          <p>
+            And then javascript to create the particle motion plots. This uses
+            20 seconds around the P wave.
+          </p>
+          <pre><code class="language-javascript">
+        }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+          let div = seisplotjs.d3.select('div#particlemotion');
+          let firstP = ttimes.arrivals.find(a => a.phase.startsWith('S'));
+          let windowDuration = 20;
+          let firstPTimeWindow = new seisplotjs.util.StartEndDuration(
+            seisplotjs.moment.utc(quakeList[0].time).add(firstP.time, 'seconds').subtract(windowDuration/2, 'seconds'),
+            null,
+            windowDuration);
+          let xSeisData = seismogramDataList[0].cloneWithNewSeismogram(seismogramDataList[0].seismogram.cut(firstPTimeWindow));
+          let ySeisData = seismogramDataList[1].cloneWithNewSeismogram(seismogramDataList[1].seismogram.cut(firstPTimeWindow));
+          let zSeisData = seismogramDataList[2].cloneWithNewSeismogram(seismogramDataList[2].seismogram.cut(firstPTimeWindow));
+          let spanA = div.append('div').classed('particlemotionContainer', true);
+          let spanB = div.append('div').classed('particlemotionContainer', true);
+          let spanC = div.append('div').classed('particlemotionContainer', true);
+
+          let minMax = seisplotjs.seismogram.findMinMax([ xSeisData, ySeisData, zSeisData]);
+
+          let seismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
+          seismographConfig.margin.left = 60;
+          seismographConfig.margin.top = seismographConfig.margin.bottom;
+          seismographConfig.margin.right = seismographConfig.margin.left;
+          seismographConfig.fixedTimeScale = firstPTimeWindow;
+          seismographConfig.fixedYScale = minMax;
+
+          let seisConfigA = seismographConfig.clone();
+          seisConfigA.title = xSeisData.seismogram.channelCode+" "+ySeisData.seismogram.channelCode;
+          seisConfigA.xLabel = xSeisData.seismogram.channelCode;
+          seisConfigA.yLabel = ySeisData.seismogram.channelCode;
+          let pmpA = new seisplotjs.particlemotion.ParticleMotion(spanA, seisConfigA, xSeisData, ySeisData);
+          pmpA.draw();
+
+          let seisConfigB = seismographConfig.clone();
+          seisConfigB.title = xSeisData.seismogram.channelCode+" "+zSeisData.seismogram.channelCode;
+          seisConfigB.xLabel = xSeisData.seismogram.channelCode;
+          seisConfigB.yLabel = zSeisData.seismogram.channelCode;
+          let pmpB = new seisplotjs.particlemotion.ParticleMotion(spanB, seisConfigB, xSeisData, zSeisData);
+          pmpB.draw();
+
+          let seisConfigC = seismographConfig.clone();
+          seisConfigC.title = ySeisData.seismogram.channelCode+" "+zSeisData.seismogram.channelCode;
+          seisConfigC.xLabel = ySeisData.seismogram.channelCode;
+          seisConfigC.yLabel = zSeisData.seismogram.channelCode;
+          let pmpC = new seisplotjs.particlemotion.ParticleMotion(spanC, seisConfigC, ySeisData, zSeisData);
+          pmpC.draw();
+
+          return Promise.all([ quakeList, networks, ttimes, seismogramDataList ]);
+        }).catch( function(error) {
+          seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+          console.assert(false, error);
+        });
+          </code></pre>
+
 
           <h3>See it live in <a href="tutorial4.html">tutorial4.html</a>.</h3>
           <p>Previous: <a href="3_quakesandchannels.html">Quakes and Channels</a></p>

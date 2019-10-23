@@ -7,12 +7,19 @@
       div.seismograph {
         height: 300px;
       }
+      div.particlemotionContainer  {
+        float:left;
+        height: 300px;
+        width: 320px;
+      }
     </style>
   </head>
   <body>
     <h3>Tutorial 4: Arrival Times</h3>
     <h3>A Seismograph recorded at <span id="stationCode"></span> for the <span id="earthquakeDescription"></span>!</h3>
-    <div class="seismograph" id="myseismograph">
+    <div  id="myseismograph">
+    </div>
+    <div  id="particlemotion">
     </div>
 
     <script src="seisplotjs_2.0.0-alpha.6_standalone.js"></script>
@@ -75,6 +82,53 @@
         }
         seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
         seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
+        return Promise.all([ quakeList, networks, ttimes, seismogramDataList ]);
+      }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+        let div = seisplotjs.d3.select('div#particlemotion');
+        let firstP = ttimes.arrivals.find(a => a.phase.startsWith('S'));
+        let windowDuration = 20;
+        let firstPTimeWindow = new seisplotjs.util.StartEndDuration(
+          seisplotjs.moment.utc(quakeList[0].time).add(firstP.time, 'seconds').subtract(windowDuration/2, 'seconds'),
+          null,
+          windowDuration);
+        let xSeisData = seismogramDataList[0].cloneWithNewSeismogram(seismogramDataList[0].seismogram.cut(firstPTimeWindow));
+        let ySeisData = seismogramDataList[1].cloneWithNewSeismogram(seismogramDataList[1].seismogram.cut(firstPTimeWindow));
+        let zSeisData = seismogramDataList[2].cloneWithNewSeismogram(seismogramDataList[2].seismogram.cut(firstPTimeWindow));
+        let spanA = div.append('div').classed('particlemotionContainer', true);
+        let spanB = div.append('div').classed('particlemotionContainer', true);
+        let spanC = div.append('div').classed('particlemotionContainer', true);
+
+        let minMax = seisplotjs.seismogram.findMinMax([ xSeisData, ySeisData, zSeisData]);
+
+        let seismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
+        seismographConfig.margin.left = 60;
+        seismographConfig.margin.top = seismographConfig.margin.bottom;
+        seismographConfig.margin.right = seismographConfig.margin.left;
+        seismographConfig.fixedTimeScale = firstPTimeWindow;
+        seismographConfig.fixedYScale = minMax;
+
+        let seisConfigA = seismographConfig.clone();
+        seisConfigA.title = xSeisData.seismogram.channelCode+" "+ySeisData.seismogram.channelCode;
+        seisConfigA.xLabel = xSeisData.seismogram.channelCode;
+        seisConfigA.yLabel = ySeisData.seismogram.channelCode;
+        let pmpA = new seisplotjs.particlemotion.ParticleMotion(spanA, seisConfigA, xSeisData, ySeisData);
+        pmpA.draw();
+
+        let seisConfigB = seismographConfig.clone();
+        seisConfigB.title = xSeisData.seismogram.channelCode+" "+zSeisData.seismogram.channelCode;
+        seisConfigB.xLabel = xSeisData.seismogram.channelCode;
+        seisConfigB.yLabel = zSeisData.seismogram.channelCode;
+        let pmpB = new seisplotjs.particlemotion.ParticleMotion(spanB, seisConfigB, xSeisData, zSeisData);
+        pmpB.draw();
+
+        let seisConfigC = seismographConfig.clone();
+        seisConfigC.title = ySeisData.seismogram.channelCode+" "+zSeisData.seismogram.channelCode;
+        seisConfigC.xLabel = ySeisData.seismogram.channelCode;
+        seisConfigC.yLabel = zSeisData.seismogram.channelCode;
+        let pmpC = new seisplotjs.particlemotion.ParticleMotion(spanC, seisConfigC, ySeisData, zSeisData);
+        pmpC.draw();
+
+        return Promise.all([ quakeList, networks, ttimes, seismogramDataList ]);
       }).catch( function(error) {
         seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
         console.assert(false, error);
