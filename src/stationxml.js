@@ -79,6 +79,9 @@ export class Station {
   set endDate(value?: moment | string) {
     this._endDate = checkStringOrDate(value);
   }
+  get networkCode(): string {
+    return this.network.networkCode;
+  }
   codes(): string {
     return this.network.codes()+"."+this.stationCode;
   }
@@ -139,9 +142,15 @@ export class Channel {
       this._locationCode = '';
     }
   }
+  get stationCode(): string {
+    return this.station.stationCode;
+  }
+  get networkCode(): string {
+    return this.station.networkCode;
+  }
   /**
    * Checks if this channel has sensitivity defined, within the response.
-   * 
+   *
    * @returns          true if instrumentSensitivity exits
    */
   hasInstrumentSensitivity(): boolean {
