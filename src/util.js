@@ -289,7 +289,7 @@ export function checkProtocol(): string {
  * @param   mimeType requested mime type
  * @returns           object with fetch configuration parameters
  */
-export function defaultFetchInitObj(mimeType: string): { [key: string]: any } {
+export function defaultFetchInitObj(mimeType?: string): { [key: string]: any } {
   let headers = {};
   if (isStringArg(mimeType)) {
     headers.Accept = mimeType;
@@ -317,6 +317,12 @@ export function doFetchWithTimeout(url: string,
                                    timeoutSec: number): Promise<Response> {
   const controller = new AbortController();
   const signal = controller.signal;
+  if ( ! isDef(fetchInit)) {
+    fetchInit = defaultFetchInitObj();
+  }
+  if ( ! isDef(timeoutSec) ){
+    timeoutSec = 30;
+  }
   setTimeout(() => controller.abort(), timeoutSec * 1000);
   fetchInit.signal = signal;
   return fetch(url, fetchInit)
