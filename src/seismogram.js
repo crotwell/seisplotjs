@@ -132,6 +132,9 @@ export class SeismogramSegment {
     }
     return this._endTime_cache;
   }
+  get timeWindow(): StartEndDuration {
+    return new StartEndDuration(this.startTime, this.endTime);
+  }
   get sampleRate() {
     return this._sampleRate;
   }
@@ -385,6 +388,9 @@ export class Seismogram {
   }
   get endTime(): moment {
     return this._endTime;
+  }
+  get timeWindow(): StartEndDuration {
+    return new StartEndDuration(this.startTime, this.endTime);
   }
   get networkCode(): string {
     return this._segmentArray[0].networkCode;
@@ -670,12 +676,51 @@ export class SeismogramDisplayData {
   hasQuake(): boolean {
     return this.quakeList.length > 0;
   }
+  hasSeismogram(): boolean {
+    return isDef(this._seismogram);
+  }
   hasChannel(): boolean {
     return this.channel !== null;
   }
   hasSensitivity(): boolean {
     return this._instrumentSensitivity !== null
         || (isDef(this.channel) && this.channel.hasInstrumentSensitivity());
+  }
+  get networkCode(): string {
+    if (this.channel !== null) {
+      return this.channel.networkCode;
+    } else if (isDef(this._seismogram)) {
+      return this._seismogram.networkCode;
+    } else {
+      return "unknown";
+    }
+  }
+  get stationCode(): string {
+    if (this.channel !== null) {
+      return this.channel.stationCode;
+    } else if (isDef(this._seismogram)) {
+      return this._seismogram.stationCode;
+    } else {
+      return "unknown";
+    }
+  }
+  get locationCode(): string {
+    if (this.channel !== null) {
+      return this.channel.locationCode;
+    } else if (isDef(this._seismogram)) {
+      return this._seismogram.locationCode;
+    } else {
+      return "unknown";
+    }
+  }
+  get channelCode(): string {
+    if (this.channel !== null) {
+      return this.channel.channelCode;
+    } else if (isDef(this._seismogram)) {
+      return this._seismogram.channelCode;
+    } else {
+      return "unknown";
+    }
   }
   get startTime(): moment {
     return this.timeWindow.startTime;
@@ -754,6 +799,7 @@ export class SeismogramDisplayData {
           out[name] = this[name];
         }
       });
+      out._statsCache = null;
       return out;
   }
 }
