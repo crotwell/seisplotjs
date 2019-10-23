@@ -80,6 +80,14 @@ export class Seismograph {
               seismographConfig: SeismographConfig,
               seisData: Array<SeismogramDisplayData> | Array<Seismogram> | SeismogramDisplayData | Seismogram) {
     if (inSvgParent === null) {throw new Error("inSvgParent cannot be null");}
+    if ( ! isDef(seismographConfig) {
+      if (isDef(seisData) && seisData.length > 0) {
+        // need at least one of seismographConfig or seisData to get time window
+        seismographConfig = new SeismographConfig();
+      } else {
+        throw new Error("seismographConfig and seisData cannot both be null");
+      }
+    }
     this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
     this.seismographConfig = seismographConfig;
