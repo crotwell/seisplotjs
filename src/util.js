@@ -216,6 +216,32 @@ export class StartEndDuration {
     }
     return true;
   }
+  intersect(other: StartEndDuration): StartEndDuration | null {
+    let out = null;
+    if (this.overlaps(other)) {
+      let tb = this.startTime;
+      if (tb.isBefore(other.startTime)) {
+        tb = other.startTime;
+      }
+      let te = this.endTime;
+      if (te.isAfter(other.endTime)) {
+        te = other.endTime;
+      }
+      out = new StartEndDuration(tb, te);
+    }
+    return out;
+  }
+  union(other: StartEndDuration): StartEndDuration {
+    let tb = this.startTime;
+    if (tb.isAfter(other.startTime)) {
+      tb = other.startTime;
+    }
+    let te = this.endTime;
+    if (te.isBefore(other.endTime)) {
+      te = other.endTime;
+    }
+    return new StartEndDuration(tb, te);
+  }
   toString() {
     return `StartEndDuration: ${toIsoWoZ(this.startTime)} to ${toIsoWoZ(this.endTime)} ${this.duration}`;
   }
