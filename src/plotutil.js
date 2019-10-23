@@ -14,18 +14,13 @@ import * as miniseed from './miniseed.js';
 import {Seismogram, SeismogramDisplayData} from './seismogram.js';
 import { SeismographConfig } from './seismographconfig';
 import {Seismograph} from './seismograph.js';
-import {StartEndDuration} from './util.js';
+import {StartEndDuration, isDef } from './util.js';
 
 export { dataselect, miniseed, d3, RSVP, moment };
 
 export type PlotDataType = {
-  "seismograms": Array<Seismogram>,
-  "startTime": moment,
-  "endTime": moment,
-  "request": dataselect.DataSelectQuery,
-  "svgParent": any,
-  "responseText": string,
-  "statusCode": number
+  "sddList": Array<SeismogramDisplayData>,
+  "svgParent": any
 };
 
 /**
@@ -43,12 +38,14 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
     let startAttr = svgParent.attr("start") ? svgParent.attr("start") : null;
     let endAttr = svgParent.attr("end") ? svgParent.attr("end") : null;
     let duration = svgParent.attr("duration");
-    let startTime = null;
-    let endTime = null;
+    let timeWindow = null;
+    if (isDef(startAttr) || isDef(endAttr) || isDef(duration)) {
+      timeWindow = new StartEndDuration(startAttr, endAttr, duration);
+    }
     if (svgParent.attr("href")) {
       // url to miniseed file
       url = svgParent.attr("href");
-      return fetch(url)
+      out.push( fetch(url)
         .then(response => {
           if (response.ok) {
             return response.arrayBuffer();
@@ -57,60 +54,45 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
           }
         })
         .then(ab => {
+          let seismograms = miniseed.seismogramPerChannel(miniseed.parseDataRecords(ab));
+          let sddList = seismograms.map(s => {
+              let sdd = SeismogramDisplayData.fromSeismogram(s);
+              if (timeWindow) {sdd.timeWindow = timeWindow;}
+              return sdd;
+            });
           return {
-            "seismograms": miniseed.seismogramPerChannel(miniseed.parseDataRecords(ab)),
-            "startTime": startTime,
-            "endTime": endTime,
-            "request": null,
-            "svgParent": svgParent
+            "sddList": sddList,
+            "svgParent": svgParent,
           };
-        });
+        }));
     } else {
       let net = svgParent.attr("net");
       let sta = svgParent.attr("sta");
       let loc = svgParent.attr("loc");
       let chan = svgParent.attr("chan");
       let host = svgParent.attr("host");
-      let protocol = 'http:';
       if (! host) {
           host = "service.iris.edu";
       }
-      if (document && "https:" === document.location.protocol) {
-        protocol = 'https:';
-      }
 
-      let seisDates = new StartEndDuration(startAttr, endAttr, duration, clockOffset);
-      startTime = seisDates.startTime;
-      endTime = seisDates.endTime;
+      timeWindow = new StartEndDuration(startAttr, endAttr, duration, clockOffset);
       // $FlowFixMe
       let request = new dataselect.DataSelectQuery()
-        .protocol(protocol)
         .host(host)
         .networkCode(net)
         .stationCode(sta)
         .locationCode(loc)
         .channelCode(chan)
-        .startTime(startTime)
-        .endTime(endTime);
+        .timeWindow(timeWindow);
       out.push(request.querySeismograms().then(seismograms => {
+        let sddList = seismograms.map(s => {
+            let sdd = SeismogramDisplayData.fromSeismogram(s);
+            if (isDef(timeWindow)) { sdd.timeWindow = timeWindow; }
+            return sdd;
+          });
         return {
-          "seismograms": seismograms,
-          "startTime": startTime,
-          "endTime": endTime,
-          "request": request,
+          "sddList": sddList,
           "svgParent": svgParent
-        };
-      }, function(result) {
-        // rejection, so no inSegments
-        // but may need others to display message
-        return {
-          "seismograms": [],
-          "startTime": startAttr,
-          "endTime": endAttr,
-          "request": request,
-          "svgParent": svgParent,
-          "responseText": String.fromCharCode.apply(null, new Uint8Array(result.response)),
-          "statusCode": result.status
         };
       }));
     }
@@ -123,19 +105,14 @@ export function createPlotsBySelector(selector: string) {
   return createPlotsBySelectorPromise(selector).then(function(resultArray){
     resultArray.forEach(function(result: PlotDataType) {
       result.svgParent.append("p").text("Build plot");
-        if (result.seismograms.length >0) {
+        if (result.sddList.length >0) {
           let svgDiv = result.svgParent.append("div");
           svgDiv.classed("svg-container-wide", true);
           let seisConfig = new SeismographConfig();
-          seisConfig.fixedTimeScale = new StartEndDuration(result.startTime, result.endTime);
-          let seisData = result.seismograms.map(s => SeismogramDisplayData.fromSeismogram(s));
-          let seismogram = new Seismograph(svgDiv, seisConfig, seisData);
+          let seismogram = new Seismograph(svgDiv, seisConfig, result.sddList);
           seismogram.draw();
         } else {
           result.svgParent.append("p").text("No Data");
-          if (result.statusCode || result.responseText) {
-            result.svgParent.append("p").text(result.statusCode +" "+ result.responseText);
-          }
         }
       });
       return resultArray;
@@ -149,5 +126,3 @@ export function alphabeticalSort(traceA: Seismogram, traceB: Seismogram) {
     return 1;
   }
 }
-
-export type TimeWindow = {startTime: moment, endTime: moment};
