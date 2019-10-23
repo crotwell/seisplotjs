@@ -40,10 +40,12 @@ export class MSeedArchive {
   _rootUrl: string;
   _pattern: string;
   _recordSize: number;
+  _timeoutSec: number;
   constructor(rootUrl: string, pattern: string) {
     this._rootUrl = rootUrl;
     this._pattern = pattern;
     this._recordSize = 512;
+    this._timeoutSec = 30;
     this.checkPattern(this._pattern);
   }
   get rootUrl(): string {
@@ -156,14 +158,19 @@ export class MSeedArchive {
     let recordTime = maxTimeForRecord(this._recordSize, sampleRate);
     let t = moment.utc(startTime).subtract(recordTime, 'seconds');
     let promiseArray = [];
+    const fetchInit = util.defaultFetchInitObj();
     while (t.isBefore(endTime)) {
       let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
-      promiseArray.push(fetch(url));
+
+      promiseArray.push(util.doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 ))
+//      promiseArray.push(fetch(url));
       t.add(1, 'hour');
     }
     if (moment.utc(t).add(recordTime, 'seconds').isAfter(endTime)) {
       let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
-      promiseArray.push(fetch(url));
+      console.log(`fetch mseedarchive: ${url}`)
+      promiseArray.push(util.doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 ))
+      //promiseArray.push(fetch(url));
     }
     promiseArray = promiseArray.map( (p) => {
       return p.then(fetchResponse => {
