@@ -161,16 +161,12 @@ export class MSeedArchive {
     const fetchInit = util.defaultFetchInitObj();
     while (t.isBefore(endTime)) {
       let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
-
-      promiseArray.push(util.doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 ))
-//      promiseArray.push(fetch(url));
+      promiseArray.push(util.doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 ));
       t.add(1, 'hour');
     }
     if (moment.utc(t).add(recordTime, 'seconds').isAfter(endTime)) {
       let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
-      console.log(`fetch mseedarchive: ${url}`)
-      promiseArray.push(util.doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 ))
-      //promiseArray.push(fetch(url));
+      promiseArray.push(util.doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 ));
     }
     promiseArray = promiseArray.map( (p) => {
       return p.then(fetchResponse => {
