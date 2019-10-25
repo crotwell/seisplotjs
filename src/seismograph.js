@@ -684,14 +684,17 @@ export class Seismograph {
 
     labelSelection.enter()
         .append("g")
-        .attr("class", function(m) { return "marker "+m.name+" "+m.type;})
+        .classed("marker", true)
            // translate so marker time is zero
         .attr("transform", function(marker) {
             let textx = mythis.currZoomXScale( marker.time.toDate());
             return  "translate("+textx+","+0+")";
           })
         .each(function(marker) {
+
           let drawG = d3.select(this);
+          drawG.classed(marker.name, true)
+            .classed(marker.type, true)
 
           let innerTextG = drawG.append("g")
             .attr("class", "markertext")
@@ -1183,7 +1186,7 @@ Seismograph._lastID = 0;
 export function createMarkersForTravelTimes(quake: Quake, ttime: any): Array<MarkerType> {
   return ttime.arrivals.map( a => {
     return {
-      markertype: 'predicted',
+      type: 'predicted',
       name: a.phase,
       time: moment.utc(quake.time).add(a.time, 'seconds')
     };
