@@ -6,7 +6,6 @@
  * http://www.seis.sc.edu
  */
 
-import moment from 'moment';
 import * as d3 from 'd3';
 
 import {
@@ -14,7 +13,6 @@ import {
   } from './plotutil.js';
 
 import {insertCSS} from './cssutil.js';
-import type { MarginType } from './seismographconfig';
 import { SeismographConfig } from './seismographconfig';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData } from './seismogram.js';
 import { isDef, StartEndDuration } from './util.js';
@@ -147,7 +145,7 @@ export class ParticleMotion {
   }
   draw() {
     this.checkResize();
-    this.drawAxis(this.g);
+    this.drawAxis();
     this.drawAxisLabels();
     this.drawParticleMotion();
     return this;
@@ -161,36 +159,50 @@ export class ParticleMotion {
     return false;
   }
   drawParticleMotion() {
+    this.g.selectAll("g.particleMotion").remove();
+    let lineG = this.g.append("g");
+    lineG.classed("particleMotion", true)
+      .classed("seispath", true)
+      .classed(this.xSeisData.codes(), true)
+      .classed("orient"+this.xSeisData.channelCode.charAt(2)+"_"+this.ySeisData.channelCode.charAt(2), true);
+
     // for flow
     let xSegments = this.xSeisData.seismogram ? this.xSeisData.seismogram.segments : [];
     let ySegments = this.ySeisData.seismogram ? this.ySeisData.seismogram.segments : [];
     xSegments.forEach(segX => {
         ySegments.forEach(segY => {
-          if (segX.timeWindow.overlaps(segY.timeWindow)) {
-            this.drawParticleMotionForSegment(segX, segY);
-          }
+          this.drawParticleMotionForSegment(lineG, segX, segY);
         });
       });
   }
-  drawParticleMotionForSegment(segA: SeismogramSegment, segB: SeismogramSegment) {
-    let mythis = this;
-    let timeWindow = segA.timeWindow.intersect(segB.timeWindow);
-    console.log("FIX ME: drawParticleMotionForSegment assumes segments align in time...");
-    this.g.selectAll("g.particleMotion").remove();
-    let lineG = this.g.append("g").classed("particleMotion", true);
-    let path = lineG.selectAll("path").data( [ segA.y ] );
+  drawParticleMotionForSegment(lineG: d3.selection, segA: SeismogramSegment, segB: SeismogramSegment) {
+    const mythis = this;
+    const timeWindow = segA.timeWindow.intersect(segB.timeWindow);
+    if ( ! isDef(timeWindow)) {
+      // no overlap
+      return;
+    }
+    const idxA = segA.indexOfTime(timeWindow.startTime);
+    const lastIdxA = segA.indexOfTime(timeWindow.endTime);
+    const idxB = segB.indexOfTime(timeWindow.startTime);
+    const lastIdxB = segB.indexOfTime(timeWindow.endTime);
+    if (idxA === -1 || lastIdxA === -1 || idxB === -1 || lastIdxB === -1) {
+      return;
+    }
+    const numPts = Math.min(lastIdxA-idxA, lastIdxB-idxB)+1;
+    let segmentG = lineG.append("g").classed("segment", true);
+    let path = segmentG.selectAll("path").data( [ segA.y.slice(idxA, numPts) ] );
     path.exit().remove();
     path.enter()
       .append("path")
-      .attr("class", function() {
-        return "seispath "+segA.codes()+" orient"+segA.chanCode.charAt(2)+"_"+segB.chanCode.charAt(2);
-      })
+      .classed("seispath", true)
     .attr("d", d3.line().curve(d3.curveLinear)
       .x(d => mythis.xScale(d))
-      .y((d,i) => mythis.yScale(segB.yAtIndex(i))));
+      .y((d,i) => mythis.yScale(segB.yAtIndex(idxB+i))));
   }
 
-  drawAxis(svgG: any) {
+  drawAxis() {
+    let svgG = this.g;
     svgG.selectAll("g.axis").remove();
     svgG.append("g")
         .attr("class", "axis axis--x")
@@ -237,10 +249,12 @@ export class ParticleMotion {
       this.yScale.domain(yMinMax).nice();
     }
     let xNiceMinMax = this.xScale.domain();
-    this.xScaleRmean.domain([ -1 * halfDomainDelta,  halfDomainDelta ]);
+    let xHalfNice = (xNiceMinMax[1] - xNiceMinMax[0])/2;
+    this.xScaleRmean.domain([ -1 * xHalfNice,  xHalfNice ]);
 
     let yNiceMinMax = this.yScale.domain();
-    this.yScaleRmean.domain([ -1 * halfDomainDelta,  halfDomainDelta ]);
+    let yHalfNice = (yNiceMinMax[1] - yNiceMinMax[0])/2;
+    this.yScaleRmean.domain([ -1 * yHalfNice,  yHalfNice ]);
     this.rescaleAxis();
     return this;
   }
@@ -371,6 +385,12 @@ svg.particleMotion text.title {
   fill: black;
   color: black;
   dominant-baseline: hanging;
+}
+
+svg.particleMotion path.seispath {
+    stroke: skyblue;
+    fill: none;
+    stroke-width: 1px;
 }
 `;
 

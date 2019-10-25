@@ -227,6 +227,13 @@ export class SeismogramSegment {
   timeOfSample(i: number ): moment {
     return moment.utc(this.startTime).add(i/this.sampleRate, 'seconds');
   }
+  indexOfTime(t: moment): number {
+    if (t.isBefore(this.startTime)
+        || t.isAfter(moment.utc(this.endTime).add(1/this.sampleRate, 'seconds'))) {
+        return -1;
+    }
+    return Math.round(t.diff(this.startTime) * this.sampleRate /1000);
+  }
   hasCodes(): boolean {
     return isDef(this.networkCode)
       || isDef(this.stationCode)
@@ -458,7 +465,11 @@ export class Seismogram {
       let cutSeisArray = this._segmentArray.map(seg => seg.cut(timeWindow)).filter(Boolean);
       if (cutSeisArray.length > 0) {
         out = new Seismogram(cutSeisArray);
+      } else {
+        out = null;
       }
+    } else {
+      out = null;
     }
     return out;
   }
@@ -686,6 +697,12 @@ export class SeismogramDisplayData {
     return this._instrumentSensitivity !== null
         || (isDef(this.channel) && this.channel.hasInstrumentSensitivity());
   }
+  /**
+   * return network code as a string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   *
+   * @returns network code
+   */
   get networkCode(): string {
     if (this.channel !== null) {
       return this.channel.networkCode;
@@ -695,6 +712,12 @@ export class SeismogramDisplayData {
       return "unknown";
     }
   }
+  /**
+   * return station code as a string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   *
+   * @returns station code
+   */
   get stationCode(): string {
     if (this.channel !== null) {
       return this.channel.stationCode;
@@ -704,6 +727,12 @@ export class SeismogramDisplayData {
       return "unknown";
     }
   }
+  /**
+   * return location code a a string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   *
+   * @returns location code
+   */
   get locationCode(): string {
     if (this.channel !== null) {
       return this.channel.locationCode;
@@ -713,6 +742,12 @@ export class SeismogramDisplayData {
       return "unknown";
     }
   }
+  /**
+   * return channels code as a string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   *
+   * @returns channel code
+   */
   get channelCode(): string {
     if (this.channel !== null) {
       return this.channel.channelCode;
@@ -720,6 +755,23 @@ export class SeismogramDisplayData {
       return this._seismogram.channelCode;
     } else {
       return "unknown";
+    }
+  }
+  /**
+   * return network, station, location and channels codes as one string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   *
+   * @param sep separator, defaults to '.'
+   * @returns nslc codes separated by sep
+   */
+  codes(sep: string = '.'): string {
+    if (this.channel !== null) {
+      return this.channel.codes();
+    } else {
+    return (this.networkCode ? this.networkCode : '')
+      +sep+(this.stationCode ? this.stationCode : '')
+      +sep+(this.locationCode ? this.locationCode : '')
+      +sep+(this.channelCode ? this.channelCode : '');
     }
   }
   get startTime(): moment {
@@ -784,8 +836,8 @@ export class SeismogramDisplayData {
   cloneWithNewSeismogram(seis: Seismogram | null): SeismogramDisplayData {
       let out = new SeismogramDisplayData(this.timeWindow);
       Object.getOwnPropertyNames(this).forEach( name => {
-        if (name === 'seismogram') {
-          out.seismogram = seis;
+        if (name === '_seismogram') {
+          out._seismogram = seis;
         // $FlowFixMe
         } else if (this[name] instanceof moment) {
           // $FlowFixMe
@@ -799,8 +851,29 @@ export class SeismogramDisplayData {
           out[name] = this[name];
         }
       });
+      out.seismogram = seis;
       out._statsCache = null;
       return out;
+  }
+  /**
+   * Cut the seismogram. Creates a new seismogramDisplayData with the cut
+   * seismogram and the timeWindow set to the new time window.
+   *
+   * @param  timeWindow start and end of cut
+   * @returns           new seismogramDisplayData
+   */
+  cut(timeWindow: StartEndDuration): null | SeismogramDisplayData {
+    let cutSeis = this.seismogram;
+    let out;
+    if (cutSeis) {
+      cutSeis = cutSeis.cut(timeWindow);
+      out = this.cloneWithNewSeismogram(cutSeis);
+    } else {
+      // no seismogram, so just clone?
+      out = this.clone();
+    }
+    out.timeWindow = timeWindow;
+    return out;
   }
 }
 

@@ -1,7 +1,7 @@
 // @flow
 
-import {SeismogramSegment, Seismogram} from '../src/seismogram';
-import  {moment} from '../src/util';
+import {SeismogramSegment, Seismogram, SeismogramDisplayData} from '../src/seismogram';
+import  {moment, StartEndDuration, isDef} from '../src/util';
 
 test("simple seismogram seg creation", () => {
   let yValues = Int32Array.from([0, 1, 2]);
@@ -186,4 +186,49 @@ test("seismogram merge", () => {
   let seisSegB = new SeismogramSegment(yValues.slice(), sampleRate, startTimeB);
   let seis = new Seismogram([ seisSegA, seisSegB]);
   expect(seis.merge().length).toEqual(yValues.length*2);
+});
+
+test("segment index of time", () => {
+  const len = 1000;
+  const yValues = new Int32Array(len);
+  const sampleRate = 20.0;
+  const startTime = moment.utc("2013-02-08T09:30:26");
+  const seg = new SeismogramSegment(yValues, sampleRate, startTime);
+  expect(seg.indexOfTime(startTime)).toEqual(0);
+  const before = moment.utc(startTime).subtract(1/sampleRate, 'seconds');
+  expect(seg.indexOfTime(before)).toEqual(-1);
+  const mid = moment.utc(startTime).add(47.3*1/sampleRate, 'seconds');
+  expect(seg.indexOfTime(mid)).toEqual(47);
+  const after = moment.utc(startTime).add((len+1)*1/sampleRate, 'seconds');
+  expect(seg.indexOfTime(after)).toEqual(-1);
+
+});
+
+test("cut clone sdd test", () => {
+  const len = 1000;
+  const yValues = new Int32Array(len);
+  const sampleRate = 20.0;
+  const startTime = moment.utc("2013-02-08T09:30:26");
+  const seis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+  const sdd = SeismogramDisplayData.fromSeismogram(seis);
+  const cutWindow = new StartEndDuration( startTime, null, 10);
+  const cutSeis = seis.cut(cutWindow);
+  expect(cutSeis.endTime).toEqual(cutWindow.endTime);
+  const cutSeisSdd = sdd.cloneWithNewSeismogram(cutSeis);
+  cutSeisSdd.timeWindow = cutWindow; // clone keeps the old time window
+  expect(cutSeisSdd.endTime).toEqual(cutWindow.endTime);
+  expect(cutSeisSdd.seismogram).toBeDefined();
+  expect(cutSeisSdd.seismogram.endTime).toEqual(cutWindow.endTime);
+  expect(cutSeisSdd.seismogram).not.toBe(seis);
+  // sdd cut has new seismogram and new time window
+  const cutSdd = sdd.cut(cutWindow);
+  expect(cutSdd).toBeDefined();
+  const cutSdd_seis = isDef(cutSdd) ? cutSdd.seismogram: null;
+  expect(cutSdd_seis).toBeDefined();
+  if (isDef(cutSdd) && isDef(cutSdd_seis)) {
+    // for flow
+    expect(cutSdd.endTime).toEqual(cutWindow.endTime);
+    expect(cutSdd_seis.endTime).toEqual(cutWindow.endTime);
+    expect(cutSdd_seis).not.toEqual(seis);
+  }
 });
