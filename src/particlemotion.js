@@ -132,8 +132,8 @@ export class ParticleMotion {
     this.yScaleRmean = d3.scaleLinear();
     this.svgParent = inSvgParent;
 
-    this.xAxis = d3.axisBottom(this.xScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
-    this.yAxis = d3.axisLeft(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
+    this.xAxis = d3.axisBottom(this.xScaleRmean).tickFormat(this.seismographConfig.yScaleFormat);
+    this.yAxis = d3.axisLeft(this.yScaleRmean).tickFormat(this.seismographConfig.yScaleFormat);
     this.width = 100;
     this.height = 100;
     let mythis = this;

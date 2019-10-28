@@ -75,7 +75,7 @@ export class SeismographConfig {
     this.isYAxis = true;
     this.isYAxisRight = false;
     this.xScaleFormat = multiFormatHour;
-    this.yScaleFormat = "3e";
+    this.yScaleFormat = formatCountOrAmp;
     this._title = [ ];
     this.xLabel = "Time";
     this.xLabelOrientation = "horizontal";
@@ -202,6 +202,12 @@ export class SeismographConfig {
     return outS;
   }
 }
+
+export const formatCount = d3.format('~s');
+export const formatExp = d3.format('.2e');
+export const formatCountOrAmp = function(v: number): string {
+  return -1<v && v<1 && v !== 0 ? formatExp(v) : formatCount(v);
+};
 
 export const formatMillisecond = d3.utcFormat(".%L");
 export const formatSecond = d3.utcFormat(":%S");

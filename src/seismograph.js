@@ -133,10 +133,10 @@ export class Seismograph {
       this.xAxisTop = d3.axisTop(this.currZoomXScale).tickFormat(this.seismographConfig.xScaleFormat);
     }
     if (this.seismographConfig.isYAxis) {
-      this.yAxis = d3.axisLeft(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
+      this.yAxis = d3.axisLeft(this.yScaleRmean).tickFormat(this.seismographConfig.yScaleFormat);
     }
     if (this.seismographConfig.isYAxisRight) {
-      this.yAxisRight = d3.axisRight(this.yScaleRmean).ticks(8, this.seismographConfig.yScaleFormat);
+      this.yAxisRight = d3.axisRight(this.yScaleRmean).tickFormat(this.seismographConfig.yScaleFormat);
     }
 
     let mythis = this;
@@ -694,7 +694,7 @@ export class Seismograph {
 
           let drawG = d3.select(this);
           drawG.classed(marker.name, true)
-            .classed(marker.type, true)
+            .classed(marker.type, true);
 
           let innerTextG = drawG.append("g")
             .attr("class", "markertext")
