@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <title>Obspy Dataset View</title>
+    <style>
+      div.seismograph {
+        height: 300px;
+      }
+    </style>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  </head>
+  <body>
+    <div id='message'></div>
+
+    <h3>ObsPy Plotting</h3>
+    <button id="refresh">Refresh</button>
+    <h3 id="title">Seismograph!</h3>
+    <div class="seismograph" id="myseismograph">
+    </div>
+
+    <script src="seisplotjs_2.0.0-alpha.6_standalone.js"></script>
+    <script src="viewObspy.js"></script>
+    <script>
+      seisplotjs.d3.select("button#refresh").on("click", function(d) {
+        loadDataset();
+      });
+      loadDataset();
+    </script>
+  </body>
+</html>
