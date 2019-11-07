@@ -127,8 +127,7 @@ test( "qml util test", () => {
 
 test( "qml parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_QML, "text/xml");
-  let eventQuery = new fdsnevent.EventQuery();
-  let quakes = eventQuery.parseQuakeML(xml);
+  let quakes = quakeml.parseQuakeML(xml);
   expect(quakes.length).toBe(7);
   expect(quakes[0].time.toISOString()).toEqual("2018-06-04T01:50:48.520Z");
   expect(quakes[0].latitude).toEqual(19.4053333);
