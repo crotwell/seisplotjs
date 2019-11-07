@@ -7,7 +7,7 @@
  */
 
 import { moment } from 'moment';
-import { Quake, Origin, Magnitude, Arrival, Pick } from './quakeml';
+import { Quake, Origin, Magnitude, Arrival, Pick, USGS_HOST } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 import * as util from './util.js'; // for util.log
@@ -25,20 +25,13 @@ export const SERVICE_VERSION = 1;
  */
 export const SERVICE_NAME = `fdsnws-event-${SERVICE_VERSION}`;
 
-
-export let QML_NS = 'http://quakeml.org/xmlns/quakeml/1.2';
-export let BED_NS = 'http://quakeml.org/xmlns/bed/1.2';
-export let IRIS_NS = 'http://service.iris.edu/fdsnws/event/1/';
-export let ANSS_NS = 'http://anss.org/xmlns/event/0.1';
-export let ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1";
-
-export let USGS_HOST = "earthquake.usgs.gov";
+export { USGS_HOST };
 
 export const FAKE_EMPTY_XML = '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
 
 /**
  * Query to a FDSN Event web service.
- * 
+ *
  * @see http://www.fdsn.org/webservices/
  */
 export class EventQuery {
@@ -671,207 +664,6 @@ export class EventQuery {
       isDef(this.catalog) ||
       isDef(this.contributor);
   }
-
-  /**
-   * Parses a QuakeML event xml element into a Quake object.
-   *
-   * @param qml the event xml Element
-   * @returns QuakeML Quake(Event) object
-   */
-  convertToQuake(qml: Element): Quake {
-    let out = new Quake();
-    let s = _grabAttribute(qml, 'publicID');
-    if (! s) {throw new Error("Quake/Event does not have publicID");}
-    out.publicId = s;
-    const desc = _grabFirstElText(_grabFirstEl(qml, 'description'), 'text');
-    if (isStringArg(desc)) {out.description = desc;}
-    let otimeStr = _grabFirstElText(_grabFirstEl(_grabFirstEl(qml, 'origin'), 'time'),'value');
-    if (otimeStr ) {
-      out.time = otimeStr;
-    }
-
-    //need picks before can do origins
-    let allPickEls = qml.getElementsByTagNameNS(BED_NS, 'pick');
-    let allPicks = [];
-    for (let pickEl of allPickEls) {
-      allPicks.push(this.convertToPick(pickEl));
-    }
-
-    let allOriginEls = qml.getElementsByTagNameNS(BED_NS, "origin");
-    let allOrigins = [];
-    for (let originEl of allOriginEls) {
-      allOrigins.push(this.convertToOrigin(originEl, allPicks));
-    }
-    let allMagEls = qml.getElementsByTagNameNS(BED_NS, "magnitude");
-    let allMags = [];
-    for (let magEl of allMagEls) {
-      allMags.push(this.convertToMagnitude(magEl));
-    }
-    out.originList = allOrigins;
-    out.magnitudeList = allMags;
-    out.pickList = allPicks;
-    out.eventId = this.extractEventId(qml);
-    out.preferredOriginId = _grabFirstElText(qml, 'preferredOriginID');
-    out.preferredMagnitudeId = _grabFirstElText(qml, 'preferredMagnitudeID');
-    if (out.preferredOriginId) {
-      for (let o of allOrigins) {
-        if (o.publicId === out.preferredOriginId) {
-          out.preferredOrigin = o;
-          out.latitude = o.latitude;
-          out.longitude = o.longitude;
-          out.depth = o.depth;
-          out.time = o.time;
-        } else {
-          util.log(`no preferredOriginId match: ${o.publicId} ${out.preferredOriginId}`);
-        }
-      }
-    } else if (out.originList.length > 1) {
-      const o = out.originList[0];
-      out.latitude = o.latitude;
-      out.longitude = o.longitude;
-      out.depth = o.depth;
-    }
-    if (allMags.length > 0) {out.magnitude = allMags[0];}
-    if (out.preferredMagnitudeId) {
-      for (let m of allMags) {
-        if (m.publicId === out.preferredMagnitudeId) {
-          out.preferredMagnitude = m;
-          out.magnitude = m;
-        } else {
-          util.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`);
-        }
-      }
-    }
-    return out;
-  }
-  /**
-   * Extracts the EventId from a QuakeML element, guessing from one of several
-   * incompatible (grumble grumble) formats.
-   *
-   * @param   qml Quake(Event) to extract from
-   * @returns     Extracted Id, or "unknownEventId" if we can't figure it out
-   */
-  extractEventId(qml: Element): string {
-    let eventId = _grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventid');
-    let catalogEventSource = _grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventsource');
-    if (eventId) {
-      if (this.host() === USGS_HOST && catalogEventSource) {
-        // USGS, NCEDC and SCEDC use concat of eventsource and eventId as eventit, sigh...
-        return catalogEventSource+eventId;
-      } else {
-        return eventId;
-      }
-    }
-    let publicid = _grabAttribute(qml, 'publicID');
-    if (publicid) {
-      let re = /eventid=([\w\d]+)/;
-      let parsed = re.exec(publicid);
-      if (parsed) { return parsed[1];}
-      re = /evid=([\w\d]+)/;
-      parsed = re.exec(publicid);
-      if (parsed) { return parsed[1];}
-    }
-    return "unknownEventId";
-  }
-  /**
-   * Parses a QuakeML origin xml element into a Origin object.
-   *
-   * @param qml the origin xml Element
-   * @param allPicks picks already extracted from the xml for linking arrivals with picks
-   * @returns Origin instance
-   */
-  convertToOrigin(qml: Element, allPicks: Array<Pick>): Origin {
-    let out = new Origin();
-    let otimeStr = _grabFirstElText(_grabFirstEl(qml, 'time'),'value');
-    if (otimeStr ) {
-      out.time = otimeStr;
-    } else {
-      util.log("origintime is missing...");
-    }
-    const lat = _grabFirstElFloat(_grabFirstEl(qml, 'latitude'), 'value');
-    if (isNumArg(lat)) {out.latitude = lat;}
-    const lon = _grabFirstElFloat(_grabFirstEl(qml, 'longitude'), 'value');
-    if (isNumArg(lon)) {out.longitude = lon;}
-    const depth = _grabFirstElFloat(_grabFirstEl(qml, 'depth'), 'value');
-    if (isNumArg(depth)) {out.depth = depth;}
-    const pid = _grabAttribute(qml, 'publicID');
-    if (pid){out.publicId = pid;}
-
-    let allArrivalEls = qml.getElementsByTagNameNS(BED_NS, 'arrival');
-    let allArrivals = [];
-    for ( let arrivalEl of allArrivalEls) {
-      allArrivals.push(this.convertToArrival(arrivalEl, allPicks));
-    }
-    out.arrivalList = allArrivals;
-    return out;
-  }
-  /**
-   * Parses a QuakeML magnitude xml element into a Magnitude object.
-   *
-   * @param qml the magnitude xml Element
-   * @returns Magnitude instance
-   */
-  convertToMagnitude(qml: Element): Magnitude {
-    let mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, 'mag'), 'value');
-    let type = _grabFirstElText(qml, 'type');
-    if (mag && type) {
-      let out = new Magnitude(mag, type);
-      const pid = _grabAttribute(qml, 'publicID');
-      if (pid){out.publicId = pid;}
-      return out;
-    }
-    throw new Error("Did not find mag and type in Element: ${mag} ${type}");
-  }
-  /**
-   * Parses a QuakeML arrival xml element into a Arrival object.
-   *
-   * @param arrivalQML the arrival xml Element
-   * @param allPicks picks already extracted from the xml for linking arrivals with picks
-   * @returns Arrival instance
-   */
-  convertToArrival(arrivalQML: Element, allPicks: Array<Pick>): Arrival {
-    let pickId = _grabFirstElText(arrivalQML, 'pickID');
-    let phase = _grabFirstElText(arrivalQML, 'phase');
-    if (phase && pickId) {
-      let myPick = allPicks.find(function(p: Pick) { return p.publicId === pickId;});
-      if ( ! myPick) {
-        throw new Error("Can't find pick with Id="+pickId+" for Arrival");
-      }
-      let out = new Arrival(phase, myPick);
-      const pid = _grabAttribute(arrivalQML, 'publicID');
-      if (pid){out.publicId = pid;}
-      return out;
-    } else {
-      throw new Error("Arrival does not have phase or pickId: "+stringify(phase)+" "+stringify(pickId));
-    }
-  }
-  /**
-   * Parses a QuakeML pick xml element into a Pick object.
-   *
-   * @param pickQML the pick xml Element
-   * @returns Pick instance
-   */
-  convertToPick(pickQML: Element): Pick {
-    let otimeStr = _grabFirstElText(_grabFirstEl(pickQML, 'time'),'value');
-    let time = checkStringOrDate(otimeStr);
-    let waveformIdEl = _grabFirstEl(pickQML, 'waveformID');
-    let netCode = _grabAttribute(waveformIdEl, "networkCode");
-    let stationCode = _grabAttribute(waveformIdEl, "stationCode");
-    let locationCode = _grabAttribute(waveformIdEl, "locationCode");
-    let channelCode = _grabAttribute(waveformIdEl, "channelCode");
-    // handle empty loc code, it can be missing
-    if ( ! locationCode) { locationCode = '';}
-    if (! netCode || ! stationCode || ! channelCode) {
-      throw new Error("missing codes: "+stringify(netCode)
-                      +"."+ stringify(stationCode)
-                      +"."+ stringify(locationCode)
-                      +"."+ stringify(channelCode));
-    }
-    let out = new Pick(time, netCode, stationCode, locationCode, channelCode);
-    const pid = _grabAttribute(pickQML, 'publicID');
-    if (pid){out.publicId = pid;}
-    return out;
-  }
   /**
    * Queries the remote service and parses the returned xml.
    *
@@ -897,7 +689,7 @@ export class EventQuery {
     let eventArray = top.getElementsByTagName("event");
     let out = [];
     for (let eventEl of eventArray) {
-      out.push(this.convertToQuake(eventEl));
+      out.push(Quake.createFromXml(eventEl, this._host));
     }
     return out;
   }
@@ -1118,95 +910,3 @@ export class EventQuery {
   }
 
 }
-
-
-// these are similar methods as in seisplotjs-fdsnstation
-// duplicate here to avoid dependency and diff NS, yes that is dumb...
-
-
-const _grabFirstElNS = function(xml: Element | null | void, namespace: string, tagName: string): Element | void {
-  let out = undefined;
-  if ( isObject(xml)) {
-    let elList = xml.getElementsByTagNameNS(namespace, tagName);
-    if (isObject(elList) && elList.length > 0) {
-      const e = elList.item(0);
-      if (e) {
-        out = e;
-      }
-    }
-  }
-  return out;
-};
-
-const _grabFirstEl = function(xml: Element | null | void, tagName: string): Element | void {
-  let out = undefined;
-  if ( isObject(xml)) {
-    let elList = xml.getElementsByTagName(tagName);
-    if (isObject(elList) && elList.length > 0) {
-      const e = elList.item(0);
-      if (e) {
-        out = e;
-      }
-    }
-  }
-  return out;
-};
-
-const _grabFirstElText = function(xml: Element | null | void, tagName: string): string | void {
-  let out = undefined;
-  let el = _grabFirstEl(xml, tagName);
-  if (isObject(el)) {
-    out = el.textContent;
-  }
-  return out;
-};
-
-const _grabFirstElInt = function(xml: Element | null | void, tagName: string): number | void {
-  let out = undefined;
-  let el = _grabFirstElText(xml, tagName);
-  if (isStringArg(el)) {
-    out = parseInt(el);
-  }
-  return out;
-};
-
-const _grabFirstElFloat = function(xml: Element | null | void, tagName: string): number | void {
-  let out = undefined;
-  let el = _grabFirstElText(xml, tagName);
-  if (isStringArg(el)) {
-    out = parseFloat(el);
-  }
-  return out;
-};
-
-const _grabAttribute = function(xml: Element | null | void, tagName: string): string | void {
-  let out = undefined;
-  if ( isObject(xml)) {
-    let a = xml.getAttribute(tagName);
-    if (isStringArg(a)) {
-      out = a;
-    }
-  }
-  return out;
-};
-
-const _grabAttributeNS = function(xml: Element | null | void, namespace: string, tagName: string): string | void {
-  let out = undefined;
-  if ( isObject(xml)) {
-    let a = xml.getAttributeNS(namespace, tagName);
-    if (isStringArg(a)) {
-      out = a;
-    }
-  }
-  return out;
-};
-
-export const parseUtil = {
-  "_grabFirstEl": _grabFirstEl,
-  "_grabFirstElNS": _grabFirstElNS,
-  "_grabFirstElText": _grabFirstElText,
-  "_grabFirstElFloat": _grabFirstElFloat,
-  "_grabFirstElInt": _grabFirstElInt,
-  "_grabAttribute": _grabAttribute,
-  "_grabAttributeNS": _grabAttributeNS
-};

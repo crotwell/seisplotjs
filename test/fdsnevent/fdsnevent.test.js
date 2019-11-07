@@ -1,6 +1,7 @@
 // @flow
 
 import * as fdsnevent from '../../src/fdsnevent.js';
+import * as quakeml from '../../src/quakeml.js';
 import * as util from '../../src/util.js';
 let moment = util.moment;
 
@@ -106,19 +107,19 @@ test( "qml util test", () => {
   for (let eventEl of eventArray) {
     expect(util.isObject(eventEl)).toBeTrue();
 
-    let allMagEls = eventEl.getElementsByTagNameNS(fdsnevent.BED_NS, "magnitude");
+    let allMagEls = eventEl.getElementsByTagNameNS(quakeml.BED_NS, "magnitude");
     for (let magEl of allMagEls) {
       expect(util.isObject(magEl)).toBeTrue();
-      let mag = fdsnevent.parseUtil._grabFirstElNS(magEl, fdsnevent.BED_NS, 'mag');
+      let mag = quakeml.parseUtil._grabFirstElNS(magEl, quakeml.BED_NS, 'mag');
       expect(util.isObject(mag)).toBeTrue();
-      expect(fdsnevent.parseUtil._grabFirstEl(mag, 'value')).toBeObject();
-      expect(fdsnevent.parseUtil._grabFirstElNS(mag, fdsnevent.BED_NS, 'value')).toBeObject();
-      expect(fdsnevent.parseUtil._grabFirstElText(mag, 'value')).toBeString();
-      expect(fdsnevent.parseUtil._grabFirstElFloat(mag, 'value')).toBeDefined();
-      let magVal = fdsnevent.parseUtil._grabFirstElFloat(mag, 'value');
+      expect(quakeml.parseUtil._grabFirstEl(mag, 'value')).toBeObject();
+      expect(quakeml.parseUtil._grabFirstElNS(mag, quakeml.BED_NS, 'value')).toBeObject();
+      expect(quakeml.parseUtil._grabFirstElText(mag, 'value')).toBeString();
+      expect(quakeml.parseUtil._grabFirstElFloat(mag, 'value')).toBeDefined();
+      let magVal = quakeml.parseUtil._grabFirstElFloat(mag, 'value');
       expect(magVal).toBeFinite();
       expect(magVal).toBeWithin(0, 10);
-      let type = fdsnevent.parseUtil._grabFirstElText(magEl, 'type');
+      let type = quakeml.parseUtil._grabFirstElText(magEl, 'type');
       expect(type).toBeString();
     }
   }
