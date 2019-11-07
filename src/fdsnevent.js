@@ -7,7 +7,7 @@
  */
 
 import { moment } from 'moment';
-import { Quake, Origin, Magnitude, Arrival, Pick, USGS_HOST } from './quakeml';
+import { Quake, Origin, Magnitude, Arrival, Pick, USGS_HOST, parseQuakeML } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 import * as util from './util.js'; // for util.log
@@ -672,26 +672,8 @@ export class EventQuery {
   query(): Promise<Array<Quake>> {
     let mythis = this;
     return this.queryRawXml().then(rawXml => {
-        return mythis.parseQuakeML(rawXml);
+        return parseQuakeML(rawXml, this._host);
     });
-  }
-  /**
-   * Parses a QuakeML xml document into seisplotjs objects
-   *
-   *  @param rawXml the xml Document to parse
-   *  @returns array of Quake objects
-   */
-  parseQuakeML(rawXml: Document): Array<Quake> {
-    let top = rawXml.documentElement;
-    if (! top) {
-      throw new Error("Can't get documentElement");
-    }
-    let eventArray = top.getElementsByTagName("event");
-    let out = [];
-    for (let eventEl of eventArray) {
-      out.push(Quake.createFromXml(eventEl, this._host));
-    }
-    return out;
   }
   /**
    * Queries the remote server, to get QuakeML xml.

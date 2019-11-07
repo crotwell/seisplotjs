@@ -356,6 +356,26 @@ export class Pick {
 }
 
 
+/**
+ * Parses a QuakeML xml document into seisplotjs objects
+ *
+ *  @param rawXml the xml Document to parse
+ *  @param host optional source of the xml, helpful for parsing the eventid
+ *  @returns array of Quake objects
+ */
+export function parseQuakeML(rawXml: Document, host?: string): Array<Quake> {
+  let top = rawXml.documentElement;
+  if (! top) {
+    throw new Error("Can't get documentElement");
+  }
+  let eventArray = top.getElementsByTagName("event");
+  let out = [];
+  for (let eventEl of eventArray) {
+    out.push(Quake.createFromXml(eventEl, host));
+  }
+  return out;
+}
+
 // these are similar methods as in seisplotjs.stationxml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
