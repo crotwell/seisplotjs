@@ -157,53 +157,19 @@ export class MSeedArchive {
     }
     let recordTime = maxTimeForRecord(this._recordSize, sampleRate);
     let t = moment.utc(startTime).subtract(recordTime, 'seconds');
-    let promiseArray = [];
+    let urlList = [];
     const fetchInit = util.defaultFetchInitObj();
     while (t.isBefore(endTime)) {
       let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
-      promiseArray.push(util.doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 ));
       t.add(1, 'hour');
+      urlList.push(url);
     }
     if (moment.utc(t).add(recordTime, 'seconds').isAfter(endTime)) {
       let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
-      promiseArray.push(util.doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 ));
+      urlList.push(url);
     }
-    promiseArray = promiseArray.map( (p) => {
-      return p.then(fetchResponse => {
-        if (fetchResponse.ok) {
-          if (fetchResponse.status === 200 || fetchResponse.status === 304) {
-            return fetchResponse.arrayBuffer().then(ab => {
-              let dataRecords = [];
-              if (ab.byteLength > 0) {
-                dataRecords = miniseed.parseDataRecords(ab);
-              }
-              return dataRecords;
-            });
-          } else if (fetchResponse.status === 404 ) {
-            return []; // empty array means no data
-          } else {
-            util.log("no data: status="+fetchResponse.status+" "+fetchResponse.url);
-            return [];
-          }
-        } else if (fetchResponse.status === 404 ) {
-          return []; // empty array means no data
-        } else {
-          // $FlowFixMe
-          throw new Error("fetch error: "+fetchResponse.ok+" "+fetchResponse.status+" "+fetchResponse.url);
-        }
-      }).catch(err => {
-        util.log("caught fetch err, continuing with empty: "+err);
-        return [];
-      });
-    });
-
-    return RSVP.all(promiseArray).then(pArray => {
-        let dataRecords: Array<miniseed.DataRecord> = [];
-        pArray.forEach(p => {
-          dataRecords = dataRecords.concat(p);
-        });
-        return dataRecords;
-    }).then(dataRecords => {
+    urlList.forEach(u => console.log(u));
+    return loadDataRecords(urlList).then(dataRecords => {
       if (dataRecords) {
         dataRecords =  dataRecords.filter(dr => dr.header.endTime.isSameOrAfter(startTime) &&
                                         dr.header.startTime.isSameOrBefore(endTime));
@@ -242,6 +208,49 @@ export class MSeedArchive {
 
   }
 }
+
+export function loadDataRecords(urlList: Array<string>,
+                                fetchInit?: { [key: string]: any},
+                                timeoutSec?: number): Promise<Array<miniseed.DataRecord>> {
+  let promiseArray = urlList.map( (url) => {
+    return util.doFetchWithTimeout(url, fetchInit, timeoutSec)
+    .then(fetchResponse => {
+      if (fetchResponse.ok) {
+        if (fetchResponse.status === 200 || fetchResponse.status === 304) {
+          return fetchResponse.arrayBuffer().then(ab => {
+            let dataRecords = [];
+            if (ab.byteLength > 0) {
+              dataRecords = miniseed.parseDataRecords(ab);
+            }
+            return dataRecords;
+          });
+        } else if (fetchResponse.status === 404 ) {
+          return []; // empty array means no data
+        } else {
+          util.log("no data: status="+fetchResponse.status+" "+fetchResponse.url);
+          return [];
+        }
+      } else if (fetchResponse.status === 404 ) {
+        return []; // empty array means no data
+      } else {
+        // $FlowFixMe
+        throw new Error("fetch error: "+fetchResponse.ok+" "+fetchResponse.status+" "+fetchResponse.url);
+      }
+    }).catch(err => {
+      util.log("caught fetch err, continuing with empty: "+err);
+      return [];
+    });
+  });
+
+  return RSVP.all(promiseArray).then(pArray => {
+      let dataRecords: Array<miniseed.DataRecord> = [];
+      pArray.forEach(p => {
+        dataRecords = dataRecords.concat(p);
+      });
+      return dataRecords;
+  });
+}
+
 
 /**
  * Gives the maximum sample rate for the channel, based on the
