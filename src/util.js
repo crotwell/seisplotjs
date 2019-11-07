@@ -338,9 +338,9 @@ export function defaultFetchInitObj(mimeType?: string): { [key: string]: any } {
  * @returns             promise to the result
  * @throws Error if time out or other failure
  */
-export function doFetchWithTimeout(url: string,
-                                   fetchInit: { [key: string]: any },
-                                   timeoutSec: number): Promise<Response> {
+export function doFetchWithTimeout(url: string | URL,
+                                   fetchInit?: { [key: string]: any },
+                                   timeoutSec?: number): Promise<Response> {
   const controller = new AbortController();
   const signal = controller.signal;
   if ( ! isDef(fetchInit)) {
@@ -351,7 +351,16 @@ export function doFetchWithTimeout(url: string,
   }
   setTimeout(() => controller.abort(), timeoutSec * 1000);
   fetchInit.signal = signal;
-  return fetch(url, fetchInit)
+  let absoluteUrl: URL;
+  if (isStringArg(url)) {
+    absoluteUrl = new URL(url, document.URL)
+  } else if (url instanceof URL) {
+    absoluteUrl = url;
+  } else {
+    throw new Error(`url must be string or URL, ${stringify(url)}`);
+  }
+  log(`attempt to fetch ${stringify(absoluteUrl)}`)
+  return fetch(absoluteUrl, fetchInit)
   .catch(err => {
     log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
     throw err;
