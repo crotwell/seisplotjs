@@ -1,6 +1,7 @@
 
-const loadDataset = function() {
-  return seisplotjs.util.doFetchWithTimeout('/dataset').then(response => {
+const loadDataset = function(baseUrl) {
+  const datasetUrl = new URL('/dataset', baseUrl)
+  return seisplotjs.util.doFetchWithTimeout(datasetUrl).then(response => {
     console.log("response to fetch: ");
     return response.json();
   }).then(dataset => {
@@ -20,7 +21,7 @@ const loadDataset = function() {
             return seisArray;
           });
       let quake = null;
-      if (dataset.data.relationships.quake) {
+      if (dataset.data.relationships.quake.data.id) {
         const qid = dataset.data.relationships.quake.data.id;
         console.log(`quake: ${dataset.data.relationships.quake.data.id}`);
         quake = seisplotjs.util.doFetchWithTimeout(`/quake/${qid}`).then(response => {

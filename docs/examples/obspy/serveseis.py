@@ -16,7 +16,7 @@ class ServeSeis():
         self.dataset = self.initEmptyDataset()
     def initEmptyDataset(self):
         return {
-            "stream": [],
+            "stream": None,
             "title": "tytle",
             "quake": None
         }
