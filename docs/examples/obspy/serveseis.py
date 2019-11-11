@@ -18,6 +18,9 @@ logger = logging.getLogger('websockets.server')
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
+FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>'
+
+
 class ServeSeis():
     def __init__(self):
         self.dataset = self.initEmptyDataset()
@@ -27,7 +30,8 @@ class ServeSeis():
         return {
             "stream": None,
             "title": "tytle",
-            "quake": None
+            "quake": None,
+            "inventory": None
         }
     def datasetAsJsonApi(self):
         jsonapi = {
@@ -44,6 +48,9 @@ class ServeSeis():
                     },
                     "quake": {
                         "data": {}
+                    },
+                    "inventory": {
+                        "data": {}
                     }
                 }
             }
@@ -53,6 +60,13 @@ class ServeSeis():
             id_num = self.dataset['quake'].resource_id.id.split('=')[1]
             jsonapi['data']['relationships']['quake']['data'] = {
                   'type': 'quake',
+                  'id': id_num
+                }
+
+        if self.dataset['inventory']:
+            id_num = 1; #should do something more, maybe break out by channel?
+            jsonapi['data']['relationships']['inventory']['data'] = {
+                  'type': 'inventory',
                   'id': id_num
                 }
         if self.dataset['stream']:
@@ -105,6 +119,16 @@ class ServeSeis():
     def clearQuake(self):
         self.setQuake(None)
 
+    def setInventory(self, inventory):
+        self.dataset["inventory"] = inventory;
+        self.wsServer.notifyUpdate('inventory');
+
+    def getInventory(self):
+        return self.dataset["inventory"];
+
+    def clearInventory(self):
+        self.setInventory(None)
+
     def refreshAll(self):
         self.wsServer.notifyUpdate('refreshAll');
 
@@ -126,11 +150,14 @@ class ServeSeis():
                     self.sendSeismogram()
                 elif self.path.startswith('/quake/'):
                     self.sendQuake()
+                elif self.path.startswith('/inventory'):
+                    self.sendInventory()
                 elif self.path == '/favicon.ico':
                     super().do_GET()
                 elif self.path.startswith('/www'):
                     super().do_GET()
                 else:
+                    print("oops, fell to the else...")
                     content = "IT WORKS!"
                     self.send_response(200)
                     self.send_header("Content-Length", len(content))
@@ -163,6 +190,17 @@ class ServeSeis():
                 catalog = Catalog([ObsPyRequestHandler.serveSeis.dataset['quake']],resource_id=resource_id)
                 buf = io.BytesIO()
                 catalog.write(buf, format="QUAKEML")
+                self.send_header("Content-Length", buf.getbuffer().nbytes)
+                self.send_header("Content-Type", "application/xml")
+                self.wfile.write(buf.getbuffer())
+
+            def sendInventory(self):
+                buf = io.BytesIO()
+                inventory = ObsPyRequestHandler.serveSeis.dataset['inventory']
+                if inventory is not None:
+                    inventory.write(buf,format="STATIONXML")
+                else:
+                    buf.write(FAKE_EMPTY_XML)
                 self.send_header("Content-Length", buf.getbuffer().nbytes)
                 self.send_header("Content-Type", "application/xml")
                 self.wfile.write(buf.getbuffer())

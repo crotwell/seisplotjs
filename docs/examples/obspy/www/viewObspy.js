@@ -53,13 +53,32 @@ const loadDataset = function(baseUrl) {
           return (new window.DOMParser()).parseFromString(xml, "text/xml");
         }).then(quakeml => {
           return seisplotjs.quakeml.parseQuakeML(quakeml);
+        }).then(quakeml => {
+          obspyDataset.set('quake', quakeml);
+          return quakeml;
         });
       }
-      return Promise.all([dataset, allSeis, quake]);
-    }).then( ( [ dataset, allSeis, quake ] ) => {
+      let inventory = null;
+      if (dataset.data.relationships.inventory.data.id) {
+        const qid = dataset.data.relationships.inventory.data.id;
+        console.log(`inventory: ${dataset.data.relationships.inventory.data.id}`);
+        inventory = seisplotjs.util.doFetchWithTimeout(`/inventory`).then(response => {
+          console.log("response to fetch: ");
+          return response.text();
+        }).then(xml => {
+          return (new window.DOMParser()).parseFromString(xml, "text/xml");
+        }).then(stationxml => {
+          return seisplotjs.stationxml.parseStationXml(stationxml);
+        }).then(stationxml => {
+          obspyDataset.set('inventory', stationxml);
+          return stationxml;
+        });
+      }
+      return Promise.all([dataset, allSeis, quake, inventory]);
+    }).then( ( [ dataset, allSeis, quake, inventory ] ) => {
       console.log(`plot ${allSeis.length} seismograms`);
       plotDataset(dataset);
-      return Promise.all([dataset, allSeis, quake])
+      return Promise.all([dataset, allSeis, quake, inventory])
     }).catch( function(error) {
       seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
       console.assert(false, error);
