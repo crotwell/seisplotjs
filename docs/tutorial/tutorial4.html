@@ -82,18 +82,29 @@
         }
         seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
         seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
-        return Promise.all([ quakeList, networks, ttimes, seismogramDataList ]);
-      }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+        return Promise.all([ quakeList, networks, ttimes, seismogramDataList, graphList ]);
+      }).then( ( [ quakeList, networks, ttimes, seismogramDataList, graphList ] ) => {
         let div = seisplotjs.d3.select('div#particlemotion');
-        let firstP = ttimes.arrivals.find(a => a.phase.startsWith('S'));
-        let windowDuration = 20;
-        let firstPTimeWindow = new seisplotjs.util.StartEndDuration(
-          seisplotjs.moment.utc(quakeList[0].time).add(firstP.time, 'seconds').subtract(windowDuration/2, 'seconds'),
+        let firstS = ttimes.arrivals.find(a => a.phase.startsWith('S'));
+        let windowDuration = 60;
+        let firstSTimeWindow = new seisplotjs.util.StartEndDuration(
+          seisplotjs.moment.utc(quakeList[0].time).add(firstS.time, 'seconds').subtract(windowDuration/4, 'seconds'),
           null,
           windowDuration);
-        let xSeisData = seismogramDataList[0].cloneWithNewSeismogram(seismogramDataList[0].seismogram.cut(firstPTimeWindow));
-        let ySeisData = seismogramDataList[1].cloneWithNewSeismogram(seismogramDataList[1].seismogram.cut(firstPTimeWindow));
-        let zSeisData = seismogramDataList[2].cloneWithNewSeismogram(seismogramDataList[2].seismogram.cut(firstPTimeWindow));
+        seismogramDataList.forEach(sdd => sdd.addMarkers({
+          name: "pm start",
+          time: firstSTimeWindow.startTime,
+          type: "other",
+          description: "pm start"}));
+        seismogramDataList.forEach(sdd => sdd.addMarkers({
+          name: "pm end",
+          time: firstSTimeWindow.endTime,
+          type: "other",
+          description: "pm end"}));
+        graphList.forEach(g => g.drawMarkers());
+        let xSeisData = seismogramDataList[0].cut(firstSTimeWindow);
+        let ySeisData = seismogramDataList[1].cut(firstSTimeWindow);
+        let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
         let spanA = div.append('div').classed('particlemotionContainer', true);
         let spanB = div.append('div').classed('particlemotionContainer', true);
         let spanC = div.append('div').classed('particlemotionContainer', true);
@@ -104,27 +115,27 @@
         seismographConfig.margin.left = 60;
         seismographConfig.margin.top = seismographConfig.margin.bottom;
         seismographConfig.margin.right = seismographConfig.margin.left;
-        seismographConfig.fixedTimeScale = firstPTimeWindow;
+        seismographConfig.fixedTimeScale = firstSTimeWindow;
         seismographConfig.fixedYScale = minMax;
 
         let seisConfigA = seismographConfig.clone();
-        seisConfigA.title = xSeisData.seismogram.channelCode+" "+ySeisData.seismogram.channelCode;
-        seisConfigA.xLabel = xSeisData.seismogram.channelCode;
-        seisConfigA.yLabel = ySeisData.seismogram.channelCode;
+        seisConfigA.title = xSeisData.channelCode+" "+ySeisData.channelCode;
+        seisConfigA.xLabel = xSeisData.channelCode;
+        seisConfigA.yLabel = ySeisData.channelCode;
         let pmpA = new seisplotjs.particlemotion.ParticleMotion(spanA, seisConfigA, xSeisData, ySeisData);
         pmpA.draw();
 
         let seisConfigB = seismographConfig.clone();
-        seisConfigB.title = xSeisData.seismogram.channelCode+" "+zSeisData.seismogram.channelCode;
-        seisConfigB.xLabel = xSeisData.seismogram.channelCode;
-        seisConfigB.yLabel = zSeisData.seismogram.channelCode;
+        seisConfigB.title = xSeisData.channelCode+" "+zSeisData.channelCode;
+        seisConfigB.xLabel = xSeisData.channelCode;
+        seisConfigB.yLabel = zSeisData.channelCode;
         let pmpB = new seisplotjs.particlemotion.ParticleMotion(spanB, seisConfigB, xSeisData, zSeisData);
         pmpB.draw();
 
         let seisConfigC = seismographConfig.clone();
-        seisConfigC.title = ySeisData.seismogram.channelCode+" "+zSeisData.seismogram.channelCode;
-        seisConfigC.xLabel = ySeisData.seismogram.channelCode;
-        seisConfigC.yLabel = zSeisData.seismogram.channelCode;
+        seisConfigC.title = ySeisData.channelCode+" "+zSeisData.channelCode;
+        seisConfigC.xLabel = ySeisData.channelCode;
+        seisConfigC.yLabel = zSeisData.channelCode;
         let pmpC = new seisplotjs.particlemotion.ParticleMotion(spanC, seisConfigC, ySeisData, zSeisData);
         pmpC.draw();
 
