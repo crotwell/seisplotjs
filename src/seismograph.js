@@ -234,6 +234,7 @@ export class Seismograph {
       this.drawMarkers();
     }
     this.beforeFirstDraw = false;
+    return this.svg;
   }
   printSizes(): void {
     let out = "";
