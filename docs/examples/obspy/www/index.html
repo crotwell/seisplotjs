@@ -15,6 +15,7 @@
 
     <h3>ObsPy Plotting</h3>
     <button id="refresh">Refresh</button>
+    <button id="websocketHi">Say Hi</button>
     <h3 id="title">Seismograph!</h3>
     <div class="seismograph" id="myseismograph">
     </div>
@@ -28,6 +29,37 @@
         loadDataset(baseUrl);
       });
       loadDataset(baseUrl);
+      const wsUrl = 'ws://localhost:8001';
+      const handler = function(json) {
+        console.log("hey I got something!");
+      };
+      const errHandler = function(err) {
+        console.assert(false, err);
+        console.log(`oops ${err}`);
+        console.log(`   ${err.message}`)
+      }
+      const wsConn = new ObsPyConnection(wsUrl, handler, errHandler);
+      wsConnIsOK = false;
+      wsConn.connect().then( () => {
+        console.log("after ws connect, send something back...");
+        wsConn.sendMessage("hi obspy!");
+      }).then( () => {
+        console.log("after ws connect, send something back...");
+        wsConn.sendMessage("hi obspy 2!");
+      }).then( () => {
+        console.log("after ws connect, send something back...");
+        wsConn.sendMessage("hi obspy  3!");
+        wsConnIsOK = true;
+      });
+
+      seisplotjs.d3.select("button#websocketHi").on("click", function(d) {
+        if (wsConnIsOK) {
+          wsConn.sendMessage("Howdy howdy");
+        } else {
+          console.log("wsConn not yet ok");
+        }
+      });
+
     </script>
   </body>
 </html>

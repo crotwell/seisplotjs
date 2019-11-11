@@ -2,18 +2,27 @@
 
 
 import asyncio
-import websockets
 import io
 import http.server
-import threading
 import json
+import queue
+import sys
+import threading
+import websockets
 from obspy.io.quakeml.core import Pickler
 from obspy.core.event.catalog import Catalog
 from obspy.core.event.base import ResourceIdentifier
 
+import logging
+logger = logging.getLogger('websockets.server')
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
+
 class ServeSeis():
     def __init__(self):
         self.dataset = self.initEmptyDataset()
+        self.httpServer = None
+        self.wsServer = None
     def initEmptyDataset(self):
         return {
             "stream": None,
@@ -54,11 +63,17 @@ class ServeSeis():
                   'id': i
                 })
         return jsonapi
-    def serveData(self, host='localhost', port=8000):
+    def serveData(self, host='localhost', port=8000, wsport=8001):
         print("before http server")
-        background = ObsPyServer(self.__createRequestHandlerClass(), host=host, port=port)
-        background.start()
-        print("http server started")
+        if self.httpServer:
+            print("already serving...")
+            return
+        self.httpServer = ObsPyServer(self.__createRequestHandlerClass(), host=host, port=port)
+        self.httpServer.start()
+        print("http server started at http://{}:{:d}".format(host, port))
+        self.wsServer = ObsPyWebSocket(host=host, port=wsport)
+        self.wsServer.start()
+        print("websocket server started ws://{}:{:d}".format(host, wsport))
 
     def setStream(self, stream, title=None):
         self.dataset["stream"] = stream
@@ -154,3 +169,115 @@ class ObsPyServer(threading.Thread):
         server_address = (self.host, self.port)
         httpd = server_class(server_address, self.handler_class)
         httpd.serve_forever()
+
+class ObsPyWebSocket(threading.Thread):
+    def __init__(self, host, port):
+        threading.Thread.__init__(self)
+        self.daemon=True
+        self.host = host
+        self.port = port
+        self.users = set()
+    def hello(self):
+        return json.dumps({'msg': "hi"})
+    def send_message(self, message):
+        future = asyncio.run_coroutine_threadsafe(
+              self.dataQueue.put({'msg': message}),
+              self.loop
+        )
+        result = future.result()
+        print('result of send msg {}'.format(result))
+    async def consumer_handler(self, websocket, path):
+        print("in consumer_handler", flush=True)
+        try:
+            while True:
+                print("before recv")
+                message = await websocket.recv()
+                print("got message from ws "+message, flush=True)
+        except Exception as e:
+            print("consumer_handler exception ", flush=True)
+            print(e, flush=True)
+        except:
+            print('consumer_handler something bad happened  ', flush=True)
+            e = sys.exc_info()[0]
+            print(e, flush=True)
+    async def producer_handler(self, websocket, path):
+        print("in producer_handler", flush=True)
+        try:
+            while True:
+                print('begin of producer while True:')
+                message = await self.dataQueue.get()
+                print("dataqueue had message {}".format(message), flush=True)
+                if message is None:
+                    continue
+                if self.users:  # asyncio.wait doesn't accept an empty list
+                    await asyncio.wait([self.sendOneUser(user, json.dumps(message)) for user in self.users])
+                    print("done sending", flush=True)
+                else:
+                    print("no users to send to...", flush=True)
+        except:
+            print('producer_handler something bad happened  ', flush=True)
+            e = sys.exc_info()[0]
+            print(e, flush=True)
+    async def sendOneUser(self, user, message):
+        try:
+            await user.send(message)
+        except websockets.exceptions.ConnectionClosedError as ee:
+            print("ws conn was closed, removing user ", flush=True)
+            print(ee)
+            self.users.remove(user)
+    async def initWS(self):
+        print("in initWS", flush=True)
+        self.dataQueue = asyncio.Queue()
+        async def handler(websocket, path):
+            print("in handler", flush=True)
+            self.users.add(websocket)
+            try:
+                await websocket.send(self.hello())
+                done, pending = await asyncio.wait([
+                     self.consumer_handler(websocket, path),
+                     self.producer_handler(websocket, path)
+                     ],
+                     return_when=asyncio.FIRST_COMPLETED,
+                )
+                print("handler past await tasks")
+
+
+                #await self.consumer_handler(websocket, path)
+
+
+                # consumer_task = asyncio.ensure_future(
+                #     self.consumer_handler(websocket, path))
+                # producer_task = asyncio.ensure_future(
+                #     self.producer_handler(websocket, path))
+                #
+                # done, pending = await asyncio.wait(
+                #     [consumer_task, producer_task],
+                #     return_when=asyncio.FIRST_COMPLETED,
+                # )
+                # print("handler past await tasks")
+                # exc = done.exception()
+                # if exc:
+                #     print("oops, something bad "+str(exc))
+                #     self.users.remove(websocket)
+                # for task in pending:
+                #     task.cancel()
+                print("end handler", flush=True)
+            except:
+                print('handler something bad happened  ')
+                e = sys.exc_info()[0]
+                print(e)
+            finally:
+                self.users.remove(websocket)
+            print('exit handler')
+            print("done, remove websocket user", flush=True)
+
+        self.server = await websockets.serve(handler, self.host, self.port)
+
+    def run(self):
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+        #start_server = websockets.serve(self.handler, self.host, self.port)
+        asyncio.get_event_loop().run_until_complete(asyncio.ensure_future(self.initWS()))
+        print("ws server started at {}:{:d}".format(self.host, self.port))
+        asyncio.get_event_loop().run_forever()
+        print("end run")
