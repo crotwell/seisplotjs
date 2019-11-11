@@ -1,4 +1,36 @@
 
+let obspyDataset = new Map();
+
+const plotDataset = function(dataset) {
+  seisplotjs.d3.select("#myseismograph").selectAll("div").remove();
+  seisplotjs.d3.select("#title").text(dataset.data.attributes.title);
+  const topDiv = seisplotjs.d3.select("#myseismograph");
+  let graphEnter = topDiv.selectAll("div")
+    .data(dataset.data.relationships.seismograms.data)
+    .enter().append("div").attr("id", d=>`seis${d.id}`)
+    .append("p").text(d => d.type+" "+d.id+" ");
+  return loadSeismograms(dataset).then((seisArray) => redrawSeismographs(dataset));
+}
+const redrawSeismographs = function(dataset) {
+  dataset.data.relationships.seismograms.data.forEach(d => {
+    const selectedDiv = seisplotjs.d3.select(`div#seis${d.id}`);
+    const seisUrl = `/seismograms/${d.id}`;
+    if (obspyDataset.has(seisUrl)) {
+      selectedDiv.selectAll('p').remove();
+      let seismogram = obspyDataset.get(seisUrl);
+      let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+      seisConfig.title = seismogram.codes();
+      let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+      if (obspyDataset.has(`quake`)){
+        seisData.addQuake( quake);
+      }
+      let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisData);
+      graph.draw();
+    } else {
+      selectedDiv.append("p").text(d => d.type+" "+d.id+" ");
+    }
+  });
+}
 const loadDataset = function(baseUrl) {
   const datasetUrl = new URL('/dataset', baseUrl)
   return seisplotjs.util.doFetchWithTimeout(datasetUrl).then(response => {
@@ -6,21 +38,10 @@ const loadDataset = function(baseUrl) {
     return response.json();
   }).then(dataset => {
       console.log(`Got dataset`);
-      console.log(`Got dataset: ${JSON.stringify(dataset, null, 2)}`)
-      seisplotjs.d3.select("#myseismograph").selectAll("div").remove();
-      seisplotjs.d3.select("#title").text(dataset.data.attributes.title);
-      seisplotjs.d3.select("#myseismograph").selectAll("div")
-        .data(dataset.data.relationships.seismograms.data)
-        .enter().append("div")
-        .attr("seisid", d => d.id).append("p").text(d => d.type+" "+d.id+" ");
-      let urlList = dataset.data.relationships.seismograms.data.map(d => {
-        return `/seismograms/${d.id}`;
-      });
-      let allSeis = seisplotjs.mseedarchive.loadDataRecords(urlList)
-          .then(dataRecords => {
-            let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
-            return seisArray;
-          });
+      console.log(`Got dataset: ${JSON.stringify(dataset, null, 2)}`);
+      obspyDataset.set('dataset', dataset);
+
+      let allSeis = loadSeismograms(dataset);
       let quake = null;
       if (dataset.data.relationships.quake.data.id) {
         const qid = dataset.data.relationships.quake.data.id;
@@ -37,16 +58,7 @@ const loadDataset = function(baseUrl) {
       return Promise.all([dataset, allSeis, quake]);
     }).then( ( [ dataset, allSeis, quake ] ) => {
       console.log(`plot ${allSeis.length} seismograms`);
-      allSeis.forEach((seismogram, myid) => {
-        let div = seisplotjs.d3.select('div#myseismograph').select(`div[seisid="${myid}"]`);
-        div.selectAll('*').remove();
-        let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-        seisConfig.title = seismogram.codes();
-        let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-        seisData.addQuake( quake);
-        let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
-        graph.draw();
-      });
+      plotDataset(dataset);
       return Promise.all([dataset, allSeis, quake])
     }).catch( function(error) {
       seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
@@ -54,9 +66,36 @@ const loadDataset = function(baseUrl) {
     });
 }
 
+/**
+ * Loads seismograms for dataset if not already loaded.
+ */
+const loadSeismograms = function(dataset, force=false) {
+  return Promise.all(dataset.data.relationships.seismograms.data.map(d => {
+    const seisUrl = `/seismograms/${d.id}`;
+    if ( ! force && obspyDataset.has(seisUrl)) {
+      console.log(`already have ${seisUrl}`)
+      return obspyDataset.get(seisUrl);
+    }
+    // load from obspy
+    return seisplotjs.mseedarchive.loadDataRecords( [ seisUrl ] )
+        .then(dataRecords => {
+          let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
+          if (seisArray.length != 0) {
+            obspyDataset.set(seisUrl, seisArray[0]);
+            console.log(`obspyDataset.set(${seisUrl}', ${seisArray[0]})`)
+            return seisArray[0]; // assume only first matters
+          } else {
+            console.log(`Oops, server did not return data for ${seisUrl}`);
+            return null;
+          }
+        });
+  }));
+}
+
 class ObsPyConnection {
-  constructor(url, packetHandler, errorHandler) {
+  constructor(url, baseUrl, packetHandler, errorHandler) {
     this.url = url;
+    this.baseUrl = baseUrl;
     this.packetHandler = packetHandler;
     this.errorHandler = errorHandler;
     this.closeHandler = null;
@@ -76,9 +115,11 @@ class ObsPyConnection {
    */
   connect() {
     const that = this;
+    if (this.isConnected()) {
+      this.close();
+    }
     return new seisplotjs.RSVP.Promise(function(resolve, reject) {
       const webSocket = new WebSocket(that.url);
-      that.webSocket = webSocket;
       webSocket.binaryType = 'arraybuffer';
       webSocket.onmessage = function(event) {
         console.log("  webSocket.onmessage "+event.data)
@@ -101,16 +142,20 @@ class ObsPyConnection {
         }
       };
       webSocket.onopen = function() {
-        resolve(that);
+        that.webSocket = webSocket;
+        resolve(webSocket);
       };
-    }).then(datalink => {
-      return datalink.sendMessage(JSON.stringify({"msg": "hi obspy"}));
+    }).then(webSocket => {
+      // ready to go
+      that.webSocket = webSocket;
+      that.sendMessage(JSON.stringify({"msg": "connect... hi obspy"}));
+      return that;
     });
   }
 
-/**
- * @returns true if the websocket is connected (non-null)
- */
+  /**
+   * @returns true if the websocket is connected (non-null)
+   */
   isConnected() {
     return this.webSocket !== null;
   }
@@ -123,7 +168,6 @@ class ObsPyConnection {
     if (this.webSocket) {
       if (this.webSocket) {this.webSocket.close();}
       this.webSocket = null;
-      this._mode = null;
     }
   }
 
@@ -139,9 +183,19 @@ class ObsPyConnection {
 
  handle(wsEvent ) {
    console.log("in ws handle")
-   const json = JSON.parse(wsEvent.data);
+   const jsonObj = JSON.parse(wsEvent.data);
    console.log(wsEvent.data);
-   this.packetHandler(json);
+   if (jsonObj.update) {
+     if (jsonObj.update == 'refreshAll') {
+       // start over clean
+       console.log("update refresh")
+       obspyDataset.clear();
+     }
+     loadDataset(this.baseUrl);
+   } else {
+     console.log("...not update message  "+jsonObj+"  "+jsonObj.update);
+   }
+   this.packetHandler(jsonObj);
  }
 
  /**

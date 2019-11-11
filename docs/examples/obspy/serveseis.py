@@ -57,10 +57,10 @@ class ServeSeis():
                 }
         if self.dataset['stream']:
             seisjson = jsonapi['data']['relationships']['seismograms']['data']
-            for i, sdd in enumerate(self.dataset['stream']):
+            for tr in self.dataset['stream']:
                 seisjson.append({
                   'type': 'seismogram',
-                  'id': i
+                  'id': id(tr)
                 })
         return jsonapi
     def serveData(self, host='localhost', port=8000, wsport=8001):
@@ -79,24 +79,34 @@ class ServeSeis():
         self.dataset["stream"] = stream
         if title:
             self.setTitle(title)
+        self.wsServer.notifyUpdate('stream');
 
     def getStream(self):
         return self.dataset["stream"]
 
     def clear(self):
         self.dataset = self.initEmptyDataset()
+        self.wsServer.notifyUpdate('dataset');
 
     def setTitle(self, title):
         self.dataset["title"] = title;
+        self.wsServer.notifyUpdate('title');
 
     def getTitle(self):
         return self.dataset["title"];
 
     def setQuake(self, quake):
         self.dataset["quake"] = quake;
+        self.wsServer.notifyUpdate('quake');
 
     def getQuake(self):
         return self.dataset["quake"];
+
+    def clearQuake(self):
+        self.setQuake(None)
+
+    def refreshAll(self):
+        self.wsServer.notifyUpdate('refreshAll');
 
     def __createRequestHandlerClass(self):
         class ObsPyRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -137,9 +147,11 @@ class ServeSeis():
                 self.wfile.write(content.encode())
             def sendSeismogram(self):
                 splitPath = self.path.split('/')
-                id = int(splitPath[2])
+                seisid = int(splitPath[2])
+                st = ObsPyRequestHandler.serveSeis.dataset['stream']
+                seis = next(s for s in st if id(s) == seisid)
                 buf = io.BytesIO()
-                ObsPyRequestHandler.serveSeis.dataset['stream'][id].write(buf, format='MSEED')
+                seis.write(buf, format='MSEED')
                 self.send_header("Content-Length", buf.getbuffer().nbytes)
                 self.send_header("Content-Type", "application/vnd.fdsn.mseed")
                 self.wfile.write(buf.getbuffer())
@@ -179,9 +191,17 @@ class ObsPyWebSocket(threading.Thread):
         self.users = set()
     def hello(self):
         return json.dumps({'msg': "hi"})
-    def send_message(self, message):
+    def notifyUpdate(self, type):
+        self.send_json_message({'update': type})
+    def send_json_message(self, jsonMessage):
+        if isinstance(jsonMessage, str):
+            jsonMessage = {'msg': jsonMessage};
+        if not isinstance(jsonMessage, dict):
+            raise ValueError("jsonMessage must be string or dict")
+        jsonAsStr = json.dumps(jsonMessage)
+        print("sending '{}'".format(jsonAsStr))
         future = asyncio.run_coroutine_threadsafe(
-              self.dataQueue.put({'msg': message}),
+              self.dataQueue.put(jsonAsStr),
               self.loop
         )
         result = future.result()
@@ -210,7 +230,7 @@ class ObsPyWebSocket(threading.Thread):
                 if message is None:
                     continue
                 if self.users:  # asyncio.wait doesn't accept an empty list
-                    await asyncio.wait([self.sendOneUser(user, json.dumps(message)) for user in self.users])
+                    await asyncio.wait([self.sendOneUser(user, message) for user in self.users])
                     print("done sending", flush=True)
                 else:
                     print("no users to send to...", flush=True)

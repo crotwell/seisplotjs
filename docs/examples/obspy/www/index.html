@@ -15,6 +15,7 @@
 
     <h3>ObsPy Plotting</h3>
     <button id="refresh">Refresh</button>
+    <button id="reconnect">Reconnect</button>
     <button id="websocketHi">Say Hi</button>
     <h3 id="title">Seismograph!</h3>
     <div class="seismograph" id="myseismograph">
@@ -26,6 +27,7 @@
       //const baseUrl = document.URL;
       const baseUrl = 'http://localhost:8000';
       seisplotjs.d3.select("button#refresh").on("click", function(d) {
+        obspyDataset.clear();
         loadDataset(baseUrl);
       });
       loadDataset(baseUrl);
@@ -38,25 +40,33 @@
         console.log(`oops ${err}`);
         console.log(`   ${err.message}`)
       }
-      const wsConn = new ObsPyConnection(wsUrl, handler, errHandler);
-      wsConnIsOK = false;
-      wsConn.connect().then( () => {
-        console.log("after ws connect, send something back...");
-        wsConn.sendMessage("hi obspy!");
-      }).then( () => {
-        console.log("after ws connect, send something back...");
-        wsConn.sendMessage("hi obspy 2!");
-      }).then( () => {
-        console.log("after ws connect, send something back...");
-        wsConn.sendMessage("hi obspy  3!");
-        wsConnIsOK = true;
+      let obspyConn = new ObsPyConnection(wsUrl, baseUrl, handler, errHandler);
+      let obspyConnIsOK = false;
+      obspyConn.connect().then( () => {
+        console.log("after ws connect");
+        obspyConnIsOK = true;
+      });
+
+      seisplotjs.d3.select("button#reconnect").on("click", function(d) {
+        if (obspyConn) {
+          try {
+            obspyConn.close();
+          } catch(e) {
+            // oh well
+          }
+        }
+        obspyConn.connect().then( () => {
+          console.log("after ws reconnect, send something back...");
+          obspyConn.sendMessage("hi obspy!");
+          obspyConnIsOK = true;
+        })
       });
 
       seisplotjs.d3.select("button#websocketHi").on("click", function(d) {
-        if (wsConnIsOK) {
-          wsConn.sendMessage("Howdy howdy");
+        if (obspyConnIsOK) {
+          obspyConn.sendMessage("Howdy howdy");
         } else {
-          console.log("wsConn not yet ok");
+          console.log("obspyConn not yet ok");
         }
       });
 
