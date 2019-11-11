@@ -1,13 +1,13 @@
 // @flow
 
 import * as fdsnstation from '../../src/fdsnstation.js';
+import * as stationxml from '../../src/stationxml.js';
 import * as util from '../../src/util.js';
 let moment = util.moment;
 
 test( "station parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_STATION, "text/xml");
-  let stationQuery = new fdsnstation.StationQuery();
-  let networks = stationQuery.parseRawXml(xml);
+  let networks = stationxml.parseStationXml(xml);
   expect(networks.length).toBe(2);
   expect(networks[0].stations.length).toBe(1);
   expect(networks[0].stations[0].channels.length).toBe(0);
@@ -15,8 +15,7 @@ test( "station parse test", () => {
 
 test( "channel parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_CHANNEL, "text/xml");
-  let stationQuery = new fdsnstation.StationQuery();
-  let networks = stationQuery.parseRawXml(xml);
+  let networks = stationxml.parseStationXml(xml);
   expect(networks.length).toBe(1);
   expect(networks[0].stations.length).toBe(1);
   expect(networks[0].stations[0].channels.length).toBe(1);

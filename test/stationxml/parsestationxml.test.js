@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 
-import * as fdsnstation from '../../src/fdsnstation.js';
+import * as stationxml from '../../src/stationxml.js';
 import { PolesZeros, Network, Station, Channel } from '../../src/stationxml';
 import {convertToSacPoleZero} from '../../src/transfer.js';
 import { createComplex} from '../../src/filter.js';
@@ -13,8 +13,7 @@ beforeAll(() => {
   let filename = "./test/stationxml/data/co_jsc.staxml";
   let rawData = fs.readFileSync(filename, 'utf8');
   const xml = new DOMParser().parseFromString(rawData, "text/xml");
-  let stationQuery = new fdsnstation.StationQuery();
-  networks = stationQuery.parseRawXml(xml);
+  networks = stationxml.parseStationXml(xml);
 });
 
 test( "stationxml parse test", () => {
