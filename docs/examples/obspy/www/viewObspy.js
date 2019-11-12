@@ -1,7 +1,7 @@
 
 let obspyDataset = new Map();
 
-const plotDataset = function(dataset) {
+function plotDataset(dataset) {
   seisplotjs.d3.select("#myseismograph").selectAll("div").remove();
   seisplotjs.d3.select("#title").text(dataset.data.attributes.title);
   const topDiv = seisplotjs.d3.select("#myseismograph");
@@ -11,7 +11,7 @@ const plotDataset = function(dataset) {
     .append("p").text(d => d.type+" "+d.id+" ");
   return loadSeismograms(dataset).then((seisArray) => redrawSeismographs(dataset));
 }
-const redrawSeismographs = function(dataset) {
+function redrawSeismographs(dataset) {
   dataset.data.relationships.seismograms.data.forEach(d => {
     const selectedDiv = seisplotjs.d3.select(`div#seis${d.id}`);
     const seisUrl = `/seismograms/${d.id}`;
@@ -22,7 +22,7 @@ const redrawSeismographs = function(dataset) {
       seisConfig.title = seismogram.codes();
       let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
       let c = findChannelForSeismogram(seismogram);
-      if (c ) { seisData.channel = c;}  
+      if (c ) { seisData.channel = c;}
       if (obspyDataset.has(`quake`) && obspyDataset.get(`quake`)){
         seisData.addQuake( obspyDataset.get(`quake`));
       }
@@ -33,7 +33,7 @@ const redrawSeismographs = function(dataset) {
     }
   });
 }
-const loadDataset = function(baseUrl) {
+function loadDataset(baseUrl) {
   const datasetUrl = new URL('/dataset', baseUrl)
   return seisplotjs.util.doFetchWithTimeout(datasetUrl).then(response => {
     console.log("response to fetch: ");
@@ -90,7 +90,7 @@ const loadDataset = function(baseUrl) {
 /**
  * Loads seismograms for dataset if not already loaded.
  */
-const loadSeismograms = function(dataset, force=false) {
+function loadSeismograms(dataset, force=false) {
   return Promise.all(dataset.data.relationships.seismograms.data.map(d => {
     const seisUrl = `/seismograms/${d.id}`;
     if ( ! force && obspyDataset.has(seisUrl)) {
