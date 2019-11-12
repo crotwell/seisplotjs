@@ -353,13 +353,13 @@ export function doFetchWithTimeout(url: string | URL,
   fetchInit.signal = signal;
   let absoluteUrl: URL;
   if (isStringArg(url)) {
-    absoluteUrl = new URL(url, document.URL)
+    absoluteUrl = new URL(url, document.URL);
   } else if (url instanceof URL) {
     absoluteUrl = url;
   } else {
     throw new Error(`url must be string or URL, ${stringify(url)}`);
   }
-  log(`attempt to fetch ${stringify(absoluteUrl)}`)
+  log(`attempt to fetch ${stringify(absoluteUrl)}`);
   return fetch(absoluteUrl, fetchInit)
   .catch(err => {
     log("fetch failed, possible CORS or PrivacyBadger or NoScript?");

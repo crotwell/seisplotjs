@@ -7,12 +7,11 @@
  */
 
 import { moment } from 'moment';
-import { Quake, Origin, Magnitude, Arrival, Pick, USGS_HOST, parseQuakeML } from './quakeml';
+import { Quake, USGS_HOST, parseQuakeML } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
-import * as util from './util.js'; // for util.log
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate} from './util';
 
 /**
  * Major version of the FDSN spec supported here.
@@ -670,7 +669,6 @@ export class EventQuery {
    *  @returns Promise to an Array of Quake objects.
    */
   query(): Promise<Array<Quake>> {
-    let mythis = this;
     return this.queryRawXml().then(rawXml => {
         return parseQuakeML(rawXml, this._host);
     });

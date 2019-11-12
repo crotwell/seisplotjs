@@ -158,7 +158,6 @@ export class MSeedArchive {
     let recordTime = maxTimeForRecord(this._recordSize, sampleRate);
     let t = moment.utc(startTime).subtract(recordTime, 'seconds');
     let urlList = [];
-    const fetchInit = util.defaultFetchInitObj();
     while (t.isBefore(endTime)) {
       let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
       t.add(1, 'hour');
@@ -168,7 +167,6 @@ export class MSeedArchive {
       let url = this.rootUrl+'/'+this.fillTimePattern(basePattern, t);
       urlList.push(url);
     }
-    urlList.forEach(u => console.log(u));
     return loadDataRecords(urlList).then(dataRecords => {
       if (dataRecords) {
         dataRecords =  dataRecords.filter(dr => dr.header.endTime.isSameOrAfter(startTime) &&

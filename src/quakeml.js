@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import { isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 import * as util from './util.js'; // for util.log
 import moment from 'moment';
 

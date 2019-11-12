@@ -7,11 +7,11 @@
  */
 
 import moment from 'moment';
-import {parseStationXml, Network, Station, Channel, InstrumentSensitivity, Response, Stage, AbstractFilterType, PolesZeros, FIR, CoefficientsFilter, Decimation, Gain} from './stationxml';
+import {parseStationXml, Network} from './stationxml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, isObject, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate} from './util';
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';
@@ -639,7 +639,6 @@ export class StationQuery {
    */
   query(level: string): Promise<Array<Network>> {
     if (! LEVELS.includes(level)) {throw new Error("Unknown level: '"+level+"'");}
-    let mythis = this;
     return this.queryRawXml(level).then(function(rawXml) {
         return parseStationXml(rawXml);
     });

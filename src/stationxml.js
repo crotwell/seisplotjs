@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-import {checkProtocol, toIsoWoZ, isObject, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import { isObject, isDef, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 import {createComplex} from './filter.js';
 
 import moment from 'moment';

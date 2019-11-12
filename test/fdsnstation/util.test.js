@@ -1,6 +1,5 @@
 // @flow
 
-import * as fdsnstation from '../../src/fdsnstation';
 import * as stationxml from '../../src/stationxml.js';
 
 test( "_grabFirstEl test", () => {
