@@ -22,7 +22,10 @@ FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xm
 
 
 class ServeSeis():
-    def __init__(self):
+    def __init__(self, host='localhost', port=8000, wsport=8001):
+        self.host=host
+        self.port=port
+        self.wsport=wsport
         self.dataset = self.initEmptyDataset()
         self.httpServer = None
         self.wsServer = None
@@ -77,17 +80,17 @@ class ServeSeis():
                   'id': id(tr)
                 })
         return jsonapi
-    def serveData(self, host='localhost', port=8000, wsport=8001):
+    def serveData(self):
         print("before http server")
         if self.httpServer:
             print("already serving...")
             return
-        self.httpServer = ObsPyServer(self.__createRequestHandlerClass(), host=host, port=port)
+        self.httpServer = ObsPyServer(self.__createRequestHandlerClass(), host=self.host, port=self.port)
         self.httpServer.start()
-        print("http server started at http://{}:{:d}".format(host, port))
-        self.wsServer = ObsPyWebSocket(host=host, port=wsport)
+        print("http server started at http://{}:{:d}".format(self.host, self.port))
+        self.wsServer = ObsPyWebSocket(host=self.host, port=self.wsport)
         self.wsServer.start()
-        print("websocket server started ws://{}:{:d}".format(host, wsport))
+        print("websocket server started ws://{}:{:d}".format(self.host, self.wsport))
 
     def setStream(self, stream, title=None):
         self.dataset["stream"] = stream
@@ -221,7 +224,7 @@ class ObsPyServer(threading.Thread):
         httpd.serve_forever()
 
 class ObsPyWebSocket(threading.Thread):
-    def __init__(self, host, port):
+    def __init__(self, host='localhost', port=8001):
         threading.Thread.__init__(self)
         self.daemon=True
         self.host = host
