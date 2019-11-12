@@ -21,8 +21,10 @@ const redrawSeismographs = function(dataset) {
       let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
       seisConfig.title = seismogram.codes();
       let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-      if (obspyDataset.has(`quake`)){
-        seisData.addQuake( quake);
+      let c = findChannelForSeismogram(seismogram);
+      if (c ) { seisData.channel = c;}  
+      if (obspyDataset.has(`quake`) && obspyDataset.get(`quake`)){
+        seisData.addQuake( obspyDataset.get(`quake`));
       }
       let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisData);
       graph.draw();
@@ -69,9 +71,9 @@ const loadDataset = function(baseUrl) {
           return (new window.DOMParser()).parseFromString(xml, "text/xml");
         }).then(stationxml => {
           return seisplotjs.stationxml.parseStationXml(stationxml);
-        }).then(stationxml => {
-          obspyDataset.set('inventory', stationxml);
-          return stationxml;
+        }).then(netList => {
+          obspyDataset.set('inventory', netList);
+          return netList;
         });
       }
       return Promise.all([dataset, allSeis, quake, inventory]);
@@ -109,6 +111,23 @@ const loadSeismograms = function(dataset, force=false) {
           }
         });
   }));
+}
+
+function findChannelForSeismogram(seismogram) {
+  if (obspyDataset.has('inventory')) {
+    let chanList = seisplotjs.stationxml.findChannels(
+      obspyDataset.get('inventory'),
+      seismogram.networkCode,
+      seismogram.stationCode,
+      seismogram.locationCode,
+      seismogram.channelCode);
+    for(let c of chanList) {
+      if (c.timeRange.overlaps(seismogram.timeRange)) {
+        return c;
+      }
+    }
+  }
+  return null;
 }
 
 class ObsPyConnection {

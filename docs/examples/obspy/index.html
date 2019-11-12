@@ -1,0 +1,119 @@
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>seisplotjs 2.0 Examples, Obspy</title>
+    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <link href='../../api/assets/bass.css' rel='stylesheet'>
+    <link href='../../api/assets/split.css' rel='stylesheet'>
+    <link href="../../prism.css" rel="stylesheet" />
+    <link href="../../style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
+        <div class='py1 px2'>
+          <div id='toc'>
+            <ul class='list-reset h5 py1-ul'>
+              <li><a href="../../index.html" class="">Seisplotjs</a></li>
+              <li><a href="../../api/index.html" class="">API JS Docs</a></li>
+              <li><a href="../../examples/index.html" class="">Examples</a></li>
+              <li><a href="../../tutorial/index.html" class="">Tutorial</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+              <section class='p2 mb2 clearfix bg-white minishadow'>
+        <div class='clearfix'>
+
+          <h1>Obspy Webserver</h1>
+          <h5>See it live in <a href="www/index.html">www/index.html</a>.</h5>
+          <p>
+            This allows seisplotjs in a web browser to be the seismogram
+            display for obspy. A python http server is enabled to serve
+            a stream, ie list of seismograms, to a browser. Load, process,
+            share, then refresh.
+          </p>
+          <p>
+            First, of course, you must have obspy installed. Websockets must
+            also be installed, <code>pip install websockets</code>. Start obspy
+            and then import serveobspy and start the data server. The webdir
+            argument will allow the http server to serve the files needed and
+            so should be a directory that contains your index.html, the seisplotjs
+            standalone js file and viewObspy.js. In the example this is the
+            www directory. Note, some browser addons like NoScipt or Privacy Badger
+            may block requests and so if something breaks, try disabling any
+            of these that you have installed.
+          </p>
+          <pre><code class="language-python">
+            import serveobspy
+            serveSeis = serveobspy.ServeObsPy('www')
+            serveSeis.serveData()
+          </code></pre>
+          <p>
+            This enables a http server on the default port of 8000 and a websocket
+            on port 8001, listening only on localhost (127.0.0.1) for connections.
+            Now you can go about your normal obspy processing steps. When you have
+            data you wish to plot, pass it to the server to make it available.
+          </p>
+
+          <pre><code class="language-python">
+            import obspy
+            client = obspy.clients.fdsn.Client("IRIS")
+            start = obspy.UTCDateTime('2019-10-31T01:11:19')
+            st = client.get_waveforms("IU", "SNZO", "00", "BHZ", start, start + 20 * 60)
+            serveSeis.setStream(st, title="SNZO Seismograms")
+          </code></pre>
+          <p>
+            Now opening a web browser to
+            <a href="http://127.0.0.1:8000">http://127.0.0.1:8000</a> should
+            show a plot of the seismograms loaded above. Additional calls to
+            setStream() will send a notification via the web socket to
+            cause the browser to refresh the display. You can also trigger
+            a refresh from the browser side as well. By default the display
+            is just a column of seismograms, but as this is just a web page,
+            anything you can do with html, css and javascript is possible to
+            customize the display. Moreover, the browser also has the ability
+            to load data and do calculations on the seismograms. The server
+            can also serve earthquake information, in QuakeML, and station
+            inventory information, in StationXML.
+          </p>
+          <pre><code class="language-python">
+            quake = client.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)[0]
+            serveSeis.setQuake(quake)
+            inventory = client.get_stations(network="IU", station="SNZO",
+                                            location="00", channel="BH?",
+                                            level="response",
+                                            starttime=start,
+                                            endtime=end)
+            serveSeis.setInventory(inventory);
+          </code></pre>
+          <p>
+            Given this is just a web page, you can of course have multiple
+            browsers open to the same page. If you serve with all hosts like
+          </p>
+          <pre><code class="language-python">
+            import serveobspy
+            serveSeis = serveobspy.ServeObsPy('www')
+            serveSeis.serveData(host='0.0.0.0')
+          </code></pre>
+          <p>then you can share the view of the data with browsers on other
+            computers. Of course, this is a possible security issue, so be careful
+            as the internal web server does no security checking.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="../../prism.js"></script>
+    <script>
+      Prism.plugins.NormalizeWhitespace.setDefaults({
+      	'remove-trailing': true,
+      	'remove-indent': true,
+      	'left-trim': true,
+      	'right-trim': true
+      });
+    </script>
+  </body>
+</html>

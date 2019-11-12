@@ -19,10 +19,13 @@ logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>'
+LOCALHOST = '127.0.0.1'
+DEFAULT_HTTP = 8000
+DEFAULT_WS = 8001
 
-
-class ServeSeis():
-    def __init__(self, host='localhost', port=8000, wsport=8001):
+class ServeObsPy():
+    def __init__(self, webdir, host=LOCALHOST, port=DEFAULT_HTTP, wsport=DEFAULT_WS):
+        self.webdir = webdir
         self.host=host
         self.port=port
         self.wsport=wsport
@@ -139,7 +142,7 @@ class ServeSeis():
         class ObsPyRequestHandler(http.server.SimpleHTTPRequestHandler):
             serveSeis = self # class variable to access
             def __init__(self,request, client_address, server):
-                super().__init__(request, client_address, server)
+                super().__init__(request, client_address, server, directory=ObsPyRequestHandler.serveSeis.webdir)
             def end_headers (self):
                 self.send_header('Access-Control-Allow-Origin', '*')
                 http.server.SimpleHTTPRequestHandler.end_headers(self)
@@ -157,16 +160,8 @@ class ServeSeis():
                     self.sendInventory()
                 elif self.path == '/favicon.ico':
                     super().do_GET()
-                elif self.path.startswith('/www'):
-                    super().do_GET()
                 else:
-                    print("oops, fell to the else...")
-                    content = "IT WORKS!"
-                    self.send_response(200)
-                    self.send_header("Content-Length", len(content))
-                    self.send_header("Content-Type", "text/html")
-                    self.end_headers()
-                    self.wfile.write(content.encode())
+                    super().do_GET()
 
             def sendDataset(self):
                 content = json.dumps(ObsPyRequestHandler.serveSeis.datasetAsJsonApi())
@@ -212,7 +207,7 @@ class ServeSeis():
         return ObsPyRequestHandler
 
 class ObsPyServer(threading.Thread):
-    def __init__(self, handler_class, host='localhost', port=8000):
+    def __init__(self, handler_class, host=LOCALHOST, port=DEFAULT_HTTP):
         threading.Thread.__init__(self)
         self.daemon=True
         self.handler_class = handler_class
@@ -224,7 +219,7 @@ class ObsPyServer(threading.Thread):
         httpd.serve_forever()
 
 class ObsPyWebSocket(threading.Thread):
-    def __init__(self, host='localhost', port=8001):
+    def __init__(self, host=LOCALHOST, port=DEFAULT_WS):
         threading.Thread.__init__(self)
         self.daemon=True
         self.host = host
