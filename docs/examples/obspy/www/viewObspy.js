@@ -21,6 +21,7 @@ function redrawSeismographs(dataset) {
       let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
       seisConfig.title = seismogram.codes();
       let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+      seisData.id = d.id;
       let c = findChannelForSeismogram(seismogram);
       if (c ) { seisData.channel = c;}
       if (obspyDataset.has(`quake`) && obspyDataset.get(`quake`)){
@@ -28,6 +29,7 @@ function redrawSeismographs(dataset) {
       }
       let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisData);
       graph.draw();
+      obspyDataset.set(`/seismograph/${d.id}`, graph);
     } else {
       selectedDiv.append("p").text(d => d.type+" "+d.id+" ");
     }
@@ -92,25 +94,30 @@ function loadDataset(baseUrl) {
  */
 function loadSeismograms(dataset, force=false) {
   return Promise.all(dataset.data.relationships.seismograms.data.map(d => {
-    const seisUrl = `/seismograms/${d.id}`;
-    if ( ! force && obspyDataset.has(seisUrl)) {
-      console.log(`already have ${seisUrl}`)
-      return obspyDataset.get(seisUrl);
-    }
-    // load from obspy
-    return seisplotjs.mseedarchive.loadDataRecords( [ seisUrl ] )
-        .then(dataRecords => {
-          let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
-          if (seisArray.length != 0) {
-            obspyDataset.set(seisUrl, seisArray[0]);
-            console.log(`obspyDataset.set(${seisUrl}', ${seisArray[0]})`)
-            return seisArray[0]; // assume only first matters
-          } else {
-            console.log(`Oops, server did not return data for ${seisUrl}`);
-            return null;
-          }
-        });
+    return loadSingleSeismogram(d.id, force=force);
   }));
+}
+
+function loadSingleSeismogram(seisid, force=false) {
+  const seisUrl = `/seismograms/${seisid}`;
+  if ( ! force && obspyDataset.has(seisUrl)) {
+    console.log(`already have ${seisUrl}`)
+    return Promise.resolve(obspyDataset.get(seisUrl));
+  }
+  // load from obspy
+  return seisplotjs.mseedarchive.loadDataRecords( [ seisUrl ] )
+      .then(dataRecords => {
+        let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
+        if (seisArray.length != 0) {
+          let seis = seisArray[0]; // assume only first matters
+          obspyDataset.set(seisUrl, seis);
+          console.log(`obspyDataset.set(${seisUrl}', ${seis})`)
+          return seis;
+        } else {
+          console.log(`Oops, server did not return data for ${seisUrl}`);
+          return null;
+        }
+      });
 }
 
 function findChannelForSeismogram(seismogram) {

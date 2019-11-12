@@ -7,29 +7,51 @@
       div.seismograph {
         height: 300px;
       }
+      #title {
+        text-align: center;
+      }
     </style>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   </head>
   <body>
     <div id='message'></div>
-
     <h3>ObsPy Plotting</h3>
-    <button id="refresh">Refresh</button>
-    <button id="reconnect">Reconnect</button>
-    <button id="websocketHi">Say Hi</button>
-    <h3 id="title">Seismograph!</h3>
-    <div class="seismograph" id="myseismograph">
-    </div>
+    <div id='tools'>
+      <div>
+        <button id="refresh">Refresh</button>
+        <button id="reprocess">Reprocess</button>
+        <button id="reconnect">Reconnect</button>
+        <button id="rmean">RMean</button>
 
+        <button id="taper">Taper</button>
+        <label for="taperwidth">Taper Width: </label>
+        <input type="text" id="taperwidth" name="taperwidth" value="0.05"></input>
+      </div>
+      <div>
+        <button id="lowpass">Lowpass</button>
+        <button id="bandpass">Bandpass</button>
+        <button id="highpass">Highpass</button>
+        <label for="lowfreq">Low Freq: </label>
+        <input type="text" id="lowfreq" name="lowfreq" value="1.0"></input>
+        <label for="lowfreq">High Freq: </label>
+        <input type="text" id="highfreq" name="highfreq" value=10.0></input>
+        <button id="websocketHi">Say Hi</button>
+      </div>
+    </div>
+    <h3 id="title">Seismograph!</h3>
+    <div id="myseismograph">
+    </div>
+    <div id="processChain">
+      <h5>Process Chain</h5>
+      <ul>
+      </ul>
+    </div>
     <script src="seisplotjs_2.0.0-alpha.6_standalone.js"></script>
     <script src="viewObspy.js"></script>
+    <script src="tools.js"></script>
     <script>
       //const baseUrl = document.URL;
       const baseUrl = 'http://localhost:8000';
-      seisplotjs.d3.select("button#refresh").on("click", function(d) {
-        obspyDataset.clear();
-        loadDataset(baseUrl);
-      });
       loadDataset(baseUrl);
       const wsUrl = 'ws://localhost:8001';
       const handler = function(json) {
