@@ -396,7 +396,13 @@ export class Seismogram {
   get endTime(): moment {
     return this._endTime;
   }
+  /**
+   * @deprecated
+   */
   get timeWindow(): StartEndDuration {
+    return new StartEndDuration(this.startTime, this.endTime);
+  }
+  get timeRange(): StartEndDuration {
     return new StartEndDuration(this.startTime, this.endTime);
   }
   get networkCode(): string {

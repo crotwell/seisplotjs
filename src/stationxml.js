@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-import { isObject, isDef, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import { StartEndDuration, isObject, isDef, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 import {createComplex} from './filter.js';
 
 import moment from 'moment';
@@ -41,6 +41,9 @@ export class Network {
   }
   set endDate(value?: moment | string) {
     this._endDate = checkStringOrDate(value);
+  }
+  get timeRange(): StartEndDuration {
+    return new StartEndDuration(this.startDate, this.endDate);
   }
   codes(): string {
     return this.networkCode;
@@ -80,6 +83,9 @@ export class Station {
   }
   set endDate(value?: moment | string) {
     this._endDate = checkStringOrDate(value);
+  }
+  get timeRange(): StartEndDuration {
+    return new StartEndDuration(this.startDate, this.endDate);
   }
   get networkCode(): string {
     return this.network.networkCode;
@@ -133,6 +139,9 @@ export class Channel {
   }
   set endDate(value?: moment | string) {
     this._endDate = checkStringOrDate(value);
+  }
+  get timeRange(): StartEndDuration {
+    return new StartEndDuration(this.startDate, this.endDate);
   }
   get locationCode() {
     return this._locationCode;
@@ -596,6 +605,7 @@ export function extractComplex(el: Element) {
  *
  * @param   networks Array of networks.
  * @returns           Array of stations.
+ * @deprecated
  */
 export function extractAllStations(networks: Array<Network>): Array<Station> {
   let out = [];
@@ -610,6 +620,7 @@ export function extractAllStations(networks: Array<Network>): Array<Station> {
  *
  * @param   networks Array of networks.
  * @returns           Array of channels.
+ * @deprecated
  */
 export function extractAllChannels(networks: Array<Network>): Array<Channel> {
     let out = [];
@@ -619,6 +630,38 @@ export function extractAllChannels(networks: Array<Network>): Array<Channel> {
       }
     }
     return out;
+}
+
+export function* allStations(networks: Array<Network>): Generator<Station, void, any> {
+  for (let n of networks) {
+    for (let s of n.stations) {
+        yield s;
+    }
+  }
+}
+
+export function* allChannels(networks: Array<Network>): Generator<Channel, void, any> {
+  for (let s of allStations(networks)) {
+    for (let c of s.channels) {
+      yield c;
+    }
+  }
+}
+
+/**
+ * Extract all channels from all stations from all networks in the input array.
+ *
+ * @param   networks Array of networks.
+ * @returns           Array of channels.
+ */
+export function* findChannels(networks: Array<Network>, netCode: string, staCode: string, locCode: string, chanCode: string): Generator<Channel, void, any> {
+    for (let n of networks.filter(n => n.networkCode ===  netCode)) {
+      for (let s of n.stations.filter(s => s.stationCode ===  staCode)) {
+        for (let c of s.channels.filter(c => c.locationCode ===  locCode && c.channelCode === chanCode)) {
+          yield c;
+        }
+      }
+    }
 }
 
 // these are similar methods as in seisplotjs-fdsnevent
