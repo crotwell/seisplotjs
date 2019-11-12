@@ -637,6 +637,7 @@ export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegmen
 export class SeismogramDisplayData {
   /** @private */
   _seismogram: Seismogram | null;
+  _id: string | null;
   label: string | null;
   markerList: Array<MarkerType>;
   channel: Channel | null;
@@ -650,6 +651,7 @@ export class SeismogramDisplayData {
     if ( ! timeWindow) {
       throw new Error("StartEndDuration must not be missing.");
     }
+    this._id = null;
     this._seismogram = null;
     this.label = null;
     this.markerList = [];
@@ -702,6 +704,20 @@ export class SeismogramDisplayData {
   hasSensitivity(): boolean {
     return this._instrumentSensitivity !== null
         || (isDef(this.channel) && this.channel.hasInstrumentSensitivity());
+  }
+  /**
+   * Allows id-ing a seismogram. Optional.
+   * @return         string id
+   */
+  get id(): string | null {
+    return this._id;
+  }
+  /**
+   * Allows iding a seismogram. Optional.
+   * @param   value string id
+   */
+  set id(value: string | null) {
+    this._id = value;
   }
   /**
    * return network code as a string.
