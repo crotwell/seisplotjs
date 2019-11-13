@@ -173,6 +173,7 @@ class ServeObsPy():
         self.inventory = None
 
     def refreshAll(self):
+        self.dataset["bychan"] = self.__streamToSeismogramMap(self.stream)
         self.wsServer.notifyUpdate('refreshAll');
 
     def __createRequestHandlerClass(self):
