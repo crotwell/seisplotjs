@@ -10,6 +10,7 @@ import sys
 import threading
 import websockets
 from obspy.io.quakeml.core import Pickler
+from obspy.core.stream import Stream
 from obspy.core.event.catalog import Catalog
 from obspy.core.event.base import ResourceIdentifier
 
@@ -93,14 +94,25 @@ class ServeObsPy():
                   'type': 'inventory',
                   'id': id_num
                 }
-        if self.dataset['stream']:
+        if self.dataset['bychan']:
+            # stream split by channel to group segments into a single js seismogram
             seisjson = jsonapi['data']['relationships']['seismograms']['data']
-            for tr in self.dataset['stream']:
+            for st in self.dataset['bychan']:
                 seisjson.append({
                   'type': 'seismogram',
-                  'id': id(tr)
+                  'id': id(st)
                 })
         return jsonapi
+    def __streamToSeismogramMap(self, stream):
+        byChan = {}
+        for tr in stream:
+            if not tr.id in byChan:
+                byChan[tr.id] = []
+            byChan[tr.id].append(tr)
+        out = []
+        for id, trlist in byChan.items():
+            out.append(Stream(traces=trlist))
+        return out
     def serveData(self):
         print("before http server")
         if self.httpServer:
@@ -113,45 +125,52 @@ class ServeObsPy():
         self.wsServer.start()
         print("websocket server started ws://{}:{:d}".format(self.host, self.wsport))
 
-    def setStream(self, stream, title=None):
-        self.dataset["stream"] = stream
-        if title:
-            self.setTitle(title)
-        self.wsServer.notifyUpdate('stream');
-
-    def getStream(self):
+    @property
+    def stream(self):
         return self.dataset["stream"]
-
-    def clear(self):
-        self.dataset = self.initEmptyDataset()
+    @stream.setter
+    def stream(self, stream):
+        self.dataset["stream"] = stream
+        self.dataset["bychan"] = self.__streamToSeismogramMap(stream)
+        self.wsServer.notifyUpdate('stream');
+    @stream.deleter
+    def stream(self):
+        self.dataset["stream"] = None
+        self.dataset["bychan"] = []
         self.wsServer.notifyUpdate('dataset');
 
-    def setTitle(self, title):
+    @property
+    def title(self):
+        return self.dataset["title"];
+    @title.setter
+    def title(self, title):
         self.dataset["title"] = title;
         self.wsServer.notifyUpdate('title');
+    @title.deleter
+    def title(self):
+        self.title = "";
 
-    def getTitle(self):
-        return self.dataset["title"];
-
-    def setQuake(self, quake):
+    @property
+    def quake(self):
+        return self.dataset["quake"];
+    @quake.setter
+    def quake(self, quake):
         self.dataset["quake"] = quake;
         self.wsServer.notifyUpdate('quake');
+    @quake.deleter
+    def quake(self):
+        self.quake = None
 
-    def getQuake(self):
-        return self.dataset["quake"];
-
-    def clearQuake(self):
-        self.setQuake(None)
-
-    def setInventory(self, inventory):
+    @property
+    def inventory(self):
+        return self.dataset["inventory"];
+    @inventory.setter
+    def inventory(self, inventory):
         self.dataset["inventory"] = inventory;
         self.wsServer.notifyUpdate('inventory');
-
-    def getInventory(self):
-        return self.dataset["inventory"];
-
-    def clearInventory(self):
-        self.setInventory(None)
+    @inventory.deleter
+    def inventory(self):
+        self.inventory = None
 
     def refreshAll(self):
         self.wsServer.notifyUpdate('refreshAll');
@@ -191,8 +210,8 @@ class ServeObsPy():
             def sendSeismogram(self):
                 splitPath = self.path.split('/')
                 seisid = int(splitPath[2])
-                st = ObsPyRequestHandler.serveSeis.dataset['stream']
-                seis = next(s for s in st if id(s) == seisid)
+                bychan = ObsPyRequestHandler.serveSeis.dataset['bychan']
+                seis = next(s for s in bychan if id(s) == seisid)
                 buf = io.BytesIO()
                 seis.write(buf, format='MSEED')
                 self.send_header("Content-Length", buf.getbuffer().nbytes)
