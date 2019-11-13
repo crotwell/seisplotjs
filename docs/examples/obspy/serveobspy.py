@@ -1,4 +1,4 @@
-#!/Users/crotwell/opt/miniconda3/envs/obspy/bin/python
+#!/usr/bin/env python
 
 
 import asyncio
@@ -18,17 +18,17 @@ logger = logging.getLogger('websockets.server')
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
-FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>'
-LOCALHOST = '127.0.0.1'
-DEFAULT_HTTP = 8000
-DEFAULT_WS = 8001
 
 class ServeObsPy():
-    def __init__(self, webdir, host=LOCALHOST, port=DEFAULT_HTTP, wsport=DEFAULT_WS):
+    FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>'
+    LOCALHOST = '127.0.0.1'
+    DEFAULT_HTTP = 8000
+    DEFAULT_WS = 8001
+    def __init__(self, webdir, host=None, port=None, wsport=None):
         self.webdir = webdir
-        self.host=host
-        self.port=port
-        self.wsport=wsport
+        self.__host=host
+        self.__port=port
+        self.__wsport=wsport
         self.dataset = self.initEmptyDataset()
         self.httpServer = None
         self.wsServer = None
@@ -39,6 +39,24 @@ class ServeObsPy():
             "quake": None,
             "inventory": None
         }
+    @property
+    def host(self):
+        if self.__host is None:
+            return ServeObsPy.LOCALHOST
+        else:
+            return self.__host
+    @property
+    def port(self):
+        if self.__port is None:
+            return ServeObsPy.DEFAULT_HTTP
+        else:
+            return self.__port
+    @property
+    def wsport(self):
+        if self.__wsport is None:
+            return ServeObsPy.DEFAULT_WS
+        else:
+            return self.__wsport
     def datasetAsJsonApi(self):
         jsonapi = {
             'data': {
@@ -203,28 +221,51 @@ class ServeObsPy():
                 self.send_header("Content-Type", "application/xml")
                 self.wfile.write(buf.getbuffer())
 
-
         return ObsPyRequestHandler
 
 class ObsPyServer(threading.Thread):
-    def __init__(self, handler_class, host=LOCALHOST, port=DEFAULT_HTTP):
+    def __init__(self, handler_class, host=None, port=None):
         threading.Thread.__init__(self)
         self.daemon=True
         self.handler_class = handler_class
-        self.host = host
-        self.port = port
+        self.__host = host
+        self.__port = port
+    @property
+    def host(self):
+        if self.__host is None:
+            return ServeObsPy.LOCALHOST
+        else:
+            return self.__host
+    @property
+    def port(self):
+        if self.__port is None:
+            return ServeObsPy.DEFAULT_HTTP
+        else:
+            return self.__port
     def run(self, server_class=http.server.ThreadingHTTPServer):
         server_address = (self.host, self.port)
         httpd = server_class(server_address, self.handler_class)
         httpd.serve_forever()
 
 class ObsPyWebSocket(threading.Thread):
-    def __init__(self, host=LOCALHOST, port=DEFAULT_WS):
+    def __init__(self, host=None, port=None):
         threading.Thread.__init__(self)
         self.daemon=True
-        self.host = host
-        self.port = port
+        self.__host = host
+        self.__port = port
         self.users = set()
+    @property
+    def host(self):
+        if self.__host is None:
+            return ServeObsPy.LOCALHOST
+        else:
+            return self.__host
+    @property
+    def port(self):
+        if self.__port is None:
+            return ServeObsPy.DEFAULT_WS
+        else:
+            return self.__port
     def hello(self):
         return json.dumps({'msg': "hi"})
     def notifyUpdate(self, type):
@@ -297,26 +338,6 @@ class ObsPyWebSocket(threading.Thread):
                 )
                 print("handler past await tasks")
 
-
-                #await self.consumer_handler(websocket, path)
-
-
-                # consumer_task = asyncio.ensure_future(
-                #     self.consumer_handler(websocket, path))
-                # producer_task = asyncio.ensure_future(
-                #     self.producer_handler(websocket, path))
-                #
-                # done, pending = await asyncio.wait(
-                #     [consumer_task, producer_task],
-                #     return_when=asyncio.FIRST_COMPLETED,
-                # )
-                # print("handler past await tasks")
-                # exc = done.exception()
-                # if exc:
-                #     print("oops, something bad "+str(exc))
-                #     self.users.remove(websocket)
-                # for task in pending:
-                #     task.cancel()
                 print("end handler", flush=True)
             except:
                 print('handler something bad happened  ')
@@ -332,8 +353,7 @@ class ObsPyWebSocket(threading.Thread):
     def run(self):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
-        #start_server = websockets.serve(self.handler, self.host, self.port)
         asyncio.get_event_loop().run_until_complete(asyncio.ensure_future(self.initWS()))
         print("ws server started at {}:{:d}".format(self.host, self.port))
         asyncio.get_event_loop().run_forever()
-        print("end run")
+        print("ws end run")

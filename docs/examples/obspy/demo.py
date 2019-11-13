@@ -30,6 +30,10 @@ inventory = client.get_stations(network="IU", station="SNZO",
                                 endtime=end)
 serveSeis.setInventory(inventory);
 
+yak_st = client.get_waveforms("IU", "YAK", "00", "BH?", start, start + 20 * 60)
+yss_st = client.get_waveforms("IU", "YSS", "00", "BH?", start, start + 20 * 60)
+
+
 st.attach_response(inventory)
 st.remove_sensitivity()
 st.detrend()
