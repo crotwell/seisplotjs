@@ -1,9 +1,6 @@
 
 seisplotjs.d3.select("button#refresh").on("click", function(d) {
-  processedDataset.clear();
-  processChain.length = 0;//clears the array
-  updateProcessDisplay(processChain);
-  obspyDataset.clear();
+  clearAll();
   loadAllAndPlot(baseUrl);
 });
 seisplotjs.d3.select("button#reprocess").on("click", function(d) {

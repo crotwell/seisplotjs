@@ -5,6 +5,14 @@ let processedDataset = new Map();
 
 let processChain = [];
 
+function clearAll() {
+  processedDataset.clear();
+  processChain.length = 0;//clears the array
+  updateProcessDisplay(processChain);
+  obspyDataset.clear();
+  seisplotjs.d3.select("#messages").selectAll("p").remove();
+}
+
 function checkProcessedDatasetLoaded() {
   if (! processedDataset.has('dataset')) {
     processedDataset.set('dataset', obspyDataset.get('dataset'));
@@ -57,7 +65,7 @@ function loadAllAndPlot(baseUrl) {
       plotDataset(dataset);
       return Promise.all([dataset, allSeis, quake, inventory])
     }).catch( function(error) {
-      seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+      seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error loading data." +error);
       console.assert(false, error);
     });
 }
@@ -103,6 +111,9 @@ function loadSingleSeismogram(seisid, force=false) {
           console.log(`Oops, server did not return data for ${seisUrl}`);
           return null;
         }
+      }).catch( function(error) {
+        seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading data from ${seisUrl}, ${error}`);
+        console.assert(false, error);
       });
 }
 
@@ -121,6 +132,9 @@ function loadQuake(dataset) {
     }).then(quakeml => {
       obspyDataset.set('quake', quakeml);
       return quakeml;
+    }).catch( function(error) {
+      seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading quake, ${error}`);
+      console.assert(false, error);
     });
   }
   return quake;
@@ -141,6 +155,9 @@ function loadInventory(dataset) {
     }).then(netList => {
       obspyDataset.set('inventory', netList);
       return netList;
+    }).catch( function(error) {
+      seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading inventory, ${error}`);
+      console.assert(false, error);
     });
   }
   return inventory;
@@ -182,6 +199,9 @@ function applyProcessChain() {
       return promiseSeis.then( seis => {
         updateGraph(seisId, seis);
         return seis;
+      }).catch(err => {
+        seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(err);
+        throw err;
       });
     });
     return Promise.all(promiseArray).then(() => {
@@ -215,6 +235,9 @@ function applyAllSeismograms(processFunc, desc) {
       .then(seis => {
         processedDataset.set(key, seis);
         updateGraph(d.id, seis)
+      }).catch(err => {
+        seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(err);
+        throw err;
       });
   }));
 }
