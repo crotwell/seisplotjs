@@ -1,6 +1,20 @@
 
 let obspyDataset = new Map();
 
+let processedDataset = new Map();
+
+let processChain = [];
+
+function checkProcessedDatasetLoaded() {
+  if (! processedDataset.has('dataset')) {
+    processedDataset.set('dataset', obspyDataset.get('dataset'));
+  }
+}
+
+function clearProcessedData() {
+  processedDataset.clear();
+}
+
 function plotDataset(dataset) {
   seisplotjs.d3.select("#myseismograph").selectAll("div").remove();
   seisplotjs.d3.select("#title").text(dataset.data.attributes.title);
@@ -11,6 +25,7 @@ function plotDataset(dataset) {
     .append("p").text(d => d.type+" "+d.id+" ");
   return loadSeismograms(dataset).then((seisArray) => redrawSeismographs(dataset));
 }
+
 function redrawSeismographs(dataset) {
   dataset.data.relationships.seismograms.data.forEach(d => {
     const selectedDiv = seisplotjs.d3.select(`div#seis${d.id}`);
@@ -35,49 +50,11 @@ function redrawSeismographs(dataset) {
     }
   });
 }
-function loadDataset(baseUrl) {
-  const datasetUrl = new URL('/dataset', baseUrl)
-  return seisplotjs.util.doFetchWithTimeout(datasetUrl).then(response => {
-    console.log("response to fetch: ");
-    return response.json();
-  }).then(dataset => {
-      console.log(`Got dataset`);
-      console.log(`Got dataset: ${JSON.stringify(dataset, null, 2)}`);
-      obspyDataset.set('dataset', dataset);
-
+function loadAllAndPlot(baseUrl) {
+  return loadDataset(baseUrl).then(dataset => {
       let allSeis = loadSeismograms(dataset);
-      let quake = null;
-      if (dataset.data.relationships.quake.data.id) {
-        const qid = dataset.data.relationships.quake.data.id;
-        console.log(`quake: ${dataset.data.relationships.quake.data.id}`);
-        quake = seisplotjs.util.doFetchWithTimeout(`/quake/${qid}`).then(response => {
-          console.log("response to fetch: ");
-          return response.text();
-        }).then(xml => {
-          return (new window.DOMParser()).parseFromString(xml, "text/xml");
-        }).then(quakeml => {
-          return seisplotjs.quakeml.parseQuakeML(quakeml);
-        }).then(quakeml => {
-          obspyDataset.set('quake', quakeml);
-          return quakeml;
-        });
-      }
-      let inventory = null;
-      if (dataset.data.relationships.inventory.data.id) {
-        const qid = dataset.data.relationships.inventory.data.id;
-        console.log(`inventory: ${dataset.data.relationships.inventory.data.id}`);
-        inventory = seisplotjs.util.doFetchWithTimeout(`/inventory`).then(response => {
-          console.log("response to fetch: ");
-          return response.text();
-        }).then(xml => {
-          return (new window.DOMParser()).parseFromString(xml, "text/xml");
-        }).then(stationxml => {
-          return seisplotjs.stationxml.parseStationXml(stationxml);
-        }).then(netList => {
-          obspyDataset.set('inventory', netList);
-          return netList;
-        });
-      }
+      let quake = loadQuake(dataset);
+      let inventory = loadInventory(dataset);
       return Promise.all([dataset, allSeis, quake, inventory]);
     }).then( ( [ dataset, allSeis, quake, inventory ] ) => {
       console.log(`plot ${allSeis.length} seismograms`);
@@ -88,6 +65,20 @@ function loadDataset(baseUrl) {
       console.assert(false, error);
     });
 }
+
+function loadDataset(baseUrl) {
+  const datasetUrl = new URL('/dataset', baseUrl)
+  return seisplotjs.util.doFetchWithTimeout(datasetUrl).then(response => {
+    console.log("response to fetch: ");
+    return response.json();
+  }).then(dataset => {
+      console.log(`Got dataset`);
+      console.log(`Got dataset: ${JSON.stringify(dataset, null, 2)}`);
+      obspyDataset.set('dataset', dataset);
+      return dataset;
+  });
+}
+
 
 /**
  * Loads seismograms for dataset if not already loaded.
@@ -120,6 +111,46 @@ function loadSingleSeismogram(seisid, force=false) {
       });
 }
 
+function loadQuake(dataset) {
+  let quake = null;
+  if (dataset.data.relationships.quake.data.id) {
+    const qid = dataset.data.relationships.quake.data.id;
+    console.log(`quake: ${dataset.data.relationships.quake.data.id}`);
+    quake = seisplotjs.util.doFetchWithTimeout(`/quake/${qid}`).then(response => {
+      console.log("response to fetch: ");
+      return response.text();
+    }).then(xml => {
+      return (new window.DOMParser()).parseFromString(xml, "text/xml");
+    }).then(quakeml => {
+      return seisplotjs.quakeml.parseQuakeML(quakeml);
+    }).then(quakeml => {
+      obspyDataset.set('quake', quakeml);
+      return quakeml;
+    });
+  }
+  return quake;
+}
+
+function loadInventory(dataset) {
+  let inventory = null;
+  if (dataset.data.relationships.inventory.data.id) {
+    const qid = dataset.data.relationships.inventory.data.id;
+    console.log(`inventory: ${dataset.data.relationships.inventory.data.id}`);
+    inventory = seisplotjs.util.doFetchWithTimeout(`/inventory`).then(response => {
+      console.log("response to fetch: ");
+      return response.text();
+    }).then(xml => {
+      return (new window.DOMParser()).parseFromString(xml, "text/xml");
+    }).then(stationxml => {
+      return seisplotjs.stationxml.parseStationXml(stationxml);
+    }).then(netList => {
+      obspyDataset.set('inventory', netList);
+      return netList;
+    });
+  }
+  return inventory;
+}
+
 function findChannelForSeismogram(seismogram) {
   if (obspyDataset.has('inventory')) {
     let chanList = seisplotjs.stationxml.findChannels(
@@ -135,6 +166,81 @@ function findChannelForSeismogram(seismogram) {
     }
   }
   return null;
+}
+
+function applyProcessChain() {
+  processedDataset.clear();
+  let tmpProcessChain = Array.from(processChain);
+  processChain.length = 0;//clears the array
+  updateProcessDisplay(processChain);
+  return loadAllAndPlot(baseUrl).then( ( [dataset, seisArray, quake, inventory ] ) => {
+    checkProcessedDatasetLoaded();
+    let promiseArray = dataset.data.relationships.seismograms.data.map(d => {
+      const seisId = d.id;
+      let promiseSeis = loadSingleSeismogram(d.id);
+      tmpProcessChain.forEach(p => {
+        promiseSeis = promiseSeis.then((seis) => {
+          console.log(`repro ${seisId} ${p.desc}`);
+          return p.processFunc(seis);
+        });
+      });
+      return promiseSeis.then( seis => {
+        updateGraph(seisId, seis);
+        return seis;
+      });
+    });
+    return Promise.all(promiseArray).then(() => {
+      tmpProcessChain.forEach(p => processChain.push(p));
+      updateProcessDisplay(processChain);
+    });
+  });
+}
+
+function getSeismogram(id) {
+  const key = `/seismograms/${id}`;
+  if ( ! processedDataset.has(key)) {
+    return loadSingleSeismogram(id).then(seis => {
+      let clonedSeis = seis.clone();
+      processedDataset.set(key, clonedSeis);
+      return clonedSeis;
+    })
+  }
+  return Promise.resolve(processedDataset.get(key));
+}
+
+function applyAllSeismograms(processFunc, desc) {
+  console.log(`applyAllSeismograms: ${desc}`)
+  processChain.push({desc: desc, processFunc: processFunc});
+  updateProcessDisplay(processChain);
+  checkProcessedDatasetLoaded();
+  let dataset = processedDataset.get('dataset');
+  return Promise.all(dataset.data.relationships.seismograms.data.map(d => {
+    const key = `/seismograms/${d.id}`;
+    return getSeismogram(d.id).then(seis => processFunc(seis))
+      .then(seis => {
+        processedDataset.set(key, seis);
+        updateGraph(d.id, seis)
+      });
+  }));
+}
+
+function updateGraph(seisId, seis) {
+  let graph = obspyDataset.get(`/seismograph/${seisId}`)
+  graph.seisDataList.forEach(sdd => console.log(`look for ${sdd.id} === ${seisId}`));
+  let sdd = graph.seisDataList.find(sdd => sdd.id === seisId);
+  sdd.seismogram = seis;
+  graph.calcAmpScaleDomain();
+  graph.redoDisplayYScale();
+  graph.draw()
+}
+
+function updateProcessDisplay(processChain) {
+  let pc = seisplotjs.d3.select("div#processChain ul").selectAll("li")
+    .data(processChain);
+  pc
+    .enter()
+    .append('li').text(d => d.desc);
+  pc.exit().remove();
 }
 
 class ObsPyConnection {
@@ -236,7 +342,7 @@ class ObsPyConnection {
        console.log("update refresh")
        obspyDataset.clear();
      }
-     loadDataset(this.baseUrl);
+     loadAllAndPlot(this.baseUrl).then(() => applyProcessChain());
    } else {
      console.log("...not update message  "+jsonObj+"  "+jsonObj.update);
    }
