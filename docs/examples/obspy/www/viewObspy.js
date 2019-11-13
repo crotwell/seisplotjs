@@ -11,10 +11,6 @@ function checkProcessedDatasetLoaded() {
   }
 }
 
-function clearProcessedData() {
-  processedDataset.clear();
-}
-
 function plotDataset(dataset) {
   seisplotjs.d3.select("#myseismograph").selectAll("div").remove();
   seisplotjs.d3.select("#title").text(dataset.data.attributes.title);
@@ -78,7 +74,6 @@ function loadDataset(baseUrl) {
       return dataset;
   });
 }
-
 
 /**
  * Loads seismograms for dataset if not already loaded.
@@ -174,7 +169,7 @@ function applyProcessChain() {
   processChain.length = 0;//clears the array
   updateProcessDisplay(processChain);
   return loadAllAndPlot(baseUrl).then( ( [dataset, seisArray, quake, inventory ] ) => {
-    checkProcessedDatasetLoaded();
+    processedDataset.set('dataset', dataset);
     let promiseArray = dataset.data.relationships.seismograms.data.map(d => {
       const seisId = d.id;
       let promiseSeis = loadSingleSeismogram(d.id);
