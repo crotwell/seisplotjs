@@ -27,7 +27,64 @@ function plotDataset(dataset) {
     .data(dataset.data.relationships.seismograms.data)
     .enter().append("div").attr("id", d=>`seis${d.id}`)
     .append("p").text(d => d.type+" "+d.id+" ");
-  return loadSeismograms(dataset).then((seisArray) => redrawSeismographs(dataset));
+  return loadSeismograms(dataset)
+    .then((seisArray) => redrawSeismographs(dataset))
+    .then(() => {
+      linkAllTimeAxis();
+      linkAllAmpAxis();
+    });
+}
+function linkAllTimeAxis() {
+  let dolink = seisplotjs.d3.select("input#linkx").property("checked");
+  let prefix = '/seismograph/';
+  let first = null;
+  if (dolink) {
+    obspyDataset.forEach((val, key) => {
+      if (key.startsWith(prefix)) {
+        if (first) {
+          first.linkXScaleTo(val);
+        } else {
+          first = val;
+        }
+      }
+    });
+  } else {
+    obspyDataset.forEach((val, key) => {
+      if (key.startsWith(prefix)) {
+        if (first) {
+          first.unlinkXScaleTo(val);
+        } else {
+          first = val;
+        }
+      }
+    });
+  }
+}
+function linkAllAmpAxis() {
+  let dolink = seisplotjs.d3.select("input#linky").property("checked");
+  let prefix = '/seismograph/';
+  let first = null;
+  if (dolink) {
+    obspyDataset.forEach((val, key) => {
+      if (key.startsWith(prefix)) {
+        if (first) {
+          first.linkYScaleTo(val);
+        } else {
+          first = val;
+        }
+      }
+    });
+  } else {
+    obspyDataset.forEach((val, key) => {
+      if (key.startsWith(prefix)) {
+        if (first) {
+          first.unlinkYScaleTo(val);
+        } else {
+          first = val;
+        }
+      }
+    });
+  }
 }
 
 function redrawSeismographs(dataset) {

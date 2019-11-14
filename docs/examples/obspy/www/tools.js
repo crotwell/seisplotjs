@@ -7,6 +7,12 @@ seisplotjs.d3.select("button#reprocess").on("click", function(d) {
   obspyDataset.clear();
   applyProcessChain();
 });
+seisplotjs.d3.select("input#linkx").on("change", function() {
+  linkAllTimeAxis();
+});
+seisplotjs.d3.select("input#linky").on("change", function() {
+  linkAllAmpAxis();
+});
 
 seisplotjs.d3.select("button#bandpass").on("click", d => {
   let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
