@@ -1100,6 +1100,9 @@ export class Seismograph {
   }
   unlinkXScaleTo(seismograph: Seismograph) {
     this.xScaleChangeListeners = this.xScaleChangeListeners.filter( l => l.destinationKey !==seismograph);
+    if (seismograph.xScaleChangeListeners.find(l => l.destinationKey === this)) {
+      seismograph.unlinkXScaleTo(this);
+    }
   }
   linkYScaleTo(seismograph: Seismograph) {
     let mythis = this;
@@ -1125,6 +1128,9 @@ export class Seismograph {
   }
   unlinkYScaleTo(seismograph: Seismograph) {
     this.yScaleChangeListeners = this.yScaleChangeListeners.filter( l => l.destinationKey !==seismograph);
+    if (seismograph.yScaleChangeListeners.find(l => l.destinationKey === this)) {
+      seismograph.unlinkYScaleTo(this);
+    }
   }
   updateYScaleLinkedTo(otherYScale: any) {
     if (Number.isFinite(otherYScale.domain()[0])
