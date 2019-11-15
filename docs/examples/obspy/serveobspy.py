@@ -36,6 +36,7 @@ class ServeObsPy():
     def initEmptyDataset(self):
         return {
             "stream": None,
+            "bychan": {},
             "title": "tytle",
             "quake": None,
             "inventory": None
@@ -81,20 +82,20 @@ class ServeObsPy():
             }
         }
         jsonapi['data']['attributes']['title'] = self.dataset['title']
-        if self.dataset['quake']:
+        if 'quake' in self.dataset and self.dataset['quake'] is not None:
             id_num = self.dataset['quake'].resource_id.id.split('=')[1]
             jsonapi['data']['relationships']['quake']['data'] = {
                   'type': 'quake',
                   'id': id_num
                 }
 
-        if self.dataset['inventory']:
+        if 'inventory' in self.dataset and self.dataset['inventory'] in not None:
             id_num = 1; #should do something more, maybe break out by channel?
             jsonapi['data']['relationships']['inventory']['data'] = {
                   'type': 'inventory',
                   'id': id_num
                 }
-        if self.dataset['bychan']:
+        if 'bychan' in self.dataset and self.dataset['bychan'] is not None:
             # stream split by channel to group segments into a single js seismogram
             seisjson = jsonapi['data']['relationships']['seismograms']['data']
             for st in self.dataset['bychan']:
