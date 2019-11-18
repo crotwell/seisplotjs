@@ -89,7 +89,7 @@ class ServeObsPy():
                   'id': id_num
                 }
 
-        if 'inventory' in self.dataset and self.dataset['inventory'] in not None:
+        if 'inventory' in self.dataset and self.dataset['inventory'] is not None:
             id_num = 1; #should do something more, maybe break out by channel?
             jsonapi['data']['relationships']['inventory']['data'] = {
                   'type': 'inventory',
