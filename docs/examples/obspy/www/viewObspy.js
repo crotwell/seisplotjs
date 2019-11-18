@@ -300,7 +300,7 @@ function applyAllSeismograms(processFunc, desc) {
 }
 
 function updateGraph(seisId, seis) {
-  let graph = obspyDataset.get(`/seismograph/${seisId}`)
+  let graph = obspyDataset.get(`/seismograph/${seisId}`);
   graph.seisDataList.forEach(sdd => console.log(`look for ${sdd.id} === ${seisId}`));
   let sdd = graph.seisDataList.find(sdd => sdd.id === seisId);
   sdd.seismogram = seis;
