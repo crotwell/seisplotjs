@@ -14,6 +14,10 @@ seisplotjs.d3.select("input#linky").on("change", function() {
   linkAllAmpAxis();
 });
 
+seisplotjs.d3.select("input#orientz").on("change", orientPlotFilter);
+seisplotjs.d3.select("input#orienty").on("change", orientPlotFilter);
+seisplotjs.d3.select("input#orientx").on("change", orientPlotFilter);
+
 seisplotjs.d3.select("button#bandpass").on("click", d => {
   let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
   let highFreq = seisplotjs.d3.select("#highfreq").property("value");

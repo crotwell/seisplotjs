@@ -19,7 +19,14 @@ function checkProcessedDatasetLoaded() {
   }
 }
 
-function plotDataset(dataset) {
+/**
+ * Plots seismograms from the dataset satisfying the filter.
+ *
+ * @param {Dataset}  dataset             dataset
+ * @param {function} seisChanQuakeFilter function(seismogram, channel, quake) that
+ * returns true if it should be plotted.
+ */
+function plotDataset(dataset, seisChanQuakeFilter) {
   seisplotjs.d3.select("#myseismograph").selectAll("div").remove();
   seisplotjs.d3.select("#title").text(dataset.data.attributes.title);
   const topDiv = seisplotjs.d3.select("#myseismograph");
@@ -28,7 +35,7 @@ function plotDataset(dataset) {
     .enter().append("div").attr("id", d=>`seis${d.id}`)
     .append("p").text(d => d.type+" "+d.id+" ");
   return loadSeismograms(dataset)
-    .then((seisArray) => redrawSeismographs(dataset))
+    .then((seisArray) => redrawSeismographs(dataset, seisChanQuakeFilter))
     .then(() => {
       linkAllTimeAxis();
       linkAllAmpAxis();
@@ -87,7 +94,20 @@ function linkAllAmpAxis() {
   }
 }
 
-function redrawSeismographs(dataset) {
+function displayOrientZ() {
+  let dodisp = seisplotjs.d3.select("input#linky").property("checked");
+  let prefix = '/seismograph/';
+  let first = null;
+  if (dodisp) {
+    obspyDataset.forEach((val, key) => {
+      if (key.startsWith(prefix)) {
+
+      }
+    });
+  }
+}
+
+function redrawSeismographs(dataset, seisChanQuakeFilter) {
   dataset.data.relationships.seismograms.data.forEach(d => {
     const selectedDiv = seisplotjs.d3.select(`div#seis${d.id}`);
     const seisUrl = `/seismograms/${d.id}`;
@@ -100,12 +120,16 @@ function redrawSeismographs(dataset) {
       seisData.id = d.id;
       let c = findChannelForSeismogram(seismogram);
       if (c ) { seisData.channel = c;}
+      let q = null
       if (obspyDataset.has(`quake`) && obspyDataset.get(`quake`)){
-        seisData.addQuake( obspyDataset.get(`quake`));
+        q = obspyDataset.get(`quake`);
+        seisData.addQuake( q);
       }
-      let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisData);
-      graph.draw();
-      obspyDataset.set(`/seismograph/${d.id}`, graph);
+      if ( ! seisChanQuakeFilter || seisChanQuakeFilter(seismogram, c, q)) {
+        let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisData);
+        graph.draw();
+        obspyDataset.set(`/seismograph/${d.id}`, graph);
+      }
     } else {
       selectedDiv.append("p").text(d => d.type+" "+d.id+" ");
     }
@@ -118,8 +142,9 @@ function loadAllAndPlot(baseUrl) {
       let inventory = loadInventory(dataset);
       return Promise.all([dataset, allSeis, quake, inventory]);
     }).then( ( [ dataset, allSeis, quake, inventory ] ) => {
-      console.log(`plot ${allSeis.length} seismograms`);
-      plotDataset(dataset);
+      return Promise.all([dataset, allSeis, quake, inventory, createStationCheckboxes(dataset)]);
+    }).then( ( [ dataset, allSeis, quake, inventory ] ) => {
+      plotDataset(dataset, defaultPlotFilter);
       return Promise.all([dataset, allSeis, quake, inventory])
     }).catch( function(error) {
       seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error loading data." +error);
@@ -130,11 +155,8 @@ function loadAllAndPlot(baseUrl) {
 function loadDataset(baseUrl) {
   const datasetUrl = new URL('/dataset', baseUrl)
   return seisplotjs.util.doFetchWithTimeout(datasetUrl).then(response => {
-    console.log("response to fetch: ");
     return response.json();
   }).then(dataset => {
-      console.log(`Got dataset`);
-      console.log(`Got dataset: ${JSON.stringify(dataset, null, 2)}`);
       obspyDataset.set('dataset', dataset);
       return dataset;
   });
@@ -152,7 +174,6 @@ function loadSeismograms(dataset, force=false) {
 function loadSingleSeismogram(seisid, force=false) {
   const seisUrl = `/seismograms/${seisid}`;
   if ( ! force && obspyDataset.has(seisUrl)) {
-    console.log(`already have ${seisUrl}`)
     return Promise.resolve(obspyDataset.get(seisUrl));
   }
   // load from obspy
@@ -317,6 +338,71 @@ function updateProcessDisplay(processChain) {
     .append('li').text(d => d.desc);
   pc.exit().remove();
 }
+
+function createStationCheckboxes(dataset) {
+  return Promise.all(dataset.data.relationships.seismograms.data.map(d => {
+    const key = `/seismograms/${d.id}`;
+    return getSeismogram(d.id).then(seis => seis.stationCode);
+  })).then(staCodeList => {
+    let staCodeSet = new Set(staCodeList);
+    return Array.from(staCodeSet).sort();
+  }).then(staList => {
+    console.log(`stalist: ${staList}`)
+    let staDiv = seisplotjs.d3.select("div#station_checkbox").selectAll("span")
+      .data(staList)
+      .join(enter => {
+        let span = enter.append("span");
+        span.append("input")
+          .attr("type", "checkbox")
+          .attr("id", function(d) { return d; })
+          .attr("value", function(d) { return d; })
+          .property("checked", true)
+          .on("change", orientPlotFilter);
+        span.append("label")
+          .attr('for', function(d) { return d; })
+          .text(function(d) { return d; });
+        });
+  }).catch(error => {
+    seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error station checkboxes." +error);
+    console.assert(false,error);
+  });
+}
+
+function stationFilter(seis, chan, quake) {
+  return seisplotjs.d3.select(`input#${seis.stationCode}`).property("checked");
+}
+
+function orientZFilter(seis, chan, quake) {
+  console.log(`orientZFilter  ${seis.channelCode}  ${seis.channelCode.endsWith('Z')}`)
+  return seis.channelCode.endsWith('Z');
+}
+function orientNFilter(seis, chan, quake) {
+  return seis.channelCode.endsWith('N')
+    || seis.channelCode.endsWith('Y')
+    || seis.channelCode.endsWith('1');
+}
+function orientEFilter(seis, chan, quake) {
+  return seis.channelCode.endsWith('E')
+    || seis.channelCode.endsWith('X')
+    || seis.channelCode.endsWith('2');
+}
+
+function orientPlotFilter() {
+  checkProcessedDatasetLoaded();
+  let dataset = processedDataset.get('dataset');
+  plotDataset(dataset, defaultPlotFilter);
+}
+
+function defaultPlotFilter(seis, chan, quake) {
+  let doZ = seisplotjs.d3.select("input#orientz").property("checked");
+  let doN = seisplotjs.d3.select("input#orienty").property("checked");
+  let doE = seisplotjs.d3.select("input#orientx").property("checked");
+  return stationFilter(seis, chan, quake)
+      && ((doZ && orientZFilter(seis, chan, quake))
+      || (doN && orientNFilter(seis, chan, quake))
+      || (doE && orientEFilter(seis, chan, quake)));
+}
+
 
 class ObsPyConnection {
   constructor(url, baseUrl, packetHandler, errorHandler) {
