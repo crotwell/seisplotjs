@@ -7,6 +7,13 @@
       div.seismograph {
         height: 300px;
       }
+      div svg.fftplot {
+        height: 400px;
+      }
+      div svg.particleMotion {
+        height: 400px;
+        width: 400px;
+      }
       #title {
         text-align: center;
       }
@@ -81,14 +88,30 @@
         <input type="text" id="highfreq" name="highfreq" value=10.0></input>
       </div>
       <div>
+        <span>
+          <input type="radio" id="radio_seismograph" name="plottype" value="seismograph" checked>
+          <label for="seismograph">Seismograph</label>
+        </span>
+        <span>
+          <input type="radio" id="radio_particlemotion" name="plottype" value="particlemotion" >
+          <label for="particlemotion">Particle Motion</label>
+        </span>
+        <span>
+          <input type="radio" id="radio_spectra" name="plottype" value="spectra" >
+          <label for="spectra">Spectra</label>
+        </span>
+      </div>
+      <div>
         <input type="checkbox" id="linkx" name="linkx" checked>
         <label for="linkx">Link Time Axis</label>
         <input type="checkbox" id="linky" name="linky" checked>
         <label for="linky">Link Amp Axis</label>
       </div>
       <div id="station_checkbox">
+        <label>Stations:</label>
       </div>
       <div>
+        <label>Orientations:</label>
         <input type="checkbox" id="orientz" name="orientz" checked>
         <label for="orientz">Orient Z</label>
         <input type="checkbox" id="orienty" name="orienty" checked>
@@ -107,15 +130,29 @@
       </ul>
     </div>
     <script src="seisplotjs_2.0.0-alpha.6_standalone.js"></script>
+    <script src="obspyconnection.js"></script>
     <script src="viewObspy.js"></script>
     <script src="tools.js"></script>
     <script>
       //const baseUrl = document.URL;
       const baseUrl = 'http://localhost:8000';
-      loadAllAndPlot(baseUrl);
+      const viewObspy = new ViewObsPy(baseUrl);
+      createTools(viewObspy);
+      viewObspy.loadAllAndPlot();
       const wsUrl = 'ws://localhost:8001';
-      const handler = function(json) {
+      const handler = function(jsonObj) {
         console.log("hey I got something!");
+        if (jsonObj.update) {
+          if (jsonObj.update === 'refreshAll' || jsonObj.update === 'stream') {
+            // start over clean
+            console.log("update refresh")
+            clearAll();
+          }
+          viewObspy.loadAllAndPlot();
+        } else {
+          console.log("...not update message  "+jsonObj+"  "+jsonObj.update);
+        }
+
       };
       const errHandler = function(err) {
         console.assert(false, err);
