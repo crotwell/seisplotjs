@@ -86,8 +86,13 @@ export function createOverlayFFTPlot(cssSelector: string, fftArrays: Array<FFTRe
         extentFFTData = currExtent;
       }
     }
+    let svgParent;
+    if (typeof cssSelector === 'string') {
+      svgParent = d3.select(cssSelector);
+    } else {
+      svgParent = cssSelector;
+    }
 
-    let svgParent = d3.select(cssSelector);
     let svg = svgParent.append("svg");
     svg.classed("fftplot", true).classed("overlayplot", true);
 
