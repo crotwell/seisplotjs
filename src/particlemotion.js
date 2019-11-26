@@ -46,7 +46,7 @@ export function addDivForParticleMotion(svgParent: any, xSeisData: SeismogramDis
   const yLabel = ySeis ? ySeis.channelCode : "unknown";
   svgDiv.classed(xLabel+" "+yLabel, true);
   svgDiv.classed("particleMotionContainer", true);
-  addParticleMotion(svgDiv, xSeisData, ySeisData, timeWindow);
+  return addParticleMotion(svgDiv, xSeisData, ySeisData, timeWindow);
 }
 
 export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayData, ySeisData: SeismogramDisplayData, timeWindow?: StartEndDuration): void {
@@ -68,6 +68,7 @@ export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayDa
   seisConfig.margin.right = seisConfig.margin.left;
   let pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
   pmp.draw();
+  return pmp;
 }
 
 /** Particle motion. */
