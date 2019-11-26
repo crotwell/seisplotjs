@@ -37,7 +37,8 @@
           </p>
           <p>
             First, of course, you must have obspy installed. Websockets must
-            also be installed, <code>pip install websockets</code>. Start obspy
+            also be installed, <code>conda install -c conda-forge websockets</code>
+            or <code>pip install websockets</code>. Start obspy
             and then import serveobspy and start the data server. The webdir
             argument will allow the http server to serve the files needed and
             so should be a directory that contains your index.html, the seisplotjs
@@ -63,13 +64,14 @@
             client = obspy.clients.fdsn.Client("IRIS")
             start = obspy.UTCDateTime('2019-10-31T01:11:19')
             st = client.get_waveforms("IU", "SNZO", "00", "BHZ", start, start + 20 * 60)
-            serveSeis.setStream(st, title="SNZO Seismograms")
+            serveSeis.stream=st
+            serveSeis.title="SNZO Seismograms"
           </code></pre>
           <p>
             Now opening a web browser to
             <a href="http://127.0.0.1:8000">http://127.0.0.1:8000</a> should
             show a plot of the seismograms loaded above. Additional calls to
-            setStream() will send a notification via the web socket to
+            set stream will send a notification via the web socket to
             cause the browser to refresh the display. You can also trigger
             a refresh from the browser side as well. By default the display
             is just a column of seismograms, but as this is just a web page,
@@ -81,13 +83,13 @@
           </p>
           <pre><code class="language-python">
             quake = client.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)[0]
-            serveSeis.setQuake(quake)
+            serveSeis.quake=quake
             inventory = client.get_stations(network="IU", station="SNZO",
                                             location="00", channel="BH?",
                                             level="response",
                                             starttime=start,
                                             endtime=end)
-            serveSeis.setInventory(inventory);
+            serveSeis.inventory=inventory
           </code></pre>
           <p>
             Given this is just a web page, you can of course have multiple
