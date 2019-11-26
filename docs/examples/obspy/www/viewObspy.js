@@ -297,6 +297,9 @@ class ViewObsPy {
   createPlot(seisId, plottype, seisChanQuakeFilter) {
     console.log(`createPlot ${seisId} ${plottype}`)
     const selectedDiv = seisplotjs.d3.select(`div#seis${seisId}`);
+    selectedDiv.classed('seismograph', false)
+      .classed('spectra', false)
+      .classed('particlemotion', false);
     const seisUrl = `/seismograms/${seisId}`;
     return this.getSeismogram(seisId).then(seismogram => {
       try {
@@ -360,6 +363,21 @@ class ViewObsPy {
     this.processedData.set(`/seismograph/${seisId}`, graph);
     this.linkAllTimeAxis();
     this.linkAllAmpAxis();
+    graph.svg.select('foreignObject').on('mouseover', () => {
+      let coords = seisplotjs.d3.mouse(this);
+      console.log(`hover ${d}  ${coords}`);
+    });
+    graph.svg.select('foreignObject').on("click", function() {
+      let coords = seisplotjs.d3.mouse(this);
+      console.log(`click ${coords}`);
+      let clickTime = graph.currZoomXScale.invert(coords[0]-graph.seismographConfig.margin.left);
+      clickTime = seisplotjs.moment.utc(clickTime);
+      console.log(clickTime);
+      seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
+      let clickAmp = graph.yScale.invert(coords[1]-graph.seismographConfig.margin.top);
+      seisplotjs.d3.select('input#mousey').property('value', clickAmp);
+
+    });
   }
 
   updateGraph(seisId, seis) {
@@ -384,10 +402,10 @@ class ViewObsPy {
         .attr("transform", "translate(600, 10)")
         .append("text").classed("title label", true)
         .selectAll("tspan")
-        .data(d => [seismogram.codes()])
+        .data(d => [seismogram])
         .enter()
         .append("tspan")
-      .text(seismogram => " "+seismogram.channelCode+" ");
+      .text(seismogram => " "+seismogram.codes()+" ");
     } else {
       console.log(`seis no loaded: ${d.id}`);
     }
@@ -401,19 +419,20 @@ class ViewObsPy {
     let vSeisId = null;
     let vSeisData = null;
     if (this.orientEFilter(seisData.seismogram, seisData.channel, seisData.quake)) {
-      otherId = this.findSeismogramFriendId(seisData.seismogram, this.orientNFilter).id;
+      otherId = this.findSeismogramFriendId(seisData.seismogram, this.orientNFilter);
       vSeisId = otherId;
     }
     if (this.orientNFilter(seisData.seismogram, seisData.channel, seisData.quake)) {
-      otherId = this.findSeismogramFriendId(seisData.seismogram, this.orientZFilter).id;
+      otherId = this.findSeismogramFriendId(seisData.seismogram, this.orientZFilter);
       vSeisId = otherId;
     }
     if (this.orientZFilter(seisData.seismogram, seisData.channel, seisData.quake)) {
-      otherId = this.findSeismogramFriendId(seisData.seismogram, this.orientEFilter).id;
+      otherId = this.findSeismogramFriendId(seisData.seismogram, this.orientEFilter);
       hSeisId = otherId;
       vSeisId = seisId;
     }
     if (otherId) {
+      console.log(`createParticleMotion ${hSeisId} ${vSeisId}`);
       return this.getSeismogram(otherId).then(otherSeismogram => {
         let otherSeisData = this.initSeisData(otherId, otherSeismogram);
         if (this.seisChanQuakeFilter(otherSeisData.seismogram, otherSeisData.channel, otherSeisData.quake)) {
@@ -426,7 +445,9 @@ class ViewObsPy {
             vSeisData = seisData;
           }
           let timeWindow = null;
-          seisplotjs.particlemotion.addParticleMotion(selectedDiv, hSeisData, vSeisData, timeWindow);
+          let pmp = seisplotjs.particlemotion.addParticleMotion(selectedDiv, hSeisData, vSeisData, timeWindow);
+          pmp.seismographConfig.title = [hSeisData.codes(), vSeisData.codes()];
+          pmp.drawTitle();
         }
       });
     }
@@ -434,15 +455,22 @@ class ViewObsPy {
 
   findSeismogramFriendId(seismogram, otherFilter) {
     let dataset = this.obspyData.get('dataset');
-    return dataset.data.relationships.seismograms.data.find(d => {
+    let out = dataset.data.relationships.seismograms.data.find(d => {
       const key = `/seismograms/${d.id}`;
       if (this.processedData.has(key)) {
         let otherseismogram = this.processedData.get(key);
-        return otherFilter(otherseismogram, null, null);
+        return otherFilter(otherseismogram, null, null)
+          && otherseismogram.stationCode === seismogram.stationCode
+          && otherseismogram.networkCode === seismogram.networkCode;
       } else {
         return false;
       }
     });
+    if (out) {
+      return out.id;
+    } else {
+      return null;
+    }
   }
 
   updateProcessDisplay(processChain) {
@@ -510,11 +538,10 @@ class ViewObsPy {
     } else {
       console.log(`stationFilter default true ${seis.codes}`);
     }
-    return out
+    return out;
   }
 
   orientZFilter(seis, chan, quake) {
-    console.log(`orientZFilter  ${seis.channelCode}  ${seis.channelCode.endsWith('Z')}`)
     return seis.channelCode.endsWith('Z');
   }
   orientNFilter(seis, chan, quake) {
