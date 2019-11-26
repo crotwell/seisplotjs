@@ -241,7 +241,7 @@ class ServeObsPy():
                 self.send_header("Content-Length", buf.getbuffer().nbytes)
                 self.send_header("Content-Type", "application/xml")
                 self.wfile.write(buf.getbuffer())
-
+        http.server.SimpleHTTPRequestHandler.extensions_map['.js'] = 'text/javascript'
         return ObsPyRequestHandler
 
 class ObsPyServer(threading.Thread):
