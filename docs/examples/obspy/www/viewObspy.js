@@ -129,7 +129,7 @@ class ViewObsPy {
       //  this.plotDataset(dataset, plottype, this.seisChanQuakeFilter);
         return Promise.all([dataset, allSeis, quake, inventory])
       }).catch( function(error) {
-        seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error loading data." +error);
+        seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error loading data. " +error);
         console.log(error);
       });
   }
@@ -299,6 +299,8 @@ class ViewObsPy {
     const selectedDiv = seisplotjs.d3.select(`div#seis${seisId}`);
     selectedDiv.classed('seismograph', false)
       .classed('spectra', false)
+      .classed('spectra_lin', false)
+      .classed('spectra_log', false)
       .classed('particlemotion', false);
     const seisUrl = `/seismograms/${seisId}`;
     return this.getSeismogram(seisId).then(seismogram => {
@@ -309,10 +311,14 @@ class ViewObsPy {
           selectedDiv.classed(plottype, true);
           if (plottype === 'seismograph') {
             this.createGraph(selectedDiv, seisId, seisData);
-          } else if (plottype === 'spectra') {
-            this.createSpectra(selectedDiv, seisId, seisData);
+          } else if (plottype === 'spectra_lin') {
+            this.createSpectra(selectedDiv, seisId, seisData, false);
+          } else if (plottype === 'spectra_log') {
+            this.createSpectra(selectedDiv, seisId, seisData, true);
           } else if (plottype === 'particlemotion') {
             this.createParticleMotion(selectedDiv, seisId, seisData);
+          } else {
+            console.warn(`unknwon plot type: ${plottype}`)
           }
         } else {
           console.log(`remove all from div#seis${seisId}`)
@@ -363,20 +369,16 @@ class ViewObsPy {
     this.processedData.set(`/seismograph/${seisId}`, graph);
     this.linkAllTimeAxis();
     this.linkAllAmpAxis();
-    graph.svg.select('foreignObject').on('mouseover', () => {
-      let coords = seisplotjs.d3.mouse(this);
-      console.log(`hover ${d}  ${coords}`);
-    });
-    graph.svg.select('foreignObject').on("click", function() {
-      let coords = seisplotjs.d3.mouse(this);
-      console.log(`click ${coords}`);
-      let clickTime = graph.currZoomXScale.invert(coords[0]-graph.seismographConfig.margin.left);
+    const canvasNode = graph.svg.select('foreignObject canvas').node();
+    graph.svg.select('foreignObject canvas').on('mousemove', evt => {
+      const rect = canvasNode.getBoundingClientRect();
+      let coords = [event.pageX-rect.left, event.pageY-rect.top ];
+      let clickTime = graph.currZoomXScale.invert(coords[0]);
       clickTime = seisplotjs.moment.utc(clickTime);
-      console.log(clickTime);
       seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
-      let clickAmp = graph.yScale.invert(coords[1]-graph.seismographConfig.margin.top);
-      seisplotjs.d3.select('input#mousey').property('value', clickAmp);
-
+      let clickAmp = graph.yScaleRmean.invert(coords[1]);
+      seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
+      //seisplotjs.d3.select('input#mousey').property('value', coords);
     });
   }
 
@@ -390,14 +392,14 @@ class ViewObsPy {
     graph.draw()
   }
 
-  createSpectra(selectedDiv, seisId, seisData) {
+  createSpectra(selectedDiv, seisId, seisData, loglog=true) {
     const seisUrl = `/seismograms/${seisId}`;
     if (this.processedData.has(seisUrl)) {
       selectedDiv.selectAll('*').remove();
       let seismogram = this.processedData.get(seisUrl);
       let fft = seisplotjs.fft.fftForward(seismogram);
       let fftList = [ fft ];
-      let svg = seisplotjs.fftplot.createOverlayFFTPlot(selectedDiv, fftList, true);
+      let svg = seisplotjs.fftplot.createOverlayFFTPlot(selectedDiv, fftList, loglog);
       svg.append("g").classed("title", true)
         .attr("transform", "translate(600, 10)")
         .append("text").classed("title label", true)
@@ -565,3 +567,10 @@ class ViewObsPy {
         || (doE && this.orientEFilter(seis, chan, quake)));
   }
 }
+
+
+const formatCount = seisplotjs.d3.format('.4~s');
+const formatExp = seisplotjs.d3.format('.4e');
+const formatCountOrAmp = function(v) {
+  return -1<v && v<1 && v !== 0 ? formatExp(v) : formatCount(v);
+};

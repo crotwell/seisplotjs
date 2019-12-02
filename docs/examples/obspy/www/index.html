@@ -7,7 +7,10 @@
       div.seismograph {
         height: 300px;
       }
-      div.spectra {
+      div.spectra_log {
+        height: 400px;
+      }
+      div.spectra_lin {
         height: 400px;
       }
       div.particlemotion:not(:empty) {
@@ -97,8 +100,12 @@
           <label for="particlemotion">Particle Motion</label>
         </span>
         <span>
-          <input type="radio" id="radio_spectra" name="plottype" value="spectra" >
-          <label for="spectra">Spectra</label>
+          <input type="radio" id="radio_spectra_log" name="plottype" value="spectra_log" >
+          <label for="spectra_log">Spectra (Log)</label>
+        </span>
+        <span>
+          <input type="radio" id="radio_spectra_lin" name="plottype" value="spectra_lin" >
+          <label for="spectra_lin">Spectra (Lin)</label>
         </span>
       </div>
       <div>

@@ -93,12 +93,6 @@ function createTools(viewObspy) {
     console.log(`yep my job: ${myvalue} === ${plottype}`);
     viewObspy.checkProcessedDatasetLoaded();
     let dataset = viewObspy.processedData.get('dataset');
-    if (plottype === 'seismograph') {
-      viewObspy.plotDataset(dataset, plottype, viewObspy.seisChanQuakeFilter);
-    } else if (plottype === 'particlemotion') {
-      viewObspy.plotDataset(dataset, plottype, viewObspy.seisChanQuakeFilter);
-    } else if (plottype === 'spectra') {
-      viewObspy.plotDataset(dataset, plottype, viewObspy.seisChanQuakeFilter);
-    }
+    viewObspy.plotDataset(dataset, plottype, viewObspy.seisChanQuakeFilter);
   });
 }
