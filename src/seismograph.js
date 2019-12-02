@@ -622,7 +622,7 @@ export class Seismograph {
         && xt.domain()[1].getTime() === this.currZoomXScale.domain()[1].getTime()) {
       return;
     }
-
+    let prevZoomXScale = this.currZoomXScale;
     this.currZoomXScale = xt;
     let mythis = this;
     if (! this.beforeFirstDraw) {
@@ -633,7 +633,7 @@ export class Seismograph {
       this.drawSeismograms();
       this.g.select("g.allmarkers").selectAll("g.marker")
             .attr("transform", function(marker: MarkerType) {
-              let textx = xt( marker.time);
+              let textx = xt( marker.time.toDate());
               return  "translate("+textx+","+0+")";});
 
        this.g.select("g.allmarkers").selectAll("g.markertext")
@@ -654,6 +654,15 @@ export class Seismograph {
                return (i===0) ? 0 : mythis.yScale.range()[0];
              }).curve(d3.curveLinear)([ mythis.yScale.domain()[0], mythis.yScale.domain()[1] ] ); // call the d3 function created by line with data
         });
+        let startEnd = new StartEndDuration(prevZoomXScale.domain()[0], prevZoomXScale.domain()[1]);
+        let undrawnMarkers = this.seisDataList.reduce((acc, sdd) => {
+            sdd.markerList.forEach(m => acc.push(m));
+            return acc;
+          }, []).filter( m => ! startEnd.contains(m.time));
+        if (undrawnMarkers.length !== 0) {
+          this.drawMarkers();
+        }
+
       if (this.seismographConfig.isXAxis) {
         this.g.select(".axis--x").call(this.xAxis.scale(xt));
       }
@@ -677,7 +686,7 @@ export class Seismograph {
     let labelSelection = markerG.selectAll("g.marker")
         .data(allMarkers, function(d) {
               // key for data
-              return d.name+"_"+d.time.valueOf();
+              return `${d.name}_${d.time.toISOString()}`;
             });
     labelSelection.exit().remove();
 
