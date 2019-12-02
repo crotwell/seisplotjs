@@ -41,6 +41,8 @@ import * as util      from './util.js';
 import * as vector      from './vector.js';
 import * as xseed      from './xseed.js';
 
+import * as OregonDSPTop from 'oregondsp';
+const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 import moment from 'moment';
 import RSVP from 'rsvp';
@@ -83,6 +85,7 @@ export { cssutil,
          vector,
          version,
          xseed,
+         OregonDSP,
          d3,
          moment,
          RSVP };
