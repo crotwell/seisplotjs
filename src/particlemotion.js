@@ -36,7 +36,7 @@ export function createParticleMotionBySelector(selector: string): void {
     });
   }
 
-export function addDivForParticleMotion(svgParent: any, xSeisData: SeismogramDisplayData, ySeisData: SeismogramDisplayData, timeWindow?: StartEndDuration): void {
+export function addDivForParticleMotion(svgParent: any, xSeisData: SeismogramDisplayData, ySeisData: SeismogramDisplayData, timeWindow?: StartEndDuration): ParticleMotion {
   let svgDiv = svgParent.append("div");
   if ( ! isDef(xSeisData)) {throw new Error("xSeisData cannot be null");}
   if ( ! isDef(ySeisData)) {throw new Error("ySeisData cannot be null");}
@@ -49,7 +49,7 @@ export function addDivForParticleMotion(svgParent: any, xSeisData: SeismogramDis
   return addParticleMotion(svgDiv, xSeisData, ySeisData, timeWindow);
 }
 
-export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayData, ySeisData: SeismogramDisplayData, timeWindow?: StartEndDuration): void {
+export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayData, ySeisData: SeismogramDisplayData, timeWindow?: StartEndDuration): ParticleMotion {
   if ( ! isDef(xSeisData.seismogram) || ! isDef(ySeisData.seismogram)) {
     // $FlowFixMe
     throw new Error(`Seismogram has no data: ${xSeisData.seismogram} ${ySeisData.seismogram}`);
