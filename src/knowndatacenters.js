@@ -62,12 +62,15 @@ export const knownDataCenters = {
     return this.getDataCenter(BestDCIdMap.get(type));
   },
 
-  /** Loads all known data centers. JSON top level has:
+  /**
+   * Loads all known data centers. JSON top level has:
    *  created - modification date,
    *  datacenters - array of objects, each with
    *  id, name, website, email, host, region and
    *  and supports that is an array of type and version.
-   *   Returns a Promise that resolves to the returned json. */
+   *
+   *  @returns a Promise that resolves to the returned json.
+   */
   getKnownDataCenters(): Promise<KnownDCS_JSON> {
     if ( ! knownDCs) {
       knownDCs = fetch(this.knownDataCentersJsonURL)
@@ -81,17 +84,25 @@ export const knownDataCenters = {
     return knownDCs;
   },
 
-  /** Forces a reload of the remote json. In general, because the data
+  /**
+   * Forces a reload of the remote json. In general, because the data
    *  is updated infrequently, this is unlikely to be needed. However,
    *  a very long running instance may wish to update this periodically,
-   *  likely at most daily. Returns a Promise. */
+   *  likely at most daily.
+   *
+   *  @returns a Promise to known datacenters.
+   */
   updateKnownDataCenters(): Promise<KnownDCS_JSON> {
     knownDCs = null;
     return this.getKnownDataCenters();
   },
 
-  /** Gets the data center associated with the id.
-   *   Returns a Promise. */
+  /**
+   * Gets the data center associated with the id.
+   *
+   * @param id string id
+   * @returns a Promise to data center
+   */
   getDataCenter(id: string): DataCenterType {
     return this.getKnownDataCenters().then(kdcs => {
       for (const dc of kdcs.datacenters) {
@@ -103,19 +114,28 @@ export const knownDataCenters = {
     });
   },
 
-  /** returns true is the dc datacenter supports type web service,
-   *false otherwise.
+  /**
+   *
+   * @param dc data center
+   * @param type type of service
+   * @returns true is the dc datacenter supports type web service,
+   * false otherwise.
    */
   doesSupport(dc: DataCenterType, type: string) {
     let out = dc.supports.find(function(s) { return s.type === type;});
     return typeof out !== 'undefined';
   },
 
-  /** returns the hostname for type web service. In many cases this
+  /**
+   * returns the hostname for type web service. In many cases this
    *  is the same as the host for the overall datacenter, but sometimes
    *  not all web services are hosted on the same machine. For example
    *  all fdsn web services at IRIS are hosted at service.iris.edu
    *  but the ringserver is hosted at rtserve.iris.edu
+   *
+   * @param dc data center
+   * @param type type of service
+   * @returns host
    */
   serviceHost(dc: DataCenterType, type: string): string {
     let does = this.doesSupport(dc, type);
@@ -125,9 +145,14 @@ export const knownDataCenters = {
     throw new Error(dc.id+" does not support "+type);
   },
 
-  /** returns the port for type web service. In many cases this
+  /**
+   * returns the port for type web service. In many cases this
    *  is 80, but sometimes web services are hosted on alternative
    *  ports.
+   *
+   * @param dc data center
+   * @param type type of service
+   * @returns port number
    */
   servicePort(dc: DataCenterType, type: string): number {
     let does = this.doesSupport(dc, type);

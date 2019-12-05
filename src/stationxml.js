@@ -650,7 +650,11 @@ export function* allChannels(networks: Array<Network>): Generator<Channel, void,
  * Extract all channels from all stations from all networks in the input array.
  *
  * @param   networks Array of networks.
- * @returns           Array of channels.
+ * @param   netCode network code to match
+ * @param   staCode station code to match
+ * @param   locCode location code to match
+ * @param   chanCode channel code to match
+ * @yields           Array of channels.
  */
 export function* findChannels(networks: Array<Network>, netCode: string, staCode: string, locCode: string, chanCode: string): Generator<Channel, void, any> {
     for (let n of networks.filter(n => n.networkCode ===  netCode)) {

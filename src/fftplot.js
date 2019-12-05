@@ -17,7 +17,8 @@ import {insertCSS} from './cssutil.js';
  * Create a single amplitude plot of FFT data.
  *
  * @param   cssSelector selection of the containing element, usually a div
- * @param   fft         data to plot
+ * @param   fftResult         data to plot
+ * @param   config configuration of the plot, note not all options are supported by fft plots
  * @param   loglog      true for loglog plot, false for linlog
  * @returns             the plot
  */
@@ -32,7 +33,8 @@ export function createSimpleFFTPlot(cssSelector: string, fftResult: FFTResult, c
  * Create a amplitude plot of multiple FFT data.
  *
  * @param   cssSelector selection of the containing element, usually a div
- * @param   fftResults   array of FFT data to plot
+ * @param   fftResults         data to plot
+ * @param   config configuration of the plot, note not all options are supported by fft plots
  * @param   loglog      true for loglog plot, false for linlog
  * @returns             the plot
  */
