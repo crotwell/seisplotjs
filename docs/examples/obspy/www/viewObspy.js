@@ -414,19 +414,21 @@ class ViewObsPy {
         .append("tspan")
       .text(seismogram => " "+seismogram.codes()+" ");
 
-      fftPlot.svg.select('g.allfftpaths').on('mousemove', evt => {
-        const rect = canvasNode.getBoundingClientRect();
-        //console.log("event", evt)
-        let coords = [event.pageX-rect.left, event.pageY-rect.top ];
-        //console.log(`mousemove ${event.pageX}  ${coords}`);
-        let clickTime = graph.currZoomXScale.invert(coords[0]);
-        clickTime = seisplotjs.moment.utc(clickTime);
-        seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
-        let clickAmp = graph.yScaleRmean.invert(coords[1]);
-        seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
-        //seisplotjs.d3.select('input#mousey').property('value', coords);
-
-      });
+// add rect to get mouse events even over blank areas
+      fftPlot.svg.select('g.allfftpaths')
+        .append("rect")
+        .attr("x", 0).attr('y', 0).attr("width", '100%').attr('height', '100%')
+        .attr('fill', "transparent")
+        .attr('pointer-events', 'all')
+        .on('mousemove', evt => {
+          const node = fftPlot.svg.select('g.allfftpaths').node();
+          const rect = node.getBoundingClientRect();
+          let coords = [event.pageX-rect.left, event.pageY-rect.top ];
+          let clickFreq = fftPlot.xScale.invert(coords[0]);
+          seisplotjs.d3.select('input#mousex').property('value', formatExp(clickFreq));
+          let clickAmp = fftPlot.yScale.invert(coords[1]);
+          seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
+        });
     } else {
       console.log(`seis no loaded: ${d.id}`);
     }
