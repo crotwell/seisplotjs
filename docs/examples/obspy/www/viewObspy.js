@@ -11,7 +11,7 @@ class ViewObsPy {
   clearAll() {
     this.processedData.clear();
     this.processChain.length = 0;//clears the array
-    this.updateProcessDisplay(processChain);
+    this.updateProcessDisplay(this.processChain);
     this.obspyData.clear();
     seisplotjs.d3.select("#messages").selectAll("p").remove();
   }
@@ -256,7 +256,7 @@ class ViewObsPy {
         });
       });
       return Promise.all(promiseArray).then(() => {
-        tmpProcessChain.forEach(p => processChain.push(p));
+        tmpProcessChain.forEach(p => this.processChain.push(p));
         this.updateProcessDisplay(this.processChain);
       });
     });
@@ -278,7 +278,7 @@ class ViewObsPy {
   applyAllSeismograms(processFunc, desc) {
     console.log(`applyAllSeismograms: ${desc}`)
     this.processChain.push({desc: desc, processFunc: processFunc});
-    this.updateProcessDisplay(processChain);
+    this.updateProcessDisplay(this.processChain);
     this.checkProcessedDatasetLoaded();
     let dataset = this.processedData.get('dataset');
     return Promise.all(dataset.data.relationships.seismograms.data.map(d => {
