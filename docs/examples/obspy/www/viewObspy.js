@@ -380,6 +380,7 @@ class ViewObsPy {
       seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
       //seisplotjs.d3.select('input#mousey').property('value', coords);
     });
+    return graph;
   }
 
   updateGraph(seisId, seis) {
@@ -390,17 +391,21 @@ class ViewObsPy {
     graph.calcAmpScaleDomain();
     graph.redoDisplayYScale();
     graph.draw()
+    return graph;
   }
 
   createSpectra(selectedDiv, seisId, seisData, loglog=true) {
     const seisUrl = `/seismograms/${seisId}`;
+    let fftPlot = null;
     if (this.processedData.has(seisUrl)) {
       selectedDiv.selectAll('*').remove();
       let seismogram = this.processedData.get(seisUrl);
       let fft = seisplotjs.fft.fftForward(seismogram);
       let fftList = [ fft ];
-      let svg = seisplotjs.fftplot.createOverlayFFTPlot(selectedDiv, fftList, loglog);
-      svg.append("g").classed("title", true)
+      let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+      fftPlot = new seisplotjs.fftplot.FFTPlot(selectedDiv, seisConfig, fftList, loglog);
+      fftPlot.draw();
+      fftPlot.svg.append("g").classed("title", true)
         .attr("transform", "translate(600, 10)")
         .append("text").classed("title label", true)
         .selectAll("tspan")
@@ -408,9 +413,24 @@ class ViewObsPy {
         .enter()
         .append("tspan")
       .text(seismogram => " "+seismogram.codes()+" ");
+
+      fftPlot.svg.select('g.allfftpaths').on('mousemove', evt => {
+        const rect = canvasNode.getBoundingClientRect();
+        //console.log("event", evt)
+        let coords = [event.pageX-rect.left, event.pageY-rect.top ];
+        //console.log(`mousemove ${event.pageX}  ${coords}`);
+        let clickTime = graph.currZoomXScale.invert(coords[0]);
+        clickTime = seisplotjs.moment.utc(clickTime);
+        seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
+        let clickAmp = graph.yScaleRmean.invert(coords[1]);
+        seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
+        //seisplotjs.d3.select('input#mousey').property('value', coords);
+
+      });
     } else {
       console.log(`seis no loaded: ${d.id}`);
     }
+    return fftPlot;
   }
 
   createParticleMotion(selectedDiv, seisId, seisData) {
