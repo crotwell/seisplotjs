@@ -102,7 +102,6 @@ class ViewObsPy {
   }
 
   loadAllAndPlot() {
-    console.log(`loadAllAndPlot()`);
     const that = this;
     const plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
     return this.loadDataset(this.baseUrl).then(dataset => {
@@ -130,7 +129,7 @@ class ViewObsPy {
         return Promise.all([dataset, allSeis, quake, inventory])
       }).catch( function(error) {
         seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error loading data. " +error);
-        console.log(error);
+        console.error(error);
       });
   }
 
@@ -156,15 +155,14 @@ class ViewObsPy {
           if (seisArray.length != 0) {
             let seis = seisArray[0]; // assume only first matters
             this.obspyData.set(seisUrl, seis);
-            console.log(`obspyData.set(${seisUrl}', ${seis})`)
             return seis;
           } else {
-            console.log(`Oops, server did not return data for ${seisUrl}`);
+            console.warn(`Oops, server did not return data for ${seisUrl}`);
             return null;
           }
         }).catch( function(error) {
           seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading data from ${seisUrl}, ${error}`);
-          console.assert(false, error);
+          console.error(error);
         });
   }
 
@@ -172,9 +170,7 @@ class ViewObsPy {
     let quake = null;
     if (dataset.data.relationships.quake.data.id) {
       const qid = dataset.data.relationships.quake.data.id;
-      console.log(`quake: ${dataset.data.relationships.quake.data.id}`);
       quake = seisplotjs.util.doFetchWithTimeout(`/quake/${qid}`).then(response => {
-        console.log("response to fetch: ");
         return response.text();
       }).then(xml => {
         return (new window.DOMParser()).parseFromString(xml, "text/xml");
@@ -185,7 +181,7 @@ class ViewObsPy {
         return quakeml;
       }).catch( function(error) {
         seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading quake, ${error}`);
-        console.assert(false, error);
+        console.error(error);
       });
     }
     return quake;
@@ -195,9 +191,7 @@ class ViewObsPy {
     let inventory = Promise.resolve([]);
     if (dataset.data.relationships.inventory.data.id) {
       const qid = dataset.data.relationships.inventory.data.id;
-      console.log(`inventory: ${dataset.data.relationships.inventory.data.id}`);
       inventory = seisplotjs.util.doFetchWithTimeout(`/inventory`).then(response => {
-        console.log("response to fetch: ");
         return response.text();
       }).then(xml => {
         return (new window.DOMParser()).parseFromString(xml, "text/xml");
@@ -208,7 +202,7 @@ class ViewObsPy {
         return netList;
       }).catch( function(error) {
         seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading inventory, ${error}`);
-        console.assert(false, error);
+        console.error( error);
       });
     }
     return inventory;
@@ -243,7 +237,6 @@ class ViewObsPy {
         let promiseSeis = this.loadSingleSeismogram(d.id);
         tmpProcessChain.forEach(p => {
           promiseSeis = promiseSeis.then((seis) => {
-            console.log(`repro ${seisId} ${p.desc}`);
             return p.processFunc(seis);
           });
         });
@@ -276,7 +269,6 @@ class ViewObsPy {
   }
 
   applyAllSeismograms(processFunc, desc) {
-    console.log(`applyAllSeismograms: ${desc}`)
     this.processChain.push({desc: desc, processFunc: processFunc});
     this.updateProcessDisplay(this.processChain);
     this.checkProcessedDatasetLoaded();
@@ -295,7 +287,6 @@ class ViewObsPy {
   }
 
   createPlot(seisId, plottype, seisChanQuakeFilter) {
-    console.log(`createPlot ${seisId} ${plottype}`)
     const selectedDiv = seisplotjs.d3.select(`div#seis${seisId}`);
     selectedDiv.classed('seismograph', false)
       .classed('spectra', false)
@@ -321,11 +312,10 @@ class ViewObsPy {
             console.warn(`unknwon plot type: ${plottype}`)
           }
         } else {
-          console.log(`remove all from div#seis${seisId}`)
           selectedDiv.selectAll('*').remove();
         }
       } catch(err) {
-        console.log(err);
+        console.error(err);
       }
     });
   }
@@ -356,7 +346,7 @@ class ViewObsPy {
         return this.createPlot(seisId, plottype, seisChanQuakeFilter);
       }
     } catch(err) {
-      console.log(err);
+      console.error(err);
 
     }
   }
@@ -385,7 +375,6 @@ class ViewObsPy {
 
   updateGraph(seisId, seis) {
     let graph = this.processedData.get(`/seismograph/${seisId}`);
-    graph.seisDataList.forEach(sdd => console.log(`look for ${sdd.id} === ${seisId}`));
     let sdd = graph.seisDataList.find(sdd => sdd.id === seisId);
     sdd.seismogram = seis;
     graph.calcAmpScaleDomain();
@@ -430,7 +419,7 @@ class ViewObsPy {
           seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
         });
     } else {
-      console.log(`seis no loaded: ${d.id}`);
+      console.warn(`seis no loaded: ${d.id}`);
     }
     return fftPlot;
   }
@@ -456,7 +445,6 @@ class ViewObsPy {
       vSeisId = seisId;
     }
     if (otherId) {
-      console.log(`createParticleMotion ${hSeisId} ${vSeisId}`);
       return this.getSeismogram(otherId).then(otherSeismogram => {
         let otherSeisData = this.initSeisData(otherId, otherSeismogram);
         if (this.seisChanQuakeFilter(otherSeisData.seismogram, otherSeisData.channel, otherSeisData.quake)) {
@@ -529,7 +517,6 @@ class ViewObsPy {
       let staCodeSet = new Set(staCodeList);
       return Array.from(staCodeSet).sort();
     }).then(staList => {
-      console.log(`stalist: ${staList}`);
       const that = this;
       let staDiv = seisplotjs.d3.select("div#station_checkbox").selectAll("span")
         .data(staList, s => s)
@@ -551,7 +538,7 @@ class ViewObsPy {
           });
     }).catch(error => {
       seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error station checkboxes." +error);
-      console.log(error);
+      console.error(error);
     });
   }
 
@@ -559,8 +546,6 @@ class ViewObsPy {
     let out = true; // plot by default
     if ( ! seisplotjs.d3.select(`input#${seis.stationCode}`).empty()) {
       out = seisplotjs.d3.select(`input#${seis.stationCode}`).property("checked");
-    } else {
-      console.log(`stationFilter default true ${seis.codes}`);
     }
     return out;
   }
