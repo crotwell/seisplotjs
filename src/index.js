@@ -23,6 +23,7 @@ import * as helicorder from './helicorder.js';
 import * as knownDataCenters from './knowndatacenters.js';
 import * as miniseed       from './miniseed.js';
 import * as mseedarchive   from './mseedarchive.js';
+import * as oregondsputil   from './oregondsputil.js';
 import * as particlemotion        from './particlemotion.js';
 import * as plotutil        from './plotutil.js';
 import * as quakeml        from './quakeml.js';
@@ -67,6 +68,7 @@ export { cssutil,
          knownDataCenters,
          miniseed,
          mseedarchive,
+         oregondsputil,
          particlemotion,
          plotutil,
          quakeml,

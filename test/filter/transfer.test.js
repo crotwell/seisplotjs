@@ -2,6 +2,7 @@
 
 import * as fft from '../../src/fft.js';
 import * as filter from '../../src/filter.js';
+import { createComplex} from '../../src/oregondsputil.js';
 import * as taper from '../../src/taper.js';
 import * as transfer from '../../src/transfer.js';
 import { Seismogram} from '../../src/seismogram.js';
@@ -9,7 +10,7 @@ import {SacPoleZero} from '../../src/sacPoleZero.js';
 import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile.js';
 import moment from 'moment';
 
-const ONE_COMPLEX = filter.createComplex(1, 0);
+const ONE_COMPLEX = createComplex(1, 0);
 /**
  * @author crotwell Created on Jul 27, 2005
  */
@@ -141,12 +142,12 @@ test("testEvalPoleZero", () => {
                       [9.99939, 2.35369e+10, 1.17822e+10],
                       [10, 2.35375e+10, 1.17818e+10]];
     // IU.HRV.BHE response
-    const zeros =  [filter.createComplex(0, 0),
-                    filter.createComplex(0, 0),
-                    filter.createComplex(0, 0) ];
-    const poles =  [filter.createComplex(-0.0139, 0.0100),
-                    filter.createComplex(-0.0139, -0.0100),
-                    filter.createComplex(-31.4160, 0.0000) ];
+    const zeros =  [createComplex(0, 0),
+                    createComplex(0, 0),
+                    createComplex(0, 0) ];
+    const poles =  [createComplex(-0.0139, 0.0100),
+                    createComplex(-0.0139, -0.0100),
+                    createComplex(-31.4160, 0.0000) ];
     let sacPoleZero = new SacPoleZero(poles, zeros, 2.94283674E10);
 
     // separate test for zero freq due to polezero gives 0 here
@@ -178,12 +179,12 @@ test("ReadPoleZero", () => {
   .then( pz => {
 
     // IU.HRV.BHE response
-    const zeros =  [filter.createComplex(0, 0),
-      filter.createComplex(0, 0),
-      filter.createComplex(0, 0) ];
-    const poles =  [filter.createComplex(-0.0139, 0.0100),
-      filter.createComplex(-0.0139, -0.0100),
-      filter.createComplex(-31.4160, 0.0000) ];
+    const zeros =  [createComplex(0, 0),
+      createComplex(0, 0),
+      createComplex(0, 0) ];
+    const poles =  [createComplex(-0.0139, 0.0100),
+      createComplex(-0.0139, -0.0100),
+      createComplex(-31.4160, 0.0000) ];
     let sacPoleZero = {
     poles: poles,
     zeros: zeros,

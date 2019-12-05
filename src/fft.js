@@ -6,11 +6,9 @@
  * http://www.seis.sc.edu
  */
 
-import {createComplex, Complex } from './filter.js';
 import {Seismogram } from './seismogram.js';
 
-import * as OregonDSPTop from 'oregondsp';
-const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
+import {OregonDSP, Complex, createComplex} from './oregondsputil.js';
 
 /** A higher level function to calculate DFT. Returns a
  * FFTResult for easier access to the result as

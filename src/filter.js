@@ -8,15 +8,11 @@
 
 import {Seismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
-import * as OregonDSPTop from 'oregondsp';
+import {OregonDSP} from './oregondsputil.js';
 
-const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
+
 const CenteredHilbertTransform = OregonDSP.filter.fir.equiripple.CenteredHilbertTransform;
-export const Complex = OregonDSP.filter.iir.Complex;
 
-export function createComplex(real: number, imag: number) {
-  return OregonDSP.filter.iir.Complex_init(real, imag);
-}
 
 /**
  * Constant for bandpass OregonDSP filter creation.

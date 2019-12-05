@@ -7,10 +7,9 @@
  */
 
 import { StartEndDuration, isObject, isDef, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
-import {createComplex} from './filter.js';
+import {Complex, createComplex} from './oregondsputil.js';
 
 import moment from 'moment';
-import type {Complex } from './filter.js';
 
 /** xml namespace for stationxml */
 export const STAML_NS = 'http://www.fdsn.org/xml/station/1';
@@ -288,7 +287,7 @@ export function parseStationXml(rawXml: Document): Array<Network> {
     let netArray = top.getElementsByTagNameNS(STAML_NS, "Network");
     let out = [];
     for (let n of netArray) {
-      out.push(this.convertToNetwork(n));
+      out.push(convertToNetwork(n));
     }
     return out;
   }
@@ -317,7 +316,7 @@ export function convertToNetwork(xml: Element): Network {
     let staArray = xml.getElementsByTagNameNS(STAML_NS, "Station");
     let stations = [];
     for (let s of staArray) {
-      stations.push(this.convertToStation(out, s));
+      stations.push(convertToStation(out, s));
     }
     out.stations = stations;
     return out;
@@ -349,7 +348,7 @@ export function convertToStation(network: Network, xml: Element): Station {
     let chanArray = xml.getElementsByTagNameNS(STAML_NS, "Channel");
     let channels = [];
     for (let c of chanArray) {
-      channels.push(this.convertToChannel(out, c));
+      channels.push(convertToChannel(out, c));
     }
     out.channels = channels;
     return out;
@@ -393,7 +392,7 @@ export function convertToChannel(station: Station, xml: Element): Channel {
     let responseXml = xml.getElementsByTagNameNS(STAML_NS, 'Response');
     if (responseXml && responseXml.length > 0 ) {
       const r = responseXml.item(0);
-      if (r) {out.response = this.convertToResponse(r);}
+      if (r) {out.response = convertToResponse(r);}
     }
     return out;
   }
@@ -404,12 +403,11 @@ export function convertToChannel(station: Station, xml: Element): Channel {
    * @returns Response instance
    */
 export function convertToResponse(responseXml: Element): Response {
-    let mythis = this;
     let out;
     let inst = responseXml.getElementsByTagNameNS(STAML_NS, 'InstrumentSensitivity');
     if (inst && inst.item(0)) {
       const i = inst.item(0);
-      if (i) {out = new Response(this.convertToInstrumentSensitivity(i));}
+      if (i) {out = new Response(convertToInstrumentSensitivity(i));}
     }
     if (! out) {
       // DMC returns empty response element when they know nothing (instead
@@ -419,7 +417,7 @@ export function convertToResponse(responseXml: Element): Response {
     let xmlStages = responseXml.getElementsByTagNameNS(STAML_NS, 'Stage');
     if (xmlStages && xmlStages.length > 0) {
       let jsStages = Array.from(xmlStages).map(function(stageXml) {
-        return mythis.convertToStage(stageXml);
+        return convertToStage(stageXml);
       });
       out.stages = jsStages;
     }
@@ -535,12 +533,12 @@ export function convertToStage(stageXml: Element): Stage {
     let decimationXml = _grabFirstEl(stageXml, 'Decimation');
     let decimation: Decimation | null = null;
     if (decimationXml) {
-      decimation = this.convertToDecimation(decimationXml);
+      decimation = convertToDecimation(decimationXml);
     }
     let gainXml = _grabFirstEl(stageXml, 'StageGain');
     let gain = null;
     if (gainXml) {
-      gain = this.convertToGain(gainXml);
+      gain = convertToGain(gainXml);
     } else {
       throw new Error("Did not find Gain in stage number "+stringify(_grabAttribute(stageXml, "number")));
     }

@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-import {Complex, createComplex} from './filter.js';
+ import { Complex, createComplex} from './oregondsputil.js';
 
 /**
  * SAC style response file. This contains poles and zeros to represent the
