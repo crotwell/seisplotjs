@@ -184,6 +184,8 @@ class ServeObsPy():
                 super().__init__(request, client_address, server, directory=ObsPyRequestHandler.serveSeis.webdir)
             def end_headers (self):
                 self.send_header('Access-Control-Allow-Origin', '*')
+                self.send_header('Access-Control-Allow-Headers', "X-Requested-With, Content-Type, Origin, Authorization, Accept, Client-Security-Token, Accept-Encoding")
+                self.send_header('Access-Control-Allow-Methods', "POST, GET, OPTIONS, DELETE, PUT")
                 http.server.SimpleHTTPRequestHandler.end_headers(self)
             def do_GET(self):
                 print("do_GET {}".format(self.path))
@@ -213,12 +215,17 @@ class ServeObsPy():
                 splitPath = self.path.split('/')
                 seisid = int(splitPath[2])
                 bychan = ObsPyRequestHandler.serveSeis.dataset['bychan']
-                seis = next(s for s in bychan if id(s) == seisid)
-                buf = io.BytesIO()
-                seis.write(buf, format='MSEED')
-                self.send_header("Content-Length", buf.getbuffer().nbytes)
-                self.send_header("Content-Type", "application/vnd.fdsn.mseed")
-                self.wfile.write(buf.getbuffer())
+                try:
+                    seis = next(s for s in bychan if id(s) == seisid)
+                    buf = io.BytesIO()
+                    seis.write(buf, format='MSEED')
+                    self.send_response(200)
+                    self.send_header("Content-Length", buf.getbuffer().nbytes)
+                    self.send_header("Content-Type", "application/vnd.fdsn.mseed")
+                    self.end_headers()
+                    self.wfile.write(buf.getbuffer())
+                except StopIteration:
+                    self.send_error(404, "seismogram not found")
 
             def sendQuake(self):
                 splitPath = self.path.split('/')
@@ -227,8 +234,10 @@ class ServeObsPy():
                 catalog = Catalog([ObsPyRequestHandler.serveSeis.dataset['quake']],resource_id=resource_id)
                 buf = io.BytesIO()
                 catalog.write(buf, format="QUAKEML")
+                self.send_response(200)
                 self.send_header("Content-Length", buf.getbuffer().nbytes)
                 self.send_header("Content-Type", "application/xml")
+                self.end_headers()
                 self.wfile.write(buf.getbuffer())
 
             def sendInventory(self):
@@ -238,8 +247,10 @@ class ServeObsPy():
                     inventory.write(buf,format="STATIONXML")
                 else:
                     buf.write(FAKE_EMPTY_XML)
+                self.send_response(200)
                 self.send_header("Content-Length", buf.getbuffer().nbytes)
                 self.send_header("Content-Type", "application/xml")
+                self.end_headers()
                 self.wfile.write(buf.getbuffer())
         http.server.SimpleHTTPRequestHandler.extensions_map['.js'] = 'text/javascript'
         return ObsPyRequestHandler
