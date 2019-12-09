@@ -174,7 +174,7 @@ export class StartEndDuration {
       this._endTime = moment.utc().subtract(clockOffset);
       this._startTime = moment.utc(this.endTime).subtract(this.duration);
     } else {
-      throw "need some combination of startTime, endTime and duration";
+      throw new Error("need some combination of startTime, endTime and duration");
     }
   }
   get start() {
