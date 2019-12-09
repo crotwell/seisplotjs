@@ -26,6 +26,7 @@ class ViewObsPy {
    * Plots seismographs for seismograms from the dataset satisfying the filter.
    *
    * @param {Dataset}  dataset             dataset
+   * @param {string} plottype type of plot, seismograph, spectra_log, spectra_lin, particlemotion
    * @param {function} seisChanQuakeFilter function(seismogram, channel, quake) that
    * returns true if it should be plotted.
    */
@@ -35,13 +36,16 @@ class ViewObsPy {
     let graphEnter = this.plotDiv.selectAll("div")
       .data(dataset.data.relationships.seismograms.data, keyFunc)
       .join("div")
-      .attr("id", d=>`seis${d.id}`)
-      .attr('seisId', d => d.id);
+      .attr('seis', this.createSeisKey)
+      .attr('plottype', plottype);
     dataset.data.relationships.seismograms.data.forEach(d => {
-      const seisId = d.id;
-      const key = `/seismograms/${seisId}`;
-      if ( this.processedData.has(key)) {
-        this.createPlot(seisId, plottype, seisChanQuakeFilter);
+      const seisKey = this.createSeisKey(d);
+      if ( this.processedData.has(seisKey)) {
+        this.createPlot(seisKey, plottype, seisChanQuakeFilter)
+        .catch(err => {
+          graphEnter.append("p").text(`${err.message}`);
+          console.error(err);
+        });
       } else {
         graphEnter.append("p").text(`${d.type} ${d.id}`);
       }
@@ -114,9 +118,9 @@ class ViewObsPy {
         return Promise.all([dataset, quakePromise, inventoryPromise]);
       }).then( ( [ dataset, quake, inventory ] ) => {
         let allSeisPromises = dataset.data.relationships.seismograms.data.map(d => {
-          const seisId = d.id;
-          return this.loadSingleSeismogram(d.id, false).then(seis =>{
-            that.createPlot(seisId, plottype, this.seisChanQuakeFilter)
+          const seisId = this.createSeisKey(d);
+          return this.loadSingleSeismogram(seisId, false).then(seis =>{
+            return that.createPlot(seisId, plottype, this.seisChanQuakeFilter)
           });
         });
         allSeisPromises = Promise.all(allSeisPromises).then( allSeis => {
@@ -143,18 +147,22 @@ class ViewObsPy {
     });
   }
 
-  loadSingleSeismogram(seisid, force=false) {
-    const seisUrl = `/seismograms/${seisid}`;
-    if ( ! force && this.obspyData.has(seisUrl)) {
-      return Promise.resolve(this.obspyData.get(seisUrl));
+  loadSingleSeismogram(seisKey, force=false) {
+    if ( ! force && this.obspyData.has(seisKey)) {
+      return Promise.resolve(this.obspyData.get(seisKey));
     }
     // load from obspy
+    const seisUrl = `/seismograms/${this.extractIdFromSeisKey(seisKey)}`;
     return seisplotjs.mseedarchive.loadDataRecords( [ seisUrl ] )
         .then(dataRecords => {
+          if (dataRecords.length === 0) {
+            seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`No data records from ${seisUrl}`);
+            return null;
+          }
           let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
           if (seisArray.length != 0) {
             let seis = seisArray[0]; // assume only first matters
-            this.obspyData.set(seisUrl, seis);
+            this.obspyData.set(seisKey, seis);
             return seis;
           } else {
             console.warn(`Oops, server did not return data for ${seisUrl}`);
@@ -233,15 +241,23 @@ class ViewObsPy {
     return this.loadAllAndPlot().then( ( [dataset, seisArray, quake, inventory ] ) => {
       this.processedData.set('dataset', dataset);
       let promiseArray = dataset.data.relationships.seismograms.data.map(d => {
-        const seisId = d.id;
-        let promiseSeis = this.loadSingleSeismogram(d.id);
+        const seisKey = this.createSeisKey(d);
+        let promiseSeis = this.loadSingleSeismogram(seisKey);
         tmpProcessChain.forEach(p => {
           promiseSeis = promiseSeis.then((seis) => {
-            return p.processFunc(seis);
+            if (seis) {
+              seis = p.processFunc(seis);
+            }
+            return seis;
           });
         });
         return promiseSeis.then( seis => {
-          this.updateGraph(seisId, seis);
+          if (seis) {
+            seisplotjs.d3.selectAll(`div[seis=${seisKey}]`).each( d,i => {
+              const plottype = this.attr('plottype');
+              that.updatePlot(seisKey, plottype, that.seisChanQuakeFilter)
+            });
+          }
           return seis;
         }).catch(err => {
           seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(err);
@@ -256,29 +272,35 @@ class ViewObsPy {
   }
 
 
-  getSeismogram(id) {
-    const key = `/seismograms/${id}`;
-    if ( ! this.processedData.has(key)) {
-      return this.loadSingleSeismogram(id).then(seis => {
+  getSeismogram(seisKey) {
+    if ( ! this.processedData.has(seisKey)) {
+      return this.loadSingleSeismogram(seisKey).then(seis => {
         let clonedSeis = seis.clone();
-        this.processedData.set(key, clonedSeis);
+        this.processedData.set(seisKey, clonedSeis);
         return clonedSeis;
       });
     }
-    return Promise.resolve(this.processedData.get(key));
+    return Promise.resolve(this.processedData.get(seisKey));
   }
 
   applyAllSeismograms(processFunc, desc) {
+    const that = this;
     this.processChain.push({desc: desc, processFunc: processFunc});
     this.updateProcessDisplay(this.processChain);
     this.checkProcessedDatasetLoaded();
     let dataset = this.processedData.get('dataset');
+
     return Promise.all(dataset.data.relationships.seismograms.data.map(d => {
-      const key = `/seismograms/${d.id}`;
-      return this.getSeismogram(d.id).then(seis => processFunc(seis))
+      const seisKey = this.createSeisKey(d);
+      return this.getSeismogram(seisKey).then(seis => processFunc(seis))
         .then(seis => {
-          this.processedData.set(key, seis);
-          this.updateGraph(d.id, seis)
+          this.processedData.set(seisKey, seis);
+          let allPromises = [];
+          this.plotDiv.selectAll(`div[seis=${seisKey}][plottype]`).each( function(d,i) {
+            const plottype = seisplotjs.d3.select(this).attr('plottype');
+            allPromises.push( that.updatePlot(seisKey, plottype, that.seisChanQuakeFilter));
+          });
+          return Promise.all(allPromises);
         }).catch(err => {
           seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(err);
           throw err;
@@ -287,35 +309,34 @@ class ViewObsPy {
   }
 
   createPlot(seisId, plottype, seisChanQuakeFilter) {
-    const selectedDiv = seisplotjs.d3.select(`div#seis${seisId}`);
-    selectedDiv.classed('seismograph', false)
-      .classed('spectra', false)
-      .classed('spectra_lin', false)
-      .classed('spectra_log', false)
-      .classed('particlemotion', false);
-    const seisUrl = `/seismograms/${seisId}`;
+    let selectedDiv = this.plotDiv.select(`div[seis=${seisId}][plottype=${plottype}]`);
+    if (selectedDiv.empty()) {
+      selectedDiv = this.plotDiv.append("div")
+      .attr('seis', seisId)
+      .attr('plottype', plottype);
+    }
     return this.getSeismogram(seisId).then(seismogram => {
-      try {
+      if (seismogram) {
         selectedDiv.selectAll('*').remove();
         let seisData = this.initSeisData(seisId, seismogram);
         if ( ! seisChanQuakeFilter || seisChanQuakeFilter(seismogram, seisData.channel, seisData.quake)) {
           selectedDiv.classed(plottype, true);
           if (plottype === 'seismograph') {
-            this.createGraph(selectedDiv, seisId, seisData);
+            return this.createGraph(selectedDiv, seisId, seisData);
           } else if (plottype === 'spectra_lin') {
-            this.createSpectra(selectedDiv, seisId, seisData, false);
+            return this.createSpectra(selectedDiv, seisId, seisData, false);
           } else if (plottype === 'spectra_log') {
-            this.createSpectra(selectedDiv, seisId, seisData, true);
+            return this.createSpectra(selectedDiv, seisId, seisData, true);
           } else if (plottype === 'particlemotion') {
-            this.createParticleMotion(selectedDiv, seisId, seisData);
+            return this.createParticleMotion(selectedDiv, seisId, seisData);
           } else {
-            console.warn(`unknwon plot type: ${plottype}`)
+            throw new Error(`unknwon plot type: ${plottype}`)
           }
         } else {
           selectedDiv.selectAll('*').remove();
         }
-      } catch(err) {
-        console.error(err);
+      } else {
+        throw new Error(`seismogram for ${seisId} is null!`);
       }
     });
   }
@@ -335,9 +356,9 @@ class ViewObsPy {
 
   updatePlot(seisId, plottype, seisChanQuakeFilter) {
     try {
-      const selectedDiv = d3.select(`div#seis${seisId}`)
+      const selectedDiv = seisplotjs.d3.select(`div[seis=${seisId}][plottype=${plottype}]`)
       if (plottype = 'seismograph') {
-        return this.updateGraph(selectedDiv, seisId);
+        return this.updateGraph(seisId, this.processedData.get(seisId));
       } else if (plottype = 'spectra') {
         selectedDiv.selectAll('*').remove();
         return this.createPlot(seisId, plottype, seisChanQuakeFilter);
@@ -347,16 +368,17 @@ class ViewObsPy {
       }
     } catch(err) {
       console.error(err);
-
+      console.error(err.stack);
     }
   }
 
-  createGraph(selectedDiv, seisId, seisData) {
+  createGraph(selectedDiv, seisKey, seisData) {
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
     seisConfig.title = seisData.codes();
     let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisData);
     graph.draw();
-    this.processedData.set(`/seismograph/${seisId}`, graph);
+    let graphKey = `graph${this.extractIdFromSeisKey(seisKey)}`;
+    this.processedData.set(graphKey, graph);
     this.linkAllTimeAxis();
     this.linkAllAmpAxis();
     const canvasNode = graph.svg.select('foreignObject canvas').node();
@@ -368,14 +390,14 @@ class ViewObsPy {
       seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
       let clickAmp = graph.yScaleRmean.invert(coords[1]);
       seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
-      //seisplotjs.d3.select('input#mousey').property('value', coords);
     });
     return graph;
   }
 
-  updateGraph(seisId, seis) {
-    let graph = this.processedData.get(`/seismograph/${seisId}`);
-    let sdd = graph.seisDataList.find(sdd => sdd.id === seisId);
+  updateGraph(seisKey, seis) {
+    let graphKey = `graph${this.extractIdFromSeisKey(seisKey)}`;
+    let graph = this.processedData.get(graphKey);
+    let sdd = graph.seisDataList.find(sdd => sdd.id === seisKey);
     sdd.seismogram = seis;
     graph.calcAmpScaleDomain();
     graph.redoDisplayYScale();
@@ -383,16 +405,14 @@ class ViewObsPy {
     return graph;
   }
 
-  createSpectra(selectedDiv, seisId, seisData, loglog=true) {
-    const seisUrl = `/seismograms/${seisId}`;
-    let fftPlot = null;
-    if (this.processedData.has(seisUrl)) {
+  createSpectra(selectedDiv, seisKey, seisData, loglog=true) {
+    if (this.processedData.has(seisKey)) {
       selectedDiv.selectAll('*').remove();
-      let seismogram = this.processedData.get(seisUrl);
+      return this.getSeismogram(seisKey).then(seismogram => {
       let fft = seisplotjs.fft.fftForward(seismogram);
       let fftList = [ fft ];
       let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-      fftPlot = new seisplotjs.fftplot.FFTPlot(selectedDiv, seisConfig, fftList, loglog);
+      let fftPlot = new seisplotjs.fftplot.FFTPlot(selectedDiv, seisConfig, fftList, loglog);
       fftPlot.draw();
       fftPlot.svg.append("g").classed("title", true)
         .attr("transform", "translate(600, 10)")
@@ -418,10 +438,12 @@ class ViewObsPy {
           let clickAmp = fftPlot.yScale.invert(coords[1]);
           seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
         });
+        return fftPlot;
+      });
     } else {
       console.warn(`seis no loaded: ${d.id}`);
     }
-    return fftPlot;
+    return null;
   }
 
   createParticleMotion(selectedDiv, seisId, seisData) {
@@ -468,9 +490,9 @@ class ViewObsPy {
   findSeismogramFriendId(seismogram, otherFilter) {
     let dataset = this.obspyData.get('dataset');
     let out = dataset.data.relationships.seismograms.data.find(d => {
-      const key = `/seismograms/${d.id}`;
-      if (this.processedData.has(key)) {
-        let otherseismogram = this.processedData.get(key);
+      const seisKey = this.createSeisKey(d);
+      if (this.processedData.has(seisKey)) {
+        let otherseismogram = this.processedData.get(seisKey);
         return otherFilter(otherseismogram, null, null)
           && otherseismogram.stationCode === seismogram.stationCode
           && otherseismogram.networkCode === seismogram.networkCode;
@@ -507,8 +529,8 @@ class ViewObsPy {
     } else if (dataset) {
       // get from seismograms
       outPromise = Promise.all(dataset.data.relationships.seismograms.data.map(d => {
-        const key = `/seismograms/${d.id}`;
-        return this.getSeismogram(d.id).then(seis => seis.stationCode);
+        const seisKey = this.createSeisKey(d);
+        return this.getSeismogram(seisKey).then(seis => seis.stationCode);
       }));
     } else {
       outPromise = Promise.all([]); // none yet
@@ -573,7 +595,18 @@ class ViewObsPy {
         || (doN && this.orientNFilter(seis, chan, quake))
         || (doE && this.orientEFilter(seis, chan, quake)));
   }
-}
+
+  createSeisKey(d) {
+    return `seis${d.id}`;
+  }
+  extractIdFromSeisKey(seisKey) {
+    if (seisKey.startsWith('seis')) {
+      return seisKey.substring(4);
+    }
+    throw new Error(`seisKey must start with "seis"`);
+  }
+
+} // end ViewObsPy
 
 
 const formatCount = seisplotjs.d3.format('.4~s');
