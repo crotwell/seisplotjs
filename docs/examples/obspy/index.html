@@ -37,9 +37,12 @@
           </p>
           <p>
             First, of course, you must have obspy installed. Websockets must
-            also be installed, <code>conda install -c conda-forge websockets</code>
-            or <code>pip install websockets</code>. Start obspy
-            and then import serveobspy and start the data server. The webdir
+            also be installed,
+            <code class="language-bash">conda install -c conda-forge websockets</code>
+            or <code class="language-bash">pip install websockets</code>.
+            Start obspy
+            and then <code class="language-python">import serveobspy</code>
+            and start the data server. The webdir
             argument will allow the http server to serve the files needed and
             so should be a directory that contains your index.html, the seisplotjs
             standalone js file and viewObspy.js. In the example this is the
