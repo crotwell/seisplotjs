@@ -54,7 +54,7 @@ class ViewObsPy {
 
   linkAllTimeAxis() {
     let dolink = seisplotjs.d3.select("input#linkx").property("checked");
-    let prefix = '/seismograph/';
+    let prefix = 'graph';
     let first = null;
     if (dolink) {
       this.processedData.forEach((val, key) => {
@@ -80,26 +80,23 @@ class ViewObsPy {
   }
   linkAllAmpAxis() {
     let dolink = seisplotjs.d3.select("input#linky").property("checked");
-    let prefix = '/seismograph/';
+    let prefix = 'graph';
     let first = null;
+    let allGraphs = [];
+    this.processedData.forEach((val, key) => {
+      if (key.startsWith(prefix)) {
+        allGraphs.push(val);
+      }
+    });
+
     if (dolink) {
-      this.processedData.forEach((val, key) => {
-        if (key.startsWith(prefix)) {
-          if (first) {
-            first.linkYScaleTo(val);
-          } else {
-            first = val;
-          }
-        }
-      });
+      const linker = new seisplotjs.seismograph.LinkedAmpScale(allGraphs);
+      linker.recalculate();
     } else {
       this.processedData.forEach((val, key) => {
         if (key.startsWith(prefix)) {
-          if (first) {
-            first.unlinkYScaleTo(val);
-          } else {
-            first = val;
-          }
+          val.linkedAmpScale = new seisplotjs.seismograph.LinkedAmpScale([val]);
+          val.linkedAmpScale.recalculate();
         }
       });
     }

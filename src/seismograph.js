@@ -63,8 +63,10 @@ export class Seismograph {
   canvas: any;
   origXScale: d3.scale;
   currZoomXScale: any;
-  yScale: d3.scale;
-  yScaleRmean: d3.scale;
+  yScale: d3.scale; // for drawing seismogram
+  yScaleRmean: d3.scale; // for drawing y axis
+  yScaleData: d3.scale; // holds min max of data in time window
+  linkedAmpScale: LinkedAmpScale;
   lineFunc: any;
   zoom: any;
   xAxis: any;
@@ -75,7 +77,6 @@ export class Seismograph {
   throttleRescale: any;
   throttleResize: any;
   xScaleChangeListeners: Array<ScaleChangeListenerType>;
-  yScaleChangeListeners: Array<ScaleChangeListenerType>;
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
               seisData: Array<SeismogramDisplayData> | Array<Seismogram> | SeismogramDisplayData | Seismogram) {
@@ -121,10 +122,12 @@ export class Seismograph {
 
     this.calcTimeScaleDomain();
     this.yScale = d3.scaleLinear();
+    this.yScaleData = d3.scaleLinear();
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.yScaleRmean = d3.scaleLinear();
+    this.linkedAmpScale = new LinkedAmpScale([this]);
+
     this.xScaleChangeListeners = [];
-    this.yScaleChangeListeners = [];
 
     if (this.seismographConfig.isXAxis) {
       this.xAxis = d3.axisBottom(this.currZoomXScale).tickFormat(this.seismographConfig.xScaleFormat);
@@ -930,7 +933,9 @@ export class Seismograph {
       this.currZoomXScale = this.cloneXScale(this.origXScale);
   }
   calcAmpScaleDomain(): void {
+    const oldMinMax = this.yScaleData.domain();
     if (this.seismographConfig.fixedYScale) {
+      this.yScaleData.domain(this.seismographConfig.fixedYScale);
       this.yScale.domain(this.seismographConfig.fixedYScale);
     } else {
       let minMax;
@@ -944,13 +949,21 @@ export class Seismograph {
         // flatlined data, use -1, +1
         minMax = [ minMax[0]-1, minMax[1]+1];
       }
-      this.yScale.domain(minMax);
-      if (this.seismographConfig.isYAxisNice && ! this.seismographConfig.fixedYScale) {
-        this.yScale.nice();
+      this.yScaleData.domain(minMax);
+
+      if (this.linkedAmpScale) {
+        if (oldMinMax[0] !== minMax[0] || oldMinMax[1] !== minMax[1]) {
+          this.linkedAmpScale.recalculate(); // sets yScale.domain
+        }
+      } else {
+        this.yScale.domain(minMax);
+        if (this.seismographConfig.isYAxisNice) {
+          this.yScale.nice();
+        }
+        this.redoDisplayYScale();
       }
-      this.yScaleChangeListeners.forEach(l => l.notifyScaleChange(this.yScale));
+
     }
-    this.redoDisplayYScale();
   }
   redoDisplayYScale(): void {
     let niceMinMax = this.yScale.domain();
@@ -991,6 +1004,7 @@ export class Seismograph {
       }
     }
     if (this.seismographConfig.doRMean) {
+      this.seismographConfig.ySublabel = `centered ${this.seismographConfig.ySublabel}`;
       this.yScaleRmean.domain([ (niceMinMax[0]-niceMinMax[1])/2, (niceMinMax[1]-niceMinMax[0])/2 ]);
     } else {
       this.yScaleRmean.domain(niceMinMax);
@@ -1113,76 +1127,59 @@ export class Seismograph {
       seismograph.unlinkXScaleTo(this);
     }
   }
-  linkYScaleTo(seismograph: Seismograph) {
-    let mythis = this;
-    if ( ! this.yScaleChangeListeners.find(l => l.destinationKey === seismograph)) {
-      let schangeListen = {
-          destinationKey: seismograph,
-          notifyScaleChange: function(yScale) {
-            if (Number.isFinite(yScale.domain()[0])
-                && Number.isFinite(yScale.domain()[1])
-                && Number.isFinite(mythis.yScale.domain()[0])
-                && Number.isFinite(mythis.yScale.domain()[1])) {
-              seismograph.updateYScaleLinkedTo(yScale);
-            }
-          }
-        };
-        mythis.updateYScaleLinkedTo(seismograph.yScale);
-        this.yScaleChangeListeners.push(schangeListen);
-        schangeListen.notifyScaleChange(this.yScale);
-    }
-    if (! seismograph.yScaleChangeListeners.find(l => l.destinationKey === this)) {
-      seismograph.linkYScaleTo(this);
-    }
-  }
-  unlinkYScaleTo(seismograph: Seismograph) {
-    this.yScaleChangeListeners = this.yScaleChangeListeners.filter( l => l.destinationKey !==seismograph);
-    if (seismograph.yScaleChangeListeners.find(l => l.destinationKey === this)) {
-      seismograph.unlinkYScaleTo(this);
-    }
-  }
-  updateYScaleLinkedTo(otherYScale: any) {
-    if (Number.isFinite(otherYScale.domain()[0])
-          && Number.isFinite(otherYScale.domain()[1])) {
+}
 
-      let didModify = false;
-      if( ! (Number.isFinite(this.yScale.domain()[0])
-          && Number.isFinite(this.yScale.domain()[1]))) {
-        this.yScale = otherYScale;
-        didModify = true;
+export class LinkedAmpScale {
+  /**
+   *@private
+   **/
+  _graphSet: Set<Seismograph>;
+  constructor(graphList: Array<Seismograph>) {
+    let gl = graphList ? graphList : []; // in case null
+    this._graphSet = new Set(graphList);
+    this._graphSet.forEach(g => {
+      g.linkedAmpScale = this;
+    });
+  }
+  link(graph: Seismograph) {
+    this._graphSet.add(graph);
+    graph.linkedAmpScale = this;
+    this.recalculate();
+  }
+  unlink(graph: Seismograph) {
+    this._graphSet.delete(graph);
+    this.recalculate();
+  }
+  recalculate() {
+    const graphList = Array.from(this._graphSet.values());
+    const maxRange = graphList.reduce((acc, cur) => {
+      let graphMaxRange = cur.yScaleData.domain()[1]-cur.yScaleData.domain()[0];
+      return acc >  graphMaxRange ? acc : graphMaxRange;
+    }, 0);
+    const min = graphList.reduce((acc, cur) => {
+      let graphMin = cur.yScaleData.domain()[0];
+      return acc < graphMin ? acc : graphMin;
+    }, Number.MAX_SAFE_INTEGER);
+    const max = graphList.reduce((acc, cur) => {
+      let graphMax = cur.yScaleData.domain()[1];
+      return acc > graphMax ? acc : graphMax;
+    }, -1*Number.MAX_SAFE_INTEGER);
+    graphList.forEach(g => {
+      if (g.seismographConfig.doRMean) {
+        const mean = (g.yScaleData.domain()[1]+g.yScaleData.domain()[0]) / 2;
+        g.yScale.domain([mean-maxRange/2, mean+maxRange/2]);
+        g.yScaleRmean.domain([-1*maxRange/2, maxRange/2]);
       } else {
-
-        if (this.seismographConfig.doRMean) {
-          let seisYInterval = otherYScale.domain()[1]-otherYScale.domain()[0];
-          let myYInterval = this.yScale.domain()[1]-this.yScale.domain()[0];
-          if (seisYInterval > myYInterval){
-            let center = this.yScale.domain()[0]+myYInterval/2;
-            this.yScale.domain([ center - seisYInterval/2, center + seisYInterval/2]);
-            didModify = true;
-          }
-        } else {
-          let max = this.yScale.domain()[1];
-          let min = this.yScale.domain()[0];
-          if (max < otherYScale.domain()[1]) {
-            max = otherYScale.domain()[1];
-            didModify = true;
-          }
-          if (min > otherYScale.domain()[0]) {
-            min = otherYScale.domain()[0];
-            didModify = true;
-          }
-          if (didModify) {
-            this.yScale.domain([min, max]);
-          }
-        }
+        g.yScale.domain([min, max]);
+        g.yScaleRmean.domain([min, max]);
       }
-      if (didModify) {
-        this.redoDisplayYScale();
-        if ( ! this.beforeFirstDraw ) {
-          this.drawSeismograms();
-        }
+      g.redoDisplayYScale();
+      if ( ! g.beforeFirstDraw) {
+        // only trigger a draw if appending after already drawn on screen
+        // otherwise, just append the data and wait for outside to call first draw()
+        g.draw();
       }
-    }
+    });
   }
 }
 

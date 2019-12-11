@@ -66,6 +66,7 @@
       }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
         let div = seisplotjs.d3.select('div#myseismograph');
         let graphList = [];
+        const ampLinker = new seisplotjs.seismograph.LinkedAmpScale();
         for( let sdd of seismogramDataList) {
           let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
           seisConfig.title = sdd.channel.codes();
@@ -76,8 +77,8 @@
                                                              seisConfig,
                                                              sdd);
           graphList.forEach(g => graph.linkXScaleTo(g));
-          graphList.forEach(g => graph.linkYScaleTo(g));
           graphList.push(graph);
+          ampLinker.link(graph);
           graph.draw();
         }
         seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
