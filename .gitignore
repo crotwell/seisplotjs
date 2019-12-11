@@ -12,3 +12,5 @@ jsonSchema
 es6example
 docs/**/seisplotjs_*_standalone.js
 README_part.md
+__pycache__
+.DS_Store
