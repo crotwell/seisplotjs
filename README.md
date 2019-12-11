@@ -7,6 +7,7 @@ A tutorial with examples of various access and display types can be seen at
 
 Seisplotjs is divided into submodules:
 
+* [cssutil](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/cssutil.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/cssutil.js) simple util to inject css into web document
 * [datalink](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/datalink.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/datalink.js) datalink protocol over web socket to a [Ringserver](https://seiscode.iris.washington.edu/projects/ringserver) datalink server
 * [datechooser](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/datechooser.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/datechooser.js) widget to choose dates and times
 * [distaz](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/distaz.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/distaz.js) calculates distance between to lat/lon points
@@ -22,6 +23,7 @@ Seisplotjs is divided into submodules:
 * [knowndatacenters](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/knowndatacenters.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/knowndatacenters.js) known FDSN datacenters and web services, predates the FDSN datacenters web service
 * [miniseed](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/miniseed.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/miniseed.js) parsing miniseed files
 * [mseedarchive](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/mseedarchive.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/mseedarchive.js) http access to remote miniseed files in a archive format
+* [oregondsputil](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/oregondsputil.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/oregondsputil.js) utils for using the [OregonDSP](https://www.npmjs.com/package/oregondsp) package
 * [particlemotion](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/particlemotion.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/particlemotion.js) plot of particle motion from seismograms
 * [plotutil](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/plotutil.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/plotutil.js) utility functions for plotting
 * [quakeml](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/quakeml.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/quakeml.js) objects corresponding to elements in a QuakeML xml file
