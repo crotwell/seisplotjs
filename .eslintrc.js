@@ -30,6 +30,6 @@ module.exports = {
       "jsdoc/require-param-type": ["off"],
       "jsdoc/require-returns-type": ["off"],
       "jsdoc/no-types": ["error"],
-      "jsdoc/require-jsdoc": ["warn", {"require":{"MethodDefinition":true}}]
+      "jsdoc/require-jsdoc": ["off", {"require":{"MethodDefinition":true}}]
     }
 };

@@ -1129,27 +1129,45 @@ export class Seismograph {
   }
 }
 
+/**
+ * Links amplitude scales across multiple seismographs, respecting doRmean.
+ *
+ * @param graphList optional list of Seismographs to link
+ */
 export class LinkedAmpScale {
   /**
-   *@private
-   **/
+   * @private
+   */
   _graphSet: Set<Seismograph>;
-  constructor(graphList: Array<Seismograph>) {
-    let gl = graphList ? graphList : []; // in case null
-    this._graphSet = new Set(graphList);
+  constructor(graphList: ?Array<Seismograph>) {
+    const glist = graphList ? graphList : []; // in case null
+    this._graphSet = new Set(glist);
     this._graphSet.forEach(g => {
       g.linkedAmpScale = this;
     });
   }
+  /**
+   * Link new Seismograph with this amplitude scale.
+   *
+   * @param   graph Seismograph to link
+   */
   link(graph: Seismograph) {
     this._graphSet.add(graph);
     graph.linkedAmpScale = this;
     this.recalculate();
   }
+  /**
+   * Unlink Seismograph with this amplitude scale.
+   *
+   * @param   graph Seismograph to unlink
+   */
   unlink(graph: Seismograph) {
     this._graphSet.delete(graph);
     this.recalculate();
   }
+  /**
+   * Recalculate the best amplitude scale for all Seismographs. Causes a redraw.
+   */
   recalculate() {
     const graphList = Array.from(this._graphSet.values());
     const maxRange = graphList.reduce((acc, cur) => {

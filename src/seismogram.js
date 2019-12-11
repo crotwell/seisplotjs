@@ -40,7 +40,11 @@ export class SeismogramSegment {
   /** Array of y values */
   _y: null | Int32Array | Float32Array | Float64Array;
   _compressed: null | Array<seedcodec.EncodedDataSegment>;
-  /**  @private the sample rate in hertz */
+  /**
+   * the sample rate in hertz
+   * 
+   * @private
+   */
   _sampleRate: number;
   /** @private */
   _startTime: moment;
