@@ -4,16 +4,16 @@
     <meta charset='utf-8'>
     <title>Obspy Dataset View</title>
     <style>
-      div.seismograph {
+      div[plottype="seismograph"] {
         height: 300px;
       }
-      div.spectra_log {
+      div[plottype="spectra_log"] {
         height: 400px;
       }
-      div.spectra_lin {
+      div[plottype="spectra_lin"] {
         height: 400px;
       }
-      div.particlemotion:not(:empty) {
+      div[plottype="particlemotion"]:not(:empty) {
         height: 400px;
         width: 400px;
       }

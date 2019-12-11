@@ -129,7 +129,7 @@ class ViewObsPy {
       //  this.plotDataset(dataset, plottype, this.seisChanQuakeFilter);
         return Promise.all([dataset, allSeis, quake, inventory])
       }).catch( function(error) {
-        seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error loading data. " +error);
+        this.showErrorMessage("Error loading data. " +error);
         console.error(error);
       });
   }
@@ -153,7 +153,7 @@ class ViewObsPy {
     return seisplotjs.mseedarchive.loadDataRecords( [ seisUrl ] )
         .then(dataRecords => {
           if (dataRecords.length === 0) {
-            seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`No data records from ${seisUrl}`);
+            this.showErrorMessage(`No data records from ${seisUrl}`);
             return null;
           }
           let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
@@ -166,7 +166,7 @@ class ViewObsPy {
             return null;
           }
         }).catch( function(error) {
-          seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading data from ${seisUrl}, ${error}`);
+          this.showErrorMessage(`Error loading data from ${seisUrl}, ${error}`);
           console.error(error);
         });
   }
@@ -185,7 +185,7 @@ class ViewObsPy {
         this.obspyData.set('quake', quakeml);
         return quakeml;
       }).catch( function(error) {
-        seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading quake, ${error}`);
+        this.showErrorMessage(`Error loading quake, ${error}`);
         console.error(error);
       });
     }
@@ -206,7 +206,7 @@ class ViewObsPy {
         this.obspyData.set('inventory', netList);
         return netList;
       }).catch( function(error) {
-        seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(`Error loading inventory, ${error}`);
+        this.showErrorMessage(`Error loading inventory, ${error}`);
         console.error( error);
       });
     }
@@ -257,7 +257,7 @@ class ViewObsPy {
           }
           return seis;
         }).catch(err => {
-          seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(err);
+          this.showErrorMessage(err);
           throw err;
         });
       });
@@ -299,7 +299,7 @@ class ViewObsPy {
           });
           return Promise.all(allPromises);
         }).catch(err => {
-          seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(err);
+          this.showErrorMessage(err);
           throw err;
         });
     }));
@@ -317,7 +317,6 @@ class ViewObsPy {
         selectedDiv.selectAll('*').remove();
         let seisData = this.initSeisData(seisId, seismogram);
         if ( ! seisChanQuakeFilter || seisChanQuakeFilter(seismogram, seisData.channel, seisData.quake)) {
-          selectedDiv.classed(plottype, true);
           if (plottype === 'seismograph') {
             return this.createGraph(selectedDiv, seisId, seisData);
           } else if (plottype === 'spectra_lin') {
@@ -480,6 +479,8 @@ class ViewObsPy {
           pmp.drawTitle();
         }
       });
+    } else {
+      selectedDiv.append("p").text(`Can't find friends for particle motion for ${seisData.codes()}`)
     }
   }
 
@@ -555,7 +556,7 @@ class ViewObsPy {
             .text(function(d) { return d; });
           });
     }).catch(error => {
-      seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text("Error station checkboxes." +error);
+      this.showErrorMessage("Error station checkboxes." +error);
       console.error(error);
     });
   }
@@ -602,6 +603,9 @@ class ViewObsPy {
     throw new Error(`seisKey must start with "seis"`);
   }
 
+  showErrorMessage(error) {
+    seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(error);
+  }
 } // end ViewObsPy
 
 
