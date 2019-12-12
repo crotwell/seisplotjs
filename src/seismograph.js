@@ -1283,6 +1283,14 @@ svg.seismograph {
   min-width: 25px;
 }
 
+svg.seismograph g.ySublabel text {
+  font-size: smaller;
+}
+
+svg.seismograph g.xSublabel text {
+  font-size: smaller;
+}
+
 svg.seismograph text.title {
   font-size: larger;
   font-weight: bold;
