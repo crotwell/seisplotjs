@@ -115,16 +115,16 @@ class ServeObsPy():
             out.append(Stream(traces=trlist))
         return out
     def serveData(self):
-        print("before http server")
+        logger.debug("before http server")
         if self.httpServer:
-            print("already serving...")
+            logger.warn("already serving...")
             return
         self.httpServer = ObsPyServer(self.__createRequestHandlerClass(), host=self.host, port=self.port)
         self.httpServer.start()
-        print("http server started at http://{}:{:d}".format(self.host, self.port))
+        logger.info("http server started at http://{}:{:d}".format(self.host, self.port))
         self.wsServer = ObsPyWebSocket(host=self.host, port=self.wsport)
         self.wsServer.start()
-        print("websocket server started ws://{}:{:d}".format(self.host, self.wsport))
+        logger.info("websocket server started ws://{}:{:d}".format(self.host, self.wsport))
 
     @property
     def stream(self):
@@ -188,9 +188,7 @@ class ServeObsPy():
                 self.send_header('Access-Control-Allow-Methods', "POST, GET, OPTIONS, DELETE, PUT")
                 http.server.SimpleHTTPRequestHandler.end_headers(self)
             def do_GET(self):
-                print("do_GET {}".format(self.path))
-                #for h, v in self.headers.items():
-                #    print("{} = {}".format(h, v))
+                logger.debug("do_GET {}".format(self.path))
                 if self.path == '/dataset':
                     self.sendDataset()
                 elif self.path.startswith('/seismograms/'):
@@ -308,57 +306,53 @@ class ObsPyWebSocket(threading.Thread):
         if not isinstance(jsonMessage, dict):
             raise ValueError("jsonMessage must be string or dict")
         jsonAsStr = json.dumps(jsonMessage)
-        print("sending '{}'".format(jsonAsStr))
+        logger.debug("sending '{}'".format(jsonAsStr))
         future = asyncio.run_coroutine_threadsafe(
               self.dataQueue.put(jsonAsStr),
               self.loop
         )
         result = future.result()
-        print('result of send msg {}'.format(result))
+        logger.debug('result of send msg {}'.format(result))
     async def consumer_handler(self, websocket, path):
-        print("in consumer_handler", flush=True)
+        logger.debug("in consumer_handler")
         try:
             while True:
-                print("before recv")
+                logger.debug("before recv")
                 message = await websocket.recv()
-                print("got message from ws "+message, flush=True)
+                logger.debug("got message from ws "+message)
         except Exception as e:
-            print("consumer_handler exception ", flush=True)
-            print(e, flush=True)
+            logger.error("consumer_handler exception ", exc_info=e)
         except:
-            print('consumer_handler something bad happened  ', flush=True)
             e = sys.exc_info()[0]
-            print(e, flush=True)
+            logger.error('consumer_handler something bad happened  ', exc_info=e)
     async def producer_handler(self, websocket, path):
-        print("in producer_handler", flush=True)
+        logger.debug("in producer_handler")
         try:
             while True:
-                print('begin of producer while True:')
+                logger.debug('begin of producer while True:')
                 message = await self.dataQueue.get()
-                print("dataqueue had message {}".format(message), flush=True)
+                logger.debug("dataqueue had message {}".format(message))
                 if message is None:
                     continue
                 if self.users:  # asyncio.wait doesn't accept an empty list
                     await asyncio.wait([self.sendOneUser(user, message) for user in self.users])
-                    print("done sending", flush=True)
+                    logger.debug("done sending")
                 else:
-                    print("no users to send to...", flush=True)
+                    logger.debug("no users to send to...")
         except:
-            print('producer_handler something bad happened  ', flush=True)
             e = sys.exc_info()[0]
-            print(e, flush=True)
+            logger.error('producer_handler something bad happened  ', exc_info=e)
     async def sendOneUser(self, user, message):
         try:
             await user.send(message)
         except websockets.exceptions.ConnectionClosedError as ee:
-            print("ws conn was closed, removing user ", flush=True)
-            print(ee)
+            logger.debug("ws conn was closed, removing user ")
             self.users.remove(user)
     async def initWS(self):
-        print("in initWS", flush=True)
+        logger.debug("in initWS")
         self.dataQueue = asyncio.Queue()
         async def handler(websocket, path):
-            print("in handler", flush=True)
+            logger.debug("in handler")
             self.users.add(websocket)
             try:
                 await websocket.send(self.hello())
@@ -368,17 +362,16 @@ class ObsPyWebSocket(threading.Thread):
                      ],
                      return_when=asyncio.FIRST_COMPLETED,
                 )
-                print("handler past await tasks")
+                logger.debug("handler past await tasks")
 
-                print("end handler", flush=True)
+                logger.debug("end handler")
             except:
-                print('handler something bad happened  ')
                 e = sys.exc_info()[0]
-                print(e)
+                logger.error('handler something bad happened  ', exc_info=e)
             finally:
                 self.users.remove(websocket)
-            print('exit handler')
-            print("done, remove websocket user", flush=True)
+            logger.debug('exit handler')
+            logger.debug("done, remove websocket user")
 
         self.server = await websockets.serve(handler, self.host, self.port)
 
@@ -386,6 +379,5 @@ class ObsPyWebSocket(threading.Thread):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         asyncio.get_event_loop().run_until_complete(asyncio.ensure_future(self.initWS()))
-        print("ws server started at {}:{:d}".format(self.host, self.port))
         asyncio.get_event_loop().run_forever()
-        print("ws end run")
+        logger.debug("ws end run")
