@@ -81,6 +81,7 @@ export class SeismographConfig {
     this.xLabelOrientation = "horizontal";
     this.xSublabel = "";
     this.yLabel = "Amplitude";
+    this.yLabelRight = "";
     this.yLabelOrientation = "vertical";
     this.ySublabel = "";
     this.ySublabelTrans = 15;

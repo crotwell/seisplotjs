@@ -905,16 +905,24 @@ export class Seismograph {
   }
   drawYSublabel(): Seismograph {
     this.svg.selectAll('g.ySublabel').remove();
-    this.svg.append("g")
+    let svgText = this.svg.append("g")
        .classed("ySublabel", true)
        .attr("x", 0)
        .attr("transform", "translate( "+this.seismographConfig.ySublabelTrans+" , "+(this.seismographConfig.margin.top+(this.height)/2)+")")
        .append("text")
-       .classed("y label sublabel", true)
-       .attr("text-anchor", "middle")
-       .attr("dy", ".75em")
-       .attr("transform-origin", "center center")
-       .attr("transform", "rotate(-90)")
+       .classed("y label sublabel", true);
+    if (this.seismographConfig.yLabelOrientation === "vertical") {
+      // vertical
+      svgText
+        .attr("text-anchor", "middle")
+        .attr("dy", ".75em")
+        .attr("transform", "rotate(-90, 0, 0)");
+    } else {
+      // horizontal
+      svgText.attr("text-anchor", "start")
+      .attr("dominant-baseline", "central");
+    }
+    svgText
        .text(this.seismographConfig.ySublabel);
     return this;
   }
