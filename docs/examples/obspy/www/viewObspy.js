@@ -129,7 +129,7 @@ class ViewObsPy {
       //  this.plotDataset(dataset, plottype, this.seisChanQuakeFilter);
         return Promise.all([dataset, allSeis, quake, inventory])
       }).catch( function(error) {
-        this.showErrorMessage("Error loading data. " +error);
+        that.showErrorMessage("Error loading data. " +error);
         console.error(error);
       });
   }
@@ -498,7 +498,7 @@ class ViewObsPy {
       }
     });
     if (out) {
-      return out.id;
+      return this.createSeisKey(out);
     } else {
       return null;
     }
