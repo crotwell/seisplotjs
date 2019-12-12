@@ -1,3 +1,4 @@
+/*global seisplotjs */
 
 class ViewObsPy {
   constructor(baseUrl) {
@@ -6,7 +7,7 @@ class ViewObsPy {
     this.processedData = new Map();
     this.processChain = [];
     this.plotDiv = seisplotjs.d3.select("#myseismograph");
-    this.seisChanQuakeFilter = (seis, chan, quake) => {return this.defaultPlotFilter(seis, chan, quake)};
+    this.seisChanQuakeFilter = (seis, chan, quake) => {return this.defaultPlotFilter(seis, chan, quake);};
   }
   clearAll() {
     this.processedData.clear();
@@ -25,9 +26,9 @@ class ViewObsPy {
   /**
    * Plots seismographs for seismograms from the dataset satisfying the filter.
    *
-   * @param {Dataset}  dataset             dataset
+   * @param {object}  dataset             dataset
    * @param {string} plottype type of plot, seismograph, spectra_log, spectra_lin, particlemotion
-   * @param {function} seisChanQuakeFilter function(seismogram, channel, quake) that
+   * @param {Function} seisChanQuakeFilter function(seismogram, channel, quake) that
    * returns true if it should be plotted.
    */
   plotDataset(dataset, plottype, seisChanQuakeFilter) {
@@ -81,7 +82,6 @@ class ViewObsPy {
   linkAllAmpAxis() {
     let dolink = seisplotjs.d3.select("input#linky").property("checked");
     let prefix = 'graph';
-    let first = null;
     let allGraphs = [];
     this.processedData.forEach((val, key) => {
       if (key.startsWith(prefix)) {
@@ -117,7 +117,7 @@ class ViewObsPy {
         let allSeisPromises = dataset.data.relationships.seismograms.data.map(d => {
           const seisId = this.createSeisKey(d);
           return this.loadSingleSeismogram(seisId, false).then(seis =>{
-            return that.createPlot(seisId, plottype, this.seisChanQuakeFilter)
+            return that.createPlot(seisId, plottype, this.seisChanQuakeFilter);
           });
         });
         allSeisPromises = Promise.all(allSeisPromises).then( allSeis => {
@@ -127,7 +127,7 @@ class ViewObsPy {
         return Promise.all([dataset, allSeisPromises, quake, inventory]);
       }).then( ( [ dataset, allSeis, quake, inventory ] ) => {
       //  this.plotDataset(dataset, plottype, this.seisChanQuakeFilter);
-        return Promise.all([dataset, allSeis, quake, inventory])
+        return Promise.all([dataset, allSeis, quake, inventory]);
       }).catch( function(error) {
         that.showErrorMessage("Error loading data. " +error);
         console.error(error);
@@ -157,7 +157,7 @@ class ViewObsPy {
             return null;
           }
           let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
-          if (seisArray.length != 0) {
+          if (seisArray.length !== 0) {
             let seis = seisArray[0]; // assume only first matters
             this.obspyData.set(seisKey, seis);
             return seis;
@@ -252,7 +252,7 @@ class ViewObsPy {
           if (seis) {
             seisplotjs.d3.selectAll(`div[seis=${seisKey}]`).each( d,i => {
               const plottype = this.attr('plottype');
-              that.updatePlot(seisKey, plottype, that.seisChanQuakeFilter)
+              that.updatePlot(seisKey, plottype, that.seisChanQuakeFilter);
             });
           }
           return seis;
@@ -326,7 +326,7 @@ class ViewObsPy {
           } else if (plottype === 'particlemotion') {
             return this.createParticleMotion(selectedDiv, seisId, seisData);
           } else {
-            throw new Error(`unknwon plot type: ${plottype}`)
+            throw new Error(`unknwon plot type: ${plottype}`);
           }
         } else {
           selectedDiv.selectAll('*').remove();
@@ -342,7 +342,7 @@ class ViewObsPy {
     seisData.id = seisId;
     let c = this.findChannelForSeismogram(seismogram);
     if (c ) { seisData.channel = c;}
-    let q = null
+    let q = null;
     if (this.obspyData.has(`quake`) && this.obspyData.get(`quake`)){
       q = this.obspyData.get(`quake`);
       seisData.addQuake( q);
@@ -352,13 +352,13 @@ class ViewObsPy {
 
   updatePlot(seisId, plottype, seisChanQuakeFilter) {
     try {
-      const selectedDiv = seisplotjs.d3.select(`div[seis=${seisId}][plottype=${plottype}]`)
-      if (plottype = 'seismograph') {
+      const selectedDiv = seisplotjs.d3.select(`div[seis=${seisId}][plottype=${plottype}]`);
+      if (plottype === 'seismograph') {
         return this.updateGraph(seisId, this.processedData.get(seisId));
-      } else if (plottype = 'spectra') {
+      } else if (plottype === 'spectra') {
         selectedDiv.selectAll('*').remove();
         return this.createPlot(seisId, plottype, seisChanQuakeFilter);
-      } else if (plottype = 'particlemotion') {
+      } else if (plottype === 'particlemotion') {
         selectedDiv.selectAll('*').remove();
         return this.createPlot(seisId, plottype, seisChanQuakeFilter);
       }
@@ -396,7 +396,7 @@ class ViewObsPy {
     sdd.seismogram = seis;
     graph.calcAmpScaleDomain();
     graph.redoDisplayYScale();
-    graph.draw()
+    graph.draw();
     return graph;
   }
 
@@ -480,7 +480,7 @@ class ViewObsPy {
         }
       });
     } else {
-      selectedDiv.append("p").text(`Can't find friends for particle motion for ${seisData.codes()}`)
+      selectedDiv.append("p").text(`Can't find friends for particle motion for ${seisData.codes()}`);
     }
   }
 

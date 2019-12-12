@@ -1,3 +1,6 @@
+/*global seisplotjs */
+
+
 class ObsPyConnection {
   constructor(url, baseUrl, packetHandler, errorHandler) {
     this.url = url;
@@ -28,7 +31,7 @@ class ObsPyConnection {
       const webSocket = new WebSocket(that.url);
       webSocket.binaryType = 'arraybuffer';
       webSocket.onmessage = function(event) {
-        console.log("  webSocket.onmessage "+event.data)
+        console.log("  webSocket.onmessage "+event.data);
         try {
           that.handle(event);
         } catch(e) {
@@ -36,7 +39,7 @@ class ObsPyConnection {
         }
       };
       webSocket.onerror = function(event) {
-        console.assert(false, event)
+        console.assert(false, event);
         that.handleError(new Error(""+seisplotjs.util.stringify(event)));
         reject(event);
       };
@@ -78,17 +81,17 @@ class ObsPyConnection {
   }
 
   sendMessage(message) {
-    console.log(`obspy sendMessage(${message})`)
+    console.log(`obspy sendMessage(${message})`);
     if (this.webSocket) {
       this.webSocket.send(message);
-      console.log("after send")
+      console.log("after send");
     } else {
       throw new Error("WebSocket has been closed.");
     }
   }
 
  handle(wsEvent ) {
-   console.log("in ws handle")
+   console.log("in ws handle");
    const jsonObj = JSON.parse(wsEvent.data);
    console.log(wsEvent.data);
    this.packetHandler(jsonObj);
@@ -107,7 +110,7 @@ class ObsPyConnection {
    if (this.errorHandler) {
      this.errorHandler(error);
    } else {
-     util.log("datalink handleError: "+error.message);
+     seisplotjs.util.log("datalink handleError: "+error.message);
    }
  }
 }

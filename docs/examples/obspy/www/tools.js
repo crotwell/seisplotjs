@@ -1,11 +1,13 @@
+/*global seisplotjs */
+
 
 function createTools(viewObspy) {
 
-  seisplotjs.d3.select("button#refresh").on("click", function(d) {
+  seisplotjs.d3.select("button#refresh").on("click", function() {
     viewObspy.clearAll();
-    viewObspy.loadAllAndPlot(baseUrl);
+    viewObspy.loadAllAndPlot();
   });
-  seisplotjs.d3.select("button#reprocess").on("click", function(d) {
+  seisplotjs.d3.select("button#reprocess").on("click", function() {
     viewObspy.processedData.clear();
     viewObspy.applyProcessChain();
   });
@@ -25,7 +27,7 @@ function createTools(viewObspy) {
   seisplotjs.d3.select("input#orienty").on("change", () => doOrientPlot());
   seisplotjs.d3.select("input#orientx").on("change", () => doOrientPlot());
 
-  seisplotjs.d3.select("button#bandpass").on("click", d => {
+  seisplotjs.d3.select("button#bandpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
     let highFreq = seisplotjs.d3.select("#highfreq").property("value");
 
@@ -37,7 +39,7 @@ function createTools(viewObspy) {
   });
 
 
-  seisplotjs.d3.select("button#lowpass").on("click", d => {
+  seisplotjs.d3.select("button#lowpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
     let highFreq = seisplotjs.d3.select("#highfreq").property("value");
 
@@ -48,7 +50,7 @@ function createTools(viewObspy) {
 
   });
 
-  seisplotjs.d3.select("button#highpass").on("click", d => {
+  seisplotjs.d3.select("button#highpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
     let highFreq = seisplotjs.d3.select("#highfreq").property("value");
     viewObspy.applyAllSeismograms(seis => {
@@ -58,19 +60,19 @@ function createTools(viewObspy) {
   });
 
 
-  seisplotjs.d3.select("button#rmean").on("click", d => {
+  seisplotjs.d3.select("button#rmean").on("click", () => {
     viewObspy.applyAllSeismograms(seis => {
         return seisplotjs.filter.rMean(seis);
     }, `rmean`);
   });
 
-  seisplotjs.d3.select("button#rtrend").on("click", d => {
+  seisplotjs.d3.select("button#rtrend").on("click", () => {
     viewObspy.applyAllSeismograms(seis => {
         return seisplotjs.filter.rTrend(seis);
       }, `rtrend`);
   });
 
-  seisplotjs.d3.select("button#taper").on("click", d => {
+  seisplotjs.d3.select("button#taper").on("click", () => {
     let width = seisplotjs.d3.select("#taperwidth").property("value");
     let type = seisplotjs.taper.HANNING;
     viewObspy.applyAllSeismograms(seis => {

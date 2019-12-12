@@ -61,6 +61,7 @@
         font-size: larger;
       }
     </style>
+    <!-- this stops flavicon loading -->
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   </head>
   <body>
@@ -160,6 +161,8 @@
             // start over clean
             console.log("update refresh")
             viewObspy.clearAll();
+          } else {
+            console.log(`not refresh: ${jsonObj.update}`)
           }
           viewObspy.loadAllAndPlot();
         } else {
