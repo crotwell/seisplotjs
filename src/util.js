@@ -202,12 +202,18 @@ export class StartEndDuration {
    * @param   other moment to check
    * @returns        true if moment is inside this time range
    */
-  contains(other: moment): boolean {
-    if (this.startTime.isAfter(other)
-        || this.endTime.isBefore(other)) {
-      return false;
+  contains(other: moment | StartEndDuration): boolean {
+    if (other instanceof moment){
+      if (this.startTime.isAfter(other)
+          || this.endTime.isBefore(other)) {
+        return false;
+      }
+      return true;
+    } else if (other instanceof StartEndDuration) {
+      return this.contains(other.startTime) && this.contains(other.endTime);
+    } else {
+      throw new Error("expect moment or StartEndDuration");
     }
-    return true;
   }
   overlaps(other: StartEndDuration): boolean {
     if (this.startTime.isAfter(other.endTime)
