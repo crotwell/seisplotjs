@@ -5,14 +5,18 @@ import asyncio
 import io
 import http.server
 import json
+import os
 import queue
+import re
 import sys
 import threading
 import websockets
 from obspy.io.quakeml.core import Pickler
 from obspy.core.stream import Stream
+from obspy.core.utcdatetime import UTCDateTime
 from obspy.core.event.catalog import Catalog
 from obspy.core.event.base import ResourceIdentifier
+from obspy.core.util.attribdict import AttribDict
 
 import logging
 logger = logging.getLogger('websockets.server')
@@ -21,10 +25,43 @@ logger.addHandler(logging.StreamHandler())
 
 
 class ServeObsPy():
-    FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>'
+    """
+    Serves Stream, Event and Inventory over http, allowing a web browser to be
+    the display for plotting. JSONApi is used for events and inventory and miniseed
+    is used for waveforms.
+
+    .. rubric:: Basic Usage
+
+    >>> import serveobspy
+    >>> from obspy.clients.fdsn import Client
+    >>> import obspy
+
+    >>> serveSeis = serveobspy.ServeObsPy('www')
+    >>> serveSeis.serveData()
+
+    >>> start = obspy.UTCDateTime('2019-10-31T01:11:19')
+    >>> end = start + 20*60
+
+    >>> st = client.get_waveforms("IU", "SNZO", "00", "BH?", start, start + 20 * 60)
+    >>> serveSeis.stream=st
+
+    >>> quakes = client.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)
+    >>> serveSeis.quake=quakes[0]
+
+    >>> serveSeis.inventory = client.get_stations(network="IU", station="SNZO",
+                                    location="00", channel="BH?",
+                                    level="response",
+                                    starttime=start,
+                                    endtime=end)
+
+    and then open a web browser to http://localhost:8000
+    """
+
+    FAKE_EMPTY_STATIONXML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>'
     LOCALHOST = '127.0.0.1'
     DEFAULT_HTTP = 8000
     DEFAULT_WS = 8001
+
     def __init__(self, webdir, host=None, port=None, wsport=None):
         self.webdir = webdir
         self.__host=host
@@ -33,7 +70,12 @@ class ServeObsPy():
         self.dataset = self.initEmptyDataset()
         self.httpServer = None
         self.wsServer = None
+        if webdir is not None and not os.path.isdir(webdir):
+            raise Exception('webdir must be an existing directory: {}'.format(webdir))
     def initEmptyDataset(self):
+        """
+        Creates a empty dataset.
+        """
         return {
             "stream": None,
             "bychan": {},
@@ -180,6 +222,7 @@ class ServeObsPy():
     def __createRequestHandlerClass(self):
         class ObsPyRequestHandler(http.server.SimpleHTTPRequestHandler):
             serveSeis = self # class variable to access
+
             def __init__(self,request, client_address, server):
                 super().__init__(request, client_address, server, directory=ObsPyRequestHandler.serveSeis.webdir)
             def end_headers (self):
@@ -188,19 +231,23 @@ class ServeObsPy():
                 self.send_header('Access-Control-Allow-Methods', "POST, GET, OPTIONS, DELETE, PUT")
                 http.server.SimpleHTTPRequestHandler.end_headers(self)
             def do_GET(self):
-                logger.debug("do_GET {}".format(self.path))
-                if self.path == '/dataset':
-                    self.sendDataset()
-                elif self.path.startswith('/seismograms/'):
-                    self.sendSeismogram()
-                elif self.path.startswith('/quake/'):
-                    self.sendQuake()
-                elif self.path.startswith('/inventory'):
-                    self.sendInventory()
-                elif self.path == '/favicon.ico':
-                    super().do_GET()
-                else:
-                    super().do_GET()
+                try:
+                    logger.debug("do_GET {}".format(self.path))
+                    if self.path == '/dataset':
+                        self.sendDataset()
+                    elif self.path.startswith('/seismograms/'):
+                        self.sendSeismogram()
+                    elif self.path.startswith('/quake/'):
+                        self.sendQuake()
+                    elif self.path.startswith('/inventory'):
+                        self.sendInventory()
+                    elif self.path == '/favicon.ico':
+                        super().do_GET()
+                    else:
+                        super().do_GET()
+                except Exception as e:
+                    self.send_error(404, "seis item not found")
+                    logger.error(e)
 
             def sendDataset(self):
                 content = json.dumps(ObsPyRequestHandler.serveSeis.datasetAsJsonApi())
@@ -209,9 +256,7 @@ class ServeObsPy():
                 self.send_header("Content-Type", "application/vnd.api+json")
                 self.end_headers()
                 self.wfile.write(content.encode())
-            def sendSeismogram(self):
-                splitPath = self.path.split('/')
-                seisid = int(splitPath[2])
+            def sendMseed(self, seisid):
                 bychan = ObsPyRequestHandler.serveSeis.dataset['bychan']
                 try:
                     seis = next(s for s in bychan if id(s) == seisid)
@@ -223,7 +268,35 @@ class ServeObsPy():
                     self.end_headers()
                     self.wfile.write(buf.getbuffer())
                 except StopIteration:
-                    self.send_error(404, "seismogram not found")
+                    self.send_error(404, "mseed seismogram not found ".format(seisid))
+            def sendStats(self, seisid):
+                bychan = ObsPyRequestHandler.serveSeis.dataset['bychan']
+                try:
+                    seis = next(s for s in bychan if id(s) == seisid)
+                    print("before stats ", flush=True)
+                    content = json.dumps(seis[0].stats, cls=StatsEncoder)
+                    self.send_response(200)
+                    self.send_header("Content-Length", len(content))
+                    self.send_header("Content-Type", "application/json")
+                    self.end_headers()
+                    self.wfile.write(content.encode())
+                except StopIteration as e:
+                    logger.warn(e)
+                    self.send_error(404, "stats seismogram not found {}  {}".format(seisid, e))
+                except Exception as e:
+                    logger.warn(e)
+                    self.send_error(404, "stats seismogram something bad happened {}  {}".format(seisid, e))
+
+            def sendSeismogram(self):
+                print("sendSeismogram: {}".format(self.path))
+                m = re.match(r'/seismograms/(\d+)/(\w+)', self.path)
+                if (m.group(2) == 'mseed'):
+                    self.sendMseed(int(m.group(1)))
+                elif m.group(2) == 'stats':
+                    self.sendStats(int(m.group(1)))
+                else:
+                    raise Exception("unknown seismogram url {}".format(self.path))
+
 
             def sendQuake(self):
                 splitPath = self.path.split('/')
@@ -244,7 +317,7 @@ class ServeObsPy():
                 if inventory is not None:
                     inventory.write(buf,format="STATIONXML")
                 else:
-                    buf.write(FAKE_EMPTY_XML)
+                    buf.write(FAKE_EMPTY_STATIONXML)
                 self.send_response(200)
                 self.send_header("Content-Length", buf.getbuffer().nbytes)
                 self.send_header("Content-Type", "application/xml")
@@ -252,6 +325,21 @@ class ServeObsPy():
                 self.wfile.write(buf.getbuffer())
         http.server.SimpleHTTPRequestHandler.extensions_map['.js'] = 'text/javascript'
         return ObsPyRequestHandler
+
+
+class StatsEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, UTCDateTime):
+            return obj.isoformat()
+        if isinstance(obj, AttribDict):
+            jsonDict = {}
+            for k,v in obj.items():
+                jsonDict[k] = v;
+            return jsonDict
+        if isinstance(obj, complex):
+            return [obj.real, obj.imag]
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
 
 class ObsPyServer(threading.Thread):
     def __init__(self, handler_class, host=None, port=None):

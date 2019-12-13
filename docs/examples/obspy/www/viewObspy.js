@@ -145,17 +145,33 @@ class ViewObsPy {
   }
 
   loadSingleSeismogram(seisKey, force=false) {
+    const that = this;
     if ( ! force && this.obspyData.has(seisKey)) {
       return Promise.resolve(this.obspyData.get(seisKey));
     }
     // load from obspy
-    const seisUrl = `/seismograms/${this.extractIdFromSeisKey(seisKey)}`;
-    return seisplotjs.mseedarchive.loadDataRecords( [ seisUrl ] )
-        .then(dataRecords => {
+    const seisBaseUrl = `/seismograms/${this.extractIdFromSeisKey(seisKey)}`;
+    const seisUrl = `${seisBaseUrl}/mseed`;
+    const statsUrl = `${seisBaseUrl}/stats`;
+    const seisPromise = seisplotjs.mseedarchive.loadDataRecords( [ seisUrl ] );
+    const fetchInit = seisplotjs.util.defaultFetchInitObj(seisplotjs.util.JSON_MIME);
+    const statsPromise = seisplotjs.util.doFetchWithTimeout(statsUrl, fetchInit)
+          .then(function(response) {
+            let contentType = response.headers.get('content-type');
+            if(contentType && contentType.includes(seisplotjs.util.JSON_MIME)) {
+              return response.json();
+            }
+            // $FlowFixMe
+            throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
+          });
+
+    return Promise.all([seisPromise, statsPromise])
+        .then( ( [dataRecords, stats] ) => {
           if (dataRecords.length === 0) {
             this.showErrorMessage(`No data records from ${seisUrl}`);
             return null;
           }
+          console.log(`stats: ${JSON.stringify(stats)}`);
           let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
           if (seisArray.length !== 0) {
             let seis = seisArray[0]; // assume only first matters
@@ -166,7 +182,7 @@ class ViewObsPy {
             return null;
           }
         }).catch( function(error) {
-          this.showErrorMessage(`Error loading data from ${seisUrl}, ${error}`);
+          that.showErrorMessage(`Error loading data from ${seisUrl}, ${error}`);
           console.error(error);
         });
   }
