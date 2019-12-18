@@ -102,6 +102,17 @@ class ViewObsPy {
     }
   }
 
+  doGain() {
+    let doGain = seisplotjs.d3.select("input#doGain").property("checked");
+    let prefix = 'graph';
+    this.processedData.forEach((val, key) => {
+      if (key.startsWith(prefix)) {
+        val.seismographConfig.doGain = doGain;
+        val.redoDisplayYScale();
+      }
+    });
+  }
+
   loadAllAndPlot() {
     const that = this;
     const plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
@@ -176,6 +187,7 @@ class ViewObsPy {
           if (seisArray.length !== 0) {
             let seis = seisArray[0]; // assume only first matters
             this.obspyData.set(seisKey, seis);
+            this.obspyData.set(seisKey+"/stats", stats);
             return seis;
           } else {
             console.warn(`Oops, server did not return data for ${seisUrl}`);
@@ -386,6 +398,7 @@ class ViewObsPy {
   createGraph(selectedDiv, seisKey, seisData) {
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
     seisConfig.title = seisData.codes();
+    seisConfig.doGain = seisplotjs.d3.select("input#doGain").property("checked");
     let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisData);
     graph.draw();
     let graphKey = `graph${this.extractIdFromSeisKey(seisKey)}`;

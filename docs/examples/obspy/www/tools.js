@@ -18,6 +18,10 @@ function createTools(viewObspy) {
     viewObspy.linkAllAmpAxis();
   });
 
+  seisplotjs.d3.select("input#doGain").on("change", function() {
+    viewObspy.doGain();
+  });
+
   function doOrientPlot() {
       let dataset = viewObspy.obspyData.get('dataset');
       const plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
