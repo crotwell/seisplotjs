@@ -20,7 +20,7 @@ from obspy.core.util.attribdict import AttribDict
 
 import logging
 logger = logging.getLogger('websockets.server')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 
 
@@ -268,7 +268,7 @@ class ServeObsPy():
                     self.end_headers()
                     self.wfile.write(buf.getbuffer())
                 except StopIteration:
-                    self.send_error(404, "mseed seismogram not found ".format(seisid))
+                    self.send_error(404, "mseed seismogram not found, {} ".format(seisid))
             def sendStats(self, seisid):
                 bychan = ObsPyRequestHandler.serveSeis.dataset['bychan']
                 try:
@@ -405,9 +405,10 @@ class ObsPyWebSocket(threading.Thread):
         logger.debug("in consumer_handler")
         try:
             while True:
-                logger.debug("before recv")
                 message = await websocket.recv()
                 logger.debug("got message from ws "+message)
+        except websockets.exceptions.ConnectionClosedOK:
+            pass
         except Exception as e:
             logger.error("consumer_handler exception ", exc_info=e)
         except:
