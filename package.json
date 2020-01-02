@@ -20,8 +20,8 @@
   },
   "scripts": {
     "srclint": "eslint 'src/*.js' ",
-    "lint": "eslint 'src/*.js' 'test/*.js' 'test/*/*.js' ",
-    "examplelint": "eslint  'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
+    "lint": "eslint 'src/*.js' 'test/*.js' 'test/*/*.js'  ",
+    "examplelint": "eslint -c .eslintrc_noflow.js 'docs/examples/obspy/www/[otv]*.js' 'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
     "test": "jest",
     "flow": "flow",
     "flow-copy": "flow-copy-source -v -i '**/__tests__/**' src dist/module",

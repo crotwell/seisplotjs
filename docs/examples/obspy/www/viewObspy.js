@@ -1,12 +1,15 @@
 /*global seisplotjs */
 
 class ViewObsPy {
-  constructor(baseUrl) {
+  constructor(baseUrl, cssSelector="#myseismograph") {
     this.baseUrl = baseUrl;
     this.obspyData = new Map();
     this.processedData = new Map();
     this.processChain = [];
-    this.plotDiv = seisplotjs.d3.select("#myseismograph");
+    this.plotDiv = seisplotjs.d3.select(cssSelector);
+    if (this.plotDiv.empty()) {
+      throw new Error(`Can't find element for css selector '${cssSelector}'`);
+    }
     this.seisChanQuakeFilter = (seis, chan, quake) => {return this.defaultPlotFilter(seis, chan, quake);};
   }
   clearAll() {
@@ -465,7 +468,7 @@ class ViewObsPy {
         return fftPlot;
       });
     } else {
-      console.warn(`seis no loaded: ${d.id}`);
+      console.warn(`seis no loaded`);
     }
     return null;
   }
@@ -473,7 +476,6 @@ class ViewObsPy {
   createParticleMotion(selectedDiv, seisId, seisData) {
     // find pair, x => y, y => z, z=> x
     let otherId = null;
-    let hSeisId = seisId;
     let hSeisData = seisData;
     let vSeisId = null;
     let vSeisData = null;
@@ -487,7 +489,6 @@ class ViewObsPy {
     }
     if (this.orientZFilter(seisData.seismogram, seisData.channel, seisData.quake)) {
       otherId = this.findSeismogramFriendId(seisData.seismogram, this.orientEFilter);
-      hSeisId = otherId;
       vSeisId = seisId;
     }
     if (otherId) {
@@ -566,7 +567,7 @@ class ViewObsPy {
       return Array.from(staCodeSet).sort();
     }).then(staList => {
       const that = this;
-      let staDiv = seisplotjs.d3.select("div#station_checkbox").selectAll("span")
+      seisplotjs.d3.select("div#station_checkbox").selectAll("span")
         .data(staList, s => s)
         .join(enter => {
           let span = enter.append("span").attr('sta', s=>s);
