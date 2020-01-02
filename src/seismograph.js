@@ -17,7 +17,7 @@ import {SeismographConfig,
 import type { MarkerType } from './seismogram.js';
 import type { MarginType } from './seismographconfig';
 import {SeismogramDisplayData, findStartEnd, findMinMax, findMinMaxOverTimeRange,
-        SeismogramSegment, Seismogram } from './seismogram.js';
+        SeismogramSegment, Seismogram, COUNT_UNIT } from './seismogram.js';
 import {Quake} from './quakeml.js';
 
 import * as util from './util.js';
@@ -977,7 +977,8 @@ export class Seismograph {
     let niceMinMax = this.yScale.domain();
     if (this.seismographConfig.doGain
         && this.seisDataList.length > 0
-        && this.seisDataList.every(sdd => sdd.hasSensitivity())) {
+        && this.seisDataList.every(sdd => sdd.hasSensitivity())
+        && this.seisDataList.every(sdd => sdd.seismogram.yUnit === COUNT_UNIT )) {
       // each has seisitivity
       const firstSensitivity = this.seisDataList[0].sensitivity;
       if (isDef(firstSensitivity) && this.seisDataList.every(sdd => (

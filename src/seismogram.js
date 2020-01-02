@@ -14,6 +14,8 @@ import {Channel, InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
 import {StartEndDuration } from './util';
 
+export const COUNT_UNIT = 'count';
+
 export type HighLowType = {
       xScaleDomain: Array<number>;
       xScaleRange: Array<number>;
@@ -42,7 +44,7 @@ export class SeismogramSegment {
   _compressed: null | Array<seedcodec.EncodedDataSegment>;
   /**
    * the sample rate in hertz
-   * 
+   *
    * @private
    */
   _sampleRate: number;
@@ -72,7 +74,7 @@ export class SeismogramSegment {
     }
     this._sampleRate = sampleRate;
     this._startTime = checkStringOrDate(startTime);
-    this.yUnit = 'count';
+    this.yUnit = COUNT_UNIT;
     // to avoid recalc of end time as it is kind of expensive
     this._endTime_cache = null;
     this._endTime_cache_numPoints = 0;
