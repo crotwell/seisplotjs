@@ -19,7 +19,7 @@ from obspy.core.event.base import ResourceIdentifier
 from obspy.core.util.attribdict import AttribDict
 
 import logging
-logger = logging.getLogger('websockets.server')
+logger = logging.getLogger('viewobspy')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler())
 
@@ -250,6 +250,9 @@ class ServeObsPy():
                     logger.error(e)
 
             def sendDataset(self):
+                """
+                Serve dataset as JsonAPI
+                """
                 content = json.dumps(ObsPyRequestHandler.serveSeis.datasetAsJsonApi())
                 self.send_response(200)
                 self.send_header("Content-Length", len(content))
@@ -257,6 +260,9 @@ class ServeObsPy():
                 self.end_headers()
                 self.wfile.write(content.encode())
             def sendMseed(self, seisid):
+                """
+                Serve seismogram as miniseed
+                """
                 bychan = ObsPyRequestHandler.serveSeis.dataset['bychan']
                 try:
                     seis = next(s for s in bychan if id(s) == seisid)
@@ -270,6 +276,9 @@ class ServeObsPy():
                 except StopIteration:
                     self.send_error(404, "mseed seismogram not found, {} ".format(seisid))
             def sendStats(self, seisid):
+                """
+                Serve stats for seismogram as simple JSON
+                """
                 bychan = ObsPyRequestHandler.serveSeis.dataset['bychan']
                 try:
                     seis = next(s for s in bychan if id(s) == seisid)
@@ -299,6 +308,9 @@ class ServeObsPy():
 
 
             def sendQuake(self):
+                """
+                Serve quake as QuakeML
+                """
                 splitPath = self.path.split('/')
                 id = int(splitPath[2])
                 resource_id = ResourceIdentifier(str(id))
@@ -312,6 +324,9 @@ class ServeObsPy():
                 self.wfile.write(buf.getbuffer())
 
             def sendInventory(self):
+                """
+                Serve inventory as StationXML
+                """
                 buf = io.BytesIO()
                 inventory = ObsPyRequestHandler.serveSeis.dataset['inventory']
                 if inventory is not None:
