@@ -38,9 +38,20 @@
           <h1>Seisplotjs Tutorial</h1>
 
           <h3>Realtime Data</h3>
-          <h5>See it live in <a href="tutorial7.html">tutorial7.html</a>.</h5>
+          <h5>See it live in <a href="tutorial7.html" target="_blank">tutorial7.html</a>.</h5>
 
           <p>
+            Now for something else completely different. A realtime plot can be
+            a crowd pleaser, but it is considered
+            <a href="http://ds.iris.edu/ds/nodes/dmc/services/usage/">very rude</a>
+            to rapidly request the same seismogram over and over from the
+            FDSN dataselect web service, and so we will use a web socket to the
+            <a href="https://seiscode.iris.washington.edu/projects/ringserver">IRIS ringserver</a>
+            using the
+            <a href="https://raw.githubusercontent.com/iris-edu/libdali/master/doc/DataLink.protocol">DataLink</a>
+            protocol.
+            </p>
+            <p>
             First we need to set up a bunch of variables we will use to keep track
             of the realtime data.
             The timerInterval is set so that hopefully it updates the display
@@ -75,7 +86,10 @@
           </code></pre>
 
           <p>
-            And a function to handle each datalink packet as it arrives.
+            And a function to handle each datalink packet as it arrives. In this
+            case all datalink packets should contain a single miniseed record,
+            but there is nothing in the datalink protocol that prevents sending
+            other types of data as the payload.
           </p>
           <pre><code class="language-javascript">
             const packetHandler = function(packet) {
@@ -105,8 +119,8 @@
           </code></pre>
 
           <p>
-            Now we create the actual Datalink connection to the IRIS
-            ringserver.
+            Now we create the actual Datalink connection to the
+            <a href="https://seiscode.iris.washington.edu/projects/ringserver">IRIS ringserver</a>.
           </p>
           <pre><code class="language-javascript">
 
@@ -209,7 +223,7 @@
             toggleConnect();
           </code></pre>
 
-          <h3>See it live in <a href="tutorial7.html">tutorial7.html</a>.</h3>
+          <h3>See it live in <a href="tutorial7.html" target="_blank">tutorial7.html</a>.</h3>
           <p>Previous: <a href="6_helicorder.html">Helicorder</a></p>
           <p>Next: <a href="../tutorial/8_andmore.html" class="sub">...and more</a></p>
 

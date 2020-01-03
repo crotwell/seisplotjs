@@ -38,7 +38,7 @@
           <h1>Seisplotjs Tutorial</h1>
 
           <h3>Helicorder</h3>
-          <h5>See it live in <a href="tutorial6.html">tutorial6.html</a>.</h5>
+          <h5>See it live in <a href="tutorial6.html" target="_blank">tutorial6.html</a>.</h5>
 
           <p>
             Now for something completely different. A helicorder style plot is a
@@ -81,7 +81,7 @@
             new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
           </code></pre>
           <p>
-            In the then method of the Promise, we construct our dataselect
+            In the then method of the Promise from findFdsnDataSelect, we construct our dataselect
             query. Because the helicorder will need 24 hours of data, it is
             probably best not to try this on a 100 samples per second HHZ
             channel, but a 1 sample per second LHZ channel should be fine. The
@@ -98,13 +98,15 @@
                 .querySeismograms();
           </code></pre>
           <p>
-            In the following <code>then</code> method, we populate out text
+            In the following <code class="language-javascript">then</code>
+            method, we populate out text
             spans using d3 and then configure our helicorder. One extra bit we
             add is a marker for the current time. Since each line is 2 hours,
             without this marker it is hard to know if the station is way behind
             or if we are just in the middle of a two hour section, so adding
             a marker helps. Lastly, we draw the helicorder. If any errors occur,
-            the <code>catch</code> is invoked that should output an error
+            the <code class="language-javascript">catch</code>
+            is invoked that should output an error
             message to the page.
           </p>
           <pre><code class="language-javascript">
@@ -126,7 +128,7 @@
           });
           </code></pre>
 
-          <h3>See it live in <a href="tutorial6.html">tutorial6.html</a>.</h3>
+          <h3>See it live in <a href="tutorial6.html" target="_blank">tutorial6.html</a>.</h3>
           <p>Previous: <a href="5_filter.html">Deconvolution and Filtering</a></p>
           <p>Next: <a href="7_realtime.html" class="sub">Realtime Data</a></p>
 
