@@ -119,7 +119,7 @@ class ViewObsPy {
   loadAllAndPlot() {
     const that = this;
     const plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
-    return this.loadDataset(this.baseUrl).then(dataset => {
+    return this.loadDataset().then(dataset => {
         this.plotDataset(dataset, plottype, this.seisChanQuakeFilter);
         let quakePromise = this.loadQuake(dataset);
         let inventoryPromise = this.loadInventory(dataset).then(inventory => {
@@ -148,8 +148,8 @@ class ViewObsPy {
       });
   }
 
-  loadDataset(baseUrl) {
-    const datasetUrl = new URL('/dataset', baseUrl);
+  loadDataset() {
+    const datasetUrl = new URL('/dataset', this.baseUrl);
     return seisplotjs.util.doFetchWithTimeout(datasetUrl).then(response => {
       return response.json();
     }).then(dataset => {
@@ -165,8 +165,8 @@ class ViewObsPy {
     }
     // load from obspy
     const seisBaseUrl = `/seismograms/${this.extractIdFromSeisKey(seisKey)}`;
-    const seisUrl = `${seisBaseUrl}/mseed`;
-    const statsUrl = `${seisBaseUrl}/stats`;
+    const seisUrl = new URL(`${seisBaseUrl}/mseed`, this.baseUrl);
+    const statsUrl = new URL(`${seisBaseUrl}/stats`, this.baseUrl);
     const seisPromise = seisplotjs.mseedarchive.loadDataRecords( [ seisUrl ] );
     const fetchInit = seisplotjs.util.defaultFetchInitObj(seisplotjs.util.JSON_MIME);
     const statsPromise = seisplotjs.util.doFetchWithTimeout(statsUrl, fetchInit)
@@ -206,7 +206,8 @@ class ViewObsPy {
     let quake = null;
     if (dataset.data.relationships.quake.data.id) {
       const qid = dataset.data.relationships.quake.data.id;
-      quake = seisplotjs.util.doFetchWithTimeout(`/quake/${qid}`).then(response => {
+      const quakeUrl = new URL(`/quake/${qid}`, this.baseUrl);
+      quake = seisplotjs.util.doFetchWithTimeout(quakeUrl).then(response => {
         return response.text();
       }).then(xml => {
         return (new window.DOMParser()).parseFromString(xml, "text/xml");
@@ -227,7 +228,8 @@ class ViewObsPy {
     let inventory = Promise.resolve([]);
     if (dataset.data.relationships.inventory.data.id) {
       const qid = dataset.data.relationships.inventory.data.id;
-      inventory = seisplotjs.util.doFetchWithTimeout(`/inventory`).then(response => {
+      const inventoryUrl = new URL('/inventory', this.baseUrl);
+      inventory = seisplotjs.util.doFetchWithTimeout(inventoryUrl).then(response => {
         return response.text();
       }).then(xml => {
         return (new window.DOMParser()).parseFromString(xml, "text/xml");
@@ -360,7 +362,10 @@ class ViewObsPy {
             throw new Error(`unknwon plot type: ${plottype}`);
           }
         } else {
-          selectedDiv.selectAll('*').remove();
+          selectedDiv.remove();
+          let graphKey = `graph${this.extractIdFromSeisKey(seisId)}`;
+          this.processedData.delete(graphKey);
+
         }
       } else {
         throw new Error(`seismogram for ${seisId} is null!`);
