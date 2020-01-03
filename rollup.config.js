@@ -15,6 +15,15 @@ export default [{
   external: [
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),
+    '@babel/runtime/helpers/classCallCheck',
+    '@babel/runtime/helpers/createClass',
+    '@babel/runtime/helpers/typeof',
+    '@babel/runtime/helpers/possibleConstructorReturn',
+    '@babel/runtime/helpers/getPrototypeOf',
+    '@babel/runtime/helpers/inherits',
+    '@babel/runtime/helpers/slicedToArray',
+    '@babel/runtime/helpers/wrapNativeSuper',
+    '@babel/runtime/regenerator',
   ],
   plugins: [
     flowEntry(),
@@ -37,6 +46,15 @@ export default [{
   external: [
     ...Object.keys(pkg.dependencies || {}),
     ...Object.keys(pkg.peerDependencies || {}),
+    '@babel/runtime/helpers/classCallCheck',
+    '@babel/runtime/helpers/createClass',
+    '@babel/runtime/helpers/typeof',
+    '@babel/runtime/helpers/possibleConstructorReturn',
+    '@babel/runtime/helpers/getPrototypeOf',
+    '@babel/runtime/helpers/inherits',
+    '@babel/runtime/helpers/slicedToArray',
+    '@babel/runtime/helpers/wrapNativeSuper',
+    '@babel/runtime/regenerator',
   ],
   plugins: [
     flowEntry(),
