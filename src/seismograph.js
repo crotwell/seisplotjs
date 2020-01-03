@@ -783,6 +783,12 @@ export class Seismograph {
   }
 
   calcWidthHeight(nOuterWidth: number, nOuterHeight: number): void {
+    if (nOuterWidth < this.seismographConfig.margin.left + this.seismographConfig.margin.right) {
+      throw new Error(`width too small for margin: ${nOuterWidth} < ${this.seismographConfig.margin.left} + ${this.seismographConfig.margin.right}`);
+    }
+    if (nOuterHeight < this.seismographConfig.margin.top + this.seismographConfig.margin.bottom) {
+      throw new Error(`height too small for margin: ${nOuterWidth} < ${this.seismographConfig.margin.top} + ${this.seismographConfig.margin.bottom}`);
+    }
     this.outerWidth = nOuterWidth;
     this.outerHeight = nOuterHeight;
     this.height = this.outerHeight - this.seismographConfig.margin.top - this.seismographConfig.margin.bottom;
