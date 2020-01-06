@@ -20,7 +20,7 @@ import {StartEndDuration} from './util.js';
  *
  * @param div selected div to append chooser to
  * @param initialTime initial chooser time value
- * @param updateCallback callback function when time is selected
+ * @param updateCallback optional callback function when time is selected
  */
 export class HourMinChooser {
 
@@ -35,11 +35,15 @@ export class HourMinChooser {
   hourSlider: any; // d3 not yet in flow-typed :(
   minuteDiv: any; // d3 not yet in flow-typed :(
   minuteSlider: any; // d3 not yet in flow-typed :(
-  constructor(div: any, initialTime: moment, updateCallback: ( time: moment) => void) {
+  constructor(div: any, initialTime: moment, updateCallback?: ( time: moment) => void) {
     let mythis = this;
-    this.div = div;
+    if (typeof div === 'string') {
+      this.div = d3.select(div);
+    } else {
+      this.div = div;
+    }
     this.time = moment.utc(initialTime);
-    this.updateCallback = updateCallback;
+    this.updateCallback = updateCallback ? updateCallback : dummyCallback;
     this.hourMinRegEx = /^([0-1]?[0-9]):([0-5]?[0-9])$/;
     this.myOnClick = function(e) {
       // click document outside popup closes popup
@@ -72,7 +76,7 @@ export class HourMinChooser {
         }
 
       });
-    this.div.append("span").text("UTC");
+    this.div.append("span").classed("utclabel", true).text("UTC");
     this.popupDiv = this.div.append("div")
       .classed("hourminpopup", true)
       .style("position", "absolute")
@@ -190,7 +194,7 @@ export class HourMinChooser {
  * @param div selected div to append chooser to
  * @param label label for chooser
  * @param initialTime initial chooser time value
- * @param updateCallback callback function when time is selected
+ * @param updateCallback optional callback function when time is selected
  */
 export class DateTimeChooser {
   div: any; // d3 not yet in flow-typed :(
@@ -200,12 +204,16 @@ export class DateTimeChooser {
   dateField: any;
   picker: Pikaday;
   hourMin: HourMinChooser;
-  constructor(div: any, label: string, initialTime: moment, updateCallback: ( time: moment) => void) {
-    this.div = div;
+  constructor(div: any, label: string, initialTime: moment, updateCallback?: ( time: moment) => void) {
+    if (typeof div === 'string') {
+      this.div = d3.select(div);
+    } else {
+      this.div = div;
+    }
     this.label = label;
     this.time = moment.utc(initialTime);
     this.time.second(0).millisecond(0); // only hour and min?
-    this.updateCallback = updateCallback;
+    this.updateCallback = updateCallback ? updateCallback : dummyCallback;
     this.dateField = div.append("label").text(this.label).append("input")
       .classed("pikaday", true)
       .attr("value", this.time.toISOString())
@@ -272,7 +280,7 @@ export class DateTimeChooser {
  * Combination of two DateTimeChoosers to specify a start and end time.
  *
  * @param div selected div to append chooser to
- * @param updateCallback callback function when time is selected
+ * @param updateCallback optional callback function when time is selected/changed
  */
 export class TimeRangeChooser {
   div: any;
@@ -280,21 +288,28 @@ export class TimeRangeChooser {
   duration: number;
   startChooser: DateTimeChooser;
   endChooser: DateTimeChooser;
-  constructor(div: any, updateCallback: (timerange: StartEndDuration) => void) {
-    this.updateCallback = updateCallback;
+  _mostRecentChanged: string;
+  constructor(div: any, updateCallback?: (timerange: StartEndDuration) => void) {
+    this._mostRecentChanged = 'start';
+    this.updateCallback = updateCallback ? updateCallback : dummyCallback;
     let endTime = moment.utc();
     this.duration = 300;
     let startTime = moment.utc(endTime).subtract(this.duration, 'second');
-    this.div = div;
+    if (typeof div === 'string') {
+      this.div = d3.select(div);
+    } else {
+      this.div = div;
+    }
     this.div.classed("timeRangeChooser", true);
     let mythis = this;
-    let startDiv = div.append("div").classed("start", true);
+    let startDiv = this.div.append("span").classed("start", true);
     this.startChooser = new DateTimeChooser(startDiv, "Start:", startTime, function(startTime) {
       mythis.endChooser.updateTime(moment.utc(startTime).add(mythis.duration, 'seconds'));
       mythis.updateCallback(mythis.getTimeRange());
+      mythis._mostRecentChanged = 'start';
     });
 
-    let durationDiv = div.append("div").classed("duration", true);
+    let durationDiv = this.div.append("span").classed("duration", true);
     durationDiv.append("label").text("Duration:").append("input")
       .classed("pikatime", true)
       .attr("value", this.duration)
@@ -302,14 +317,21 @@ export class TimeRangeChooser {
       .on("input", function() {
         let nDur = +Number.parseInt(this.value);
         mythis.duration = nDur;
-        mythis.startChooser.updateTime(moment.utc(mythis.endChooser.getTime()).subtract(mythis.duration, 'seconds'));
-        mythis.updateCallback(mythis.getTimeRange());
+        if (mythis._mostRecentChanged === 'end') {
+          mythis.startChooser.updateTime(moment.utc(mythis.endChooser.getTime()).subtract(mythis.duration, 'seconds'));
+          mythis.updateCallback(mythis.getTimeRange());
+        } else {
+          // change end
+          mythis.endChooser.updateTime(moment.utc(mythis.startChooser.getTime()).add(mythis.duration, 'seconds'));
+          mythis.updateCallback(mythis.getTimeRange());
+        }
       });
 
-    let endDiv = div.append("div").classed("end", true);
+    let endDiv = this.div.append("span").classed("end", true);
     this.endChooser = new DateTimeChooser(endDiv, "End:", endTime, function(endTime) {
       mythis.startChooser.updateTime(moment.utc(endTime).subtract(mythis.duration, 'seconds'));
       mythis.updateCallback(mythis.getTimeRange());
+      mythis._mostRecentChanged = 'end';
     });
   }
   getTimeRange(): StartEndDuration {
@@ -319,12 +341,25 @@ export class TimeRangeChooser {
 }
 
 /**
+ * Dummy callback function for cases where user doesn't need this. Mainly here
+ * to keep eslint happy.
+ *
+ * @param   t new time/time range, not used
+ */
+// eslint-disable-next-line no-unused-vars
+function dummyCallback(t) { }
+
+/**
  * CSS for the parts of HourMin, DateTime and TimeRange choosers
  * that are not using pikaday.
  */
 export const chooser_css = `
 
-div.timeRangeChooser div div.hourminpopup {
+div.timeRangeChooser .utclabel {
+  font-size: smaller;
+}
+
+div.timeRangeChooser span div.hourminpopup {
     z-index: 9999;
     display: block;
     position: relative;
@@ -361,8 +396,9 @@ div.hourminpopup input {
     width: 150px;
 }
 
-div.timeRangeChooser div {
+div.timeRangeChooser span {
   margin: 2px;
+  margin-right: 5px;
 }
 
 input.pikaday {
