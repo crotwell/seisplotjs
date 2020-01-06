@@ -177,6 +177,8 @@ if [[ 'html' == "$format"  ]]
 then
   rm -rf docs/api/assets
   mv docs/api/helicorder/assets docs/api/.
+  cp docs/api/assets/bass.css docs/.
+  cp docs/api/assets/split.css docs/.
   for f in src/*
   do
     jsfile=`basename ${f} .js`
