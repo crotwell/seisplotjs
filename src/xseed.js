@@ -45,35 +45,43 @@ export function parseXSeedRecords(arrayBuffer: ArrayBuffer): Array<XSeedRecord> 
 
 /**
  * Represents a xSEED Data Record, with header, extras and data.
+ *
+ * @param header xseed fixed record header
+ * @param extraHeaders json compatible object with extra headers
+ * @param rawData waveform data, in correct compression for value in header
  */
 export class XSeedRecord {
   header: XSeedHeader;
-  rawData: DataView;
-  rawExtraHeaders: null | string;
   extraHeaders: any;
-  length: number;
+  rawData: DataView;
   constructor(header: XSeedHeader, extraHeaders: any, rawData: DataView) {
     this.header = header;
     this.rawData = rawData;
-    this.rawExtraHeaders = null;
     this.extraHeaders = extraHeaders;
   }
+  /**
+   * Parses an xseed data record from a DataView.
+   *
+   * @param   dataView bytes to parse
+   * @returns parsed record
+   */
   static createFromDataView(dataView: DataView): XSeedRecord {
-    const header = new XSeedHeader(dataView);
+    const header = XSeedHeader.createFromDataView(dataView);
     let extraDataView = new DataView(dataView.buffer,
                              dataView.byteOffset+header.getSize(),
                              header.extraHeadersLength);
-    const rawExtraHeaders = makeString(dataView,
-        dataView.byteOffset+header.getSize(),
-        header.extraHeadersLength);
     const extraHeaders = parseExtraHeaders(extraDataView);
     let sliceStart = dataView.byteOffset+header.getSize()+header.extraHeadersLength;
     const rawData = new DataView(dataView.buffer.slice(sliceStart, sliceStart+ header.dataLength));
 
     const xr = new XSeedRecord(header, extraHeaders, rawData);
-    xr.rawExtraHeaders = rawExtraHeaders;
     return xr;
   }
+  /**
+   * Calculates the byte size of the xseed record to hold this data.
+   *
+   * @returns size in bytes
+   */
   getSize() {
     let json = JSON.stringify(this.extraHeaders);
     if (json.length > 2) {
@@ -91,16 +99,25 @@ export class XSeedRecord {
   decompress() {
     return this.asEncodedDataSegment().decode();
   }
-
+  /**
+   * Wraps data in an EncodedDataSegment for future decompression.
+   *
+   * @returns waveform data
+   */
   asEncodedDataSegment() {
     return new seedcodec.EncodedDataSegment(this.header.encoding,
                                   this.rawData,
                                   this.header.numSamples,
                                   LITTLE_ENDIAN);
   }
+  /**
+   * Just the header.identifier, included as codes() for compatiblility
+   * with parsed miniseed2 data records.
+   *
+   * @returns string identifier
+   */
   codes() {
       return this.header.identifier;
-//    return this.header.netCode+"."+this.header.staCode+"."+this.header.locCode+"."+this.header.chanCode;
   }
 
   /**
@@ -163,6 +180,9 @@ export class XSeedRecord {
   }
 }
 
+/**
+ * Fixed header of an XSeed data record.
+ */
 export class XSeedHeader {
   recordIndicator: string;
   formatVersion: number;
@@ -186,70 +206,83 @@ export class XSeedHeader {
   dataLength: number;
   start: moment;
   end: moment;
-  constructor(dataView?: DataView) {
-    if ( !dataView) {
-      // empty construction
-      this.recordIndicator = 'MS';
-      this.formatVersion = 3;
-      this.flags = 0;
-      this.nanosecond=0;
-      this.year = 1970;
-      this.dayOfYear=1;
-      this.hour=0;
-      this.minute=0;
-      this.second=0;
-      this.encoding = 3; // 32 bit ints
-      this.sampleRatePeriod = 1;
-      this.numSamples = 0;
-      this.crc = 0;
-      this.publicationVersion = UNKNOWN_DATA_VERSION;
-      this.identifierLength = 0;
-      this.extraHeadersLength = 2;
-      this.identifier = "";
-      this.extraHeaders = {};
-      this.dataLength = 0;
-      return;
+  constructor() {
+    // empty construction
+    this.recordIndicator = 'MS';
+    this.formatVersion = 3;
+    this.flags = 0;
+    this.nanosecond=0;
+    this.year = 1970;
+    this.dayOfYear=1;
+    this.hour=0;
+    this.minute=0;
+    this.second=0;
+    this.encoding = 3; // 32 bit ints
+    this.sampleRatePeriod = 1;
+    this.numSamples = 0;
+    this.crc = 0;
+    this.publicationVersion = UNKNOWN_DATA_VERSION;
+    this.identifierLength = 0;
+    this.extraHeadersLength = 2;
+    this.identifier = "";
+    this.extraHeaders = {};
+    this.dataLength = 0;
+  }
+  /**
+   * Parses an xseed fixed header from a DataView.
+   *
+   * @param   dataView bytes to parse
+   * @returns parsed header object
+   */
+  static createFromDataView(dataView: DataView): XSeedHeader {
+    const header = new XSeedHeader();
+    header.recordIndicator = makeString(dataView, 0,2);
+    if ( ! header.recordIndicator === 'MS') {
+      throw new Error("First 2 bytes of record should be MS but found "+header.recordIndicator);
     }
-    this.recordIndicator = makeString(dataView, 0,2);
-    if ( ! this.recordIndicator === 'MS') {
-      throw new Error("First 2 bytes of record should be MS but found "+this.recordIndicator);
+    header.formatVersion = dataView.getUint8(2);
+    if (header.formatVersion !== 3) {
+      throw new Error("Format Version should be 3, "+header.formatVersion);
     }
-    this.formatVersion = dataView.getUint8(2);
-    if (this.formatVersion !== 3) {
-      throw new Error("Format Version should be 3, "+this.formatVersion);
-    }
-    this.flags = dataView.getUint8(3);
+    header.flags = dataView.getUint8(3);
     const headerLittleEndian = true;
-    this.nanosecond = dataView.getInt32(4, headerLittleEndian);
-    this.year = dataView.getInt16(8, headerLittleEndian);
-    if (checkByteSwap(this.year)) {
-      throw new Error("Looks like wrong byte order, year="+this.year);
+    header.nanosecond = dataView.getInt32(4, headerLittleEndian);
+    header.year = dataView.getInt16(8, headerLittleEndian);
+    if (checkByteSwap(header.year)) {
+      throw new Error("Looks like wrong byte order, year="+header.year);
     }
-    this.dayOfYear = dataView.getInt16(10, headerLittleEndian);
-    this.hour = dataView.getUint8(12);
-    this.minute = dataView.getUint8(13);
-    this.second = dataView.getUint8(14);
-    this.encoding = dataView.getUint8(15);
-    this.sampleRatePeriod = dataView.getFloat64(16, headerLittleEndian);
-    if (this.sampleRatePeriod < 0) {
-      this.sampleRate = 1 / this.sampleRatePeriod;
+    header.dayOfYear = dataView.getInt16(10, headerLittleEndian);
+    header.hour = dataView.getUint8(12);
+    header.minute = dataView.getUint8(13);
+    header.second = dataView.getUint8(14);
+    header.encoding = dataView.getUint8(15);
+    header.sampleRatePeriod = dataView.getFloat64(16, headerLittleEndian);
+    if (header.sampleRatePeriod < 0) {
+      header.sampleRate = 1 / header.sampleRatePeriod;
     } else {
-      this.sampleRate = this.sampleRatePeriod;
+      header.sampleRate = header.sampleRatePeriod;
     }
-    this.numSamples = dataView.getUint32(24, headerLittleEndian);
-    this.crc = dataView.getUint32(28, headerLittleEndian);
-    this.publicationVersion = dataView.getUint8(32);
-    this.identifierLength = dataView.getUint8(33);
-    this.extraHeadersLength = dataView.getUint16(34, headerLittleEndian);
-    this.dataLength = dataView.getUint32(36, headerLittleEndian);
-    this.identifier = makeString(dataView, 40, this.identifierLength);
+    header.numSamples = dataView.getUint32(24, headerLittleEndian);
+    header.crc = dataView.getUint32(28, headerLittleEndian);
+    header.publicationVersion = dataView.getUint8(32);
+    header.identifierLength = dataView.getUint8(33);
+    header.extraHeadersLength = dataView.getUint16(34, headerLittleEndian);
+    header.dataLength = dataView.getUint32(36, headerLittleEndian);
+    header.identifier = makeString(dataView, 40, header.identifierLength);
     // lazily extract json and data
 
-    this.start = this._startToMoment();
-    this.end = this.timeOfSample(this.numSamples-1);
+    header.start = header._startToMoment();
+    header.end = header.timeOfSample(header.numSamples-1);
+    return header;
   }
+  /**
+   * Calculates size of the fixed header including the identifier, but without
+   * the extra headers.
+   *
+   * @return size in bytes of fixed header
+   */
   getSize() {
-    return FIXED_HEADER_SIZE+this.identifierLength;
+    return FIXED_HEADER_SIZE+this.identifier.length;
   }
   toString() {
     return this.identifier+" "+this.start.toISOString()+" "+this.encoding;
