@@ -20,7 +20,7 @@ from obspy.core.util.attribdict import AttribDict
 
 import logging
 logger = logging.getLogger('viewobspy')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 
@@ -282,7 +282,6 @@ class ServeObsPy():
                 bychan = ObsPyRequestHandler.serveSeis.dataset['bychan']
                 try:
                     seis = next(s for s in bychan if id(s) == seisid)
-                    print("before stats ", flush=True)
                     content = json.dumps(seis[0].stats, cls=StatsEncoder)
                     self.send_response(200)
                     self.send_header("Content-Length", len(content))
@@ -297,7 +296,6 @@ class ServeObsPy():
                     self.send_error(404, "stats seismogram something bad happened {}  {}".format(seisid, e))
 
             def sendSeismogram(self):
-                print("sendSeismogram: {}".format(self.path))
                 m = re.match(r'/seismograms/(\d+)/(\w+)', self.path)
                 if (m.group(2) == 'mseed'):
                     self.sendMseed(int(m.group(1)))
@@ -417,7 +415,6 @@ class ObsPyWebSocket(threading.Thread):
         result = future.result()
         logger.debug('result of send msg {}'.format(result))
     async def consumer_handler(self, websocket, path):
-        logger.debug("in consumer_handler")
         try:
             while True:
                 message = await websocket.recv()
@@ -430,10 +427,8 @@ class ObsPyWebSocket(threading.Thread):
             e = sys.exc_info()[0]
             logger.error('consumer_handler something bad happened  ', exc_info=e)
     async def producer_handler(self, websocket, path):
-        logger.debug("in producer_handler")
         try:
             while True:
-                logger.debug('begin of producer while True:')
                 message = await self.dataQueue.get()
                 logger.debug("dataqueue had message {}".format(message))
                 if message is None:
@@ -453,10 +448,8 @@ class ObsPyWebSocket(threading.Thread):
             logger.debug("ws conn was closed, removing user ")
             self.users.remove(user)
     async def initWS(self):
-        logger.debug("in initWS")
         self.dataQueue = asyncio.Queue()
         async def handler(websocket, path):
-            logger.debug("in handler")
             self.users.add(websocket)
             try:
                 await websocket.send(self.hello())
@@ -466,16 +459,13 @@ class ObsPyWebSocket(threading.Thread):
                      ],
                      return_when=asyncio.FIRST_COMPLETED,
                 )
-                logger.debug("handler past await tasks")
 
-                logger.debug("end handler")
             except:
                 e = sys.exc_info()[0]
                 logger.error('handler something bad happened  ', exc_info=e)
             finally:
                 self.users.remove(websocket)
-            logger.debug('exit handler')
-            logger.debug("done, remove websocket user")
+                logger.debug('exit handler, remove websocket user')
 
         self.server = await websockets.serve(handler, self.host, self.port)
 
