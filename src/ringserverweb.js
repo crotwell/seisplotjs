@@ -25,7 +25,13 @@ export type StreamsResult = {
 export const IRIS_HOST = 'rtserve.iris.washington.edu';
 
 const ORG = 'Organization: ';
-
+/**
+ * Web connection to a Ringserver.
+ *
+ *
+ * @param host optional host to connect to, defaults to IRIS
+ * @param port optional host to connect to, defaults to 80
+ */
 export class RingserverConnection {
   /** @private */
   _host: string;
@@ -143,7 +149,8 @@ export class RingserverConnection {
    * Result returned is an RSVP Promise.
    *
    * @param matchPattern regular expression to match
-   * @returns promise to streams
+   * @returns promise to object with 'accessTime' as a moment
+   * and 'streams' as an array of StreamStat objects.
    */
   pullStreams(matchPattern: string ): Promise<StreamsResult> {
     let queryParams = "";
@@ -171,8 +178,7 @@ export class RingserverConnection {
   }
 
   /**
-   * Pulls raw result from ringserver /streams. QueryParams should
-   * be formatted like URL query parameters, ie 'name=value&name=value'.
+   * Utility method to pull raw result from ringserver url.
    * Result returned is an RSVP Promise.
    *
    * @param url the url
@@ -190,24 +196,53 @@ export class RingserverConnection {
       });
   }
 
+  /**
+   * Forms base url from protocol, host and port.
+   *
+   * @return the string url
+   */
   formBaseURL(): string {
     return checkProtocol()+'//'+this._host+(this._port===80 ? '' : (':'+this._port));
   }
 
+  /**
+   * Forms the ringserver id url.
+   *
+   * @return the id url
+   */
   formIdURL(): string {
     return this.formBaseURL()+'/id';
   }
 
+  /**
+   * Forms the ringserver streams url using the query parameters.
+   *
+   * @return the streams url
+   */
   formStreamsURL(queryParams: string): string {
     return this.formBaseURL()+'/streams'+((queryParams && queryParams.length > 0) ? '?'+queryParams : '');
   }
 
+  /**
+   * Forms the ringserver stream ids url using the query parameters.
+   *
+   * @return the stream ids url
+   */
   formStreamIdsURL(queryParams: string): string {
     return this.formBaseURL()+'/streamids'+((queryParams && queryParams.length > 0) ? '?'+queryParams : '');
   }
 
 }
 
+/**
+ * Extract one StreamStat per station from an array of channel level
+ * StreamStats. The start and end times are the min and max times for all
+ * the channels within the station. Can be used to get most time of most
+ * recent packet from the stations to give an idea of current latency.
+ *
+ * @param   streams array of channel level StreamStats
+ * @return array of station level StreamStats
+ */
 export function stationsFromStreams(streams: Array<StreamStat>): Array<StreamStat> {
   let out: Map<string, StreamStat> = new Map();
   for (const s of streams) {
@@ -239,6 +274,13 @@ export type NSLCType = {
   channelCode: string
 };
 
+/**
+ * Split type, networkCode, stationCode, locationCode and channelCode
+ * from a ringserver id formatted like net_sta_loc_chan/type
+ *
+ * @param   id id string to split
+ * @return  object with the split fields
+ */
 export function nslcSplit(id: string): NSLCType {
   let split = id.split('/');
   let out = {};
@@ -256,6 +298,13 @@ export function nslcSplit(id: string): NSLCType {
   return out;
 }
 
+/**
+ * Object to hold start and end times for a key, usually channel or station.
+ *
+ * @param key id, usually station or channel
+ * @param start start time
+ * @param end end time
+ */
 export class StreamStat {
   key: string;
   startRaw: string;

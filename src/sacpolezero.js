@@ -15,8 +15,17 @@
  * StationXML response to SacPoleZero.
  */
 export class SacPoleZero {
+  /**
+   * Complex poles
+   */
   poles: Array<Complex>;
+  /**
+   * Complex zeros
+   */
   zeros: Array<Complex>;
+  /**
+   * Scalar overall gain
+   */
   constant: number;
   /** number of zeros added to convert to displacement, for debugging */
   gamma: number;

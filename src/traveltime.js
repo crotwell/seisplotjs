@@ -20,6 +20,8 @@ export const SVG_FORMAT = "svg";
  * Query to the IRIS traveltime webservice, based on the TauP Toolkit. See
  * http://service.iris.edu/irisws/traveltime/1/ and
  * https://www.seis.sc.edu/TauP/
+ *
+ * @param host optional host to connect to, defaults to IRIS
  */
 export class TraveltimeQuery {
   /** @private */

@@ -41,6 +41,8 @@ export const FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSN
  * Query to a FDSN Station web service.
  *
  * @see http://www.fdsn.org/webservices/
+ *
+ * @param host optional host to connect to, defaults to IRIS
  */
 export class StationQuery {
   /** @private */

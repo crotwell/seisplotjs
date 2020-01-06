@@ -38,6 +38,8 @@ export const IRIS_HOST = "service.iris.edu";
  * Query to a FDSN Dataselect web service.
  *
  * @see http://www.fdsn.org/webservices/
+ *
+ * @param host optional host to connect to, defaults to IRIS
  */
 export class DataSelectQuery {
   /** @private */
