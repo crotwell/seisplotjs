@@ -17,6 +17,10 @@ import {StartEndDuration} from './util.js';
 
 /**
  * Hour and Minute chooser using sliders.
+ *
+ * @param div selected div to append chooser to
+ * @param initialTime initial chooser time value
+ * @param updateCallback callback function when time is selected
  */
 export class HourMinChooser {
 
@@ -31,10 +35,10 @@ export class HourMinChooser {
   hourSlider: any; // d3 not yet in flow-typed :(
   minuteDiv: any; // d3 not yet in flow-typed :(
   minuteSlider: any; // d3 not yet in flow-typed :(
-  constructor(div: any, time: moment, updateCallback: ( time: moment) => void) {
+  constructor(div: any, initialTime: moment, updateCallback: ( time: moment) => void) {
     let mythis = this;
     this.div = div;
-    this.time = moment.utc(time);
+    this.time = moment.utc(initialTime);
     this.updateCallback = updateCallback;
     this.hourMinRegEx = /^([0-1]?[0-9]):([0-5]?[0-9])$/;
     this.myOnClick = function(e) {
@@ -106,7 +110,7 @@ export class HourMinChooser {
           mythis.timeModified();
         }
       });
-    this.minuteSlider.attr("value", time.minute());
+    this.minuteSlider.attr("value", this.time.minute());
   }
   /**
    * Updates the time without triggering the callback function.
@@ -182,6 +186,11 @@ export class HourMinChooser {
 /**
  * Date and Time chooser using pikaday for the date and the above
  * HourMinChooser for the hour and minute of time.
+ *
+ * @param div selected div to append chooser to
+ * @param label label for chooser
+ * @param initialTime initial chooser time value
+ * @param updateCallback callback function when time is selected
  */
 export class DateTimeChooser {
   div: any; // d3 not yet in flow-typed :(
@@ -244,7 +253,7 @@ export class DateTimeChooser {
   getTime(): moment {
     return this.time;
   }
-  
+
   /**
    * internal time set
    *
@@ -261,15 +270,18 @@ export class DateTimeChooser {
 
 /**
  * Combination of two DateTimeChoosers to specify a start and end time.
+ *
+ * @param div selected div to append chooser to
+ * @param updateCallback callback function when time is selected
  */
 export class TimeRangeChooser {
   div: any;
-  callbackFunction: (timerange: StartEndDuration) => void;
+  updateCallback: (timerange: StartEndDuration) => void;
   duration: number;
   startChooser: DateTimeChooser;
   endChooser: DateTimeChooser;
-  constructor(div: any, callbackFunction: (timerange: StartEndDuration) => void) {
-    this.callbackFunction = callbackFunction;
+  constructor(div: any, updateCallback: (timerange: StartEndDuration) => void) {
+    this.updateCallback = updateCallback;
     let endTime = moment.utc();
     this.duration = 300;
     let startTime = moment.utc(endTime).subtract(this.duration, 'second');
@@ -279,7 +291,7 @@ export class TimeRangeChooser {
     let startDiv = div.append("div").classed("start", true);
     this.startChooser = new DateTimeChooser(startDiv, "Start:", startTime, function(startTime) {
       mythis.endChooser.updateTime(moment.utc(startTime).add(mythis.duration, 'seconds'));
-      mythis.callbackFunction(mythis.getTimeRange());
+      mythis.updateCallback(mythis.getTimeRange());
     });
 
     let durationDiv = div.append("div").classed("duration", true);
@@ -291,13 +303,13 @@ export class TimeRangeChooser {
         let nDur = +Number.parseInt(this.value);
         mythis.duration = nDur;
         mythis.startChooser.updateTime(moment.utc(mythis.endChooser.getTime()).subtract(mythis.duration, 'seconds'));
-        mythis.callbackFunction(mythis.getTimeRange());
+        mythis.updateCallback(mythis.getTimeRange());
       });
 
     let endDiv = div.append("div").classed("end", true);
     this.endChooser = new DateTimeChooser(endDiv, "End:", endTime, function(endTime) {
       mythis.startChooser.updateTime(moment.utc(endTime).subtract(mythis.duration, 'seconds'));
-      mythis.callbackFunction(mythis.getTimeRange());
+      mythis.updateCallback(mythis.getTimeRange());
     });
   }
   getTimeRange(): StartEndDuration {
