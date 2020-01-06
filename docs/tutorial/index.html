@@ -66,10 +66,12 @@
   &lt;/body>
 &lt;/html>
           </code></pre>
-          <p>And then we need to download the standalone version of seisplotjs,
+          <p>If this is to be hosted locally, then we need to download the standalone version of seisplotjs,
             from here <a href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.0.0-alpha.6_standalone.js">
               http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.0.0-alpha.6_standalone.js</a>
               and put it in the same directory as our html file.
+              The <code class="language-html">&lt;script src="..."></code>
+              tag will also need to be changed to just the local link.
           </p>
           <p>
             Now we need a seismogram to plot. In seisplotjs, we refer to the
