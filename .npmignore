@@ -1,10 +1,6 @@
 src/
 flow-typed/
-example/knmi/
-example/socal/
-example/sis/
-example/testCss/
-example/uw/
+example/
 .DS_Store
 .git/
 seisplotjs_*_standalone.js
