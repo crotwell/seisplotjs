@@ -199,7 +199,7 @@ export class RingserverConnection {
   /**
    * Forms base url from protocol, host and port.
    *
-   * @return the string url
+   * @returns the string url
    */
   formBaseURL(): string {
     return checkProtocol()+'//'+this._host+(this._port===80 ? '' : (':'+this._port));
@@ -208,7 +208,7 @@ export class RingserverConnection {
   /**
    * Forms the ringserver id url.
    *
-   * @return the id url
+   * @returns the id url
    */
   formIdURL(): string {
     return this.formBaseURL()+'/id';
@@ -217,16 +217,18 @@ export class RingserverConnection {
   /**
    * Forms the ringserver streams url using the query parameters.
    *
-   * @return the streams url
+   * @param queryParams optional string of query parameters
+   * @returns the streams url
    */
-  formStreamsURL(queryParams: string): string {
+  formStreamsURL(queryParams?: string): string {
     return this.formBaseURL()+'/streams'+((queryParams && queryParams.length > 0) ? '?'+queryParams : '');
   }
 
   /**
    * Forms the ringserver stream ids url using the query parameters.
    *
-   * @return the stream ids url
+   * @param queryParams optional string of query parameters
+   * @returns the stream ids url
    */
   formStreamIdsURL(queryParams: string): string {
     return this.formBaseURL()+'/streamids'+((queryParams && queryParams.length > 0) ? '?'+queryParams : '');
@@ -241,7 +243,7 @@ export class RingserverConnection {
  * recent packet from the stations to give an idea of current latency.
  *
  * @param   streams array of channel level StreamStats
- * @return array of station level StreamStats
+ * @returns array of station level StreamStats
  */
 export function stationsFromStreams(streams: Array<StreamStat>): Array<StreamStat> {
   let out: Map<string, StreamStat> = new Map();
@@ -279,7 +281,7 @@ export type NSLCType = {
  * from a ringserver id formatted like net_sta_loc_chan/type
  *
  * @param   id id string to split
- * @return  object with the split fields
+ * @returns  object with the split fields
  */
 export function nslcSplit(id: string): NSLCType {
   let split = id.split('/');
@@ -332,6 +334,12 @@ export class StreamStat {
     this.startRaw = start; // reset to unchanged strings
     this.endRaw = end;
   }
+  /**
+   * Calculates latency time difference between last packet and current time.
+   *
+   * @param accessTime time latency is calculated relative to
+   * @returns latency
+   */
   calcLatency(accessTime: moment): moment.duration {
     return this.end.from(accessTime);
   }

@@ -25,7 +25,7 @@ export const FDSN_HOST = "www.fdsn.org";
  * @see http://www.fdsn.org/webservices/
  *
  * @param host optional host to connect to, defaults to FDSN
-*/
+ */
 export class DataCentersQuery {
   /** @private */
   _specVersion: number;

@@ -279,7 +279,7 @@ export class XSeedHeader {
    * Calculates size of the fixed header including the identifier, but without
    * the extra headers.
    *
-   * @return size in bytes of fixed header
+   * @returns size in bytes of fixed header
    */
   getSize() {
     return FIXED_HEADER_SIZE+this.identifier.length;
@@ -287,15 +287,33 @@ export class XSeedHeader {
   toString() {
     return this.identifier+" "+this.start.toISOString()+" "+this.encoding;
   }
+  /**
+   * Converts start time header fields to ISO8641 time string.
+   *
+   * @returns iso start time
+   */
   getStartFieldsAsISO() {
     return ''+this.year+'-'+padZeros(this.dayOfYear, 3)
       +'T'+padZeros(this.hour, 2)+':'+padZeros(this.minute, 2)+":"
       +padZeros(this.second, 2)+"."+padZeros(this.nanosecond, 9)+"Z";
   }
-
+  /**
+   * Calculates time of the ith sample.
+   *
+   * @param   i sample number
+   * @returns the time
+   */
   timeOfSample(i: number) {
     return moment.utc(this.start).add(1000*i/this.sampleRate, 'milliseconds');
   }
+  /**
+   * Writes to the given dataview.
+   *
+   * @param   dataView write buffer
+   * @param   offset   offset within the buffer
+   * @param   zeroCrc  optionally zero out the crc field in order to recalculate
+   * @returns          new offset after this record
+   */
   save(dataView: DataView, offset: number =0, zeroCrc: boolean =false) {
     dataView.setInt8(offset, this.recordIndicator.charCodeAt(0));
     offset++;
@@ -345,6 +363,11 @@ export class XSeedHeader {
 
     return offset;
   }
+  /**
+   * Converts header start time to moment
+   *
+   * @returns         start time as moment
+   */
   _startToMoment(): moment {
     let m = new moment.utc([this.year, 0, 1, this.hour, this.minute, this.second, 0]);
     m.add(Math.round(this.nanosecond / 1000000), 'ms');
