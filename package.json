@@ -39,8 +39,8 @@
     "version": "npm run compile && npm run standalone",
     "postversion": "echo git push && echo git push --tags",
     "bumpversion": "npm run bumpversion_standalone && npm run bumpversion_version",
-    "bumpversion_standalone": "replace-in-file seisplotjs_2.0.0-alpha.6_standalone.js seisplotjs_${npm_package_version}_standalone.js docs/index.html docs/tutorial/*.html docs/examples/*/*.html examples/*/*.html --verbose ",
-    "bumpversion_version": "replace-in-file 2.0.0-alpha.6 ${npm_package_version} src/index.js docs/index.html docs/tutorial/*.html docs/examples/index.html docs/examples/*/index.html --verbose "
+    "bumpversion_standalone": "replace-in-file seisplotjs_2.0.0-alpha.6_standalone.js seisplotjs_${npm_package_version}_standalone.js docs/index.html docs/tutorial/*.html docs/examples/*/*.html docs/examples/*/*/*.html examples/*/*.html --verbose ",
+    "bumpversion_version": "replace-in-file 2.0.0-alpha.6 ${npm_package_version} createApiDocs.sh src/index.js docs/index.html docs/tutorial/*.html docs/examples/*.html docs/examples/*/*.html docs/examples/*/*/*.html --verbose "
   },
   "repository": {
     "type": "git",
