@@ -4,6 +4,7 @@ Javascript modules for parsing, manipulating and plotting seismic data.
 A tutorial with examples of various access and display types can be seen at
 [http://www.seis.sc.edu/~crotwell/seisplotjs_v2/](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/). Also see the [wiki](https://github.com/crotwell/seisplotjs/wiki).
 
+Install with `npm i --save seisplotjs`
 
 Seisplotjs is divided into submodules:
 
