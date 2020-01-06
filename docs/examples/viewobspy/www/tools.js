@@ -88,6 +88,12 @@ function createTools(viewObspy) {
     let myvalue = seisplotjs.d3.select(this).property('value');
     let plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
     if (myvalue !== plottype) { return; }
+    viewObspy.plotDiv.selectAll("*").remove();
+    viewObspy.processedData.forEach((value, key) => {
+      if (key.startsWith('graph')) {
+        viewObspy.processedData.delete(key);
+      }
+    });
     viewObspy.checkProcessedDatasetLoaded();
     let dataset = viewObspy.processedData.get('dataset');
     viewObspy.plotDataset(dataset, plottype, viewObspy.seisChanQuakeFilter);
