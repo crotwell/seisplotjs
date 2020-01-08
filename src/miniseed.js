@@ -10,7 +10,7 @@
 
 import {SeismogramSegment, Seismogram} from './seismogram';
 import * as seedcodec from './seedcodec';
-import { isNonEmptyStringArg } from './util.js';
+import { isDef, isNonEmptyStringArg } from './util.js';
 
 export const MINISEED_MIME = "application/vnd.fdsn.mseed";
 
@@ -333,7 +333,7 @@ function makeString(dataView: DataView, offset: number, length: number): string 
 }
 
 export function parseBTime(dataView: DataView, offset: number, byteSwap?: boolean): BTime {
-    if ( ! byteSwap ) { byteSwap = false; }
+    if ( ! isDef(byteSwap) ) { byteSwap = false; }
     let year = dataView.getInt16(offset, byteSwap);
     let jday = dataView.getInt16(offset+2, byteSwap);
     let hour = dataView.getInt8(offset+4);

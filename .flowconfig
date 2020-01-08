@@ -9,6 +9,7 @@
 [libs]
 
 [lints]
+sketchy-null-bool=error
 sketchy-null-number=error
 sketchy-null-string=error
 
