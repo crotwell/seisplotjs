@@ -11,7 +11,8 @@ import RSVP from 'rsvp';
 
 import * as util from './util.js'; // for util.log
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg,
+        isNonEmptyStringArg,isNumArg, checkStringOrDate} from './util';
 
 import * as miniseed from './miniseed';
 import { Seismogram, SeismogramDisplayData } from './seismogram';
@@ -79,7 +80,7 @@ export class DataSelectQuery {
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
-    if (host) {
+    if (isNonEmptyStringArg(host)) {
       this._host = host;
     } else {
       this._host = IRIS_HOST;

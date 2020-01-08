@@ -11,7 +11,8 @@ import {parseStationXml, Network} from './stationxml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate} from './util';
+import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
+        isNonEmptyStringArg, isNumArg, checkStringOrDate} from './util';
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';
@@ -111,7 +112,7 @@ export class StationQuery {
     this._specVersion = 1;
     this._protocol = checkProtocol();
     this.host(host);
-    if (! host) {
+    if (! isNonEmptyStringArg(host)) {
       this._host = IRIS_HOST;
     }
     this._port = 80;

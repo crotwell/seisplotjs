@@ -10,6 +10,7 @@
 
 [lints]
 sketchy-null-number=error
+sketchy-null-string=error
 
 [options]
 

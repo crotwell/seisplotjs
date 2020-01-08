@@ -11,7 +11,8 @@ import { Quake, USGS_HOST, parseQuakeML } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject, isStringArg, isNumArg, checkStringOrDate} from './util';
+import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject,
+        isStringArg, isNonEmptyStringArg, isNumArg, checkStringOrDate} from './util';
 
 /**
  * Major version of the FDSN spec supported here.
@@ -104,7 +105,7 @@ export class EventQuery {
     this._specVersion = 1;
     this._protocol = checkProtocol();
     this.host(host);
-    if (! host) {
+    if (! isNonEmptyStringArg(host)) {
       this._host = USGS_HOST;
     }
     this._port = 80;

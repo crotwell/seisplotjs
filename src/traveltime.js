@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-import {checkProtocol, hasArgs, stringify, isDef } from './util';
+import {checkProtocol, hasArgs, stringify, isDef, isNonEmptyStringArg } from './util';
 import {Station} from './stationxml.js';
 import {Quake} from './quakeml.js';
 
@@ -55,7 +55,7 @@ export class TraveltimeQuery {
   constructor(host: ?string) {
     this._specVersion = "1";
     this._protocol = checkProtocol();
-    if (! host) {
+    if (! isNonEmptyStringArg(host)) {
       this._host = IRIS_HOST;
     } else {
       this._host = host;

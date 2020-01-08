@@ -7,7 +7,7 @@
  */
 
 import * as util from './util.js'; // for util.log
-import {dataViewToString, stringify, isDef} from './util';
+import {dataViewToString, stringify, isDef, isNonEmptyStringArg} from './util';
 import * as miniseed from './miniseed';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
@@ -627,7 +627,7 @@ export class DataLinkPacket {
    */
   export function stringToUint8Array(dataString?: string): Uint8Array | void {
     let binaryData = undefined;
-    if (dataString) {
+    if (isNonEmptyStringArg(dataString)) {
       binaryData = new Uint8Array(dataString.length);
       for (let i=0; i<dataString.length;i++) {
         binaryData[i] = dataString.charCodeAt(i);

@@ -10,6 +10,7 @@
 
 import {SeismogramSegment, Seismogram} from './seismogram';
 import * as seedcodec from './seedcodec';
+import { isNonEmptyStringArg } from './util.js';
 
 export const MINISEED_MIME = "application/vnd.fdsn.mseed";
 
@@ -174,7 +175,7 @@ export class DataRecord {
    * @returns string of codes
    */
   codes(sep?: string): string {
-    if ( ! sep) { sep = '.';}
+    if ( ! isNonEmptyStringArg(sep)) { sep = '.';}
     return this.header.netCode+sep+this.header.staCode+sep+this.header.locCode+sep+this.header.chanCode;
   }
 }

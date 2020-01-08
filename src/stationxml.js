@@ -6,7 +6,8 @@
  * http://www.seis.sc.edu
  */
 
-import { StartEndDuration, isObject, isDef, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import { StartEndDuration, isObject, isDef, isStringArg, isNonEmptyStringArg,
+         isNumArg, checkStringOrDate, stringify} from './util';
 import {Complex, createComplex} from './oregondsputil.js';
 
 import moment from 'moment';
@@ -299,13 +300,13 @@ export function parseStationXml(rawXml: Document): Array<Network> {
    */
 export function convertToNetwork(xml: Element): Network {
     const netCode = _grabAttribute(xml, "code");
-    if (! netCode) {throw new Error("network code missing in network!");}
+    if (! isNonEmptyStringArg(netCode)) {throw new Error("network code missing in network!");}
     let out = new Network(netCode);
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
-    if (rs) { out.restrictedStatus = rs; }
+    if (isNonEmptyStringArg(rs)) { out.restrictedStatus = rs; }
     const desc = _grabFirstElText(xml, 'Description');
-    if (desc) {out.description = desc;}
+    if (isNonEmptyStringArg(desc)) {out.description = desc;}
     if (_grabAttribute(xml, "endDate")) {
       out.endDate = _grabAttribute(xml, "endDate");
     }
@@ -330,11 +331,11 @@ export function convertToNetwork(xml: Element): Network {
    */
 export function convertToStation(network: Network, xml: Element): Station {
     let staCode = _grabAttribute(xml, "code");
-    if (! staCode) {throw new Error("station code missing in station!");}
+    if (! isNonEmptyStringArg(staCode)) {throw new Error("station code missing in station!");}
     let out = new Station(network, staCode);
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
-    if (rs) { out.restrictedStatus = rs; }
+    if (isNonEmptyStringArg(rs)) { out.restrictedStatus = rs; }
     const lat =  _grabFirstElFloat(xml, 'Latitude');
     if (isNumArg(lat)) {out.latitude = lat;}
     const lon = _grabFirstElFloat(xml, 'Longitude');
@@ -362,14 +363,14 @@ export function convertToStation(network: Network, xml: Element): Station {
    */
 export function convertToChannel(station: Station, xml: Element): Channel {
     let locCode = _grabAttribute(xml, "locationCode");
-    if (! locCode) {locCode = '';}
+    if (! isNonEmptyStringArg(locCode)) {locCode = '';}
     let chanCode = _grabAttribute(xml, "code");
-    if (! chanCode) {throw new Error("channel code missing in channel!");}
+    if (! isNonEmptyStringArg(chanCode)) {throw new Error("channel code missing in channel!");}
 
     let out = new Channel(station, chanCode, locCode);
     out.startDate = _grabAttribute(xml, "startDate");
     const rs = _grabAttribute(xml, "restrictedStatus");
-    if (rs) { out.restrictedStatus = rs; }
+    if (isNonEmptyStringArg(rs)) { out.restrictedStatus = rs; }
 
     const lat =  _grabFirstElFloat(xml, 'Latitude');
     if (isNumArg(lat)) {out.latitude = lat;}
@@ -460,10 +461,10 @@ export function convertToStage(stageXml: Element): Stage {
       // shoudl be a filter of some kind, check for units
       let inputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'InputUnits'), 'Name');
       let outputUnits = _grabFirstElText(_grabFirstEl(stageXml, 'OutputUnits'), 'Name');
-      if (! inputUnits) {
+      if (! isNonEmptyStringArg(inputUnits)) {
         throw new Error("Stage inputUnits required");
       }
-      if (! outputUnits) {
+      if (! isNonEmptyStringArg(outputUnits)) {
         throw new Error("Stage outputUnits required");
       }
       // here we assume there must be a filter, and so must have units
@@ -471,7 +472,7 @@ export function convertToStage(stageXml: Element): Stage {
       if (subEl.localName === 'PolesZeros') {
         filter = new PolesZeros(inputUnits, outputUnits);
         const pzt = _grabFirstElText(stageXml, 'PzTransferFunctionType');
-        if (pzt) { filter.pzTransferFunctionType = pzt; }
+        if (isNonEmptyStringArg(pzt)) { filter.pzTransferFunctionType = pzt; }
         const nfa = _grabFirstElFloat(stageXml, 'NormalizationFactor');
         if (isNumArg(nfa)) { filter.normalizationFactor = nfa;}
         const nfr = _grabFirstElFloat(stageXml, 'NormalizationFrequency');
@@ -490,7 +491,7 @@ export function convertToStage(stageXml: Element): Stage {
         let coeffXml = subEl;
         filter = new CoefficientsFilter(inputUnits, outputUnits);
         const cft = _grabFirstElText(coeffXml, 'CfTransferFunctionType');
-        if (cft) {filter.cfTransferFunction = cft;}
+        if (isNonEmptyStringArg(cft)) {filter.cfTransferFunction = cft;}
         filter.numerator = Array.from(coeffXml.getElementsByTagNameNS(STAML_NS, 'Numerator'))
             .map(function(numerEl) {
               return parseFloat(numerEl.textContent);
@@ -505,7 +506,7 @@ export function convertToStage(stageXml: Element): Stage {
         let firXml = subEl;
         filter = new FIR(inputUnits, outputUnits);
         const s = _grabFirstElText(firXml, 'Symmetry');
-        if (s) {filter.symmetry = s;}
+        if (isNonEmptyStringArg(s)) {filter.symmetry = s;}
         filter.numerator = Array.from(firXml.getElementsByTagNameNS(STAML_NS, 'NumeratorCoefficient'))
             .map(function(numerEl) {
               return parseFloat(numerEl.textContent);
@@ -521,12 +522,12 @@ export function convertToStage(stageXml: Element): Stage {
       if (filter) {
         // add description and name if it was there
         let description = _grabFirstElText(subEl, 'Description');
-        if (description) {
+        if (isNonEmptyStringArg(description)) {
           filter.description = description;
         }
         if (subEl.hasAttribute('name')) {
           const n = _grabAttribute(subEl, 'name');
-          if (n) {filter.name = n;}
+          if (isNonEmptyStringArg(n)) {filter.name = n;}
         }
       }
     }

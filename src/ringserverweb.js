@@ -9,7 +9,8 @@
 import moment from 'moment';
 
 import * as util from './util.js'; // for util.log
-import { checkProtocol, hasNoArgs, isStringArg, isNumArg, isDef, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import { checkProtocol, hasNoArgs, isStringArg, isNonEmptyStringArg, isNumArg,
+         isDef, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 
 export type RingserverVersion = {
@@ -40,7 +41,7 @@ export class RingserverConnection {
   /** @private */
   _timeoutSec: number;
   constructor(host?: string, port?: number) {
-    this._host = (host ? host : IRIS_HOST);
+    this._host = (isNonEmptyStringArg(host) ? host : IRIS_HOST);
     this._port = (isDef(port) ? port : 80);
     this._timeoutSec = 30;
   }
@@ -221,7 +222,7 @@ export class RingserverConnection {
    * @returns the streams url
    */
   formStreamsURL(queryParams?: string): string {
-    return this.formBaseURL()+'/streams'+((queryParams && queryParams.length > 0) ? '?'+queryParams : '');
+    return this.formBaseURL()+'/streams'+((isNonEmptyStringArg(queryParams) && queryParams.length > 0) ? '?'+queryParams : '');
   }
 
   /**

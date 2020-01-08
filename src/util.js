@@ -42,7 +42,9 @@ export function isStringArg(value: any): boolean %checks {
 export function isNumArg(value: any): boolean %checks {
   return typeof value === 'number';
 }
-
+export function isNonEmptyStringArg(value: any): boolean %checks {
+  return arguments.length !== 0 && isStringArg(value) && value.length !== 0;
+}
 export function isObject (obj: mixed): boolean %checks {
   return obj !== null && typeof obj === 'object';
 }

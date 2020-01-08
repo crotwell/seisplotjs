@@ -6,7 +6,8 @@
  * http://www.seis.sc.edu
  */
 
-import { isObject, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import { isObject, isStringArg, isNonEmptyStringArg,
+         isNumArg, checkStringOrDate, stringify} from './util';
 import * as util from './util.js'; // for util.log
 import moment from 'moment';
 
@@ -59,12 +60,12 @@ export class Quake {
     }
     let out = new Quake();
     let s = _grabAttribute(qml, 'publicID');
-    if (! s) {throw new Error("Quake/Event does not have publicID");}
+    if (! isNonEmptyStringArg(s)) {throw new Error("Quake/Event does not have publicID");}
     out.publicId = s;
     const desc = _grabFirstElText(_grabFirstEl(qml, 'description'), 'text');
     if (isStringArg(desc)) {out.description = desc;}
     let otimeStr = _grabFirstElText(_grabFirstEl(_grabFirstEl(qml, 'origin'), 'time'),'value');
-    if (otimeStr ) {
+    if (isNonEmptyStringArg(otimeStr) ) {
       out.time = otimeStr;
     }
 
@@ -91,7 +92,7 @@ export class Quake {
     out.eventId = Quake.extractEventId(qml, host);
     out.preferredOriginId = _grabFirstElText(qml, 'preferredOriginID');
     out.preferredMagnitudeId = _grabFirstElText(qml, 'preferredMagnitudeID');
-    if (out.preferredOriginId) {
+    if (isNonEmptyStringArg(out.preferredOriginId)) {
       for (let o of allOrigins) {
         if (o.publicId === out.preferredOriginId) {
           out.preferredOrigin = o;
@@ -110,7 +111,7 @@ export class Quake {
       out.depth = o.depth;
     }
     if (allMags.length > 0) {out.magnitude = allMags[0];}
-    if (out.preferredMagnitudeId) {
+    if (isNonEmptyStringArg(out.preferredMagnitudeId)) {
       for (let m of allMags) {
         if (m.publicId === out.preferredMagnitudeId) {
           out.preferredMagnitude = m;
@@ -133,8 +134,8 @@ export class Quake {
   static extractEventId(qml: Element, host?: string): string {
     let eventId = _grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventid');
     let catalogEventSource = _grabAttributeNS(qml, ANSS_CATALOG_NS, 'eventsource');
-    if (eventId) {
-      if (host === USGS_HOST && catalogEventSource) {
+    if (isNonEmptyStringArg(eventId)) {
+      if (host === USGS_HOST && isNonEmptyStringArg(catalogEventSource)) {
         // USGS, NCEDC and SCEDC use concat of eventsource and eventId as eventit, sigh...
         return catalogEventSource+eventId;
       } else {
@@ -142,7 +143,7 @@ export class Quake {
       }
     }
     let publicid = _grabAttribute(qml, 'publicID');
-    if (publicid) {
+    if (isNonEmptyStringArg(publicid)) {
       let re = /eventid=([\w\d]+)/;
       let parsed = re.exec(publicid);
       if (parsed) { return parsed[1];}
@@ -198,7 +199,7 @@ export class Origin {
     }
     let out = new Origin();
     let otimeStr = _grabFirstElText(_grabFirstEl(qml, 'time'),'value');
-    if (otimeStr ) {
+    if (isNonEmptyStringArg(otimeStr) ) {
       out.time = otimeStr;
     } else {
       util.log("origintime is missing...");
@@ -210,7 +211,7 @@ export class Origin {
     const depth = _grabFirstElFloat(_grabFirstEl(qml, 'depth'), 'value');
     if (isNumArg(depth)) {out.depth = depth;}
     const pid = _grabAttribute(qml, 'publicID');
-    if (pid){out.publicId = pid;}
+    if (isNonEmptyStringArg(pid)){out.publicId = pid;}
 
     let allArrivalEls = qml.getElementsByTagNameNS(BED_NS, 'arrival');
     let allArrivals = [];
@@ -255,12 +256,12 @@ export class Magnitude {
     let type = _grabFirstElText(qml, 'type');
     if (isNumArg(mag)) {
       // allow type to be undef, but mag needs to be a number
-      if ( ! type ) {
+      if ( ! isNonEmptyStringArg(type) ) {
         type = UNKNOWN_MAG_TYPE;
       }
       let out = new Magnitude(mag, type);
       const pid = _grabAttribute(qml, 'publicID');
-      if (pid){out.publicId = pid;}
+      if (isNonEmptyStringArg(pid)){out.publicId = pid;}
       return out;
     } else {
       throw new Error(`Did not find mag and type in Element: ${stringify(mag)} ${stringify(type)}`);
@@ -295,14 +296,14 @@ export class Arrival {
     }
     let pickId = _grabFirstElText(arrivalQML, 'pickID');
     let phase = _grabFirstElText(arrivalQML, 'phase');
-    if (phase && pickId) {
+    if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
       let myPick = allPicks.find(function(p: Pick) { return p.publicId === pickId;});
       if ( ! myPick) {
         throw new Error("Can't find pick with Id="+pickId+" for Arrival");
       }
       let out = new Arrival(phase, myPick);
       const pid = _grabAttribute(arrivalQML, 'publicID');
-      if (pid){out.publicId = pid;}
+      if (isNonEmptyStringArg(pid)){out.publicId = pid;}
       return out;
     } else {
       throw new Error("Arrival does not have phase or pickId: "+stringify(phase)+" "+stringify(pickId));
@@ -348,8 +349,9 @@ export class Pick {
     let locationCode = _grabAttribute(waveformIdEl, "locationCode");
     let channelCode = _grabAttribute(waveformIdEl, "channelCode");
     // handle empty loc code, it can be missing
-    if ( ! locationCode) { locationCode = '';}
-    if (! netCode || ! stationCode || ! channelCode) {
+    if ( ! isNonEmptyStringArg(locationCode)) { locationCode = '';}
+    if (! isNonEmptyStringArg(netCode) || ! isNonEmptyStringArg(stationCode)
+        || ! isNonEmptyStringArg(channelCode)) {
       throw new Error("missing codes: "+stringify(netCode)
                       +"."+ stringify(stationCode)
                       +"."+ stringify(locationCode)
@@ -357,7 +359,7 @@ export class Pick {
     }
     let out = new Pick(time, netCode, stationCode, locationCode, channelCode);
     const pid = _grabAttribute(pickQML, 'publicID');
-    if (pid){out.publicId = pid;}
+    if (isNonEmptyStringArg(pid)){out.publicId = pid;}
     return out;
   }
 }

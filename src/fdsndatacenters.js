@@ -7,7 +7,8 @@
  */
 
 // special due to flow
-import {checkProtocol, makeParam, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg} from './util';
+import {checkProtocol, makeParam, isDef, hasArgs, hasNoArgs, isStringArg,
+        isNonEmptyStringArg, isNumArg} from './util';
 
 import { TEXT_MIME, JSON_MIME , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
@@ -48,7 +49,7 @@ export class DataCentersQuery {
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
-    if (host) {
+    if (isNonEmptyStringArg(host)) {
       this._host = host;
     } else {
       this._host = FDSN_HOST;
@@ -198,7 +199,7 @@ export class DataCentersQuery {
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
       .then(function(response) {
         let contentType = response.headers.get('content-type');
-        if(contentType && contentType.includes(JSON_MIME)) {
+        if(isNonEmptyStringArg(contentType) && contentType.includes(JSON_MIME)) {
           return response.json();
         }
         // $FlowFixMe

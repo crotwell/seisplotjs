@@ -10,7 +10,8 @@ import moment from 'moment';
 import RSVP from 'rsvp';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg, isNumArg, checkStringOrDate, stringify} from './util';
+import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
+        isNonEmptyStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import {SeismogramDisplayData } from './seismogram.js';
 import { TEXT_MIME, JSON_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
@@ -92,7 +93,7 @@ export class AvailabilityQuery {
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
-    if (host) {
+    if (isNonEmptyStringArg(host)) {
       this._host = host;
     } else {
       this._host = IRIS_HOST;
@@ -465,7 +466,7 @@ export class AvailabilityQuery {
           return EMPTY_JSON;
         }
         let contentType = response.headers.get('content-type');
-        if(contentType && contentType.includes(JSON_MIME)) {
+        if(isNonEmptyStringArg(contentType) && contentType.includes(JSON_MIME)) {
           return response.json();
         }
         // $FlowFixMe
@@ -502,7 +503,7 @@ export class AvailabilityQuery {
           return EMPTY_JSON;
         }
         let contentType = response.headers.get('content-type');
-        if(contentType && contentType.includes(JSON_MIME)) {
+        if(isNonEmptyStringArg(contentType) && contentType.includes(JSON_MIME)) {
           return response.json();
         }
         // $FlowFixMe
@@ -545,7 +546,7 @@ export class AvailabilityQuery {
           return EMPTY_JSON;
         }
         let contentType = response.headers.get('content-type');
-        if(contentType && contentType.includes(JSON_MIME)) {
+        if(isNonEmptyStringArg(contentType) && contentType.includes(JSON_MIME)) {
           return response.json();
         }
         // $FlowFixMe
@@ -592,7 +593,7 @@ export class AvailabilityQuery {
           n.stations.push(s);
         }
         let c = new Channel(s, ds.channel, ds.locationCode);
-        if (ds.earliest && ds.latest){
+        if (isNonEmptyStringArg(ds.earliest) && isNonEmptyStringArg(ds.latest)){
           out.push( SeismogramDisplayData.fromChannelAndTimes(c, moment.utc(ds.earliest), moment.utc(ds.latest)));
         } else if (ds.timespans) {
           for (let ts of ds.timespans) {
