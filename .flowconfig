@@ -9,9 +9,10 @@
 [libs]
 
 [lints]
-sketchy-null-bool=error
-sketchy-null-number=error
-sketchy-null-string=error
+all=error
+unclear-type=off
+untyped-import=off
+unsafe-getters-setters=off
 
 [options]
 
