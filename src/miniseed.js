@@ -366,6 +366,12 @@ export class BTime {
   toString(): string {
     return this.year+"-"+this.jday+" "+this.hour+":"+this.min+":"+this.sec+"."+this.tenthMilli.toFixed().padStart(4,'0')+" "+this.toMoment().toISOString();
   }
+  /**
+   * Converts this BTime to a momentjs utc moment. Note momentjs's precision
+   * is limited to milliseconds.
+   *
+   * @returns         BTime as a moment
+   */
   toMoment(): moment {
     let m = new moment.utc([this.year, 0, 1, this.hour, this.min, this.sec, 0]);
     m.add(Math.round(this.tenthMilli/10), 'ms');
@@ -375,9 +381,6 @@ export class BTime {
     } else {
       throw new Error(`BTime.start is invalid moment: ${this.year} ${this.jday} ${this.hour} ${this.min} ${this.sec} ${this.tenthMilli}`);
     }
-  }
-  toDate(): Date {
-    return this.toMoment().toDate();
   }
 }
 
