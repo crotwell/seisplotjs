@@ -35,12 +35,14 @@
     "standalone": "npm run browserify && npm run tutorial_standalone && npm run example_standalone",
     "doc": "npm run apidoc",
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
-    "prepare": "npm outdated && npm run flow && npm run lint && npm run test && npm outdated && npm run compile && npm run doc",
+    "prepare": "npm run compile && npm run doc",
     "version": "npm run compile && npm run standalone && npm run bumpversion",
     "postversion": "echo remember: git push && echo remember: git push --tags",
     "bumpversion": "npm run bumpversion_standalone && npm run bumpversion_version",
     "bumpversion_standalone": "replace-in-file seisplotjs_2.0.0-alpha.7_standalone.js seisplotjs_${npm_package_version}_standalone.js docs/index.html docs/tutorial/*.html docs/examples/*/*.html docs/examples/*/*/*.html examples/*/*.html --verbose ",
-    "bumpversion_version": "replace-in-file 2.0.0-alpha.7 ${npm_package_version} createApiDocs.sh src/index.js docs/index.html docs/tutorial/*.html docs/examples/*.html docs/examples/*/*.html docs/examples/*/*/*.html --verbose "
+    "bumpversion_version": "replace-in-file 2.0.0-alpha.7 ${npm_package_version} createApiDocs.sh src/index.js docs/index.html docs/tutorial/*.html docs/examples/*.html docs/examples/*/*.html docs/examples/*/*/*.html --verbose ",
+    "doingdevelopment": "git update-index --skip-worktree docs/api/*.html",
+    "prepublishOnly": "npm run flow && npm run lint && npm run test && npm outdated && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code"
   },
   "repository": {
     "type": "git",
