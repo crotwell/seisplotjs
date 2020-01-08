@@ -1,6 +1,6 @@
 {
   "name": "seisplotjs",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.7",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "dist/seisplotjs-umd.js",
   "module": "dist/module/index.js",
@@ -36,11 +36,11 @@
     "doc": "npm run apidoc",
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
     "prepare": "npm outdated && npm run flow && npm run lint && npm run test && npm outdated && npm run compile && npm run doc",
-    "version": "npm run compile && npm run standalone",
-    "postversion": "echo git push && echo git push --tags",
+    "version": "npm run compile && npm run standalone && npm run bumpversion",
+    "postversion": "echo remember: git push && echo remember: git push --tags",
     "bumpversion": "npm run bumpversion_standalone && npm run bumpversion_version",
-    "bumpversion_standalone": "replace-in-file seisplotjs_2.0.0-alpha.6_standalone.js seisplotjs_${npm_package_version}_standalone.js docs/index.html docs/tutorial/*.html docs/examples/*/*.html docs/examples/*/*/*.html examples/*/*.html --verbose ",
-    "bumpversion_version": "replace-in-file 2.0.0-alpha.6 ${npm_package_version} createApiDocs.sh src/index.js docs/index.html docs/tutorial/*.html docs/examples/*.html docs/examples/*/*.html docs/examples/*/*/*.html --verbose "
+    "bumpversion_standalone": "replace-in-file seisplotjs_2.0.0-alpha.7_standalone.js seisplotjs_${npm_package_version}_standalone.js docs/index.html docs/tutorial/*.html docs/examples/*/*.html docs/examples/*/*/*.html examples/*/*.html --verbose ",
+    "bumpversion_version": "replace-in-file 2.0.0-alpha.7 ${npm_package_version} createApiDocs.sh src/index.js docs/index.html docs/tutorial/*.html docs/examples/*.html docs/examples/*/*.html docs/examples/*/*/*.html --verbose "
   },
   "repository": {
     "type": "git",

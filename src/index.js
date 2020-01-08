@@ -50,9 +50,9 @@ import RSVP from 'rsvp';
 import * as d3 from 'd3';
 
 /**
- * Current versionof seisplotjs
+ * Current version of seisplotjs
  */
-const version = '2.0.0-alpha.6';
+const version = '2.0.0-alpha.7';
 
 /* reexport */
 export { cssutil,
