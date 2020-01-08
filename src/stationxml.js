@@ -598,39 +598,12 @@ export function extractComplex(el: Element) {
     }
   }
 
-
 /**
- * Extract all stations from all networks in the input array.
+ * Generator function to access all stations within all networks in the array.
  *
- * @param   networks Array of networks.
- * @returns           Array of stations.
- * @deprecated
+ * @param      networks array of Networks
+ * @returns           generator yeiding stations
  */
-export function extractAllStations(networks: Array<Network>): Array<Station> {
-  let out = [];
-  for (let n of networks) {
-    out = out.concat(n.stations);
-  }
-  return out;
-}
-
-/**
- * Extract all channels from all stations from all networks in the input array.
- *
- * @param   networks Array of networks.
- * @returns           Array of channels.
- * @deprecated
- */
-export function extractAllChannels(networks: Array<Network>): Array<Channel> {
-    let out = [];
-    for (let n of networks) {
-      for (let s of n.stations) {
-        out = out.concat(s.channels);
-      }
-    }
-    return out;
-}
-
 export function* allStations(networks: Array<Network>): Generator<Station, void, any> {
   for (let n of networks) {
     for (let s of n.stations) {
@@ -639,6 +612,13 @@ export function* allStations(networks: Array<Network>): Generator<Station, void,
   }
 }
 
+/**
+ * Generator function to access all channels within all stations
+ * within all networks in the array.
+ *
+ * @param      networks array of Networks
+ * @returns           generator yeiding channels
+ */
 export function* allChannels(networks: Array<Network>): Generator<Channel, void, any> {
   for (let s of allStations(networks)) {
     for (let c of s.channels) {
