@@ -18,6 +18,8 @@ export const ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1";
 
 export const USGS_HOST = "earthquake.usgs.gov";
 
+export const UNKNOWN_MAG_TYPE = 'unknown';
+
 // QuakeML classes
 
 /** Represent a QuakeML Event. Renamed to Quake as Event conflicts with
@@ -251,13 +253,18 @@ export class Magnitude {
     }
     let mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, 'mag'), 'value');
     let type = _grabFirstElText(qml, 'type');
-    if (mag && type) {
+    if (isNumArg(mag)) {
+      // allow type to be undef, but mag needs to be a number
+      if ( ! type ) {
+        type = UNKNOWN_MAG_TYPE;
+      }
       let out = new Magnitude(mag, type);
       const pid = _grabAttribute(qml, 'publicID');
       if (pid){out.publicId = pid;}
       return out;
+    } else {
+      throw new Error(`Did not find mag and type in Element: ${stringify(mag)} ${stringify(type)}`);
     }
-    throw new Error("Did not find mag and type in Element: ${mag} ${type}");
   }
   toString() {
     return stringify(this.mag)+" "+stringify(this.type);
@@ -330,7 +337,7 @@ export class Pick {
    * @returns Pick instance
    */
   static createFromXml(pickQML: Element): Pick {
-    if (pickQML.localName !== "Pick") {
+    if (pickQML.localName !== "pick") {
       throw new Error(`Cannot extract, not a QuakeML Pick: ${pickQML.localName}`);
     }
     let otimeStr = _grabFirstElText(_grabFirstEl(pickQML, 'time'),'value');
