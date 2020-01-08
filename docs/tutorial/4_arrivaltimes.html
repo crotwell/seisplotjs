@@ -92,7 +92,7 @@
               name: "origin",
               time: seisplotjs.moment.utc(quakeList[0].time)
             });
-            let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
+            let allChannels = Array.from(seisplotjs.stationxml.allChannels(networks));
             let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
             let startTime = seisplotjs.moment.utc(quakeList[0].time)
               .add(firstP.time, 'seconds').subtract(30, 'seconds');

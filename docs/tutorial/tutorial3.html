@@ -62,13 +62,13 @@
           }).addTo(mymap);
           circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
         }
-        for (let s of seisplotjs.stationxml.extractAllStations(networks)) {
+        for (let s of seisplotjs.stationxml.allStations(networks)) {
           let m = L.marker([s.latitude, s.longitude]);
           m.addTo(mymap);
           m.bindTooltip(s.codes());
         }
 
-        let allChannels = seisplotjs.stationxml.extractAllChannels(networks);
+        let allChannels = Array.from(seisplotjs.stationxml.allChannels(networks));
         let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
         let seismogramDataList = allChannels.map(c => {
           return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
