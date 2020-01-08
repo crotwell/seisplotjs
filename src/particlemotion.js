@@ -15,7 +15,7 @@ import {
 import {insertCSS} from './cssutil.js';
 import { SeismographConfig } from './seismographconfig';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData } from './seismogram.js';
-import { isDef, StartEndDuration } from './util.js';
+import { isDef, isNumArg, StartEndDuration } from './util.js';
 
 export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)
@@ -310,7 +310,7 @@ export class ParticleMotion {
   }
   drawXLabel() {
     this.svg.selectAll("g.xLabel").remove();
-    if (this.width && this.outerWidth) {
+    if (isNumArg(this.width) && isNumArg(this.outerWidth)) {
     this.svg.append("g")
        .classed("xLabel", true)
        .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight - this.seismographConfig.margin.bottom/3  )+")")

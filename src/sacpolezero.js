@@ -7,6 +7,7 @@
  */
 
  import { Complex, createComplex} from './oregondsputil.js';
+ import { isNumArg } from './util.js';
 
 /**
  * SAC style response file. This contains poles and zeros to represent the
@@ -51,7 +52,7 @@ export class SacPoleZero {
       s.push("    "+this.poles[i].real()+" "+this.poles[i].imag());
     }
     s.push("CONSTANT "+this.constant);
-    if (this.gamma && this.mulFactor && this.sd && this.A0) {
+    if (isNumArg(this.gamma) && isNumArg(this.mulFactor) && isNumArg(this.sd) && isNumArg(this.A0)) {
       s.push("*    gamma: "+this.gamma);
       s.push("*    mulFactor: "+this.mulFactor);
       s.push("*    sd: "+this.sd);

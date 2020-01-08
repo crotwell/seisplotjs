@@ -21,7 +21,7 @@ import {SeismogramDisplayData, findStartEnd, findMinMax, findMinMaxOverTimeRange
 import {Quake} from './quakeml.js';
 
 import * as util from './util.js';
-import {StartEndDuration, isDef} from './util';
+import {StartEndDuration, isDef, isNumArg } from './util';
 
 
 
@@ -109,10 +109,10 @@ export class Seismograph {
 
     this.svg = this.svgParent.append("svg")
       .style("z-index", 100);
-    if (this.seismographConfig.minHeight && this.seismographConfig.minHeight > 0) {
+    if (isNumArg(this.seismographConfig.minHeight) && this.seismographConfig.minHeight > 0) {
       this.svg.style("min-height", this.seismographConfig.minHeight+'px');
     }
-    if (this.seismographConfig.maxHeight && this.seismographConfig.maxHeight > 0) {
+    if (isNumArg(this.seismographConfig.maxHeight) && this.seismographConfig.maxHeight > 0) {
       this.svg.style("max-height", this.seismographConfig.maxHeight+'px');
     }
     this.svg.classed("seismograph", true);

@@ -135,7 +135,7 @@ export class RingserverConnection {
    */
   pullStreamIds(level: number, matchPattern: string): Promise<Array<string>> {
     let queryParams = 'level=6';
-    if (level && level > 0) { queryParams = 'level='+level; }
+    if (isNumArg(level) && level > 0) { queryParams = 'level='+level; }
     if (matchPattern) { queryParams = queryParams+'&match='+matchPattern; }
     const url = this.formStreamIdsURL(queryParams);
     return this.pullRaw(url).then(raw => {

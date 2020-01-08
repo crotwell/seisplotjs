@@ -609,13 +609,13 @@ export class AvailabilityQuery {
     let out = "";
     if (this._quality) { out += this.makePostParm("quality", this.quality());}
     if (this._merge) { out += this.makePostParm("merge", this.merge());}
-    if (this._mergeGaps && (this._format === 'query' || this._format === 'queryauth')) {
+    if (isNumArg(this._mergeGaps) && (this._format === 'query' || this._format === 'queryauth')) {
       out += this.makePostParm("mergegaps", this.mergeGaps());
     }
     if (this._show && (this._format === 'query' || this._format === 'queryauth')) {
       out += this.makePostParm("show", this.show());
     }
-    if (this._limit && this._limit>0) { out += this.makePostParm("limit", this.limit());}
+    if (isNumArg(this._limit) && this._limit>0) { out += this.makePostParm("limit", this.limit());}
     if (this._orderby) { out += this.makePostParm("orderby", this.orderby());}
     if (this._includerestricted) { out += this.makePostParm("includerestricted", this.includeRestricted());}
     if (this._format) { out += this.makePostParm("format", this.format());}
@@ -682,7 +682,7 @@ export class AvailabilityQuery {
     if (this._merge) { url = url+makeParam("merge", this.merge());}
     if (this._mergeGaps) { url = url+makeParam("mergegaps", this.mergeGaps());}
     if (this._show) { url = url+makeParam("show", this.show());}
-    if (this._limit && this._limit>0) { url = url+makeParam("limit", this.limit());}
+    if (isNumArg(this._limit) && this._limit>0) { url = url+makeParam("limit", this.limit());}
     if (this._orderby) { url = url+makeParam("orderby", this.orderby());}
     if (this._includerestricted) { url = url+makeParam("includerestricted", this.includeRestricted());}
     if (this._format) { url = url+makeParam("format", this.format());}

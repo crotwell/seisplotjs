@@ -7,7 +7,7 @@
  */
 
 import { SeismogramDisplayData, Seismogram } from './seismogram.js';
-import {StartEndDuration} from './util.js';
+import {StartEndDuration, isDef } from './util.js';
 import moment from 'moment';
 import * as d3 from 'd3';
 
@@ -162,7 +162,7 @@ export class SeismographConfig {
   }
 
   getColorForIndex(i: number): string {
-    if (this.lineColors.length && this.lineColors.length > 0) {
+    if (isDef(this.lineColors) && this.lineColors.length > 0) {
       return this.lineColors[i%this.lineColors.length];
     } else {
         return "black";
