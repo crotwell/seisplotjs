@@ -666,7 +666,7 @@ export function* findChannels(networks: Array<Network>, netCode: string, staCode
     }
 }
 
-// these are similar methods as in seisplotjs-fdsnevent
+// these are similar methods as in seisplotjs.quakeml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
 const _grabFirstEl = function(xml: Element | null | void, tagName: string): Element | void {
@@ -688,8 +688,6 @@ const _grabFirstElText = function _grabFirstElText(xml: Element | null | void, t
   let el = _grabFirstEl(xml, tagName);
   if (isObject(el)) {
     out = el.textContent;
-  } else {
-    throw new Error(`Expect string but was ${typeof el}`);
   }
   return out;
 };
