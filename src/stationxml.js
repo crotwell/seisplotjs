@@ -733,7 +733,7 @@ const _grabAttributeNS = function(xml: Element | null | void, namespace: string,
 };
 
 
-export const util = {
+export const parseUtil = {
   "_grabFirstEl": _grabFirstEl,
   "_grabFirstElText": _grabFirstElText,
   "_grabFirstElFloat": _grabFirstElFloat,
