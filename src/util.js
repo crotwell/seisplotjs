@@ -139,7 +139,7 @@ export class StartEndDuration {
   _duration: moment.duration;
   _clockOffset: moment.duration;
   constructor(startTime: moment | null, endTime: moment | null, duration: moment.duration | number | null =null, clockOffset?: number | null =0) {
-    if (duration) {
+    if (isDef(duration)) {
       if ((typeof duration === "string" || duration instanceof String)) {
         if (duration.charAt(0) === 'P') {
           this._duration = moment.duration(duration);

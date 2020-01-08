@@ -9,6 +9,7 @@
 import {Seismogram } from './seismogram.js';
 import {InstrumentSensitivity} from './stationxml.js';
 import {OregonDSP} from './oregondsputil.js';
+import {isDef} from './util.js';
 
 
 const CenteredHilbertTransform = OregonDSP.filter.fir.equiripple.CenteredHilbertTransform;
@@ -226,9 +227,9 @@ export function envelope(seis: Seismogram): Seismogram {
 export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge?: number ): Seismogram {
   if (seis.isContiguous()) {
     let seisY = seis.y;
-    if (! n) { n = 10;}
-    if (! lowEdge) { lowEdge = .05;}
-    if (! highEdge) { highEdge = .95;}
+    if (! isDef(n)) { n = 10;}
+    if (! isDef(lowEdge)) { lowEdge = .05;}
+    if (! isDef(highEdge)) { highEdge = .95;}
     let hilbert = new CenteredHilbertTransform(n, lowEdge, highEdge);
     let coeff = hilbert.getCoefficients();
     for (let c of coeff) {

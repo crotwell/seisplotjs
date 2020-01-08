@@ -9,6 +9,7 @@
 [libs]
 
 [lints]
+sketchy-null-number=error
 
 [options]
 

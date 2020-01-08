@@ -41,7 +41,7 @@ export class RingserverConnection {
   _timeoutSec: number;
   constructor(host?: string, port?: number) {
     this._host = (host ? host : IRIS_HOST);
-    this._port = (port ? port : 80);
+    this._port = (isDef(port) ? port : 80);
     this._timeoutSec = 30;
   }
 
