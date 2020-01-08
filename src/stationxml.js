@@ -602,7 +602,7 @@ export function extractComplex(el: Element) {
  * Generator function to access all stations within all networks in the array.
  *
  * @param      networks array of Networks
- * @returns           generator yeiding stations
+ * @yields           generator yeiding stations
  */
 export function* allStations(networks: Array<Network>): Generator<Station, void, any> {
   for (let n of networks) {
@@ -617,7 +617,7 @@ export function* allStations(networks: Array<Network>): Generator<Station, void,
  * within all networks in the array.
  *
  * @param      networks array of Networks
- * @returns           generator yeiding channels
+ * @yields           generator yeiding channels
  */
 export function* allChannels(networks: Array<Network>): Generator<Channel, void, any> {
   for (let s of allStations(networks)) {
