@@ -135,7 +135,7 @@ do
       fi
       # modules links for README.md
       cat >> README_part.md <<EOF
-  * [${jsfile}](http://www.seis.sc.edu/~crotwell/seisplotjs_v2/api/${jsfile}.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.js) ${descText}
+  * [${jsfile}](https://crotwell.github.io/seisplotjs/api/${jsfile}.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.js) ${descText}
 EOF
 
     fi
