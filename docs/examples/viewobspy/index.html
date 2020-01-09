@@ -71,9 +71,15 @@
 
           <pre><code class="language-python">
             import obspy
-            client = obspy.clients.fdsn.Client("IRIS")
+            from obspy.clients.fdsn import Client
+            import obspy
+
+            client = Client("IRIS")
+
             start = obspy.UTCDateTime('2019-10-31T01:11:19')
-            st = client.get_waveforms("IU", "SNZO", "00", "BHZ", start, start + 20 * 60)
+            end = start + 20*60
+
+            st = client.get_waveforms("IU", "SNZO", "00", "BH?", start, start + 20 * 60)
             serveSeis.stream=st
             serveSeis.title="SNZO Seismograms"
           </code></pre>
