@@ -315,14 +315,18 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L20-L37'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L28-L45'>
       <span>src/particlemotion.js</span>
       </a>
     
   </div>
   
 
-  
+  <p>Creates particle motion plots, for each selected element. This assumes each
+element has some combination of start, end, duration, net, sta, loc, and chan
+attributes sufficient to form the data query to return all components of
+motion. Or an href to a miniseed file.</p>
+
     <div class='pre p1 fill-light mt0'>createParticleMotionBySelector(selector: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): void</div>
   
   
@@ -341,7 +345,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>selector</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    
+	    css selector
+
           </div>
           
         </div>
@@ -384,7 +389,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L39-L50'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L47-L58'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -477,7 +482,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L52-L72'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L60-L80'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -570,14 +575,14 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L75-L366'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L91-L382'>
       <span>src/particlemotion.js</span>
       </a>
     
   </div>
   
 
-  <p>Particle motion.</p>
+  <p>Particle motion plot.</p>
 
     <div class='pre p1 fill-light mt0'>new ParticleMotion(inSvgParent: any, seismographConfig: SeismographConfig, xSeisData: (SeismogramDisplayData | Seismogram), ySeisData: (SeismogramDisplayData | Seismogram))</div>
   
@@ -597,7 +602,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>inSvgParent</span> <code class='quiet'>(any)</code>
-	    
+	    parent element, often a div
+
           </div>
           
         </div>
@@ -605,7 +611,9 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>seismographConfig</span> <code class='quiet'>(SeismographConfig)</code>
-	    
+	    config, not all parameters are used in
+particle motion plots. Can be null for defaults.
+
           </div>
           
         </div>
@@ -613,7 +621,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>xSeisData</span> <code class='quiet'>((SeismogramDisplayData | Seismogram))</code>
-	    
+	    x axis seismogram
+
           </div>
           
         </div>
@@ -621,7 +630,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>ySeisData</span> <code class='quiet'>((SeismogramDisplayData | Seismogram))</code>
-	    
+	    y axis seismogram
+
           </div>
           
         </div>
@@ -655,7 +665,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L94-L94'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L110-L110'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -723,7 +733,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L76-L76'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L92-L92'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -783,7 +793,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L77-L77'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L93-L93'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -843,7 +853,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L78-L78'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L94-L94'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -903,7 +913,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L79-L79'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L95-L95'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -963,7 +973,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L80-L80'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L96-L96'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1023,7 +1033,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L81-L81'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L97-L97'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1083,7 +1093,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L82-L82'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L98-L98'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1143,7 +1153,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L83-L83'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L99-L99'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1203,7 +1213,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L84-L84'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L100-L100'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1263,7 +1273,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L85-L85'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L101-L101'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1323,7 +1333,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L86-L86'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L102-L102'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1383,7 +1393,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L87-L87'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L103-L103'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1443,7 +1453,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L88-L88'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L104-L104'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1503,7 +1513,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L89-L89'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L105-L105'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1563,7 +1573,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L90-L90'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L106-L106'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1623,7 +1633,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L91-L91'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L107-L107'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1683,7 +1693,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L92-L92'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L108-L108'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1743,7 +1753,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L93-L93'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L109-L109'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1803,7 +1813,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L147-L153'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L163-L169'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1858,7 +1868,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L154-L161'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L170-L177'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1918,7 +1928,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L162-L178'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L178-L194'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -1973,7 +1983,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L179-L203'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L195-L219'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2057,7 +2067,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L205-L215'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L221-L231'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2112,7 +2122,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L216-L223'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L232-L239'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2167,7 +2177,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L225-L230'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L241-L246'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2222,7 +2232,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L232-L261'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L248-L277'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2277,7 +2287,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L263-L275'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L279-L291'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2337,7 +2347,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L277-L287'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L293-L303'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2413,7 +2423,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L294-L310'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L310-L326'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2478,7 +2488,7 @@ then each item will be in a separate tspan for easier formatting.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L311-L322'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L327-L338'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2533,7 +2543,7 @@ then each item will be in a separate tspan for easier formatting.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L323-L339'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L339-L355'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2588,7 +2598,7 @@ then each item will be in a separate tspan for easier formatting.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L340-L349'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L356-L365'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2643,7 +2653,7 @@ then each item will be in a separate tspan for easier formatting.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L350-L365'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L366-L381'>
       <span>src/particlemotion.js</span>
       </a>
     
@@ -2706,7 +2716,7 @@ then each item will be in a separate tspan for easier formatting.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/particlemotion.js#L368-L396'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/particlemotion.js#L384-L412'>
       <span>src/particlemotion.js</span>
       </a>
     

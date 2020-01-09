@@ -200,15 +200,18 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L16-L28'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L29-L41'>
       <span>src/transfer.js</span>
       </a>
     
   </div>
   
 
-  
-    <div class='pre p1 fill-light mt0'>transfer(seis: Seismogram, response: <a href="https://developer.mozilla.org/docs/Web/Guide/HTML/HTML5">Response</a>, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+  <p>Applies response, poles and zeros along with overall gain to the seismogram.
+Should produce results similar to the sac command:
+transfer from polezero to none</p>
+
+    <div class='pre p1 fill-light mt0'>transfer(seis: Seismogram, response: <a href="https://developer.mozilla.org/docs/Web/Guide/HTML/HTML5">Response</a>, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): Seismogram</div>
   
   
 
@@ -226,7 +229,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>seis</span> <code class='quiet'>(Seismogram)</code>
-	    
+	    seismogram to instrument correct
+
           </div>
           
         </div>
@@ -234,7 +238,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>response</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/Guide/HTML/HTML5">Response</a>)</code>
-	    
+	    response to apply
+
           </div>
           
         </div>
@@ -242,7 +247,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>lowCut</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    low cut
+
           </div>
           
         </div>
@@ -250,7 +256,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>lowPass</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    low pass
+
           </div>
           
         </div>
@@ -258,7 +265,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>highPass</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    high pass
+
           </div>
           
         </div>
@@ -266,7 +274,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>highCut</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    high cut
+
           </div>
           
         </div>
@@ -276,6 +285,14 @@
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>Seismogram</code>:
+        instrument corrected seismogram
+
+      
+    
   
 
   
@@ -304,7 +321,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L31-L48'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L44-L61'>
       <span>src/transfer.js</span>
       </a>
     
@@ -312,7 +329,7 @@
   
 
   
-    <div class='pre p1 fill-light mt0'>transferSacPZ(seis: Seismogram, sacPoleZero: SacPoleZero, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+    <div class='pre p1 fill-light mt0'>transferSacPZ(seis: Seismogram, sacPoleZero: SacPoleZero, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): Seismogram</div>
   
   
 
@@ -381,6 +398,11 @@
   
 
   
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>Seismogram</code>
+    
+  
 
   
 
@@ -408,7 +430,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L50-L77'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L63-L90'>
       <span>src/transfer.js</span>
       </a>
     
@@ -416,7 +438,7 @@
   
 
   
-    <div class='pre p1 fill-light mt0'>transferSacPZSegment(seis: SeismogramSegment, sacPoleZero: SacPoleZero, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+    <div class='pre p1 fill-light mt0'>transferSacPZSegment(seis: SeismogramSegment, sacPoleZero: SacPoleZero, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): SeismogramSegment</div>
   
   
 
@@ -485,6 +507,11 @@
   
 
   
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>SeismogramSegment</code>
+    
+  
 
   
 
@@ -512,7 +539,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L80-L110'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L93-L123'>
       <span>src/transfer.js</span>
       </a>
     
@@ -606,14 +633,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L112-L138'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L133-L159'>
       <span>src/transfer.js</span>
       </a>
     
   </div>
   
 
-  
+  <p>Caclulates the frequency response from the given poles and zeros.</p>
+
     <div class='pre p1 fill-light mt0'>calcResponseFromSacPoleZero(sacPoleZero: SacPoleZero, numPoints: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, sampleRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): FFTResult</div>
   
   
@@ -632,7 +660,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>sacPoleZero</span> <code class='quiet'>(SacPoleZero)</code>
-	    
+	    poles and zeros
+
           </div>
           
         </div>
@@ -640,7 +669,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>numPoints</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    number of points in the output fft
+
           </div>
           
         </div>
@@ -648,7 +678,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>sampleRate</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    sample rate to compute at
+
           </div>
           
         </div>
@@ -661,7 +692,10 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>FFTResult</code>
+      <code>FFTResult</code>:
+        frequency response
+
+      
     
   
 
@@ -691,15 +725,17 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L140-L174'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L174-L208'>
       <span>src/transfer.js</span>
       </a>
     
   </div>
   
 
-  
-    <div class='pre p1 fill-light mt0'>combine(freqValues: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>, sampFreq: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, sacPoleZero: SacPoleZero, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+  <p>Applies poles and zeros to the fft of a time series. Modifies the freqValues
+in place.</p>
+
+    <div class='pre p1 fill-light mt0'>combine(freqValues: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>, sampFreq: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, sacPoleZero: SacPoleZero, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): any</div>
   
   
 
@@ -717,7 +753,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>freqValues</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>)</code>
-	    
+	    fft of a timeseries
+
           </div>
           
         </div>
@@ -725,7 +762,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>sampFreq</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    sampling frequency
+
           </div>
           
         </div>
@@ -733,7 +771,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>sacPoleZero</span> <code class='quiet'>(SacPoleZero)</code>
-	    
+	    poles and zeros
+
           </div>
           
         </div>
@@ -741,7 +780,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>lowCut</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    low cut
+
           </div>
           
         </div>
@@ -749,7 +789,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>lowPass</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    low pass
+
           </div>
           
         </div>
@@ -757,7 +798,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>highPass</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    high pass
+
           </div>
           
         </div>
@@ -765,7 +807,8 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>highCut</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    high cut
+
           </div>
           
         </div>
@@ -775,6 +818,14 @@
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        input freq values, with poles and zeros applied
+
+      
+    
   
 
   
@@ -803,7 +854,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L185-L201'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L219-L235'>
       <span>src/transfer.js</span>
       </a>
     
@@ -888,14 +939,15 @@ situation, then the response is set to be 0+0i.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L203-L224'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L247-L268'>
       <span>src/transfer.js</span>
       </a>
     
   </div>
   
 
-  
+  <p>Calculates the frequency taper for the given parameters.</p>
+
     <div class='pre p1 fill-light mt0'>calcFreqTaper(freq: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
   
   
@@ -914,7 +966,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>freq</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    frequency
+
           </div>
           
         </div>
@@ -922,7 +975,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>lowCut</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    low cut
+
           </div>
           
         </div>
@@ -930,7 +984,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>lowPass</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    low pass
+
           </div>
           
         </div>
@@ -938,7 +993,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>highPass</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    high pass
+
           </div>
           
         </div>
@@ -946,7 +1002,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>highCut</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    high cut
+
           </div>
           
         </div>
@@ -959,7 +1016,10 @@ situation, then the response is set to be 0+0i.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
+        taper value at the frequency
+
+      
     
   
 
@@ -989,14 +1049,15 @@ situation, then the response is set to be 0+0i.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L226-L236'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L281-L291'>
       <span>src/transfer.js</span>
       </a>
     
   </div>
   
 
-  
+  <p>Applies the frequency taper to the fft of the time series.</p>
+
     <div class='pre p1 fill-light mt0'>applyFreqTaper(fftResult: FFTResult, sampleRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, lowPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highPass: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, highCut: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): FFTResult</div>
   
   
@@ -1015,7 +1076,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>fftResult</span> <code class='quiet'>(FFTResult)</code>
-	    
+	    fft of time series
+
           </div>
           
         </div>
@@ -1023,7 +1085,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>sampleRate</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    sample rate
+
           </div>
           
         </div>
@@ -1031,7 +1094,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>lowCut</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    low cut
+
           </div>
           
         </div>
@@ -1039,7 +1103,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>lowPass</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    low pass
+
           </div>
           
         </div>
@@ -1047,7 +1112,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>highPass</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    high pass
+
           </div>
           
         </div>
@@ -1055,7 +1121,8 @@ situation, then the response is set to be 0+0i.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>highCut</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    
+	    high cut
+
           </div>
           
         </div>
@@ -1068,7 +1135,10 @@ situation, then the response is set to be 0+0i.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>FFTResult</code>
+      <code>FFTResult</code>:
+        fft with taper applied
+
+      
     
   
 
@@ -1098,7 +1168,7 @@ situation, then the response is set to be 0+0i.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L241-L246'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L296-L301'>
       <span>src/transfer.js</span>
       </a>
     
@@ -1146,7 +1216,7 @@ situation, then the response is set to be 0+0i.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L242-L242'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L297-L297'>
       <span>src/transfer.js</span>
       </a>
     
@@ -1201,7 +1271,7 @@ situation, then the response is set to be 0+0i.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L243-L243'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L298-L298'>
       <span>src/transfer.js</span>
       </a>
     
@@ -1256,7 +1326,7 @@ situation, then the response is set to be 0+0i.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L244-L244'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L299-L299'>
       <span>src/transfer.js</span>
       </a>
     
@@ -1311,7 +1381,7 @@ situation, then the response is set to be 0+0i.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L245-L245'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L300-L300'>
       <span>src/transfer.js</span>
       </a>
     
@@ -1376,7 +1446,7 @@ situation, then the response is set to be 0+0i.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L259-L326'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L314-L381'>
       <span>src/transfer.js</span>
       </a>
     
@@ -1455,7 +1525,7 @@ added is kept as gamma in the result.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/62deca08ce045cbd682ddc70c165371e79237ac3/src/transfer.js#L328-L344'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ba2f7d1c8181cc8a0c038ee03576f2559213dc7c/src/transfer.js#L383-L399'>
       <span>src/transfer.js</span>
       </a>
     
