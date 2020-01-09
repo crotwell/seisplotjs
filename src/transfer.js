@@ -13,12 +13,25 @@ import {Response, PolesZeros } from './stationxml.js';
 import Qty from 'js-quantities';
 import { Complex, createComplex} from './oregondsputil.js';
 
+/**
+ * Applies response, poles and zeros along with overall gain to the seismogram.
+ * Should produce results similar to the sac command:
+ * transfer from polezero to none
+ *
+ * @param   seis     seismogram to instrument correct
+ * @param   response response to apply
+ * @param   lowCut   low cut
+ * @param   lowPass  low pass
+ * @param   highPass high pass
+ * @param   highCut  high cut
+ * @returns           instrument corrected seismogram
+ */
 export function transfer(seis: Seismogram,
                         response: Response,
                         lowCut: number,
                         lowPass: number,
                         highPass: number,
-                        highCut: number) {
+                        highCut: number): Seismogram {
         if (! response) {
           throw new Error("Response not exist???");
         }
@@ -33,7 +46,7 @@ export function transferSacPZ(seis: Seismogram,
                               lowCut: number,
                               lowPass: number,
                               highPass: number,
-                              highCut: number) {
+                              highCut: number): Seismogram {
   let outSeis = [];
   for( let i=0; i< seis.segments.length; i++) {
     let result = transferSacPZSegment(seis.segments[i],
@@ -52,7 +65,7 @@ export function transferSacPZSegment(seis: SeismogramSegment,
                               lowCut: number,
                               lowPass: number,
                               highPass: number,
-                              highCut: number) {
+                              highCut: number): SeismogramSegment {
         const sampFreq = seis.sampleRate;
 
         let values = seis.y;
@@ -109,6 +122,14 @@ export function calcResponse(response: Response, numPoints: number, sampleRate: 
   return out;
 }
 
+/**
+ * Caclulates the frequency response from the given poles and zeros.
+ *
+ * @param   sacPoleZero poles and zeros
+ * @param   numPoints   number of points in the output fft
+ * @param   sampleRate  sample rate to compute at
+ * @returns             frequency response
+ */
 export function calcResponseFromSacPoleZero(sacPoleZero: SacPoleZero, numPoints: number, sampleRate: number): FFTResult {
   // inst response as packed frequency array
   let freqValues = new Float32Array(numPoints);
@@ -137,6 +158,19 @@ export function calcResponseFromSacPoleZero(sacPoleZero: SacPoleZero, numPoints:
   return out;
 }
 
+/**
+ * Applies poles and zeros to the fft of a time series. Modifies the freqValues
+ * in place.
+ *
+ * @param   freqValues  fft of a timeseries
+ * @param   sampFreq    sampling frequency
+ * @param   sacPoleZero poles and zeros
+ * @param   lowCut      low cut
+ * @param   lowPass     low pass
+ * @param   highPass    high pass
+ * @param   highCut     high cut
+ * @returns             input freq values, with poles and zeros applied
+ */
 export function combine(freqValues: Float32Array,
                         sampFreq: number,
                         sacPoleZero: SacPoleZero,
@@ -200,6 +234,16 @@ export function combine(freqValues: Float32Array,
         return out.overReal( sacPoleZero.constant);
     }
 
+/**
+ * Calculates the frequency taper for the given parameters.
+ *
+ * @param   freq     frequency
+ * @param   lowCut   low cut
+ * @param   lowPass  low pass
+ * @param   highPass high pass
+ * @param   highCut  high cut
+ * @returns           taper value at the frequency
+ */
 export function calcFreqTaper(freq: number,
                           lowCut: number,
                           lowPass: number,
@@ -223,6 +267,17 @@ export function calcFreqTaper(freq: number,
             / (highPass - highCut)));
 }
 
+/**
+ * Applies the frequency taper to the fft of the time series.
+ *
+ * @param   fftResult  fft of time series
+ * @param   sampleRate sample rate
+ * @param   lowCut     low cut
+ * @param   lowPass    low pass
+ * @param   highPass   high pass
+ * @param   highCut    high cut
+ * @returns            fft with taper applied
+ */
 export function applyFreqTaper(fftResult: FFTResult,
                           sampleRate: number,
                           lowCut: number,

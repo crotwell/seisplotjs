@@ -24,7 +24,9 @@ export type PlotDataType = {
 };
 
 /**
- * Returns an array of Promises, one per selected element.
+ * Returns an array of Promises, one per selected element. This assumes each
+ * element has some combination of start, end, duration, net, sta, loc, and chan
+ * attributes sufficient to form the data query. Or an href to a miniseed file.
  *
  * @param selector css selector
  * @returns promise to array of plot data types

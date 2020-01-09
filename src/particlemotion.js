@@ -17,6 +17,14 @@ import { SeismographConfig } from './seismographconfig';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData } from './seismogram.js';
 import { isDef, isNumArg, StartEndDuration } from './util.js';
 
+/**
+ * Creates particle motion plots, for each selected element. This assumes each
+ * element has some combination of start, end, duration, net, sta, loc, and chan
+ * attributes sufficient to form the data query to return all components of
+ * motion. Or an href to a miniseed file.
+ *
+ * @param selector css selector
+ */
 export function createParticleMotionBySelector(selector: string): void {
     createPlotsBySelectorPromise(selector)
     .then(function(resultArray) {
@@ -71,7 +79,15 @@ export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayDa
   return pmp;
 }
 
-/** Particle motion. */
+/**
+ * Particle motion plot.
+ *
+ * @param inSvgParent parent element, often a div
+ * @param seismographConfig config, not all parameters are used in
+ * particle motion plots. Can be null for defaults.
+ * @param xSeisData x axis seismogram
+ * @param ySeisData y axis seismogram
+ */
 export class ParticleMotion {
   plotId: number;
   xSeisData: SeismogramDisplayData;

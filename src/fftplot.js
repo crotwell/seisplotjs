@@ -44,6 +44,14 @@ export function createOverlayFFTPlot(cssSelector: string, fftResults: Array<FFTR
   return fftplot;
 }
 
+/**
+ * A amplitude plot of fft data.
+ *
+ * @param cssSelector selector or d3 selection
+ * @param seismographConfig config of the plot, not all values are used
+ * @param fftResult fft data to plot
+ * @param loglog log or linear frequency
+ */
 export class FFTPlot {
   svgParent: any;
   seismographConfig: SeismographConfig;

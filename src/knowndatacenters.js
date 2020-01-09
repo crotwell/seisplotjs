@@ -48,7 +48,11 @@ function initBestDCIdMap() {
 
 let knownDCs = null;
 
-
+/**
+ * Lookup system for FDSN web services, predates the new FDSN DataCenters
+ * web service, which is now the preferred method, as this may be out of date.
+ * 
+ */
 export const knownDataCenters = {
   knownDataCentersJsonURL: checkProtocol()+"//www.seis.sc.edu/fdsnServiceCheck/fdsnDataCenters.json",
 

@@ -27,6 +27,10 @@ export const DRAW_BOTH = "both"; // for testing
 /** Constant for drawing seismogram using both canvas and svg plus alignment markers, for testing. */
 export const DRAW_BOTH_ALIGN = "alignment"; // for testing
 
+/**
+ * Configuration object for Seismograph display.
+ * 
+ */
 export class SeismographConfig {
   drawingType: string;
   xScaleFormat: (date: Date) => string;

@@ -23,7 +23,8 @@ export const UNKNOWN_MAG_TYPE = 'unknown';
 
 // QuakeML classes
 
-/** Represent a QuakeML Event. Renamed to Quake as Event conflicts with
+/**
+ * Represent a QuakeML Event. Renamed to Quake as Event conflicts with
  * other uses in javascript.
  */
 export class Quake {

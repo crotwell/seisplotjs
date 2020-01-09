@@ -84,6 +84,11 @@ export class DataLinkConnection {
     this._responseReject = null;
   }
 
+  /**
+   * Set a callback function called when the connection is closed.
+   *
+   * @param  closeHandler callback function
+   */
   setOnClose(closeHandler: (close: CloseEvent) => void) {
     this.closeHandler = closeHandler;
   }
