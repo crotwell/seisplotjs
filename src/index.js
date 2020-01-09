@@ -52,7 +52,7 @@ import * as d3 from 'd3';
 /**
  * Current version of seisplotjs
  */
-const version = '2.0.0-alpha.7';
+const version = '2.0.0';
 
 /* reexport */
 export { cssutil,
