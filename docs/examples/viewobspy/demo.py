@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
 import serveobspy
-from obspy.clients.fdsn import Client
-import obspy
 
 serveSeis = serveobspy.ServeObsPy('www')
 serveSeis.serveData()
+
+from obspy.clients.fdsn import Client
+import obspy
 
 client = Client("IRIS")
 
