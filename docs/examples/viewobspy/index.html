@@ -50,9 +50,12 @@
             so should be a directory that contains your index.html, the seisplotjs
             standalone js file and viewObspy.js, tools.js and obspyconnection.js files.
             In the example this is the
-            www directory. Note, some browser addons like NoScipt or Privacy Badger
-            may block requests and so if something breaks, try disabling any
-            of these that you have installed.
+            www directory.
+          </p>
+          <p>
+            The easiest way to get these files locally is probably to
+            <code class="language-bash">git clone https://github.com/crotwell/seisplotjs.git</code>
+            and then <code class="language-bash">cd seisplotjs/docs/examples/viewobspy</code>.
           </p>
           <pre><code class="language-python">
             import serveobspy
@@ -87,6 +90,11 @@
             to load data and do calculations on the seismograms. The server
             can also serve earthquake information, in QuakeML, and station
             inventory information, in StationXML.
+          </p>
+          <p>
+            Note, some browser addons like NoScipt or Privacy Badger
+            may block requests and so if something breaks, try disabling any
+            of these that you have installed.
           </p>
           <pre><code class="language-python">
             quake = client.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)[0]
