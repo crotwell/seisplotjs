@@ -407,6 +407,21 @@ class ViewObsPy {
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
     seisConfig.title = seisData.codes();
     seisConfig.doGain = seisplotjs.d3.select("input#doGain").property("checked");
+    if (seisData.quakeList.length > 0) {
+      let phaseMarkers = [];
+      seisData.quakeList.forEach(q => {
+        phaseMarkers.push({
+          markertype: 'predicted',
+          name: "origin",
+          time: seisplotjs.moment.utc(q.time)
+        });
+      });
+      seisData.addMarkers(phaseMarkers);
+      console.log(`add markers: ${phaseMarkers.length}`);
+    } else {
+      console.log("no quake");
+    }
+
     let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisData);
     graph.draw();
     let graphKey = `graph${this.extractIdFromSeisKey(seisKey)}`;

@@ -125,10 +125,10 @@ class ServeObsPy():
         }
         jsonapi['data']['attributes']['title'] = self.dataset['title']
         if 'quake' in self.dataset and self.dataset['quake'] is not None:
-            id_num = self.dataset['quake'].resource_id.id.split('=')[1]
+            quakeId = extractEventId(self.dataset['quake'])
             jsonapi['data']['relationships']['quake']['data'] = {
                   'type': 'quake',
-                  'id': id_num
+                  'id': quakeId
                 }
 
         if 'inventory' in self.dataset and self.dataset['inventory'] is not None:
@@ -310,8 +310,8 @@ class ServeObsPy():
                 Serve quake as QuakeML
                 """
                 splitPath = self.path.split('/')
-                id = int(splitPath[2])
-                resource_id = ResourceIdentifier(str(id))
+                id = splitPath[2]
+                resource_id = ResourceIdentifier(id)
                 catalog = Catalog([ObsPyRequestHandler.serveSeis.dataset['quake']],resource_id=resource_id)
                 buf = io.BytesIO()
                 catalog.write(buf, format="QUAKEML")
@@ -339,6 +339,27 @@ class ServeObsPy():
         http.server.SimpleHTTPRequestHandler.extensions_map['.js'] = 'text/javascript'
         return ObsPyRequestHandler
 
+ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1"
+
+def extractEventId(quakeml):
+    usgsExtras = {k: v for k, v in quakeml.extra.items() if v.namespace == ANSS_CATALOG_NS}
+    if 'eventid' in usgsExtras and 'eventsource' in usgsExtras:
+        # assume USGS style event ids,
+        # USGS, NCEDC and SCEDC use concat of eventsource and eventId as eventit, sigh...
+        return "{}{}".format(usgsExtras['eventsource'].value, usgsExtras['eventid'].value)
+    if quakeml.resource_id:
+        eventIdPat = re.compile('eventid=([\w\d]+)')
+        m = eventIdPat.search(quakeml.resource_id.id)
+        if m:
+            return m.group(1)
+
+        evidPat = re.compile('evid=([\w\d]+)')
+        m = evidPat.search(quakeml.resource_id.id)
+        if m:
+            return m.group(1)
+
+        return quakeml.resource_id.id
+    return "unknownEventId"+random.randrange(100000)
 
 class StatsEncoder(json.JSONEncoder):
     def default(self, obj):
