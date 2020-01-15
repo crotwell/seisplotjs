@@ -16,7 +16,8 @@ end = start + 20*60
 st = client.get_waveforms("IU", "SNZO", "00", "BH?", start, start + 20 * 60)
 serveSeis.stream=st
 
-quakes = client.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)
+usgs = Client("USGS")
+quakes = usgs.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)
 serveSeis.quake=quakes[0]
 #iris has crazy event ids
 
