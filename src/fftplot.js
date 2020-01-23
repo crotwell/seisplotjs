@@ -24,7 +24,6 @@ import {insertCSS} from './cssutil.js';
  */
 export function createSimpleFFTPlot(cssSelector: string, fftResult: FFTResult, config: SeismographConfig, loglog: boolean = true) {
   let fftplot =  new FFTPlot(cssSelector, config, fftResult, loglog);
-  fftplot.svg.classed("overlayplot", false);
   fftplot.draw();
   return fftplot;
 }
@@ -134,7 +133,7 @@ export class FFTPlot {
 
     let svg = this.svgParent.append("svg");
     this.svg = svg;
-    svg.classed("fftplot", true).classed("overlayplot", true);
+    svg.classed("fftplot", true);
 
 
     let rect = svg.node().getBoundingClientRect();
@@ -220,77 +219,77 @@ svg.fftplot {
   width: 100%;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+1) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+1) path.fftpath {
   stroke: skyblue;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+2) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+2) path.fftpath {
   stroke: olivedrab;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+3) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+3) path.fftpath {
   stroke: goldenrod;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+4) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+4) path.fftpath {
   stroke: firebrick;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+5) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+5) path.fftpath {
   stroke: darkcyan;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+6) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+6) path.fftpath {
   stroke: orange;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+7) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+7) path.fftpath {
   stroke: darkmagenta;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+8) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+8) path.fftpath {
   stroke: mediumvioletred;
 }
 
-svg.fftplot.overlayplot g.allfftpaths g:nth-child(9n+9) path.fftpath {
+svg.fftplot g.allfftpaths g:nth-child(9n+9) path.fftpath {
   stroke: sienna;
 }
 
 /* same colors for titles */
 
-svg.fftplot.overlayplot g.title tspan:nth-child(9n+1)  {
+svg.fftplot g.title tspan:nth-child(9n+1)  {
   fill: skyblue;
 }
 
-svg.fftplot.overlayplot g.title text tspan:nth-child(9n+2)  {
+svg.fftplot g.title text tspan:nth-child(9n+2)  {
   stroke: olivedrab;
 }
 
-svg.fftplot.overlayplot g.title text tspan:nth-child(9n+3)  {
+svg.fftplot g.title text tspan:nth-child(9n+3)  {
   stroke: goldenrod;
 }
 
-svg.fftplot.overlayplot g.title tspan:nth-child(9n+4)  {
+svg.fftplot g.title tspan:nth-child(9n+4)  {
   stroke: firebrick;
 }
 
-svg.fftplot.overlayplot g.title tspan:nth-child(9n+5)  {
+svg.fftplot g.title tspan:nth-child(9n+5)  {
   stroke: darkcyan;
 }
 
-svg.fftplot.overlayplot g.title tspan:nth-child(9n+6)  {
+svg.fftplot g.title tspan:nth-child(9n+6)  {
   stroke: orange;
 }
 
-svg.fftplot.overlayplot g.title tspan:nth-child(9n+7)  {
+svg.fftplot g.title tspan:nth-child(9n+7)  {
   stroke: darkmagenta;
 }
 
-svg.fftplot.overlayplot g.title tspan:nth-child(9n+8)  {
+svg.fftplot g.title tspan:nth-child(9n+8)  {
   stroke: mediumvioletred;
 }
 
-svg.fftplot.overlayplot g.title tspan:nth-child(9n+9)  {
+svg.fftplot g.title tspan:nth-child(9n+9)  {
   stroke: sienna;
 }
 

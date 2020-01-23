@@ -264,7 +264,6 @@ export class Seismograph {
   }
 
   drawSeismograms() {
-    this.svg.classed("overlayPlot", this.seisDataList.length > 1);
     if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
       if (this.alignmentSeisData.length === 0) {
         const startenddur = new StartEndDuration(this.currZoomXScale.domain()[0], this.currZoomXScale.domain()[1]);
