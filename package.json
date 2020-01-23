@@ -40,8 +40,8 @@
     "version": "npm run compile && npm run standalone && npm run bumpversion && npm run doc",
     "postversion": "echo remember: git push && echo remember: git push --tags",
     "bumpversion": "npm run bumpversion_standalone && npm run bumpversion_version",
-    "bumpversion_standalone": "replace-in-file seisplotjs_2.0.0_standalone.js seisplotjs_${npm_package_version}_standalone.js docs/index.html docs/tutorial/*.html docs/examples/*/*.html docs/examples/*/*/*.html examples/*/*.html --verbose ",
-    "bumpversion_version": "replace-in-file 2.0.0 ${npm_package_version} createApiDocs.sh src/index.js docs/index.html docs/tutorial/*.html docs/examples/*.html docs/examples/*/*.html docs/examples/*/*/*.html --verbose ",
+    "bumpversion_standalone": "replace-in-file seisplotjs_2.0.1-alpha.1_standalone.js seisplotjs_${npm_package_version}_standalone.js docs/index.html docs/tutorial/*.html docs/examples/*/*.html docs/examples/*/*/*.html examples/*/*.html --verbose ",
+    "bumpversion_version": "replace-in-file 2.0.1-alpha.1 ${npm_package_version} createApiDocs.sh src/index.js docs/index.html docs/tutorial/*.html docs/examples/*.html docs/examples/*/*.html docs/examples/*/*/*.html --verbose ",
     "doingdevelopment": "git update-index --skip-worktree docs/api/*.html",
     "prepublishOnly": "npm run flow && npm run lint && npm run test && npm outdated && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code"
   },
