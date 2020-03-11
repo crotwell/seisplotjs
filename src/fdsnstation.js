@@ -11,7 +11,7 @@ import {parseStationXml, Network} from './stationxml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
+import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isObject, isStringArg,
         isNonEmptyStringArg, isNumArg, checkStringOrDate} from './util';
 
 export const LEVEL_NETWORK = 'network';
@@ -719,32 +719,32 @@ export class StationQuery {
    */
   formURL(level: string) {
     let url = this.formBaseURL()+"/query?";
-    if (! level) {throw new Error("level not specified, should be one of network, station, channel, response.");}
+    if (! isStringArg(level)) {throw new Error("level not specified, should be one of network, station, channel, response.");}
     url = url+makeParam("level", level);
-    if (this._networkCode) { url = url+makeParam("net", this.networkCode());}
-    if (this._stationCode) { url = url+makeParam("sta", this.stationCode());}
-    if (this._locationCode) { url = url+makeParam("loc", this.locationCode());}
-    if (this._channelCode) { url = url+makeParam("cha", this.channelCode());}
-    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
-    if (this._startBefore) { url = url+makeParam("startbefore", toIsoWoZ(this.startBefore()));}
-    if (this._startAfter) { url = url+makeParam("startafter", toIsoWoZ(this.startAfter()));}
-    if (this._endBefore) { url = url+makeParam("endbefore", toIsoWoZ(this.endBefore()));}
-    if (this._endAfter) { url = url+makeParam("endafter", toIsoWoZ(this.endAfter()));}
-    if (this._minLat) { url = url+makeParam("minlat", this.minLat());}
-    if (this._maxLat) { url = url+makeParam("maxlat", this.maxLat());}
-    if (this._minLon) { url = url+makeParam("minlon", this.minLon());}
-    if (this._maxLon) { url = url+makeParam("maxlon", this.maxLon());}
-    if (this._latitude) { url = url+makeParam("lat", this.latitude());}
-    if (this._longitude) { url = url+makeParam("lon", this.longitude());}
-    if (this._minRadius) { url = url+makeParam("minradius", this.minRadius());}
-    if (this._maxRadius) { url = url+makeParam("maxradius", this.maxRadius());}
-    if (this._includeRestricted) { url = url+makeParam("includerestricted", this.includeRestricted());}
-    if (this._includeAvailability) { url = url+makeParam("includeavailability", this.includeAvailability());}
-    if (this._updatedAfter) { url = url+makeParam("updatedafter", toIsoWoZ(this.updatedAfter()));}
-    if (this._matchTimeseries) { url = url+makeParam("matchtimeseries", this.matchTimeseries());}
-    if (this._format) { url = url+makeParam("format", this.format());}
-    if (this._nodata) { url = url+makeParam("nodata", this.nodata());}
+    if (isStringArg(this._networkCode)) { url = url+makeParam("net", this.networkCode());}
+    if (isStringArg(this._stationCode)) { url = url+makeParam("sta", this.stationCode());}
+    if (isStringArg(this._locationCode)) { url = url+makeParam("loc", this.locationCode());}
+    if (isStringArg(this._channelCode)) { url = url+makeParam("cha", this.channelCode());}
+    if (isObject(this._startTime)) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
+    if (isObject(this._endTime)) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
+    if (isObject(this._startBefore)) { url = url+makeParam("startbefore", toIsoWoZ(this.startBefore()));}
+    if (isObject(this._startAfter)) { url = url+makeParam("startafter", toIsoWoZ(this.startAfter()));}
+    if (isObject(this._endBefore)) { url = url+makeParam("endbefore", toIsoWoZ(this.endBefore()));}
+    if (isObject(this._endAfter)) { url = url+makeParam("endafter", toIsoWoZ(this.endAfter()));}
+    if (isNumArg(this._minLat)) { url = url+makeParam("minlat", this.minLat());}
+    if (isNumArg(this._maxLat)) { url = url+makeParam("maxlat", this.maxLat());}
+    if (isNumArg(this._minLon)) { url = url+makeParam("minlon", this.minLon());}
+    if (isNumArg(this._maxLon)) { url = url+makeParam("maxlon", this.maxLon());}
+    if (isNumArg(this._latitude)) { url = url+makeParam("lat", this.latitude());}
+    if (isNumArg(this._longitude)) { url = url+makeParam("lon", this.longitude());}
+    if (isNumArg(this._minRadius)) { url = url+makeParam("minradius", this.minRadius());}
+    if (isNumArg(this._maxRadius)) { url = url+makeParam("maxradius", this.maxRadius());}
+    if (isDef(this._includeRestricted)) { url = url+makeParam("includerestricted", this.includeRestricted());}
+    if (isDef(this._includeAvailability)) { url = url+makeParam("includeavailability", this.includeAvailability());}
+    if (isObject(this._updatedAfter)) { url = url+makeParam("updatedafter", toIsoWoZ(this.updatedAfter()));}
+    if (isDef(this._matchTimeseries)) { url = url+makeParam("matchtimeseries", this.matchTimeseries());}
+    if (isStringArg(this._format)) { url = url+makeParam("format", this.format());}
+    if (isNumArg(this._nodata)) { url = url+makeParam("nodata", this.nodata());}
     if (url.endsWith('&') || url.endsWith('?')) {
       url = url.substr(0, url.length-1); // zap last & or ?
     }
