@@ -1309,83 +1309,83 @@ svg.realtimePlot g.allseismograms path.seispath {
   stroke: skyblue;
 }
 
-svg g.allseismograms g:nth-child(9n+1) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+1) path.seispath {
   stroke: skyblue;
 }
 
-svg g.allseismograms g:nth-child(9n+2) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+2) path.seispath {
   stroke: olivedrab;
 }
 
-svg g.allseismograms g:nth-child(9n+3) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+3) path.seispath {
   stroke: goldenrod;
 }
 
-svg g.allseismograms g:nth-child(9n+4) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+4) path.seispath {
   stroke: firebrick;
 }
 
-svg g.allseismograms g:nth-child(9n+5) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+5) path.seispath {
   stroke: darkcyan;
 }
 
-svg g.allseismograms g:nth-child(9n+6) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+6) path.seispath {
   stroke: orange;
 }
 
-svg g.allseismograms g:nth-child(9n+7) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+7) path.seispath {
   stroke: darkmagenta;
 }
 
-svg g.allseismograms g:nth-child(9n+8) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+8) path.seispath {
   stroke: mediumvioletred;
 }
 
-svg g.allseismograms g:nth-child(9n+9) path.seispath {
+svg.seismograph g.allseismograms g:nth-child(9n+9) path.seispath {
   stroke: sienna;
 }
 
 /* same colors for titles */
 
-svg g.title text tspan:nth-child(9n+1)  {
+svg.seismograph g.title text tspan:nth-child(9n+1)  {
   fill: skyblue;
 }
 
-svg g.title text tspan:nth-child(9n+2)  {
+svg.seismograph g.title text tspan:nth-child(9n+2)  {
   stroke: olivedrab;
 }
 
-svg g.title text tspan:nth-child(9n+3)  {
+svg.seismograph g.title text tspan:nth-child(9n+3)  {
   stroke: goldenrod;
 }
 
-svg g.title tspan:nth-child(9n+4)  {
+svg.seismograph g.title tspan:nth-child(9n+4)  {
   stroke: firebrick;
 }
 
-svg g.title tspan:nth-child(9n+5)  {
+svg.seismograph g.title tspan:nth-child(9n+5)  {
   stroke: darkcyan;
 }
 
-svg g.title tspan:nth-child(9n+6)  {
+svg.seismograph g.title tspan:nth-child(9n+6)  {
   stroke: orange;
 }
 
-svg g.title tspan:nth-child(9n+7)  {
+svg.seismograph g.title tspan:nth-child(9n+7)  {
   stroke: darkmagenta;
 }
 
-svg g.title tspan:nth-child(9n+8)  {
+svg.seismograph g.title tspan:nth-child(9n+8)  {
   stroke: mediumvioletred;
 }
 
-svg g.title tspan:nth-child(9n+9)  {
+svg.seismograph g.title tspan:nth-child(9n+9)  {
   stroke: sienna;
 }
 
 
 /* links in svg */
-svg text a {
+svg.seismograph text a {
   fill: #0000EE;
   text-decoration: underline;
 }
