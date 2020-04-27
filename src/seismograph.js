@@ -834,8 +834,10 @@ export class Seismograph {
 
   setMargin(value: MarginType ): Seismograph {
     this.seismographConfig.margin = value;
-    this.calcWidthHeight(this.outerWidth, this.outerHeight);
-    this.g.attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
+    if ( ! this.beforeFirstDraw) {
+      this.calcWidthHeight(this.outerWidth, this.outerHeight);
+      this.g.attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
+    }
     return this;
   }
   drawTitle() {
