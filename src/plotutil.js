@@ -32,7 +32,6 @@ export type PlotDataType = {
  * @returns promise to array of plot data types
  */
 export function createPlotsBySelectorPromise(selector: string): Promise<Array<PlotDataType>> {
-  let clockOffset = 0; // should set from server
   let out = [];
   d3.selectAll(selector).each(function() {
     let svgParent = d3.select(this);
@@ -43,6 +42,8 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
     let timeWindow = null;
     if (isDef(startAttr) || isDef(endAttr) || isDef(duration)) {
       timeWindow = new StartEndDuration(startAttr, endAttr, duration);
+    } else {
+      throw new Error(`Need at least one of start, end, duration.`);
     }
     if (svgParent.attr("href")) {
       // url to miniseed file
@@ -72,20 +73,22 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
       let sta = svgParent.attr("sta");
       let loc = svgParent.attr("loc");
       let chan = svgParent.attr("chan");
+      if (! ( net && sta && loc && chan)) {
+        throw new Error(`Must set all of net, sta, loc, chan, but got ${net}, ${sta}, ${loc}, ${chan}`);
+      }
       let host = svgParent.attr("host");
       if (! host) {
           host = "service.iris.edu";
       }
 
-      timeWindow = new StartEndDuration(startAttr, endAttr, duration, clockOffset);
       // $FlowFixMe
-      let request = new dataselect.DataSelectQuery()
-        .host(host)
-        .networkCode(net)
-        .stationCode(sta)
-        .locationCode(loc)
-        .channelCode(chan)
-        .timeWindow(timeWindow);
+      let request = new dataselect.DataSelectQuery().timeWindow(timeWindow);
+      if (host) { request.host(host); }
+      if (net) { request.networkCode(net); }
+      if (sta) { request.stationCode(sta); }
+      if (loc) { request.locationCode(loc); }
+      if (chan) { request.channelCode(chan); }
+
       out.push(request.querySeismograms().then(seismograms => {
         let sddList = seismograms.map(s => {
             let sdd = SeismogramDisplayData.fromSeismogram(s);

@@ -3,12 +3,13 @@
 import * as traveltime from '../../src/traveltime';
 
 test("formURL", () => {
-  // $FlowFixMe
-  let query = new traveltime.TraveltimeQuery()
-    .evdepth(50)
-    .stalat(34).stalon(-81)
-    .evlat(35).evlon(-101)
-    .phases("P,S,PcP,PKiKP,PKPPKP");
+  let query = new traveltime.TraveltimeQuery();
+  expect(query.evdepth(50)).toBe(query);
+  expect(query.stalat(34)).toBe(query);
+  expect(query.stalon(-81)).toBe(query);
+  expect(query.evlat(35)).toBe(query);
+  expect(query.evlon(-101)).toBe(query);
+  expect(query.phases("P,S,PcP,PKiKP,PKPPKP")).toBe(query);
   // for flow
   query = ((query: any): traveltime.TraveltimeQuery);
   let url = query.formURL();
