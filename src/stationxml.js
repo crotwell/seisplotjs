@@ -173,7 +173,6 @@ export class Channel {
     } else {
       this.response.instrumentSensitivity = value;
     }
-    return this;
   }
   get instrumentSensitivity(): InstrumentSensitivity {
     if (this.response) {
