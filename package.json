@@ -1,6 +1,6 @@
 {
   "name": "seisplotjs",
-  "version": "2.0.1-alpha.1",
+  "version": "2.0.1",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "dist/seisplotjs-umd.js",
   "module": "dist/module/index.js",
