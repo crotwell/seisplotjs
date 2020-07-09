@@ -45,11 +45,53 @@ export function isNumArg(value: any): boolean %checks {
 export function isNonEmptyStringArg(value: any): boolean %checks {
   return arguments.length !== 0 && isStringArg(value) && value.length !== 0;
 }
-export function isObject (obj: mixed): boolean %checks {
+export function isObject(obj: mixed): boolean %checks {
   return obj !== null && typeof obj === 'object';
 }
 export function isDef(v: mixed): boolean %checks {
   return typeof v !== 'undefined' && v !== null;
+}
+
+export function doIntGetterSetter(obj, field: string, value?: number) {
+  const hiddenField = `_${field}`;
+  if (hasNoArgs(value)) {
+    return obj[hiddenField];
+  } else if (isNumArg(value)) {
+    obj[hiddenField] = value;
+  } else if (isStringArg(value) && Number.isFinite(Number(value))) {
+    obj[hiddenField] = parseInt(value);
+  } else {
+    throw new Error(`${field} value argument is optional or number, but was type ${(typeof value)}, '${value}' `);
+  }
+  return obj;
+}
+
+export function doFloatGetterSetter(obj, field: string, value?: number) {
+  const hiddenField = `_${field}`;
+  if (hasNoArgs(value)) {
+    return obj[hiddenField];
+  } else if (isNumArg(value)) {
+    obj[hiddenField] = value;
+  } else if (isStringArg(value) && Number.isFinite(Number(value))) {
+    obj[hiddenField] = parseFloat(value);
+  } else {
+    throw new Error(`value argument is optional or number, but was type ${(typeof value)}, '${value}' `);
+  }
+  return obj;
+}
+
+export function doMomentGetterSetter(obj, field: string, value?: moment) {
+  const hiddenField = `_${field}`;
+  if (hasNoArgs(value)) {
+    return obj[hiddenField];
+  } else if (hasArgs(value) && isObject(value) && moment.isMoment(value)) {
+    obj[hiddenField] = value;
+  } else if (hasArgs(value) && moment.isMoment(checkStringOrDate(value))) {
+    obj[hiddenField] = checkStringOrDate(value);
+  } else {
+    throw new Error(`${field} value argument is optional, moment, date or date string, but was type ${(typeof value)}, '${value}' `);
+  }
+  return obj;
 }
 
 /**

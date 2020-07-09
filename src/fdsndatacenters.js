@@ -7,7 +7,8 @@
  */
 
 // special due to flow
-import {checkProtocol, makeParam, isDef, hasArgs, hasNoArgs, isStringArg,
+import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
+        checkProtocol, makeParam, isDef, hasArgs, hasNoArgs, isStringArg,
         isNonEmptyStringArg, isNumArg} from './util';
 
 import { TEXT_MIME, JSON_MIME , doFetchWithTimeout, defaultFetchInitObj} from './util.js';
@@ -113,14 +114,7 @@ export class DataCentersQuery {
    * @returns the query when setting, the current value os services if no arguments
    */
   port(value?: number): number | DataCentersQuery {
-    if (hasNoArgs(value)) {
-      return this._port;
-    } else if (hasArgs(value)) {
-      this._port = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'port', value);
   }
   /**
    * limits results to the named data center, default is all data centers

@@ -11,7 +11,8 @@ import {parseStationXml, Network} from './stationxml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isObject, isStringArg,
+import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
+        checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isObject, isStringArg,
         isNonEmptyStringArg, isNumArg, checkStringOrDate} from './util';
 
 export const LEVEL_NETWORK = 'network';
@@ -172,14 +173,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   port(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._port;
-    } else if (isNumArg(value)) {
-      this._port = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'port', value);
   }
   /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.
@@ -188,14 +182,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   nodata(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._nodata;
-    } else if (hasArgs(value)) {
-      this._nodata = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'nodata', value);
   }
   /** Get/Set the network query parameter.
    *
@@ -263,14 +250,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   startTime(value?: moment): moment | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._startTime;
-    } else if (hasArgs(value)) {
-      this._startTime = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'startTime', value);
   }
   /** Get/Set the endtime query parameter.
    *
@@ -278,14 +258,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   endTime(value?: moment): moment | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._endTime;
-    } else if (hasArgs(value)) {
-      this._endTime = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'endTime', value);
   }
   /**
    * Sets startTime and endTime using the given time window
@@ -304,14 +277,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   startBefore(value?: moment): moment | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._startBefore;
-    } else if (hasArgs(value)) {
-      this._startBefore = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'startBefore', value);
   }
   /** Get/Set the endbefore query parameter.
    *
@@ -319,14 +285,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   endBefore(value?: moment): moment | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._endBefore;
-    } else if (hasArgs(value)) {
-      this._endBefore = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'endBefore', value);
   }
   /** Get/Set the startafter query parameter.
    *
@@ -334,14 +293,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   startAfter(value?: moment): moment | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._startAfter;
-    } else if (hasArgs(value)) {
-      this._startAfter = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'startAfter', value);
   }
   /** Get/Set the endafter query parameter.
    *
@@ -349,14 +301,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   endAfter(value?: moment): moment | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._endAfter;
-    } else if (hasArgs(value)) {
-      this._endAfter = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'endAfter', value);
   }
   /** Get/Set the minlat query parameter.
    *
@@ -364,14 +309,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   minLat(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._minLat;
-    } else if (isNumArg(value)) {
-      this._minLat = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minLat', value);
   }
   /** Get/Set the maxlon query parameter.
    *
@@ -379,14 +317,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   maxLat(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._maxLat;
-    } else if (isNumArg(value)) {
-      this._maxLat = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'maxLat', value);
   }
   /** Get/Set the minlon query parameter.
    *
@@ -394,14 +325,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   minLon(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._minLon;
-    } else if (isNumArg(value)) {
-      this._minLon = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minLon', value);
   }
   /** Get/Set the maxlon query parameter.
    *
@@ -409,14 +333,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   maxLon(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._maxLon;
-    } else if (isNumArg(value)) {
-      this._maxLon = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'maxLon', value);
   }
   /** Get/Set the latitude query parameter.
    *
@@ -424,14 +341,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   latitude(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._latitude;
-    } else if (isNumArg(value)) {
-      this._latitude = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'latitude', value);
   }
   /** Get/Set the longitude query parameter.
    *
@@ -439,14 +349,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   longitude(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._longitude;
-    } else if (isNumArg(value)) {
-      this._longitude = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'longitude', value);
   }
   /** Get/Set the minradius query parameter.
    *
@@ -454,14 +357,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   minRadius(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._minRadius;
-    } else if (isNumArg(value)) {
-      this._minRadius = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minRadius', value);
   }
   /** Get/Set the maxradius query parameter.
    *
@@ -469,14 +365,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   maxRadius(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._maxRadius;
-    } else if (isNumArg(value)) {
-      this._maxRadius = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'maxRadius', value);
   }
   /** Get/Set the includerestricted query parameter.
    *
@@ -529,14 +418,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   updatedAfter(value?: moment): moment | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._updatedAfter;
-    } else if (hasArgs(value)) {
-      this._updatedAfter = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'updatedAfter', value);
   }
   /** Get/Set the matchtimeseries query parameter.
    *

@@ -9,7 +9,7 @@
 import moment from 'moment';
 
 import * as util from './util.js'; // for util.log
-import { checkProtocol, hasNoArgs, isStringArg, isNonEmptyStringArg, isNumArg,
+import { doIntGetterSetter, doFloatGetterSetter, checkProtocol, hasNoArgs, isStringArg, isNonEmptyStringArg, isNumArg,
          isDef, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 
@@ -70,14 +70,7 @@ export class RingserverConnection {
    * @returns new value if getting, this if setting
    */
   port(value?: number): number | RingserverConnection {
-    if (hasNoArgs(value)) {
-      return this._port;
-    } else if (isNumArg(value)) {
-      this._port = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'port', value);
   }
 
   /**

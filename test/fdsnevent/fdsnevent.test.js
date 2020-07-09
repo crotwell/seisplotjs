@@ -15,7 +15,10 @@ test( "query setter test", () => {
 
 test( "form url test", () => {
   let query = new fdsnevent.EventQuery();
+  const NO_DATA = 404;
   const MINMAG = 5.5;
+  const MIN_DEPTH = 100;
+  const MAX_DEPTH = 500;
   const START = moment.utc("2018-01-01");
   const END = moment.utc("2018-01-11");
   const IRIS_HOST = "service.iris.edu";
@@ -35,10 +38,13 @@ test( "form url test", () => {
   expect(query.magnitudeType(MAG_TYPE)).toBe(query);
   expect(query.magnitudeType()).toBe(MAG_TYPE);
 
-  expect(query.minDepth(MINMAG)).toBe(query);
-  expect(query.minDepth()).toBe(MINMAG);
-  expect(query.maxDepth(MINMAG)).toBe(query);
-  expect(query.maxDepth()).toBe(MINMAG);
+  expect(query.nodata(NO_DATA)).toBe(query);
+  expect(query.nodata()).toBe(NO_DATA);
+
+  expect(query.minDepth(MIN_DEPTH)).toBe(query);
+  expect(query.minDepth()).toBe(MIN_DEPTH);
+  expect(query.maxDepth(MAX_DEPTH)).toBe(query);
+  expect(query.maxDepth()).toBe(MAX_DEPTH);
 
   expect(query.minLat(12)).toBe(query);
   expect(query.minLat()).toBe(12);

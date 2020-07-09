@@ -10,7 +10,7 @@ import moment from 'moment';
 import RSVP from 'rsvp';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
+import {doIntGetterSetter, doFloatGetterSetter, checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
         isNonEmptyStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import {SeismogramDisplayData } from './seismogram.js';
@@ -160,14 +160,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   nodata(value?: number): number | AvailabilityQuery {
-    if (hasNoArgs(value)) {
-      return this._nodata;
-    } else if (hasArgs(value)) {
-      this._nodata = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'nodata', value);
   }
   /**
    * Gets/Sets the port, not usually set unless not on standard http or https ports
@@ -176,14 +169,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   port(value?: number): number | AvailabilityQuery {
-    if (hasNoArgs(value)) {
-      return this._port;
-    } else if (hasArgs(value)) {
-      this._port = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'port', value);
   }
   /**
    * Gets/Sets the network code to check.

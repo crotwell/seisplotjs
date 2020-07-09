@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-import {checkProtocol, hasArgs, stringify, isDef, isNonEmptyStringArg } from './util';
+import {doIntGetterSetter, doFloatGetterSetter, checkProtocol, hasArgs, stringify, isDef, isNonEmptyStringArg } from './util';
 import {Station} from './stationxml.js';
 import {Quake} from './quakeml.js';
 
@@ -30,6 +30,8 @@ export class TraveltimeQuery {
   _protocol: string;
   /** @private */
   _host: string;
+  /** @private */
+  _port: number;
   /** @private */
   _nodata: number;
   /** @private */
@@ -60,6 +62,7 @@ export class TraveltimeQuery {
     } else {
       this._host = host;
     }
+    this._port = 80;
     this._format = JSON_FORMAT;
     this._noheader = false; // only for text format
   }
@@ -69,14 +72,22 @@ export class TraveltimeQuery {
   host(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._host = value, this) : this._host;
   }
+  /** Gets/Sets the remote port to connect to.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
+  port(value?: number): number | StationQuery {
+    return doIntGetterSetter(this, 'port', value);
+  }
   specVersion(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._specVersion = value, this) : this._specVersion;
   }
   evdepth(value?: number): number | TraveltimeQuery {
-    return hasArgs(value) ? (this._evdepth = value, this) : this._evdepth;
+    return doFloatGetterSetter(this, 'evdepth', value);
   }
   distdeg(value?: number): number | TraveltimeQuery {
-    return hasArgs(value) ? (this._distdeg = value, this) : this._distdeg;
+    return doFloatGetterSetter(this, 'distdeg', value);
   }
   model(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._model = value, this) : this._model;
@@ -85,10 +96,10 @@ export class TraveltimeQuery {
     return hasArgs(value) ? (this._phases = value, this) : this._phases;
   }
   stalat(value?: number): number | TraveltimeQuery {
-    return hasArgs(value) ? (this._stalat = value, this) : this._stalat;
+    return doFloatGetterSetter(this, 'stalat', value);
   }
   stalon(value?: number): number | TraveltimeQuery {
-    return hasArgs(value) ? (this._stalon = value, this) : this._stalon;
+    return doFloatGetterSetter(this, 'stalon', value);
   }
   latLonFromStation(station: Station): TraveltimeQuery {
     this.stalat(station.latitude);
@@ -96,10 +107,10 @@ export class TraveltimeQuery {
     return this;
   }
   evlat(value?: number): number | TraveltimeQuery {
-    return hasArgs(value) ? (this._evlat = value, this) : this._evlat;
+    return doFloatGetterSetter(this, 'evlat', value);
   }
   evlon(value?: number): number | TraveltimeQuery {
-    return hasArgs(value) ? (this._evlon = value, this) : this._evlon;
+    return doFloatGetterSetter(this, 'evlon', value);
   }
   latLonFromQuake(quake: Quake): TraveltimeQuery {
     this.evlat(quake.latitude);
@@ -202,7 +213,7 @@ export class TraveltimeQuery {
     if (this._protocol.endsWith(colon)) {
       colon = "";
     }
-    let url = this._protocol+colon+"//"+this._host+"/irisws/traveltime/"+this._specVersion+"/";
+    return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/irisws/traveltime/"+this._specVersion+"/";
     return url;
   }
 

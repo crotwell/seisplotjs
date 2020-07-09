@@ -11,7 +11,8 @@ import RSVP from 'rsvp';
 
 import * as util from './util.js'; // for util.log
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg,
+import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
+        checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg,
         isNonEmptyStringArg,isNumArg, checkStringOrDate} from './util';
 
 import * as miniseed from './miniseed';
@@ -147,14 +148,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   nodata(value?: number): number | DataSelectQuery {
-    if (hasNoArgs(value)) {
-      return this._nodata;
-    } else if (hasArgs(value)) {
-      this._nodata = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'nodata', value);
   }
   /**
    * Gets/Sets the remote port to connect to.
@@ -163,14 +157,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   port(value?: number): number | DataSelectQuery {
-    if (hasNoArgs(value)) {
-      return this._port;
-    } else if (isNumArg(value)) {
-      this._port = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'port', value);
   }
   /** Get/Set the network query parameter.
    *
@@ -238,14 +225,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   startTime(value?: moment): moment | DataSelectQuery {
-    if (hasNoArgs(value)) {
-      return this._startTime;
-    } else if (hasArgs(value)) {
-      this._startTime = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'startTime', value);
   }
   /** Get/Set the endtime query parameter.
    *
@@ -253,14 +233,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   endTime(value?: moment): moment | DataSelectQuery {
-    if (hasNoArgs(value)) {
-      return this._endTime;
-    } else if (hasArgs(value)) {
-      this._endTime = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'endTime', value);
   }
   /**
    * Sets startTime and endTime using the given time window
@@ -294,14 +267,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   minimumLength(value?: number): number | DataSelectQuery {
-    if (hasNoArgs(value)) {
-      return this._minimumLength;
-    } else if (hasArgs(value)) {
-      this._minimumLength = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minimumLength', value);
   }
   /** Get/Set the longest only query parameter.
    *

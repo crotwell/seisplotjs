@@ -11,7 +11,8 @@ import { Quake, USGS_HOST, parseQuakeML } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
-import {checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject,
+import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
+        checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject,
         isStringArg, isNonEmptyStringArg, isNumArg, checkStringOrDate} from './util';
 
 /**
@@ -169,14 +170,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   port(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._port;
-    } else if (isNumArg(value)) {
-      this._port = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'port', value);
   }
   /**
    * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
@@ -186,14 +180,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   nodata(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._nodata;
-    } else if (hasArgs(value)) {
-      this._nodata = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'nodata', value);
   }
   /**
    * Get/Set the eventid query parameter.
@@ -218,14 +205,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   startTime(value?: moment): moment | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._startTime;
-    } else if (hasArgs(value)) {
-      this._startTime = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'startTime', value);
   }
   /**
    * Get/Set the endtime query parameter.
@@ -234,14 +214,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   endTime(value?: moment): moment | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._endTime;
-    } else if (hasArgs(value)) {
-      this._endTime = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'endTime', value);
   }
   /**
    * Sets startTime and endTime using the given time window
@@ -261,14 +234,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   updatedAfter(value?: moment): moment | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._updatedAfter;
-    } else if (hasArgs(value)) {
-      this._updatedAfter = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error('value argument is optional or moment or string, but was '+typeof value);
-    }
+    return doMomentGetterSetter(this, 'updatedAfter', value);
   }
   /**
    * Get/Set the minmag query parameter.
@@ -277,14 +243,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   minMag(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._minMag;
-    } else if (isNumArg(value)) {
-      this._minMag = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minMag', value);
   }
   /**
    * Get/Set the maxmag query parameter.
@@ -293,14 +252,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   maxMag(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._maxMag;
-    } else if (isNumArg(value)) {
-      this._maxMag = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+      return doFloatGetterSetter(this, 'maxMag', value);
   }
   /**
    * Get/Set the magnitudetype query parameter.
@@ -325,14 +277,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   minDepth(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._minDepth;
-    } else if (isNumArg(value)) {
-      this._minDepth = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minDepth', value);
   }
   /**
    * Get/Set the maxdepth query parameter.
@@ -341,14 +286,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   maxDepth(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._maxDepth;
-    } else if (isNumArg(value)) {
-      this._maxDepth = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'maxDepth', value);
   }
   /**
    * Get/Set the minlat query parameter.
@@ -357,14 +295,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   minLat(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._minLat;
-    } else if (isNumArg(value)) {
-      this._minLat = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minLat', value);
   }
   /**
    * Get/Set the maxlat query parameter.
@@ -373,14 +304,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   maxLat(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._maxLat;
-    } else if (isNumArg(value)) {
-      this._maxLat = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'maxLat', value);
   }
   /**
    * Get/Set the minlon query parameter.
@@ -389,14 +313,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   minLon(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._minLon;
-    } else if (isNumArg(value)) {
-      this._minLon = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minLon', value);
   }
   /**
    * Get/Set the maxlon query parameter.
@@ -405,14 +322,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   maxLon(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._maxLon;
-    } else if (isNumArg(value)) {
-      this._maxLon = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'maxLon', value);
   }
   /**
    * Get/Set the latitude query parameter.
@@ -421,14 +331,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   latitude(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._latitude;
-    } else if (isNumArg(value)) {
-      this._latitude = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'latitude', value);
   }
   /**
    * Get/Set the longitude query parameter.
@@ -437,14 +340,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   longitude(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._longitude;
-    } else if (isNumArg(value)) {
-      this._longitude = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'longitude', value);
   }
   /**
    * Get/Set the minradius query parameter.
@@ -453,14 +349,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   minRadius(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._minRadius;
-    } else if (isNumArg(value)) {
-      this._minRadius = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'minRadius', value);
   }
   /**
    * Get/Set the maxradius query parameter.
@@ -469,14 +358,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   maxRadius(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._maxRadius;
-    } else if (isNumArg(value)) {
-      this._maxRadius = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doFloatGetterSetter(this, 'maxRadius', value);
   }
   /**
    * Get/Set the includearrivals query parameter.
@@ -549,14 +431,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   limit(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._limit;
-    } else if (isNumArg(value)) {
-      this._limit = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'limit', value);
   }
   /**
    * Get/Set the offset query parameter.
@@ -565,14 +440,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   offset(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._offset;
-    } else if (isNumArg(value)) {
-      this._offset = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or number, but was '+typeof value);
-    }
+    return doIntGetterSetter(this, 'offset', value);
   }
   /**
    * Get/Set the orderby query parameter.
