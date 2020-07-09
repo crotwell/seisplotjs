@@ -73,6 +73,7 @@ doPlot = function(config) {
     .startTime(timeWindow.startTime)
     .endTime(timeWindow.endTime);
   let hash = {
+    config: config,
     timeWindow: timeWindow,
     staCode: staCodeQuery,
     chanOrient: config.orientationCode,
@@ -163,15 +164,23 @@ doPlot = function(config) {
     redrawHeli(hash);
     return hash;
   }).then(hash => {
+    return seisplotjs.RSVP.hash(queryEarthquakes(hash));
+  }).catch(err => {
+    console.assert(false, err);
+  });
+};
+
+queryEarthquakes = function(hash) {
+  return seisplotjs.RSVP.hash(hash).then(hash => {
     let quakeStart = moment.utc(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
     let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     localQuakesQuery
       .startTime(quakeStart)
       .endTime(hash.timeWindow.endTime)
-      .minLat(31.75)
-      .maxLat(35.5)
-      .minLon(-84)
-      .maxLon(-78);
+      .minLat(hash.config.localMinLat)
+      .maxLat(hash.config.localMaxLat)
+      .minLon(hash.config.localMinLon)
+      .maxLon(hash.config.localMaxLon);
     hash.localQuakes = localQuakesQuery.query();
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
@@ -182,8 +191,8 @@ doPlot = function(config) {
       .endTime(hash.timeWindow.endTime)
       .latitude(33)
       .longitude(-81)
-      .maxRadius(10)
-      .minMag(4);
+      .maxRadius(hash.config.regionalMaxRadius)
+      .minMag(hash.config.regionalMinMag);
     hash.regionalQuakes = regionalQuakesQuery.query();
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
@@ -192,11 +201,13 @@ doPlot = function(config) {
     globalQuakesQuery
       .startTime(quakeStart)
       .endTime(hash.timeWindow.endTime)
-      .minMag(6);
+      .minMag(hash.config.globalMinMag);
     hash.globalQuakes = globalQuakesQuery.query();
     return seisplotjs.RSVP.hash(hash);
+
   }).catch(e => {
-      svgParent.append("h3").text("Error Loading Data").style("color", "red");
+    let svgParent = d3.select(`div.${divClass}`);
+      svgParent.append("h3").text("Error Loading Earthquake Data").style("color", "red");
       svgParent.append("p").text(`${e}`);
       throw e;
   }).then(hash => {
@@ -275,10 +286,9 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
     hash.seisData.addMarkers(markers);
     hash.heli.draw();
     return hash;
-  }).catch(err => {
-    console.assert(false, err);
   });
-};
+}
+
 
 redrawHeli = function(hash) {
   console.log(`heli redraw... ${hash.amp}`)

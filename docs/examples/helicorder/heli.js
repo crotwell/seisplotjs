@@ -68,13 +68,76 @@ let updateAmpRadioButtons = function(currentState) {
           .select("input#maxAmp").property("checked", "true");
         currentState.amp = "max";
     }
+
   } else {
     // default to max?
       d3.select("#amp")
         .select("input#maxAmp").property("checked", "true");
       currentState.amp = "max";
   }
+
+  // earthquake query params
+  updateEarthquakeQueryParam(currentState, 'localMinLat', 31.75);
+  updateEarthquakeQueryParam(currentState, 'localMaxLat', 35.5);
+  updateEarthquakeQueryParam(currentState, 'localMinLon', -84);
+  updateEarthquakeQueryParam(currentState, 'localMaxLon', -78);
+  updateEarthquakeQueryParam(currentState, 'regionalMaxRadius', 10);
+  updateEarthquakeQueryParam(currentState, 'regionalMinMag', 4.5);
+  updateEarthquakeQueryParam(currentState, 'globalMinMag', 6);
+  loadAllEarthquakeQueryParams(currentState);
+  console.log(`currentState: ${JSON.stringify(currentState)}`);
 };
+
+const updateEarthquakeQueryParam = function(currentState, id, defaultValue) {
+  let region = 'global';
+  if (id.startsWith('local')) {
+    region = 'local';
+  } else if (id.startsWith('regional')) {
+    region = 'regional';
+  } else if (id.startsWith('global')) {
+    region = 'global';
+  } else {
+    throw new Error(`Unknown region for ${id}`);
+  }
+  if ( ! Number.isFinite(Number(currentState[id]))) {
+    currentState[id] = defaultValue;
+  }
+  if (typeof currentState[id] !== 'number') {
+    currentState[id] = parseFloat(currentState[id]);
+  }
+  d3.select("div#"+region)
+    .select("input#"+id).property("value", currentState[id]);
+}
+
+function loadAllEarthquakeQueryParams(currentState) {
+  loadEarthquakeQueryParam(currentState, 'localMinLat');
+  loadEarthquakeQueryParam(currentState, 'localMaxLat');
+  loadEarthquakeQueryParam(currentState, 'localMinLon');
+  loadEarthquakeQueryParam(currentState, 'localMaxLon');
+  loadEarthquakeQueryParam(currentState, 'regionalMaxRadius');
+  loadEarthquakeQueryParam(currentState, 'regionalMinMag');
+  loadEarthquakeQueryParam(currentState, 'globalMinMag');
+}
+
+const loadEarthquakeQueryParam = function(currentState, id) {
+  let region = 'global';
+  if (id.startsWith('local')) {
+    region = 'local';
+  } else if (id.startsWith('regional')) {
+    region = 'regional';
+  } else if (id.startsWith('global')) {
+    region = 'global';
+  } else {
+    throw new Error(`Unknown region for ${id}`);
+  }
+  let inputVal = d3.select("div#"+region)
+    .select("input#"+id).property("value");
+  if ( Number.isFinite(Number(inputVal))) {
+    currentState[id] = parseFloat(inputVal);
+  } else {
+    throw new Error(`Value for input ${id} is not a valid number: ${inputVal}`);
+  }
+}
 
 // Check browser state, in case of back or forward buttons
 let currentState = window.history.state;
@@ -378,6 +441,12 @@ d3.select("#amp")
   });
 d3.select("#percentAmpSlider").on("input", function() {
   handleAmpChange(`${this.value}%`);
+});
+
+
+d3.select("button#refreshEarthquakes").on("click", function(d) {
+  loadAllEarthquakeQueryParams(state);
+  loadAndPlot(state);
 });
 
 
