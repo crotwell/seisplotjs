@@ -184,7 +184,7 @@ export class StartEndDuration {
       this._endTime = moment.utc(WAY_FUTURE);
       this._duration = moment.duration(this.endTime.diff(this.startTime));
     } else {
-      throw new Error(`need some combination of startTime, endTime and duration: ${startTime} ${endTime} ${duration}`);
+      throw new Error(`need some combination of startTime, endTime and duration: ${stringify(startTime)} ${stringify(endTime)} ${stringify(duration)}`);
     }
   }
   get start() {
