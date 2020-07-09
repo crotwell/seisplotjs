@@ -9,7 +9,7 @@
 import moment from 'moment';
 
 import * as util from './util.js'; // for util.log
-import { doIntGetterSetter, doFloatGetterSetter, checkProtocol, hasNoArgs, isStringArg, isNonEmptyStringArg, isNumArg,
+import { doIntGetterSetter, checkProtocol, hasNoArgs, isStringArg, isNonEmptyStringArg, isNumArg,
          isDef, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 

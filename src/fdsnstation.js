@@ -13,7 +13,7 @@ import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, de
 // special due to flow
 import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
         checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isObject, isStringArg,
-        isNonEmptyStringArg, isNumArg, checkStringOrDate} from './util';
+        isNonEmptyStringArg, isNumArg} from './util';
 
 export const LEVEL_NETWORK = 'network';
 export const LEVEL_STATION = 'station';

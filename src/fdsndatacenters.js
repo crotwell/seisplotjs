@@ -7,7 +7,7 @@
  */
 
 // special due to flow
-import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
+import {doIntGetterSetter, 
         checkProtocol, makeParam, isDef, hasArgs, hasNoArgs, isStringArg,
         isNonEmptyStringArg, isNumArg} from './util';
 

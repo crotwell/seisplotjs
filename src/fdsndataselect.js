@@ -13,7 +13,7 @@ import * as util from './util.js'; // for util.log
 // special due to flow
 import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
         checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg,
-        isNonEmptyStringArg,isNumArg, checkStringOrDate} from './util';
+        isNonEmptyStringArg,isNumArg} from './util';
 
 import * as miniseed from './miniseed';
 import { Seismogram, SeismogramDisplayData } from './seismogram';

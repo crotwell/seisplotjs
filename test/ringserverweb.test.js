@@ -1,8 +1,6 @@
 // @flow
 
 import * as ringserverweb from '../src/ringserverweb.js';
-import * as util from '../src/util.js';
-let moment = util.moment;
 
 
 test( "query setter test", () => {

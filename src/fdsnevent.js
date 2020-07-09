@@ -13,7 +13,7 @@ import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, de
 // special due to flow
 import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
         checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject,
-        isStringArg, isNonEmptyStringArg, isNumArg, checkStringOrDate} from './util';
+        isStringArg, isNonEmptyStringArg, isNumArg} from './util';
 
 /**
  * Major version of the FDSN spec supported here.

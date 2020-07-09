@@ -13,7 +13,6 @@ test( "query setter test", () => {
   const CHAN = 'HHZ';
   const DURATION = 300;
   const timeWindow = new util.StartEndDuration(new moment.utc('2018-01-01T12:34:45.000Z'), null, DURATION, 0);
-  const MIN_LENGTH = 120;
   const QUALITY = 'D';
   const FORMAT = 'json';
   expect(dsQuery.networkCode(NET)).toBe(dsQuery);

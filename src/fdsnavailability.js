@@ -10,7 +10,7 @@ import moment from 'moment';
 import RSVP from 'rsvp';
 
 // special due to flow
-import {doIntGetterSetter, doFloatGetterSetter, checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
+import {doIntGetterSetter, checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
         isNonEmptyStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import {SeismogramDisplayData } from './seismogram.js';
