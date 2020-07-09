@@ -77,7 +77,7 @@ export class TraveltimeQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  port(value?: number): number | StationQuery {
+  port(value?: number): number | TraveltimeQuery {
     return doIntGetterSetter(this, 'port', value);
   }
   specVersion(value?: string): string | TraveltimeQuery {
@@ -213,7 +213,7 @@ export class TraveltimeQuery {
     if (this._protocol.endsWith(colon)) {
       colon = "";
     }
-    return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/irisws/traveltime/"+this._specVersion+"/";
+    const url = this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/irisws/traveltime/"+this._specVersion+"/";
     return url;
   }
 

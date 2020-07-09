@@ -52,7 +52,7 @@ export function isDef(v: mixed): boolean %checks {
   return typeof v !== 'undefined' && v !== null;
 }
 
-export function doIntGetterSetter(obj, field: string, value?: number) {
+export function doIntGetterSetter(obj: any, field: string, value?: number) {
   const hiddenField = `_${field}`;
   if (hasNoArgs(value)) {
     return obj[hiddenField];
@@ -66,7 +66,7 @@ export function doIntGetterSetter(obj, field: string, value?: number) {
   return obj;
 }
 
-export function doFloatGetterSetter(obj, field: string, value?: number) {
+export function doFloatGetterSetter(obj: any, field: string, value?: number) {
   const hiddenField = `_${field}`;
   if (hasNoArgs(value)) {
     return obj[hiddenField];
@@ -80,7 +80,7 @@ export function doFloatGetterSetter(obj, field: string, value?: number) {
   return obj;
 }
 
-export function doMomentGetterSetter(obj, field: string, value?: moment) {
+export function doMomentGetterSetter(obj: any, field: string, value?: moment) {
   const hiddenField = `_${field}`;
   if (hasNoArgs(value)) {
     return obj[hiddenField];

@@ -653,7 +653,7 @@ export class AvailabilityQuery {
     return name+"="+stringify(val)+"\n";
   }
 
-  formURL(method: string): string {
+  formURL(method?: string): string {
     if (hasNoArgs(method)) {
       method = "query";
     }
