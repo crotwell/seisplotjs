@@ -126,6 +126,8 @@ export function calcClockOffset(serverTimeUTC: moment): number {
   return moment.utc().diff(serverTimeUTC, 'seconds', true);
 }
 
+export const WAY_FUTURE = moment.utc('2500-01-01T00:00:00');
+
 /**
  * Any two of startTime, endTime and duration can be specified, or just duration which
  * then assumes endTime is now.
@@ -176,8 +178,13 @@ export class StartEndDuration {
       }
       this._endTime = moment.utc().subtract(clockOffset);
       this._startTime = moment.utc(this.endTime).subtract(this.duration);
+    } else if (startTime) {
+      // only a start time, maybe like a Channel that is active currently
+      this._startTime = checkStringOrDate(startTime);
+      this._endTime = moment.utc(WAY_FUTURE);
+      this._duration = moment.duration(this.endTime.diff(this.startTime));
     } else {
-      throw new Error("need some combination of startTime, endTime and duration");
+      throw new Error(`need some combination of startTime, endTime and duration: ${startTime} ${endTime} ${duration}`);
     }
   }
   get start() {

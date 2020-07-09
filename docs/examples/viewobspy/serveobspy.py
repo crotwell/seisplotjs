@@ -19,6 +19,7 @@ from obspy.core.event.base import ResourceIdentifier
 from obspy.core.util.attribdict import AttribDict
 
 import logging
+logging.basicConfig()
 logger = logging.getLogger('viewobspy')
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
@@ -247,7 +248,7 @@ class ServeObsPy():
                         super().do_GET()
                 except Exception as e:
                     self.send_error(404, "seis item not found")
-                    logger.error(e)
+                    logger.error("Error in do_GET", exc_info=e)
 
             def sendDataset(self):
                 """
@@ -342,12 +343,14 @@ class ServeObsPy():
 ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1"
 
 def extractEventId(quakeml):
-    usgsExtras = {k: v for k, v in quakeml.extra.items() if v.namespace == ANSS_CATALOG_NS}
+    usgsExtras = {}
+    if 'extra' in quakeml:
+        usgsExtras = {k: v for k, v in quakeml.extra.items() if v.namespace == ANSS_CATALOG_NS}
     if 'eventid' in usgsExtras and 'eventsource' in usgsExtras:
         # assume USGS style event ids,
         # USGS, NCEDC and SCEDC use concat of eventsource and eventId as eventit, sigh...
         return "{}{}".format(usgsExtras['eventsource'].value, usgsExtras['eventid'].value)
-    if quakeml.resource_id:
+    if 'resource_id' in quakeml:
         eventIdPat = re.compile('eventid=([\w\d]+)')
         m = eventIdPat.search(quakeml.resource_id.id)
         if m:
