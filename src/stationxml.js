@@ -21,13 +21,14 @@ export const STAML_NS = 'http://www.fdsn.org/xml/station/1';
 export class Network {
   networkCode: string;
   _startDate: moment;
-  _endDate: moment;
+  _endDate: moment | null;
   restrictedStatus: string;
   description: string;
   totalNumberStations: number;
   stations: Array<Station>;
   constructor(networkCode: string) {
     this.networkCode = networkCode;
+    this._endDate = null;
     this.stations = [];
   }
   get startDate() {
@@ -39,8 +40,12 @@ export class Network {
   get endDate() {
     return this._endDate;
   }
-  set endDate(value?: moment | string) {
-    this._endDate = checkStringOrDate(value);
+  set endDate(value?: moment | string | null) {
+    if ( ! isDef(value)) {
+      this._endDate = null;
+    } else {
+      this._endDate = checkStringOrDate(value);
+    }
   }
   get timeRange(): StartEndDuration {
     return new StartEndDuration(this.startDate, this.endDate);
@@ -60,7 +65,7 @@ export class Station {
     /** @private */
   _startDate: moment;
     /** @private */
-  _endDate: moment;
+  _endDate: moment | null;
   restrictedStatus: string;
   name: string;
   latitude: number;
@@ -69,6 +74,7 @@ export class Station {
   channels: Array<Channel>;
   constructor(network: Network, stationCode: string) {
     this.network = network;
+    this._endDate = null;
     this.stationCode = stationCode;
     this.channels = [];
   }
@@ -81,8 +87,12 @@ export class Station {
   get endDate(): moment {
     return this._endDate;
   }
-  set endDate(value?: moment | string) {
-    this._endDate = checkStringOrDate(value);
+  set endDate(value?: moment | string | null) {
+    if ( ! isDef(value)) {
+      this._endDate = null;
+    } else {
+      this._endDate = checkStringOrDate(value);
+    }
   }
   get timeRange(): StartEndDuration {
     return new StartEndDuration(this.startDate, this.endDate);
@@ -103,7 +113,7 @@ export class Channel {
     /** @private */
   _startDate: moment;
     /** @private */
-  _endDate: moment;
+  _endDate: moment | null;
   restrictedStatus: string;
   latitude: number;
   longitude: number;
@@ -115,6 +125,7 @@ export class Channel {
   response: Response;
   constructor(station: Station, channelCode: string, locationCode: string) {
     this.station = station;
+    this._endDate = null;
     if (channelCode.length !== 3) {
       throw new Error(`Channel code must be 3 chars: ${channelCode}`);
     }
@@ -137,8 +148,12 @@ export class Channel {
   get endDate() {
     return this._endDate;
   }
-  set endDate(value?: moment | string) {
-    this._endDate = checkStringOrDate(value);
+  set endDate(value?: moment | string | null) {
+    if ( ! isDef(value)) {
+      this._endDate = null;
+    } else {
+      this._endDate = checkStringOrDate(value);
+    }
   }
   get timeRange(): StartEndDuration {
     return new StartEndDuration(this.startDate, this.endDate);
