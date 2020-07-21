@@ -5,6 +5,7 @@ import asyncio
 import io
 import http.server
 import json
+import numpy
 import os
 import queue
 import re
@@ -363,6 +364,12 @@ def extractEventId(quakeml):
 
 class StatsEncoder(json.JSONEncoder):
     def default(self, obj):
+        if isinstance(obj, numpy.integer):
+            return int(obj)
+        elif isinstance(obj, numpy.floating):
+            return float(obj)
+        elif isinstance(obj, numpy.ndarray):
+            return obj.tolist()
         if isinstance(obj, UTCDateTime):
             return obj.isoformat()
         if isinstance(obj, AttribDict):
