@@ -52,6 +52,18 @@ export function isDef(v: mixed): boolean %checks {
   return typeof v !== 'undefined' && v !== null;
 }
 
+export function doStringGetterSetter(obj: any, field: string, value?: string) {
+  const hiddenField = `_${field}`;
+  if (hasNoArgs(value)) {
+    return obj[hiddenField];
+  } else if (isStringArg(value)) {
+    obj[hiddenField] = value;
+  } else {
+    throw new Error(`${field} value argument is optional or number, but was type ${(typeof value)}, '${value}' `);
+  }
+  return obj;
+}
+
 export function doIntGetterSetter(obj: any, field: string, value?: number) {
   const hiddenField = `_${field}`;
   if (hasNoArgs(value)) {

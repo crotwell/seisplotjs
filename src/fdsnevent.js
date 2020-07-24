@@ -11,7 +11,7 @@ import { Quake, USGS_HOST, parseQuakeML } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
-import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
+import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
         checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isDef, isObject,
         isStringArg, isNonEmptyStringArg, isNumArg} from './util';
 
@@ -138,14 +138,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   protocol(value?: string): string | EventQuery {
-    if (isStringArg(value)) {
-      this._protocol = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._protocol;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'protocol', value);
   }
   /**
    * Gets/Sets the remote host to connect to.
@@ -154,14 +147,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   host(value?: string): string | EventQuery {
-    if (isStringArg(value)) {
-      this._host = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._host;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'host', value);
   }
   /**
    * Gets/Sets the remote port to connect to.
@@ -189,14 +175,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   eventId(value?: string): string | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._eventId;
-    } else if (isStringArg(value)) {
-      this._eventId = value;
-      return this;
-    } else  {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'eventId', value);
   }
   /**
    * Get/Set the starttime query parameter.
@@ -261,14 +240,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   magnitudeType(value?: string): string | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._magnitudeType;
-    } else if (isStringArg(value)) {
-      this._magnitudeType = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'magnitudeType', value);
   }
   /**
    * Get/Set the mindepth query parameter.
@@ -415,14 +387,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   format(value?: string): string | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._format;
-    } else if (isStringArg(value)) {
-      this._format = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'format', value);
   }
   /**
    * Get/Set the limit query parameter.
@@ -449,14 +414,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   orderBy(value?: string): string | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._orderBy;
-    } else if (isStringArg(value)) {
-      this._orderBy = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'orderBy', value);
   }
   /**
    * Get/Set the catalog query parameter.
@@ -465,14 +423,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   catalog(value?: string): string | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._catalog;
-    } else if (isStringArg(value)) {
-      this._catalog = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'catalog', value);
   }
   /**
    * Get/Set the contributor query parameter.
@@ -481,14 +432,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   contributor(value?: string): string | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._contributor;
-    } else if (isStringArg(value)) {
-      this._contributor = value;
-      return this;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'contributor', value);
   }
   /**
    * Get/Set the timeout in seconds for the request. Default is 30.

@@ -10,7 +10,7 @@ import moment from 'moment';
 import RSVP from 'rsvp';
 
 // special due to flow
-import {doIntGetterSetter, checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
+import {doStringGetterSetter, doIntGetterSetter, checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isStringArg,
         isNonEmptyStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import {SeismogramDisplayData } from './seismogram.js';
@@ -127,14 +127,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   protocol(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._protocol = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._protocol;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'protocol', value);
   }
   /**
    * Gets/Sets the remote host to connect to.
@@ -143,14 +136,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   host(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._host = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._host;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'host', value);
   }
   /**
    * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
@@ -178,14 +164,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   networkCode(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._networkCode = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._networkCode;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'networkCode', value);
   }
   /**
    * Gets/Sets the station code to check.
@@ -194,14 +173,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   stationCode(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._stationCode = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._stationCode;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'stationCode', value);
   }
   /**
    * Gets/Sets the location code to check.
@@ -210,14 +182,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   locationCode(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._locationCode = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._locationCode;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'locationCode', value);
   }
   /**
    * Gets/Sets the channel code to check.
@@ -226,14 +191,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   channelCode(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._channelCode = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._channelCode;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'channelCode', value);
   }
   /**
    * Gets/Sets the start time parameter for the query.
@@ -285,14 +243,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   quality(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._quality = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._quality;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'quality', value);
   }
   /**
    * Gets/Sets the merge parameter for the query.
@@ -301,14 +252,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   merge(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._merge = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._merge;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'merge', value);
   }
   /**
    * Gets/Sets the mergegaps parameter for the query.
@@ -317,14 +261,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   mergeGaps(value?: number): number | AvailabilityQuery {
-    if (isNumArg(value)) {
-      this._mergeGaps = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._mergeGaps;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'mergeGaps', value);
   }
   /**
    * Gets/Sets the show parameter for the query.
@@ -333,14 +270,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   show(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._show = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._show;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'show', value);
   }
   /**
    * Gets/Sets the limit parameter for the query.
@@ -365,14 +295,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   orderby(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._orderby = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._orderby;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'orderBy', value);
   }
   /**
    * Gets/Sets the include restricted data parameter for the query.
@@ -399,14 +322,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   format(value?: string): string | AvailabilityQuery {
-    if (isStringArg(value)) {
-      this._format = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._format;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'format', value);
   }
   /** Get/Set the timeout in seconds for the request. Default is 30.
    *

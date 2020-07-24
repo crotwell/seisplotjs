@@ -7,7 +7,7 @@
  */
 
 // special due to flow
-import {doIntGetterSetter, 
+import {doStringGetterSetter, doIntGetterSetter,
         checkProtocol, makeParam, isDef, hasArgs, hasNoArgs, isStringArg,
         isNonEmptyStringArg, isNumArg} from './util';
 
@@ -82,14 +82,7 @@ export class DataCentersQuery {
    * @returns the query when setting, the current value os services if no arguments
    */
   protocol(value?: string): string | DataCentersQuery {
-    if (isStringArg(value)) {
-      this._protocol = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._protocol;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'protocol', value);
   }
   /** Gets/Sets the remote host to connect to. This defaults to
    * www.fdsn.org and generally should not be set.
@@ -98,14 +91,7 @@ export class DataCentersQuery {
    * @returns the query when setting, the current value os services if no arguments
    */
   host(value?: string): string | DataCentersQuery {
-    if (isStringArg(value)) {
-      this._host = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._host;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'host', value);
   }
   /** Gets/Sets the remote port to connect to. This defaults to
    * the standard port for the protocol and generally should not be set.
@@ -123,14 +109,7 @@ export class DataCentersQuery {
    * @returns the query when setting, the current value os services if no arguments
    */
   name(value?: string): string | DataCentersQuery {
-    if (isStringArg(value)) {
-      this._name = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._name;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'name', value);
   }
   /**
    * limits results to services that match the glob style pattern
@@ -139,14 +118,7 @@ export class DataCentersQuery {
    * @returns the query when setting, the current value os services if no arguments
    */
   services(value?: string): string | DataCentersQuery {
-    if (isStringArg(value)) {
-      this._services = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._services;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'services', value);
   }
   /**
    * whether the results include detailed information about

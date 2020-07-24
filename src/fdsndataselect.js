@@ -11,7 +11,7 @@ import RSVP from 'rsvp';
 
 import * as util from './util.js'; // for util.log
 // special due to flow
-import {doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
+import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
         checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg,
         isNonEmptyStringArg,isNumArg} from './util';
 
@@ -115,14 +115,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   protocol(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._protocol = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._protocol;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'protocol', value);
   }
   /**
    * Gets/Sets the remote host to connect to.
@@ -131,14 +124,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   host(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._host = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._host;
-    } else {
-      throw new Error('value argument is optional or string, but was '+typeof value);
-    }
+    return doStringGetterSetter(this, 'host', value);
   }
   /**
    * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
@@ -165,14 +151,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   networkCode(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._networkCode = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._networkCode;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'networkCode', value);
   }
   /** Get/Set the station query parameter.
    *
@@ -180,14 +159,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   stationCode(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._stationCode = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._stationCode;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'stationCode', value);
   }
   /** Get/Set the location code query parameter.
    *
@@ -195,14 +167,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   locationCode(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._locationCode = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._locationCode;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'locationCode', value);
   }
   /** Get/Set the channel query parameter.
    *
@@ -210,14 +175,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   channelCode(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._channelCode = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._channelCode;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'channelCode', value);
   }
   /** Get/Set the starttime query parameter.
    *
@@ -252,14 +210,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   quality(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._quality = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._quality;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'quality', value);
   }
   /** Get/Set the minimum length query parameter.
    *
@@ -294,14 +245,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   repository(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._repository = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._repository;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'repository', value);
   }
   /** Get/Set the format query parameter.
    *
@@ -309,14 +253,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   format(value?: string): string | DataSelectQuery {
-    if (isStringArg(value)) {
-      this._format = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._format;
-    } else {
-      throw new Error('value argument is optional or string, but was '+value);
-    }
+    return doStringGetterSetter(this, 'format', value);
   }
   /**
    * Get/Set the timeout in seconds for the request. Default is 30.
