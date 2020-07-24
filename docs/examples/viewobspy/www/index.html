@@ -169,7 +169,7 @@
           } else {
             console.log(`not refresh: ${jsonObj.update}`)
           }
-          viewObspy.loadAllAndPlot();
+          viewObspy.applyProcessChain();
         } else {
           console.log("...not update message  "+JSON.stringify(jsonObj));
         }

@@ -264,6 +264,7 @@ class ViewObsPy {
   }
 
   applyProcessChain() {
+    const that = this;
     this.processedData.clear();
     let tmpProcessChain = Array.from(this.processChain);
     this.processChain.length = 0;//clears the array
@@ -283,8 +284,9 @@ class ViewObsPy {
         });
         return promiseSeis.then( seis => {
           if (seis) {
-            seisplotjs.d3.selectAll(`div[seis=${seisKey}]`).each( d,i => {
-              const plottype = this.attr('plottype');
+            // can't use arrow function here as messes with d3 this assignment
+            seisplotjs.d3.selectAll(`div[seis=${seisKey}]`).each( function(d) {
+              const plottype = seisplotjs.d3.select(this).attr('plottype');
               that.updatePlot(seisKey, plottype, that.seisChanQuakeFilter);
             });
           }
