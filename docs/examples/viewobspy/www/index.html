@@ -5,7 +5,7 @@
     <title>Obspy Dataset View</title>
     <style>
       div[plottype="seismograph"] {
-        height: 300px;
+        height: 250px;
       }
       div[plottype="spectra_log"] {
         height: 400px;
@@ -69,7 +69,7 @@
   </head>
   <body>
     <div id='message'></div>
-    <h3>ObsPy Plotting</h3>
+    <h3>ObsPy: <span id="title">seismographs</span></h3>
     <input id="_1" type="checkbox" class="hidetools">
     <label class="hidetools" for="_1"><span> Tools:</span></label>
     <div class='tools'>
@@ -140,7 +140,7 @@
       </div>
     </div>
     <div id="messages"></div>
-    <h3 id="title">Seismograph!</h3>
+
     <div id="myseismograph">
     </div>
     <div id="processChain">

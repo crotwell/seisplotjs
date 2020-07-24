@@ -81,7 +81,7 @@ class ServeObsPy():
         return {
             "stream": None,
             "bychan": {},
-            "title": "tytle",
+            "title": "View ObsPy",
             "quake": None,
             "inventory": None
         }
