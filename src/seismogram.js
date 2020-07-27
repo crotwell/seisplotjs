@@ -10,6 +10,7 @@ import moment from 'moment';
 import { checkStringOrDate, meanOfSlice, isDef, stringify } from './util';
 import * as seedcodec from './seedcodec';
 
+import {distaz, DistAzOutput} from './distaz.js';
 import {Channel, InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
 import {StartEndDuration } from './util';
@@ -853,6 +854,13 @@ export class SeismogramDisplayData {
     }
     this._statsCache = stats;
     return stats;
+  }
+  get distaz(): DistAzOutput {
+    let out = null;
+    if (this.quakeList.length > 0 && this.channel !== null) {
+      out = distaz(this.channel.latitude, this.channel.longitude, this.quakeList[0].latitude, this.quakeList[0].longitude);
+    }
+    return out;
   }
   clone(): SeismogramDisplayData {
     return this.cloneWithNewSeismogram(this.seismogram ? this.seismogram.clone() : null);

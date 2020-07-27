@@ -29,10 +29,34 @@ export function kmtodeg(km: number): number {
   return km / kmPerDeg;
 }
 
-type DistAzOutput = {
-  delta: number,
-  az: number,
-  baz: number
+export class DistAzOutput {
+  delta: number;
+  az: number;
+  baz: number;
+  stalat: number;
+  stalon: number;
+  evtlat: number;
+  evtlon: number;
+  constructor(delta, az, baz) {
+    this.delta = delta ? delta : 0.0;
+    this.az = az ? az : 0.0;
+    this.baz = baz ? baz : 0.0;
+  }
+  get distance() {
+    return this.delta;
+  }
+  get distanceKm() {
+    return degtokm(this.delta);
+  }
+  get distanceDeg() {
+    return this.delta;
+  }
+  get azimuth() {
+    return this.az;
+  }
+  get backazimuth() {
+    return this.baz;
+  }
 }
 
 /**
@@ -54,15 +78,11 @@ type DistAzOutput = {
  * @returns delta, az, baz in a DistAzOutput
  */
 export function distaz(lat1: number, lon1: number, lat2: number, lon2: number): DistAzOutput {
-    let result = {
-        stalat: lat1,
-        stalon: lon1,
-        evtlat: lat2,
-        evtlon: lon2,
-        delta: 0.0,
-        az: 0.0,
-        baz: 0.0
-    };
+    let result = new DistAzOutput();
+    result.stalat = lat1;
+    result.stalon = lon1;
+    result.evtlat = lat2;
+    result.evtlon = lon2;
 
     if ((lat1 === lat2)&&(lon1 === lon2)) {
         // don't do calc, just return zero for idential points
