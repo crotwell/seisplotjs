@@ -123,6 +123,10 @@ export class Channel {
   dip: number;
   sampleRate: number;
   response: Response;
+  sensor: Equipment;
+  preamplifier: Equipment;
+  datalogger: Equipment;
+
   constructor(station: Station, channelCode: string, locationCode: string) {
     this.station = station;
     this._endDate = null;
@@ -213,6 +217,19 @@ export class InstrumentSensitivity {
     this.inputUnits = inputUnits;
     this.outputUnits = outputUnits;
   }
+}
+
+export class Equipment {
+  resourceId: string;
+  type: string;
+  description: string
+  manufacturer: string;
+  vendor: string;
+  model: string;
+  serialNumber: string;
+  installationDate: moment;
+  removalDate: moment;
+  calibrationDateList: Array<moment>;
 }
 
 export class Response {
@@ -404,6 +421,19 @@ export function convertToChannel(station: Station, xml: Element): Channel {
     if (_grabAttribute(xml, "endDate")) {
       out.endDate = _grabAttribute(xml, "endDate");
     }
+    const sensor = xml.getElementsByTagNameNS(STAML_NS, "Sensor");
+    console.log(`get sensor xml: ${sensor} from ${xml} ${sensor.length}`)
+    if (sensor && sensor.length > 0 ) {
+      out.sensor = convertToEquipment(sensor.item(0));
+    }
+    const preamp = xml.getElementsByTagNameNS(STAML_NS, "PreAmplifier");
+    if (preamp && preamp.length > 0 ) {
+      out.preamplifier = convertToEquipment(preamp.item(0));
+    }
+    const datalogger =xml.getElementsByTagNameNS(STAML_NS, "DataLogger");
+    if (datalogger && datalogger.length > 0 ) {
+      out.datalogger = convertToEquipment(datalogger.item(0));
+    }
     let responseXml = xml.getElementsByTagNameNS(STAML_NS, 'Response');
     if (responseXml && responseXml.length > 0 ) {
       const r = responseXml.item(0);
@@ -411,6 +441,37 @@ export function convertToChannel(station: Station, xml: Element): Channel {
     }
     return out;
   }
+
+export function convertToEquipment(xml: Element): Equipment {
+  let out = new Equipment();
+  let val;
+  val = _grabFirstElText(xml, 'Type');
+  if (isNonEmptyStringArg(val)) {out.type = val;}
+  val = _grabFirstElText(xml, 'Description');
+  if (isNonEmptyStringArg(val)) {out.description = val;}
+  val = _grabFirstElText(xml, 'Manufacturer');
+  if (isNonEmptyStringArg(val)) {out.manufacturer = val;}
+  val = _grabFirstElText(xml, 'Vendor');
+  if (isNonEmptyStringArg(val)) {out.vendor = val;}
+  val = _grabFirstElText(xml, 'Model');
+  if (isNonEmptyStringArg(val)) {out.model = val;}
+  val = _grabFirstElText(xml, 'SerialNumber');
+  if (isNonEmptyStringArg(val)) {out.serialNumber = val;}
+  val = _grabFirstElText(xml, 'InstallationDate');
+  if (isNonEmptyStringArg(val)) {out.installationDate = val;}
+  val = _grabFirstElText(xml, 'RemovalDate');
+  if (isNonEmptyStringArg(val)) {out.removalDate = val;}
+
+  let calibXml = xml.getElementsByTagNameNS(STAML_NS, 'CalibrationDate');
+  if (calibXml && calibXml.length > 0 ) {
+    out.calibrationDate = calibXml.map(x => {
+      if (isObject(x)) {
+        return x.textContent;
+      }
+    });
+  }
+  return out;
+}
 
   /** Parses a FDSNStationXML Response xml element into a Response object.
    *

@@ -22,6 +22,8 @@ test( "stationxml parse test", () => {
   expect(networks).toHaveLength(1);
   expect(networks[0].stations.length).toBe(1);
   expect(networks[0].stations[0].channels.length).toBe(1);
+  expect(networks[0].stations[0].channels[0].sensor).toBeDefined();
+  expect(networks[0].stations[0].channels[0].sensor.description).not.toBeNull();
   const response = networks[0].stations[0].channels[0].response;
   expect(response.stages[0].filter).toBeInstanceOf(PolesZeros);
   const pz = ((response.stages[0].filter: any): PolesZeros);
