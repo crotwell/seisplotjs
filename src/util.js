@@ -209,7 +209,7 @@ export class StartEndDuration {
       } else if ((moment.isDuration(duration))) {
         this._duration = moment.duration(duration);
       } else {
-        throw new Error(`Unknown type for duration: ${typeof duration}  ${JSON.stringify(duration)}`);
+        throw new Error(`Unknown type for duration: ${typeof duration} ${duration.constructor.name}  ${JSON.stringify(duration)}`);
       }
     }
     if (startTime && endTime) {

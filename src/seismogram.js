@@ -650,7 +650,7 @@ export class SeismogramDisplayData {
   _statsCache: SeismogramDisplayStats | null;
   constructor(timeWindow: StartEndDuration) {
     if ( ! timeWindow) {
-      throw new Error("StartEndDuration must not be missing.");
+      throw new Error("timeWindow must not be missing.");
     }
     this._id = null;
     this._seismogram = null;
@@ -670,6 +670,7 @@ export class SeismogramDisplayData {
     return out;
   }
   static fromChannelAndTimeWindow(channel: Channel, timeWindow: StartEndDuration): SeismogramDisplayData {
+    if ( ! channel) {throw new Error('fromChannelAndTimeWindow, channel is undef')}
     const out = new SeismogramDisplayData(timeWindow);
     out.channel = channel;
     return out;

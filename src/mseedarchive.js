@@ -97,12 +97,11 @@ export class MSeedArchive {
    */
   loadSeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
     let promiseArray = channelTimeList.map(ct => {
-      if (isDef(ct.channel)) {
-        const channel = ct.channel;
-        return RSVP.hash({
-            "request": ct,
-            "dataRecords": this.loadDataForChannel(channel, ct.startTime, ct.endTime)
-          });
+        if (isDef(ct.channel)) {
+          return RSVP.hash({
+              "request": ct,
+              "dataRecords": this.loadDataForChannel(ct.channel, ct.startTime, ct.endTime)
+            });
         } else {
           throw new Error("channel is missing in loadSeismograms ");
         }
