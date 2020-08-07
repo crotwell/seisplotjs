@@ -30,6 +30,8 @@ function createTools(viewObspy) {
   seisplotjs.d3.select("input#orientz").on("change", () => doOrientPlot());
   seisplotjs.d3.select("input#orienty").on("change", () => doOrientPlot());
   seisplotjs.d3.select("input#orientx").on("change", () => doOrientPlot());
+  seisplotjs.d3.select("input#orientr").on("change", () => doOrientPlot());
+  seisplotjs.d3.select("input#orientt").on("change", () => doOrientPlot());
 
   seisplotjs.d3.select("button#bandpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");

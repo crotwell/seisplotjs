@@ -634,15 +634,25 @@ class ViewObsPy {
       || seis.channelCode.endsWith('X')
       || seis.channelCode.endsWith('2');
   }
+  orientRFilter(seis, chan, quake) {
+    return seis.channelCode.endsWith('R');
+  }
+  orientTFilter(seis, chan, quake) {
+    return seis.channelCode.endsWith('T');
+  }
 
   defaultPlotFilter(seis, chan, quake) {
     let doZ = seisplotjs.d3.select("input#orientz").property("checked");
     let doN = seisplotjs.d3.select("input#orienty").property("checked");
     let doE = seisplotjs.d3.select("input#orientx").property("checked");
+    let doR = seisplotjs.d3.select("input#orientr").property("checked");
+    let doT = seisplotjs.d3.select("input#orientt").property("checked");
     return this.stationFilter(seis, chan, quake)
         && ((doZ && this.orientZFilter(seis, chan, quake))
         || (doN && this.orientNFilter(seis, chan, quake))
-        || (doE && this.orientEFilter(seis, chan, quake)));
+        || (doE && this.orientEFilter(seis, chan, quake))
+        || (doR && this.orientRFilter(seis, chan, quake))
+        || (doT && this.orientTFilter(seis, chan, quake)));
   }
 
   createSeisKey(d) {
