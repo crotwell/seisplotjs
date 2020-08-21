@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-import {Seismogram } from './seismogram.js';
+import {Seismogram, SeismogramDisplayData } from './seismogram.js';
 
 import {OregonDSP, Complex, createComplex} from './oregondsputil.js';
 
@@ -15,12 +15,19 @@ import {OregonDSP, Complex, createComplex} from './oregondsputil.js';
  * complex, amp, phase arrays. Calls calcDFT internally.
  * Inverse FFT is available as FFTResult.fftInverse().
  *
- * @param seis seismogram to transform
+ * @param seis seismogram or SeismogramDisplayData to transform
  * @returns fft of seismogram
  */
-export function fftForward(seis: Seismogram) {
+export function fftForward(seis: Seismogram | SeismogramDisplayData) {
+  let sdd;
+  if (seis instanceof Seismogram) {
+    sdd = SeismogramDisplayData.fromSeismogram(seis);
+  } else {
+    sdd = seis;
+  }
   if ( seis.isContiguous()) {
     let result = FFTResult.createFromPackedFreq(calcDFT(seis.y), seis.numPoints, seis.sampleRate);
+    result.seismogramDisplayData = sdd;
     return result;
   } else {
     throw new Error("Can only take FFT is seismogram is contiguous.");
@@ -88,6 +95,10 @@ export class FFTResult {
   numPoints: number;
   /** sample rate of the original time series, maybe be null. */
   sampleRate: number;
+  /** optional reference to SeismogramDisplayData when calculated from a seismogram.
+   *  Useful for creating title, etc.
+   *  */
+  seismogramDisplayData: SeismogramDisplayData;
   constructor(origLength: number, sampleRate: number) {
       this.origLength = origLength;
       this.sampleRate = sampleRate;
@@ -208,6 +219,8 @@ export class FFTResult {
     return inverseDFT(this.packedFreq, this.origLength);
   }
   clone() {
-    return FFTResult.createFromPackedFreq(this.packedFreq.slice(), this.origLength, this.sampleRate);
+    let out = FFTResult.createFromPackedFreq(this.packedFreq.slice(), this.origLength, this.sampleRate);
+    out.seismogramDisplayData = this.seismogramDisplayData;
+    return out;
   }
 }

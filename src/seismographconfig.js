@@ -10,6 +10,7 @@ import { SeismogramDisplayData, Seismogram } from './seismogram.js';
 import {StartEndDuration, isDef } from './util.js';
 import moment from 'moment';
 import * as d3 from 'd3';
+import Handlebars from 'handlebars';
 
 export type MarginType = {
   top: number,
@@ -27,12 +28,14 @@ export const DRAW_BOTH = "both"; // for testing
 /** Constant for drawing seismogram using both canvas and svg plus alignment markers, for testing. */
 export const DRAW_BOTH_ALIGN = "alignment"; // for testing
 
+export const DEFAULT_TITLE = "{{#each seisDataList}}<tspan>{{onlyChangesChannel ../seisDataList @index}}</tspan> {{else}}No Data{{/each}}";
+
 /**
  * Configuration object for Seismograph display.
- * 
+ *
  */
 export class SeismographConfig {
-  drawingType: string;
+  drawingType: string; // canvas or svg
   xScaleFormat: (date: Date) => string;
   yScaleFormat: string | (value: number) => string;
   _title: Array<string>;
@@ -80,7 +83,7 @@ export class SeismographConfig {
     this.isYAxisRight = false;
     this.xScaleFormat = multiFormatHour;
     this.yScaleFormat = formatCountOrAmp;
-    this._title = [ ];
+    this._title = [DEFAULT_TITLE];
     this.xLabel = "Time";
     this.xLabelOrientation = "horizontal";
     this.xSublabel = "";
@@ -141,6 +144,17 @@ export class SeismographConfig {
     } else {
       this._title = [ value ];
     }
+  }
+
+  handlebarsTitle(context, runtimeOptions) {
+    if ( this._title && ! this._handlebarsTitle) {
+      let titleStr = "";
+      if (this._title.length === 1) {
+        this._handlebarsTitle = Handlebars.compile(this._title[0]);
+      }
+      this._handlebarsTitle = Handlebars.compile(this._title.join(" "));
+    }
+    return this._handlebarsTitle(context, runtimeOptions);
   }
 
   /** Fake data to use to test alignment of seismograph axis and between canvas

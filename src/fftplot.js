@@ -156,6 +156,9 @@ export class FFTPlot {
     if (this.yScale.domain()[0] === this.yScale.domain()[1]) {
       this.yScale.domain( [ this.yScale.domain()[0]/2, this.yScale.domain()[1]*2]);
     }
+
+    this.drawTitle();
+
     const xAxis = d3.axisBottom(this.xScale);
     g.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -200,6 +203,28 @@ export class FFTPlot {
     }
     return this;
   }
+  drawTitle() {
+    let rect = this.svg.node().getBoundingClientRect();
+    let width = +rect.width - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
+console.log(`drawTitle ${width}  ${this.seismographConfig.margin.left}`)
+    this.svg.selectAll("g.title").remove();
+    let titleSVGText = this.svg.append("g")
+       .classed("title", true)
+       .attr("transform", "translate("+(this.seismographConfig.margin.left+(width)/2)+", "+0+")")
+       .append("text").classed("title label", true)
+       .attr("x",0).attr("y",0)
+       .attr("text-anchor", "middle");
+    let handlebarOut = this.seismographConfig.handlebarsTitle({
+        seisDataList: this.fftResults.map(f => f.seismogramDisplayData),
+        seisConfig: this.seismographConfig
+      },
+      {
+        allowProtoPropertiesByDefault: true // this might be a security issue???
+      });
+    console.log(`handlebar title: ${handlebarOut}`);
+    titleSVGText.html(handlebarOut);
+
+  }
 }
 
 /**
@@ -217,6 +242,13 @@ path.fftpath {
 svg.fftplot {
   height: 100%;
   width: 100%;
+}
+svg.fftplot text.title {
+  font-size: larger;
+  font-weight: bold;
+  fill: black;
+  color: black;
+  dominant-baseline: hanging;
 }
 
 svg.fftplot g.allfftpaths g:nth-child(9n+1) path.fftpath {
@@ -257,7 +289,7 @@ svg.fftplot g.allfftpaths g:nth-child(9n+9) path.fftpath {
 
 /* same colors for titles */
 
-svg.fftplot g.title tspan:nth-child(9n+1)  {
+svg.fftplot g.title text tspan:nth-child(9n+1)  {
   fill: skyblue;
 }
 
@@ -269,27 +301,27 @@ svg.fftplot g.title text tspan:nth-child(9n+3)  {
   stroke: goldenrod;
 }
 
-svg.fftplot g.title tspan:nth-child(9n+4)  {
+svg.fftplot g.title  text tspan:nth-child(9n+4)  {
   stroke: firebrick;
 }
 
-svg.fftplot g.title tspan:nth-child(9n+5)  {
+svg.fftplot g.title  text tspan:nth-child(9n+5)  {
   stroke: darkcyan;
 }
 
-svg.fftplot g.title tspan:nth-child(9n+6)  {
+svg.fftplot g.title  text tspan:nth-child(9n+6)  {
   stroke: orange;
 }
 
-svg.fftplot g.title tspan:nth-child(9n+7)  {
+svg.fftplot g.title  text tspan:nth-child(9n+7)  {
   stroke: darkmagenta;
 }
 
-svg.fftplot g.title tspan:nth-child(9n+8)  {
+svg.fftplot g.title  text tspan:nth-child(9n+8)  {
   stroke: mediumvioletred;
 }
 
-svg.fftplot g.title tspan:nth-child(9n+9)  {
+svg.fftplot g.title  text tspan:nth-child(9n+9)  {
   stroke: sienna;
 }
 

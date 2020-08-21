@@ -19,6 +19,7 @@ import * as fdsndataselect from './fdsndataselect.js';
 import * as filter         from './filter.js';
 import * as fft         from './fft.js';
 import * as fftplot         from './fftplot.js';
+import * as handlebarshelpers from './handlebarshelpers.js';
 import * as helicorder from './helicorder.js';
 import * as knownDataCenters from './knowndatacenters.js';
 import * as miniseed       from './miniseed.js';
@@ -66,6 +67,7 @@ export { cssutil,
          fdsndataselect,
          fft,
          fftplot,
+         handlebarshelpers,
          helicorder,
          filter,
          knownDataCenters,

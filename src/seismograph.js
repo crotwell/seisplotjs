@@ -23,6 +23,8 @@ import {Quake} from './quakeml.js';
 import * as util from './util.js';
 import {StartEndDuration, isDef, isNumArg } from './util';
 
+import {registerHelpers} from './handlebarshelpers.js';
+registerHelpers();
 
 
 const CLIP_PREFIX = "seismographclip";
@@ -848,14 +850,16 @@ export class Seismograph {
        .append("text").classed("title label", true)
        .attr("x",0).attr("y",0)
        .attr("text-anchor", "middle");
-    if (Array.isArray(this.seismographConfig.title)) {
-      this.seismographConfig.title.forEach(function(s) {
-        titleSVGText.append("tspan").text(s+" ");
+    let handlebarOut = this.seismographConfig.handlebarsTitle({
+        seisDataList: this.seisDataList,
+        seisConfig: this.seismographConfig
+      },
+      {
+        allowProtoPropertiesByDefault: true // this might be a security issue???
       });
-    } else {
-      titleSVGText
-        .text(this.seismographConfig.title);
-    }
+    console.log(`handlebar title: ${handlebarOut}`);
+    titleSVGText.html(handlebarOut);
+
   }
   drawXLabel(): Seismograph {
     this.svg.selectAll("g.xLabel").remove();
