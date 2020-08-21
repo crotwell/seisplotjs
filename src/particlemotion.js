@@ -72,8 +72,10 @@ export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayDa
   seisConfig.title = xSeis.channelCode+" "+ySeis.channelCode;
   seisConfig.xLabel = xSeis.channelCode;
   seisConfig.yLabel = ySeis.channelCode;
-  seisConfig.margin.top = seisConfig.margin.bottom;
-  seisConfig.margin.right = seisConfig.margin.left;
+  seisConfig.margin.top = 40;
+  seisConfig.margin.bottom = 40;
+  seisConfig.margin.right = 40;
+  seisConfig.margin.left = 40;
   let pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
   pmp.draw();
   return pmp;
@@ -314,14 +316,15 @@ export class ParticleMotion {
        .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+( this.seismographConfig.margin.bottom/3  )+")")
        .append("text").classed("title label", true)
        .attr("text-anchor", "middle");
-    if (Array.isArray(this.seismographConfig.title)) {
-      this.seismographConfig.title.forEach(function(s) {
-        titleSVGText.append("tspan").text(s+" ");
-      });
-    } else {
-      titleSVGText
-        .text(this.seismographConfig.title);
-    }
+    let handlebarOut = this.seismographConfig.handlebarsTitle({
+         seisDataList: [ this.xSeisData , this.ySeisData ],
+         seisConfig: this.seismographConfig
+       },
+       {
+         allowProtoPropertiesByDefault: true // this might be a security issue???
+       });
+    console.log(`handlebar title: ${handlebarOut}`);
+    titleSVGText.html(handlebarOut);
     return this;
   }
   drawXLabel() {
@@ -336,21 +339,35 @@ export class ParticleMotion {
     }
     return this;
   }
-  drawYLabel() {
+  drawYLabel(): Seismograph {
     this.svg.selectAll('g.yLabel').remove();
-    if (this.height) {
-      this.svg.append("g")
-       .classed("yLabel", true)
-       .attr("x", 0)
-       .attr("transform", "translate(0, "+(this.seismographConfig.margin.top+(this.height)/2)+")")
-       .append("text")
-       .classed("y label", true)
-       .attr("text-anchor", "middle")
-       .attr("dy", ".75em")
-       .attr("transform-origin", "center center")
-       .attr("transform", "rotate(-90)")
-       .text(this.seismographConfig.yLabel);
-     }
+    for(let side of [ 'left', 'right']) {
+      let hTranslate = (side==="left"?0:this.seismographConfig.margin.left+this.width+1);
+      let svgText = this.svg.append("g")
+         .classed("yLabel", true)
+         .classed(side, true)
+         .attr("x", 0)
+         .attr("transform", `translate(${hTranslate}, ${(this.seismographConfig.margin.top+(this.height)/2)})`)
+         .append("text");
+      svgText
+         .classed("y label", true);
+      if (this.seismographConfig.yLabelOrientation === "vertical") {
+        // vertical
+        svgText
+          .attr("text-anchor", "middle")
+          .attr("dy", ".75em")
+          .attr("transform", "rotate(-90, 0, 0)");
+      } else {
+        // horizontal
+        svgText.attr("text-anchor", "start")
+        .attr("dominant-baseline", "central");
+      }
+      if (side==="left") {
+        svgText.text(this.seismographConfig.yLabel);
+      } else {
+        svgText.text(this.seismographConfig.yLabelRight);
+      }
+    }
     return this;
   }
   drawXSublabel() {
@@ -363,22 +380,30 @@ export class ParticleMotion {
        .text(this.seismographConfig.xSublabel);
     return this;
   }
-  drawYSublabel()  {
+  drawYSublabel(): Seismograph {
     this.svg.selectAll('g.ySublabel').remove();
-
-    this.svg.append("g")
+    let svgText = this.svg.append("g")
        .classed("ySublabel", true)
        .attr("x", 0)
        .attr("transform", "translate( "+this.seismographConfig.ySublabelTrans+" , "+(this.seismographConfig.margin.top+(this.height)/2)+")")
        .append("text")
-       .classed("y label sublabel", true)
-       .attr("text-anchor", "middle")
-       .attr("dy", ".75em")
-       .attr("transform-origin", "center center")
-       .attr("transform", "rotate(-90)")
+       .classed("y label sublabel", true);
+    if (this.seismographConfig.yLabelOrientation === "vertical") {
+      // vertical
+      svgText
+        .attr("text-anchor", "middle")
+        .attr("dy", ".75em")
+        .attr("transform", "rotate(-90, 0, 0)");
+    } else {
+      // horizontal
+      svgText.attr("text-anchor", "start")
+      .attr("dominant-baseline", "central");
+    }
+    svgText
        .text(this.seismographConfig.ySublabel);
     return this;
   }
+
 }
 
 export const particleMotion_css = `
