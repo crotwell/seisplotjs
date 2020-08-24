@@ -32,6 +32,10 @@ export type MarkerType = {
   description: string
 };
 
+export type MarkerHolderType = {
+  marker: MarkerType,
+  sdd: SeismogramDisplayData
+}
 /**
  * A contiguous segment of a Seismogram.
  *
@@ -670,7 +674,7 @@ export class SeismogramDisplayData {
     return out;
   }
   static fromChannelAndTimeWindow(channel: Channel, timeWindow: StartEndDuration): SeismogramDisplayData {
-    if ( ! channel) {throw new Error('fromChannelAndTimeWindow, channel is undef')}
+    if ( ! channel) {throw new Error('fromChannelAndTimeWindow, channel is undef');}
     const out = new SeismogramDisplayData(timeWindow);
     out.channel = channel;
     return out;
@@ -696,6 +700,12 @@ export class SeismogramDisplayData {
   }
   hasQuake(): boolean {
     return this.quakeList.length > 0;
+  }
+  get quake() {
+    if (this.hasQuake()) {
+      return this.quakeList[0];
+    }
+    return null;
   }
   hasSeismogram(): boolean {
     return isDef(this._seismogram);
@@ -803,9 +813,26 @@ export class SeismogramDisplayData {
   get startTime(): moment {
     return this.timeWindow.startTime;
   }
+  get start(): moment {
+    return this.timeWindow.startTime;
+  }
   get endTime(): moment {
     return this.timeWindow.endTime;
   }
+  get end(): moment {
+    return this.timeWindow.endTime;
+  }
+
+  relativeTimeWindow(startOffset: moment.duration, duration: moment.duration): StartEndDuration {
+    if (this.alignmentTime) {
+      return new StartEndDuration(moment.utc(this.alignmentTime).add(startOffset),
+                                            null, duration);
+    } else {
+      return new StartEndDuration(moment.utc(this.startTime).add(startOffset),
+                                            null, duration);
+    }
+  }
+
   get sensitivity(): InstrumentSensitivity | null {
     const channel = this.channel;
     if (this._instrumentSensitivity) {
@@ -935,6 +962,30 @@ export function findStartEnd(sddList: Array<SeismogramDisplayData>): StartEndDur
   return new StartEndDuration(startTime, endTime);
 }
 
+
+
+export function findMaxDuration(sddList: Array<SeismogramDisplayData>): moment.duration {
+  return findMaxDurationOfType('start', sddList);
+}
+
+export function findMaxDurationOfType(type: string, sddList: Array<SeismogramDisplayData>): moment.duration {
+  return sddList.reduce((acc, sdd) => {
+    let timeWindow;
+    if (type === 'start') {
+      timeWindow = sdd.timeWindow;
+    } else if (type === 'origin' && sdd.hasQuake()) {
+      timeWindow = new StartEndDuration(sdd.quakeList[0].time, sdd.timeWindow.end);
+    } else{
+      timeWindow = sdd.timeWindow;
+    }
+    if (timeWindow.duration.asMilliseconds() > acc.asMilliseconds()) {
+      return moment.duration(timeWindow.duration);
+    } else {
+      return acc;
+    }
+  }, moment.duration(0, 'seconds'));
+}
+
 export function findMinMax(sddList: Array<SeismogramDisplayData>): Array<number> {
   let min = sddList.map(sdd => {
     return sdd.min;
@@ -975,6 +1026,24 @@ export function findMinMaxOverTimeRange(sddList: Array<SeismogramDisplayData>, t
   return [min, max];
 }
 
+
+export function findMinMaxOverRelativeTimeRange(sddList: Array<SeismogramDisplayData>, startOffset: moment.duration, duration: moment.duration): Array<number> {
+  let minMaxArr = sddList.map(sdd => {
+      let timeWindow = sdd.relativeTimeWindow(startOffset, duration);
+      return findMinMaxOverTimeRange([sdd], timeWindow);
+    });
+  let min = minMaxArr.map(mm => {
+    return mm[0];
+  }).reduce(function (p, v) {
+    return ( p < v ? p : v );
+  });
+  let max = minMaxArr.map(mm => {
+    return mm[1];
+  }).reduce(function (p, v) {
+    return ( p > v ? p : v );
+  });
+  return [min, max];
+}
 
 export function findStartEndOfSeismograms(data: Array<Seismogram>, accumulator?: StartEndDuration): StartEndDuration {
   let out: StartEndDuration;

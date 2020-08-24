@@ -73,6 +73,10 @@ export class SeismographConfig {
   windowAmp: boolean;
   fixedYScale: null | Array<number>;
   fixedTimeScale: null | StartEndDuration;
+  linkedAmplitudeScale: null | LinkedAmpScale;
+  linkedTimeScale: null | LinkedTimeScale;
+  timeAlignmentStyle: string;
+  isRelativeTime: boolean;
 
   constructor() {
     this.drawingType = DRAW_CANVAS;
@@ -98,6 +102,10 @@ export class SeismographConfig {
     this.windowAmp = true;
     this.fixedYScale = null;
     this.fixedTimeScale = null;
+    this.linkedAmplitudeScale = null;
+    this.linkedTimeScale = new LinkedTimeScale();
+    this.timeAlignmentStyle = 'start';
+    this.isRelativeTime = false;
     this.doMarkers = true;
     this.markerTextOffset = .85;
     this.markerTextAngle = 45;
@@ -148,7 +156,6 @@ export class SeismographConfig {
 
   handlebarsTitle(context, runtimeOptions) {
     if ( this._title && ! this._handlebarsTitle) {
-      let titleStr = "";
       if (this._title.length === 1) {
         this._handlebarsTitle = Handlebars.compile(this._title[0]);
       }
@@ -221,6 +228,167 @@ export class SeismographConfig {
     return outS;
   }
 }
+
+export class AmplitudeScalable {
+  middle: Number;
+  halfWidth: Number;
+  constructor(middle: Number, halfWidth: Number) {
+    this.middle = middle;
+    this.halfWidth = halfWidth;
+  }
+  getAmplitudeRange(): Array<Number> {
+    return [-1, 1]; // default
+  }
+  notifyAmplitudeChange([minAmp: Number, maxAmp: Number]) {
+    // no-op
+  }
+}
+
+export class TimeScalable {
+  alignmentTimeOffset: moment.duration;
+  duration: moment.duration;
+  constructor(alignmentTimeOffset: moment.duration, duration: moment.duration) {
+    this.alignmentTimeOffset = alignmentTimeOffset;
+    this.duration = duration;
+  }
+  notifyTimeRangeChange(alignmentTimeOffset: moment.duration, duration: moment.duration) {
+    // no-op
+  }
+}
+
+/**
+ * Links amplitude scales across multiple seismographs, respecting doRmean.
+ *
+ * @param graphList optional list of AmplitudeScalable to link
+ */
+export class LinkedAmpScale {
+  /**
+   * @private
+   */
+  _graphSet: Set<AmplitudeScalable>;
+  constructor(graphList: ?Array<AmplitudeScalable>) {
+    const glist = graphList ? graphList : []; // in case null
+    this._graphSet = new Set(glist);
+  }
+  /**
+   * Link new Seismograph with this amplitude scale.
+   *
+   * @param   graph AmplitudeScalable to link
+   */
+  link(graph: AmplitudeScalable) {
+    this._graphSet.add(graph);
+    this.recalculate();
+  }
+  /**
+   * Unlink Seismograph with this amplitude scale.
+   *
+   * @param   graph AmplitudeScalable to unlink
+   */
+  unlink(graph: AmplitudeScalable) {
+    this._graphSet.delete(graph);
+    this.recalculate();
+  }
+  /**
+   * Recalculate the best amplitude scale for all Seismographs. Causes a redraw.
+   */
+  recalculate() {
+    const graphList = Array.from(this._graphSet.values());
+    const maxHalfRange  = graphList.reduce((acc, cur) => {
+      return acc >  cur.halfWidth ? acc : cur.halfWidth;
+    }, 0);
+    graphList.forEach(g => {
+      g.notifyAmplitudeChange([g.middle-maxHalfRange, g.middle+maxHalfRange]);
+    });
+  }
+}
+
+/**
+ * Links time scales across multiple seismographs.
+ *
+ * @param graphList optional list of TimeScalables to link
+ */
+export class LinkedTimeScale {
+  /**
+   * @private
+   */
+  _graphSet: Set<TimeScalable>;
+  _originalDuration: null | moment.duration;
+  _originalStartOffset: null | moment.duration;
+  _zoomedDuration: null | moment.duration;
+  _zoomedStartOffset: null | moment.duration;
+  constructor(graphList: ?Array<TimeScalable>, originalDuration?: moment.duration, originalStartOffset?: moment.duration) {
+    const glist = graphList ? graphList : []; // in case null
+    this._graphSet = new Set(glist);
+    this._originalDuration = originalDuration;
+    if ( ! originalDuration) {
+      this._originalDuration = glist.reduce((acc, cur) => {
+        return acc.asMilliseconds() > cur.duration.asMilliseconds() ? acc : cur.duration;
+      }, moment.duration(0));
+    }
+    this._originalStartOffset = originalStartOffset;
+    if (! originalStartOffset) {
+      this._originalStartOffset = moment.duration(0, 'seconds');
+    }
+    this._zoomedDuration = null;
+    this._zoomedStartOffset = null;
+  }
+  /**
+   * Link new TimeScalable with this time scale.
+   *
+   * @param   graph TimeScalable to link
+   */
+  link(graph: TimeScalable) {
+    this._graphSet.add(graph);
+    this.recalculate();
+  }
+  /**
+   * Unlink TimeScalable with this amplitude scale.
+   *
+   * @param   graph TimeScalable to unlink
+   */
+  unlink(graph: TimeScalable) {
+    this._graphSet.delete(graph);
+    this.recalculate();
+  }
+  zoom(startOffset: moment.duration, duration: moment.duration) {
+    this._zoomedDuration = duration;
+    this._zoomedStartOffset = startOffset;
+    this.recalculate();
+  }
+  unzoom() {
+    this._zoomedDuration = null;
+    this._zoomedStartOffset = null;
+    this.recalculate();
+  }
+  get offset() {
+    return this._zoomedStartOffset ? this._zoomedStartOffset : this._originalStartOffset;
+  }
+  set offset(offset) {
+    this.originalStartOffset = offset;
+    this.recalculate();
+  }
+  get duration() {
+    return this._zoomedDuration ? this._zoomedDuration : this._originalDuration;
+  }
+  set duration(duration: moment.duration) {
+    this._originalDuration = duration;
+    this.recalculate();
+  }
+  /**
+   * Recalculate the best time scale for all Seismographs. Causes a redraw.
+   */
+  recalculate() {
+    const graphList = Array.from(this._graphSet.values());
+    if ( ! this._zoomedStartOffset) { this._zoomedStartOffset = moment.duration(0, 'seconds');}
+    if ( ! this._zoomedDuration) {
+      this._zoomedDuration = this._originalDuration;
+    }
+    graphList.forEach(graph => {
+      graph.notifyTimeRangeChange(this._zoomedStartOffset, this._zoomedDuration);
+    });
+  }
+}
+
 
 export const formatCount = d3.format('~s');
 export const formatExp = d3.format('.2e');
