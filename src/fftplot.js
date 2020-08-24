@@ -206,7 +206,6 @@ export class FFTPlot {
   drawTitle() {
     let rect = this.svg.node().getBoundingClientRect();
     let width = +rect.width - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
-console.log(`drawTitle ${width}  ${this.seismographConfig.margin.left}`)
     this.svg.selectAll("g.title").remove();
     let titleSVGText = this.svg.append("g")
        .classed("title", true)
@@ -221,7 +220,6 @@ console.log(`drawTitle ${width}  ${this.seismographConfig.margin.left}`)
       {
         allowProtoPropertiesByDefault: true // this might be a security issue???
       });
-    console.log(`handlebar title: ${handlebarOut}`);
     titleSVGText.html(handlebarOut);
 
   }

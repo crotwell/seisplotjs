@@ -323,7 +323,6 @@ export class ParticleMotion {
        {
          allowProtoPropertiesByDefault: true // this might be a security issue???
        });
-    console.log(`handlebar title: ${handlebarOut}`);
     titleSVGText.html(handlebarOut);
     return this;
   }

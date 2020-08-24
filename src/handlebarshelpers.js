@@ -1,7 +1,5 @@
 import Handlebars from 'handlebars';
 
-import * as distaz from './distaz.js';
-
 export function registerHelpers() {
   Handlebars.registerHelper("onlyChangesChannel", function(sddDataList, index) {
     let out = "";
