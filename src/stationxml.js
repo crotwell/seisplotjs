@@ -422,7 +422,6 @@ export function convertToChannel(station: Station, xml: Element): Channel {
       out.endDate = _grabAttribute(xml, "endDate");
     }
     const sensor = xml.getElementsByTagNameNS(STAML_NS, "Sensor");
-    console.log(`get sensor xml: ${sensor} from ${xml} ${sensor.length}`)
     if (sensor && sensor.length > 0 ) {
       out.sensor = convertToEquipment(sensor.item(0));
     }
