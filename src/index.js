@@ -33,6 +33,7 @@ import * as sacPoleZero    from './sacpolezero.js';
 import * as seedcodec      from './seedcodec.js';
 import * as seedlink       from './seedlink.js';
 import * as seismogram     from './seismogram.js';
+import * as seismogramloader     from './seismogramloader.js';
 import * as seismograph     from './seismograph.js';
 import * as seismographconfig     from './seismographconfig.js';
 import * as stationxml     from './stationxml.js';
@@ -82,6 +83,7 @@ export { cssutil,
          seedcodec,
          seedlink,
          seismogram,
+         seismogramloader,
          seismograph,
          seismographconfig,
          stationxml,
