@@ -8,7 +8,7 @@
 
 // special due to flow
 import {doStringGetterSetter, doIntGetterSetter,
-        checkProtocol, makeParam, isDef, hasArgs, hasNoArgs, isStringArg,
+        checkProtocol, makeParam, isDef, hasArgs, hasNoArgs,
         isNonEmptyStringArg, isNumArg} from './util';
 
 import { TEXT_MIME, JSON_MIME , doFetchWithTimeout, defaultFetchInitObj} from './util.js';

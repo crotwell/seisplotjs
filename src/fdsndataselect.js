@@ -12,7 +12,7 @@ import RSVP from 'rsvp';
 import * as util from './util.js'; // for util.log
 // special due to flow
 import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
-        checkProtocol, toIsoWoZ, hasArgs, hasNoArgs, isStringArg,
+        checkProtocol, toIsoWoZ, hasArgs, hasNoArgs,
         isNonEmptyStringArg,isNumArg} from './util';
 
 import * as miniseed from './miniseed';
