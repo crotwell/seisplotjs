@@ -423,15 +423,24 @@ export function convertToChannel(station: Station, xml: Element): Channel {
     }
     const sensor = xml.getElementsByTagNameNS(STAML_NS, "Sensor");
     if (sensor && sensor.length > 0 ) {
-      out.sensor = convertToEquipment(sensor.item(0));
+      const sensorTmp = sensor.item(0);
+      if (isDef(sensorTmp)) {
+        out.sensor = convertToEquipment(sensorTmp);
+      }
     }
     const preamp = xml.getElementsByTagNameNS(STAML_NS, "PreAmplifier");
     if (preamp && preamp.length > 0 ) {
-      out.preamplifier = convertToEquipment(preamp.item(0));
+      const preampTmp = sensor.item(0);
+      if (isDef(preampTmp)) {
+        out.preamplifier = convertToEquipment(preampTmp);
+      }
     }
     const datalogger =xml.getElementsByTagNameNS(STAML_NS, "DataLogger");
     if (datalogger && datalogger.length > 0 ) {
-      out.datalogger = convertToEquipment(datalogger.item(0));
+      const dataloggerTmp = sensor.item(0);
+      if (isDef(dataloggerTmp)) {
+        out.datalogger = convertToEquipment(dataloggerTmp);
+      }
     }
     let responseXml = xml.getElementsByTagNameNS(STAML_NS, 'Response');
     if (responseXml && responseXml.length > 0 ) {
@@ -462,12 +471,9 @@ export function convertToEquipment(xml: Element): Equipment {
   if (isNonEmptyStringArg(val)) {out.removalDate = val;}
 
   let calibXml = xml.getElementsByTagNameNS(STAML_NS, 'CalibrationDate');
-  if (calibXml && calibXml.length > 0 ) {
-    out.calibrationDate = calibXml.map(x => {
-      if (isObject(x)) {
-        return x.textContent;
-      }
-    });
+  out.calibrationDateList = [];
+  for (let cal of calibXml) {
+    out.calibrationDateList.push(cal.textContent);
   }
   return out;
 }

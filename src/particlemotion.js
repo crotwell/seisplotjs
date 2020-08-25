@@ -338,7 +338,7 @@ export class ParticleMotion {
     }
     return this;
   }
-  drawYLabel(): Seismograph {
+  drawYLabel() {
     this.svg.selectAll('g.yLabel').remove();
     for(let side of [ 'left', 'right']) {
       let hTranslate = (side==="left"?0:this.seismographConfig.margin.left+this.width+1);
@@ -379,7 +379,7 @@ export class ParticleMotion {
        .text(this.seismographConfig.xSublabel);
     return this;
   }
-  drawYSublabel(): Seismograph {
+  drawYSublabel() {
     this.svg.selectAll('g.ySublabel').remove();
     let svgText = this.svg.append("g")
        .classed("ySublabel", true)

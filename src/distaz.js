@@ -37,7 +37,7 @@ export class DistAzOutput {
   stalon: number;
   evtlat: number;
   evtlon: number;
-  constructor(delta, az, baz) {
+  constructor(delta: number, az: number, baz: number) {
     this.delta = delta ? delta : 0.0;
     this.az = az ? az : 0.0;
     this.baz = baz ? baz : 0.0;
@@ -78,17 +78,14 @@ export class DistAzOutput {
  * @returns delta, az, baz in a DistAzOutput
  */
 export function distaz(lat1: number, lon1: number, lat2: number, lon2: number): DistAzOutput {
-    let result = new DistAzOutput();
-    result.stalat = lat1;
-    result.stalon = lon1;
-    result.evtlat = lat2;
-    result.evtlon = lon2;
 
     if ((lat1 === lat2)&&(lon1 === lon2)) {
         // don't do calc, just return zero for idential points
-        result.delta = 0;
-        result.az = 0;
-        result.baz = 0;
+        let result = new DistAzOutput(0,0,0);
+        result.stalat = lat1;
+        result.stalon = lon1;
+        result.evtlat = lat2;
+        result.evtlon = lon2;
         return result;
     }
     let scolat, slon, ecolat, elon;
@@ -143,7 +140,7 @@ export function distaz(lat1: number, lon1: number, lat2: number, lon2: number): 
      *
      */
     del=Math.acos(a*aa + b*bb + c*cc);
-    result.delta=del/rad;
+    let result_delta=del/rad;
     /*
      *
      *  Bullen, Sec 10.2, eqn 7 / eqn 8
@@ -159,7 +156,7 @@ export function distaz(lat1: number, lon1: number, lat2: number, lon2: number): 
     if (dbaz<0.0) {
         dbaz=dbaz+2*Math.PI;
     }
-    result.baz=dbaz/rad;
+    let result_baz=dbaz/rad;
     /*
      *
      *  Bullen, Sec 10.2, eqn 7 / eqn 8
@@ -173,13 +170,18 @@ export function distaz(lat1: number, lon1: number, lat2: number, lon2: number): 
     if(daz<0.0) {
         daz=daz+2*Math.PI;
     }
-    result.az=daz/rad;
+    let result_az=daz/rad;
     /*
      *
      *   Make sure 0.0 is always 0.0, not 360.
      *
      */
-    if(Math.abs(result.baz-360.) < .00001) result.baz=0.0;
-    if(Math.abs(result.az-360.) < .00001) result.az=0.0;
+    if(Math.abs(result_baz-360.) < .00001) result_baz=0.0;
+    if(Math.abs(result_az-360.) < .00001) result_az=0.0;
+    let result = new DistAzOutput(result_delta, result_az, result_baz);
+    result.stalat = lat1;
+    result.stalon = lon1;
+    result.evtlat = lat2;
+    result.evtlon = lon2;
     return result;
 }

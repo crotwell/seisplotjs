@@ -25,8 +25,8 @@ export function fftForward(seis: Seismogram | SeismogramDisplayData) {
   } else {
     sdd = seis;
   }
-  if ( seis.isContiguous()) {
-    let result = FFTResult.createFromPackedFreq(calcDFT(seis.y), seis.numPoints, seis.sampleRate);
+  if ( sdd.seismogram.isContiguous()) {
+    let result = FFTResult.createFromPackedFreq(calcDFT(sdd.seismogram.y), sdd.seismogram.numPoints, sdd.seismogram.sampleRate);
     result.seismogramDisplayData = sdd;
     return result;
   } else {

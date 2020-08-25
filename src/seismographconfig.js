@@ -39,6 +39,7 @@ export class SeismographConfig {
   xScaleFormat: (date: Date) => string;
   yScaleFormat: string | (value: number) => string;
   _title: Array<string>;
+  _handlebarsCompiled: null | ({},{}) => string;
   isXAxis: boolean;
   isXAxisTop: boolean;
   xLabel: string;
@@ -152,16 +153,21 @@ export class SeismographConfig {
     } else {
       this._title = [ value ];
     }
+    this._handlebarsCompiled = null;
   }
 
-  handlebarsTitle(context, runtimeOptions) {
-    if ( this._title && ! this._handlebarsTitle) {
-      if (this._title.length === 1) {
-        this._handlebarsTitle = Handlebars.compile(this._title[0]);
+  handlebarsTitle(context: {}, runtimeOptions: {}) {
+    if (  ! isDef(this._handlebarsCompiled)) {
+      if ( this._title) {
+        if (this._title.length === 1) {
+          this._handlebarsCompiled = Handlebars.compile(this._title[0]);
+        }
+        this._handlebarsCompiled = Handlebars.compile(this._title.join(" "));
+      } else {
+        this._handlebarsCompiled = Handlebars.compile("");
       }
-      this._handlebarsTitle = Handlebars.compile(this._title.join(" "));
     }
-    return this._handlebarsTitle(context, runtimeOptions);
+    return this._handlebarsCompiled(context, runtimeOptions);
   }
 
   /** Fake data to use to test alignment of seismograph axis and between canvas
@@ -230,16 +236,16 @@ export class SeismographConfig {
 }
 
 export class AmplitudeScalable {
-  middle: Number;
-  halfWidth: Number;
-  constructor(middle: Number, halfWidth: Number) {
+  middle: number;
+  halfWidth: number;
+  constructor(middle: number, halfWidth: number) {
     this.middle = middle;
     this.halfWidth = halfWidth;
   }
-  getAmplitudeRange(): Array<Number> {
+  getAmplitudeRange(): Array<number> {
     return [-1, 1]; // default
   }
-  notifyAmplitudeChange([minAmp: Number, maxAmp: Number]) {
+  notifyAmplitudeChange(minAmp: number, maxAmp: number) {
     // no-op
   }
 }
@@ -297,7 +303,7 @@ export class LinkedAmpScale {
       return acc >  cur.halfWidth ? acc : cur.halfWidth;
     }, 0);
     graphList.forEach(g => {
-      g.notifyAmplitudeChange([g.middle-maxHalfRange, g.middle+maxHalfRange]);
+      g.notifyAmplitudeChange(g.middle-maxHalfRange, g.middle+maxHalfRange);
     });
   }
 }
@@ -363,8 +369,8 @@ export class LinkedTimeScale {
   get offset() {
     return this._zoomedStartOffset ? this._zoomedStartOffset : this._originalStartOffset;
   }
-  set offset(offset) {
-    this.originalStartOffset = offset;
+  set offset(offset: moment.duration) {
+    this._originalStartOffset = offset;
     this.recalculate();
   }
   get duration() {

@@ -10,7 +10,7 @@ import moment from 'moment';
 import RSVP from 'rsvp';
 
 // special due to flow
-import {doStringGetterSetter, doIntGetterSetter, checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs,
+import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs,
         isNonEmptyStringArg, isNumArg, checkStringOrDate, stringify} from './util';
 
 import {SeismogramDisplayData } from './seismogram.js';
@@ -261,7 +261,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   mergeGaps(value?: number): number | AvailabilityQuery {
-    return doStringGetterSetter(this, 'mergeGaps', value);
+    return doFloatGetterSetter(this, 'mergeGaps', value);
   }
   /**
    * Gets/Sets the show parameter for the query.

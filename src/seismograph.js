@@ -18,7 +18,7 @@ import {SeismographConfig, LinkedAmpScale,
 // reexport as was defined here in 2.0.1
 export { LinkedAmpScale };
 
-import type { MarkerType } from './seismogram.js';
+import type { MarkerType, MarkerHolderType } from './seismogram.js';
 import type { MarginType } from './seismographconfig';
 import {SeismogramDisplayData, findStartEnd, findMaxDuration, findMinMax, findMinMaxOverTimeRange,
         findMinMaxOverRelativeTimeRange, SeismogramSegment, Seismogram, COUNT_UNIT } from './seismogram.js';
@@ -81,6 +81,8 @@ export class Seismograph {
   g: any;
   throttleRescale: any;
   throttleResize: any;
+  myTimeScalable: TimeScalable;
+  myAmpScalable: AmplitudeScalable;
   xScaleChangeListeners: Array<ScaleChangeListenerType>;
   constructor(inSvgParent: any,
               seismographConfig: SeismographConfig,
@@ -140,22 +142,19 @@ export class Seismograph {
 
     this.myAmpScalable = new SeismographAmplitudeScalable(this);
     if (this.seismographConfig.linkedAmplitudeScale) {
-      this.linkedAmpScale = this.seismographConfig.linkedAmplitudeScale;
-      this.linkedAmpScale.link(this.myAmpScalable);
-    } else {
-      this.linkedAmpScale = new LinkedAmpScale([this.myAmpScalable]);
+      this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
     }
 
 
     if (this.seismographConfig.isXAxis) {
       this.xAxis = d3.axisBottom(this.currZoomXScale);
-      if ( ! this.seismographConfig.isRelative) {
+      if ( ! this.seismographConfig.isRelativeTime) {
         this.xAxis.tickFormat(this.seismographConfig.xScaleFormat);
       }
     }
     if (this.seismographConfig.isXAxisTop) {
       this.xAxisTop = d3.axisTop(this.currZoomXScale);
-      if ( ! this.seismographConfig.isRelative) {
+      if ( ! this.seismographConfig.isRelativeTime) {
         this.xAxisTop.tickFormat(this.seismographConfig.xScaleFormat);
       }
     }
@@ -515,7 +514,7 @@ export class Seismograph {
     const subtraceJoin = traceJoin
       .selectAll('path')
        .data(sdd => {
-          const sddXScale = this.timeScaleForSeisDisplayData();
+          const sddXScale = this.timeScaleForSeisDisplayData(sdd);
           let segArr = sdd.seismogram ? sdd.seismogram.segments : [];
           return segArr.map(seg => {
             return {
@@ -601,7 +600,7 @@ export class Seismograph {
     svgG.selectAll("g.axis").remove();
     if (this.seismographConfig.isXAxis) {
       this.xAxis.scale(this.currZoomXScale);
-      if ( ! this.seismographConfig.isRelative) {
+      if ( ! this.seismographConfig.isRelativeTime) {
         this.xAxis.tickFormat(this.seismographConfig.xScaleFormat);
       }
       svgG.append("g")
@@ -611,7 +610,7 @@ export class Seismograph {
     }
     if (this.seismographConfig.isXAxisTop) {
       this.xAxisTop.scale(this.currZoomXScale);
-      if ( ! this.seismographConfig.isRelative) {
+      if ( ! this.seismographConfig.isRelativeTime) {
         this.xAxisTop.tickFormat(this.seismographConfig.xScaleFormat);
       }
       svgG.append("g")
@@ -1090,9 +1089,9 @@ export class Seismograph {
       }
       this.yScaleData.domain(minMax);
 
-      if (this.linkedAmpScale) {
+      if (this.seismographConfig.linkedAmplitudeScale) {
         if (oldMinMax[0] !== minMax[0] || oldMinMax[1] !== minMax[1]) {
-          this.linkedAmpScale.recalculate(); // sets yScale.domain
+          this.seismographConfig.linkedAmplitudeScale.recalculate(); // sets yScale.domain
         }
       } else {
         this.yScale.domain(minMax);
@@ -1282,7 +1281,7 @@ export class SeismographAmplitudeScalable extends AmplitudeScalable {
     this.graph = graph;
   }
 
-  notifyAmplitudeChange([minAmp: Number, maxAmp: Number]) {
+  notifyAmplitudeChange(minAmp: number, maxAmp: number) {
     if (this.graph.seismographConfig.doRMean) {
       const mean = (this.graph.yScaleData.domain()[1]+this.graph.yScaleData.domain()[0]) / 2;
       const maxRange = maxAmp-minAmp;

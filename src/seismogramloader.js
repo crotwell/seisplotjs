@@ -26,7 +26,7 @@ export function loadSeismograms(channelList: Array<Channel>,
   let ttPromiseList = [];
   for (let s of stationList) {
     for (let q of quakeList) {
-      if (s.timeRange().contains(q.time)) {
+      if (s.timeRange.contains(q.time)) {
         let taupQuery = new TraveltimeQuery()
           .latLonFromStation(s)
           .latLonFromQuake(q)
@@ -68,9 +68,10 @@ export function loadSeismograms(channelList: Array<Channel>,
       let timeWindow = new StartEndDuration(startTime, endTime);
       let phaseMarkers = createMarkersForTravelTimes(tt.quake, tt.ttimes);
       phaseMarkers.push({
-        markertype: 'predicted',
+        type: 'predicted',
         name: "origin",
-        time: moment.utc(tt.quake.time)
+        time: moment.utc(tt.quake.time),
+        description: ""
       });
 
       for (let chan of channelList) {
@@ -86,7 +87,7 @@ export function loadSeismograms(channelList: Array<Channel>,
     }
 
     if ( ! dsQuery) {
-      let dsQuery = new DataSelectQuery();
+      dsQuery = new DataSelectQuery();
     }
     return dsQuery.postQuerySeismograms(seismogramDataList);
 
