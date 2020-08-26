@@ -18,7 +18,7 @@ import {SeismographConfig, LinkedAmpScale,
 // reexport as was defined here in 2.0.1
 export { LinkedAmpScale };
 
-import type { MarkerType, MarkerHolderType } from './seismogram.js';
+import type { MarkerType } from './seismogram.js';
 import type { MarginType } from './seismographconfig';
 import {SeismogramDisplayData, findStartEnd, findMaxDuration, findMinMax, findMinMaxOverTimeRange,
         findMinMaxOverRelativeTimeRange, SeismogramSegment, Seismogram, COUNT_UNIT } from './seismogram.js';
@@ -38,6 +38,13 @@ export type ScaleChangeListenerType = {
   destinationKey: any,
   notifyScaleChange: (value: any) => void
 }
+
+export type MarkerHolderType = {
+  marker: MarkerType,
+  sdd: SeismogramDisplayData,
+  xscale: any
+}
+
 
 /* A seismogram plot, using d3. The actual waveform can be drawn
   * with a separate Canvas (default) or with SVG.
