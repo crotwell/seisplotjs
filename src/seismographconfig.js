@@ -245,6 +245,7 @@ export class AmplitudeScalable {
   getAmplitudeRange(): Array<number> {
     return [-1, 1]; // default
   }
+  // eslint-disable-next-line no-unused-vars
   notifyAmplitudeChange(minAmp: number, maxAmp: number) {
     // no-op
   }
@@ -257,6 +258,7 @@ export class TimeScalable {
     this.alignmentTimeOffset = alignmentTimeOffset;
     this.duration = duration;
   }
+  // eslint-disable-next-line no-unused-vars
   notifyTimeRangeChange(alignmentTimeOffset: moment.duration, duration: moment.duration) {
     // no-op
   }
