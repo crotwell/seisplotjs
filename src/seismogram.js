@@ -14,7 +14,7 @@ import {distaz, DistAzOutput} from './distaz.js';
 import {Channel, InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
 import {StartEndDuration } from './util.js';
-import {TraveltimeArrivalType} from './traveltime.js';
+import type {TraveltimeJsonType, TraveltimeArrivalType} from './traveltime.js';
 
 export const COUNT_UNIT = 'count';
 
