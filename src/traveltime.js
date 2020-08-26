@@ -6,7 +6,8 @@
  * http://www.seis.sc.edu
  */
 
-import {doIntGetterSetter, doFloatGetterSetter, checkProtocol, hasArgs, stringify, isDef, isNonEmptyStringArg } from './util';
+import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter,
+        checkProtocol, hasArgs, stringify, isDef, isNonEmptyStringArg } from './util';
 import {Station} from './stationxml.js';
 import {Quake} from './quakeml.js';
 
@@ -15,6 +16,48 @@ export let IRIS_HOST = "service.iris.edu";
 export const TEXT_FORMAT = "text";
 export const JSON_FORMAT = "json";
 export const SVG_FORMAT = "svg";
+
+/**
+ * Type for json returned by iris traveltime web service
+ *
+ */
+export type TraveltimeJsonType = {
+  model: string,
+  sourcedepth: number,
+  receiverdepth: number,
+  phases: Array<string>,
+  arrivals: Array<TraveltimeArrivalType>
+};
+
+
+export type TraveltimeArrivalType = {
+  distdeg: number,
+  phase: string,
+  time: number,
+  rayparam: number,
+  takeoff: number,
+  incident: number,
+  puristdist: number,
+  puristname: string
+};
+
+/** converts a text line from the text format into an
+ *  TraveltimeArrivalType object like what is returned by the json format.
+ */
+export function convertTravelTimeLineToObject(ttimeline: string): TraveltimeArrivalType {
+    let items = ttimeline.trim().split(/\s+/);
+    return {
+      distdeg: parseFloat(items[0]),
+      phase: items[2],
+      time: parseFloat(items[3]),
+      rayparam: parseFloat(items[4]),
+      takeoff: parseFloat(items[5]),
+      incident: parseFloat(items[6]),
+      puristdist: parseFloat(items[7]),
+      puristname: items[9]
+    };
+  }
+
 
 /**
  * Query to the IRIS traveltime webservice, based on the TauP Toolkit. See
@@ -81,7 +124,7 @@ export class TraveltimeQuery {
     return doIntGetterSetter(this, 'port', value);
   }
   specVersion(value?: string): string | TraveltimeQuery {
-    return hasArgs(value) ? (this._specVersion = value, this) : this._specVersion;
+    return doStringGetterSetter(this, 'specVersion', value);
   }
   evdepth(value?: number): number | TraveltimeQuery {
     return doFloatGetterSetter(this, 'evdepth', value);
@@ -90,10 +133,10 @@ export class TraveltimeQuery {
     return doFloatGetterSetter(this, 'distdeg', value);
   }
   model(value?: string): string | TraveltimeQuery {
-    return hasArgs(value) ? (this._model = value, this) : this._model;
+    return doStringGetterSetter(this, 'model', value);
   }
   phases(value?: string): string | TraveltimeQuery {
-    return hasArgs(value) ? (this._phases = value, this) : this._phases;
+    return doStringGetterSetter(this, 'phases', value);
   }
   stalat(value?: number): number | TraveltimeQuery {
     return doFloatGetterSetter(this, 'stalat', value);
@@ -119,23 +162,10 @@ export class TraveltimeQuery {
     return this;
   }
   format(value?: string): string | TraveltimeQuery {
-    return hasArgs(value) ? (this._format = value, this) : this._format;
+    return doStringGetterSetter(this, 'format', value);
   }
   noheader(value?: boolean): boolean | TraveltimeQuery {
     return hasArgs(value) ? (this._noheader = value, this) : this._noheader;
-  }
-  convertToArrival(ttimeline: string) {
-    let items = ttimeline.trim().split(/\s+/);
-    return {
-      distdeg: parseFloat(items[0]),
-      phase: items[2],
-      time: parseFloat(items[3]),
-      rayparam: parseFloat(items[4]),
-      takeoff: parseFloat(items[5]),
-      incident: parseFloat(items[6]),
-      puristdist: parseFloat(items[7]),
-      puristname: items[9]
-    };
   }
 
   queryText(): Promise<string> {
@@ -149,12 +179,12 @@ export class TraveltimeQuery {
         }
       });
   }
-  queryJson(): Promise<any> {
+  queryJson(): Promise<TraveltimeJsonType> {
     this.format(JSON_FORMAT);
     return fetch(this.formURL())
       .then(response => {
         if (response.ok) {
-          return response.json();
+          return ((response.json(): any): TraveltimeJsonType);
         } else {
           throw new Error("Fetching over network was not ok: "+response.status+" "+response.statusText);
         }

@@ -7,13 +7,14 @@
  */
 
 import moment from 'moment';
-import { checkStringOrDate, meanOfSlice, isDef, stringify } from './util';
-import * as seedcodec from './seedcodec';
+import { checkStringOrDate, meanOfSlice, isDef, stringify } from './util.js';
+import * as seedcodec from './seedcodec.js';
 
 import {distaz, DistAzOutput} from './distaz.js';
 import {Channel, InstrumentSensitivity} from './stationxml.js';
 import {Quake} from './quakeml.js';
-import {StartEndDuration } from './util';
+import {StartEndDuration } from './util.js';
+import {TraveltimeArrivalType} from './traveltime.js';
 
 export const COUNT_UNIT = 'count';
 
@@ -32,10 +33,6 @@ export type MarkerType = {
   description: string
 };
 
-export type MarkerHolderType = {
-  marker: MarkerType,
-  sdd: SeismogramDisplayData
-}
 /**
  * A contiguous segment of a Seismogram.
  *
@@ -645,6 +642,7 @@ export class SeismogramDisplayData {
   _id: string | null;
   label: string | null;
   markerList: Array<MarkerType>;
+  traveltimeList: Array<TraveltimeArrivalType>;
   channel: Channel | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
@@ -696,6 +694,16 @@ export class SeismogramDisplayData {
         markers.forEach(m => this.markerList.push(m));
       } else {
         this.markerList.push(markers);
+      }
+  }
+  addTravelTimes(ttimes: TraveltimeJsonType | TraveltimeArrivalType | Array<TraveltimeArrivalType>) {
+      if (typeof ttimes === "object" && ttimes.arrivals) {
+        let ttimeJson = (ttimes: TraveltimeArrivalType); // for flow
+        this.addTravelTimes(ttimesJson.arrivals);
+      } else if (Array.isArray(ttimes)) {
+        ttimes.forEach(m => this.traveltimeList.push(m));
+      } else {
+        this.traveltimeList.push(ttimes);
       }
   }
   hasQuake(): boolean {
@@ -883,7 +891,7 @@ export class SeismogramDisplayData {
     this._statsCache = stats;
     return stats;
   }
-  get distaz(): DistAzOutput {
+  get distaz(): null | DistAzOutput {
     let out = null;
     if (this.quakeList.length > 0 && this.channel !== null) {
       out = distaz(this.channel.latitude, this.channel.longitude, this.quakeList[0].latitude, this.quakeList[0].longitude);
