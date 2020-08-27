@@ -169,8 +169,8 @@ export class Quake {
   toString() {
     return stringify(this.time)
     +' '+stringify(this.latitude)
-    +" "+stringify(this.longitude)
-    +' '+stringify(this.depth)
+    +"/"+stringify(this.longitude)
+    +' '+stringify(this.depth/1000)+' km'
     +' '+this.magnitude.toString();
   }
 }
