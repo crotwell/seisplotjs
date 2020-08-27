@@ -25,8 +25,8 @@ import {StartEndDuration} from './util.js';
 export class HourMinChooser {
 
   div: any; // d3 not yet in flow-typed :(
-  time: moment;
-  updateCallback: ( time: moment) => void;
+  time: moment$Moment;
+  updateCallback: ( time: moment$Moment) => void;
   hourMinRegEx: RegExp;
   myOnClick: (event: Event) => void;
   hourMinField: any; // d3 not yet in flow-typed :(
@@ -35,7 +35,7 @@ export class HourMinChooser {
   hourSlider: any; // d3 not yet in flow-typed :(
   minuteDiv: any; // d3 not yet in flow-typed :(
   minuteSlider: any; // d3 not yet in flow-typed :(
-  constructor(div: any, initialTime: moment, updateCallback?: ( time: moment) => void) {
+  constructor(div: any, initialTime: moment$Moment, updateCallback?: ( time: moment$Moment) => void) {
     let mythis = this;
     if (typeof div === 'string') {
       this.div = d3.select(div);
@@ -67,8 +67,8 @@ export class HourMinChooser {
           mythis.hourMinField.style("background-color", null);
           let h = match[1];
           let m = match[2];
-          mythis.time.hours(h);
-          mythis.time.minutes(m);
+          mythis.time.hours(parseInt(h));
+          mythis.time.minutes(parseInt(m));
           mythis.popupDiv.style("visibility", "hidden");
           mythis.timeModified();
         } else {
@@ -121,7 +121,7 @@ export class HourMinChooser {
    *
    * @param  newTime new time to update sliders
    */
-  updateTime(newTime: moment): void {
+  updateTime(newTime: moment$Moment): void {
     this.time = newTime;
     this.hourMinField.property("value", this.time.format('HH:mm'));
     this.hourSlider.property("value", this.time.hour());
@@ -198,13 +198,13 @@ export class HourMinChooser {
  */
 export class DateTimeChooser {
   div: any; // d3 not yet in flow-typed :(
-  time: moment;
-  updateCallback: ( time: moment) => void;
+  time: moment$Moment;
+  updateCallback: ( time: moment$Moment) => void;
   label: string;
   dateField: any;
   picker: Pikaday;
   hourMin: HourMinChooser;
-  constructor(div: any, label: string, initialTime: moment, updateCallback?: ( time: moment) => void) {
+  constructor(div: any, label: string, initialTime: moment$Moment, updateCallback?: ( time: moment$Moment) => void) {
     if (typeof div === 'string') {
       this.div = d3.select(div);
     } else {
@@ -248,7 +248,7 @@ export class DateTimeChooser {
    *
    * @param  newTime new time to update sliders
    */
-  updateTime(newTime: moment): void {
+  updateTime(newTime: moment$Moment): void {
     this._internalSetTime(newTime);
     this.hourMin.updateTime(newTime);
   }
@@ -258,7 +258,7 @@ export class DateTimeChooser {
   timeModified(): void {
     this.updateCallback(this.time);
   }
-  getTime(): moment {
+  getTime(): moment$Moment {
     return this.time;
   }
 
@@ -268,7 +268,7 @@ export class DateTimeChooser {
    * @private
    * @param  newTime new time to update
    */
-  _internalSetTime(newTime: moment): void {
+  _internalSetTime(newTime: moment$Moment): void {
     this.time = moment.utc(newTime);
     this.dateField.attr("value", this.time.toISOString());
     // re-moment to avoid utc issue, using utc messes up picker, so pretend

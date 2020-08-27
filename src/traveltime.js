@@ -21,16 +21,16 @@ export const SVG_FORMAT = "svg";
  * Type for json returned by iris traveltime web service
  *
  */
-export type TraveltimeJsonType = {
+export type TraveltimeJsonType = {|
   model: string,
   sourcedepth: number,
   receiverdepth: number,
   phases: Array<string>,
   arrivals: Array<TraveltimeArrivalType>
-};
+|};
 
 
-export type TraveltimeArrivalType = {
+export type TraveltimeArrivalType = {|
   distdeg: number,
   phase: string,
   time: number,
@@ -39,7 +39,7 @@ export type TraveltimeArrivalType = {
   incident: number,
   puristdist: number,
   puristname: string
-};
+|};
 
 /** converts a text line from the text format into an
  *  TraveltimeArrivalType object like what is returned by the json format.

@@ -252,14 +252,14 @@ export class AmplitudeScalable {
 }
 
 export class TimeScalable {
-  alignmentTimeOffset: moment.duration;
-  duration: moment.duration;
-  constructor(alignmentTimeOffset: moment.duration, duration: moment.duration) {
+  alignmentTimeOffset: moment$MomentDuration;
+  duration: moment$MomentDuration;
+  constructor(alignmentTimeOffset: moment$MomentDuration, duration: moment$MomentDuration) {
     this.alignmentTimeOffset = alignmentTimeOffset;
     this.duration = duration;
   }
   // eslint-disable-next-line no-unused-vars
-  notifyTimeRangeChange(alignmentTimeOffset: moment.duration, duration: moment.duration) {
+  notifyTimeRangeChange(alignmentTimeOffset: moment$MomentDuration, duration: moment$MomentDuration) {
     // no-op
   }
 }
@@ -320,21 +320,24 @@ export class LinkedTimeScale {
    * @private
    */
   _graphSet: Set<TimeScalable>;
-  _originalDuration: null | moment.duration;
-  _originalStartOffset: null | moment.duration;
-  _zoomedDuration: null | moment.duration;
-  _zoomedStartOffset: null | moment.duration;
-  constructor(graphList: ?Array<TimeScalable>, originalDuration?: moment.duration, originalStartOffset?: moment.duration) {
+  _originalDuration: moment$MomentDuration;
+  _originalStartOffset: moment$MomentDuration;
+  _zoomedDuration: null | moment$MomentDuration;
+  _zoomedStartOffset: null | moment$MomentDuration;
+  constructor(graphList: ?Array<TimeScalable>, originalDuration?: moment$MomentDuration, originalStartOffset?: moment$MomentDuration) {
     const glist = graphList ? graphList : []; // in case null
     this._graphSet = new Set(glist);
-    this._originalDuration = originalDuration;
-    if ( ! originalDuration) {
+
+    if ( originalDuration) {
+      this._originalDuration = originalDuration;
+    } else {
       this._originalDuration = glist.reduce((acc, cur) => {
         return acc.asMilliseconds() > cur.duration.asMilliseconds() ? acc : cur.duration;
       }, moment.duration(0));
     }
-    this._originalStartOffset = originalStartOffset;
-    if (! originalStartOffset) {
+    if (originalStartOffset) {
+      this._originalStartOffset = originalStartOffset;
+    } else {
       this._originalStartOffset = moment.duration(0, 'seconds');
     }
     this._zoomedDuration = null;
@@ -358,7 +361,7 @@ export class LinkedTimeScale {
     this._graphSet.delete(graph);
     this.recalculate();
   }
-  zoom(startOffset: moment.duration, duration: moment.duration) {
+  zoom(startOffset: moment$MomentDuration, duration: moment$MomentDuration) {
     this._zoomedDuration = duration;
     this._zoomedStartOffset = startOffset;
     this.recalculate();
@@ -371,14 +374,14 @@ export class LinkedTimeScale {
   get offset() {
     return this._zoomedStartOffset ? this._zoomedStartOffset : this._originalStartOffset;
   }
-  set offset(offset: moment.duration) {
+  set offset(offset: moment$MomentDuration) {
     this._originalStartOffset = offset;
     this.recalculate();
   }
   get duration() {
     return this._zoomedDuration ? this._zoomedDuration : this._originalDuration;
   }
-  set duration(duration: moment.duration) {
+  set duration(duration: moment$MomentDuration) {
     this._originalDuration = duration;
     this.recalculate();
   }
@@ -387,12 +390,8 @@ export class LinkedTimeScale {
    */
   recalculate() {
     const graphList = Array.from(this._graphSet.values());
-    if ( ! this._zoomedStartOffset) { this._zoomedStartOffset = moment.duration(0, 'seconds');}
-    if ( ! this._zoomedDuration) {
-      this._zoomedDuration = this._originalDuration;
-    }
     graphList.forEach(graph => {
-      graph.notifyTimeRangeChange(this._zoomedStartOffset, this._zoomedDuration);
+      graph.notifyTimeRangeChange(this.offset, this.duration);
     });
   }
 }

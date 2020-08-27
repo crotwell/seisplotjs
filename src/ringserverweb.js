@@ -19,7 +19,7 @@ export type RingserverVersion = {
 };
 
 export type StreamsResult = {
-  accessTime: moment,
+  accessTime: moment$Moment,
   streams: Array<StreamStat>
 };
 
@@ -305,9 +305,9 @@ export class StreamStat {
   key: string;
   startRaw: string;
   endRaw: string;
-  start: moment;
-  end: moment;
-  constructor(key: string, start: moment, end: moment) {
+  start: moment$Moment;
+  end: moment$Moment;
+  constructor(key: string, start: string, end: string) {
     this.key = key;
     this.startRaw = start;
     this.endRaw = end;
@@ -334,7 +334,7 @@ export class StreamStat {
    * @param accessTime time latency is calculated relative to
    * @returns latency
    */
-  calcLatency(accessTime: moment): moment.duration {
-    return this.end.from(accessTime);
+  calcLatency(accessTime: moment$Moment): moment$MomentDuration {
+    return moment.duration(this.end.diff(accessTime));
   }
 }

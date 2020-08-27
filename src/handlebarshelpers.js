@@ -1,3 +1,5 @@
+// @flow
+
 import Handlebars from 'handlebars';
 
 export function registerHelpers() {

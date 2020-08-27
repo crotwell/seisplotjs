@@ -30,7 +30,7 @@ export const UNKNOWN_MAG_TYPE = 'unknown';
 export class Quake {
   eventId: string;
   publicId: string;
-  _time: moment;
+  _time: moment$Moment;
   latitude: number;
   longitude: number;
   depth: number;
@@ -154,10 +154,10 @@ export class Quake {
     }
     return "unknownEventId";
   }
-  get time(): moment {
+  get time(): moment$Moment {
     return this._time;
   }
-  set time(value: moment | string) {
+  set time(value: moment$Moment | string) {
     this._time = moment.utc(value);
   }
   get arrivals(): Array<Arrival> {
@@ -176,7 +176,7 @@ export class Quake {
 }
 /** Represents a QuakeML Origin. */
 export class Origin {
-  time: moment;
+  time: moment$Moment;
   latitude: number;
   longitude: number;
   depth: number;
@@ -201,7 +201,7 @@ export class Origin {
     let out = new Origin();
     let otimeStr = _grabFirstElText(_grabFirstEl(qml, 'time'),'value');
     if (isNonEmptyStringArg(otimeStr) ) {
-      out.time = otimeStr;
+      out.time = moment.utc(otimeStr);
     } else {
       util.log("origintime is missing...");
     }
@@ -315,13 +315,13 @@ export class Arrival {
 /** Represents a QuakeML Pick.
  */
 export class Pick {
-  time: moment;
+  time: moment$Moment;
   networkCode: string;
   stationCode: string;
   locationCode: string;
   channelCode: string;
   publicId: string;
-  constructor(time: moment,
+  constructor(time: moment$Moment,
       networkCode: string,
       stationCode: string,
       locationCode: string,

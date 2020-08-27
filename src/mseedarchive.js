@@ -128,7 +128,7 @@ export class MSeedArchive {
    * @param   endTime   end time
    * @returns Promise to array of miniseed records
    */
-  loadDataForChannel(channel: Channel, startTime: moment, endTime: moment): Promise<Array<miniseed.DataRecord>> {
+  loadDataForChannel(channel: Channel, startTime: moment$Moment, endTime: moment$Moment): Promise<Array<miniseed.DataRecord>> {
     return this.loadData(channel.station.network.networkCode,
                     channel.station.stationCode,
                     channel.locationCode,
@@ -149,7 +149,7 @@ export class MSeedArchive {
    * @param   sampleRate known sample rate for this channel
    * @returns             Promise to array of miniseed records
    */
-  loadData(net: string, sta: string, loc: string, chan: string, startTime: moment, endTime: moment, sampleRate: number): Promise<Array<miniseed.DataRecord>> {
+  loadData(net: string, sta: string, loc: string, chan: string, startTime: moment$Moment, endTime: moment$Moment, sampleRate: number): Promise<Array<miniseed.DataRecord>> {
     let basePattern = this.fillBasePattern(net, sta, loc, chan);
     if ( ! util.isDef(sampleRate)) {
       sampleRate = minSampleRate(chan);
@@ -198,7 +198,7 @@ export class MSeedArchive {
    * @param   t           moment in time
    * @returns              string with time replaces
    */
-  fillTimePattern(basePattern: string, t: moment): string {
+  fillTimePattern(basePattern: string, t: moment$Moment): string {
     return basePattern.replace(/%Y/g, t.format('YYYY'))
       .replace(/%j/g, t.format('DDDD'))
       .replace(/%H/g, t.format('HH'));

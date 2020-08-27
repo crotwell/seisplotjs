@@ -55,8 +55,8 @@ export class FFTPlot {
   svgParent: any;
   seismographConfig: SeismographConfig;
   fftResults: Array<FFTResult>;
-  xScale: d3.scale;
-  yScale: d3.scale;
+  xScale: any;
+  yScale: any;
   svg: any;
   loglog: boolean;
   constructor(cssSelector: string,

@@ -12,6 +12,7 @@ import { SacPoleZero } from './sacpolezero.js';
 import {Response, PolesZeros } from './stationxml.js';
 import Qty from 'js-quantities';
 import { Complex, createComplex} from './oregondsputil.js';
+import {stringify} from './util.js';
 
 /**
  * Applies response, poles and zeros along with overall gain to the seismogram.
@@ -90,7 +91,7 @@ export function transferSacPZSegment(seis: SeismogramSegment,
     }
 
 
-export function calcResponse(response: Response, numPoints: number, sampleRate: number, unit: string | Qty ="m"): FFTResult {
+export function calcResponse(response: Response, numPoints: number, sampleRate: number, unit: string): FFTResult {
   const sacPoleZero = convertToSacPoleZero(response);
 
   const unitQty = new Qty(unit);
@@ -107,7 +108,7 @@ export function calcResponse(response: Response, numPoints: number, sampleRate: 
   for(let i=0; i<gamma; i++) {
     let z = sacPoleZero.zeros[sacPoleZero.zeros.length-1-i];
     if (z.real() !== 0 || z.imag() !== 0) {
-      throw new Error(`Attempt to trim ${gamma} zeros from SacPoleZero, but zero isn't 0+i0: ${z}`);
+      throw new Error(`Attempt to trim ${gamma} zeros from SacPoleZero, but zero isn't 0+i0: ${stringify(z)}`);
     }
   }
   // subtract gama zeros, ex 1 to get

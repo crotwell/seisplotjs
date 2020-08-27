@@ -69,9 +69,9 @@ export class AvailabilityQuery {
   /** @private */
   _channelCode: string;
   /** @private */
-  _startTime: moment;
+  _startTime: moment$Moment;
   /** @private */
-  _endTime: moment;
+  _endTime: moment$Moment;
   /** @private */
   _quality: string;
   /** @private */
@@ -199,7 +199,7 @@ export class AvailabilityQuery {
    * @param value start time
    * @returns the query when setting, the current value when no argument
    */
-  startTime(value?: moment): moment | AvailabilityQuery {
+  startTime(value?: moment$Moment): moment$Moment | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
     } else if (hasArgs(value)) {
@@ -215,7 +215,7 @@ export class AvailabilityQuery {
    * @param value end time
    * @returns the query when setting, the current value when no argument
    */
-  endTime(value?: moment): moment | AvailabilityQuery {
+  endTime(value?: moment$Moment): moment$Moment | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
     } else if (hasArgs(value)) {
@@ -578,8 +578,8 @@ export class AvailabilityQuery {
     if (this._stationCode) { url = url+makeParam("sta", this.stationCode());}
     if (this._locationCode) { url = url+makeParam("loc", this.locationCode());}
     if (this._channelCode) { url = url+makeParam("cha", this.channelCode());}
-    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
+    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this._startTime));}
+    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this._endTime));}
     if (this._quality) { url = url+makeParam("quality", this.quality());}
     if (this._merge) { url = url+makeParam("merge", this.merge());}
     if (this._mergeGaps) { url = url+makeParam("mergegaps", this.mergeGaps());}

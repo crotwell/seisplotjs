@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
-import { moment } from 'moment';
+import moment from 'moment';
 import { Quake, USGS_HOST, parseQuakeML } from './quakeml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
@@ -51,11 +51,11 @@ export class EventQuery {
   /** @private */
   _eventId: string;
   /** @private */
-  _startTime: moment;
+  _startTime: moment$Moment;
   /** @private */
-  _endTime: moment;
+  _endTime: moment$Moment;
   /** @private */
-  _updatedAfter: moment;
+  _updatedAfter: moment$Moment;
   /** @private */
   _minMag: number;
   /** @private */
@@ -183,7 +183,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment): moment | EventQuery {
+  startTime(value?: moment$Moment): moment$Moment | EventQuery {
     return doMomentGetterSetter(this, 'startTime', value);
   }
   /**
@@ -192,7 +192,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment): moment | EventQuery {
+  endTime(value?: moment$Moment): moment$Moment | EventQuery {
     return doMomentGetterSetter(this, 'endTime', value);
   }
   /**
@@ -212,7 +212,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: moment): moment | EventQuery {
+  updatedAfter(value?: moment$Moment): moment$Moment | EventQuery {
     return doMomentGetterSetter(this, 'updatedAfter', value);
   }
   /**
@@ -654,22 +654,22 @@ export class EventQuery {
     }
     let url = this.formBaseURL()+"/query?";
     if (this._eventId) { url = url+makeParam("eventid", this.eventId());}
-    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
-    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
-    if (isNumArg(this._minMag)) { url = url+makeParam("minmag", this.minMag());}
-    if (isNumArg(this._maxMag)) { url = url+makeParam("maxmag", this.maxMag());}
-    if (isStringArg(this._magnitudeType)) { url = url+makeParam("magnitudetype", this.magnitudeType());}
-    if (isNumArg(this._minDepth)) { url = url+makeParam("mindepth", this.minDepth());}
-    if (isNumArg(this._maxDepth)) { url = url+makeParam("maxdepth", this.maxDepth());}
-    if (isNumArg(this._minLat)) { url = url+makeParam("minlat", this.minLat());}
-    if (isNumArg(this._maxLat)) { url = url+makeParam("maxlat", this.maxLat());}
-    if (isNumArg(this._minLon)) { url = url+makeParam("minlon", this.minLon());}
-    if (isNumArg(this._maxLon)) { url = url+makeParam("maxlon", this.maxLon());}
+    if (this._startTime) { url = url+makeParam("starttime", toIsoWoZ(this._startTime));}
+    if (this._endTime) { url = url+makeParam("endtime", toIsoWoZ(this._endTime));}
+    if (isNumArg(this._minMag)) { url = url+makeParam("minmag", this._minMag);}
+    if (isNumArg(this._maxMag)) { url = url+makeParam("maxmag", this._maxMag);}
+    if (isStringArg(this._magnitudeType)) { url = url+makeParam("magnitudetype", this._magnitudeType);}
+    if (isNumArg(this._minDepth)) { url = url+makeParam("mindepth", this._minDepth);}
+    if (isNumArg(this._maxDepth)) { url = url+makeParam("maxdepth", this._maxDepth);}
+    if (isNumArg(this._minLat)) { url = url+makeParam("minlat", this._minLat);}
+    if (isNumArg(this._maxLat)) { url = url+makeParam("maxlat", this._maxLat);}
+    if (isNumArg(this._minLon)) { url = url+makeParam("minlon", this._minLon);}
+    if (isNumArg(this._maxLon)) { url = url+makeParam("maxlon", this._maxLon);}
     if (isNumArg(this._minRadius) || isNumArg(this._maxRadius)) {
       if (isNumArg(this._latitude) && isNumArg(this._longitude)) {
-        url = url+makeParam("latitude", this.latitude())+makeParam("longitude", this.longitude());
-        if (isNumArg(this._minRadius)) { url = url+makeParam("minradius", this.minRadius());}
-        if (isNumArg(this._maxRadius)) { url = url+makeParam("maxradius", this.maxRadius());}
+        url = url+makeParam("latitude", this._latitude)+makeParam("longitude", this._longitude);
+        if (isNumArg(this._minRadius)) { url = url+makeParam("minradius", this._minRadius);}
+        if (isNumArg(this._maxRadius)) { url = url+makeParam("maxradius", this._maxRadius);}
       } else {
         throw new Error("Cannot use minRadius or maxRadius without latitude and longitude: lat="+this._latitude+" lon="+this._longitude);
       }

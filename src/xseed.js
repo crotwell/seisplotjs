@@ -204,8 +204,8 @@ export class XSeedHeader {
   identifier: string;
   extraHeaders: any;
   dataLength: number;
-  start: moment;
-  end: moment;
+  start: moment$Moment;
+  end: moment$Moment;
   constructor() {
     // empty construction
     this.recordIndicator = 'MS';
@@ -368,7 +368,7 @@ export class XSeedHeader {
    *
    * @returns         start time as moment
    */
-  _startToMoment(): moment {
+  _startToMoment(): moment$Moment {
     let m = new moment.utc([this.year, 0, 1, this.hour, this.minute, this.second, 0]);
     m.add(Math.round(this.nanosecond / 1000000), 'ms');
     m.dayOfYear(this.dayOfYear);
@@ -495,7 +495,7 @@ export function merge(drList: Array<XSeedRecord>): Seismogram {
   let out = [];
   let currDR;
   drList.sort(function(a,b) {
-      return a.header.start.getTime() - b.header.start.getTime();
+      return a.header.start.valueOf() - b.header.start.valueOf();
   });
   let contig = [];
   for (let i=0; i<drList.length; i++) {

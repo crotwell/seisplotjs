@@ -11,6 +11,7 @@ import {InstrumentSensitivity} from './stationxml.js';
 import {OregonDSP} from './oregondsputil.js';
 import {isDef} from './util.js';
 
+import type { IIRFilter } from 'oregondsp/com/oregondsp/signalProcessing/filter/iir';
 
 const CenteredHilbertTransform = OregonDSP.filter.fir.equiripple.CenteredHilbertTransform;
 
@@ -172,7 +173,7 @@ export function createChebyshevII(numPoles: number,
  * @param   seis      seismogram to apply filter to
  * @returns            filtered seismogram
  */
-export function applyFilter(iirFilter: OregonDSP.filter.iir.IIRFilter, seis: Seismogram): Seismogram {
+export function applyFilter(iirFilter: IIRFilter, seis: Seismogram): Seismogram {
   let filteredSegments = [];
   for(let i=0; i<seis.segments.length; i++) {
     let outData = Float32Array.from(seis.segments[i].y);

@@ -8,8 +8,11 @@
 
  import * as OregonDSPTop from 'oregondsp';
 
+import type { Complex } from 'oregondsp/com/oregondsp/signalProcessing/filter/iir';
+export type { Complex };
+
  export const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
- export const Complex = OregonDSP.filter.iir.Complex;
+// export class Complex = OregonDSP.filter.iir.Complex;
 
  export function createComplex(real: number, imag: number) {
    return OregonDSP.filter.iir.Complex_init(real, imag);

@@ -28,7 +28,7 @@ export type HighLowType = {
 
 export type MarkerType = {
   name: string,
-  time: moment,
+  time: moment$Moment,
   type: string,
   description: string
 };
@@ -51,8 +51,8 @@ export class SeismogramSegment {
    */
   _sampleRate: number;
   /** @private */
-  _startTime: moment;
-  _endTime_cache: null | moment;
+  _startTime: moment$Moment;
+  _endTime_cache: null | moment$Moment;
   _endTime_cache_numPoints: number;
   networkCode: string;
   stationCode: string;
@@ -62,7 +62,7 @@ export class SeismogramSegment {
   _highlow: HighLowType;
   constructor(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
               sampleRate: number,
-              startTime: moment) {
+              startTime: moment$Moment) {
     if (yArray instanceof Int32Array || yArray instanceof Float32Array || yArray instanceof Float64Array) {
       this._y = yArray;
       this._compressed = null;
@@ -125,14 +125,14 @@ export class SeismogramSegment {
     this._y = value;
     this._invalidate_endTime_cache();
   }
-  get startTime(): moment {
+  get startTime(): moment$Moment {
     return this._startTime;
   }
-  set startTime(value: moment | string) {
+  set startTime(value: moment$Moment | string) {
     this._startTime = checkStringOrDate(value);
     this._invalidate_endTime_cache();
   }
-  get endTime(): moment {
+  get endTime(): moment$Moment {
     if ( ! this._endTime_cache || this._endTime_cache_numPoints !== this.numPoints) {
       // array length modified, recalc cached end time
       this._endTime_cache_numPoints = this.numPoints;
@@ -232,10 +232,10 @@ export class SeismogramSegment {
     }
     return [ minAmp, maxAmp ];
   }
-  timeOfSample(i: number ): moment {
+  timeOfSample(i: number ): moment$Moment {
     return moment.utc(this.startTime).add(i/this.sampleRate, 'seconds');
   }
-  indexOfTime(t: moment): number {
+  indexOfTime(t: moment$Moment): number {
     if (t.isBefore(this.startTime)
         || t.isAfter(moment.utc(this.endTime).add(1/this.sampleRate, 'seconds'))) {
         return -1;
@@ -277,7 +277,7 @@ export class SeismogramSegment {
   }
 
   cloneWithNewData(clonedData: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
-    clonedStartTime: moment = this._startTime): SeismogramSegment {
+    clonedStartTime: moment$Moment = this._startTime): SeismogramSegment {
     let out = new SeismogramSegment(clonedData,
                           this.sampleRate,
                           moment.utc(clonedStartTime));
@@ -326,8 +326,8 @@ export class SeismogramSegment {
   */
 export class Seismogram {
   _segmentArray: Array<SeismogramSegment>;
-  _startTime: moment;
-  _endTime: moment;
+  _startTime: moment$Moment;
+  _endTime: moment$Moment;
   _y: null | Int32Array | Float32Array | Float64Array;
   constructor(segmentArray: SeismogramSegment | Array<SeismogramSegment>) {
     this._y = null;
@@ -398,10 +398,10 @@ export class Seismogram {
     return meanVal;
   }
 
-  get startTime(): moment {
+  get startTime(): moment$Moment {
     return this._startTime;
   }
-  get endTime(): moment {
+  get endTime(): moment$Moment {
     return this._endTime;
   }
   get timeRange(): StartEndDuration {
@@ -506,7 +506,7 @@ export class Seismogram {
     }
     return out;
   }
-  break(duration: moment.Duration) {
+  break(duration: moment$MomentDuration) {
     if (this._segmentArray) {
       let breakStart = moment.utc(this.startTime);
       let out = [];
@@ -602,7 +602,7 @@ export class Seismogram {
    */
   static createFromContiguousData(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
                                   sampleRate: number,
-                                  startTime: moment) {
+                                  startTime: moment$Moment) {
     const seg = new SeismogramSegment(yArray, sampleRate, startTime);
     return new Seismogram([seg]);
   }
@@ -647,7 +647,7 @@ export class SeismogramDisplayData {
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
   timeWindow: StartEndDuration;
-  alignmentTime: moment | null;
+  alignmentTime: moment$Moment | null;
   doShow: boolean;
   _statsCache: SeismogramDisplayStats | null;
   constructor(timeWindow: StartEndDuration) {
@@ -677,7 +677,7 @@ export class SeismogramDisplayData {
     out.channel = channel;
     return out;
   }
-  static fromChannelAndTimes(channel: Channel, startTime: moment, endTime: moment): SeismogramDisplayData {
+  static fromChannelAndTimes(channel: Channel, startTime: moment$Moment, endTime: moment$Moment): SeismogramDisplayData {
     const out = new SeismogramDisplayData(new StartEndDuration(startTime, endTime));
     out.channel = channel;
     return out;
@@ -697,11 +697,10 @@ export class SeismogramDisplayData {
       }
   }
   addTravelTimes(ttimes: TraveltimeJsonType | TraveltimeArrivalType | Array<TraveltimeArrivalType>) {
-      if (typeof ttimes === "object" && ttimes.arrivals) {
-        let ttimeJson = (ttimes: TraveltimeArrivalType); // for flow
-        this.addTravelTimes(ttimesJson.arrivals);
-      } else if (Array.isArray(ttimes)) {
+      if (Array.isArray(ttimes)) {
         ttimes.forEach(m => this.traveltimeList.push(m));
+      } else if (ttimes.arrivals) {
+        ttimes.arrivals.forEach(m => this.traveltimeList.push(m));
       } else {
         this.traveltimeList.push(ttimes);
       }
@@ -818,20 +817,20 @@ export class SeismogramDisplayData {
       +sep+(this.channelCode ? this.channelCode : '');
     }
   }
-  get startTime(): moment {
+  get startTime(): moment$Moment {
     return this.timeWindow.startTime;
   }
-  get start(): moment {
+  get start(): moment$Moment {
     return this.timeWindow.startTime;
   }
-  get endTime(): moment {
+  get endTime(): moment$Moment {
     return this.timeWindow.endTime;
   }
-  get end(): moment {
+  get end(): moment$Moment {
     return this.timeWindow.endTime;
   }
 
-  relativeTimeWindow(startOffset: moment.duration, duration: moment.duration): StartEndDuration {
+  relativeTimeWindow(startOffset: moment$MomentDuration, duration: moment$MomentDuration): StartEndDuration {
     if (this.alignmentTime) {
       return new StartEndDuration(moment.utc(this.alignmentTime).add(startOffset),
                                             null, duration);
@@ -972,11 +971,11 @@ export function findStartEnd(sddList: Array<SeismogramDisplayData>): StartEndDur
 
 
 
-export function findMaxDuration(sddList: Array<SeismogramDisplayData>): moment.duration {
+export function findMaxDuration(sddList: Array<SeismogramDisplayData>): moment$MomentDuration {
   return findMaxDurationOfType('start', sddList);
 }
 
-export function findMaxDurationOfType(type: string, sddList: Array<SeismogramDisplayData>): moment.duration {
+export function findMaxDurationOfType(type: string, sddList: Array<SeismogramDisplayData>): moment$MomentDuration {
   return sddList.reduce((acc, sdd) => {
     let timeWindow;
     if (type === 'start') {
@@ -1035,7 +1034,7 @@ export function findMinMaxOverTimeRange(sddList: Array<SeismogramDisplayData>, t
 }
 
 
-export function findMinMaxOverRelativeTimeRange(sddList: Array<SeismogramDisplayData>, startOffset: moment.duration, duration: moment.duration): Array<number> {
+export function findMinMaxOverRelativeTimeRange(sddList: Array<SeismogramDisplayData>, startOffset: moment$MomentDuration, duration: moment$MomentDuration): Array<number> {
   let minMaxArr = sddList.map(sdd => {
       let timeWindow = sdd.relativeTimeWindow(startOffset, duration);
       return findMinMaxOverTimeRange([sdd], timeWindow);

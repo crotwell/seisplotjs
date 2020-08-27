@@ -194,7 +194,7 @@ export class ParticleMotion {
         });
       });
   }
-  drawParticleMotionForSegment(lineG: d3.selection, segA: SeismogramSegment, segB: SeismogramSegment) {
+  drawParticleMotionForSegment(lineG: any, segA: SeismogramSegment, segB: SeismogramSegment) {
     const mythis = this;
     const timeWindow = segA.timeWindow.intersect(segB.timeWindow);
     if ( ! isDef(timeWindow)) {

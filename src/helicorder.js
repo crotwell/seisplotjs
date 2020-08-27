@@ -17,7 +17,7 @@ import {StartEndDuration, isDef} from './util.js';
 
 /**
  * A helicorder-like multi-line seismogram display usually covering 24 hours
- * 
+ *
  * @param inSvgParent the parent element, usually a div tag
  * @param heliConfig configuration object
  * @param seisData the data to display
@@ -166,7 +166,7 @@ export class Helicorder {
    * @param   numberOfLines  number of lines
    * @returns Array of HeliTimeRange, one per line
    */
-  calcTimesForLines(startTime: moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRange> {
+  calcTimesForLines(startTime: moment$Moment, secondsPerLine: number, numberOfLines: number): Array<HeliTimeRange> {
     let out = [];
     let s = moment.utc(startTime);
     for (let lineNum=0; lineNum < numberOfLines; lineNum++) {
@@ -234,7 +234,7 @@ export class HelicorderConfig extends SeismographConfig {
  */
 export class HeliTimeRange extends StartEndDuration {
   lineNumber: number;
-  constructor(startTime: moment | null, endTime: moment | null, duration: number | null =null, clockOffset?: number | null =0) {
+  constructor(startTime: moment$Moment | null, endTime: moment$Moment | null, duration: number | null =null, clockOffset?: number | null =0) {
     super(startTime, endTime, duration, clockOffset);
   }
 }

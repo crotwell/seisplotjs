@@ -7,6 +7,7 @@
  */
 
 import * as miniseed from './miniseed';
+import {DataRecord, DataHeader } from './miniseed.js';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
 
@@ -17,7 +18,7 @@ export const SEEDLINK_PROTOCOL = "SeedLink3.1";
 export type SequencedDataRecord = {
   rawsequence: string,
   sequence: number,
-  miniseed: miniseed.DataRecord
+  miniseed: DataRecord
 };
 
  /**
@@ -56,7 +57,7 @@ export class SeedlinkConnection {
     this.closeFn = null;
     this.command = 'DATA';
   }
-  setTimeCommand(startTime: moment) {
+  setTimeCommand(startTime: moment$Moment) {
     this.command = "TIME "+moment.utc(startTime).format("YYYY,MM,DD,HH,mm,ss");
   }
   setOnError(errorFn: (error: Error) => void) {

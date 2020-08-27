@@ -92,16 +92,16 @@ export function doFloatGetterSetter(obj: any, field: string, value?: number) {
   return obj;
 }
 
-export function doMomentGetterSetter(obj: any, field: string, value?: moment) {
+export function doMomentGetterSetter(obj: any, field: string, value?: moment$Moment): any | moment$Moment {
   const hiddenField = `_${field}`;
   if (hasNoArgs(value)) {
-    return obj[hiddenField];
+    return (obj[hiddenField]: moment$Moment);
   } else if (hasArgs(value) && isObject(value) && moment.isMoment(value)) {
     obj[hiddenField] = value;
   } else if (hasArgs(value) && moment.isMoment(checkStringOrDate(value))) {
     obj[hiddenField] = checkStringOrDate(value);
   } else {
-    throw new Error(`${field} value argument is optional, moment, date or date string, but was type ${(typeof value)}, '${value}' `);
+    throw new Error(`${field} value argument is optional, moment, date or date string, but was type ${(typeof value)}, '${stringify(value)}' `);
   }
   return obj;
 }
@@ -176,7 +176,7 @@ export function stringify(value: mixed): string {
  * @param  serverTimeUTC now as reported by remote server
  * @returns offset in seconds to now on local machine
  */
-export function calcClockOffset(serverTimeUTC: moment): number {
+export function calcClockOffset(serverTimeUTC: moment$Moment): number {
   return moment.utc().diff(serverTimeUTC, 'seconds', true);
 }
 
@@ -192,19 +192,19 @@ export const WAY_FUTURE = moment.utc('2500-01-01T00:00:00');
  * default is zero.
  */
 export class StartEndDuration {
-  _startTime: moment;
-  _endTime: moment;
-  _duration: moment.duration;
-  _clockOffset: moment.duration;
-  constructor(startTime: moment | null, endTime: moment | null, duration: moment.duration | number | null =null, clockOffset?: number | null =0) {
+  _startTime: moment$Moment;
+  _endTime: moment$Moment;
+  _duration: moment$MomentDuration;
+  _clockOffset: moment$MomentDuration;
+  constructor(startTime: moment$Moment | string | null, endTime: moment$Moment | string | null, duration: moment$MomentDuration | string | number | null =null, clockOffset?: number | null =0) {
     if (isDef(duration)) {
-      if ((typeof duration === "string" || duration instanceof String)) {
+      if ((typeof duration === "string" )) {
         if (duration.charAt(0) === 'P') {
           this._duration = moment.duration(duration);
         } else {
           this._duration = moment.duration(Number.parseFloat(duration), 'seconds');
         }
-      } else if ((typeof duration === "number" || duration instanceof Number)) {
+      } else if ((typeof duration === "number" )) {
         this._duration = moment.duration(duration, 'seconds');
       } else if ((moment.isDuration(duration))) {
         this._duration = moment.duration(duration);
@@ -212,27 +212,27 @@ export class StartEndDuration {
         throw new Error(`Unknown type for duration: ${typeof duration} ${duration.constructor.name}  ${JSON.stringify(duration)}`);
       }
     }
-    if (startTime && endTime) {
+    if (isDef(startTime) && isDef(endTime)) {
       this._startTime = checkStringOrDate(startTime);
       this._endTime = checkStringOrDate(endTime);
       this._duration = moment.duration(this.endTime.diff(this.startTime));
-    } else if (startTime && this._duration) {
+    } else if (isDef(startTime) && isDef(this._duration)) {
       this._startTime = checkStringOrDate(startTime);
       this._endTime = moment.utc(this.startTime).add(this.duration);
-    } else if (endTime && this._duration) {
+    } else if (isDef(endTime) && isDef(this._duration)) {
       this._endTime = checkStringOrDate(endTime);
       this._startTime = moment.utc(this.endTime).subtract(this.duration);
-    } else if (this._duration) {
-      if (clockOffset === undefined) {
+    } else if (isDef(this._duration)) {
+      if (! isDef(clockOffset) ) {
         this._clockOffset = moment.duration(0, 'seconds');
-      } else if (clockOffset instanceof Number) {
+      } else if (typeof clockOffset === 'number') {
         this._clockOffset = moment.duration(clockOffset, 'seconds');
       } else {
         this._clockOffset = clockOffset;
       }
-      this._endTime = moment.utc().subtract(clockOffset);
+      this._endTime = moment.utc().subtract(this._clockOffset);
       this._startTime = moment.utc(this.endTime).subtract(this.duration);
-    } else if (startTime) {
+    } else if (isDef(startTime)) {
       // only a start time, maybe like a Channel that is active currently
       this._startTime = checkStringOrDate(startTime);
       this._endTime = moment.utc(WAY_FUTURE);
@@ -266,7 +266,7 @@ export class StartEndDuration {
    * @param   other moment to check
    * @returns        true if moment is inside this time range
    */
-  contains(other: moment | StartEndDuration): boolean {
+  contains(other: moment$Moment | StartEndDuration): boolean {
     if (other instanceof moment){
       if (this.startTime.isAfter(other)
           || this.endTime.isBefore(other)) {
@@ -313,7 +313,7 @@ export class StartEndDuration {
     return new StartEndDuration(tb, te);
   }
   toString() {
-    return `StartEndDuration: ${toIsoWoZ(this.startTime)} to ${toIsoWoZ(this.endTime)} ${this.duration}`;
+    return `StartEndDuration: ${toIsoWoZ(this.startTime)} to ${toIsoWoZ(this.endTime)} ${this.duration.toISOString()}`;
   }
 }
 
@@ -325,7 +325,7 @@ export class StartEndDuration {
  * @param d 'now', string time, Date, number of milliseconds since epoch, or moment
  * @returns moment created from argument
  */
-export function checkStringOrDate(d: any): moment {
+export function checkStringOrDate(d: any): moment$Moment {
   if (moment.isMoment(d)) {
     return d;
   } else if (d instanceof Date) {
@@ -362,7 +362,7 @@ export function makeParam(name: string, val: mixed): string {
  * @param  date moment to convert to string
  * @returns ISO8601 without timezone Z
  **/
-export function toIsoWoZ(date: moment): string {
+export function toIsoWoZ(date: moment$Moment): string {
   let out = date.toISOString();
   return out.substring(0, out.length-1);
 }

@@ -7,6 +7,7 @@ import {Channel} from './stationxml.js';
 import {Quake} from './quakeml.js';
 import {SeismogramDisplayData} from './seismogram.js';
 import {createMarkersForTravelTimes} from './seismograph.js';
+import {isDef, stringify} from './util.js';
 import moment from 'moment';
 
 export function loadSeismograms(channelList: Array<Channel>,
@@ -14,11 +15,14 @@ export function loadSeismograms(channelList: Array<Channel>,
                 startPhaseList: Array<string>,
                 endPhaseList: Array<string>,
                 otherPhaseList: Array<string>,
-                startOffset: moment.duration,
-                endOffset: moment.duration,
+                startOffset: moment$MomentDuration,
+                endOffset: moment$MomentDuration,
                 dsQuery?: DataSelectQuery) {
   let stationList = new Set();
-  let allPhaseList = Array.from(startPhaseList).concat(endPhaseList, otherPhaseList);
+  let allPhaseList = [];
+  allPhaseList = allPhaseList.concat(startPhaseList, endPhaseList, otherPhaseList);
+  let allPhases = allPhaseList.join(',');
+  if ( ! isDef(allPhases)) { allPhases = "";}
 
   for (let chan of channelList) {
     stationList.add(chan.station);
@@ -29,9 +33,10 @@ export function loadSeismograms(channelList: Array<Channel>,
       if (s.timeRange.contains(q.time)) {
         let taupQuery = new TraveltimeQuery()
           .latLonFromStation(s)
-          .latLonFromQuake(q)
-          .phases(allPhaseList.join(','));
-        ttPromiseList.push(taupQuery.query().then(ttimes => {
+          .latLonFromQuake(q);
+        // for flow
+        if (allPhases) {taupQuery.phases(allPhases);}
+        let queryPromise = taupQuery.queryJson().then(ttimes => {
           return {
             ttimes: ttimes,
             quake: q,
@@ -40,10 +45,12 @@ export function loadSeismograms(channelList: Array<Channel>,
             startArrival: null,
             endArrival: null
           };
-        }));
+        });
+        ttPromiseList.push(queryPromise);
       }
     }
   }
+  // $FlowFixMe[incompatible-call]
   return Promise.all(ttPromiseList).then(ttList => {
     let seismogramDataList = [];
     for (let tt of ttList) {

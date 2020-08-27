@@ -309,7 +309,7 @@ export class DataLinkConnection {
    * @param   data        optional data to send
    * @returns             promise to server's response
    */
-  writeAck(streamid: string, hpdatastart: number, hpdataend: number, data?: Uint8Array): Promise<DataLinkResponse> |  Promise<DataLinkPacket>  {
+  writeAck(streamid: string, hpdatastart: moment$Moment, hpdataend: moment$Moment, data?: Uint8Array): Promise<DataLinkResponse> |  Promise<DataLinkPacket>  {
     let header = `WRITE ${streamid} ${momentToHPTime(hpdatastart)} ${momentToHPTime(hpdataend)} A`;
     return this.awaitDLBinary(header, data);
   }
@@ -375,7 +375,7 @@ export class DataLinkConnection {
    * @param time time to position after
    * @returns promise to server's response
    */
-  positionAfter(time: moment): Promise<DataLinkResponse> {
+  positionAfter(time: moment$Moment): Promise<DataLinkResponse> {
     return this.positionAfterHPTime(momentToHPTime(time)).then(this.ensureDataLinkResponse);
   }
 

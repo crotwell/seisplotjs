@@ -74,11 +74,11 @@ export class Seismograph {
   svg: any;
   canvasHolder: any;
   canvas: any;
-  origXScale: d3.scale;
+  origXScale: any;
   currZoomXScale: any;
-  yScale: d3.scale; // for drawing seismogram
-  yScaleRmean: d3.scale; // for drawing y axis
-  yScaleData: d3.scale; // holds min max of data in time window
+  yScale: any; // for drawing seismogram
+  yScaleRmean: any; // for drawing y axis
+  yScaleData: any; // holds min max of data in time window
   lineFunc: any;
   zoom: any;
   xAxis: any;
@@ -491,7 +491,7 @@ export class Seismograph {
   timeScaleForSeisDisplayData(sdd: SeismogramDisplayData) {
     let plotSed;
     let sddXScale = d3.scaleUtc();
-    if (this.seismographConfig.isRelativeTime) {
+    if (this.seismographConfig.isRelativeTime && this.seismographConfig.linkedTimeScale) {
       plotSed = sdd.relativeTimeWindow( this.seismographConfig.linkedTimeScale.offset,
                                         this.seismographConfig.linkedTimeScale.duration);
     } else {
@@ -680,15 +680,21 @@ export class Seismograph {
   zoomed(): void {
     let t = d3.event.transform;
     let xt = t.rescaleX(this.origXScale);
-    if (this.seismographConfig.isRelativeTime) {
-      let startDelta = xt.domain()[0] - this.origXScale.domain()[0];
-      let duration = xt.domain()[1] - xt.domain()[0];
-      this.seismographConfig.linkedTimeScale.zoom(moment.duration(startDelta), moment.duration(duration, 'milliseconds'));
+    if (isDef(this.seismographConfig.linkedTimeScale)) {
+      // for flow
+      const linkedTS = this.seismographConfig.linkedTimeScale;
+      if (this.seismographConfig.isRelativeTime) {
+        let startDelta = xt.domain()[0] - this.origXScale.domain()[0];
+        let duration = xt.domain()[1] - xt.domain()[0];
+        linkedTS.zoom(moment.duration(startDelta), moment.duration(duration, 'milliseconds'));
+      } else {
+        let orig = new StartEndDuration(this.origXScale.domain()[0], this.origXScale.domain()[1]);
+        let sed = new StartEndDuration(xt.domain()[0], xt.domain()[1]);
+        let startDelta = moment.duration(sed.start.diff(orig.start));
+        linkedTS.zoom(startDelta, sed.duration);
+      }
     } else {
-      let orig = new StartEndDuration(this.origXScale.domain()[0], this.origXScale.domain()[1]);
-      let sed = new StartEndDuration(xt.domain()[0], xt.domain()[1]);
-      let startDelta = moment.duration(sed.start.diff(orig.start));
-      this.seismographConfig.linkedTimeScale.zoom(startDelta, sed.duration);
+      this.redrawWithXScale(xt);
     }
   }
 
@@ -1080,9 +1086,15 @@ export class Seismograph {
       let minMax;
       if (this.seismographConfig.windowAmp) {
         if (this.seismographConfig.isRelativeTime) {
-          minMax = findMinMaxOverRelativeTimeRange(this.seisDataList,
+          if (isDef(this.seismographConfig.linkedTimeScale)) {
+            minMax = findMinMaxOverRelativeTimeRange(this.seisDataList,
                                                   this.seismographConfig.linkedTimeScale.offset,
                                                   this.seismographConfig.linkedTimeScale.duration);
+          } else {
+            // ??
+            let timeWindow = new StartEndDuration(this.currZoomXScale.domain()[0], this.currZoomXScale.domain()[1]);
+            minMax = findMinMaxOverTimeRange(this.seisDataList, timeWindow);
+          }
         } else {
           let timeWindow = new StartEndDuration(this.currZoomXScale.domain()[0], this.currZoomXScale.domain()[1]);
           minMax = findMinMaxOverTimeRange(this.seisDataList, timeWindow);
@@ -1335,7 +1347,7 @@ export class SeismographTimeScalable extends TimeScalable {
     super(alignmentTimeOffset, maxDuration);
     this.graph = graph;
   }
-  notifyTimeRangeChange(offset: moment.duration, duration: moment.duration) {
+  notifyTimeRangeChange(offset: moment$MomentDuration, duration: moment$MomentDuration) {
     if (this.graph.beforeFirstDraw) {
       return;
     }

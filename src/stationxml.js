@@ -20,8 +20,8 @@ export const STAML_NS = 'http://www.fdsn.org/xml/station/1';
 
 export class Network {
   networkCode: string;
-  _startDate: moment;
-  _endDate: moment | null;
+  _startDate: moment$Moment;
+  _endDate: moment$Moment | null;
   restrictedStatus: string;
   description: string;
   totalNumberStations: number;
@@ -34,13 +34,13 @@ export class Network {
   get startDate() {
     return this._startDate;
   }
-  set startDate(value?: moment | string) {
+  set startDate(value?: moment$Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
   get endDate() {
     return this._endDate;
   }
-  set endDate(value?: moment | string | null) {
+  set endDate(value?: moment$Moment | string | null) {
     if ( ! isDef(value)) {
       this._endDate = null;
     } else {
@@ -63,9 +63,9 @@ export class Station {
   network: Network;
   stationCode: string;
     /** @private */
-  _startDate: moment;
+  _startDate: moment$Moment;
     /** @private */
-  _endDate: moment | null;
+  _endDate: moment$Moment | null;
   restrictedStatus: string;
   name: string;
   latitude: number;
@@ -78,16 +78,16 @@ export class Station {
     this.stationCode = stationCode;
     this.channels = [];
   }
-  get startDate(): moment {
+  get startDate(): moment$Moment {
     return this._startDate;
   }
-  set startDate(value?: moment | string) {
+  set startDate(value?: moment$Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
-  get endDate(): moment {
+  get endDate(): moment$Moment | null {
     return this._endDate;
   }
-  set endDate(value?: moment | string | null) {
+  set endDate(value?: moment$Moment | string | null) {
     if ( ! isDef(value)) {
       this._endDate = null;
     } else {
@@ -111,9 +111,9 @@ export class Channel {
   _locationCode: string;
   channelCode: string;
     /** @private */
-  _startDate: moment;
+  _startDate: moment$Moment;
     /** @private */
-  _endDate: moment | null;
+  _endDate: moment$Moment | null;
   restrictedStatus: string;
   latitude: number;
   longitude: number;
@@ -146,13 +146,13 @@ export class Channel {
   get startDate() {
     return this._startDate;
   }
-  set startDate(value?: moment | string) {
+  set startDate(value?: moment$Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
   get endDate() {
     return this._endDate;
   }
-  set endDate(value?: moment | string | null) {
+  set endDate(value?: moment$Moment | string | null) {
     if ( ! isDef(value)) {
       this._endDate = null;
     } else {
@@ -227,8 +227,8 @@ export class Equipment {
   vendor: string;
   model: string;
   serialNumber: string;
-  installationDate: moment;
-  removalDate: moment;
+  installationDate: moment$Moment;
+  removalDate: moment$Moment;
   calibrationDateList: Array<moment>;
 }
 
@@ -466,14 +466,14 @@ export function convertToEquipment(xml: Element): Equipment {
   val = _grabFirstElText(xml, 'SerialNumber');
   if (isNonEmptyStringArg(val)) {out.serialNumber = val;}
   val = _grabFirstElText(xml, 'InstallationDate');
-  if (isNonEmptyStringArg(val)) {out.installationDate = val;}
+  if (isNonEmptyStringArg(val)) {out.installationDate = checkStringOrDate(val);}
   val = _grabFirstElText(xml, 'RemovalDate');
-  if (isNonEmptyStringArg(val)) {out.removalDate = val;}
+  if (isNonEmptyStringArg(val)) {out.removalDate = checkStringOrDate(val);}
 
   let calibXml = xml.getElementsByTagNameNS(STAML_NS, 'CalibrationDate');
   out.calibrationDateList = [];
   for (let cal of calibXml) {
-    out.calibrationDateList.push(cal.textContent);
+    out.calibrationDateList.push(checkStringOrDate(cal.textContent));
   }
   return out;
 }

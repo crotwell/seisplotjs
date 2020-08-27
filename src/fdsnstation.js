@@ -66,17 +66,17 @@ export class StationQuery {
   /** @private */
   _channelCode: string;
   /** @private */
-  _startTime: moment;
+  _startTime: moment$Moment;
   /** @private */
-  _endTime: moment;
+  _endTime: moment$Moment;
   /** @private */
-  _startBefore: moment;
+  _startBefore: moment$Moment;
   /** @private */
-  _endBefore: moment;
+  _endBefore: moment$Moment;
   /** @private */
-  _startAfter: moment;
+  _startAfter: moment$Moment;
   /** @private */
-  _endAfter: moment;
+  _endAfter: moment$Moment;
   /** @private */
   _minLat: number;
   /** @private */
@@ -100,7 +100,7 @@ export class StationQuery {
   /** @private */
   _format: string;
   /** @private */
-  _updatedAfter: moment;
+  _updatedAfter: moment$Moment;
   /** @private */
   _matchTimeseries: boolean;
   /** @private */
@@ -207,7 +207,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment): moment | StationQuery {
+  startTime(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'startTime', value);
   }
   /** Get/Set the endtime query parameter.
@@ -215,7 +215,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment): moment | StationQuery {
+  endTime(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'endTime', value);
   }
   /**
@@ -234,7 +234,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: moment): moment | StationQuery {
+  startBefore(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'startBefore', value);
   }
   /** Get/Set the endbefore query parameter.
@@ -242,7 +242,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: moment): moment | StationQuery {
+  endBefore(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'endBefore', value);
   }
   /** Get/Set the startafter query parameter.
@@ -250,7 +250,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: moment): moment | StationQuery {
+  startAfter(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'startAfter', value);
   }
   /** Get/Set the endafter query parameter.
@@ -258,7 +258,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: moment): moment | StationQuery {
+  endAfter(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'endAfter', value);
   }
   /** Get/Set the minlat query parameter.
@@ -368,7 +368,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: moment): moment | StationQuery {
+  updatedAfter(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'updatedAfter', value);
   }
   /** Get/Set the matchtimeseries query parameter.
@@ -558,12 +558,12 @@ export class StationQuery {
     if (isStringArg(this._stationCode)) { url = url+makeParam("sta", this.stationCode());}
     if (isStringArg(this._locationCode)) { url = url+makeParam("loc", this.locationCode());}
     if (isStringArg(this._channelCode)) { url = url+makeParam("cha", this.channelCode());}
-    if (isObject(this._startTime)) { url = url+makeParam("starttime", toIsoWoZ(this.startTime()));}
-    if (isObject(this._endTime)) { url = url+makeParam("endtime", toIsoWoZ(this.endTime()));}
-    if (isObject(this._startBefore)) { url = url+makeParam("startbefore", toIsoWoZ(this.startBefore()));}
-    if (isObject(this._startAfter)) { url = url+makeParam("startafter", toIsoWoZ(this.startAfter()));}
-    if (isObject(this._endBefore)) { url = url+makeParam("endbefore", toIsoWoZ(this.endBefore()));}
-    if (isObject(this._endAfter)) { url = url+makeParam("endafter", toIsoWoZ(this.endAfter()));}
+    if (isObject(this._startTime)) { url = url+makeParam("starttime", toIsoWoZ(this._startTime));}
+    if (isObject(this._endTime)) { url = url+makeParam("endtime", toIsoWoZ(this._endTime));}
+    if (isObject(this._startBefore)) { url = url+makeParam("startbefore", toIsoWoZ(this._startBefore));}
+    if (isObject(this._startAfter)) { url = url+makeParam("startafter", toIsoWoZ(this._startAfter));}
+    if (isObject(this._endBefore)) { url = url+makeParam("endbefore", toIsoWoZ(this._endBefore));}
+    if (isObject(this._endAfter)) { url = url+makeParam("endafter", toIsoWoZ(this._endAfter));}
     if (isNumArg(this._minLat)) { url = url+makeParam("minlat", this.minLat());}
     if (isNumArg(this._maxLat)) { url = url+makeParam("maxlat", this.maxLat());}
     if (isNumArg(this._minLon)) { url = url+makeParam("minlon", this.minLon());}
@@ -574,7 +574,7 @@ export class StationQuery {
     if (isNumArg(this._maxRadius)) { url = url+makeParam("maxradius", this.maxRadius());}
     if (isDef(this._includeRestricted)) { url = url+makeParam("includerestricted", this.includeRestricted());}
     if (isDef(this._includeAvailability)) { url = url+makeParam("includeavailability", this.includeAvailability());}
-    if (isObject(this._updatedAfter)) { url = url+makeParam("updatedafter", toIsoWoZ(this.updatedAfter()));}
+    if (isObject(this._updatedAfter)) { url = url+makeParam("updatedafter", toIsoWoZ(this._updatedAfter));}
     if (isDef(this._matchTimeseries)) { url = url+makeParam("matchtimeseries", this.matchTimeseries());}
     if (isStringArg(this._format)) { url = url+makeParam("format", this.format());}
     if (isNumArg(this._nodata)) { url = url+makeParam("nodata", this.nodata());}

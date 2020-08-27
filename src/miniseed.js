@@ -208,8 +208,8 @@ export class DataHeader {
   blocketteOffset: number;
   recordSize: number;
   blocketteList: Array<Blockette>;
-  startTime: moment;
-  endTime: moment;
+  startTime: moment$Moment;
+  endTime: moment$Moment;
   constructor() {
     this.seq = "      ";
     this.typeCode = 68; // D
@@ -268,7 +268,7 @@ export class DataHeader {
    * @param i sample index
    * @returns time at i-th sample as moment
    */
-  timeOfSample(i: number): moment {
+  timeOfSample(i: number): moment$Moment {
     return moment.utc(this.startTime).add(i/this.sampleRate, 'second');
   }
 }
@@ -372,7 +372,7 @@ export class BTime {
    *
    * @returns         BTime as a moment
    */
-  toMoment(): moment {
+  toMoment(): moment$Moment {
     let m = new moment.utc([this.year, 0, 1, this.hour, this.min, this.sec, 0]);
     m.add(Math.round(this.tenthMilli/10), 'ms');
     m.dayOfYear(this.jday);

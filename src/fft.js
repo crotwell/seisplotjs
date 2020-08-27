@@ -8,7 +8,8 @@
 
 import {Seismogram, SeismogramDisplayData } from './seismogram.js';
 
-import {OregonDSP, Complex, createComplex} from './oregondsputil.js';
+import type { Complex } from './oregondsputil.js';
+import {OregonDSP, createComplex} from './oregondsputil.js';
 
 /** A higher level function to calculate DFT. Returns a
  * FFTResult for easier access to the result as
@@ -189,12 +190,12 @@ export class FFTResult {
   recalcFromComplex() {
     const N = this.complex.length;
     let modFreq = new Float32Array(N).fill(0);
-    modFreq[0] = this.complex[0].real;
+    modFreq[0] = this.complex[0].real();
     for (let i=1; i< this.complex.length-1; i++) {
-      modFreq[i] = this.complex[i].real;
-      modFreq[N-i] = this.complex[i].imag;
+      modFreq[i] = this.complex[i].real();
+      modFreq[N-i] = this.complex[i].imag();
     }
-    modFreq[N/2] = this.complex[N-1].real;
+    modFreq[N/2] = this.complex[N-1].real();
     this.packedFreq = modFreq;
     this.numPoints = this.packedFreq.length;
   }
