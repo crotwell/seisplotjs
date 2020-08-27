@@ -1,5 +1,6 @@
 // @flow
 
+import {Quake} from '../src/quakeml.js';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData} from '../src/seismogram';
 import  {moment, StartEndDuration, isDef} from '../src/util';
 
@@ -204,13 +205,37 @@ test("segment index of time", () => {
 
 });
 
+
+test("clone sdd test", () => {
+  const len = 1000;
+  const yValues = new Int32Array(len);
+  const sampleRate = 20.0;
+  const startTime = moment.utc("2013-02-08T09:30:26");
+  const seis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+  const q = new Quake();
+  q.time= startTime;
+  q.latitude = -10;
+  q.longitude = 12;
+  const sdd = SeismogramDisplayData.fromSeismogram(seis);
+  sdd.addQuake(q);
+  const processedSeis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+  const cloneSdd = sdd.cloneWithNewSeismogram(processedSeis);
+  expect(cloneSdd.quakeList).toHaveLength(sdd.quakeList.length);
+  expect(cloneSdd.quakeList[0]).toBe(sdd.quakeList[0]);
+});
+
 test("cut clone sdd test", () => {
   const len = 1000;
   const yValues = new Int32Array(len);
   const sampleRate = 20.0;
   const startTime = moment.utc("2013-02-08T09:30:26");
   const seis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+  const q = new Quake();
+  q.time= startTime;
+  q.latitude = -10;
+  q.longitude = 12;
   const sdd = SeismogramDisplayData.fromSeismogram(seis);
+  sdd.addQuake(q);
   const cutWindow = new StartEndDuration( startTime, null, 10);
   const cutSeis = seis.cut(cutWindow);
   expect(cutSeis.endTime).toEqual(cutWindow.endTime);
@@ -231,4 +256,5 @@ test("cut clone sdd test", () => {
     expect(cutSdd_seis.endTime).toEqual(cutWindow.endTime);
     expect(cutSdd_seis).not.toEqual(seis);
   }
+  expect(cutSdd.quakeList).toHaveLength(sdd.quakeList.length);
 });
