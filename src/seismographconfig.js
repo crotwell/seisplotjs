@@ -327,9 +327,14 @@ export class LinkedTimeScale {
   constructor(graphList: ?Array<TimeScalable>, originalDuration?: moment$MomentDuration, originalStartOffset?: moment$MomentDuration) {
     const glist = graphList ? graphList : []; // in case null
     this._graphSet = new Set(glist);
+    this._zoomedDuration = null;
+    this._zoomedStartOffset = null;
 
     if ( originalDuration) {
       this._originalDuration = originalDuration;
+      // so know that duration passed in instead of calculated
+      // this prevents future links from causeing recalc
+      this._zoomedDuration = originalDuration;
     } else {
       this._originalDuration = glist.reduce((acc, cur) => {
         return acc.asMilliseconds() > cur.duration.asMilliseconds() ? acc : cur.duration;
@@ -340,8 +345,6 @@ export class LinkedTimeScale {
     } else {
       this._originalStartOffset = moment.duration(0, 'seconds');
     }
-    this._zoomedDuration = null;
-    this._zoomedStartOffset = null;
   }
   /**
    * Link new TimeScalable with this time scale.
@@ -350,6 +353,12 @@ export class LinkedTimeScale {
    */
   link(graph: TimeScalable) {
     this._graphSet.add(graph);
+    if ( ! isDef(this._zoomedDuration)) {
+      // assume before any zooming, so recalc duration
+      if (graph.duration.asMilliseconds() > this._originalDuration.asMilliseconds()) {
+        this._originalDuration = moment.duration(graph.duration);
+      }
+    }
     this.recalculate();
   }
   /**
@@ -391,7 +400,10 @@ export class LinkedTimeScale {
   recalculate() {
     const graphList = Array.from(this._graphSet.values());
     graphList.forEach(graph => {
-      graph.notifyTimeRangeChange(this.offset, this.duration);
+      // run later via event loop
+      setTimeout(() => {
+        graph.notifyTimeRangeChange(this.offset, this.duration);
+      });
     });
   }
 }
