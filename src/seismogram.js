@@ -658,6 +658,7 @@ export class SeismogramDisplayData {
     this._seismogram = null;
     this.label = null;
     this.markerList = [];
+    this.traveltimeList = [];
     this.channel = null;
     this._instrumentSensitivity = null;
     this.quakeList = [];
