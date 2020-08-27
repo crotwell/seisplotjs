@@ -7,7 +7,7 @@
  */
 
 import * as miniseed from './miniseed';
-import {DataRecord, DataHeader } from './miniseed.js';
+import {DataRecord } from './miniseed.js';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
 

@@ -7,7 +7,7 @@ import {Channel} from './stationxml.js';
 import {Quake} from './quakeml.js';
 import {SeismogramDisplayData} from './seismogram.js';
 import {createMarkersForTravelTimes} from './seismograph.js';
-import {isDef, stringify} from './util.js';
+import {isDef} from './util.js';
 import moment from 'moment';
 
 export function loadSeismograms(channelList: Array<Channel>,

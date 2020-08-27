@@ -6,7 +6,6 @@
  * http://www.seis.sc.edu
  */
 
-import moment from 'moment';
 import RSVP from 'rsvp';
 
 import * as util from './util.js'; // for util.log

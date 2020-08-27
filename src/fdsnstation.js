@@ -6,7 +6,6 @@
  * http://www.seis.sc.edu
  */
 
-import moment from 'moment';
 import {parseStationXml, Network} from './stationxml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
