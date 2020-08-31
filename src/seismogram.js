@@ -894,7 +894,7 @@ export class SeismogramDisplayData {
   /**
    * Calculates distance and azimuth for each event in quakeList.
    *
-   * @return Array of DistAzOutput, empty array if no quakes.
+   * @returns Array of DistAzOutput, empty array if no quakes.
    */
   get distazList(): Array<DistAzOutput> {
     if (this.quakeList.length > 0 && isDef(this.channel) ) {
@@ -908,7 +908,7 @@ export class SeismogramDisplayData {
    * Calculates distance and azimuth for the first event in quakeList. This is
    * a convienence method as usually there will only be one quake.
    *
-   * @return DistAzOutput, null if no quakes.
+   * @returns DistAzOutput, null if no quakes.
    */
   get distaz(): null | DistAzOutput {
     let out = null;
