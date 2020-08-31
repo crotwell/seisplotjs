@@ -11,7 +11,8 @@ import {SeismogramSegment, Seismogram } from './seismogram.js';
 import { SacPoleZero } from './sacpolezero.js';
 import {Response, PolesZeros } from './stationxml.js';
 import Qty from 'js-quantities';
-import { Complex, createComplex} from './oregondsputil.js';
+import { createComplex} from './oregondsputil.js';
+import type {Complex} from './oregondsputil.js';
 import {stringify} from './util.js';
 
 /**

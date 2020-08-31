@@ -6,7 +6,8 @@
  * http://www.seis.sc.edu
  */
 
- import { Complex, createComplex} from './oregondsputil.js';
+ import { createComplex} from './oregondsputil.js';
+ import type {Complex} from './oregondsputil.js';
  import { isNumArg } from './util.js';
 
 /**
