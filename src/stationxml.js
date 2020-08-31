@@ -8,7 +8,8 @@
 
 import { StartEndDuration, isObject, isDef, isStringArg, isNonEmptyStringArg,
          isNumArg, checkStringOrDate, stringify} from './util';
-import {Complex, createComplex} from './oregondsputil.js';
+import { createComplex} from './oregondsputil.js';
+import type {Complex} from './oregondsputil.js';
 
 import moment from 'moment';
 

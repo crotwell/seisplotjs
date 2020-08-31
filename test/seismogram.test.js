@@ -255,6 +255,6 @@ test("cut clone sdd test", () => {
     expect(cutSdd.endTime).toEqual(cutWindow.endTime);
     expect(cutSdd_seis.endTime).toEqual(cutWindow.endTime);
     expect(cutSdd_seis).not.toEqual(seis);
+    expect(cutSdd.quakeList).toHaveLength(sdd.quakeList.length);
   }
-  expect(cutSdd.quakeList).toHaveLength(sdd.quakeList.length);
 });
