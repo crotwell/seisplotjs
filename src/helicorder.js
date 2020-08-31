@@ -100,6 +100,8 @@ export class Helicorder {
       let marginTop = lineTime.lineNumber===0?0:Math.round(-1.0*height*this.heliConfig.overlap);
 
       let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
+      // don't title lines past the first
+      lineSeisConfig.title = null;
       if (lineTime.lineNumber===0) {
         lineSeisConfig.title = this.heliConfig.title;
         lineSeisConfig.isXAxisTop = this.heliConfig.isXAxisTop;
