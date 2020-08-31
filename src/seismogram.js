@@ -647,7 +647,7 @@ export class SeismogramDisplayData {
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
   timeWindow: StartEndDuration;
-  alignmentTime: moment$Moment | null;
+  alignmentTime: moment$Moment;
   doShow: boolean;
   _statsCache: SeismogramDisplayStats | null;
   constructor(timeWindow: StartEndDuration) {
@@ -663,7 +663,7 @@ export class SeismogramDisplayData {
     this._instrumentSensitivity = null;
     this.quakeList = [];
     this.timeWindow = timeWindow;
-    this.alignmentTime = null;
+    this.alignmentTime = timeWindow.start;
     this.doShow = true;
     this._statsCache = null;
   }
