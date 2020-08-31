@@ -24,7 +24,7 @@ import {SeismogramDisplayData, findStartEnd, findMaxDuration, findMinMax, findMi
         findMinMaxOverRelativeTimeRange, SeismogramSegment, Seismogram, COUNT_UNIT } from './seismogram.js';
 import {Quake} from './quakeml.js';
 
-import * as util from './util.js';
+import * as util from './util.js'; // for util.log to replace console.log
 import {StartEndDuration, isDef, isNumArg } from './util';
 
 import {registerHelpers} from './handlebarshelpers.js';
@@ -214,6 +214,10 @@ export class Seismograph {
   }
   draw(): void {
     let rect = this.svg.node().getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) {
+      util.log(`Attempt draw seismograph, but width/height too small: ${rect.width} ${rect.height}`);
+      return;
+    }
     if ((rect.width !== this.outerWidth || rect.height !== this.outerHeight)) {
       if (rect.height < this.seismographConfig.minHeight) {
         rect.height = this.seismographConfig.minHeight;
@@ -261,7 +265,7 @@ export class Seismograph {
     }
 
     this.drawSeismograms();
-    this.drawAxis(this.g);
+    this.drawAxis();
     this.drawAxisLabels();
     if (this.seismographConfig.doMarkers) {
       this.drawMarkers();
@@ -543,14 +547,9 @@ export class Seismograph {
   }
 
   calcSecondsPerPixel(xScale: any): number {
-    let domain = xScale.domain(); // time so milliseconds
+    let domain = xScale.domain(); // rel time and absolute both milliseconds
     let range = xScale.range(); // pixels
-    if (this.seismographConfig.isRelativeTime) {
-      return (domain[1].getTime()-domain[0].getTime())/1000 / (range[1]-range[0]);
-    } else {
-      // relative time, domain is in seconds
-      return (domain[1]-domain[0]) / (range[1]-range[0]);
-    }
+    return (domain[1].getTime()-domain[0].getTime())/1000 / (range[1]-range[0]);
   }
 
   segmentDrawLine(seg: SeismogramSegment, xScale: any): void {
@@ -603,38 +602,66 @@ export class Seismograph {
     }
   }
 
-  drawAxis(svgG: any): void {
-    svgG.selectAll("g.axis").remove();
+  /**
+   * Draws the top, bottom, (time) axis and the left and right (amplitude) axis if configured.
+   */
+  drawAxis(): void {
+    this.drawTopBottomAxis();
+    this.drawLeftRightAxis();
+  }
+  /**
+   * Draws the left and right (amplitude) axis if configured.
+   *
+   */
+  drawTopBottomAxis(): void {
+    this.g.selectAll("g.axis--x").remove();
+    this.g.selectAll("g.axis--x-top").remove();
+    let xScaleToDraw;
+    if ( this.seismographConfig.isRelativeTime) {
+      xScaleToDraw = this.currZoomXScale.copy();
+      const millisecondDomain = xScaleToDraw.domain();
+      xScaleToDraw.domain([millisecondDomain[0]/1000, millisecondDomain[1]/1000]);
+    } else {
+      xScaleToDraw = this.currZoomXScale;
+    }
     if (this.seismographConfig.isXAxis) {
-      this.xAxis.scale(this.currZoomXScale);
+      this.xAxis.scale(xScaleToDraw);
       if ( ! this.seismographConfig.isRelativeTime) {
         this.xAxis.tickFormat(this.seismographConfig.xScaleFormat);
       }
-      svgG.append("g")
+      this.g.append("g")
           .attr("class", "axis axis--x")
           .attr("transform", "translate(0," + this.height + ")")
           .call(this.xAxis);
     }
     if (this.seismographConfig.isXAxisTop) {
-      this.xAxisTop.scale(this.currZoomXScale);
+      this.xAxisTop.scale(xScaleToDraw);
       if ( ! this.seismographConfig.isRelativeTime) {
         this.xAxisTop.tickFormat(this.seismographConfig.xScaleFormat);
       }
-      svgG.append("g")
-          .attr("class", "axis axis--x")
+      this.g.append("g")
+          .attr("class", "axis axis--x-top")
           .call(this.xAxisTop);
     }
+  }
+
+  /**
+   * Draws the left and right (amplitude) axis if configured.
+   */
+  drawLeftRightAxis(): void {
+    this.g.selectAll("g.axis--y").remove();
+    this.g.selectAll("g.axis--y-right").remove();
     if (this.seismographConfig.isYAxis) {
       this.yAxis.scale(this.yScaleRmean);
       this.yAxis.ticks(8, this.seismographConfig.yScaleFormat);
-      svgG.append("g")
+      this.g.append("g")
           .attr("class", "axis axis--y")
           .call(this.yAxis);
     }
     if (this.seismographConfig.isYAxisRight) {
       this.yAxisRight.scale(this.yScaleRmean);
       this.yAxisRight.ticks(8, this.seismographConfig.yScaleFormat);
-      svgG.append("g")
+      this.g.append("g")
           .attr("class", "axis axis--y-right")
           .attr("transform", "translate(" + this.width + ",0)")
           .call(this.yAxisRight);
@@ -760,14 +787,10 @@ export class Seismograph {
           });
         if (undrawnMarkers.length !== 0) {
           this.drawMarkers();
+        } else {
+          console.log('no undrawn markers');
         }
-
-      if (this.seismographConfig.isXAxis) {
-        this.g.select(".axis--x").call(this.xAxis.scale(xt));
-      }
-      if (this.seismographConfig.isXAxisTop) {
-        this.g.select(".axis--x-top").call(this.xAxisTop.scale(xt));
-      }
+      this.drawTopBottomAxis();
     }
     this.xScaleChangeListeners.forEach(l => l.notifyScaleChange(xt));
   }
@@ -1258,32 +1281,17 @@ export class Seismograph {
       }
     }
   }
+  /**
+   * @deprecated
+   */
   linkXScaleTo(seismograph: Seismograph) {
-    this.origXScale.domain(seismograph.origXScale.domain());
-    this.currZoomXScale.domain(seismograph.currZoomXScale.domain());
-    if ( ! this.beforeFirstDraw && seismograph.currZoomXScale.range()[1] !== 1) {
-      // default range is 0,1, so don't draw then.
-      this.redrawWithXScale(seismograph.currZoomXScale);
-    }
-    if ( ! this.xScaleChangeListeners.find(l => l.destinationKey === seismograph)) {
-      this.xScaleChangeListeners.push({
-          destinationKey: seismograph,
-          notifyScaleChange: function(xScale) {
-            if ( ! seismograph.beforeFirstDraw) {
-              seismograph.redrawWithXScale(xScale);
-            }
-          }
-        });
-    }
-    if (! seismograph.xScaleChangeListeners.find(l => l.destinationKey === this)) {
-      seismograph.linkXScaleTo(this);
-    }
+    throw new Error("no longer supported, use SeismogramConfig.linkedTimeScale");
   }
+  /**
+   * @deprecated
+   */
   unlinkXScaleTo(seismograph: Seismograph) {
-    this.xScaleChangeListeners = this.xScaleChangeListeners.filter( l => l.destinationKey !==seismograph);
-    if (seismograph.xScaleChangeListeners.find(l => l.destinationKey === this)) {
-      seismograph.unlinkXScaleTo(this);
-    }
+    throw new Error("no longer supported, use SeismogramConfig.linkedTimeScale");
   }
 }
 
@@ -1322,8 +1330,9 @@ export class SeismographAmplitudeScalable extends AmplitudeScalable {
 export class SeismographTimeScalable extends TimeScalable {
   graph: Seismograph;
   constructor(graph: Seismograph) {
-    let alignmentTimeOffset;
+    let alignmentTimeOffset = moment.duration(0);
     let maxDuration = findMaxDuration(graph.seisDataList);
+    /*
     if (graph.seismographConfig.timeAlignmentStyle === 'start') {
       for (let sdd of graph.seisDataList) {
         sdd.alignmentTime = sdd.timeWindow.start;
@@ -1344,6 +1353,7 @@ export class SeismographTimeScalable extends TimeScalable {
       alignmentTimeOffset = moment.duration(0);
       maxDuration = sed.duration;
     }
+    */
     super(alignmentTimeOffset, maxDuration);
     this.graph = graph;
   }
