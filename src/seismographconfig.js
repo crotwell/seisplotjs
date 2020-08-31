@@ -142,13 +142,16 @@ export class SeismographConfig {
     return this._title;
   }
   /**
-   * Sets the title as simple string or array of strings. If an array
+   * Sets the title as simple string or array of strings or a
+   * handlebars template. If an array
    * then each item will be in a separate tspan for easier formatting.
    *
    * @param value string or array of strings to be the title
    */
-  set title(value: string | Array<string>) {
-    if (Array.isArray(value)) {
+  set title(value: null | string | Array<string>) {
+    if (! isDef(value)) {
+      this._title = [ "" ];
+    } else if (Array.isArray(value)) {
       this._title = value;
     } else {
       this._title = [ value ];
@@ -158,13 +161,13 @@ export class SeismographConfig {
 
   handlebarsTitle(context: {}, runtimeOptions: {}) {
     if (  ! isDef(this._handlebarsCompiled)) {
-      if ( this._title) {
-        if (this._title.length === 1) {
-          this._handlebarsCompiled = Handlebars.compile(this._title[0]);
-        }
-        this._handlebarsCompiled = Handlebars.compile(this._title.join(" "));
+      if ( ! isDef(this._title) || this._title.length === 0 || ! isDef(this._title[0])) {
+        // empty title
+        return "";
+      } else if (this._title.length === 1) {
+        this._handlebarsCompiled = Handlebars.compile(this._title[0]);
       } else {
-        this._handlebarsCompiled = Handlebars.compile("");
+        this._handlebarsCompiled = Handlebars.compile(""+this._title.join(" "));
       }
     }
     return this._handlebarsCompiled(context, runtimeOptions);
