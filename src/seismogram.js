@@ -831,6 +831,41 @@ export class SeismogramDisplayData {
     return this.timeWindow.endTime;
   }
 
+  alignStartTime() {
+    this.alignmentTime = this.start;
+  }
+
+  alignOriginTime() {
+    if (this.quake) {
+      this.alignmentTime = this.quake.time;
+    } else {
+      this.alignmentTime = this.start;
+    }
+  }
+
+  alignPhaseTime(phaseRegExp: RegExp | string) {
+    let intPhaseRegExp;
+    if (typeof phaseRegExp === 'string') {
+      intPhaseRegExp = new RegExp(phaseRegExp);
+    } else {
+      intPhaseRegExp = phaseRegExp;
+    }
+    if (this.quake && this.traveltimeList) {
+      // for flow
+      const q = this.quake;
+      let matchArrival = this.traveltimeList.find(ttArrival => {
+          let match = intPhaseRegExp.exec(ttArrival.phase);
+          // make sure regexp matches whole string, not just partial
+          return match !== null && match[0] === ttArrival.phase;
+        });
+      if (matchArrival) {
+        this.alignmentTime = moment.utc(q.time).add(moment.duration(matchArrival.time, 'seconds'));
+      } else {
+        this.alignmentTime = this.start;
+      }
+    }
+  }
+
   relativeTimeWindow(startOffset: moment$MomentDuration, duration: moment$MomentDuration): StartEndDuration {
     if (this.alignmentTime) {
       return new StartEndDuration(moment.utc(this.alignmentTime).add(startOffset),
