@@ -801,6 +801,32 @@ export class SeismogramDisplayData {
       return "unknown";
     }
   }
+  get sourceId() {
+    if (this.channel !== null) {
+      return this.channel.sourceId();
+    } else if (isDef(this._seismogram)) {
+    const sep= '_';
+    let band;
+    let source;
+    let subsource;
+    if (this.channelCode.length === 3) {
+      band = this.channelCode.charAt(0);
+      source = this.channelCode.charAt(1);
+      subsource = this.channelCode.charAt(2);
+    } else {
+      let items = this.channelCode.split(sep);
+      band = items[0];
+      source = items[1];
+      subsource = items[2];
+    }
+    return 'FDSN:'+ (this.networkCode ? this.networkCode : '')
+      +sep+(this.stationCode ? this.stationCode : '')
+      +sep+(this.locationCode ? this.locationCode : '')
+      +sep+band+sep+source+sep+subsource;
+    } else {
+      throw new Error("unable to create Id, neither channel nor seismogram");
+    }
+  }
   /**
    * return network, station, location and channels codes as one string.
    * Uses this.channel if it exists, this.seismogram if not.

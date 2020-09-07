@@ -32,6 +32,10 @@ export class Network {
     this._endDate = null;
     this.stations = [];
   }
+
+  get sourceId() {
+    return 'FDSN:'+ (this.networkCode ? this.networkCode : '');
+  }
   get startDate() {
     return this._startDate;
   }
@@ -79,6 +83,12 @@ export class Station {
     this.stationCode = stationCode;
     this.channels = [];
   }
+  get sourceId() {
+    const sep= '_';
+    return (this.network ? this.network.sourceId : 'FDSN:')
+      +sep+(this.stationCode ? this.stationCode : '');
+  }
+
   get startDate(): moment$Moment {
     return this._startDate;
   }
@@ -144,6 +154,26 @@ export class Channel {
       throw new Error(`locationCode must be 2 chars, or empty: "${locationCode}"`);
     }
   }
+  get sourceId() {
+    const sep= '_';
+    let band;
+    let source;
+    let subsource;
+    if (this.channelCode.length === 3) {
+      band = this.channelCode.charAt(0);
+      source = this.channelCode.charAt(1);
+      subsource = this.channelCode.charAt(2);
+    } else {
+      let items = this.channelCode.split(sep);
+      band = items[0];
+      source = items[1];
+      subsource = items[2];
+    }
+    return (this.station ? this.station.sourceId : 'FDSN:_')
+      +sep+(this.locationCode ? this.locationCode : '')
+      +sep+band+sep+source+sep+subsource;
+  }
+
   get startDate() {
     return this._startDate;
   }
