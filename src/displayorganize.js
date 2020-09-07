@@ -37,23 +37,21 @@ export class OrganizedDisplay {
     return null;
   }
   plot(divElement: any) {
+    divElement.attr("plottype", this.plottype)
     if (this.plottype === SEISMOGRAPH) {
-      const innerDiv = divElement.append("div");
-      this.seismograph = new Seismograph(innerDiv, this.seisConfig, this.seisData);
+      this.seismograph = new Seismograph(divElement, this.seisConfig, this.seisData);
       this.seismograph.draw();
     } else if (this.plottype === SPECTRA) {
       const loglog = true;
-      const innerDiv = divElement.append("div");
       let fftList = this.seisData.map(sd => seisplotjs.fft.fftForward(sd.seismogram));
-      let fftPlot = new seisplotjs.fftplot.FFTPlot(innerDiv, this.seisConfig, fftList, loglog);
+      let fftPlot = new seisplotjs.fftplot.FFTPlot(divElement, this.seisConfig, fftList, loglog);
       fftPlot.draw();
     } else if (this.plottype === PARTICLE_MOTION) {
-      const innerDiv = divElement.append("div");
-      this.seismograph = new Seismograph(innerDiv, this.seisConfig, this.seisData);
+      this.seismograph = new Seismograph(divElement, this.seisConfig, this.seisData);
       this.seismograph.draw();
     } else if (this.plottype === MAP) {
       const mapid = 'map'+(((1+Math.random())*0x10000)|0).toString(16).substring(1);
-      const innerDiv = divElement.append("div").classed("map", true).attr('id', mapid);
+      divElement.classed("map", true).attr('id', mapid);
       const centerLat = 35;
       const centerLon = -100;
       const mapZoomLevel = 1;
@@ -80,13 +78,7 @@ export class OrganizedDisplay {
       });
 
     } else if (this.plottype === QUAKE_TABLE) {
-      const innerDiv = divElement.append("div");
-      this.seismograph = new Seismograph(innerDiv, this.seisConfig, this.seisData);
-      this.seismograph.draw();
     } else if (this.plottype === STATION_TABLE) {
-      const innerDiv = divElement.append("div");
-      this.seismograph = new Seismograph(innerDiv, this.seisConfig, this.seisData);
-      this.seismograph.draw();
     } else {
       throw new Error(`Unkown plottype ${this.plottype}`);
     }
@@ -221,7 +213,6 @@ export function createPlots(organized: Array<OrganizedDisplay>, divElement: any)
   divElement.selectAll("div").data(organized)
   .enter().append("div").each(function(org) {
     const div = d3.select(this);
-    div.attr("plottype", org.plottype);
     org.plot(div);
   });
 }
