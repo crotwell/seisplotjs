@@ -10,6 +10,7 @@
 import * as cssutil        from './cssutil.js';
 import * as datalink         from './datalink.js';
 import * as datechooser      from './datechooser.js';
+import * as displayorganize   from './displayorganize.js';
 import * as distaz         from './distaz.js';
 import * as fdsnavailability  from './fdsnavailability.js';
 import * as fdsndatacenters      from './fdsndatacenters.js';
@@ -60,6 +61,7 @@ const version = '2.0.2-alpha.0';
 export { cssutil,
          datalink,
          datechooser,
+         displayorganize,
          distaz,
          fdsnavailability,
          fdsndatacenters,
