@@ -4,18 +4,34 @@
     <meta charset='utf-8'>
     <title>Obspy Dataset View</title>
     <style>
+      div#myseismograph {
+        width: 95%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+      }
       div[plottype="seismograph"] {
         height: 250px;
+        width: 100%;
+        grid-column: 1 / -1;
       }
-      div[plottype="spectra_log"] {
+      div[plottype="amp_spectra"] {
         height: 400px;
+        width: 100%;
+        grid-column: 1 / -1;
       }
-      div[plottype="spectra_lin"] {
+      div[plottype="amp_spectra"] {
         height: 400px;
+        width: 100%;
+        grid-column: 1 / -1;
       }
       div[plottype="particlemotion"]:not(:empty) {
         height: 400px;
-        width: 400px;
+        width: 100%;
+      }
+      div[plottype="map"] {
+        height: 250px;
+        width: 100%;
+        grid-column: 1 / -1;
       }
       #mousex {
         width: 155px;
@@ -28,6 +44,7 @@
       }
       div.tools {
         display:none;
+        grid-template-columns: 1fr 1fr;
       }
       span.toggletools :target {
         display:block;
@@ -36,9 +53,6 @@
           display:none;
       }
 
-      div.tools {
-          display:none;
-      }
       .drop {
         cursor: pointer;
         display: block;
@@ -58,12 +72,16 @@
         content:'▼';
         }
       input:checked + .hidetools + div{
-        display:block;
+        display:grid;
       }
       label.hidetools span {
         font-size: larger;
       }
     </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+     integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+     crossorigin=""/>
+
     <!-- this stops flavicon loading -->
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   </head>
@@ -73,82 +91,138 @@
     <input id="_1" type="checkbox" class="hidetools">
     <label class="hidetools" for="_1"><span> Tools:</span></label>
     <div class='tools'>
-      <div>
-        <button id="refresh">Refresh</button>
-        <button id="reprocess">Reprocess</button>
-        <button id="reconnect">Reconnect</button>
-        <button id="websocketHi">Say Hi</button>
+      <div class='toolsleft'>
+        <div>
+          <button id="refresh">Refresh</button>
+          <button id="reprocess">Reprocess</button>
+          <button id="reconnect">Reconnect</button>
+          <button id="websocketHi">Say Hi</button>
+        </div>
+        <div>
+          <button id="rmean">RMean</button>
+          <button id="taper">Taper</button>
+          <label for="taperwidth">Taper Width: </label>
+          <input type="text" id="taperwidth" name="taperwidth" value="0.05"></input>
+        </div>
+        <div>
+          <button id="lowpass">Lowpass</button>
+          <button id="bandpass">Bandpass</button>
+          <button id="highpass">Highpass</button>
+          <label for="lowfreq">Low Freq: </label>
+          <input type="text" id="lowfreq" name="lowfreq" value="1.0"></input>
+          <label for="lowfreq">High Freq: </label>
+          <input type="text" id="highfreq" name="highfreq" value=10.0></input>
+        </div>
+        <div>
+          <label>Plot Type:</label>
+          <span>
+            <input type="radio" id="radio_map" name="plottype" value="map">
+            <label for="map">Map</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_seismograph" name="plottype" value="seismograph" checked>
+            <label for="seismograph">Seismograph</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_particlemotion" name="plottype" value="particlemotion" >
+            <label for="particlemotion">Particle Motion</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_spectra_log" name="plottype" value="amp_spectra?loglog=true" >
+            <label for="spectra_log">Spectra (Log)</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_spectra_lin" name="plottype" value="amp_spectra?loglog=false" >
+            <label for="spectra_lin">Spectra (Lin)</label>
+          </span>
+        </div>
+        <div>
+          <label>Organized: </label>
+          <span>
+            <input type="radio" id="radio_organize_individual" name="organizetype" value="individual" checked>
+            <label for="radio_organize_individual">Individual</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_organize_overlay_bystation" name="organizetype" value="bystation" >
+            <label for="radio_organize_bystation">Station</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_organize_overlay_bycomponent" name="organizetype" value="bycomponent" >
+            <label for="radio_organize_bycomponent">Component</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_organize_overlay_overlayall" name="organizetype" value="overlayall" >
+            <label for="radio_organize_overlayall">Overlay All</label>
+          </span>
+        </div>
+        <div>
+          <label>Sort: </label>
+          <span>
+            <input type="radio" id="radio_organize_individual" name="sorttype" value="none" checked>
+            <label for="radio_organize_individual">None</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_organize_individual" name="sorttype" value="alphabetical" >
+            <label for="radio_organize_individual">Alphabetical</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_organize_overlay_bydistance" name="sorttype" value="bydistance" >
+            <label for="radio_organize_bydistance">Distance</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_organize_overlay_bybackazimuth" name="sorttype" value="bybackazimuth" >
+            <label for="radio_organize_bybackazimuth">Back Azimuth</label>
+          </span>
+          <span>
+            <input type="radio" id="radio_organize_overlay_byazimuth" name="sorttype" value="byazimuth" >
+            <label for="radio_organize_byazimuth">Azimuth</label>
+          </span>
+        </div>
+        <div>
+          <input type="checkbox" id="linkx" name="linkx" checked>
+          <label for="linkx">Link Time Axis</label>
+          <input type="checkbox" id="linky" name="linky" checked>
+          <label for="linky">Link Amp Axis</label>
+          <input type="checkbox" id="doGain" name="doGain" checked>
+          <label for="doGain">Gain</label>
+        </div>
+        <div id="station_checkbox">
+          <label>Stations:</label>
+        </div>
+        <div>
+          <label>Orientations:</label>
+          <input type="checkbox" id="orientz" name="orientz" checked>
+          <label for="orientz">Orient Z</label>
+          <input type="checkbox" id="orienty" name="orienty" checked>
+          <label for="orienty">Orient N,1,Y</label>
+          <input type="checkbox" id="orientx" name="orientx" checked>
+          <label for="orientx">Orient E,2,X</label>
+          <input type="checkbox" id="orientr" name="orienty" checked>
+          <label for="orienty">Orient R</label>
+          <input type="checkbox" id="orientt" name="orientx" checked>
+          <label for="orientx">Orient T</label>
+        </div>
+        <div>
+          <input id="mousex" name="mousex" readonly>
+          <label for="mousex">X</label>
+          <input id="mousey" name="mousey" readonly>
+          <label for="mousey">Y</label>
+        </div>
       </div>
-      <div>
-        <button id="rmean">RMean</button>
-        <button id="taper">Taper</button>
-        <label for="taperwidth">Taper Width: </label>
-        <input type="text" id="taperwidth" name="taperwidth" value="0.05"></input>
-      </div>
-      <div>
-        <button id="lowpass">Lowpass</button>
-        <button id="bandpass">Bandpass</button>
-        <button id="highpass">Highpass</button>
-        <label for="lowfreq">Low Freq: </label>
-        <input type="text" id="lowfreq" name="lowfreq" value="1.0"></input>
-        <label for="lowfreq">High Freq: </label>
-        <input type="text" id="highfreq" name="highfreq" value=10.0></input>
-      </div>
-      <div>
-        <span>
-          <input type="radio" id="radio_seismograph" name="plottype" value="seismograph" checked>
-          <label for="seismograph">Seismograph</label>
-        </span>
-        <span>
-          <input type="radio" id="radio_particlemotion" name="plottype" value="particlemotion" >
-          <label for="particlemotion">Particle Motion</label>
-        </span>
-        <span>
-          <input type="radio" id="radio_spectra_log" name="plottype" value="spectra_log" >
-          <label for="spectra_log">Spectra (Log)</label>
-        </span>
-        <span>
-          <input type="radio" id="radio_spectra_lin" name="plottype" value="spectra_lin" >
-          <label for="spectra_lin">Spectra (Lin)</label>
-        </span>
-      </div>
-      <div>
-        <input type="checkbox" id="linkx" name="linkx" checked>
-        <label for="linkx">Link Time Axis</label>
-        <input type="checkbox" id="linky" name="linky" checked>
-        <label for="linky">Link Amp Axis</label>
-        <input type="checkbox" id="doGain" name="doGain" checked>
-        <label for="doGain">Gain</label>
-      </div>
-      <div id="station_checkbox">
-        <label>Stations:</label>
-      </div>
-      <div>
-        <label>Orientations:</label>
-        <input type="checkbox" id="orientz" name="orientz" checked>
-        <label for="orientz">Orient Z</label>
-        <input type="checkbox" id="orienty" name="orienty" checked>
-        <label for="orienty">Orient N,1,Y</label>
-        <input type="checkbox" id="orientx" name="orientx" checked>
-        <label for="orientx">Orient E,2,X</label>
-      </div>
-      <div>
-        <input id="mousex" name="mousex" readonly>
-        <label for="mousex">X</label>
-        <input id="mousey" name="mousey" readonly>
-        <label for="mousey">Y</label>
+      <div class='toolsright'>
+        <div id="processChain">
+          <h5>Process Chain</h5>
+          <ul>
+          </ul>
+        </div>
       </div>
     </div>
     <div id="messages"></div>
 
     <div id="myseismograph">
     </div>
-    <div id="processChain">
-      <h5>Process Chain</h5>
-      <ul>
-      </ul>
-    </div>
     <script src="https://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.0.2-alpha.0_standalone.js"></script>
+    <script src="seisplotjs_2.0.2-alpha.0_standalone.js"></script>
     <script src="obspyconnection.js"></script>
     <script src="viewObspy.js"></script>
     <script src="tools.js"></script>
@@ -160,16 +234,21 @@
       viewObspy.loadAllAndPlot();
       const wsUrl = 'ws://localhost:8001';
       const handler = function(jsonObj) {
-        console.log("hey I got something!");
+        console.log(`hey I got something!  ${JSON.stringify(jsonObj)}`);
         if (jsonObj.update) {
-          if (jsonObj.update === 'refreshAll' || jsonObj.update === 'stream') {
+          if (jsonObj.update === 'refreshAll') {
             // start over clean
             console.log("update refresh")
             viewObspy.clearAll();
-          } else {
+            viewObspy.loadAllAndPlot();
+          } else if (jsonObj.update === 'stream') {
+              // reload data, but keep process chain
+              console.log("update stream");
+              viewObspy.loadAllAndPlot();
+            } else {
+          viewObspy.replot();
             console.log(`not refresh: ${jsonObj.update}`)
           }
-          viewObspy.applyProcessChain();
         } else {
           console.log("...not update message  "+JSON.stringify(jsonObj));
         }

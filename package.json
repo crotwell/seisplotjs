@@ -19,6 +19,7 @@
     "moment": "^2.27.0",
     "oregondsp": "^1.2.2",
     "pikaday": "^1.8.0",
+    "querystringify": "^2.2.0",
     "rsvp": "^4.8.5"
   },
   "scripts": {

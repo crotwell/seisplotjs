@@ -1,11 +1,17 @@
 // @flow
 
+import { fftForward }    from './fft.js';
+import { FFTPlot }       from './fftplot.js';
+import { ParticleMotion }       from './particlemotion.js';
+import { Quake } from './quakeml.js';
+import { Station } from './stationxml.js';
 import { SeismogramDisplayData } from './seismogram.js';
 import {Seismograph} from './seismograph.js';
 import {SeismographConfig} from './seismographconfig.js';
 import {isDef} from './util.js';
 import * as d3 from 'd3';
 import * as L from 'leaflet';
+import * as querystringify from 'querystringify';
 
 export const SEISMOGRAPH = 'seismograph';
 export const SPECTRA = 'amp_spectra';
@@ -19,12 +25,16 @@ export class OrganizedDisplay {
   seisData: Array<SeismogramDisplayData>;
   seisConfig: SeismographConfig;
   seismograph: Seismograph | null;
+  fftPlot: FFTPlot | null;
+  particleMotionPlot: ParticleMotion | null;
   attributes: Map<string, any>;
-  constructor(seisData: Array<SeismogramDisplayData>, plottype?: string = 'seismograph') {
+  constructor(seisData: Array<SeismogramDisplayData>, plottype?: string = SEISMOGRAPH) {
     this.plottype = plottype;
     this.seisData = seisData;
     this.seisConfig = new SeismographConfig();
     this.seismograph = null;
+    this.fftPlot = null;
+    this.particleMotionPlot = null;
     this.attributes = new Map();
   }
   setAttribute(key: string, value: any) {
@@ -37,52 +47,77 @@ export class OrganizedDisplay {
     return null;
   }
   plot(divElement: any) {
-    divElement.attr("plottype", this.plottype)
-    if (this.plottype === SEISMOGRAPH) {
+    let qIndex = this.plottype.indexOf('?');
+    let plotstyle = this.plottype;
+    let queryParams = {};
+    if (qIndex != -1) {
+      queryParams = querystringify.parse(this.plottype.substring(qIndex));
+      plotstyle = this.plottype.substring(0, qIndex);
+    }
+    divElement.attr("plottype", plotstyle);
+    if (this.plottype.startsWith(SEISMOGRAPH)) {
       this.seismograph = new Seismograph(divElement, this.seisConfig, this.seisData);
       this.seismograph.draw();
-    } else if (this.plottype === SPECTRA) {
-      const loglog = true;
-      let fftList = this.seisData.map(sd => seisplotjs.fft.fftForward(sd.seismogram));
-      let fftPlot = new seisplotjs.fftplot.FFTPlot(divElement, this.seisConfig, fftList, loglog);
-      fftPlot.draw();
-    } else if (this.plottype === PARTICLE_MOTION) {
-      this.seismograph = new Seismograph(divElement, this.seisConfig, this.seisData);
-      this.seismograph.draw();
-    } else if (this.plottype === MAP) {
+    } else if (this.plottype.startsWith(SPECTRA)) {
+      let loglog = getFromQueryParams(queryParams, 'loglog', 'true');
+      loglog = (queryParams.loglog.toLowerCase() === 'true');
+      let fftList = this.seisData.map(sd => fftForward(sd.seismogram));
+      this.fftPlot = new FFTPlot(divElement, this.seisConfig, fftList, loglog);
+      this.fftPlot.draw();
+    } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
+      if (this.seisData.length !== 2) {
+        throw new Error(`particle motion requies exactly 2 seisData in seisDataList, ${this.seisData.length}`);
+      }
+      // timeWindow optional subwindow of seismogram to display
+      let timeWindow = null;
+
+      let pmpSeisConfig = this.seisConfig.clone();
+      pmpSeisConfig.yLabel = this.seisData[1].channelCode;
+      pmpSeisConfig.xLabel = this.seisData[0].channelCode;
+
+      let pmp = new seisplotjs.particlemotion.ParticleMotion(divElement, pmpSeisConfig, this.seisData[0], this.seisData[1], timeWindow);
+      pmp.draw();
+    } else if (this.plottype.startsWith(MAP)) {
       const mapid = 'map'+(((1+Math.random())*0x10000)|0).toString(16).substring(1);
       divElement.classed("map", true).attr('id', mapid);
-      const centerLat = 35;
-      const centerLon = -100;
-      const mapZoomLevel = 1;
+      const centerLat = parseFloat(getFromQueryParams(queryParams, 'centerLat', '35'));
+      const centerLon = parseFloat(getFromQueryParams(queryParams, 'centerLat', '-100'));
+      const mapZoomLevel = parseInt(getFromQueryParams(queryParams, 'zoom', '1'));
+      const magScale = parseFloat(getFromQueryParams(queryParams, 'magScale', '5.0'));
       const mymap = L.map(mapid).setView([ centerLat, centerLon], mapZoomLevel);
       let OpenTopoMap = L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 17,
         attribution: 'Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
       }).addTo(mymap);
-      this.seisData.forEach(sdd => {
-        for (const q of sdd.quakeList) {
-          let circle = L.circleMarker([q.latitude, q.longitude], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.15,
-            radius: q.magnitude ? (q.magnitude.mag*5) : 3 // in case no mag
-          }).addTo(mymap);
-          circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
-        }
-        let s = sdd.channel.station;
-          let m = L.marker([s.latitude, s.longitude]);
-          m.addTo(mymap);
-          m.bindTooltip(s.codes());
 
+      uniqueQuakes(this.seisData).forEach(q => {
+        let circle = L.circleMarker([q.latitude, q.longitude], {
+          color: 'red',
+          fillColor: '#f03',
+          fillOpacity: 0.15,
+          radius: q.magnitude ? (q.magnitude.mag* magScale) : 3 // in case no mag
+        }).addTo(mymap);
+        circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
+      });
+      uniqueStations(this.seisData).forEach(s => {
+        let m = L.marker([s.latitude, s.longitude]);
+        m.addTo(mymap);
+        m.bindTooltip(s.codes());
       });
 
-    } else if (this.plottype === QUAKE_TABLE) {
-    } else if (this.plottype === STATION_TABLE) {
+    } else if (this.plottype.startsWith(QUAKE_TABLE)) {
+    } else if (this.plottype.startsWith(STATION_TABLE)) {
     } else {
-      throw new Error(`Unkown plottype ${this.plottype}`);
+      throw new Error(`Unkown plottype ${this.plottype} ${SPECTRA}`);
     }
   }
+}
+
+export function getFromQueryParams(qParams: {}, name: string, defaultValue: string = ""): string {
+  if (qParams.hasOwnProperty(name)) {
+    return qParams[name];
+  }
+  return defaultValue;
 }
 
 export function individualDisplay(sddList: Array<SeismogramDisplayData>): Array<OrganizedDisplay> {
@@ -130,6 +165,12 @@ export function overlayByComponent(sddList: Array<SeismogramDisplayData>): Array
 export function overlayByStation(sddList: Array<SeismogramDisplayData>): Array<OrganizedDisplay> {
   return overlayBySDDFunction(sddList, "station", (sdd => sdd.networkCode+'_'+sdd.stationCode));
 }
+
+export function overlayAll(sddList: Array<SeismogramDisplayData>): Array<OrganizedDisplay> {
+  return overlayBySDDFunction(sddList, "all", (sdd => "all"));
+}
+
+
 
 export function overlayByComponentOld(sddList: Array<SeismogramDisplayData>): Array<OrganizedDisplay> {
   console.log(`overlayByComponent  ${sddList.length}`);
@@ -206,6 +247,22 @@ export function attributeDistance(orgDisp: OrganizedDisplay): number | null {
     }
   });
   return null;
+}
+
+export function uniqueStations(seisData: Array<SeismogramDisplayData>): Array<Station> {
+  const out = new Set();
+  seisData.forEach( sdd => {
+    if (sdd.channel) { out.add(sdd.channel.station);}
+  });
+  return Array.from(out.values());
+}
+
+export function uniqueQuakes(seisData: Array<SeismogramDisplayData>): Array<Quake> {
+  const out = new Set();
+  seisData.forEach( sdd => {
+    sdd.quakeList.forEach( q => out.add(q));
+  });
+  return Array.from(out.values());
 }
 
 export function createPlots(organized: Array<OrganizedDisplay>, divElement: any) {

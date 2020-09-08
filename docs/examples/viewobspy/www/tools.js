@@ -8,48 +8,58 @@ function createTools(viewObspy) {
     viewObspy.loadAllAndPlot();
   });
   seisplotjs.d3.select("button#reprocess").on("click", function() {
-    viewObspy.processedData.clear();
-    viewObspy.applyProcessChain();
+    viewObspy.reprocess();
   });
   seisplotjs.d3.select("input#linkx").on("change", function() {
-    viewObspy.linkAllTimeAxis();
+    viewObspy.replot();
   });
   seisplotjs.d3.select("input#linky").on("change", function() {
-    viewObspy.linkAllAmpAxis();
+    viewObspy.replot();
   });
 
   seisplotjs.d3.select("input#doGain").on("change", function() {
-    viewObspy.doGain();
+    viewObspy.replot();
   });
 
-  function doOrientPlot() {
-      let dataset = viewObspy.obspyData.get('dataset');
-      const plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
-      viewObspy.plotDataset(dataset, plottype, viewObspy.seisChanQuakeFilter);
-  }
-  seisplotjs.d3.select("input#orientz").on("change", () => doOrientPlot());
-  seisplotjs.d3.select("input#orienty").on("change", () => doOrientPlot());
-  seisplotjs.d3.select("input#orientx").on("change", () => doOrientPlot());
+  seisplotjs.d3.select("input#orientz").on("change", () => viewObspy.replot());
+  seisplotjs.d3.select("input#orienty").on("change", () => viewObspy.replot());
+  seisplotjs.d3.select("input#orientx").on("change", () => viewObspy.replot());
+  seisplotjs.d3.select("input#orientr").on("change", () => viewObspy.replot());
+  seisplotjs.d3.select("input#orientt").on("change", () => viewObspy.replot());
+
+  seisplotjs.d3.select("input#radio_organize_individual").on("change", () => {
+    viewObspy.organizetype = "individual";
+    viewObspy.replot();
+  });
+  seisplotjs.d3.select("input#radio_organize_overlay_bystation").on("change", () => {
+    viewObspy.organizetype = "bystation";
+    viewObspy.replot();
+  });
+  seisplotjs.d3.select("input#radio_organize_overlay_bycomponent").on("change", () => {
+    viewObspy.organizetype = "bycomponent";
+    viewObspy.replot();
+  });
 
   seisplotjs.d3.select("button#bandpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
     let highFreq = seisplotjs.d3.select("#highfreq").property("value");
 
-    viewObspy.applyAllSeismograms(seis => {
-        let butterworth = seisplotjs.filter.createButterworth(2, seisplotjs.filter.BAND_PASS, lowFreq, highFreq, 1/seis.sampleRate);
-        return seisplotjs.filter.applyFilter(butterworth, seis);
+    viewObspy.applyAllSeismograms(sdd => {
+        let butterworth = seisplotjs.filter.createButterworth(2, seisplotjs.filter.BAND_PASS, lowFreq, highFreq, 1/sdd.seismogram.sampleRate);
+        let filtSeis = seisplotjs.filter.applyFilter(butterworth, sdd.seismogram);
+        return sdd.cloneWithNewSeismogram(filtSeis);
     }, `bp ${lowFreq}  ${highFreq}`);
 
   });
-
 
   seisplotjs.d3.select("button#lowpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
     let highFreq = seisplotjs.d3.select("#highfreq").property("value");
 
-    viewObspy.applyAllSeismograms(seis => {
-        let butterworth = seisplotjs.filter.createButterworth(2, seisplotjs.filter.LOW_PASS, lowFreq, highFreq, 1/seis.sampleRate);
-        return seisplotjs.filter.applyFilter(butterworth, seis);
+    viewObspy.applyAllSeismograms(sdd => {
+        let butterworth = seisplotjs.filter.createButterworth(2, seisplotjs.filter.LOW_PASS, lowFreq, highFreq, 1/sdd.seismogram.sampleRate);
+        let filtSeis = seisplotjs.filter.applyFilter(butterworth, sdd.seismogram);
+        return sdd.cloneWithNewSeismogram(filtSeis);
     }, `lp   ${highFreq}`);
 
   });
@@ -57,30 +67,34 @@ function createTools(viewObspy) {
   seisplotjs.d3.select("button#highpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
     let highFreq = seisplotjs.d3.select("#highfreq").property("value");
-    viewObspy.applyAllSeismograms(seis => {
-        let butterworth = seisplotjs.filter.createButterworth(2, seisplotjs.filter.HIGH_PASS, lowFreq, highFreq, 1/seis.sampleRate);
-        return seisplotjs.filter.applyFilter(butterworth, seis);
+    viewObspy.applyAllSeismograms(sdd => {
+        let butterworth = seisplotjs.filter.createButterworth(2, seisplotjs.filter.HIGH_PASS, lowFreq, highFreq, 1/sdd.seismogram.sampleRate);
+        let filtSeis = seisplotjs.filter.applyFilter(butterworth, sdd.seismogram);
+        return sdd.cloneWithNewSeismogram(filtSeis);
     }, `hp ${lowFreq} `);
   });
 
 
   seisplotjs.d3.select("button#rmean").on("click", () => {
-    viewObspy.applyAllSeismograms(seis => {
-        return seisplotjs.filter.rMean(seis);
+    viewObspy.applyAllSeismograms(sdd => {
+        let filtSeis = seisplotjs.filter.rMean(sdd.seismogram);
+        return sdd.cloneWithNewSeismogram(filtSeis);
     }, `rmean`);
   });
 
   seisplotjs.d3.select("button#rtrend").on("click", () => {
-    viewObspy.applyAllSeismograms(seis => {
-        return seisplotjs.filter.rTrend(seis);
+    viewObspy.applyAllSeismograms(sdd => {
+        let filtSeis = seisplotjs.filter.rTrend(sdd.seismogram);
+        return sdd.cloneWithNewSeismogram(filtSeis);
       }, `rtrend`);
   });
 
   seisplotjs.d3.select("button#taper").on("click", () => {
     let width = seisplotjs.d3.select("#taperwidth").property("value");
     let type = seisplotjs.taper.HANNING;
-    viewObspy.applyAllSeismograms(seis => {
-      return seisplotjs.taper.taper(seis, width, type);
+    viewObspy.applyAllSeismograms(sdd => {
+      let filtSeis = seisplotjs.taper.taper(sdd.seismogram, width, type);
+      return sdd.cloneWithNewSeismogram(filtSeis);
     }, `taper ${width} ${type}`);
   });
 
@@ -88,14 +102,7 @@ function createTools(viewObspy) {
     let myvalue = seisplotjs.d3.select(this).property('value');
     let plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
     if (myvalue !== plottype) { return; }
-    viewObspy.plotDiv.selectAll("*").remove();
-    viewObspy.processedData.forEach((value, key) => {
-      if (key.startsWith('graph')) {
-        viewObspy.processedData.delete(key);
-      }
-    });
-    viewObspy.checkProcessedDatasetLoaded();
-    let dataset = viewObspy.processedData.get('dataset');
-    viewObspy.plotDataset(dataset, plottype, viewObspy.seisChanQuakeFilter);
+    viewObspy.plottype = plottype;
+    viewObspy.replot();
   });
 }

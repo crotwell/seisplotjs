@@ -18,7 +18,7 @@ serveSeis.stream=st
 
 usgs = Client("USGS")
 quakes = usgs.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)
-serveSeis.quake=quakes[0]
+serveSeis.catalog=quakes
 #iris has crazy event ids
 
 

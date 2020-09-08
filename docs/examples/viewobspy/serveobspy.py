@@ -18,6 +18,7 @@ from obspy.core.utcdatetime import UTCDateTime
 from obspy.core.event.catalog import Catalog
 from obspy.core.event.base import ResourceIdentifier
 from obspy.core.util.attribdict import AttribDict
+from obspy.core.inventory.response import Response
 
 import logging
 logging.basicConfig()
@@ -29,7 +30,8 @@ logger.addHandler(logging.StreamHandler())
 class ServeObsPy():
     """
     Serves Stream, Event and Inventory over http, allowing a web browser to be
-    the display for plotting. JSONApi is used for events and inventory and miniseed
+    the display for plotting. JSONApi is used for the dataset, events catalog as quakeml,
+    inventory as stationxml and miniseed
     is used for waveforms.
 
     .. rubric:: Basic Usage
@@ -47,8 +49,7 @@ class ServeObsPy():
     >>> st = client.get_waveforms("IU", "SNZO", "00", "BH?", start, start + 20 * 60)
     >>> serveSeis.stream=st
 
-    >>> quakes = client.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)
-    >>> serveSeis.quake=quakes[0]
+    >>> serveSeis.catalog=client.get_events(starttime=start - 1*60, endtime=start + 20*60, minmagnitude=5)
 
     >>> serveSeis.inventory = client.get_stations(network="IU", station="SNZO",
                                     location="00", channel="BH?",
@@ -82,7 +83,7 @@ class ServeObsPy():
             "stream": None,
             "bychan": {},
             "title": "View ObsPy",
-            "quake": None,
+            "catalog": None,
             "inventory": None
         }
     @property
@@ -116,7 +117,7 @@ class ServeObsPy():
                         "data": [
                         ]
                     },
-                    "quake": {
+                    "catalog": {
                         "data": {}
                     },
                     "inventory": {
@@ -126,13 +127,13 @@ class ServeObsPy():
             }
         }
         jsonapi['data']['attributes']['title'] = self.dataset['title']
-        if 'quake' in self.dataset and self.dataset['quake'] is not None:
-            quakeId = extractEventId(self.dataset['quake'])
-            jsonapi['data']['relationships']['quake']['data'] = {
-                  'type': 'quake',
-                  'id': quakeId
-                }
 
+        if 'catalog' in self.dataset and self.dataset['catalog'] is not None:
+            id_num = 1; #should do something more
+            jsonapi['data']['relationships']['catalog']['data'] = {
+                  'type': 'catalog',
+                  'id': id_num
+                }
         if 'inventory' in self.dataset and self.dataset['inventory'] is not None:
             id_num = 1; #should do something more, maybe break out by channel?
             jsonapi['data']['relationships']['inventory']['data'] = {
@@ -196,15 +197,16 @@ class ServeObsPy():
         self.title = "";
 
     @property
-    def quake(self):
-        return self.dataset["quake"];
-    @quake.setter
-    def quake(self, quake):
-        self.dataset["quake"] = quake;
-        self.wsServer.notifyUpdate('quake');
-    @quake.deleter
-    def quake(self):
-        self.quake = None
+    def catalog(self):
+        return self.dataset["catalog"];
+    @catalog.setter
+    def catalog(self, catalog):
+        self.dataset["catalog"] = catalog;
+        self.wsServer.notifyUpdate('catalog');
+    @catalog.deleter
+    def catalog(self):
+        self.catalog = None
+
 
     @property
     def inventory(self):
@@ -239,8 +241,8 @@ class ServeObsPy():
                         self.sendDataset()
                     elif self.path.startswith('/seismograms/'):
                         self.sendSeismogram()
-                    elif self.path.startswith('/quake/'):
-                        self.sendQuake()
+                    elif self.path.startswith('/catalog/'):
+                        self.sendCatalog()
                     elif self.path.startswith('/inventory'):
                         self.sendInventory()
                     elif self.path == '/favicon.ico':
@@ -307,16 +309,16 @@ class ServeObsPy():
                     raise Exception("unknown seismogram url {}".format(self.path))
 
 
-            def sendQuake(self):
+            def sendCatalog(self):
                 """
-                Serve quake as QuakeML
+                Serve catalog as QuakeML
                 """
-                splitPath = self.path.split('/')
-                id = splitPath[2]
-                resource_id = ResourceIdentifier(id)
-                catalog = Catalog([ObsPyRequestHandler.serveSeis.dataset['quake']],resource_id=resource_id)
                 buf = io.BytesIO()
-                catalog.write(buf, format="QUAKEML")
+                catalog = ObsPyRequestHandler.serveSeis.dataset['catalog']
+                if catalog is None:
+                    print("Catalog is None")
+                    catalog = Catalog([])
+                catalog.write(buf,format="QUAKEML")
                 self.send_response(200)
                 self.send_header("Content-Length", buf.getbuffer().nbytes)
                 self.send_header("Content-Type", "application/xml")
@@ -382,6 +384,8 @@ class StatsEncoder(json.JSONEncoder):
             return jsonDict
         if isinstance(obj, complex):
             return [obj.real, obj.imag]
+        if isinstance(obj, Response):
+            return "" # Response is not json serializable
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 

@@ -1,6 +1,7 @@
 /*global seisplotjs */
 
-
+/** The web socket connection to obspy for notification of updates to the dataset.
+*/
 class ObsPyConnection {
   constructor(url, baseUrl, packetHandler, errorHandler) {
     this.url = url;
