@@ -50,7 +50,7 @@ export class OrganizedDisplay {
     let qIndex = this.plottype.indexOf('?');
     let plotstyle = this.plottype;
     let queryParams = {};
-    if (qIndex != -1) {
+    if (qIndex !== -1) {
       queryParams = querystringify.parse(this.plottype.substring(qIndex));
       plotstyle = this.plottype.substring(0, qIndex);
     }
@@ -68,14 +68,12 @@ export class OrganizedDisplay {
       if (this.seisData.length !== 2) {
         throw new Error(`particle motion requies exactly 2 seisData in seisDataList, ${this.seisData.length}`);
       }
-      // timeWindow optional subwindow of seismogram to display
-      let timeWindow = null;
 
       let pmpSeisConfig = this.seisConfig.clone();
       pmpSeisConfig.yLabel = this.seisData[1].channelCode;
       pmpSeisConfig.xLabel = this.seisData[0].channelCode;
 
-      let pmp = new seisplotjs.particlemotion.ParticleMotion(divElement, pmpSeisConfig, this.seisData[0], this.seisData[1], timeWindow);
+      let pmp = new ParticleMotion(divElement, pmpSeisConfig, this.seisData[0], this.seisData[1]);
       pmp.draw();
     } else if (this.plottype.startsWith(MAP)) {
       const mapid = 'map'+(((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -85,7 +83,7 @@ export class OrganizedDisplay {
       const mapZoomLevel = parseInt(getFromQueryParams(queryParams, 'zoom', '1'));
       const magScale = parseFloat(getFromQueryParams(queryParams, 'magScale', '5.0'));
       const mymap = L.map(mapid).setView([ centerLat, centerLon], mapZoomLevel);
-      let OpenTopoMap = L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
+      L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 17,
         attribution: 'Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
       }).addTo(mymap);
@@ -106,7 +104,9 @@ export class OrganizedDisplay {
       });
 
     } else if (this.plottype.startsWith(QUAKE_TABLE)) {
+
     } else if (this.plottype.startsWith(STATION_TABLE)) {
+      
     } else {
       throw new Error(`Unkown plottype ${this.plottype} ${SPECTRA}`);
     }

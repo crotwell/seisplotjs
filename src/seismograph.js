@@ -20,6 +20,7 @@ export { LinkedAmpScale };
 
 import type { MarkerType } from './seismogram.js';
 import type { MarginType } from './seismographconfig';
+import type { TraveltimeJsonType } from './traveltime.js';
 import {SeismogramDisplayData, findStartEnd, findMaxDuration, findMinMax, findMinMaxOverTimeRange,
         findMinMaxOverRelativeTimeRange, SeismogramSegment, Seismogram, COUNT_UNIT } from './seismogram.js';
 import {Quake} from './quakeml.js';
@@ -1389,12 +1390,13 @@ Seismograph._lastID = 0;
  * IRIS traveltime web service, or the json output of TauP
  * @returns        array of Markers suitable for adding to a seismograph
  */
-export function createMarkersForTravelTimes(quake: Quake, ttime: any): Array<MarkerType> {
+export function createMarkersForTravelTimes(quake: Quake, ttime: TraveltimeJsonType): Array<MarkerType> {
   return ttime.arrivals.map( a => {
     return {
       type: 'predicted',
       name: a.phase,
-      time: moment.utc(quake.time).add(a.time, 'seconds')
+      time: moment.utc(quake.time).add(a.time, 'seconds'),
+      description: ""
     };
   });
 }
