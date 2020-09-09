@@ -1,7 +1,9 @@
 // @flow
 
 import { knownDataCenters } from '../src/knownDataCenters.js';
-require('isomorphic-fetch');
+
+const fetch = require('node-fetch');
+global.fetch = fetch;
 
 
 test("fetch directly", () => {

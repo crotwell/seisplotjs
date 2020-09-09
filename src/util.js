@@ -131,7 +131,9 @@ export function dataViewToString(dataView: DataView) {
 export function log(msg: string): void {
   // eslint-disable-next-line no-console
   if (console) {console.log(`${stringify(msg)}`);}
-  d3.select("div#debug").append("p").text(`${stringify(msg)}`);
+  if (typeof window !== 'undefined' && window != null) {
+    d3.select("div#debug").append("p").text(`${stringify(msg)}`);
+  }
 }
 
 /**
@@ -373,7 +375,10 @@ export function toIsoWoZ(date: moment$Moment): string {
  **/
 export function checkProtocol(): string {
   let _protocol = 'http:';
-  if (typeof document !== 'undefined' && document.location && "https:" === document.location.protocol) {
+  if (typeof document !== 'undefined' && document != null
+      && 'location' in document
+      && 'protocol' in document.location
+      && "https:" === document.location.protocol) {
     _protocol = 'https:';
   }
   return _protocol;
@@ -431,7 +436,7 @@ export function doFetchWithTimeout(url: string | URL,
     throw new Error(`url must be string or URL, ${stringify(url)}`);
   }
   log(`attempt to fetch ${stringify(absoluteUrl)}`);
-  return fetch(absoluteUrl, fetchInit)
+  return fetch(absoluteUrl.href, fetchInit)
   .catch(err => {
     log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
     throw err;

@@ -6,8 +6,15 @@ import {StationQuery} from '../src/fdsnstation.js';
 import {allChannels} from '../src/stationxml.js';
 import moment from 'moment';
 
+const fetch = require('node-fetch');
+global.fetch = fetch;
+
+/*
+*/
+// oops, can't use fetch in jest test without mocking...
+
 test( "query setter test", () => {
-  let localQueryTimeWindow = new StartEndDuration('2020-08-20', '2020-08-21');
+  let localQueryTimeWindow = new StartEndDuration('2020-08-21', '2020-08-22');
   let localEventQuery = new EventQuery()
     .timeWindow(localQueryTimeWindow)
     .latitude(33.72).longitude(-81)
@@ -18,8 +25,10 @@ test( "query setter test", () => {
     .locationCode('00')
     .channelCode('LH?')
     .timeWindow(localQueryTimeWindow);
-  Promise.all( [ localEventQuery.query(), stationQuery.queryChannels() ] )
+  return Promise.all( [ localEventQuery.query(), stationQuery.queryChannels() ] )
     .then( ( [ localQuakeList, networks ] ) => {
+      expect(localQuakeList).not.toBeEmpty();
+      expect(networks).not.toBeEmpty();
       return loadSeismograms(Array.from(allChannels(networks)),
                                 localQuakeList,
                               "P",
@@ -32,3 +41,5 @@ test( "query setter test", () => {
     });
 
 });
+/*
+*/
