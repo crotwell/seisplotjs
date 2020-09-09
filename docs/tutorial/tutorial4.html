@@ -22,7 +22,8 @@
     <div  id="particlemotion">
     </div>
 
-    <script src="https://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.0.2-alpha.0_standalone.js"></script>
+    <xxxscript src="https://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.1.0-alpha.0_standalone.js"></script>
+    <script src="./seisplotjs_2.1.0-alpha.0_standalone.js"></script>
     <script>
     let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
     let eventQuery = new seisplotjs.fdsnevent.EventQuery()
@@ -66,19 +67,19 @@
       }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
         let div = seisplotjs.d3.select('div#myseismograph');
         let graphList = [];
-        const ampLinker = new seisplotjs.seismograph.LinkedAmpScale();
+        let commonSeisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+        commonSeisConfig.linkedAmpScale = new seisplotjs.seismographconfig.LinkedAmpScale();
+        commonSeisConfig.linkedTimeScale = new seisplotjs.seismographconfig.LinkedTimeScale();
+        commonSeisConfig.wheelZoom = false;
+        commonSeisConfig.doGain = true;
         for( let sdd of seismogramDataList) {
-          let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-          seisConfig.title = sdd.channel.codes();
-          seisConfig.wheelZoom = false;
-          seisConfig.doGain = true;
+          let seisConfig = commonSeisConfig.clone();
           let subdiv = div.append('div').classed('seismograph', true);
           let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                              seisConfig,
-                                                             sdd);
-          graphList.forEach(g => graph.linkXScaleTo(g));
+                                                             seismogramDataList);
+          //graphList.forEach(g => graph.linkXScaleTo(g));
           graphList.push(graph);
-          ampLinker.link(graph);
           graph.draw();
         }
         seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
