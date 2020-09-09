@@ -131,7 +131,7 @@ export function dataViewToString(dataView: DataView) {
 export function log(msg: string): void {
   // eslint-disable-next-line no-console
   if (console) {console.log(`${stringify(msg)}`);}
-  if (typeof window !== 'undefined' && window != null) {
+  if (typeof window !== 'undefined' && window !== null) {
     d3.select("div#debug").append("p").text(`${stringify(msg)}`);
   }
 }
@@ -375,7 +375,7 @@ export function toIsoWoZ(date: moment$Moment): string {
  **/
 export function checkProtocol(): string {
   let _protocol = 'http:';
-  if (typeof document !== 'undefined' && document != null
+  if (typeof document !== 'undefined' && document !== null
       && 'location' in document
       && 'protocol' in document.location
       && "https:" === document.location.protocol) {

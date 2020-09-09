@@ -3,6 +3,7 @@
 import { knownDataCenters } from '../src/knownDataCenters.js';
 
 const fetch = require('node-fetch');
+// eslint-disable-next-line no-undef
 global.fetch = fetch;
 
 

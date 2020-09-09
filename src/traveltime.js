@@ -222,10 +222,10 @@ export class TraveltimeQuery {
         if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
           // no data, create empty
           return {
-            model: isDef(mythis._model) ? mythis.model() : "",
-            sourcedepth: isDef(mythis._evdepth) ? mythis.evdepth() : 0,
+            model: isDef(mythis._model) ? mythis._model : "",
+            sourcedepth: isDef(mythis._evdepth) ? mythis._evdepth : 0,
             receiverdepth: 0,
-            phases: isDef(mythis._phases) ? mythis.phases() : [],
+            phases: isDef(mythis._phases) ? mythis._phases.split(',') : [],
             arrivals: []
           };
         } else {

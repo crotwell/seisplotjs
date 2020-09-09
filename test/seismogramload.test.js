@@ -7,6 +7,7 @@ import {allChannels} from '../src/stationxml.js';
 import moment from 'moment';
 
 const fetch = require('node-fetch');
+// eslint-disable-next-line no-undef
 global.fetch = fetch;
 
 /*

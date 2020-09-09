@@ -106,7 +106,7 @@ export class OrganizedDisplay {
     } else if (this.plottype.startsWith(QUAKE_TABLE)) {
 
     } else if (this.plottype.startsWith(STATION_TABLE)) {
-      
+
     } else {
       throw new Error(`Unkown plottype ${this.plottype} ${SPECTRA}`);
     }
@@ -114,7 +114,7 @@ export class OrganizedDisplay {
 }
 
 export function getFromQueryParams(qParams: {}, name: string, defaultValue: string = ""): string {
-  if (qParams.hasOwnProperty(name)) {
+  if (name in qParams) {
     return qParams[name];
   }
   return defaultValue;
