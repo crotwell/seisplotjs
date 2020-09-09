@@ -27,6 +27,7 @@ export {RSVP, };
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";
+export const SVG_MIME = "image/svg+xml";
 export const TEXT_MIME = "text/plain";
 
 // flow predicate %check functions
