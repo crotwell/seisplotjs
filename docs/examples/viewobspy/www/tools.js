@@ -105,4 +105,25 @@ function createTools(viewObspy) {
     viewObspy.plottype = plottype;
     viewObspy.replot();
   });
+
+  seisplotjs.d3.select("button#ttimeRecalc").on("click", () => {
+    let plotPredicted = seisplotjs.d3.select("#phases").property("checked");
+    let phaseList = seisplotjs.d3.select("#phaseList").property("value");
+    if ( ! phaseList || phaseList.length === 0) {
+      phaseList = "P,S";
+    }
+    console.log(`ttimeRecalc  ${plotPredicted}  ${phaseList}`)
+    viewObspy.applyAllSeismograms((seisData, index, array, dataset, catalog, inventory) =>{
+      // only do on index 0 as we want to do for all quakes/stations at once to
+      // minimize trips to traveltime web service
+console.log(`recalc proc func ${index}  ${array.length}`)
+      if (index !== 0) { return seisData; }
+      return viewObspy.addTravelTimes(array, phaseList).then(travelTimes => {
+        if (plotPredicted) {
+          viewObspy.replot();
+        }
+        return seisData;
+      });
+    }, "add travel times "+phaseList);
+  });
 }

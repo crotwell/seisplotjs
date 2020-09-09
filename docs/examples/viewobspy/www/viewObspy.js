@@ -12,8 +12,8 @@ class ViewObsPy {
     }
     this.seisChanQuakeFilter = (seis, chan, quake) => {return this.defaultPlotFilter(seis, chan, quake);};
     this.seisIdToDisplayIdMap = new Map();
-    this.sorttype = seisplotjs.d3.select('input[name="sorttype"]:checked').property("value");
     this.organizetype = seisplotjs.d3.select('input[name="organizetype"]:checked').property("value");
+    this.sorttype = seisplotjs.d3.select('input[name="sorttype"]:checked').property("value");
     this.plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
   }
 
@@ -78,10 +78,10 @@ class ViewObsPy {
       console.log("replot: no data yet");
       return;
     }
+
     let filteredSeis = seisDataList.filter(sd => this.seisChanQuakeFilter(sd.seismogram, sd.channel, sd.quake));
-    let sortedSeis = this.sortForPlotting(this.sorttype, filteredSeis);
-    let organizedSeis = this.organizePlotting(this.organizetype, this.plottype, dataset, catalog, inventory, sortedSeis);
-    //this.createPlots(dataset, catalog, inventory, organizedSeis);
+    let organizedSeis = this.organizePlotting(this.organizetype, this.plottype, dataset, catalog, inventory, filteredSeis);
+    organizedSeis = this.sortForPlotting(this.sorttype, organizedSeis);
     this.plotDiv.selectAll('*').remove();
     seisplotjs.displayorganize.createPlots(organizedSeis, this.plotDiv);
   }
@@ -143,13 +143,13 @@ class ViewObsPy {
       this.processedData.set(seisData.id, seisData);
     });
     tmpProcessChain.forEach(p => {
-      tempSeis = tempSeis.map((seisData, index, array) => {
-        const seisKey = seisData.id;
-        const ts = p.processFunc(seisData, index, array, dataset, catalog, inventory);
-        ts.id = seisKey;
-        this.processedData.set(seisKey, seisData);
-        return ts;
-      });
+        tempSeis = tempSeis.map((seisData, index, array) => {
+          const seisKey = seisData.id;
+          const ts = p.processFunc(seisData, index, array, dataset, catalog, inventory);
+          ts.id = seisKey;
+          this.processedData.set(seisKey, seisData);
+          return ts;
+        });
       this.processChain.push(p);
       this.updateProcessDisplay(this.processChain);
       this.processedData.set('seisDataList', tempSeis);
@@ -157,7 +157,7 @@ class ViewObsPy {
     console.log(`applyProcessChain processedData quake: ${this.processedData.get('seisDataList')[0].quakeList.length}` );
   }
 
-  applyAllSeismograms(processFunc, desc) {
+  async applyAllSeismograms(processFunc, desc) {
     this.processChain.push({desc: desc, processFunc: processFunc});
     this.updateProcessDisplay(this.processChain);
     const dataset = this.obspyData.get('dataset');
@@ -165,10 +165,12 @@ class ViewObsPy {
     const inventory = this.obspyData.get('inventory');
     let seisDataList = this.processedData.get('seisDataList');
 
-    seisDataList = seisDataList.map(sd => processFunc(sd));
-    this.processedData.set('seisDataList', seisDataList);
-    console.log(`applyAllSeismograms processedData quake: ${this.processedData.get('seisDataList')[0].quakeList.length}` );
-    this.replot();
+    return await seisplotjs.RSVP.all(seisDataList.map((seisData, index, array) => processFunc(seisData, index, array, dataset, catalog, inventory)))
+    .then(procSeisDataList => {
+      this.processedData.set('seisDataList', procSeisDataList);
+      console.log(`applyAllSeismograms processedData quake: ${this.processedData.get('seisDataList')[0].quakeList.length}` );
+      this.replot();
+    });
   }
 
   sortForPlotting(sorttype, seisDataList) {
@@ -274,47 +276,44 @@ class ViewObsPy {
       return organized;
     }
 
-  createPlots(dataset, catalog, inventory, organizedSeis) {
-
-    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    seisConfig.title = seisplotjs.seismographconfig.DEFAULT_TITLE;
-    seisConfig.doGain = seisplotjs.d3.select("input#doGain").property("checked");
-    if (seisplotjs.d3.select("input#linkx").property("checked")) {
-      seisConfig.linkedTimeScale = new seisplotjs.seismographconfig.LinkedTimeScale();
-    }
-    if (seisplotjs.d3.select("input#linky").property("checked")) {
-      seisConfig.linkedAmplitudeScale = new seisplotjs.seismographconfig.LinkedAmpScale();
-    }
-    let pmpSeisConfig = seisConfig.clone();
-    pmpSeisConfig.margin.left = 40;
-    pmpSeisConfig.margin.right = 40;
-    pmpSeisConfig.margin.top = 40;
-    pmpSeisConfig.margin.bottom = 40;
-
-    this.plotDiv.selectAll('*').remove();
-    organizedSeis.forEach((os, osIndex) => {
-      if (os.seisDisplayData.length === 0) { return; }
-      const seisId = os.seisDisplayData[0].id; // use first seis
-      console.log(`createPlots  organizedSeis.forEach  ${osIndex}   ${os.plottype}  ${os.seisDisplayData.length} quake: ${os.seisDisplayData[0].quakeList.length}`)
-      let selectedDiv = this.plotDiv.append("div")
-        .attr('seis', `${osIndex}`)
-        .attr('plottype', os.plottype);
-
-      selectedDiv.selectAll('*').remove();
-      if (os.plottype === 'seismograph') {
-        return this.createGraph(selectedDiv, seisConfig, os.seisDisplayData, seisId);
-      } else if (os.plottype === 'spectra_lin') {
-        return this.createSpectra(selectedDiv, seisId, os.seisDisplayData, false);
-      } else if (os.plottype === 'spectra_log') {
-        return this.createSpectra(selectedDiv, seisId, os.seisDisplayData, true);
-      } else if (os.plottype === 'particlemotion') {
-        return this.createParticleMotion(selectedDiv, pmpSeisConfig, os.seisDisplayData);
-      } else {
-        throw new Error(`unknwon plot type: ${plottype}`);
-      }
+  addTravelTimes(seisDataList, phaseList) {
+    const stationList = seisplotjs.displayorganize.uniqueStations(seisDataList);
+    const quakeList = seisplotjs.displayorganize.uniqueQuakes(seisDataList);
+    console.log(`addTravelTimes q: ${quakeList.length}  s: ${stationList.length}`)
+    let promiseArray = [];
+    stationList.forEach(s => {
+      let stationSDDList = seisDataList.filter(sdd => sdd.channel && sdd.channel.station === s);
+      quakeList.forEach(q => {
+        let quakeStationSDDList = stationSDDList.filter(sdd => {
+          let found = false;
+          sdd.quakeList.forEach(sddQ => {
+            if (sddQ === q) {found = true;}
+          });
+          return found;
+        });
+        let ttimeQuery = new seisplotjs.traveltime.TraveltimeQuery();
+        let distaz = seisplotjs.distaz.distaz(s.latitude, s.longitude, q.latitude, q.longitude);
+        ttimeQuery.distdeg(distaz.delta)
+        .evdepthInMeter(q.depth)
+        .phases(phaseList);
+        promiseArray.push( ttimeQuery.queryJson().then(travelTime => {
+          let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(q, travelTime);
+          phaseMarkers.push({
+            markertype: 'predicted',
+            name: "origin",
+            time: seisplotjs.moment.utc(q.time),
+            description: q.toString()
+          });
+          quakeStationSDDList.forEach(sdd => {
+            sdd.addTravelTimes(travelTime);
+            sdd.addMarkers(phaseMarkers);
+          });
+          return travelTime;
+        }));
+      });
     });
+    return seisplotjs.RSVP.all(promiseArray);
   }
-
   createGraph(selectedDiv, seisConfig, seisDataList, seisKey) {
     for (let seisData of seisDataList) {
       if (seisData.quakeList && seisData.quakeList.length > 0) {

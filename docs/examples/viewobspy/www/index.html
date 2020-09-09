@@ -114,6 +114,14 @@
           <input type="text" id="highfreq" name="highfreq" value=10.0></input>
         </div>
         <div>
+          <label>Phases:</label>
+          <input type="checkbox" id="phases" name="phases" checked>
+          <label for="phases">Show Predicted Arrivals</label>
+          <label for="phaseList">Phases: </label>
+          <input type="text" id="phaseList" name="phaseList" value="P,S"></input>
+          <button id="ttimeRecalc">Recalc</button>
+        </div>
+        <div>
           <label>Plot Type:</label>
           <span>
             <input type="radio" id="radio_map" name="plottype" value="map">
