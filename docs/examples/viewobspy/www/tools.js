@@ -112,18 +112,11 @@ function createTools(viewObspy) {
     if ( ! phaseList || phaseList.length === 0) {
       phaseList = "P,S";
     }
-    console.log(`ttimeRecalc  ${plotPredicted}  ${phaseList}`)
     viewObspy.applyAllSeismograms((seisData, index, array, dataset, catalog, inventory) =>{
       // only do on index 0 as we want to do for all quakes/stations at once to
       // minimize trips to traveltime web service
-console.log(`recalc proc func ${index}  ${array.length}`)
-      if (index !== 0) { return seisData; }
-      return viewObspy.addTravelTimes(array, phaseList).then(travelTimes => {
-        if (plotPredicted) {
-          viewObspy.replot();
-        }
-        return seisData;
-      });
+      if (index !== 0) { return Promise.resolve(seisData); }
+      return viewObspy.addTravelTimes(array, phaseList).then(ttarray => {return seisData;});
     }, "add travel times "+phaseList);
   });
 }

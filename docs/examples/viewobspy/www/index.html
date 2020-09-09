@@ -253,7 +253,15 @@
               // reload data, but keep process chain
               console.log("update stream");
               viewObspy.loadAllAndPlot();
-            } else {
+          } else if (jsonObj.update === 'catalog') {
+              // reload data, but keep process chain
+              console.log("update catalog");
+              viewObspy.loadCatalog().then(() => viewObspy.reprocess());
+          } else if (jsonObj.update === 'inventory') {
+              // reload data, but keep process chain
+              console.log("update inventory");
+              viewObspy.loadInventory().then(() => viewObspy.reprocess());
+          } else {
           viewObspy.replot();
             console.log(`not refresh: ${jsonObj.update}`)
           }

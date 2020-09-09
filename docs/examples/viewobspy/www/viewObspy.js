@@ -10,7 +10,7 @@ class ViewObsPy {
     if (this.plotDiv.empty()) {
       throw new Error(`Can't find element for css selector '${cssSelector}'`);
     }
-    this.seisChanQuakeFilter = (seis, chan, quake) => {return this.defaultPlotFilter(seis, chan, quake);};
+    this.seisChanQuakeFilter = this.defaultPlotFilter;
     this.seisIdToDisplayIdMap = new Map();
     this.organizetype = seisplotjs.d3.select('input[name="organizetype"]:checked').property("value");
     this.sorttype = seisplotjs.d3.select('input[name="sorttype"]:checked').property("value");
@@ -18,32 +18,27 @@ class ViewObsPy {
   }
 
   clearData() {
-    console.log('clearData');
     this.processedData.clear();
     this.obspyData.clear();
     seisplotjs.d3.select("#messages").selectAll("p").remove();
     this.seisIdToDisplayIdMap.clear();
-    this.seisChanQuakeFilter = (seis, chan, quake) => {return this.defaultPlotFilter(seis, chan, quake);};
+    this.seisChanQuakeFilter = this.defaultPlotFilter;
   }
 
   clearAll() {
-    console.log("clearAll");
     this.clearData();
     this.processChain.length = 0;//clears the array
     this.updateProcessDisplay(this.processChain);
   }
 
   loadAllAndPlot() {
-    console.log(`loadAllAndPlot: ${this.processChain.length}`);
 
     const that = this;
     return this.loadAll().then( ([ dataset, catalog, inventory, seisDataList ]) => {
       this.obspyData.set('dataset', dataset);
       this.obspyData.set('catalog', catalog);
-      for (let c of catalog) {console.log(`catalog: ${c}`);}
       this.obspyData.set('inventory', inventory);
       this.obspyData.set('seisDataList', seisDataList);
-      seisDataList.forEach(s => console.log(`seisDataList ${s.id}`))
       this.createStationCheckboxes(seisDataList, inventory);
 
       this.reprocess();
@@ -53,20 +48,19 @@ class ViewObsPy {
   }
 
   reprocess() {
-    console.log(`reprocess: ${this.processChain.length}`);
 
     const dataset = this.obspyData.get('dataset');
     const catalog = this.obspyData.get('catalog');
     const inventory = this.obspyData.get('inventory');
     let seisDataList = this.obspyData.get('seisDataList');
 
-    this.applyProcessChain( dataset, catalog, inventory, seisDataList);
-
+    if (seisDataList && seisDataList.length > 0) {
+      this.applyProcessChain( dataset, catalog, inventory, seisDataList);
+    }
     this.replot();
   }
 
   replot() {
-    console.log(`replot: ${this.processChain.length}`);
 
     const dataset = this.obspyData.get('dataset');
     const catalog = this.obspyData.get('catalog');
@@ -75,11 +69,10 @@ class ViewObsPy {
     seisDataList = seisDataList ? seisDataList : this.obspyData.get('seisDataList'); // make sure not null
     if ( ! seisDataList) {
       // no data yet?
-      console.log("replot: no data yet");
       return;
     }
 
-    let filteredSeis = seisDataList.filter(sd => this.seisChanQuakeFilter(sd.seismogram, sd.channel, sd.quake));
+    let filteredSeis = seisDataList.filter(sd => this.seisChanQuakeFilter(sd));
     let organizedSeis = this.organizePlotting(this.organizetype, this.plottype, dataset, catalog, inventory, filteredSeis);
     organizedSeis = this.sortForPlotting(this.sorttype, organizedSeis);
     this.plotDiv.selectAll('*').remove();
@@ -94,32 +87,20 @@ class ViewObsPy {
     const that = this;
     this.clearData();
     return this.loadDataset().then(dataset => {
-        let catalogPromise = this.loadCatalog(dataset);
-        let inventoryPromise = this.loadInventory(dataset);
+        let catalogPromise = this.loadCatalog();
+        let inventoryPromise = this.loadInventory();
         return Promise.all([dataset, catalogPromise, inventoryPromise]);
       }).then( ( [ dataset, catalog, inventory] ) => {
-        this.obspyData.set('seisDataList', []);
+        that.obspyData.set('seisDataList', []);
         let allSeisPromises = dataset.data.relationships.seismograms.data.map(d => {
           const seisId = this.createSeisKey(d);
-          return this.loadSingleSeismogram(seisId, false).then(seismogram => {
+          return that.loadSingleSeismogram(seisId, false).then(seismogram => {
             let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
             seisData.id = seisId;
-
-            let chanList = seisplotjs.stationxml.findChannels(
-              inventory,
-              seismogram.networkCode,
-              seismogram.stationCode,
-              seismogram.locationCode,
-              seismogram.channelCode);
-            for(let c of chanList) {
-              if (c.timeRange.overlaps(seismogram.timeRange)) {
-                seisData.channel = c;
-              }
-            }
-            for (let quake of catalog) {
+            that.matchSDDWithChannel(seisData, inventory);
+            catalog.forEach(quake => {
               seisData.addQuake(quake);
-            }
-            console.log(`sdd quake: ${seisData.quakeList.length}`)
+            });
             return seisData;
           });
         });
@@ -127,8 +108,24 @@ class ViewObsPy {
       });
   }
 
+  matchSDDWithChannel(sdd, inventory) {
+    if ( seisplotjs.util.isDef(sdd.seismogram) && seisplotjs.util.isDef(inventory)) {
+      let chanList = seisplotjs.stationxml.findChannels(
+        inventory,
+        sdd.seismogram.networkCode,
+        sdd.seismogram.stationCode,
+        sdd.seismogram.locationCode,
+        sdd.seismogram.channelCode);
+      for(let c of chanList) {
+        if (c.timeRange.overlaps(sdd.seismogram.timeRange)) {
+          sdd.channel = c;
+          return;
+        }
+      }
+    }
+  }
+
   applyProcessChain( dataset, catalog, inventory, seisDataList) {
-    console.log(`applyProcessChain: ${this.processChain.length}`);
     const that = this;
     this.processedData.clear();
     let tmpProcessChain = this.processChain.slice();
@@ -138,23 +135,48 @@ class ViewObsPy {
     this.processedData.set('catalog', catalog);
     this.processedData.set('inventory', inventory);
     this.processedData.set('seisDataList', seisDataList);
-    let tempSeis = Array.from(seisDataList);
-    tempSeis.forEach(seisData => {
-      this.processedData.set(seisData.id, seisData);
+
+    let firstPromise = new seisplotjs.RSVP.all((seisDataList ? seisDataList.slice() : []))
+    .then(tempSeis => {
+      this.processedData.set('seisDataList', tempSeis);
+      tempSeis.forEach(seisData => {
+        this.processedData.set(seisData.id, seisData);
+      });
+      return tempSeis;
     });
+    let promise = firstPromise;
     tmpProcessChain.forEach(p => {
+      promise = promise.then(tempSeis => {
+
         tempSeis = tempSeis.map((seisData, index, array) => {
           const seisKey = seisData.id;
-          const ts = p.processFunc(seisData, index, array, dataset, catalog, inventory);
-          ts.id = seisKey;
-          this.processedData.set(seisKey, seisData);
-          return ts;
+          let tempSeisData = p.processFunc(seisData, index, array, dataset, catalog, inventory);
+          let out;
+          if (tempSeisData) {
+            out = tempSeisData;
+          } else {
+            // just in case process doesn't return the new seisdata
+            out = Promise.resolve(seisData);
+          }
+
+          return out.then(ts => {
+            ts.id = seisKey;
+            this.processedData.set(seisKey, seisData);
+            return ts;
+          });
         });
-      this.processChain.push(p);
-      this.updateProcessDisplay(this.processChain);
-      this.processedData.set('seisDataList', tempSeis);
+        return seisplotjs.RSVP.all(tempSeis);
+      }).then(tempSeis => {
+        this.processChain.push(p);
+        this.updateProcessDisplay(this.processChain);
+        this.processedData.set('seisDataList', tempSeis);
+      });
     });
-    console.log(`applyProcessChain processedData quake: ${this.processedData.get('seisDataList')[0].quakeList.length}` );
+    promise.then(tempSeis => {
+      that.replot();
+      return tempSeis;
+    });
+    return firstPromise;
   }
 
   async applyAllSeismograms(processFunc, desc) {
@@ -165,10 +187,18 @@ class ViewObsPy {
     const inventory = this.obspyData.get('inventory');
     let seisDataList = this.processedData.get('seisDataList');
 
-    return await seisplotjs.RSVP.all(seisDataList.map((seisData, index, array) => processFunc(seisData, index, array, dataset, catalog, inventory)))
+    const promiseArray = seisDataList.map((seisData, index, array) => {
+      let tempSeisData = processFunc(seisData, index, array, dataset, catalog, inventory);
+      if (tempSeisData) {
+        return tempSeisData;
+      } else {
+        // just in case process doesn't return the new seisdata
+        return Promise.resolve(seisData);
+      }
+    });
+    return await seisplotjs.RSVP.all(promiseArray)
     .then(procSeisDataList => {
       this.processedData.set('seisDataList', procSeisDataList);
-      console.log(`applyAllSeismograms processedData quake: ${this.processedData.get('seisDataList')[0].quakeList.length}` );
       this.replot();
     });
   }
@@ -279,7 +309,6 @@ class ViewObsPy {
   addTravelTimes(seisDataList, phaseList) {
     const stationList = seisplotjs.displayorganize.uniqueStations(seisDataList);
     const quakeList = seisplotjs.displayorganize.uniqueQuakes(seisDataList);
-    console.log(`addTravelTimes q: ${quakeList.length}  s: ${stationList.length}`)
     let promiseArray = [];
     stationList.forEach(s => {
       let stationSDDList = seisDataList.filter(sdd => sdd.channel && sdd.channel.station === s);
@@ -327,9 +356,6 @@ class ViewObsPy {
           });
         });
         seisData.addMarkers(phaseMarkers);
-        console.log(`add markers: ${phaseMarkers.length}`);
-      } else {
-        console.log("no quake");
       }
     }
 
@@ -438,7 +464,7 @@ class ViewObsPy {
         staList.push(c.station.stationCode);
       }
       outPromise = Promise.all(staList);
-    } else if (dataset) {
+    } else if (dataset && dataset.data) {
       // get from seismograms
       outPromise = Promise.all(dataset.data.relationships.seismograms.data.map(d => {
         const seisKey = this.createSeisKey(d);
@@ -522,16 +548,14 @@ class ViewObsPy {
     return Promise.all([seisPromise, statsPromise])
         .then( ( [dataRecords, stats] ) => {
           if (dataRecords.length === 0) {
-            this.showErrorMessage(`No data records from ${seisUrl}`);
+            that.showErrorMessage(`No data records from ${seisUrl}`);
             return null;
           }
-          console.log(`stats: ${JSON.stringify(stats)}`);
           let seisArray = seisplotjs.miniseed.seismogramPerChannel(dataRecords);
           if (seisArray.length !== 0) {
             let seis = seisArray[0]; // assume only first matters
-            this.obspyData.set(seisKey, seis);
-            this.obspyData.set(seisKey+"/stats", stats);
-            this.obspyData.get('seisDataList').push(seis);
+            that.obspyData.set(seisKey, seis);
+            that.obspyData.set(seisKey+"/stats", stats);
             return seis;
           } else {
             console.warn(`Oops, server did not return data for ${seisUrl}`);
@@ -543,91 +567,116 @@ class ViewObsPy {
         });
   }
 
-  loadCatalog(dataset) {
-    let catalog = Promise.resolve([]);
-    if (dataset.data.relationships.catalog.data.id) {
-      const qid = dataset.data.relationships.catalog.data.id;
-      const catalogUrl = new URL(`/catalog/${qid}`, this.baseUrl);
-      catalog = seisplotjs.util.doFetchWithTimeout(catalogUrl).then(response => {
-        return response.text();
-      }).then(xml => {
-        return (new window.DOMParser()).parseFromString(xml, "text/xml");
-      }).then(quakeml => {
-        return seisplotjs.quakeml.parseQuakeML(quakeml);
-      }).then(quakeml => {
-        this.obspyData.set('catalog', quakeml);
-        return quakeml;
-      }).catch( function(error) {
-        this.showErrorMessage(`Error loading quake, ${error}`);
-        console.error(error);
-      });
-    }
-    return catalog;
+  loadCatalog() {
+    const mythis = this;
+    return Promise.resolve(mythis.obspyData.get('dataset'))
+    .then(dataset => {
+      if ( ! dataset) {
+        return mythis.loadDataset();
+      } else {
+        return dataset;
+      }
+    }).then( dataset => {
+      if (dataset.data.relationships.catalog.data.id) {
+        const qid = dataset.data.relationships.catalog.data.id;
+        const catalogUrl = new URL(`/catalog/${qid}`, this.baseUrl);
+        return seisplotjs.util.doFetchWithTimeout(catalogUrl).then(response => {
+          return response.text();
+        }).then(xml => {
+          return (new window.DOMParser()).parseFromString(xml, "text/xml");
+        }).then(quakeml => {
+          return seisplotjs.quakeml.parseQuakeML(quakeml);
+        }).then(quakeml => {
+          this.obspyData.set('catalog', quakeml);
+          return quakeml;
+        }).catch( function(error) {
+          this.showErrorMessage(`Error loading quake, ${error}`);
+          console.error(error);
+        });
+      } else {
+        return Promise.resolve([]);
+      }
+    });
   }
 
-  loadInventory(dataset) {
-    let inventory = Promise.resolve([]);
-    if (dataset.data.relationships.inventory.data.id) {
-      const qid = dataset.data.relationships.inventory.data.id;
-      const inventoryUrl = new URL('/inventory', this.baseUrl);
-      inventory = seisplotjs.util.doFetchWithTimeout(inventoryUrl).then(response => {
-        return response.text();
-      }).then(xml => {
-        return (new window.DOMParser()).parseFromString(xml, "text/xml");
-      }).then(stationxml => {
-        return seisplotjs.stationxml.parseStationXml(stationxml);
-      }).then(netList => {
-        this.obspyData.set('inventory', netList);
-        return netList;
-      }).catch( function(error) {
-        this.showErrorMessage(`Error loading inventory, ${error}`);
-        console.error( error);
-      });
-    }
-    return inventory;
+  loadInventory() {
+    const mythis = this;
+    return Promise.resolve(mythis.obspyData.get('dataset'))
+    .then(dataset => {
+      if ( ! dataset) {
+        return mythis.loadDataset();
+      } else {
+        return dataset;
+      }
+    }).then( dataset => {
+      let inventory = Promise.resolve([]);
+      if (dataset.data.relationships.inventory.data.id) {
+        const qid = dataset.data.relationships.inventory.data.id;
+        const inventoryUrl = new URL('/inventory', mythis.baseUrl);
+        inventory = seisplotjs.util.doFetchWithTimeout(inventoryUrl).then(response => {
+          return response.text();
+        }).then(xml => {
+          return (new window.DOMParser()).parseFromString(xml, "text/xml");
+        }).then(stationxml => {
+          return seisplotjs.stationxml.parseStationXml(stationxml);
+        }).then(netList => {
+          mythis.obspyData.set('inventory', netList);
+          if (mythis.obspyData.has('seisDataList')) {
+            mythis.obspyData.get('seisDataList').forEach(sdd => {
+              mythis.matchSDDWithChannel(sdd, netList);
+            });
+          }
+          return netList;
+        }).catch( function(error) {
+          mythis.showErrorMessage(`Error loading inventory, ${error}`);
+          console.error( error);
+        });
+      }
+      return inventory;
+    });
   }
 
 
-  stationFilter(seis, chan, quake) {
+  stationFilter(sdd) {
     let out = true; // plot by default
-    if ( ! seisplotjs.d3.select(`input#${seis.stationCode}`).empty()) {
-      out = seisplotjs.d3.select(`input#${seis.stationCode}`).property("checked");
+    if ( ! seisplotjs.d3.select(`input#${sdd.stationCode}`).empty()) {
+      out = seisplotjs.d3.select(`input#${sdd.stationCode}`).property("checked");
     }
     return out;
   }
 
-  orientZFilter(seis, chan, quake) {
-    return seis.channelCode.endsWith('Z');
+  orientZFilter(sdd) {
+    return sdd.channelCode.endsWith('Z');
   }
-  orientNFilter(seis, chan, quake) {
-    return seis.channelCode.endsWith('N')
-      || seis.channelCode.endsWith('Y')
-      || seis.channelCode.endsWith('1');
+  orientNFilter(sdd) {
+    return sdd.channelCode.endsWith('N')
+      || sdd.channelCode.endsWith('Y')
+      || sdd.channelCode.endsWith('1');
   }
-  orientEFilter(seis, chan, quake) {
-    return seis.channelCode.endsWith('E')
-      || seis.channelCode.endsWith('X')
-      || seis.channelCode.endsWith('2');
+  orientEFilter(sdd) {
+    return sdd.channelCode.endsWith('E')
+      || sdd.channelCode.endsWith('X')
+      || sdd.channelCode.endsWith('2');
   }
-  orientRFilter(seis, chan, quake) {
-    return seis.channelCode.endsWith('R');
+  orientRFilter(sdd) {
+    return sdd.channelCode.endsWith('R');
   }
-  orientTFilter(seis, chan, quake) {
-    return seis.channelCode.endsWith('T');
+  orientTFilter(sdd) {
+    return sdd.channelCode.endsWith('T');
   }
 
-  defaultPlotFilter(seis, chan, quake) {
+  defaultPlotFilter(sdd) {
     let doZ = seisplotjs.d3.select("input#orientz").property("checked");
     let doN = seisplotjs.d3.select("input#orienty").property("checked");
     let doE = seisplotjs.d3.select("input#orientx").property("checked");
     let doR = seisplotjs.d3.select("input#orientr").property("checked");
     let doT = seisplotjs.d3.select("input#orientt").property("checked");
-    return this.stationFilter(seis, chan, quake)
-        && ((doZ && this.orientZFilter(seis, chan, quake))
-        || (doN && this.orientNFilter(seis, chan, quake))
-        || (doE && this.orientEFilter(seis, chan, quake))
-        || (doR && this.orientRFilter(seis, chan, quake))
-        || (doT && this.orientTFilter(seis, chan, quake)));
+    return this.stationFilter(sdd)
+        && ((doZ && this.orientZFilter(sdd))
+        || (doN && this.orientNFilter(sdd))
+        || (doE && this.orientEFilter(sdd))
+        || (doR && this.orientRFilter(sdd))
+        || (doT && this.orientTFilter(sdd)));
   }
 
 
