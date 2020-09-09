@@ -788,8 +788,6 @@ export class Seismograph {
           });
         if (undrawnMarkers.length !== 0) {
           this.drawMarkers();
-        } else {
-          console.log('no undrawn markers');
         }
       this.drawTopBottomAxis();
     }

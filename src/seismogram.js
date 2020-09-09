@@ -748,7 +748,7 @@ export class SeismogramDisplayData {
    * @returns network code
    */
   get networkCode(): string {
-    if (this.channel !== null) {
+    if (isDef(this.channel)) {
       return this.channel.networkCode;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.networkCode;
@@ -763,7 +763,7 @@ export class SeismogramDisplayData {
    * @returns station code
    */
   get stationCode(): string {
-    if (this.channel !== null) {
+    if (isDef(this.channel)) {
       return this.channel.stationCode;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.stationCode;
@@ -778,7 +778,7 @@ export class SeismogramDisplayData {
    * @returns location code
    */
   get locationCode(): string {
-    if (this.channel !== null) {
+    if (isDef(this.channel)) {
       return this.channel.locationCode;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.locationCode;
@@ -793,7 +793,7 @@ export class SeismogramDisplayData {
    * @returns channel code
    */
   get channelCode(): string {
-    if (this.channel !== null) {
+    if (isDef(this.channel)) {
       return this.channel.channelCode;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.channelCode;
@@ -802,7 +802,7 @@ export class SeismogramDisplayData {
     }
   }
   get sourceId() {
-    if (this.channel !== null) {
+    if (isDef(this.channel)) {
       return this.channel.sourceId();
     } else if (isDef(this._seismogram)) {
     const sep= '_';

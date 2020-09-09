@@ -132,7 +132,6 @@ export function mapAndIndividualDisplay(sddList: Array<SeismogramDisplayData>): 
 }
 
 export function overlayBySDDFunction(sddList: Array<SeismogramDisplayData>, key: string, sddFun: (SeismogramDisplayData => string | number | null)): Array<OrganizedDisplay> {
-  console.log(`overlayBy ${key}  ${sddList.length}`);
   let out = [];
   sddList.forEach(sdd => {
     let found = false;
@@ -145,14 +144,12 @@ export function overlayBySDDFunction(sddList: Array<SeismogramDisplayData>, key:
       if (org.getAttribute(key) === val) {
         org.seisData.push(sdd);
         found = true;
-        console.log(`    found, push ${val} ${sdd.codes()}`);
       }
     });
     if (! found) {
       const org = new OrganizedDisplay( [ sdd ] );
       org.setAttribute(key, val);
       out.push(org);
-      console.log(`not found, create ${val} ${sdd.codes()}`);
     }
   });
   return sortByKey(out, key);
@@ -167,13 +164,12 @@ export function overlayByStation(sddList: Array<SeismogramDisplayData>): Array<O
 }
 
 export function overlayAll(sddList: Array<SeismogramDisplayData>): Array<OrganizedDisplay> {
-  return overlayBySDDFunction(sddList, "all", (sdd => "all"));
+  return overlayBySDDFunction(sddList, "all", (() => "all"));
 }
 
 
 
 export function overlayByComponentOld(sddList: Array<SeismogramDisplayData>): Array<OrganizedDisplay> {
-  console.log(`overlayByComponent  ${sddList.length}`);
   let out = [];
   const KEY = "component";
   sddList.forEach(sdd => {
@@ -183,14 +179,12 @@ export function overlayByComponentOld(sddList: Array<SeismogramDisplayData>): Ar
       if (org.getAttribute(KEY) === orientCode) {
         org.seisData.push(sdd);
         found = true;
-        console.log(`    found, push ${orientCode} ${sdd.codes()}`);
       }
     });
     if (! found) {
       const org = new OrganizedDisplay( [ sdd ] );
       org.setAttribute(KEY, orientCode);
       out.push(org);
-      console.log(`not found, create ${orientCode} ${sdd.codes()}`);
     }
   });
   return sortByKey(out, KEY);
