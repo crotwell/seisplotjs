@@ -43,7 +43,7 @@ test("live parse result", () => {
   fedCatQuery.targetService('station');
   return fedCatQuery.queryRaw().then(function(parsedResult) {
     expect(parsedResult.queries).toHaveLength(1);
-    expect(parsedResult.params.get('level')).toEqual(LEVEL)
+    expect(parsedResult.params.get('level')).toEqual(LEVEL);
   });
 });
 
@@ -56,8 +56,6 @@ test("setup station queries test", () => {
     return fedCatQuery.setupQueryFdsnStation('network').then(parsedResult => {
       expect(parsedResult.queries).toHaveLength(1);
       expect(parsedResult.queries[0]).toBeDefined();
-      console.log(`${parsedResult.queries[0].dataCenter}`);
-      console.log(`${parsedResult.queries[0].postLines}`);
     });
 });
 
@@ -102,7 +100,7 @@ test("run BK networks", () => {
 });
 
 
-test.only( "run dataselect test", () => {
+test( "run dataselect test", () => {
   let fedCatQuery = new FedCatalogQuery();
   const NET = 'CO';
   const STA = 'JSC';
@@ -118,7 +116,7 @@ test.only( "run dataselect test", () => {
   expect(fedCatQuery.startTime(START)).toBe(fedCatQuery);
   expect(fedCatQuery.endTime(END)).toBe(fedCatQuery);
   return fedCatQuery.queryFdsnDataselect().then(sddList => {
-    expect(sddList).toHaveLength(1)
+    expect(sddList).toHaveLength(1);
     expect(sddList[0]).toBeDefined();
     expect(sddList[0].networkCode).toBe(NET);
     expect(sddList[0].stationCode).toBe(STA);

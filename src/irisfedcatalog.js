@@ -6,11 +6,11 @@
  * http://www.seis.sc.edu
  */
 
-import {parseStationXml, Network} from './stationxml';
-import {LEVELS, LEVEL_NETWORK, LEVEL_STATION, LEVEL_CHANNEL, LEVEL_RESPONSE, FAKE_EMPTY_XML, StationQuery} from './fdsnstation.js';
+import { Network} from './stationxml';
+import {LEVELS, LEVEL_NETWORK, LEVEL_STATION, LEVEL_CHANNEL, LEVEL_RESPONSE, StationQuery} from './fdsnstation.js';
 import {DataSelectQuery} from './fdsndataselect.js';
 import {SeismogramDisplayData} from './seismogram.js';
-import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import { TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
 import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
@@ -508,7 +508,14 @@ export class FedCatalogQuery {
    */
   queryFdsnStation(level: string): Promise<Array<Network>> {
     return this.setupQueryFdsnStation(level).then(parsedResult => {
-      return RSVP.all(parsedResult.queries.map(query => query.stationQuery.postQuery(level, query.postLines)));
+      return RSVP.all(parsedResult.queries.map(query => {
+        if (isDef(query.stationQuery)) {
+            return query.stationQuery.postQuery(level, query.postLines);
+          } else {
+            // could return [];
+            throw new Error("stationQuery missing");
+          }
+        }));
     }).then(netArrayArray => {
       let out = [];
       netArrayArray.forEach(netArray => {
@@ -521,50 +528,65 @@ export class FedCatalogQuery {
   }
 
 
- setupQueryFdsnStation(level: string): Promise<Array<FedCatalogResult>> {
+ setupQueryFdsnStation(level: string): Promise<ParsedResultType> {
     if (! LEVELS.includes(level)) {throw new Error("Unknown level: '"+level+"'");}
     this._level = level;
     this.targetService('station');
     return this.queryRaw().then(function(parsedResult) {
       for (let r of parsedResult.queries) {
-        r.stationQuery = new StationQuery();
+        const stationQuery = new StationQuery();
+        r.stationQuery = stationQuery;
         parsedResult.params.forEach( (v, k) => {
           const field = `_${k}`;
           console.log(`set StationQuery field: ${field}=${v}`);
-          r.stationQuery[field] = v;
+          // $FlowIgnore[prop-missing] dynamic setting of field
+          // $FlowIgnore[incompatible-use]
+          stationQuery[field] = v;
         });
-        if (! r.services.has('STATIONSERVICE')) {
+        if (! r.services.has('STATIONSERVICE') || ! isDef(r.services.get('STATIONSERVICE'))) {
           console.log(`${parsedResult.queries.length} ${r.dataCenter} services.size: ${r.services.size}`);
           r.services.forEach((v,k) => console.log(`service: ${k}  ${v}`));
           throw new Error("QueryResult does not have STATIONSERVICE in services");
         }
-        const serviceURL = new URL(r.services.get('STATIONSERVICE'));
-        r.stationQuery.host(serviceURL.hostname);
-        if (serviceURL.port) {
-          r.stationQuery.port(serviceURL.port);
+        const urlString = r.services.get('STATIONSERVICE');
+        if ( isDef(urlString)) {
+          const serviceURL = new URL(urlString);
+          stationQuery.host(serviceURL.hostname);
+          if (serviceURL.port) {
+            stationQuery.port(parseInt(serviceURL.port));
+          }
+        } else {
+          throw new Error("QueryResult does have STATIONSERVICE in services, but is undef");
         }
       }
       return parsedResult;
     });
   }
 
-  setupQueryFdnsDataSelect(): Promise<Array<SeismogramDisplayData>> {
+  setupQueryFdnsDataSelect(): Promise<ParsedResultType> {
     this.targetService('dataselect');
     return this.queryRaw().then(function(parsedResult) {
-      let out = [];
       for (let r of parsedResult.queries) {
-        r.dataSelectQuery = new DataSelectQuery();
+        const dataSelectQuery = new DataSelectQuery();
+        r.dataSelectQuery = dataSelectQuery;
         parsedResult.params.forEach( (k,v) => {
           const field = `_${k}`;
-            r.dataSelectQuery[field] = v;
+          // $FlowIgnore[prop-missing] dynamic setting of field
+          // $FlowIgnore[incompatible-use]
+          dataSelectQuery[field] = v;
         });
         if (! r.services.has('DATASELECTSERVICE')) {
           throw new Error("QueryResult does not have DATASELECTSERVICE in services");
         }
-        const serviceURL = new URL(r.services.get('DATASELECTSERVICE'));
-        r.dataSelectQuery.host(serviceURL.hostname);
-        if (serviceURL.port) {
-          stationQuery.port(serviceURL.port);
+        const urlString = r.services.get('DATASELECTSERVICE');
+        if ( isDef(urlString)) {
+          const serviceURL = new URL(urlString);
+          dataSelectQuery.host(serviceURL.hostname);
+          if (serviceURL.port) {
+            dataSelectQuery.port(parseInt(serviceURL.port));
+          }
+        } else {
+          throw new Error("QueryResult does have DATASELECTSERVICE in services, but is undef");
         }
       }
       return parsedResult;
@@ -582,8 +604,13 @@ export class FedCatalogQuery {
           const end = moment.utc(items[5]);
           return SeismogramDisplayData.fromCodesAndTimes(items[0], items[1], items[2], items[3], start, end);
           });
-        sddList.forEach(sdd => console.log(`queryFdsnDataselect sdd: ${sdd.networkCode} ${sdd.stationCode} ${sdd.locationCode} ${sdd.channelCode}`))
-        return query.dataSelectQuery.postQuerySeismograms(sddList);
+        sddList.forEach(sdd => console.log(`queryFdsnDataselect sdd: ${sdd.networkCode} ${sdd.stationCode} ${sdd.locationCode} ${sdd.channelCode}`));
+        if (isDef(query.dataSelectQuery)) {
+          return query.dataSelectQuery.postQuerySeismograms(sddList);
+        } else {
+          // could return [];
+          throw new Error("dataSelectQuery missing");
+        }
       }));
     }).then(sddArrayArray => {
       let out = [];
@@ -597,9 +624,8 @@ export class FedCatalogQuery {
   }
 
   /**
-   * Queries the remote web service at the given level for raw xml.
+   * Queries the remote web service.
    *
-   * @param level the level to query at, network, station, channel or response.
    * @returns a Promise to an xml Document.
    */
   queryRaw(): Promise<ParsedResultType> {
@@ -711,7 +737,6 @@ export class FedCatalogQuery {
   /**
    * Form URL to query the remote web service, encoding the query parameters.
    *
-   * @param level network, station, channel or response
    * @returns url
    */
   formURL() {

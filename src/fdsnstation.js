@@ -10,6 +10,8 @@ import {parseStationXml, Network} from './stationxml';
 import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, makePostParam,
   doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
+import RSVP from 'rsvp';
+
 // special due to flow
 import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
         checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isObject, isStringArg,
@@ -607,11 +609,12 @@ export class StationQuery {
      * @param  postLines array of channel selection lines
      * @return           string suitable for POST to fdsn station web service.
      */
-  postQueryRawXml(level: string, postLines: Array<string>): Promise<Response> {
+  postQueryRawXml(level: string, postLines: Array<string>): Promise<Document> {
     if (postLines.length === 0) {
       // return promise faking an not ok fetch response
       return RSVP.hash(FAKE_EMPTY_XML);
     } else {
+      const mythis = this;
       const fetchInit = defaultFetchInitObj(XML_MIME);
       fetchInit.method = "POST";
       fetchInit.body = this.createPostBody(level, postLines);

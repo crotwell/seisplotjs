@@ -16,7 +16,7 @@ import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGe
 
 import * as miniseed from './miniseed';
 import { Seismogram, SeismogramDisplayData } from './seismogram';
-import { TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj, isDef} from './util.js';
+import { TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 /** const for miniseed format, mseed */
 export const FORMAT_MINISEED = 'miniseed';
@@ -330,7 +330,7 @@ export class DataSelectQuery {
    * per channel, which may contain gaps. The original channel and timerange are
    * also populated with each result.
    *
-   * @param   channelTimeList array of SeismogramDisplayData objects
+   * @param   sddList array of SeismogramDisplayData objects
    * that will be filled in with the resulting seismogram
    * @returns Promise to the input Array of SeismogramDisplayData objects, each with the
    * seismogram containing the data returned from the server
@@ -371,7 +371,7 @@ export class DataSelectQuery {
     let out = "";
     for (let sdd of sddList) {
       const locCode = sdd.locationCode.trim() === "" ? "--" : sdd.locationCode;
-      out += `${sdd.networkCode} ${sdd.stationCode} ${sdd.locationCode} ${sdd.channelCode} ${sdd.startTime.toISOString()} ${sdd.endTime.toISOString()}`;
+      out += `${sdd.networkCode} ${sdd.stationCode} ${locCode} ${sdd.channelCode} ${sdd.startTime.toISOString()} ${sdd.endTime.toISOString()}`;
       out += '\n';
     }
     return out;
