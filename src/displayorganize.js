@@ -167,30 +167,6 @@ export function overlayAll(sddList: Array<SeismogramDisplayData>): Array<Organiz
   return overlayBySDDFunction(sddList, "all", (() => "all"));
 }
 
-
-
-export function overlayByComponentOld(sddList: Array<SeismogramDisplayData>): Array<OrganizedDisplay> {
-  let out = [];
-  const KEY = "component";
-  sddList.forEach(sdd => {
-    let found = false;
-    const orientCode = sdd.channelCode.charAt(2);
-    out.forEach(org => {
-      if (org.getAttribute(KEY) === orientCode) {
-        org.seisData.push(sdd);
-        found = true;
-      }
-    });
-    if (! found) {
-      const org = new OrganizedDisplay( [ sdd ] );
-      org.setAttribute(KEY, orientCode);
-      out.push(org);
-    }
-  });
-  return sortByKey(out, KEY);
-}
-
-
 export function sortByKey(organized: Array<OrganizedDisplay>, key: string): Array<OrganizedDisplay> {
   organized.sort((orgA, orgB) => {
     const valA = orgA.getAttribute(key);
