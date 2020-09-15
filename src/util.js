@@ -359,6 +359,18 @@ export function makeParam(name: string, val: mixed): string {
 }
 
 /**
+ * Converts name and value into a parameter line, with appending newline,
+ * for including in POST body.
+ *
+ * @param   name parameter name
+ * @param   val  parameter value
+ * @returns      formated query parameter
+ */
+export function makePostParam(name: string, val: mixed): string {
+  return name+"="+stringify(val)+"\n";
+}
+
+/**
  * converts to ISO8601 but removes the trailing Z as FDSN web services
  * do not allow that.
  *
@@ -435,7 +447,7 @@ export function doFetchWithTimeout(url: string | URL,
   } else {
     throw new Error(`url must be string or URL, ${stringify(url)}`);
   }
-  log(`attempt to fetch ${stringify(absoluteUrl)}`);
+  log(`attempt to fetch ${fetchInit.method} ${stringify(absoluteUrl)}`);
   return fetch(absoluteUrl.href, fetchInit)
   .catch(err => {
     log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
@@ -444,8 +456,10 @@ export function doFetchWithTimeout(url: string | URL,
     if(response.ok) {
       return response;
     }
-    // $FlowFixMe
-    throw new Error(`fetch response was not ok. ${response.ok} ${response.status}`);
+    return response.text().then(text => {
+      // $FlowFixMe
+      throw new Error(`fetch response was not ok. ${response.ok} ${response.status}\n${text}`);
+    });
   });
 }
 

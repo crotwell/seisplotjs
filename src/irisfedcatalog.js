@@ -7,20 +7,18 @@
  */
 
 import {parseStationXml, Network} from './stationxml';
-import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, makePostParam,
-  doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import {LEVELS, LEVEL_NETWORK, LEVEL_STATION, LEVEL_CHANNEL, LEVEL_RESPONSE, FAKE_EMPTY_XML, StationQuery} from './fdsnstation.js';
+import {DataSelectQuery} from './fdsndataselect.js';
+import {SeismogramDisplayData} from './seismogram.js';
+import {XML_MIME, TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 // special due to flow
 import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
         checkProtocol, toIsoWoZ, isDef, hasArgs, hasNoArgs, isObject, isStringArg,
         isNonEmptyStringArg, isNumArg} from './util';
 
-export const LEVEL_NETWORK = 'network';
-export const LEVEL_STATION = 'station';
-export const LEVEL_CHANNEL = 'channel';
-export const LEVEL_RESPONSE = 'response';
-
-export const LEVELS = [ LEVEL_NETWORK, LEVEL_STATION, LEVEL_CHANNEL, LEVEL_RESPONSE];
+import moment from 'moment';
+import RSVP from 'rsvp';
 
 /**
  * Major version of the FDSN spec supported here.
@@ -31,22 +29,45 @@ export const SERVICE_VERSION = 1;
  * Service name as used in the FDSN DataCenters registry,
  * http://www.fdsn.org/datacenters
  */
-export const SERVICE_NAME = `fdsnws-station-${SERVICE_VERSION}`;
+export const SERVICE_NAME = `irisws-fedcatalog-${SERVICE_VERSION}`;
 
 export const IRIS_HOST = "service.iris.edu";
 
 /** a fake, completely empty stationxml document in case of no data. */
-export const FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>';
+export const FAKE_EMPTY_TEXT = '\n';
 
+export class FedCatalogResult {
+  dataCenter: string;
+  services: Map<string,string>;
+  stationService: string;
+  dataSelectService: string;
+  postLines: Array<string>;
+  stationQuery: StationQuery | null;
+  dataSelectQuery: DataSelectQuery | null;
+  constructor() {
+    this.dataCenter = "";
+    this.stationService = "";
+    this.dataSelectService = "";
+    this.postLines = [];
+    this.services = new Map();
+    this.stationQuery = null;
+    this.dataSelectQuery = null;
+  }
+}
+
+export type ParsedResultType = {
+  params: Map<string,string>;
+  queries: Array<FedCatalogResult>;
+}
 
 /**
- * Query to a FDSN Station web service.
+ * Query to a IRIS FedCatalog web service.
  *
  * @see http://www.fdsn.org/webservices/
  *
  * @param host optional host to connect to, defaults to IRIS
  */
-export class StationQuery {
+export class FedCatalogQuery {
   /** @private */
   _specVersion: number;
   /** @private */
@@ -57,6 +78,10 @@ export class StationQuery {
   _port: number;
   /** @private */
   _nodata: number;
+  /** @private */
+  _targetService: string;
+  /** @private */
+  _level: string;
   /** @private */
   _networkCode: string;
   /** @private */
@@ -126,7 +151,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  specVersion(value?: number): number | StationQuery {
+  specVersion(value?: number): number | FedCatalogQuery {
     if (hasArgs(value)) {
       this._specVersion = value;
       return this;
@@ -142,7 +167,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  protocol(value?: string): string | StationQuery {
+  protocol(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'protocol', value);
   }
   /** Gets/Sets the remote host to connect to.
@@ -150,7 +175,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  host(value?: string): string | StationQuery {
+  host(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'host', value);
   }
   /** Gets/Sets the remote port to connect to.
@@ -158,7 +183,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  port(value?: number): number | StationQuery {
+  port(value?: number): number | FedCatalogQuery {
     return doIntGetterSetter(this, 'port', value);
   }
   /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
@@ -167,15 +192,23 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  nodata(value?: number): number | StationQuery {
+  nodata(value?: number): number | FedCatalogQuery {
     return doIntGetterSetter(this, 'nodata', value);
+  }
+  /** Get/Set the targetservice query parameter.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
+  targetService(value?: string): string | FedCatalogQuery {
+    return doStringGetterSetter(this, 'targetService', value);
   }
   /** Get/Set the network query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  networkCode(value?: string): string | StationQuery {
+  networkCode(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'networkCode', value);
   }
   /** Get/Set the station query parameter.
@@ -183,7 +216,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  stationCode(value?: string): string | StationQuery {
+  stationCode(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'stationCode', value);
   }
   /** Get/Set the location code query parameter.
@@ -191,7 +224,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  locationCode(value?: string): string | StationQuery {
+  locationCode(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'locationCode', value);
   }
   /** Get/Set the channel query parameter.
@@ -199,7 +232,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  channelCode(value?: string): string | StationQuery {
+  channelCode(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'channelCode', value);
   }
   /** Get/Set the starttime query parameter.
@@ -207,7 +240,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment$Moment): moment$Moment | StationQuery {
+  startTime(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'startTime', value);
   }
   /** Get/Set the endtime query parameter.
@@ -215,7 +248,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment$Moment): moment$Moment | StationQuery {
+  endTime(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'endTime', value);
   }
   /**
@@ -234,7 +267,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: moment$Moment): moment$Moment | StationQuery {
+  startBefore(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'startBefore', value);
   }
   /** Get/Set the endbefore query parameter.
@@ -242,7 +275,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: moment$Moment): moment$Moment | StationQuery {
+  endBefore(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'endBefore', value);
   }
   /** Get/Set the startafter query parameter.
@@ -250,7 +283,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: moment$Moment): moment$Moment | StationQuery {
+  startAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'startAfter', value);
   }
   /** Get/Set the endafter query parameter.
@@ -258,7 +291,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: moment$Moment): moment$Moment | StationQuery {
+  endAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'endAfter', value);
   }
   /** Get/Set the minlat query parameter.
@@ -266,7 +299,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minLat(value?: number): number | StationQuery {
+  minLat(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'minLat', value);
   }
   /** Get/Set the maxlon query parameter.
@@ -274,7 +307,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxLat(value?: number): number | StationQuery {
+  maxLat(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'maxLat', value);
   }
   /** Get/Set the minlon query parameter.
@@ -282,7 +315,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minLon(value?: number): number | StationQuery {
+  minLon(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'minLon', value);
   }
   /** Get/Set the maxlon query parameter.
@@ -290,7 +323,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxLon(value?: number): number | StationQuery {
+  maxLon(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'maxLon', value);
   }
   /** Get/Set the latitude query parameter.
@@ -298,7 +331,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  latitude(value?: number): number | StationQuery {
+  latitude(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'latitude', value);
   }
   /** Get/Set the longitude query parameter.
@@ -306,7 +339,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  longitude(value?: number): number | StationQuery {
+  longitude(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'longitude', value);
   }
   /** Get/Set the minradius query parameter.
@@ -314,7 +347,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minRadius(value?: number): number | StationQuery {
+  minRadius(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'minRadius', value);
   }
   /** Get/Set the maxradius query parameter.
@@ -322,7 +355,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxRadius(value?: number): number | StationQuery {
+  maxRadius(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'maxRadius', value);
   }
   /** Get/Set the includerestricted query parameter.
@@ -330,7 +363,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeRestricted(value?: boolean): boolean | StationQuery {
+  includeRestricted(value?: boolean): boolean | FedCatalogQuery {
     if (hasNoArgs(value)) {
       return this._includeRestricted;
     } else if (hasArgs(value)) {
@@ -345,7 +378,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeAvailability(value?: boolean): boolean | StationQuery {
+  includeAvailability(value?: boolean): boolean | FedCatalogQuery {
     if (hasNoArgs(value)) {
       return this._includeAvailability;
     } else if (hasArgs(value)) {
@@ -360,7 +393,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  format(value?: string): string | StationQuery {
+  format(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'format', value);
   }
   /** Get/Set the updatedafter query parameter.
@@ -368,7 +401,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: moment$Moment): moment$Moment | StationQuery {
+  updatedAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'updatedAfter', value);
   }
   /** Get/Set the matchtimeseries query parameter.
@@ -376,7 +409,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  matchTimeseries(value?: boolean): boolean | StationQuery {
+  matchTimeseries(value?: boolean): boolean | FedCatalogQuery {
     if (hasNoArgs(value)) {
       return this._matchTimeseries;
     } else if (hasArgs(value)) {
@@ -391,7 +424,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  timeout(value?: number): number | StationQuery {
+  timeout(value?: number): number | FedCatalogQuery {
     if (hasNoArgs(value)) {
       return this._timeoutSec;
     } else if (isNumArg(value)) {
@@ -436,7 +469,7 @@ export class StationQuery {
    * @returns a Promise to an Array of Network objects.
    */
   queryNetworks(): Promise<Array<Network>> {
-    return this.query(LEVEL_NETWORK);
+    return this.queryFdsnStation(LEVEL_NETWORK);
   }
   /**
    * Queries the remote web service for stations. The stations
@@ -445,7 +478,7 @@ export class StationQuery {
    * @returns a Promise to an Array of Network objects.
    */
   queryStations(): Promise<Array<Network>> {
-    return this.query(LEVEL_STATION);
+    return this.queryFdsnStation(LEVEL_STATION);
   }
   /**
    * Queries the remote web service for channels. The Channels
@@ -454,7 +487,7 @@ export class StationQuery {
    * @returns a Promise to an Array of Network objects.
    */
   queryChannels(): Promise<Array<Network>> {
-    return this.query(LEVEL_CHANNEL);
+    return this.queryFdsnStation(LEVEL_CHANNEL);
   }
   /**
    * Queries the remote web service for responses. The Responses
@@ -464,108 +497,102 @@ export class StationQuery {
    * @returns a Promise to an Array of Network objects.
    */
   queryResponses(): Promise<Array<Network>> {
-    return this.query(LEVEL_RESPONSE);
+    return this.queryFdsnStation(LEVEL_RESPONSE);
   }
 
   /**
-   * Queries the remote web service at the given level.
+   * Queries the remote station web service at the given level.
    *
    * @param level the level to query at, networ, station, channel or response.
    * @returns a Promise to an Array of Network objects.
    */
-  query(level: string): Promise<Array<Network>> {
+  queryFdsnStation(level: string): Promise<Array<Network>> {
+    return this.setupQueryFdsnStation(level).then(parsedResult => {
+      return RSVP.all(parsedResult.queries.map(query => query.stationQuery.postQuery(level, query.postLines)));
+    }).then(netArrayArray => {
+      let out = [];
+      netArrayArray.forEach(netArray => {
+        netArray.forEach(net => {
+          out.push(net);
+        });
+      });
+      return out;
+    });
+  }
+
+
+ setupQueryFdsnStation(level: string): Promise<Array<FedCatalogResult>> {
     if (! LEVELS.includes(level)) {throw new Error("Unknown level: '"+level+"'");}
-    return this.queryRawXml(level).then(function(rawXml) {
-        return parseStationXml(rawXml);
+    this._level = level;
+    this.targetService('station');
+    return this.queryRaw().then(function(parsedResult) {
+      for (let r of parsedResult.queries) {
+        r.stationQuery = new StationQuery();
+        parsedResult.params.forEach( (v, k) => {
+          const field = `_${k}`;
+          console.log(`set StationQuery field: ${field}=${v}`);
+          r.stationQuery[field] = v;
+        });
+        if (! r.services.has('STATIONSERVICE')) {
+          console.log(`${parsedResult.queries.length} ${r.dataCenter} services.size: ${r.services.size}`);
+          r.services.forEach((v,k) => console.log(`service: ${k}  ${v}`));
+          throw new Error("QueryResult does not have STATIONSERVICE in services");
+        }
+        const serviceURL = new URL(r.services.get('STATIONSERVICE'));
+        r.stationQuery.host(serviceURL.hostname);
+        if (serviceURL.port) {
+          r.stationQuery.port(serviceURL.port);
+        }
+      }
+      return parsedResult;
     });
   }
 
-
-  /**
-   * Execute POST request for networks, using params defined in this, and with
-   * channel lines of the form:
-   *
-   * NET STA LOC CHA STARTTIME ENDTIME
-   *
-   * Note that empty LOC should be encoded as dash-dash
-   *
-   * @param  postLines array of channel selection lines
-   * @returns a Promise to an Array of Network objects.
-   */
-  postQueryNetworks(postLines: Array<string>): Promise<Array<Network>> {
-    return this.postQueryRawXml(LEVEL_NETWORK, postLines).then(function(rawXml) {
-        return parseStationXml(rawXml);
+  setupQueryFdnsDataSelect(): Promise<Array<SeismogramDisplayData>> {
+    this.targetService('dataselect');
+    return this.queryRaw().then(function(parsedResult) {
+      let out = [];
+      for (let r of parsedResult.queries) {
+        r.dataSelectQuery = new DataSelectQuery();
+        parsedResult.params.forEach( (k,v) => {
+          const field = `_${k}`;
+            r.dataSelectQuery[field] = v;
+        });
+        if (! r.services.has('DATASELECTSERVICE')) {
+          throw new Error("QueryResult does not have DATASELECTSERVICE in services");
+        }
+        const serviceURL = new URL(r.services.get('DATASELECTSERVICE'));
+        r.dataSelectQuery.host(serviceURL.hostname);
+        if (serviceURL.port) {
+          stationQuery.port(serviceURL.port);
+        }
+      }
+      return parsedResult;
     });
   }
 
+  queryFdsnDataselect() {
+    return this.setupQueryFdnsDataSelect()
+    .then(parsedResult => {
 
-  /**
-   * Execute POST request for stations, using params defined in this, and with
-   * channel lines of the form:
-   *
-   * NET STA LOC CHA STARTTIME ENDTIME
-   *
-   * Note that empty LOC should be encoded as dash-dash
-   *
-   * @param  postLines array of channel selection lines
-   * @returns a Promise to an Array of Network objects.
-   */
-  postQueryStations(postLines: Array<string>): Promise<Array<Network>> {
-    return this.postQueryRawXml(LEVEL_STATION, postLines).then(function(rawXml) {
-        return parseStationXml(rawXml);
-    });
-  }
-
-  /**
-   * Execute POST request for channels, using params defined in this, and with
-   * channel lines of the form:
-   *
-   * NET STA LOC CHA STARTTIME ENDTIME
-   *
-   * Note that empty LOC should be encoded as dash-dash
-   *
-   * @param  postLines array of channel selection lines
-   * @returns a Promise to an Array of Network objects.
-   */
-  postQueryChannels(postLines: Array<string>): Promise<Array<Network>> {
-    return this.postQueryRawXml(LEVEL_CHANNEL, postLines).then(function(rawXml) {
-        return parseStationXml(rawXml);
-    });
-  }
-
-  /**
-   * Execute POST request for responses, using params defined in this, and with
-   * channel lines of the form:
-   *
-   * NET STA LOC CHA STARTTIME ENDTIME
-   *
-   * Note that empty LOC should be encoded as dash-dash
-   *
-   * @param  postLines array of channel selection lines
-   * @returns a Promise to an Array of Network objects.
-   */
-  postQueryResponses(postLines: Array<string>): Promise<Array<Network>> {
-    return this.postQueryRawXml(LEVEL_RESPONSE, postLines).then(function(rawXml) {
-        return parseStationXml(rawXml);
-    });
-  }
-
-  /**
-   * Execute POST request using params defined in this, for given level, and with
-   * channel lines of the form:
-   *
-   * NET STA LOC CHA STARTTIME ENDTIME
-   *
-   * Note that empty LOC should be encoded as dash-dash
-   *
-   * @param  level     level to request, one of network, station, channel, response
-   * @param  postLines array of channel selection lines
-   * @returns a Promise to an Array of Network objects.
-   */
-  postQuery(level: string, postLines: Array<string>): Promise<Array<Network>> {
-    if (! LEVELS.includes(level)) {throw new Error("Unknown level: '"+level+"'");}
-    return this.postQueryRawXml(level, postLines).then(function(rawXml) {
-        return parseStationXml(rawXml);
+      return RSVP.all(parsedResult.queries.map(query => {
+        let sddList = query.postLines.map(line => {
+          const items = line.split(" ");
+          const start = moment.utc(items[4]);
+          const end = moment.utc(items[5]);
+          return SeismogramDisplayData.fromCodesAndTimes(items[0], items[1], items[2], items[3], start, end);
+          });
+        sddList.forEach(sdd => console.log(`queryFdsnDataselect sdd: ${sdd.networkCode} ${sdd.stationCode} ${sdd.locationCode} ${sdd.channelCode}`))
+        return query.dataSelectQuery.postQuerySeismograms(sddList);
+      }));
+    }).then(sddArrayArray => {
+      let out = [];
+      sddArrayArray.forEach(sddArray => {
+        sddArray.forEach(sdd => {
+          out.push(sdd);
+        });
+      });
+      return out;
     });
   }
 
@@ -575,97 +602,70 @@ export class StationQuery {
    * @param level the level to query at, network, station, channel or response.
    * @returns a Promise to an xml Document.
    */
-  queryRawXml(level: string): Promise<Document> {
+  queryRaw(): Promise<ParsedResultType> {
     const mythis = this;
-    const url = this.formURL(level);
-    const fetchInit = defaultFetchInitObj(XML_MIME);
+    const url = this.formURL();
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
       .then(response => {
           if (response.status === 200) {
             return response.text();
           } else if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
             // 204 is nodata, so successful but empty
-            return FAKE_EMPTY_XML;
+            return FAKE_EMPTY_TEXT;
           } else {
             throw new Error(`Status not successful: ${response.status}`);
           }
-      }).then(function(rawXmlText) {
-        return new DOMParser().parseFromString(rawXmlText, "text/xml");
+      }).then(function(rawText) {
+        console.log(rawText);
+        return mythis.parseRequest(rawText);
       });
   }
 
-
-    /**
-     * Execute POST request using params defined in this, for given level, and with
-     * channel lines of the form:
-     *
-     * NET STA LOC CHA STARTTIME ENDTIME
-     *
-     * Note that empty LOC should be encoded as dash-dash
-     *
-     * @param  level     level to request, one of network, station, channel, response
-     * @param  postLines array of channel selection lines
-     * @return           string suitable for POST to fdsn station web service.
-     */
-  postQueryRawXml(level: string, postLines: Array<string>): Promise<Response> {
-    if (postLines.length === 0) {
-      // return promise faking an not ok fetch response
-      return RSVP.hash(FAKE_EMPTY_XML);
-    } else {
-      const fetchInit = defaultFetchInitObj(XML_MIME);
-      fetchInit.method = "POST";
-      fetchInit.body = this.createPostBody(level, postLines);
-      return doFetchWithTimeout(this.formURL(level), fetchInit, this._timeoutSec * 1000 )
-      .then(response => {
-          if (response.status === 200) {
-            return response.text();
-          } else if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
-            // 204 is nodata, so successful but empty
-            return FAKE_EMPTY_XML;
-          } else {
-            throw new Error(`Status not successful: ${response.status}`);
+  parseRequest(requestText: string): ParsedResultType {
+    let out = {
+      params: new Map(),
+      queries: []
+    };
+    let lines = requestText.split('\n');
+    let inParams = true;
+    let query = null;
+    for (let l of lines) {
+      l = l.trim();
+      if (inParams) {
+        if (l.length === 0) {
+          //empty line, end of section
+          inParams = false;
+        } else {
+          let keyval = l.split('=');
+          out.params.set(keyval[0], keyval[1]);
+        }
+      } else {
+        if (l.length === 0) {
+          // empty line, end of section
+          query = null;
+        } else {
+          if (query === null) {
+            // first line of next response section
+            console.log(`first line of next query: ${l}`);
+            query = new FedCatalogResult();
+            out.queries.push(query);
           }
-      }).then(function(rawXmlText) {
-        return new DOMParser().parseFromString(rawXmlText, "text/xml");
-      });
+          if (l.indexOf("=") !== -1) {
+            let keyval = l.split("=");
+            if (keyval[0] === "DATACENTER") {
+              query.dataCenter = keyval[1];
+            } else if (keyval[0].endsWith("SERVICE")) {
+              query.services.set(keyval[0], keyval[1]);
+            } else {
+              throw new Error(`Unexpected line in FedCatalog response: '${l}'`);
+            }
+          } else {
+            query.postLines.push(l);
+          }
+        }
+      }
     }
-  }
-
-  /**
-   * Creates post body using params defined in this, for given level, and with
-   * optional channel lines of the form:
-   *
-   * NET STA LOC CHA STARTTIME ENDTIME
-   *
-   * Note that empty LOC should be encoded as dash-dash
-   *
-   * @param  level     level to request, one of network, station, channel, response
-   * @param  postLines optional array of channel selection lines
-   * @return           string suitable for POST to fdsn station web service.
-   */
-  createPostBody(level: string, postLines: Array<string> = []): string {
-    let out = "";
-    if (! isStringArg(level)) {throw new Error("level not specified, should be one of network, station, channel, response.");}
-    out = out+makePostParam("level", level);
-    if (isObject(this._startBefore)) { out = out+makePostParam("startbefore", toIsoWoZ(this._startBefore));}
-    if (isObject(this._startAfter)) { out = out+makePostParam("startafter", toIsoWoZ(this._startAfter));}
-    if (isObject(this._endBefore)) { out = out+makePostParam("endbefore", toIsoWoZ(this._endBefore));}
-    if (isObject(this._endAfter)) { out = out+makePostParam("endafter", toIsoWoZ(this._endAfter));}
-    if (isNumArg(this._minLat)) { out = out+makePostParam("minlat", this.minLat());}
-    if (isNumArg(this._maxLat)) { out = out+makePostParam("maxlat", this.maxLat());}
-    if (isNumArg(this._minLon)) { out = out+makePostParam("minlon", this.minLon());}
-    if (isNumArg(this._maxLon)) { out = out+makePostParam("maxlon", this.maxLon());}
-    if (isNumArg(this._latitude)) { out = out+makePostParam("lat", this.latitude());}
-    if (isNumArg(this._longitude)) { out = out+makePostParam("lon", this.longitude());}
-    if (isNumArg(this._minRadius)) { out = out+makePostParam("minradius", this.minRadius());}
-    if (isNumArg(this._maxRadius)) { out = out+makePostParam("maxradius", this.maxRadius());}
-    if (isDef(this._includeRestricted)) { out = out+makePostParam("includerestricted", this.includeRestricted());}
-    if (isDef(this._includeAvailability)) { out = out+makePostParam("includeavailability", this.includeAvailability());}
-    if (isObject(this._updatedAfter)) { out = out+makePostParam("updatedafter", toIsoWoZ(this._updatedAfter));}
-    if (isDef(this._matchTimeseries)) { out = out+makePostParam("matchtimeseries", this.matchTimeseries());}
-    if (isStringArg(this._format)) { out = out+makePostParam("format", this.format());}
-    if (isNumArg(this._nodata)) { out = out+makePostParam("nodata", this.nodata());}
-    postLines.forEach(line => out = out + line.trim() + "\n");
     return out;
   }
 
@@ -706,7 +706,7 @@ export class StationQuery {
     if (this._protocol.endsWith(colon)) {
       colon = "";
     }
-    return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/fdsnws/station/"+this._specVersion;
+    return this._protocol+colon+"//"+this._host+(this._port===80?"":(":"+this._port))+"/irisws/fedcatalog/"+this._specVersion;
   }
   /**
    * Form URL to query the remote web service, encoding the query parameters.
@@ -714,10 +714,10 @@ export class StationQuery {
    * @param level network, station, channel or response
    * @returns url
    */
-  formURL(level: string) {
+  formURL() {
     let url = this.formBaseURL()+"/query?";
-    if (! isStringArg(level)) {throw new Error("level not specified, should be one of network, station, channel, response.");}
-    url = url+makeParam("level", level);
+    if (isStringArg(this._level)) { url = url+makeParam("level", this._level);}
+    if (isStringArg(this._targetService)) { url = url+makeParam("targetservice", this.targetService());}
     if (isStringArg(this._networkCode)) { url = url+makeParam("net", this.networkCode());}
     if (isStringArg(this._stationCode)) { url = url+makeParam("sta", this.stationCode());}
     if (isStringArg(this._locationCode)) { url = url+makeParam("loc", this.locationCode());}

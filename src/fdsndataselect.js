@@ -335,51 +335,44 @@ export class DataSelectQuery {
    * @returns Promise to the input Array of SeismogramDisplayData objects, each with the
    * seismogram containing the data returned from the server
    */
-  postQuerySeismograms(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
-    return this.postQueryDataRecords(channelTimeList).then(dataRecords => {
+  postQuerySeismograms(sddList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
+    return this.postQueryDataRecords(sddList).then(dataRecords => {
       return miniseed.seismogramPerChannel(dataRecords);
     }).then(seisArray => {
-      for (let ct of channelTimeList) {
-        if (isDef(ct.channel)) {
-          let channel = ct.channel;
-          let codes = channel.codes();
-          let seis = seisArray.find(s => s.codes() === codes);
-          if (seis) {
-            ct.seismogram = seis;
-          }
-        } else {
-          throw new Error("Channel in missing in postQuerySeismograms");
+      for (let sdd of sddList) {
+        let codes = sdd.codes();
+        let seis = seisArray.find(s => s.codes() === codes && s.timeRange.overlaps(sdd.timeWindow));
+        if (seis) {
+          sdd.seismogram = seis;
         }
       }
-      return channelTimeList;
+      return sddList;
     });
   }
-  postQueryRaw(channelTimeList: Array<SeismogramDisplayData>): Promise<Response> {
-    if (channelTimeList.length === 0) {
+  postQueryRaw(sddList: Array<SeismogramDisplayData>): Promise<Response> {
+    if (sddList.length === 0) {
       // return promise faking an not ok fetch response
       return RSVP.hash({
         ok: false
       });
     } else {
-      const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
-      fetchInit.method = "POST";
-      fetchInit.body = this.createPostBody(channelTimeList);
-      return doFetchWithTimeout(this.formURL(), fetchInit, this._timeoutSec * 1000 );
+      return this.postQueryRawWithBody(this.createPostBody(sddList));
     }
   }
 
-  createPostBody(channelTimeList: Array<SeismogramDisplayData>): string {
+  postQueryRawWithBody(body: string): Promise<Response> {
+      const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
+      fetchInit.method = "POST";
+      fetchInit.body = body;
+      return doFetchWithTimeout(this.formURL(), fetchInit, this._timeoutSec * 1000 );
+  }
+
+  createPostBody(sddList: Array<SeismogramDisplayData>): string {
     let out = "";
-    for (let ct of channelTimeList) {
-      if (isDef(ct.channel)) {
-        let channel = ct.channel;
-        let sta = channel.station;
-        let net = sta.network;
-        out += `${net.networkCode} ${sta.stationCode} ${channel.locationCode} ${channel.channelCode} ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}`;
-        out += '\n';
-      } else {
-        throw new Error("Channel in missing in createPostBody");
-      }
+    for (let sdd of sddList) {
+      const locCode = sdd.locationCode.trim() === "" ? "--" : sdd.locationCode;
+      out += `${sdd.networkCode} ${sdd.stationCode} ${sdd.locationCode} ${sdd.channelCode} ${sdd.startTime.toISOString()} ${sdd.endTime.toISOString()}`;
+      out += '\n';
     }
     return out;
   }

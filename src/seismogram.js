@@ -407,6 +407,9 @@ export class Seismogram {
   get timeRange(): StartEndDuration {
     return new StartEndDuration(this.startTime, this.endTime);
   }
+  get timeWindow(): StartEndDuration {
+    return this.timeRange;
+  }
   get networkCode(): string {
     return this._segmentArray[0].networkCode;
   }
@@ -635,6 +638,12 @@ export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegmen
   }
 }
 
+export type ChannelCodeHolderType = {
+  networkCode: string,
+  stationCode: string,
+  locationCode: string,
+  channelCode: string
+}
 
 export class SeismogramDisplayData {
   /** @private */
@@ -644,6 +653,7 @@ export class SeismogramDisplayData {
   markerList: Array<MarkerType>;
   traveltimeList: Array<TraveltimeArrivalType>;
   channel: Channel | null;
+  channelCodesHolder: ChannelCodeHolderType | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
   timeWindow: StartEndDuration;
@@ -660,6 +670,7 @@ export class SeismogramDisplayData {
     this.markerList = [];
     this.traveltimeList = [];
     this.channel = null;
+    this.channelCodesHolder = null;
     this._instrumentSensitivity = null;
     this.quakeList = [];
     this.timeWindow = timeWindow;
@@ -681,6 +692,16 @@ export class SeismogramDisplayData {
   static fromChannelAndTimes(channel: Channel, startTime: moment$Moment, endTime: moment$Moment): SeismogramDisplayData {
     const out = new SeismogramDisplayData(new StartEndDuration(startTime, endTime));
     out.channel = channel;
+    return out;
+  }
+  static fromCodesAndTimes(networkCode: string, stationCode: string, locationCode: string, channelCode: string, startTime: moment$Moment, endTime: moment$Moment): SeismogramDisplayData {
+    const out = new SeismogramDisplayData(new StartEndDuration(startTime, endTime));
+    out.channelCodesHolder = {
+      networkCode: networkCode,
+      stationCode: stationCode,
+      locationCode: locationCode,
+      channelCode: channelCode
+    };
     return out;
   }
   addQuake(quake: Quake | Array<Quake> ) {
@@ -752,6 +773,8 @@ export class SeismogramDisplayData {
       return this.channel.networkCode;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.networkCode;
+    } else if (isDef(this.channelCodesHolder)) {
+      return this.channelCodesHolder.networkCode;
     } else {
       return "unknown";
     }
@@ -767,6 +790,8 @@ export class SeismogramDisplayData {
       return this.channel.stationCode;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.stationCode;
+    } else if (isDef(this.channelCodesHolder)) {
+      return this.channelCodesHolder.stationCode;
     } else {
       return "unknown";
     }
@@ -782,6 +807,8 @@ export class SeismogramDisplayData {
       return this.channel.locationCode;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.locationCode;
+    } else if (isDef(this.channelCodesHolder)) {
+      return this.channelCodesHolder.locationCode;
     } else {
       return "unknown";
     }
@@ -797,6 +824,8 @@ export class SeismogramDisplayData {
       return this.channel.channelCode;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.channelCode;
+    } else if (isDef(this.channelCodesHolder)) {
+      return this.channelCodesHolder.channelCode;
     } else {
       return "unknown";
     }
