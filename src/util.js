@@ -447,7 +447,7 @@ export function doFetchWithTimeout(url: string | URL,
   } else {
     throw new Error(`url must be string or URL, ${stringify(url)}`);
   }
-  log(`attempt to fetch ${fetchInit.method} ${stringify(absoluteUrl)}`);
+  log(`attempt to fetch ${fetchInit.method ? fetchInit.method : ""} ${stringify(absoluteUrl)}`);
   return fetch(absoluteUrl.href, fetchInit)
   .catch(err => {
     log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
