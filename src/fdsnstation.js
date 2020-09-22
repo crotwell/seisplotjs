@@ -226,7 +226,7 @@ export class StationQuery {
    * @param   se time window
    * @returns     this
    */
-  timeWindow(se: StartEndDuration) {
+  timeWindow(se: StartEndDuration): StationQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;
@@ -677,7 +677,7 @@ export class StationQuery {
    *
    * @returns the url
    */
-  formVersionURL() {
+  formVersionURL(): string {
       return this.formBaseURL()+"/version";
   }
 
@@ -704,7 +704,7 @@ export class StationQuery {
    *
    * @returns the url
    */
-  formBaseURL() {
+  formBaseURL(): string {
     let colon = ":";
     if (this._protocol.endsWith(colon)) {
       colon = "";
@@ -717,7 +717,7 @@ export class StationQuery {
    * @param level network, station, channel or response
    * @returns url
    */
-  formURL(level: string) {
+  formURL(level: string): string {
     let url = this.formBaseURL()+"/query?";
     if (! isStringArg(level)) {throw new Error("level not specified, should be one of network, station, channel, response.");}
     url = url+makeParam("level", level);

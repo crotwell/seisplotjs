@@ -8,11 +8,18 @@
 
  import moment from 'moment';
 
-import {SeismogramSegment, Seismogram} from './seismogram';
-import * as seedcodec from './seedcodec';
+import { SeismogramSegment, Seismogram} from './seismogram';
+import { EncodedDataSegment } from './seedcodec';
 import { isDef, isNonEmptyStringArg } from './util.js';
 
 export const MINISEED_MIME = "application/vnd.fdsn.mseed";
+
+// type codes as number (ascii)
+export const R_TYPECODE: number = 'R'.charCodeAt(0);
+export const D_TYPECODE: number = 'D'.charCodeAt(0);
+export const Q_TYPECODE: number = 'Q'.charCodeAt(0);
+export const M_TYPECODE: number = 'M'.charCodeAt(0);
+
 
 /**
  * parse arrayBuffer into an array of DataRecords.
@@ -160,11 +167,11 @@ export class DataRecord {
    *
    * @returns decompressed data
    */
-  decompress() {
+  decompress(): Int32Array | Float32Array | Float64Array {
     return this.asEncodedDataSegment().decode();
   }
-  asEncodedDataSegment() {
-    return new seedcodec.EncodedDataSegment(this.header.encoding, this.data, this.header.numSamples, this.header.littleEndian);
+  asEncodedDataSegment(): EncodedDataSegment {
+    return new EncodedDataSegment(this.header.encoding, this.data, this.header.numSamples, this.header.littleEndian);
   }
 
   /**
@@ -238,7 +245,7 @@ export class DataHeader {
     this.endTime = moment.utc(this.startTime);
   }
 
-  toString() {
+  toString(): string {
     return this.netCode+"."+this.staCode+"."+this.locCode+"."+this.chanCode+" "+this.startTime.toISOString()+" "+this.encoding;
   }
 

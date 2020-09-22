@@ -40,7 +40,7 @@ export class OrganizedDisplay {
   setAttribute(key: string, value: any) {
     this.attributes.set(key, value);
   }
-  getAttribute(key: string) {
+  getAttribute(key: string): any {
     if (this.attributes.has(key)) {
       return this.attributes.get(key);
     }
@@ -61,8 +61,9 @@ export class OrganizedDisplay {
     } else if (this.plottype.startsWith(SPECTRA)) {
       let loglog = getFromQueryParams(queryParams, 'loglog', 'true');
       loglog = (queryParams.loglog.toLowerCase() === 'true');
-      let fftList = this.seisData.map(sd => fftForward(sd.seismogram));
-      this.fftPlot = new FFTPlot(divElement, this.seisConfig, fftList, loglog);
+      let fftList = this.seisData.map(sdd => sdd.seismogram ? fftForward(sdd) : null);
+      let fftListNoNull = fftList.filter(Boolean);
+      this.fftPlot = new FFTPlot(divElement, this.seisConfig, fftListNoNull, loglog);
       this.fftPlot.draw();
     } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
       if (this.seisData.length !== 2) {

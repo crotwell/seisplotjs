@@ -73,7 +73,7 @@ export function parseSac(dataView: DataView): sacType {
   return out;
 }
 
-export function replaceYData(dataView: DataView, yData: Float32Array) {
+export function replaceYData(dataView: DataView, yData: Float32Array): DataView {
   let littleEndian = false;
   let sacVer = dataView.getUint32(NVHDR_OFFSET, true);
   if (sacVer === 6) {

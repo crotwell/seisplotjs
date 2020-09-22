@@ -67,6 +67,7 @@ export class DataLinkConnection {
   architecture: string;
   _responseResolve: null | (response: DataLinkResponse) => void;
   _responseReject: null | (error: Error) => void;
+  _mode: string;
   webSocket: WebSocket | null;
   constructor(url: string, packetHandler: (packet: DataLinkPacket) => void, errorHandler: (error: Error) => void) {
     this.url = url;
@@ -98,7 +99,7 @@ export class DataLinkConnection {
    *
    *  @returns a Promise that resolves to the server's ID.
    */
-  connect() {
+  connect(): Promise<string> {
     const that = this;
     return new RSVP.Promise(function(resolve, reject) {
       const webSocket = new WebSocket(that.url, DATALINK_PROTOCOL);
@@ -139,7 +140,7 @@ export class DataLinkConnection {
    * @returns the current mode, QUERY_MODE or STREAM_MODE
    *
    */
-  get mode() { return this._mode;}
+  get mode(): string { return this._mode;}
 
   /**
    * Switches to streaming mode to receive data packets from the ringserver.
@@ -168,7 +169,7 @@ export class DataLinkConnection {
       this.endStream(); // end streaming just in case
       if (this.webSocket) {this.webSocket.close();}
       this.webSocket = null;
-      this._mode = null;
+      this._mode = QUERY_MODE;
     }
   }
 
@@ -593,7 +594,7 @@ export class DataLinkPacket {
    *
    * @returns miniseed DataRecord or null
    */
-  get miniseed() {
+  get miniseed(): miniseed.DataRecord | null {
     if ( ! isDef(this._miniseed) ) {
       if (this.streamId.endsWith(MSEED_TYPE)) {
         this._miniseed = miniseed.parseSingleDataRecord(this.data);

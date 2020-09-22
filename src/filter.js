@@ -11,7 +11,7 @@ import {InstrumentSensitivity} from './stationxml.js';
 import {OregonDSP} from './oregondsputil.js';
 import {isDef} from './util.js';
 
-import type { IIRFilter } from 'oregondsp/com/oregondsp/signalProcessing/filter/iir';
+import type { IIRFilter, Butterworth, ChebyshevI, ChebyshevII } from 'oregondsp/com/oregondsp/signalProcessing/filter/iir';
 
 const CenteredHilbertTransform = OregonDSP.filter.fir.equiripple.CenteredHilbertTransform;
 
@@ -29,7 +29,7 @@ export const LOW_PASS = OregonDSP.filter.iir.PassbandType.LOWPASS;
  */
 export const HIGH_PASS = OregonDSP.filter.iir.PassbandType.HIGHPASS;
 
-export function amplitude(real: number, imag: number) {
+export function amplitude(real: number, imag: number): number {
   return Math.hypot(real, imag);
 }
 
@@ -108,7 +108,7 @@ export function createButterworth(numPoles: number,
                                   passband: string,
                                   lowFreqCorner: number,
                                   highFreqCorner: number,
-                                  delta: number) {
+                                  delta: number): Butterworth {
   return new OregonDSP.filter.iir.Butterworth(numPoles,
                                      passband,
                                      lowFreqCorner,
@@ -132,7 +132,7 @@ export function createChebyshevI(numPoles: number,
                                   passband: string,
                                   lowFreqCorner: number,
                                   highFreqCorner: number,
-                                  delta: number) {
+                                  delta: number): ChebyshevI {
   return new OregonDSP.filter.iir.ChebyshevI(numPoles,
                                     epsilon,
                                     passband,
@@ -157,7 +157,7 @@ export function createChebyshevII(numPoles: number,
                                   passband: string,
                                   lowFreqCorner: number,
                                   highFreqCorner: number,
-                                  delta: number) {
+                                  delta: number): ChebyshevII {
   return new OregonDSP.filter.iir.ChebyshevII(numPoles,
                                      epsilon,
                                      passband,

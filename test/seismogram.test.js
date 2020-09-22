@@ -238,23 +238,30 @@ test("cut clone sdd test", () => {
   sdd.addQuake(q);
   const cutWindow = new StartEndDuration( startTime, null, 10);
   const cutSeis = seis.cut(cutWindow);
-  expect(cutSeis.endTime).toEqual(cutWindow.endTime);
-  const cutSeisSdd = sdd.cloneWithNewSeismogram(cutSeis);
-  cutSeisSdd.timeWindow = cutWindow; // clone keeps the old time window
-  expect(cutSeisSdd.endTime).toEqual(cutWindow.endTime);
-  expect(cutSeisSdd.seismogram).toBeDefined();
-  expect(cutSeisSdd.seismogram.endTime).toEqual(cutWindow.endTime);
-  expect(cutSeisSdd.seismogram).not.toBe(seis);
-  // sdd cut has new seismogram and new time window
-  const cutSdd = sdd.cut(cutWindow);
-  expect(cutSdd).toBeDefined();
-  const cutSdd_seis = isDef(cutSdd) ? cutSdd.seismogram: null;
-  expect(cutSdd_seis).toBeDefined();
-  if (isDef(cutSdd) && isDef(cutSdd_seis)) {
+  expect(cutSeis).toBeDefined();
+  if (isDef(cutSeis)) {
     // for flow
-    expect(cutSdd.endTime).toEqual(cutWindow.endTime);
-    expect(cutSdd_seis.endTime).toEqual(cutWindow.endTime);
-    expect(cutSdd_seis).not.toEqual(seis);
-    expect(cutSdd.quakeList).toHaveLength(sdd.quakeList.length);
+    expect(cutSeis.endTime).toEqual(cutWindow.endTime);
+    const cutSeisSdd = sdd.cloneWithNewSeismogram(cutSeis);
+    cutSeisSdd.timeWindow = cutWindow; // clone keeps the old time window
+    expect(cutSeisSdd.endTime).toEqual(cutWindow.endTime);
+    expect(cutSeisSdd.seismogram).toBeDefined();
+    const cutSeisSdd_seis = cutSeisSdd.seismogram;
+    if (isDef(cutSeisSdd_seis)) {
+      expect(cutSeisSdd_seis.endTime).toEqual(cutWindow.endTime);
+      expect(cutSeisSdd_seis).not.toBe(seis);
+      // sdd cut has new seismogram and new time window
+      const cutSdd = sdd.cut(cutWindow);
+      expect(cutSdd).toBeDefined();
+      const cutSdd_seis = isDef(cutSdd) ? cutSdd.seismogram: null;
+      expect(cutSdd_seis).toBeDefined();
+      if (isDef(cutSdd) && isDef(cutSdd_seis)) {
+        // for flow
+        expect(cutSdd.endTime).toEqual(cutWindow.endTime);
+        expect(cutSdd_seis.endTime).toEqual(cutWindow.endTime);
+        expect(cutSdd_seis).not.toEqual(seis);
+        expect(cutSdd.quakeList).toHaveLength(sdd.quakeList.length);
+      }
+    }
   }
 });

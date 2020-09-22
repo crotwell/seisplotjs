@@ -167,7 +167,6 @@ export class ParticleMotion {
     this.drawAxis();
     this.drawAxisLabels();
     this.drawParticleMotion();
-    return this;
   }
   checkResize(): boolean {
     let rect = this.svgParent.node().getBoundingClientRect();
@@ -237,14 +236,12 @@ export class ParticleMotion {
     this.drawXSublabel();
     this.drawYLabel();
     this.drawYSublabel();
-    return this;
   }
 
   rescaleAxis() {
     let delay = 500;
     this.g.select(".axis--y").transition().duration(delay/2).call(this.yAxis);
     this.g.select(".axis--x").transition().duration(delay/2).call(this.xAxis);
-    return this;
   }
 
   calcScaleDomain() {
@@ -275,7 +272,6 @@ export class ParticleMotion {
     let yHalfNice = (yNiceMinMax[1] - yNiceMinMax[0])/2;
     this.yScaleRmean.domain([ -1 * yHalfNice,  yHalfNice ]);
     this.rescaleAxis();
-    return this;
   }
 
   calcTimeWindow(): void {
@@ -301,7 +297,6 @@ export class ParticleMotion {
     this.yScale.range([this.height, 0]);
     this.xScaleRmean.range([0, this.width]);
     this.yScaleRmean.range([this.height, 0]);
-    return this;
   }
   /**
    * Draws the title as simple string or array of strings. If an array
@@ -336,7 +331,6 @@ export class ParticleMotion {
        .attr("text-anchor", "middle")
        .text(this.seismographConfig.xLabel);
     }
-    return this;
   }
   drawYLabel() {
     this.svg.selectAll('g.yLabel').remove();
@@ -367,7 +361,6 @@ export class ParticleMotion {
         svgText.text(this.seismographConfig.yLabelRight);
       }
     }
-    return this;
   }
   drawXSublabel() {
     this.svg.selectAll('g.xSublabel').remove();
@@ -377,7 +370,6 @@ export class ParticleMotion {
        .append("text").classed("x label sublabel", true)
        .attr("text-anchor", "middle")
        .text(this.seismographConfig.xSublabel);
-    return this;
   }
   drawYSublabel() {
     this.svg.selectAll('g.ySublabel').remove();
@@ -400,7 +392,6 @@ export class ParticleMotion {
     }
     svgText
        .text(this.seismographConfig.ySublabel);
-    return this;
   }
 
 }

@@ -257,7 +257,7 @@ export class FedCatalogQuery {
    * @param   se time window
    * @returns     this
    */
-  timeWindow(se: StartEndDuration) {
+  timeWindow(se: StartEndDuration): FedCatalogQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;
@@ -593,7 +593,7 @@ export class FedCatalogQuery {
     });
   }
 
-  queryFdsnDataselect() {
+  queryFdsnDataselect(): Promise<Array<SeismogramDisplayData>> {
     return this.setupQueryFdnsDataSelect()
     .then(parsedResult => {
 
@@ -700,7 +700,7 @@ export class FedCatalogQuery {
    *
    * @returns the url
    */
-  formVersionURL() {
+  formVersionURL(): string {
       return this.formBaseURL()+"/version";
   }
 
@@ -727,7 +727,7 @@ export class FedCatalogQuery {
    *
    * @returns the url
    */
-  formBaseURL() {
+  formBaseURL(): string {
     let colon = ":";
     if (this._protocol.endsWith(colon)) {
       colon = "";
@@ -739,7 +739,7 @@ export class FedCatalogQuery {
    *
    * @returns url
    */
-  formURL() {
+  formURL(): string {
     let url = this.formBaseURL()+"/query?";
     if (isStringArg(this._level)) { url = url+makeParam("level", this._level);}
     if (isStringArg(this._targetService)) { url = url+makeParam("targetservice", this.targetService());}

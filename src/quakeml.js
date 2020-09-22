@@ -166,7 +166,7 @@ export class Quake {
   get picks(): Array<Pick> {
     return this.pickList;
   }
-  toString() {
+  toString(): string {
     return stringify(this.time)
     +' '+stringify(this.latitude)
     +"/"+stringify(this.longitude)
@@ -222,7 +222,7 @@ export class Origin {
     out.arrivalList = allArrivals;
     return out;
   }
-  toString() {
+  toString(): string {
     return stringify(this.time)
       +' '+stringify(this.latitude)
       +" "+stringify(this.longitude)
@@ -268,7 +268,7 @@ export class Magnitude {
       throw new Error(`Did not find mag and type in Element: ${stringify(mag)} ${stringify(type)}`);
     }
   }
-  toString() {
+  toString(): string {
     return stringify(this.mag)+" "+stringify(this.type);
   }
 }

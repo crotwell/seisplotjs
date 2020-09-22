@@ -106,7 +106,7 @@ export function createPlotsBySelectorPromise(selector: string): Promise<Array<Pl
 }
 
 
-export function createPlotsBySelector(selector: string) {
+export function createPlotsBySelector(selector: string): Promise<Array<PlotDataType>> {
   return createPlotsBySelectorPromise(selector).then(function(resultArray){
     resultArray.forEach(function(result: PlotDataType) {
       result.svgParent.append("p").text("Build plot");
@@ -124,7 +124,7 @@ export function createPlotsBySelector(selector: string) {
   });
 }
 
-export function alphabeticalSort(traceA: Seismogram, traceB: Seismogram) {
+export function alphabeticalSort(traceA: Seismogram, traceB: Seismogram): number {
   if (traceA.codes() < traceB.codes()) {
     return -1;
   } else {

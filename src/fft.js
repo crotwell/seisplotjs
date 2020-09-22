@@ -10,6 +10,7 @@ import {Seismogram, SeismogramDisplayData } from './seismogram.js';
 
 import type { Complex } from './oregondsputil.js';
 import {OregonDSP, createComplex} from './oregondsputil.js';
+import {isDef} from './util.js';
 
 /** A higher level function to calculate DFT. Returns a
  * FFTResult for easier access to the result as
@@ -19,19 +20,25 @@ import {OregonDSP, createComplex} from './oregondsputil.js';
  * @param seis seismogram or SeismogramDisplayData to transform
  * @returns fft of seismogram
  */
-export function fftForward(seis: Seismogram | SeismogramDisplayData) {
+export function fftForward(seis: Seismogram | SeismogramDisplayData): FFTResult {
   let sdd;
   if (seis instanceof Seismogram) {
     sdd = SeismogramDisplayData.fromSeismogram(seis);
   } else {
     sdd = seis;
   }
-  if ( sdd.seismogram.isContiguous()) {
-    let result = FFTResult.createFromPackedFreq(calcDFT(sdd.seismogram.y), sdd.seismogram.numPoints, sdd.seismogram.sampleRate);
-    result.seismogramDisplayData = sdd;
-    return result;
+  if ( isDef(sdd.seismogram)) {
+    const seismogram = sdd.seismogram;
+    if (seismogram.isContiguous()) {
+      let result = FFTResult.createFromPackedFreq(calcDFT(seismogram.y), seismogram.numPoints, seismogram.sampleRate);
+      result.seismogramDisplayData = sdd;
+      return result;
+    } else {
+      throw new Error("Can only take FFT is seismogram is contiguous.");
+    }
+
   } else {
-    throw new Error("Can only take FFT is seismogram is contiguous.");
+    throw new Error("Can not take FFT is seismogram is null.");
   }
 }
 
@@ -112,7 +119,7 @@ export class FFTResult {
    * @param   sampleRate sample rate of original data
    * @returns            FFTResult
    */
-  static createFromPackedFreq(packedFreq: Float32Array, origLength: number, sampleRate: number) {
+  static createFromPackedFreq(packedFreq: Float32Array, origLength: number, sampleRate: number): FFTResult {
     let fftResult = new FFTResult(origLength, sampleRate);
     fftResult.packedFreq = packedFreq;
     fftResult.recalcFromPackedFreq();
@@ -126,7 +133,7 @@ export class FFTResult {
    * @param   sampleRate sample rate of original data
    * @returns               FFTResult
    */
-  static createFromComplex(complexArray: Array<Complex>, origLength: number, sampleRate: number) {
+  static createFromComplex(complexArray: Array<Complex>, origLength: number, sampleRate: number): FFTResult {
     let fftResult = new FFTResult(origLength, sampleRate);
     fftResult.complex = complexArray;
     fftResult.recalcFromComplex();
@@ -141,7 +148,7 @@ export class FFTResult {
    * @param   sampleRate sample rate of original data
    * @returns             FFTResult
    */
-  static createFromAmpPhase(amp: Float32Array, phase: Float32Array, origLength: number, sampleRate: number) {
+  static createFromAmpPhase(amp: Float32Array, phase: Float32Array, origLength: number, sampleRate: number): FFTResult {
     let fftResult = new FFTResult(origLength, sampleRate);
     if (amp.length !== phase.length) {throw new Error(`amp and phase must be same length: ${amp.length} ${phase.length}`);}
     fftResult.amp = amp;
@@ -154,7 +161,7 @@ export class FFTResult {
    *
    * @returns fundamental frequency
    */
-  get fundamentalFrequency() {
+  get fundamentalFrequency(): number {
     if (this.sampleRate) {
       return this.sampleRate/this.numPoints;
     } else {
@@ -187,7 +194,7 @@ export class FFTResult {
    * recalculate the packedFreq array after modifications
    * to the complex array.
    * */
-  recalcFromComplex() {
+  recalcFromComplex(): void {
     const N = this.complex.length;
     let modFreq = new Float32Array(N).fill(0);
     modFreq[0] = this.complex[0].real();
@@ -216,10 +223,10 @@ export class FFTResult {
    *
    * @returns time domain representation
    */
-  fftInverse() {
+  fftInverse(): Float32Array {
     return inverseDFT(this.packedFreq, this.origLength);
   }
-  clone() {
+  clone(): FFTResult {
     let out = FFTResult.createFromPackedFreq(this.packedFreq.slice(), this.origLength, this.sampleRate);
     out.seismogramDisplayData = this.seismogramDisplayData;
     return out;

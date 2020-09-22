@@ -33,16 +33,16 @@ export class Network {
     this.stations = [];
   }
 
-  get sourceId() {
+  get sourceId(): string {
     return 'FDSN:'+ (this.networkCode ? this.networkCode : '');
   }
-  get startDate() {
+  get startDate(): moment$Moment {
     return this._startDate;
   }
   set startDate(value?: moment$Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
-  get endDate() {
+  get endDate(): null | moment$Moment {
     return this._endDate;
   }
   set endDate(value?: moment$Moment | string | null) {
@@ -83,7 +83,7 @@ export class Station {
     this.stationCode = stationCode;
     this.channels = [];
   }
-  get sourceId() {
+  get sourceId(): string {
     const sep= '_';
     return (this.network ? this.network.sourceId : 'FDSN:')
       +sep+(this.stationCode ? this.stationCode : '');
@@ -154,7 +154,7 @@ export class Channel {
       throw new Error(`locationCode must be 2 chars, or empty: "${locationCode}"`);
     }
   }
-  get sourceId() {
+  get sourceId(): string {
     const sep= '_';
     let band;
     let source;
@@ -174,13 +174,13 @@ export class Channel {
       +sep+band+sep+source+sep+subsource;
   }
 
-  get startDate() {
+  get startDate(): moment$Moment {
     return this._startDate;
   }
   set startDate(value?: moment$Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
-  get endDate() {
+  get endDate(): null | moment$Moment {
     return this._endDate;
   }
   set endDate(value?: moment$Moment | string | null) {
@@ -193,7 +193,7 @@ export class Channel {
   get timeRange(): StartEndDuration {
     return new StartEndDuration(this.startDate, this.endDate);
   }
-  get locationCode() {
+  get locationCode(): string {
     return this._locationCode;
   }
   set locationCode(value: string) {
@@ -698,7 +698,7 @@ export function convertToGain(gainXml: Element): Gain {
    * @param   el xml element
    * @returns     Complex instance
    */
-export function extractComplex(el: Element) {
+export function extractComplex(el: Element): Complex {
     const re = _grabFirstElFloat(el, 'Real');
     const im = _grabFirstElFloat(el, 'Imaginary');
     if (isNumArg(re) && isNumArg(im)) {

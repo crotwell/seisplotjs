@@ -198,7 +198,7 @@ export class DataSelectQuery {
    * @param   se time window
    * @returns     this
    */
-  timeWindow(se: StartEndDuration) {
+  timeWindow(se: StartEndDuration): DataSelectQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;

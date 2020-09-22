@@ -22,7 +22,10 @@ import {insertCSS} from './cssutil.js';
  * @param   loglog      true for loglog plot, false for linlog
  * @returns             the plot
  */
-export function createSimpleFFTPlot(cssSelector: string, fftResult: FFTResult, config: SeismographConfig, loglog: boolean = true) {
+export function createSimpleFFTPlot(cssSelector: string,
+                                    fftResult: FFTResult,
+                                    config: SeismographConfig,
+                                    loglog: boolean = true): FFTPlot {
   let fftplot =  new FFTPlot(cssSelector, config, fftResult, loglog);
   fftplot.draw();
   return fftplot;
@@ -37,7 +40,10 @@ export function createSimpleFFTPlot(cssSelector: string, fftResult: FFTResult, c
  * @param   loglog      true for loglog plot, false for linlog
  * @returns             the plot
  */
-export function createOverlayFFTPlot(cssSelector: string, fftResults: Array<FFTResult>, config: SeismographConfig = new SeismographConfig(), loglog: boolean = true) {
+export function createOverlayFFTPlot(cssSelector: string,
+                                      fftResults: Array<FFTResult>,
+                                      config: SeismographConfig = new SeismographConfig(),
+                                      loglog: boolean = true): FFTPlot {
   let fftplot =  new FFTPlot(cssSelector, config, fftResults, loglog);
   fftplot.draw();
   return fftplot;
@@ -201,7 +207,6 @@ export class FFTPlot {
           .datum(ampSlice)
           .attr("d", line);
     }
-    return this;
   }
   drawTitle() {
     let rect = this.svg.node().getBoundingClientRect();

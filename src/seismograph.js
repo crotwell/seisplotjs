@@ -200,7 +200,7 @@ export class Seismograph {
   }
   static fromSeismograms(inSvgParent: any,
                 seismographConfig: SeismographConfig,
-                seismogramList: Array<Seismogram>) {
+                seismogramList: Array<Seismogram>): Seismograph {
     return new Seismograph(inSvgParent,
                            seismographConfig,
                            seismogramList.map(s => SeismogramDisplayData.fromSeismogram(s)));
@@ -493,7 +493,7 @@ export class Seismograph {
             .attr("width", this.width)
             .attr("height", this.height);
   }
-  timeScaleForSeisDisplayData(sdd: SeismogramDisplayData) {
+  timeScaleForSeisDisplayData(sdd: SeismogramDisplayData): any {
     let plotSed;
     let sddXScale = d3.scaleUtc();
     if (this.seismographConfig.isRelativeTime && this.seismographConfig.linkedTimeScale) {
@@ -1149,7 +1149,7 @@ export class Seismograph {
     if (this.seismographConfig.doGain
         && this.seisDataList.length > 0
         && this.seisDataList.every(sdd => sdd.hasSensitivity())
-        && this.seisDataList.every(sdd => sdd.seismogram.yUnit === COUNT_UNIT )) {
+        && this.seisDataList.every(sdd => isDef(sdd.seismogram) && sdd.seismogram.yUnit === COUNT_UNIT )) {
       // each has seisitivity
       const firstSensitivity = this.seisDataList[0].sensitivity;
       if (isDef(firstSensitivity) && this.seisDataList.every(sdd => (
@@ -1243,7 +1243,6 @@ export class Seismograph {
       // otherwise, just append the data and wait for outside to call first draw()
       this.drawSeismograms();
     }
-    return this;
   }
   /**
    * Finds the SeismogramDisplayData within the display containing the given

@@ -143,7 +143,7 @@ export class SeismogramSegment {
   get timeWindow(): StartEndDuration {
     return new StartEndDuration(this.startTime, this.endTime);
   }
-  get sampleRate() {
+  get sampleRate(): number {
     return this._sampleRate;
   }
   set sampleRate(value: number) {
@@ -509,7 +509,7 @@ export class Seismogram {
     }
     return out;
   }
-  break(duration: moment$MomentDuration) {
+  break(duration: moment$MomentDuration): void {
     if (this._segmentArray) {
       let breakStart = moment.utc(this.startTime);
       let out = [];
@@ -523,9 +523,8 @@ export class Seismogram {
       out = out.filter(Boolean);
       this._segmentArray = out;
     }
-    return this;
   }
-  isContiguous() {
+  isContiguous(): boolean {
     if (this._segmentArray.length === 1) {
       return true;
     }
@@ -605,7 +604,7 @@ export class Seismogram {
    */
   static createFromContiguousData(yArray: Array<seedcodec.EncodedDataSegment> | Int32Array | Float32Array | Float64Array,
                                   sampleRate: number,
-                                  startTime: moment$Moment) {
+                                  startTime: moment$Moment): Seismogram {
     const seg = new SeismogramSegment(yArray, sampleRate, startTime);
     return new Seismogram([seg]);
   }
@@ -618,7 +617,7 @@ export class NonContiguousData extends Error {
   }
 }
 
-export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegment) {
+export function ensureIsSeismogram(seisSeismogram: Seismogram | SeismogramSegment): Seismogram {
   if (typeof seisSeismogram === "object") {
     if (seisSeismogram instanceof Seismogram) {
       return seisSeismogram;
@@ -730,7 +729,7 @@ export class SeismogramDisplayData {
   hasQuake(): boolean {
     return this.quakeList.length > 0;
   }
-  get quake() {
+  get quake(): Quake | null {
     if (this.hasQuake()) {
       return this.quakeList[0];
     }
@@ -830,9 +829,9 @@ export class SeismogramDisplayData {
       return "unknown";
     }
   }
-  get sourceId() {
+  get sourceId(): string {
     if (isDef(this.channel)) {
-      return this.channel.sourceId();
+      return this.channel.sourceId;
     } else if (isDef(this._seismogram)) {
     const sep= '_';
     let band;
@@ -944,32 +943,32 @@ export class SeismogramDisplayData {
   set sensitivity(value: InstrumentSensitivity | null) {
     this._instrumentSensitivity = value;
   }
-  get min() {
+  get min(): number {
     if ( ! this._statsCache ) {
       this._statsCache = this.calcStats();
     }
     return this._statsCache.min;
   }
-  get max() {
+  get max(): number {
     if ( ! this._statsCache ) {
       this._statsCache = this.calcStats();
     }
     return this._statsCache.max;
   }
-  get mean() {
+  get mean(): number {
     if ( ! this._statsCache ) {
       this._statsCache = this.calcStats();
     }
     return this._statsCache.mean;
   }
-  get seismogram() {
+  get seismogram(): Seismogram | null {
     return this._seismogram;
   }
   set seismogram(value: Seismogram | null) {
     this._seismogram = value;
     this._statsCache = null;
   }
-  calcStats() {
+  calcStats(): SeismogramDisplayStats {
     let stats = new SeismogramDisplayStats();
     if (this.seismogram) {
       let minMax = this.seismogram.findMinMax();
@@ -1173,10 +1172,10 @@ export function findStartEndOfSeismograms(data: Array<Seismogram>, accumulator?:
   }
   if ( Array.isArray(data)) {
     for (let s of data) {
-      if ( s.startTime < out.startTime) {
+      if ( s.startTime.isSameOrBefore(out.startTime)) {
         out = new StartEndDuration( moment.utc(s.startTime), out.endTime);
       }
-      if ( out.endTime < s.endTime ) {
+      if ( out.endTime.isSameOrBefore(s.endTime) ) {
         out = new StartEndDuration( out.startTime, moment.utc(s.endTime));
       }
     }

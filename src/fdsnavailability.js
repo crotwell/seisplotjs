@@ -27,7 +27,8 @@ export const FORMAT_GEOCSV = 'geocsv';
 export const FORMAT_REQUEST = 'request';
 
 /** const of completely empty json, {} */
-export const EMPTY_JSON = JSON.parse('{}');
+export const EMPTY_JSON: RootType = { version: {},
+                                      datasources: []};
 
 /**
  * Major version of the FDSN spec supported here.
@@ -357,7 +358,7 @@ export class AvailabilityQuery {
    *
    * @returns promise to the result as json
    */
-  queryJson(): Promise<string> {
+  queryJson(): Promise<{}> {
     const mythis = this;
     this.format(FORMAT_JSON);
     const url = this.formURL("query");
@@ -365,7 +366,7 @@ export class AvailabilityQuery {
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
       .then(function(response) {
         if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
-          return EMPTY_JSON;
+          return RSVP.hash(EMPTY_JSON);
         }
         let contentType = response.headers.get('content-type');
         if(isNonEmptyStringArg(contentType) && contentType.includes(JSON_MIME)) {
@@ -394,7 +395,7 @@ export class AvailabilityQuery {
    *
    * @returns promise to the result as json
    */
-  extentJson() {
+  extentJson(): Promise<{}> {
     const mythis = this;
     this.format(FORMAT_JSON);
     const url = this.formURL("extent");

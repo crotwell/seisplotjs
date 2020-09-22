@@ -6,9 +6,9 @@
  * http://www.seis.sc.edu
  */
 
-import * as seedcodec from './seedcodec';
+import { EncodedDataSegment } from './seedcodec';
 import {SeismogramSegment, Seismogram} from './seismogram';
-import {DataRecord} from './miniseed';
+import {DataRecord, R_TYPECODE, D_TYPECODE, Q_TYPECODE, M_TYPECODE} from './miniseed';
 import moment from 'moment';
 
 /** const for unknown data version, 0 */
@@ -82,7 +82,7 @@ export class XSeedRecord {
    *
    * @returns size in bytes
    */
-  getSize() {
+  getSize(): number {
     let json = JSON.stringify(this.extraHeaders);
     if (json.length > 2) {
       this.header.extraHeadersLength = json.length;
@@ -96,7 +96,7 @@ export class XSeedRecord {
      *
      * @returns decompressed data as a typed array, usually Int32Array or Float32Array
      */
-  decompress() {
+  decompress(): Int32Array | Float32Array | Float64Array {
     return this.asEncodedDataSegment().decode();
   }
   /**
@@ -104,8 +104,8 @@ export class XSeedRecord {
    *
    * @returns waveform data
    */
-  asEncodedDataSegment() {
-    return new seedcodec.EncodedDataSegment(this.header.encoding,
+  asEncodedDataSegment(): EncodedDataSegment {
+    return new EncodedDataSegment(this.header.encoding,
                                   this.rawData,
                                   this.header.numSamples,
                                   LITTLE_ENDIAN);
@@ -116,7 +116,7 @@ export class XSeedRecord {
    *
    * @returns string identifier
    */
-  codes() {
+  codes(): string {
       return this.header.identifier;
   }
 
@@ -281,10 +281,10 @@ export class XSeedHeader {
    *
    * @returns size in bytes of fixed header
    */
-  getSize() {
+  getSize(): number {
     return FIXED_HEADER_SIZE+this.identifier.length;
   }
-  toString() {
+  toString(): string {
     return this.identifier+" "+this.start.toISOString()+" "+this.encoding;
   }
   /**
@@ -292,7 +292,7 @@ export class XSeedHeader {
    *
    * @returns iso start time
    */
-  getStartFieldsAsISO() {
+  getStartFieldsAsISO(): string {
     return ''+this.year+'-'+padZeros(this.dayOfYear, 3)
       +'T'+padZeros(this.hour, 2)+':'+padZeros(this.minute, 2)+":"
       +padZeros(this.second, 2)+"."+padZeros(this.nanosecond, 9)+"Z";
@@ -303,7 +303,7 @@ export class XSeedHeader {
    * @param   i sample number
    * @returns the time
    */
-  timeOfSample(i: number) {
+  timeOfSample(i: number): moment$Moment {
     return moment.utc(this.start).add(1000*i/this.sampleRate, 'milliseconds');
   }
   /**
@@ -314,7 +314,7 @@ export class XSeedHeader {
    * @param   zeroCrc  optionally zero out the crc field in order to recalculate
    * @returns          new offset after this record
    */
-  save(dataView: DataView, offset: number =0, zeroCrc: boolean =false) {
+  save(dataView: DataView, offset: number =0, zeroCrc: boolean =false): number {
     dataView.setInt8(offset, this.recordIndicator.charCodeAt(0));
     offset++;
     dataView.setInt8(offset, this.recordIndicator.charCodeAt(1));
@@ -386,7 +386,7 @@ export class XSeedHeader {
  * @param   dataView json bytes as DataView
  * @returns           json object
  */
-export function parseExtraHeaders(dataView: DataView) {
+export function parseExtraHeaders(dataView: DataView): {} {
   if (dataView.byteLength === 0) {
     return {};
   }
@@ -408,7 +408,7 @@ export function parseExtraHeaders(dataView: DataView) {
  * @param   len total length of string
  * @returns      zero padded string
  */
-export function padZeros(val: number, len: number) {
+export function padZeros(val: number, len: number): string {
   let out = ""+val;
   while (out.length < len) {
     out = "0"+out;
@@ -602,16 +602,16 @@ export function convertMS2Record(ms2record: DataRecord): XSeedRecord {
   xHeader.numSamples = ms2H.numSamples;
   xHeader.crc = 0;
   if (ms2H.typeCode) {
-    if (ms2H.typeCode === 'R') {
+    if (ms2H.typeCode === R_TYPECODE) {
       xHeader.publicationVersion = 1;
-    } else if (ms2H.typeCode === 'D') {
+    } else if (ms2H.typeCode === D_TYPECODE) {
       xHeader.publicationVersion = 2;
-    } else if (ms2H.typeCode === 'Q') {
+    } else if (ms2H.typeCode === Q_TYPECODE) {
       xHeader.publicationVersion = 3;
-    } else if (ms2H.typeCode === 'M') {
+    } else if (ms2H.typeCode === M_TYPECODE) {
       xHeader.publicationVersion = 4;
     }
-    if (ms2H.typeCode !== 'D') {
+    if (ms2H.typeCode !== D_TYPECODE) {
       xExtras.DataQuality = ms2H.typeCode;
     }
   }
@@ -736,7 +736,7 @@ const kCRCTable = new Int32Array([
  *
  * @returns calculated crc32c value
  */
-export function calculateCRC32C(buf: ArrayBuffer | Uint8Array, initial: number =0 ) {
+export function calculateCRC32C(buf: ArrayBuffer | Uint8Array, initial: number =0 ): number {
   if ( buf instanceof ArrayBuffer){
     buf = new Uint8Array(buf);
   } else if ( buf instanceof Uint8Array) {

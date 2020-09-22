@@ -159,7 +159,7 @@ export class SeismographConfig {
     this._handlebarsCompiled = null;
   }
 
-  handlebarsTitle(context: {}, runtimeOptions: {}) {
+  handlebarsTitle(context: {}, runtimeOptions: {}): string {
     if (  ! isDef(this._handlebarsCompiled)) {
       if ( ! isDef(this._title) || this._title.length === 0 || ! isDef(this._title[0])) {
         // empty title
@@ -228,7 +228,7 @@ export class SeismographConfig {
     });
     return out;
   }
-  toString() {
+  toString(): string {
     let outS = "";
     Object.getOwnPropertyNames(this).forEach( name => {
       // $FlowFixMe
@@ -383,14 +383,14 @@ export class LinkedTimeScale {
     this._zoomedStartOffset = null;
     this.recalculate();
   }
-  get offset() {
+  get offset(): moment$MomentDuration {
     return this._zoomedStartOffset ? this._zoomedStartOffset : this._originalStartOffset;
   }
   set offset(offset: moment$MomentDuration) {
     this._originalStartOffset = offset;
     this.recalculate();
   }
-  get duration() {
+  get duration(): moment$MomentDuration{
     return this._zoomedDuration ? this._zoomedDuration : this._originalDuration;
   }
   set duration(duration: moment$MomentDuration) {
@@ -412,19 +412,19 @@ export class LinkedTimeScale {
 }
 
 
-export const formatCount = d3.format('~s');
-export const formatExp = d3.format('.2e');
+export const formatCount: (number)=>string  = d3.format('~s');
+export const formatExp: (number)=>string  = d3.format('.2e');
 export const formatCountOrAmp = function(v: number): string {
   return -1<v && v<1 && v !== 0 ? formatExp(v) : formatCount(v);
 };
 
-export const formatMillisecond = d3.utcFormat(".%L");
-export const formatSecond = d3.utcFormat(":%S");
-export const formatMinute = d3.utcFormat("%H:%M");
-export const formatHour = d3.utcFormat("%H:%M");
-export const formatDay = d3.utcFormat("%m/%d");
-export const formatMonth = d3.utcFormat("%Y/%m");
-export const formatYear = d3.utcFormat("%Y");
+export const formatMillisecond: (Date)=>string  = d3.utcFormat(".%L");
+export const formatSecond: (Date)=>string  = d3.utcFormat(":%S");
+export const formatMinute: (Date)=>string  = d3.utcFormat("%H:%M");
+export const formatHour: (Date)=>string  = d3.utcFormat("%H:%M");
+export const formatDay: (Date)=>string  = d3.utcFormat("%m/%d");
+export const formatMonth: (Date)=>string  = d3.utcFormat("%Y/%m");
+export const formatYear: (Date)=>string  = d3.utcFormat("%Y");
 
 export const multiFormatHour = function(date: Date): string {
   return (d3.utcSecond(date) < date ? formatMillisecond

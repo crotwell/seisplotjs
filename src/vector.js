@@ -133,7 +133,7 @@ function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: number, sei
  * @param   seisC third seismogram
  * @returns Seismogram of vector magnitudes
  */
-export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Seismogram) {
+export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Seismogram): Seismogram {
   if (seisA.segments.length !== seisB.segments.length) {
     throw new Error("Seismograms do not have same number of segments: "+seisA.segments.length+" !== "+seisB.segments.length+" !== "+seisC.segments.length);
   }
@@ -159,7 +159,7 @@ export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Sei
  * @param   seisC thrid perpendicular seismogram
  * @returns         seismogram representing the vector magnitude, sqrt(x*x+y*y+z*z)
  */
-function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: SeismogramSegment, seisC: SeismogramSegment) {
+function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: SeismogramSegment, seisC: SeismogramSegment): SeismogramSegment {
   if (seisA.y.length !== seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);

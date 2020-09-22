@@ -10,7 +10,7 @@ import {calcDFT, inverseDFT, FFTResult } from './fft.js';
 import {SeismogramSegment, Seismogram } from './seismogram.js';
 import { SacPoleZero } from './sacpolezero.js';
 import {Response, PolesZeros } from './stationxml.js';
-import Qty from 'js-quantities';
+import {Qty} from 'js-quantities';
 import { createComplex} from './oregondsputil.js';
 import type {Complex} from './oregondsputil.js';
 import {stringify} from './util.js';
@@ -179,7 +179,7 @@ export function combine(freqValues: Float32Array,
                         lowCut: number,
                         lowPass: number,
                         highPass: number,
-                        highCut: number) {
+                        highCut: number): Float32Array {
         const deltaF = sampFreq / freqValues.length;
 
         // handle zero freq, no imag, set real to 0
@@ -202,7 +202,7 @@ export function combine(freqValues: Float32Array,
                                                                highPass,
                                                                highCut));
             let freqComplex = createComplex(freqValues[i], freqValues[freqValues.length-i])
-                .timesComplex(respAtS);
+                .times(respAtS);
             freqValues[i] = freqComplex.real();
             freqValues[freqValues.length-i] = freqComplex.imag();
         }
@@ -218,7 +218,7 @@ export function combine(freqValues: Float32Array,
    * @param freq frequency to evaluate
    * @returns complex frequency domain value for this frequency
    */
-  export function evalPoleZeroInverse(sacPoleZero: SacPoleZero, freq: number) {
+  export function evalPoleZeroInverse(sacPoleZero: SacPoleZero, freq: number): Complex {
         const s = createComplex(0, 2 * Math.PI * freq);
         let zeroOut = createComplex(1, 0);
         let poleOut = createComplex(1, 0);
@@ -295,11 +295,17 @@ export function applyFreqTaper(fftResult: FFTResult,
 /**
  * commonly used units as Qty
  */
-export const UNITS = {
+export const UNITS: {
+  // for flow, seems dumb, but...
+  COUNT: Qty,
+  METER: Qty,
+  METER_PER_SECOND: Qty,
+  METER_PER_SECOND_PER_SECOND: Qty
+  } = {
   COUNT: new Qty('count'),
   METER: new Qty('m'),
   METER_PER_SECOND: new Qty('m/s'),
-  METER_PER_SECOND_PER_SECOND: new Qty('m/s2'),
+  METER_PER_SECOND_PER_SECOND: new Qty('m/s2')
 };
 
  /**
@@ -313,7 +319,7 @@ export const UNITS = {
   * @param response stationxml Response to convert
   * @returns SAC PoleZero style version of the response
   */
-export function convertToSacPoleZero( response: Response) {
+export function convertToSacPoleZero( response: Response): SacPoleZero {
     let polesZeros: PolesZeros;
     if (response.stages[0].filter instanceof PolesZeros) {
       polesZeros = response.stages[0].filter;
@@ -384,7 +390,7 @@ export function convertToSacPoleZero( response: Response) {
 
 export function calc_A0(poles: Array<Complex>,
                         zeros: Array<Complex>,
-                        ref_freq: number) {
+                        ref_freq: number): number {
     let numer = createComplex(1, 0);
     let denom = createComplex(1, 0);
     let f0;

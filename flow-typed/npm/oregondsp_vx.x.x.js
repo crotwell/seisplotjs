@@ -17,12 +17,26 @@
        abs(): number;
        angle(): number;
        times(c: Complex): Complex;
+       timesComplex(c: Complex): Complex;
+       timesReal(n: number): Complex;
        plus(c: Complex): Complex;
+       minusComplex(c: Complex): Complex;
+       overComplex(c: Complex): Complex;
+       overReal(n: number): Complex;
        conjugate(): Complex;
        toString(): string;
      }
      declare export class IIRFilter {
        filterInPlace(a: Float32Array): void;
+     }
+     declare export class Butterworth extends IIRFilter {
+
+     }
+     declare export class ChebyshevI extends IIRFilter {
+
+     }
+     declare export class ChebyshevII extends IIRFilter {
+
      }
 
      declare export function Complex_init(real :number, imag :number) :Complex;

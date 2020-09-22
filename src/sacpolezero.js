@@ -80,7 +80,7 @@ export class SacPoleZero {
    * @param data string to parse
    * @returns SacPoleZero instance
    */
-  static parse(data: string) {
+  static parse(data: string): SacPoleZero {
       let pz = {
         zeros: [],
         poles: [],

@@ -42,19 +42,19 @@ export class DistAzOutput {
     this.az = az ? az : 0.0;
     this.baz = baz ? baz : 0.0;
   }
-  get distance() {
+  get distance(): number {
     return this.delta;
   }
-  get distanceKm() {
+  get distanceKm(): number {
     return degtokm(this.delta);
   }
-  get distanceDeg() {
+  get distanceDeg(): number {
     return this.delta;
   }
-  get azimuth() {
+  get azimuth(): number {
     return this.az;
   }
-  get backazimuth() {
+  get backazimuth(): number {
     return this.baz;
   }
 }

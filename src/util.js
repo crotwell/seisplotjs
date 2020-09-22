@@ -53,7 +53,7 @@ export function isDef(v: mixed): boolean %checks {
   return typeof v !== 'undefined' && v !== null;
 }
 
-export function doStringGetterSetter(obj: any, field: string, value?: string) {
+export function doStringGetterSetter(obj: any, field: string, value?: string): string | any {
   const hiddenField = `_${field}`;
   if (hasNoArgs(value)) {
     return obj[hiddenField];
@@ -65,7 +65,7 @@ export function doStringGetterSetter(obj: any, field: string, value?: string) {
   return obj;
 }
 
-export function doIntGetterSetter(obj: any, field: string, value?: number) {
+export function doIntGetterSetter(obj: any, field: string, value?: number): number | any {
   const hiddenField = `_${field}`;
   if (hasNoArgs(value)) {
     return obj[hiddenField];
@@ -79,7 +79,7 @@ export function doIntGetterSetter(obj: any, field: string, value?: number) {
   return obj;
 }
 
-export function doFloatGetterSetter(obj: any, field: string, value?: number) {
+export function doFloatGetterSetter(obj: any, field: string, value?: number): number | any {
   const hiddenField = `_${field}`;
   if (hasNoArgs(value)) {
     return obj[hiddenField];
@@ -113,7 +113,7 @@ export function doMomentGetterSetter(obj: any, field: string, value?: moment$Mom
  * @param   dataView bytes to convert
  * @returns           the string
  */
-export function dataViewToString(dataView: DataView) {
+export function dataViewToString(dataView: DataView): string {
   let out = "";
   for (let i=0; i< dataView.byteLength; i++) {
     out += String.fromCharCode(dataView.getUint8(i));
@@ -183,7 +183,7 @@ export function calcClockOffset(serverTimeUTC: moment$Moment): number {
   return moment.utc().diff(serverTimeUTC, 'seconds', true);
 }
 
-export const WAY_FUTURE = moment.utc('2500-01-01T00:00:00');
+export const WAY_FUTURE: moment$Moment = moment.utc('2500-01-01T00:00:00');
 
 /**
  * Any two of startTime, endTime and duration can be specified, or just duration which
@@ -244,22 +244,22 @@ export class StartEndDuration {
       throw new Error(`need some combination of startTime, endTime and duration: ${stringify(startTime)} ${stringify(endTime)} ${stringify(duration)}`);
     }
   }
-  get start() {
+  get start(): moment$Moment {
     return this._startTime;
   }
-  get startTime() {
+  get startTime(): moment$Moment {
     return this._startTime;
   }
-  get end() {
+  get end(): moment$Moment {
     return this._endTime;
   }
-  get endTime() {
+  get endTime(): moment$Moment {
     return this._endTime;
   }
-  get duration() {
+  get duration(): moment$MomentDuration {
     return this._duration;
   }
-  get clockOffset() {
+  get clockOffset(): moment$MomentDuration {
     return this._clockOffset;
   }
   /**
@@ -315,7 +315,7 @@ export class StartEndDuration {
     }
     return new StartEndDuration(tb, te);
   }
-  toString() {
+  toString(): string {
     return `StartEndDuration: ${toIsoWoZ(this.startTime)} to ${toIsoWoZ(this.endTime)} ${this.duration.toISOString()}`;
   }
 }

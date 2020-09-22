@@ -13,7 +13,7 @@ import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter,
 import {Station} from './stationxml.js';
 import {Quake} from './quakeml.js';
 
-export let IRIS_HOST = "service.iris.edu";
+export const IRIS_HOST = "service.iris.edu";
 
 export const TEXT_FORMAT = "text";
 export const JSON_FORMAT = "json";

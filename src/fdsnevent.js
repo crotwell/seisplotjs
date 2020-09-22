@@ -200,7 +200,7 @@ export class EventQuery {
    * @param   se time window
    * @returns     this
    */
-  timeWindow(se: StartEndDuration) {
+  timeWindow(se: StartEndDuration): EventQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;

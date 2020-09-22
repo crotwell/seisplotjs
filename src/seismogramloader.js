@@ -17,7 +17,7 @@ export function loadSeismograms(channelList: Array<Channel>,
                 otherPhaseList: Array<string>,
                 startOffset: moment$MomentDuration,
                 endOffset: moment$MomentDuration,
-                dsQuery?: DataSelectQuery) {
+                dsQuery?: DataSelectQuery): Promise<Array<SeismogramDisplayData>> {
   let stationList = new Set();
   let allPhaseList = [];
   allPhaseList = allPhaseList.concat(startPhaseList, endPhaseList, otherPhaseList);
