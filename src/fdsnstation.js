@@ -607,7 +607,7 @@ export class StationQuery {
      *
      * @param  level     level to request, one of network, station, channel, response
      * @param  postLines array of channel selection lines
-     * @return           string suitable for POST to fdsn station web service.
+     * @returns           string suitable for POST to fdsn station web service.
      */
   postQueryRawXml(level: string, postLines: Array<string>): Promise<Document> {
     if (postLines.length === 0) {
@@ -644,7 +644,7 @@ export class StationQuery {
    *
    * @param  level     level to request, one of network, station, channel, response
    * @param  postLines optional array of channel selection lines
-   * @return           string suitable for POST to fdsn station web service.
+   * @returns           string suitable for POST to fdsn station web service.
    */
   createPostBody(level: string, postLines: Array<string> = []): string {
     let out = "";

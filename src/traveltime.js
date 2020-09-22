@@ -43,8 +43,12 @@ export type TraveltimeArrivalType = {|
   puristname: string
 |};
 
-/** converts a text line from the text format into an
+/**
+ * converts a text line from the text format into an
  *  TraveltimeArrivalType object like what is returned by the json format.
+ *
+ *  @param ttimeline travel time output line for an arrival
+ *  @returns parsed travel time arrival
  */
 export function convertTravelTimeLineToObject(ttimeline: string): TraveltimeArrivalType {
     let items = ttimeline.trim().split(/\s+/);

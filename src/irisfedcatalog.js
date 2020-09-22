@@ -538,14 +538,11 @@ export class FedCatalogQuery {
         r.stationQuery = stationQuery;
         parsedResult.params.forEach( (v, k) => {
           const field = `_${k}`;
-          console.log(`set StationQuery field: ${field}=${v}`);
           // $FlowIgnore[prop-missing] dynamic setting of field
           // $FlowIgnore[incompatible-use]
           stationQuery[field] = v;
         });
         if (! r.services.has('STATIONSERVICE') || ! isDef(r.services.get('STATIONSERVICE'))) {
-          console.log(`${parsedResult.queries.length} ${r.dataCenter} services.size: ${r.services.size}`);
-          r.services.forEach((v,k) => console.log(`service: ${k}  ${v}`));
           throw new Error("QueryResult does not have STATIONSERVICE in services");
         }
         const urlString = r.services.get('STATIONSERVICE');
@@ -604,7 +601,6 @@ export class FedCatalogQuery {
           const end = moment.utc(items[5]);
           return SeismogramDisplayData.fromCodesAndTimes(items[0], items[1], items[2], items[3], start, end);
           });
-        sddList.forEach(sdd => console.log(`queryFdsnDataselect sdd: ${sdd.networkCode} ${sdd.stationCode} ${sdd.locationCode} ${sdd.channelCode}`));
         if (isDef(query.dataSelectQuery)) {
           return query.dataSelectQuery.postQuerySeismograms(sddList);
         } else {
@@ -643,7 +639,6 @@ export class FedCatalogQuery {
             throw new Error(`Status not successful: ${response.status}`);
           }
       }).then(function(rawText) {
-        console.log(rawText);
         return mythis.parseRequest(rawText);
       });
   }
@@ -673,7 +668,6 @@ export class FedCatalogQuery {
         } else {
           if (query === null) {
             // first line of next response section
-            console.log(`first line of next query: ${l}`);
             query = new FedCatalogResult();
             out.queries.push(query);
           }

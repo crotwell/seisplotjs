@@ -1,4 +1,4 @@
-// @ flow
+// @flow
 
 /*
  * Philip Crotwell
@@ -53,7 +53,7 @@ let knownDCs = null;
  * web service, which is now the preferred method, as this may be out of date.
  *
  */
-export const knownDataCenters = {
+export const knownDataCenters: {} = {
   knownDataCentersJsonURL: checkProtocol()+"//www.seis.sc.edu/fdsnServiceCheck/fdsnDataCenters.json",
 
   DS: DS,

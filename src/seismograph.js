@@ -1224,7 +1224,6 @@ export class Seismograph {
    * appends the seismogram(s) or SeismogramDisplayData as separate time series.
    *
    * @param seismogram data to append
-   * @returns this Seismograph
    */
   append(seismogram: Array<Seismogram> | Seismogram | SeismogramDisplayData) {
     if (seismogram instanceof SeismogramDisplayData) {
