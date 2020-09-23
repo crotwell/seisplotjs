@@ -22,7 +22,7 @@ const ensureFloat32Array = function(a): Float32Array {
   return ((a: any): Float32Array);
 };
 
-test("test freq Taper", () => {
+test("freq Taper", () => {
     expect(transfer.calcFreqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);
     expect(transfer.calcFreqTaper(.9, 1, 2, 10, 20)).toBeCloseTo(0, 5);
     expect(transfer.calcFreqTaper(1, 1, 2, 10, 20)).toBeCloseTo(0, 5);
