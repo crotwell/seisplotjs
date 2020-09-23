@@ -10,7 +10,7 @@ import {calcDFT, inverseDFT, FFTResult } from './fft.js';
 import {SeismogramSegment, Seismogram } from './seismogram.js';
 import { SacPoleZero } from './sacpolezero.js';
 import {Response, PolesZeros } from './stationxml.js';
-import {Qty} from 'js-quantities';
+import Qty from 'js-quantities';
 import { createComplex} from './oregondsputil.js';
 import type {Complex} from './oregondsputil.js';
 import {stringify} from './util.js';
@@ -202,7 +202,7 @@ export function combine(freqValues: Float32Array,
                                                                highPass,
                                                                highCut));
             let freqComplex = createComplex(freqValues[i], freqValues[freqValues.length-i])
-                .times(respAtS);
+                .timesComplex(respAtS);
             freqValues[i] = freqComplex.real();
             freqValues[freqValues.length-i] = freqComplex.imag();
         }

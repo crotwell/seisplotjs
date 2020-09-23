@@ -14,7 +14,7 @@
  */
 
 declare module 'js-quantities' {
-  declare export class Qty {
+  declare export default class Qty {
     scalar: number;
     constructor(n: number | string, s?: string): Qty;
     isCompatible(q: Qty): boolean;
