@@ -160,6 +160,9 @@ export class Quake {
   set time(value: moment$Moment | string) {
     this._time = moment.utc(value);
   }
+  get depthKm(): number {
+    return this.depth / 1000;
+  }
   get arrivals(): Array<Arrival> {
     return this.preferredOrigin.arrivalList;
   }

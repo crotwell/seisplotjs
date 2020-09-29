@@ -255,6 +255,7 @@ export const defaultStationInfoTemplate = `
       <th colspan="6">Waveform</th>
       <th colspan="4">Channel</th>
       <th colspan="5">Event</th>
+      <th colspan="4">DistAz</th>
     </tr>
     <tr>
       <th>Codes</th>
@@ -274,6 +275,11 @@ export const defaultStationInfoTemplate = `
       <th>Lon</th>
       <th>Mag</th>
       <th>Depth</th>
+
+      <th>Dist deg</th>
+      <th>Dist km</th>
+      <th>Azimuth</th>
+      <th>Back Azimuth</th>
     </tr>
   {{#each seisDataList as |sdd|}}
     <tr>
@@ -301,13 +307,21 @@ export const defaultStationInfoTemplate = `
         <td>{{sdd.quake.latitude}}</td>
         <td>{{sdd.quake.longitude}}</td>
         <td>{{sdd.quake.magnitude.mag}} {{sdd.quake.magnitude.type}}</td>
-        <td>{{sdd.quake.depth}}</td>
+        <td>{{sdd.quake.depthKm}}</td>
       {{else}}
         <td>no quake</td>
         <td/>
         <td/>
         <td/>
         <td/>
+      {{/if}}
+      {{#if sdd.hasQuake }}
+        {{#if sdd.hasChannel }}
+          <td>{{formatNumber sdd.distaz.distanceDeg 2}}</td>
+          <td>{{formatNumber sdd.distaz.distanceKm 2}}</td>
+          <td>{{formatNumber sdd.distaz.az 2}}</td>
+          <td>{{formatNumber sdd.distaz.baz 2}}</td>
+        {{/if}}
       {{/if}}
     </tr>
   {{/each}}

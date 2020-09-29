@@ -40,6 +40,15 @@ export function registerHelpers() {
       return "";
     }
   });
+
+  Handlebars.registerHelper("formatNumber", function(val: number, digits?: number=2) {
+  if ( typeof val === 'undefined' || val === null) { return "";}
+  let decimalDigits = digits===undefined ? 2 : digits;
+  if ( typeof val === 'number') { return  val.toFixed(decimalDigits);}
+  // not number, so just return unmodified
+  return val;
+  });
+
   Handlebars.registerHelper("formatIsoDate", function(param, hash) {
     if (typeof param === 'undefined' || param === null ) return "no time";
     let defaultFormat = 'YYYY-MM-DD[T]HH:mm:ss.SSSS';
