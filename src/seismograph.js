@@ -1148,7 +1148,7 @@ export class Seismograph {
     let niceMinMax = this.yScale.domain();
     if (this.seismographConfig.doGain
         && this.seisDataList.length > 0
-        && this.seisDataList.every(sdd => sdd.hasSensitivity())
+        && this.seisDataList.every(sdd => sdd.hasSensitivity)
         && this.seisDataList.every(sdd => isDef(sdd.seismogram) && sdd.seismogram.yUnit === COUNT_UNIT )) {
       // each has seisitivity
       const firstSensitivity = this.seisDataList[0].sensitivity;

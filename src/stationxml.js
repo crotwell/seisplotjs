@@ -232,6 +232,14 @@ export class Channel {
     }
   }
 
+  /**
+   * return network, station, location and channels codes as one string.
+   *
+   */
+  get nslc(): string {
+    return this.codes();
+  }
+
   codes(): string {
     return this.station.codes()+"."+this.locationCode+"."+this.channelCode;
   }
@@ -740,6 +748,7 @@ export function* allChannels(networks: Array<Network>): Generator<Channel, void,
 
 /**
  * Extract all channels from all stations from all networks in the input array.
+ * Regular expressions may be used instaed of exact code matchs.
  *
  * @param   networks Array of networks.
  * @param   netCode network code to match
@@ -749,13 +758,17 @@ export function* allChannels(networks: Array<Network>): Generator<Channel, void,
  * @yields           Array of channels.
  */
 export function* findChannels(networks: Array<Network>, netCode: string, staCode: string, locCode: string, chanCode: string): Generator<Channel, void, any> {
-    for (let n of networks.filter(n => n.networkCode ===  netCode)) {
-      for (let s of n.stations.filter(s => s.stationCode ===  staCode)) {
-        for (let c of s.channels.filter(c => c.locationCode ===  locCode && c.channelCode === chanCode)) {
-          yield c;
-        }
+  const netRE = new RegExp(`^${netCode}$`);
+  const staRE = new RegExp(`^${staCode}$`);
+  const locRE = new RegExp(`^${locCode}$`);
+  const chanRE = new RegExp(`^${chanCode}$`);
+  for (let n of networks.filter(n => netRE.test(n.networkCode))) {
+    for (let s of n.stations.filter(s => staRE.test(s.stationCode))) {
+      for (let c of s.channels.filter(c => locRE.test(c.locationCode) && chanRE.test(c.channelCode))) {
+        yield c;
       }
     }
+  }
 }
 
 // these are similar methods as in seisplotjs.quakeml

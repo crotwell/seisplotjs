@@ -125,12 +125,21 @@ export class SeismogramSegment {
     this._y = value;
     this._invalidate_endTime_cache();
   }
+  get start(): moment$Moment {
+    return this.startTime;
+  }
+  set start(value: moment$Moment | string): moment$Moment {
+    this.startTime = value;
+  }
   get startTime(): moment$Moment {
     return this._startTime;
   }
   set startTime(value: moment$Moment | string) {
     this._startTime = checkStringOrDate(value);
     this._invalidate_endTime_cache();
+  }
+  get end(): moment$Moment {
+    return this.endTime;
   }
   get endTime(): moment$Moment {
     if ( ! this._endTime_cache || this._endTime_cache_numPoints !== this.numPoints) {
@@ -248,6 +257,15 @@ export class SeismogramSegment {
       || isDef(this.locationCode)
       || isDef(this.channelCode);
   }
+
+  /**
+   * return network, station, location and channels codes as one string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   */
+  get nslc(): string {
+    return this.codes();
+  }
+
   /**
    * return network, station, location and channels codes as one string
    *
@@ -398,8 +416,14 @@ export class Seismogram {
     return meanVal;
   }
 
+  get start(): moment$Moment {
+    return this.startTime;
+  }
   get startTime(): moment$Moment {
     return this._startTime;
+  }
+  get end(): moment$Moment {
+    return this.endTime;
   }
   get endTime(): moment$Moment {
     return this._endTime;
@@ -446,6 +470,15 @@ export class Seismogram {
   hasCodes(): boolean {
     return this._segmentArray[0].hasCodes();
   }
+
+  /**
+   * return network, station, location and channels codes as one string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   */
+  get nslc(): string {
+    return this.codes();
+  }
+
   codes(): string {
     return this._segmentArray[0].codes();
   }
@@ -726,22 +759,22 @@ export class SeismogramDisplayData {
         this.traveltimeList.push(ttimes);
       }
   }
-  hasQuake(): boolean {
+  get hasQuake(): boolean {
     return this.quakeList.length > 0;
   }
   get quake(): Quake | null {
-    if (this.hasQuake()) {
+    if (this.hasQuake) {
       return this.quakeList[0];
     }
     return null;
   }
-  hasSeismogram(): boolean {
+  get hasSeismogram(): boolean {
     return isDef(this._seismogram);
   }
-  hasChannel(): boolean {
+  get hasChannel(): boolean {
     return this.channel !== null;
   }
-  hasSensitivity(): boolean {
+  get hasSensitivity(): boolean {
     return this._instrumentSensitivity !== null
         || (isDef(this.channel) && this.channel.hasInstrumentSensitivity());
   }
@@ -855,6 +888,15 @@ export class SeismogramDisplayData {
       throw new Error("unable to create Id, neither channel nor seismogram");
     }
   }
+
+  /**
+   * return network, station, location and channels codes as one string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   */
+  get nslc(): string {
+    return this.codes();
+  }
+
   /**
    * return network, station, location and channels codes as one string.
    * Uses this.channel if it exists, this.seismogram if not.
@@ -1089,7 +1131,7 @@ export function findMaxDurationOfType(type: string, sddList: Array<SeismogramDis
     let timeWindow;
     if (type === 'start') {
       timeWindow = sdd.timeWindow;
-    } else if (type === 'origin' && sdd.hasQuake()) {
+    } else if (type === 'origin' && sdd.hasQuake) {
       timeWindow = new StartEndDuration(sdd.quakeList[0].time, sdd.timeWindow.end);
     } else{
       timeWindow = sdd.timeWindow;
