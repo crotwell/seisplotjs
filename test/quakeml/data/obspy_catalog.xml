@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='utf-8'?>
+<q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:anss="http://anss.org/xmlns/event/0.1" xmlns:catalog="http://anss.org/xmlns/catalog/0.1" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2">
+  <eventParameters publicID="quakeml:earthquake.usgs.gov/fdsnws/event/1/query?starttime=2019-10-31T01%3A10%3A19.000000&amp;endtime=2019-10-31T01%3A31%3A19.000000&amp;minmagnitude=5.0">
+    <creationInfo>
+      <creationTime>2020-09-29T15:24:50.000000Z</creationTime>
+    </creationInfo>
+    <event publicID="quakeml:earthquake.usgs.gov/fdsnws/event/1/query?eventid=us6000697y&amp;format=quakeml" catalog:datasource="us" catalog:eventsource="us" catalog:eventid="6000697y">
+      <preferredOriginID>quakeml:earthquake.usgs.gov/archive/product/origin/us6000697y/us/1579377641040/product.xml</preferredOriginID>
+      <preferredMagnitudeID>quakeml:earthquake.usgs.gov/archive/product/origin/us6000697y/us/1579377641040/product.xml#magnitude</preferredMagnitudeID>
+      <type>earthquake</type>
+      <description>
+        <text>3km S of Bulatukan, Philippines</text>
+        <type>earthquake name</type>
+      </description>
+      <creationInfo>
+        <agencyID>us</agencyID>
+        <creationTime>2020-01-18T20:00:41.040000Z</creationTime>
+      </creationInfo>
+      <origin publicID="quakeml:earthquake.usgs.gov/archive/product/origin/us6000697y/us/1579377641040/product.xml" catalog:datasource="us" catalog:dataid="us6000697y" catalog:eventsource="us" catalog:eventid="6000697y">
+        <time>
+          <value>2019-10-31T01:20:58.661000Z</value>
+        </time>
+        <latitude>
+          <value>6.8717</value>
+        </latitude>
+        <longitude>
+          <value>125.1581</value>
+        </longitude>
+        <depth>
+          <value>10000.0</value>
+          <uncertainty>1700.0</uncertainty>
+        </depth>
+        <quality>
+          <usedPhaseCount>24</usedPhaseCount>
+          <standardError>0.48</standardError>
+          <azimuthalGap>123.0</azimuthalGap>
+          <minimumDistance>0.461</minimumDistance>
+        </quality>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <agencyID>us</agencyID>
+          <creationTime>2020-01-18T20:00:41.040000Z</creationTime>
+        </creationInfo>
+        <originUncertainty>
+          <preferredDescription>horizontal uncertainty</preferredDescription>
+          <horizontalUncertainty>5200.0</horizontalUncertainty>
+        </originUncertainty>
+      </origin>
+      <magnitude publicID="quakeml:earthquake.usgs.gov/archive/product/origin/us6000697y/us/1579377641040/product.xml#magnitude" catalog:datasource="us" catalog:dataid="us6000697y" catalog:eventsource="us" catalog:eventid="6000697y">
+        <mag>
+          <value>5.1</value>
+          <uncertainty>0.158</uncertainty>
+        </mag>
+        <type>mb</type>
+        <originID>quakeml:earthquake.usgs.gov/archive/product/origin/us6000697y/us/1579377641040/product.xml</originID>
+        <stationCount>16</stationCount>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <agencyID>us</agencyID>
+          <creationTime>2020-01-18T20:00:41.040000Z</creationTime>
+        </creationInfo>
+      </magnitude>
+    </event>
+    <event publicID="quakeml:earthquake.usgs.gov/fdsnws/event/1/query?eventid=us700061e9&amp;format=quakeml" catalog:datasource="us" catalog:eventsource="us" catalog:eventid="700061e9">
+      <preferredOriginID>quakeml:earthquake.usgs.gov/archive/product/origin/us700061e9/us/1579377648040/product.xml</preferredOriginID>
+      <preferredMagnitudeID>quakeml:earthquake.usgs.gov/archive/product/origin/us700061e9/us/1579377648040/product.xml#magnitude</preferredMagnitudeID>
+      <type>earthquake</type>
+      <description>
+        <text>2km ESE of Kisante, Philippines</text>
+        <type>earthquake name</type>
+      </description>
+      <creationInfo>
+        <agencyID>us</agencyID>
+        <creationTime>2020-07-10T17:51:48.013000Z</creationTime>
+      </creationInfo>
+      <origin publicID="quakeml:earthquake.usgs.gov/archive/product/origin/us700061e9/us/1579377648040/product.xml" catalog:datasource="us" catalog:dataid="us700061e9" catalog:eventsource="us" catalog:eventid="700061e9">
+        <time>
+          <value>2019-10-31T01:11:19.146000Z</value>
+        </time>
+        <latitude>
+          <value>6.9098</value>
+        </latitude>
+        <longitude>
+          <value>125.1782</value>
+        </longitude>
+        <depth>
+          <value>10000.0</value>
+          <uncertainty>1700.0</uncertainty>
+        </depth>
+        <quality>
+          <usedPhaseCount>183</usedPhaseCount>
+          <standardError>0.76</standardError>
+          <azimuthalGap>19.0</azimuthalGap>
+          <minimumDistance>0.428</minimumDistance>
+        </quality>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <agencyID>us</agencyID>
+          <creationTime>2020-01-18T20:00:48.040000Z</creationTime>
+        </creationInfo>
+        <originUncertainty>
+          <preferredDescription>horizontal uncertainty</preferredDescription>
+          <horizontalUncertainty>7000.0</horizontalUncertainty>
+        </originUncertainty>
+      </origin>
+      <magnitude publicID="quakeml:earthquake.usgs.gov/archive/product/origin/us700061e9/us/1579377648040/product.xml#magnitude" catalog:datasource="us" catalog:dataid="us700061e9" catalog:eventsource="us" catalog:eventid="700061e9">
+        <mag>
+          <value>6.5</value>
+          <uncertainty>0.043</uncertainty>
+        </mag>
+        <type>mww</type>
+        <originID>quakeml:earthquake.usgs.gov/archive/product/origin/us700061e9/us/1579377648040/product.xml</originID>
+        <stationCount>51</stationCount>
+        <evaluationMode>manual</evaluationMode>
+        <creationInfo>
+          <agencyID>us</agencyID>
+          <creationTime>2020-01-18T20:00:48.040000Z</creationTime>
+        </creationInfo>
+      </magnitude>
+    </event>
+  </eventParameters>
+</q:quakeml>
