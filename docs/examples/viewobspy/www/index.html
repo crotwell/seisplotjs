@@ -33,6 +33,15 @@
         width: 100%;
         grid-column: 1 / -1;
       }
+      div[plottype="info"] {
+        grid-column: 1 / -1;
+      }
+      td {
+        background-color: #eee;
+      }
+      th {
+        background-color: #eee;
+      }
       #mousex {
         width: 155px;
       }
@@ -124,6 +133,10 @@
         <div>
           <label>Plot Type:</label>
           <span>
+            <input type="radio" id="radio_info" name="plottype" value="info">
+            <label for="info">Info</label>
+          </span>
+          <span>
             <input type="radio" id="radio_map" name="plottype" value="map">
             <label for="map">Map</label>
           </span>
@@ -159,8 +172,8 @@
             <label for="radio_organize_bycomponent">Component</label>
           </span>
           <span>
-            <input type="radio" id="radio_organize_overlay_overlayall" name="organizetype" value="overlayall" >
-            <label for="radio_organize_overlayall">Overlay All</label>
+            <input type="radio" id="radio_organize_overlay_all" name="organizetype" value="all" >
+            <label for="radio_organize_overlay_all">Overlay All</label>
           </span>
         </div>
         <div>

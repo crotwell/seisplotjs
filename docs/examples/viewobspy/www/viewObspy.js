@@ -223,10 +223,12 @@ class ViewObsPy {
       organizedData = seisplotjs.displayorganize.overlayByStation(seisDataList);
     } else if (organizetype === "bycomponent") {
       organizedData = seisplotjs.displayorganize.overlayByComponent(seisDataList);
-    } else if (organizetype === "overlayall") {
+    } else if (organizetype === "all") {
       organizedData = seisplotjs.displayorganize.overlayAll(seisDataList);
     } else if (typeof organizetype === 'function') {
       organizedData = organizetype(seisDataList)
+    } else {
+      throw new Error(`Unknown organize type: ${organizetype}`)
     }
 
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();

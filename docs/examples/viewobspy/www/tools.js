@@ -39,6 +39,10 @@ function createTools(viewObspy) {
     viewObspy.organizetype = "bycomponent";
     viewObspy.replot();
   });
+  seisplotjs.d3.select("input#radio_organize_overlay_all").on("change", () => {
+    viewObspy.organizetype = "all";
+    viewObspy.replot();
+  });
 
   seisplotjs.d3.select("button#bandpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
