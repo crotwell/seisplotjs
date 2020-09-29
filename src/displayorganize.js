@@ -12,11 +12,13 @@ import {isDef} from './util.js';
 import * as d3 from 'd3';
 import * as L from 'leaflet';
 import * as querystringify from 'querystringify';
+import Handlebars from 'handlebars';
 
 export const SEISMOGRAPH = 'seismograph';
 export const SPECTRA = 'amp_spectra';
 export const PARTICLE_MOTION = 'particlemotion';
 export const MAP = 'map';
+export const INFO = 'info';
 export const QUAKE_TABLE = 'quake_table';
 export const STATION_TABLE = 'station_table';
 
@@ -104,12 +106,14 @@ export class OrganizedDisplay {
         m.bindTooltip(s.codes());
       });
 
+    } else if (this.plottype.startsWith(INFO)) {
+      stationInfoPlot(divElement, this.seisConfig, this.seisData, defaultStationInfoTemplate);
     } else if (this.plottype.startsWith(QUAKE_TABLE)) {
 
     } else if (this.plottype.startsWith(STATION_TABLE)) {
 
     } else {
-      throw new Error(`Unkown plottype ${this.plottype} ${SPECTRA}`);
+      throw new Error(`Unkown plottype "${this.plottype}"`);
     }
   }
 }
@@ -212,7 +216,7 @@ export function sortDistance(organized: Array<OrganizedDisplay>): Array<Organize
 
 export function attributeDistance(orgDisp: OrganizedDisplay): number | null {
   orgDisp.seisData.forEach(sdd => {
-    if (sdd.hasQuake() && sdd.hasChannel() ) {
+    if (sdd.hasQuake && sdd.hasChannel ) {
       const distaz = sdd.distaz;
       return distaz ? distaz.delta : null;
     }
@@ -243,4 +247,84 @@ export function createPlots(organized: Array<OrganizedDisplay>, divElement: any)
     const div = d3.select(this);
     org.plot(div);
   });
+}
+
+export const defaultStationInfoTemplate = `
+  <table>
+    <tr>
+      <th colspan="6">Waveform</th>
+      <th colspan="4">Channel</th>
+      <th colspan="5">Event</th>
+    </tr>
+    <tr>
+      <th>Codes</th>
+      <th>Start</th>
+      <th>Duration</th>
+      <th>End</th>
+      <th>Num Pts</th>
+      <th>Sample Rate</th>
+
+      <th>Lat</th>
+      <th>Lon</th>
+      <th>Elev</th>
+      <th>Depth</th>
+
+      <th>Time</th>
+      <th>Lat</th>
+      <th>Lon</th>
+      <th>Mag</th>
+      <th>Depth</th>
+    </tr>
+  {{#each seisDataList as |sdd|}}
+    <tr>
+      <td>{{sdd.nslc}}</td>
+      <td>{{formatIsoDate sdd.seismogram.startTime}}</td>
+      <td>{{formatDuration sdd.seismogram.timeWindow.duration}}</td>
+      <td>{{formatIsoDate sdd.seismogram.endTime}}</td>
+      <td>{{sdd.seismogram.numPoints}}</td>
+      <td>{{sdd.seismogram.sampleRate}}</td>
+
+      {{#if sdd.hasChannel}}
+        <td>{{sdd.channel.latitude}}</td>
+        <td>{{sdd.channel.longitude}}</td>
+        <td>{{sdd.channel.elevation}}</td>
+        <td>{{sdd.channel.depth}}</td>
+      {{else}}
+        <td>no channel</td>
+        <td/>
+        <td/>
+        <td/>
+      {{/if}}
+
+      {{#if sdd.hasQuake}}
+        <td>{{formatIsoDate sdd.quake.time}}</td>
+        <td>{{sdd.quake.latitude}}</td>
+        <td>{{sdd.quake.longitude}}</td>
+        <td>{{sdd.quake.magnitude.mag}} {{sdd.quake.magnitude.type}}</td>
+        <td>{{sdd.quake.depth}}</td>
+      {{else}}
+        <td>no quake</td>
+        <td/>
+        <td/>
+        <td/>
+        <td/>
+      {{/if}}
+    </tr>
+  {{/each}}
+  </table>
+`;
+
+export function stationInfoPlot(divElement: any,
+                                seismographConfig: SeismographConfig,
+                                seisDataList: Array<SeismogramDisplayData>,
+                                handlebarsTemplate: string ) {
+  if ( ! handlebarsTemplate) { handlebarsTemplate = defaultStationInfoTemplate; }
+  let handlebarsCompiled = Handlebars.compile(handlebarsTemplate);
+  divElement.html(handlebarsCompiled({
+      seisDataList: seisDataList,
+      seisConfig: seismographConfig
+    },
+    {
+      allowProtoPropertiesByDefault: true // this might be a security issue???
+    }));
 }

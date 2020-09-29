@@ -1,6 +1,7 @@
 // @flow
 
 import Handlebars from 'handlebars';
+import moment from 'moment';
 
 export function registerHelpers() {
   Handlebars.registerHelper("onlyChangesChannel", function(sddDataList, index) {
@@ -38,5 +39,20 @@ export function registerHelpers() {
     } else {
       return "";
     }
+  });
+  Handlebars.registerHelper("formatIsoDate", function(param, hash) {
+    if (typeof param === 'undefined' || param === null ) return "no time";
+    let defaultFormat = 'YYYY-MM-DD[T]HH:mm:ss.SSSS';
+    let format = hash.format===undefined ? defaultFormat : hash.format;
+    let m = param;
+    if ( ! moment.isMoment(param)) {
+      m = moment(param).utc()
+    }
+    return m.format(format);
+  });
+
+  Handlebars.registerHelper("formatDuration", function(param, hash) {
+    if (typeof param === 'undefined' || param === null ) return "no time";
+    return `${param.asSeconds()} sec`;
   });
 }
