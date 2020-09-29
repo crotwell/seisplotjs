@@ -4,8 +4,6 @@ import fs from 'fs';
 
 import * as quakeml from '../../src/quakeml.js';
 
-import {Quake} from '../../src/quakeml';
-
 import moment from 'moment';
 
 test("viewobspy quake", () => {

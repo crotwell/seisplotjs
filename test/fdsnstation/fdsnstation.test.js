@@ -5,6 +5,7 @@ import * as stationxml from '../../src/stationxml.js';
 import * as util from '../../src/util.js';
 let moment = util.moment;
 
+// eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
 // eslint-disable-next-line no-undef
 global.fetch = fetch;

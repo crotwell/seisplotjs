@@ -1,12 +1,14 @@
 // @flow
 
 // $FlowFixMe
+// eslint-disable-next-line no-undef
 let TextDecoder = require('util').TextDecoder;
 // eslint-disable-next-line no-undef
 global.TextDecoder = TextDecoder;
 
 import * as xseed from '../../src/xseed.js';
 
+// eslint-disable-next-line no-undef
 const fs = require('fs');
 
 let fileList = [
@@ -99,6 +101,7 @@ for (let filename of fileList) {
     // doesn't work as json is not identical after round trip
     // due to / being same as \/, also 1e-6 and .000001
     //expect(xh.extraHeadersLength).toEqual(jsonData.ExtraLength);
+    // also careful as undef and {} for headers same
     if (xh.extraHeadersLength > 2) {
       expect(xr.extraHeaders).toEqual(jsonData.ExtraHeaders);
     }

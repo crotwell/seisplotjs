@@ -46,12 +46,12 @@ export function registerHelpers() {
     let format = hash.format===undefined ? defaultFormat : hash.format;
     let m = param;
     if ( ! moment.isMoment(param)) {
-      m = moment(param).utc()
+      m = moment(param).utc();
     }
     return m.format(format);
   });
 
-  Handlebars.registerHelper("formatDuration", function(param, hash) {
+  Handlebars.registerHelper("formatDuration", function(param) {
     if (typeof param === 'undefined' || param === null ) return "no time";
     return `${param.asSeconds()} sec`;
   });

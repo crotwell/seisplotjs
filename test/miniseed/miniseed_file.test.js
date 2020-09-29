@@ -4,6 +4,7 @@ import * as miniseed from '../../src/miniseed.js';
 import * as seedcodec from '../../src/seedcodec.js';
 import  {moment} from '../../src/util';
 
+// eslint-disable-next-line no-undef
 const fs = require('fs');
 
 test("load miniseed file", () => {

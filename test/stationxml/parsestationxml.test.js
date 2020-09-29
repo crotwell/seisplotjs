@@ -7,7 +7,7 @@ import { PolesZeros, Network, Station, Channel } from '../../src/stationxml';
 import {convertToSacPoleZero} from '../../src/transfer.js';
 import { createComplex} from '../../src/oregondsputil.js';
 
-let networks = null;
+let networks = [];
 
 beforeAll(() => {
   let filename = "./test/stationxml/data/co_jsc.staxml";

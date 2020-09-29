@@ -111,8 +111,8 @@ export class Station {
   get networkCode(): string {
     return this.network.networkCode;
   }
-  codes(): string {
-    return this.network.codes()+"."+this.stationCode;
+  codes(sep?: string = '.'): string {
+    return this.network.codes()+sep+this.stationCode;
   }
 }
 
@@ -235,13 +235,20 @@ export class Channel {
   /**
    * return network, station, location and channels codes as one string.
    *
+   * @returns net.sta.loc.chan
    */
   get nslc(): string {
     return this.codes();
   }
 
-  codes(): string {
-    return this.station.codes()+"."+this.locationCode+"."+this.channelCode;
+  /**
+   * return network, station, location and channels codes as one string.
+   *
+   * @param sep separator, defaults to dot '.'
+   * @returns net.sta.loc.chan
+   */
+  codes(sep?: string = '.'): string {
+    return this.station.codes(sep)+sep+this.locationCode+sep+this.channelCode;
   }
 }
 

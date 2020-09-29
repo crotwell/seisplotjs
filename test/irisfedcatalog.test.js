@@ -3,6 +3,7 @@
 import {FedCatalogQuery} from '../src/irisfedcatalog.js';
 import moment from 'moment';
 
+// eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
 // eslint-disable-next-line no-undef
 global.fetch = fetch;

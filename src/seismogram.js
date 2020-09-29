@@ -128,7 +128,7 @@ export class SeismogramSegment {
   get start(): moment$Moment {
     return this.startTime;
   }
-  set start(value: moment$Moment | string): moment$Moment {
+  set start(value: moment$Moment | string) {
     this.startTime = value;
   }
   get startTime(): moment$Moment {
@@ -261,6 +261,8 @@ export class SeismogramSegment {
   /**
    * return network, station, location and channels codes as one string.
    * Uses this.channel if it exists, this.seismogram if not.
+   *
+   * @returns nslc codes separated by '.'
    */
   get nslc(): string {
     return this.codes();
@@ -467,13 +469,15 @@ export class Seismogram {
   get numPoints(): number {
     return this._segmentArray.reduce((accumulator, seis) => accumulator + seis.numPoints, 0);
   }
-  hasCodes(): boolean {
-    return this._segmentArray[0].hasCodes();
+  get hasCodes(): boolean {
+    return this._segmentArray[0].hasCodes;
   }
 
   /**
    * return network, station, location and channels codes as one string.
    * Uses this.channel if it exists, this.seismogram if not.
+   *
+   * @returns net.sta.loc.chan
    */
   get nslc(): string {
     return this.codes();
@@ -862,6 +866,12 @@ export class SeismogramDisplayData {
       return "unknown";
     }
   }
+  /**
+   * return FDSN source id as a string.
+   * Uses this.channel if it exists, this.seismogram if not.
+   *
+   * @returns FDSN source id
+   */
   get sourceId(): string {
     if (isDef(this.channel)) {
       return this.channel.sourceId;
@@ -891,7 +901,9 @@ export class SeismogramDisplayData {
 
   /**
    * return network, station, location and channels codes as one string.
-   * Uses this.channel if it exists, this.seismogram if not.
+   * Uses this.channel if it exists, this.seismogram if not
+   *
+   * @returns net.sta.loc.chan
    */
   get nslc(): string {
     return this.codes();
