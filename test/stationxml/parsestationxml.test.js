@@ -63,3 +63,18 @@ test("convert to sac polezero", () => {
     expect(p.imag()).toBeFinite();
   });
 });
+
+test("findChannels", () => {
+  let chanList = stationxml.findChannels(
+    networks,
+    'CO',
+    'JSC',
+    '00',
+    'HHZ');
+  for (let c of chanList) {
+    expect(c.channelCode).toEqual('HHZ');
+    expect(c.locationCode).toEqual('00');
+    expect(c.stationCode).toEqual('JSC');
+    expect(c.networkCode).toEqual('CO');
+  }
+});
