@@ -314,7 +314,7 @@ export const defaultStationInfoTemplate = `
       {{#if sdd.hasQuake }}
         {{#if sdd.hasChannel }}
           <td>{{formatNumber sdd.distaz.distanceDeg 2}}</td>
-          <td>{{formatNumber sdd.distaz.distanceKm 2}}</td>
+          <td>{{formatNumber sdd.distaz.distanceKm 0}}</td>
           <td>{{formatNumber sdd.distaz.az 2}}</td>
           <td>{{formatNumber sdd.distaz.baz 2}}</td>
         {{/if}}
