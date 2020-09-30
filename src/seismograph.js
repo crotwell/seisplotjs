@@ -66,7 +66,8 @@ export class Seismograph {
   svgParent: any;
   seismographConfig: SeismographConfig;
   seisDataList: Array<SeismogramDisplayData>;
-  alignmentSeisData: Array<SeismogramDisplayData>;
+  /** @private */
+  _debugAlignmentSeisData: Array<SeismogramDisplayData>;
 
   width: number;
   height: number;
@@ -109,7 +110,7 @@ export class Seismograph {
     this.seismographConfig = seismographConfig;
     this.seisDataList = [];
     this._internalAppend(seisData);
-    this.alignmentSeisData = [];
+    this._debugAlignmentSeisData = [];
 
     this.width = 200;
     this.height = 100;
@@ -300,13 +301,13 @@ export class Seismograph {
 
   drawSeismograms() {
     if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
-      if (this.alignmentSeisData.length === 0) {
+      if (this._debugAlignmentSeisData.length === 0) {
         const startenddur = new StartEndDuration(this.currZoomXScale.domain()[0], this.currZoomXScale.domain()[1]);
         const fakeSDD = this.seismographConfig.createAlignmentData(startenddur);
-        this.alignmentSeisData.push(fakeSDD);
+        this._debugAlignmentSeisData.push(fakeSDD);
       }
     } else {
-      this.alignmentSeisData = [];
+      this._debugAlignmentSeisData = [];
     }
     if (this.seismographConfig.drawingType === DRAW_CANVAS
       || this.seismographConfig.drawingType === DRAW_BOTH
@@ -345,7 +346,7 @@ export class Seismograph {
       context.lineWidth = this.seismographConfig.lineWidth *2;
     }
 
-    const sddList = this.seisDataList.concat(this.alignmentSeisData);
+    const sddList = this.seisDataList.concat(this._debugAlignmentSeisData);
     sddList.forEach( (sdd, sddIndex) => {
       let ti = sddIndex;
       const xscaleForSDD = this.timeScaleForSeisDisplayData(sdd);
@@ -446,7 +447,7 @@ export class Seismograph {
     const context = canvasNode.getContext("2d");
 
     // canvas text color
-    textcolor = this.seismographConfig.getColorForIndex(2*this.seisDataList.length+this.alignmentSeisData.length);
+    textcolor = this.seismographConfig.getColorForIndex(2*this.seisDataList.length+this._debugAlignmentSeisData.length);
     context.strokeStyle=textcolor;
     context.strokeText("canvas "+textcolor, this.width*3/4, this.height/4);
 
@@ -511,7 +512,7 @@ export class Seismograph {
     return sddXScale;
   }
   drawSeismogramsSvg() {
-    const sddList = this.seisDataList.concat(this.alignmentSeisData);
+    const sddList = this.seisDataList.concat(this._debugAlignmentSeisData);
     const mythis = this;
     const allSegG = this.g.select("g.allseismograms");
     const traceJoin = allSegG.selectAll("g.seismogram")
