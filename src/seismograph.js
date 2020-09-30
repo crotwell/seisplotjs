@@ -1062,6 +1062,7 @@ export class Seismograph {
     return this;
   }
   calcTimeScaleDomain(): void {
+
     if (this.seismographConfig.isRelativeTime) {
 
       if ( ! isDef(this.origXScale)) {
@@ -1085,8 +1086,14 @@ export class Seismograph {
       let timeWindow;
 
       if (this.seismographConfig.linkedTimeScale) {
-      //  timeWindow = this.seismographConfig.linkedTimeScale.calcTimeWindow(this);
-      timeWindow = findStartEnd(this.seisDataList);
+        if (this.seisDataList.length === 0) {
+          timeWindow = new StartEndDuration(null, moment.utc(), this.seismographConfig.linkedTimeScale.duration);
+        } else {
+          // use first sdd alignmentTime to align, since we are not plotting relative
+          const alignTime = this.seisDataList[0].alignmentTime;
+          const start = alignTime.clone().add(this.seismographConfig.linkedTimeScale.offset);
+          timeWindow = new StartEndDuration(start, null, this.seismographConfig.linkedTimeScale.duration);
+        }
       } else if (this.seismographConfig.fixedTimeScale) {
         timeWindow = this.seismographConfig.fixedTimeScale;
       } else {
