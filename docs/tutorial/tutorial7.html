@@ -29,6 +29,8 @@ const duration = seisplotjs.moment.duration(5, 'minutes');
 const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
 const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
+seisPlotConfig.linkedTimeScale.offset = seisplotjs.moment.duration(-1*duration.asMilliseconds(), 'milliseconds');
+seisPlotConfig.linkedTimeScale.duration = duration;
 let graphList = new Map();
 let numPackets = 0;
 let paused = false;
@@ -58,10 +60,9 @@ const packetHandler = function(packet) {
     if ( ! seisPlot) {
         let seismogram = new seisplotjs.seismogram.Seismogram( [ seisSegment ]);
         let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+        seisData.alignmentTime = seisplotjs.moment.utc();
         let plotDiv = realtimeDiv.append("div").classed("seismograph", true);
-        let myseisPlotConfig = seisPlotConfig.clone();
-        myseisPlotConfig.title = codes;
-        seisPlot = new seisplotjs.seismograph.Seismograph(plotDiv, myseisPlotConfig, seisData);
+        seisPlot = new seisplotjs.seismograph.Seismograph(plotDiv, seisPlotConfig, seisData);
         graphList.set(codes, seisPlot);
         console.log(`new plot: ${codes}`)
       } else {
@@ -86,11 +87,14 @@ let timer = seisplotjs.d3.interval(function(elapsed) {
   redrawInProgress = true;
   window.requestAnimationFrame(timestamp => {
     try {
-      graphList.forEach(function(value, key) {
-          value.seismographConfig.fixedTimeScale = new seisplotjs.util.StartEndDuration(null, null, duration);
-          value.calcTimeScaleDomain();
-          value.calcAmpScaleDomain();
-          value.draw();
+      const now = seisplotjs.moment.utc();
+      graphList.forEach(function(graph, key) {
+        graph.seisDataList.forEach(sdd => {
+          sdd.alignmentTime = now;
+        });
+        graph.calcTimeScaleDomain();
+        graph.calcAmpScaleDomain();
+        graph.draw();
       });
     } catch(err) {
       console.assert(false, err);
