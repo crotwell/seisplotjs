@@ -1278,15 +1278,19 @@ export class Seismograph {
       }
     }
   }
+  // eslint-disable-next-line jsdoc/require-param
   /**
    * @deprecated
    */
+   // eslint-disable-next-line no-unused-vars
   linkXScaleTo(seismograph: Seismograph) {
     throw new Error("no longer supported, use SeismogramConfig.linkedTimeScale");
   }
+  // eslint-disable-next-line jsdoc/require-param
   /**
    * @deprecated
    */
+   // eslint-disable-next-line no-unused-vars
   unlinkXScaleTo(seismograph: Seismograph) {
     throw new Error("no longer supported, use SeismogramConfig.linkedTimeScale");
   }

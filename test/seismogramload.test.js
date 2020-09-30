@@ -39,7 +39,7 @@ test( "query setter test", () => {
                               moment.duration(-30, 'seconds'),
                               moment.duration(120, 'seconds'));
     }).then(sddList => {
-      console.log(`got ${sddList.length} seismograms`);
+      expect(sddList).toHaveLength(3);
     });
 
 });

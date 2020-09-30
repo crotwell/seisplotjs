@@ -49,19 +49,17 @@ test("applyFreqTaper to FFTResult", () => {
   let ftaper = transfer.applyFreqTaper(inFFT, sampRate, lowCut, lowPass, highPass, highCut);
   let deltaF = sampRate/numPoints;
 
-  ftaper.amp.forEach((v,i) => {
-    let F = deltaF*i;
-    if (i===0) {
-      expect(v).toEqual(0);
-    } else {
-      if (F < lowCut || F > highCut) {
-          expect(v).toBeCloseTo(0, 2);
-      } else if (F > lowPass && F < highPass ) {
-          expect(v).toBeCloseTo(1, 2);
-      }
-    }
-    });
+  expect(ftaper.amp[0]).toEqual(0);
+  // outside cut, close to zero
+  ftaper.amp.filter((v,i) => deltaF*i < lowCut || deltaF*i > highCut).forEach((v) => {
+    expect(v).toBeCloseTo(0, 2);
   });
+  // inside pass, close to one
+  ftaper.amp.filter((v,i) => lowPass < deltaF*i && deltaF*i < highPass).forEach((v) => {
+    expect(v).toBeCloseTo(1, 2);
+  });
+
+});
 
 test("TaperVsSac", () => {
     let sacout = [ [ 0, 0.000610352, 0 ],
@@ -342,34 +340,20 @@ test("Combine", () => {
                            [-1.5673e-07, 2.15609e-07]];
 
       for(let i = 0; i < sacout.length; i++) {
-          if(sacout[i][0] === 0 || out[i] === 0) {
-            expect(out[i]).toBeCloseTo(sacout[i][0]);
-            //  assertEquals("real " + i + " " + out[i].real()+"  "+sacout[i][0],
-            //               sacout[i][0],
-            //               out[i].real() ,
-            //               0.00001);
-          } else {
-            expect(out[i]).toBeCloseTo(sacout[i][0], 9);
-            expect(sacout[i][0]/ out[i]).toBeCloseTo(1, 5);
-              // assertEquals("real " + i + " " + out[i].real()+"  "+sacout[i][0], 1, sacout[i][0]
-              //         / out[i].real(), 0.00001);
-          }
-        }
-        for(let i = 1; i < sacout.length; i++) {
-          if(sacout[i][1] === 0 || out[out.length-i] === 0) {
-            expect(out[out.length-i]).toBeCloseTo(sacout[i][1]);
-              // assertEquals("imag " + i + " " + out[i].imag()+"  "+sacout[i][1],
-              //              sacout[i][1],
-              //              out[i].imag() ,
-              //              0.00001);
-          } else {
-            expect(out[out.length-i]).toBeCloseTo(sacout[i][1], 9);
-            expect(sacout[i][1]/ out[out.length-i]).toBeCloseTo(1, 5);
-              // assertEquals("imag " + i + " " + out[i].imag()+"  "+sacout[i][1],
-              //              -1,
-              //              sacout[i][1] / out[i].imag(),
-              //              0.00001);
-          }
+          expect(out[i]).toBeCloseTo(sacout[i][0], 9);
+          expect(out[i] === 0 ? 1+sacout[i][0] : sacout[i][0]/ out[i]).toBeCloseTo(1, 5);
+            // assertEquals("real " + i + " " + out[i].real()+"  "+sacout[i][0], 1, sacout[i][0]
+            //         / out[i].real(), 0.00001);
+
+      }
+      for(let i = 1; i < sacout.length; i++) {
+          expect(out[out.length-i]).toBeCloseTo(sacout[i][1], 9);
+          expect(out[out.length-i] ===0 ? 1+sacout[i][1] : sacout[i][1]/ out[out.length-i]).toBeCloseTo(1, 5);
+            // assertEquals("imag " + i + " " + out[i].imag()+"  "+sacout[i][1],
+            //              -1,
+            //              sacout[i][1] / out[i].imag(),
+            //              0.00001);
+
       }
     });
 });
@@ -417,7 +401,7 @@ test("impulse one zero combina amp", () => {
         // for debugging, save data as sac file
         saveDataPromise = readDataView("./test/filter/data/impulse_onezero_fftam.sac.am").then(dataView => {
             let inSac = parseSac(dataView);
-            expect(bagAmPh.amp.length).toBe(inSac.npts);
+            if (bagAmPh.amp.length !== inSac.npts) {throw new Error(`length not equal, not writting: ${bagAmPh.amp.length} ${inSac.npts}`);}
             return writeSac(replaceYData(dataView, bagAmPh.amp), "./test/filter/data/impulse_onezero_fftam.bag.am");
           });
       }

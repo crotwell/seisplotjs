@@ -29,17 +29,13 @@ test("real small fft, Lyons p 64-72", () => {
 });
 
 test("Round Trip FFT, Spike", () => {
-  const data = new Float32Array(128).fill(0);
+  const data = new Float32Array(128).fill(1/10000);
   data[1] = 1/100;
   const fftout = fft.calcDFT(data);
   const out = fft.inverseDFT(fftout, data.length);
   expect(out).toHaveLength(data.length);
   for(let i=0; i<out.length; i++) {
-    if (data[i] === 0) {
-      expect(out[i]).toBeCloseTo(data[i], 3);
-    } else {
-      expect(out[i]/data[i]).toBeCloseTo(1, 5);
-    }
+    expect(out[i]/data[i]).toBeCloseTo(1, 5);
   }
   let sampleRate = 1;
   let start = moment.utc();
@@ -50,11 +46,8 @@ test("Round Trip FFT, Spike", () => {
   }
   const invresult = fftresult.fftInverse();
   for(let i=0; i<invresult.length; i++) {
-    if (data[i] === 0) {
-      expect(invresult[i]).toBeCloseTo(data[i], 3);
-    } else {
-      expect(invresult[i]/data[i]).toBeCloseTo(1, 5);
-    }
+    expect(invresult[i]).toBeCloseTo(data[i], 5);
+    //  expect(invresult[i]/data[i]).toBeCloseTo(1, 5);
   }
 });
 
@@ -65,11 +58,7 @@ test("Round Trip FFT HRV", () => {
     const fftout = fft.calcDFT(data.y);
     const out = fft.inverseDFT(fftout, data.y.length);
     for(let i=0; i<out.length; i++) {
-      if (data.y[i] === 0) {
-        expect(out[i]).toBeCloseTo(data.y[i], 3);
-      } else {
-        expect(out[i]/data.y[i]).toBeCloseTo(1, 3);
-      }
+      expect(out[i]).toBeCloseTo(data.y[i], 2);
     }
   });
 });
@@ -99,7 +88,9 @@ test("FFT", () => {
       if (OVERWRITE_OUTPUT) {
         saveDataPromise = readDataView("./test/filter/data/IU.HRV.__.BHE_fft.sac.am").then(dataView => {
           let inSac = parseSac(dataView);
-          expect(fftRes.amp.length).toBe(inSac.npts);
+          if (fftRes.amp.length !== inSac.npts) {
+            throw new Error(`npts not same: ${fftRes.amp.length}  ${inSac.npts}, not writing.`);
+          }
           return Promise.all([
               writeSac(replaceYData(dataView, fftRes.amp), "./test/filter/data/IU.HRV.__.BHE_fft.bag.am"),
               writeSac(replaceYData(dataView, fftRes.phase), "./test/filter/data/IU.HRV.__.BHE_fft.bag.ph")

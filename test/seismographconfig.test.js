@@ -39,14 +39,12 @@ test("simple seismographconfig clone", () => {
      "black"];
   seisConfig.lineWidth = 2;
   const cloned = seisConfig.clone();
-  Object.getOwnPropertyNames(seisConfig).forEach( name => {
-    if (name !== 'margin') {
-      // $FlowFixMe
-      expect(cloned[name]).toEqual(seisConfig[name]);
-    } else {
-      expect(cloned.margin.top).toEqual(seisConfig.margin.top);
-    }
-  });
+  // margin toString function causes problems, so delete before compare
+  // $FlowExpectedError[cannot-write]
+  delete seisConfig.margin.toString;
+  // $FlowExpectedError[cannot-write]
+  delete cloned.margin.toString;
+  expect(seisConfig).toEqual(cloned);
   seisConfig.drawingType = DRAW_BOTH;
   seisConfig.yLabel = "Changed";
   expect(cloned.yLabel).not.toEqual(seisConfig.yLabel);

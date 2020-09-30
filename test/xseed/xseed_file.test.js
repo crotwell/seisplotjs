@@ -11,18 +11,24 @@ import * as xseed from '../../src/xseed.js';
 // eslint-disable-next-line no-undef
 const fs = require('fs');
 
-let fileList = [
+let filesWithoutExtraHeaders = [
   'test/xseed/reference-data/reference-ascii.xseed',
-  'test/xseed/reference-data/reference-detectiononly.xseed',
-  'test/xseed/reference-data/reference-sinusoid-FDSN-All.xseed',
-  'test/xseed/reference-data/reference-sinusoid-FDSN-Other.xseed',
-  'test/xseed/reference-data/reference-sinusoid-TQ-TC-ED.xseed',
   'test/xseed/reference-data/reference-sinusoid-float32.xseed',
   'test/xseed/reference-data/reference-sinusoid-float64.xseed',
   'test/xseed/reference-data/reference-sinusoid-int16.xseed',
   'test/xseed/reference-data/reference-sinusoid-int32.xseed',
   'test/xseed/reference-data/reference-sinusoid-steim1.xseed',
   'test/xseed/reference-data/reference-sinusoid-steim2.xseed'];
+
+let filesWithExtraHeaders = [
+'test/xseed/reference-data/reference-detectiononly.xseed',
+'test/xseed/reference-data/reference-sinusoid-FDSN-All.xseed',
+'test/xseed/reference-data/reference-sinusoid-FDSN-Other.xseed',
+'test/xseed/reference-data/reference-sinusoid-TQ-TC-ED.xseed'
+];
+
+let fileList = filesWithoutExtraHeaders.concat(filesWithExtraHeaders);
+
 
 let fileSizeMap = new Map();
 fileSizeMap.set('test/xseed/reference-data/reference-ascii.xseed',295);
@@ -37,13 +43,14 @@ fileSizeMap.set('test/xseed/reference-data/reference-sinusoid-int32.xseed',2060)
 fileSizeMap.set('test/xseed/reference-data/reference-sinusoid-steim1.xseed',956);
 fileSizeMap.set('test/xseed/reference-data/reference-sinusoid-steim2.xseed',956);
 
+let testData = fileList.map( f => [f, fileSizeMap.get(f)]);
 //  fileList = fileList.slice(2,3);
 
-for (let filename of fileList) {
-  test("ref xseed file vs json"+filename, () => {
+describe.each(testData)('.file %s', (filename, fileSize) => {
+  test(`ref xseed file vs json ${filename}`, () => {
     expect(fs.existsSync(filename)).toEqual(true);
     let xData = fs.readFileSync(filename);
-    expect(xData.length).toEqual(fileSizeMap.get(filename));
+    expect(xData.length).toEqual(fileSize);
     let hexStr = "";
     for (let i=0;i<xData.length; i++) {
       let s = "";
@@ -97,16 +104,37 @@ for (let filename of fileList) {
     //expect(xseed.crcToHexString(crc)).toEqual(jsonData.CRC);
     expect(xh.publicationVersion).toEqual(jsonData.PublicationVersion);
 
+  });
+});
+
+let testDataWHeaders = filesWithExtraHeaders.map( f => [f]);
+
+
+describe.each(testDataWHeaders)('.extraHeaders %s', (filename ) => {
+  test(`ref xseed file vs json ${filename}`, () => {
+    expect(fs.existsSync(filename)).toEqual(true);
+    let xData = fs.readFileSync(filename);
+    let ab = xData.buffer.slice(xData.byteOffset, xData.byteOffset + xData.byteLength);
+    let parsed = xseed.parseXSeedRecords(ab);
+    let xr = parsed[0];
+    // doesn't work as json is not identical after round trip
+    // due to / being same as \/, also 1e-6 and .000001
+    //expect(xr.getSize()).toEqual(fileSizeMap.get(filename));
+
+    let jsonFilename = filename.slice(0, -5)+'json';
+
+    expect(fs.existsSync(jsonFilename)).toEqual(true);
+    let jsonData = JSON.parse(fs.readFileSync(jsonFilename, 'utf8'));
 
     // doesn't work as json is not identical after round trip
     // due to / being same as \/, also 1e-6 and .000001
-    //expect(xh.extraHeadersLength).toEqual(jsonData.ExtraLength);
+    //   expect(xh.extraHeadersLength).toEqual(jsonData.ExtraLength);
     // also careful as undef and {} for headers same
-    if (xh.extraHeadersLength > 2) {
-      expect(xr.extraHeaders).toEqual(jsonData.ExtraHeaders);
-    }
+
+    expect(xr.extraHeaders).toEqual(jsonData.ExtraHeaders);
+
   });
-}
+});
 
 test("crc-32c of a string", () => {
   let s = "123456789";

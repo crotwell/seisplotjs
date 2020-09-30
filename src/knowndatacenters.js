@@ -40,7 +40,7 @@ const RS= "ringserver";
 const BestDCIdMap = new Map();
 
 function initBestDCIdMap() {
-  BestDCIdMap.set(knownDataCenters.DS, "IRIS");
+  BestDCIdMap.set(DS, "IRIS");
   BestDCIdMap.set(ST, "IRIS");
   BestDCIdMap.set(RS, "IRIS");
   BestDCIdMap.set(EV, "USGS");

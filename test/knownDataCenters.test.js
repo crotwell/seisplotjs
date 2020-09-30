@@ -9,7 +9,9 @@ global.fetch = fetch;
 
 
 test("fetch directly", () => {
+  // $FlowExpectedError[prop-missing]
   expect(knownDataCenters.knownDataCentersJsonURL).toBeDefined();
+    // $FlowExpectedError[prop-missing]
   return fetch(knownDataCenters.knownDataCentersJsonURL)
   .then(response => {
     expect(response.status).toBe(200);
@@ -19,6 +21,7 @@ test("fetch directly", () => {
 
 
 test("load known DCs", () => {
+  // $FlowExpectedError[prop-missing]
   return knownDataCenters.getKnownDataCenters().then(knownDCs => {
     expect(knownDCs).toBeDefined();
   });

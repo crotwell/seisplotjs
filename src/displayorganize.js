@@ -108,10 +108,6 @@ export class OrganizedDisplay {
 
     } else if (this.plottype.startsWith(INFO)) {
       stationInfoPlot(divElement, this.seisConfig, this.seisData, defaultStationInfoTemplate);
-    } else if (this.plottype.startsWith(QUAKE_TABLE)) {
-
-    } else if (this.plottype.startsWith(STATION_TABLE)) {
-
     } else {
       throw new Error(`Unkown plottype "${this.plottype}"`);
     }
