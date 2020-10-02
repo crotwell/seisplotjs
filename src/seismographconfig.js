@@ -38,7 +38,9 @@ export class SeismographConfig {
   drawingType: string; // canvas or svg
   xScaleFormat: (date: Date) => string;
   yScaleFormat: string | (value: number) => string;
+  /** @private */
   _title: Array<string>;
+  /** @private */
   _handlebarsCompiled: null | ({},{}) => string;
   isXAxis: boolean;
   isXAxisTop: boolean;
@@ -73,9 +75,11 @@ export class SeismographConfig {
   doGain: boolean;
   windowAmp: boolean;
   fixedYScale: null | Array<number>;
-  fixedTimeScale: null | StartEndDuration;
+  /** @private */
+  _fixedTimeScale: null | StartEndDuration;
   linkedAmplitudeScale: null | LinkedAmpScale;
-  linkedTimeScale: null | LinkedTimeScale;
+  /** @private */
+  _linkedTimeScale: null | LinkedTimeScale;
   timeAlignmentStyle: string;
   isRelativeTime: boolean;
 
@@ -102,9 +106,9 @@ export class SeismographConfig {
     this.doGain = true;
     this.windowAmp = true;
     this.fixedYScale = null;
-    this.fixedTimeScale = null;
+    this._fixedTimeScale = null;
     this.linkedAmplitudeScale = null;
-    this.linkedTimeScale = new LinkedTimeScale();
+    this._linkedTimeScale = new LinkedTimeScale();
     this.timeAlignmentStyle = 'start';
     this.isRelativeTime = false;
     this.doMarkers = true;
@@ -131,6 +135,22 @@ export class SeismographConfig {
        "sienna",
        "black"];
     this.lineWidth = 1;
+  }
+
+  get fixedTimeScale(): null | StartEndDuration {
+    return this._fixedTimeScale;
+  }
+  set fixedTimeScale(ts: StartEndDuration) {
+    this._fixedTimeScale = ts;
+    this._linkedTimeScale = null;
+  }
+
+  get linkedTimeScale(): null | LinkedTimeScale {
+    return this._linkedTimeScale;
+  }
+  set linkedTimeScale(ts: LinkedTimeScale) {
+    this._linkedTimeScale = ts;
+    this._fixedTimeScale = null;
   }
 
 /**

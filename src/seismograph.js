@@ -1068,9 +1068,10 @@ export class Seismograph {
       if ( ! isDef(this.origXScale)) {
         this.origXScale = d3.scaleLinear();
       }
-      if (this.seismographConfig.linkedTimeScale) {
-        const offset = this.seismographConfig.linkedTimeScale.offset;
-        const duration= this.seismographConfig.linkedTimeScale.duration;
+      if (isDef(this.seismographConfig.linkedTimeScale)) {
+        const linkedTimeScale = this.seismographConfig.linkedTimeScale;
+        const offset = linkedTimeScale.offset;
+        const duration= linkedTimeScale.duration;
         const relStart = offset.asMilliseconds();
         const relEnd = relStart + duration.asMilliseconds();
         this.origXScale.domain([relStart, relEnd]);
@@ -1086,13 +1087,14 @@ export class Seismograph {
       let timeWindow;
 
       if (this.seismographConfig.linkedTimeScale) {
+        const linkedTimeScale = this.seismographConfig.linkedTimeScale;
         if (this.seisDataList.length === 0) {
-          timeWindow = new StartEndDuration(null, moment.utc(), this.seismographConfig.linkedTimeScale.duration);
+          timeWindow = new StartEndDuration(null, moment.utc(), linkedTimeScale.duration);
         } else {
           // use first sdd alignmentTime to align, since we are not plotting relative
           const alignTime = this.seisDataList[0].alignmentTime;
-          const start = alignTime.clone().add(this.seismographConfig.linkedTimeScale.offset);
-          timeWindow = new StartEndDuration(start, null, this.seismographConfig.linkedTimeScale.duration);
+          const start = alignTime.clone().add(linkedTimeScale.offset);
+          timeWindow = new StartEndDuration(start, null, linkedTimeScale.duration);
         }
       } else if (this.seismographConfig.fixedTimeScale) {
         timeWindow = this.seismographConfig.fixedTimeScale;
