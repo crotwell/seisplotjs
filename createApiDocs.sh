@@ -118,6 +118,8 @@ do
     if [ -n "${descVarName}" ]; then
       descText="${!descVarName}"
       descArg='--project-description'
+    else
+      echo "Missing Desc for ${jsfile} #################"
     fi
     # fix markdown style links with html
     re="(.*)\[(.+)\]\((.+)\)(.*)"
@@ -129,6 +131,10 @@ do
     then
       #echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
       npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
+      if [ $? -ne 0 ]
+      then
+        exit $?
+      fi
       if [[ 'html' == "$format"  ]]
       then
         mv docs/api/${jsfile}/index.html docs/api/${jsfile}.html
