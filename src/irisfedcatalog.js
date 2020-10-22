@@ -63,7 +63,7 @@ export type ParsedResultType = {
 /**
  * Query to a IRIS FedCatalog web service.
  *
- * @see http://www.fdsn.org/webservices/
+ * @see http://service.iris.edu/irisws/fedcatalog/1/
  *
  * @param host optional host to connect to, defaults to IRIS
  */

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.seismograph 2.0.2-alpha.0 | Documentation</title>
+  <title>seisplotjs.seismograph 2.1.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.seismograph</h3>
-          <div class='mb1'><code>2.0.2-alpha.0</code></div>
+          <div class='mb1'><code>2.1.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -29,9 +29,29 @@
               
                 
                 <li><a
+                  href='#linkedampscale'
+                  class="">
+                  LinkedAmpScale
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#scalechangelistenertype'
                   class="">
                   ScaleChangeListenerType
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#markerholdertype'
+                  class="">
+                  MarkerHolderType
                   
                 </a>
                 
@@ -90,12 +110,6 @@
                         href='#seismographseisdatalist'
                         class='regular pre-open'>
                         #seisDataList
-                      </a></li>
-                      
-                      <li><a
-                        href='#seismographalignmentseisdata'
-                        class='regular pre-open'>
-                        #alignmentSeisData
                       </a></li>
                       
                       <li><a
@@ -171,12 +185,6 @@
                       </a></li>
                       
                       <li><a
-                        href='#seismographlinkedampscale'
-                        class='regular pre-open'>
-                        #linkedAmpScale
-                      </a></li>
-                      
-                      <li><a
                         href='#seismographlinefunc'
                         class='regular pre-open'>
                         #lineFunc
@@ -228,6 +236,18 @@
                         href='#seismographthrottleresize'
                         class='regular pre-open'>
                         #throttleResize
+                      </a></li>
+                      
+                      <li><a
+                        href='#seismographmytimescalable'
+                        class='regular pre-open'>
+                        #myTimeScalable
+                      </a></li>
+                      
+                      <li><a
+                        href='#seismographmyampscalable'
+                        class='regular pre-open'>
+                        #myAmpScalable
                       </a></li>
                       
                       <li><a
@@ -285,6 +305,12 @@
                       </a></li>
                       
                       <li><a
+                        href='#seismographtimescaleforseisdisplaydata'
+                        class='regular pre-open'>
+                        #timeScaleForSeisDisplayData
+                      </a></li>
+                      
+                      <li><a
                         href='#seismographdrawseismogramssvg'
                         class='regular pre-open'>
                         #drawSeismogramsSvg
@@ -309,6 +335,18 @@
                       </a></li>
                       
                       <li><a
+                        href='#seismographdrawtopbottomaxis'
+                        class='regular pre-open'>
+                        #drawTopBottomAxis
+                      </a></li>
+                      
+                      <li><a
+                        href='#seismographdrawleftrightaxis'
+                        class='regular pre-open'>
+                        #drawLeftRightAxis
+                      </a></li>
+                      
+                      <li><a
                         href='#seismographrescaleyaxis'
                         class='regular pre-open'>
                         #rescaleYAxis
@@ -318,12 +356,6 @@
                         href='#seismographdrawaxislabels'
                         class='regular pre-open'>
                         #drawAxisLabels
-                      </a></li>
-                      
-                      <li><a
-                        href='#seismographclonexscale'
-                        class='regular pre-open'>
-                        #cloneXScale
                       </a></li>
                       
                       <li><a
@@ -474,9 +506,9 @@
               
                 
                 <li><a
-                  href='#linkedampscale'
+                  href='#seismographamplitudescalable'
                   class=" toggle-sibling">
-                  LinkedAmpScale
+                  SeismographAmplitudeScalable
                   <span class='icon'>▸</span>
                 </a>
                 
@@ -487,21 +519,49 @@
                       <li class='h5'><span>Instance members</span></li>
                       
                       <li><a
-                        href='#linkedampscalelink'
+                        href='#seismographamplitudescalablegraph'
                         class='regular pre-open'>
-                        #link
+                        #graph
                       </a></li>
                       
                       <li><a
-                        href='#linkedampscaleunlink'
+                        href='#seismographamplitudescalablenotifyamplitudechange'
                         class='regular pre-open'>
-                        #unlink
+                        #notifyAmplitudeChange
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#seismographtimescalable'
+                  class=" toggle-sibling">
+                  SeismographTimeScalable
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#seismographtimescalablegraph'
+                        class='regular pre-open'>
+                        #graph
                       </a></li>
                       
                       <li><a
-                        href='#linkedampscalerecalculate'
+                        href='#seismographtimescalablenotifytimerangechange'
                         class='regular pre-open'>
-                        #recalculate
+                        #notifyTimeRangeChange
                       </a></li>
                       
                     </ul>
@@ -547,12 +607,65 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='linkedampscale'>
+      LinkedAmpScale
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L15-L15'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>LinkedAmpScale</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='scalechangelistenertype'>
       ScaleChangeListenerType
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L31-L34'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L38-L41'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -617,12 +730,88 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='markerholdertype'>
+      MarkerHolderType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L43-L47'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>MarkerHolderType</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Properties</div>
+    <div>
+      
+        <div class='space-bottom0'>
+          <span class='code bold'>marker</span> <code class='quiet'>(MarkerType)</code>
+          
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <span class='code bold'>sdd</span> <code class='quiet'>(SeismogramDisplayData)</code>
+          
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <span class='code bold'>xscale</span> <code class='quiet'>(any)</code>
+          
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='seismograph'>
       Seismograph
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L46-L1146'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L60-L1307'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -700,7 +889,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L171-L177'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L202-L208'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -708,7 +897,7 @@
   
 
   
-    <div class='pre p1 fill-light mt0'>fromSeismograms(inSvgParent: any, seismographConfig: SeismographConfig, seismogramList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Seismogram>)</div>
+    <div class='pre p1 fill-light mt0'>fromSeismograms(inSvgParent: any, seismographConfig: SeismographConfig, seismogramList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Seismogram>): <a href="#seismograph">Seismograph</a></div>
   
   
 
@@ -753,6 +942,11 @@
   
 
   
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#seismograph">Seismograph</a></code>
+    
+  
 
   
 
@@ -794,7 +988,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L49-L49'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L63-L63'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -856,7 +1050,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L50-L50'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L64-L64'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -918,7 +1112,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L52-L52'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L66-L66'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -980,7 +1174,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L53-L53'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L67-L67'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1042,7 +1236,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L54-L54'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L68-L68'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1051,68 +1245,6 @@
 
   
     <div class='pre p1 fill-light mt0'>seisDataList</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='seismographalignmentseisdata'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>alignmentSeisData</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L55-L55'>
-      <span>src/seismograph.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>alignmentSeisData</div>
   
     <p>
       Type:
@@ -1166,7 +1298,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L57-L57'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L72-L72'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1228,7 +1360,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L58-L58'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L73-L73'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1290,7 +1422,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L59-L59'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L74-L74'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1352,7 +1484,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L60-L60'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L75-L75'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1414,7 +1546,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L61-L61'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L76-L76'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1476,7 +1608,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L62-L62'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L77-L77'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1538,7 +1670,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L63-L63'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L78-L78'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1600,7 +1732,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L64-L64'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L79-L79'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1612,7 +1744,7 @@
   
     <p>
       Type:
-      d3.scale
+      any
     </p>
   
   
@@ -1662,7 +1794,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L65-L65'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L80-L80'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1724,7 +1856,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L66-L66'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L81-L81'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1736,7 +1868,7 @@
   
     <p>
       Type:
-      d3.scale
+      any
     </p>
   
   
@@ -1786,7 +1918,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L67-L67'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L82-L82'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1798,7 +1930,7 @@
   
     <p>
       Type:
-      d3.scale
+      any
     </p>
   
   
@@ -1848,7 +1980,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L68-L68'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L83-L83'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -1860,69 +1992,7 @@
   
     <p>
       Type:
-      d3.scale
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='seismographlinkedampscale'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>linkedAmpScale</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L69-L69'>
-      <span>src/seismograph.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>linkedAmpScale</div>
-  
-    <p>
-      Type:
-      <a href="#linkedampscale">LinkedAmpScale</a>
+      any
     </p>
   
   
@@ -1972,7 +2042,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L70-L70'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L84-L84'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2034,7 +2104,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L71-L71'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L85-L85'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2096,7 +2166,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L72-L72'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L86-L86'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2158,7 +2228,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L73-L73'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L87-L87'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2220,7 +2290,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L74-L74'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L88-L88'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2282,7 +2352,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L75-L75'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L89-L89'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2344,7 +2414,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L76-L76'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L90-L90'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2406,7 +2476,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L77-L77'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L91-L91'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2468,7 +2538,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L78-L78'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L92-L92'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2481,6 +2551,130 @@
     <p>
       Type:
       any
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='seismographmytimescalable'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>myTimeScalable</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L93-L93'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>myTimeScalable</div>
+  
+    <p>
+      Type:
+      TimeScalable
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='seismographmyampscalable'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>myAmpScalable</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L94-L94'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>myAmpScalable</div>
+  
+    <p>
+      Type:
+      AmplitudeScalable
     </p>
   
   
@@ -2530,7 +2724,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L79-L79'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L95-L95'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2592,7 +2786,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L179-L185'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L210-L216'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2654,7 +2848,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L186-L241'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L217-L277'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2716,7 +2910,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L242-L264'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L278-L300'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2778,7 +2972,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L266-L289'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L302-L325'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2835,7 +3029,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L290-L294'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L326-L330'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2897,7 +3091,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L295-L372'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L331-L411'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -2959,7 +3153,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L373-L443'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L412-L482'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3021,7 +3215,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L444-L457'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L483-L496'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3069,6 +3263,81 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='seismographtimescaleforseisdisplaydata'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeScaleForSeisDisplayData(sdd)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L497-L513'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>timeScaleForSeisDisplayData(sdd: SeismogramDisplayData): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sdd</span> <code class='quiet'>(SeismogramDisplayData)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='seismographdrawseismogramssvg'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -3083,7 +3352,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L458-L484'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L514-L549'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3140,7 +3409,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L486-L490'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L551-L555'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3215,7 +3484,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L492-L540'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L557-L605'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3288,7 +3557,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>drawAxis(svgG)</span>
+            <span class='code strong strong truncate'>drawAxis()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -3298,15 +3567,16 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L542-L574'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L610-L613'>
       <span>src/seismograph.js</span>
       </a>
     
   </div>
   
 
-  
-    <div class='pre p1 fill-light mt0'>drawAxis(svgG: any): void</div>
+  <p>Draws the top, bottom, (time) axis and the left and right (amplitude) axis if configured.</p>
+
+    <div class='pre p1 fill-light mt0'>drawAxis(): void</div>
   
   
 
@@ -3318,18 +3588,131 @@
   
 
   
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>svgG</span> <code class='quiet'>(any)</code>
-	    
-          </div>
-          
-        </div>
-      
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
     </div>
+  
+    <div class='border-bottom' id='seismographdrawtopbottomaxis'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>drawTopBottomAxis()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L618-L648'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Draws the left and right (amplitude) axis if configured.</p>
+
+    <div class='pre p1 fill-light mt0'>drawTopBottomAxis(): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='seismographdrawleftrightaxis'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>drawLeftRightAxis()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L653-L671'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Draws the left and right (amplitude) axis if configured.</p>
+
+    <div class='pre p1 fill-light mt0'>drawLeftRightAxis(): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
   
 
   
@@ -3373,7 +3756,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L576-L594'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L673-L691'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3435,7 +3818,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L596-L602'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L693-L699'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3483,81 +3866,6 @@
       </div>
     </div>
   
-    <div class='border-bottom' id='seismographclonexscale'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>cloneXScale(scale)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L604-L609'>
-      <span>src/seismograph.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>cloneXScale(scale: d3.scale): d3.scale</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>scale</span> <code class='quiet'>(d3.scale)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>d3.scale</code>
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
     <div class='border-bottom' id='seismographresetzoom'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -3572,7 +3880,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L610-L612'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L701-L707'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3624,7 +3932,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>zoomed(mythis)</span>
+            <span class='code strong strong truncate'>zoomed()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -3634,7 +3942,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L614-L618'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L709-L728'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3642,7 +3950,7 @@
   
 
   
-    <div class='pre p1 fill-light mt0'>zoomed(mythis: <a href="#seismograph">Seismograph</a>): void</div>
+    <div class='pre p1 fill-light mt0'>zoomed(): void</div>
   
   
 
@@ -3653,19 +3961,6 @@
   
   
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>mythis</span> <code class='quiet'>(<a href="#seismograph">Seismograph</a>)</code>
-	    
-          </div>
-          
-        </div>
-      
-    </div>
   
 
   
@@ -3709,7 +4004,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L620-L676'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L730-L796'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3784,7 +4079,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L678-L782'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L798-L909'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3841,7 +4136,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L784-L817'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L911-L944'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -3924,7 +4219,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L821-L826'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L948-L953'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4007,7 +4302,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L828-L833'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L955-L960'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4064,7 +4359,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L835-L842'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L962-L969'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4139,7 +4434,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L843-L859'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L970-L987'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4196,7 +4491,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L860-L871'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L988-L999'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4258,7 +4553,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L872-L902'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1000-L1030'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4320,7 +4615,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L903-L912'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1031-L1040'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4382,7 +4677,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L913-L935'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1041-L1063'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4444,7 +4739,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L936-L949'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1064-L1111'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4506,7 +4801,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L950-L982'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1112-L1156'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4568,7 +4863,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L983-L1030'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1157-L1204'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4630,7 +4925,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1031-L1033'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1205-L1207'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4692,7 +4987,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1065-L1083'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1238-L1255'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4701,7 +4996,7 @@
 
   <p>appends the seismogram(s) or SeismogramDisplayData as separate time series.</p>
 
-    <div class='pre p1 fill-light mt0'>append(seismogram: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Seismogram> | Seismogram | SeismogramDisplayData)): any</div>
+    <div class='pre p1 fill-light mt0'>append(seismogram: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Seismogram> | Seismogram | SeismogramDisplayData))</div>
   
   
 
@@ -4730,14 +5025,6 @@
 
   
 
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>any</code>:
-        this Seismograph
-
-      
-    
   
 
   
@@ -4772,7 +5059,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1091-L1094'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1263-L1266'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4853,7 +5140,7 @@ Seismogram.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1100-L1102'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1272-L1274'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -4930,7 +5217,7 @@ Seismogram.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1108-L1118'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1280-L1290'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -5007,7 +5294,7 @@ Seismogram.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1119-L1139'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1296-L1298'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -5019,7 +5306,8 @@ Seismogram.</p>
   
   
 
-  
+  <div>Deprecated: This is deprecated.
+</div>
   
   
   
@@ -5077,7 +5365,7 @@ Seismogram.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1140-L1145'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1304-L1306'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -5089,7 +5377,8 @@ Seismogram.</p>
   
   
 
-  
+  <div>Deprecated: This is deprecated.
+</div>
   
   
   
@@ -5150,22 +5439,28 @@ Seismogram.</p>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='linkedampscale'>
-      LinkedAmpScale
+    <h3 class='fl m0' id='seismographamplitudescalable'>
+      SeismographAmplitudeScalable
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1153-L1218'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1309-L1339'>
       <span>src/seismograph.js</span>
       </a>
     
   </div>
   
 
-  <p>Links amplitude scales across multiple seismographs, respecting doRmean.</p>
-
-    <div class='pre p1 fill-light mt0'>new LinkedAmpScale(graphList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#seismograph">Seismograph</a>>?)</div>
   
+    <div class='pre p1 fill-light mt0'>new SeismographAmplitudeScalable(graph: <a href="#seismograph">Seismograph</a>)</div>
+  
+  
+    <p>
+      Extends
+      
+        AmplitudeScalable
+      
+    </p>
   
 
   
@@ -5181,9 +5476,8 @@ Seismogram.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>graphList</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#seismograph">Seismograph</a>>?)</code>
-	    optional list of Seismographs to link
-
+            <span class='code bold'>graph</span> <code class='quiet'>(<a href="#seismograph">Seismograph</a>)</code>
+	    
           </div>
           
         </div>
@@ -5207,11 +5501,11 @@ Seismogram.</p>
     <div class='py1 quiet mt1 prose-big'>Instance Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='linkedampscalelink'>
+    <div class='border-bottom' id='seismographamplitudescalablegraph'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>link(graph)</span>
+            <span class='code strong strong truncate'>graph</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -5221,16 +5515,77 @@ Seismogram.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1170-L1174'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1310-L1310'>
       <span>src/seismograph.js</span>
       </a>
     
   </div>
   
 
-  <p>Link new Seismograph with this amplitude scale.</p>
+  
+    <div class='pre p1 fill-light mt0'>graph</div>
+  
+    <p>
+      Type:
+      <a href="#seismograph">Seismograph</a>
+    </p>
+  
+  
 
-    <div class='pre p1 fill-light mt0'>link(graph: <a href="#seismograph">Seismograph</a>)</div>
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='seismographamplitudescalablenotifyamplitudechange'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>notifyAmplitudeChange(minAmp, maxAmp)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1322-L1338'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>notifyAmplitudeChange(minAmp: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, maxAmp: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
   
   
 
@@ -5247,9 +5602,16 @@ Seismogram.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>graph</span> <code class='quiet'>(<a href="#seismograph">Seismograph</a>)</code>
-	    Seismograph to link
-
+            <span class='code bold'>minAmp</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>maxAmp</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
           </div>
           
         </div>
@@ -5279,31 +5641,45 @@ Seismogram.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='linkedampscaleunlink'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>unlink(graph)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
 
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='seismographtimescalable'>
+      SeismographTimeScalable
+    </h3>
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1180-L1183'>
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1341-L1389'>
       <span>src/seismograph.js</span>
       </a>
     
   </div>
   
 
-  <p>Unlink Seismograph with this amplitude scale.</p>
-
-    <div class='pre p1 fill-light mt0'>unlink(graph: <a href="#seismograph">Seismograph</a>)</div>
   
+    <div class='pre p1 fill-light mt0'>new SeismographTimeScalable(graph: <a href="#seismograph">Seismograph</a>)</div>
+  
+  
+    <p>
+      Extends
+      
+        TimeScalable
+      
+    </p>
   
 
   
@@ -5320,13 +5696,68 @@ Seismogram.</p>
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>graph</span> <code class='quiet'>(<a href="#seismograph">Seismograph</a>)</code>
-	    Seismograph to unlink
-
+	    
           </div>
           
         </div>
       
     </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='seismographtimescalablegraph'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>graph</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1342-L1342'>
+      <span>src/seismograph.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>graph</div>
+  
+    <p>
+      Type:
+      <a href="#seismograph">Seismograph</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
   
 
   
@@ -5351,11 +5782,11 @@ Seismogram.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='linkedampscalerecalculate'>
+    <div class='border-bottom' id='seismographtimescalablenotifytimerangechange'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>recalculate()</span>
+            <span class='code strong strong truncate'>notifyTimeRangeChange(offset, duration)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -5365,16 +5796,15 @@ Seismogram.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1187-L1217'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1371-L1388'>
       <span>src/seismograph.js</span>
       </a>
     
   </div>
   
 
-  <p>Recalculate the best amplitude scale for all Seismographs. Causes a redraw.</p>
-
-    <div class='pre p1 fill-light mt0'>recalculate()</div>
+  
+    <div class='pre p1 fill-light mt0'>notifyTimeRangeChange(offset: moment$MomentDuration, duration: moment$MomentDuration)</div>
   
   
 
@@ -5385,6 +5815,27 @@ Seismogram.</p>
   
   
 
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>offset</span> <code class='quiet'>(moment$MomentDuration)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>duration</span> <code class='quiet'>(moment$MomentDuration)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
   
 
   
@@ -5431,7 +5882,7 @@ Seismogram.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1233-L1241'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1403-L1412'>
       <span>src/seismograph.js</span>
       </a>
     
@@ -5441,7 +5892,7 @@ Seismogram.</p>
   <p>Creates Markers for all of the arrivals in ttime.arrivals, relative
 to the given Quake.</p>
 
-    <div class='pre p1 fill-light mt0'>createMarkersForTravelTimes(quake: Quake, ttime: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;MarkerType></div>
+    <div class='pre p1 fill-light mt0'>createMarkersForTravelTimes(quake: Quake, ttime: TraveltimeJsonType): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;MarkerType></div>
   
   
 
@@ -5467,7 +5918,7 @@ to the given Quake.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>ttime</span> <code class='quiet'>(any)</code>
+            <span class='code bold'>ttime</span> <code class='quiet'>(TraveltimeJsonType)</code>
 	    travel times json object as returned from the
 IRIS traveltime web service, or the json output of TauP
 
@@ -5518,7 +5969,7 @@ IRIS traveltime web service, or the json output of TauP
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/seismograph.js#L1243-L1395'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/seismograph.js#L1414-L1566'>
       <span>src/seismograph.js</span>
       </a>
     
