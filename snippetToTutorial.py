@@ -87,7 +87,7 @@ for dirpath, dirs, files in os.walk('docs/tutorial'):
             if tutNum is '1':
                 htmlfilename = 'index.html'
             else:
-                htmlfilePattern = re.compile(f"{tutNum}_\w+.html")
+                htmlfilePattern = re.compile(f"^{tutNum}_\w+.html$")
                 for hf in files:
                     htmlmatch = htmlfilePattern.match(hf)
                     if htmlmatch:
