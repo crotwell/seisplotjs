@@ -57,7 +57,7 @@
             pick the time window starting 30 seconds prior to the first P
             arrival.
          </p>
-         <pre><code class="language-javascript">
+         <pre><code class="language-javascript" snippet="traveltime">
            Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
              .then( ( [ quakeList, networks ] ) => {
                let taupQuery = new seisplotjs.traveltime.TraveltimeQuery()
@@ -85,7 +85,7 @@
             making it easy to associate the new waveform with the request time
             window, channel, and quake.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="markers">
           }).then( ( [ quakeList, networks, ttimes ] ) => {
             let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
             phaseMarkers.push({
@@ -113,7 +113,7 @@
             each other in time
             and amplitude.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="seismograph">
           }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
             let div = seisplotjs.d3.select("div#myseismograph");
             let graphList = [];

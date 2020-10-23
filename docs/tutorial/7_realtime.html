@@ -59,7 +59,7 @@
             just often enough to move the image over by one pixel. We will also
             need an error handling function.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="vars">
 
             const matchPattern = `CO_JSC_00_HH./MSEED`;
             seisplotjs.d3.select("span#channel").text(matchPattern);
@@ -92,7 +92,7 @@
             but there is nothing in the datalink protocol that prevents sending
             other types of data as the payload.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="handle">
             const packetHandler = function(packet) {
               if (packet.isMiniseed()) {
                 numPackets++;
@@ -123,7 +123,7 @@
             Now we create the actual Datalink connection to the
             <a href="https://seiscode.iris.washington.edu/projects/ringserver">IRIS ringserver</a>.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="datalink">
 
             const datalink = new seisplotjs.datalink.DataLinkConnection(
                 seisplotjs.datalink.IRIS_RINGSERVER_URL,
@@ -135,7 +135,7 @@
           <p>
             Here is the timer that will periodically refresh the displays.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="timer">
 
               let timer = seisplotjs.d3.interval(function(elapsed) {
                 if ( paused || redrawInProgress) {
@@ -162,7 +162,7 @@
           <p>
             We wire up the pause button.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="pause">
 
   seisplotjs.d3.select("button#pause").on("click", function(d) {
     togglePause( );
@@ -182,7 +182,7 @@
           <p>
             And wire up the disconnect button
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="disconnet">
             seisplotjs.d3.select("button#disconnect").on("click", function(d) {
               toggleConnect();
             });
@@ -220,7 +220,7 @@
           <p>
             And then we start it going!
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="go">
             toggleConnect();
           </code></pre>
 

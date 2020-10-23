@@ -75,7 +75,7 @@
             find in the IRISDMC datacenter. Being a remote operation, this also
             returns a Promise.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="window">
             const plotEnd = seisplotjs.moment.utc().endOf("hour").add(1, "millisecond");
             if (plotEnd.hour() % 2 === 1) {plotEnd.add(1, "hour");}
             const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, seisplotjs.moment.duration(1, "day"));
@@ -89,7 +89,7 @@
             <code class="language-javascript">querySeismograms()</code> method
             of course returns a Promise.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="seismogram">
             .then(dataSelectArray => {
               return dataSelectArray[0].networkCode("CO")
                 .stationCode("JSC")
@@ -110,7 +110,7 @@
             is invoked that should output an error
             message to the page.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="heli">
           }).then(seisArray => {
             seisplotjs.d3.select("span#channel").text(seisArray[0].codes());
             seisplotjs.d3.select("span#starttime").text(timeWindow.start.format("YYYY-MM-DD HH:mm")+"Z");

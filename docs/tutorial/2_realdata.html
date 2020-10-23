@@ -57,7 +57,7 @@
             that allows many channel-time range pairs to be requested at once.
 
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript"snippet="querystation">
             let timeWindow = new seisplotjs.util.StartEndDuration("2019-07-06T03:19:53Z", null, 1800);
             let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
             dsQuery.networkCode("CO")
@@ -78,7 +78,7 @@
             there to only be one seismogram returned from this, so we only try
             to display the first one.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="queryseis">
             dsQuery.querySeismograms().then(seisArray => {
                 // only plot the first seismogram
                 let seismogram = seisArray[0];

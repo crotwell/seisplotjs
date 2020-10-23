@@ -1,0 +1,98 @@
+#!/bin/env python3
+
+import os.path
+import re
+from html.parser import HTMLParser
+from bs4 import BeautifulSoup
+
+StartSnip = re.compile('// snip start (\w)')
+EndSnip = re.compile('// snip end ')
+StartTag = re.compile('^<\w+.*>')
+EndTag = re.compile('^</\w+>')
+ComboStartEndTag = re.compile('^<\w+.*/>')
+StartEndTag = re.compile('^<\w+.*>.*</\w+>$')
+
+jsfilePattern = re.compile('^tutorial(\d+).js$')
+#jsfilePattern = re.compile('^tutorial(4).js$')
+
+def snippetReplace(dirpath, jsfilename, htmlfilename):
+    print(f"jsfile={jsfilename}  htmlfile={htmlfilename}")
+    # Read in the file
+    filepath = os.path.join(dirpath, jsfilename)
+    with open(filepath, 'r') as file :
+        jsdata = file.readlines()
+
+    filepath = os.path.join(dirpath, htmlfilename)
+    with open(filepath, 'r') as file :
+        soup = BeautifulSoup(file, 'html.parser')
+    for c in soup.find_all('code'):
+        if (c.get('class') is not None
+              and "language-javascript" in c.get('class')
+              and c.get('snippet') is not None):
+            snipname = c.get('snippet')
+            print(f"code: {c.get('snippet')} {c.get('class')}")
+            inSnip = False
+            for line in jsdata:
+                if not inSnip:
+                    match = StartSnip.match(line)
+                    if match and match.group(1) == snipname:
+                        print(f"found start for {snipname}  {match.group(1)}")
+                        inSnip = True
+                        c.clear()
+                        c.append("\n")
+                else:
+                    startmatch = StartSnip.match(line)
+                    endmatch = EndSnip.match(line)
+                    if startmatch or endmatch:
+                        inSnip = False
+                    else:
+                        c.append(f"{line}")
+    with open(filepath+".mod.html", 'w', encoding='utf-8') as file:
+        #file.write(redoIndent(soup.encode(formatter="html")))
+        file.write(soup.prettify(formatter="html"))
+    #os.rename(filepath, filepath+".orig")
+    #os.rename(filepath+".mod.html", filepath)
+
+def redoIndent(text, spaces=2):
+    level = 0
+    indent = " "*spaces
+    out = []
+    for line in text.decode('utf-8').split("\n"):
+        trimLine = line.strip()
+        if (ComboStartEndTag.match(trimLine) is not None
+              or StartEndTag.match(trimLine) is not None):
+            out.append(indent*level + trimLine)
+        elif StartTag.match(trimLine) is not None:
+            out.append(indent*level + trimLine)
+            level = level+1
+            print(f"start tag {level}  {line}")
+        elif EndTag.match(trimLine) is not None:
+            level = level-1
+            out.append(indent*level + trimLine)
+            print(f"end tag {level}  {line}")
+        else:
+            out.append(indent*level + trimLine)
+    return "\n".join(out).encode('utf-8')
+
+
+for dirpath, dirs, files in os.walk('docs/tutorial'):
+    for filename in files:
+        print(f"try {filename}")
+        match = jsfilePattern.match(filename)
+        if match:
+            tutNum = match.group(1)
+            jsfilename = filename
+
+            htmlfilename = None
+            if tutNum is '1':
+                htmlfilename = 'index.html'
+            else:
+                htmlfilePattern = re.compile(f"{tutNum}_\w+.html")
+                for hf in files:
+                    htmlmatch = htmlfilePattern.match(hf)
+                    if htmlmatch:
+                        htmlfilename = hf
+            if htmlfilename is None:
+                print(f"cant find html to go with {jsfilename}")
+            else:
+                snippetReplace(dirpath, jsfilename, htmlfilename)

@@ -1,28 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset='utf-8'>
-    <title>Tutorial 7: Realtime</title>
-    <style>
-      div#realtime div.seismograph {
-        height: 300px;
-      }
-    </style>
-  </head>
-  <body>
-    <h3>Tutorial 7: Realtime</h3>
-    <h3>Realtime display for <span id="channel"></span></h3>
-
-    <button id="disconnect">Disconnect</button>
-    <button id="pause">Pause</button>
-    Packets: <span id="numPackets">0</span>
-    <div id="realtime">
-    </div>
-
-    <div id="debug">
-    </div>
-    <script src="seisplotjs_2.1.0-alpha.0_standalone.js"></script>
-    <script>
+// snip start vars
 const matchPattern = `CO_JSC_00_HH./MSEED`;
 seisplotjs.d3.select('span#channel').text(matchPattern);
 const duration = seisplotjs.moment.duration(5, 'minutes');
@@ -49,7 +25,7 @@ const errorFn = function(error) {
   seisplotjs.d3.select("p#error").text("Error: "+error);
 };
 
-
+// snip start handle
 const packetHandler = function(packet) {
   if (packet.isMiniseed()) {
     numPackets++;
@@ -73,13 +49,13 @@ const packetHandler = function(packet) {
     console.log(`not a mseed packet: ${packet.streamId}`)
   }
 };
-
+// snip start datalink
 const datalink = new seisplotjs.datalink.DataLinkConnection(
     seisplotjs.datalink.IRIS_RINGSERVER_URL,
     packetHandler,
     errorFn);
 
-
+// snip start timer
 let timer = seisplotjs.d3.interval(function(elapsed) {
   if ( paused || redrawInProgress) {
     return;
@@ -104,6 +80,7 @@ let timer = seisplotjs.d3.interval(function(elapsed) {
 
   }, timerInterval);
 
+// snip start pause
 seisplotjs.d3.select("button#pause").on("click", function(d) {
   togglePause( );
 });
@@ -117,7 +94,7 @@ let togglePause = function() {
   }
 }
 
-
+// snip start disconnet
 seisplotjs.d3.select("button#disconnect").on("click", function(d) {
   toggleConnect();
 });
@@ -150,8 +127,5 @@ let toggleConnect = function() {
     seisplotjs.d3.select("button#disconnect").text("Disconnect");
   }
 }
-
+// snip start go
 toggleConnect();
-    </script>
-  </body>
-</html>

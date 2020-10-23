@@ -91,7 +91,7 @@
             both the <code class="language-javascript">EventQuery</code>
             and <code class="language-javascript">StationQuery</code> objects.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="map">
             const centerLat = 35;
             const centerLon = -100;
             const mapZoomLevel = 4;
@@ -136,7 +136,7 @@
             arrival times. Note that we use the event time as the start and
             ask for a duration of 2400 seconds.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="promise">
             Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
             .then( ( [ quakeList, networks ] ) => {
                 for (const q of quakeList) {
@@ -171,7 +171,7 @@
             array of strings in the title the same color, making them easier to
             identify. Note the units on the left hand side are now m/s.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="seismograph">
           }).then( ( [ quakeList, networks, seismogramDataList ] ) => {
             let div = seisplotjs.d3.select("div#myseismograph");
             let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();

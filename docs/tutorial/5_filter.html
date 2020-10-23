@@ -54,7 +54,7 @@
             will return stationXML with the full response filled in for each
             channel.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="station">
             let stationQuery = new seisplotjs.fdsnstation.StationQuery()
               .networkCode("CO")
               .stationCode("HODGE")
@@ -68,7 +68,7 @@
             lets reduce the time window to just the region where the P
             arrival is, say 300 seconds instead of 1800.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="window">
           let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 300);
           </code></pre>
           <p>
@@ -82,7 +82,7 @@
             and then we <code class="language-javascript">transfer</code>
             the instrument response for the channel.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="">
           }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
             seismogramDataList.forEach(sdd => {
               let butterworth = seisplotjs.filter.createButterworth(

@@ -84,7 +84,7 @@
             for now we will just put out javascript directly inside the
             bottom <code>script</code> element.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript" snippet="createseis">
             let dataArray = new Float32Array(1000).map(function(d, i) {
               return Math.sin(2*Math.PI*i/100) * 100;
             });
@@ -110,7 +110,7 @@
             object allows that. Just for fun we add a title and give a bit of space
             at the top for the title to be without overlapping the seismograph.
           </p>
-          <pre><code class="language-javascript">
+          <pre><code class="language-javascript"  snippet="draw">
             let div = seisplotjs.d3.select("div#sinewave");
             let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
             seisConfig.title = "A sine wave!";
