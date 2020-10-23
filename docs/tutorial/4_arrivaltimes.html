@@ -1,92 +1,189 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>seisplotjs 2.0 Tutorial, p4</title>
-    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <link href="../bass.css" rel="stylesheet"/>
-    <link href="../split.css" rel="stylesheet"/>
-    <link href="../prism.css" rel="stylesheet" />
-    <link href="style.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="flex">
-      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
-        <div class="py1 px2">
-          <div id="toc">
-            <ul class="list-reset h5 py1-ul">
-              <li><a href="../index.html" class="">Seisplotjs</a></li>
-              <li><a href="../api/index.html" class="">API JS Docs</a></li>
-              <li><a href="../examples/index.html" class="">Examples</a></li>
-              <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
-              <li class="sub"><a href="../tutorial/index.html" class="sub">Sine Wave</a></li>
-              <li class="sub"><a href="../tutorial/2_realdata.html" class="sub">Real data</a></li>
-              <li class="sub"><a href="../tutorial/3_quakesandchannels.html" class="sub">Quakes and Channels</a></li>
-              <li class="sub"><a href="../tutorial/4_arrivaltimes.html" class="sub">Arrival Times</a></li>
-              <li class="sub"><a href="../tutorial/5_filter.html" class="sub">Filtering</a></li>
-              <li class="sub"><a href="../tutorial/6_helicorder.html" class="sub">Helicorder</a></li>
-              <li class="sub"><a href="../tutorial/7_realtime.html" class="sub">Realtime</a></li>
-              <li class="sub"><a href="../tutorial/8_andmore.html" class="sub">...and more</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div id="split-right" class="relative overflow-auto height-viewport-100">
-              <section class="p2 mb2 clearfix bg-white minishadow">
-        <div class="clearfix">
-
-          <h1>Seisplotjs Tutorial</h1>
-
-          <h3>Predicted Phase Arrival Times:</h3>
-          <h5>See it live in <a href="tutorial4.html" target="_blank">tutorial4.html</a>.</h5>
-          <p>
-            It would be nice to know where the P and S wave are predicted to
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   seisplotjs 2.0 Tutorial, p4
+  </title>
+  <meta content="Javascript library for parsing, manipulating and displaying seismic data." name="description"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <link href="../bass.css" rel="stylesheet"/>
+  <link href="../split.css" rel="stylesheet"/>
+  <link href="../prism.css" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div class="flex">
+   <div class="overflow-auto fs0 height-viewport-100" id="split-left">
+    <div class="py1 px2">
+     <div id="toc">
+      <ul class="list-reset h5 py1-ul">
+       <li>
+        <a class="" href="../index.html">
+         Seisplotjs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../api/index.html">
+         API JS Docs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../examples/index.html">
+         Examples
+        </a>
+       </li>
+       <li>
+        <a class="" href="../tutorial/index.html">
+         Tutorial
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/index.html">
+         Sine Wave
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/2_realdata.html">
+         Real data
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/3_quakesandchannels.html">
+         Quakes and Channels
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/4_arrivaltimes.html">
+         Arrival Times
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/5_filter.html">
+         Filtering
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/6_helicorder.html">
+         Helicorder
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/7_realtime.html">
+         Realtime
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/8_andmore.html">
+         ...and more
+        </a>
+       </li>
+      </ul>
+     </div>
+    </div>
+   </div>
+   <div class="relative overflow-auto height-viewport-100" id="split-right">
+    <section class="p2 mb2 clearfix bg-white minishadow">
+     <div class="clearfix">
+      <h1>
+       Seisplotjs Tutorial
+      </h1>
+      <h3>
+       Predicted Phase Arrival Times:
+      </h3>
+      <h5>
+       See it live in
+       <a href="tutorial4.html" target="_blank">
+        tutorial4.html
+       </a>
+       .
+      </h5>
+      <p>
+       It would be nice to know where the P and S wave are predicted to
             arrive. We can use the IRIS
-            <a href="http://service.iris.edu/irisws/traveltime/1/">traveltime</a>
-            web service to to get travel times for seismic phases. The traveltime
-            web service uses <a href="http://www.seis.sc.edu/TauP/">The TauP Toolkit</a>
-            under the hood, and so the documentation for it can help. We will
-            keep things simple and just ask for <em>P</em> and <em>S</em> phases.
+       <a href="http://service.iris.edu/irisws/traveltime/1/">
+        traveltime
+       </a>
+       web service to to get travel times for seismic phases. The traveltime
+            web service uses
+       <a href="http://www.seis.sc.edu/TauP/">
+        The TauP Toolkit
+       </a>
+       under the hood, and so the documentation for it can help. We will
+            keep things simple and just ask for
+       <em>
+        P
+       </em>
+       and
+       <em>
+        S
+       </em>
+       phases.
             Again, this is a remote service, therefore asynchronous, and we
             will need to
             use promises again. We put an additional
-            <code class="language-javascript">then()</code> call
+       <code class="language-javascript">
+        then()
+       </code>
+       call
             after we get the quake and station but before we ask for the
             seismograms. This allows us to use the predicted travel times to
             pick the time window starting 30 seconds prior to the first P
             arrival.
-         </p>
-         <pre><code class="language-javascript" snippet="traveltime">
+      </p>
+      <pre><code class="language-javascript" snippet="traveltime">
            Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
-             .then( ( [ quakeList, networks ] ) => {
+             .then( ( [ quakeList, networks ] ) =&gt; {
                let taupQuery = new seisplotjs.traveltime.TraveltimeQuery()
                  .latLonFromStation(networks[0].stations[0])
                  .latLonFromQuake(quakeList[0])
                  .phases("P,S");
                return Promise.all( [ quakeList, networks, taupQuery.queryJson() ] );
           </code></pre>
-          <p>
-            Now in the next <code>then</code>, we can use add the travel time to the
+      <p>
+       Now in the next
+       <code>
+        then
+       </code>
+       , we can use add the travel time to the
             origin time to get a start for our request.
-            The little flags for phase arrivals are <code>Marker</code> objects
+            The little flags for phase arrivals are
+       <code>
+        Marker
+       </code>
+       objects
             and we put them and the quake into our
-            <code class="language-javascript">SeismogramDisplayData</code> objects.
+       <code class="language-javascript">
+        SeismogramDisplayData
+       </code>
+       objects.
             One important thing
             to keep in mind with time is that the moment objects from the
-            <a href="https://momentjs.com/docs/">momentjs</a> library that we
+       <a href="https://momentjs.com/docs/">
+        momentjs
+       </a>
+       library that we
             use are mutible, and so you should always create a copy before
-            modifying like <code class="language-javascript">seisplotjs.moment.utc(quakeList[0].time)</code> as
+            modifying like
+       <code class="language-javascript">
+        seisplotjs.moment.utc(quakeList[0].time)
+       </code>
+       as
             otherwise you will change the origin time of the quake. The
-            <code class="language-javascript">postQuerySeismograms()</code>
-            will parse the miniseed in the response and then create seismograms
+       <code class="language-javascript">
+        postQuerySeismograms()
+       </code>
+       will parse the miniseed in the response and then create seismograms
             within each
-            <code class="language-javascript">SeismogramDisplayData</code> object,
+       <code class="language-javascript">
+        SeismogramDisplayData
+       </code>
+       object,
             making it easy to associate the new waveform with the request time
             window, channel, and quake.
-          </p>
-          <pre><code class="language-javascript" snippet="markers">
-          }).then( ( [ quakeList, networks, ttimes ] ) => {
+      </p>
+      <pre><code class="language-javascript" snippet="markers">
+          }).then( ( [ quakeList, networks, ttimes ] ) =&gt; {
             let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
             phaseMarkers.push({
               markertype: "predicted",
@@ -94,11 +191,11 @@
               time: seisplotjs.moment.utc(quakeList[0].time)
             });
             let allChannels = Array.from(seisplotjs.stationxml.allChannels(networks));
-            let firstP = ttimes.arrivals.find(a => a.phase.startsWith("P"));
+            let firstP = ttimes.arrivals.find(a =&gt; a.phase.startsWith("P"));
             let startTime = seisplotjs.moment.utc(quakeList[0].time)
               .add(firstP.time, "seconds").subtract(30, "seconds");
             let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 1800);
-            let seismogramDataList = allChannels.map(c => {
+            let seismogramDataList = allChannels.map(c =&gt; {
               let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
               sdd.addQuake(quakeList);
               sdd.addMarkers(phaseMarkers);
@@ -107,14 +204,14 @@
             let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
             return Promise.all( [ quakeList, networks, ttimes, dsQuery.postQuerySeismograms(seismogramDataList) ] );
           </code></pre>
-          <p>
-            Now that we have travel times and seismograms, we can plot both.
+      <p>
+       Now that we have travel times and seismograms, we can plot both.
             We also link the seismographs so that they stay aligned with
             each other in time
             and amplitude.
-          </p>
-          <pre><code class="language-javascript" snippet="seismograph">
-          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+      </p>
+      <pre><code class="language-javascript" snippet="seismograph">
+          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) =&gt; {
             let div = seisplotjs.d3.select("div#myseismograph");
             let graphList = [];
             for( let sdd of seismogramDataList) {
@@ -126,8 +223,8 @@
               let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                                  seisConfig,
                                                                  sdd);
-              graphList.forEach(g => graph.linkXScaleTo(g));
-              graphList.forEach(g => graph.linkYScaleTo(g));
+              graphList.forEach(g =&gt; graph.linkXScaleTo(g));
+              graphList.forEach(g =&gt; graph.linkYScaleTo(g));
               graphList.push(graph);
               graph.draw();
             }
@@ -135,50 +232,48 @@
             seisplotjs.d3.select("span#earthquakeDescription").text(quakeList[0].description);
             return Promise.all([ quakeList, networks, ttimes, seismogramDataList ]);
           </code></pre>
-          <p>
-            For a little extra, we also can plot the particle motion around the
+      <p>
+       For a little extra, we also can plot the particle motion around the
             P wave for these seismograms. First we need to add a div to to the html.
-          </p>
-
-          <pre><code class="language-html">
-            &lt;div  id="particlemotion">
-            &lt;/div>
+      </p>
+      <pre><code class="language-html">
+            &lt;div  id="particlemotion"&gt;
+            &lt;/div&gt;
           </code></pre>
-          <p>
-            And some styling in the &lt;style> at the top.
-          </p>
-
-          <pre><code class="language-css">
+      <p>
+       And some styling in the &lt;style&gt; at the top.
+      </p>
+      <pre><code class="language-css">
           div.particlemotionContainer  {
             float:left;
             height: 300px;
             width: 320px;
           }
           </code></pre>
-          <p>
-            And then javascript to create the particle motion plots. This uses
+      <p>
+       And then javascript to create the particle motion plots. This uses
             60 seconds around the S wave.
-          </p>
-          <pre><code class="language-javascript">
-        }).then( ( [ quakeList, networks, ttimes, seismogramDataList, graphList ] ) => {
+      </p>
+      <pre><code class="language-javascript">
+        }).then( ( [ quakeList, networks, ttimes, seismogramDataList, graphList ] ) =&gt; {
           let div = seisplotjs.d3.select("div#particlemotion");
-          let firstS = ttimes.arrivals.find(a => a.phase.startsWith("S"));
+          let firstS = ttimes.arrivals.find(a =&gt; a.phase.startsWith("S"));
           let windowDuration = 60;
           let firstSTimeWindow = new seisplotjs.util.StartEndDuration(
             seisplotjs.moment.utc(quakeList[0].time).add(firstS.time, "seconds").subtract(windowDuration/4, "seconds"),
             null,
             windowDuration);
-          seismogramDataList.forEach(sdd => sdd.addMarkers({
+          seismogramDataList.forEach(sdd =&gt; sdd.addMarkers({
             name: "pm start",
             time: firstSTimeWindow.startTime,
             type: "other",
             description: "pm start"}));
-          seismogramDataList.forEach(sdd => sdd.addMarkers({
+          seismogramDataList.forEach(sdd =&gt; sdd.addMarkers({
             name: "pm end",
             time: firstSTimeWindow.endTime,
             type: "other",
             description: "pm end"}));
-          graphList.forEach(g => g.drawMarkers());
+          graphList.forEach(g =&gt; g.drawMarkers());
           let xSeisData = seismogramDataList[0].cut(firstSTimeWindow);
           let ySeisData = seismogramDataList[1].cut(firstSTimeWindow);
           let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
@@ -222,25 +317,38 @@
           console.assert(false, error);
         });
           </code></pre>
-
-
-          <h3>See it live in <a href="tutorial4.html" target="_blank">tutorial4.html</a>.</h3>
-          <p>Previous: <a href="3_quakesandchannels.html">Quakes and Channels</a></p>
-          <p>Next: <a href="5_filter.html">Deconvolution and Filtering</a></p>
-
-
-        </div>
-      </div>
-    </div>
-
-    <script src="../prism.js"></script>
-    <script>
-      Prism.plugins.NormalizeWhitespace.setDefaults({
+      <h3>
+       See it live in
+       <a href="tutorial4.html" target="_blank">
+        tutorial4.html
+       </a>
+       .
+      </h3>
+      <p>
+       Previous:
+       <a href="3_quakesandchannels.html">
+        Quakes and Channels
+       </a>
+      </p>
+      <p>
+       Next:
+       <a href="5_filter.html">
+        Deconvolution and Filtering
+       </a>
+      </p>
+     </div>
+    </section>
+   </div>
+  </div>
+  <script src="../prism.js">
+  </script>
+  <script>
+   Prism.plugins.NormalizeWhitespace.setDefaults({
       	"remove-trailing": true,
       	"remove-indent": true,
       	"left-trim": true,
       	"right-trim": true
       });
-    </script>
-  </body>
+  </script>
+ </body>
 </html>

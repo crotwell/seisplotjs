@@ -50,14 +50,16 @@ def snippetReplace(dirpath, jsfilename, htmlfilename):
     with open(filepath+".mod.html", 'w', encoding='utf-8') as file:
         #file.write(redoIndent(soup.encode(formatter="html")))
         file.write(soup.prettify(formatter="html"))
-    #os.rename(filepath, filepath+".orig")
-    #os.rename(filepath+".mod.html", filepath)
+        #file.write(redoIndent(str(soup)))
+    os.rename(filepath, filepath+".orig")
+    os.rename(filepath+".mod.html", filepath)
 
 def redoIndent(text, spaces=2):
     level = 0
     indent = " "*spaces
     out = []
-    for line in text.decode('utf-8').split("\n"):
+    #text = text.decode('utf-8')
+    for line in text.split("\n"):
         trimLine = line.strip()
         if (ComboStartEndTag.match(trimLine) is not None
               or StartEndTag.match(trimLine) is not None):
@@ -72,7 +74,8 @@ def redoIndent(text, spaces=2):
             print(f"end tag {level}  {line}")
         else:
             out.append(indent*level + trimLine)
-    return "\n".join(out).encode('utf-8')
+    #return "\n".join(out).encode('utf-8')
+    return "\n".join(out)
 
 
 for dirpath, dirs, files in os.walk('docs/tutorial'):

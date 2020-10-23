@@ -1,72 +1,132 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>seisplotjs 2.0 Tutorial, p6</title>
-    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <link href="../bass.css" rel="stylesheet"/>
-    <link href="../split.css" rel="stylesheet"/>
-    <link href="../prism.css" rel="stylesheet" />
-    <link href="style.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="flex">
-      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
-        <div class="py1 px2">
-          <div id="toc">
-            <ul class="list-reset h5 py1-ul">
-              <li><a href="../index.html" class="">Seisplotjs</a></li>
-              <li><a href="../api/index.html" class="">API JS Docs</a></li>
-              <li><a href="../examples/index.html" class="">Examples</a></li>
-              <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
-              <li class="sub"><a href="../tutorial/index.html" class="sub">Sine Wave</a></li>
-              <li class="sub"><a href="../tutorial/2_realdata.html" class="sub">Real data</a></li>
-              <li class="sub"><a href="../tutorial/3_quakesandchannels.html" class="sub">Quakes and Channels</a></li>
-              <li class="sub"><a href="../tutorial/4_arrivaltimes.html" class="sub">Arrival Times</a></li>
-              <li class="sub"><a href="../tutorial/5_filter.html" class="sub">Filtering</a></li>
-              <li class="sub"><a href="../tutorial/6_helicorder.html" class="sub">Helicorder</a></li>
-              <li class="sub"><a href="../tutorial/7_realtime.html" class="sub">Realtime</a></li>
-              <li class="sub"><a href="../tutorial/8_andmore.html" class="sub">...and more</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div id="split-right" class="relative overflow-auto height-viewport-100">
-              <section class="p2 mb2 clearfix bg-white minishadow">
-        <div class="clearfix">
-
-          <h1>Seisplotjs Tutorial</h1>
-
-          <h3>Helicorder</h3>
-          <h5>See it live in <a href="tutorial6.html" target="_blank">tutorial6.html</a>.</h5>
-
-          <p>
-            Now for something completely different. A helicorder style plot is a
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   seisplotjs 2.0 Tutorial, p6
+  </title>
+  <meta content="Javascript library for parsing, manipulating and displaying seismic data." name="description"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <link href="../bass.css" rel="stylesheet"/>
+  <link href="../split.css" rel="stylesheet"/>
+  <link href="../prism.css" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div class="flex">
+   <div class="overflow-auto fs0 height-viewport-100" id="split-left">
+    <div class="py1 px2">
+     <div id="toc">
+      <ul class="list-reset h5 py1-ul">
+       <li>
+        <a class="" href="../index.html">
+         Seisplotjs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../api/index.html">
+         API JS Docs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../examples/index.html">
+         Examples
+        </a>
+       </li>
+       <li>
+        <a class="" href="../tutorial/index.html">
+         Tutorial
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/index.html">
+         Sine Wave
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/2_realdata.html">
+         Real data
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/3_quakesandchannels.html">
+         Quakes and Channels
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/4_arrivaltimes.html">
+         Arrival Times
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/5_filter.html">
+         Filtering
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/6_helicorder.html">
+         Helicorder
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/7_realtime.html">
+         Realtime
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/8_andmore.html">
+         ...and more
+        </a>
+       </li>
+      </ul>
+     </div>
+    </div>
+   </div>
+   <div class="relative overflow-auto height-viewport-100" id="split-right">
+    <section class="p2 mb2 clearfix bg-white minishadow">
+     <div class="clearfix">
+      <h1>
+       Seisplotjs Tutorial
+      </h1>
+      <h3>
+       Helicorder
+      </h3>
+      <h5>
+       See it live in
+       <a href="tutorial6.html" target="_blank">
+        tutorial6.html
+       </a>
+       .
+      </h5>
+      <p>
+       Now for something completely different. A helicorder style plot is a
             nice way to quickly look at a large amount of data from a single station,
             usually a entire day, by breaking it into multiple lines. A common
             style is 12 lines each covering 2 hours. First we need to get the data,
             but to illustrate another technique for finding services, we will
-            use the FDSN <a href="http://www.fdsn.org/datacenters/">Datacenter Registry</a>
-            to find the IRIS dataselect web service. As before, we need to create
+            use the FDSN
+       <a href="http://www.fdsn.org/datacenters/">
+        Datacenter Registry
+       </a>
+       to find the IRIS dataselect web service. As before, we need to create
             a div to put it in, and we add some headers with spans to label it.
-          </p>
-          <pre><code class="language-html">
-            &lt;h3>A Helicorder for &lt;span id="channel">&lt;/span>!&lt;/h3>
-            &lt;h5>From &lt;span id="starttime">&lt;/span> to &lt;span id="endtime">&lt;/span>&lt;/h5>
-            &lt;div id="helicorder">
-            &lt;/div>
+      </p>
+      <pre><code class="language-html">
+            &lt;h3&gt;A Helicorder for &lt;span id="channel"&gt;&lt;/span&gt;!&lt;/h3&gt;
+            &lt;h5&gt;From &lt;span id="starttime"&gt;&lt;/span&gt; to &lt;span id="endtime"&gt;&lt;/span&gt;&lt;/h5&gt;
+            &lt;div id="helicorder"&gt;
+            &lt;/div&gt;
           </code></pre>
-          <p>
-            We also need a little styling to size the div.
-          </p>
-          <pre><code class="language-css">
+      <p>
+       We also need a little styling to size the div.
+      </p>
+      <pre><code class="language-css">
               div#helicorder {
                 height: 600px;
               }
           </code></pre>
-          <p>
-            A little trickery finds the end time that is an even hour boundary,
+      <p>
+       A little trickery finds the end time that is an even hour boundary,
             so that if the current time is 10:45, we will make the plot go to
             12:00 instead of just 11:00, keeping each line"s hour to an even value.
             You can create a custom query to the FDSN Datacenters Registry, but
@@ -74,23 +134,26 @@
             So, we will just get the first fdsn-dataselect web service that we
             find in the IRISDMC datacenter. Being a remote operation, this also
             returns a Promise.
-          </p>
-          <pre><code class="language-javascript" snippet="window">
+      </p>
+      <pre><code class="language-javascript" snippet="window">
             const plotEnd = seisplotjs.moment.utc().endOf("hour").add(1, "millisecond");
             if (plotEnd.hour() % 2 === 1) {plotEnd.add(1, "hour");}
             const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, seisplotjs.moment.duration(1, "day"));
             new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
           </code></pre>
-          <p>
-            In the then method of the Promise from findFdsnDataSelect, we construct our dataselect
+      <p>
+       In the then method of the Promise from findFdsnDataSelect, we construct our dataselect
             query. Because the helicorder will need 24 hours of data, it is
             probably best not to try this on a 100 samples per second HHZ
             channel, but a 1 sample per second LHZ channel should be fine. The
-            <code class="language-javascript">querySeismograms()</code> method
+       <code class="language-javascript">
+        querySeismograms()
+       </code>
+       method
             of course returns a Promise.
-          </p>
-          <pre><code class="language-javascript" snippet="seismogram">
-            .then(dataSelectArray => {
+      </p>
+      <pre><code class="language-javascript" snippet="seismogram">
+            .then(dataSelectArray =&gt; {
               return dataSelectArray[0].networkCode("CO")
                 .stationCode("JSC")
                 .locationCode("00")
@@ -98,20 +161,26 @@
                 .timeWindow(timeWindow)
                 .querySeismograms();
           </code></pre>
-          <p>
-            In the following <code class="language-javascript">then</code>
-            method, we populate out text
+      <p>
+       In the following
+       <code class="language-javascript">
+        then
+       </code>
+       method, we populate out text
             spans using d3 and then configure our helicorder. One extra bit we
             add is a marker for the current time. Since each line is 2 hours,
             without this marker it is hard to know if the station is way behind
             or if we are just in the middle of a two hour section, so adding
             a marker helps. Lastly, we draw the helicorder. If any errors occur,
-            the <code class="language-javascript">catch</code>
-            is invoked that should output an error
+            the
+       <code class="language-javascript">
+        catch
+       </code>
+       is invoked that should output an error
             message to the page.
-          </p>
-          <pre><code class="language-javascript" snippet="heli">
-          }).then(seisArray => {
+      </p>
+      <pre><code class="language-javascript" snippet="heli">
+          }).then(seisArray =&gt; {
             seisplotjs.d3.select("span#channel").text(seisArray[0].codes());
             seisplotjs.d3.select("span#starttime").text(timeWindow.start.format("YYYY-MM-DD HH:mm")+"Z");
             seisplotjs.d3.select("span#endtime").text(timeWindow.end.format("YYYY-MM-DD HH:mm")+"Z");
@@ -128,25 +197,38 @@
             console.assert(false, error);
           });
           </code></pre>
-
-          <h3>See it live in <a href="tutorial6.html" target="_blank">tutorial6.html</a>.</h3>
-          <p>Previous: <a href="5_filter.html">Deconvolution and Filtering</a></p>
-          <p>Next: <a href="7_realtime.html" class="sub">Realtime Data</a></p>
-
-
-        </div>
-      </section>
-      </div>
-    </div>
-
-    <script src="../prism.js"></script>
-    <script>
-      Prism.plugins.NormalizeWhitespace.setDefaults({
+      <h3>
+       See it live in
+       <a href="tutorial6.html" target="_blank">
+        tutorial6.html
+       </a>
+       .
+      </h3>
+      <p>
+       Previous:
+       <a href="5_filter.html">
+        Deconvolution and Filtering
+       </a>
+      </p>
+      <p>
+       Next:
+       <a class="sub" href="7_realtime.html">
+        Realtime Data
+       </a>
+      </p>
+     </div>
+    </section>
+   </div>
+  </div>
+  <script src="../prism.js">
+  </script>
+  <script>
+   Prism.plugins.NormalizeWhitespace.setDefaults({
       	"remove-trailing": true,
       	"remove-indent": true,
       	"left-trim": true,
       	"right-trim": true
       });
-    </script>
-  </body>
+  </script>
+ </body>
 </html>

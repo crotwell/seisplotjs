@@ -1,63 +1,135 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>seisplotjs 2.0 Tutorial, p2</title>
-    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <link href="../bass.css" rel="stylesheet"/>
-    <link href="../split.css" rel="stylesheet"/>
-    <link href="../prism.css" rel="stylesheet" />
-    <link href="style.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="flex">
-      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
-        <div class="py1 px2">
-          <div id="toc">
-            <ul class="list-reset h5 py1-ul">
-              <li><a href="../index.html" class="">Seisplotjs</a></li>
-              <li><a href="../api/index.html" class="">API JS Docs</a></li>
-              <li><a href="../examples/index.html" class="">Examples</a></li>
-              <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
-              <li class="sub"><a href="../tutorial/index.html" class="sub">Sine Wave</a></li>
-              <li class="sub"><a href="../tutorial/2_realdata.html" class="sub">Real data</a></li>
-              <li class="sub"><a href="../tutorial/3_quakesandchannels.html" class="sub">Quakes and Channels</a></li>
-              <li class="sub"><a href="../tutorial/4_arrivaltimes.html" class="sub">Arrival Times</a></li>
-              <li class="sub"><a href="../tutorial/5_filter.html" class="sub">Filtering</a></li>
-              <li class="sub"><a href="../tutorial/6_helicorder.html" class="sub">Helicorder</a></li>
-              <li class="sub"><a href="../tutorial/7_realtime.html" class="sub">Realtime</a></li>
-              <li class="sub"><a href="../tutorial/8_andmore.html" class="sub">...and more</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div id="split-right" class="relative overflow-auto height-viewport-100">
-              <section class="p2 mb2 clearfix bg-white minishadow">
-        <div class="clearfix">
-
-          <h1>Seisplotjs Tutorial</h1>
-
-          <h3>Let"s Get Some Real Data:</h3>
-          <h5>See it live in <a href="tutorial2.html" target="_blank">tutorial2.html</a>.</h5>
-          <p>
-            A sine wave is kind of boring, so perhaps some real data would be
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   seisplotjs 2.0 Tutorial, p2
+  </title>
+  <meta content="Javascript library for parsing, manipulating and displaying seismic data." name="description"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <link href="../bass.css" rel="stylesheet"/>
+  <link href="../split.css" rel="stylesheet"/>
+  <link href="../prism.css" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div class="flex">
+   <div class="overflow-auto fs0 height-viewport-100" id="split-left">
+    <div class="py1 px2">
+     <div id="toc">
+      <ul class="list-reset h5 py1-ul">
+       <li>
+        <a class="" href="../index.html">
+         Seisplotjs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../api/index.html">
+         API JS Docs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../examples/index.html">
+         Examples
+        </a>
+       </li>
+       <li>
+        <a class="" href="../tutorial/index.html">
+         Tutorial
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/index.html">
+         Sine Wave
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/2_realdata.html">
+         Real data
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/3_quakesandchannels.html">
+         Quakes and Channels
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/4_arrivaltimes.html">
+         Arrival Times
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/5_filter.html">
+         Filtering
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/6_helicorder.html">
+         Helicorder
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/7_realtime.html">
+         Realtime
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/8_andmore.html">
+         ...and more
+        </a>
+       </li>
+      </ul>
+     </div>
+    </div>
+   </div>
+   <div class="relative overflow-auto height-viewport-100" id="split-right">
+    <section class="p2 mb2 clearfix bg-white minishadow">
+     <div class="clearfix">
+      <h1>
+       Seisplotjs Tutorial
+      </h1>
+      <h3>
+       Let"s Get Some Real Data:
+      </h3>
+      <h5>
+       See it live in
+       <a href="tutorial2.html" target="_blank">
+        tutorial2.html
+       </a>
+       .
+      </h5>
+      <p>
+       A sine wave is kind of boring, so perhaps some real data would be
             more interesting. We will use the IRIS
-            <a href="http://service.iris.edu/fdsnws/dataselect/1/">FDSNWS
-            dataselect</a> web service to grab some actual seismic data.
+       <a href="http://service.iris.edu/fdsnws/dataselect/1/">
+        FDSNWS
+            dataselect
+       </a>
+       web service to grab some actual seismic data.
             StartEndDuration makes it easy to get start and end times from
             any combination of start, end and duration. The parameters
             for the DataSelectQuery match those listed in the
-            <a href="http://www.fdsn.org/webservices/">fdsnws-dataselect</a>
-            specification. This example only uses the simple
-            <code class="language-html">GET</code> style query, and so
+       <a href="http://www.fdsn.org/webservices/">
+        fdsnws-dataselect
+       </a>
+       specification. This example only uses the simple
+       <code class="language-html">
+        GET
+       </code>
+       style query, and so
             is limited to a single channel (maybe wildcarded) and single time range.
-            <code class="language-javascript">DataSelectQuery</code> also
-            supports the <code class="language-html">POST</code> style query
+       <code class="language-javascript">
+        DataSelectQuery
+       </code>
+       also
+            supports the
+       <code class="language-html">
+        POST
+       </code>
+       style query
             that allows many channel-time range pairs to be requested at once.
-
-          </p>
-          <pre><code class="language-javascript"snippet="querystation">
+      </p>
+      <pre><code class="language-javascript" snippet="querystation">
             let timeWindow = new seisplotjs.util.StartEndDuration("2019-07-06T03:19:53Z", null, 1800);
             let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
             dsQuery.networkCode("CO")
@@ -66,20 +138,33 @@
               .channelCode("LHZ")
               .timeWindow(timeWindow);
           </code></pre>
-          <p>
-            One important difference here is that, unlike the previous example,
+      <p>
+       One important difference here is that, unlike the previous example,
             getting data remotely is inherently an asynchronous operation, and
             so rather than return seismograms, the
-            <code class="language-javascript">querySeismograms()</code>
-            method returns a
-            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>.
-            The <code class="language-javascript">then()</code> method of the
-            promise is executed <em>after</em> the request returns. We expect
+       <code class="language-javascript">
+        querySeismograms()
+       </code>
+       method returns a
+       <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">
+        Promise
+       </a>
+       .
+            The
+       <code class="language-javascript">
+        then()
+       </code>
+       method of the
+            promise is executed
+       <em>
+        after
+       </em>
+       the request returns. We expect
             there to only be one seismogram returned from this, so we only try
             to display the first one.
-          </p>
-          <pre><code class="language-javascript" snippet="queryseis">
-            dsQuery.querySeismograms().then(seisArray => {
+      </p>
+      <pre><code class="language-javascript" snippet="queryseis">
+            dsQuery.querySeismograms().then(seisArray =&gt; {
                 // only plot the first seismogram
                 let seismogram = seisArray[0];
                 let div = seisplotjs.d3.select("div#myseismograph");
@@ -93,24 +178,38 @@
                 console.assert(false, error);
               });
           </code></pre>
-
-          <h3>See it live in <a href="tutorial2.html" target="_blank">tutorial2.html</a>.</h3>
-          <p>Previous: <a href="index.html">Sine wave</a></p>
-          <p>Next: <a href="3_quakesandchannels.html">Quakes and Channels</a></p>
-
-
-        </div>
-      </div>
-    </div>
-
-    <script src="../prism.js"></script>
-    <script>
-      Prism.plugins.NormalizeWhitespace.setDefaults({
+      <h3>
+       See it live in
+       <a href="tutorial2.html" target="_blank">
+        tutorial2.html
+       </a>
+       .
+      </h3>
+      <p>
+       Previous:
+       <a href="index.html">
+        Sine wave
+       </a>
+      </p>
+      <p>
+       Next:
+       <a href="3_quakesandchannels.html">
+        Quakes and Channels
+       </a>
+      </p>
+     </div>
+    </section>
+   </div>
+  </div>
+  <script src="../prism.js">
+  </script>
+  <script>
+   Prism.plugins.NormalizeWhitespace.setDefaults({
       	"remove-trailing": true,
       	"remove-indent": true,
       	"left-trim": true,
       	"right-trim": true
       });
-    </script>
-  </body>
+  </script>
+ </body>
 </html>

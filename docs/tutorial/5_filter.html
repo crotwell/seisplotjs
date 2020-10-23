@@ -1,60 +1,128 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <title>seisplotjs 2.0 Tutorial, p5</title>
-    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
-    <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <link href="../bass.css" rel="stylesheet"/>
-    <link href="../split.css" rel="stylesheet"/>
-    <link href="../prism.css" rel="stylesheet" />
-    <link href="style.css" rel="stylesheet" />
-  </head>
-  <body>
-    <div class="flex">
-      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
-        <div class="py1 px2">
-          <div id="toc">
-            <ul class="list-reset h5 py1-ul">
-              <li><a href="../index.html" class="">Seisplotjs</a></li>
-              <li><a href="../api/index.html" class="">API JS Docs</a></li>
-              <li><a href="../examples/index.html" class="">Examples</a></li>
-              <li><a href="../tutorial/index.html" class="">Tutorial</a></li>
-              <li class="sub"><a href="../tutorial/index.html" class="sub">Sine Wave</a></li>
-              <li class="sub"><a href="../tutorial/2_realdata.html" class="sub">Real data</a></li>
-              <li class="sub"><a href="../tutorial/3_quakesandchannels.html" class="sub">Quakes and Channels</a></li>
-              <li class="sub"><a href="../tutorial/4_arrivaltimes.html" class="sub">Arrival Times</a></li>
-              <li class="sub"><a href="../tutorial/5_filter.html" class="sub">Filtering</a></li>
-              <li class="sub"><a href="../tutorial/6_helicorder.html" class="sub">Helicorder</a></li>
-              <li class="sub"><a href="../tutorial/7_realtime.html" class="sub">Realtime</a></li>
-              <li class="sub"><a href="../tutorial/8_andmore.html" class="sub">...and more</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div id="split-right" class="relative overflow-auto height-viewport-100">
-              <section class="p2 mb2 clearfix bg-white minishadow">
-        <div class="clearfix">
-
-          <h1>Seisplotjs Tutorial</h1>
-
-          <h3>Filtering, Deconvolution and FFT</h3>
-          <h5>See it live in <a href="tutorial5.html" target="_blank">tutorial5.html</a>.</h5>
-
-          <p>Maybe we would like to see the body waves more clearly and filter out
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   seisplotjs 2.0 Tutorial, p5
+  </title>
+  <meta content="Javascript library for parsing, manipulating and displaying seismic data." name="description"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <link href="../bass.css" rel="stylesheet"/>
+  <link href="../split.css" rel="stylesheet"/>
+  <link href="../prism.css" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div class="flex">
+   <div class="overflow-auto fs0 height-viewport-100" id="split-left">
+    <div class="py1 px2">
+     <div id="toc">
+      <ul class="list-reset h5 py1-ul">
+       <li>
+        <a class="" href="../index.html">
+         Seisplotjs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../api/index.html">
+         API JS Docs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../examples/index.html">
+         Examples
+        </a>
+       </li>
+       <li>
+        <a class="" href="../tutorial/index.html">
+         Tutorial
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/index.html">
+         Sine Wave
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/2_realdata.html">
+         Real data
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/3_quakesandchannels.html">
+         Quakes and Channels
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/4_arrivaltimes.html">
+         Arrival Times
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/5_filter.html">
+         Filtering
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/6_helicorder.html">
+         Helicorder
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/7_realtime.html">
+         Realtime
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/8_andmore.html">
+         ...and more
+        </a>
+       </li>
+      </ul>
+     </div>
+    </div>
+   </div>
+   <div class="relative overflow-auto height-viewport-100" id="split-right">
+    <section class="p2 mb2 clearfix bg-white minishadow">
+     <div class="clearfix">
+      <h1>
+       Seisplotjs Tutorial
+      </h1>
+      <h3>
+       Filtering, Deconvolution and FFT
+      </h3>
+      <h5>
+       See it live in
+       <a href="tutorial5.html" target="_blank">
+        tutorial5.html
+       </a>
+       .
+      </h5>
+      <p>
+       Maybe we would like to see the body waves more clearly and filter out
             the surface waves. And instead of the raw velocity data, lets
             apply the full instrument response to correct to displacement.
             First, lets switch from the LH? channels, recorded
             at one sample per second, to the HH? channels, recorded at 100 sps
             to give us a wider frequency band to play with. Since we will need
             the response information as well, we will need to change from
-            using <code class="language-javascript">queryChannels()</code>
-            to <code class="language-javascript">queryResponses()</code>
-            in the <code class="language-javascript">stationQuery</code>. This
+            using
+       <code class="language-javascript">
+        queryChannels()
+       </code>
+       to
+       <code class="language-javascript">
+        queryResponses()
+       </code>
+       in the
+       <code class="language-javascript">
+        stationQuery
+       </code>
+       . This
             will return stationXML with the full response filled in for each
             channel.
-          </p>
-          <pre><code class="language-javascript" snippet="station">
+      </p>
+      <pre><code class="language-javascript" snippet="station">
             let stationQuery = new seisplotjs.fdsnstation.StationQuery()
               .networkCode("CO")
               .stationCode("HODGE")
@@ -63,28 +131,34 @@
               .timeWindow(queryTimeWindow);
             Promise.all( [ eventQuery.query(), stationQuery.queryResponses() ] )
           </code></pre>
-          <p>
-            Of course 100 sps means that we will have 100 times as many samples, so
+      <p>
+       Of course 100 sps means that we will have 100 times as many samples, so
             lets reduce the time window to just the region where the P
             arrival is, say 300 seconds instead of 1800.
-          </p>
-          <pre><code class="language-javascript" snippet="window">
+      </p>
+      <pre><code class="language-javascript" snippet="window">
           let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 300);
           </code></pre>
-          <p>
-            Now we insert the filtering code after the seismograms have arrived
+      <p>
+       Now we insert the filtering code after the seismograms have arrived
             but before we plot them. We will insert another
-            <code class="language-javascript">then()</code> call even though
+       <code class="language-javascript">
+        then()
+       </code>
+       call even though
             we could just add to the existing one. We create a butterworth
             filter using the sampling rate of the seismogram, with a passband
             of 0.5 to 10 Hz. Removing the mean is usually a good idea, then
             we apply the filter. Tapering is important before a deconvolution
-            and then we <code class="language-javascript">transfer</code>
-            the instrument response for the channel.
-          </p>
-          <pre><code class="language-javascript" snippet="">
-          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
-            seismogramDataList.forEach(sdd => {
+            and then we
+       <code class="language-javascript">
+        transfer
+       </code>
+       the instrument response for the channel.
+      </p>
+      <pre><code class="language-javascript" snippet="">
+          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) =&gt; {
+            seismogramDataList.forEach(sdd =&gt; {
               let butterworth = seisplotjs.filter.createButterworth(
                                      2, // poles
                                      seisplotjs.filter.BAND_PASS,
@@ -101,38 +175,38 @@
             });
             return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
           </code></pre>
-          <p>
-            Then, just to make sure we don"t correct the data twice, we
+      <p>
+       Then, just to make sure we don"t correct the data twice, we
             disable the gain correction.
-          </p>
-          <pre><code class="language-javascript">
+      </p>
+      <pre><code class="language-javascript">
             seisConfig.doGain = false;
           </code></pre>
-          <p>
-            We can also plot the amplitude spectra for the
+      <p>
+       We can also plot the amplitude spectra for the
             three seismograms. We need to add an additional div to hold them.
-          </p>
-          <pre><code class="language-html">
-            &lt;div id="fftplot">
-            &lt;/div>
+      </p>
+      <pre><code class="language-html">
+            &lt;div id="fftplot"&gt;
+            &lt;/div&gt;
           </code></pre>
-          <p>
-            And an additional style to size it.
-          </p>
-          <pre><code class="language-css">
+      <p>
+       And an additional style to size it.
+      </p>
+      <pre><code class="language-css">
             div#fftplot {
               height: 600px;
             }
           </code></pre>
-          <p>
-            Then we calculate the fft and plot it. Because the resulting plot is
+      <p>
+       Then we calculate the fft and plot it. Because the resulting plot is
             just an svg element created with d3, we can add a plot label by
             modifying it with normal d3 techniques.
-          </p>
-          <pre><code class="language-javascript">
-          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
+      </p>
+      <pre><code class="language-javascript">
+          }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) =&gt; {
             let div = seisplotjs.d3.select("div#fftplot");
-            let fftList = seismogramDataList.map(sdd => seisplotjs.fft.fftForward(sdd.seismogram));
+            let fftList = seismogramDataList.map(sdd =&gt; seisplotjs.fft.fftForward(sdd.seismogram));
             let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
             let fftPlot = new seisplotjs.fftplot.FFTPlot("div#fftplot", seisConfig, fftList, true);
             fftPlot.draw();
@@ -143,28 +217,42 @@
               .data(seismogramDataList)
               .enter()
               .append("tspan")
-              .text(sdd => " "+sdd.seismogram.channelCode+" ");
+              .text(sdd =&gt; " "+sdd.seismogram.channelCode+" ");
 
             return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
           </code></pre>
-
-          <h3>See it live in <a href="tutorial5.html" target="_blank">tutorial5.html</a>.</h3>
-          <p>Previous:  <a href="4_arrivaltimes.html">Predicted phase arrival times</a></p>
-          <p>Next:  <a href="6_helicorder.html">Helicorder</a></p>
-
-
-        </div>
-      </div>
-    </div>
-
-    <script src="../prism.js"></script>
-    <script>
-      Prism.plugins.NormalizeWhitespace.setDefaults({
+      <h3>
+       See it live in
+       <a href="tutorial5.html" target="_blank">
+        tutorial5.html
+       </a>
+       .
+      </h3>
+      <p>
+       Previous:
+       <a href="4_arrivaltimes.html">
+        Predicted phase arrival times
+       </a>
+      </p>
+      <p>
+       Next:
+       <a href="6_helicorder.html">
+        Helicorder
+       </a>
+      </p>
+     </div>
+    </section>
+   </div>
+  </div>
+  <script src="../prism.js">
+  </script>
+  <script>
+   Prism.plugins.NormalizeWhitespace.setDefaults({
       	"remove-trailing": true,
       	"remove-indent": true,
       	"left-trim": true,
       	"right-trim": true
       });
-    </script>
-  </body>
+  </script>
+ </body>
 </html>
