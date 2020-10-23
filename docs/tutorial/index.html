@@ -1,11 +1,12 @@
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8"/>
     <title>seisplotjs 2.0 Tutorial</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='../bass.css' rel='stylesheet'>
-    <link href='../split.css' rel='stylesheet'>
+    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link href="../bass.css" rel="stylesheet"/>
+    <link href="../split.css" rel="stylesheet"/>
     <link href="../prism.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
     <style>
@@ -15,11 +16,11 @@
     </style>
   </head>
   <body>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
+    <div class="flex">
+      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
               <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
@@ -36,9 +37,9 @@
           </div>
         </div>
       </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+      <div id="split-right" class="relative overflow-auto height-viewport-100">
+        <section class="p2 mb2 clearfix bg-white minishadow">
+        <div class="clearfix">
 
           <h1>Seisplotjs Tutorial</h1>
           <h3>Draw a Sine Wave:</h3>
@@ -48,29 +49,29 @@
             put the plot in, something like this:
           </p>
           <pre><code class="language-html">
-&lt;html lang="en">
-  &lt;head>
-    &lt;meta charset='utf-8'>
-    &lt;title>Tutorial 1: Sine Wave&lt;/title>
-  &lt;/head>
-  &lt;body>
-    &lt;h3>Tutorial 1: Sine Wave&lt;/h3>
-    &lt;h3>A Seismograph!&lt;/h3>
-    &lt;div class="seismograph" id="myseismograph">
-    &lt;/div>
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;Tutorial 1: Sine Wave&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h3&gt;Tutorial 1: Sine Wave&lt;/h3&gt;
+    &lt;h3&gt;A Seismograph!&lt;/h3&gt;
+    &lt;div class="seismograph" id="myseismograph"&gt;
+    &lt;/div&gt;
 
-    &lt;script src="https://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.1.0-alpha.0_standalone.js">&lt;/script>
-    &lt;script>
+    &lt;script src="https://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.1.0-alpha.0_standalone.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
     // your code goes here...
-    &lt;/script>
-  &lt;/body>
-&lt;/html>
+    &lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
           </code></pre>
           <p>If this is to be hosted locally, then we need to download the standalone version of seisplotjs,
             from here <a href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.1.0-alpha.0_standalone.js">
               http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.0.0_standalone.js</a>
               and put it in the same directory as our html file.
-              The <code class="language-html">&lt;script src="..."></code>
+              The <code class="language-html">&lt;script src="..."&gt;</code>
               tag will also need to be changed to just the local link.
           </p>
           <p>
@@ -88,7 +89,7 @@
               return Math.sin(2*Math.PI*i/100) * 100;
             });
             let sampleRate = 20;
-            let start = seisplotjs.moment.utc('2019-07-04T05:46:23Z');
+            let start = seisplotjs.moment.utc("2019-07-04T05:46:23Z");
             let seismogram = seisplotjs.seismogram.Seismogram.createFromContiguousData(dataArray, sampleRate, start);
           </code></pre>
           <p>Now we have created a contiguous (no gaps) seismogram that represents
@@ -101,7 +102,7 @@
             to configure the Seismograph.
             We also put the seismogram inside a
             <code class="language-javascript">SeismogramDisplayData</code>
-            object. In this case it doesn't matter much, but later we will want
+            object. In this case it doesn"t matter much, but later we will want
             to attach the <code class="language-javascript">Channel</code>,
             a <code class="language-javascript">Quake</code> and maybe
             other items to the seismogram and the
@@ -110,7 +111,7 @@
             at the top for the title to be without overlapping the seismograph.
           </p>
           <pre><code class="language-javascript">
-            let div = seisplotjs.d3.select('div#sinewave');
+            let div = seisplotjs.d3.select("div#sinewave");
             let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
             seisConfig.title = "A sine wave!";
             seisConfig.margin.top = 25;
@@ -120,9 +121,9 @@
           </code></pre>
           <p>
             We should have a seismograph displayed. But it might be a bit small,
-            so let's make it bigger. We will style it with CSS. In the
-            <code>&lt;head></code> near the top we will add a
-            <code>&lt;style></code> element
+            so let"s make it bigger. We will style it with CSS. In the
+            <code>&lt;head&gt;</code> near the top we will add a
+            <code>&lt;style&gt;</code> element
             to make the height be 450 pixels and the width be 100% of the
             space available.
             Note also that zoom in and out by double click and shift-double click
@@ -132,24 +133,26 @@
           </p>
 
           <pre><code class="language-html">
-&lt;style>
+&lt;style&gt;
   div.seismograph {
     height: 300px;
   }
-&lt;/style>
+&lt;/style&gt;
           </code></pre>
 
           <h3>See it live in <a href="tutorial1.html" target="_blank">tutorial1.html</a>.</h3>
-          <p>Next: <a href="2_realdata.html">Let's get some real data</a></p>
-
-
+          <p>Next: <a href="2_realdata.html">Let"s get some real data</a></p>
+        </div>
+      </section>
+      </div>
+    </div>
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-trailing': true,
-      	'remove-indent': true,
-      	'left-trim': true,
-      	'right-trim': true
+      	"remove-trailing": true,
+      	"remove-indent": true,
+      	"left-trim": true,
+      	"right-trim": true
       });
     </script>
   </body>

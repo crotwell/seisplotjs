@@ -1,20 +1,21 @@
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8"/>
     <title>seisplotjs 2.0 Tutorial, p6</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='../bass.css' rel='stylesheet'>
-    <link href='../split.css' rel='stylesheet'>
+    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link href="../bass.css" rel="stylesheet"/>
+    <link href="../split.css" rel="stylesheet"/>
     <link href="../prism.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
+    <div class="flex">
+      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
               <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
@@ -31,9 +32,9 @@
           </div>
         </div>
       </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+      <div id="split-right" class="relative overflow-auto height-viewport-100">
+              <section class="p2 mb2 clearfix bg-white minishadow">
+        <div class="clearfix">
 
           <h1>Seisplotjs Tutorial</h1>
 
@@ -52,7 +53,7 @@
           </p>
           <pre><code class="language-html">
             &lt;h3>A Helicorder for &lt;span id="channel">&lt;/span>!&lt;/h3>
-            &lt;h5>From <span id="starttime">&lt;/span> to &lt;span id="endtime">&lt;/span>&lt;/h5>
+            &lt;h5>From &lt;span id="starttime">&lt;/span> to &lt;span id="endtime">&lt;/span>&lt;/h5>
             &lt;div id="helicorder">
             &lt;/div>
           </code></pre>
@@ -67,7 +68,7 @@
           <p>
             A little trickery finds the end time that is an even hour boundary,
             so that if the current time is 10:45, we will make the plot go to
-            12:00 instead of just 11:00, keeping each line's hour to an even value.
+            12:00 instead of just 11:00, keeping each line"s hour to an even value.
             You can create a custom query to the FDSN Datacenters Registry, but
             there is a convenience method to just get standard FDSN web services.
             So, we will just get the first fdsn-dataselect web service that we
@@ -75,9 +76,9 @@
             returns a Promise.
           </p>
           <pre><code class="language-javascript">
-            const plotEnd = seisplotjs.moment.utc().endOf('hour').add(1, 'millisecond');
-            if (plotEnd.hour() % 2 === 1) {plotEnd.add(1, 'hour');}
-            const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, seisplotjs.moment.duration(1, 'day'));
+            const plotEnd = seisplotjs.moment.utc().endOf("hour").add(1, "millisecond");
+            if (plotEnd.hour() % 2 === 1) {plotEnd.add(1, "hour");}
+            const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, seisplotjs.moment.duration(1, "day"));
             new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
           </code></pre>
           <p>
@@ -90,10 +91,10 @@
           </p>
           <pre><code class="language-javascript">
             .then(dataSelectArray => {
-              return dataSelectArray[0].networkCode('CO')
-                .stationCode('JSC')
-                .locationCode('00')
-                .channelCode('LHZ')
+              return dataSelectArray[0].networkCode("CO")
+                .stationCode("JSC")
+                .locationCode("00")
+                .channelCode("LHZ")
                 .timeWindow(timeWindow)
                 .querySeismograms();
           </code></pre>
@@ -112,18 +113,18 @@
           <pre><code class="language-javascript">
           }).then(seisArray => {
             seisplotjs.d3.select("span#channel").text(seisArray[0].codes());
-            seisplotjs.d3.select("span#starttime").text(timeWindow.start.format('YYYY-MM-DD HH:mm')+"Z");
-            seisplotjs.d3.select("span#endtime").text(timeWindow.end.format('YYYY-MM-DD HH:mm')+"Z");
+            seisplotjs.d3.select("span#starttime").text(timeWindow.start.format("YYYY-MM-DD HH:mm")+"Z");
+            seisplotjs.d3.select("span#endtime").text(timeWindow.end.format("YYYY-MM-DD HH:mm")+"Z");
             let heliConfig = new seisplotjs.helicorder.HelicorderConfig(timeWindow);
             heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
             let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
-            seisData.addMarkers([ { markertype: 'predicted', name: "now", time: seisplotjs.moment.utc() } ]);
+            seisData.addMarkers([ { markertype: "predicted", name: "now", time: seisplotjs.moment.utc() } ]);
             let helicorder = new seisplotjs.helicorder.Helicorder("div#helicorder",
                                           heliConfig,
                                           seisData);
             helicorder.draw();
           }).catch( function(error) {
-            seisplotjs.d3.select("div#helicorder").append('p').html("Error loading data." +error);
+            seisplotjs.d3.select("div#helicorder").append("p").html("Error loading data." +error);
             console.assert(false, error);
           });
           </code></pre>
@@ -134,16 +135,17 @@
 
 
         </div>
+      </section>
       </div>
     </div>
 
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-trailing': true,
-      	'remove-indent': true,
-      	'left-trim': true,
-      	'right-trim': true
+      	"remove-trailing": true,
+      	"remove-indent": true,
+      	"left-trim": true,
+      	"right-trim": true
       });
     </script>
   </body>

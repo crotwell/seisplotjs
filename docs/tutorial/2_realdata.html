@@ -1,20 +1,21 @@
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8"/>
     <title>seisplotjs 2.0 Tutorial, p2</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='../bass.css' rel='stylesheet'>
-    <link href='../split.css' rel='stylesheet'>
+    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link href="../bass.css" rel="stylesheet"/>
+    <link href="../split.css" rel="stylesheet"/>
     <link href="../prism.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
+    <div class="flex">
+      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
               <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
@@ -31,13 +32,13 @@
           </div>
         </div>
       </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+      <div id="split-right" class="relative overflow-auto height-viewport-100">
+              <section class="p2 mb2 clearfix bg-white minishadow">
+        <div class="clearfix">
 
           <h1>Seisplotjs Tutorial</h1>
 
-          <h3>Let's Get Some Real Data:</h3>
+          <h3>Let"s Get Some Real Data:</h3>
           <h5>See it live in <a href="tutorial2.html" target="_blank">tutorial2.html</a>.</h5>
           <p>
             A sine wave is kind of boring, so perhaps some real data would be
@@ -57,12 +58,12 @@
 
           </p>
           <pre><code class="language-javascript">
-            let timeWindow = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
+            let timeWindow = new seisplotjs.util.StartEndDuration("2019-07-06T03:19:53Z", null, 1800);
             let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-            dsQuery.networkCode('CO')
-              .stationCode('HODGE')
-              .locationCode('00')
-              .channelCode('LHZ')
+            dsQuery.networkCode("CO")
+              .stationCode("HODGE")
+              .locationCode("00")
+              .channelCode("LHZ")
               .timeWindow(timeWindow);
           </code></pre>
           <p>
@@ -81,14 +82,14 @@
             dsQuery.querySeismograms().then(seisArray => {
                 // only plot the first seismogram
                 let seismogram = seisArray[0];
-                let div = seisplotjs.d3.select('div#myseismograph');
+                let div = seisplotjs.d3.select("div#myseismograph");
                 let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
                 seisConfig.title = seismogram.codes();
                 let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
                 let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
                 graph.draw();
               }).catch( function(error) {
-                seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+                seisplotjs.d3.select("div#myseismograph").append("p").html("Error loading data." +error);
                 console.assert(false, error);
               });
           </code></pre>
@@ -105,10 +106,10 @@
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-trailing': true,
-      	'remove-indent': true,
-      	'left-trim': true,
-      	'right-trim': true
+      	"remove-trailing": true,
+      	"remove-indent": true,
+      	"left-trim": true,
+      	"right-trim": true
       });
     </script>
   </body>

@@ -1,20 +1,21 @@
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8"/>
     <title>seisplotjs 2.0 Tutorial, p3</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='../bass.css' rel='stylesheet'>
-    <link href='../split.css' rel='stylesheet'>
+    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link href="../bass.css" rel="stylesheet"/>
+    <link href="../split.css" rel="stylesheet"/>
     <link href="../prism.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
+    <div class="flex">
+      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
               <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
@@ -31,9 +32,9 @@
           </div>
         </div>
       </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+      <div id="split-right" class="relative overflow-auto height-viewport-100">
+              <section class="p2 mb2 clearfix bg-white minishadow">
+        <div class="clearfix">
 
           <h1>Seisplotjs Tutorial</h1>
 
@@ -53,7 +54,7 @@
            javascript map library
            that creates nice looking maps and has lots of flexibility, for this.
           </p>
-          <p>Within the &lt;head>, we need to add a link for the Leaflet's style sheet.</p>
+          <p>Within the &lt;head>, we need to add a link for the Leaflet"s style sheet.</p>
           <pre><code class="language-html">
             &lt;link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
@@ -94,23 +95,23 @@
             const centerLat = 35;
             const centerLon = -100;
             const mapZoomLevel = 4;
-            const mymap = L.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
-            let OpenTopoMap = L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
+            const mymap = L.map("mapid").setView([ centerLat, centerLon], mapZoomLevel);
+            let OpenTopoMap = L.tileLayer("http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
             	maxZoom: 17,
-            	attribution: 'Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
+            	attribution: "Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)"
             }).addTo(mymap);
 
-            let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
+            let queryTimeWindow = new seisplotjs.util.StartEndDuration("2019-07-01", "2019-07-31");
             let eventQuery = new seisplotjs.fdsnevent.EventQuery()
               .timeWindow(queryTimeWindow)
               .minMag(7)
               .latitude(35).longitude(-118)
               .maxRadius(3);
             let stationQuery = new seisplotjs.fdsnstation.StationQuery()
-              .networkCode('CO')
-              .stationCode('HODGE')
-              .locationCode('00')
-              .channelCode('LH?')
+              .networkCode("CO")
+              .stationCode("HODGE")
+              .locationCode("00")
+              .channelCode("LH?")
               .timeWindow(queryTimeWindow);
 
           </code></pre>
@@ -140,8 +141,8 @@
             .then( ( [ quakeList, networks ] ) => {
                 for (const q of quakeList) {
                   let circle = L.circleMarker([q.latitude, q.longitude], {
-                    color: 'red',
-                    fillColor: '#f03',
+                    color: "red",
+                    fillColor: "#f03",
                     fillOpacity: 0.15,
                     radius: q.magnitude ? (q.magnitude.mag*5) : 3 // in case no mag
                   }).addTo(mymap);
@@ -172,7 +173,7 @@
           </p>
           <pre><code class="language-javascript">
           }).then( ( [ quakeList, networks, seismogramDataList ] ) => {
-            let div = seisplotjs.d3.select('div#myseismograph');
+            let div = seisplotjs.d3.select("div#myseismograph");
             let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
             seisConfig.title = seismogramDataList.map((sdd, i) => i===0?sdd.channel.codes():sdd.channel.channelCode);
             seisConfig.doGain = true;
@@ -180,16 +181,16 @@
                                                                seisConfig,
                                                                seismogramDataList);
             graph.draw();
-            seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
-            seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
+            seisplotjs.d3.select("span#stationCode").text(networks[0].stations[0].codes());
+            seisplotjs.d3.select("span#earthquakeDescription").text(quakeList[0].description);
           }).catch( function(error) {
-            seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+            seisplotjs.d3.select("div#myseismograph").append("p").html("Error loading data." +error);
             console.assert(false, error);
           });
           </code></pre>
 
           <h3>See it live in <a href="tutorial3.html" target="_blank">tutorial3.html</a>.</h3>
-          <p>Previous: <a href="2_realdata.html">Let's get some real data</a></p>
+          <p>Previous: <a href="2_realdata.html">Let"s get some real data</a></p>
           <p>Next: <a href="4_arrivaltimes.html">Predicted phase arrival times</a></p>
 
 
@@ -200,10 +201,10 @@
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-trailing': true,
-      	'remove-indent': true,
-      	'left-trim': true,
-      	'right-trim': true
+      	"remove-trailing": true,
+      	"remove-indent": true,
+      	"left-trim": true,
+      	"right-trim": true
       });
     </script>
   </body>

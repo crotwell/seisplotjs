@@ -1,20 +1,21 @@
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8"/>
     <title>seisplotjs 2.0 Tutorial, p4</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='../bass.css' rel='stylesheet'>
-    <link href='../split.css' rel='stylesheet'>
+    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link href="../bass.css" rel="stylesheet"/>
+    <link href="../split.css" rel="stylesheet"/>
     <link href="../prism.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
+    <div class="flex">
+      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
               <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
@@ -31,9 +32,9 @@
           </div>
         </div>
       </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+      <div id="split-right" class="relative overflow-auto height-viewport-100">
+              <section class="p2 mb2 clearfix bg-white minishadow">
+        <div class="clearfix">
 
           <h1>Seisplotjs Tutorial</h1>
 
@@ -88,14 +89,14 @@
           }).then( ( [ quakeList, networks, ttimes ] ) => {
             let phaseMarkers = seisplotjs.seismograph.createMarkersForTravelTimes(quakeList[0], ttimes);
             phaseMarkers.push({
-              markertype: 'predicted',
+              markertype: "predicted",
               name: "origin",
               time: seisplotjs.moment.utc(quakeList[0].time)
             });
             let allChannels = Array.from(seisplotjs.stationxml.allChannels(networks));
-            let firstP = ttimes.arrivals.find(a => a.phase.startsWith('P'));
+            let firstP = ttimes.arrivals.find(a => a.phase.startsWith("P"));
             let startTime = seisplotjs.moment.utc(quakeList[0].time)
-              .add(firstP.time, 'seconds').subtract(30, 'seconds');
+              .add(firstP.time, "seconds").subtract(30, "seconds");
             let timeWindow = new seisplotjs.util.StartEndDuration(startTime, null, 1800);
             let seismogramDataList = allChannels.map(c => {
               let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
@@ -114,14 +115,14 @@
           </p>
           <pre><code class="language-javascript">
           }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
-            let div = seisplotjs.d3.select('div#myseismograph');
+            let div = seisplotjs.d3.select("div#myseismograph");
             let graphList = [];
             for( let sdd of seismogramDataList) {
               let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
               seisConfig.title = sdd.channel.codes();
               seisConfig.wheelZoom = false;
               seisConfig.doGain = true;
-              let subdiv = div.append('div').classed('seismograph', true);
+              let subdiv = div.append("div").classed("seismograph", true);
               let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                                  seisConfig,
                                                                  sdd);
@@ -130,8 +131,8 @@
               graphList.push(graph);
               graph.draw();
             }
-            seisplotjs.d3.select('span#stationCode').text(networks[0].stations[0].codes());
-            seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
+            seisplotjs.d3.select("span#stationCode").text(networks[0].stations[0].codes());
+            seisplotjs.d3.select("span#earthquakeDescription").text(quakeList[0].description);
             return Promise.all([ quakeList, networks, ttimes, seismogramDataList ]);
           </code></pre>
           <p>
@@ -160,11 +161,11 @@
           </p>
           <pre><code class="language-javascript">
         }).then( ( [ quakeList, networks, ttimes, seismogramDataList, graphList ] ) => {
-          let div = seisplotjs.d3.select('div#particlemotion');
-          let firstS = ttimes.arrivals.find(a => a.phase.startsWith('S'));
+          let div = seisplotjs.d3.select("div#particlemotion");
+          let firstS = ttimes.arrivals.find(a => a.phase.startsWith("S"));
           let windowDuration = 60;
           let firstSTimeWindow = new seisplotjs.util.StartEndDuration(
-            seisplotjs.moment.utc(quakeList[0].time).add(firstS.time, 'seconds').subtract(windowDuration/4, 'seconds'),
+            seisplotjs.moment.utc(quakeList[0].time).add(firstS.time, "seconds").subtract(windowDuration/4, "seconds"),
             null,
             windowDuration);
           seismogramDataList.forEach(sdd => sdd.addMarkers({
@@ -181,9 +182,9 @@
           let xSeisData = seismogramDataList[0].cut(firstSTimeWindow);
           let ySeisData = seismogramDataList[1].cut(firstSTimeWindow);
           let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
-          let spanA = div.append('div').classed('particlemotionContainer', true);
-          let spanB = div.append('div').classed('particlemotionContainer', true);
-          let spanC = div.append('div').classed('particlemotionContainer', true);
+          let spanA = div.append("div").classed("particlemotionContainer", true);
+          let spanB = div.append("div").classed("particlemotionContainer", true);
+          let spanC = div.append("div").classed("particlemotionContainer", true);
 
           let minMax = seisplotjs.seismogram.findMinMax([ xSeisData, ySeisData, zSeisData]);
 
@@ -217,7 +218,7 @@
 
           return Promise.all([ quakeList, networks, ttimes, seismogramDataList ]);
         }).catch( function(error) {
-          seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+          seisplotjs.d3.select("div#myseismograph").append("p").html("Error loading data." +error);
           console.assert(false, error);
         });
           </code></pre>
@@ -235,10 +236,10 @@
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-trailing': true,
-      	'remove-indent': true,
-      	'left-trim': true,
-      	'right-trim': true
+      	"remove-trailing": true,
+      	"remove-indent": true,
+      	"left-trim": true,
+      	"right-trim": true
       });
     </script>
   </body>

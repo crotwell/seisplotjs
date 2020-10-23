@@ -1,20 +1,21 @@
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8"/>
     <title>seisplotjs 2.0 Tutorial, p7</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='../bass.css' rel='stylesheet'>
-    <link href='../split.css' rel='stylesheet'>
+    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link href="../bass.css" rel="stylesheet"/>
+    <link href="../split.css" rel="stylesheet"/>
     <link href="../prism.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
+    <div class="flex">
+      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
               <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
@@ -31,9 +32,9 @@
           </div>
         </div>
       </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+      <div id="split-right" class="relative overflow-auto height-viewport-100">
+              <section class="p2 mb2 clearfix bg-white minishadow">
+        <div class="clearfix">
 
           <h1>Seisplotjs Tutorial</h1>
 
@@ -61,8 +62,8 @@
           <pre><code class="language-javascript">
 
             const matchPattern = `CO_JSC_00_HH./MSEED`;
-            seisplotjs.d3.select('span#channel').text(matchPattern);
-            const duration = seisplotjs.moment.duration(5, 'minutes');
+            seisplotjs.d3.select("span#channel").text(matchPattern);
+            const duration = seisplotjs.moment.duration(5, "minutes");
             const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
             const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
             seisPlotConfig.wheelZoom = false;
@@ -207,7 +208,7 @@
                     console.log(`positionAfter response: ${response}`)
                     return datalink.stream();
                   }).catch( function(error) {
-                    seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+                    seisplotjs.d3.select("div#debug").append("p").html("Error: " +error);
                     console.assert(false, error);
                   });
                 }
@@ -229,16 +230,17 @@
 
 
         </div>
+      </section>
       </div>
     </div>
 
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-trailing': true,
-      	'remove-indent': true,
-      	'left-trim': true,
-      	'right-trim': true
+      	"remove-trailing": true,
+      	"remove-indent": true,
+      	"left-trim": true,
+      	"right-trim": true
       });
     </script>
   </body>

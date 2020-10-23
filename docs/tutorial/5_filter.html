@@ -1,20 +1,21 @@
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8"/>
     <title>seisplotjs 2.0 Tutorial, p5</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='../bass.css' rel='stylesheet'>
-    <link href='../split.css' rel='stylesheet'>
+    <meta name="description" content="Javascript library for parsing, manipulating and displaying seismic data."/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <link href="../bass.css" rel="stylesheet"/>
+    <link href="../split.css" rel="stylesheet"/>
     <link href="../prism.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
+    <div class="flex">
+      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
               <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
@@ -31,9 +32,9 @@
           </div>
         </div>
       </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+      <div id="split-right" class="relative overflow-auto height-viewport-100">
+              <section class="p2 mb2 clearfix bg-white minishadow">
+        <div class="clearfix">
 
           <h1>Seisplotjs Tutorial</h1>
 
@@ -55,10 +56,10 @@
           </p>
           <pre><code class="language-javascript">
             let stationQuery = new seisplotjs.fdsnstation.StationQuery()
-              .networkCode('CO')
-              .stationCode('HODGE')
-              .locationCode('00')
-              .channelCode('HH?')
+              .networkCode("CO")
+              .stationCode("HODGE")
+              .locationCode("00")
+              .channelCode("HH?")
               .timeWindow(queryTimeWindow);
             Promise.all( [ eventQuery.query(), stationQuery.queryResponses() ] )
           </code></pre>
@@ -76,7 +77,7 @@
             <code class="language-javascript">then()</code> call even though
             we could just add to the existing one. We create a butterworth
             filter using the sampling rate of the seismogram, with a passband
-            of .5 to 10 Hz. Removing the mean is usually a good idea, then
+            of 0.5 to 10 Hz. Removing the mean is usually a good idea, then
             we apply the filter. Tapering is important before a deconvolution
             and then we <code class="language-javascript">transfer</code>
             the instrument response for the channel.
@@ -101,7 +102,7 @@
             return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
           </code></pre>
           <p>
-            Then, just to make sure we don't correct the data twice, we
+            Then, just to make sure we don"t correct the data twice, we
             disable the gain correction.
           </p>
           <pre><code class="language-javascript">
@@ -130,10 +131,10 @@
           </p>
           <pre><code class="language-javascript">
           }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
-            let div = seisplotjs.d3.select('div#fftplot');
+            let div = seisplotjs.d3.select("div#fftplot");
             let fftList = seismogramDataList.map(sdd => seisplotjs.fft.fftForward(sdd.seismogram));
             let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-            let fftPlot = new seisplotjs.fftplot.FFTPlot('div#fftplot', seisConfig, fftList, true);
+            let fftPlot = new seisplotjs.fftplot.FFTPlot("div#fftplot", seisConfig, fftList, true);
             fftPlot.draw();
             fftPlot.svg.append("g").classed("title", true)
               .attr("transform", "translate(600, 100)")
@@ -159,10 +160,10 @@
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-trailing': true,
-      	'remove-indent': true,
-      	'left-trim': true,
-      	'right-trim': true
+      	"remove-trailing": true,
+      	"remove-indent": true,
+      	"left-trim": true,
+      	"right-trim": true
       });
     </script>
   </body>
