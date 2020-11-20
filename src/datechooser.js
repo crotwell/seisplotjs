@@ -56,10 +56,10 @@ export class HourMinChooser {
       .classed("pikatime", true)
       .attr("value", this.time.format('HH:mm'))
       .attr("type", "text")
-      .on("click", function() {
+      .on("click", function(d3event) {
         mythis.showHide();
         // don't propagate click up to document
-        d3.event.stopPropagation();
+        d3event.stopPropagation();
       })
       .on("change", function() {
         let match = mythis.hourMinRegEx.exec(mythis.hourMinField.property("value"));
@@ -81,9 +81,9 @@ export class HourMinChooser {
       .classed("hourminpopup", true)
       .style("position", "absolute")
       .style("visibility", "hidden")
-      .on("click", function() {
+      .on("click", function(d3event) {
         // don't propagate click up to document
-        d3.event.stopPropagation();
+        d3event.stopPropagation();
       });
     this.hourDiv = this.popupDiv.append("div").classed("hour", true);
     this.hourSlider = this.hourDiv.append("label").text("Hour:").append("input");

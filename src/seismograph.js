@@ -181,8 +181,8 @@ export class Seismograph {
       .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + (this.seismographConfig.margin.top) + ")");
     this.g.append("g").classed("allseismograms", true);
 
-    let z = this.svg.call(d3.zoom().on("zoom", function () {
-        mythis.zoomed();
+    let z = this.svg.call(d3.zoom().on("zoom", function (e) {
+        mythis.zoomed(e);
       }));
     if ( ! this.seismographConfig.wheelZoom) {
       z.on("wheel.zoom", null);
@@ -248,8 +248,8 @@ export class Seismograph {
         .attr("width", this.width)
         .attr("height", this.height+1);
       const mythis = this;
-      let z = this.canvas.call(d3.zoom().on("zoom", function () {
-          mythis.zoomed();
+      let z = this.canvas.call(d3.zoom().on("zoom", function (e) {
+          mythis.zoomed(e);
         }));
       if ( ! this.seismographConfig.wheelZoom) {
         z.on("wheel.zoom", null);
@@ -706,8 +706,8 @@ export class Seismograph {
     }
   }
 
-  zoomed(): void {
-    let t = d3.event.transform;
+  zoomed(e): void {
+    let t = e.transform;
     let xt = t.rescaleX(this.origXScale);
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       // for flow
