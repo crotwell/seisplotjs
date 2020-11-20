@@ -494,6 +494,9 @@ export class EventQuery {
    */
   queryRawXml(): Promise<Document> {
     let mythis = this;
+    if ( ! this.isSomeParameterSet()) {
+      throw new Error("Must set some parameter to avoid asking for everything.");
+    }
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
