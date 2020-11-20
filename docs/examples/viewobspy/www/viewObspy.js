@@ -40,6 +40,9 @@ class ViewObsPy {
       this.obspyData.set('inventory', inventory);
       this.obspyData.set('seisDataList', seisDataList);
       this.createStationCheckboxes(seisDataList, inventory);
+      this.createBandCheckboxes(seisDataList, inventory);
+      this.createGainCheckboxes(seisDataList, inventory);
+      this.createOrientationCheckboxes(seisDataList, inventory);
 
       this.reprocess();
 
@@ -456,37 +459,59 @@ class ViewObsPy {
     pc.exit().remove();
   }
 
-  createStationCheckboxes(dataset, inventory) {
-    let outPromise;
+  createStationCheckboxes(seisDataList, inventory) {
+    let chanKeyFun = c => c.station.stationCode;
+    let sddKeyFun = sdd => sdd.stationCode;
+    let idPrefix = "station";
+    this.createCheckboxes(seisDataList, inventory, chanKeyFun, sddKeyFun, idPrefix);
+  }
+
+
+  createBandCheckboxes(seisDataList, inventory) {
+    let chanKeyFun = c => c.channelCode.charAt(0);
+    let sddKeyFun = sdd => sdd.channelCode.charAt(0);
+    let idPrefix = "band";
+    this.createCheckboxes(seisDataList, inventory, chanKeyFun, sddKeyFun, idPrefix);
+  }
+  createGainCheckboxes(seisDataList, inventory) {
+    let chanKeyFun = c => c.channelCode.charAt(1);
+    let sddKeyFun = sdd => sdd.channelCode.charAt(1);
+    let idPrefix = "gain";
+    this.createCheckboxes(seisDataList, inventory, chanKeyFun, sddKeyFun, idPrefix);
+  }
+  createOrientationCheckboxes(seisDataList, inventory) {
+    let chanKeyFun = c => c.channelCode.charAt(2);
+    let sddKeyFun = sdd => sdd.channelCode.charAt(2);
+    let idPrefix = "orient";
+    this.createCheckboxes(seisDataList, inventory, chanKeyFun, sddKeyFun, idPrefix);
+  }
+
+  createCheckboxes(seisDataList, inventory, chanKeyFun, sddKeyFun, idPrefix) {
+    let outPromise = [];
     if (inventory) {
       // get from inventory if we have it
       let chanList = seisplotjs.stationxml.allChannels(inventory);
-      let staList = [];
       for(let c of chanList) {
-        staList.push(c.station.stationCode);
+        outPromise.push(chanKeyFun(c));
       }
-      outPromise = Promise.all(staList);
-    } else if (dataset && dataset.data) {
-      // get from seismograms
-      outPromise = Promise.all(dataset.data.relationships.seismograms.data.map(d => {
-        const seisKey = this.createSeisKey(d);
-        return this.getSeismogram(seisKey).then(seis => seis.stationCode);
-      }));
-    } else {
-      outPromise = Promise.all([]); // none yet
     }
-    return outPromise.then(staCodeList => {
+    if (seisDataList) {
+      // get from seismograms
+      seisDataList.forEach(sdd => outPromise.push(sddKeyFun(sdd)));
+    }
+    return Promise.all(outPromise).then(staCodeList => {
       let staCodeSet = new Set(staCodeList);
       return Array.from(staCodeSet).sort();
     }).then(staList => {
       const that = this;
-      seisplotjs.d3.select("div#station_checkbox").selectAll("span")
+      staList.sort();
+      seisplotjs.d3.select(`div#${idPrefix}_checkbox`).selectAll("span")
         .data(staList, s => s)
         .join(enter => {
           let span = enter.append("span").attr('sta', s=>s);
           span.append("input")
             .attr("type", "checkbox")
-            .attr("id", function(d) { return d; })
+            .attr("id", function(d) { return `${idPrefix}${d}`; })
             .attr("value", function(d) { return d; })
             .property("checked", true)
             .on("change", () => {
@@ -497,7 +522,7 @@ class ViewObsPy {
             .text(function(d) { return d; });
           });
     }).catch(error => {
-      this.showErrorMessage("Error station checkboxes." +error);
+      this.showErrorMessage("Error create checkboxes." +error);
       console.error(error);
     });
   }
@@ -640,45 +665,39 @@ class ViewObsPy {
 
 
   stationFilter(sdd) {
-    let out = true; // plot by default
-    if ( ! seisplotjs.d3.select(`input#${sdd.stationCode}`).empty()) {
-      out = seisplotjs.d3.select(`input#${sdd.stationCode}`).property("checked");
-    }
-    return out;
+    const inputId = `input#station${sdd.stationCode}`;
+    return this.inputIdFilter(inputId);
   }
 
-  orientZFilter(sdd) {
-    return sdd.channelCode.endsWith('Z');
+
+  orientFilter(sdd) {
+    const inputId = `input#orient${sdd.channelCode.charAt(2)}`;
+    return this.inputIdFilter(inputId);
   }
-  orientNFilter(sdd) {
-    return sdd.channelCode.endsWith('N')
-      || sdd.channelCode.endsWith('Y')
-      || sdd.channelCode.endsWith('1');
+
+  bandFilter(sdd) {
+    const inputId = `input#band${sdd.channelCode.charAt(0)}`;
+    return this.inputIdFilter(inputId);
   }
-  orientEFilter(sdd) {
-    return sdd.channelCode.endsWith('E')
-      || sdd.channelCode.endsWith('X')
-      || sdd.channelCode.endsWith('2');
+
+  gainFilter(sdd) {
+    const inputId = `input#gain${sdd.channelCode.charAt(1)}`;
+    return this.inputIdFilter(inputId);
   }
-  orientRFilter(sdd) {
-    return sdd.channelCode.endsWith('R');
-  }
-  orientTFilter(sdd) {
-    return sdd.channelCode.endsWith('T');
+
+  inputIdFilter(inputId) {
+      let out = true; // plot by default
+      if ( ! seisplotjs.d3.select(inputId).empty()) {
+        out = seisplotjs.d3.select(inputId).property("checked");
+      }
+      return out;
   }
 
   defaultPlotFilter(sdd) {
-    let doZ = seisplotjs.d3.select("input#orientz").property("checked");
-    let doN = seisplotjs.d3.select("input#orienty").property("checked");
-    let doE = seisplotjs.d3.select("input#orientx").property("checked");
-    let doR = seisplotjs.d3.select("input#orientr").property("checked");
-    let doT = seisplotjs.d3.select("input#orientt").property("checked");
     return this.stationFilter(sdd)
-        && ((doZ && this.orientZFilter(sdd))
-        || (doN && this.orientNFilter(sdd))
-        || (doE && this.orientEFilter(sdd))
-        || (doR && this.orientRFilter(sdd))
-        || (doT && this.orientTFilter(sdd)));
+        && this.bandFilter(sdd)
+        && this.gainFilter(sdd)
+        && this.orientFilter(sdd);
   }
 
 
