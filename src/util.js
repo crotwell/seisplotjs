@@ -453,7 +453,7 @@ export function doFetchWithTimeout(url: string | URL,
     log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
     throw err;
   }).then(function(response) {
-    if(response.ok) {
+    if(response.ok || response.status === 404) {
       return response;
     }
     return response.text().then(text => {
