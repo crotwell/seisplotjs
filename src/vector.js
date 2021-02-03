@@ -7,6 +7,7 @@
  */
 
 import {SeismogramSegment, Seismogram } from './seismogram.js';
+import {isDef} from './util.js';
 
 /**
  * const for degrees to radians, pi/180
@@ -131,23 +132,29 @@ function rotateSeismogramSegment(seisA: SeismogramSegment, azimuthA: number, sei
  * @param   seisA first seismogram
  * @param   seisB second seismogram
  * @param   seisC third seismogram
+ * @param   orientCode optional orientation code for resulting seismogram, defaults to M
  * @returns Seismogram of vector magnitudes
  */
-export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Seismogram): Seismogram {
+export function vectorMagnitude(seisA: Seismogram,
+                                seisB: Seismogram,
+                                seisC: Seismogram,
+                                orientCode: ?string): Seismogram {
   if (seisA.segments.length !== seisB.segments.length) {
     throw new Error("Seismograms do not have same number of segments: "+seisA.segments.length+" !== "+seisB.segments.length+" !== "+seisC.segments.length);
   }
   if (seisA.segments.length !== seisC.segments.length) {
     throw new Error("Seismograms do not have same number of segments: "+seisA.segments.length+" !== "+seisB.segments.length+" !== "+seisC.segments.length);
   }
-  let outSeis = [];
+  let outData = [];
   for( let i=0; i< seisA.segments.length; i++) {
     let result = vectorMagnitudeSegment(seisA.segments[i],
                                         seisB.segments[i],
-                                        seisC.segments[i]);
-    outSeis.push(result);
+                                        seisC.segments[i],
+                                        orientCode);
+    outData.push(result);
   }
-  return new Seismogram(outSeis);
+  const outSeis = new Seismogram(outData);
+  return outSeis;
 }
 
 /**
@@ -157,9 +164,13 @@ export function vectorMagnitude(seisA: Seismogram, seisB: Seismogram, seisC: Sei
  * @param   seisA first seismogram
  * @param   seisB second perpendicular seismogram
  * @param   seisC thrid perpendicular seismogram
+ * @param   orientCode optional orientation code for resulting seismogram, defaults to M
  * @returns         seismogram representing the vector magnitude, sqrt(x*x+y*y+z*z)
  */
-function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: SeismogramSegment, seisC: SeismogramSegment): SeismogramSegment {
+function vectorMagnitudeSegment(seisA: SeismogramSegment,
+                                seisB: SeismogramSegment,
+                                seisC: SeismogramSegment,
+                                orientCode: ?string): SeismogramSegment {
   if (seisA.y.length !== seisB.y.length) {
     throw new Error("seisA and seisB should be of same lenght but was "
     +seisA.y.length+" "+seisB.y.length);
@@ -186,6 +197,10 @@ function vectorMagnitudeSegment(seisA: SeismogramSegment, seisB: SeismogramSegme
       + seisC.y[i] * seisC.y[i]);
   }
   let outSeis = seisA.cloneWithNewData(y);
-  outSeis.channelCode = seisA.chanCode.slice(0,2)+"M";
+
+  if ( ! isDef(orientCode)) {
+    orientCode = 'M';
+  }
+  outSeis.channelCode = seisA.chanCode.slice(0,2)+orientCode;
   return outSeis;
 }
