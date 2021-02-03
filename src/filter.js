@@ -245,3 +245,33 @@ export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge
     throw new Error("Cannot take hilbert of non-contiguous seismogram");
   }
 }
+
+
+/**
+ * Differentiate a seismogram.
+ *
+ * @param   seis input seismogram
+ * @returns       differentiated seismogram
+ */
+export function differentiate(seis: Seismogram): Seismogram {
+  if (seis instanceof Seismogram) {
+    let diffSeismogram = new Seismogram(seis.segments.map(s =>{
+        let origY = s.y;
+        const sampRate = 1.0*s.sampleRate; // same as 1/delta
+        let diffY = new Float32Array(origY.length-1);
+        for (let i=0; i< diffY.length; i++) {
+          if (i < 5) {
+            console.log(`${i} (${origY[i+1]}-${origY[i]})*${sampRate}`)
+          }
+          diffY[i] = (origY[i+1]-origY[i])*sampRate;
+        }
+        let out = s.cloneWithNewData(diffY);
+        console.log(`diff ${out.codes()}: len: ${diffY.length} minmax: ${out.findMinMax()}  samp: ${sampRate}`)
+        out.yUnit = out.yUnit+"/s";
+        return out;
+      }));
+    return diffSeismogram;
+  } else {
+    throw new Error("diff arg not a Seismogram");
+  }
+}
