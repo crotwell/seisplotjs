@@ -38,6 +38,7 @@ export class SeismographConfig {
   drawingType: string; // canvas or svg
   xScaleFormat: (date: Date) => string;
   yScaleFormat: string | (value: number) => string;
+  showTitle: boolean;
   /** @private */
   _title: Array<string>;
   /** @private */
@@ -92,6 +93,7 @@ export class SeismographConfig {
     this.xScaleFormat = multiFormatHour;
     this.yScaleFormat = formatCountOrAmp;
     this._title = [DEFAULT_TITLE];
+    this.showTitle = true;
     this.xLabel = "Time";
     this.xLabelOrientation = "horizontal";
     this.xSublabel = "";

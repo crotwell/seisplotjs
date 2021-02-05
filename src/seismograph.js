@@ -973,20 +973,22 @@ export class Seismograph {
   }
   drawTitle() {
     this.svg.selectAll("g.title").remove();
-    let titleSVGText = this.svg.append("g")
-       .classed("title", true)
-       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+0+")")
-       .append("text").classed("title label", true)
-       .attr("x",0).attr("y",0)
-       .attr("text-anchor", "middle");
-    let handlebarOut = this.seismographConfig.handlebarsTitle({
-        seisDataList: this.seisDataList,
-        seisConfig: this.seismographConfig
-      },
-      {
-        allowProtoPropertiesByDefault: true // this might be a security issue???
-      });
-    titleSVGText.html(handlebarOut);
+    if (this.seismographConfig.showTitle) {
+      let titleSVGText = this.svg.append("g")
+         .classed("title", true)
+         .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+2+")")
+         .append("text").classed("title label", true)
+         .attr("x",0).attr("y",0)
+         .attr("text-anchor", "middle");
+      let handlebarOut = this.seismographConfig.handlebarsTitle({
+          seisDataList: this.seisDataList,
+          seisConfig: this.seismographConfig
+        },
+        {
+          allowProtoPropertiesByDefault: true // this might be a security issue???
+        });
+      titleSVGText.html(handlebarOut);
+    }
 
   }
   drawXLabel(): Seismograph {
