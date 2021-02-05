@@ -80,7 +80,6 @@ export class SeismographConfig {
   linkedAmplitudeScale: null | LinkedAmpScale;
   /** @private */
   _linkedTimeScale: null | LinkedTimeScale;
-  timeAlignmentStyle: string;
   isRelativeTime: boolean;
 
   constructor() {
@@ -109,7 +108,6 @@ export class SeismographConfig {
     this._fixedTimeScale = null;
     this.linkedAmplitudeScale = null;
     this._linkedTimeScale = new LinkedTimeScale();
-    this.timeAlignmentStyle = 'start';
     this.isRelativeTime = false;
     this.doMarkers = true;
     this.markerTextOffset = .85;

@@ -1347,28 +1347,6 @@ export class SeismographTimeScalable extends TimeScalable {
   constructor(graph: Seismograph) {
     let alignmentTimeOffset = moment.duration(0);
     let maxDuration = findMaxDuration(graph.seisDataList);
-    /*
-    if (graph.seismographConfig.timeAlignmentStyle === 'start') {
-      for (let sdd of graph.seisDataList) {
-        sdd.alignmentTime = sdd.timeWindow.start;
-      }
-      alignmentTimeOffset = moment.duration(0);
-    } else if (graph.seismographConfig.timeAlignmentStyle === 'origin') {
-
-      for (let sdd of graph.seisDataList) {
-        if (sdd.quake) {
-          sdd.alignmentTime = sdd.quake.time;
-        } else {
-          sdd.alignmentTime = sdd.timeWindow.start;
-        }
-      }
-      alignmentTimeOffset = moment.duration(0);
-    } else {
-      const sed = findStartEnd(graph.seisDataList);
-      alignmentTimeOffset = moment.duration(0);
-      maxDuration = sed.duration;
-    }
-    */
     super(alignmentTimeOffset, maxDuration);
     this.graph = graph;
   }
