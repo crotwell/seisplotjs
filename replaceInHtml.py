@@ -9,7 +9,7 @@ replaceItems = {
 
 for dirpath, dirs, files in os.walk('docs/api'):
     for filename in files:
-        if filename.endswith('.html') and not filename is "index.html":
+        if filename.endswith('.html') and filename != "index.html":
             # Read in the file
             filepath = os.path.join(dirpath, filename)
             with open(filepath, 'r') as file :
