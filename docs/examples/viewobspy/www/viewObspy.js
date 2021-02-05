@@ -12,9 +12,25 @@ class ViewObsPy {
     }
     this.seisChanQuakeFilter = this.defaultPlotFilter;
     this.seisIdToDisplayIdMap = new Map();
-    this.organizetype = seisplotjs.d3.select('input[name="organizetype"]:checked').property("value");
-    this.sorttype = seisplotjs.d3.select('input[name="sorttype"]:checked').property("value");
-    this.plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
+    this.organizetype = this.getCheckedOption("organizetype", "individual");
+    this.sorttype = this.getCheckedOption("sorttype", "none");
+    this.plottype = this.getCheckedOption("plottype", "seismograph");
+    //this.organizetype = seisplotjs.d3.select('input[name="organizetype"]:checked').property("value");
+    //this.sorttype = seisplotjs.d3.select('input[name="sorttype"]:checked').property("value");
+    //this.plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
+    this.defaultSeismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
+    this.defaultSeismographConfig.title = seisplotjs.seismographconfig.DEFAULT_TITLE;
+  }
+
+  getCheckedOption(name, defaultValue) {
+    let s = seisplotjs.d3.select(`input[name="${name}"]:checked`);
+    if (s && ! s.empty()) {
+      return s.property("value");
+    } else {
+      s = seisplotjs.d3.select(`input[name="${name}"][value="${defaultValue}"]`);
+      s.attr("checked", true);
+      return defaultValue;
+    }
   }
 
   clearData() {
