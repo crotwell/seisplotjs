@@ -222,6 +222,31 @@ export class SeismographConfig {
         return "black";
     }
   }
+
+  createCSSForLineColors() {
+    console.log("createCSSForLineColors")
+    let cssText = "";
+    let numColors = this.lineColors.length;
+    this.lineColors.forEach((color, index) => {
+        cssText = cssText+`
+        svg.seismograph g.title  text tspan:nth-child(${numColors}n+${index+1})  {
+          stroke: ${color};
+          fill: ${color};
+          color: ${color};
+        }
+        `;
+        if (this.drawingType !== DRAW_CANVAS) {
+          // only needed if doing waveform as SVG, default is canvas
+          cssText += `
+          svg.seismograph g.allseismograms g:nth-child(${numColors}n+${index+1}) path.seispath {
+            stroke: ${color};
+          }
+          `;
+        }
+      });
+    return cssText;
+  }
+
   clone(): SeismographConfig {
     let out = new SeismographConfig();
     Object.getOwnPropertyNames(this).forEach( name => {

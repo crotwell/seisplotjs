@@ -135,6 +135,10 @@ export class Seismograph {
     this.svg.attr("version", "1.1");
     this.svg.attr("plotId", this.plotId);
 
+// this might be bad, global colors for individual Seismograph???
+// doesn't apply to just the svg that contain is
+    insertCSS(this.seismographConfig.createCSSForLineColors(), COLOR_CSS_ID);
+
         this.xScaleChangeListeners = [];
 
     this.myTimeScalable = new SeismographTimeScalable(this);
@@ -1482,81 +1486,6 @@ svg.realtimePlot g.allseismograms path.seispath {
   stroke: skyblue;
 }
 
-svg.seismograph g.allseismograms g:nth-child(9n+1) path.seispath {
-  stroke: skyblue;
-}
-
-svg.seismograph g.allseismograms g:nth-child(9n+2) path.seispath {
-  stroke: olivedrab;
-}
-
-svg.seismograph g.allseismograms g:nth-child(9n+3) path.seispath {
-  stroke: goldenrod;
-}
-
-svg.seismograph g.allseismograms g:nth-child(9n+4) path.seispath {
-  stroke: firebrick;
-}
-
-svg.seismograph g.allseismograms g:nth-child(9n+5) path.seispath {
-  stroke: darkcyan;
-}
-
-svg.seismograph g.allseismograms g:nth-child(9n+6) path.seispath {
-  stroke: orange;
-}
-
-svg.seismograph g.allseismograms g:nth-child(9n+7) path.seispath {
-  stroke: darkmagenta;
-}
-
-svg.seismograph g.allseismograms g:nth-child(9n+8) path.seispath {
-  stroke: mediumvioletred;
-}
-
-svg.seismograph g.allseismograms g:nth-child(9n+9) path.seispath {
-  stroke: sienna;
-}
-
-/* same colors for titles */
-
-svg.seismograph g.title text tspan:nth-child(9n+1)  {
-  fill: skyblue;
-}
-
-svg.seismograph g.title text tspan:nth-child(9n+2)  {
-  stroke: olivedrab;
-}
-
-svg.seismograph g.title text tspan:nth-child(9n+3)  {
-  stroke: goldenrod;
-}
-
-svg.seismograph g.title tspan:nth-child(9n+4)  {
-  stroke: firebrick;
-}
-
-svg.seismograph g.title tspan:nth-child(9n+5)  {
-  stroke: darkcyan;
-}
-
-svg.seismograph g.title tspan:nth-child(9n+6)  {
-  stroke: orange;
-}
-
-svg.seismograph g.title tspan:nth-child(9n+7)  {
-  stroke: darkmagenta;
-}
-
-svg.seismograph g.title tspan:nth-child(9n+8)  {
-  stroke: mediumvioletred;
-}
-
-svg.seismograph g.title tspan:nth-child(9n+9)  {
-  stroke: sienna;
-}
-
-
 /* links in svg */
 svg.seismograph text a {
   fill: #0000EE;
@@ -1565,6 +1494,10 @@ svg.seismograph text a {
 
 `;
 
+export const COLOR_CSS_ID = "seismographcolors";
+
 if (document){
-  insertCSS(seismograph_css);
+  insertCSS(seismograph_css, "seismograph");
+  // default seis colors
+  insertCSS(new SeismographConfig().createCSSForLineColors(), COLOR_CSS_ID);
 }

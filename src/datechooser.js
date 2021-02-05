@@ -650,6 +650,6 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 
 
 if (document){
-  insertCSS(chooser_css);
-  insertCSS(pikaday_css);
+  insertCSS(chooser_css, "datechooser");
+  insertCSS(pikaday_css, "pikaday");
 }

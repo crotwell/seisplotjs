@@ -284,5 +284,5 @@ div.helicorder div.heliLine:nth-child(3n) .yLabel text {
 `;
 
 if (document){
-  insertCSS(helicorder_css);
+  insertCSS(helicorder_css, "helicorder");
 }

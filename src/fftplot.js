@@ -338,5 +338,5 @@ svg.fftplot text a {
 `;
 
 if (document){
-  insertCSS(fftplot_css);
+  insertCSS(fftplot_css, "fftplot");
 }

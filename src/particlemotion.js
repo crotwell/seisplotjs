@@ -427,7 +427,7 @@ svg.particleMotion path.seispath {
 `;
 
 if (document){
-  insertCSS(particleMotion_css);
+  insertCSS(particleMotion_css, "particlemotion");
 }
 
 // static ID for particle motion
