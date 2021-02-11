@@ -260,12 +260,10 @@ export function differentiate(seis: Seismogram): Seismogram {
         const sampRate = 1.0*s.sampleRate; // same as 1/delta
         let diffY = new Float32Array(origY.length-1);
         for (let i=0; i< diffY.length; i++) {
-          if (i < 5) {
-            console.log(`${i} (${origY[i+1]}-${origY[i]})*${sampRate}`)
-          }
           diffY[i] = (origY[i+1]-origY[i])*sampRate;
         }
         let out = s.cloneWithNewData(diffY);
+        out.startTime = out.startTime.add(1/out.sampleRate/2, 'second');
         console.log(`diff ${out.codes()}: len: ${diffY.length} minmax: ${out.findMinMax()}  samp: ${sampRate}`)
         out.yUnit = out.yUnit+"/s";
         return out;
