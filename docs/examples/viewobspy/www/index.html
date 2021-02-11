@@ -56,6 +56,9 @@
         display:none;
         grid-template-columns: 1fr 1fr;
       }
+      div.tools input[type="text"] {
+        width: 7em;
+      }
       span.toggletools :target {
         display:block;
       }
@@ -87,6 +90,13 @@
       label.hidetools span {
         font-size: larger;
       }
+      div.tools {
+        background-color: whitesmoke;
+      }
+      div.seisConfig {
+        background-color: gainsboro ;
+        margin-left: 15px;
+      }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
@@ -98,15 +108,22 @@
   <body>
     <div id='message'></div>
     <h3>ObsPy: <span id="title">seismographs</span></h3>
-    <input id="_1" type="checkbox" class="hidetools">
+    <input id="_1" type="checkbox" class="hidetools"></input>
     <label class="hidetools" for="_1"><span> Tools:</span></label>
     <div class='tools'>
       <div class='toolsleft'>
+        <div class="seisConfigHider">
+          <input id="_2" type="checkbox" class="hidetools"></input>
+          <label class="hidetools" for="_2"><span> Display Config:</span></label>
+          <div class="seisConfig">
+          </div>
+        </div>
         <div>
           <button id="refresh">Refresh</button>
           <button id="reprocess">Reprocess</button>
           <button id="reconnect">Reconnect</button>
           <button id="websocketHi">Say Hi</button>
+          <button id="websocketSendConfig">Send Config</button>
         </div>
         <div>
           <button id="rmean">RMean</button>
@@ -271,9 +288,26 @@
               // reload data, but keep process chain
               console.log("update inventory");
               viewObspy.loadInventory().then(() => viewObspy.reprocess());
+          } else if (jsonObj.update === 'config') {
+              viewObspy.configureDisplayFromJSON(jsonObj.config);
+              //viewObspy.defaultSeismographConfig = seisplotjs.seismographconfig.SeismographConfig.fromJSON(jsonObj.payload);
+              viewObspy.replot();
+          } else if (jsonObj.update === 'comment') {
+              viewObspy.showErrorMessage(jsonObj.comment);
           } else {
           viewObspy.replot();
             console.log(`not refresh: ${jsonObj.update}`)
+          }
+        } else if (jsonObj.request) {
+          if (jsonObj.request === 'config') {
+              let config = viewObspy.getConfigAsJSON();
+              let message = JSON.stringify({
+                'update': 'config',
+                'payload': config
+              });
+              obspyConn.sendMessage(message);
+          } else {
+            console.log(`unknown request: ${jsonObj.request}`)
           }
         } else {
           console.log("...not update message  "+JSON.stringify(jsonObj));
@@ -302,18 +336,38 @@
         }
         obspyConn.connect().then( () => {
           console.log("after ws reconnect, send something back...");
-          obspyConn.sendMessage("hi obspy!");
+          let message = JSON.stringify({
+            msg: "hi obspy!"
+          });
+          obspyConn.sendMessage(message);
           obspyConnIsOK = true;
         })
       });
 
       seisplotjs.d3.select("button#websocketHi").on("click", function(d) {
         if (obspyConnIsOK) {
-          obspyConn.sendMessage("Howdy howdy");
+          let message = JSON.stringify({
+            msg: "Howdy howdy"
+          });
+          obspyConn.sendMessage(message);
         } else {
           console.log("obspyConn not yet ok");
         }
       });
+
+      seisplotjs.d3.select("button#websocketSendConfig").on("click", function(d) {
+        if (obspyConnIsOK) {
+          let config = viewObspy.getConfigAsJSON();
+          let message = JSON.stringify({
+            'update': 'config',
+            'payload': config
+          });
+          obspyConn.sendMessage(message);
+        } else {
+          console.log("obspyConn not yet ok");
+        }
+      });
+
 
     </script>
   </body>

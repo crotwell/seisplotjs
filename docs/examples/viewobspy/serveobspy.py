@@ -71,6 +71,7 @@ class ServeObsPy():
         self.__port=port
         self.__wsport=wsport
         self.dataset = self.initEmptyDataset()
+        self._displayConfig = None
         self.httpServer = None
         self.wsServer = None
         if webdir is not None and not os.path.isdir(webdir):
@@ -167,7 +168,7 @@ class ServeObsPy():
         self.httpServer = ObsPyServer(self.__createRequestHandlerClass(), host=self.host, port=self.port)
         self.httpServer.start()
         logger.info("http server started at http://{}:{:d}".format(self.host, self.port))
-        self.wsServer = ObsPyWebSocket(host=self.host, port=self.wsport)
+        self.wsServer = ObsPyWebSocket(WSMessageHandler(self), host=self.host, port=self.wsport)
         self.wsServer.start()
         logger.info("websocket server started ws://{}:{:d}".format(self.host, self.wsport))
 
@@ -205,7 +206,7 @@ class ServeObsPy():
         self.wsServer.notifyUpdate('catalog');
     @catalog.deleter
     def catalog(self):
-        self.catalog = None
+        self.dataset["catalog"] = None
 
 
     @property
@@ -217,11 +218,36 @@ class ServeObsPy():
         self.wsServer.notifyUpdate('inventory');
     @inventory.deleter
     def inventory(self):
-        self.inventory = None
+        self.dataset["inventory"] = None
 
     def refreshAll(self):
         self.dataset["bychan"] = self.__streamToSeismogramMap(self.stream)
         self.wsServer.notifyUpdate('refreshAll');
+
+    def requestConfig(self):
+        self.wsServer.send_json_message({'request': 'config'});
+
+
+    @property
+    def displayConfig(self):
+        return self._displayConfig;
+    @displayConfig.setter
+    def displayConfig(self, displayConfig):
+        self._displayConfig = displayConfig;
+        self.broadcastConfig();
+    @displayConfig.deleter
+    def displayConfig(self):
+        self._displayConfig = None
+    def broadcastConfig(self):
+        if self._displayConfig is None:
+            raise ValueError("Cannot send None as displayConfig")
+        self.wsServer.send_json_message({'update': 'config',
+                                         'config': self._displayConfig});
+    def prettyprint_config(self):
+        if self._displayConfig is None:
+            print("displayConfig not loaded, try requestConfig()")
+        else:
+            print(json.dumps(self._displayConfig, indent=4))
 
     def __createRequestHandlerClass(self):
         class ObsPyRequestHandler(http.server.SimpleHTTPRequestHandler):
@@ -343,6 +369,29 @@ class ServeObsPy():
         http.server.SimpleHTTPRequestHandler.extensions_map['.js'] = 'text/javascript'
         return ObsPyRequestHandler
 
+
+class WSMessageHandler():
+    def __init__(self, serveObspy):
+        self.serveObspy = serveObspy
+    def handle(self, message):
+        #print(f"handling messge: {message}")
+        jsonMsg = json.loads(message)
+
+        if 'update' in jsonMsg:
+            if jsonMsg['update'] == 'config':
+                self.serveObspy._displayConfig = jsonMsg['payload']
+                print("display config received")
+            elif jsonMsg['update'] == 'comment':
+                print(f"Comment message: {jsonMsg['comment']}")
+            else:
+                print(f"handle unknown update message: {jsonMsg['update']}")
+
+        elif 'msg' in jsonMsg:
+            print(f"Comment message: {jsonMsg['msg']}")
+        else:
+            print(f"Unknown message type: {message}")
+
+
 ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1"
 
 def extractEventId(quakeml):
@@ -414,9 +463,10 @@ class ObsPyServer(threading.Thread):
         httpd.serve_forever()
 
 class ObsPyWebSocket(threading.Thread):
-    def __init__(self, host=None, port=None):
+    def __init__(self, messageHandler, host=None, port=None):
         threading.Thread.__init__(self)
         self.daemon=True
+        self.__messageHandler = messageHandler
         self.__host = host
         self.__port = port
         self.users = set()
@@ -454,6 +504,7 @@ class ObsPyWebSocket(threading.Thread):
             while True:
                 message = await websocket.recv()
                 logger.debug("got message from ws "+message)
+                self.__messageHandler.handle(message)
         except websockets.exceptions.ConnectionClosedOK:
             pass
         except Exception as e:

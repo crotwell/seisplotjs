@@ -42,6 +42,9 @@ export class OrganizedDisplay {
   setAttribute(key: string, value: any) {
     this.attributes.set(key, value);
   }
+  hasAttribute(key: string) {
+    return this.attributes.has(key);
+  }
   getAttribute(key: string): any {
     if (this.attributes.has(key)) {
       return this.attributes.get(key);
@@ -107,7 +110,11 @@ export class OrganizedDisplay {
       });
 
     } else if (this.plottype.startsWith(INFO)) {
-      stationInfoPlot(divElement, this.seisConfig, this.seisData, defaultStationInfoTemplate);
+      let infoTemplate = defaultInfoTemplate;
+      if (this.getAttribute("infoTemplate")) {
+        infoTemplate = this.getAttribute("infoTemplate");
+      }
+      stationInfoPlot(divElement, this.seisConfig, this.seisData, infoTemplate);
     } else {
       throw new Error(`Unkown plottype "${this.plottype}"`);
     }
@@ -245,7 +252,7 @@ export function createPlots(organized: Array<OrganizedDisplay>, divElement: any)
   });
 }
 
-export const defaultStationInfoTemplate = `
+export const defaultInfoTemplate = `
   <table>
     <tr>
       <th colspan="6">Waveform</th>
@@ -328,7 +335,7 @@ export function stationInfoPlot(divElement: any,
                                 seismographConfig: SeismographConfig,
                                 seisDataList: Array<SeismogramDisplayData>,
                                 handlebarsTemplate: string ) {
-  if ( ! handlebarsTemplate) { handlebarsTemplate = defaultStationInfoTemplate; }
+  if ( ! handlebarsTemplate) { handlebarsTemplate = defaultInfoTemplate; }
   let handlebarsCompiled = Handlebars.compile(handlebarsTemplate);
   divElement.html(handlebarsCompiled({
       seisDataList: seisDataList,

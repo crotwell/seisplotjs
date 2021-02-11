@@ -58,7 +58,7 @@ class ObsPyConnection {
     }).then(webSocket => {
       // ready to go
       that.webSocket = webSocket;
-      that.sendMessage(JSON.stringify({"msg": "connect... hi obspy"}));
+      that.sendMessage(JSON.stringify({"update": "comment", "comment": "connect... hi obspy"}));
       return that;
     });
   }

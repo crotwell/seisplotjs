@@ -15,11 +15,9 @@ class ViewObsPy {
     this.organizetype = this.getCheckedOption("organizetype", "individual");
     this.sorttype = this.getCheckedOption("sorttype", "none");
     this.plottype = this.getCheckedOption("plottype", "seismograph");
-    //this.organizetype = seisplotjs.d3.select('input[name="organizetype"]:checked').property("value");
-    //this.sorttype = seisplotjs.d3.select('input[name="sorttype"]:checked').property("value");
-    //this.plottype = seisplotjs.d3.select('input[name="plottype"]:checked').property("value");
     this.defaultSeismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
     this.defaultSeismographConfig.title = seisplotjs.seismographconfig.DEFAULT_TITLE;
+    this.infoTemplate = seisplotjs.displayorganize.defaultInfoTemplate;
   }
 
   getCheckedOption(name, defaultValue) {
@@ -31,6 +29,46 @@ class ViewObsPy {
       s.attr("checked", true);
       return defaultValue;
     }
+  }
+
+  configureDisplayFromJSON(jsonObj) {
+    console.log("configureDisplayFromJSON "+JSON.stringify(jsonObj));
+    seisplotjs.d3.select("div.seisConfig").selectAll('*').remove();
+    this.defaultSeismographConfig =
+      seisplotjs.seismographconfig.SeismographConfig.fromJSON(jsonObj.display);
+    this.organizetype = jsonObj.arrange.organize;
+    this.sorttype = jsonObj.arrange.sort;
+    this.plottype = jsonObj.arrange.plot;
+    if (jsonObj.infoTemplate) {
+      this.infoTemplate = jsonObj.infoTemplate;
+    }
+    createTools(this);
+  }
+
+  getConfigAsJSON() {
+    let config = this.defaultSeismographConfig.asJSON();
+    let arrange = this.getArrangementAsJSON();
+    let filter = this.getFilterAsJSON();
+    return {
+      'display': config,
+      'infoTemplate': this.infoTemplate,
+      'arrange': arrange,
+      'filter': filter
+    }
+  }
+
+  getArrangementAsJSON() {
+    return {
+      'organize': this.organizetype,
+      'sort': this.sorttype,
+      'plot': this.plottype
+    };
+  }
+
+  getFilterAsJSON() {
+    return {
+
+    };
   }
 
   clearData() {
@@ -224,7 +262,11 @@ class ViewObsPy {
 
   sortForPlotting(sorttype, seisDataList) {
     let out = seisDataList;
-
+    if (sorttype === "none") {
+      out = seisDataList;
+    } else {
+      this.showErrorMessage("Sorting not yet implemented: "+sorttype);
+    }
     return out;
   }
 
@@ -250,8 +292,7 @@ class ViewObsPy {
       throw new Error(`Unknown organize type: ${organizetype}`)
     }
 
-    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    seisConfig.title = seisplotjs.seismographconfig.DEFAULT_TITLE;
+    let seisConfig = this.defaultSeismographConfig.clone();
     seisConfig.doGain = seisplotjs.d3.select("input#doGain").property("checked");
     if (seisplotjs.d3.select("input#linkx").property("checked")) {
       seisConfig.linkedTimeScale = new seisplotjs.seismographconfig.LinkedTimeScale();
@@ -270,6 +311,7 @@ class ViewObsPy {
     organizedData.forEach(org => {
       org.plottype = plottype;
       org.seisConfig = seisConfig;
+      org.setAttribute("infoTemplate", this.infoTemplate);
     });
     return organizedData;
   }
@@ -403,8 +445,7 @@ class ViewObsPy {
     if (seisData && seisData.length > 0) {
       selectedDiv.selectAll('*').remove();
       let fftList = seisData.map(sd => seisplotjs.fft.fftForward(sd.seismogram));
-      let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-      seisConfig.title = seisplotjs.seismographconfig.DEFAULT_TITLE;
+      let seisConfig = this.defaultSeismographConfig.clone();
       let fftPlot = new seisplotjs.fftplot.FFTPlot(selectedDiv, seisConfig, fftList, loglog);
       fftPlot.draw();
 
