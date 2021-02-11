@@ -7,6 +7,13 @@ function createTools(viewObspy) {
                                             viewObspy.defaultSeismographConfig,
                                             () => {console.log(viewObspy.defaultSeismographConfig.asJSON());viewObspy.replot();});
 
+  seisplotjs.d3.select("div.infoTemplate").select("#infoTemplateText")
+    .property("value", viewObspy.infoTemplate)
+    .on("change", () => {
+      viewObspy.infoTemplate = seisplotjs.d3.select(`#infoTemplateText`).property("value");
+      viewObspy.replot();
+    });;
+
   seisplotjs.d3.select("button#refresh").on("click", function() {
     viewObspy.clearAll();
     viewObspy.loadAllAndPlot();
