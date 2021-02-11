@@ -48,6 +48,27 @@ function createTools(viewObspy) {
     viewObspy.replot();
   });
 
+  seisplotjs.d3.select("input#radio_sort_none").on("change", () => {
+    viewObspy.sorttype = "none";
+    viewObspy.replot();
+  });
+  seisplotjs.d3.select("input#radio_sort_alphabetical").on("change", () => {
+    viewObspy.sorttype = "alphabetical";
+    viewObspy.replot();
+  });
+  seisplotjs.d3.select("input#radio_sort_bydistance").on("change", () => {
+    viewObspy.sorttype = "distance";
+    viewObspy.replot();
+  });
+  seisplotjs.d3.select("input#radio_sort_bybackazimuth").on("change", () => {
+    viewObspy.sorttype = "backazimuth";
+    viewObspy.replot();
+  });
+  seisplotjs.d3.select("input#radio_sort_byazimuth").on("change", () => {
+    viewObspy.sorttype = "azimuth";
+    viewObspy.replot();
+  });
+
   seisplotjs.d3.select("button#bandpass").on("click", () => {
     let lowFreq = seisplotjs.d3.select("#lowfreq").property("value");
     let highFreq = seisplotjs.d3.select("#highfreq").property("value");
