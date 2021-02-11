@@ -252,12 +252,6 @@ export class Seismograph {
         .attr("width", this.width)
         .attr("height", this.height+1);
       const mythis = this;
-      let z = this.canvas.call(d3.zoom().on("zoom", function (e) {
-          mythis.zoomed(e);
-        }));
-      if ( ! this.seismographConfig.wheelZoom) {
-        z.on("wheel.zoom", null);
-      }
 
       let style = window.getComputedStyle(this.svg.node());
       let padTop = style.getPropertyValue('padding-top');
