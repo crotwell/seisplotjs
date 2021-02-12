@@ -277,7 +277,7 @@ class ViewObsPy {
     }
     if (plottype === "particlemotion") {
       // particle motion is special due to pairwise plots
-      return this.organizeParticleMotion(seisDataList);
+      organizedData = this.organizeParticleMotion(seisDataList);
     } else if (! organizetype || organizetype === "individual") {
       organizedData = seisplotjs.displayorganize.individualDisplay(seisDataList);
     } else if (organizetype === "bystation") {
@@ -319,52 +319,28 @@ class ViewObsPy {
 
     organizeParticleMotion(seisDataList) {
       let organized = [];
-      let tmpSeisDataList = Array.from(seisDataList);
-      seisDataList.forEach(currSeisData => {
-        let hSeisData;
-        let vSeisData;
-        let friendList = seisDataList.filter(sdd => sdd.networkCode === currSeisData.networkCode
-            && sdd.stationCode === currSeisData.stationCode
-            && sdd.locationCode === currSeisData.locationCode
-            && sdd.channelCode.slice(0,2) === currSeisData.channelCode.slice(0,2)
-            && sdd.timeWindow.overlaps(currSeisData.timeWindow));
-        if (this.orientEFilter(currSeisData)) {
-          friendList = friendList.filter(this.orientNFilter);
-          hSeisData = currSeisData;
-        } else if (this.orientNFilter(currSeisData)) {
-          friendList = friendList.filter(this.orientZFilter);
-          hSeisData = currSeisData;
-        } else if (this.orientRFilter(currSeisData)) {
-          friendList = friendList.filter(this.orientTFilter);
-          hSeisData = currSeisData;
-        } else if (this.orientTFilter(currSeisData)) {
-          friendList = friendList.filter(this.orientZFilter);
-          hSeisData = currSeisData;
-        } else if (this.orientZFilter(currSeisData)) {
-          // can be RZ or EZ
-          let tmpfriendList = friendList.filter(this.orientEFilter);
-          if (tmpfriendList.length === 0) {
-              friendList = friendList.filter(this.orientRFilter);
-          } else {
-            friendList = tmpfriendList;
-          }
-          vSeisData = currSeisData;
+      let byFriends = seisplotjs.displayorganize.groupComponentOfMotion(seisDataList);
+      let pairs = [];
+      byFriends.forEach(friendList => {
+        if (friendList.length > 1) {
+          friendList.forEach( (first, i) => {
+            for (let j=i+1; j<friendList.length; j++) {
+              pairs.push([first, friendList[j]]);
+            }
+          });
         } else {
-          console.log(`cant filter friend list: ${currSeisData.codes()}`);
+          console.log(`cant find friend for ${friendList[0].codes()}`);
         }
-        if (friendList.length !== 0) {
-          if (currSeisData === hSeisData) {
-            vSeisData = friendList[0];
-          } else {
-            hSeisData = friendList[0];
-          }
-          const foundSeisData = friendList[0];
-          let org = new seisplotjs.displayorganize.OrganizedDisplay([ hSeisData, vSeisData ], seisplotjs.displayorganize.PARTICLE_MOTION);
+      });
+      pairs.forEach(pair => {
+        if (pair[0].channelCode.charCodeAt(2) > pair[1].channelCode.charCodeAt(2)){
+          let tmp = pair[0];
+          pair[0] = pair[1];
+          pair[1] = tmp;
+        }
+        let org = new seisplotjs.displayorganize.OrganizedDisplay(pair, seisplotjs.displayorganize.PARTICLE_MOTION);
 
-          organized.push(org);
-        } else {
-          console.log(`didn't find unique friend for ${currSeisData.codes()} ${friendList.length}`);
-        }
+        organized.push(org);
       });
       return organized;
     }

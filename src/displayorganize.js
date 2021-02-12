@@ -196,6 +196,37 @@ export function sortByKey(organized: Array<OrganizedDisplay>, key: string): Arra
   return organized;
 }
 
+/**
+ * Groups seismic data into subarrays where members of each subarray are
+ * from the same network/station, have the same band and gain/instrument code
+ * and overlap in time. Note, in most cases the subarrays will have
+ * 1, 2 or 3 elements, but this is not checked nor guaranteed.
+ *
+ * @param   sddList list of SeismogramDisplayData to split
+ * @return          array of array of data, organized by component of motion
+ */
+export function groupComponentOfMotion(sddList: Array<SeismogramDisplayData>): Array<Array<SeismogramDisplayData>> {
+  let tmpSeisDataList = Array.from(sddList);
+  const bifurcate = (arr, filter) =>
+      arr.reduce((acc, val, i) => (acc[filter(val) ? 0 : 1].push(val), acc), [[], []]);
+  const byFriends = [];
+  while (tmpSeisDataList.length > 0) {
+    const first = tmpSeisDataList.shift();
+    const isFriend = (sdddB) => first.networkCode === sdddB.networkCode
+        && first.stationCode === sdddB.stationCode
+        && first.locationCode === sdddB.locationCode
+        && first.channelCode.slice(0,2) === sdddB.channelCode.slice(0,2)
+        && first.timeWindow.overlaps(sdddB.timeWindow);
+    const splitArray = bifurcate(tmpSeisDataList, isFriend);
+    let nextGroup = splitArray[0];
+    console.log(`friends for ${first.codes()}: ${nextGroup.length}`)
+    nextGroup.unshift(first);
+    byFriends.push(nextGroup);
+    tmpSeisDataList = splitArray[1];
+  }
+  return byFriends;
+}
+
 export function createAttribute(organized: Array<OrganizedDisplay>,
                                 key: string,
                                 valueFun: (OrganizedDisplay => string | number | null)
