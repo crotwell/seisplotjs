@@ -495,33 +495,37 @@ export const multiFormatHour = function(date: Date): string {
 export function createEditor(div: any, config: SeismographConfig, onChange: () => void) {
   if (!isDef(div)) {throw new Error('div is Required');}
   let titleDiv = div.append("div");
-  createBooleanOption(titleDiv.append("span"), "Title", "isTitle", config.showTitle, (checked: boolean ) => {config.showTitle = checked;onChange();});
-  createTextOption(titleDiv.append("span"), "Title", "title", config._title[0], (val: string) => {config.title = val;onChange();});
+  createBooleanOptionByKey(titleDiv.append("span"), "", "showTitle", config, onChange);
+  createTextOption(titleDiv.append("span"), "Title", "title", config, onChange);
   titleDiv.selectAll("input").classed("smallconfigtext", false).classed("bigconfigtext", true);
 
   let xLabelDiv = div.append("div");
   xLabelDiv.append("span").text("X Axis:");
-  createBooleanOption(xLabelDiv.append("span"), "Bot", "isXAxis", config.isXAxis, (checked: boolean ) => {config.isXAxis = checked;onChange();});
-  createBooleanOption(xLabelDiv.append("span"), "Top", "isXAxisTop", config.isXAxisTop, (checked: boolean ) => {config.isXAxisTop = checked;onChange();});
-  createTextOption(xLabelDiv.append("span"), "X Label", "xLabel", config.xLabel, (label: string) => {config.xLabel = label;onChange();});
-  createTextOption(xLabelDiv.append("span"), "Sublabel", "xSublabel", config.xSublabel, (label: string) => {config.xSublabel = label;onChange();});
+  createBooleanOptionByKey(xLabelDiv.append("span"), "Bot", "isXAxis", config, onChange);
+  createBooleanOptionByKey(xLabelDiv.append("span"), "Top", "isXAxisTop", config, onChange);
+  createTextOption(xLabelDiv.append("span"), "X Label", "xLabel", config, onChange);
+  createTextOption(xLabelDiv.append("span"), "Sublabel", "xSublabel", config, onChange);
+  createBooleanOptionByKey(xLabelDiv.append("span"), "Relative", "isRelativeTime", config, onChange);
 
   let yLabelDiv = div.append("div");
   yLabelDiv.append("span").text("Y Axis:");
-  createBooleanOption(yLabelDiv.append("span"), "Left", "isYAxis", config.isYAxis, (checked: boolean ) => {config.isYAxis = checked;onChange();});
-  createBooleanOption(yLabelDiv.append("span"), "Right", "isYAxisRight", config.isYAxisRight, (checked: boolean ) => {config.isYAxisRight = checked;onChange();});
-  createBooleanOption(yLabelDiv.append("span"), "Nice", "isYAxisNice", config.isYAxisNice, (checked: boolean ) => {config.isYAxisNice = checked;onChange();});
-  createTextOption(yLabelDiv.append("span"), "Label", "yLabel", config.yLabel, (label: string) => {config.yLabel = label;onChange();});
-  createTextOption(yLabelDiv.append("span"), " Sublabel", "ySublabel", config.ySublabel, (label: string) => {config.ySublabel = label;onChange();});
-  createBooleanOption(yLabelDiv.append("span"), "is Units", "ySublabelIsUnits", config.ySublabelIsUnits, (checked: boolean ) => {config.ySublabelIsUnits = checked;onChange();});
-  createBooleanOption(yLabelDiv.append("span"), "Centered", "doRMean", config.doRMean, (checked: boolean ) => {config.doRMean = checked;onChange();});
+  createBooleanOptionByKey(yLabelDiv.append("span"), "Left", "isYAxis", config, onChange);
+  createBooleanOptionByKey(yLabelDiv.append("span"), "Right", "isYAxisRight", config, onChange);
+  createTextOption(yLabelDiv.append("span"), "Label", "yLabel", config, onChange);
+  createTextOption(yLabelDiv.append("span"), " Sublabel", "ySublabel", config, onChange);
+  createBooleanOptionByKey(yLabelDiv.append("span"), "is Units", "ySublabelIsUnits", config, onChange);
+  let yLabelDivB = div.append("div");
+  createBooleanOptionByKey(yLabelDivB.append("span"), "Nice", "isYAxisNice", config, onChange);
+  createBooleanOptionByKey(yLabelDivB.append("span"), "From Mid", "doRMean", config, onChange);
+  createBooleanOptionByKey(yLabelDivB.append("span"), "Window", "windowAmp", config, onChange);
 
   let marginDiv = div.append("div");
   marginDiv.append("label").text("Margin:");
-  createTextOption(marginDiv.append("span"), "Left", "marginLeft", config.margin.left, (val: string) => {config.margin.left = parseInt(val);onChange();});
-  createTextOption(marginDiv.append("span"), "Right", "marginRight", config.margin.right, (val: string) => {config.margin.right = parseInt(val);onChange();});
-  createTextOption(marginDiv.append("span"), "Top", "marginTop", config.margin.top, (val: string) => {config.margin.top = parseInt(val);onChange();});
-  createTextOption(marginDiv.append("span"), "Bottom", "marginBottom", config.margin.bottom, (val: string) => {config.margin.bottom = parseInt(val);onChange();});
+  createTextOption(marginDiv.append("span"), "Left", "left", config.margin, onChange);
+  createTextOption(marginDiv.append("span"), "Right", "mright", config.margin, onChange);
+  createTextOption(marginDiv.append("span"), "Top", "top", config.margin, onChange);
+  createTextOption(marginDiv.append("span"), "Bottom", "bottom", config.margin, onChange);
+
   let colorDiv = div.append("div");
   colorDiv.append("label").text("Color:");
   let subDiv = colorDiv.append("span");
@@ -529,58 +533,61 @@ export function createEditor(div: any, config: SeismographConfig, onChange: () =
   config.lineColors.forEach((color, index) => {
     let colorspan = subDiv.append("span");
     colorspan.style("color", color);
-    createTextOption(colorspan,
-                      `${index+1}`,
-                      `color${index}`,
-                      color,
-                      (val: string) => {
-                            config.lineColors[index] = val;
-                            colorspan.style("color", val);
-                            colorspan.select("input").style("color", val);
-                            // might be bad as global colors
-                            //seisplotjs.cssutil.insertCSS(config.createCSSForLineColors(),
-                            //    seisplotjs.seismograph.COLOR_CSS_ID);
-                            onChange();
-                      });
+    colorspan.append("label").text(`${index+1}:`);
+    colorspan.append("input")
+      .classed("smallconfigtext", true)
+      .attr("type", "text")
+      .attr("name", `color${index+1}`)
+      .property("value", color)
+      .on("change", function() {
+          let val = d3.select(this).property("value");
+          config.lineColors[index] = val;
+          colorspan.style("color", val);
+          colorspan.select("input").style("color", val);
+          onChange();
+        });
     colorspan.select("input").style("color", color);
   });
 
-  createBooleanOption(div.append("div"), "Mouse Wheel Zoom", "wheelZoom", config.wheelZoom, (checked: boolean ) => {config.wheelZoom = checked;onChange();});
-  createTextOption(div.append("div"), "Line Width", "lineWidth", config.lineWidth, (lineWidth: string) => {config.lineWidth = parseInt(lineWidth);onChange();});
-  createBooleanOption(div.append("div"), "Show Markers", "doMarkers", config.doMarkers, (checked: boolean ) => {config.doMarkers = checked;onChange();});
+  createTextOption(div.append("div"), "Line Width", "lineWidth", config, onChange);
+  createBooleanOptionByKey(div.append("div"), "Show Markers", "doMarkers", config, onChange);
   const heightDiv = div.append("div");
   heightDiv.append("label").text("Height:");
   let subHeightDiv = heightDiv.append("span");
-  createTextOption(subHeightDiv.append("span"), "Min", "minHeight", config.minHeight, (val: string) => {config.minHeight = parseInt(val);onChange();});
-  createTextOption(subHeightDiv.append("span"), "Max", "maxHeight", config.maxHeight, (val: string) => {config.maxHeight = parseInt(val);onChange();});
+  createTextOption(subHeightDiv.append("span"), "Min", "minHeight", config, onChange);
+  createTextOption(subHeightDiv.append("span"), "Max", "maxHeight", config, onChange);
+  createBooleanOptionByKey(div.append("div"), "Mouse Wheel Zoom2", "wheelZoom", config, onChange);
 
 }
 
-function createBooleanOption(mydiv: any, label: string, id: string, isChecked: boolean, setter: (v: boolean) => void) {
-  mydiv.append("input")
+function createBooleanOptionByKey(myspan: any, label: string, key: string, config: SeismographConfig, onChange: () => void) {
+  myspan.append("input")
     .attr("type", "checkbox")
-    .attr("id", id)
-    .attr("name", id)
-    .property("checked", isChecked)
-    .on("change", () => {
-        setter(d3.select(`#${id}`).property("checked"));
+    .attr("id", key)
+    .attr("name", key)
+    .property("checked", config[key])
+    .on("change", function() {
+      config[key] = d3.select(this).property("checked");
+      onChange();
       });
-    mydiv.append("label").text(`${label}:`);
-
+  myspan.append("label").text(`${label}:`);
+  return myspan;
 }
 
-function createTextOption(mydiv: any, label: string, id: string, value: string, setter: (v: string) => void) {
+function createTextOption(mydiv: any, label: string, key: string, config: SeismographConfig, onChange: () => void) {
   const myspan = mydiv.append("span");
   myspan.append("label").text(`${label}:`);
   myspan.append("input")
     .classed("smallconfigtext", true)
     .attr("type", "text")
-    .attr("id", id)
-    .attr("name", id)
-    .property("value", value)
-    .on("change", () => {
-        setter(d3.select(`#${id}`).property("value"));
+    .attr("id", key)
+    .attr("name", key)
+    .property("value", config[key])
+    .on("change", function() {
+        config[key] = d3.select(this).property("value");
+        onChange();
       });
+  return myspan;
 }
 
 export const configEditor_css = `
