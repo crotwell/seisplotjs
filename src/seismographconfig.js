@@ -6,6 +6,7 @@
  * http://www.seis.sc.edu
  */
 
+ import {insertCSS} from './cssutil.js';
 import { SeismogramDisplayData, Seismogram } from './seismogram.js';
 import {StartEndDuration, isDef } from './util.js';
 import moment from 'moment';
@@ -235,7 +236,6 @@ export class SeismographConfig {
   }
 
   createCSSForLineColors() {
-    console.log("createCSSForLineColors")
     let cssText = "";
     let numColors = this.lineColors.length;
     this.lineColors.forEach((color, index) => {
@@ -494,13 +494,28 @@ export const multiFormatHour = function(date: Date): string {
 
 export function createEditor(div: any, config: SeismographConfig, onChange: () => void) {
   if (!isDef(div)) {throw new Error('div is Required');}
-  createBooleanOption(div.append("div"), "Show Title", "isTitle", config.showTitle, (checked: boolean ) => {config.showTitle = checked;onChange();});
+  let titleDiv = div.append("div");
+  createBooleanOption(titleDiv.append("span"), "Title", "isTitle", config.showTitle, (checked: boolean ) => {config.showTitle = checked;onChange();});
+  createTextOption(titleDiv.append("span"), "Title", "title", config._title[0], (val: string) => {config.title = val;onChange();});
+  titleDiv.selectAll("input").classed("smallconfigtext", false).classed("bigconfigtext", true);
+
   let xLabelDiv = div.append("div");
+  xLabelDiv.append("span").text("X Axis:");
+  createBooleanOption(xLabelDiv.append("span"), "Bot", "isXAxis", config.isXAxis, (checked: boolean ) => {config.isXAxis = checked;onChange();});
+  createBooleanOption(xLabelDiv.append("span"), "Top", "isXAxisTop", config.isXAxisTop, (checked: boolean ) => {config.isXAxisTop = checked;onChange();});
   createTextOption(xLabelDiv.append("span"), "X Label", "xLabel", config.xLabel, (label: string) => {config.xLabel = label;onChange();});
   createTextOption(xLabelDiv.append("span"), "Sublabel", "xSublabel", config.xSublabel, (label: string) => {config.xSublabel = label;onChange();});
+
   let yLabelDiv = div.append("div");
-  createTextOption(yLabelDiv.append("span"), "Y Label", "yLabel", config.yLabel, (label: string) => {config.yLabel = label;onChange();});
+  yLabelDiv.append("span").text("Y Axis:");
+  createBooleanOption(yLabelDiv.append("span"), "Left", "isYAxis", config.isYAxis, (checked: boolean ) => {config.isYAxis = checked;onChange();});
+  createBooleanOption(yLabelDiv.append("span"), "Right", "isYAxisRight", config.isYAxisRight, (checked: boolean ) => {config.isYAxisRight = checked;onChange();});
+  createBooleanOption(yLabelDiv.append("span"), "Nice", "isYAxisNice", config.isYAxisNice, (checked: boolean ) => {config.isYAxisNice = checked;onChange();});
+  createTextOption(yLabelDiv.append("span"), "Label", "yLabel", config.yLabel, (label: string) => {config.yLabel = label;onChange();});
   createTextOption(yLabelDiv.append("span"), " Sublabel", "ySublabel", config.ySublabel, (label: string) => {config.ySublabel = label;onChange();});
+  createBooleanOption(yLabelDiv.append("span"), "is Units", "ySublabelIsUnits", config.ySublabelIsUnits, (checked: boolean ) => {config.ySublabelIsUnits = checked;onChange();});
+  createBooleanOption(yLabelDiv.append("span"), "Centered", "doRMean", config.doRMean, (checked: boolean ) => {config.doRMean = checked;onChange();});
+
   let marginDiv = div.append("div");
   marginDiv.append("label").text("Margin:");
   createTextOption(marginDiv.append("span"), "Left", "marginLeft", config.margin.left, (val: string) => {config.margin.left = parseInt(val);onChange();});
@@ -512,7 +527,6 @@ export function createEditor(div: any, config: SeismographConfig, onChange: () =
   let subDiv = colorDiv.append("span");
   console.log(`l8ine colors ${config.lineColors.length}`);
   config.lineColors.forEach((color, index) => {
-  console.log(`l8ine colors ${color} ${index}`);
     let colorspan = subDiv.append("span");
     colorspan.style("color", color);
     createTextOption(colorspan,
@@ -543,7 +557,6 @@ export function createEditor(div: any, config: SeismographConfig, onChange: () =
 }
 
 function createBooleanOption(mydiv: any, label: string, id: string, isChecked: boolean, setter: (v: boolean) => void) {
-  mydiv.append("label").text(`${label}:`);
   mydiv.append("input")
     .attr("type", "checkbox")
     .attr("id", id)
@@ -552,12 +565,15 @@ function createBooleanOption(mydiv: any, label: string, id: string, isChecked: b
     .on("change", () => {
         setter(d3.select(`#${id}`).property("checked"));
       });
+    mydiv.append("label").text(`${label}:`);
+
 }
 
 function createTextOption(mydiv: any, label: string, id: string, value: string, setter: (v: string) => void) {
   const myspan = mydiv.append("span");
   myspan.append("label").text(`${label}:`);
   myspan.append("input")
+    .classed("smallconfigtext", true)
     .attr("type", "text")
     .attr("id", id)
     .attr("name", id)
@@ -565,4 +581,18 @@ function createTextOption(mydiv: any, label: string, id: string, value: string, 
     .on("change", () => {
         setter(d3.select(`#${id}`).property("value"));
       });
+}
+
+export const configEditor_css = `
+input[type="text"].smallconfigtext {
+  width: 7em;
+}
+
+input[type="text"].bigconfigtext {
+  width: 27em;
+}
+`;
+
+if (document){
+  insertCSS(configEditor_css, "configeditor");
 }
