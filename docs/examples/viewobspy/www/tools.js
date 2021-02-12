@@ -5,7 +5,7 @@ function createTools(viewObspy) {
   seisplotjs.d3.select("div.seisConfig").selectAll("*").remove();
   seisplotjs.seismographconfig.createEditor(seisplotjs.d3.select("div.seisConfig"),
                                             viewObspy.defaultSeismographConfig,
-                                            () => {console.log(viewObspy.defaultSeismographConfig.asJSON());viewObspy.replot();});
+                                            () => {viewObspy.replot();});
 
   seisplotjs.d3.select("div.infoTemplate").select("#infoTemplateText")
     .property("value", viewObspy.infoTemplate)
