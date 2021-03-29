@@ -207,7 +207,7 @@ export class TraveltimeQuery {
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
       .then(function(response) {
-        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+        if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
           // no data, create empty
           return FAKE_EMPTY_TEXT_MODEL+(isDef(this._model) ? this.model() : "")+
           FAKE_EMPTY_TEXT_HEADERS;
@@ -223,7 +223,7 @@ export class TraveltimeQuery {
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, mythis._timeoutSec * 1000 )
       .then(function(response) {
-        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+        if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
           // no data, create empty
           return {
             model: isDef(mythis._model) ? mythis._model : "",
@@ -247,7 +247,7 @@ export class TraveltimeQuery {
       .then(function(response) {
           if (response.status === 200) {
             return response.text();
-          } else if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+          } else if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
             // 204 is nodata, so successful but empty
             return FAKE_EMPTY_SVG;
           } else {
