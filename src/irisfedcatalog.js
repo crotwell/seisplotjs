@@ -2,7 +2,7 @@
 
 /*
  * Philip Crotwell
- * University of South Carolina, 2019
+ * University of South Carolina, 2020
  * http://www.seis.sc.edu
  */
 
@@ -21,7 +21,7 @@ import moment from 'moment';
 import RSVP from 'rsvp';
 
 /**
- * Major version of the FDSN spec supported here.
+ * Major version of the IRIS web service supported here.
  * Currently is 1.
  */
 export const SERVICE_VERSION = 1;
@@ -144,6 +144,41 @@ export class FedCatalogQuery {
     this._port = 80;
     this._timeoutSec = 30;
   }
+  /**
+   * Constructs a station FedCatalogQuery using the parameters in a StationQuery.
+   * @param   stationQuery query to pull parameters from
+   * @return               fedcatalog query
+   */
+  static fromStationQuery(stationQuery: StationQuery): FedCatalogQuery {
+    const out = new FedCatalogQuery();
+    if ( ! stationQuery.isSomeParameterSet()) {
+      throw new Error("Some parameters must be set in the stationQuery to avoid asking for everything.");
+    }
+    if (isStringArg(stationQuery._networkCode)) { out.networkCode(stationQuery._networkCode);}
+    if (isStringArg(stationQuery._stationCode)) { out.stationCode(stationQuery._stationCode);}
+    if (isStringArg(stationQuery._locationCode)) { out.locationCode(stationQuery._locationCode);}
+    if (isStringArg(stationQuery._channelCode)) { out.channelCode(stationQuery._channelCode);}
+    if (isObject(stationQuery._startTime)) { out.startTime(stationQuery._startTime);}
+    if (isObject(stationQuery._endTime)) { out.endTime(stationQuery._endTime);}
+    if (isObject(stationQuery._startBefore)) { out.startBefore(stationQuery._startBefore);}
+    if (isObject(stationQuery._startAfter)) { out.startAfter(stationQuery._startAfter);}
+    if (isObject(stationQuery._endBefore)) { out.endBefore(stationQuery._endBefore);}
+    if (isObject(stationQuery._endAfter)) { out.endAfter(stationQuery._endAfter);}
+    if (isNumArg(stationQuery._minLat)) { out.minLat(stationQuery._minLat);}
+    if (isNumArg(stationQuery._maxLat)) { out.maxLat(stationQuery._maxLat);}
+    if (isNumArg(stationQuery._minLon)) { out.minLon(stationQuery._minLon);}
+    if (isNumArg(stationQuery._maxLon)) { out.maxLon(stationQuery._maxLon);}
+    if (isNumArg(stationQuery._latitude)) { out.latitude(stationQuery._latitude);}
+    if (isNumArg(stationQuery._longitude)) { out.longitude(stationQuery._longitude);}
+    if (isNumArg(stationQuery._minRadius)) { out.minRadius(stationQuery._minRadius);}
+    if (isNumArg(stationQuery._maxRadius)) { out.maxRadius(stationQuery._maxRadius);}
+    if (isDef(stationQuery._includeRestricted)) { out.includeRestricted(stationQuery._includeRestricted);}
+    if (isDef(stationQuery._includeAvailability)) { out.includeAvailability(stationQuery._includeAvailability);}
+    if (isObject(stationQuery._updatedAfter)) { out.updatedAfter(stationQuery._updatedAfter);}
+    if (isDef(stationQuery._matchTimeseries)) { out.matchTimeseries(stationQuery._matchTimeseries);}
+    return out;
+  }
+
   /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
