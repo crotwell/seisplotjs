@@ -42,7 +42,7 @@ export class OrganizedDisplay {
   setAttribute(key: string, value: any) {
     this.attributes.set(key, value);
   }
-  hasAttribute(key: string) {
+  hasAttribute(key: string): boolean {
     return this.attributes.has(key);
   }
   getAttribute(key: string): any {

@@ -365,7 +365,7 @@ export class AvailabilityQuery {
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
       .then(function(response) {
-        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+        if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
           return RSVP.hash(EMPTY_JSON);
         }
         let contentType = response.headers.get('content-type');
@@ -402,7 +402,7 @@ export class AvailabilityQuery {
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
     .then(function(response) {
-        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+        if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
           return EMPTY_JSON;
         }
         let contentType = response.headers.get('content-type');
@@ -445,7 +445,7 @@ export class AvailabilityQuery {
     const mythis = this;
     this.format(FORMAT_JSON);
     return this.postRaw(channelTimeList, method).then(function(response) {
-        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+        if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
           return EMPTY_JSON;
         }
         let contentType = response.headers.get('content-type');

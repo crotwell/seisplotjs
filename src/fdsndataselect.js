@@ -11,7 +11,7 @@ import RSVP from 'rsvp';
 import * as util from './util.js'; // for util.log
 // special due to flow
 import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
-        checkProtocol, toIsoWoZ, hasArgs, hasNoArgs,
+        isDef, checkProtocol, toIsoWoZ, hasArgs, hasNoArgs,
         isNonEmptyStringArg,isNumArg} from './util';
 
 import * as miniseed from './miniseed';
@@ -284,7 +284,7 @@ export class DataSelectQuery {
     const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
       .then(function(response) {
-        if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+        if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
           // no data
           return new ArrayBuffer(0);
         } else {

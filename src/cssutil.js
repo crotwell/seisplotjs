@@ -20,7 +20,7 @@ export function insertCSS(cssText: string, id: string): HTMLElement {
   if (head === null) {throw new Error("document.head is null");}
   if (id) {
     let existing = document.getElementById(id);
-    if (existing) {existing.parentNode.removeChild(existing);}
+    if (existing && existing.parentNode) {existing.parentNode.removeChild(existing);}
   }
   let styleElement = document.createElement('style');
   if (id) { styleElement.id = id; }

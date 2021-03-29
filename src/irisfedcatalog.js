@@ -667,7 +667,7 @@ export class FedCatalogQuery {
       .then(response => {
           if (response.status === 200) {
             return response.text();
-          } else if (response.status === 204 || (mythis.nodata() && response.status === mythis.nodata())) {
+          } else if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
             // 204 is nodata, so successful but empty
             return FAKE_EMPTY_TEXT;
           } else {
