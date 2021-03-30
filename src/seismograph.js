@@ -125,11 +125,20 @@ export class Seismograph {
 
     this.svg = this.svgParent.append("svg")
       .style("z-index", 100);
+
     if (isNumArg(this.seismographConfig.minHeight) && this.seismographConfig.minHeight > 0) {
       this.svg.style("min-height", this.seismographConfig.minHeight+'px');
+      this.svgParent.style("min-height", this.seismographConfig.minHeight+'px');
     }
     if (isNumArg(this.seismographConfig.maxHeight) && this.seismographConfig.maxHeight > 0) {
       this.svg.style("max-height", this.seismographConfig.maxHeight+'px');
+    }
+    if (isNumArg(this.seismographConfig.minWidth) && this.seismographConfig.minWidth > 0) {
+      this.svg.style("min-width", this.seismographConfig.minWidth+'px');
+      this.svgParent.style("min-width", this.seismographConfig.minWidth+'px');
+    }
+    if (isNumArg(this.seismographConfig.maxWidth) && this.seismographConfig.maxWidth > 0) {
+      this.svg.style("max-width", this.seismographConfig.maxWidth+'px');
     }
     this.svg.classed("seismograph", true);
     this.svg.attr("version", "1.1");

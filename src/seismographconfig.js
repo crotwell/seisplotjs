@@ -62,8 +62,10 @@ export class SeismographConfig {
   markerTextOffset: number;
   markerTextAngle: number;
   markerFlagpoleBase: string;
-  minHeight: number;
-  maxHeight: number;
+  minHeight: null | number;
+  maxHeight: null | number;
+  minWidth: null | number;
+  maxWidth: null | number;
   margin: MarginType;
   segmentDrawCompressedCutoff: number;//below this draw all points, above draw minmax
   maxZoomPixelPerSample: number; // no zoom in past point of sample
@@ -138,7 +140,7 @@ export class SeismographConfig {
     this.lineWidth = 1;
   }
 
-  static fromJSON(json: object): SeismographConfig {
+  static fromJSON(json: any): SeismographConfig {
     let seisConfig = new SeismographConfig();
     Object.assign(seisConfig, json);
     return seisConfig;
