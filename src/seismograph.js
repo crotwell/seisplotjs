@@ -126,16 +126,18 @@ export class Seismograph {
     this.svg = this.svgParent.append("svg")
       .style("z-index", 100);
 
-    if (isNumArg(this.seismographConfig.minHeight) && this.seismographConfig.minHeight > 0) {
-      this.svg.style("min-height", this.seismographConfig.minHeight+'px');
-      this.svgParent.style("min-height", this.seismographConfig.minHeight+'px');
+    if (isDef(this.seismographConfig.minHeight) && isNumArg(this.seismographConfig.minHeight) && this.seismographConfig.minHeight > 0) {
+      const minHeight = this.seismographConfig.minHeight; // for flow
+      this.svg.style("min-height", minHeight+'px');
+      this.svgParent.style("min-height", minHeight+'px');
     }
     if (isNumArg(this.seismographConfig.maxHeight) && this.seismographConfig.maxHeight > 0) {
       this.svg.style("max-height", this.seismographConfig.maxHeight+'px');
     }
     if (isNumArg(this.seismographConfig.minWidth) && this.seismographConfig.minWidth > 0) {
-      this.svg.style("min-width", this.seismographConfig.minWidth+'px');
-      this.svgParent.style("min-width", this.seismographConfig.minWidth+'px');
+      const minWidth = this.seismographConfig.minWidth; // for flow
+      this.svg.style("min-width", minWidth+'px');
+      this.svgParent.style("min-width", minWidth+'px');
     }
     if (isNumArg(this.seismographConfig.maxWidth) && this.seismographConfig.maxWidth > 0) {
       this.svg.style("max-width", this.seismographConfig.maxWidth+'px');
@@ -229,18 +231,19 @@ export class Seismograph {
   }
   draw(): void {
     let rect = this.svg.node().getBoundingClientRect();
-    if (rect.width === 0 || rect.height === 0) {
+    if (rect.width === 0 || ! isDef(rect.width) || rect.height === 0 || ! isDef(rect.height)) {
       util.log(`Attempt draw seismograph, but width/height too small: ${rect.width} ${rect.height}`);
       return;
     }
+    let calcHeight = rect.height;
     if ((rect.width !== this.outerWidth || rect.height !== this.outerHeight)) {
-      if (rect.height < this.seismographConfig.minHeight) {
-        rect.height = this.seismographConfig.minHeight;
+      if (isNumArg(this.seismographConfig.minHeight) && calcHeight < this.seismographConfig.minHeight) {
+        calcHeight = this.seismographConfig.minHeight;
       }
-      if (rect.height > this.seismographConfig.maxHeight) {
-        rect.height = this.seismographConfig.maxHeight;
+      if (isNumArg(this.seismographConfig.maxHeight) && calcHeight > this.seismographConfig.maxHeight) {
+        calcHeight = this.seismographConfig.maxHeight;
       }
-      this.calcWidthHeight(rect.width, rect.height);
+      this.calcWidthHeight(rect.width, calcHeight);
     }
     if (this.canvas) {
       this.canvasHolder.attr("width", this.width)
@@ -260,7 +263,6 @@ export class Seismograph {
         .attr("y", 0)
         .attr("width", this.width)
         .attr("height", this.height+1);
-      const mythis = this;
 
       let style = window.getComputedStyle(this.svg.node());
       let padTop = style.getPropertyValue('padding-top');

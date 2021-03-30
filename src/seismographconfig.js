@@ -146,7 +146,7 @@ export class SeismographConfig {
     return seisConfig;
   }
 
-  asJSON() {
+  asJSON(): any {
     // kind of dumb...
     return JSON.parse(JSON.stringify(this));
   }
@@ -237,7 +237,7 @@ export class SeismographConfig {
     }
   }
 
-  createCSSForLineColors() {
+  createCSSForLineColors(): string {
     let cssText = "";
     let numColors = this.lineColors.length;
     this.lineColors.forEach((color, index) => {
@@ -567,8 +567,10 @@ function createBooleanOptionByKey(myspan: any, label: string, key: string, confi
     .attr("type", "checkbox")
     .attr("id", key)
     .attr("name", key)
+    //$FlowExpectedError
     .property("checked", config[key])
     .on("change", function() {
+      //$FlowExpectedError
       config[key] = d3.select(this).property("checked");
       onChange();
       });
@@ -576,7 +578,7 @@ function createBooleanOptionByKey(myspan: any, label: string, key: string, confi
   return myspan;
 }
 
-function createTextOption(mydiv: any, label: string, key: string, config: SeismographConfig, onChange: () => void) {
+function createTextOption(mydiv: any, label: string, key: string, config: any, onChange: () => void) {
   const myspan = mydiv.append("span");
   myspan.append("label").text(`${label}:`);
   myspan.append("input")
@@ -584,8 +586,10 @@ function createTextOption(mydiv: any, label: string, key: string, config: Seismo
     .attr("type", "text")
     .attr("id", key)
     .attr("name", key)
+    //$FlowExpectedError
     .property("value", config[key])
     .on("change", function() {
+        //$FlowExpectedError
         config[key] = d3.select(this).property("value");
         onChange();
       });

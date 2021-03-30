@@ -14,6 +14,7 @@
  */
 
 declare module 'pikaday' {
+  import type momemt$Moment from "moment";
   declare class Pikaday {
     constructor( { field: any, format: string, onSelect: () => void } ): Pikaday;
     isVisible(): boolean;

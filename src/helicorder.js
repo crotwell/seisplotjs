@@ -13,7 +13,7 @@ import {insertCSS} from './cssutil.js';
 import { SeismogramDisplayData } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
-import {StartEndDuration, isDef} from './util.js';
+import {StartEndDuration, isDef, isNumArg} from './util.js';
 
 /**
  * A helicorder-like multi-line seismogram display usually covering 24 hours
@@ -91,7 +91,9 @@ export class Helicorder {
     let lineTimes = this.calcTimesForLines(startTime, secondsPerLine, this.heliConfig.numLines);
     const margin = this.heliConfig.margin;
     const nl = this.heliConfig.numLines;
-    const baseHeight = (this.heliConfig.maxHeight-margin.top-margin.bottom) /
+    // for flow
+    const maxHeight = this.heliConfig.maxHeight!==null ? this.heliConfig.maxHeight : DEFAULT_MAX_HEIGHT;
+    const baseHeight = (maxHeight-margin.top-margin.bottom) /
                        (nl-(nl-1)*this.heliConfig.overlap) ;
     for(let lineTime of lineTimes) {
       let startTime = lineTime.startTime;
@@ -181,6 +183,8 @@ export class Helicorder {
   }
 }
 
+export const DEFAULT_MAX_HEIGHT = 600;
+
 /**
  * Configuration of the helicorder
  *
@@ -198,7 +202,7 @@ export class HelicorderConfig extends SeismographConfig {
     }
     this.fixedTimeScale = timeWindow;
     this.maxVariation = 0;
-    this.maxHeight = 600;
+    this.maxHeight = DEFAULT_MAX_HEIGHT;
     this.xLabel = '';
     this.yLabel = '';
     this.xSublabel = '';

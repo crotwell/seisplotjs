@@ -530,13 +530,13 @@ export function convertToEquipment(xml: Element): Equipment {
    * @returns Response instance
    */
 export function convertToResponse(responseXml: Element): Response {
-    let out;
+    let out = new Response();
     let inst = responseXml.getElementsByTagNameNS(STAML_NS, 'InstrumentSensitivity');
     if (inst && inst.item(0)) {
       const i = inst.item(0);
       if (i) {out = new Response(convertToInstrumentSensitivity(i));}
     }
-    if (! out) {
+    if ( ! isDef(out)) {
       // DMC returns empty response element when they know nothing (instead
       // of just leaving it out). Return empty object in this case
       out = new Response();
