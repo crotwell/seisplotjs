@@ -27,6 +27,7 @@
     "lint": "eslint 'src/*.js' 'test/*.js' 'test/*/*.js'  ",
     "examplelint": "eslint -c .eslintrc_noflow.js 'docs/examples/viewobspy/www/[otv]*.js' 'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
     "test": "jest",
+    "livetest": "jest -c jest.config.live.js",
     "flow": "flow",
     "flow-copy": "flow-copy-source -v -i '**/__tests__/**' src dist/module",
     "rollup": "rollup --config rollup.config.js",

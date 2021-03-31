@@ -10,7 +10,7 @@ import { Network} from './stationxml';
 import {LEVELS, LEVEL_NETWORK, LEVEL_STATION, LEVEL_CHANNEL, LEVEL_RESPONSE, StationQuery} from './fdsnstation.js';
 import {DataSelectQuery} from './fdsndataselect.js';
 import {SeismogramDisplayData} from './seismogram.js';
-import { TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
+import { TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj, stringify} from './util.js';
 
 // special due to flow
 import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGetterSetter,
@@ -32,6 +32,9 @@ export const SERVICE_VERSION = 1;
 export const SERVICE_NAME = `irisws-fedcatalog-${SERVICE_VERSION}`;
 
 export const IRIS_HOST = "service.iris.edu";
+
+export const TARGET_DATASELECT = 'dataselect';
+export const TARGET_STATION = 'station';
 
 /** a fake, completely empty stationxml document in case of no data. */
 export const FAKE_EMPTY_TEXT = '\n';
@@ -151,6 +154,9 @@ export class FedCatalogQuery {
    */
   static fromStationQuery(stationQuery: StationQuery): FedCatalogQuery {
     const out = new FedCatalogQuery();
+    if ( ! stationQuery instanceof StationQuery) {
+      throw new Error("1st arg must be a StationQuery: "+stringify(stationQuery.constructor));
+    }
     if ( ! stationQuery.isSomeParameterSet()) {
       throw new Error("Some parameters must be set in the stationQuery to avoid asking for everything.");
     }
@@ -595,40 +601,52 @@ export class FedCatalogQuery {
     });
   }
 
-  setupQueryFdnsDataSelect(): Promise<ParsedResultType> {
-    this.targetService('dataselect');
-    return this.queryRaw().then(function(parsedResult) {
-      for (let r of parsedResult.queries) {
-        const dataSelectQuery = new DataSelectQuery();
-        r.dataSelectQuery = dataSelectQuery;
-        parsedResult.params.forEach( (k,v) => {
-          const field = `_${k}`;
-          // $FlowIgnore[prop-missing] dynamic setting of field
-          // $FlowIgnore[incompatible-use]
-          dataSelectQuery[field] = v;
-        });
-        if (! r.services.has('DATASELECTSERVICE')) {
-          throw new Error("QueryResult does not have DATASELECTSERVICE in services");
-        }
-        const urlString = r.services.get('DATASELECTSERVICE');
-        if ( isDef(urlString)) {
-          const serviceURL = new URL(urlString);
-          dataSelectQuery.host(serviceURL.hostname);
-          if (serviceURL.port) {
-            dataSelectQuery.port(parseInt(serviceURL.port));
-          }
-        } else {
-          throw new Error("QueryResult does have DATASELECTSERVICE in services, but is undef");
-        }
+  /**
+   * For each item in a parsed result returned from a FedCat service, create a
+   * DataSelectQuery with host and port, or url filled in correctly, ready to
+   * be called with the result lines.
+   *
+   * @param   parsedResult result from a FedCat web service
+   * @return               result with dataSelectQuery added to each item
+   */
+  setupForFdnsDataSelect(parsedResult: ParsedResultType): ParsedResultType {
+    for (let r of parsedResult.queries) {
+      const dataSelectQuery = new DataSelectQuery();
+      r.dataSelectQuery = dataSelectQuery;
+      parsedResult.params.forEach( (k,v) => {
+        const field = `_${k}`;
+        // $FlowIgnore[prop-missing] dynamic setting of field
+        // $FlowIgnore[incompatible-use]
+        dataSelectQuery[field] = v;
+      });
+      if (! r.services.has('DATASELECTSERVICE')) {
+        throw new Error("QueryResult does not have DATASELECTSERVICE in services");
       }
-      return parsedResult;
-    });
+      const urlString = r.services.get('DATASELECTSERVICE');
+      if ( isDef(urlString)) {
+        const serviceURL = new URL(urlString);
+        dataSelectQuery.host(serviceURL.hostname);
+        if (serviceURL.port) {
+          dataSelectQuery.port(parseInt(serviceURL.port));
+        }
+      } else {
+        throw new Error("QueryResult does have DATASELECTSERVICE in services, but is undef");
+      }
+    }
+    return parsedResult;
   }
 
   queryFdsnDataselect(): Promise<Array<SeismogramDisplayData>> {
-    return this.setupQueryFdnsDataSelect()
-    .then(parsedResult => {
+    const mythis = this;
+    this.targetService(TARGET_DATASELECT);
+    return this.queryRaw().then(parsedResult => {
+      return mythis.setupForFdnsDataSelect(parsedResult)
+    }).then(parsedResult => {
+      return mythis.postFdsnDataselectForFedCatResult(parsedResult);
+    });
+  }
 
+  postFdsnDataselectForFedCatResult(parsedResult: ParsedResultType): Promise<Array<SeismogramDisplayData>> {
       return RSVP.all(parsedResult.queries.map(query => {
         let sddList = query.postLines.map(line => {
           const items = line.split(" ");
@@ -642,8 +660,7 @@ export class FedCatalogQuery {
           // could return [];
           throw new Error("dataSelectQuery missing");
         }
-      }));
-    }).then(sddArrayArray => {
+      })).then(sddArrayArray => {
       let out = [];
       sddArrayArray.forEach(sddArray => {
         sddArray.forEach(sdd => {
@@ -654,10 +671,66 @@ export class FedCatalogQuery {
     });
   }
 
+
+  /**
+   * query the fed cat server for dataselect using post, which allows for multiple
+   * channel-timeranges at once. This assumes that there are not multiple
+   * time ranges for the same channel as the results, encapsulated as
+   * SeismogramDisplayData objects, are returned one seismogram
+   * per channel, which may contain gaps. The original channel and timerange are
+   * also populated with each result.
+   *
+   * @param   sddList array of SeismogramDisplayData objects
+   * that will be filled in with the resulting seismogram
+   * @returns Promise to the input Array of SeismogramDisplayData objects, each with the
+   * seismogram containing the data returned from the server
+   */
+  postQuerySeismograms(sddList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
+    return this.postQueryRaw(sddList, TARGET_DATASELECT).then((parsedResult: ParsedResultType) => {
+      this.setupForFdnsDataSelect(parsedResult);
+      return this.postFdsnDataselectForFedCatResult(parsedResult);
+    }).then((sddResultArray: Array<SeismogramDisplayData> ) => {
+      for (let sdd of sddList) {
+        let codes = sdd.codes();
+        let matchSdd = sddResultArray.find(s => s.codes() === codes && s.timeWindow.overlaps(sdd.timeWindow));
+        if (matchSdd) {
+          // copy seismogram from remote service into original sdd
+          // that requested it
+          sdd.seismogram = matchSdd.seismogram;
+        }
+      }
+      return sddList;
+    });
+  }
+
+  postQueryRaw(sddList: Array<SeismogramDisplayData>, targetService: string): Promise<ParsedResultType> {
+    if (sddList.length === 0) {
+      // return promise faking an empty response
+      return RSVP.hash(this.parseRequest(FAKE_EMPTY_TEXT));
+    } else {
+      let body = `targetservice=${targetService}\n`
+        + DataSelectQuery.createPostBody(sddList);
+      return this.postQueryRawWithBody(body);
+    }
+  }
+
+  postQueryRawWithBody(body: string): Promise<ParsedResultType> {
+    const mythis = this;
+    const fetchInit = defaultFetchInitObj(TEXT_MIME);
+    fetchInit.method = "POST";
+    fetchInit.body = body;
+    return doFetchWithTimeout(this.formURL(), fetchInit, this._timeoutSec * 1000 )
+      .then(response => {
+          return this.handleHttpResponseCodes(response);
+      }).then( rawText => {
+        return mythis.parseRequest(rawText);
+      });
+  }
+
   /**
    * Queries the remote web service.
    *
-   * @returns a Promise to an xml Document.
+   * @returns a Promise to an parsed result.
    */
   queryRaw(): Promise<ParsedResultType> {
     const mythis = this;
@@ -665,17 +738,21 @@ export class FedCatalogQuery {
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
       .then(response => {
-          if (response.status === 200) {
-            return response.text();
-          } else if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
-            // 204 is nodata, so successful but empty
-            return FAKE_EMPTY_TEXT;
-          } else {
-            throw new Error(`Status not successful: ${response.status}`);
-          }
+          return this.handleHttpResponseCodes(response);
       }).then(function(rawText) {
         return mythis.parseRequest(rawText);
       });
+  }
+
+  handleHttpResponseCodes(response: Response): Promise<string> {
+    if (response.status === 200) {
+      return response.text();
+    } else if (response.status === 204 || (isDef(this._nodata) && response.status === this.nodata())) {
+      // 204 is nodata, so successful but empty
+      return Promise.resolve(FAKE_EMPTY_TEXT);
+    } else {
+      throw new Error(`Status not successful: ${response.status}`);
+    }
   }
 
   parseRequest(requestText: string): ParsedResultType {
@@ -772,7 +849,12 @@ export class FedCatalogQuery {
     let url = this.formBaseURL()+"/query?";
     if (isStringArg(this._level)) { url = url+makeParam("level", this._level);}
     if (isStringArg(this._targetService)) { url = url+makeParam("targetservice", this.targetService());}
-    if (isStringArg(this._networkCode)) { url = url+makeParam("net", this.networkCode());}
+    if (isStringArg(this._networkCode)) { url = url+makeParam("net", this.networkCode());
+    } else {
+      // this is dumb, just to workaround a bug with IRIS fedcat server requiring one
+      // of net, sta, loc, chan, but net=* seems to satisfy this
+      url = url+makeParam("net", "*");
+    }
     if (isStringArg(this._stationCode)) { url = url+makeParam("sta", this.stationCode());}
     if (isStringArg(this._locationCode)) { url = url+makeParam("loc", this.locationCode());}
     if (isStringArg(this._channelCode)) { url = url+makeParam("cha", this.channelCode());}

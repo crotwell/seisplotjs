@@ -2,101 +2,164 @@
 
 import {StartEndDuration} from './util.js';
 import {TraveltimeQuery} from './traveltime.js';
+import type {TraveltimeArrivalType} from './traveltime.js';
 import {DataSelectQuery} from './fdsndataselect.js';
-import {Channel} from './stationxml.js';
+import {EventQuery} from './fdsnevent.js';
+import {StationQuery} from './fdsnstation.js';
+import {FedCatalogQuery} from './irisfedcatalog.js';
+import {Network, Station, Channel, allChannels, allStations} from './stationxml.js';
 import {Quake} from './quakeml.js';
 import {SeismogramDisplayData} from './seismogram.js';
 import {createMarkersForTravelTimes} from './seismograph.js';
-import {isDef} from './util.js';
+import {isDef, isNumArg, isStringArg, stringify } from './util.js';
 import moment from 'moment';
+import RSVP from 'rsvp';
 
-export function loadSeismograms(channelList: Array<Channel>,
-                quakeList: Array<Quake>,
-                startPhaseList: Array<string>,
-                endPhaseList: Array<string>,
-                otherPhaseList: Array<string>,
-                startOffset: moment$MomentDuration,
-                endOffset: moment$MomentDuration,
-                dsQuery?: DataSelectQuery): Promise<Array<SeismogramDisplayData>> {
-  let stationList = new Set();
-  let allPhaseList = [];
-  allPhaseList = allPhaseList.concat(startPhaseList, endPhaseList, otherPhaseList);
-  let allPhases = allPhaseList.join(',');
-  if ( ! isDef(allPhases)) { allPhases = "";}
-
-  for (let chan of channelList) {
-    stationList.add(chan.station);
+export class SeismogramLoader {
+  stationQuery: StationQuery;
+  eventQuery: EventQuery;
+  dataselectQuery: null | DataSelectQuery;
+  startPhaseList: Array<string>;
+  endPhaseList: Array<string>;
+  markedPhaseList: Array<string>;
+  _startOffset: moment$MomentDuration;
+  _endOffset: moment$MomentDuration;
+  constructor(stationQuery: StationQuery,
+               eventQuery: EventQuery,
+               dataselectQuery?: DataSelectQuery) {
+    if ( ! isDef(stationQuery)) { throw new Error("stationQuery must not be null");}
+    if ( ! (stationQuery instanceof StationQuery)) { throw new Error("1st arg must be a StationQuery: "+stringify(stationQuery.constructor));}
+    if ( ! isDef(eventQuery)) { throw new Error("eventQuery must not be null");}
+    if ( ! (eventQuery instanceof EventQuery)) { throw new Error("2nd arg must be a EventQuery: "+stringify(eventQuery.constructor));}
+    this.stationQuery= stationQuery;
+    this.eventQuery = eventQuery;
+    this.dataselectQuery = null;
+    if ( isDef(dataselectQuery)) {
+      this.dataselectQuery = dataselectQuery;
+    }
+    this.startPhaseList = [ "p", "P", "Pdiff", "PKP"];
+    this.endPhaseList = [ "s", "S", "Sdiff", "SKS"];
+    this.markedPhaseList = [];
+    this._startOffset = moment.duration(-30, 'seconds');
+    this._endOffset = moment.duration(60, 'seconds');
   }
-  let ttPromiseList = [];
-  for (let s of stationList) {
-    for (let q of quakeList) {
-      if (s.timeRange.contains(q.time)) {
-        let taupQuery = new TraveltimeQuery()
-          .latLonFromStation(s)
-          .latLonFromQuake(q);
-        // for flow
-        if (allPhases) {taupQuery.phases(allPhases);}
-        let queryPromise = taupQuery.queryJson().then(ttimes => {
-          return {
-            ttimes: ttimes,
-            quake: q,
-            station: s,
-            sddList: [],
-            startArrival: null,
-            endArrival: null
-          };
-        });
-        ttPromiseList.push(queryPromise);
-      }
+  get startOffset(): moment$MomentDuration {
+    return this._startOffset;
+  }
+  set startOffset(val: moment$MomentDuration): void {
+    if (moment.isDuration(val)) {
+      this._startOffset = val;
+    } else if (typeof val === 'number') {
+      this.startOffsetOfSeconds(val);
+    } else {
+      throw new Error("startOffset must be moment Duration: "+stringify(val));
     }
   }
-  // $FlowFixMe[incompatible-call]
-  return Promise.all(ttPromiseList).then(ttList => {
-    let seismogramDataList = [];
-    for (let tt of ttList) {
-      for (let pname of startPhaseList) {
-        for (let a of tt.ttimes.arrivals) {
-          if (a.phase === pname && ( ! tt.startArrival || tt.startArrival.time > a.time)) {
-            tt.startArrival = a;
+  startOffsetOfSeconds(val: number) {
+    this._startOffset = moment.duration(val, 'seconds');
+  }
+  get endOffset(): moment$MomentDuration {
+    return this._endOffset;
+  }
+  set endOffset(val: moment$MomentDuration): void {
+    if (moment.isDuration(val)) {
+      this._endOffset = val;
+    } else if (typeof val === 'number') {
+      this.endOffsetOfSeconds(val);
+    } else {
+      throw new Error("startOffset must be moment Duration: "+stringify(val));
+    }
+  }
+  endOffsetOfSeconds(val: number) {
+    this._endOffset = moment.duration(val, 'seconds');
+  }
+  loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
+    if ( ! this.stationQuery instanceof StationQuery) {
+      throw new Error("1st arg must be a StationQuery: "+stringify(this.stationQuery.constructor));
+    }
+    let fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
+    if ( ! this.stationQuery.isSomeParameterSet()) {
+      throw new Error("Must set some station parameter to avoid asking for everything.");
+    }
+    if ( ! this.eventQuery.isSomeParameterSet()) {
+      throw new Error("Must set some event parameter to avoid asking for everything.");
+    }
+    return RSVP.all([fedcat.queryChannels(), this.eventQuery])
+      .then(([ netList, eventQuery]) => {
+        return RSVP.all([netList, eventQuery.query()]);
+      }).then(([ netList, quakeList]) => {
+
+        let allPhaseList = [];
+        allPhaseList = allPhaseList.concat(this.startPhaseList, this.endPhaseList, this.markedPhaseList);
+        const allPhases = ""+allPhaseList.join(',');
+
+        let ttpromiseList = [];
+        for (let q of quakeList) {
+          for (let s of allStations(netList)) {
+            if (s.timeRange.contains(q.time)) {
+              let taupQuery = new TraveltimeQuery()
+              taupQuery.latLonFromStation(s)
+                .latLonFromQuake(q)
+                .phases(allPhases);
+              // save quake and station along with result from traveltime
+              ttpromiseList.push(Promise.all([s, q, taupQuery.queryJson()]));
+            }
           }
         }
-      }
-      for (let pname of endPhaseList) {
-        for (let a of tt.ttimes.arrivals) {
-          if (a.phase === pname && ( ! tt.endArrival || tt.endArrival.time > a.time)) {
-            tt.endArrival = a;
+        return Promise.all( [ netList, quakeList, Promise.all(ttpromiseList) ] );
+      }).then( ([ netList, quakeList, ttpromiseList ]) => {
+        let seismogramDataList = [];
+        for (let ttarr of ttpromiseList) {
+          let station = ttarr[0];
+          let quake = ttarr[1];
+          let ttjson = ttarr[2];
+          // find earliest start and end arrival
+          let startArrival;
+          let endArrival
+          for (let pname of this.startPhaseList) {
+            for (let a of ttjson.arrivals) {
+              if (a.phase === pname && ( ! isDef(startArrival) || startArrival.time > a.time)) {
+                startArrival = a;
+              }
+            }
+          }
+          for (let pname of this.endPhaseList) {
+            for (let a of ttjson.arrivals) {
+              if (a.phase === pname && ( ! isDef(endArrival) || endArrival.time > a.time)) {
+                endArrival = a;
+              }
+            }
+          }
+          if (isDef(startArrival) && isDef(endArrival)) {
+            let startTime = moment.utc(quake.time)
+              .add(startArrival.time, 'seconds').add(this.startOffset);
+            let endTime = moment.utc(quake.time)
+              .add(endArrival.time, 'seconds').add(this.endOffset);
+            let timeWindow = new StartEndDuration(startTime, endTime);
+            let phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
+            phaseMarkers.push({
+              type: 'predicted',
+              name: "origin",
+              time: moment.utc(quake.time),
+              description: ""
+            });
+
+            for (let chan of station.channels) {
+                let sdd = SeismogramDisplayData.fromChannelAndTimeWindow(chan, timeWindow);
+                sdd.addQuake(quake);
+                sdd.addTravelTimes(ttjson);
+                sdd.addMarkers(phaseMarkers);
+                seismogramDataList.push(sdd);
+            }
           }
         }
-      }
-      let startTime = moment.utc(tt.quake.time)
-        .add(tt.startArrival.time, 'seconds').add(startOffset);
-      let endTime = moment.utc(tt.quake.time)
-        .add(tt.endArrival.time, 'seconds').add(endOffset);
-      let timeWindow = new StartEndDuration(startTime, endTime);
-      let phaseMarkers = createMarkersForTravelTimes(tt.quake, tt.ttimes);
-      phaseMarkers.push({
-        type: 'predicted',
-        name: "origin",
-        time: moment.utc(tt.quake.time),
-        description: ""
+        if (this.dataselectQuery !== null) {
+          return this.dataselectQuery.postQuerySeismograms(seismogramDataList);
+        } else {
+          // use IrisFedCat
+          let fedcatDS = new FedCatalogQuery();
+          return fedcatDS.postQuerySeismograms(seismogramDataList);
+        }
       });
-
-      for (let chan of channelList) {
-        if (tt.station === chan.station) {
-          let sdd = SeismogramDisplayData.fromChannelAndTimeWindow(chan, timeWindow);
-          sdd.addQuake(tt.quake);
-          sdd.addTravelTimes(tt.ttimes);
-          sdd.addMarkers(phaseMarkers);
-          tt.sddList.push(sdd);
-          seismogramDataList.push(sdd);
-        }
-      }
-    }
-
-    if ( ! dsQuery) {
-      dsQuery = new DataSelectQuery();
-    }
-    return dsQuery.postQuerySeismograms(seismogramDataList);
-
-  });
+  }
 }
