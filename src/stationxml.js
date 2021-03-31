@@ -16,6 +16,10 @@ import moment from 'moment';
 /** xml namespace for stationxml */
 export const STAML_NS = 'http://www.fdsn.org/xml/station/1';
 
+export const COUNT_UNIT_NAME = 'count';
+
+export let FIX_INVALID_STAXML = true;
+
 
 // StationXML classes
 
@@ -376,7 +380,9 @@ export function parseStationXml(rawXml: Document): Array<Network> {
    * @returns Network instance
    */
 export function convertToNetwork(xml: Element): Network {
-    const netCode = _grabAttribute(xml, "code");
+  let netCode = "";
+  try {
+    netCode = _grabAttribute(xml, "code");
     if (! isNonEmptyStringArg(netCode)) {throw new Error("network code missing in network!");}
     let out = new Network(netCode);
     out.startDate = _grabAttribute(xml, "startDate");
@@ -398,7 +404,16 @@ export function convertToNetwork(xml: Element): Network {
     }
     out.stations = stations;
     return out;
+  } catch (err) {
+    if (typeof err === 'string') {
+      throw `${netCode}.${err}`;
+    } else {
+      err.message = `${netCode}.${err.message}`;
+      throw err;
+    }
   }
+}
+
   /**
    * Parses a FDSNStationXML Station xml element into a Station object.
    *
@@ -407,7 +422,9 @@ export function convertToNetwork(xml: Element): Network {
    * @returns Station instance
    */
 export function convertToStation(network: Network, xml: Element): Station {
-    let staCode = _grabAttribute(xml, "code");
+  let staCode=""; // so can use in rethrow exception
+  try {
+    staCode = _grabAttribute(xml, "code");
     if (! isNonEmptyStringArg(staCode)) {throw new Error("station code missing in station!");}
     let out = new Station(network, staCode);
     out.startDate = _grabAttribute(xml, "startDate");
@@ -430,7 +447,16 @@ export function convertToStation(network: Network, xml: Element): Station {
     }
     out.channels = channels;
     return out;
+  } catch (err) {
+    if (typeof err === 'string') {
+      throw `${staCode}.${err}`;
+    } else {
+      err.message = `${staCode}.${err.message}`;
+      throw err;
+    }
   }
+}
+
   /**
    * Parses a FDSNStationXML Channel xml element into a Channel object.
    *
@@ -439,9 +465,12 @@ export function convertToStation(network: Network, xml: Element): Station {
    * @returns Channel instance
    */
 export function convertToChannel(station: Station, xml: Element): Channel {
-    let locCode = _grabAttribute(xml, "locationCode");
+  let locCode=""; // so can use in rethrow exception
+  let chanCode="";
+  try {
+    locCode = _grabAttribute(xml, "locationCode");
     if (! isNonEmptyStringArg(locCode)) {locCode = '';}
-    let chanCode = _grabAttribute(xml, "code");
+    chanCode = _grabAttribute(xml, "code");
     if (! isNonEmptyStringArg(chanCode)) {throw new Error("channel code missing in channel!");}
 
     let out = new Channel(station, chanCode, locCode);
@@ -494,7 +523,15 @@ export function convertToChannel(station: Station, xml: Element): Channel {
       if (r) {out.response = convertToResponse(r);}
     }
     return out;
+  } catch (err) {
+    if (typeof err === 'string') {
+      throw `${locCode}.${chanCode} ${err}`;
+    } else {
+      err.message = `${locCode}.${chanCode} ${err.message}`;
+      throw err;
+    }
   }
+}
 
 export function convertToEquipment(xml: Element): Equipment {
   let out = new Equipment();
@@ -562,6 +599,10 @@ export function convertToInstrumentSensitivity(xml: Element): InstrumentSensitiv
     let frequency = _grabFirstElFloat(xml, 'Frequency');
     let inputUnits = _grabFirstElText(_grabFirstEl(xml, 'InputUnits'), 'Name');
     let outputUnits = _grabFirstElText(_grabFirstEl(xml, 'OutputUnits'), 'Name');
+    if (FIX_INVALID_STAXML && ! isDef(outputUnits)) {
+      // assume last output unit is count?
+      outputUnits = COUNT_UNIT_NAME;
+    }
     if (! (isDef(sensitivity) && isDef(frequency) && isDef(inputUnits) && isDef(outputUnits))) {
       // $FlowFixMe
       throw new Error(`Not all elements of Sensitivity exist: ${sensitivity} ${frequency} ${inputUnits} ${outputUnits}`);
