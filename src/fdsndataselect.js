@@ -356,7 +356,7 @@ export class DataSelectQuery {
         ok: false
       });
     } else {
-      return this.postQueryRawWithBody(this.createPostBody(sddList));
+      return this.postQueryRawWithBody(DataSelectQuery.createPostBody(sddList));
     }
   }
 
@@ -367,7 +367,7 @@ export class DataSelectQuery {
       return doFetchWithTimeout(this.formURL(), fetchInit, this._timeoutSec * 1000 );
   }
 
-  createPostBody(sddList: Array<SeismogramDisplayData>): string {
+  static createPostBody(sddList: Array<SeismogramDisplayData>): string {
     let out = "";
     for (let sdd of sddList) {
       const locCode = sdd.locationCode.trim() === "" ? "--" : sdd.locationCode;
