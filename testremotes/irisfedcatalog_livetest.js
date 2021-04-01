@@ -26,6 +26,33 @@ test("live parse result", () => {
   });
 });
 
+test("run BK networks", () => {
+    let fedCatQuery = new FedCatalogQuery();
+    const NET = 'BK';
+    expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
+    expect(fedCatQuery.networkCode()).toBe(NET);
+    return fedCatQuery.queryNetworks().then(netArray => {
+      expect(netArray).toHaveLength(2);
+      expect(netArray[0]).toBeDefined();
+      expect(netArray[0].networkCode).toBe(NET);
+      expect(netArray[1]).toBeDefined();
+      expect(netArray[1].networkCode).toBe(NET);
+    });
+});
+
+test("run CO active stations", () => {
+    let fedCatQuery = new FedCatalogQuery();
+    const NET = 'CO';
+    expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
+    expect(fedCatQuery.networkCode()).toBe(NET);
+    expect(fedCatQuery.endAfter(moment.utc())).toBe(fedCatQuery);
+    return fedCatQuery.queryStations().then(netArray => {
+      expect(netArray[0]).toBeDefined();
+      expect(netArray[0].networkCode).toBe(NET);
+      expect(netArray[0].stations).toHaveLength(10);
+    });
+});
+
 test("channels for CO", () => {
   let fedCatQuery = new FedCatalogQuery();
   const NET = 'CO';
@@ -46,6 +73,34 @@ test("channels for CO", () => {
     expect(net.stations[0].channels).toHaveLength(1);
   });
 });
+
+
+test( "run dataselect test", () => {
+  let fedCatQuery = new FedCatalogQuery();
+  const NET = 'CO';
+  const STA = 'JSC';
+  const LOC = '00';
+  const CHAN = "HHZ";
+  const START = moment.utc('2020-09-01T00:00:00Z');
+  const END = moment.utc('2020-09-01T00:10:00Z');
+  expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
+  expect(fedCatQuery.networkCode()).toBe(NET);
+  expect(fedCatQuery.stationCode(STA)).toBe(fedCatQuery);
+  expect(fedCatQuery.locationCode(LOC)).toBe(fedCatQuery);
+  expect(fedCatQuery.channelCode(CHAN)).toBe(fedCatQuery);
+  expect(fedCatQuery.startTime(START)).toBe(fedCatQuery);
+  expect(fedCatQuery.endTime(END)).toBe(fedCatQuery);
+  return fedCatQuery.queryFdsnDataselect().then(sddList => {
+    expect(sddList).toHaveLength(1);
+    expect(sddList[0]).toBeDefined();
+    expect(sddList[0].networkCode).toBe(NET);
+    expect(sddList[0].stationCode).toBe(STA);
+    expect(sddList[0].locationCode).toBe(LOC);
+    expect(sddList[0].channelCode).toBe(CHAN);
+    expect(sddList[0].seismogram).toBeDefined();
+  });
+});
+
 
 test("seismograms for CO.BIRD for timewindow", () => {
   let fedCatQuery = new FedCatalogQuery();
