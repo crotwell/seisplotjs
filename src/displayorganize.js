@@ -68,7 +68,8 @@ export class OrganizedDisplay {
       loglog = (queryParams.loglog.toLowerCase() === 'true');
       let nonContigMsg = "non-contiguous seismograms, skipping: "+
         this.seisData.filter(sdd => !(sdd.seismogram && sdd.seismogram.isContiguous()))
-        .map(sdd => `${sdd.codes()} ${sdd.seismogram.segments.length}`).join(',');
+        // $FlowIgnore[incompatible-use]
+        .map(sdd => isDef(sdd.seismogram) ? `${sdd.codes()} ${sdd.seismogram.segments.length}` : "null").join(',');
       console.error(nonContigMsg);
       let fftList = this.seisData.map(sdd => {
         return sdd.seismogram && sdd.seismogram.isContiguous() ? fftForward(sdd) : null;
