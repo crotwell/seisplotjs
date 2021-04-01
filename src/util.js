@@ -440,10 +440,10 @@ export function doFetchWithTimeout(url: string | URL,
   setTimeout(() => controller.abort(), timeoutSec * 1000);
   fetchInit.signal = signal;
   let absoluteUrl: URL;
-  if (isStringArg(url)) {
-    absoluteUrl = new URL(url, document.URL);
-  } else if (url instanceof URL) {
+  if (url instanceof URL) {
     absoluteUrl = url;
+  } else if (isStringArg(url)) {
+    absoluteUrl = new URL(url, document.URL);
   } else {
     throw new Error(`url must be string or URL, ${stringify(url)}`);
   }
