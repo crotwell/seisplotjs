@@ -2,16 +2,14 @@
 
 import {StartEndDuration} from './util.js';
 import {TraveltimeQuery} from './traveltime.js';
-import type {TraveltimeArrivalType} from './traveltime.js';
 import {DataSelectQuery} from './fdsndataselect.js';
 import {EventQuery} from './fdsnevent.js';
 import {StationQuery} from './fdsnstation.js';
 import {FedCatalogQuery} from './irisfedcatalog.js';
-import {Network, Station, Channel, allChannels, allStations} from './stationxml.js';
-import {Quake} from './quakeml.js';
+import {allStations} from './stationxml.js';
 import {SeismogramDisplayData} from './seismogram.js';
 import {createMarkersForTravelTimes} from './seismograph.js';
-import {isDef, isNumArg, isStringArg, stringify } from './util.js';
+import {isDef, stringify } from './util.js';
 import moment from 'moment';
 import RSVP from 'rsvp';
 
@@ -74,7 +72,7 @@ export class SeismogramLoader {
     this._endOffset = moment.duration(val, 'seconds');
   }
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
-    if ( ! this.stationQuery instanceof StationQuery) {
+    if ( ! (this.stationQuery instanceof StationQuery)) {
       throw new Error("1st arg must be a StationQuery: "+stringify(this.stationQuery.constructor));
     }
     let fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
@@ -97,7 +95,7 @@ export class SeismogramLoader {
         for (let q of quakeList) {
           for (let s of allStations(netList)) {
             if (s.timeRange.contains(q.time)) {
-              let taupQuery = new TraveltimeQuery()
+              let taupQuery = new TraveltimeQuery();
               taupQuery.latLonFromStation(s)
                 .latLonFromQuake(q)
                 .phases(allPhases);
@@ -115,7 +113,7 @@ export class SeismogramLoader {
           let ttjson = ttarr[2];
           // find earliest start and end arrival
           let startArrival;
-          let endArrival
+          let endArrival;
           for (let pname of this.startPhaseList) {
             for (let a of ttjson.arrivals) {
               if (a.phase === pname && ( ! isDef(startArrival) || startArrival.time > a.time)) {
@@ -153,13 +151,15 @@ export class SeismogramLoader {
             }
           }
         }
+        let sddListPromise;
         if (this.dataselectQuery !== null) {
-          return this.dataselectQuery.postQuerySeismograms(seismogramDataList);
+          sddListPromise = this.dataselectQuery.postQuerySeismograms(seismogramDataList);
         } else {
           // use IrisFedCat
           let fedcatDS = new FedCatalogQuery();
-          return fedcatDS.postQuerySeismograms(seismogramDataList);
+          sddListPromise = fedcatDS.postQuerySeismograms(seismogramDataList);
         }
+        return Promise.all( sddListPromise );
       });
   }
 }

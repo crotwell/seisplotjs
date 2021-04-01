@@ -13,7 +13,7 @@ import {insertCSS, isCSSInserted} from './cssutil.js';
 import { SeismogramDisplayData } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
-import {StartEndDuration, isDef, isNumArg} from './util.js';
+import {StartEndDuration, isDef} from './util.js';
 
 /**
  * A helicorder-like multi-line seismogram display usually covering 24 hours

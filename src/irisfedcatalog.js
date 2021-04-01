@@ -149,12 +149,13 @@ export class FedCatalogQuery {
   }
   /**
    * Constructs a station FedCatalogQuery using the parameters in a StationQuery.
+   * 
    * @param   stationQuery query to pull parameters from
-   * @return               fedcatalog query
+   * @returns               fedcatalog query
    */
   static fromStationQuery(stationQuery: StationQuery): FedCatalogQuery {
     const out = new FedCatalogQuery();
-    if ( ! stationQuery instanceof StationQuery) {
+    if ( ! (stationQuery instanceof StationQuery)) {
       throw new Error("1st arg must be a StationQuery: "+stringify(stationQuery.constructor));
     }
     if ( ! stationQuery.isSomeParameterSet()) {
@@ -607,7 +608,7 @@ export class FedCatalogQuery {
    * be called with the result lines.
    *
    * @param   parsedResult result from a FedCat web service
-   * @return               result with dataSelectQuery added to each item
+   * @returns               result with dataSelectQuery added to each item
    */
   setupForFdnsDataSelect(parsedResult: ParsedResultType): ParsedResultType {
     for (let r of parsedResult.queries) {
@@ -640,7 +641,7 @@ export class FedCatalogQuery {
     const mythis = this;
     this.targetService(TARGET_DATASELECT);
     return this.queryRaw().then(parsedResult => {
-      return mythis.setupForFdnsDataSelect(parsedResult)
+      return mythis.setupForFdnsDataSelect(parsedResult);
     }).then(parsedResult => {
       return mythis.postFdsnDataselectForFedCatResult(parsedResult);
     });

@@ -15,10 +15,10 @@ export const G_DATA_SELECTOR = "seisplotjsdata";
  * element at the beginning of the head.
  *
  * @param  cssText textual css for insertion
+ * @param id optional id for style element
  * @returns the style html element inserted
  */
 export function insertCSS(cssText: string, id: string): HTMLElement {
-  console.log("insertCSS")
   let head = document.head;
   if (head === null) {throw new Error("document.head is null");}
   if (id) {

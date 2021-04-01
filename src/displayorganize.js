@@ -209,12 +209,12 @@ export function sortByKey(organized: Array<OrganizedDisplay>, key: string): Arra
  * 1, 2 or 3 elements, but this is not checked nor guaranteed.
  *
  * @param   sddList list of SeismogramDisplayData to split
- * @return          array of array of data, organized by component of motion
+ * @returns          array of array of data, organized by component of motion
  */
 export function groupComponentOfMotion(sddList: Array<SeismogramDisplayData>): Array<Array<SeismogramDisplayData>> {
   let tmpSeisDataList = Array.from(sddList);
   const bifurcate = (arr, filter) =>
-      arr.reduce((acc, val, i) => (acc[filter(val) ? 0 : 1].push(val), acc), [[], []]);
+      arr.reduce((acc, val) => (acc[filter(val) ? 0 : 1].push(val), acc), [[], []]);
   const byFriends = [];
   while (tmpSeisDataList.length > 0) {
     const first = tmpSeisDataList.shift();
@@ -225,7 +225,6 @@ export function groupComponentOfMotion(sddList: Array<SeismogramDisplayData>): A
         && first.timeWindow.overlaps(sdddB.timeWindow);
     const splitArray = bifurcate(tmpSeisDataList, isFriend);
     let nextGroup = splitArray[0];
-    console.log(`friends for ${first.codes()}: ${nextGroup.length}`)
     nextGroup.unshift(first);
     byFriends.push(nextGroup);
     tmpSeisDataList = splitArray[1];
