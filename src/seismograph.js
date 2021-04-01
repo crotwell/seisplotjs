@@ -547,7 +547,7 @@ export class Seismograph {
         });
     subtraceJoin.enter()
       .append("path")
-        .classed("seispath", true)
+        .classed(G_DATA_SELECTOR, true)
         .classed(DRAW_BOTH_ALIGN, this.seismographConfig.drawingType === DRAW_BOTH_ALIGN)
         .attr("style", "clip-path: url(#"+CLIP_PREFIX+mythis.plotId+")")
         .attr("shape-rendering", "crispEdges")
