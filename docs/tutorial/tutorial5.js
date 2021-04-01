@@ -64,7 +64,6 @@ Promise.all( [ eventQuery.query(), stationQuery.queryResponses() ] )
     let div = seisplotjs.d3.select('div#myseismograph');
     for( let sdd of seismogramDataList) {
       let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-      seisConfig.title = sdd.channel.codes();
       seisConfig.linkedAmplitudeScale = new seisplotjs.seismograph.LinkedAmpScale();
       seisConfig.wheelZoom = false;
 // snip start gain
@@ -83,19 +82,16 @@ Promise.all( [ eventQuery.query(), stationQuery.queryResponses() ] )
 // snip start fft
   }).then( ( [ quakeList, networks, ttimes, seismogramDataList ] ) => {
     let div = seisplotjs.d3.select('div#fftplot');
-    let fftList = seismogramDataList.map(sdd => seisplotjs.fft.fftForward(sdd.seismogram));
+    let fftList = seismogramDataList.map(sdd => {
+      if (sdd.seismogram.isContiguous()) {
+        return seisplotjs.fft.fftForward(sdd.seismogram)
+      } else {
+        return null; // can't do fft for non-contiguouus
+      }
+    }).filter(x => x); // to remove nulls
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
     let fftPlot = new seisplotjs.fftplot.FFTPlot('div#fftplot', seisConfig, fftList, true);
     fftPlot.draw();
-    fftPlot.svg.append("g").classed("title", true)
-      .attr("transform", "translate(600, 100)")
-      .append("text").classed("title label", true)
-      .selectAll("tspan")
-      .data(seismogramDataList)
-      .enter()
-      .append("tspan")
-      .text(sdd => " "+sdd.seismogram.channelCode+" ");
-
     return Promise.all( [ quakeList, networks, ttimes, seismogramDataList ] );
 // snip end
   }).catch( function(error) {
