@@ -18,7 +18,7 @@ export const STAML_NS = 'http://www.fdsn.org/xml/station/1';
 
 export const COUNT_UNIT_NAME = 'count';
 
-export let FIX_INVALID_STAXML = true;
+export let FIX_INVALID_STAXML: boolean = true;
 
 
 // StationXML classes
