@@ -66,7 +66,13 @@ export class OrganizedDisplay {
     } else if (this.plottype.startsWith(SPECTRA)) {
       let loglog = getFromQueryParams(queryParams, 'loglog', 'true');
       loglog = (queryParams.loglog.toLowerCase() === 'true');
-      let fftList = this.seisData.map(sdd => sdd.seismogram ? fftForward(sdd) : null);
+      let nonContigMsg = "non-contiguous seismograms, skipping: "+
+        this.seisData.filter(sdd => !(sdd.seismogram && sdd.seismogram.isContiguous()))
+        .map(sdd => `${sdd.codes()} ${sdd.seismogram.segments.length}`).join(',');
+      console.error(nonContigMsg);
+      let fftList = this.seisData.map(sdd => {
+        return sdd.seismogram && sdd.seismogram.isContiguous() ? fftForward(sdd) : null;
+      });
       let fftListNoNull = fftList.filter(Boolean);
       this.fftPlot = new FFTPlot(divElement, this.seisConfig, fftListNoNull, loglog);
       this.fftPlot.draw();
