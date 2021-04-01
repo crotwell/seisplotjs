@@ -11,7 +11,7 @@ import { SeismographConfig } from './seismographconfig';
 
 import * as d3 from 'd3';
 
-import {insertCSS} from './cssutil.js';
+import {insertCSS, G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from './cssutil.js';
 
 /**
  * Create a single amplitude plot of FFT data.
@@ -139,7 +139,7 @@ export class FFTPlot {
 
     let svg = this.svgParent.append("svg");
     this.svg = svg;
-    svg.classed("fftplot", true);
+    svg.classed("fftplot", true).classed(AUTO_COLOR_SELECTOR, true);
 
 
     let rect = svg.node().getBoundingClientRect();
@@ -190,7 +190,7 @@ export class FFTPlot {
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "end")
         .text("Amp");
-    let pathg = g.append("g").classed("allfftpaths", true);
+    let pathg = g.append("g").classed(G_DATA_SELECTOR, true);
     for (const ap of ampPhaseList) {
       let ampSlice = ampSliceMap.get(ap);
       let minFreq = ap.fundamentalFrequency;
@@ -217,7 +217,8 @@ export class FFTPlot {
          .classed("title", true)
          .attr("transform", "translate("+(this.seismographConfig.margin.left+(width)/2)+", "+0+")")
          .append("text").classed("title label", true)
-         .attr("x",0).attr("y",0)
+         .attr("x",0)
+         .attr("y",0)
          .attr("text-anchor", "middle");
       let handlebarOut = this.seismographConfig.handlebarsTitle({
           seisDataList: this.fftResults.map(f => f.seismogramDisplayData),
@@ -253,80 +254,6 @@ svg.fftplot text.title {
   fill: black;
   color: black;
   dominant-baseline: hanging;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+1) path.fftpath {
-  stroke: skyblue;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+2) path.fftpath {
-  stroke: olivedrab;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+3) path.fftpath {
-  stroke: goldenrod;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+4) path.fftpath {
-  stroke: firebrick;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+5) path.fftpath {
-  stroke: darkcyan;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+6) path.fftpath {
-  stroke: orange;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+7) path.fftpath {
-  stroke: darkmagenta;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+8) path.fftpath {
-  stroke: mediumvioletred;
-}
-
-svg.fftplot g.allfftpaths g:nth-child(9n+9) path.fftpath {
-  stroke: sienna;
-}
-
-/* same colors for titles */
-
-svg.fftplot g.title text tspan:nth-child(9n+1)  {
-  fill: skyblue;
-}
-
-svg.fftplot g.title text tspan:nth-child(9n+2)  {
-  stroke: olivedrab;
-}
-
-svg.fftplot g.title text tspan:nth-child(9n+3)  {
-  stroke: goldenrod;
-}
-
-svg.fftplot g.title  text tspan:nth-child(9n+4)  {
-  stroke: firebrick;
-}
-
-svg.fftplot g.title  text tspan:nth-child(9n+5)  {
-  stroke: darkcyan;
-}
-
-svg.fftplot g.title  text tspan:nth-child(9n+6)  {
-  stroke: orange;
-}
-
-svg.fftplot g.title  text tspan:nth-child(9n+7)  {
-  stroke: darkmagenta;
-}
-
-svg.fftplot g.title  text tspan:nth-child(9n+8)  {
-  stroke: mediumvioletred;
-}
-
-svg.fftplot g.title  text tspan:nth-child(9n+9)  {
-  stroke: sienna;
 }
 
 

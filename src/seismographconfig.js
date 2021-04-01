@@ -6,7 +6,7 @@
  * http://www.seis.sc.edu
  */
 
- import {insertCSS} from './cssutil.js';
+ import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from './cssutil.js';
 import { SeismogramDisplayData, Seismogram } from './seismogram.js';
 import {StartEndDuration, isDef } from './util.js';
 import moment from 'moment';
@@ -237,25 +237,39 @@ export class SeismographConfig {
     }
   }
 
-  createCSSForLineColors(): string {
+  createCSSForLineColors(svgClass?: string): string {
     let cssText = "";
     let numColors = this.lineColors.length;
+    let svgEl = "svg";
+    if ( ! isDef(svgClass)) {
+      svgEl = `svg.${AUTO_COLOR_SELECTOR}`;
+    } else if (svgClass.length === 0) {
+      svgEl = "svg";
+    } else {
+      svgEl = `svg.${svgClass}`;
+    }
+    // line width and fill for paths that are seisplotjsdata
+    cssText = cssText+`
+      ${svgEl} g.${G_DATA_SELECTOR} g path {
+        fill: none;
+        stroke-width: 1px;
+      }
+    `;
     this.lineColors.forEach((color, index) => {
         cssText = cssText+`
-        svg.seismograph g.title  text tspan:nth-child(${numColors}n+${index+1})  {
+        ${svgEl} g.title  text tspan:nth-child(${numColors}n+${index+1})  {
           stroke: ${color};
           fill: ${color};
           color: ${color};
         }
         `;
-        if (this.drawingType !== DRAW_CANVAS) {
-          // only needed if doing waveform as SVG, default is canvas
-          cssText += `
-          svg.seismograph g.allseismograms g:nth-child(${numColors}n+${index+1}) path.seispath {
-            stroke: ${color};
-          }
-          `;
+        // not used by actual waveform as default is canvas, not svg
+        // is used by fftplot
+        cssText += `
+        ${svgEl} g.${G_DATA_SELECTOR} g:nth-child(${numColors}n+${index+1}) path {
+          stroke: ${color};
         }
+        `;
       });
     return cssText;
   }
@@ -531,7 +545,6 @@ export function createEditor(div: any, config: SeismographConfig, onChange: () =
   let colorDiv = div.append("div");
   colorDiv.append("label").text("Color:");
   let subDiv = colorDiv.append("span");
-  console.log(`l8ine colors ${config.lineColors.length}`);
   config.lineColors.forEach((color, index) => {
     let colorspan = subDiv.append("span");
     colorspan.style("color", color);

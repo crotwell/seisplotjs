@@ -9,7 +9,7 @@
 import * as d3 from 'd3';
 import moment from 'moment';
 
-import {insertCSS} from './cssutil.js';
+import {insertCSS, isCSSInserted} from './cssutil.js';
 import { SeismogramDisplayData } from './seismogram.js';
 import { Seismograph } from './seismograph.js';
 import { SeismographConfig } from './seismographconfig';
@@ -40,8 +40,11 @@ export class Helicorder {
     } else {
       this.svgParent = inSvgParent;
     }
-    this.svgParent = this.svgParent.append('div').classed('helicorder', true);
+    this.svgParent = this.svgParent.append('div').classed(HELICORDER_SELECTOR, true);
     this.heliConfig = heliConfig;
+    if ( ! isCSSInserted(HELI_COLOR_CSS_ID)) {
+      insertCSS(this.heliConfig.createCSSForLineColors(HELICORDER_SELECTOR), HELI_COLOR_CSS_ID);
+    }
   }
   /**
    * draws, or redraws, the helicorder.
@@ -121,7 +124,8 @@ export class Helicorder {
       lineSeisConfig.fixedTimeScale = lineTime;
       lineSeisConfig.yLabel = `${startTime.format("HH:mm")}`;
       lineSeisConfig.yLabelRight = `${endTime.format("HH:mm")}`;
-      lineSeisConfig.lineColors = [ seisDiv.style("color")];
+      lineSeisConfig.lineColors = [ this.heliConfig.lineColors[lineTime.lineNumber % this.heliConfig.lineColors.length]];
+//      [ seisDiv.style("color")];
 
       let lineCutSeis = null;
       let lineSeisData;
@@ -146,6 +150,7 @@ export class Helicorder {
         }
       }
       let seismograph = new Seismograph(seisDiv, lineSeisConfig, lineSeisData);
+      seismograph.svg.classed(HELICORDER_SELECTOR, true);
       seismograph.draw();
       if (lineTime.lineNumber===0) {
         // add UTC to top left
@@ -216,6 +221,10 @@ export class HelicorderConfig extends SeismographConfig {
     this.margin.left = 20;
     this.margin.right = 20;
     this.margin.top = 40;
+    this.lineColors = [
+       "skyblue",
+       "olivedrab",
+       "goldenrod"];
 
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.ySublabel = ` `;
@@ -286,6 +295,8 @@ div.helicorder div.heliLine:nth-child(3n) .yLabel text {
 }
 
 `;
+export const HELICORDER_SELECTOR = "helicorder";
+export const HELI_COLOR_CSS_ID = "helicordercolors";
 
 if (document){
   insertCSS(helicorder_css, "helicorder");

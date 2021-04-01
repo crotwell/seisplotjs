@@ -10,7 +10,7 @@
 import moment from 'moment';
 import * as d3 from 'd3';
 
-import {insertCSS} from './cssutil.js';
+import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from './cssutil.js';
 
 import {SeismographConfig, LinkedAmpScale,
         AmplitudeScalable, TimeScalable,
@@ -194,7 +194,7 @@ export class Seismograph {
     this.g = this.svg.append("g")
       .classed("marginTransform", true)
       .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + (this.seismographConfig.margin.top) + ")");
-    this.g.append("g").classed("allseismograms", true);
+    this.g.append("g").classed("allseismograms", true).classed(AUTO_COLOR_SELECTOR, true);
 
     let z = this.svg.call(d3.zoom().on("zoom", function (e) {
         mythis.zoomed(e);
