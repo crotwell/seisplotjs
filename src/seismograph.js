@@ -983,7 +983,8 @@ export class Seismograph {
          .classed("title", true)
          .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+2+")")
          .append("text").classed("title label", true)
-         .attr("x",0).attr("y",0)
+         .attr("x",0)
+         .attr("y",1) // shift down one pixel so text isn't cropped
          .attr("text-anchor", "middle");
       let handlebarOut = this.seismographConfig.handlebarsTitle({
           seisDataList: this.seisDataList,
