@@ -53,7 +53,7 @@ Promise.all( [ eventQuery.query(), stationQuery.queryChannels() ] )
       let subdiv = div.append('div').classed('seismograph', true);
       let graph = new seisplotjs.seismograph.Seismograph(subdiv,
                                                          seisConfig,
-                                                         seismogramDataList);
+                                                         sdd);
       //graphList.forEach(g => graph.linkXScaleTo(g));
       graphList.push(graph);
       graph.draw();
