@@ -159,7 +159,7 @@ export class SeismogramLoader {
           let fedcatDS = new FedCatalogQuery();
           sddListPromise = fedcatDS.postQuerySeismograms(seismogramDataList);
         }
-        return Promise.all( sddListPromise );
+        return sddListPromise;
       });
   }
 }
