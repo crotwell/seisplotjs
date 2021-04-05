@@ -1,6 +1,7 @@
 // @flow
 
 // $FlowFixMe
+// eslint-disable-next-line no-undef
 let TextDecoder = require('util').TextDecoder;
 // eslint-disable-next-line no-undef
 global.TextDecoder = TextDecoder;
