@@ -149,7 +149,7 @@ export class FedCatalogQuery {
   }
   /**
    * Constructs a station FedCatalogQuery using the parameters in a StationQuery.
-   * 
+   *
    * @param   stationQuery query to pull parameters from
    * @returns               fedcatalog query
    */
