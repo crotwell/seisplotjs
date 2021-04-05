@@ -715,7 +715,7 @@ export class Seismograph {
     }
   }
 
-  zoomed(e): void {
+  zoomed(e: any): void {
     let t = e.transform;
     let xt = t.rescaleX(this.origXScale);
     if (isDef(this.seismographConfig.linkedTimeScale)) {
