@@ -143,12 +143,30 @@ export class SeismographConfig {
   static fromJSON(json: any): SeismographConfig {
     let seisConfig = new SeismographConfig();
     Object.assign(seisConfig, json);
+    seisConfig.linkedAmplitudeScale = null;
+    if (json.isLinkedTimeScale) {
+      seisConfig._linkedTimeScale = new LinkedTimeScale();
+    }
+    if (json.isLinkedAmplitudeScale) {
+      seisConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
+    }
     return seisConfig;
   }
 
   asJSON(): any {
     // kind of dumb...
-    return JSON.parse(JSON.stringify(this));
+    let out = JSON.parse(JSON.stringify(this));
+    out.title = out._title;
+    delete out._title;
+    out.fixedYScale = out._fixedYScale;
+    delete out._fixedYScale;
+    out.fixedTimeScale = out._fixedTimeScale;
+    delete out._fixedTimeScale;
+    delete out._linkedTimeScale;
+    out.isLinkedTimeScale = isDef(this._linkedTimeScale);
+    out.isLinkedAmplitudeScale = isDef(this.linkedAmplitudeScale);
+    delete out._titleHandlebarsCompiled
+    return out;
   }
 
   get fixedTimeScale(): null | StartEndDuration {
