@@ -86,8 +86,8 @@ export class OrganizedDisplay {
       pmpSeisConfig.yLabel = this.seisData[1].channelCode;
       pmpSeisConfig.xLabel = this.seisData[0].channelCode;
 
-      let pmp = new ParticleMotion(divElement, pmpSeisConfig, this.seisData[0], this.seisData[1]);
-      pmp.draw();
+      this.particleMotionPlot = new ParticleMotion(divElement, pmpSeisConfig, this.seisData[0], this.seisData[1]);
+      this.particleMotionPlot.draw();
     } else if (this.plottype.startsWith(MAP)) {
       const mapid = 'map'+(((1+Math.random())*0x10000)|0).toString(16).substring(1);
       divElement.classed("map", true).attr('id', mapid);

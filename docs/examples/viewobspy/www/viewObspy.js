@@ -32,7 +32,6 @@ class ViewObsPy {
   }
 
   configureDisplayFromJSON(jsonObj) {
-    console.log("configureDisplayFromJSON "+JSON.stringify(jsonObj));
     seisplotjs.d3.select("div.seisConfig").selectAll('*').remove();
     this.defaultSeismographConfig =
       seisplotjs.seismographconfig.SeismographConfig.fromJSON(jsonObj.display);
@@ -87,7 +86,7 @@ class ViewObsPy {
       'infoTemplate': this.infoTemplate,
       'arrange': arrange,
       'filter': filter
-    }
+    };
   }
 
   getArrangementAsJSON() {
@@ -119,8 +118,6 @@ class ViewObsPy {
   }
 
   loadAllAndPlot() {
-
-    const that = this;
     return this.loadAll().then( ([ dataset, catalog, inventory, seisDataList ]) => {
       this.obspyData.set('dataset', dataset);
       this.obspyData.set('catalog', catalog);
@@ -167,11 +164,48 @@ class ViewObsPy {
     organizedSeis = this.sortForPlotting(this.sorttype, organizedSeis);
     this.plotDiv.selectAll('*').remove();
     seisplotjs.displayorganize.createPlots(organizedSeis, this.plotDiv);
+    for(let os of organizedSeis) {
+      if (seisplotjs.util.isDef(os.seismograph)) {
+        const graph = os.seismograph;
+        const canvasNode = graph.svg.select('foreignObject canvas').node();
+        canvasNode.addEventListener('mousemove', evt => {
+          let clickTime = graph.xAxis.scale().invert(evt.offsetX);
+          clickTime = seisplotjs.moment.utc(clickTime);
+          seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
+          let clickAmp = graph.yAxis.scale().invert(evt.offsetY);
+          seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
+        });
+      }
+      if (seisplotjs.util.isDef(os.fftPlot)) {
+        os.fftPlot.svg.on('mousemove', evt => {
+          const fftPlot = os.fftPlot;
+          const node = fftPlot.svg.select('g.seisplotjsdata').node();
+          const margin = fftPlot.seismographConfig.margin;
+          let clickFreq = fftPlot.xAxis.scale().invert(evt.offsetX-margin.left);
+          seisplotjs.d3.select('input#mousex').property('value', formatExp(clickFreq));
+          let clickAmp = fftPlot.yAxis.scale().invert(evt.offsetY-margin.top);
+          seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
+        });
+      }
+
+      if (seisplotjs.util.isDef(os.particleMotionPlot)) {
+        const node = os.particleMotionPlot.svg.select('g.seisplotjsdata').node();
+        const particleMotionPlot = os.particleMotionPlot;
+        particleMotionPlot.svg.on('mousemove', evt => {
+          const margin = particleMotionPlot.seismographConfig.margin;
+          let clickYAmp = particleMotionPlot.xAxis.scale().invert(evt.offsetX-margin.left);
+          seisplotjs.d3.select('input#mousex').property('value', formatCountOrAmp(clickYAmp));
+          let clickXAmp = particleMotionPlot.yAxis.scale().invert(evt.offsetY-margin.top);
+          seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickXAmp));
+        });
+      }
+    }
   }
 
   /**
    * Loads the dataset, quake, enventory and seismograms from serveobspy
-   * @return {Promise[Dataset, Quake, Array[Network], Array[SeismogramDisplayData]} Promise to data
+   *
+   * @returns {Promise[Dataset, Quake, Array[Network], Array[SeismogramDisplayData]} Promise to data
    */
   loadAll() {
     const that = this;
@@ -305,7 +339,7 @@ class ViewObsPy {
 
   organizePlotting(organizetype, plottype, dataset, catalog, inventory, seisDataList) {
     let organizedData = [];
-    if ( ! seisDataList || seisDataList.length == 0) {
+    if ( ! seisDataList || seisDataList.length === 0) {
       return organizedData;
     }
     if (plottype === "particlemotion") {
@@ -320,9 +354,9 @@ class ViewObsPy {
     } else if (organizetype === "all") {
       organizedData = seisplotjs.displayorganize.overlayAll(seisDataList);
     } else if (typeof organizetype === 'function') {
-      organizedData = organizetype(seisDataList)
+      organizedData = organizetype(seisDataList);
     } else {
-      throw new Error(`Unknown organize type: ${organizetype}`)
+      throw new Error(`Unknown organize type: ${organizetype}`);
     }
 
     let seisConfig = this.defaultSeismographConfig.clone();
@@ -415,106 +449,6 @@ class ViewObsPy {
     });
     return seisplotjs.RSVP.all(promiseArray);
   }
-  createGraph(selectedDiv, seisConfig, seisDataList, seisKey) {
-    for (let seisData of seisDataList) {
-      if (seisData.quakeList && seisData.quakeList.length > 0) {
-        let phaseMarkers = [];
-        seisData.quakeList.forEach(q => {
-          phaseMarkers.push({
-            markertype: 'predicted',
-            name: "origin",
-            time: seisplotjs.moment.utc(q.time),
-            description: q.toString()
-          });
-        });
-        seisData.addMarkers(phaseMarkers);
-      }
-    }
-
-    let graph = new seisplotjs.seismograph.Seismograph(selectedDiv, seisConfig, seisDataList);
-    graph.draw();
-    let graphKey = `graph${this.extractIdFromSeisKey(seisKey)}`;
-    this.processedData.set(graphKey, graph);
-    //this.linkAllTimeAxis();
-    //this.linkAllAmpAxis();
-    const canvasNode = graph.svg.select('foreignObject canvas').node();
-    graph.svg.select('foreignObject canvas').on('mousemove', evt => {
-      const rect = canvasNode.getBoundingClientRect();
-      let coords = [event.pageX-rect.left, event.pageY-rect.top ];
-      let clickTime = graph.currZoomXScale.invert(coords[0]);
-      clickTime = seisplotjs.moment.utc(clickTime);
-      seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
-      let clickAmp = graph.yScaleRmean.invert(coords[1]);
-      seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
-    });
-    return graph;
-  }
-
-  createSpectra(selectedDiv, seisKey, seisData, loglog=true) {
-    if (seisData && seisData.length > 0) {
-      selectedDiv.selectAll('*').remove();
-      let fftList = seisData.map(sd => seisplotjs.fft.fftForward(sd.seismogram));
-      let seisConfig = this.defaultSeismographConfig.clone();
-      let fftPlot = new seisplotjs.fftplot.FFTPlot(selectedDiv, seisConfig, fftList, loglog);
-      fftPlot.draw();
-
-// add rect to get mouse events even over blank areas
-      fftPlot.svg.select('g.allfftpaths')
-        .append("rect")
-        .attr("x", 0).attr('y', 0).attr("width", '100%').attr('height', '100%')
-        .attr('fill', "transparent")
-        .attr('pointer-events', 'all')
-        .on('mousemove', evt => {
-          const node = fftPlot.svg.select('g.allfftpaths').node();
-          const rect = node.getBoundingClientRect();
-          let coords = [event.pageX-rect.left, event.pageY-rect.top ];
-          let clickFreq = fftPlot.xScale.invert(coords[0]);
-          seisplotjs.d3.select('input#mousex').property('value', formatExp(clickFreq));
-          let clickAmp = fftPlot.yScale.invert(coords[1]);
-          seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
-        });
-        return fftPlot;
-    } else {
-      console.warn(`seis no loaded`);
-    }
-    return null;
-  }
-
-  createParticleMotion(selectedDiv, seisConfig, seisDataList, timeWindow) {
-    if (seisDataList.length !== 2) {
-      throw new Error(`particle motion requies exactly 2 seisData in seisDataList, ${seisDataList.length}`);
-    }
-
-    // timeWindow optional subwindow of seismogram to display
-
-    let pmpSeisConfig = seisConfig.clone();
-    pmpSeisConfig.yLabel = seisDataList[1].channelCode;
-    pmpSeisConfig.xLabel = seisDataList[0].channelCode;
-
-    let pmp = new seisplotjs.particlemotion.ParticleMotion(selectedDiv, pmpSeisConfig, seisDataList[0], seisDataList[1], timeWindow);
-    pmp.draw();
-
-  }
-
-  findSeismogramFriendId(seismogram, otherFilter) {
-    let dataset = this.obspyData.get('dataset');
-    let out = dataset.data.relationships.seismograms.data.find(d => {
-      const seisKey = this.createSeisKey(d);
-      if (this.processedData.has(seisKey)) {
-        let otherseismogram = this.processedData.get(seisKey);
-        return otherFilter(otherseismogram, null, null)
-          && otherseismogram.stationCode === seismogram.stationCode
-          && otherseismogram.networkCode === seismogram.networkCode;
-      } else {
-        return false;
-      }
-    });
-    if (out) {
-      return this.createSeisKey(out);
-    } else {
-      return null;
-    }
-  }
 
 
   updateProcessDisplay(processChain) {
@@ -569,7 +503,6 @@ class ViewObsPy {
       let staCodeSet = new Set(staCodeList);
       return Array.from(staCodeSet).sort();
     }).then(staList => {
-      const that = this;
       staList.sort();
       seisplotjs.d3.select(`div#${idPrefix}_checkbox`).selectAll("span")
         .data(staList, s => s)
@@ -704,7 +637,6 @@ class ViewObsPy {
     }).then( dataset => {
       let inventory = Promise.resolve([]);
       if (dataset.data.relationships.inventory.data.id) {
-        const qid = dataset.data.relationships.inventory.data.id;
         const inventoryUrl = new URL('/inventory', mythis.baseUrl);
         inventory = seisplotjs.util.doFetchWithTimeout(inventoryUrl).then(response => {
           return response.text();

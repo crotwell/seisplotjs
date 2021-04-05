@@ -151,8 +151,13 @@ export class ParticleMotion {
     this.yScaleRmean = d3.scaleLinear();
     this.svgParent = inSvgParent;
 
-    this.xAxis = d3.axisBottom(this.xScaleRmean).tickFormat(this.seismographConfig.yScaleFormat);
-    this.yAxis = d3.axisLeft(this.yScaleRmean).tickFormat(this.seismographConfig.yScaleFormat);
+    if (this.seismographConfig.doRMean) {
+      this.xAxis = d3.axisBottom(this.xScaleRmean).tickFormat(this.seismographConfig.yScaleFormat);
+      this.yAxis = d3.axisLeft(this.yScaleRmean).tickFormat(this.seismographConfig.yScaleFormat);
+    } else {
+      this.xAxis = d3.axisBottom(this.xScale).tickFormat(this.seismographConfig.yScaleFormat);
+      this.yAxis = d3.axisLeft(this.yScale).tickFormat(this.seismographConfig.yScaleFormat);
+    }
     this.width = 100;
     this.height = 100;
     let mythis = this;
@@ -180,6 +185,7 @@ export class ParticleMotion {
     this.g.selectAll("g.particleMotion").remove();
     let lineG = this.g.append("g");
     lineG.classed("particleMotion", true)
+      .classed("seisplotjsdata", true)
       .classed("seispath", true)
       .classed(this.xSeisData.codes(), true)
       .classed("orient"+this.xSeisData.channelCode.charAt(2)+"_"+this.ySeisData.channelCode.charAt(2), true);
