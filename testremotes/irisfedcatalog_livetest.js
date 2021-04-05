@@ -13,6 +13,18 @@ const fetch = require('node-fetch');
 global.fetch = fetch;
 
 
+test("station queries test", () => {
+
+    let fedCatQuery = new FedCatalogQuery();
+    const NET = 'CO';
+    expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
+    expect(fedCatQuery.networkCode()).toBe(NET);
+    return fedCatQuery.setupQueryFdsnStation('network').then(parsedResult => {
+      expect(parsedResult.queries).toHaveLength(1);
+      expect(parsedResult.queries[0]).toBeDefined();
+    });
+});
+
 test("live parse result", () => {
   let fedCatQuery = new FedCatalogQuery();
   const NET = 'CO';

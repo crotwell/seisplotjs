@@ -3,11 +3,6 @@
 import {FedCatalogQuery} from '../src/irisfedcatalog.js';
 import moment from 'moment';
 
-// eslint-disable-next-line no-undef
-const fetch = require('node-fetch');
-// eslint-disable-next-line no-undef
-global.fetch = fetch;
-
 
 test( "query setter test", () => {
   let fedCatQuery = new FedCatalogQuery();
@@ -33,16 +28,4 @@ CO * * * 1987-01-01T00:00:00 2599-12-31T23:59:59`;
   expect(resp.queries[0].services.get('STATIONSERVICE')).toEqual('http://service.iris.edu/fdsnws/station/1/');
   expect(resp.queries[0].postLines).toHaveLength(1);
   expect(resp.queries[0].postLines[0]).toEqual(lines[lines.length-1]);
-});
-
-test("setup station queries test", () => {
-
-    let fedCatQuery = new FedCatalogQuery();
-    const NET = 'CO';
-    expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
-    expect(fedCatQuery.networkCode()).toBe(NET);
-    return fedCatQuery.setupQueryFdsnStation('network').then(parsedResult => {
-      expect(parsedResult.queries).toHaveLength(1);
-      expect(parsedResult.queries[0]).toBeDefined();
-    });
 });
