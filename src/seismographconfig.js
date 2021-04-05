@@ -538,7 +538,7 @@ export function createEditor(div: any, config: SeismographConfig, onChange: () =
   let marginDiv = div.append("div");
   marginDiv.append("label").text("Margin:");
   createTextOption(marginDiv.append("span"), "Left", "left", config.margin, onChange);
-  createTextOption(marginDiv.append("span"), "Right", "mright", config.margin, onChange);
+  createTextOption(marginDiv.append("span"), "Right", "right", config.margin, onChange);
   createTextOption(marginDiv.append("span"), "Top", "top", config.margin, onChange);
   createTextOption(marginDiv.append("span"), "Bottom", "bottom", config.margin, onChange);
 
