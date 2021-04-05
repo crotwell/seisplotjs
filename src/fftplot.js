@@ -63,6 +63,8 @@ export class FFTPlot {
   fftResults: Array<FFTResult>;
   xScale: any;
   yScale: any;
+  xAxis: any;
+  yAxis: any;
   svg: any;
   loglog: boolean;
   constructor(cssSelector: string,
