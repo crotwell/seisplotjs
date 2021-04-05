@@ -148,7 +148,7 @@ export class SeismographConfig {
       seisConfig._linkedTimeScale = new LinkedTimeScale();
     }
     if (json.isLinkedAmplitudeScale) {
-      seisConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
+      seisConfig.linkedAmplitudeScale = new LinkedAmpScale();
     }
     return seisConfig;
   }
