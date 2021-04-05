@@ -37,8 +37,41 @@ class ViewObsPy {
     this.defaultSeismographConfig =
       seisplotjs.seismographconfig.SeismographConfig.fromJSON(jsonObj.display);
     this.organizetype = jsonObj.arrange.organize;
+    if (this.organizetype === 'individual') {
+      seisplotjs.d3.select("input#radio_organize_individual").property("checked", true);
+    } else if (this.organizetype === 'bystation') {
+      seisplotjs.d3.select("input#radio_organize_overlay_bystation").property("checked", true);
+    } else if (this.organizetype === 'bycomponent') {
+      seisplotjs.d3.select("input#radio_organize_overlay_bycomponent").property("checked", true);
+    } else if (this.organizetype === 'all') {
+      seisplotjs.d3.select("input#radio_organize_overlay_all").property("checked", true);
+    }
     this.sorttype = jsonObj.arrange.sort;
+    if (this.sorttype === 'none') {
+      seisplotjs.d3.select("input#radio_sort_none").property("checked", true);
+    } else if (this.sorttype === 'alphabetical') {
+      seisplotjs.d3.select("input#radio_sort_alphabetical").property("checked", true);
+    } else if (this.sorttype === 'bydistance') {
+      seisplotjs.d3.select("input#radio_sort_bydistance").property("checked", true);
+    } else if (this.sorttype === 'bybackazimuth') {
+      seisplotjs.d3.select("input#radio_sort_bybackazimuth").property("checked", true);
+    } else if (this.sorttype === 'byazimuth') {
+      seisplotjs.d3.select("input#radio_sort_byazimuth").property("checked", true);
+    }
     this.plottype = jsonObj.arrange.plot;
+    if (this.plottype === 'info') {
+      seisplotjs.d3.select("input#radio_info").property("checked", true);
+    } else if (this.plottype === 'map') {
+      seisplotjs.d3.select("input#radio_map").property("checked", true);
+    } else if (this.plottype === 'seismograph') {
+      seisplotjs.d3.select("input#radio_seismograph").property("checked", true);
+    } else if (this.plottype === 'particlemotion') {
+      seisplotjs.d3.select("input#radio_particlemotion").property("checked", true);
+    } else if (this.plottype === 'amp_spectra?loglog=true') {
+      seisplotjs.d3.select("input#radio_spectra_log").property("checked", true);
+    } else if (this.plottype === 'amp_spectra?loglog=false') {
+      seisplotjs.d3.select("input#radio_spectra_lin").property("checked", true);
+    }
     if (jsonObj.infoTemplate) {
       this.infoTemplate = jsonObj.infoTemplate;
     }
