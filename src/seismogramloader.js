@@ -104,8 +104,8 @@ export class SeismogramLoader {
             }
           }
         }
-        return Promise.all( [ netList, quakeList, Promise.all(ttpromiseList) ] );
-      }).then( ([ netList, quakeList, ttpromiseList ]) => {
+        return Promise.all( ttpromiseList );
+      }).then( ttpromiseList  => {
         let seismogramDataList = [];
         for (let ttarr of ttpromiseList) {
           let station = ttarr[0];
