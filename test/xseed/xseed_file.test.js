@@ -1,13 +1,7 @@
 // @flow
 
-// $FlowFixMe
-let TextDecoder = require('util').TextDecoder;
-// eslint-disable-next-line no-undef
-global.TextDecoder = TextDecoder;
-
+import { isDef } from '../../src/util.js';
 import * as xseed from '../../src/xseed.js';
-
-//const fs = require('fs');
 import fs from 'fs';
 
 let fileList = [
@@ -101,10 +95,39 @@ for (let filename of fileList) {
     // doesn't work as json is not identical after round trip
     // due to / being same as \/, also 1e-6 and .000001
     //expect(xh.extraHeadersLength).toEqual(jsonData.ExtraLength);
-    if (xh.extraHeadersLength > 2) {
-      expect(xr.extraHeaders).toEqual(jsonData.ExtraHeaders);
-    }
+
+    expect(getExtraHeaders(xr)).toEqual(getJsonDataExtraHeaders(jsonData));
+
   });
+}
+
+/**
+ * get json ExtraHeaders, but with special case if there are no json headers
+ * it returns {} for both {} and the empty string. Makes test case consistent.
+ *
+ * @param   xr xseed record
+ * @returns     json version of extra headers
+ */
+function getExtraHeaders(xr: XSeedRecord) {
+  const xh = xr.header;
+  if (xh.extraHeadersLength > 2) {
+    return xr.extraHeaders;
+  }
+  return {}; // empty object
+}
+
+/**
+ * get ExtraHeaders from reference json datafile, but with special case if there are no json headers
+ * it returns {} for both {} and undef. Makes test case consistent.
+ *
+ * @param   jsonData xseed record
+ * @returns     json version of extra headers
+ */
+function getJsonDataExtraHeaders(jsonData: any) {
+  if (isDef(jsonData.ExtraHeaders)) {
+    return jsonData.ExtraHeaders;
+  }
+  return {}; // empty object
 }
 
 test("crc-32c of a string", () => {
