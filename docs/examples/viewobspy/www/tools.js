@@ -12,7 +12,7 @@ function createTools(viewObspy) {
     .on("change", () => {
       viewObspy.infoTemplate = seisplotjs.d3.select(`#infoTemplateText`).property("value");
       viewObspy.replot();
-    });;
+    });
 
   seisplotjs.d3.select("button#refresh").on("click", function() {
     viewObspy.clearAll();
@@ -143,7 +143,6 @@ function createTools(viewObspy) {
   });
 
   seisplotjs.d3.select("button#ttimeRecalc").on("click", () => {
-    let plotPredicted = seisplotjs.d3.select("#phases").property("checked");
     let phaseList = seisplotjs.d3.select("#phaseList").property("value");
     if ( ! phaseList || phaseList.length === 0) {
       phaseList = "P,S";

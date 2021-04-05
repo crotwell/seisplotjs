@@ -179,7 +179,6 @@ class ViewObsPy {
       if (seisplotjs.util.isDef(os.fftPlot)) {
         os.fftPlot.svg.on('mousemove', evt => {
           const fftPlot = os.fftPlot;
-          const node = fftPlot.svg.select('g.seisplotjsdata').node();
           const margin = fftPlot.seismographConfig.margin;
           let clickFreq = fftPlot.xAxis.scale().invert(evt.offsetX-margin.left);
           seisplotjs.d3.select('input#mousex').property('value', formatExp(clickFreq));
@@ -189,7 +188,6 @@ class ViewObsPy {
       }
 
       if (seisplotjs.util.isDef(os.particleMotionPlot)) {
-        const node = os.particleMotionPlot.svg.select('g.seisplotjsdata').node();
         const particleMotionPlot = os.particleMotionPlot;
         particleMotionPlot.svg.on('mousemove', evt => {
           const margin = particleMotionPlot.seismographConfig.margin;
@@ -205,7 +203,7 @@ class ViewObsPy {
   /**
    * Loads the dataset, quake, enventory and seismograms from serveobspy
    *
-   * @returns {Promise[Dataset, Quake, Array[Network], Array[SeismogramDisplayData]} Promise to data
+   * @returns {Promise<Dataset, Quake, Array<Network>, Array<SeismogramDisplayData>>} Promise to data
    */
   loadAll() {
     const that = this;
