@@ -293,6 +293,8 @@ export class ParticleMotion {
     this.outerHeight = nOuterHeight ? Math.max(100, nOuterHeight) : 100;
     this.height = this.outerHeight - this.seismographConfig.margin.top - this.seismographConfig.margin.bottom;
     this.width = this.outerWidth - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
+    this.height = Math.min(this.height, this.width);
+    this.width = Math.min(this.height, this.width);
     this.xScale.range([0, this.width]);
     this.yScale.range([this.height, 0]);
     this.xScaleRmean.range([0, this.width]);
