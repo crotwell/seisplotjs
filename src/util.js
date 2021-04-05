@@ -38,10 +38,14 @@ export function hasNoArgs(value: any): boolean %checks {
   return arguments.length === 0 || typeof value === 'undefined';
 }
 export function isStringArg(value: any): boolean %checks {
-  return arguments.length !== 0 && typeof value === 'string';
+  return arguments.length !== 0
+    && (typeof value === 'string'
+        || (isObject(value) && value instanceof String)) ;
 }
 export function isNumArg(value: any): boolean %checks {
-  return typeof value === 'number';
+  return arguments.length !== 0
+    && (typeof value === 'number'
+        || (isObject(value) && value instanceof Number)) ;
 }
 export function isNonEmptyStringArg(value: any): boolean %checks {
   return arguments.length !== 0 && isStringArg(value) && value.length !== 0;
