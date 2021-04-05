@@ -153,7 +153,7 @@ export class Seismograph {
         this.xScaleChangeListeners = [];
 
     this.myTimeScalable = new SeismographTimeScalable(this);
-    if (this.seismographConfig.linkedTimeScale) {
+    if (isDef(this.seismographConfig.linkedTimeScale)) {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
     }
     this.calcTimeScaleDomain();
@@ -1098,7 +1098,7 @@ export class Seismograph {
     } else {
       let timeWindow;
 
-      if (this.seismographConfig.linkedTimeScale) {
+      if (isDef(this.seismographConfig.linkedTimeScale)) {
         const linkedTimeScale = this.seismographConfig.linkedTimeScale;
         if (this.seisDataList.length === 0) {
           timeWindow = new StartEndDuration(null, moment.utc(), linkedTimeScale.duration);
