@@ -165,10 +165,10 @@ export class FFTPlot {
 
     this.drawTitle();
 
-    const xAxis = d3.axisBottom(this.xScale);
+    this.xAxis = d3.axisBottom(this.xScale);
     g.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        .call(this.xAxis);
     g.append("g")
         .attr("transform", `translate(0, ${height+ this.seismographConfig.margin.bottom} )`)
       .append("text")
@@ -179,9 +179,9 @@ export class FFTPlot {
         .attr("text-anchor", "end")
         .text("Hertz");
 
-    const yAxis = d3.axisLeft(this.yScale);
+    this.yAxis = d3.axisLeft(this.yScale);
     g.append("g")
-        .call(yAxis);
+        .call(this.yAxis);
     svg.append("g")
         .attr("transform", `translate(0, ${this.seismographConfig.margin.top+height/2} )`)
       .append("text")
