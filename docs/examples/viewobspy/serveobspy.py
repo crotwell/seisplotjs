@@ -74,6 +74,7 @@ class ServeObsPy():
         self._displayConfig = None
         self.httpServer = None
         self.wsServer = None
+        self.save_config_to = "seisplotjs_config.json"
         if webdir is not None and not os.path.isdir(webdir):
             raise Exception('webdir must be an existing directory: {}'.format(webdir))
     def initEmptyDataset(self):
@@ -380,7 +381,9 @@ class WSMessageHandler():
         if 'update' in jsonMsg:
             if jsonMsg['update'] == 'config':
                 self.serveObspy._displayConfig = jsonMsg['payload']
-                print("display config received")
+                print(f"display config received, save to {self.serveObspy.save_config_to}")
+                with open(self.serveObspy.save_config_to, 'w') as outfile:
+                    json.dump(jsonMsg['payload'], outfile, indent=4)
             elif jsonMsg['update'] == 'comment':
                 print(f"Comment message: {jsonMsg['comment']}")
             else:
