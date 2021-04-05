@@ -1,5 +1,10 @@
 // @flow
 
+// $FlowFixMe
+let TextDecoder = require('util').TextDecoder;
+// eslint-disable-next-line no-undef
+global.TextDecoder = TextDecoder;
+
 import { isDef } from '../../src/util.js';
 import * as xseed from '../../src/xseed.js';
 import fs from 'fs';
@@ -108,7 +113,7 @@ for (let filename of fileList) {
  * @param   xr xseed record
  * @returns     json version of extra headers
  */
-function getExtraHeaders(xr: XSeedRecord) {
+function getExtraHeaders(xr: xseed.XSeedRecord) {
   const xh = xr.header;
   if (xh.extraHeadersLength > 2) {
     return xr.extraHeaders;
