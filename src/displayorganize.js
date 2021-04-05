@@ -66,11 +66,14 @@ export class OrganizedDisplay {
     } else if (this.plottype.startsWith(SPECTRA)) {
       let loglog = getFromQueryParams(queryParams, 'loglog', 'true');
       loglog = (queryParams.loglog.toLowerCase() === 'true');
-      let nonContigMsg = "non-contiguous seismograms, skipping: "+
-        this.seisData.filter(sdd => !(sdd.seismogram && sdd.seismogram.isContiguous()))
+      let nonContigList = this.seisData.filter(sdd => !(sdd.seismogram && sdd.seismogram.isContiguous()));
+      if (nonContigList.length > 0) {
+        let nonContigMsg = "non-contiguous seismograms, skipping: "+
+
         // $FlowIgnore[incompatible-use]
-        .map(sdd => isDef(sdd.seismogram) ? `${sdd.codes()} ${sdd.seismogram.segments.length}` : "null").join(',');
-      console.error(nonContigMsg);
+        nonContigList.map(sdd => isDef(sdd.seismogram) ? `${sdd.codes()} ${sdd.seismogram.segments.length}` : "null").join(',');
+        divElement.append('p').text(nonContigMsg);
+      }
       let fftList = this.seisData.map(sdd => {
         return sdd.seismogram && sdd.seismogram.isContiguous() ? fftForward(sdd) : null;
       });
