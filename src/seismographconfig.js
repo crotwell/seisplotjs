@@ -165,7 +165,7 @@ export class SeismographConfig {
     delete out._linkedTimeScale;
     out.isLinkedTimeScale = isDef(this._linkedTimeScale);
     out.isLinkedAmplitudeScale = isDef(this.linkedAmplitudeScale);
-    delete out._titleHandlebarsCompiled
+    delete out._titleHandlebarsCompiled;
     return out;
   }
 
