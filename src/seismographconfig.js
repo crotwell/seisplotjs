@@ -43,7 +43,7 @@ export class SeismographConfig {
   /** @private */
   _title: Array<string>;
   /** @private */
-  _handlebarsCompiled: null | ({},{}) => string;
+  _titleHandlebarsCompiled: null | ({},{}) => string;
   isXAxis: boolean;
   isXAxisTop: boolean;
   xLabel: string;
@@ -190,21 +190,21 @@ export class SeismographConfig {
     } else {
       this._title = [ value ];
     }
-    this._handlebarsCompiled = null;
+    this._titleHandlebarsCompiled = null;
   }
 
   handlebarsTitle(context: {}, runtimeOptions: {}): string {
-    if (  ! isDef(this._handlebarsCompiled)) {
+    if (  ! isDef(this._titleHandlebarsCompiled)) {
       if ( ! isDef(this._title) || this._title.length === 0 || ! isDef(this._title[0])) {
         // empty title
         return "";
       } else if (this._title.length === 1) {
-        this._handlebarsCompiled = Handlebars.compile(this._title[0]);
+        this._titleHandlebarsCompiled = Handlebars.compile(this._title[0]);
       } else {
-        this._handlebarsCompiled = Handlebars.compile(""+this._title.join(" "));
+        this._titleHandlebarsCompiled = Handlebars.compile(""+this._title.join(" "));
       }
     }
-    return this._handlebarsCompiled(context, runtimeOptions);
+    return this._titleHandlebarsCompiled(context, runtimeOptions);
   }
 
   /** Fake data to use to test alignment of seismograph axis and between canvas
@@ -565,13 +565,14 @@ export function createEditor(div: any, config: SeismographConfig, onChange: () =
   });
 
   createTextOption(div.append("div"), "Line Width", "lineWidth", config, onChange);
+  createBooleanOptionByKey(div.append("div"), "Connect Segments", "connectSegments", config, onChange);
   createBooleanOptionByKey(div.append("div"), "Show Markers", "doMarkers", config, onChange);
   const heightDiv = div.append("div");
   heightDiv.append("label").text("Height:");
   let subHeightDiv = heightDiv.append("span");
   createTextOption(subHeightDiv.append("span"), "Min", "minHeight", config, onChange);
   createTextOption(subHeightDiv.append("span"), "Max", "maxHeight", config, onChange);
-  createBooleanOptionByKey(div.append("div"), "Mouse Wheel Zoom2", "wheelZoom", config, onChange);
+  createBooleanOptionByKey(div.append("div"), "Mouse Wheel Zoom", "wheelZoom", config, onChange);
 
 }
 
