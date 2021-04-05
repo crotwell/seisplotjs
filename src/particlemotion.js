@@ -399,12 +399,6 @@ export class ParticleMotion {
 }
 
 export const particleMotion_css = `
-.particleMotionContainer {
-  height: 100%;
-  width: 100%;
-  min-height: 25px;
-  min-width: 25px;
-}
 
 svg.particleMotion {
   height: 100%;
