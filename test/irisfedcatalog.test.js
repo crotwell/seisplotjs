@@ -1,7 +1,6 @@
 // @flow
 
 import {FedCatalogQuery} from '../src/irisfedcatalog.js';
-import moment from 'moment';
 
 
 test( "query setter test", () => {
