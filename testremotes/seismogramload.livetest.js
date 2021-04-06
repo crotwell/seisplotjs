@@ -5,15 +5,13 @@ import {EventQuery} from '../src/fdsnevent.js';
 import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation.js';
 import {allChannels} from '../src/stationxml.js';
 import moment from 'moment';
+import RSVP from 'rsvp';
 
 // eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
 // eslint-disable-next-line no-undef
 global.fetch = fetch;
 
-/*
-*/
-// oops, can't use fetch in jest test without mocking...
 
 test( "load HODGE for local eq test", () => {
   let localQueryTimeWindow = new StartEndDuration('2020-08-21', '2020-08-22');
@@ -36,11 +34,16 @@ test( "load HODGE for local eq test", () => {
   seisLoad.markedPhaseList = "PcP";
   seisLoad.startOffset = -30; // seconds
   seisLoad.endOffset = moment.duration(120, 'seconds'); // or as duration
-  return seisLoad.loadSeismograms().then( sddList  => {
-    expect(sddList).toHaveLength(3);
-
-  });
+  return RSVP.all([
+    seisLoad.loadSeismograms().then( sddList  => {
+      expect(sddList).toHaveLength(3);
+    }),
+    seisLoad.networkList.then(networkList => {
+      expect(networkList).toHaveLength(1);
+    }),
+    seisLoad.quakeList.then(quakeList => {
+      expect(quakeList).toHaveLength(1);
+    })
+  ] );
 
 });
-/*
-*/

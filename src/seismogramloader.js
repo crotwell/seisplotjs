@@ -1,12 +1,14 @@
 //@flow
 
+import type { TraveltimeJsonType } from './traveltime.js';
 import {StartEndDuration} from './util.js';
 import {TraveltimeQuery} from './traveltime.js';
 import {DataSelectQuery} from './fdsndataselect.js';
 import {EventQuery} from './fdsnevent.js';
 import {StationQuery} from './fdsnstation.js';
 import {FedCatalogQuery} from './irisfedcatalog.js';
-import {allStations} from './stationxml.js';
+import {Quake} from './quakeml.js';
+import {allStations, Network} from './stationxml.js';
 import {SeismogramDisplayData} from './seismogram.js';
 import {createMarkersForTravelTimes} from './seismograph.js';
 import {isDef, stringify } from './util.js';
@@ -22,6 +24,10 @@ export class SeismogramLoader {
   markedPhaseList: Array<string>;
   _startOffset: moment$MomentDuration;
   _endOffset: moment$MomentDuration;
+  networkList: Promise<Array<Network>> | null;
+  quakeList: Promise<Array<Quake>> | null;
+  traveltimeList: Promise<TraveltimeJsonType> | null;
+  sddList: Promise<Array<SeismogramDisplayData>> | null;
   constructor(stationQuery: StationQuery,
                eventQuery: EventQuery,
                dataselectQuery?: DataSelectQuery) {
@@ -40,6 +46,10 @@ export class SeismogramLoader {
     this.markedPhaseList = [];
     this._startOffset = moment.duration(-30, 'seconds');
     this._endOffset = moment.duration(60, 'seconds');
+    this.networkList = null;
+    this.quakeList = null;
+    this.traveltimeList = null;
+    this.sddList = null;
   }
   get startOffset(): moment$MomentDuration {
     return this._startOffset;
@@ -72,9 +82,6 @@ export class SeismogramLoader {
     this._endOffset = moment.duration(val, 'seconds');
   }
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
-    if ( ! (this.stationQuery instanceof StationQuery)) {
-      throw new Error("1st arg must be a StationQuery: "+stringify(this.stationQuery.constructor));
-    }
     let fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
     if ( ! this.stationQuery.isSomeParameterSet()) {
       throw new Error("Must set some station parameter to avoid asking for everything.");
@@ -82,15 +89,14 @@ export class SeismogramLoader {
     if ( ! this.eventQuery.isSomeParameterSet()) {
       throw new Error("Must set some event parameter to avoid asking for everything.");
     }
-    return RSVP.all([fedcat.queryChannels(), this.eventQuery])
-      .then(([ netList, eventQuery]) => {
-        return RSVP.all([netList, eventQuery.query()]);
-      }).then(([ netList, quakeList]) => {
+    this.networkList = fedcat.queryChannels();
+    this.quakeList = this.eventQuery.query();
+    let allPhaseList = [];
+    allPhaseList = allPhaseList.concat(this.startPhaseList, this.endPhaseList, this.markedPhaseList);
+    const allPhases = ""+allPhaseList.join(',');
 
-        let allPhaseList = [];
-        allPhaseList = allPhaseList.concat(this.startPhaseList, this.endPhaseList, this.markedPhaseList);
-        const allPhases = ""+allPhaseList.join(',');
-
+    this.traveltimeList = RSVP.all([this.networkList, this.quakeList])
+    .then(([ netList, quakeList]) => {
         let ttpromiseList = [];
         for (let q of quakeList) {
           for (let s of allStations(netList)) {
@@ -105,7 +111,9 @@ export class SeismogramLoader {
           }
         }
         return Promise.all( ttpromiseList );
-      }).then( ttpromiseList  => {
+      });
+
+      this.sddList = this.traveltimeList.then( ttpromiseList  => {
         let seismogramDataList = [];
         for (let ttarr of ttpromiseList) {
           let station = ttarr[0];
@@ -161,5 +169,6 @@ export class SeismogramLoader {
         }
         return sddListPromise;
       });
+      return this.sddList;
   }
 }

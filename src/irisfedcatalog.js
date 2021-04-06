@@ -39,7 +39,7 @@ export const TARGET_STATION = 'station';
 /** a fake, completely empty stationxml document in case of no data. */
 export const FAKE_EMPTY_TEXT = '\n';
 
-export class FedCatalogResult {
+export class FedCatalogDataCenter {
   dataCenter: string;
   services: Map<string,string>;
   stationService: string;
@@ -47,6 +47,8 @@ export class FedCatalogResult {
   postLines: Array<string>;
   stationQuery: StationQuery | null;
   dataSelectQuery: DataSelectQuery | null;
+  networkList: Promise<Array<Network>> | null;
+  sddList: Promise<Array<SeismogramDisplayData>> | null;
   constructor() {
     this.dataCenter = "";
     this.stationService = "";
@@ -55,12 +57,18 @@ export class FedCatalogResult {
     this.services = new Map();
     this.stationQuery = null;
     this.dataSelectQuery = null;
+    this.networkList = null;
+    this.sddList = null;
   }
 }
 
-export type ParsedResultType = {
+export class FedCatalogResult {
   params: Map<string,string>;
-  queries: Array<FedCatalogResult>;
+  queries: Array<FedCatalogDataCenter>;
+  constructor() {
+    this.params = new Map();
+    this.queries = [];
+  }
 }
 
 /**
@@ -133,6 +141,7 @@ export class FedCatalogQuery {
   _matchTimeseries: boolean;
   /** @private */
   _timeoutSec: number;
+  fedCatResult: Promise<FedCatalogResult> | null;
   /** Construct a query
    *
    * @param host the host to connect to , defaults to service.iris.edu
@@ -146,6 +155,7 @@ export class FedCatalogQuery {
     }
     this._port = 80;
     this._timeoutSec = 30;
+    this.fedCatResult = null;
   }
   /**
    * Constructs a station FedCatalogQuery using the parameters in a StationQuery.
@@ -549,10 +559,12 @@ export class FedCatalogQuery {
    * @returns a Promise to an Array of Network objects.
    */
   queryFdsnStation(level: string): Promise<Array<Network>> {
-    return this.setupQueryFdsnStation(level).then(parsedResult => {
-      return RSVP.all(parsedResult.queries.map(query => {
+    return this.setupQueryFdsnStation(level)
+    .then(fedCatalogResult => {
+      return RSVP.all(fedCatalogResult.queries.map(query => {
         if (isDef(query.stationQuery)) {
-            return query.stationQuery.postQuery(level, query.postLines);
+            query.networkList = query.stationQuery.postQuery(level, query.postLines);
+            return query.networkList;
           } else {
             // could return [];
             throw new Error("stationQuery missing");
@@ -570,15 +582,15 @@ export class FedCatalogQuery {
   }
 
 
- setupQueryFdsnStation(level: string): Promise<ParsedResultType> {
+ setupQueryFdsnStation(level: string): Promise<FedCatalogResult> {
     if (! LEVELS.includes(level)) {throw new Error("Unknown level: '"+level+"'");}
     this._level = level;
     this.targetService('station');
-    return this.queryRaw().then(function(parsedResult) {
-      for (let r of parsedResult.queries) {
+    return this.queryRaw().then(function(fedCatalogResult) {
+      for (let r of fedCatalogResult.queries) {
         const stationQuery = new StationQuery();
         r.stationQuery = stationQuery;
-        parsedResult.params.forEach( (v, k) => {
+        fedCatalogResult.params.forEach( (v, k) => {
           const field = `_${k}`;
           // $FlowIgnore[prop-missing] dynamic setting of field
           // $FlowIgnore[incompatible-use]
@@ -598,7 +610,7 @@ export class FedCatalogQuery {
           throw new Error("QueryResult does have STATIONSERVICE in services, but is undef");
         }
       }
-      return parsedResult;
+      return fedCatalogResult;
     });
   }
 
@@ -607,14 +619,14 @@ export class FedCatalogQuery {
    * DataSelectQuery with host and port, or url filled in correctly, ready to
    * be called with the result lines.
    *
-   * @param   parsedResult result from a FedCat web service
+   * @param   fedCatalogResult result from a FedCat web service
    * @returns               result with dataSelectQuery added to each item
    */
-  setupForFdnsDataSelect(parsedResult: ParsedResultType): ParsedResultType {
-    for (let r of parsedResult.queries) {
+  setupForFdnsDataSelect(fedCatalogResult: FedCatalogResult): FedCatalogResult {
+    for (let r of fedCatalogResult.queries) {
       const dataSelectQuery = new DataSelectQuery();
       r.dataSelectQuery = dataSelectQuery;
-      parsedResult.params.forEach( (k,v) => {
+      fedCatalogResult.params.forEach( (k,v) => {
         const field = `_${k}`;
         // $FlowIgnore[prop-missing] dynamic setting of field
         // $FlowIgnore[incompatible-use]
@@ -634,21 +646,21 @@ export class FedCatalogQuery {
         throw new Error("QueryResult does have DATASELECTSERVICE in services, but is undef");
       }
     }
-    return parsedResult;
+    return fedCatalogResult;
   }
 
   queryFdsnDataselect(): Promise<Array<SeismogramDisplayData>> {
     const mythis = this;
     this.targetService(TARGET_DATASELECT);
-    return this.queryRaw().then(parsedResult => {
-      return mythis.setupForFdnsDataSelect(parsedResult);
-    }).then(parsedResult => {
-      return mythis.postFdsnDataselectForFedCatResult(parsedResult);
+    return this.queryRaw().then(fedCatalogResult => {
+      return mythis.setupForFdnsDataSelect(fedCatalogResult);
+    }).then(fedCatalogResult => {
+      return mythis.postFdsnDataselectForFedCatResult(fedCatalogResult);
     });
   }
 
-  postFdsnDataselectForFedCatResult(parsedResult: ParsedResultType): Promise<Array<SeismogramDisplayData>> {
-      return RSVP.all(parsedResult.queries.map(query => {
+  postFdsnDataselectForFedCatResult(fedCatalogResult: FedCatalogResult): Promise<Array<SeismogramDisplayData>> {
+      return RSVP.all(fedCatalogResult.queries.map(query => {
         let sddList = query.postLines.map(line => {
           const items = line.split(" ");
           const start = moment.utc(items[4]);
@@ -656,7 +668,8 @@ export class FedCatalogQuery {
           return SeismogramDisplayData.fromCodesAndTimes(items[0], items[1], items[2], items[3], start, end);
           });
         if (isDef(query.dataSelectQuery)) {
-          return query.dataSelectQuery.postQuerySeismograms(sddList);
+          query.sddList = query.dataSelectQuery.postQuerySeismograms(sddList);
+          return query.sddList;
         } else {
           // could return [];
           throw new Error("dataSelectQuery missing");
@@ -687,9 +700,9 @@ export class FedCatalogQuery {
    * seismogram containing the data returned from the server
    */
   postQuerySeismograms(sddList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
-    return this.postQueryRaw(sddList, TARGET_DATASELECT).then((parsedResult: ParsedResultType) => {
-      this.setupForFdnsDataSelect(parsedResult);
-      return this.postFdsnDataselectForFedCatResult(parsedResult);
+    return this.postQueryRaw(sddList, TARGET_DATASELECT).then((fedCatalogResult: FedCatalogResult) => {
+      this.setupForFdnsDataSelect(fedCatalogResult);
+      return this.postFdsnDataselectForFedCatResult(fedCatalogResult);
     }).then((sddResultArray: Array<SeismogramDisplayData> ) => {
       for (let sdd of sddList) {
         let codes = sdd.codes();
@@ -704,7 +717,7 @@ export class FedCatalogQuery {
     });
   }
 
-  postQueryRaw(sddList: Array<SeismogramDisplayData>, targetService: string): Promise<ParsedResultType> {
+  postQueryRaw(sddList: Array<SeismogramDisplayData>, targetService: string): Promise<FedCatalogResult> {
     if (sddList.length === 0) {
       // return promise faking an empty response
       return RSVP.hash(this.parseRequest(FAKE_EMPTY_TEXT));
@@ -715,7 +728,7 @@ export class FedCatalogQuery {
     }
   }
 
-  postQueryRawWithBody(body: string): Promise<ParsedResultType> {
+  postQueryRawWithBody(body: string): Promise<FedCatalogResult> {
     const mythis = this;
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     fetchInit.method = "POST";
@@ -733,16 +746,17 @@ export class FedCatalogQuery {
    *
    * @returns a Promise to an parsed result.
    */
-  queryRaw(): Promise<ParsedResultType> {
+  queryRaw(): Promise<FedCatalogResult> {
     const mythis = this;
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
-    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+    this.fedCatResult = doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
       .then(response => {
           return this.handleHttpResponseCodes(response);
       }).then(function(rawText) {
         return mythis.parseRequest(rawText);
       });
+    return this.fedCatResult;
   }
 
   handleHttpResponseCodes(response: Response): Promise<string> {
@@ -756,11 +770,8 @@ export class FedCatalogQuery {
     }
   }
 
-  parseRequest(requestText: string): ParsedResultType {
-    let out = {
-      params: new Map(),
-      queries: []
-    };
+  parseRequest(requestText: string): FedCatalogResult {
+    let out = new FedCatalogResult();
     let lines = requestText.split('\n');
     let inParams = true;
     let query = null;
@@ -781,7 +792,7 @@ export class FedCatalogQuery {
         } else {
           if (query === null) {
             // first line of next response section
-            query = new FedCatalogResult();
+            query = new FedCatalogDataCenter();
             out.queries.push(query);
           }
           if (l.indexOf("=") !== -1) {
