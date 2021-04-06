@@ -39,6 +39,11 @@ export const TARGET_STATION = 'station';
 /** a fake, completely empty stationxml document in case of no data. */
 export const FAKE_EMPTY_TEXT = '\n';
 
+/**
+ * Represents the part of the results of a fedcatalog query for a single
+ * datacenter, a section of the larger FedCatalogResult.
+ *
+ */
 export class FedCatalogDataCenter {
   dataCenter: string;
   services: Map<string,string>;
@@ -62,6 +67,10 @@ export class FedCatalogDataCenter {
   }
 }
 
+/**
+ * Represents the results of a fedcatalog query.
+ * 
+ */
 export class FedCatalogResult {
   params: Map<string,string>;
   queries: Array<FedCatalogDataCenter>;
