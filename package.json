@@ -12,7 +12,7 @@
   "dependencies": {
     "@babel/runtime": "^7.12.13",
     "crc-32": "^1.2.0",
-    "d3": "^6.5.0",
+    "d3": "^6.6.2",
     "handlebars": "^4.7.6",
     "js-quantities": "^1.7.6",
     "leaflet": "^1.7.1",
