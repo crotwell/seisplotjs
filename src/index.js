@@ -23,6 +23,7 @@ import * as fftplot         from './fftplot.js';
 import * as handlebarshelpers from './handlebarshelpers.js';
 import * as helicorder from './helicorder.js';
 import * as knownDataCenters from './knowndatacenters.js';
+import * as leafletutil       from './leafletutil.js';
 import * as miniseed       from './miniseed.js';
 import * as mseedarchive   from './mseedarchive.js';
 import * as oregondsputil   from './oregondsputil.js';
@@ -51,6 +52,7 @@ const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 import moment from 'moment';
 import RSVP from 'rsvp';
 import * as d3 from 'd3';
+import * as leaflet from 'leaflet';
 
 /**
  * Current version of seisplotjs
@@ -74,6 +76,7 @@ export { cssutil,
          helicorder,
          filter,
          knownDataCenters,
+         leafletutil,
          miniseed,
          mseedarchive,
          oregondsputil,
@@ -98,5 +101,6 @@ export { cssutil,
          xseed,
          OregonDSP,
          d3,
+         leaflet,
          moment,
          RSVP };

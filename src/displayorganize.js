@@ -2,6 +2,7 @@
 
 import { fftForward }    from './fft.js';
 import { FFTPlot }       from './fftplot.js';
+import * as leafletutil from './leafletutil.js';
 import { ParticleMotion }       from './particlemotion.js';
 import { Quake } from './quakeml.js';
 import { Station } from './stationxml.js';
@@ -105,18 +106,12 @@ export class OrganizedDisplay {
       }).addTo(mymap);
 
       uniqueQuakes(this.seisData).forEach(q => {
-        let circle = L.circleMarker([q.latitude, q.longitude], {
-          color: 'red',
-          fillColor: '#f03',
-          fillOpacity: 0.15,
-          radius: q.magnitude ? (q.magnitude.mag* magScale) : 3 // in case no mag
-        }).addTo(mymap);
-        circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
+        let circle = leafletutil.createQuakeMarker(q, magScale);
+        circle.addTo(mymap);
       });
       uniqueStations(this.seisData).forEach(s => {
-        let m = L.marker([s.latitude, s.longitude]);
+        let m = leafletutil.createStationMarker(s);
         m.addTo(mymap);
-        m.bindTooltip(s.codes());
       });
 
     } else if (this.plottype.startsWith(INFO)) {
