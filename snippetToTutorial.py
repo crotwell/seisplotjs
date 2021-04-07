@@ -2,10 +2,11 @@
 
 import os.path
 import re
+import filecmp
 from html.parser import HTMLParser
 from bs4 import BeautifulSoup
 
-StartSnip = re.compile('// snip start (\w)')
+StartSnip = re.compile('// snip start (\w+)')
 EndSnip = re.compile('// snip end ')
 StartTag = re.compile('^<\w+.*>')
 EndTag = re.compile('^</\w+>')
@@ -13,7 +14,7 @@ ComboStartEndTag = re.compile('^<\w+.*/>')
 StartEndTag = re.compile('^<\w+.*>.*</\w+>$')
 
 jsfilePattern = re.compile('^tutorial(\d+).js$')
-#jsfilePattern = re.compile('^tutorial(4).js$')
+#jsfilePattern = re.compile('^tutorial(3).js$')
 
 def snippetReplace(dirpath, jsfilename, htmlfilename):
     print(f"jsfile={jsfilename}  htmlfile={htmlfilename}")
@@ -28,18 +29,22 @@ def snippetReplace(dirpath, jsfilename, htmlfilename):
     for c in soup.find_all('code'):
         if (c.get('class') is not None
               and "language-javascript" in c.get('class')
-              and c.get('snippet') is not None):
+              and c.get('snippet') is not None
+              and len(c.get('snippet')) != 0):
             snipname = c.get('snippet')
             print(f"code: {c.get('snippet')} {c.get('class')}")
             inSnip = False
+            snipLines = []
+            foundStart = False
             for line in jsdata:
                 if not inSnip:
                     match = StartSnip.match(line)
-                    if match and match.group(1) == snipname:
-                        print(f"found start for {snipname}  {match.group(1)}")
-                        inSnip = True
-                        c.clear()
-                        c.append("\n")
+                    if match:
+                        if match.group(1) == snipname:
+                            inSnip = True
+                            foundStart = True
+                            c.clear()
+                            c.append("\n")
                 else:
                     startmatch = StartSnip.match(line)
                     endmatch = EndSnip.match(line)
@@ -47,12 +52,19 @@ def snippetReplace(dirpath, jsfilename, htmlfilename):
                         inSnip = False
                     else:
                         c.append(f"{line}")
+                        snipLines.append(f"{line}")
+            if not foundStart:
+                raise Exception(f"Did not find a start snip for {snipname}")
     with open(filepath+".mod.html", 'w', encoding='utf-8') as file:
         #file.write(redoIndent(soup.encode(formatter="html")))
         file.write(soup.prettify(formatter="html"))
         #file.write(redoIndent(str(soup)))
     os.rename(filepath, filepath+".orig")
     os.rename(filepath+".mod.html", filepath)
+    if filecmp.cmp(filepath+".orig", filepath):
+      print(f"{filepath} seems to have no changes ")
+      os.unlink(filepath+".orig")
+
 
 def redoIndent(text, spaces=2):
     level = 0
@@ -87,7 +99,7 @@ for dirpath, dirs, files in os.walk('docs/tutorial'):
             jsfilename = filename
 
             htmlfilename = None
-            if tutNum is '1':
+            if tutNum == '1':
                 htmlfilename = 'index.html'
             else:
                 htmlfilePattern = re.compile(f"^{tutNum}_\w+.html$")

@@ -35,6 +35,7 @@
     "apidoc:clean": "rimraf docs/api",
     "compile": "npm run build:clean && npm run rollup && npm run flow-copy && npm run standalone ",
     "browserify": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ] && npm run example_standalone && npm run tutorial_standalone",
+    "tutorial_snippet": "python3 snippetToTutorial.py",
     "tutorial_standalone": "cd docs/tutorial ; rm seisplotjs_*_standalone.js ; ln -s ../../dist/seisplotjs_${npm_package_version}_standalone.js ;  cd ../..",
     "example_standalone": "cd docs/examples; cd helicorder ; rm seisplotjs_*_standalone.js ; ln -s ../../../dist/seisplotjs_${npm_package_version}_standalone.js ; cd ..; cd viewobspy/www;rm seisplotjs_*_standalone.js;ln -s ../../../../dist/seisplotjs_${npm_package_version}_standalone.js; cd ../../../..",
     "standalone": "npm run browserify && npm run tutorial_standalone && npm run example_standalone",
