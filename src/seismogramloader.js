@@ -11,7 +11,7 @@ import {Quake} from './quakeml.js';
 import {allStations, Network} from './stationxml.js';
 import {SeismogramDisplayData} from './seismogram.js';
 import {createMarkersForTravelTimes} from './seismograph.js';
-import {isDef, stringify } from './util.js';
+import {isDef, isStringArg, stringify } from './util.js';
 import moment from 'moment';
 import RSVP from 'rsvp';
 
@@ -41,15 +41,27 @@ export class SeismogramLoader {
     if ( isDef(dataselectQuery)) {
       this.dataselectQuery = dataselectQuery;
     }
-    this.startPhaseList = [ "p", "P", "Pdiff", "PKP"];
-    this.endPhaseList = [ "s", "S", "Sdiff", "SKS"];
-    this.markedPhaseList = [];
+    this._startPhaseList = [ "p", "P", "Pdiff", "PKP"];
+    this._endPhaseList = [ "s", "S", "Sdiff", "SKS"];
+    this._markedPhaseList = [];
     this._startOffset = moment.duration(-30, 'seconds');
     this._endOffset = moment.duration(60, 'seconds');
     this.networkList = null;
     this.quakeList = null;
     this.traveltimeList = null;
     this.sddList = null;
+  }
+  get startPhaseList(): Array<String> {
+    return this._startPhaseList;
+  }
+  set startPhaseList(val: Array<String> | String) {
+    if (Array.isArray(val)) {
+      this._startPhaseList = val;
+    } else if (isStringArg(val)) {
+      this._startPhaseList = val.split(',');
+    } else {
+      throw new Error('value argument is string or array of string, but was '+typeof val);
+    }
   }
   get startOffset(): moment$MomentDuration {
     return this._startOffset;
@@ -66,6 +78,18 @@ export class SeismogramLoader {
   startOffsetOfSeconds(val: number) {
     this._startOffset = moment.duration(val, 'seconds');
   }
+  get endPhaseList(): Array<String> {
+    return this._endPhaseList;
+  }
+  set endPhaseList(val: Array<String> | String) {
+    if (Array.isArray(val)) {
+      this._endPhaseList = val;
+    } else if (isStringArg(val)) {
+      this._endPhaseList = val.split(',');
+    } else {
+      throw new Error('value argument is string or array of string, but was '+typeof val);
+    }
+  }
   get endOffset(): moment$MomentDuration {
     return this._endOffset;
   }
@@ -80,6 +104,18 @@ export class SeismogramLoader {
   }
   endOffsetOfSeconds(val: number) {
     this._endOffset = moment.duration(val, 'seconds');
+  }
+  get markedPhaseList(): Array<String> {
+    return this._markedPhaseList;
+  }
+  set markedPhaseList(val: Array<String> | String) {
+    if (Array.isArray(val)) {
+      this._markedPhaseList = val;
+    } else if (isStringArg(val)) {
+      this._markedPhaseList = val.split(',');
+    } else {
+      throw new Error('value argument is string or array of string, but was '+typeof val);
+    }
   }
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
     let fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
