@@ -44,7 +44,7 @@ Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) => {
   let seismogramDataList = [];
   for (const q of quakeList) {
-    let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
+    let timeWindow = new seisplotjs.util.StartEndDuration(q.time, null, 2400);
     for (const c of seisplotjs.stationxml.allChannels(networkList)) {
       let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
       sdd.addQuake(q);
