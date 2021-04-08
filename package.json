@@ -39,7 +39,7 @@
     "tutorial_standalone": "cd docs/tutorial ; rm seisplotjs_*_standalone.js ; ln -s ../../dist/seisplotjs_${npm_package_version}_standalone.js ;  cd ../..",
     "example_standalone": "cd docs/examples; cd helicorder ; rm seisplotjs_*_standalone.js ; ln -s ../../../dist/seisplotjs_${npm_package_version}_standalone.js ; cd ..; cd viewobspy/www;rm seisplotjs_*_standalone.js;ln -s ../../../../dist/seisplotjs_${npm_package_version}_standalone.js; cd ../../../..",
     "standalone": "npm run browserify && npm run tutorial_standalone && npm run example_standalone",
-    "doc": "npm run apidoc",
+    "doc": "npm run tutorial_snippet && npm run apidoc",
     "apidoc": "npm run apidoc:clean && ./createApiDocs.sh",
     "prepare": "npm run compile",
     "version": "npm run compile && npm run standalone && npm run bumpversion && npm run doc",
