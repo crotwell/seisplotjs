@@ -121,19 +121,29 @@
        , a
            javascript map library
            that creates nice looking maps and has lots of flexibility, for this.
+           Seisplotjs includes leaflet and provides helper functions in the
+       <code class="language-javascript">
+        seisplotjs.leafletutil
+       </code>
+       module.
       </p>
       <p>
-       Within the &lt;head&gt;, we need to add a link for the Leaflet"s style sheet.
-      </p>
-      <pre><code class="language-html">
-            &lt;link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-   crossorigin=""/&gt;
-          </code></pre>
-      <p>
-       And some additional styling to size the map. Because the quake and
+       We can add some additional styling to size the map. Because the quake and
             the station are more or less east west of each other, we can use a
             map that is relatively narrow vertically, but spans the entire window.
+            The markers on the map can also be styled with css, using the
+       <code class="language-javascript">
+        quakeMarker
+       </code>
+       and
+       <code class="language-javascript">
+        stationMarker
+       </code>
+       selectors. We
+        will change the color from the default red and blue to illustrate. Note
+        that the station icon is actually a div that contains a triangle
+        unicode character, \u25B2, while the quake marker is a circle created
+        from an svg path element and so we use stoke and fill instead of color.
       </p>
       <pre><code class="language-css">
           &lt;style&gt;
@@ -141,27 +151,41 @@
               height: 300px;
               width: 100%;
             }
-          </code></pre>
+            div.stationMapMarker {
+              color: rebeccapurple;
+            }
+            path.quakeMapMarker {
+              fill: orange;
+              stroke: yellow;
+              fill-opacity: 0.25;
+            }
+          &lt;/style&gt;
+        </code></pre>
       <p>
-       We just need to include the leaflet javascript file
-            before our code.
-      </p>
-      <pre><code class="language-html">
-          &lt;script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
-   crossorigin=""&gt;&lt;/script&gt;
-          </code></pre>
-      <p>
-       First, we will create the map, centering it on 35/-100 and at zoom level 4.
-            The
+       First, we will create the map, centering it on 35/-100 and at
+       zoom level 4. The
        <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">
         World Ocean Base
        </a>
        tile layer gives a nice background.
-            Then we will create the queries for the quake and station.
-            Again, both of these queries
-            are asynchronous and so we will have to use promises. We first create
-            both the
+      </p>
+      <pre><code class="language-javascript" snippet="map">
+const centerLat = 35;
+const centerLon = -100;
+const mapZoomLevel = 4;
+const quakeMagScaleFactor = 5; // radius in pixels per unit magnitude
+const mymap = seisplotjs.leaflet.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
+let topoMap = seisplotjs.leaflet.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 17,
+  attribution: 'Map data: &lt;a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer"&gt;Esri, Garmin, GEBCO, NOAA NGDC, and other contributors&lt;/a&gt;)'
+});
+topoMap.addTo(mymap);
+</code></pre>
+      <p>
+       Then we will create the queries for the quake and station.
+        Again, both of these queries
+        are asynchronous and so we will have to use promises. We first create
+        both the
        <code class="language-javascript">
         EventQuery
        </code>
@@ -171,124 +195,124 @@
        </code>
        objects.
       </p>
-      <pre><code class="language-javascript" snippet="map">
-            const centerLat = 35;
-            const centerLon = -100;
-            const mapZoomLevel = 4;
-            const mymap = L.map("mapid").setView([ centerLat, centerLon], mapZoomLevel);
-            let OpenTopoMap = L.tileLayer("http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}", {
-            	maxZoom: 17,
-            	attribution: "Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)"
-            }).addTo(mymap);
-
-            let queryTimeWindow = new seisplotjs.util.StartEndDuration("2019-07-01", "2019-07-31");
-            let eventQuery = new seisplotjs.fdsnevent.EventQuery()
-              .timeWindow(queryTimeWindow)
-              .minMag(7)
-              .latitude(35).longitude(-118)
-              .maxRadius(3);
-            let stationQuery = new seisplotjs.fdsnstation.StationQuery()
-              .networkCode("CO")
-              .stationCode("HODGE")
-              .locationCode("00")
-              .channelCode("LH?")
-              .timeWindow(queryTimeWindow);
-
-          </code></pre>
+      <pre><code class="language-javascript" snippet="quakechan">
+let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
+let eventQuery = new seisplotjs.fdsnevent.EventQuery()
+  .timeWindow(queryTimeWindow)
+  .minMag(7)
+  .latitude(35).longitude(-118)
+  .maxRadius(3);
+let stationQuery = new seisplotjs.fdsnstation.StationQuery()
+  .networkCode('CO')
+  .stationCode('HODGE')
+  .locationCode('00')
+  .channelCode('LH?')
+  .timeWindow(queryTimeWindow);
+</code></pre>
       <p>
-       Then we call their
+       Next we call the
        <code class="language-javascript">
         query
        </code>
-       methods with a
-       <code class="language-javascript">
-        Promise.all()
-       </code>
-       which will wait until both of these return before calling the
-       <code class="language-javascript">
-        then()
-       </code>
-       function. Once we have
-            the quake and station results, we plot them on the map. Even though
-            we only expect one station and one quake to be returned, we will
-            plot them as if there might be many for easier reuse. The station is
-            a generic map marker, but the quake is
-            plotted as a circle with the radius scaled by the magnitude.
-            We then will use the more powerful
-       <code class="language-http">
-        POST
-       </code>
-       method to get the seismograms. The
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       works just like the
-       <code class="language-javascript">
-        StartEndDuration
-       </code>
-       but
-            also holds the channel that the
-            time rage corresponds to and will contain the resulting seismogram.
-            In this case the times are all the same, but
-            might be different if we were using multiple stations and predicted
-            arrival times. Note that we use the event time as the start and
-            ask for a duration of 2400 seconds.
-      </p>
-      <pre><code class="language-javascript" snippet="promise">
-            Promise.all([ eventQuery.query(), stationQuery.queryChannels()])
-            .then( ( [ quakeList, networks ] ) =&gt; {
-                for (const q of quakeList) {
-                  let circle = L.circleMarker([q.latitude, q.longitude], {
-                    color: "red",
-                    fillColor: "#f03",
-                    fillOpacity: 0.15,
-                    radius: q.magnitude ? (q.magnitude.mag*5) : 3 // in case no mag
-                  }).addTo(mymap);
-                  circle.bindTooltip(q.time.toISOString()+" "+(q.magnitude ? (q.magnitude.mag+" "+q.magnitude.type) : "unkn"));
-                }
-                for (let s of seisplotjs.stationxml.allStations(networks)) {
-                  let m = L.marker([s.latitude, s.longitude]);
-                  m.addTo(mymap);
-                  m.bindTooltip(s.codes());
-                }
-
-                let allChannels = Array.from(seisplotjs.stationxml.allChannels(networks));
-                let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
-                let seismogramDataList = allChannels.map(c =&gt; {
-                  return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
-                });
-                let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-                return Promise.all([ quakeList, networks, dsQuery.postQuerySeismograms(seismogramDataList) ]);
-            </code></pre>
-      <p>
-       Because we have the
-            channel, we can also plot the seismograms corrected for overall
-            gain and in units of m/s. We also added a couple of
+       methods for eventQuery and stationQuery, which each
+       return a Promise to an array of Network or Quake objects
+       and then use those to plot the earthquakes and stations on the map.
+       The station will be plotted as
+       a generic triangle as the map marker, but the quake is
+       plotted as a circle with the radius scaled by the magnitude.
+       We also added a couple of
        <code class="language-html">
         &lt;span&gt;
        </code>
        elements to hold the station codes and earthquake description.
-            The default text coloring colors the seismograms and the corresponding
-            array of strings in the title the same color, making them easier to
-            identify. Note the units on the left hand side are now m/s.
+        We set the these elements assuming we will only get one of each.
       </p>
-      <pre><code class="language-javascript" snippet="seismograph">
-          }).then( ( [ quakeList, networks, seismogramDataList ] ) =&gt; {
-            let div = seisplotjs.d3.select("div#myseismograph");
-            let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-            seisConfig.title = seismogramDataList.map((sdd, i) =&gt; i===0?sdd.channel.codes():sdd.channel.channelCode);
-            seisConfig.doGain = true;
-            let graph = new seisplotjs.seismograph.Seismograph(div,
-                                                               seisConfig,
-                                                               seismogramDataList);
-            graph.draw();
-            seisplotjs.d3.select("span#stationCode").text(networks[0].stations[0].codes());
-            seisplotjs.d3.select("span#earthquakeDescription").text(quakeList[0].description);
-          }).catch( function(error) {
-            seisplotjs.d3.select("div#myseismograph").append("p").html("Error loading data." +error);
-            console.assert(false, error);
-          });
-          </code></pre>
+      <pre><code class="language-javascript" snippet="promise">
+let stationsPromise = stationQuery.queryChannels().then(networkList =&gt; {
+  for (let s of seisplotjs.stationxml.allStations(networkList)) {
+    let m = seisplotjs.leafletutil.createStationMarker(s);
+    m.addTo(mymap);
+  }
+  seisplotjs.d3.select('span#stationCode').text(networkList[0].stations[0].codes());
+  return networkList;
+});
+let quakePromise = eventQuery.query().then( quakeList =&gt; {
+  for (const q of quakeList) {
+    let circle = seisplotjs.leafletutil.createQuakeMarker(q, quakeMagScaleFactor);
+    circle.addTo(mymap);
+  }
+  seisplotjs.d3.select('span#earthquakeDescription').text(quakeList[0].description);
+  return quakeList;
+});
+</code></pre>
+      <p>
+       We then use a separate
+       <code class="language-javascript">
+        then()
+       </code>
+       for the actual seismograms. Because we will need both the earthquake and
+       the chanenls, we use
+       <code class="language-javascript">
+        Promise.all()
+       </code>
+       to ensure both have successfully completed.
+       We then will use the more powerful POST method of the
+       <a href="http://service.iris.edu/fdsnws/dataselect/1/">
+        FDSNWS dataselect
+       </a> web
+       service to get the seismograms.
+       The array of
+       <code class="language-javascript">
+        SeismogramDisplayData
+       </code>
+       objects works just like the
+       <code class="language-javascript">
+        StartEndDuration
+       </code>
+       we saw previously but also holds the channel and the quake and will also contain
+          the resulting seismogram. We ask for data starting at the origin time of the
+          earthquake and with a duration of 2400 seconds.
+      </p>
+      <pre><code class="language-javascript" snippet="seismogramload">
+Promise.all( [ quakePromise, stationsPromise ] )
+.then( ( [ quakeList, networkList ] ) =&gt; {
+  let seismogramDataList = [];
+  for (const q of quakeList) {
+    let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
+    for (const c of seisplotjs.stationxml.allChannels(networkList)) {
+      let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
+      sdd.addQuake(q);
+      seismogramDataList.push(sdd);
+    }
+  }
+  let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+  let sddPromise = dsQuery.postQuerySeismograms(seismogramDataList);
+  return Promise.all( [ quakePromise, stationsPromise, sddPromise ] );
+</code></pre>
+      <p>
+        Once these are loaded we will plot them
+        just like we did before. Because we have the
+        channel, we can also plot the seismograms corrected for overall
+        gain and in units of m/s.
+        The default text coloring colors the seismograms and the corresponding
+        array of strings in the title the same color, making them easier to
+        identify. Note the units on the left hand side are now m/s.
+      </p>
+      <pre><code class="language-javascript" snippet="seismogramplot">
+}).then( ( [ quakeList, networkList, seismogramDataList ] ) =&gt; {
+    let div = seisplotjs.d3.select('div#myseismograph');
+    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+    seisConfig.doGain = true;
+    let graph = new seisplotjs.seismograph.Seismograph(div,
+                                                       seisConfig,
+                                                       seismogramDataList);
+    graph.draw();
+    return seismogramDataList;
+}).catch( function(error) {
+  seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
+  console.assert(false, error);
+});
+</code></pre>
       <h3>
        See it live in
        <a href="tutorial3.html" target="_blank">
