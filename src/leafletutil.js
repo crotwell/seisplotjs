@@ -6,13 +6,17 @@ import * as L from 'leaflet';
 
 export const triangle = '\u25B2';
 
+export const StationMarkerClassName = 'stationMapMarker';
+export const InactiveStationMarkerClassName = 'inactiveStationMapMarker';
+export const QuakeMarkerClassName = 'quakeMapMarker';
+
 export const stationIcon = L.divIcon( {
-    className: 'stationMarker'
+    className: StationMarkerClassName
   }
 );
 
 export const inactiveStationIcon = L.divIcon( {
-    className: 'inactiveStationMarker'
+    className: InactiveStationMarkerClassName
   }
 );
 
@@ -21,29 +25,29 @@ export const inactiveStationIcon = L.divIcon( {
 
 export const stationMarker_css = `
 
-.inactiveStationMarker {
+.${InactiveStationMarkerClassName} {
   color: darkgrey;
   font-size: large;
   z-index: 1;
   text-shadow: 1px 1px 0 dimgrey, -1px 1px 0 dimgrey, -2px 1px 0 dimgrey, -1px -1px 0 dimgrey, 0 -3px 0 dimgrey, 1px -1px 0 dimgrey, 2px 1px 0 dimgrey;
 }
-.inactiveStationMarker:after{
-  content: "${triangle}"
+.${InactiveStationMarkerClassName}:after{
+  content: "${triangle}";
 }
-.stationMarker {
+.${StationMarkerClassName} {
   color: blue;
   font-size: large;
   z-index: 10;
   text-shadow: 1px 1px 0 dimgrey, -1px 1px 0 dimgrey, -2px 1px 0 dimgrey, -1px -1px 0 dimgrey, 0 -3px 0 dimgrey, 1px -1px 0 dimgrey, 2px 1px 0 dimgrey;
 }
 
-.stationMarker:after{
-  content: "${triangle}"
+.${StationMarkerClassName}:after{
+  content: "${triangle}";
 }
-path.quakeMarker {
+.${QuakeMarkerClassName} {
   stroke: red;
-  fillColor: #f03;
-  fillOpacity: 0.15;
+  fill: #f03;
+  fill-opacity: 0.15;
 }
 `;
 
@@ -60,7 +64,7 @@ export function createQuakeMarker(quake: Quake, magScaleFactor: number = 5) {
   let circle = L.circleMarker([quake.latitude, quake.longitude], {
     color: 'currentColor',
     radius: quake.magnitude ? (quake.magnitude.mag*magScaleFactor) : magScaleFactor, // in case no mag
-    className: 'quakeMarker'
+    className: QuakeMarkerClassName
   });
   circle.bindTooltip(`${quake.time.toISOString()} ${(quake.magnitude ? (quake.magnitude.mag+" "+quake.magnitude.type) : "unkn")}`);
   return circle;
