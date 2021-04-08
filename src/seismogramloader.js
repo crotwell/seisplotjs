@@ -19,9 +19,9 @@ export class SeismogramLoader {
   stationQuery: StationQuery;
   eventQuery: EventQuery;
   dataselectQuery: null | DataSelectQuery;
-  startPhaseList: Array<string>;
-  endPhaseList: Array<string>;
-  markedPhaseList: Array<string>;
+  _startPhaseList: Array<string>;
+  _endPhaseList: Array<string>;
+  _markedPhaseList: Array<string>;
   _startOffset: moment$MomentDuration;
   _endOffset: moment$MomentDuration;
   networkList: Promise<Array<Network>> | null;
@@ -51,10 +51,10 @@ export class SeismogramLoader {
     this.traveltimeList = null;
     this.sddList = null;
   }
-  get startPhaseList(): Array<String> {
+  get startPhaseList(): Array<string> {
     return this._startPhaseList;
   }
-  set startPhaseList(val: Array<String> | String) {
+  set startPhaseList(val: Array<string> | string) {
     if (Array.isArray(val)) {
       this._startPhaseList = val;
     } else if (isStringArg(val)) {
@@ -78,10 +78,10 @@ export class SeismogramLoader {
   startOffsetOfSeconds(val: number) {
     this._startOffset = moment.duration(val, 'seconds');
   }
-  get endPhaseList(): Array<String> {
+  get endPhaseList(): Array<string> {
     return this._endPhaseList;
   }
-  set endPhaseList(val: Array<String> | String) {
+  set endPhaseList(val: Array<string> | string) {
     if (Array.isArray(val)) {
       this._endPhaseList = val;
     } else if (isStringArg(val)) {
@@ -105,10 +105,10 @@ export class SeismogramLoader {
   endOffsetOfSeconds(val: number) {
     this._endOffset = moment.duration(val, 'seconds');
   }
-  get markedPhaseList(): Array<String> {
+  get markedPhaseList(): Array<string> {
     return this._markedPhaseList;
   }
-  set markedPhaseList(val: Array<String> | String) {
+  set markedPhaseList(val: Array<string> | string) {
     if (Array.isArray(val)) {
       this._markedPhaseList = val;
     } else if (isStringArg(val)) {
