@@ -4,22 +4,36 @@
     <meta charset='utf-8'>
     <title>Tutorial 4: Arrival Times</title>
     <style>
+      div#mapid {
+        height: 40%;
+        width: 100%;
+      }
       div.seismograph {
-        height: 300px;
+        height: 40%;
+      }
+      div.stationMapMarker {
+        color: rebeccapurple;
+      }
+      path.quakeMapMarker {
+        fill: orange;
+        stroke: yellow;
+        fill-opacity: 0.25;
       }
       div.particlemotionContainer  {
         float:left;
-        height: 300px;
-        width: 320px;
+        width: 32vw;
+        height: 32vw;
       }
     </style>
   </head>
   <body>
     <h3>Tutorial 4: Arrival Times</h3>
+    <div id="mapid">
+    </div>
     <h3>A Seismograph recorded at <span id="stationCode"></span> for the <span id="earthquakeDescription"></span>!</h3>
     <div  id="myseismograph">
     </div>
-    <div  id="particlemotion">
+    <div  id="myparticlemotion">
     </div>
 
     <xxxscript src="https://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_2.1.0-alpha.0_standalone.js"></script>
