@@ -46,14 +46,20 @@ export class SeismographConfig {
   _titleHandlebarsCompiled: null | ({},{}) => string;
   isXAxis: boolean;
   isXAxisTop: boolean;
-  xLabel: string;
+  _xLabel: string;
+  /** @private */
+  _xLabelHandlebarsCompiled: null | ({},{}) => string;
   xLabelOrientation: string;
   xSublabel: string;
   isYAxis: boolean;
   isYAxisRight: boolean;
   isYAxisNice: boolean;
-  yLabel: string;
-  yLabelRight: string;
+  _yLabel: string;
+  /** @private */
+  _yLabelHandlebarsCompiled: null | ({},{}) => string;
+  _yLabelRight: string;
+  /** @private */
+  _yLabelRightHandlebarsCompiled: null | ({},{}) => string;
   yLabelOrientation: string;
   ySublabel: string;
   ySublabelTrans: number;
@@ -225,6 +231,110 @@ export class SeismographConfig {
     return this._titleHandlebarsCompiled(context, runtimeOptions);
   }
 
+  /**
+   * gets the current x label
+   *
+   * @returns        x label
+   */
+  get xLabel(): string {
+    return this._xLabel;
+  }
+  /**
+   * Sets the xLabel as simple string or a
+   * handlebars template.
+   *
+   * @param value string  to be the x label
+   */
+  set xLabel(value: null | string ) {
+    if (! isDef(value)) {
+      this._xLabel =  "";
+    } else {
+      this._xLabel =  value;
+    }
+    this._xLabelHandlebarsCompiled = null;
+  }
+
+  handlebarsXLabel(context: {}, runtimeOptions: {}): string {
+    if (  ! isDef(this._xLabelHandlebarsCompiled)) {
+      if ( ! isDef(this._xLabel) || this._xLabel.length === 0 ) {
+        // empty label
+        return "";
+      } else {
+        this._xLabelHandlebarsCompiled = Handlebars.compile(this._xLabel);
+      }
+    }
+    return this._xLabelHandlebarsCompiled(context, runtimeOptions);
+  }
+
+  /**
+   * gets the current title
+   *
+   * @returns        yLabel
+   */
+  get yLabel(): string {
+    return this._yLabel;
+  }
+  /**
+   * Sets the ylabel as simple string or a
+   * handlebars template.
+   *
+   * @param value string to be the y label
+   */
+  set yLabel(value: null | string ) {
+    if (! isDef(value)) {
+      this._yLabel =  "";
+    } else {
+      this._yLabel =  value;
+    }
+    this._yLabelHandlebarsCompiled = null;
+  }
+
+  handlebarsYLabel(context: {}, runtimeOptions: {}): string {
+    if (  ! isDef(this._yLabelHandlebarsCompiled)) {
+      if ( ! isDef(this._yLabel) || this._yLabel.length === 0 ) {
+        // empty label
+        return "";
+      } else {
+        this._yLabelHandlebarsCompiled = Handlebars.compile(this._yLabel);
+      }
+    }
+    return this._yLabelHandlebarsCompiled(context, runtimeOptions);
+  }
+
+  /**
+   * gets the current title
+   *
+   * @returns        yLabel
+   */
+  get yLabelRight(): string {
+    return this._yLabelRight;
+  }
+  /**
+   * Sets the ylabel as simple string or a
+   * handlebars template.
+   *
+   * @param value string to be the y label
+   */
+  set yLabelRight(value: null | string ) {
+    if (! isDef(value)) {
+      this._yLabelRight =  "";
+    } else {
+      this._yLabelRight =  value;
+    }
+    this._yLabelRightHandlebarsCompiled = null;
+  }
+
+  handlebarsYLabelRight(context: {}, runtimeOptions: {}): string {
+    if (  ! isDef(this._yLabelRightHandlebarsCompiled)) {
+      if ( ! isDef(this._yLabelRight) || this._yLabelRight.length === 0 ) {
+        // empty label
+        return "";
+      } else {
+        this._yLabelRightHandlebarsCompiled = Handlebars.compile(this._yLabelRight);
+      }
+    }
+    return this._yLabelRightHandlebarsCompiled(context, runtimeOptions);
+  }
   /** Fake data to use to test alignment of seismograph axis and between canvas
    *  and svg drawing.
    *

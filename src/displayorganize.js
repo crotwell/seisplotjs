@@ -3,7 +3,7 @@
 import { fftForward }    from './fft.js';
 import { FFTPlot }       from './fftplot.js';
 import * as leafletutil from './leafletutil.js';
-import { ParticleMotion }       from './particlemotion.js';
+import { ParticleMotion, createParticleMotionConfig } from './particlemotion.js';
 import { Quake } from './quakeml.js';
 import { Station } from './stationxml.js';
 import { SeismogramDisplayData } from './seismogram.js';
@@ -34,7 +34,11 @@ export class OrganizedDisplay {
   constructor(seisData: Array<SeismogramDisplayData>, plottype?: string = SEISMOGRAPH) {
     this.plottype = plottype;
     this.seisData = seisData;
-    this.seisConfig = new SeismographConfig();
+    if (this.plottype.startsWith(PARTICLE_MOTION)) {
+      this.seisConfig = createParticleMotionConfig();
+    } else {
+      this.seisConfig = new SeismographConfig();
+    }
     this.seismograph = null;
     this.fftPlot = null;
     this.particleMotionPlot = null;
@@ -87,8 +91,6 @@ export class OrganizedDisplay {
       }
 
       let pmpSeisConfig = this.seisConfig.clone();
-      pmpSeisConfig.yLabel = this.seisData[1].channelCode;
-      pmpSeisConfig.xLabel = this.seisData[0].channelCode;
 
       this.particleMotionPlot = new ParticleMotion(divElement, pmpSeisConfig, this.seisData[0], this.seisData[1]);
       this.particleMotionPlot.draw();

@@ -17,6 +17,10 @@ import { SeismographConfig } from './seismographconfig';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData } from './seismogram.js';
 import { isDef, isNumArg, StartEndDuration } from './util.js';
 
+export const DEFAULT_TITLE = "<tspan>{{#each seisDataList}}{{onlyChangesChannel ../seisDataList @index}} {{else}}No Data{{/each}}</tspan>";
+export const DEFAULT_XLABEL = "{{seisXData.channelCode}}";
+export const DEFAULT_YLABEL = "{{seisYData.channelCode}}";
+
 /**
  * Creates particle motion plots, for each selected element. This assumes each
  * element has some combination of start, end, duration, net, sta, loc, and chan
@@ -48,11 +52,8 @@ export function addDivForParticleMotion(svgParent: any, xSeisData: SeismogramDis
   let svgDiv = svgParent.append("div");
   if ( ! isDef(xSeisData)) {throw new Error("xSeisData cannot be null");}
   if ( ! isDef(ySeisData)) {throw new Error("ySeisData cannot be null");}
-  const xSeis = xSeisData.seismogram;
-  const ySeis = ySeisData.seismogram;
-  const xLabel = xSeis ? xSeis.channelCode : "unknown";
-  const yLabel = ySeis ? ySeis.channelCode : "unknown";
-  svgDiv.classed(xLabel+" "+yLabel, true);
+  svgDiv.classed(xSeisData.channelCode, true);
+  svgDiv.classed(ySeisData.channelCode, true);
   svgDiv.classed("particleMotionContainer", true);
   return addParticleMotion(svgDiv, xSeisData, ySeisData, timeWindow);
 }
@@ -65,22 +66,26 @@ export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayDa
   const xSeis = xSeisData.seismogram;
   const ySeis = ySeisData.seismogram;
 
-  let seisConfig = new SeismographConfig();
-  if (isDef(timeWindow)) {
-    seisConfig.fixedTimeScale = timeWindow;
-  }
-  seisConfig.title = xSeis.channelCode+" "+ySeis.channelCode;
-  seisConfig.xLabel = xSeis.channelCode;
-  seisConfig.yLabel = ySeis.channelCode;
-  seisConfig.margin.top = 40;
-  seisConfig.margin.bottom = 40;
-  seisConfig.margin.right = 40;
-  seisConfig.margin.left = 40;
+  let seisConfig = createParticleMotionConfig(timeWindow);
   let pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
   pmp.draw();
   return pmp;
 }
 
+export function createParticleMotionConfig(timeWindow?: StartEndDuration): SeismographConfig {
+  let seisConfig = new SeismographConfig();
+  seisConfig.title = DEFAULT_TITLE;
+  if (isDef(timeWindow)) {
+    seisConfig.fixedTimeScale = timeWindow;
+  }
+  seisConfig.xLabel = DEFAULT_XLABEL;
+  seisConfig.yLabel = DEFAULT_YLABEL;
+  seisConfig.margin.top = 40;
+  seisConfig.margin.bottom = 40;
+  seisConfig.margin.right = 40;
+  seisConfig.margin.left = 40;
+  return seisConfig;
+}
 /**
  * Particle motion plot.
  *
@@ -131,12 +136,9 @@ export class ParticleMotion {
     if (isDef(seismographConfig)) {
       this.seismographConfig = seismographConfig;
     } else {
-      this.seismographConfig = new SeismographConfig();
+      this.seismographConfig = createParticleMotionConfig();
       this.seismographConfig.xLabel = this.xSeisData.channelCode;
       this.seismographConfig.yLabel = this.ySeisData.channelCode;
-      this.seismographConfig.margin.left = 40;
-      this.seismographConfig.margin.top = this.seismographConfig.margin.bottom;
-      this.seismographConfig.margin.right = this.seismographConfig.margin.left;
     }
     this.calcTimeWindow();
     this.svg = inSvgParent.append("svg");
@@ -321,6 +323,8 @@ export class ParticleMotion {
        .attr("text-anchor", "middle");
     let handlebarOut = this.seismographConfig.handlebarsTitle({
          seisDataList: [ this.xSeisData , this.ySeisData ],
+         seisXData: this.xSeisData,
+         seisYData: this.ySeisData,
          seisConfig: this.seismographConfig
        },
        {
@@ -332,12 +336,22 @@ export class ParticleMotion {
   drawXLabel() {
     this.svg.selectAll("g.xLabel").remove();
     if (isNumArg(this.width) && isNumArg(this.outerWidth)) {
-    this.svg.append("g")
-       .classed("xLabel", true)
-       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight - this.seismographConfig.margin.bottom/3  )+")")
-       .append("text").classed("x label", true)
-       .attr("text-anchor", "middle")
-       .text(this.seismographConfig.xLabel);
+      let svgText = this.svg.append("g")
+         .classed("xLabel", true)
+         .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight - this.seismographConfig.margin.bottom/3  )+")")
+         .append("text").classed("x label", true)
+         .attr("text-anchor", "middle")
+         .text(this.seismographConfig.xLabel);
+      let handlebarOut = this.seismographConfig.handlebarsXLabel({
+          seisDataList: [ this.xSeisData , this.ySeisData ],
+          seisXData: this.xSeisData,
+          seisYData: this.ySeisData,
+          seisConfig: this.seismographConfig
+        },
+        {
+          allowProtoPropertiesByDefault: true // this might be a security issue???
+        });
+      svgText.html(handlebarOut);
     }
   }
   drawYLabel() {
@@ -364,9 +378,27 @@ export class ParticleMotion {
         .attr("dominant-baseline", "central");
       }
       if (side==="left") {
-        svgText.text(this.seismographConfig.yLabel);
+        let handlebarOut = this.seismographConfig.handlebarsYLabel({
+            seisDataList: [ this.xSeisData , this.ySeisData ],
+            seisXData: this.xSeisData,
+            seisYData: this.ySeisData,
+            seisConfig: this.seismographConfig
+          },
+          {
+            allowProtoPropertiesByDefault: true // this might be a security issue???
+          });
+        svgText.html(handlebarOut);
       } else {
-        svgText.text(this.seismographConfig.yLabelRight);
+        let handlebarOut = this.seismographConfig.handlebarsYLabelRight({
+            seisDataList: [ this.xSeisData , this.ySeisData ],
+            seisXData: this.xSeisData,
+            seisYData: this.ySeisData,
+            seisConfig: this.seismographConfig
+          },
+          {
+            allowProtoPropertiesByDefault: true // this might be a security issue???
+          });
+        svgText.html(handlebarOut);
       }
     }
   }
