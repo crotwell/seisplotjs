@@ -164,6 +164,19 @@ export class ParticleMotion {
     this.height = 100;
     let mythis = this;
 
+    // for line ends to show direction of particle motion
+    const arrow = this.svg.append("defs").append("marker");
+    arrow.attr("id", "arrow")
+      .attr("markerWidth", "10")
+      .attr( "markerHeight", "10")
+      .attr( "refX", "0")
+      .attr( "refY", "3")
+      .attr( "orient", "auto")
+      .attr( "markerUnits", "strokeWidth")
+    arrow.append("path").attr("d", "M0,0 L0,6 L9,3 z")
+      .attr("stroke", "currentColor")
+      .attr("fill", "currentColor");
+
     this.g = this.svg.append("g")
         .attr("transform", "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")");
     this.calcScaleDomain();
@@ -222,6 +235,7 @@ export class ParticleMotion {
     path.enter()
       .append("path")
       .classed("seispath", true)
+      .attr("marker-end", "url(#arrow)")
     .attr("d", d3.line().curve(d3.curveLinear)
       .x(d => mythis.xScale(d))
       .y((d,i) => mythis.yScale(segB.yAtIndex(idxB+i))));
