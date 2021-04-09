@@ -64,6 +64,18 @@ export function convertTravelTimeLineToObject(ttimeline: string): TraveltimeArri
     };
   }
 
+export function createOriginArrival(dist: number): TraveltimeArrivalType {
+  return {
+    distdeg: dist,
+    phase: 'origin',
+    time: 0,
+    rayparam: 0,
+    takeoff: 0,
+    incident: 0,
+    puristdist: dist,
+    puristname: 'origin'
+  };
+}
 
 /**
  * Query to the IRIS traveltime webservice, based on the TauP Toolkit. See

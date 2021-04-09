@@ -1,8 +1,9 @@
 //@flow
 
 import type { TraveltimeJsonType } from './traveltime.js';
+import {distaz} from './distaz.js';
 import {StartEndDuration} from './util.js';
-import {TraveltimeQuery} from './traveltime.js';
+import {TraveltimeQuery, createOriginArrival} from './traveltime.js';
 import {DataSelectQuery} from './fdsndataselect.js';
 import {EventQuery} from './fdsnevent.js';
 import {StationQuery} from './fdsnstation.js';
@@ -10,13 +11,15 @@ import {FedCatalogQuery} from './irisfedcatalog.js';
 import {Quake} from './quakeml.js';
 import {allStations, Network} from './stationxml.js';
 import {SeismogramDisplayData} from './seismogram.js';
-import {createMarkersForTravelTimes} from './seismograph.js';
+import {createMarkersForTravelTimes, createMarkerForOriginTime} from './seismograph.js';
 import {isDef, isStringArg, stringify } from './util.js';
 import moment from 'moment';
 import RSVP from 'rsvp';
 
 export class SeismogramLoader {
   stationQuery: StationQuery;
+  withResponse: boolean;
+  markOrigin: boolean;
   eventQuery: EventQuery;
   dataselectQuery: null | DataSelectQuery;
   _startPhaseList: Array<string>;
@@ -36,7 +39,9 @@ export class SeismogramLoader {
     if ( ! isDef(eventQuery)) { throw new Error("eventQuery must not be null");}
     if ( ! (eventQuery instanceof EventQuery)) { throw new Error("2nd arg must be a EventQuery: "+stringify(eventQuery.constructor));}
     this.stationQuery= stationQuery;
+    this.withResponse = false;
     this.eventQuery = eventQuery;
+    this.markOrigin = true;
     this.dataselectQuery = null;
     if ( isDef(dataselectQuery)) {
       this.dataselectQuery = dataselectQuery;
@@ -125,11 +130,18 @@ export class SeismogramLoader {
     if ( ! this.eventQuery.isSomeParameterSet()) {
       throw new Error("Must set some event parameter to avoid asking for everything.");
     }
-    this.networkList = fedcat.queryChannels();
+    if (this.withResponse) {
+      this.networkList = fedcat.queryResponses();
+    } else {
+      this.networkList = fedcat.queryChannels();
+    }
     this.quakeList = this.eventQuery.query();
     let allPhaseList = [];
     allPhaseList = allPhaseList.concat(this.startPhaseList, this.endPhaseList, this.markedPhaseList);
-    const allPhases = ""+allPhaseList.join(',');
+    if (allPhaseList.includes('origin')) {
+      this.markOrigin = true;
+    }
+    const allPhasesWithoutOrigin = allPhaseList.filter(p => p !== 'origin').join(',');
 
     this.traveltimeList = RSVP.all([this.networkList, this.quakeList])
     .then(([ netList, quakeList]) => {
@@ -138,11 +150,11 @@ export class SeismogramLoader {
           for (let s of allStations(netList)) {
             if (s.timeRange.contains(q.time)) {
               let taupQuery = new TraveltimeQuery();
-              taupQuery.latLonFromStation(s)
-                .latLonFromQuake(q)
-                .phases(allPhases);
+              let daz = distaz(s.latitude, s.longitude, q.latitude, q.longitude);
+              taupQuery.distdeg(daz.distanceDeg);
+              taupQuery.phases(allPhasesWithoutOrigin);
               // save quake and station along with result from traveltime
-              ttpromiseList.push(Promise.all([s, q, taupQuery.queryJson()]));
+              ttpromiseList.push(Promise.all([s, q, taupQuery.queryJson(), daz]));
             }
           }
         }
@@ -155,20 +167,30 @@ export class SeismogramLoader {
           let station = ttarr[0];
           let quake = ttarr[1];
           let ttjson = ttarr[2];
+          let distaz = ttarr[3];
           // find earliest start and end arrival
           let startArrival;
           let endArrival;
           for (let pname of this.startPhaseList) {
-            for (let a of ttjson.arrivals) {
-              if (a.phase === pname && ( ! isDef(startArrival) || startArrival.time > a.time)) {
-                startArrival = a;
+            if (pname === 'origin' && ( ! isDef(startArrival) || startArrival.time > 0)) {
+              startArrival = createOriginArrival(distaz.distanceDeg);
+            } else {
+              for (let a of ttjson.arrivals) {
+                if (a.phase === pname && ( ! isDef(startArrival) || startArrival.time > a.time)) {
+                  startArrival = a;
+                }
               }
             }
           }
           for (let pname of this.endPhaseList) {
-            for (let a of ttjson.arrivals) {
-              if (a.phase === pname && ( ! isDef(endArrival) || endArrival.time > a.time)) {
-                endArrival = a;
+            // weird, but might as well allow origin to be the end phase
+            if (pname === 'origin' && ( ! isDef(startArrival) || startArrival.time > 0)) {
+              endArrival = createOriginArrival(distaz.distanceDeg);
+            } else {
+              for (let a of ttjson.arrivals) {
+                if (a.phase === pname && ( ! isDef(endArrival) || endArrival.time > a.time)) {
+                  endArrival = a;
+                }
               }
             }
           }
@@ -179,13 +201,9 @@ export class SeismogramLoader {
               .add(endArrival.time, 'seconds').add(this.endOffset);
             let timeWindow = new StartEndDuration(startTime, endTime);
             let phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
-            phaseMarkers.push({
-              type: 'predicted',
-              name: "origin",
-              time: moment.utc(quake.time),
-              description: ""
-            });
-
+            if (this.markOrigin ) {
+              phaseMarkers.push(createMarkerForOriginTime(quake));
+            }
             for (let chan of station.channels) {
                 let sdd = SeismogramDisplayData.fromChannelAndTimeWindow(chan, timeWindow);
                 sdd.addQuake(quake);

@@ -1401,6 +1401,24 @@ export function createMarkersForTravelTimes(quake: Quake, ttime: TraveltimeJsonT
   });
 }
 
+/**
+ * Creates a Marker for the origin time in ttime.arrivals, for the given Quake.
+ *
+ * @param   quake quake the travel times are relative to
+ *
+ * @returns        Marker suitable for adding to a seismograph
+ */
+export function createMarkerForOriginTime(quake: Quake): MarkerType {
+    return {
+      type: 'predicted',
+      name: 'origin',
+      time: moment.utc(quake.time),
+      description: ""
+    };
+}
+
+
+
 export const seismograph_css = `
 
 
