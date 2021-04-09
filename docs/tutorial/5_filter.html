@@ -170,8 +170,9 @@ let loaderSDDPromise = loader.loadSeismograms();
         we need direct access to intermediate values as SeismogramLoader
         works across the various remote call. We can set the text in the
         span elements here just as an example. Note that the quake and channel
-        are saved within the SeismogramDisplayData we will get at the end, so
-        they are not lost even if we do not set up these extra then methods.
+        are saved within the list of SeismogramDisplayData objects
+        we will get at the end, so they are not lost even if we do not make
+        use of these extra then methods.
       </p>
       <pre><code class="language-javascript" snippet="map">
 let stationsPromise = loader.networkList.then(networkList =&gt; {
