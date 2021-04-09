@@ -175,6 +175,7 @@ const centerLon = -100;
 const mapZoomLevel = 4;
 const quakeMagScaleFactor = 5; // radius in pixels per unit magnitude
 const mymap = seisplotjs.leaflet.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
+mymap.scrollWheelZoom.disable();
 let topoMap = seisplotjs.leaflet.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
   maxZoom: 17,
   attribution: 'Map data: &lt;a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer"&gt;Esri, Garmin, GEBCO, NOAA NGDC, and other contributors&lt;/a&gt;)'
@@ -259,7 +260,8 @@ let quakePromise = eventQuery.query().then( quakeList =&gt; {
        We then will use the more powerful POST method of the
        <a href="http://service.iris.edu/fdsnws/dataselect/1/">
         FDSNWS dataselect
-       </a> web
+       </a>
+       web
        service to get the seismograms.
        The array of
        <code class="language-javascript">
@@ -278,7 +280,7 @@ Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) =&gt; {
   let seismogramDataList = [];
   for (const q of quakeList) {
-    let timeWindow = new seisplotjs.util.StartEndDuration(quakeList[0].time, null, 2400);
+    let timeWindow = new seisplotjs.util.StartEndDuration(q.time, null, 2400);
     for (const c of seisplotjs.stationxml.allChannels(networkList)) {
       let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
       sdd.addQuake(q);
@@ -290,7 +292,7 @@ Promise.all( [ quakePromise, stationsPromise ] )
   return Promise.all( [ quakePromise, stationsPromise, sddPromise ] );
 </code></pre>
       <p>
-        Once these are loaded we will plot them
+       Once these are loaded we will plot them
         just like we did before. Because we have the
         channel, we can also plot the seismograms corrected for overall
         gain and in units of m/s.

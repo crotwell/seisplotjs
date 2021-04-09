@@ -4,6 +4,7 @@ const centerLon = -100;
 const mapZoomLevel = 4;
 const quakeMagScaleFactor = 5; // radius in pixels per unit magnitude
 const mymap = seisplotjs.leaflet.map('mapid').setView([ centerLat, centerLon], mapZoomLevel);
+mymap.scrollWheelZoom.disable();
 let topoMap = seisplotjs.leaflet.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}', {
   maxZoom: 17,
   attribution: 'Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)'
