@@ -981,10 +981,10 @@ export class Seismograph {
     if (this.seismographConfig.showTitle) {
       let titleSVGText = this.svg.append("g")
          .classed("title", true)
-         .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+2+")")
+         .attr("transform", `translate(${(this.seismographConfig.margin.left+(this.width)/2)}, 0)`)
          .append("text").classed("title label", true)
          .attr("x",0)
-         .attr("y",0)
+         .attr("y",2) // give little extra space at top, css style as hanging doesn't quite do it
          .attr("text-anchor", "middle");
       let handlebarOut = this.seismographConfig.handlebarsTitle({
           seisDataList: this.seisDataList,

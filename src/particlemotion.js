@@ -63,9 +63,6 @@ export function addParticleMotion(svgParent: any, xSeisData: SeismogramDisplayDa
     // $FlowFixMe
     throw new Error(`Seismogram has no data: ${xSeisData.seismogram} ${ySeisData.seismogram}`);
   }
-  const xSeis = xSeisData.seismogram;
-  const ySeis = ySeisData.seismogram;
-
   let seisConfig = createParticleMotionConfig(timeWindow);
   let pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
   pmp.draw();
@@ -172,7 +169,7 @@ export class ParticleMotion {
       .attr( "refX", "0")
       .attr( "refY", "3")
       .attr( "orient", "auto")
-      .attr( "markerUnits", "strokeWidth")
+      .attr( "markerUnits", "strokeWidth");
     arrow.append("path").attr("d", "M0,0 L0,6 L9,3 z")
       .attr("stroke", "currentColor")
       .attr("fill", "currentColor");
@@ -332,8 +329,10 @@ export class ParticleMotion {
     this.svg.selectAll("g.title").remove();
     let titleSVGText = this.svg.append("g")
        .classed("title", true)
-       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+( this.seismographConfig.margin.bottom/3  )+")")
+       .attr("transform", `translate(${(this.seismographConfig.margin.left+(this.width)/2)}, 0)`)
        .append("text").classed("title label", true)
+       .attr("x",0)
+       .attr("y",2) // give little extra space at top, css style as hanging doesn't quite do it
        .attr("text-anchor", "middle");
     let handlebarOut = this.seismographConfig.handlebarsTitle({
          seisDataList: [ this.xSeisData , this.ySeisData ],
