@@ -575,6 +575,13 @@ export class Seismogram {
     }
     return true;
   }
+  /**
+   * Merges all segments into a single array of the same type as the first
+   * segment. No checking is done for gaps or overlaps, this is a simple
+   * congatination. Be careful!
+   *
+   * @return contatenated data
+   */
   merge(): Int32Array | Float32Array | Float64Array {
     let outArray;
     if (this._segmentArray[0].y instanceof Int32Array) {
@@ -746,6 +753,9 @@ export class SeismogramDisplayData {
     } else {
       this.quakeList.push(quake);
     }
+  }
+  addMarker(marker: MarkerType) {
+    this.addMarkers( [ marker ]);
   }
   addMarkers(markers: MarkerType | Array<MarkerType>) {
       if (Array.isArray(markers)) {
