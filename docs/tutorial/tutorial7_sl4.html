@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <title>Tutorial 7: Realtime</title>
+    <style>
+      div#realtime div.seismograph {
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Tutorial 7: Realtime</h3>
+    <h3>Realtime display for <span id="channel"></span></h3>
+
+    <button id="disconnect">Disconnect</button>
+    <button id="pause">Pause</button>
+    Packets: <span id="numPackets">0</span>
+    <div id="realtime">
+    </div>
+
+    <div id="debug">
+    </div>
+    <script src="seisplotjs_2.1.0-alpha.0_standalone.js"></script>
+    <script src="tutorial7_sl4.js"></script>
+  </body>
+</html>

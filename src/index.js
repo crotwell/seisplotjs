@@ -34,6 +34,7 @@ import * as ringserverweb  from './ringserverweb.js';
 import * as sacPoleZero    from './sacpolezero.js';
 import * as seedcodec      from './seedcodec.js';
 import * as seedlink       from './seedlink.js';
+import * as seedlink4       from './seedlink4.js';
 import * as seismogram     from './seismogram.js';
 import * as seismogramloader     from './seismogramloader.js';
 import * as seismograph     from './seismograph.js';
@@ -87,6 +88,7 @@ export { cssutil,
          sacPoleZero,
          seedcodec,
          seedlink,
+         seedlink4,
          seismogram,
          seismogramloader,
          seismograph,

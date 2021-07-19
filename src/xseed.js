@@ -65,7 +65,8 @@ export class XSeedRecord {
    * @param   dataView bytes to parse
    * @returns parsed record
    */
-  static createFromDataView(dataView: DataView): XSeedRecord {
+
+  static parseSingleDataRecord(dataView: DataView): XSeedRecord {
     const header = XSeedHeader.createFromDataView(dataView);
     let extraDataView = new DataView(dataView.buffer,
                              dataView.byteOffset+header.getSize(),
@@ -76,6 +77,16 @@ export class XSeedRecord {
 
     const xr = new XSeedRecord(header, extraHeaders, rawData);
     return xr;
+  }
+  /**
+   * [createFromDataView description]
+   * @deprecated
+   * @param  {[type]} dataView [description]
+   * @param  {[type]} header   [description]
+   * @return {[type]}          [description]
+   */
+  static createFromDataView(dataView: DataView): XSeedRecord {
+    return XSeedRecord.parseSingleDataRecord(dataView);
   }
   /**
    * Calculates the byte size of the xseed record to hold this data.
