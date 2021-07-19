@@ -33,6 +33,7 @@ export const PACKET = "PACKET";
 export const STREAM = "STREAM";
 export const ENDSTREAM = "ENDSTREAM";
 export const MSEED_TYPE = "/MSEED";
+export const MSEED3_TYPE = "/MSEED3";
 
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
@@ -604,6 +605,30 @@ export class DataLinkPacket {
     }
     return this._miniseed;
   }
+  /**
+   * is this packet a miniseed3 packet
+   *
+   * @returns          true if it is miniseed3
+   */
+  isMiniseed3(): boolean {
+    return isDef(this._mseed3) || this.streamId.endsWith(MSEED3_TYPE);
+  }
+  /**
+   * Parsed payload as a miniseed3 data record, if the data format is 3, null otherwise.
+   *
+   * @returns miniseed3 DataRecord or null
+   */
+  get miniseed3(): xseed.XSeedDataRecord | null {
+    if ( ! isDef(this._mseed3) ) {
+      if (this.streamId.endsWith(MSEED3_TYPE)) {
+        this._mseed3 = xseed.parseSingleDataRecord(this.data);
+      } else {
+        this._mseed3 = null;
+      }
+    }
+    return this._mseed3;
+  }
+
 }
 
 /**
