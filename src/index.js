@@ -55,10 +55,7 @@ import RSVP from 'rsvp';
 import * as d3 from 'd3';
 import * as leaflet from 'leaflet';
 
-/**
- * Current version of seisplotjs
- */
-const version = '2.1.0-alpha.0';
+import { version } from './util.js';
 
 /* reexport */
 export { cssutil,

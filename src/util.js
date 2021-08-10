@@ -6,6 +6,10 @@
  * http://www.seis.sc.edu
  */
 
+ /**
+  * Current version of seisplotjs
+  */
+export const version = '2.1.0-alpha.0';
 
 import moment from 'moment';
 import * as d3 from 'd3';

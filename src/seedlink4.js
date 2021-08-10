@@ -12,7 +12,7 @@ import {DataRecord } from './miniseed.js';
 import {XSeedRecord } from './xseed.js';
 import * as RSVP from 'rsvp';
 import moment from 'moment';
-import {version} from './index.js';
+import {version} from './util.js';
 
 import {dataViewToString} from './util';
 
@@ -62,7 +62,7 @@ export class SEPacket {
           sePacket._miniseed = miniseed.parseSingleDataRecord(dataView);
         } else if (dataFormat === 51) {
           // ascii 3 = 51, miniseed3
-          sePacket._mseed3 = xseed.createFromDataView(dataView);
+          sePacket._mseed3 = xseed.XSeedRecord.parseSingleDataRecord(dataView);
         } else if (dataFormat === 73) {
           // ascii I = 73, info packet with json
           sePacket._json = JSON.parse(dataViewToString(dataView));
@@ -114,7 +114,7 @@ export class SEPacket {
     get miniseed3(): xseed.XSeedDataRecord | null {
       if ( ! isDef(this._mseed3) ) {
         if (this.dataFormat === MINISEED_3_FORMAT) {
-          this._mseed3 = xseed.parseSingleDataRecord(this._rawPayload);
+          this._mseed3 = xseed.XSeedRecord.parseSingleDataRecord(this._rawPayload);
         } else {
           this._mseed3 = null;
         }
