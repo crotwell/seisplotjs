@@ -145,6 +145,21 @@ export function log(msg: string): void {
 }
 
 /**
+ * Log a warning message to the console. Put here to limit lint console errors
+ * for the times we really do want to use console.log. Will also append a
+ * p tag to a div#debug if it exists.
+ *
+ * @param   msg the message to log
+ */
+export function warn(msg: string): void {
+  // eslint-disable-next-line no-console
+  if (console) {console.log(`${stringify(msg)}`);}
+  if (typeof window !== 'undefined' && window !== null) {
+    d3.select("div#debug").append("p").text(`${stringify(msg)}`);
+  }
+}
+
+/**
  * String representation of input. This is kind of dumb but makes
  *  flow happier.
  *
