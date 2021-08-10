@@ -9,7 +9,8 @@
 import * as util from './util.js'; // for util.log
 import {dataViewToString, stringify, isDef, isNonEmptyStringArg} from './util';
 import * as miniseed from './miniseed';
-import * as RSVP from 'rsvp';
+import * as xseed from './xseed';
+import RSVP from 'rsvp';
 import moment from 'moment';
 
 /** const for datalink protocol for web sockets, DataLink1.0 */
@@ -182,7 +183,7 @@ export class DataLinkConnection {
   sendId(): Promise<string> {
     const that = this;
     return this.id(this.programname, this.username, stringify(this.clientIdNum), this.architecture)
-    .then(this.ensureDataLinkResponse)
+    .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse))
     .then(dlResponse => {
       if (dlResponse.type === 'ID') {
         that.serverId = ''+dlResponse.message;
@@ -323,7 +324,7 @@ export class DataLinkConnection {
    * @returns DataLinkResponse after checking instanceof
    * @throws Error if not a DataLinkResponse
    */
-  ensureDataLinkResponse(dl: DataLinkResponse | DataLinkPacket): DataLinkResponse {
+  static ensureDataLinkResponse(dl: DataLinkResponse | DataLinkPacket): DataLinkResponse {
     if (dl instanceof DataLinkResponse) {
       return dl;
     }
@@ -337,7 +338,7 @@ export class DataLinkConnection {
    * @returns DataLinkPacket after checking instanceof
    * @throws Error if not a DataLinkPacket
    */
-  ensureDataLinkPacket(dl: DataLinkResponse | DataLinkPacket): DataLinkPacket {
+  static ensureDataLinkPacket(dl: DataLinkResponse | DataLinkPacket): DataLinkPacket {
     if (dl instanceof DataLinkPacket) {
       return dl;
     }
@@ -357,7 +358,8 @@ export class DataLinkConnection {
    */
   id(programname: string, username: string, processid: string, architecture: string): Promise<DataLinkResponse> {
     let command = `ID ${programname}:${username}:${processid}:${architecture}`;
-    return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
+    return this.awaitDLCommand(command)
+    .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse));
   }
 
   /**
@@ -368,7 +370,8 @@ export class DataLinkConnection {
    */
   info(infoType: string): Promise<DataLinkResponse> {
     let command = `INFO ${infoType}`;
-    return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
+    return this.awaitDLCommand(command)
+    .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse));
   }
 
   /**
@@ -378,7 +381,8 @@ export class DataLinkConnection {
    * @returns promise to server's response
    */
   positionAfter(time: moment$Moment): Promise<DataLinkResponse> {
-    return this.positionAfterHPTime(momentToHPTime(time)).then(this.ensureDataLinkResponse);
+    return this.positionAfterHPTime(momentToHPTime(time))
+    .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse));
   }
 
   /**
@@ -389,7 +393,8 @@ export class DataLinkConnection {
    */
   positionAfterHPTime(hpTime: number): Promise<DataLinkResponse> {
     let command = `POSITION AFTER ${hpTime}`;
-    return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
+    return this.awaitDLCommand(command)
+    .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse));
   }
 
   /**
@@ -400,7 +405,8 @@ export class DataLinkConnection {
    */
   match(pattern: string): Promise<DataLinkResponse> {
     let command = `MATCH`;
-    return this.awaitDLCommand(command, pattern).then(this.ensureDataLinkResponse);
+    return this.awaitDLCommand(command, pattern)
+    .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse));
   }
 
   /**
@@ -411,7 +417,8 @@ export class DataLinkConnection {
    */
   reject(pattern: string): Promise<DataLinkResponse> {
     let command = `REJECT ${pattern}`;
-    return this.awaitDLCommand(command).then(this.ensureDataLinkResponse);
+    return this.awaitDLCommand(command)
+    .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse));
   }
 
   /**
@@ -422,7 +429,8 @@ export class DataLinkConnection {
    */
   read(packetId: string): Promise<DataLinkPacket> {
     let command = `READ ${packetId}`;
-    return this.awaitDLBinary(command).then(this.ensureDataLinkPacket);
+    return this.awaitDLBinary(command)
+    .then(dlResponse => DataLinkConnection.ensureDataLinkPacket(dlResponse));
   }
 
   /**
@@ -542,8 +550,10 @@ export class DataLinkPacket {
   hppacketend: string;
   dataSize: number;
   _miniseed: null | miniseed.DataRecord;
+  _mseed3: null | xseed.XSeedRecord;
   constructor(header: string, dataview: DataView) {
     this._miniseed = null;
+    this._mseed3 = null;
     this.header = header;
     this.data = dataview;
     let split = this.header.split(' ');
@@ -618,10 +628,10 @@ export class DataLinkPacket {
    *
    * @returns miniseed3 DataRecord or null
    */
-  get miniseed3(): xseed.XSeedDataRecord | null {
+  get miniseed3(): xseed.XSeedRecord | null {
     if ( ! isDef(this._mseed3) ) {
       if (this.streamId.endsWith(MSEED3_TYPE)) {
-        this._mseed3 = xseed.parseSingleDataRecord(this.data);
+        this._mseed3 = xseed.XSeedRecord.parseSingleDataRecord(this.data);
       } else {
         this._mseed3 = null;
       }
