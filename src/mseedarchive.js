@@ -9,7 +9,7 @@
 import moment from 'moment';
 import * as util from './util';
 import * as miniseed from './miniseed';
-import * as RSVP from 'rsvp';
+import RSVP from 'rsvp';
 
 import {SeismogramDisplayData } from './seismogram';
 import {Channel} from './stationxml';

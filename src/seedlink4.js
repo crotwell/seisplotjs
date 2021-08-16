@@ -10,7 +10,7 @@ import * as miniseed from './miniseed';
 import * as xseed from './xseed';
 import {DataRecord } from './miniseed.js';
 import {XSeedRecord } from './xseed.js';
-import * as RSVP from 'rsvp';
+import RSVP from 'rsvp';
 import moment from 'moment';
 import {version} from './util.js';
 

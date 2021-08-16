@@ -8,7 +8,7 @@
 
 import * as miniseed from './miniseed';
 import {DataRecord } from './miniseed.js';
-import * as RSVP from 'rsvp';
+import RSVP from 'rsvp';
 import moment from 'moment';
 
 import {dataViewToString} from './util';
