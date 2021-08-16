@@ -406,7 +406,7 @@ export class SeismographConfig {
     let out = new SeismographConfig();
     Object.getOwnPropertyNames(this).forEach( name => {
       // $FlowFixMe
-      if (this[name] instanceof moment) {
+      if (moment.isMoment(this[name])) {
         // $FlowFixMe
         out[name] = moment.utc(this[name]);
         // $FlowFixMe

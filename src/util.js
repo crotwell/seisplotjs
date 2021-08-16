@@ -179,7 +179,7 @@ export function stringify(value: mixed): string {
     return "function "+value.name;
   } else if (typeof value === 'object') {
     if (value) {
-      if (value instanceof moment) {
+      if (moment.isMoment(value)) {
         return value.toISOString();
       } else {
         return value.constructor.name+ " "+value.toString();

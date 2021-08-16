@@ -1079,7 +1079,7 @@ export class SeismogramDisplayData {
         if (name === '_seismogram') {
           out._seismogram = seis;
         // $FlowFixMe
-        } else if (this[name] instanceof moment) {
+        } else if (moment.isMoment(this[name] )) {
           // $FlowFixMe
           out[name] = moment.utc(this[name]);
           // $FlowFixMe
