@@ -64,6 +64,7 @@ export const knownDataCenters: {} = {
   allDCTypes: [ DS, EV, ST, RS ],
 
   getDefaultDC(type: string) {
+    // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     return this.getDataCenter(BestDCIdMap.get(type));
   },
@@ -80,6 +81,7 @@ export const knownDataCenters: {} = {
    *  @returns a Promise that resolves to the returned json.
    */
   getKnownDataCenters(): Promise<KnownDCS_JSON> {
+    // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     if ( ! knownDCs) {
       knownDCs = fetch(this.knownDataCentersJsonURL)
@@ -104,6 +106,7 @@ export const knownDataCenters: {} = {
    *  @returns a Promise to known datacenters.
    */
   updateKnownDataCenters(): Promise<KnownDCS_JSON> {
+    // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     knownDCs = null;
     return this.getKnownDataCenters();
@@ -118,6 +121,7 @@ export const knownDataCenters: {} = {
    * @returns a Promise to data center
    */
   getDataCenter(id: string): DataCenterType {
+    // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     return this.getKnownDataCenters().then(kdcs => {
       for (const dc of kdcs.datacenters) {
@@ -139,6 +143,7 @@ export const knownDataCenters: {} = {
    * false otherwise.
    */
   doesSupport(dc: DataCenterType, type: string) {
+    // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     let out = dc.supports.find(function(s) { return s.type === type;});
     return typeof out !== 'undefined';
@@ -158,6 +163,7 @@ export const knownDataCenters: {} = {
    * @returns host
    */
   serviceHost(dc: DataCenterType, type: string): string {
+    // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     let does = this.doesSupport(dc, type);
     if (does) {
@@ -178,6 +184,7 @@ export const knownDataCenters: {} = {
    * @returns port number
    */
   servicePort(dc: DataCenterType, type: string): number {
+    // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     let does = this.doesSupport(dc, type);
     if (does) {

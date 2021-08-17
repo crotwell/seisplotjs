@@ -239,16 +239,13 @@ export class SeedlinkConnection {
       this.webSocket = null;
     }
     const that = this;
-    console.log("in interactiveConnect");
     return new Promise(function(resolve, reject) {
       try {
 
-        console.log(`WebSocket(${that.url})`);
         const webSocket = new WebSocket(that.url, SEEDLINK4_PROTOCOL);
         that.webSocket = webSocket;
         webSocket.binaryType = 'arraybuffer';
         webSocket.onopen = function() {
-          console.log(`onopen`);
           resolve(that);
         };
         webSocket.onerror = function(err) {
@@ -272,7 +269,6 @@ export class SeedlinkConnection {
         reject(err);
       }
     }).then(function(sl4) {
-      console.log("connected");
       return sl4;
     });
   }

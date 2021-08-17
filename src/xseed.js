@@ -81,9 +81,8 @@ export class XSeedRecord {
   /**
    * [createFromDataView description]
    * @deprecated
-   * @param  {[type]} dataView [description]
-   * @param  {[type]} header   [description]
-   * @return {[type]}          [description]
+   * @param   dataView record bytes
+   * @return
    */
   static createFromDataView(dataView: DataView): XSeedRecord {
     return XSeedRecord.parseSingleDataRecord(dataView);

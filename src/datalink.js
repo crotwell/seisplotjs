@@ -140,7 +140,6 @@ export class DataLinkConnection {
   }
   /**
    * @returns the current mode, QUERY_MODE or STREAM_MODE
-   *
    */
   get mode(): string { return this._mode;}
 
@@ -238,7 +237,8 @@ export class DataLinkConnection {
     return rawPacket;
   }
 
-  /** sends the header with optional binary data
+  /**
+   * sends the header with optional binary data
    * as the data section. Size of the data is appended
    * to the header before sending if present.
    *
@@ -254,7 +254,8 @@ export class DataLinkConnection {
     }
   }
 
-  /** sends the command as header with optional dataString
+  /**
+   * sends the command as header with optional dataString
    * as the data section. Size of the dataString is appended
    * to the header before sending.
    *
