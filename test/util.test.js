@@ -48,3 +48,8 @@ test("isStringArg isNumArg", () => {
   expect(util.isNumArg(null)).toBeFalse();
   expect(util.isNumArg(o)).toBeFalse();
 });
+
+
+test("version", () => {
+  expect(util.version).toContain('2.1');
+});

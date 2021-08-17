@@ -9,7 +9,9 @@
  /**
   * Current version of seisplotjs
   */
-export const version = '2.1.0-alpha.0';
+import {version} from '../package.json';
+export {version};
+
 
 import moment from 'moment';
 import * as d3 from 'd3';
