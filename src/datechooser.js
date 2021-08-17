@@ -214,7 +214,7 @@ export class DateTimeChooser {
     this.time = moment.utc(initialTime);
     this.time.second(0).millisecond(0); // only hour and min?
     this.updateCallback = updateCallback ? updateCallback : dummyCallback;
-    this.dateField = div.append("label").text(this.label).append("input")
+    this.dateField = this.div.append("label").text(this.label).append("input")
       .classed("pikaday", true)
       .attr("value", this.time.toISOString())
       .attr("type", "text")
