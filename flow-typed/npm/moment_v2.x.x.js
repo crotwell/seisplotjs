@@ -122,6 +122,7 @@ declare class moment$MomentDuration {
   toJSON(): string;
   toISOString(): string;
   isValid(): boolean;
+  clone(): moment$MomentDuration;
 }
 declare class moment$Moment {
   static ISO_8601: string;
