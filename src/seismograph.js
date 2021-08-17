@@ -143,6 +143,7 @@ export class Seismograph {
       this.svg.style("max-width", this.seismographConfig.maxWidth+'px');
     }
     this.svg.classed("seismograph", true);
+    this.svg.classed(AUTO_COLOR_SELECTOR, true);
     this.svg.attr("version", "1.1");
     this.svg.attr("plotId", this.plotId);
 
