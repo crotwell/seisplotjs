@@ -1,6 +1,7 @@
 
 import {insertCSS} from './cssutil.js';
 import {Quake} from './quakeml.js';
+import {Station} from './stationxml.js';
 
 import * as L from 'leaflet';
 
