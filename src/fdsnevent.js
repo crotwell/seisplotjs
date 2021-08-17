@@ -468,14 +468,14 @@ export class EventQuery {
       isDef(this._longitude) ||
       isDef(this._minRadius) ||
       isDef(this._maxRadius) ||
-      isDef(this.minDepth) ||
-      isDef(this.maxDepth) ||
-      isDef(this.limit) ||
-      isDef(this.minMag) ||
-      isDef(this.maxMag) ||
-      isDef(this.updatedAfter) ||
-      isDef(this.catalog) ||
-      isDef(this.contributor);
+      isDef(this._minDepth) ||
+      isDef(this._maxDepth) ||
+      isDef(this._limit) ||
+      isDef(this._minMag) ||
+      isDef(this._maxMag) ||
+      isDef(this._updatedAfter) ||
+      isDef(this._catalog) ||
+      isDef(this._contributor);
   }
   /**
    * Queries the remote service and parses the returned xml.
@@ -520,7 +520,7 @@ export class EventQuery {
    */
   formBaseURL(): string {
       let colon = ":";
-      if (! this.host || this._host === USGS_HOST) {
+      if (! this._host || this._host === USGS_HOST) {
         this._host = USGS_HOST;
         // usgs does 301 moved permanently to https
         this._protocol = 'https:';

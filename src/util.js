@@ -180,7 +180,8 @@ export function stringify(value: mixed): string {
   } else if (typeof value === 'object') {
     if (value) {
       if (moment.isMoment(value)) {
-        return value.toISOString();
+        const momentValue = ((value: any): moment$Moment);
+        return momentValue.toISOString();
       } else {
         return value.constructor.name+ " "+value.toString();
       }
@@ -233,7 +234,8 @@ export class StartEndDuration {
       } else if ((typeof duration === "number" )) {
         this._duration = moment.duration(duration, 'seconds');
       } else if ((moment.isDuration(duration))) {
-        this._duration = moment.duration(duration);
+        const momentDuration = ((duration: any): moment$MomentDuration);
+        this._duration = momentDuration;
       } else {
         throw new Error(`Unknown type for duration: ${typeof duration} ${duration.constructor.name}  ${JSON.stringify(duration)}`);
       }
@@ -294,8 +296,9 @@ export class StartEndDuration {
    */
   contains(other: moment$Moment | StartEndDuration): boolean {
     if (moment.isMoment(other)){
-      if (this.startTime.isAfter(other)
-          || this.endTime.isBefore(other)) {
+      const momentOther = ((other: any): moment$Moment);
+      if (this.startTime.isAfter(momentOther)
+          || this.endTime.isBefore(momentOther)) {
         return false;
       }
       return true;
@@ -303,8 +306,8 @@ export class StartEndDuration {
       return this.contains(other.startTime) && this.contains(other.endTime);
     } else {
       let otherType = "?";
-      if (other && other.constructor) { otherType = other.constructor.name; }
-      throw new Error(`expect moment or StartEndDuration: "${other}" ${otherType}`);
+      if (other && isDef(other.constructor)) { otherType = other.constructor.name; }
+      throw new Error(`expect moment or StartEndDuration: "${stringify(other)}" ${otherType}`);
     }
   }
   overlaps(other: StartEndDuration): boolean {

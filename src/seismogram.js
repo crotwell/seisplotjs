@@ -1159,7 +1159,8 @@ export function findMaxDurationOfType(type: string, sddList: Array<SeismogramDis
       timeWindow = sdd.timeWindow;
     }
     if (timeWindow.duration.asMilliseconds() > acc.asMilliseconds()) {
-      return moment.duration(timeWindow.duration);
+      const momentDuration = ((timeWindow.duration: any): moment$MomentDuration);
+      return moment.duration(momentDuration);
     } else {
       return acc;
     }

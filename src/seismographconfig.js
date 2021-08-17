@@ -559,7 +559,8 @@ export class LinkedTimeScale {
     if ( ! isDef(this._zoomedDuration)) {
       // assume before any zooming, so recalc duration
       if (graph.duration.asMilliseconds() > this._originalDuration.asMilliseconds()) {
-        this._originalDuration = moment.duration(graph.duration);
+        const momentDuration = ((graph.duration: any): moment$MomentDuration);
+        this._originalDuration = moment.duration(momentDuration);
       }
     }
     this.recalculate();
