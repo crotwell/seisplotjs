@@ -402,7 +402,7 @@ div.timeRangeChooser span {
 }
 
 input.pikaday {
-  width: 70px;
+  width: 80px;
 }
 input.pikatime {
   width: 50px;
