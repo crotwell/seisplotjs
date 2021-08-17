@@ -1,6 +1,7 @@
 import * as pkg from "./package.json";
 import babel from 'rollup-plugin-babel';
 import flowEntry from 'rollup-plugin-flow-entry';
+import json from '@rollup/plugin-json';
 
 export default [{
   input: 'src/index.js',
@@ -26,6 +27,7 @@ export default [{
     '@babel/runtime/regenerator',
   ],
   plugins: [
+    json(),
     flowEntry(),
     babel({
       exclude: 'node_modules/**',
@@ -57,6 +59,7 @@ export default [{
     '@babel/runtime/regenerator',
   ],
   plugins: [
+    json(),
     flowEntry(),
     babel({
       exclude: 'node_modules/**',

@@ -74,6 +74,8 @@
     "@babel/plugin-transform-runtime": "^7.12.15",
     "@babel/preset-env": "^7.12.13",
     "@babel/preset-flow": "^7.12.13",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-json": "^4.1.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.0.6",
     "babelify": "^10.0.0",
@@ -96,7 +98,7 @@
     "node-fetch": "^2.6.1",
     "prismjs": "^1.23.0",
     "replace-in-file": "^6.2.0",
-    "rollup": "^2.38.5",
+    "rollup": "^2.56.2",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-flow-entry": "^0.3.4"
   },
