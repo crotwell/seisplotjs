@@ -14,7 +14,7 @@ import RSVP from 'rsvp';
 import moment from 'moment';
 import {version} from './util.js';
 
-import {dataViewToString} from './util';
+import {dataViewToString, isDef} from './util';
 
 export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";
 
@@ -22,19 +22,24 @@ export const MINISEED_2_FORMAT = '2';
 export const MINISEED_3_FORMAT = '3';
 export const SE_PACKET_SIGNATURE = "SE";
 
+const useLittleEndian = true;
+
 export class SEPacket {
     dataFormat: string;
-    reserved: number;
+    dataSubformat: string;
     payloadLength: number;
     sequence: number;
+    stationId: string;
     _miniseed: DataRecord | null;
     _mseed3: XSeedRecord | null;
     _json: any | null;
-    _rawPayload: DataView;
-    constructor(dataFormat: string, payloadLength: number, sequence: number) {
+    _rawPayload: DataView | null;
+    constructor(dataFormat: string, dataSubformat: string, payloadLength: number, sequence: number, stationId: string) {
       this.dataFormat = dataFormat;
+      this.dataSubformat = dataSubformat;
       this.payloadLength = payloadLength;
       this.sequence = sequence;
+      this.stationId = stationId;
       this._miniseed = null;
       this._mseed3 = null;
       this._json = null;
@@ -50,21 +55,27 @@ export class SEPacket {
       let sig = String.fromCharCode(slHeader.getUint8(0), slHeader.getUint8(1));
       if (sig === SE_PACKET_SIGNATURE) {
         let dataFormat = slHeader.getUint8(2);
-        let reserved = slHeader.getUint8(3);
-        let payloadLength = slHeader.getUint32(4);
-        let sequenceNum = slHeader.getUint64(8);
-        let dataView = new DataView(data, 16, data.byteLength-16);
-        sePacket = new SEPacket(String.fromCharCode(dataFormat), payloadLength, sequenceNum);
-        sePacket.reserved = reserved;
-        sePacket.rawPayload = dataView;
+        let dataSubformat = slHeader.getUint8(3);
+        let payloadLength = slHeader.getUint32(4, useLittleEndian);
+        let sequenceNum = slHeader.getBigUint64(8, useLittleEndian);
+        let stationIdLength = slHeader.getUint8(16);
+        let stationIdDV = new DataView(data, 17, stationIdLength);
+        let stationId = dataViewToString(stationIdDV);
+        let dataView = new DataView(data, 17+stationIdLength, data.byteLength-16);
+        sePacket = new SEPacket(String.fromCharCode(dataFormat),
+                                String.fromCharCode(dataSubformat),
+                                payloadLength,
+                                sequenceNum,
+                                stationId);
+        sePacket._rawPayload = dataView;
         if (dataFormat === 50) {
           // ascii 2 is 50, miniseed2
           sePacket._miniseed = miniseed.parseSingleDataRecord(dataView);
         } else if (dataFormat === 51) {
           // ascii 3 = 51, miniseed3
           sePacket._mseed3 = xseed.XSeedRecord.parseSingleDataRecord(dataView);
-        } else if (dataFormat === 73) {
-          // ascii I = 73, info packet with json
+        } else if (dataFormat === 74) {
+          // ascii J = 74, json e.g. info packet
           sePacket._json = JSON.parse(dataViewToString(dataView));
         }
       } else {
@@ -87,8 +98,11 @@ export class SEPacket {
      * @returns miniseed DataRecord or null
      */
     get miniseed(): miniseed.DataRecord | null {
+      if ( ! isDef(this._rawPayload)) {
+        throw new Error(`payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`);
+      }
       if ( ! isDef(this._miniseed) ) {
-        if (this.dataFormat === MINISEED_2_FORMAT) {
+        if (this.dataFormat === MINISEED_2_FORMAT && isDef(this._rawPayload)) {
           this._miniseed = miniseed.parseSingleDataRecord(this._rawPayload);
         } else {
           this._miniseed = null;
@@ -111,9 +125,12 @@ export class SEPacket {
      *
      * @returns miniseed3 DataRecord or null
      */
-    get miniseed3(): xseed.XSeedDataRecord | null {
+    get miniseed3(): xseed.XSeedRecord | null {
+      if ( ! isDef(this._rawPayload)) {
+        throw new Error(`payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`);
+      }
       if ( ! isDef(this._mseed3) ) {
-        if (this.dataFormat === MINISEED_3_FORMAT) {
+        if (this.dataFormat === MINISEED_3_FORMAT && isDef(this._rawPayload)) {
           this._mseed3 = xseed.XSeedRecord.parseSingleDataRecord(this._rawPayload);
         } else {
           this._mseed3 = null;
@@ -175,13 +192,14 @@ export class SeedlinkConnection {
   }
 
   connect() {
+    const that = this;
     this.interactiveConnect().then(() => {
       return that.sendHello();
     }).then(function(lines) {
-      if (this.checkProto(lines)) {
+      if (that.checkProto(lines)) {
         return true;
       } else {
-        throw new Exception(`${SEEDLINK4_PROTOCOL} not found in HELLO response`);
+        throw new Error(`${SEEDLINK4_PROTOCOL} not found in HELLO response`);
       }
     })
     .then(function() {
@@ -194,10 +212,10 @@ export class SeedlinkConnection {
       return that.sendCmdArray([ that.command ]);
     })
     .then(function(val) {
-      webSocket.onmessage = function(event) {
+      that.webSocket.onmessage = function(event) {
         that.handle(event);
       };
-      webSocket.send('END\r');
+      that.webSocket.send('END\r');
       return val;
     }).catch(err => {
       if (that.errorFn) {
@@ -209,7 +227,7 @@ export class SeedlinkConnection {
     });
   }
 
-  interactiveConnect() {
+  interactiveConnect(): Promise<SeedlinkConnection> {
     if (this.webSocket) {
       this.webSocket.close();
       this.webSocket = null;
@@ -231,7 +249,7 @@ export class SeedlinkConnection {
           if (that.errorFn) {
             that.errorFn(err);
           }
-          reject(event);
+          reject(err);
         };
         webSocket.onclose = function(closeEvent) {
           if (that.closeFn) {
@@ -258,10 +276,10 @@ export class SeedlinkConnection {
     let caps = sl[1].trim().split();
     for (let c of caps) {
       if (c === SEEDLINK4_PROTOCOL) {
-        return True;
+        return true;
       }
     }
-    return False;
+    return false;
   }
 
   close(): void {
@@ -273,13 +291,12 @@ export class SeedlinkConnection {
 
   handle(event: MessageEvent ): void {
     //for flow
-    const data = ((event.data: any): ArrayBuffer);
-    if (data.byteLength < 64) {
-      //assume text
-    } else if (data[0] === 83 && data[1] === 76){
-      this.handleMiniseed(event);
-    } else if (data[0] === 83 && data[1] === 69){
+    const rawdata = ((event.data: any): ArrayBuffer);
+    const data = new Uint8Array(rawdata);
+    if (data[0] === 83 && data[1] === 69){
       this.handleSEPacket(event);
+    } else {
+      this.errorFn(new Error(`Packet does not look like SE packet: ${data[0]} ${data[1]}`));
     }
   }
 
@@ -288,7 +305,7 @@ export class SeedlinkConnection {
     const data = ((event.data: any): ArrayBuffer);
     try {
         let out = SEPacket.parse(data);
-        this.receiveSEPacketFn(out);
+        this.receivePacketFn(out);
      } catch(e) {
         this.errorFn("Error, closing seedlink. "+e);
         this.close();
@@ -304,7 +321,7 @@ export class SeedlinkConnection {
    *
    * @returns            Promise that resolves to the response from the server.
    */
-  sendHello(): Promise<string> {
+  sendHello(): Promise<Array<string>> {
     let webSocket = this.webSocket;
     let promise = new RSVP.Promise(function(resolve, reject) {
       if (webSocket) {
