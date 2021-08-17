@@ -1,4 +1,4 @@
-
+// @flow
 
 /*
  * Philip Crotwell
@@ -64,8 +64,10 @@ export const knownDataCenters: {} = {
   allDCTypes: [ DS, EV, ST, RS ],
 
   getDefaultDC(type: string) {
+    // $FlowFixMe[object-this-reference]
     // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
+    // $FlowFixMe[object-this-reference]
     return this.getDataCenter(BestDCIdMap.get(type));
   },
 
@@ -84,8 +86,11 @@ export const knownDataCenters: {} = {
     // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     if ( ! knownDCs) {
+      // $FlowFixMe[object-this-reference]
       knownDCs = fetch(this.knownDataCentersJsonURL)
         .then(response => {
+          // $FlowFixMe[method-unbinding]
+          // $FlowFixMe[class-object-subtyping]
           return (response: {json(): any}).json();
         }).then(function(json: any): KnownDCS_JSON {
           json.accesstime = moment.utc();
@@ -109,6 +114,7 @@ export const knownDataCenters: {} = {
     // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     knownDCs = null;
+    // $FlowFixMe[object-this-reference]
     return this.getKnownDataCenters();
   },
 
@@ -123,6 +129,7 @@ export const knownDataCenters: {} = {
   getDataCenter(id: string): DataCenterType {
     // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
+    // $FlowFixMe[object-this-reference]
     return this.getKnownDataCenters().then(kdcs => {
       for (const dc of kdcs.datacenters) {
         if (dc.id === id) {
@@ -165,6 +172,7 @@ export const knownDataCenters: {} = {
   serviceHost(dc: DataCenterType, type: string): string {
     // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
+    // $FlowFixMe[object-this-reference]
     let does = this.doesSupport(dc, type);
     if (does) {
       return does.host ? does.host : dc.host;
@@ -186,6 +194,7 @@ export const knownDataCenters: {} = {
   servicePort(dc: DataCenterType, type: string): number {
     // eslint-disable-next-line no-console
     console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
+    // $FlowFixMe[object-this-reference]
     let does = this.doesSupport(dc, type);
     if (does) {
       return does.port ? does.port : 80;
