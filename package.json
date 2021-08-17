@@ -34,7 +34,7 @@
     "build:clean": "rimraf dist",
     "apidoc:clean": "rimraf docs/api",
     "compile": "npm run build:clean && npm run rollup && npm run flow-copy && npm run standalone ",
-    "browserify": "browserify src/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js  -t [ babelify ] && npm run example_standalone && npm run tutorial_standalone",
+    "browserify": "browserify dist/module/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js -p [ esmify ] -t [ babelify ] && npm run example_standalone && npm run tutorial_standalone",
     "tutorial_snippet": "python3 snippetToTutorial.py",
     "tutorial_standalone": "cd docs/tutorial ; rm seisplotjs_*_standalone.js ; ln -s ../../dist/seisplotjs_${npm_package_version}_standalone.js ;  cd ../..",
     "example_standalone": "cd docs/examples; cd helicorder ; rm seisplotjs_*_standalone.js ; ln -s ../../../dist/seisplotjs_${npm_package_version}_standalone.js ; cd ..; cd viewobspy/www;rm seisplotjs_*_standalone.js;ln -s ../../../../dist/seisplotjs_${npm_package_version}_standalone.js; cd ../../../..",
@@ -90,6 +90,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-standard": "^5.0.0",
+    "esmify": "^2.1.1",
     "flow-bin": "^0.157.0",
     "flow-copy-source": "^2.0.9",
     "flowtypify": "^1.0.1",
@@ -99,7 +100,6 @@
     "prismjs": "^1.23.0",
     "replace-in-file": "^6.2.0",
     "rollup": "^2.56.2",
-    "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-flow-entry": "^0.3.4"
   },
   "babel": {

@@ -1,5 +1,5 @@
 import * as pkg from "./package.json";
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import flowEntry from 'rollup-plugin-flow-entry';
 import json from '@rollup/plugin-json';
 
@@ -31,12 +31,12 @@ export default [{
     flowEntry(),
     babel({
       exclude: 'node_modules/**',
-      runtimeHelpers: true,
+      babelHelpers: 'runtime',
     })
   ]
 },{
   input: 'src/index.js',
-  preserveModules: true,
+  //preserveModules: true,
   output: [
     {
       dir: "dist/module",
@@ -63,7 +63,7 @@ export default [{
     flowEntry(),
     babel({
       exclude: 'node_modules/**',
-      runtimeHelpers: true,
+      babelHelpers: 'runtime',
     })
   ]
   }
