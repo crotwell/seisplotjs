@@ -1,4 +1,4 @@
-// @flow
+
 
 /*
  * Philip Crotwell
@@ -52,6 +52,7 @@ let knownDCs = null;
  * Lookup system for FDSN web services, predates the new FDSN DataCenters
  * web service, which is now the preferred method, as this may be out of date.
  *
+ * @deprecated Use fdsndatacenters instead
  */
 export const knownDataCenters: {} = {
   knownDataCentersJsonURL: checkProtocol()+"//www.seis.sc.edu/fdsnServiceCheck/fdsnDataCenters.json",
@@ -63,6 +64,7 @@ export const knownDataCenters: {} = {
   allDCTypes: [ DS, EV, ST, RS ],
 
   getDefaultDC(type: string) {
+    console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     return this.getDataCenter(BestDCIdMap.get(type));
   },
 
@@ -73,9 +75,12 @@ export const knownDataCenters: {} = {
    *  id, name, website, email, host, region and
    *  and supports that is an array of type and version.
    *
+   * @deprecated Use fdsndatacenters instead
+   *
    *  @returns a Promise that resolves to the returned json.
    */
   getKnownDataCenters(): Promise<KnownDCS_JSON> {
+    console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     if ( ! knownDCs) {
       knownDCs = fetch(this.knownDataCentersJsonURL)
         .then(response => {
@@ -94,9 +99,12 @@ export const knownDataCenters: {} = {
    *  a very long running instance may wish to update this periodically,
    *  likely at most daily.
    *
+   * @deprecated Use fdsndatacenters instead
+   *
    *  @returns a Promise to known datacenters.
    */
   updateKnownDataCenters(): Promise<KnownDCS_JSON> {
+    console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     knownDCs = null;
     return this.getKnownDataCenters();
   },
@@ -104,10 +112,13 @@ export const knownDataCenters: {} = {
   /**
    * Gets the data center associated with the id.
    *
+   * @deprecated Use fdsndatacenters instead
+   *
    * @param id string id
    * @returns a Promise to data center
    */
   getDataCenter(id: string): DataCenterType {
+    console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     return this.getKnownDataCenters().then(kdcs => {
       for (const dc of kdcs.datacenters) {
         if (dc.id === id) {
@@ -119,6 +130,8 @@ export const knownDataCenters: {} = {
   },
 
   /**
+  *
+  * @deprecated Use fdsndatacenters instead
    *
    * @param dc data center
    * @param type type of service
@@ -126,6 +139,7 @@ export const knownDataCenters: {} = {
    * false otherwise.
    */
   doesSupport(dc: DataCenterType, type: string) {
+    console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     let out = dc.supports.find(function(s) { return s.type === type;});
     return typeof out !== 'undefined';
   },
@@ -137,11 +151,14 @@ export const knownDataCenters: {} = {
    *  all fdsn web services at IRIS are hosted at service.iris.edu
    *  but the ringserver is hosted at rtserve.iris.edu
    *
+   * @deprecated Use fdsndatacenters instead
+   *
    * @param dc data center
    * @param type type of service
    * @returns host
    */
   serviceHost(dc: DataCenterType, type: string): string {
+    console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     let does = this.doesSupport(dc, type);
     if (does) {
       return does.host ? does.host : dc.host;
@@ -154,11 +171,14 @@ export const knownDataCenters: {} = {
    *  is 80, but sometimes web services are hosted on alternative
    *  ports.
    *
+   * @deprecated Use fdsndatacenters instead
+   *
    * @param dc data center
    * @param type type of service
    * @returns port number
    */
   servicePort(dc: DataCenterType, type: string): number {
+    console.log("knownDataCenters is deprecated, use fdsndatacenters instead");
     let does = this.doesSupport(dc, type);
     if (does) {
       return does.port ? does.port : 80;
