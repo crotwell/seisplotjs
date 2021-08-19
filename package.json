@@ -91,7 +91,7 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-standard": "^5.0.0",
     "esmify": "^2.1.1",
-    "flow-bin": "^0.157.0",
+    "flow-bin": "^0.158.0",
     "flow-copy-source": "^2.0.9",
     "flowtypify": "^1.0.1",
     "jest": "^27.0.6",
