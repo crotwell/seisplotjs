@@ -25,6 +25,7 @@ import * as helicorder from './helicorder.js';
 import * as knownDataCenters from './knowndatacenters.js';
 import * as leafletutil       from './leafletutil.js';
 import * as miniseed       from './miniseed.js';
+import * as mseed3      from './mseed3.js';
 import * as mseedarchive   from './mseedarchive.js';
 import * as oregondsputil   from './oregondsputil.js';
 import * as particlemotion        from './particlemotion.js';
@@ -45,7 +46,6 @@ import * as transfer     from './transfer.js';
 import * as traveltime     from './traveltime.js';
 import * as util      from './util.js';
 import * as vector      from './vector.js';
-import * as xseed      from './xseed.js';
 
 import * as OregonDSPTop from 'oregondsp';
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
@@ -76,6 +76,7 @@ export { cssutil,
          knownDataCenters,
          leafletutil,
          miniseed,
+         mseed3,
          mseedarchive,
          oregondsputil,
          particlemotion,
@@ -97,7 +98,6 @@ export { cssutil,
          util,
          vector,
          version,
-         xseed,
          OregonDSP,
          d3,
          leaflet,
