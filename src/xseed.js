@@ -11,6 +11,10 @@ import {SeismogramSegment, Seismogram} from './seismogram';
 import {DataRecord, R_TYPECODE, D_TYPECODE, Q_TYPECODE, M_TYPECODE} from './miniseed';
 import moment from 'moment';
 
+export type json_object = { [key: string]: any};
+
+export const MINISEED_THREE_MIME = "application/vnd.fdsn.mseed3";
+
 /** const for unknown data version, 0 */
 export const UNKNOWN_DATA_VERSION = 0;
 /** const for offset to crc in record, 28 */
@@ -21,6 +25,8 @@ export const FIXED_HEADER_SIZE=40;
 export const FDSN_PREFIX = 'FDSN';
 /** const for little endian, true */
 export const LITTLE_ENDIAN = true;
+/** const for big endian, false */
+export const BIG_ENDIAN = false;
 
 /**
  * parse arrayBuffer into an array of XSeedRecords.
@@ -68,11 +74,13 @@ export class XSeedRecord {
 
   static parseSingleDataRecord(dataView: DataView): XSeedRecord {
     const header = XSeedHeader.createFromDataView(dataView);
+    const ehoffset = header.getSize();
+    const dataoffset = header.getSize()+header.extraHeadersLength;
     let extraDataView = new DataView(dataView.buffer,
-                             dataView.byteOffset+header.getSize(),
+                             dataView.byteOffset+ehoffset,
                              header.extraHeadersLength);
     const extraHeaders = parseExtraHeaders(extraDataView);
-    let sliceStart = dataView.byteOffset+header.getSize()+header.extraHeadersLength;
+    let sliceStart = dataView.byteOffset+dataoffset;
     const rawData = new DataView(dataView.buffer.slice(sliceStart, sliceStart+ header.dataLength));
 
     const xr = new XSeedRecord(header, extraHeaders, rawData);
@@ -89,16 +97,29 @@ export class XSeedRecord {
   }
   /**
    * Calculates the byte size of the xseed record to hold this data.
+   * This should be called if the size is needed after modification
+   * of the extraHeaders.
    *
    * @returns size in bytes
    */
-  getSize(): number {
+  calcSize(): number {
     let json = JSON.stringify(this.extraHeaders);
     if (json.length > 2) {
       this.header.extraHeadersLength = json.length;
     } else {
       this.header.extraHeadersLength = 0;
     }
+    return this.getSize();
+  }
+
+  /**
+   * Gets the byte size of the xseed record to hold this data.
+   * Note that unless calcSize() has been called, this may not
+   * take into account modifications to the extra headers.
+   *
+   * @returns size in bytes
+   */
+  getSize(): number {
     return this.header.getSize()+this.header.extraHeadersLength+this.header.dataLength;
   }
     /** Decompresses the data , if the compression
@@ -115,10 +136,18 @@ export class XSeedRecord {
    * @returns waveform data
    */
   asEncodedDataSegment(): EncodedDataSegment {
+    let swapBytes = LITTLE_ENDIAN;
+    if (this.header.encoding === 10 ||
+        this.header.encoding === 11 ||
+        this.header.encoding === 19) {
+          // steim1, 2 and 3 are big endian
+      swapBytes = BIG_ENDIAN;
+    }
+
     return new EncodedDataSegment(this.header.encoding,
                                   this.rawData,
                                   this.header.numSamples,
-                                  LITTLE_ENDIAN);
+                                  swapBytes);
   }
   /**
    * Just the header.identifier, included as codes() for compatiblility
@@ -178,8 +207,8 @@ export class XSeedRecord {
    * @returns         crc pulled from saved xseed record
    */
   calcCrc(): number {
-    let size = this.getSize();
-    let buff = new ArrayBuffer(this.getSize());
+    let size = this.calcSize();
+    let buff = new ArrayBuffer(size);
     let dataView = new DataView(buff);
     let offset = this.save(dataView);
     if (offset !== size) {
@@ -187,6 +216,11 @@ export class XSeedRecord {
     }
     let crc = dataView.getUint32(CRC_OFFSET, true);
     return crc;
+  }
+
+  toString(): string {
+    // $FlowIgnore[incompatible-call]
+    return `${this.header.toString()}\n          extra headers:\n${JSON.stringify(this.extraHeaders, 2)}`;
   }
 }
 
@@ -212,7 +246,7 @@ export class XSeedHeader {
   identifierLength: number;
   extraHeadersLength: number;
   identifier: string;
-  extraHeaders: any;
+  extraHeaders: json_object;
   dataLength: number;
   start: moment$Moment;
   end: moment$Moment;
@@ -286,8 +320,8 @@ export class XSeedHeader {
     return header;
   }
   /**
-   * Calculates size of the fixed header including the identifier, but without
-   * the extra headers.
+   * Calculates size of the fixed header including the variable
+   * length identifier, but without the extra headers.
    *
    * @returns size in bytes of fixed header
    */
@@ -295,7 +329,39 @@ export class XSeedHeader {
     return FIXED_HEADER_SIZE+this.identifier.length;
   }
   toString(): string {
-    return this.identifier+" "+this.start.toISOString()+" "+this.encoding;
+    /*
+    FDSN:CO_HODGE_00_L_H_Z, version 4, 477 bytes (format: 3)
+             start time: 2019,187,03:19:53.000000
+      number of samples: 255
+       sample rate (Hz): 1
+                  flags: [00000000] 8 bits
+                    CRC: 0x8926FFDF
+    extra header length: 31 bytes
+    data payload length: 384 bytes
+       payload encoding: STEIM-2 integer compression (val: 11)
+          extra headers:
+                "FDSN": {
+                  "Time": {
+                    "Quality": 0
+                  }
+                }
+
+     */
+    let encode_name = "unknown";
+    if (this.encoding === 11) {
+      encode_name = "STEIM-2 integer compression";
+    } else if (this.encoding === 10) {
+      encode_name = "STEIM-1 integer compression";
+    }
+    return `  ${this.identifier}, version ${this.publicationVersion}, ${this.getSize()+this.dataLength} bytes (format: ${this.formatVersion})\n`+
+`             start time: ${this.getStartFieldsAsISO()}\n`+
+`      number of samples: ${this.numSamples}\n`+
+`       sample rate (Hz): ${this.sampleRate}\n`+
+`                  flags: [${(this.flags >>> 0).toString(2).padStart(8, '0')}] 8 bits\n`+
+`                    CRC: ${crcToHexString(this.crc)}\n`+
+`    extra header length: ${this.extraHeadersLength} bytes\n`+
+`    data payload length: ${this.dataLength} bytes\n`+
+`       payload encoding: ${encode_name} (val: ${this.encoding})`;
   }
   /**
    * Converts start time header fields to ISO8641 time string.

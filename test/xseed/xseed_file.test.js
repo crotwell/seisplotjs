@@ -8,6 +8,7 @@ global.TextDecoder = TextDecoder;
 
 import { isDef } from '../../src/util.js';
 import * as xseed from '../../src/xseed.js';
+import * as miniseed from '../../src/miniseed.js';
 import fs from 'fs';
 
 let fileList = [
@@ -143,5 +144,77 @@ test("crc-32c of a string", () => {
     buf[i] = s.charCodeAt(i);
   }
   let crc = xseed.calculateCRC32C(buf);
-  expect(crc).toEqual(0xe3069283);
+  expect(crc).toEqual(0xe3069283);//0xE3069283
+});
+
+test("text output vs mseed2text", function() {
+  let ctext = [
+"  XFDSN:XX_TEST__L_H_Z, version 1, 956 bytes (format: 3)",
+"             start time: 2012-001T00:00:00.000000000Z",
+"      number of samples: 500",
+"       sample rate (Hz): 1",
+"                  flags: [00000100] 8 bits",
+"                    CRC: 0x5CFF0548",
+"    extra header length: 0 bytes",
+"    data payload length: 896 bytes",
+"       payload encoding: STEIM-2 integer compression (val: 11)"
+  ];
+  const filename = 'test/xseed/reference-data/reference-sinusoid-steim2.xseed';
+  expect(fs.existsSync(filename)).toEqual(true);
+  let xData = fs.readFileSync(filename);
+
+  let ab = xData.buffer.slice(xData.byteOffset, xData.byteOffset + xData.byteLength);
+  let dataView = new DataView(ab);
+  const readCRC = dataView.getUint32(28, true);
+  expect(dataView.getUint8(0)).toEqual(77);
+  expect(dataView.getUint8(1)).toEqual(83);
+  expect(dataView.getUint8(2)).toEqual(3);
+  let parsed = xseed.parseXSeedRecords(ab);
+  expect(parsed.length).toEqual(1);
+  let xr = parsed[0];
+  let xh = xr.header;
+  expect(xseed.crcToHexString(readCRC)).toEqual("0x5CFF0548");
+  expect(readCRC).toEqual(0x5CFF0548);
+  expect(readCRC).toEqual(xr.header.crc);
+  let xhStr = xh.toString().split('\n');
+  expect(xhStr.length).toEqual(ctext.length);
+  for (let i=0; i< ctext.length; i++) {
+    expect(xhStr[i]).toEqual(ctext[i]);
+  }
+});
+
+
+test("decomp HODGE", function() {
+  const ms3filename = 'test/xseed/one_record_HODGE_HHZ.ms3';
+  const ms2filename = 'test/xseed/one_record_HODGE_HHZ.ms2';
+  expect(fs.existsSync(ms3filename)).toEqual(true);
+  expect(fs.existsSync(ms2filename)).toEqual(true);
+  let xData = fs.readFileSync(ms3filename);
+  let mBuf = fs.readFileSync(ms2filename);
+
+  let ms2AB = mBuf.buffer.slice(mBuf.byteOffset, mBuf.byteOffset + mBuf.byteLength);
+  let m2Records = miniseed.parseDataRecords(ms2AB);
+  expect(m2Records.length).toEqual(1);
+  let ms2Record = m2Records[0];
+  let ms2Data = ms2Record.decompress();
+
+  let ab = xData.buffer.slice(xData.byteOffset, xData.byteOffset + xData.byteLength);
+  let dataView = new DataView(ab);
+  const readCRC = dataView.getUint32(28, true);
+  expect(dataView.getUint8(0)).toEqual(77);
+  expect(dataView.getUint8(1)).toEqual(83);
+  expect(dataView.getUint8(2)).toEqual(3);
+  let parsed = xseed.parseXSeedRecords(ab);
+  expect(parsed.length).toEqual(1);
+  let xr = parsed[0];
+  let xh = xr.header;
+  let data = xr.decompress();
+  const ldata = [ -7, -50,  -58,   -46 ,  -31, 17];
+  for (let i=0; i<ldata.length; i++) {
+    expect(data[i]).toEqual(ldata[i]);
+  }
+  expect(data.length).toEqual(ms2Data.length);
+  for (let i=0; i<ms2Data.length; i++) {
+    expect(data[i]).toEqual(ms2Data[i]);
+  }
 });

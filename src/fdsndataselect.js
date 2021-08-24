@@ -15,11 +15,15 @@ import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGe
         isNonEmptyStringArg,isNumArg} from './util';
 
 import * as miniseed from './miniseed';
+import * as xseed from './xseed';
 import { Seismogram, SeismogramDisplayData } from './seismogram';
 import { TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
 /** const for miniseed format, mseed */
 export const FORMAT_MINISEED = 'miniseed';
+
+/** const for miniseed format, mseed */
+export const FORMAT_MINISEED_THREE = 'miniseed3';
 
 /**
  * Major version of the FDSN spec supported here.
@@ -298,15 +302,46 @@ export class DataSelectQuery {
 
   /**
    * queries the web service using the configured parameters, parsing the response
+   * into miniseed data records.
+   *
+   * @returns Promise to Array of miniseed.DataRecords
+   */
+  queryMS3Records(): Promise<Array<xseed.XSeedRecord>> {
+    const mythis = this;
+    this.format(FORMAT_MINISEED_THREE);
+    const url = this.formURL();
+    const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000 )
+      .then(function(response) {
+        if (response.status === 204 || (isDef(mythis._nodata) && response.status === mythis.nodata())) {
+          // no data
+          return new ArrayBuffer(0);
+        } else {
+          return response.arrayBuffer();
+        }
+      }).then(function(rawBuffer) {
+        let dataRecords = xseed.parseXSeedRecords(rawBuffer);
+        return dataRecords;
+    });
+  }
+
+  /**
+   * queries the web service using the configured parameters, parsing the response
    * into miniseed data records and then combining the data records into
    * Seismogram objects.
    *
    * @returns Promise to Array of Seismogram objects
    */
   querySeismograms(): Promise<Array<Seismogram>> {
-    return this.queryDataRecords().then(dataRecords => {
-      return miniseed.seismogramPerChannel(dataRecords);
-    });
+    if (this._format === FORMAT_MINISEED_THREE) {
+        return this.queryMS3Records().then(dataRecords => {
+          return xseed.seismogramPerChannel(dataRecords);
+        });
+    } else {
+      return this.queryDataRecords().then(dataRecords => {
+        return miniseed.seismogramPerChannel(dataRecords);
+      });
+    }
   }
 
   postQueryDataRecords(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<miniseed.DataRecord>> {
@@ -317,11 +352,27 @@ export class DataSelectQuery {
           return miniseed.parseDataRecords(ab);
         });
       } else {
-        util.log("fetchRespone not ok");
+        util.log("fetchResponse not ok");
         return [];
       }
     });
   }
+
+  postQueryMS3Records(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<xseed.XSeedRecord>> {
+    return this.postQueryRaw(channelTimeList)
+    .then( fetchResponse => {
+      if(fetchResponse.ok) {
+        return fetchResponse.arrayBuffer().then(ab => {
+          return xseed.parseXSeedRecords(ab);
+        });
+      } else {
+        util.log("fetchResponse not ok");
+        return [];
+      }
+    });
+  }
+
+
   /**
    * query the dataselect server using post, which allows for multiple
    * channel-timeranges at once. This assumes that there are not multiple
@@ -336,9 +387,17 @@ export class DataSelectQuery {
    * seismogram containing the data returned from the server
    */
   postQuerySeismograms(sddList: Array<SeismogramDisplayData>): Promise<Array<SeismogramDisplayData>> {
-    return this.postQueryDataRecords(sddList).then(dataRecords => {
-      return miniseed.seismogramPerChannel(dataRecords);
-    }).then(seisArray => {
+    let seismogramPromise;
+    if (this._format === FORMAT_MINISEED_THREE) {
+        seismogramPromise = this.postQueryMS3Records(sddList).then(dataRecords => {
+          return xseed.seismogramPerChannel(dataRecords);
+        });
+    } else {
+      seismogramPromise = this.postQueryDataRecords(sddList).then(dataRecords => {
+        return miniseed.seismogramPerChannel(dataRecords);
+      });
+    }
+    return seismogramPromise.then(seisArray => {
       for (let sdd of sddList) {
         let codes = sdd.codes();
         let seis = seisArray.find(s => s.codes() === codes && s.timeRange.overlaps(sdd.timeWindow));
