@@ -88,9 +88,10 @@ export class XSeedRecord {
   }
   /**
    * [createFromDataView description]
+   *
    * @deprecated
    * @param   dataView record bytes
-   * @return
+   * @returns record
    */
   static createFromDataView(dataView: DataView): XSeedRecord {
     return XSeedRecord.parseSingleDataRecord(dataView);
@@ -122,7 +123,8 @@ export class XSeedRecord {
   getSize(): number {
     return this.header.getSize()+this.header.extraHeadersLength+this.header.dataLength;
   }
-    /** Decompresses the data , if the compression
+    /**
+     * Decompresses the data , if the compression
      *  type is known
      *
      * @returns decompressed data as a typed array, usually Int32Array or Float32Array
@@ -534,7 +536,8 @@ export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord, sampRatio: num
         && moment.utc(h1.end).add(sampRatio/h1.sampleRate, 'seconds').isSameOrAfter(h2.start);
 }
 
- /** concatentates a sequence of XSeedRecords into a single seismogram object.
+ /**
+  * Concatentates a sequence of XSeedRecords into a single seismogram object.
   * Assumes that they are all contiguous (no gaps or overlaps) and in order.
   * Header values from the first XSeedRecord are used.
   *
@@ -809,7 +812,6 @@ const kCRCTable = new Int32Array([
  *
  * @param buf input data
  * @param initial starting value, from earlier data
- *
  * @returns calculated crc32c value
  */
 export function calculateCRC32C(buf: ArrayBuffer | Uint8Array, initial: number =0 ): number {
