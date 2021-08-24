@@ -1,4 +1,4 @@
-// @flow
+MSeed3// @flow
 
 /*
  * Philip Crotwell
@@ -9,7 +9,7 @@
 import * as util from './util.js'; // for util.log
 import {dataViewToString, stringify, isDef, isNonEmptyStringArg} from './util';
 import * as miniseed from './miniseed';
-import * as xseed from './xseed';
+import * as mseed3 from './mseed3';
 import RSVP from 'rsvp';
 import moment from 'moment';
 
@@ -551,7 +551,7 @@ export class DataLinkPacket {
   hppacketend: string;
   dataSize: number;
   _miniseed: null | miniseed.DataRecord;
-  _mseed3: null | xseed.XSeedRecord;
+  _mseed3: null | mseed3.MSeed3Record;
   constructor(header: string, dataview: DataView) {
     this._miniseed = null;
     this._mseed3 = null;
@@ -629,10 +629,10 @@ export class DataLinkPacket {
    *
    * @returns miniseed3 DataRecord or null
    */
-  get miniseed3(): xseed.XSeedRecord | null {
+  get miniseed3(): mseed3.MSeed3Record | null {
     if ( ! isDef(this._mseed3) ) {
       if (this.streamId.endsWith(MSEED3_TYPE)) {
-        this._mseed3 = xseed.XSeedRecord.parseSingleDataRecord(this.data);
+        this._mseed3 = mseed3.MSeed3Record.parseSingleDataRecord(this.data);
       } else {
         this._mseed3 = null;
       }

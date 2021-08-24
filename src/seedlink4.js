@@ -7,9 +7,9 @@
  */
 
 import * as miniseed from './miniseed';
-import * as xseed from './xseed';
+import * as mseed3 from './mseed3';
 import {DataRecord } from './miniseed.js';
-import {XSeedRecord } from './xseed.js';
+import {MSeed3Record } from './mseed3.js';
 import RSVP from 'rsvp';
 import moment from 'moment';
 import {version} from './util.js';
@@ -31,7 +31,7 @@ export class SEPacket {
     sequence: number;
     stationId: string;
     _miniseed: DataRecord | null;
-    _mseed3: XSeedRecord | null;
+    _mseed3: MSeed3Record | null;
     _json: any | null;
     _rawPayload: DataView | null;
     constructor(dataFormat: string, dataSubformat: string, payloadLength: number, sequence: number, stationId: string) {
@@ -74,7 +74,7 @@ export class SEPacket {
           sePacket._miniseed = miniseed.parseSingleDataRecord(dataView);
         } else if (dataFormat === 51) {
           // ascii 3 = 51, miniseed3
-          sePacket._mseed3 = xseed.XSeedRecord.parseSingleDataRecord(dataView);
+          sePacket._mseed3 = mseed3.MSeed3Record.parseSingleDataRecord(dataView);
         } else if (dataFormat === 74) {
           // ascii J = 74, json e.g. info packet
           sePacket._json = JSON.parse(dataViewToString(dataView));
@@ -126,13 +126,13 @@ export class SEPacket {
      *
      * @returns miniseed3 DataRecord or null
      */
-    get miniseed3(): xseed.XSeedRecord | null {
+    get miniseed3(): mseed3.MSeed3Record | null {
       if ( ! isDef(this._rawPayload)) {
         throw new Error(`payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`);
       }
       if ( ! isDef(this._mseed3) ) {
         if (this.dataFormat === MINISEED_3_FORMAT && isDef(this._rawPayload)) {
-          this._mseed3 = xseed.XSeedRecord.parseSingleDataRecord(this._rawPayload);
+          this._mseed3 = mseed3.MSeed3Record.parseSingleDataRecord(this._rawPayload);
         } else {
           this._mseed3 = null;
         }

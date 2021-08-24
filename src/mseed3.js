@@ -29,12 +29,12 @@ export const LITTLE_ENDIAN = true;
 export const BIG_ENDIAN = false;
 
 /**
- * parse arrayBuffer into an array of XSeedRecords.
+ * parse arrayBuffer into an array of MSeed3Records.
  *
- * @param arrayBuffer bytes to extract xseed records from
- * @returns array of all xseed records contained in the buffer
+ * @param arrayBuffer bytes to extract miniseed3 records from
+ * @returns array of all miniseed3 records contained in the buffer
  */
-export function parseXSeedRecords(arrayBuffer: ArrayBuffer): Array<XSeedRecord> {
+export function parseMSeed3Records(arrayBuffer: ArrayBuffer): Array<MSeed3Record> {
   let dataRecords = [];
   let offset = 0;
   while (offset < arrayBuffer.byteLength) {
@@ -42,7 +42,7 @@ export function parseXSeedRecords(arrayBuffer: ArrayBuffer): Array<XSeedRecord> 
     if (! (dataView.getUint8(0) === 77 && dataView.getUint8(1) === 83)) {
       throw new Error(`First byte must be M=77 S=83 at offset=${offset}, but was ${dataView.getUint8(0)} ${dataView.getUint8(1)}`);
     }
-    let dr = XSeedRecord.createFromDataView(dataView);
+    let dr = MSeed3Record.createFromDataView(dataView);
     dataRecords.push(dr);
     offset += dr.getSize();
   }
@@ -52,28 +52,28 @@ export function parseXSeedRecords(arrayBuffer: ArrayBuffer): Array<XSeedRecord> 
 /**
  * Represents a xSEED Data Record, with header, extras and data.
  *
- * @param header xseed fixed record header
+ * @param header miniseed3 fixed record header
  * @param extraHeaders json compatible object with extra headers
  * @param rawData waveform data, in correct compression for value in header
  */
-export class XSeedRecord {
-  header: XSeedHeader;
+export class MSeed3Record {
+  header: MSeed3Header;
   extraHeaders: any;
   rawData: DataView;
-  constructor(header: XSeedHeader, extraHeaders: any, rawData: DataView) {
+  constructor(header: MSeed3Header, extraHeaders: any, rawData: DataView) {
     this.header = header;
     this.rawData = rawData;
     this.extraHeaders = extraHeaders;
   }
   /**
-   * Parses an xseed data record from a DataView.
+   * Parses an miniseed3 data record from a DataView.
    *
    * @param   dataView bytes to parse
    * @returns parsed record
    */
 
-  static parseSingleDataRecord(dataView: DataView): XSeedRecord {
-    const header = XSeedHeader.createFromDataView(dataView);
+  static parseSingleDataRecord(dataView: DataView): MSeed3Record {
+    const header = MSeed3Header.createFromDataView(dataView);
     const ehoffset = header.getSize();
     const dataoffset = header.getSize()+header.extraHeadersLength;
     let extraDataView = new DataView(dataView.buffer,
@@ -83,7 +83,7 @@ export class XSeedRecord {
     let sliceStart = dataView.byteOffset+dataoffset;
     const rawData = new DataView(dataView.buffer.slice(sliceStart, sliceStart+ header.dataLength));
 
-    const xr = new XSeedRecord(header, extraHeaders, rawData);
+    const xr = new MSeed3Record(header, extraHeaders, rawData);
     return xr;
   }
   /**
@@ -93,11 +93,11 @@ export class XSeedRecord {
    * @param   dataView record bytes
    * @returns record
    */
-  static createFromDataView(dataView: DataView): XSeedRecord {
-    return XSeedRecord.parseSingleDataRecord(dataView);
+  static createFromDataView(dataView: DataView): MSeed3Record {
+    return MSeed3Record.parseSingleDataRecord(dataView);
   }
   /**
-   * Calculates the byte size of the xseed record to hold this data.
+   * Calculates the byte size of the miniseed3 record to hold this data.
    * This should be called if the size is needed after modification
    * of the extraHeaders.
    *
@@ -114,7 +114,7 @@ export class XSeedRecord {
   }
 
   /**
-   * Gets the byte size of the xseed record to hold this data.
+   * Gets the byte size of the miniseed3 record to hold this data.
    * Note that unless calcSize() has been called, this may not
    * take into account modifications to the extra headers.
    *
@@ -162,7 +162,7 @@ export class XSeedRecord {
   }
 
   /**
-   * Saves xseed record into a DataView, recalculating crc.
+   * Saves miniseed3 record into a DataView, recalculating crc.
    *
    * @param   dataView DataView to save into, must be large enough to hold the record.
    * @returns the number of bytes written to the DataView, can be used as offset
@@ -206,7 +206,7 @@ export class XSeedRecord {
    * Calculates crc by saving to a DataView, which sets the crc header to zero
    * and then calculates it based on the rest of the record.
    *
-   * @returns         crc pulled from saved xseed record
+   * @returns         crc pulled from saved miniseed3 record
    */
   calcCrc(): number {
     let size = this.calcSize();
@@ -227,9 +227,9 @@ export class XSeedRecord {
 }
 
 /**
- * Fixed header of an XSeed data record.
+ * Fixed header of an MSeed3 data record.
  */
-export class XSeedHeader {
+export class MSeed3Header {
   recordIndicator: string;
   formatVersion: number;
   flags: number;
@@ -275,13 +275,13 @@ export class XSeedHeader {
     this.dataLength = 0;
   }
   /**
-   * Parses an xseed fixed header from a DataView.
+   * Parses an miniseed3 fixed header from a DataView.
    *
    * @param   dataView bytes to parse
    * @returns parsed header object
    */
-  static createFromDataView(dataView: DataView): XSeedHeader {
-    const header = new XSeedHeader();
+  static createFromDataView(dataView: DataView): MSeed3Header {
+    const header = new MSeed3Header();
     header.recordIndicator = makeString(dataView, 0,2);
     if ( ! header.recordIndicator === 'MS') {
       throw new Error("First 2 bytes of record should be MS but found "+header.recordIndicator);
@@ -522,14 +522,14 @@ function checkByteSwap(year: number) {
 }
 
 /**
- * Checks if two xseed records are (nearly) contiguous.
+ * Checks if two miniseed3 records are (nearly) contiguous.
  *
  * @param   dr1 first record
  * @param   dr2 second record
  * @param   sampRatio tolerence expressed as ratio of sample period, default 1.5
  * @returns      true if contiguous
  */
-export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord, sampRatio: number =1.5): boolean {
+export function areContiguous(dr1: MSeed3Record, dr2: MSeed3Record, sampRatio: number =1.5): boolean {
     let h1 = dr1.header;
     let h2 = dr2.header;
     return h1.end.isBefore( h2.start )
@@ -537,14 +537,14 @@ export function areContiguous(dr1: XSeedRecord, dr2: XSeedRecord, sampRatio: num
 }
 
  /**
-  * Concatentates a sequence of XSeedRecords into a single seismogram object.
+  * Concatentates a sequence of MSeed3 Records into a single seismogram object.
   * Assumes that they are all contiguous (no gaps or overlaps) and in order.
-  * Header values from the first XSeedRecord are used.
+  * Header values from the first MSeed3 Record are used.
   *
-  * @param contig array of xseed records
+  * @param contig array of miniseed3 records
   * @returns seismogram segment for the records
   */
-export function createSeismogramSegment(contig: Array<XSeedRecord>): SeismogramSegment {
+export function createSeismogramSegment(contig: Array<MSeed3Record>): SeismogramSegment {
   let contigData = contig.map(dr => dr.asEncodedDataSegment());
   let out = new SeismogramSegment(contigData,
                                  contig[0].header.sampleRate,
@@ -560,17 +560,17 @@ export function createSeismogramSegment(contig: Array<XSeedRecord>): SeismogramS
 
 
  /**
-  * Merges xseed records into a Seismogram object, each of
+  * Merges miniseed3 records into a Seismogram object, each of
   * which consists of SeismogramSegment objects
   * containing the data as EncodedDataSegment objects. DataRecords are
   * sorted by startTime.
   * This assumes all data records are from the same channel, byChannel
   * can be used first if multiple channels may be present. Gaps may be present.
   *
-  * @param drList list of xseed records to convert
+  * @param drList list of miniseed3 records to convert
   * @returns the seismogram
   */
-export function merge(drList: Array<XSeedRecord>): Seismogram {
+export function merge(drList: Array<MSeed3Record>): Seismogram {
   let out = [];
   let currDR;
   drList.sort(function(a,b) {
@@ -601,11 +601,11 @@ export function merge(drList: Array<XSeedRecord>): Seismogram {
  * splits a list of data records by channel identifier, returning an object
  * with each NSLC mapped to an array of data records.
  *
- * @param drList array of xseed records
- * @returns map of channel id to array of xseed records, possibly not contiguous
+ * @param drList array of miniseed3 records
+ * @returns map of channel id to array of miniseed3 records, possibly not contiguous
  */
-export function byChannel(drList: Array<XSeedRecord>): Map<string, Array<XSeedRecord>> {
-  let out: Map<string, Array<XSeedRecord>> = new Map();
+export function byChannel(drList: Array<MSeed3Record>): Map<string, Array<MSeed3Record>> {
+  let out: Map<string, Array<MSeed3Record>> = new Map();
   let key;
   for (let i=0; i<drList.length; i++) {
     let currDR = drList[i];
@@ -622,13 +622,13 @@ export function byChannel(drList: Array<XSeedRecord>): Map<string, Array<XSeedRe
 }
 
 /**
- * splits the XSeedRecords by channel and creates a single
+ * splits the MSeed3Records by channel and creates a single
  * Seismogram for each channel.
  *
- * @param   drList XSeedRecords array
+ * @param   drList MSeed3Records array
  * @returns         Map of code to Seismogram
  */
-export function seismogramPerChannel(drList: Array<XSeedRecord> ): Array<Seismogram> {
+export function seismogramPerChannel(drList: Array<MSeed3Record> ): Array<Seismogram> {
   let out = [];
   let byChannelMap = byChannel(drList);
   byChannelMap.forEach(segments => out.push(merge(segments)));
@@ -639,12 +639,12 @@ export function seismogramPerChannel(drList: Array<XSeedRecord> ): Array<Seismog
 /* MSeed2 to xSeed converstion */
 
 /**
- * Convert array of Miniseed2 DataRecords into an array of XSeedRecords.
+ * Convert array of Miniseed2 DataRecords into an array of MSeed3Records.
  *
  * @param   mseed2 array of DataRecords
- * @returns         array of XSeedRecords
+ * @returns         array of MSeed3Records
  */
-export function convertMS2toXSeed(mseed2: Array<DataRecord>): Array<XSeedRecord> {
+export function convertMS2toMSeed3(mseed2: Array<DataRecord>): Array<MSeed3Record> {
   let out = [];
   for (let i=0; i< mseed2.length; i++) {
     out.push(convertMS2Record(mseed2[i]));
@@ -653,13 +653,13 @@ export function convertMS2toXSeed(mseed2: Array<DataRecord>): Array<XSeedRecord>
 }
 
 /**
- * Converts a single miniseed2 DataRecord into a single XSeedRecord.
+ * Converts a single miniseed2 DataRecord into a single MSeed3Record.
  *
  * @param   ms2record Miniseed2 DataRecord to convert
- * @returns            XSeedRecord
+ * @returns            MSeed3Record
  */
-export function convertMS2Record(ms2record: DataRecord): XSeedRecord {
-  let xHeader = new XSeedHeader();
+export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
+  let xHeader = new MSeed3Header();
   let xExtras = {};
   let ms2H = ms2record.header;
   xHeader.flags = (ms2H.activityFlags & 1) *2
@@ -718,7 +718,7 @@ export function convertMS2Record(ms2record: DataRecord): XSeedRecord {
   }
   xHeader.extraHeadersLength = JSON.stringify(xExtras).length;
   // need to convert if not steim1 or 2
-  let out = new XSeedRecord(xHeader, xExtras, ms2record.data);
+  let out = new MSeed3Record(xHeader, xExtras, ms2record.data);
   return out;
 }
 

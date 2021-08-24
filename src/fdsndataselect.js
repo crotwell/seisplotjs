@@ -15,7 +15,7 @@ import {doStringGetterSetter, doIntGetterSetter, doFloatGetterSetter, doMomentGe
         isNonEmptyStringArg,isNumArg} from './util';
 
 import * as miniseed from './miniseed';
-import * as xseed from './xseed';
+import * as mseed3 from './mseed3';
 import { Seismogram, SeismogramDisplayData } from './seismogram';
 import { TEXT_MIME, StartEndDuration, makeParam, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
@@ -306,7 +306,7 @@ export class DataSelectQuery {
    *
    * @returns Promise to Array of miniseed.DataRecords
    */
-  queryMS3Records(): Promise<Array<xseed.XSeedRecord>> {
+  queryMS3Records(): Promise<Array<mseed3.MSeed3Record>> {
     const mythis = this;
     this.format(FORMAT_MINISEED_THREE);
     const url = this.formURL();
@@ -320,7 +320,7 @@ export class DataSelectQuery {
           return response.arrayBuffer();
         }
       }).then(function(rawBuffer) {
-        let dataRecords = xseed.parseXSeedRecords(rawBuffer);
+        let dataRecords = mseed3.parseMSeed3Records(rawBuffer);
         return dataRecords;
     });
   }
@@ -335,7 +335,7 @@ export class DataSelectQuery {
   querySeismograms(): Promise<Array<Seismogram>> {
     if (this._format === FORMAT_MINISEED_THREE) {
         return this.queryMS3Records().then(dataRecords => {
-          return xseed.seismogramPerChannel(dataRecords);
+          return mseed3.seismogramPerChannel(dataRecords);
         });
     } else {
       return this.queryDataRecords().then(dataRecords => {
@@ -358,12 +358,12 @@ export class DataSelectQuery {
     });
   }
 
-  postQueryMS3Records(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<xseed.XSeedRecord>> {
+  postQueryMS3Records(channelTimeList: Array<SeismogramDisplayData>): Promise<Array<mseed3.MSeed3Record>> {
     return this.postQueryRaw(channelTimeList)
     .then( fetchResponse => {
       if(fetchResponse.ok) {
         return fetchResponse.arrayBuffer().then(ab => {
-          return xseed.parseXSeedRecords(ab);
+          return mseed3.parseMSeed3Records(ab);
         });
       } else {
         util.log("fetchResponse not ok");
@@ -390,7 +390,7 @@ export class DataSelectQuery {
     let seismogramPromise;
     if (this._format === FORMAT_MINISEED_THREE) {
         seismogramPromise = this.postQueryMS3Records(sddList).then(dataRecords => {
-          return xseed.seismogramPerChannel(dataRecords);
+          return mseed3.seismogramPerChannel(dataRecords);
         });
     } else {
       seismogramPromise = this.postQueryDataRecords(sddList).then(dataRecords => {
