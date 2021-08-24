@@ -440,7 +440,7 @@ function extractSteim2Samples(dataView: DataView, offset: number, swapBytes: boo
             temp[currNum++] = (tempInt << 22) >> 22; // d2
             break;
           default:
-            throw new CodecException(`Unknown case currNibble=${currNibble} dnib=${dnib}`);
+            throw new CodecException(`Unknown case currNibble=${currNibble} dnib=${dnib} for chunk ${i} offset ${offset}, nibbles: ${nibbles}`);
         }
         break;
       case 3:
@@ -471,7 +471,7 @@ function extractSteim2Samples(dataView: DataView, offset: number, swapBytes: boo
             bitSize = 4;
             break;
           default:
-            throw new CodecException(`Unknown case currNibble=${currNibble} dnib=${dnib}`);
+            throw new CodecException(`Unknown case currNibble=${currNibble} dnib=${dnib} for chunk ${i} offset ${offset}, nibbles: ${nibbles}`);
         }
         if (diffCount > 0) {
           for (let d=0; d<diffCount; d++) {  // for-loop formulation
