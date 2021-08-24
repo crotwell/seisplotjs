@@ -222,7 +222,7 @@ export class XSeedRecord {
 
   toString(): string {
     // $FlowIgnore[incompatible-call]
-    return `${this.header.toString()}\n          extra headers:\n${JSON.stringify(this.extraHeaders, 2)}`;
+    return `${this.header.toString()}\n          extra headers: ${JSON.stringify(this.extraHeaders, 2)}`;
   }
 }
 
