@@ -330,6 +330,12 @@ export class MSeed3Header {
   getSize(): number {
     return FIXED_HEADER_SIZE+this.identifier.length;
   }
+  /**
+   * Text representation of the miniseed3 header. This is modeled after
+   * the output of mseed3-text from the mseed3-utils package from IRIS.
+   *
+   * @return textual repersentation
+   */
   toString(): string {
     /*
     FDSN:CO_HODGE_00_L_H_Z, version 4, 477 bytes (format: 3)
