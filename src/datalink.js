@@ -1,4 +1,4 @@
-MSeed3// @flow
+// @flow
 
 /*
  * Philip Crotwell
