@@ -1421,7 +1421,6 @@ export function createMarkerForOriginTime(quake: Quake): MarkerType {
 export function createFullMarkersForQuakeAtStation(quake: Quake, station: Station): Array<MarkerType> {
   let markers = [];
   let daz = distaz.distaz(station.latitude, station.longitude, quake.latitude, quake.longitude);
-  console.log(`createFullMarkersForQuakeAtStation quake time: ${quake.time.toISOString()}`)
   markers.push({ markertype: 'predicted',
                  name: `M${quake.preferredMagnitude.mag} ${quake.time.format('HH:mm')}`,
                  time: moment.utc(quake.time),
@@ -1433,15 +1432,29 @@ ${quake.preferredMagnitude}
 ${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
 `
                });
-  if (quake.arrivals) {
-    quake.arrivals.forEach(arrival => {
-      if (arrival && arrival.pick.stationCode == hash.staCode) {
-        console.log(`createFullMarkersForQuakeAtStation arrival/pick time: ${arrival.pick.time}`)
+  return markers;
+}
+
+export function createFullMarkersForQuakeAtChannel(quake: Quake, channel: Channel): Array<MarkerType> {
+  let markers = createFullMarkersForQuakeAtStation(quake, channel.station);
+  return markers.concat(createMarkerForPicks(quake, channel));
+}
+/**
+ * Creates a Marker for the picked arrival times in quake.arrivals, for the given Quake.
+ *
+ * @param   quake quake the travel times are relative to
+ *
+ * @returns        Marker suitable for adding to a seismograph
+ */
+export function createMarkerForPicks(origin: Origin, channel: Channel): MarkerType {
+  const markers = [];
+  if (origin.arrivals) {
+    origin.arrivals.forEach(arrival => {
+      if (arrival && arrival.pick.isOnChannel(channel)) {
         markers.push({ markertype: 'pick', name: arrival.phase, time: arrival.pick.time });
       }
     });
   }
-  markers.forEach(m => console.log(`all markers ${m}  ${m.time}  ${m.name}`));
   return markers;
 }
 
