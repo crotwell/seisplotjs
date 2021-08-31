@@ -22,7 +22,8 @@ import type { MarkerType } from './seismogram.js';
 import type { TraveltimeJsonType } from './traveltime.js';
 import {SeismogramDisplayData, findStartEnd, findMaxDuration, findMinMax, findMinMaxOverTimeRange,
         findMinMaxOverRelativeTimeRange, SeismogramSegment, Seismogram, COUNT_UNIT } from './seismogram.js';
-import {Quake} from './quakeml.js';
+import {Quake, Origin} from './quakeml.js';
+import {Station, Channel} from './stationxml.js';
 import * as distaz from './distaz.js';
 
 import * as util from './util.js'; // for util.log to replace console.log
@@ -1419,16 +1420,17 @@ export function createMarkerForOriginTime(quake: Quake): MarkerType {
 }
 
 export function createFullMarkersForQuakeAtStation(quake: Quake, station: Station): Array<MarkerType> {
-  let markers = [];
+  let markers: Array<MarkerType> = [];
   let daz = distaz.distaz(station.latitude, station.longitude, quake.latitude, quake.longitude);
-  markers.push({ markertype: 'predicted',
+  markers.push({ type: 'predicted',
                  name: `M${quake.preferredMagnitude.mag} ${quake.time.format('HH:mm')}`,
                  time: moment.utc(quake.time),
                  link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
+// $FlowFixMe[incompatible-type]
                  description: `${quake.time.toISOString()}
 ${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(quake.depth/1000).toFixed(2)} km
 ${quake.description}
-${quake.preferredMagnitude}
+${quake.preferredMagnitude.toString()}
 ${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
 `
                });
@@ -1437,7 +1439,7 @@ ${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
 
 export function createFullMarkersForQuakeAtChannel(quake: Quake, channel: Channel): Array<MarkerType> {
   let markers = createFullMarkersForQuakeAtStation(quake, channel.station);
-  return markers.concat(createMarkerForPicks(quake, channel));
+  return markers.concat(createMarkerForPicks(quake.preferredOrigin, channel));
 }
 /**
  * Creates a Marker for the picked arrival times in quake.arrivals, for the given Quake.
@@ -1446,12 +1448,15 @@ export function createFullMarkersForQuakeAtChannel(quake: Quake, channel: Channe
  *
  * @returns        Marker suitable for adding to a seismograph
  */
-export function createMarkerForPicks(origin: Origin, channel: Channel): MarkerType {
-  const markers = [];
+export function createMarkerForPicks(origin: Origin, channel: Channel): Array<MarkerType> {
+  let markers: Array<MarkerType> = [];
   if (origin.arrivals) {
     origin.arrivals.forEach(arrival => {
       if (arrival && arrival.pick.isOnChannel(channel)) {
-        markers.push({ markertype: 'pick', name: arrival.phase, time: arrival.pick.time });
+        markers.push({ type: 'pick',
+          name: arrival.phase,
+          time: arrival.pick.time,
+          description: "" });
       }
     });
   }
