@@ -19,11 +19,11 @@ import {SeismographConfig, LinkedAmpScale,
 export { LinkedAmpScale };
 
 import type { MarkerType } from './seismogram.js';
-import type { MarginType } from './seismographconfig';
 import type { TraveltimeJsonType } from './traveltime.js';
 import {SeismogramDisplayData, findStartEnd, findMaxDuration, findMinMax, findMinMaxOverTimeRange,
         findMinMaxOverRelativeTimeRange, SeismogramSegment, Seismogram, COUNT_UNIT } from './seismogram.js';
 import {Quake} from './quakeml.js';
+import * as distaz from './distaz.js';
 
 import * as util from './util.js'; // for util.log to replace console.log
 import {StartEndDuration, isDef, isNumArg } from './util';
@@ -1418,6 +1418,32 @@ export function createMarkerForOriginTime(quake: Quake): MarkerType {
     };
 }
 
+export function createFullMarkersForQuakeAtStation(quake: Quake, station: Station): Array<MarkerType> {
+  let markers = [];
+  let daz = distaz.distaz(station.latitude, station.longitude, quake.latitude, quake.longitude);
+  console.log(`createFullMarkersForQuakeAtStation quake time: ${quake.time.toISOString()}`)
+  markers.push({ markertype: 'predicted',
+                 name: `M${quake.preferredMagnitude.mag} ${quake.time.format('HH:mm')}`,
+                 time: moment.utc(quake.time),
+                 link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
+                 description: `${quake.time.toISOString()}
+${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(quake.depth/1000).toFixed(2)} km
+${quake.description}
+${quake.preferredMagnitude}
+${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
+`
+               });
+  if (quake.arrivals) {
+    quake.arrivals.forEach(arrival => {
+      if (arrival && arrival.pick.stationCode == hash.staCode) {
+        console.log(`createFullMarkersForQuakeAtStation arrival/pick time: ${arrival.pick.time}`)
+        markers.push({ markertype: 'pick', name: arrival.phase, time: arrival.pick.time });
+      }
+    });
+  }
+  markers.forEach(m => console.log(`all markers ${m}  ${m.time}  ${m.name}`));
+  return markers;
+}
 
 
 export const seismograph_css = `
