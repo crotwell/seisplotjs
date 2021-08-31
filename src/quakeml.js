@@ -366,6 +366,20 @@ export class Pick {
     if (isNonEmptyStringArg(pid)){out.publicId = pid;}
     return out;
   }
+
+  isAtStation(station: Station) {
+    return
+      this.networkCode == station.networkCode &&
+      this.stationCode == station.stationCode;
+  }
+
+  isOnChannel(channel: Channel) {
+    return
+      this.networkCode == channel.station.networkCode &&
+      this.stationCode == channel.station.stationCode &&
+      this.locationCode == channel.locationCode &&
+      this.channelCode == channel.channelCode;
+  }
 }
 
 
