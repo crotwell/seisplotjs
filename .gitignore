@@ -5,7 +5,7 @@ example/**/seisplotjs_*_standalone.js
 web_modules
 docs/api/assets/fonts
 pkg
-test/xseed/reference-data
+test/mseed3/reference-data
 example/huddle
 example/simpleHttp.sh
 jsonSchema
