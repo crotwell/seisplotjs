@@ -19,6 +19,7 @@ import {SeismographConfig, LinkedAmpScale,
 export { LinkedAmpScale };
 
 import type { MarkerType } from './seismogram.js';
+import type { MarginType } from './seismographconfig.js';
 import type { TraveltimeJsonType } from './traveltime.js';
 import {SeismogramDisplayData, findStartEnd, findMaxDuration, findMinMax, findMinMaxOverTimeRange,
         findMinMaxOverRelativeTimeRange, SeismogramSegment, Seismogram, COUNT_UNIT } from './seismogram.js';

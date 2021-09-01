@@ -5,7 +5,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-
+import {Station, Channel} from './stationxml.js';
 import { isObject, isStringArg, isNonEmptyStringArg,
          isNumArg, checkStringOrDate, stringify} from './util';
 import * as util from './util.js'; // for util.log
