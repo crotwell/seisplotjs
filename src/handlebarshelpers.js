@@ -7,6 +7,9 @@ export function registerHelpers() {
   Handlebars.registerHelper("onlyChangesChannel", function(sddDataList, index) {
     let out = "";
     const curr = sddDataList[index];
+    if ( typeof curr  === 'undefined' || curr === null) {
+      return "unknown";
+    }
     if (index === 0) {
       out = curr.codes();
     } else {
