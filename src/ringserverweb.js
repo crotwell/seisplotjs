@@ -30,7 +30,7 @@ const ORG = 'Organization: ';
  * Web connection to a Ringserver.
  *
  *
- * @param host optional host to connect to, defaults to IRIS
+ * @param host optional host to connect to, defaults to IRIS. This maybe a full URL.
  * @param port optional host to connect to, defaults to 80
  */
 export class RingserverConnection {
@@ -39,10 +39,23 @@ export class RingserverConnection {
   /** @private */
   _port: number;
   /** @private */
+  _prefix: string;
+  /** @private */
   _timeoutSec: number;
   constructor(host?: string, port?: number) {
-    this._host = (isNonEmptyStringArg(host) ? host : IRIS_HOST);
-    this._port = (isDef(port) ? port : 80);
+    let hostStr = (isNonEmptyStringArg(host) ? host : IRIS_HOST);
+    if (hostStr.startsWith("http")) {
+      let rs_url = new URL(hostStr);
+      console.log(`######  rs web: ${rs_url.hostname} ${rs_url.pathname}`);
+      this._host = rs_url.hostname;
+      this._port = parseInt(rs_url.port);
+      this._prefix = rs_url.pathname;
+    } else {
+      this._host = hostStr;
+      this._prefix = "";
+    }
+    // override port in URL if given
+    if (isDef(port)) { this._port = port; }
     this._timeoutSec = 30;
   }
 
@@ -196,7 +209,7 @@ export class RingserverConnection {
    * @returns the string url
    */
   formBaseURL(): string {
-    return checkProtocol()+'//'+this._host+(this._port===80 ? '' : (':'+this._port));
+    return checkProtocol()+'//'+this._host+(this._port===80 ? '' : (':'+this._port))+(this._prefix);
   }
 
   /**
