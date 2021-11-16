@@ -50,7 +50,7 @@ export function parseMSeed3Records(arrayBuffer: ArrayBuffer): Array<MSeed3Record
 }
 
 /**
- * Represents a xSEED Data Record, with header, extras and data.
+ * Represents a MSEED3 Data Record, with header, extras and data.
  *
  * @param header miniseed3 fixed record header
  * @param extraHeaders json compatible object with extra headers
