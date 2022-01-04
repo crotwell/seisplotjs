@@ -70,7 +70,9 @@ export class FFTPlot {
   constructor(cssSelector: string,
               seismographConfig: SeismographConfig,
               fftResult: FFTResult | Array<FFTResult>,
-              loglog: boolean = true) {
+              loglog: boolean = true,
+              amplitude: boolean = true,
+              phase: boolean = false) {
     this.svgParent = cssSelector;
     this.seismographConfig = seismographConfig;
     this.fftResults = Array.isArray(fftResult) ? fftResult : [fftResult];
@@ -78,6 +80,9 @@ export class FFTPlot {
     this.yScale = null;
     this.svg = null;
     this.loglog = loglog;
+    this.amplitude = amplitude;
+    this.phase = phase;
+    console.log(`########## FFTplot: amp: ${this.amplitude}  phase: ${this.phase}`)
     if (typeof cssSelector === 'string') {
       this.svgParent = d3.select(cssSelector);
     } else {
@@ -110,14 +115,20 @@ export class FFTPlot {
         maxFFTAmpLen = ap.amp.length;
       }
       let ampSlice;
+      if (this.amplitude) {
+        ampSlice = ap.amp;
+      } else {
+        ampSlice = ap.phase;
+      }
+      for (let i=0; i< 5; i++) {
+        console.log(`fft plot ${i}  a: ${ampSlice[i]}`);
+      }
       if (this.loglog) {
         // don't plot zero freq amp
-        ampSlice = ap.amp.slice(1);
-      } else {
-        ampSlice = ap.amp;
+        ampSlice = ampSlice.slice(1);
       }
       let currExtent = d3.extent(ampSlice);
-      if (currExtent[0] === 0) {
+      if (this.amplitude && currExtent[0] === 0) {
         // replace zero with smallest non-zero / 10 for loglog plot
         currExtent[0] = 0.1 * ampSlice.reduce((acc, curr) => {
           if (curr > 0 && curr < acc) {
@@ -158,11 +169,20 @@ export class FFTPlot {
           .rangeRound([0, width]);
     }
     this.xScale.domain(d3.extent(freqMinMax));
-    this.yScale = d3.scaleLog()
-        .rangeRound([height, 0]);
-    this.yScale.domain(extentFFTData);
-    if (this.yScale.domain()[0] === this.yScale.domain()[1]) {
-      this.yScale.domain( [ this.yScale.domain()[0]/2, this.yScale.domain()[1]*2]);
+    if (this.amplitude) {
+      this.yScale = d3.scaleLog()
+          .rangeRound([height, 0]);
+      this.yScale.domain(extentFFTData);
+      if (this.yScale.domain()[0] === this.yScale.domain()[1]) {
+        this.yScale.domain( [ this.yScale.domain()[0]/2, this.yScale.domain()[1]*2]);
+      }
+    } else {
+      this.yScale = d3.scaleLinear()
+          .rangeRound([height, 0]);
+      this.yScale.domain(extentFFTData);
+      if (this.yScale.domain()[0] === this.yScale.domain()[1]) {
+        this.yScale.domain( [ this.yScale.domain()[0]-1, this.yScale.domain()[1]+1]);
+      }
     }
 
     this.drawTitle();
@@ -184,6 +204,11 @@ export class FFTPlot {
     this.yAxis = d3.axisLeft(this.yScale);
     g.append("g")
         .call(this.yAxis);
+    let y_label= "Amp";
+    if ( ! this.amplitude) {
+      y_label = "Phase";
+      console.log(`yscale: ${this.yScale}`)
+    }
     svg.append("g")
         .attr("transform", `translate(0, ${this.seismographConfig.margin.top+height/2} )`)
       .append("text")
@@ -191,7 +216,7 @@ export class FFTPlot {
         .attr("dy", "0.71em")
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "end")
-        .text("Amp");
+        .text(y_label);
     let pathg = g.append("g").classed(G_DATA_SELECTOR, true);
     for (const ap of ampPhaseList) {
       let ampSlice = ampSliceMap.get(ap);
