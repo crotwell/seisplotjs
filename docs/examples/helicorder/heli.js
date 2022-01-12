@@ -209,7 +209,7 @@ const chooserStart = chooserEnd.subtract(moment.duration(state.duration));
 let throttleRedisplay = null;
 let throttleRedisplayDelay = 500;
 
-let dateChooserSpan = d3.select("#datechooser");
+let dateChooserSpan = seisplotjs.d3.select('span#datechooser');
 let dateChooser = new seisplotjs.datechooser.DateTimeChooser(dateChooserSpan,
     "Start Time",
     chooserStart,

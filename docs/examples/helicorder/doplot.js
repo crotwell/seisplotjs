@@ -175,6 +175,7 @@ queryEarthquakes = function(hash) {
     let quakeStart = moment.utc(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
     let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     localQuakesQuery
+      .minMag(0)
       .startTime(quakeStart)
       .endTime(hash.timeWindow.endTime)
       .minLat(hash.config.localMinLat)
