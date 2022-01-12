@@ -220,9 +220,11 @@ function plot_from_packed_freq(stage, idx, impulseResponse) {
   const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
   let title;
   if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros) {
-    title = `Stage ${idx+1}, poles: ${stage.filter.poles.length} , zeros: ${stage.filter.zeros.length} `;
+    title = `Stage ${idx+1} PolesZeros, poles: ${stage.filter.poles.length} , zeros: ${stage.filter.zeros.length} `;
+  } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros) {
+    title = `Stage ${idx+1} Coefficients, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor}, sym: ${stage.filter.symmetry} len: ${stage.filter.numerator.length} `;
   } else {
-    title = `Stage ${idx+1}, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor}, sym: ${stage.filter.symmetry} len: ${stage.filter.numerator.length} `;
+    title = `Stage ${idx+1} FIR, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor}, sym: ${stage.filter.symmetry} len: ${stage.filter.numerator.length} `;
   }
   plotConfig.title=title;
   plotConfig.ySublabelIsUnits = true;
