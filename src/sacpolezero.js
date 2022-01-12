@@ -8,7 +8,7 @@
 
  import { createComplex} from './oregondsputil.js';
  import type {Complex} from './oregondsputil.js';
- import { isNumArg } from './util.js';
+ import { isNumArg , stringify} from './util.js';
 
 /**
  * SAC style response file. This contains poles and zeros to represent the
@@ -61,6 +61,40 @@ export class SacPoleZero {
     }
     return s.join('\n');
   }
+  evalPoleZeroInverse(freq: number): Complex {
+    const s = createComplex(0, 2 * Math.PI * freq);
+    let zeroOut = createComplex(1, 0);
+    let poleOut = createComplex(1, 0);
+    for(let i = 0; i < this.poles.length; i++) {
+        poleOut = poleOut.timesComplex( s.minusComplex(this.poles[i]) );
+    }
+    for(let i = 0; i < this.zeros.length; i++) {
+        if(s.real() === this.zeros[i].real()
+                && s.imag() === this.zeros[i].imag()) {
+            return createComplex(0,0);
+        }
+        zeroOut = zeroOut.timesComplex( s.minusComplex(this.zeros[i]) );
+    }
+    let out = poleOut.overComplex(zeroOut);
+    return out.overReal( this.constant);
+  }
+  trimZeros(gamma: number) {
+    const sacPoleZero = this;
+    for(let i=0; i<gamma; i++) {
+      let z = sacPoleZero.zeros[sacPoleZero.zeros.length-1-i];
+      if (z.real() !== 0 || z.imag() !== 0) {
+        throw new Error(`Attempt to trim ${gamma} zeros from SacPoleZero, but zero isn't 0+i0: ${stringify(z)}`);
+      }
+    }
+    // subtract gama zeros, ex 1 to get
+    let trimmedZeros = sacPoleZero.zeros.slice().reverse();
+    for(let i=0; i<gamma; i++) {
+      let idx = trimmedZeros.findIndex((d) => d.real() === 0 && d.imag() === 0);
+      trimmedZeros.splice(idx, 1);
+    }
+    trimmedZeros = trimmedZeros.reverse();
+    sacPoleZero.zeros = trimmedZeros;
+  }
   toText(): string {
     let s = [];
     s.push("ZEROS "+this.zeros.length);
@@ -73,6 +107,23 @@ export class SacPoleZero {
     }
     s.push("CONSTANT "+this.constant);
     return s.join('\n');
+  }
+
+  /**
+   * Caclulates the frequency response from the given poles and zeros.
+   *
+   * @param   sacPoleZero poles and zeros
+   * @param   numPoints   number of points in the output fft
+   * @param   sampleRate  sample rate to compute at
+   * @returns             frequency response
+   */
+  calcForDisplay(freqs: Array<Number>): Array<Complex> {
+    let out = freqs.map(freq => {
+        let respAtS = this.evalPoleZeroInverse(freq);
+        respAtS = createComplex(1, 0).overComplex(respAtS);
+        return respAtS;
+    });
+    return out;
   }
   /**
    * Parses a string in sac polezero format into a SacPoleZero.
@@ -144,4 +195,21 @@ export class SacPoleZero {
       }
       return new SacPoleZero(pz.poles, pz.zeros, pz.constant);
   }
+}
+
+export function geomspace(start: number, stop: number, num: number): Array<Number> {
+  let log_start = Math.log(start);
+  let log_stop = Math.log(stop);
+  return logspace(log_start, log_stop, num);
+}
+export function logspace(start: number, stop: number, num: number): Array<Number> {
+  return linspace(start, stop, num).map(n => Math.pow(10, n));
+}
+export function linspace(start: number, stop: number, num: number): Array<Number> {
+  let delta = (stop-start)/(num-1);
+  let out = [];
+  for (let i=0;i<num;i++) {
+    out.push(start+i*delta);
+  }
+  return out;
 }

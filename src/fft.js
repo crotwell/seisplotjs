@@ -137,6 +137,7 @@ export class FFTResult {
     let fftResult = new FFTResult(origLength, sampleRate);
     fftResult.complex = complexArray;
     fftResult.recalcFromComplex();
+    fftResult.recalcFromPackedFreq();
     return fftResult;
   }
   /**

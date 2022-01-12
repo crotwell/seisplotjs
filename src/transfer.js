@@ -106,23 +106,11 @@ export function calcResponse(response: Response, numPoints: number, sampleRate: 
   } else {
       throw new Error("response unit is not displacement (m), velocity (m/s) or acceleration (m/s^2): "+unit);
   }
-  for(let i=0; i<gamma; i++) {
-    let z = sacPoleZero.zeros[sacPoleZero.zeros.length-1-i];
-    if (z.real() !== 0 || z.imag() !== 0) {
-      throw new Error(`Attempt to trim ${gamma} zeros from SacPoleZero, but zero isn't 0+i0: ${stringify(z)}`);
-    }
-  }
-  // subtract gama zeros, ex 1 to get
-  let trimmedZeros = sacPoleZero.zeros.slice().reverse();
-  for(let i=0; i<gamma; i++) {
-    let idx = trimmedZeros.findIndex((d) => d.real() === 0 && d.imag() === 0);
-    trimmedZeros.splice(idx, 1);
-  }
-  trimmedZeros = trimmedZeros.reverse();
-  sacPoleZero.zeros = trimmedZeros;
+  sacPoleZero.trimZeros(gamma);
   let out = calcResponseFromSacPoleZero( sacPoleZero, numPoints, sampleRate);
   return out;
 }
+
 
 /**
  * Caclulates the frequency response from the given poles and zeros.
@@ -133,22 +121,26 @@ export function calcResponse(response: Response, numPoints: number, sampleRate: 
  * @returns             frequency response
  */
 export function calcResponseFromSacPoleZero(sacPoleZero: SacPoleZero, numPoints: number, sampleRate: number): FFTResult {
+  const deltaF = sampleRate / numPoints;
+
   // inst response as packed frequency array
   let freqValues = new Float32Array(numPoints);
-  const deltaF = sampleRate / freqValues.length;
+  let respAtS;
   // zero freq
-  freqValues[0] = 0;
+  respAtS = evalPoleZeroInverse(sacPoleZero, 0);
+  respAtS = createComplex(1, 0).overComplex(respAtS);
+  freqValues[0] = respAtS.real();
   // nyquist
   let freq = sampleRate / 2;
-  let respAtS = evalPoleZeroInverse(sacPoleZero, freq);
+  respAtS = evalPoleZeroInverse(sacPoleZero, freq);
   respAtS = createComplex(1, 0).overComplex(respAtS);
   freqValues[freqValues.length/2 ] = respAtS.real();
-  for(let i = 1; i < freqValues.length / 2 ; i++) {
+  for(let i = 1; i < freqValues.length / 2  ; i++) {
     freq = i * deltaF;
     respAtS = evalPoleZeroInverse(sacPoleZero, freq);
     //respAtS = respAtS.timesReal(deltaF*i);
     respAtS = createComplex(1, 0).overComplex(respAtS);
-    if (respAtS.real() !== 0 && respAtS.imag() !== 0) {
+    if (respAtS.real() !== 0 || respAtS.imag() !== 0) {
       freqValues[i] = respAtS.real();
       freqValues[freqValues.length-i] = respAtS.imag();
     } else {
@@ -219,22 +211,8 @@ export function combine(freqValues: Float32Array,
    * @returns complex frequency domain value for this frequency
    */
   export function evalPoleZeroInverse(sacPoleZero: SacPoleZero, freq: number): Complex {
-        const s = createComplex(0, 2 * Math.PI * freq);
-        let zeroOut = createComplex(1, 0);
-        let poleOut = createComplex(1, 0);
-        for(let i = 0; i < sacPoleZero.poles.length; i++) {
-            poleOut = poleOut.timesComplex( s.minusComplex(sacPoleZero.poles[i]) );
-        }
-        for(let i = 0; i < sacPoleZero.zeros.length; i++) {
-            if(s.real() === sacPoleZero.zeros[i].real()
-                    && s.imag() === sacPoleZero.zeros[i].imag()) {
-                return createComplex(0,0);
-            }
-            zeroOut = zeroOut.timesComplex( s.minusComplex(sacPoleZero.zeros[i]) );
-        }
-        let out = poleOut.overComplex(zeroOut);
-        return out.overReal( sacPoleZero.constant);
-    }
+    return sacPoleZero.evalPoleZeroInverse(freq);
+  }
 
 /**
  * Calculates the frequency taper for the given parameters.
@@ -345,7 +323,14 @@ export function convertToSacPoleZero( response: Response): SacPoleZero {
     } else {
         throw new Error("response unit is not displacement, velocity or acceleration: "+unit);
     }
+    const scale_sensitivity = scaleUnit.scalar * response.instrumentSensitivity.sensitivity;
+    return convertPoleZeroToSacStyle(polesZeros,
+                                     scale_sensitivity,
+                                     response.instrumentSensitivity.frequency,
+                                     gamma);
+}
 
+export function convertPoleZeroToSacStyle(polesZeros, sensitivity, sensitivity_freq, gamma) {
     let mulFactor = 1;
     if (polesZeros.pzTransferFunctionType === "LAPLACE (HERTZ)") {
         mulFactor = 2 * Math.PI;
@@ -365,8 +350,8 @@ export function convertToSacPoleZero( response: Response): SacPoleZero {
                                polesZeros.poles[i].imag() * mulFactor);
     }
     let constant = polesZeros.normalizationFactor;
-    let sd = response.instrumentSensitivity.sensitivity;
-    let fs = response.instrumentSensitivity.frequency;
+    let sd = sensitivity;
+    let fs = sensitivity_freq;
     sd *= Math.pow(2 * Math.PI * fs, gamma);
     let A0 = polesZeros.normalizationFactor;
     let fn = polesZeros.normalizationFrequency;
@@ -379,7 +364,6 @@ export function convertToSacPoleZero( response: Response): SacPoleZero {
     } else {
         constant = (sd * calc_A0(poles, zeros, fs));
     }
-    constant *= scaleUnit.scalar;
     let sacPZ = new SacPoleZero(poles, zeros, constant);
     sacPZ.gamma= gamma;
     sacPZ.mulFactor= mulFactor;
