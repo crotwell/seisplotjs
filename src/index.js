@@ -7,6 +7,7 @@
  * http://www.seis.sc.edu
  */
 
+import * as axisutil        from './axisutil.js';
 import * as cssutil        from './cssutil.js';
 import * as datalink         from './datalink.js';
 import * as datechooser      from './datechooser.js';
@@ -58,7 +59,8 @@ import * as leaflet from 'leaflet';
 import { version } from './util.js';
 
 /* reexport */
-export { cssutil,
+export { axisutil,
+         cssutil,
          datalink,
          datechooser,
          displayorganize,

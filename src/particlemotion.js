@@ -16,6 +16,7 @@ import {insertCSS} from './cssutil.js';
 import { SeismographConfig } from './seismographconfig';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData } from './seismogram.js';
 import { isDef, isNumArg, StartEndDuration } from './util.js';
+import {drawAxisLabels, drawTitle, drawXLabel, drawXSublabel, drawYLabel, drawYSublabel} from './axisutil.js';
 
 export const DEFAULT_TITLE = "<tspan>{{#each seisDataList}}{{onlyChangesChannel ../seisDataList @index}} {{else}}No Data{{/each}}</tspan>";
 export const DEFAULT_XLABEL = "{{seisXData.channelCode}}";
@@ -182,7 +183,13 @@ export class ParticleMotion {
   draw() {
     this.checkResize();
     this.drawAxis();
-    this.drawAxisLabels();
+    let handlebarsInput = {
+      seisDataList: [ this.xSeisData , this.ySeisData ],
+      seisXData: this.xSeisData,
+      seisYData: this.ySeisData,
+      seisConfig: this.seismographConfig
+    };
+    drawAxisLabels(this.svg, this.seismographConfig, this.height, this.width, handlebarsInput);
     this.drawParticleMotion();
   }
   checkResize(): boolean {

@@ -103,6 +103,8 @@ export class FFTResult {
   numPoints: number;
   /** sample rate of the original time series, maybe be null. */
   sampleRate: number;
+  /** optional units of the original data for display purposes. */
+  inputUnits: string;
   /** optional reference to SeismogramDisplayData when calculated from a seismogram.
    *  Useful for creating title, etc.
    *  */
@@ -226,6 +228,28 @@ export class FFTResult {
    */
   fftInverse(): Float32Array {
     return inverseDFT(this.packedFreq, this.origLength);
+  }
+  frequencies() {
+    let out = new Float32Array(this.numPoints/2+1).fill(0);
+    for (let i=0; i<out.length; i++) {
+      out[i] = i*this.fundamentalFrequency;
+    }
+    return out;
+  }
+  get numFrequencies() {
+    return this.numPoints/2+1;
+  }
+  get minFrequency() {
+    return this.fundamentalFrequency;
+  }
+  get maxFrequency() {
+    return this.sampleRate/2;
+  }
+  amplitudes() {
+    return this.amp;
+  }
+  phases() {
+    return this.phase;
   }
   clone(): FFTResult {
     let out = FFTResult.createFromPackedFreq(this.packedFreq.slice(), this.origLength, this.sampleRate);

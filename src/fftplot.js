@@ -12,6 +12,7 @@ import { SeismographConfig } from './seismographconfig';
 import * as d3 from 'd3';
 
 import {insertCSS, G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from './cssutil.js';
+import {drawAxisLabels, drawTitle, drawXLabel, drawXSublabel, drawYLabel, drawYSublabel} from './axisutil.js';
 
 /**
  * Create a single amplitude plot of FFT data.
@@ -50,7 +51,46 @@ export function createOverlayFFTPlot(cssSelector: string,
 }
 
 /**
- * A amplitude plot of fft data.
+ * Similar to FFTResult, but used for plotting non-fft generated data.
+ * This allows the frequencies to be, for example, evenly distrubuted
+ * in log instead of linearly for plotting PolesZeros stages.
+ */
+export class FreqAmp {
+  freq: Array<Number>;
+  values: Array<Complex>;
+  /** optional units of the original data for display purposes. */
+  inputUnits: string;
+  constructor(freq: Array<Number>, values: Array<Complex>) {
+    this.freq = freq;
+    this.values = values;
+    this.inputUnits = '';// leave blank unless set manually
+  }
+  frequencies() {
+    return this.freq;
+  }
+  amplitudes() {
+    return this.values.map(c => c.abs());
+  }
+  phases() {
+    return this.values.map(c => c.angle());
+  }
+  get numFrequencies() {
+    return this.freq.length;
+  }
+  get minFrequency() {
+    return this.fundamentalFrequency;
+  }
+  get maxFrequency() {
+    return this.freq[this.freq.length-1];
+  }
+  // for compatibility with FFTResult
+  get fundamentalFrequency() {
+    return this.freq[0];
+  }
+}
+
+/**
+ * A amplitude or phase plot of fft data.
  *
  * @param cssSelector selector or d3 selection
  * @param seismographConfig config of the plot, not all values are used
@@ -60,16 +100,18 @@ export function createOverlayFFTPlot(cssSelector: string,
 export class FFTPlot {
   svgParent: any;
   seismographConfig: SeismographConfig;
-  fftResults: Array<FFTResult>;
+  fftResults: Array<FFTResult | FreqAmp>;
   xScale: any;
   yScale: any;
   xAxis: any;
   yAxis: any;
   svg: any;
   loglog: boolean;
+  amplitude: boolean;
+  phase: boolean;
   constructor(cssSelector: string,
               seismographConfig: SeismographConfig,
-              fftResult: FFTResult | Array<FFTResult>,
+              fftResult: FFTResult | FreqAmp | Array<FFTResult>,
               loglog: boolean = true,
               amplitude: boolean = true,
               phase: boolean = false) {
@@ -82,7 +124,6 @@ export class FFTPlot {
     this.loglog = loglog;
     this.amplitude = amplitude;
     this.phase = phase;
-    console.log(`########## FFTplot: amp: ${this.amplitude}  phase: ${this.phase}`)
     if (typeof cssSelector === 'string') {
       this.svgParent = d3.select(cssSelector);
     } else {
@@ -97,31 +138,29 @@ export class FFTPlot {
     let maxFFTAmpLen = 0;
     let extentFFTData = null;
     let freqMinMax = [];
+    if (this.phase) { extentFFTData = d3.extent([-Math.PI, Math.PI]);}
     for (const fftA of this.fftResults) {
       if (this.loglog) {
         freqMinMax.push(fftA.fundamentalFrequency); // min freq
       } else {
         freqMinMax.push(0);
       }
-      freqMinMax.push(fftA.sampleRate/2); // max freq
+      freqMinMax.push(fftA.maxFrequency); // max freq
       let ap: FFTResult;
-      if (fftA instanceof FFTResult) {
+      if (fftA instanceof FFTResult || fftA instanceof FreqAmp) {
         ap = fftA;
       } else {
         throw new Error("fftResults must be array of FFTResult");
       }
       ampPhaseList.push(ap);
-      if (maxFFTAmpLen < ap.amp.length) {
-        maxFFTAmpLen = ap.amp.length;
+      if (maxFFTAmpLen < ap.numFrequencies) {
+        maxFFTAmpLen = ap.numFrequencies;
       }
       let ampSlice;
       if (this.amplitude) {
-        ampSlice = ap.amp;
+        ampSlice = ap.amplitudes();
       } else {
-        ampSlice = ap.phase;
-      }
-      for (let i=0; i< 5; i++) {
-        console.log(`fft plot ${i}  a: ${ampSlice[i]}`);
+        ampSlice = ap.phases();
       }
       if (this.loglog) {
         // don't plot zero freq amp
@@ -138,7 +177,6 @@ export class FFTPlot {
           }
           }, 1e-9);
       }
-      ampSliceMap.set(ap, ampSlice);
       if (extentFFTData) {
         extentFFTData = d3.extent([ extentFFTData[0],
                                     extentFFTData[1],
@@ -148,6 +186,9 @@ export class FFTPlot {
       } else {
         extentFFTData = currExtent;
       }
+    }
+    if ( ! extentFFTData) {
+      extentFFTData = d3.extent([0.1,1]);
     }
 
     let svg = this.svgParent.append("svg");
@@ -169,7 +210,7 @@ export class FFTPlot {
           .rangeRound([0, width]);
     }
     this.xScale.domain(d3.extent(freqMinMax));
-    if (this.amplitude) {
+    if (this.loglog && this.amplitude) {
       this.yScale = d3.scaleLog()
           .rangeRound([height, 0]);
       this.yScale.domain(extentFFTData);
@@ -185,77 +226,67 @@ export class FFTPlot {
       }
     }
 
-    this.drawTitle();
 
     this.xAxis = d3.axisBottom(this.xScale);
     g.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(this.xAxis);
-    g.append("g")
-        .attr("transform", `translate(0, ${height+ this.seismographConfig.margin.bottom} )`)
-      .append("text")
-        .attr("fill", "#000")
-        .attr("y", 0)
-        .attr("x", width/2)
-        .attr("dy", "0.71em")
-        .attr("text-anchor", "end")
-        .text("Hertz");
 
     this.yAxis = d3.axisLeft(this.yScale);
     g.append("g")
         .call(this.yAxis);
-    let y_label= "Amp";
+    this.seismographConfig.yLabel= "Amp";
     if ( ! this.amplitude) {
-      y_label = "Phase";
-      console.log(`yscale: ${this.yScale}`)
+      this.seismographConfig.yLabel = "Phase";
     }
-    svg.append("g")
-        .attr("transform", `translate(0, ${this.seismographConfig.margin.top+height/2} )`)
-      .append("text")
-        .attr("fill", "#000")
-        .attr("dy", "0.71em")
-        .attr("transform", "rotate(-90)")
-        .attr("text-anchor", "end")
-        .text(y_label);
+    this.seismographConfig.xLabel = "Frequency";
+    this.seismographConfig.xSublabel = "Hz";
+    if (this.seismographConfig.ySublabelIsUnits) {
+      if (this.phase) {
+        this.seismographConfig.ySublabel = "radian";
+      } else {
+        for (const ap of ampPhaseList) {
+          this.seismographConfig.ySublabel += ap.inputUnits;
+        }
+      }
+    }
+
     let pathg = g.append("g").classed(G_DATA_SELECTOR, true);
     for (const ap of ampPhaseList) {
-      let ampSlice = ampSliceMap.get(ap);
+      let ampSlice;
+      if (this.amplitude) {
+        ampSlice = ap.amplitudes();
+      } else {
+        ampSlice = ap.phases();
+      }
+      let freqSlice = ap.frequencies();
+      if (this.loglog) {
+        freqSlice = freqSlice.slice(1);
+        ampSlice = ampSlice.slice(1);
+      }
       let minFreq = ap.fundamentalFrequency;
       let line = d3.line();
-      if (this.loglog) {
-        line.x(function(d, i) { return that.xScale((i+1)*minFreq); });
-        // minus one as slice off zero freq above
-      } else {
-        line.x(function(d, i) { return that.xScale((i  )*minFreq); });
-      }
-      line.y(function(d) {if (d !== 0.0 && ! isNaN(d)) {return that.yScale(d);} else {return that.yScale.range()[0];} });
+      line.x(function(d, i) {
+        return that.xScale(freqSlice[i]);
+      });
+      line.y(function(d, i) {
+        if (d !== 0.0 && ! isNaN(d)) {
+          return that.yScale(d);
+        } else {
+          console.warn(`y value is zero or nan: ${d} ${i}`);
+          return that.yScale.range()[0];
+        }
+      });
       pathg.append("g").append("path")
           .classed("fftpath", true)
           .datum(ampSlice)
           .attr("d", line);
     }
-  }
-  drawTitle() {
-    let rect = this.svg.node().getBoundingClientRect();
-    let width = +rect.width - this.seismographConfig.margin.left - this.seismographConfig.margin.right;
-    this.svg.selectAll("g.title").remove();
-    if (this.seismographConfig.showTitle) {
-      let titleSVGText = this.svg.append("g")
-         .classed("title", true)
-         .attr("transform", `translate(${(this.seismographConfig.margin.left+(width)/2)}, 0)`)
-         .append("text").classed("title label", true)
-         .attr("x",0)
-         .attr("y",2) // give little extra space at top, css style as hanging doesn't quite do it
-         .attr("text-anchor", "middle");
-      let handlebarOut = this.seismographConfig.handlebarsTitle({
-          seisDataList: this.fftResults.map(f => f.seismogramDisplayData),
-          seisConfig: this.seismographConfig
-        },
-        {
-          allowProtoPropertiesByDefault: true // this might be a security issue???
-        });
-      titleSVGText.html(handlebarOut);
-    }
+    const handlebarInput = {
+        seisDataList: this.fftResults.map(f => f.seismogramDisplayData),
+        seisConfig: this.seismographConfig
+      };
+    drawAxisLabels(this.svg, this.seismographConfig, height, width, handlebarInput);
   }
 }
 
@@ -283,6 +314,9 @@ svg.fftplot text.title {
   dominant-baseline: hanging;
 }
 
+svg.fftplot text.sublabel {
+  font-size: smaller;
+}
 
 /* links in svg */
 svg.fftplot text a {

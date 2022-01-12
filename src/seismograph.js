@@ -26,6 +26,7 @@ import {SeismogramDisplayData, findStartEnd, findMaxDuration, findMinMax, findMi
 import {Quake, Origin} from './quakeml.js';
 import {Station, Channel} from './stationxml.js';
 import * as distaz from './distaz.js';
+import {drawAxisLabels, drawTitle, drawXLabel, drawXSublabel, drawYLabel, drawYSublabel} from './axisutil.js';
 
 import * as util from './util.js'; // for util.log to replace console.log
 import {StartEndDuration, isDef, isNumArg } from './util';
@@ -280,7 +281,7 @@ export class Seismograph {
 
     this.drawSeismograms();
     this.drawAxis();
-    this.drawAxisLabels();
+    drawAxisLabels(this.svg, this.seismographConfig, this.height, this.width, this.createHandlebarsInput());
     if (this.seismographConfig.doMarkers) {
       this.drawMarkers();
     }
@@ -701,7 +702,12 @@ export class Seismograph {
         }, delay);
     }
   }
-
+  createHandlebarsInput() {
+    return {
+        seisDataList: this.seisDataList,
+        seisConfig: this.seismographConfig
+      };
+  }
   drawAxisLabels(): void {
     this.drawTitle();
     this.drawXLabel();
@@ -980,101 +986,19 @@ export class Seismograph {
     return this;
   }
   drawTitle() {
-    this.svg.selectAll("g.title").remove();
-    if (this.seismographConfig.showTitle) {
-      let titleSVGText = this.svg.append("g")
-         .classed("title", true)
-         .attr("transform", `translate(${(this.seismographConfig.margin.left+(this.width)/2)}, 0)`)
-         .append("text").classed("title label", true)
-         .attr("x",0)
-         .attr("y",2) // give little extra space at top, css style as hanging doesn't quite do it
-         .attr("text-anchor", "middle");
-      let handlebarOut = this.seismographConfig.handlebarsTitle({
-          seisDataList: this.seisDataList,
-          seisConfig: this.seismographConfig
-        },
-        {
-          allowProtoPropertiesByDefault: true // this might be a security issue???
-        });
-      titleSVGText.html(handlebarOut);
-    }
-
+    drawTitle(this.svg, this.seismographConfig, this.height, this.width, this.createHandlebarsInput());
   }
-  drawXLabel(): Seismograph {
-    this.svg.selectAll("g.xLabel").remove();
-    if (this.seismographConfig.xLabel && this.seismographConfig.xLabel.length > 0) {
-      this.svg.append("g")
-         .classed("xLabel", true)
-         .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight - this.seismographConfig.margin.bottom/3  )+")")
-         .append("text").classed("x label", true)
-         .attr("text-anchor", "middle")
-         .text(this.seismographConfig.xLabel);
-    }
-    return this;
+  drawXLabel() {
+    drawXLabel(this.svg, this.seismographConfig, this.height, this.width, this.createHandlebarsInput());
   }
-  drawYLabel(): Seismograph {
-    this.svg.selectAll('g.yLabel').remove();
-    for(let side of [ 'left', 'right']) {
-      let hTranslate = (side==="left"?0:this.seismographConfig.margin.left+this.width+1);
-      let svgText = this.svg.append("g")
-         .classed("yLabel", true)
-         .classed(side, true)
-         .attr("x", 0)
-         .attr("transform", `translate(${hTranslate}, ${(this.seismographConfig.margin.top+(this.height)/2)})`)
-         .append("text");
-      svgText
-         .classed("y label", true);
-      if (this.seismographConfig.yLabelOrientation === "vertical") {
-        // vertical
-        svgText
-          .attr("text-anchor", "middle")
-          .attr("dy", ".75em")
-          .attr("transform", "rotate(-90, 0, 0)");
-      } else {
-        // horizontal
-        svgText.attr("text-anchor", "start")
-        .attr("dominant-baseline", "central");
-      }
-      if (side==="left") {
-        svgText.text(this.seismographConfig.yLabel);
-      } else {
-        svgText.text(this.seismographConfig.yLabelRight);
-      }
-    }
-    return this;
+  drawXSublabel() {
+    drawXSublabel(this.svg, this.seismographConfig, this.height, this.width, this.createHandlebarsInput());
   }
-  drawXSublabel(): Seismograph {
-    this.svg.selectAll('g.xSublabel').remove();
-    this.svg.append("g")
-       .classed("xSublabel", true)
-       .attr("transform", "translate("+(this.seismographConfig.margin.left+(this.width)/2)+", "+(this.outerHeight  )+")")
-       .append("text").classed("x label sublabel", true)
-       .attr("text-anchor", "middle")
-       .text(this.seismographConfig.xSublabel);
-    return this;
+  drawYLabel() {
+    drawYLabel(this.svg, this.seismographConfig, this.height, this.width, this.createHandlebarsInput());
   }
-  drawYSublabel(): Seismograph {
-    this.svg.selectAll('g.ySublabel').remove();
-    let svgText = this.svg.append("g")
-       .classed("ySublabel", true)
-       .attr("x", 0)
-       .attr("transform", "translate( "+this.seismographConfig.ySublabelTrans+" , "+(this.seismographConfig.margin.top+(this.height)/2)+")")
-       .append("text")
-       .classed("y label sublabel", true);
-    if (this.seismographConfig.yLabelOrientation === "vertical") {
-      // vertical
-      svgText
-        .attr("text-anchor", "middle")
-        .attr("dy", ".75em")
-        .attr("transform", "rotate(-90, 0, 0)");
-    } else {
-      // horizontal
-      svgText.attr("text-anchor", "start")
-      .attr("dominant-baseline", "central");
-    }
-    svgText
-       .text(this.seismographConfig.ySublabel);
-    return this;
+  drawYSublabel() {
+    drawYSublabel(this.svg, this.seismographConfig, this.height, this.width, this.createHandlebarsInput());
   }
   calcTimeScaleDomain(): void {
 
@@ -1215,7 +1139,9 @@ export class Seismograph {
       this.yScaleRmean.domain(niceMinMax);
     }
     this.rescaleYAxis();
-    this.drawYSublabel();
+    if (this.seismographConfig.ySublabelIsUnits ) {
+      drawYSublabel(this.svg, this.seismographConfig, this.height, this.width);
+    }
   }
   getSeismogramData(): Array<SeismogramDisplayData> {
     return this.seisDataList;
