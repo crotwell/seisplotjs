@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+     <meta charset="utf-8" />
+     <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h3>Input: </h3>
+    <div>
+      <label>SIS ExtStationXML URL:</label>
+      <input type="text" id="stationxml_url" name="extstationxml_url" value="sis_filtercascade_15242.xml"></input>
+      <button id="extstationxml_load">Load</button>
+    </div>
+    <div>
+      <label>FDSN StationXML frm IRIS:</label>
+      <channel-code-input></channel-code-input>
+      <button id="stationxml_load">Load</button>
+    </div>
+    <channel-list-chooser></channel-list-chooser>
+    <div>
+    <button id="clear">Clear</button>
+    <input id="showphase" type="checkbox">Phase</input>
+    </div>
+    <h3>Response Stage plot</h3>
+    <h5 class="response_url"></h5>
+    <div class="stageplot"></div>
+
+
+<script src="seisplotjs_2.1.0-alpha.0_standalone.js"></script>
+<script src="channel_chooser.js"></script>
+<script src="response_parse.js"></script>
+<script src="response_plot.js"></script>
+  </body>
+</html>
