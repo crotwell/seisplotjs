@@ -1,0 +1,64 @@
+
+g.out path {
+  stroke: red;
+  fill: none;
+  stroke-width: 1px;
+}
+
+g.in path {
+  stroke: skyblue;
+  fill: none;
+  stroke-width: 1px;
+}
+
+g.reout path {
+  stroke: seagreen;
+  fill: none;
+  stroke-width: 1px;
+}
+g.timedomain path {
+  stroke: goldenrod;
+  fill: none;
+  stroke-width: 1px;
+}
+
+ul {
+  list-style: none;
+}
+
+div.fftplot svg g g.allfftpaths g path {
+        fill: none;
+        stroke: steelblue;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+        stroke-width: 1.5;
+}
+
+div.fftplot svg g g.allfftpaths g:nth-child(9n+1) path {
+  stroke: skyblue;
+}
+
+div.fftplot svg g g.allfftpaths g:nth-child(9n+2) path {
+  stroke: olivedrab;
+}
+
+div.fftplot svg g g.allfftpaths g:nth-child(9n+3) path {
+  stroke: goldenrod;
+}
+
+div.fftplot svg g g.allfftpaths g:nth-child(9n+4) path {
+  stroke: firebrick;
+}
+
+div.fftplot svg g g.allfftpaths g:nth-child(9n+5) path {
+  stroke: darkcyan;
+}
+
+div.fftplot svg g g.allfftpaths g:nth-child(9n+6) path {
+  stroke: orange;
+}
+
+svg g.yAxis  .tick line {
+    stroke: lightgrey;
+    opacity: 0.7;
+}

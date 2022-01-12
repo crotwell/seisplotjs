@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+     <meta charset="utf-8" />
+     <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h3><a href="https://github.com/crotwell/OregonDSP-kotlin">OregsonDSP</a> Equiripple Lowpass FIR filter design</h3>
+    <div class="control">
+      <button id="load">Create</button>
+      <label>N (half)</label><input name="N" type="text" value="20">
+      <label>OmegaP</label><input name="OmegaP" type="text" value=".45">
+      <label>Wp</label><input name="Wp" type="text" value="1">
+      <label>OmegaS</label><input name="OmegaS" type="text" value=".5">
+      <label>Ws</label><input name="Ws" type="text" value="1">
+
+    </div>
+    <div class="control2">
+      <label>Data npts:</label><input name="NumPoints" type="text" value="1024">
+      <input id="fixdelay" name="fixdelay" type="checkbox" checked><label>Fix Delay</label>
+        <input id="rmean" name="rmean" type="checkbox" checked><label>RMean</label>
+      <input id="loglog" name="loglog" type="checkbox" checked><label>LogLog</label>
+      <input id="initval" name="initval" type="checkbox" checked><label>Init to First Sample</label>
+      <label>Miniseed:</label><input name="mseedUrl" type="text" value="testData/XX.PI04.RW.HNZ.2019.070.18">
+
+    </div>
+    <div class="message"></div>
+
+    <h3>Random timeseries plot</h3>
+    <h5>Blue: original, Red: filtered, Orange: time domain filtered, Green: filtered twice</h5>
+    <div class="plot">
+      <svg class="timeseries"></svg>
+    </div>
+    <h3>FFT plot</h3>
+    <h5>Blue: original, Yellow: filtered, Green: time domain</h5>
+    <div class="fft fftplot">
+    </div>
+
+    <h3>FFT Ratio plot</h3>
+    <div class="fftplot fftratio">
+    </div>
+    <h3>FFT FIR plot</h3>
+    <div class="fftplot fftfir">
+    </div>
+    <h3>Zero gain vs FIR N</h3>
+    <div class="zeroFreqGain">
+      <svg class="zeroFreqGain"></svg>
+    </div>
+    <h3 class="coefficients"></h3>
+    <div class="coefficients">
+      <ul></ul>
+    </div>
+
+        <div class="impulse">
+          <ul></ul>
+        </div>
+    <script src="seisplotjs_2.1.0-alpha.0_standalone.js"></script>
+    <script src="firDesign.js"></script>
+  </body>
+</html>
