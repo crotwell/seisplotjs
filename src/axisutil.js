@@ -1,16 +1,16 @@
+//@flow
 
-import moment from 'moment';
-import RSVP from 'rsvp';
 import * as d3 from 'd3';
-import * as dataselect from './fdsndataselect.js';
-import * as miniseed from './miniseed.js';
-import {Seismogram, SeismogramDisplayData} from './seismogram.js';
 import { SeismographConfig } from './seismographconfig';
 import {Seismograph} from './seismograph.js';
 import {StartEndDuration, isDef } from './util.js';
 
 
-export function drawXLabel(svg, seismographConfig, height, width, handlebarsInput={}) {
+export function drawXLabel(svg: any,
+                           seismographConfig: SeismographConfig,
+                           height: number,
+                           width: number,
+                           handlebarsInput: any={}) {
   console.log(`Plotutil xLabel:  ${seismographConfig.xLabel}`)
   svg.selectAll("g.xLabel").remove();
   if (seismographConfig.xLabel && seismographConfig.xLabel.length > 0) {
@@ -29,7 +29,11 @@ export function drawXLabel(svg, seismographConfig, height, width, handlebarsInpu
   }
 }
 
-export function drawXSublabel(svg, seismographConfig, height, width) {
+export function drawXSublabel(svg: any,
+                           seismographConfig: SeismographConfig,
+                           height: number,
+                           width: number,
+                           handlebarsInput: any={}) {
   svg.selectAll('g.xSublabel').remove();
   svg.append("g")
      .classed("xSublabel", true)
@@ -40,7 +44,11 @@ export function drawXSublabel(svg, seismographConfig, height, width) {
      .text(seismographConfig.xSublabel);
 }
 
-export function drawYLabel(svg, seismographConfig, height, width, handlebarsInput={}) {
+export function drawYLabel(svg: any,
+                           seismographConfig: SeismographConfig,
+                           height: number,
+                           width: number,
+                           handlebarsInput: any={}) {
   svg.selectAll('g.yLabel').remove();
   for(let side of [ 'left', 'right']) {
     let hTranslate = (side==="left"?0:seismographConfig.margin.left+width+1);
@@ -79,7 +87,11 @@ export function drawYLabel(svg, seismographConfig, height, width, handlebarsInpu
   }
 }
 
-export function drawYSublabel(svg, seismographConfig, height, width) {
+export function drawYSublabel(svg: any,
+                           seismographConfig: SeismographConfig,
+                           height: number,
+                           width: number,
+                           handlebarsInput: any={}) {
   svg.selectAll('g.ySublabel').remove();
   let svgText = svg.append("g")
      .classed("ySublabel", true)
@@ -102,7 +114,11 @@ export function drawYSublabel(svg, seismographConfig, height, width) {
      .text(seismographConfig.ySublabel);
 }
 
-export function drawTitle(svg, seismographConfig, height, width, handlebarsInput={}) {
+export function drawTitle(svg: any,
+                           seismographConfig: SeismographConfig,
+                           height: number,
+                           width: number,
+                           handlebarsInput: any={}) {
   if (! handlebarsInput.seisConfig) {
     handlebarsInput.seisConfig = seismographConfig;
   }
@@ -123,7 +139,11 @@ export function drawTitle(svg, seismographConfig, height, width, handlebarsInput
   }
 }
 
-export function drawAxisLabels(svg, seismographConfig, height, width, handlebarsInput={}) {
+export function drawAxisLabels(svg: any,
+                           seismographConfig: SeismographConfig,
+                           height: number,
+                           width: number,
+                           handlebarsInput: any={}) {
   drawTitle(svg, seismographConfig, height, width, handlebarsInput);
   drawXLabel(svg, seismographConfig, height, width, handlebarsInput);
   drawXSublabel(svg, seismographConfig, height, width);
