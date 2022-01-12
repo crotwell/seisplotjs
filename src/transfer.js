@@ -13,7 +13,6 @@ import {Response, PolesZeros } from './stationxml.js';
 import Qty from 'js-quantities';
 import { createComplex} from './oregondsputil.js';
 import type {Complex} from './oregondsputil.js';
-import {stringify} from './util.js';
 
 /**
  * Applies response, poles and zeros along with overall gain to the seismogram.
@@ -332,7 +331,7 @@ export function convertToSacPoleZero( response: Response): SacPoleZero {
 
 export function convertPoleZeroToSacStyle(polesZeros: PolesZeros,
                                           sensitivity: number,
-                                          sensitivity_freq :number,
+                                          sensitivity_freq: number,
                                           gamma: number): SacPoleZero {
     let mulFactor = 1;
     if (polesZeros.pzTransferFunctionType === "LAPLACE (HERTZ)") {

@@ -368,15 +368,15 @@ export class Pick {
   }
 
   isAtStation(station: Station): boolean {
-    return this.networkCode == station.networkCode &&
-      this.stationCode == station.stationCode;
+    return this.networkCode === station.networkCode &&
+      this.stationCode === station.stationCode;
   }
 
   isOnChannel(channel: Channel): boolean {
-    return this.networkCode == channel.station.networkCode &&
-      this.stationCode == channel.station.stationCode &&
-      this.locationCode == channel.locationCode &&
-      this.channelCode == channel.channelCode;
+    return this.networkCode === channel.station.networkCode &&
+      this.stationCode === channel.station.stationCode &&
+      this.locationCode === channel.locationCode &&
+      this.channelCode === channel.channelCode;
   }
 }
 

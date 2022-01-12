@@ -1,17 +1,12 @@
 //@flow
 
-import * as d3 from 'd3';
 import { SeismographConfig } from './seismographconfig';
-import {Seismograph} from './seismograph.js';
-import {StartEndDuration, isDef } from './util.js';
-
 
 export function drawXLabel(svg: any,
                            seismographConfig: SeismographConfig,
                            height: number,
                            width: number,
                            handlebarsInput: any={}) {
-  console.log(`Plotutil xLabel:  ${seismographConfig.xLabel}`)
   svg.selectAll("g.xLabel").remove();
   if (seismographConfig.xLabel && seismographConfig.xLabel.length > 0) {
     let svgText = svg.append("g")

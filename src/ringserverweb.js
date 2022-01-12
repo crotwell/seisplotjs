@@ -46,7 +46,6 @@ export class RingserverConnection {
     let hostStr = (isNonEmptyStringArg(host) ? host : IRIS_HOST);
     if (hostStr.startsWith("http")) {
       let rs_url = new URL(hostStr);
-      console.log(`######  rs web: ${rs_url.hostname} ${rs_url.pathname}`);
       this._host = rs_url.hostname;
       this._port = parseInt(rs_url.port);
       this._prefix = rs_url.pathname;

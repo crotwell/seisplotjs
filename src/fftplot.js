@@ -14,7 +14,7 @@ import type { Complex } from './oregondsputil.js';
 import * as d3 from 'd3';
 
 import {insertCSS, G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from './cssutil.js';
-import {drawAxisLabels, drawTitle, drawXLabel, drawXSublabel, drawYLabel, drawYSublabel} from './axisutil.js';
+import {drawAxisLabels} from './axisutil.js';
 
 /**
  * Create a single amplitude plot of FFT data.
@@ -139,7 +139,6 @@ export class FFTPlot {
   draw() {
     const that = this;
     let ampPhaseList = [];
-    let ampSliceMap = new Map();
     let maxFFTAmpLen = 0;
     let extentFFTData = null;
     let freqMinMax = [];
@@ -269,7 +268,6 @@ export class FFTPlot {
         freqSlice = freqSlice.slice(1);
         ampSlice = ampSlice.slice(1);
       }
-      let minFreq = ap.fundamentalFrequency;
       let line = d3.line();
       line.x(function(d, i) {
         return that.xScale(freqSlice[i]);
@@ -278,7 +276,6 @@ export class FFTPlot {
         if (d !== 0.0 && ! isNaN(d)) {
           return that.yScale(d);
         } else {
-          console.warn(`y value is zero or nan: ${d} ${i}`);
           return that.yScale.range()[0];
         }
       });

@@ -16,7 +16,7 @@ import {insertCSS} from './cssutil.js';
 import { SeismographConfig } from './seismographconfig';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData } from './seismogram.js';
 import { isDef, isNumArg, StartEndDuration } from './util.js';
-import {drawAxisLabels, drawTitle, drawXLabel, drawXSublabel, drawYLabel, drawYSublabel} from './axisutil.js';
+import {drawAxisLabels} from './axisutil.js';
 
 export const DEFAULT_TITLE = "<tspan>{{#each seisDataList}}{{onlyChangesChannel ../seisDataList @index}} {{else}}No Data{{/each}}</tspan>";
 export const DEFAULT_XLABEL = "{{seisXData.channelCode}}";

@@ -334,7 +334,7 @@ export class MSeed3Header {
    * Text representation of the miniseed3 header. This is modeled after
    * the output of mseed3-text from the mseed3-utils package from IRIS.
    *
-   * @return textual repersentation
+   * @returns textual repersentation
    */
   toString(): string {
     /*
