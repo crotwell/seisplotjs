@@ -117,7 +117,7 @@ export class SacPoleZero {
    * @param   sampleRate  sample rate to compute at
    * @returns             frequency response
    */
-  calcForDisplay(freqs: Array<Number>): Array<Complex> {
+  calcForDisplay(freqs: Array<number>): Array<Complex> {
     let out = freqs.map(freq => {
         let respAtS = this.evalPoleZeroInverse(freq);
         respAtS = createComplex(1, 0).overComplex(respAtS);
@@ -197,15 +197,15 @@ export class SacPoleZero {
   }
 }
 
-export function geomspace(start: number, stop: number, num: number): Array<Number> {
+export function geomspace(start: number, stop: number, num: number): Array<number> {
   let log_start = Math.log(start);
   let log_stop = Math.log(stop);
   return logspace(log_start, log_stop, num);
 }
-export function logspace(start: number, stop: number, num: number): Array<Number> {
+export function logspace(start: number, stop: number, num: number): Array<number> {
   return linspace(start, stop, num).map(n => Math.pow(10, n));
 }
-export function linspace(start: number, stop: number, num: number): Array<Number> {
+export function linspace(start: number, stop: number, num: number): Array<number> {
   let delta = (stop-start)/(num-1);
   let out = [];
   for (let i=0;i<num;i++) {

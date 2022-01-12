@@ -8,6 +8,8 @@
 
 import {FFTResult} from './fft.js';
 import { SeismographConfig } from './seismographconfig';
+import { SeismogramDisplayData } from './seismogram.js';
+import type { Complex } from './oregondsputil.js';
 
 import * as d3 from 'd3';
 
@@ -56,35 +58,37 @@ export function createOverlayFFTPlot(cssSelector: string,
  * in log instead of linearly for plotting PolesZeros stages.
  */
 export class FreqAmp {
-  freq: Array<Number>;
+  freq: Array<number>;
   values: Array<Complex>;
   /** optional units of the original data for display purposes. */
   inputUnits: string;
-  constructor(freq: Array<Number>, values: Array<Complex>) {
+  seismogramDisplayData: null | SeismogramDisplayData;
+  constructor(freq: Array<number>, values: Array<Complex>) {
     this.freq = freq;
     this.values = values;
     this.inputUnits = '';// leave blank unless set manually
+    this.seismogramDisplayData = null;
   }
-  frequencies() {
+  frequencies(): Array<number> {
     return this.freq;
   }
-  amplitudes() {
+  amplitudes(): Array<number> {
     return this.values.map(c => c.abs());
   }
-  phases() {
+  phases(): Array<number> {
     return this.values.map(c => c.angle());
   }
-  get numFrequencies() {
+  get numFrequencies(): number {
     return this.freq.length;
   }
-  get minFrequency() {
+  get minFrequency(): number {
     return this.fundamentalFrequency;
   }
-  get maxFrequency() {
+  get maxFrequency(): number {
     return this.freq[this.freq.length-1];
   }
   // for compatibility with FFTResult
-  get fundamentalFrequency() {
+  get fundamentalFrequency(): number {
     return this.freq[0];
   }
 }
@@ -117,6 +121,7 @@ export class FFTPlot {
               phase: boolean = false) {
     this.svgParent = cssSelector;
     this.seismographConfig = seismographConfig;
+    // $FlowFixMe[incompatible-type]
     this.fftResults = Array.isArray(fftResult) ? fftResult : [fftResult];
     this.xScale = null;
     this.yScale = null;
@@ -146,7 +151,7 @@ export class FFTPlot {
         freqMinMax.push(0);
       }
       freqMinMax.push(fftA.maxFrequency); // max freq
-      let ap: FFTResult;
+      let ap: FFTResult | FreqAmp;
       if (fftA instanceof FFTResult || fftA instanceof FreqAmp) {
         ap = fftA;
       } else {

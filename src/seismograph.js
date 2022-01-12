@@ -702,7 +702,7 @@ export class Seismograph {
         }, delay);
     }
   }
-  createHandlebarsInput() {
+  createHandlebarsInput(): any {
     return {
         seisDataList: this.seisDataList,
         seisConfig: this.seismographConfig

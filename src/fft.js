@@ -229,26 +229,26 @@ export class FFTResult {
   fftInverse(): Float32Array {
     return inverseDFT(this.packedFreq, this.origLength);
   }
-  frequencies() {
+  frequencies(): Float32Array {
     let out = new Float32Array(this.numPoints/2+1).fill(0);
     for (let i=0; i<out.length; i++) {
       out[i] = i*this.fundamentalFrequency;
     }
     return out;
   }
-  get numFrequencies() {
+  get numFrequencies(): number {
     return this.numPoints/2+1;
   }
-  get minFrequency() {
+  get minFrequency(): number {
     return this.fundamentalFrequency;
   }
-  get maxFrequency() {
+  get maxFrequency(): number {
     return this.sampleRate/2;
   }
-  amplitudes() {
+  amplitudes(): Float32Array {
     return this.amp;
   }
-  phases() {
+  phases(): Float32Array {
     return this.phase;
   }
   clone(): FFTResult {

@@ -330,7 +330,10 @@ export function convertToSacPoleZero( response: Response): SacPoleZero {
                                      gamma);
 }
 
-export function convertPoleZeroToSacStyle(polesZeros, sensitivity, sensitivity_freq, gamma) {
+export function convertPoleZeroToSacStyle(polesZeros: PolesZeros,
+                                          sensitivity: number,
+                                          sensitivity_freq :number,
+                                          gamma: number): SacPoleZero {
     let mulFactor = 1;
     if (polesZeros.pzTransferFunctionType === "LAPLACE (HERTZ)") {
         mulFactor = 2 * Math.PI;
