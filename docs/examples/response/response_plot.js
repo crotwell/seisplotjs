@@ -30,7 +30,7 @@ function clear_plots() {
 }
 
 function load_fdsn() {
-  clear_plots();
+  clear_all();
   let chan_chooser = document.querySelector("channel-code-input");
   let sta = chan_chooser.station;
   // here grab a channel response from IRIS DMC and plot stages
@@ -57,12 +57,15 @@ function load_fdsn() {
     chanChooser.setCallback(c => process_stages(c.response.stages));
     chanChooser.setChannels(Array.from(seisplotjs.stationxml.allChannels(networkList)));
     chanChooser.setAttribute('channel',"a");
-    //process_stages(firstChan.response.stages);
+  }).catch(e => {
+    let div = seisplotjs.d3.select("div.stageplot");
+    div.append("p").text(`Error: ${e}`);
+    console.warn(e);
   });
 }
 
 function load_ext() {
-  clear_plots();
+  clear_all();
   // here grab a sis extstationxml file directly and plot response stages
   const fetchInit = seisplotjs.util.defaultFetchInitObj(seisplotjs.util.XML_MIME);
   let url = document.querySelector('input#stationxml_url').value
@@ -78,10 +81,17 @@ function load_ext() {
     }).then(function(rawXmlText) {
       return new DOMParser().parseFromString(rawXmlText, "text/xml");
     }).then(xml => {
-      if (xml.querySelector("HardwareResponse")) {
+      const top = xml.documentElement;
+      if (top.localName === "Response") {
+        // stationxml-response from IRIS NRL web service
+        let resp = seisplotjs.stationxml.convertToResponse(xml);
+        process_stages(resp.stages);
+      } else if (top.localName === "FDSNStationXML" && xml.querySelector("HardwareResponse")) {
+        // SIS extended stationxml
         let stages = parse_sis_xml(xml);
         process_stages(stages);
-      } else {
+      } else if (top.localName === "FDSNStationXML") {
+        // plain old FDSN StationXML
         let networkList = seisplotjs.stationxml.parseStationXml(xml);
         //let firstChan = seisplotjs.stationxml.allChannels(networkList).next();
         let firstChan = networkList[0].stations[0].channels[0];
@@ -93,7 +103,14 @@ function load_ext() {
         }
         document.querySelector("channel-list-chooser")[0].channels = Array.from(seisplotjs.stationxml.allChannels(networkList));
         process_stages(firstChan.response.stages);
+      } else {
+        let div = seisplotjs.d3.select("div.stageplot");
+        div.append("p").text("Unknown file type...");
       }
+    }).catch(e => {
+      let div = seisplotjs.d3.select("div.stageplot");
+      div.append("p").text(`Error: ${e}`);
+      console.warn(e);
     })
 }
 
