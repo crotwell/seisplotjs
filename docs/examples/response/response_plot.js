@@ -27,6 +27,10 @@ function clear_plots() {
   while (divEl.firstChild) {
     divEl.removeChild(divEl.lastChild);
   }
+  divEl = document.querySelector("div.overlayplot");
+  while (divEl.firstChild) {
+    divEl.removeChild(divEl.lastChild);
+  }
 }
 
 function load_fdsn() {
@@ -217,9 +221,14 @@ function calc_stage_coeff(stage) {
     let numPoints = Math.max(pad_size, 2*stage.filter.numerator.length);
     if (stage.filter.denominator.length ===0 ) {
       longCoeff = new Array(numPoints).fill(0);
-      for(let i=0; i<stage.filter.numerator.length; i++) {
-        longCoeff[i] = stage.filter.numerator[i];
+      if (stage.filter.numerator.length !==0 ) {
+        for(let i=0; i<stage.filter.numerator.length; i++) {
+          longCoeff[i] = stage.filter.numerator[i];
+        }
+      } else {
+        longCoeff[0] = 1;
       }
+      console.log(`Coef: ${longCoeff.slice(0,5)}`)
       return longCoeff;
     }
   }
@@ -238,10 +247,12 @@ function plot_from_packed_freq(stage, idx, impulseResponse) {
   let title;
   if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros) {
     title = `Stage ${idx+1} PolesZeros, poles: ${stage.filter.poles.length} , zeros: ${stage.filter.zeros.length} `;
-  } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros) {
-    title = `Stage ${idx+1} Coefficients, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor}, sym: ${stage.filter.symmetry} len: ${stage.filter.numerator.length} `;
-  } else {
+  } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.CoefficientsFilter) {
+    title = `Stage ${idx+1} Coefficients, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor}, len: ${stage.filter.numerator.length}/${stage.filter.denominator.length} `;
+  } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.FIR) {
     title = `Stage ${idx+1} FIR, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor}, sym: ${stage.filter.symmetry} len: ${stage.filter.numerator.length} `;
+  } else {
+    title = `Stage ${idx+1} unknown filter, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor} `;
   }
   plotConfig.title=title;
   plotConfig.ySublabelIsUnits = true;
@@ -265,7 +276,7 @@ function plot_from_packed_freq(stage, idx, impulseResponse) {
 function overlay_plot_from_coefficients(all_resp, in_samp_rate) {
   const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
   plotConfig.title=`Overlay Stages, in sps: ${in_samp_rate}`;
-  let div = seisplotjs.d3.select("div.stageplot").append("div");
+  let div = seisplotjs.d3.select("div.overlayplot").append("div");
   div.classed("stage", true);
   div.append("p").text(`Overlay Stages`);
   const fftRatioPlot = new seisplotjs.fftplot.FFTPlot(div, plotConfig, all_resp, doLogLog);
