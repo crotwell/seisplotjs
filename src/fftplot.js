@@ -194,6 +194,13 @@ export class FFTPlot {
     if ( ! extentFFTData) {
       extentFFTData = d3.extent([0.1,1]);
     }
+    if ((extentFFTData[1]-extentFFTData[0])/ extentFFTData[1] < 1) {
+      extentFFTData = d3.extent([ extentFFTData[0],
+                                  extentFFTData[1],
+                                  extentFFTData[0]*2,
+                                  extentFFTData[0]*0.1],
+                                  function(d) { return d; });
+    }
 
     let svg = this.svgParent.append("svg");
     this.svg = svg;
