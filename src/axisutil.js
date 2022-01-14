@@ -28,6 +28,7 @@ export function drawXSublabel(svg: any,
                            seismographConfig: SeismographConfig,
                            height: number,
                            width: number,
+                           // eslint-disable-next-line no-unused-vars
                            handlebarsInput: any={}) {
   svg.selectAll('g.xSublabel').remove();
   svg.append("g")
@@ -86,6 +87,7 @@ export function drawYSublabel(svg: any,
                            seismographConfig: SeismographConfig,
                            height: number,
                            width: number,
+                           // eslint-disable-next-line no-unused-vars
                            handlebarsInput: any={}) {
   svg.selectAll('g.ySublabel').remove();
   let svgText = svg.append("g")

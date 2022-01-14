@@ -200,14 +200,12 @@ test("decomp HODGE", function() {
 
   let ab = xData.buffer.slice(xData.byteOffset, xData.byteOffset + xData.byteLength);
   let dataView = new DataView(ab);
-  const readCRC = dataView.getUint32(28, true);
   expect(dataView.getUint8(0)).toEqual(77);
   expect(dataView.getUint8(1)).toEqual(83);
   expect(dataView.getUint8(2)).toEqual(3);
   let parsed = mseed3.parseMSeed3Records(ab);
   expect(parsed.length).toEqual(1);
   let xr = parsed[0];
-  let xh = xr.header;
   let data = xr.decompress();
   const ldata = [ -7, -50,  -58,   -46 ,  -31, 17];
   for (let i=0; i<ldata.length; i++) {
