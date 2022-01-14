@@ -520,7 +520,7 @@ export class DataLinkResponse {
     let message = '';
     if (type === 'ID') {
       message = ''+header.substring(3);
-    } else if (type === 'INFO' || type === 'OK' || type === 'ERROR') {
+    } else if (type === 'ENDSTREAM' || type === 'INFO' || type === 'OK' || type === 'ERROR') {
       value = s[1];
       if (data) {
         message = dataViewToString(new DataView(data.buffer, 3+header.length));
