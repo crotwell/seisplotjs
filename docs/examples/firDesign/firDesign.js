@@ -18,24 +18,21 @@ let createFIR = function() {
   let firLp = new odsp.filter.fir.equiripple.EquirippleLowpass(N, OmegaP, Wp, OmegaS, Ws);
 
   d3.select("h3.coefficients").selectAll("*").remove();
-  d3.select("h3.coefficients").text(`FIR Coefficients: N: ${N} => ${2*N+1}  OmegaP: ${OmegaP} Wp: ${Wp}  OmegsS: ${OmegaS} Ws: ${Ws}`)
+  d3.select("h3.coefficients").text(`FIR Coefficients: N: ${N} => ${2*N+1}  OmegaP: ${OmegaP} Wp: ${Wp}  OmegsS: ${OmegaS} Ws: ${Ws}`);
 
   let coeffDispFun = function(d, i, a) {
     let pre = "    ";
     if (i === 0) {pre = 'coeff = [';}
     let post = ", \n";
-    if (i === a.length-1) {post = "];"}
+    if (i === a.length-1) {post = "];";}
     return `${pre}${d}${post}`;
   };
   let asText = "";
   firLp.getCoefficients().forEach((d,i,a) =>{ asText+= coeffDispFun(d,i,a);});
-  let coeffDisplay = d3.select("div.coefficients").select("code")
-    .text(asText);
+  d3.select("div.coefficients").select("code").text(asText);
 
 
   const NumPoints = parseInt(document.getElementsByName('NumPoints')[0].value);
-  const plotWidth = 1024;
-  const plotHeight = 512;
 
   let longCoeff = new Array(NumPoints).fill(0);
   for(let i=0; i<firLp.getCoefficients().length; i++) {
@@ -44,7 +41,7 @@ let createFIR = function() {
   const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
   plotConfig.title = "FIR Filter"
   d3.select("div.fftfir").selectAll("*").remove();
-  let impulseResponse = fftForwardArray(longCoeff)
+  let impulseResponse = fftForwardArray(longCoeff);
   d3.select("div.fftfir").selectAll("*").remove();
   const firPlot = new seisplotjs.fftplot.FFTPlot("div.fftfir", plotConfig, [impulseResponse],  doLogLog, true, false);
   firPlot.draw();

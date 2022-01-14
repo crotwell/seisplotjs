@@ -30,7 +30,7 @@ let heliHash = null;
 let loadAndPlot = function(state) {
   updateAmpRadioButtons(state);
   doPlot(state).then(hash => heliHash = hash);
-}
+};
 
 let updateAmpRadioButtons = function(currentState) {
   console.log(`updateAmpRadioButtons:  ${currentState.amp}`)
@@ -107,7 +107,7 @@ const updateEarthquakeQueryParam = function(currentState, id, defaultValue) {
   }
   d3.select("div#"+region)
     .select("input#"+id).property("value", currentState[id]);
-}
+};
 
 function loadAllEarthquakeQueryParams(currentState) {
   loadEarthquakeQueryParam(currentState, 'localMinLat');

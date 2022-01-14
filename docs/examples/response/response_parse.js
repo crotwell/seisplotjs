@@ -15,7 +15,6 @@ function parse_sis_xml(sisxml) {
   rd_array.forEach(rdict => {
     const resp_el = rdict.firstElementChild;
     let name = resp_el.getAttribute("name");
-    let sis_ns = resp_el.getAttribute("SISNamespace");
     if (resp_el.localName === 'FIR') {
       // add fake Gain
       let gain = sisxml.createElementNS(STAML_NS, "StageGain");
@@ -46,7 +45,7 @@ function parse_sis_xml(sisxml) {
           throw new Error("Did not find Gain in stage number "+seqNum+" "+fname);
         }
         stages.push(new seisplotjs.stationxml.Stage(sis_filter, decimation, gain));
-      })
+      });
     }
   });
   return stages;

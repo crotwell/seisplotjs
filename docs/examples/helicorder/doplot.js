@@ -107,7 +107,7 @@ doPlot = function(config) {
     });
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    if (hash.bandCode == 'H') {
+    if (hash.bandCode === 'H') {
       let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
         MINMAX_URL,
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
@@ -130,10 +130,9 @@ doPlot = function(config) {
     }
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    if (hash.chantrList.length == 0) {
+    if (hash.chantrList.length === 0) {
       svgParent.append("p").text("No Data Found").style("color", "red");
       console.log("min max data from miniseedArchive found none");
-      throw new Error("min max data from miniseedArchive found none");
       let dsQ = new seisplotjs.fdsndataselect.DataSelectQuery()
         .nodata(404);
       console.log(dsQ.createPostBody(hash.chanTR));

@@ -74,7 +74,7 @@ function load_ext() {
   // IRIS NRL has bug with xml mime, so also include text
   const mime_types = seisplotjs.util.XML_MIME+","+seisplotjs.util.TEXT_MIME;
   const fetchInit = seisplotjs.util.defaultFetchInitObj(mime_types);
-  let url = document.querySelector('input#stationxml_url').value
+  let url = document.querySelector('input#stationxml_url').value;
   seisplotjs.d3.select(".response_url").text(url);
   const timeoutSec = 10;
   seisplotjs.util.doFetchWithTimeout(url, fetchInit, timeoutSec * 1000 )
@@ -128,9 +128,9 @@ function process_stages(stages) {
   let first_sps = null;
 
   stages.forEach((stage,idx) => {
-    if (stage.filter && stage.decimation != null) {
+    if (stage.filter && stage.decimation !== null) {
       in_sps.push(stage.decimation.inputSampleRate);
-      if (first_sps == null) {first_sps = stage.decimation.inputSampleRate;}
+      if (first_sps === null) {first_sps = stage.decimation.inputSampleRate;}
     }
   });
   stages.forEach((stage,idx) => {
@@ -195,19 +195,19 @@ function calc_stage_coeff(stage) {
     let numPoints = Math.max(pad_size, 2*fir.numerator.length);
     //let numPoints = fir.numerator.length;
     let longCoeff;
-    if (fir.symmetry == "NONE") {
+    if (fir.symmetry === "NONE") {
       longCoeff = new Array(numPoints).fill(0);
       for(let i=0; i<fir.numerator.length; i++) {
         longCoeff[i] = fir.numerator[i];
       }
-    } else if (fir.symmetry == "ODD") {
+    } else if (fir.symmetry === "ODD") {
       longCoeff = new Array(2*numPoints-1).fill(0);
       for(let i=0; i<fir.numerator.length-1; i++) {
         longCoeff[i] = fir.numerator[i];
         longCoeff[2*(fir.numerator.length-1)-i] = fir.numerator[i];
       }
       longCoeff[fir.numerator.length-1] = fir.numerator[fir.numerator.length-1];
-    } else if (fir.symmetry == "EVEN") {
+    } else if (fir.symmetry === "EVEN") {
       longCoeff = new Array(2*numPoints).fill(0);
       for(let i=0; i<fir.numerator.length; i++) {
         longCoeff[i] = fir.numerator[i];
@@ -216,8 +216,6 @@ function calc_stage_coeff(stage) {
     } else {
       throw new Error(`Unknown symmetry type: ${fir.symmetry}`);
     }
-    console.log(`coeff ${fir.symmetry} ${fir.numerator.length} -> ${longCoeff.length}`)
-    longCoeff.forEach(c => console.log(c))
     return longCoeff;
   } else if (stage.filter instanceof seisplotjs.stationxml.CoefficientsFilter ) {
     let numPoints = Math.max(pad_size, 2*stage.filter.numerator.length);
@@ -230,12 +228,11 @@ function calc_stage_coeff(stage) {
       } else {
         longCoeff[0] = 1;
       }
-      console.log(`Coef: ${longCoeff.slice(0,5)}`)
       return longCoeff;
     }
   }
   // fake a unity impulse response
-  longCoeff = new Array(pad_size).fill(0);
+  let longCoeff = new Array(pad_size).fill(0);
   longCoeff[0] = 1;
   return longCoeff;
 }

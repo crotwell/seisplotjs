@@ -37,7 +37,6 @@ class ChannelCodeInput extends HTMLElement {
     shadow.appendChild(wrapper);
   }
   attributeChangedCallback(name, oldValue, newValue) {
-    console.log('attributes changed.');
   }
   static get observedAttributes() { return ATTR_LIST; }
   get network() {
@@ -92,7 +91,6 @@ class ChannelListChooser extends HTMLElement {
     this.draw_element(this.shadowRoot);
   }
   attributeChangedCallback(name, oldValue, newValue) {
-    console.log('attributes changed.');
   }
   setCallback(callback) {
     this.callback = callback;
