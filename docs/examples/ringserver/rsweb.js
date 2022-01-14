@@ -1,44 +1,40 @@
 
 const d3 = seisplotjs.d3;
 const hostUrl = "http://eeyore.seis.sc.edu/ringserver";
-const wsUrl = "ws://eeyore.seis.sc.edu/ringserver/datalink";
 const rs = new seisplotjs.ringserverweb.RingserverConnection(hostUrl);
 let numPackets = 0;
+d3.select("div.results").select("pre").text(hostUrl+'\n'+rs.getDataLinkURL());
 
-  console.log(`XXXXXXX host: ${rs._host}`);
-  d3.select("button#id").on("click", function(d) {
-    console.log("id")
-    clear_plots()
-    d3.select("div.results").select("pre").text("...loading");
-    rs.pullId().then(o => {
-      d3.select("div.results").select("pre").text(o.ringserverVersion+"\n"+o.serverId);
-    });
+d3.select("button#id").on("click", function(d) {
+  clear_plots()
+  d3.select("div.results").select("pre").text("...loading");
+  rs.pullId().then(o => {
+    d3.select("div.results").select("pre").text(o.ringserverVersion+"\n"+o.serverId);
   });
-  d3.select("button#streamids").on("click", function(d) {
-    clear_plots()
-      console.log("streamids")
-    d3.select("div.results").select("pre").text("...loading");
-    let level = Number(d3.select("input#level").property("value"));
-    let match = d3.select("input#match").property("value");
-    rs.pullStreamIds(level, match).then(o => {
+});
+d3.select("button#streamids").on("click", function(d) {
+  clear_plots()
+  d3.select("div.results").select("pre").text("...loading");
+  let level = Number(d3.select("input#level").property("value"));
+  let match = d3.select("input#match").property("value");
+  rs.pullStreamIds(level, match).then(o => {
 
-      d3.select("div.results").select("pre").text(o.join("\n"));
-    });
+    d3.select("div.results").select("pre").text(o.join("\n"));
   });
-  d3.select("button#streams").on("click", function(d) {
-    clear_plots()
-      console.log("streams")
-    d3.select("div.results").select("pre").text("...loading");
-    let match = d3.select("input#streammatch").property("value");
-    rs.pullStreams(match).then(o => {
-      const streamChooser = document.querySelector("stream-list-chooser");
-      streamChooser.setCallback(c => display_realtime(c));
-      streamChooser.setStreamStats(o.streams);
-      let text = "";
-      o.streams.forEach( sstat => text+=`${sstat.key} ${sstat.start.toISOString()} ${sstat.end.toISOString()} (${sstat.calcLatency(o.accessTime).humanize()})\n`);
-      d3.select("div.results").select("pre").text(text);
-    });
+});
+d3.select("button#streams").on("click", function(d) {
+  clear_plots()
+  d3.select("div.results").select("pre").text("...loading");
+  let match = d3.select("input#streammatch").property("value");
+  rs.pullStreams(match).then(o => {
+    const streamChooser = document.querySelector("stream-list-chooser");
+    streamChooser.setCallback(c => display_realtime(c));
+    streamChooser.setStreamStats(o.streams);
+    let text = "";
+    o.streams.forEach( sstat => text+=`${sstat.key} ${sstat.start.toISOString()} ${sstat.end.toISOString()} (${sstat.calcLatency(o.accessTime).humanize()})\n`);
+    d3.select("div.results").select("pre").text(text);
   });
+});
 
 
 const errorFn = function(error) {
@@ -60,7 +56,7 @@ const packetHandler = function(packet) {
   document.querySelector("pre").textContent=packetText;
 }
 const datalink = new seisplotjs.datalink.DataLinkConnection(
-    wsUrl,
+    rs.getDataLinkURL(),
     packetHandler,
     errorFn);
 
@@ -126,6 +122,7 @@ function clear_plots() {
       stopped = true;
     }
   }
+  document.querySelector("span#numPackets").textContent="0";
   const streamChooser = document.querySelector("stream-list-chooser");
   streamChooser.setStreamStats([]);
   document.querySelector("pre").textContent="";
