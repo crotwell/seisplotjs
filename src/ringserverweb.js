@@ -346,7 +346,8 @@ export class StreamStat {
    * @param accessTime time latency is calculated relative to
    * @returns latency
    */
-  calcLatency(accessTime: moment$Moment): moment$MomentDuration {
+  calcLatency(accessTime?: moment$Moment): moment$MomentDuration {
+    if (! accessTime) accessTime = moment.utc();
     return moment.duration(this.end.diff(accessTime));
   }
 }
