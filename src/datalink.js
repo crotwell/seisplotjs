@@ -465,7 +465,9 @@ export class DataLinkConnection {
           dv = new DataView(rawData, 3+headerLen);
         }
         const dlResponse = DataLinkResponse.parse(header, dv);
-        if (dlResponse.type === 'ERROR') {
+        if (dlResponse.type === 'ENDSTREAM') {
+          this._mode = QUERY_MODE;
+        } else if (dlResponse.type === 'ERROR') {
           this.handleError(new Error(`value=${dlResponse.value} ${dlResponse.message}`));
         } else {
           if (this._responseResolve) {

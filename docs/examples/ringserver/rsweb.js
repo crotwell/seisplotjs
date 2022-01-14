@@ -51,17 +51,36 @@ const packetHandler = function(packet) {
     numPackets++;
     document.querySelector("span#numPackets").textContent=numPackets;
   }
-  document.querySelector("pre").textContent+=`${packet.header}\n`
+  if (lastPackets.length > 10) {
+    lastPackets = lastPackets.slice(lastPackets.length-10);
+  }
+  lastPackets.push(packet);
+  let packetText = "";
+  lastPackets.forEach(p => packetText+=`${p.header}\n`);
+  document.querySelector("pre").textContent=packetText;
 }
 const datalink = new seisplotjs.datalink.DataLinkConnection(
-    "ws://thecloud.seis.sc.edu/ringserver/datalink",
+    wsUrl,
     packetHandler,
     errorFn);
 
-
+let lastPackets = [];
 function display_realtime(streamstat) {
-  d3.select("div.results").select("pre").text(`realtime: ${streamstat.key}`);
-  toggleConnect(streamstat);
+  datalink.endStream();
+  lastPackets = [];
+  d3.select("div.results").select("pre").text(`realtime: ${streamstat.key}\n`);
+  datalink.connect()
+  .then(serverId => {
+    seisplotjs.d3.select("button#disconnect").text("Disconnect");
+    return datalink.match(streamstat.key);
+  }).then(response => {
+    stopped = false;
+    console.log(`match response: ${response}`)
+    return datalink.stream();
+  }).catch( function(error) {
+    seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+    console.assert(false, error);
+  });
 }
 
 let stopped = true;
@@ -101,6 +120,12 @@ let toggleConnect = function(streamstat) {
 }
 
 function clear_plots() {
+  if (! stopped) {
+    if (datalink) {
+      datalink.endStream();
+      stopped = true;
+    }
+  }
   const streamChooser = document.querySelector("stream-list-chooser");
   streamChooser.setStreamStats([]);
   document.querySelector("pre").textContent="";

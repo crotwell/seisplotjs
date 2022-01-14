@@ -48,13 +48,15 @@ export class RingserverConnection {
       let rs_url = new URL(hostStr);
       this._host = rs_url.hostname;
       this._port = parseInt(rs_url.port);
+      if (! Number.isInteger(this._port) ) { this._port = 80;}
       this._prefix = rs_url.pathname;
     } else {
       this._host = hostStr;
+      this._port = 80;
       this._prefix = "";
     }
     // override port in URL if given
-    if (isDef(port)) { this._port = port; }
+    if (isNumArg(port)) { this._port = port; }
     this._timeoutSec = 30;
   }
 
@@ -208,6 +210,7 @@ export class RingserverConnection {
    * @returns the string url
    */
   formBaseURL(): string {
+    if (this._port === 0) { this._port = 80; }
     return checkProtocol()+'//'+this._host+(this._port===80 ? '' : (':'+this._port))+(this._prefix);
   }
 
