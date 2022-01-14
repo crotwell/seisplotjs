@@ -12,6 +12,8 @@ import * as util from './util.js'; // for util.log
 import { doIntGetterSetter, checkProtocol, hasNoArgs, isStringArg, isNonEmptyStringArg, isNumArg,
          isDef, TEXT_MIME, doFetchWithTimeout, defaultFetchInitObj} from './util.js';
 
+export const SEEDLINK_PATH = "/seedlink";
+export const DATALINK_PATH = "/datalink";
 
 export type RingserverVersion = {
   'ringserverVersion': string,
@@ -202,6 +204,18 @@ export class RingserverConnection {
             throw new Error(`Status not 200: ${response.status}`);
           }
       });
+  }
+
+  getDataLinkURL() {
+    let proto = "ws:";
+    if (checkProtocol() === "https:") { proto = "wss:"};
+    return proto+'//'+this._host+(this._port===80 ? '' : (':'+this._port))+(this._prefix)+DATALINK_PATH;
+  }
+
+  getSeedLinkURL() {
+    let proto = "ws:";
+    if (checkProtocol() === "https:") { proto = "wss:"};
+    return proto+'//'+this._host+(this._port===80 ? '' : (':'+this._port))+(this._prefix)+SEEDLINK_PATH;
   }
 
   /**
