@@ -57,6 +57,7 @@ export class MSeedArchive {
   get recordSize(): number {
     return this._recordSize;
   }
+  /* eslint-disable jsdoc/no-multi-asterisks */
   /**
    * checks pattern for allowed flags as not all that are supported
    * by ringserver are supported here. Must only include:
@@ -85,6 +86,8 @@ export class MSeedArchive {
     }
     return true;
   }
+  /* eslint-enable jsdoc/no-multi-asterisks */
+
   /**
    * Loads seismograms from the remote miniseed archive via
    * http(s). Files downloaded include all that might overlap
