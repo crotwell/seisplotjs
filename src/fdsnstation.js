@@ -45,7 +45,6 @@ export const FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSN
  * Query to a FDSN Station web service.
  *
  * @see http://www.fdsn.org/webservices/
- *
  * @param host optional host to connect to, defaults to IRIS
  */
 export class StationQuery {
@@ -107,7 +106,8 @@ export class StationQuery {
   _matchTimeseries: boolean;
   /** @private */
   _timeoutSec: number;
-  /** Construct a query
+  /**
+   * Construct a query
    *
    * @param host the host to connect to , defaults to service.iris.edu
    */
@@ -121,9 +121,10 @@ export class StationQuery {
     this._port = 80;
     this._timeoutSec = 30;
   }
-  /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
-   *  Setting this is probably a bad idea as the code may not be compatible with
-   *  the web service.
+  /**
+   * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+   * Setting this is probably a bad idea as the code may not be compatible with
+   * the web service.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -138,8 +139,9 @@ export class StationQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  /** Gets/Sets the protocol, http or https. This should match the protocol
-   *  of the page loaded, but is autocalculated and generally need not be set.
+  /**
+   * Gets/Sets the protocol, http or https. This should match the protocol
+   * of the page loaded, but is autocalculated and generally need not be set.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -147,7 +149,8 @@ export class StationQuery {
   protocol(value?: string): string | StationQuery {
     return doStringGetterSetter(this, 'protocol', value);
   }
-  /** Gets/Sets the remote host to connect to.
+  /**
+   * Gets/Sets the remote host to connect to.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -155,7 +158,8 @@ export class StationQuery {
   host(value?: string): string | StationQuery {
     return doStringGetterSetter(this, 'host', value);
   }
-  /** Gets/Sets the remote port to connect to.
+  /**
+   * Gets/Sets the remote port to connect to.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -163,7 +167,8 @@ export class StationQuery {
   port(value?: number): number | StationQuery {
     return doIntGetterSetter(this, 'port', value);
   }
-  /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
+  /**
+   * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.
    *
    * @param value optional new value if setting
@@ -172,7 +177,8 @@ export class StationQuery {
   nodata(value?: number): number | StationQuery {
     return doIntGetterSetter(this, 'nodata', value);
   }
-  /** Get/Set the network query parameter.
+  /**
+   * Get/Set the network query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -180,7 +186,8 @@ export class StationQuery {
   networkCode(value?: string): string | StationQuery {
     return doStringGetterSetter(this, 'networkCode', value);
   }
-  /** Get/Set the station query parameter.
+  /**
+   * Get/Set the station query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -188,7 +195,8 @@ export class StationQuery {
   stationCode(value?: string): string | StationQuery {
     return doStringGetterSetter(this, 'stationCode', value);
   }
-  /** Get/Set the location code query parameter.
+  /**
+   * Get/Set the location code query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -196,7 +204,8 @@ export class StationQuery {
   locationCode(value?: string): string | StationQuery {
     return doStringGetterSetter(this, 'locationCode', value);
   }
-  /** Get/Set the channel query parameter.
+  /**
+   * Get/Set the channel query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -204,7 +213,8 @@ export class StationQuery {
   channelCode(value?: string): string | StationQuery {
     return doStringGetterSetter(this, 'channelCode', value);
   }
-  /** Get/Set the starttime query parameter.
+  /**
+   * Get/Set the starttime query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -212,7 +222,8 @@ export class StationQuery {
   startTime(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'startTime', value);
   }
-  /** Get/Set the endtime query parameter.
+  /**
+   * Get/Set the endtime query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -231,7 +242,8 @@ export class StationQuery {
     this.endTime(se.endTime);
     return this;
   }
-  /** Get/Set the startbefore query parameter.
+  /**
+   * Get/Set the startbefore query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -239,7 +251,8 @@ export class StationQuery {
   startBefore(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'startBefore', value);
   }
-  /** Get/Set the endbefore query parameter.
+  /**
+   * Get/Set the endbefore query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -247,7 +260,8 @@ export class StationQuery {
   endBefore(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'endBefore', value);
   }
-  /** Get/Set the startafter query parameter.
+  /**
+   * Get/Set the startafter query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -255,7 +269,8 @@ export class StationQuery {
   startAfter(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'startAfter', value);
   }
-  /** Get/Set the endafter query parameter.
+  /**
+   * Get/Set the endafter query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -263,7 +278,8 @@ export class StationQuery {
   endAfter(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'endAfter', value);
   }
-  /** Get/Set the minlat query parameter.
+  /**
+   * Get/Set the minlat query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -271,7 +287,8 @@ export class StationQuery {
   minLat(value?: number): number | StationQuery {
     return doFloatGetterSetter(this, 'minLat', value);
   }
-  /** Get/Set the maxlon query parameter.
+  /**
+   * Get/Set the maxlon query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -279,7 +296,8 @@ export class StationQuery {
   maxLat(value?: number): number | StationQuery {
     return doFloatGetterSetter(this, 'maxLat', value);
   }
-  /** Get/Set the minlon query parameter.
+  /**
+   * Get/Set the minlon query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -287,7 +305,8 @@ export class StationQuery {
   minLon(value?: number): number | StationQuery {
     return doFloatGetterSetter(this, 'minLon', value);
   }
-  /** Get/Set the maxlon query parameter.
+  /**
+   * Get/Set the maxlon query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -295,7 +314,8 @@ export class StationQuery {
   maxLon(value?: number): number | StationQuery {
     return doFloatGetterSetter(this, 'maxLon', value);
   }
-  /** Get/Set the latitude query parameter.
+  /**
+   * Get/Set the latitude query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -303,7 +323,8 @@ export class StationQuery {
   latitude(value?: number): number | StationQuery {
     return doFloatGetterSetter(this, 'latitude', value);
   }
-  /** Get/Set the longitude query parameter.
+  /**
+   * Get/Set the longitude query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -311,7 +332,8 @@ export class StationQuery {
   longitude(value?: number): number | StationQuery {
     return doFloatGetterSetter(this, 'longitude', value);
   }
-  /** Get/Set the minradius query parameter.
+  /**
+   * Get/Set the minradius query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -319,7 +341,8 @@ export class StationQuery {
   minRadius(value?: number): number | StationQuery {
     return doFloatGetterSetter(this, 'minRadius', value);
   }
-  /** Get/Set the maxradius query parameter.
+  /**
+   * Get/Set the maxradius query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -327,7 +350,8 @@ export class StationQuery {
   maxRadius(value?: number): number | StationQuery {
     return doFloatGetterSetter(this, 'maxRadius', value);
   }
-  /** Get/Set the includerestricted query parameter.
+  /**
+   * Get/Set the includerestricted query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -342,7 +366,8 @@ export class StationQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
-  /** Get/Set the includeavailability query parameter.
+  /**
+   * Get/Set the includeavailability query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -357,7 +382,8 @@ export class StationQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
-  /** Get/Set the format query parameter.
+  /**
+   * Get/Set the format query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -365,7 +391,8 @@ export class StationQuery {
   format(value?: string): string | StationQuery {
     return doStringGetterSetter(this, 'format', value);
   }
-  /** Get/Set the updatedafter query parameter.
+  /**
+   * Get/Set the updatedafter query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -373,7 +400,8 @@ export class StationQuery {
   updatedAfter(value?: moment$Moment): moment$Moment | StationQuery {
     return doMomentGetterSetter(this, 'updatedAfter', value);
   }
-  /** Get/Set the matchtimeseries query parameter.
+  /**
+   * Get/Set the matchtimeseries query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -388,7 +416,8 @@ export class StationQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
-  /** Get/Set the timeout in seconds for the request. Default is 30.
+  /**
+   * Get/Set the timeout in seconds for the request. Default is 30.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -404,12 +433,13 @@ export class StationQuery {
     }
   }
 
-  /** Checks to see if any parameter that would limit the data
+  /**
+   * Checks to see if any parameter that would limit the data
    * returned is set. This is a crude, coarse check to make sure
    * the client doesn't ask for EVERYTHING the server has.
    *
    * @returns true if some parameter set
-   * */
+   */
   isSomeParameterSet(): boolean {
     return isDef(this._networkCode) ||
     isDef(this._stationCode) ||

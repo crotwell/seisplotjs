@@ -112,10 +112,8 @@ export class SacPoleZero {
   /**
    * Caclulates the frequency response from the given poles and zeros.
    *
-   * @param   sacPoleZero poles and zeros
-   * @param   numPoints   number of points in the output fft
-   * @param   sampleRate  sample rate to compute at
-   * @returns             frequency response
+   * @param freqs frequencies to compute
+   * @returns  frequency response
    */
   calcForDisplay(freqs: Array<number>): Array<Complex> {
     let out = freqs.map(freq => {

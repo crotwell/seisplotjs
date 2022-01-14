@@ -235,7 +235,8 @@ export class Origin {
     return this.arrivalList;
   }
 }
-/** Represents a QuakeML Magnitude.
+/**
+  Represents a QuakeML Magnitude.
  */
 export class Magnitude {
   mag: number;
@@ -276,7 +277,8 @@ export class Magnitude {
   }
 }
 
-/** Represents a QuakeML Arrival, a combination of a Pick with a phase name.
+/**
+  Represents a QuakeML Arrival, a combination of a Pick with a phase name.
  */
 export class Arrival {
   phase: string;
@@ -315,7 +317,8 @@ export class Arrival {
   }
 }
 
-/** Represents a QuakeML Pick.
+/**
+  Represents a QuakeML Pick.
  */
 export class Pick {
   time: moment$Moment;

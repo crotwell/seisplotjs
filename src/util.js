@@ -406,7 +406,7 @@ export function makePostParam(name: string, val: mixed): string {
  *
  * @param  date moment to convert to string
  * @returns ISO8601 without timezone Z
- **/
+ */
 export function toIsoWoZ(date: moment$Moment): string {
   let out = date.toISOString();
   return out.substring(0, out.length-1);
@@ -414,7 +414,7 @@ export function toIsoWoZ(date: moment$Moment): string {
 
 /**
  * @returns the protocol, http or https for the document if possible.
- **/
+ */
 export function checkProtocol(): string {
   let _protocol = 'http:';
   if (typeof document !== 'undefined' && document !== null

@@ -335,7 +335,8 @@ export class SeismographConfig {
     }
     return this._yLabelRightHandlebarsCompiled(context, runtimeOptions);
   }
-  /** Fake data to use to test alignment of seismograph axis and between canvas
+  /**
+   * Fake data to use to test alignment of seismograph axis and between canvas
    *  and svg drawing.
    *
    * @param   timeWindow start and end of fake data

@@ -279,7 +279,7 @@ export class FFTPlot {
       line.x(function(d, i) {
         return that.xScale(freqSlice[i]);
       });
-      line.y(function(d, i) {
+      line.y(function(d) {
         if (d !== 0.0 && ! isNaN(d)) {
           return that.yScale(d);
         } else {

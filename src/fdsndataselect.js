@@ -43,7 +43,6 @@ export const IRIS_HOST = "service.iris.edu";
  * Query to a FDSN Dataselect web service.
  *
  * @see http://www.fdsn.org/webservices/
- *
  * @param host optional host to connect to, defaults to IRIS
  */
 export class DataSelectQuery {
@@ -148,7 +147,8 @@ export class DataSelectQuery {
   port(value?: number): number | DataSelectQuery {
     return doIntGetterSetter(this, 'port', value);
   }
-  /** Get/Set the network query parameter.
+  /**
+   * Get/Set the network query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -156,7 +156,8 @@ export class DataSelectQuery {
   networkCode(value?: string): string | DataSelectQuery {
     return doStringGetterSetter(this, 'networkCode', value);
   }
-  /** Get/Set the station query parameter.
+  /**
+   * Get/Set the station query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -164,7 +165,8 @@ export class DataSelectQuery {
   stationCode(value?: string): string | DataSelectQuery {
     return doStringGetterSetter(this, 'stationCode', value);
   }
-  /** Get/Set the location code query parameter.
+  /**
+   * Get/Set the location code query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -172,7 +174,8 @@ export class DataSelectQuery {
   locationCode(value?: string): string | DataSelectQuery {
     return doStringGetterSetter(this, 'locationCode', value);
   }
-  /** Get/Set the channel query parameter.
+  /**
+   * Get/Set the channel query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -180,7 +183,8 @@ export class DataSelectQuery {
   channelCode(value?: string): string | DataSelectQuery {
     return doStringGetterSetter(this, 'channelCode', value);
   }
-  /** Get/Set the starttime query parameter.
+  /**
+   * Get/Set the starttime query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -188,7 +192,8 @@ export class DataSelectQuery {
   startTime(value?: moment$Moment): moment$Moment | DataSelectQuery {
     return doMomentGetterSetter(this, 'startTime', value);
   }
-  /** Get/Set the endtime query parameter.
+  /**
+   * Get/Set the endtime query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -207,7 +212,8 @@ export class DataSelectQuery {
     this.endTime(se.endTime);
     return this;
   }
-  /** Get/Set the quality query parameter.
+  /**
+   * Get/Set the quality query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -215,7 +221,8 @@ export class DataSelectQuery {
   quality(value?: string): string | DataSelectQuery {
     return doStringGetterSetter(this, 'quality', value);
   }
-  /** Get/Set the minimum length query parameter.
+  /**
+   * Get/Set the minimum length query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -223,7 +230,8 @@ export class DataSelectQuery {
   minimumLength(value?: number): number | DataSelectQuery {
     return doFloatGetterSetter(this, 'minimumLength', value);
   }
-  /** Get/Set the longest only query parameter.
+  /**
+   * Get/Set the longest only query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -250,7 +258,8 @@ export class DataSelectQuery {
   repository(value?: string): string | DataSelectQuery {
     return doStringGetterSetter(this, 'repository', value);
   }
-  /** Get/Set the format query parameter.
+  /**
+   * Get/Set the format query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting

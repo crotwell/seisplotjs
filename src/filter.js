@@ -223,7 +223,6 @@ export function envelope(seis: Seismogram): Seismogram {
  * @param lowEdge low edge of filter, normailized to 0-1, default is 0.05
  * @param highEdge high edge of filter, normailized to 0-1, default is 0.95
  * @returns hilbert transformed data
- *
  */
 export function hilbert(seis: Seismogram, n?: number, lowEdge?: number, highEdge?: number ): Seismogram {
   if (seis.isContiguous()) {

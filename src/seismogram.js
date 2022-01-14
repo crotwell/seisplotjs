@@ -337,7 +337,8 @@ export class SeismogramSegment {
   }
 }
 
- /** Represents time window for a single channel that may
+ /**
+  * Represents time window for a single channel that may
   * contain gaps or overlaps, but is otherwise more or less
   * continuous, or at least adjacent data from the channel.
   * Each segment within
@@ -580,7 +581,7 @@ export class Seismogram {
    * segment. No checking is done for gaps or overlaps, this is a simple
    * congatination. Be careful!
    *
-   * @return contatenated data
+   * @returns contatenated data
    */
   merge(): Int32Array | Float32Array | Float64Array {
     let outArray;

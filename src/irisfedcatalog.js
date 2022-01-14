@@ -69,7 +69,7 @@ export class FedCatalogDataCenter {
 
 /**
  * Represents the results of a fedcatalog query.
- * 
+ *
  */
 export class FedCatalogResult {
   params: Map<string,string>;
@@ -84,7 +84,6 @@ export class FedCatalogResult {
  * Query to a IRIS FedCatalog web service.
  *
  * @see http://service.iris.edu/irisws/fedcatalog/1/
- *
  * @param host optional host to connect to, defaults to IRIS
  */
 export class FedCatalogQuery {
@@ -151,7 +150,8 @@ export class FedCatalogQuery {
   /** @private */
   _timeoutSec: number;
   fedCatResult: Promise<FedCatalogResult> | null;
-  /** Construct a query
+  /**
+   * Construct a query
    *
    * @param host the host to connect to , defaults to service.iris.edu
    */
@@ -205,7 +205,8 @@ export class FedCatalogQuery {
     return out;
   }
 
-  /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+  /**
+   * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
    *  Setting this is probably a bad idea as the code may not be compatible with
    *  the web service.
    *
@@ -222,7 +223,8 @@ export class FedCatalogQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  /** Gets/Sets the protocol, http or https. This should match the protocol
+  /**
+   * Gets/Sets the protocol, http or https. This should match the protocol
    *  of the page loaded, but is autocalculated and generally need not be set.
    *
    * @param value optional new value if setting
@@ -231,7 +233,8 @@ export class FedCatalogQuery {
   protocol(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'protocol', value);
   }
-  /** Gets/Sets the remote host to connect to.
+  /**
+   * Gets/Sets the remote host to connect to.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -239,7 +242,8 @@ export class FedCatalogQuery {
   host(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'host', value);
   }
-  /** Gets/Sets the remote port to connect to.
+  /**
+   * Gets/Sets the remote port to connect to.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -247,7 +251,8 @@ export class FedCatalogQuery {
   port(value?: number): number | FedCatalogQuery {
     return doIntGetterSetter(this, 'port', value);
   }
-  /** Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
+  /**
+   * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.
    *
    * @param value optional new value if setting
@@ -256,7 +261,8 @@ export class FedCatalogQuery {
   nodata(value?: number): number | FedCatalogQuery {
     return doIntGetterSetter(this, 'nodata', value);
   }
-  /** Get/Set the targetservice query parameter.
+  /**
+   * Get/Set the targetservice query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -264,7 +270,8 @@ export class FedCatalogQuery {
   targetService(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'targetService', value);
   }
-  /** Get/Set the network query parameter.
+  /**
+   * Get/Set the network query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -272,7 +279,8 @@ export class FedCatalogQuery {
   networkCode(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'networkCode', value);
   }
-  /** Get/Set the station query parameter.
+  /**
+   * Get/Set the station query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -280,7 +288,8 @@ export class FedCatalogQuery {
   stationCode(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'stationCode', value);
   }
-  /** Get/Set the location code query parameter.
+  /**
+   * Get/Set the location code query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -288,7 +297,8 @@ export class FedCatalogQuery {
   locationCode(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'locationCode', value);
   }
-  /** Get/Set the channel query parameter.
+  /**
+   * Get/Set the channel query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -296,7 +306,8 @@ export class FedCatalogQuery {
   channelCode(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'channelCode', value);
   }
-  /** Get/Set the starttime query parameter.
+  /**
+   * Get/Set the starttime query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -304,7 +315,8 @@ export class FedCatalogQuery {
   startTime(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'startTime', value);
   }
-  /** Get/Set the endtime query parameter.
+  /**
+   * Get/Set the endtime query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -323,7 +335,8 @@ export class FedCatalogQuery {
     this.endTime(se.endTime);
     return this;
   }
-  /** Get/Set the startbefore query parameter.
+  /**
+   * Get/Set the startbefore query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -331,7 +344,8 @@ export class FedCatalogQuery {
   startBefore(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'startBefore', value);
   }
-  /** Get/Set the endbefore query parameter.
+  /**
+   * Get/Set the endbefore query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -339,7 +353,8 @@ export class FedCatalogQuery {
   endBefore(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'endBefore', value);
   }
-  /** Get/Set the startafter query parameter.
+  /**
+   * Get/Set the startafter query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -347,7 +362,8 @@ export class FedCatalogQuery {
   startAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'startAfter', value);
   }
-  /** Get/Set the endafter query parameter.
+  /**
+   * Get/Set the endafter query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -355,7 +371,8 @@ export class FedCatalogQuery {
   endAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'endAfter', value);
   }
-  /** Get/Set the minlat query parameter.
+  /**
+   * Get/Set the minlat query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -363,7 +380,8 @@ export class FedCatalogQuery {
   minLat(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'minLat', value);
   }
-  /** Get/Set the maxlon query parameter.
+  /**
+   * Get/Set the maxlon query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -371,7 +389,8 @@ export class FedCatalogQuery {
   maxLat(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'maxLat', value);
   }
-  /** Get/Set the minlon query parameter.
+  /**
+   * Get/Set the minlon query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -379,7 +398,8 @@ export class FedCatalogQuery {
   minLon(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'minLon', value);
   }
-  /** Get/Set the maxlon query parameter.
+  /**
+   * Get/Set the maxlon query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -387,7 +407,8 @@ export class FedCatalogQuery {
   maxLon(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'maxLon', value);
   }
-  /** Get/Set the latitude query parameter.
+  /**
+   * Get/Set the latitude query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -395,7 +416,8 @@ export class FedCatalogQuery {
   latitude(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'latitude', value);
   }
-  /** Get/Set the longitude query parameter.
+  /**
+   * Get/Set the longitude query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -403,7 +425,8 @@ export class FedCatalogQuery {
   longitude(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'longitude', value);
   }
-  /** Get/Set the minradius query parameter.
+  /**
+   * Get/Set the minradius query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -411,7 +434,8 @@ export class FedCatalogQuery {
   minRadius(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'minRadius', value);
   }
-  /** Get/Set the maxradius query parameter.
+  /**
+   * Get/Set the maxradius query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -419,7 +443,8 @@ export class FedCatalogQuery {
   maxRadius(value?: number): number | FedCatalogQuery {
     return doFloatGetterSetter(this, 'maxRadius', value);
   }
-  /** Get/Set the includerestricted query parameter.
+  /**
+   * Get/Set the includerestricted query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -434,7 +459,8 @@ export class FedCatalogQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
-  /** Get/Set the includeavailability query parameter.
+  /**
+   * Get/Set the includeavailability query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -449,7 +475,8 @@ export class FedCatalogQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
-  /** Get/Set the format query parameter.
+  /**
+   * Get/Set the format query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -457,7 +484,8 @@ export class FedCatalogQuery {
   format(value?: string): string | FedCatalogQuery {
     return doStringGetterSetter(this, 'format', value);
   }
-  /** Get/Set the updatedafter query parameter.
+  /**
+   * Get/Set the updatedafter query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -465,7 +493,8 @@ export class FedCatalogQuery {
   updatedAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, 'updatedAfter', value);
   }
-  /** Get/Set the matchtimeseries query parameter.
+  /**
+   * Get/Set the matchtimeseries query parameter.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -480,7 +509,8 @@ export class FedCatalogQuery {
       throw new Error('value argument is optional or boolean, but was '+typeof value);
     }
   }
-  /** Get/Set the timeout in seconds for the request. Default is 30.
+  /**
+   * Get/Set the timeout in seconds for the request. Default is 30.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
@@ -496,12 +526,13 @@ export class FedCatalogQuery {
     }
   }
 
-  /** Checks to see if any parameter that would limit the data
+  /**
+   * Checks to see if any parameter that would limit the data
    * returned is set. This is a crude, coarse check to make sure
    * the client doesn't ask for EVERYTHING the server has.
    *
    * @returns true if some parameter set
-   * */
+   */
   isSomeParameterSet(): boolean {
     return isDef(this._networkCode) ||
     isDef(this._stationCode) ||

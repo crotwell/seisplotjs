@@ -25,7 +25,6 @@ export const FDSN_HOST = "www.fdsn.org";
  * Query to a FDSN Data Centers Registry web service.
  *
  * @see http://www.fdsn.org/webservices/
- *
  * @param host optional host to connect to, defaults to FDSN
  */
 export class DataCentersQuery {
@@ -58,9 +57,10 @@ export class DataCentersQuery {
     this._port = 80;
     this._timeoutSec = 30;
   }
-  /** Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
-   *  Setting this is probably a bad idea as the code may not be compatible with
-   *  the web service.
+  /**
+   * Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+   * Setting this is probably a bad idea as the code may not be compatible with
+   * the web service.
    *
    * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
@@ -75,8 +75,9 @@ export class DataCentersQuery {
       throw new Error('value argument is optional or number, but was '+typeof value);
     }
   }
-  /** Gets/Sets the protocol, http or https. This should match the protocol
-   *  of the page loaded, but is autocalculated and generally need not be set.
+  /**
+   * Gets/Sets the protocol, http or https. This should match the protocol
+   * of the page loaded, but is autocalculated and generally need not be set.
    *
    * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
@@ -84,7 +85,8 @@ export class DataCentersQuery {
   protocol(value?: string): string | DataCentersQuery {
     return doStringGetterSetter(this, 'protocol', value);
   }
-  /** Gets/Sets the remote host to connect to. This defaults to
+  /**
+   * Gets/Sets the remote host to connect to. This defaults to
    * www.fdsn.org and generally should not be set.
    *
    * @param value optional new value if setting
@@ -93,7 +95,8 @@ export class DataCentersQuery {
   host(value?: string): string | DataCentersQuery {
     return doStringGetterSetter(this, 'host', value);
   }
-  /** Gets/Sets the remote port to connect to. This defaults to
+  /**
+   * Gets/Sets the remote port to connect to. This defaults to
    * the standard port for the protocol and generally should not be set.
    *
    * @param value optional new value if setting
@@ -138,7 +141,8 @@ export class DataCentersQuery {
     }
   }
 
-   /** Get/Set the timeout in seconds for the request. Default is 30.
+   /**
+    * Get/Set the timeout in seconds for the request. Default is 30.
     *
     * @param  value timeout seconds
     * @returns the query when setting, the current value os services if no arguments
@@ -321,7 +325,8 @@ export class DataCentersQuery {
     return this.formBaseURL()+"/version";
   }
 
-  /** Queries the remote web service to get its version
+  /**
+   * Queries the remote web service to get its version
    *
    * @returns Promise to version string
    */

@@ -12,7 +12,8 @@ import type { Complex } from './oregondsputil.js';
 import {OregonDSP, createComplex} from './oregondsputil.js';
 import {isDef} from './util.js';
 
-/** A higher level function to calculate DFT. Returns a
+/**
+ * A higher level function to calculate DFT. Returns a
  * FFTResult for easier access to the result as
  * complex, amp, phase arrays. Calls calcDFT internally.
  * Inverse FFT is available as FFTResult.fftInverse().
@@ -105,9 +106,10 @@ export class FFTResult {
   sampleRate: number;
   /** optional units of the original data for display purposes. */
   inputUnits: string;
-  /** optional reference to SeismogramDisplayData when calculated from a seismogram.
+  /**
+   * optional reference to SeismogramDisplayData when calculated from a seismogram.
    *  Useful for creating title, etc.
-   *  */
+   */
   seismogramDisplayData: SeismogramDisplayData;
   constructor(origLength: number, sampleRate: number) {
       this.origLength = origLength;
@@ -196,7 +198,7 @@ export class FFTResult {
   /**
    * recalculate the packedFreq array after modifications
    * to the complex array.
-   * */
+   */
   recalcFromComplex(): void {
     const N = this.complex.length;
     let modFreq = new Float32Array(N).fill(0);

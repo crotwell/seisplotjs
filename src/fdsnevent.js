@@ -33,7 +33,6 @@ export const FAKE_EMPTY_XML = '<?xml version="1.0"?><q:quakeml xmlns="http://qua
  * Query to a FDSN Event web service.
  *
  * @see http://www.fdsn.org/webservices/
- *
  * @param host optional host to connect to, defaults to USGS
  */
 export class EventQuery {

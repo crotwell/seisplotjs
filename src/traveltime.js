@@ -136,7 +136,8 @@ export class TraveltimeQuery {
   host(value?: string): string | TraveltimeQuery {
     return hasArgs(value) ? (this._host = value, this) : this._host;
   }
-  /** Gets/Sets the remote port to connect to.
+  /**
+   * Gets/Sets the remote port to connect to.
    *
    * @param value optional new value if setting
    * @returns new value if getting, this if setting

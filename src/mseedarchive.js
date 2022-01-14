@@ -297,7 +297,7 @@ export function maxSampleRate(chan: string): number {
   *
   * @param chan channel code like BHZ, only the first letter is used
   * @returns mimumum sample rate this could be
-  **/
+  */
 export function minSampleRate(chan: string): number {
   let f = chan.slice(0,1);
   switch(f) {
@@ -331,7 +331,8 @@ export function minSampleRate(chan: string): number {
       throw new Error("Unknown band code "+f+" in "+chan);
   }
 }
- /** Calculates the maximum time coverage for a single miniseed record
+ /**
+  * Calculates the maximum time coverage for a single miniseed record
   * given the record size (usually 512 or 4096) and the sample rate (Hertz).
   * This assumes 40 bytes of header and maximum compression of 2 samples
   * per byte (4 bit per sample) which is the best Steim2.

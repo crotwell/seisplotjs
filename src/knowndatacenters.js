@@ -79,7 +79,6 @@ export const knownDataCenters: {} = {
    *  and supports that is an array of type and version.
    *
    * @deprecated Use fdsndatacenters instead
-   *
    *  @returns a Promise that resolves to the returned json.
    */
   getKnownDataCenters(): Promise<KnownDCS_JSON> {
@@ -107,7 +106,6 @@ export const knownDataCenters: {} = {
    *  likely at most daily.
    *
    * @deprecated Use fdsndatacenters instead
-   *
    *  @returns a Promise to known datacenters.
    */
   updateKnownDataCenters(): Promise<KnownDCS_JSON> {
@@ -122,7 +120,6 @@ export const knownDataCenters: {} = {
    * Gets the data center associated with the id.
    *
    * @deprecated Use fdsndatacenters instead
-   *
    * @param id string id
    * @returns a Promise to data center
    */
@@ -141,9 +138,8 @@ export const knownDataCenters: {} = {
   },
 
   /**
-  *
-  * @deprecated Use fdsndatacenters instead
    *
+   * @deprecated Use fdsndatacenters instead
    * @param dc data center
    * @param type type of service
    * @returns true is the dc datacenter supports type web service,
@@ -164,7 +160,6 @@ export const knownDataCenters: {} = {
    *  but the ringserver is hosted at rtserve.iris.edu
    *
    * @deprecated Use fdsndatacenters instead
-   *
    * @param dc data center
    * @param type type of service
    * @returns host
@@ -186,7 +181,6 @@ export const knownDataCenters: {} = {
    *  ports.
    *
    * @deprecated Use fdsndatacenters instead
-   *
    * @param dc data center
    * @param type type of service
    * @returns port number

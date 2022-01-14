@@ -374,7 +374,8 @@ export function parseStationXml(rawXml: Document): Array<Network> {
     return out;
   }
 
-  /** Parses a FDSNStationXML Network xml element into a Network object.
+  /**
+   * Parses a FDSNStationXML Network xml element into a Network object.
    *
    * @param xml the network xml Element
    * @returns Network instance
@@ -561,7 +562,8 @@ export function convertToEquipment(xml: Element): Equipment {
   return out;
 }
 
-  /** Parses a FDSNStationXML Response xml element into a Response object.
+  /**
+   * Parses a FDSNStationXML Response xml element into a Response object.
    *
    * @param responseXml the response xml Element
    * @returns Response instance

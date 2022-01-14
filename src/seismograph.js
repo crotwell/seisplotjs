@@ -1334,7 +1334,6 @@ export function createMarkersForTravelTimes(quake: Quake, ttime: TraveltimeJsonT
  * Creates a Marker for the origin time in ttime.arrivals, for the given Quake.
  *
  * @param   quake quake the travel times are relative to
- *
  * @returns        Marker suitable for adding to a seismograph
  */
 export function createMarkerForOriginTime(quake: Quake): MarkerType {
@@ -1371,8 +1370,8 @@ export function createFullMarkersForQuakeAtChannel(quake: Quake, channel: Channe
 /**
  * Creates a Marker for the picked arrival times in quake.arrivals, for the given Quake.
  *
- * @param   quake quake the travel times are relative to
- *
+ * @param origin quake the travel times are relative to
+ * @param channel channel picks made on
  * @returns        Marker suitable for adding to a seismograph
  */
 export function createMarkerForPicks(origin: Origin, channel: Channel): Array<MarkerType> {

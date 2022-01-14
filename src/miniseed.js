@@ -153,7 +153,7 @@ export function parseBlockette(dataView: DataView, offset: number, length: numbe
 
 /**
  * Represents a SEED Data Record, with header, blockettes and data.
- *  */
+ */
 export class DataRecord {
   header: DataHeader;
   data: DataView;
@@ -402,7 +402,8 @@ export function checkByteSwap(bTime: BTime): boolean {
   return bTime.year < 1960 || bTime.year > 2055;
 }
 
-/** Determines if two DataRecords are contiguous, ie if the second starts
+/**
+ * Determines if two DataRecords are contiguous, ie if the second starts
  * after the end of the first and the start time of the second is within
  * 1.5 times the sample period of the end of the first.
  *
@@ -424,7 +425,7 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord): boolean {
  *
  * @param contig array of data records
  * @returns SeismogramSegment instance
- * */
+ */
 export function createSeismogramSegment(contig: Array<DataRecord> | DataRecord): SeismogramSegment {
   if ( ! Array.isArray(contig)) { contig = [ contig ];}
   let contigData = contig.map(dr => dr.asEncodedDataSegment());
@@ -485,7 +486,7 @@ export function merge(drList: Array<DataRecord>): Seismogram {
  *
  * @param drList array of data records
  * @returns map of arrays of data records keyed by channel
- * */
+ */
 export function byChannel(drList: Array<DataRecord>): Map<string, Array<DataRecord>> {
   let out: Map<string, Array<DataRecord>> = new Map();
   let key;

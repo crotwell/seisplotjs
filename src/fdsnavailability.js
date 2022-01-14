@@ -47,7 +47,6 @@ export const IRIS_HOST = "service.iris.edu";
  * Query to a FDSN Availability web service.
  *
  * @see http://www.fdsn.org/webservices/
- *
  * @param host optional host to connect to, defaults to IRIS
  */
 export class AvailabilityQuery {
@@ -325,7 +324,8 @@ export class AvailabilityQuery {
   format(value?: string): string | AvailabilityQuery {
     return doStringGetterSetter(this, 'format', value);
   }
-  /** Get/Set the timeout in seconds for the request. Default is 30.
+  /**
+   * Get/Set the timeout in seconds for the request. Default is 30.
    *
    * @param value timeout in seconds
    * @returns the query when setting, the current value when no argument
