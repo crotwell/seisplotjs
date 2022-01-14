@@ -56,7 +56,7 @@ const packetHandler = function(packet) {
   }
   lastPackets.push(packet);
   let packetText = "";
-  lastPackets.forEach(p => packetText+=`${p.header}\n`);
+  lastPackets.forEach(p => packetText+=`${p.streamId} ${p.pktid} ${p.packetStart.toISOString()} to ${p.packetEnd.toISOString()}\n`);
   document.querySelector("pre").textContent=packetText;
 }
 const datalink = new seisplotjs.datalink.DataLinkConnection(
