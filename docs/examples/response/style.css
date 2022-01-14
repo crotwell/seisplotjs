@@ -2,3 +2,7 @@
 div.stage {
   height: 300px;
 }
+
+#stationxml_url {
+  width: 300px;
+}
