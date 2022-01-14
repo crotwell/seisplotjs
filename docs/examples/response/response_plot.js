@@ -71,7 +71,9 @@ function load_fdsn() {
 function load_ext() {
   clear_all();
   // here grab a sis extstationxml file directly and plot response stages
-  const fetchInit = seisplotjs.util.defaultFetchInitObj(seisplotjs.util.XML_MIME);
+  // IRIS NRL has bug with xml mime, so also include text
+  const mime_types = seisplotjs.util.XML_MIME+","+seisplotjs.util.TEXT_MIME;
+  const fetchInit = seisplotjs.util.defaultFetchInitObj(mime_types);
   let url = document.querySelector('input#stationxml_url').value
   seisplotjs.d3.select(".response_url").text(url);
   const timeoutSec = 10;

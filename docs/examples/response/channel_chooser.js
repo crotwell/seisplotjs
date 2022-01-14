@@ -30,7 +30,7 @@ class ChannelCodeInput extends HTMLElement {
         position: relative;
       }
       input {
-        width: 100px;
+        width: 50px;
       }
     `;
     shadow.appendChild(style);
