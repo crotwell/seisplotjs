@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <link rel="stylesheet" href="style.css">
+   <title>SCSN Ringserver</title>
+</head>
+<body>
+
+  <h3><a href="https://github.com/iris-edu/ringserver">Ringserver</a> Web interface:</h3>
+
+  <div class="commands">
+    <button id="id">Id</button>
+    <div>
+      <button id="streamids">Stream Ids</button>
+      <label>Level: </label><input type="text" id="level" name="level" pattern="[0-6]" value="1"></input>
+      <label>Match: </label><input type="text" id="match" name="match" value=""></input>
+    </div>
+    <div>
+      <button id="streams">Streams</button>
+      <label>Match: </label><input type="text" id="streammatch" name="streammatch" value=" "></input>
+    </div>
+    <div>
+      <button id="disconnect">Disconnect</button>
+      <button id="pause">Pause</button>
+      Packets: <span id="numPackets">0</span>
+    </div>
+  </div>
+  <div class="streams">
+    <stream-list-chooser></stream-list-chooser>
+  </div>
+  <div class="results">
+    <pre></pre>
+  </div>
+
+
+  <script src="seisplotjs_2.1.0-alpha.0_standalone.js"></script>
+  <script src="stream_chooser.js"></script>
+  <script src="rsweb.js"></script>
+</body>
+</html>
