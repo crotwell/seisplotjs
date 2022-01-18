@@ -4,7 +4,10 @@ const doLogLog = true;
 let pad_size = 1024*1/16;
 
 document.querySelector("#extstationxml_load").addEventListener('click', event => {
-  load_ext();
+  load_sis();
+});
+document.querySelector("#nrl_load").addEventListener('click', event => {
+  load_nrl();
 });
 document.querySelector("#stationxml_load").addEventListener('click', event => {
   load_fdsn();
@@ -68,13 +71,19 @@ function load_fdsn() {
   });
 }
 
-function load_ext() {
+function load_sis() {
+  load_ext('input#stationxml_url');
+}
+function load_nrl() {
+  load_ext('input#nrl_url');
+}
+function load_ext(input_selector) {
   clear_all();
   // here grab a sis extstationxml file directly and plot response stages
   // IRIS NRL has bug with xml mime, so also include text
   const mime_types = seisplotjs.util.XML_MIME+","+seisplotjs.util.TEXT_MIME;
   const fetchInit = seisplotjs.util.defaultFetchInitObj(mime_types);
-  let url = document.querySelector('input#stationxml_url').value;
+  let url = document.querySelector(input_selector).value;
   seisplotjs.d3.select(".response_url").text(url);
   const timeoutSec = 10;
   seisplotjs.util.doFetchWithTimeout(url, fetchInit, timeoutSec * 1000 )
@@ -134,8 +143,11 @@ function process_stages(stages) {
     }
   });
   stages.forEach((stage,idx) => {
-    let div = seisplotjs.d3.select("div.stageplot");
-    div.append("div").append("h5").text(`Stage: ${idx+1}`);
+    let div = seisplotjs.d3.select("div.stageplot").append("div");
+    let details = div.append("details")
+    details.append("summary").text(`Stage: ${idx+1}`);
+    details.append("textarea").attr("rows", 10).attr("cols", 80).text(stage_details(stage, idx));
+
     if (stage.gain) {
       div.append("div").append("span").text(`Gain: ${stage.gain.value} at ${stage.gain.frequency} Hz`);
     }
@@ -150,7 +162,7 @@ function process_stages(stages) {
         stage.filter instanceof seisplotjs.stationxml.FIR ) ) {
       let coeff = calc_stage_coeff(stage);
       let impulseResponse = seisplotjs.fft.FFTResult.createFromPackedFreq(seisplotjs.fft.calcDFT(coeff.reverse()), coeff.length, stage.decimation.inputSampleRate);
-      plot_from_packed_freq(stage, idx, impulseResponse);
+      plot_from_packed_freq(div, stage, idx, impulseResponse);
       all_resp.push(impulseResponse);
     } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros) {
       const numPoints = pad_size;
@@ -166,7 +178,7 @@ function process_stages(stages) {
 
       //let impulseResponse = seisplotjs.transfer.calcResponseFromSacPoleZero(sacPoleZero, numPoints, 2*first_sps);
 
-      plot_from_packed_freq(stage, idx, freqAmp);
+      plot_from_packed_freq(div, stage, idx, freqAmp);
       all_resp.push(freqAmp);
     } else {
       let div = seisplotjs.d3.select("div.stageplot").append("div");
@@ -220,7 +232,7 @@ function calc_stage_coeff(stage) {
   } else if (stage.filter instanceof seisplotjs.stationxml.CoefficientsFilter ) {
     let numPoints = Math.max(pad_size, 2*stage.filter.numerator.length);
     if (stage.filter.denominator.length ===0 ) {
-      longCoeff = new Array(numPoints).fill(0);
+      let longCoeff = new Array(numPoints).fill(0);
       if (stage.filter.numerator.length !==0 ) {
         for(let i=0; i<stage.filter.numerator.length; i++) {
           longCoeff[i] = stage.filter.numerator[i];
@@ -237,9 +249,8 @@ function calc_stage_coeff(stage) {
   return longCoeff;
 }
 
-function plot_from_packed_freq(stage, idx, impulseResponse) {
+function plot_from_packed_freq(div, stage, idx, impulseResponse) {
   impulseResponse.inputUnits = stage.filter.inputUnits;
-  let div = seisplotjs.d3.select("div.stageplot");
   let ampdiv = div.append("div");
   ampdiv.classed("stage", true);
   const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
@@ -280,4 +291,33 @@ function overlay_plot_from_coefficients(all_resp, in_samp_rate) {
   div.append("p").text(`Overlay Stages`);
   const fftRatioPlot = new seisplotjs.fftplot.FFTPlot(div, plotConfig, all_resp, doLogLog);
   fftRatioPlot.draw();
+}
+
+function stage_details(stage, idx) {
+  let out = "";
+  if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros) {
+    out = `Stage ${idx+1} PolesZeros, poles: ${stage.filter.poles.length} , zeros: ${stage.filter.zeros.length} \n`;
+    out += `PzTransferFunctionType: ${stage.filter.pzTransferFunctionType}\n`;
+    out += `NormalizationFactor: ${stage.filter.normalizationFactor} at ${stage.filter.normalizationFrequency} Hz \n`;
+    out += `Poles (${stage.filter.poles.length}):\n`;
+    stage.filter.poles.forEach((p,idx) => {out += `${idx}: ${p.real()} + ${p.imag()} i\n`});
+    out += `Zeros (${stage.filter.zeros.length}):\n`;
+    stage.filter.zeros.forEach((p,idx) => {out += `${idx}: ${p.real()} + ${p.imag()} i\n`});
+  } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.CoefficientsFilter) {
+    out = `Stage ${idx+1} Coefficients, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor}, len: ${stage.filter.numerator.length}/${stage.filter.denominator.length} \n`;
+    out += `CfTransferFunctionType: ${stage.filter.cfTransferFunction}\n`;
+    out += `Numerator (${stage.filter.numerator.length}):\n`;
+    stage.filter.numerator.forEach((p,idx) => {out += `${idx}: ${p}\n`});
+    out += `Denominator (${stage.filter.denominator.length}):\n`;
+    stage.filter.denominator.forEach((p,idx) => {out += `${idx}: ${p}\n`});
+  } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.FIR) {
+    out =  `Stage ${idx+1} FIR, in sps: ${stage.decimation.inputSampleRate}, factor: ${stage.decimation.factor}, sym: ${stage.filter.symmetry} len: ${stage.filter.numerator.length} \n`;
+    out += `Symmetry: ${stage.filter.symmetry}\n`;
+    out += `NumeratorCoefficient (${stage.filter.numerator.length}):\n`;
+    stage.filter.numerator.forEach((p,idx) => {out += `${idx}: ${p}\n`});
+  } else {
+    let filter_class = stage.filter ? stage.filter.__proto__.constructor.name : "missing";
+    out = `Stage ${idx+1} unknown filter: ${filter_class}  \n`;
+  }
+  return out;
 }

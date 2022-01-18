@@ -12,16 +12,21 @@
       is not correct. Note the large ripple in the passband.
       Choosing a channel from IRIS hopefully shows other
       more correct responses. You may also paste a URL to a stationxml,
-      IRIS stationxml-resp from the NRL, 
+      IRIS stationxml-resp from the NRL,
       or SIS extended stationxml file into the box to plot it.
     </p>
     <div>
-      <label>SIS ExtStationXML URL:</label>
+      <label>SIS ExtStationXML Url:</label>
       <input type="text" id="stationxml_url" name="extstationxml_url" value="sis_filtercascade_15242.xml"></input>
       <button id="extstationxml_load">Load</button>
     </div>
     <div>
-      <label>FDSN StationXML frm IRIS:</label>
+      <label>IRIS NRL Url:</label>
+      <input type="text" id="nrl_url" name="nrl_url" value="http://service.iris.edu/iriswsbeta/nrl/1/combine?instconfig=sensor_CEADASE_CPHM-500_LP1_PG8_SG2250_STgroundVel%3Adatalogger_EQMet_SMA_PG1_FR50&format=stationxml-resp&nodata=404"></input>
+      <button id="nrl_load">Load</button>
+    </div>
+    <div>
+      <label>FDSN StationXML from IRIS:</label>
       <channel-code-input></channel-code-input>
       <button id="stationxml_load">Load</button>
     </div>
