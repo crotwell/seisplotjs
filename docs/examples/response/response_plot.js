@@ -156,15 +156,18 @@ function process_stages(stages) {
     }
     if (stage.filter && (
         (stage.filter instanceof seisplotjs.stationxml.CoefficientsFilter &&
+          stage.filter.cfTransferFunction === "DIGITAL" &&
           stage.filter.denominator.length === 0 &&
           stage.filter.numerator.length > 0
         ) ||
-        stage.filter instanceof seisplotjs.stationxml.FIR ) ) {
+        stage.filter instanceof seisplotjs.stationxml.FIR &&
+          stage.filter.numerator.length > 0) ) {
       let coeff = calc_stage_coeff(stage);
       let impulseResponse = seisplotjs.fft.FFTResult.createFromPackedFreq(seisplotjs.fft.calcDFT(coeff.reverse()), coeff.length, stage.decimation.inputSampleRate);
       plot_from_packed_freq(div, stage, idx, impulseResponse);
       all_resp.push(impulseResponse);
-    } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros) {
+    } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros &&
+      stage.filter.pzTransferFunctionType === "LAPLACE (RADIANS/SECOND)") {
       const numPoints = pad_size;
       let gamma = 0;
       let sacPoleZero = seisplotjs.transfer.convertPoleZeroToSacStyle(stage.filter, 1,1,gamma);

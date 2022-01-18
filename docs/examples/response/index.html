@@ -40,6 +40,20 @@
     <div class="stageplot"></div>
     <hr/>
     <div class="overlayplot"></div>
+    <hr/>
+    <h4>Caveats:</h4>
+    <p>Not all responses types are plotted currently, including:</p>
+    <ul>
+      <li>Gain-only Stages</li>
+      <li>Polynomial</li>
+      <li>Coefficients that are not DIGITAL</li>
+      <li>Coefficients that have length zero numerator and denominator coefficients</li>
+      <li>Coefficients that have denominator coefficients</li>
+      <li>FIR that have length zero numerator coefficients</li>
+      <li>PolesZeros that are not LAPLACE (RADIANS/SECOND)</li>
+      <li>ResponseList</li>
+    </ul>
+
 
 
 <script src="seisplotjs_2.1.0-alpha.0_standalone.js"></script>
