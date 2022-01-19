@@ -17,7 +17,11 @@ let createFIR = function() {
   const doLogLog = d3.select("input[name=loglog]").property('checked');
   let firLp = new odsp.filter.fir.equiripple.EquirippleLowpass(N, OmegaP, Wp, OmegaS, Ws);
 
+  d3.select("div.message").selectAll("*").remove();
   d3.select("h3.coefficients").selectAll("*").remove();
+  d3.select("div.fftfir").selectAll("*").remove();
+  d3.select("div.impulse").selectAll("*").remove();
+
   d3.select("h3.coefficients").text(`FIR Coefficients: N: ${N} => ${2*N+1}  OmegaP: ${OmegaP} Wp: ${Wp}  OmegsS: ${OmegaS} Ws: ${Ws}`);
 
   let coeffDispFun = function(d, i, a) {
@@ -34,20 +38,32 @@ let createFIR = function() {
 
   const NumPoints = parseInt(document.getElementsByName('NumPoints')[0].value);
 
-  let longCoeff = new Array(NumPoints).fill(0);
+  let longCoeff = new Float32Array(NumPoints).fill(0);
   for(let i=0; i<firLp.getCoefficients().length; i++) {
     longCoeff[i] = firLp.getCoefficients()[i];
   }
   const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
   plotConfig.title = "FIR Filter"
-  d3.select("div.fftfir").selectAll("*").remove();
   let impulseResponse = fftForwardArray(longCoeff);
-  d3.select("div.fftfir").selectAll("*").remove();
   const firPlot = new seisplotjs.fftplot.FFTPlot("div.fftfir", plotConfig, [impulseResponse],  doLogLog, true, false);
   firPlot.draw();
   const firPhasePlot = new seisplotjs.fftplot.FFTPlot("div.fftfir", plotConfig, [impulseResponse],  doLogLog, false, true);
   firPhasePlot.draw();
   d3.select("div.message").append('p').text(`Zero Freq Gain: ${impulseResponse.amp[0]}`);
+
+  let sampleRate = 1;
+  let start = seisplotjs.moment.utc('2000-01-01T00:00:00Z');
+  let impulseSeis = seisplotjs.seismogram.Seismogram.createFromContiguousData(longCoeff, sampleRate, start);
+  // snip start draw
+  let div = seisplotjs.d3.select('div.impulse');
+  let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+  seisConfig.title = "Impulse Response";
+  seisConfig.margin.top = 25;
+  seisConfig.doRMean = false;
+  seisConfig.wheelZoom = false;
+  let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(impulseSeis);
+  let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
+  graph.draw();
 }
 
 

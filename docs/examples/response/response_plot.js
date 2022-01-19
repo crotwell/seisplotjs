@@ -165,6 +165,7 @@ function process_stages(stages) {
       let coeff = calc_stage_coeff(stage);
       let impulseResponse = seisplotjs.fft.FFTResult.createFromPackedFreq(seisplotjs.fft.calcDFT(coeff.reverse()), coeff.length, stage.decimation.inputSampleRate);
       plot_from_packed_freq(div, stage, idx, impulseResponse);
+      plot_impulse(div, stage, idx, coeff);
       all_resp.push(impulseResponse);
     } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros &&
       stage.filter.pzTransferFunctionType === "LAPLACE (RADIANS/SECOND)") {
@@ -283,6 +284,26 @@ function plot_from_packed_freq(div, stage, idx, impulseResponse) {
     fftPhasePlot.draw();
   }
   return fftAmpPlot;
+}
+
+function plot_impulse(div, stage, idx, coeff) {
+  let plotdiv = div.append("div");
+  plotdiv.classed("stage", true);
+  let sampleRate = 1;
+  let start = seisplotjs.moment.utc('2000-01-01T00:00:00Z');
+  if (stage.decimation) {
+    sampleRate = stage.decimation.inputSampleRate;
+  }
+  let impulseSeis = seisplotjs.seismogram.Seismogram.createFromContiguousData(coeff.reverse(), sampleRate, start);
+  // snip start draw
+  let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+  seisConfig.title = "Impulse Response";
+  seisConfig.margin.top = 25;
+  seisConfig.doRMean = false;
+  seisConfig.wheelZoom = false;
+  let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(impulseSeis);
+  let graph = new seisplotjs.seismograph.Seismograph(plotdiv, seisConfig, seisData);
+  graph.draw();
 }
 
 

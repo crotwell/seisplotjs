@@ -5,3 +5,7 @@ div.fftfir {
 div.fftfir svg {
   height: 50%;
 }
+
+div.impulse {
+  height: 300px;
+}
