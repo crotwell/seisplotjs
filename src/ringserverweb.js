@@ -206,13 +206,13 @@ export class RingserverConnection {
       });
   }
 
-  getDataLinkURL() {
+  getDataLinkURL(): string {
     let proto = "ws:";
     if (checkProtocol() === "https:") { proto = "wss:";}
     return proto+'//'+this._host+(this._port===80 ? '' : (':'+this._port))+(this._prefix)+DATALINK_PATH;
   }
 
-  getSeedLinkURL() {
+  getSeedLinkURL(): string {
     let proto = "ws:";
     if (checkProtocol() === "https:") { proto = "wss:";}
     return proto+'//'+this._host+(this._port===80 ? '' : (':'+this._port))+(this._prefix)+SEEDLINK_PATH;
