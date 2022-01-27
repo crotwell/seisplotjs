@@ -25,7 +25,7 @@
   "scripts": {
     "srclint": "eslint 'src/*.js' ",
     "lint": "eslint 'src/*.js' 'test/*.js' 'test/*/*.js'  ",
-    "examplelint": "eslint -c .eslintrc_noflow.js 'docs/examples/viewobspy/www/[otv]*.js' 'example/socal/socal.js' 'example/southcarolina/southcarolina.js' ",
+    "examplelint": "eslint -c .eslintrc_noflow.js 'docs/examples/viewobspy/www/[otv]*.js' 'docs/examples/*/[a-r]*.js'  'docs/examples/*/s[t-z]*.js'",
     "test": "jest",
     "livetest": "jest -c jest.config.live.js",
     "flow": "flow",
