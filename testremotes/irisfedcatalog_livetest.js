@@ -57,7 +57,8 @@ test("run CO active stations", () => {
     const NET = 'CO';
     expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
     expect(fedCatQuery.networkCode()).toBe(NET);
-    expect(fedCatQuery.endAfter(moment.utc())).toBe(fedCatQuery);
+    expect(fedCatQuery.endAfter(moment.utc('2021-01-01'))).toBe(fedCatQuery);
+    expect(fedCatQuery.startBefore(moment.utc('2021-01-01'))).toBe(fedCatQuery);
     return fedCatQuery.queryStations().then(netArray => {
       expect(netArray[0]).toBeDefined();
       expect(netArray[0].networkCode).toBe(NET);

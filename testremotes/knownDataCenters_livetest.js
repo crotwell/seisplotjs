@@ -7,7 +7,6 @@ const fetch = require('node-fetch');
 // eslint-disable-next-line no-undef
 global.fetch = fetch;
 
-
 test("fetch directly", () => {
   // $FlowExpectedError[prop-missing]
   expect(knownDataCenters.knownDataCentersJsonURL).toBeDefined();

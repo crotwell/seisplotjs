@@ -5,9 +5,9 @@ module.exports = {
       "plugin:jest/recommended",
       "plugin:jsdoc/recommended"
     ],
+    "parser": "@babel/eslint-parser",
     "plugins": [
       "flowtype",
-      "standard",
       "promise",
       "jest",
       "jsdoc"
