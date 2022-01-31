@@ -58,7 +58,7 @@ export class SeedlinkConnection {
     this.command = "DATA";
   }
 
-  setTimeCommand(startTime: moment$Moment) {
+  setTimeCommand(startTime: moment.Moment) {
     this.command =
       "TIME " + moment.utc(startTime).format("YYYY,MM,DD,HH,mm,ss");
   }

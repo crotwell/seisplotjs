@@ -24,8 +24,8 @@ export let FIX_INVALID_STAXML: boolean = true;
 // StationXML classes
 export class Network {
   networkCode: string;
-  _startDate: moment$Moment;
-  _endDate: moment$Moment | null;
+  _startDate: moment.Moment;
+  _endDate: moment.Moment | null;
   restrictedStatus: string;
   description: string;
   totalNumberStations: number;
@@ -41,19 +41,19 @@ export class Network {
     return "FDSN:" + (this.networkCode ? this.networkCode : "");
   }
 
-  get startDate(): moment$Moment {
+  get startDate(): moment.Moment {
     return this._startDate;
   }
 
-  set startDate(value?: moment$Moment | string) {
+  set startDate(value?: moment.Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
 
-  get endDate(): null | moment$Moment {
+  get endDate(): null | moment.Moment {
     return this._endDate;
   }
 
-  set endDate(value?: moment$Moment | string | null) {
+  set endDate(value?: moment.Moment | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -84,10 +84,10 @@ export class Station {
   stationCode: string;
 
   /** @private */
-  _startDate: moment$Moment;
+  _startDate: moment.Moment;
 
   /** @private */
-  _endDate: moment$Moment | null;
+  _endDate: moment.Moment | null;
   restrictedStatus: string;
   name: string;
   latitude: number;
@@ -111,19 +111,19 @@ export class Station {
     );
   }
 
-  get startDate(): moment$Moment {
+  get startDate(): moment.Moment {
     return this._startDate;
   }
 
-  set startDate(value?: moment$Moment | string) {
+  set startDate(value?: moment.Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
 
-  get endDate(): moment$Moment | null {
+  get endDate(): moment.Moment | null {
     return this._endDate;
   }
 
-  set endDate(value?: moment$Moment | string | null) {
+  set endDate(value?: moment.Moment | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -151,10 +151,10 @@ export class Channel {
   channelCode: string;
 
   /** @private */
-  _startDate: moment$Moment;
+  _startDate: moment.Moment;
 
   /** @private */
-  _endDate: moment$Moment | null;
+  _endDate: moment.Moment | null;
   restrictedStatus: string;
   latitude: number;
   longitude: number;
@@ -221,19 +221,19 @@ export class Channel {
     );
   }
 
-  get startDate(): moment$Moment {
+  get startDate(): moment.Moment {
     return this._startDate;
   }
 
-  set startDate(value?: moment$Moment | string) {
+  set startDate(value?: moment.Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
 
-  get endDate(): null | moment$Moment {
+  get endDate(): null | moment.Moment {
     return this._endDate;
   }
 
-  set endDate(value?: moment$Moment | string | null) {
+  set endDate(value?: moment.Moment | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -338,8 +338,8 @@ export class Equipment {
   vendor: string;
   model: string;
   serialNumber: string;
-  installationDate: moment$Moment;
-  removalDate: moment$Moment;
+  installationDate: moment.Moment;
+  removalDate: moment.Moment;
   calibrationDateList: Array<moment>;
 }
 export class Response {

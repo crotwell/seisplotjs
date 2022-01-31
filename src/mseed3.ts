@@ -298,8 +298,8 @@ export class MSeed3Header {
   identifier: string;
   extraHeaders: json_object;
   dataLength: number;
-  start: moment$Moment;
-  end: moment$Moment;
+  start: moment.Moment;
+  end: moment.Moment;
 
   constructor() {
     // empty construction
@@ -471,7 +471,7 @@ export class MSeed3Header {
    * @param   i sample number
    * @returns the time
    */
-  timeOfSample(i: number): moment$Moment {
+  timeOfSample(i: number): moment.Moment {
     return moment
       .utc(this.start)
       .add((1000 * i) / this.sampleRate, "milliseconds");
@@ -547,7 +547,7 @@ export class MSeed3Header {
    *
    * @returns         start time as moment
    */
-  _startToMoment(): moment$Moment {
+  _startToMoment(): moment.Moment {
     let m = new moment.utc([
       this.year,
       0,

@@ -147,8 +147,8 @@ export class MSeedArchive {
    */
   loadDataForChannel(
     channel: Channel,
-    startTime: moment$Moment,
-    endTime: moment$Moment,
+    startTime: moment.Moment,
+    endTime: moment.Moment,
   ): Promise<Array<miniseed.DataRecord>> {
     return this.loadData(
       channel.station.network.networkCode,
@@ -178,8 +178,8 @@ export class MSeedArchive {
     sta: string,
     loc: string,
     chan: string,
-    startTime: moment$Moment,
-    endTime: moment$Moment,
+    startTime: moment.Moment,
+    endTime: moment.Moment,
     sampleRate: number,
   ): Promise<Array<miniseed.DataRecord>> {
     let basePattern = this.fillBasePattern(net, sta, loc, chan);
@@ -242,7 +242,7 @@ export class MSeedArchive {
    * @param   t           moment in time
    * @returns              string with time replaces
    */
-  fillTimePattern(basePattern: string, t: moment$Moment): string {
+  fillTimePattern(basePattern: string, t: moment.Moment): string {
     return basePattern
       .replace(/%Y/g, t.format("YYYY"))
       .replace(/%j/g, t.format("DDDD"))

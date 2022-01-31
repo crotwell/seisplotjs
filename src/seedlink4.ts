@@ -224,7 +224,7 @@ export class SeedlinkConnection {
     this.agent = agent.trim().replaceAll(/\w+/g, "_");
   }
 
-  setTimeCommand(startTime: moment$Moment) {
+  setTimeCommand(startTime: moment.Moment) {
     this.command =
       "TIME " + moment.utc(startTime).format("YYYY,MM,DD,HH,mm,ss");
   }

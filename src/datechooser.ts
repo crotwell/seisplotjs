@@ -19,8 +19,8 @@ import {StartEndDuration} from "./util";
 export class HourMinChooser {
   div: any; // d3 not yet in flow-typed :(
 
-  time: moment$Moment;
-  updateCallback: (time: moment$Moment) => void;
+  time: moment.Moment;
+  updateCallback: (time: moment.Moment) => void;
   hourMinRegEx: RegExp;
   myOnClick: (event: Event) => void;
   hourMinField: any; // d3 not yet in flow-typed :(
@@ -37,8 +37,8 @@ export class HourMinChooser {
 
   constructor(
     div: any,
-    initialTime: moment$Moment,
-    updateCallback?: (time: moment$Moment) => void,
+    initialTime: moment.Moment,
+    updateCallback?: (time: moment.Moment) => void,
   ) {
     let mythis = this;
 
@@ -144,7 +144,7 @@ export class HourMinChooser {
    *
    * @param  newTime new time to update sliders
    */
-  updateTime(newTime: moment$Moment): void {
+  updateTime(newTime: moment.Moment): void {
     this.time = newTime;
     this.hourMinField.property("value", this.time.format("HH:mm"));
     this.hourSlider.property("value", this.time.hour());
@@ -227,8 +227,8 @@ export class HourMinChooser {
 export class DateTimeChooser {
   div: any; // d3 not yet in flow-typed :(
 
-  time: moment$Moment;
-  updateCallback: (time: moment$Moment) => void;
+  time: moment.Moment;
+  updateCallback: (time: moment.Moment) => void;
   label: string;
   dateField: any;
   picker: Pikaday;
@@ -237,8 +237,8 @@ export class DateTimeChooser {
   constructor(
     div: any,
     label: string,
-    initialTime: moment$Moment,
-    updateCallback?: (time: moment$Moment) => void,
+    initialTime: moment.Moment,
+    updateCallback?: (time: moment.Moment) => void,
   ) {
     if (typeof div === "string") {
       this.div = d3.select(div);
@@ -297,7 +297,7 @@ export class DateTimeChooser {
    *
    * @param  newTime new time to update sliders
    */
-  updateTime(newTime: moment$Moment): void {
+  updateTime(newTime: moment.Moment): void {
     this._internalSetTime(newTime);
 
     this.hourMin.updateTime(newTime);
@@ -310,7 +310,7 @@ export class DateTimeChooser {
     this.updateCallback(this.time);
   }
 
-  getTime(): moment$Moment {
+  getTime(): moment.Moment {
     return this.time;
   }
 
@@ -320,7 +320,7 @@ export class DateTimeChooser {
    * @private
    * @param  newTime new time to update
    */
-  _internalSetTime(newTime: moment$Moment): void {
+  _internalSetTime(newTime: moment.Moment): void {
     this.time = moment.utc(newTime);
     this.dateField.attr("value", this.time.toISOString());
     // re-moment to avoid utc issue, using utc messes up picker, so pretend

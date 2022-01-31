@@ -87,10 +87,10 @@ export class DataSelectQuery {
   _channelCode: string;
 
   /** @private */
-  _startTime: moment$Moment;
+  _startTime: moment.Moment;
 
   /** @private */
-  _endTime: moment$Moment;
+  _endTime: moment.Moment;
 
   /** @private */
   _quality: string;
@@ -233,7 +233,7 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment$Moment): moment$Moment | DataSelectQuery {
+  startTime(value?: moment.Moment): moment.Moment | DataSelectQuery {
     return doMomentGetterSetter(this, "startTime", value);
   }
 
@@ -243,7 +243,7 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment$Moment): moment$Moment | DataSelectQuery {
+  endTime(value?: moment.Moment): moment.Moment | DataSelectQuery {
     return doMomentGetterSetter(this, "endTime", value);
   }
 

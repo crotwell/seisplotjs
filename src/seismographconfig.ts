@@ -547,12 +547,12 @@ export class AmplitudeScalable {
   }
 }
 export class TimeScalable {
-  alignmentTimeOffset: moment$MomentDuration;
-  duration: moment$MomentDuration;
+  alignmentTimeOffset: moment.Duration;
+  duration: moment.Duration;
 
   constructor(
-    alignmentTimeOffset: moment$MomentDuration,
-    duration: moment$MomentDuration,
+    alignmentTimeOffset: moment.Duration,
+    duration: moment.Duration,
   ) {
     this.alignmentTimeOffset = alignmentTimeOffset;
     this.duration = duration;
@@ -560,8 +560,8 @@ export class TimeScalable {
 
   // eslint-disable-next-line no-unused-vars
   notifyTimeRangeChange(
-    alignmentTimeOffset: moment$MomentDuration,
-    duration: moment$MomentDuration,
+    alignmentTimeOffset: moment.Duration,
+    duration: moment.Duration,
   ) {
     // no-op
   }
@@ -630,15 +630,15 @@ export class LinkedTimeScale {
    * @private
    */
   _graphSet: Set<TimeScalable>;
-  _originalDuration: moment$MomentDuration;
-  _originalStartOffset: moment$MomentDuration;
-  _zoomedDuration: null | moment$MomentDuration;
-  _zoomedStartOffset: null | moment$MomentDuration;
+  _originalDuration: moment.Duration;
+  _originalStartOffset: moment.Duration;
+  _zoomedDuration: null | moment.Duration;
+  _zoomedStartOffset: null | moment.Duration;
 
   constructor(
     graphList: Array<TimeScalable> | null | undefined,
-    originalDuration?: moment$MomentDuration,
-    originalStartOffset?: moment$MomentDuration,
+    originalDuration?: moment.Duration,
+    originalStartOffset?: moment.Duration,
   ) {
     const glist = graphList ? graphList : []; // in case null
 
@@ -698,7 +698,7 @@ export class LinkedTimeScale {
     this.recalculate();
   }
 
-  zoom(startOffset: moment$MomentDuration, duration: moment$MomentDuration) {
+  zoom(startOffset: moment.Duration, duration: moment.Duration) {
     this._zoomedDuration = duration;
     this._zoomedStartOffset = startOffset;
     this.recalculate();
@@ -710,22 +710,22 @@ export class LinkedTimeScale {
     this.recalculate();
   }
 
-  get offset(): moment$MomentDuration {
+  get offset(): moment.Duration {
     return this._zoomedStartOffset
       ? this._zoomedStartOffset
       : this._originalStartOffset;
   }
 
-  set offset(offset: moment$MomentDuration) {
+  set offset(offset: moment.Duration) {
     this._originalStartOffset = offset;
     this.recalculate();
   }
 
-  get duration(): moment$MomentDuration {
+  get duration(): moment.Duration {
     return this._zoomedDuration ? this._zoomedDuration : this._originalDuration;
   }
 
-  set duration(duration: moment$MomentDuration) {
+  set duration(duration: moment.Duration) {
     this._originalDuration = duration;
     this.recalculate();
   }

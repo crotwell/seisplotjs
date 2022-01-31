@@ -1833,8 +1833,8 @@ export class SeismographTimeScalable extends TimeScalable {
   }
 
   notifyTimeRangeChange(
-    offset: moment$MomentDuration,
-    duration: moment$MomentDuration,
+    offset: moment.Duration,
+    duration: moment.Duration,
   ) {
     if (this.graph.beforeFirstDraw) {
       return;

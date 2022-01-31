@@ -22,8 +22,8 @@ type DataCenterType = {
   supports: Array<SupportsType>;
 };
 type KnownDCS_JSON = {
-  accesstime?: moment$Moment;
-  created: moment$Moment;
+  accesstime?: moment.Moment;
+  created: moment.Moment;
   datacenters: Array<DataCenterType>;
 };
 const DS = "fdsnws-dataselect";

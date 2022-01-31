@@ -143,22 +143,22 @@ export class FedCatalogQuery {
   _channelCode: string;
 
   /** @private */
-  _startTime: moment$Moment;
+  _startTime: moment.Moment;
 
   /** @private */
-  _endTime: moment$Moment;
+  _endTime: moment.Moment;
 
   /** @private */
-  _startBefore: moment$Moment;
+  _startBefore: moment.Moment;
 
   /** @private */
-  _endBefore: moment$Moment;
+  _endBefore: moment.Moment;
 
   /** @private */
-  _startAfter: moment$Moment;
+  _startAfter: moment.Moment;
 
   /** @private */
-  _endAfter: moment$Moment;
+  _endAfter: moment.Moment;
 
   /** @private */
   _minLat: number;
@@ -194,7 +194,7 @@ export class FedCatalogQuery {
   _format: string;
 
   /** @private */
-  _updatedAfter: moment$Moment;
+  _updatedAfter: moment.Moment;
 
   /** @private */
   _matchTimeseries: boolean;
@@ -454,7 +454,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment$Moment): moment$Moment | FedCatalogQuery {
+  startTime(value?: moment.Moment): moment.Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, "startTime", value);
   }
 
@@ -464,7 +464,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment$Moment): moment$Moment | FedCatalogQuery {
+  endTime(value?: moment.Moment): moment.Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, "endTime", value);
   }
 
@@ -486,7 +486,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: moment$Moment): moment$Moment | FedCatalogQuery {
+  startBefore(value?: moment.Moment): moment.Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, "startBefore", value);
   }
 
@@ -496,7 +496,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: moment$Moment): moment$Moment | FedCatalogQuery {
+  endBefore(value?: moment.Moment): moment.Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, "endBefore", value);
   }
 
@@ -506,7 +506,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
+  startAfter(value?: moment.Moment): moment.Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, "startAfter", value);
   }
 
@@ -516,7 +516,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
+  endAfter(value?: moment.Moment): moment.Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, "endAfter", value);
   }
 
@@ -654,7 +654,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: moment$Moment): moment$Moment | FedCatalogQuery {
+  updatedAfter(value?: moment.Moment): moment.Moment | FedCatalogQuery {
     return doMomentGetterSetter(this, "updatedAfter", value);
   }
 

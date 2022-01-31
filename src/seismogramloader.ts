@@ -25,8 +25,8 @@ export class SeismogramLoader {
   _startPhaseList: Array<string>;
   _endPhaseList: Array<string>;
   _markedPhaseList: Array<string>;
-  _startOffset: moment$MomentDuration;
-  _endOffset: moment$MomentDuration;
+  _startOffset: moment.Duration;
+  _endOffset: moment.Duration;
   networkList: Promise<Array<Network>> | null;
   quakeList: Promise<Array<Quake>> | null;
   traveltimeList: Promise<TraveltimeJsonType> | null;
@@ -95,11 +95,11 @@ export class SeismogramLoader {
     }
   }
 
-  get startOffset(): moment$MomentDuration {
+  get startOffset(): moment.Duration {
     return this._startOffset;
   }
 
-  set startOffset(val: moment$MomentDuration): void {
+  set startOffset(val: moment.Duration): void {
     if (moment.isDuration(val)) {
       this._startOffset = val;
     } else if (typeof val === "number") {
@@ -129,11 +129,11 @@ export class SeismogramLoader {
     }
   }
 
-  get endOffset(): moment$MomentDuration {
+  get endOffset(): moment.Duration {
     return this._endOffset;
   }
 
-  set endOffset(val: moment$MomentDuration): void {
+  set endOffset(val: moment.Duration): void {
     if (moment.isDuration(val)) {
       this._endOffset = val;
     } else if (typeof val === "number") {

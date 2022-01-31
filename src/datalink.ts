@@ -14,11 +14,16 @@ import moment from "moment";
 /** const for datalink protocol for web sockets, DataLink1.0 */
 export const DATALINK_PROTOCOL = "DataLink1.0";
 
+
+enum MODE {
+  Query = "QUERY",
+  Stream = "STREAM",
+};
 /** const for query mode, QUERY */
-export const QUERY_MODE = "QUERY";
+export const QUERY_MODE = MODE.Query;
 
 /** const for streaming mode, STREAM */
-export const STREAM_MODE = "STREAM";
+export const STREAM_MODE = MODE.Stream;
 
 /** const for maximum process number to create fake number for datalink id, 2^16-2 */
 export const MAX_PROC_NUM = Math.pow(2, 16) - 2;
@@ -41,7 +46,7 @@ export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
-let defaultHandleResponse = function (message) {
+let defaultHandleResponse = function (message: string) {
   util.log("Unhandled datalink response: " + message);
 };
 
@@ -62,7 +67,7 @@ export class DataLinkConnection {
   url: string;
 
   /** @private */
-  _mode: string | null;
+  _mode: MODE;
   packetHandler: (packet: DataLinkPacket) => void;
   errorHandler: (error: Error) => void;
   closeHandler: null | ((close: CloseEvent) => void);
@@ -82,7 +87,7 @@ export class DataLinkConnection {
   ) {
     this.webSocket = null;
     this.url = url;
-    this._mode = QUERY_MODE;
+    this._mode = MODE.Query;
     this.packetHandler = packetHandler;
     this.errorHandler = errorHandler;
     this.closeHandler = null;
@@ -129,7 +134,7 @@ export class DataLinkConnection {
       webSocket.onclose = function (closeEvent) {
         that.webSocket = null; // clean up
 
-        that._mode = QUERY_MODE;
+        that._mode = MODE.Query;
 
         if (that.closeHandler) {
           that.closeHandler(closeEvent);
@@ -140,7 +145,7 @@ export class DataLinkConnection {
         resolve(that);
       };
     })
-      .then(datalink => {
+      .then((datalink: DataLinkConnection) => {
         return datalink.sendId();
       })
       .then((idmsg: string) => {
@@ -167,11 +172,11 @@ export class DataLinkConnection {
    * Switches to streaming mode to receive data packets from the ringserver.
    */
   stream(): void {
-    if (this._mode === STREAM_MODE) {
+    if (this._mode === MODE.Stream) {
       return;
     }
 
-    this._mode = STREAM_MODE;
+    this._mode = MODE.Stream;
     this.sendDLCommand(STREAM, "");
   }
 
@@ -182,12 +187,12 @@ export class DataLinkConnection {
     if (
       this.webSocket === null ||
       this._mode === null ||
-      this._mode === QUERY_MODE
+      this._mode === MODE.Query
     ) {
       return;
     }
 
-    this._mode = QUERY_MODE;
+    this._mode = MODE.Query;
     this.sendDLCommand(ENDSTREAM, "");
   }
 
@@ -204,7 +209,7 @@ export class DataLinkConnection {
       }
 
       this.webSocket = null;
-      this._mode = QUERY_MODE;
+      this._mode = MODE.Query;
     }
   }
 
@@ -326,9 +331,9 @@ export class DataLinkConnection {
   awaitDLBinary(
     header: string,
     data?: Uint8Array,
-  ): Promise<DataLinkResponse> | Promise<DataLinkPacket> {
+  ): Promise<DataLinkResponse| DataLinkPacket> {
     let that = this;
-    let promise = new RSVP.Promise(function (resolve, reject) {
+    let promise = new RSVP.Promise(function (resolve: (a: DataLinkResponse|DataLinkPacket) => void, reject) {
       that._responseResolve = resolve;
       that._responseReject = reject;
       that.sendDLBinary(header, data);
@@ -357,7 +362,7 @@ export class DataLinkConnection {
   awaitDLCommand(
     command: string,
     dataString?: string,
-  ): Promise<DataLinkResponse> | Promise<DataLinkPacket> {
+  ): Promise<DataLinkResponse | DataLinkPacket> {
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
 
@@ -372,10 +377,10 @@ export class DataLinkConnection {
    */
   writeAck(
     streamid: string,
-    hpdatastart: moment$Moment,
-    hpdataend: moment$Moment,
+    hpdatastart: moment.Moment,
+    hpdataend: moment.Moment,
     data?: Uint8Array,
-  ): Promise<DataLinkResponse> | Promise<DataLinkPacket> {
+  ): Promise<DataLinkResponse | DataLinkPacket> {
     let header = `WRITE ${streamid} ${momentToHPTime(
       hpdatastart,
     )} ${momentToHPTime(hpdataend)} A`;
@@ -458,7 +463,7 @@ export class DataLinkConnection {
    * @param time time to position after
    * @returns promise to server's response
    */
-  positionAfter(time: moment$Moment): Promise<DataLinkResponse> {
+  positionAfter(time: moment.Moment): Promise<DataLinkResponse> {
     return this.positionAfterHPTime(momentToHPTime(time)).then(dlResponse =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse),
     );
@@ -558,7 +563,7 @@ export class DataLinkConnection {
         const dlResponse = DataLinkResponse.parse(header, dv);
 
         if (dlResponse.type === "ENDSTREAM") {
-          this._mode = QUERY_MODE;
+          this._mode = MODE.Query;
         } else if (dlResponse.type === "ERROR") {
           this.handleError(
             new Error(`value=${dlResponse.value} ${dlResponse.message}`),
@@ -688,7 +693,7 @@ export class DataLinkPacket {
    *
    * @returns start time
    */
-  get packetStart(): moment {
+  get packetStart(): moment.Moment {
     return hpTimeToMoment(parseInt(this.hppacketstart));
   }
 
@@ -697,7 +702,7 @@ export class DataLinkPacket {
    *
    * @returns end time
    */
-  get packetEnd(): moment {
+  get packetEnd(): moment.Moment {
     return hpTimeToMoment(parseInt(this.hppacketend));
   }
 
@@ -706,7 +711,7 @@ export class DataLinkPacket {
    *
    * @returns packet time
    */
-  get packetTime(): moment {
+  get packetTime(): moment.Moment {
     return hpTimeToMoment(parseInt(this.hppackettime));
   }
 
@@ -770,7 +775,7 @@ export class DataLinkPacket {
  * @param   m moment to convert
  * @returns  microseconds since epoch
  */
-export function momentToHPTime(m: moment): number {
+export function momentToHPTime(m: moment.Moment ): number {
   return m.valueOf() * 1000;
 }
 
@@ -780,7 +785,7 @@ export function momentToHPTime(m: moment): number {
  * @param   hptime hptime to convert
  * @returns  moment in utc for the hptime
  */
-export function hpTimeToMoment(hptime: number): moment {
+export function hpTimeToMoment(hptime: number): moment.Moment  {
   return moment.utc(hptime / 1000);
 }
 
@@ -790,8 +795,8 @@ export function hpTimeToMoment(hptime: number): moment {
  * @param   dataString String to encode.
  * @returns             String as bytes in Uint8Array.
  */
-export function stringToUint8Array(dataString?: string): Uint8Array | void {
-  let binaryData = undefined;
+export function stringToUint8Array(dataString?: string): Uint8Array {
+  let binaryData;
 
   if (isNonEmptyStringArg(dataString)) {
     binaryData = new Uint8Array(dataString.length);
@@ -799,6 +804,8 @@ export function stringToUint8Array(dataString?: string): Uint8Array | void {
     for (let i = 0; i < dataString.length; i++) {
       binaryData[i] = dataString.charCodeAt(i);
     }
+  } else {
+    binaryData = new Uint8Array(0);
   }
 
   return binaryData;

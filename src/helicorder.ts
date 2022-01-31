@@ -221,7 +221,7 @@ export class Helicorder {
    * @returns Array of HeliTimeRange, one per line
    */
   calcTimesForLines(
-    startTime: moment$Moment,
+    startTime: moment.Moment,
     secondsPerLine: number,
     numberOfLines: number,
   ): Array<HeliTimeRange> {
@@ -301,8 +301,8 @@ export class HeliTimeRange extends StartEndDuration {
   lineNumber: number;
 
   constructor(
-    startTime: moment$Moment | null,
-    endTime: moment$Moment | null,
+    startTime: moment.Moment | null,
+    endTime: moment.Moment | null,
     duration: number | null = null,
     clockOffset?: number | null = 0,
   ) {

@@ -117,12 +117,12 @@ export function doFloatGetterSetter(
 export function doMomentGetterSetter(
   obj: any,
   field: string,
-  value?: moment$Moment,
-): any | moment$Moment {
+  value?: moment.Moment,
+): any | moment.Moment {
   const hiddenField = `_${field}`;
 
   if (hasNoArgs(value)) {
-    return obj[hiddenField] as moment$Moment;
+    return obj[hiddenField] as moment.Moment;
   } else if (hasArgs(value) && isObject(value) && moment.isMoment(value)) {
     obj[hiddenField] = value;
   } else if (hasArgs(value) && moment.isMoment(checkStringOrDate(value))) {
@@ -215,7 +215,7 @@ export function stringify(value: unknown): string {
   } else if (typeof value === "object") {
     if (value) {
       if (moment.isMoment(value)) {
-        const momentValue = (value as any) as moment$Moment;
+        const momentValue = (value as any) as moment.Moment;
         return momentValue.toISOString();
       } else {
         return value.constructor.name + " " + value.toString();
@@ -237,10 +237,10 @@ export function stringify(value: unknown): string {
  * @param  serverTimeUTC now as reported by remote server
  * @returns offset in seconds to now on local machine
  */
-export function calcClockOffset(serverTimeUTC: moment$Moment): number {
+export function calcClockOffset(serverTimeUTC: moment.Moment): number {
   return moment.utc().diff(serverTimeUTC, "seconds", true);
 }
-export const WAY_FUTURE: moment$Moment = moment.utc("2500-01-01T00:00:00");
+export const WAY_FUTURE: moment.Moment = moment.utc("2500-01-01T00:00:00");
 
 /**
  * Any two of startTime, endTime and duration can be specified, or just duration which
@@ -252,15 +252,15 @@ export const WAY_FUTURE: moment$Moment = moment.utc("2500-01-01T00:00:00");
  * default is zero.
  */
 export class StartEndDuration {
-  _startTime: moment$Moment;
-  _endTime: moment$Moment;
-  _duration: moment$MomentDuration;
-  _clockOffset: moment$MomentDuration;
+  _startTime: moment.Moment;
+  _endTime: moment.Moment;
+  _duration: moment.Duration;
+  _clockOffset: moment.Duration;
 
   constructor(
-    startTime: moment$Moment | string | null,
-    endTime: moment$Moment | string | null,
-    duration: moment$MomentDuration | string | number | null = null,
+    startTime: moment.Moment | string | null,
+    endTime: moment.Moment | string | null,
+    duration: moment.Duration | string | number | null = null,
     clockOffset?: number | null = 0,
   ) {
     if (isDef(duration)) {
@@ -276,7 +276,7 @@ export class StartEndDuration {
       } else if (typeof duration === "number") {
         this._duration = moment.duration(duration, "seconds");
       } else if (moment.isDuration(duration)) {
-        const momentDuration = (duration as any) as moment$MomentDuration;
+        const momentDuration = (duration as any) as moment.Duration;
         this._duration = momentDuration;
       } else {
         throw new Error(
@@ -322,27 +322,27 @@ export class StartEndDuration {
     }
   }
 
-  get start(): moment$Moment {
+  get start(): moment.Moment {
     return this._startTime;
   }
 
-  get startTime(): moment$Moment {
+  get startTime(): moment.Moment {
     return this._startTime;
   }
 
-  get end(): moment$Moment {
+  get end(): moment.Moment {
     return this._endTime;
   }
 
-  get endTime(): moment$Moment {
+  get endTime(): moment.Moment {
     return this._endTime;
   }
 
-  get duration(): moment$MomentDuration {
+  get duration(): moment.Duration {
     return this._duration;
   }
 
-  get clockOffset(): moment$MomentDuration {
+  get clockOffset(): moment.Duration {
     return this._clockOffset;
   }
 
@@ -353,9 +353,9 @@ export class StartEndDuration {
    * @param   other moment to check
    * @returns        true if moment is inside this time range
    */
-  contains(other: moment$Moment | StartEndDuration): boolean {
+  contains(other: moment.Moment | StartEndDuration): boolean {
     if (moment.isMoment(other)) {
-      const momentOther = (other as any) as moment$Moment;
+      const momentOther = (other as any) as moment.Moment;
 
       if (
         this.startTime.isAfter(momentOther) ||
@@ -444,7 +444,7 @@ export class StartEndDuration {
  * @param d 'now', string time, Date, number of milliseconds since epoch, or moment
  * @returns moment created from argument
  */
-export function checkStringOrDate(d: any): moment$Moment {
+export function checkStringOrDate(d: any): moment.Moment {
   if (moment.isMoment(d)) {
     return d;
   } else if (d instanceof Date) {
@@ -494,7 +494,7 @@ export function makePostParam(name: string, val: unknown): string {
  * @param  date moment to convert to string
  * @returns ISO8601 without timezone Z
  */
-export function toIsoWoZ(date: moment$Moment): string {
+export function toIsoWoZ(date: moment.Moment): string {
   let out = date.toISOString();
   return out.substring(0, out.length - 1);
 }

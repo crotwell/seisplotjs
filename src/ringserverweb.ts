@@ -25,7 +25,7 @@ export type RingserverVersion = {
   serverId: string;
 };
 export type StreamsResult = {
-  accessTime: moment$Moment;
+  accessTime: moment.Moment;
   streams: Array<StreamStat>;
 };
 export const IRIS_HOST = "rtserve.iris.washington.edu";
@@ -420,8 +420,8 @@ export class StreamStat {
   key: string;
   startRaw: string;
   endRaw: string;
-  start: moment$Moment;
-  end: moment$Moment;
+  start: moment.Moment;
+  end: moment.Moment;
 
   constructor(key: string, start: string, end: string) {
     this.key = key;
@@ -466,7 +466,7 @@ export class StreamStat {
    * @param accessTime time latency is calculated relative to
    * @returns latency
    */
-  calcLatency(accessTime?: moment$Moment): moment$MomentDuration {
+  calcLatency(accessTime?: moment.Moment): moment.Duration {
     if (!accessTime) accessTime = moment.utc();
     return moment.duration(this.end.diff(accessTime));
   }

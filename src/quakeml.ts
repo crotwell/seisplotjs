@@ -31,7 +31,7 @@ export const UNKNOWN_MAG_TYPE = "unknown";
 export class Quake {
   eventId: string;
   publicId: string;
-  _time: moment$Moment;
+  _time: moment.Moment;
   latitude: number;
   longitude: number;
   depth: number;
@@ -203,11 +203,11 @@ export class Quake {
     return "unknownEventId";
   }
 
-  get time(): moment$Moment {
+  get time(): moment.Moment {
     return this._time;
   }
 
-  set time(value: moment$Moment | string) {
+  set time(value: moment.Moment | string) {
     this._time = moment.utc(value);
   }
 
@@ -241,7 +241,7 @@ export class Quake {
 
 /** Represents a QuakeML Origin. */
 export class Origin {
-  time: moment$Moment;
+  time: moment.Moment;
   latitude: number;
   longitude: number;
   depth: number;
@@ -449,7 +449,7 @@ export class Arrival {
   Represents a QuakeML Pick.
  */
 export class Pick {
-  time: moment$Moment;
+  time: moment.Moment;
   networkCode: string;
   stationCode: string;
   locationCode: string;
@@ -457,7 +457,7 @@ export class Pick {
   publicId: string;
 
   constructor(
-    time: moment$Moment,
+    time: moment.Moment,
     networkCode: string,
     stationCode: string,
     locationCode: string,

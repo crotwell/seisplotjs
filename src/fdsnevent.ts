@@ -70,13 +70,13 @@ export class EventQuery {
   _eventId: string;
 
   /** @private */
-  _startTime: moment$Moment;
+  _startTime: moment.Moment;
 
   /** @private */
-  _endTime: moment$Moment;
+  _endTime: moment.Moment;
 
   /** @private */
-  _updatedAfter: moment$Moment;
+  _updatedAfter: moment.Moment;
 
   /** @private */
   _minMag: number;
@@ -239,7 +239,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment$Moment): moment$Moment | EventQuery {
+  startTime(value?: moment.Moment): moment.Moment | EventQuery {
     return doMomentGetterSetter(this, "startTime", value);
   }
 
@@ -249,7 +249,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment$Moment): moment$Moment | EventQuery {
+  endTime(value?: moment.Moment): moment.Moment | EventQuery {
     return doMomentGetterSetter(this, "endTime", value);
   }
 
@@ -271,7 +271,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: moment$Moment): moment$Moment | EventQuery {
+  updatedAfter(value?: moment.Moment): moment.Moment | EventQuery {
     return doMomentGetterSetter(this, "updatedAfter", value);
   }
 

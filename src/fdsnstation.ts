@@ -93,22 +93,22 @@ export class StationQuery {
   _channelCode: string;
 
   /** @private */
-  _startTime: moment$Moment;
+  _startTime: moment.Moment;
 
   /** @private */
-  _endTime: moment$Moment;
+  _endTime: moment.Moment;
 
   /** @private */
-  _startBefore: moment$Moment;
+  _startBefore: moment.Moment;
 
   /** @private */
-  _endBefore: moment$Moment;
+  _endBefore: moment.Moment;
 
   /** @private */
-  _startAfter: moment$Moment;
+  _startAfter: moment.Moment;
 
   /** @private */
-  _endAfter: moment$Moment;
+  _endAfter: moment.Moment;
 
   /** @private */
   _minLat: number;
@@ -144,7 +144,7 @@ export class StationQuery {
   _format: string;
 
   /** @private */
-  _updatedAfter: moment$Moment;
+  _updatedAfter: moment.Moment;
 
   /** @private */
   _matchTimeseries: boolean;
@@ -279,7 +279,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment$Moment): moment$Moment | StationQuery {
+  startTime(value?: moment.Moment): moment.Moment | StationQuery {
     return doMomentGetterSetter(this, "startTime", value);
   }
 
@@ -289,7 +289,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment$Moment): moment$Moment | StationQuery {
+  endTime(value?: moment.Moment): moment.Moment | StationQuery {
     return doMomentGetterSetter(this, "endTime", value);
   }
 
@@ -311,7 +311,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: moment$Moment): moment$Moment | StationQuery {
+  startBefore(value?: moment.Moment): moment.Moment | StationQuery {
     return doMomentGetterSetter(this, "startBefore", value);
   }
 
@@ -321,7 +321,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: moment$Moment): moment$Moment | StationQuery {
+  endBefore(value?: moment.Moment): moment.Moment | StationQuery {
     return doMomentGetterSetter(this, "endBefore", value);
   }
 
@@ -331,7 +331,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: moment$Moment): moment$Moment | StationQuery {
+  startAfter(value?: moment.Moment): moment.Moment | StationQuery {
     return doMomentGetterSetter(this, "startAfter", value);
   }
 
@@ -341,7 +341,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: moment$Moment): moment$Moment | StationQuery {
+  endAfter(value?: moment.Moment): moment.Moment | StationQuery {
     return doMomentGetterSetter(this, "endAfter", value);
   }
 
@@ -479,7 +479,7 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: moment$Moment): moment$Moment | StationQuery {
+  updatedAfter(value?: moment.Moment): moment.Moment | StationQuery {
     return doMomentGetterSetter(this, "updatedAfter", value);
   }
 

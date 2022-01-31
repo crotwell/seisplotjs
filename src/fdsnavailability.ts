@@ -97,10 +97,10 @@ export class AvailabilityQuery {
   _channelCode: string;
 
   /** @private */
-  _startTime: moment$Moment;
+  _startTime: moment.Moment;
 
   /** @private */
-  _endTime: moment$Moment;
+  _endTime: moment.Moment;
 
   /** @private */
   _quality: string;
@@ -252,7 +252,7 @@ export class AvailabilityQuery {
    * @param value start time
    * @returns the query when setting, the current value when no argument
    */
-  startTime(value?: moment$Moment): moment$Moment | AvailabilityQuery {
+  startTime(value?: moment.Moment): moment.Moment | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._startTime;
     } else if (hasArgs(value)) {
@@ -272,7 +272,7 @@ export class AvailabilityQuery {
    * @param value end time
    * @returns the query when setting, the current value when no argument
    */
-  endTime(value?: moment$Moment): moment$Moment | AvailabilityQuery {
+  endTime(value?: moment.Moment): moment.Moment | AvailabilityQuery {
     if (hasNoArgs(value)) {
       return this._endTime;
     } else if (hasArgs(value)) {
