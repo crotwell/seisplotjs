@@ -7,10 +7,8 @@
 /**
  * Current version of seisplotjs
  */
-import {version} from "../package.json";
-export {version};
+export const version = process.env.npm_package_version;
 import moment from "moment";
-import * as d3 from "d3";
 //reexport
 export {moment};
 import RSVP from "rsvp";
@@ -32,27 +30,31 @@ export function hasArgs(value: any): boolean {
 export function hasNoArgs(value: any): boolean {
   return arguments.length === 0 || typeof value === "undefined";
 }
-export function isStringArg(value: any): boolean {
+export function isStringArg(value: any): value is string {
   return (
     arguments.length !== 0 &&
     (typeof value === "string" || (isObject(value) && value instanceof String))
   );
 }
-export function isNumArg(value: any): boolean {
+export function isNumArg(value: any): value is number {
   return (
     arguments.length !== 0 &&
     (typeof value === "number" || (isObject(value) && value instanceof Number))
   );
 }
-export function isNonEmptyStringArg(value: any): boolean {
+export function isNonEmptyStringArg(value: any): value is string {
   return arguments.length !== 0 && isStringArg(value) && value.length !== 0;
 }
 export function isObject(obj: unknown): boolean {
   return obj !== null && typeof obj === "object";
 }
-export function isDef(v: unknown): boolean {
-  return typeof v !== "undefined" && v !== null;
+//export function isDef(v: unknown): boolean {
+//  return typeof v !== "undefined" && v !== null;
+//}
+export function isDef<Value>(value: Value | undefined | null): value is Value {
+  return value !== null && value !== undefined;
 }
+
 export function doStringGetterSetter(
   obj: any,
   field: string,
@@ -167,10 +169,11 @@ export function log(msg: string): void {
     console.log(`${stringify(msg)}`);
   }
 
-  if (typeof window !== "undefined" && window !== null) {
-    d3.select("div#debug")
-      .append("p")
-      .text(`${stringify(msg)}`);
+  if (typeof document !== "undefined" && document !== null) {
+    let p = document.createElement("p");
+    p.textContent = `${stringify(msg)}`;
+    (document.querySelector("div#debug") as HTMLInputElement)
+      .appendChild(p);
   }
 }
 
@@ -187,10 +190,11 @@ export function warn(msg: string): void {
     console.log(`${stringify(msg)}`);
   }
 
-  if (typeof window !== "undefined" && window !== null) {
-    d3.select("div#debug")
-      .append("p")
-      .text(`${stringify(msg)}`);
+  if (typeof document !== "undefined" && document !== null) {
+    let p = document.createElement("p");
+    p.textContent = `${stringify(msg)}`;
+    (document.querySelector("div#debug") as HTMLInputElement)
+      .appendChild(p);
   }
 }
 
@@ -261,28 +265,28 @@ export class StartEndDuration {
     startTime: moment.Moment | string | null,
     endTime: moment.Moment | string | null,
     duration: moment.Duration | string | number | null = null,
-    clockOffset?: number | null = 0,
+    clockOffset: number | null = 0,
   ) {
+    this._clockOffset = moment.duration(0, "seconds");
+    let momentDuration = null;
     if (isDef(duration)) {
       if (typeof duration === "string") {
         if (duration.charAt(0) === "P") {
-          this._duration = moment.duration(duration);
+          momentDuration = moment.duration(duration);
         } else {
-          this._duration = moment.duration(
+          momentDuration = moment.duration(
             Number.parseFloat(duration),
             "seconds",
           );
         }
       } else if (typeof duration === "number") {
-        this._duration = moment.duration(duration, "seconds");
+        momentDuration = moment.duration(duration, "seconds");
       } else if (moment.isDuration(duration)) {
-        const momentDuration = (duration as any) as moment.Duration;
-        this._duration = momentDuration;
+        momentDuration = momentDuration;
       } else {
         throw new Error(
-          `Unknown type for duration: ${typeof duration} ${
-            duration.constructor.name
-          }  ${JSON.stringify(duration)}`,
+          // @ts-ignore
+          `Unknown type for duration: ${typeof duration} ${duration.constructor.name}  ${JSON.stringify(duration)}`,
         );
       }
     }
@@ -291,13 +295,16 @@ export class StartEndDuration {
       this._startTime = checkStringOrDate(startTime);
       this._endTime = checkStringOrDate(endTime);
       this._duration = moment.duration(this.endTime.diff(this.startTime));
-    } else if (isDef(startTime) && isDef(this._duration)) {
+    } else if (isDef(startTime) && isDef(momentDuration)) {
+      this._duration = momentDuration;
       this._startTime = checkStringOrDate(startTime);
       this._endTime = moment.utc(this.startTime).add(this.duration);
-    } else if (isDef(endTime) && isDef(this._duration)) {
+    } else if (isDef(endTime) && isDef(momentDuration)) {
+      this._duration = momentDuration;
       this._endTime = checkStringOrDate(endTime);
       this._startTime = moment.utc(this.endTime).subtract(this.duration);
-    } else if (isDef(this._duration)) {
+    } else if (isDef(momentDuration)) {
+      this._duration = momentDuration;
       if (!isDef(clockOffset)) {
         this._clockOffset = moment.duration(0, "seconds");
       } else if (typeof clockOffset === "number") {
@@ -370,7 +377,9 @@ export class StartEndDuration {
     } else {
       let otherType = "?";
 
-      if (other && isDef(other.constructor)) {
+      // @ts-ignore
+      if (isDef(other) && isDef(other.constructor)) {
+        // @ts-ignore
         otherType = other.constructor.name;
       }
 
@@ -444,14 +453,14 @@ export class StartEndDuration {
  * @param d 'now', string time, Date, number of milliseconds since epoch, or moment
  * @returns moment created from argument
  */
-export function checkStringOrDate(d: any): moment.Moment {
+export function checkStringOrDate(d: moment.MomentInput): moment.Moment {
   if (moment.isMoment(d)) {
     return d;
   } else if (d instanceof Date) {
     return moment.utc(d);
-  } else if (d instanceof Number || typeof d === "number") {
-    return moment.utc(d);
-  } else if (d instanceof String || typeof d === "string") {
+  } else if (isNumArg(d)) {
+    return moment.unix(d).utc();
+  } else if (isNonEmptyStringArg(d)) {
     let lc = d.toLowerCase();
 
     if (d.length === 0 || lc === "now") {
@@ -526,7 +535,7 @@ export function checkProtocol(): string {
  * @returns           object with fetch configuration parameters
  */
 export function defaultFetchInitObj(mimeType?: string): Record<string, any> {
-  let headers = {};
+  let headers: Record<string, string> = {};
 
   if (isStringArg(mimeType)) {
     headers.Accept = mimeType;
@@ -616,11 +625,10 @@ export function meanOfSlice(
   totalPts: number,
 ): number {
   if (dataSlice.length < 8) {
-    return (
-      dataSlice.reduce(function (acc, val) {
+    // @ts-ignore
+    return dataSlice.reduce(function(acc: number, val: number): number {
         return acc + val;
-      }, 0) / totalPts
-    );
+      }, 0) / totalPts;
   } else {
     let byTwo = Math.floor(dataSlice.length / 2);
     return (
