@@ -12,6 +12,7 @@ import {
   isNumArg,
   checkStringOrDate,
   stringify,
+  rethrowWithMessage,
 } from "./util";
 import {createComplex} from "./oregondsputil";
 import type {Complex} from "./oregondsputil";
@@ -21,6 +22,8 @@ import moment from "moment";
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
 export const COUNT_UNIT_NAME = "count";
 export let FIX_INVALID_STAXML: boolean = true;
+export const INVALID_NUMBER = -99999;
+export const FAKE_START_DATE = moment.utc("1900-01-01Z");
 // StationXML classes
 export class Network {
   networkCode: string;
@@ -28,13 +31,17 @@ export class Network {
   _endDate: moment.Moment | null;
   restrictedStatus: string;
   description: string;
-  totalNumberStations: number;
+  totalNumberStations: number | null;
   stations: Array<Station>;
 
   constructor(networkCode: string) {
     this.networkCode = networkCode;
+    this._startDate = FAKE_START_DATE;
     this._endDate = null;
+    this.description = "";
+    this.restrictedStatus = "";
     this.stations = [];
+    this.totalNumberStations = null;
   }
 
   get sourceId(): string {
@@ -45,7 +52,7 @@ export class Network {
     return this._startDate;
   }
 
-  set startDate(value?: moment.Moment | string) {
+  set startDate(value: moment.Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
 
@@ -53,7 +60,7 @@ export class Network {
     return this._endDate;
   }
 
-  set endDate(value?: moment.Moment | string | null) {
+  set endDate(value: moment.Moment | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -97,9 +104,15 @@ export class Station {
 
   constructor(network: Network, stationCode: string) {
     this.network = network;
+    this.name = "";
+    this.restrictedStatus = "";
+    this._startDate = FAKE_START_DATE;
     this._endDate = null;
     this.stationCode = stationCode;
     this.channels = [];
+    this.latitude = INVALID_NUMBER;
+    this.longitude = INVALID_NUMBER;
+    this.elevation = 0;
   }
 
   get sourceId(): string {
@@ -115,7 +128,7 @@ export class Station {
     return this._startDate;
   }
 
-  set startDate(value?: moment.Moment | string) {
+  set startDate(value: moment.Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
 
@@ -123,7 +136,7 @@ export class Station {
     return this._endDate;
   }
 
-  set endDate(value?: moment.Moment | string | null) {
+  set endDate(value: moment.Moment | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -139,7 +152,7 @@ export class Station {
     return this.network.networkCode;
   }
 
-  codes(sep?: string = "."): string {
+  codes(sep: string = "."): string {
     return this.network.codes() + sep + this.stationCode;
   }
 }
@@ -163,28 +176,42 @@ export class Channel {
   azimuth: number;
   dip: number;
   sampleRate: number;
-  response: Response;
-  sensor: Equipment;
-  preamplifier: Equipment;
-  datalogger: Equipment;
+  response: Response | null;
+  sensor: Equipment | null;
+  preamplifier: Equipment | null;
+  datalogger: Equipment | null;
 
   constructor(station: Station, channelCode: string, locationCode: string) {
     this.station = station;
+    this._startDate = FAKE_START_DATE;
     this._endDate = null;
+    this.response = null;
+    this.sensor = null;
+    this.preamplifier = null;
+    this.datalogger = null;
+    this.restrictedStatus = "";
+    this.azimuth = INVALID_NUMBER;
+    this.dip = INVALID_NUMBER;
+    this.latitude = INVALID_NUMBER;
+    this.longitude = INVALID_NUMBER;
+    this.depth = 0;
+    this.elevation = 0;
+    this.sampleRate = 0;
+
 
     if (channelCode.length !== 3) {
       throw new Error(`Channel code must be 3 chars: ${channelCode}`);
     }
 
     this.channelCode = channelCode;
-    this.locationCode = locationCode;
+    this._locationCode = locationCode;
 
     if (!locationCode) {
       // make sure "null" is encoded as empty string
-      this.locationCode = "";
+      this._locationCode = "";
     }
 
-    if (!(this.locationCode.length === 2 || this.locationCode.length === 0)) {
+    if (!(this._locationCode.length === 2 || this._locationCode.length === 0)) {
       throw new Error(
         `locationCode must be 2 chars, or empty: "${locationCode}"`,
       );
@@ -225,7 +252,7 @@ export class Channel {
     return this._startDate;
   }
 
-  set startDate(value?: moment.Moment | string) {
+  set startDate(value: moment.Moment | string) {
     this._startDate = checkStringOrDate(value);
   }
 
@@ -233,7 +260,7 @@ export class Channel {
     return this._endDate;
   }
 
-  set endDate(value?: moment.Moment | string | null) {
+  set endDate(value: moment.Moment | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -276,7 +303,7 @@ export class Channel {
   }
 
   set instrumentSensitivity(value: InstrumentSensitivity) {
-    if (typeof this.response === "undefined") {
+    if (! isDef(this.response)) {
       this.response = new Response(value);
     } else {
       this.response.instrumentSensitivity = value;
@@ -284,7 +311,7 @@ export class Channel {
   }
 
   get instrumentSensitivity(): InstrumentSensitivity {
-    if (this.response) {
+    if (isDef(this.response) && isDef(this.response.instrumentSensitivity)) {
       return this.response.instrumentSensitivity;
     } else {
       throw new Error("no Response or InstrumentSensitivity defined");
@@ -306,7 +333,7 @@ export class Channel {
    * @param sep separator, defaults to dot '.'
    * @returns net.sta.loc.chan
    */
-  codes(sep?: string = "."): string {
+  codes(sep: string = "."): string {
     return (
       this.station.codes(sep) + sep + this.locationCode + sep + this.channelCode
     );
@@ -338,12 +365,24 @@ export class Equipment {
   vendor: string;
   model: string;
   serialNumber: string;
-  installationDate: moment.Moment;
-  removalDate: moment.Moment;
-  calibrationDateList: Array<moment>;
+  installationDate: moment.Moment | null;
+  removalDate: moment.Moment | null;
+  calibrationDateList: Array<moment.Moment>;
+  constructor() {
+    this.resourceId = "";
+    this.type = "";
+    this.description = "";
+    this.manufacturer = "";
+    this.vendor = "";
+    this.model = "";
+    this.serialNumber = "";
+    this.installationDate = null;
+    this.removalDate = null;
+    this.calibrationDateList = [];
+  }
 }
 export class Response {
-  instrumentSensitivity: InstrumentSensitivity;
+  instrumentSensitivity: InstrumentSensitivity | null;
   stages: Array<Stage>;
 
   constructor(
@@ -352,10 +391,14 @@ export class Response {
   ) {
     if (instrumentSensitivity) {
       this.instrumentSensitivity = instrumentSensitivity;
+    } else {
+      this.instrumentSensitivity = null;
     }
 
     if (stages) {
       this.stages = stages;
+    } else {
+      this.stages = [];
     }
   }
 }
@@ -383,6 +426,8 @@ export class AbstractFilterType {
   constructor(inputUnits: string, outputUnits: string) {
     this.inputUnits = inputUnits;
     this.outputUnits = outputUnits;
+    this.description = "";
+    this.name = "";
   }
 }
 export class PolesZeros extends AbstractFilterType {
@@ -394,6 +439,11 @@ export class PolesZeros extends AbstractFilterType {
 
   constructor(inputUnits: string, outputUnits: string) {
     super(inputUnits, outputUnits);
+    this.pzTransferFunctionType = "";
+    this.normalizationFactor = 1;
+    this.normalizationFrequency = 0;
+    this.zeros = new Array(0);
+    this.poles = new Array(0);
   }
 }
 export class FIR extends AbstractFilterType {
@@ -402,6 +452,8 @@ export class FIR extends AbstractFilterType {
 
   constructor(inputUnits: string, outputUnits: string) {
     super(inputUnits, outputUnits);
+    this.symmetry = "none";
+    this.numerator = [ 1 ];
   }
 }
 export class CoefficientsFilter extends AbstractFilterType {
@@ -411,6 +463,9 @@ export class CoefficientsFilter extends AbstractFilterType {
 
   constructor(inputUnits: string, outputUnits: string) {
     super(inputUnits, outputUnits);
+    this.cfTransferFunction = "";
+    this.numerator = [ 1 ];
+    this.denominator = new Array(0);
   }
 }
 export class Decimation {
@@ -419,10 +474,18 @@ export class Decimation {
   offset: number | null | undefined;
   delay: number | null | undefined;
   correction: number | null | undefined;
+  constructor(inputSampleRate: number, factor: number) {
+    this.inputSampleRate = inputSampleRate;
+    this.factor = factor;
+  }
 }
 export class Gain {
   value: number;
   frequency: number;
+  constructor(value: number, frequency: number) {
+    this.value = value;
+    this.frequency = frequency;
+  }
 }
 
 /**
@@ -458,14 +521,10 @@ export function convertToNetwork(xml: Element): Network {
   let netCode = "";
 
   try {
-    netCode = _grabAttribute(xml, "code");
-
-    if (!isNonEmptyStringArg(netCode)) {
-      throw new Error("network code missing in network!");
-    }
+    netCode = _requireAttribute(xml, "code");
 
     let out = new Network(netCode);
-    out.startDate = _grabAttribute(xml, "startDate");
+    out.startDate = _requireAttribute(xml, "startDate");
 
     const rs = _grabAttribute(xml, "restrictedStatus");
 
@@ -486,9 +545,7 @@ export function convertToNetwork(xml: Element): Network {
     let totSta = xml.getElementsByTagNameNS(STAML_NS, "TotalNumberStations");
 
     if (totSta && totSta.length > 0) {
-      out.totalNumberStations = parseInt(
-        _grabFirstElText(xml, "TotalNumberStations"),
-      );
+      out.totalNumberStations = _grabFirstElInt(xml, "TotalNumberStations");
     }
 
     let staArray = xml.getElementsByTagNameNS(STAML_NS, "Station");
@@ -501,12 +558,7 @@ export function convertToNetwork(xml: Element): Network {
     out.stations = stations;
     return out;
   } catch (err) {
-    if (typeof err === "string") {
-      throw `${netCode}.${err}`;
-    } else {
-      err.message = `${netCode}.${err.message}`;
-      throw err;
-    }
+    rethrowWithMessage(err, netCode);
   }
 }
 
@@ -521,14 +573,14 @@ export function convertToStation(network: Network, xml: Element): Station {
   let staCode = ""; // so can use in rethrow exception
 
   try {
-    staCode = _grabAttribute(xml, "code");
+    staCode = _requireAttribute(xml, "code");
 
     if (!isNonEmptyStringArg(staCode)) {
       throw new Error("station code missing in station!");
     }
 
     let out = new Station(network, staCode);
-    out.startDate = _grabAttribute(xml, "startDate");
+    out.startDate = _requireAttribute(xml, "startDate");
 
     const rs = _grabAttribute(xml, "restrictedStatus");
 
@@ -576,12 +628,7 @@ export function convertToStation(network: Network, xml: Element): Station {
     out.channels = channels;
     return out;
   } catch (err) {
-    if (typeof err === "string") {
-      throw `${staCode}.${err}`;
-    } else {
-      err.message = `${staCode}.${err.message}`;
-      throw err;
-    }
+    rethrowWithMessage(err, staCode);
   }
 }
 
@@ -593,7 +640,7 @@ export function convertToStation(network: Network, xml: Element): Station {
  * @returns Channel instance
  */
 export function convertToChannel(station: Station, xml: Element): Channel {
-  let locCode = ""; // so can use in rethrow exception
+  let locCode: string | null = ""; // so can use in rethrow exception
 
   let chanCode = "";
 
@@ -604,14 +651,10 @@ export function convertToChannel(station: Station, xml: Element): Channel {
       locCode = "";
     }
 
-    chanCode = _grabAttribute(xml, "code");
-
-    if (!isNonEmptyStringArg(chanCode)) {
-      throw new Error("channel code missing in channel!");
-    }
+    let chanCode = _requireAttribute(xml, "code");
 
     let out = new Channel(station, chanCode, locCode);
-    out.startDate = _grabAttribute(xml, "startDate");
+    out.startDate = checkStringOrDate(_requireAttribute(xml, "startDate"));
 
     const rs = _grabAttribute(xml, "restrictedStatus");
 
@@ -707,12 +750,7 @@ export function convertToChannel(station: Station, xml: Element): Channel {
 
     return out;
   } catch (err) {
-    if (typeof err === "string") {
-      throw `${locCode}.${chanCode} ${err}`;
-    } else {
-      err.message = `${locCode}.${chanCode} ${err.message}`;
-      throw err;
-    }
+    rethrowWithMessage(err, `${locCode}.${chanCode}`);
   }
 }
 export function convertToEquipment(xml: Element): Equipment {
@@ -899,24 +937,24 @@ export function convertToStage(stageXml: Element): Stage {
 
     // here we assume there must be a filter, and so must have units
     if (subEl.localName === "PolesZeros") {
-      filter = new PolesZeros(inputUnits, outputUnits);
+      const pzFilter = new PolesZeros(inputUnits, outputUnits);
 
       const pzt = _grabFirstElText(stageXml, "PzTransferFunctionType");
 
       if (isNonEmptyStringArg(pzt)) {
-        filter.pzTransferFunctionType = pzt;
+        pzFilter.pzTransferFunctionType = pzt;
       }
 
       const nfa = _grabFirstElFloat(stageXml, "NormalizationFactor");
 
       if (isNumArg(nfa)) {
-        filter.normalizationFactor = nfa;
+        pzFilter.normalizationFactor = nfa;
       }
 
       const nfr = _grabFirstElFloat(stageXml, "NormalizationFrequency");
 
       if (isNumArg(nfr)) {
-        filter.normalizationFrequency = nfr;
+        pzFilter.normalizationFrequency = nfr;
       }
 
       let zeros = Array.from(
@@ -929,45 +967,48 @@ export function convertToStage(stageXml: Element): Stage {
       ).map(function (poleEl) {
         return extractComplex(poleEl);
       });
-      filter.zeros = zeros;
-      filter.poles = poles;
+      pzFilter.zeros = zeros;
+      pzFilter.poles = poles;
+      filter = pzFilter;
     } else if (subEl.localName === "Coefficients") {
       let coeffXml = subEl;
-      filter = new CoefficientsFilter(inputUnits, outputUnits);
+      const cFilter = new CoefficientsFilter(inputUnits, outputUnits);
 
       const cft = _grabFirstElText(coeffXml, "CfTransferFunctionType");
 
       if (isNonEmptyStringArg(cft)) {
-        filter.cfTransferFunction = cft;
+        cFilter.cfTransferFunction = cft;
       }
 
-      filter.numerator = Array.from(
+      cFilter.numerator = Array.from(
         coeffXml.getElementsByTagNameNS(STAML_NS, "Numerator"),
       ).map(function (numerEl) {
-        return parseFloat(numerEl.textContent);
-      });
-      filter.denominator = Array.from(
+        return isNonEmptyStringArg(numerEl.textContent) ? parseFloat(numerEl.textContent) : null;
+      }).filter( isDef );
+      cFilter.denominator = Array.from(
         coeffXml.getElementsByTagNameNS(STAML_NS, "Denominator"),
       ).map(function (denomEl) {
-        return parseFloat(denomEl.textContent);
-      });
+        return isNonEmptyStringArg(denomEl.textContent) ? parseFloat(denomEl.textContent) : null;
+      }).filter( isDef );
+      filter = cFilter;
     } else if (subEl.localName === "ResponseList") {
       throw new Error("ResponseList not supported: ");
     } else if (subEl.localName === "FIR") {
       let firXml = subEl;
-      filter = new FIR(inputUnits, outputUnits);
+      const firFilter = new FIR(inputUnits, outputUnits);
 
       const s = _grabFirstElText(firXml, "Symmetry");
 
       if (isNonEmptyStringArg(s)) {
-        filter.symmetry = s;
+        firFilter.symmetry = s;
       }
 
-      filter.numerator = Array.from(
+      firFilter.numerator = Array.from(
         firXml.getElementsByTagNameNS(STAML_NS, "NumeratorCoefficient"),
       ).map(function (numerEl) {
-        return parseFloat(numerEl.textContent);
-      });
+        return isNonEmptyStringArg(numerEl.textContent) ? parseFloat(numerEl.textContent) : null;
+      }).filter( isDef );
+      filter = firFilter;
     } else if (subEl.localName === "Polynomial") {
       throw new Error("Polynomial not supported: ");
     } else if (subEl.localName === "StageGain") {
@@ -1026,18 +1067,15 @@ export function convertToStage(stageXml: Element): Stage {
  * @returns Decimation instance
  */
 export function convertToDecimation(decXml: Element): Decimation {
-  let out = new Decimation();
+  let out: Decimation;
 
   const insr = _grabFirstElFloat(decXml, "InputSampleRate");
-
-  if (isNumArg(insr)) {
-    out.inputSampleRate = insr;
-  }
-
   const fac = _grabFirstElInt(decXml, "Factor");
 
-  if (isNumArg(fac)) {
-    out.factor = fac;
+  if (isNumArg(insr) && isNumArg(fac)) {
+    out = new Decimation(insr, fac);
+  } else {
+    throw new Error(`Decimation without InputSampleRate and Factor: ${insr} ${fac}`);
   }
 
   out.offset = _grabFirstElInt(decXml, "Offset");
@@ -1053,20 +1091,16 @@ export function convertToDecimation(decXml: Element): Decimation {
  * @returns Gain instance
  */
 export function convertToGain(gainXml: Element): Gain {
-  let out = new Gain();
+  let out: Gain;
 
   const v = _grabFirstElFloat(gainXml, "Value");
-
-  if (isNumArg(v)) {
-    out.value = v;
-  }
-
   const f = _grabFirstElFloat(gainXml, "Frequency");
 
-  if (isNumArg(f)) {
-    out.frequency = f;
+  if (isNumArg(v) && isNumArg(f)) {
+    out = new Gain(v,f);
+  } else {
+    throw new Error(`Gain does not have value and frequency: ${v} ${f}`);
   }
-
   return out;
 }
 
@@ -1161,10 +1195,10 @@ export function* findChannels(
 const _grabFirstEl = function (
   xml: Element | null | void,
   tagName: string,
-): Element | void {
-  let out = undefined;
+): Element | null {
+  let out = null;
 
-  if (isObject(xml)) {
+  if (xml instanceof Element) {
     let el = xml.getElementsByTagName(tagName);
 
     if (isObject(el) && el.length > 0) {
@@ -1182,12 +1216,12 @@ const _grabFirstEl = function (
 const _grabFirstElText = function _grabFirstElText(
   xml: Element | null | void,
   tagName: string,
-): string | void {
-  let out = undefined;
+): string | null {
+  let out = null;
 
   let el = _grabFirstEl(xml, tagName);
 
-  if (isObject(el)) {
+  if (el instanceof Element) {
     out = el.textContent;
   }
 
@@ -1197,8 +1231,8 @@ const _grabFirstElText = function _grabFirstElText(
 const _grabFirstElFloat = function _grabFirstElFloat(
   xml: Element | null | void,
   tagName: string,
-): number | void {
-  let out = undefined;
+): number | null {
+  let out = null;
 
   let elText = _grabFirstElText(xml, tagName);
 
@@ -1212,8 +1246,8 @@ const _grabFirstElFloat = function _grabFirstElFloat(
 const _grabFirstElInt = function _grabFirstElInt(
   xml: Element | null | void,
   tagName: string,
-): number | void {
-  let out = undefined;
+): number | null {
+  let out = null;
 
   let elText = _grabFirstElText(xml, tagName);
 
@@ -1227,10 +1261,10 @@ const _grabFirstElInt = function _grabFirstElInt(
 const _grabAttribute = function _grabAttribute(
   xml: Element | null | void,
   tagName: string,
-): string | void {
-  let out = undefined;
+): string | null {
+  let out = null;
 
-  if (isObject(xml)) {
+  if (xml instanceof Element) {
     let a = xml.getAttribute(tagName);
 
     if (isStringArg(a)) {
@@ -1241,14 +1275,25 @@ const _grabAttribute = function _grabAttribute(
   return out;
 };
 
+const _requireAttribute = function _grabAttribute(
+  xml: Element | null | void,
+  tagName: string,
+): string {
+  let out = _grabAttribute(xml, tagName);
+  if (typeof out !== "string") {
+    throw new Error(`Attribute ${tagName} not found.`);
+  }
+  return out;
+};
+
 const _grabAttributeNS = function (
   xml: Element | null | void,
   namespace: string,
   tagName: string,
-): string | void {
-  let out = undefined;
+): string | null {
+  let out = null;
 
-  if (isObject(xml)) {
+  if (xml instanceof Element) {
     let a = xml.getAttributeNS(namespace, tagName);
 
     if (isStringArg(a)) {

@@ -358,6 +358,9 @@ export function convertToSacPoleZero(response: Response): SacPoleZero {
   } else {
     throw new Error("can't find PolesZeros");
   }
+  if (response.instrumentSensitivity === null) {
+    throw new Error("response.instrumentSensitivity missing");
+  }
 
   let unit = response.instrumentSensitivity.inputUnits;
 

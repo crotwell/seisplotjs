@@ -5,6 +5,7 @@
  */
 import {
   doStringGetterSetter,
+  doBoolGetterSetter,
   doIntGetterSetter,
   doFloatGetterSetter,
   checkProtocol,
@@ -104,31 +105,31 @@ export class TraveltimeQuery {
   _port: number;
 
   /** @private */
-  _nodata: number;
+  _nodata: number | null;
 
   /** @private */
   _evdepth: number;
 
   /** @private */
-  _distdeg: number;
+  _distdeg: number | null;
 
   /** @private */
-  _model: string;
+  _model: string | null;
 
   /** @private */
-  _phases: string;
+  _phases: string | null;
 
   /** @private */
-  _stalat: number;
+  _stalat: number | null;
 
   /** @private */
-  _stalon: number;
+  _stalon: number | null;
 
   /** @private */
-  _evlat: number;
+  _evlat: number | null;
 
   /** @private */
-  _evlon: number;
+  _evlon: number | null;
 
   /** @private */
   _format: string;
@@ -142,6 +143,16 @@ export class TraveltimeQuery {
   constructor(host: string | null | undefined) {
     this._specVersion = "1";
     this._protocol = checkProtocol();
+
+    this._stalat = null;
+    this._stalon = null;
+    this._evlat = null;
+    this._evlon = null;
+    this._evdepth = 0;
+    this._distdeg = null;
+    this._model = null;
+    this._phases = null;
+    this._nodata = null;
 
     if (!isNonEmptyStringArg(host)) {
       this._host = IRIS_HOST;
@@ -157,11 +168,11 @@ export class TraveltimeQuery {
   }
 
   protocol(value?: string): string | TraveltimeQuery {
-    return hasArgs(value) ? ((this._protocol = value), this) : this._protocol;
+    return doStringGetterSetter(this, "protocol", value);
   }
 
   host(value?: string): string | TraveltimeQuery {
-    return hasArgs(value) ? ((this._host = value), this) : this._host;
+    return doStringGetterSetter(this, "host", value);
   }
 
   /**
@@ -247,7 +258,7 @@ export class TraveltimeQuery {
   }
 
   noheader(value?: boolean): boolean | TraveltimeQuery {
-    return hasArgs(value) ? ((this._noheader = value), this) : this._noheader;
+    return doBoolGetterSetter(this, "noheader", value);
   }
 
   /**
@@ -274,7 +285,7 @@ export class TraveltimeQuery {
           // no data, create empty
           return (
             FAKE_EMPTY_TEXT_MODEL +
-            (isDef(this._model) ? this.model() : "") +
+            (isDef(mythis._model) ? mythis.model() : "") +
             FAKE_EMPTY_TEXT_HEADERS
           );
         } else {
@@ -343,7 +354,7 @@ export class TraveltimeQuery {
       });
   }
 
-  queryWadl(): Promise<Element> {
+  queryWadl(): Promise<Document> {
     return fetch(this.formWadlURL()).then(response => {
       if (response.ok) {
         return response
@@ -400,7 +411,7 @@ export class TraveltimeQuery {
       url = url + "noheader=true&";
     }
 
-    if (isDef(this._evdepth)) {
+    if (isDef(this._evdepth) && this._evdepth !== 0) {
       url = url + makeParam("evdepth", this.evdepth());
     }
 

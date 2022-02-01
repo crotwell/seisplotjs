@@ -45,7 +45,7 @@ export function isNumArg(value: any): value is number {
 export function isNonEmptyStringArg(value: any): value is string {
   return arguments.length !== 0 && isStringArg(value) && value.length !== 0;
 }
-export function isObject(obj: unknown): boolean {
+export function isObject(obj: unknown): obj is object {
   return obj !== null && typeof obj === "object";
 }
 //export function isDef(v: unknown): boolean {
@@ -53,6 +53,19 @@ export function isObject(obj: unknown): boolean {
 //}
 export function isDef<Value>(value: Value | undefined | null): value is Value {
   return value !== null && value !== undefined;
+}
+
+export function rethrowWithMessage(err: any, message: string): never {
+  if ( ! isDef(err)) {
+    throw new Error(`${message}`);
+  } else if (typeof err === "string") {
+    throw new Error(`${message} ${err}`);
+  } else {
+    if (err instanceof Error) {
+      err.message = `${message} ${err.message}`;
+    }
+    throw err;
+  }
 }
 
 export function doStringGetterSetter(
@@ -69,6 +82,25 @@ export function doStringGetterSetter(
   } else {
     throw new Error(
       `${field} value argument is optional or number, but was type ${typeof value}, '${value}' `,
+    );
+  }
+
+  return obj;
+}
+export function doBoolGetterSetter(
+  obj: any,
+  field: string,
+  value?: boolean,
+): boolean | any {
+  const hiddenField = `_${field}`;
+
+  if (hasNoArgs(value)) {
+    return obj[hiddenField];
+  } else if (value === true || value === false) {
+    obj[hiddenField] = value;
+  } else {
+    throw new Error(
+      `${field} value argument is optional or boolean, but was type ${typeof value}, '${value}' `,
     );
   }
 
