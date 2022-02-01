@@ -14,6 +14,7 @@ export type MarginType = {
   right: number;
   bottom: number;
   left: number;
+  toString?: () => string;
 };
 
 /** Constant for drawing seismogram using svg. */
@@ -74,9 +75,9 @@ export class SeismographConfig {
   markerTextOffset: number;
   markerTextAngle: number;
   markerFlagpoleBase: string;
-  minHeight: null | number;
+  minHeight: number;
   maxHeight: null | number;
-  minWidth: null | number;
+  minWidth: number;
   maxWidth: null | number;
   margin: MarginType;
   segmentDrawCompressedCutoff: number; //below this draw all points, above draw minmax
@@ -111,13 +112,17 @@ export class SeismographConfig {
     this.xScaleFormat = multiFormatHour;
     this.yScaleFormat = formatCountOrAmp;
     this._title = [DEFAULT_TITLE];
+    this._titleHandlebarsCompiled = null;
     this.showTitle = true;
-    this.xLabel = "Time";
+    this._xLabel = "Time";
     this.xLabelOrientation = "horizontal";
     this.xSublabel = "";
-    this.yLabel = "Amplitude";
-    this.yLabelRight = "";
+    this._yLabel = "Amplitude";
+    this._yLabelRight = "";
+    this._xLabelHandlebarsCompiled = null;
     this.yLabelOrientation = "vertical";
+    this._yLabelHandlebarsCompiled = null;
+    this._yLabelRightHandlebarsCompiled = null;
     this.ySublabel = "";
     this.ySublabelTrans = 15;
     this.ySublabelIsUnits = true;
@@ -135,6 +140,9 @@ export class SeismographConfig {
     this.markerFlagpoleBase = "bottom"; // bottom or center
 
     this.minHeight = 0;
+    this.maxHeight = null;
+    this.minWidth = 0;
+    this.maxWidth = null;
     this.margin = {
       top: 25,
       right: 20,
@@ -211,7 +219,7 @@ export class SeismographConfig {
     return this._fixedTimeScale;
   }
 
-  set fixedTimeScale(ts: StartEndDuration) {
+  set fixedTimeScale(ts: null | StartEndDuration) {
     this._fixedTimeScale = ts;
     this._linkedTimeScale = null;
   }
@@ -220,7 +228,7 @@ export class SeismographConfig {
     return this._linkedTimeScale;
   }
 
-  set linkedTimeScale(ts: LinkedTimeScale) {
+  set linkedTimeScale(ts: null | LinkedTimeScale) {
     this._linkedTimeScale = ts;
     this._fixedTimeScale = null;
   }
@@ -484,15 +492,16 @@ export class SeismographConfig {
   clone(): SeismographConfig {
     let out = new SeismographConfig();
     Object.getOwnPropertyNames(this).forEach(name => {
-      // $FlowFixMe
+      // @ts-ignore
       if (moment.isMoment(this[name])) {
-        // $FlowFixMe
-        out[name] = moment.utc(this[name]); // $FlowFixMe
+        // @ts-ignore
+        out[name] = moment.utc(this[name]);
+        // @ts-ignore
       } else if (Array.isArray(this[name])) {
-        // $FlowFixMe
+        // @ts-ignore
         out[name] = this[name].slice();
       } else {
-        // $FlowFixMe
+        // @ts-ignore
         out[name] = this[name];
       }
 
@@ -522,7 +531,7 @@ export class SeismographConfig {
   toString(): string {
     let outS = "";
     Object.getOwnPropertyNames(this).forEach(name => {
-      // $FlowFixMe
+      // @ts-ignore
       outS += `  seisConfig.${name} = ${JSON.stringify(this[name])}\n`;
     });
     return outS;
@@ -578,7 +587,7 @@ export class LinkedAmpScale {
    */
   _graphSet: Set<AmplitudeScalable>;
 
-  constructor(graphList: Array<AmplitudeScalable> | null | undefined) {
+  constructor(graphList?: Array<AmplitudeScalable>) {
     const glist = graphList ? graphList : []; // in case null
 
     this._graphSet = new Set(glist);
@@ -636,7 +645,7 @@ export class LinkedTimeScale {
   _zoomedStartOffset: null | moment.Duration;
 
   constructor(
-    graphList: Array<TimeScalable> | null | undefined,
+    graphList?: Array<TimeScalable>,
     originalDuration?: moment.Duration,
     originalStartOffset?: moment.Duration,
   ) {
@@ -932,6 +941,7 @@ export function createEditor(
       .attr("name", `color${index + 1}`)
       .property("value", color)
       .on("change", function () {
+        // @ts-ignore
         let val = d3.select(this).property("value");
         config.lineColors[index] = val;
         colorspan.style("color", val);
@@ -998,10 +1008,10 @@ function createBooleanOptionByKey(
     .append("input")
     .attr("type", "checkbox")
     .attr("id", key)
-    .attr("name", key) //$FlowExpectedError
+    .attr("name", key) // @ts-ignore
     .property("checked", config[key])
     .on("change", function () {
-      //$FlowExpectedError
+      // @ts-ignore
       config[key] = d3.select(this).property("checked");
       onChange();
     });
@@ -1026,7 +1036,7 @@ function createTextOption(
     .attr("name", key) //$FlowExpectedError
     .property("value", config[key])
     .on("change", function () {
-      //$FlowExpectedError
+      // @ts-ignore
       config[key] = d3.select(this).property("value");
       onChange();
     });
