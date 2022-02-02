@@ -124,9 +124,6 @@ export class FFTResult {
   /** number of points in the original timeseries, may be less than fft size. */
   origLength: number;
   packedFreq: Float32Array;
-  complex: Array<Complex>;
-  amp: Float32Array;
-  phase: Float32Array;
 
   /** number of points in the fft, usually power of 2 larger than origLength. */
   numPoints: number;
@@ -135,17 +132,19 @@ export class FFTResult {
   sampleRate: number;
 
   /** optional units of the original data for display purposes. */
-  inputUnits: string;
+  inputUnits: string|undefined;
 
   /**
    * optional reference to SeismogramDisplayData when calculated from a seismogram.
    *  Useful for creating title, etc.
    */
-  seismogramDisplayData: SeismogramDisplayData;
+  seismogramDisplayData: SeismogramDisplayData|undefined;
 
   constructor(origLength: number, sampleRate: number) {
     this.origLength = origLength;
     this.sampleRate = sampleRate;
+    this.packedFreq = new Float32Array(0);
+    this.numPoints = 0;
   }
 
   /**
@@ -180,11 +179,17 @@ export class FFTResult {
     origLength: number,
     sampleRate: number,
   ): FFTResult {
-    let fftResult = new FFTResult(origLength, sampleRate);
-    fftResult.complex = complexArray;
-    fftResult.recalcFromComplex();
-    fftResult.recalcFromPackedFreq();
-    return fftResult;
+    const N = complexArray.length;
+    let modFreq = new Float32Array(N).fill(0);
+    modFreq[0] = complexArray[0].real();
+
+    for (let i = 1; i < complexArray.length - 1; i++) {
+      modFreq[i] = complexArray[i].real();
+      modFreq[N - i] = complexArray[i].imag();
+    }
+
+    modFreq[N / 2] = complexArray[N - 1].real();
+    return FFTResult.createFromPackedFreq(modFreq, origLength, sampleRate);
   }
 
   /**
@@ -202,18 +207,20 @@ export class FFTResult {
     origLength: number,
     sampleRate: number,
   ): FFTResult {
-    let fftResult = new FFTResult(origLength, sampleRate);
 
     if (amp.length !== phase.length) {
       throw new Error(
         `amp and phase must be same length: ${amp.length} ${phase.length}`,
       );
     }
-
-    fftResult.amp = amp;
-    fftResult.phase = phase;
-    fftResult.recalcFromAmpPhase();
-    return fftResult;
+    let modComplex = new Array(amp.length);
+    for (let i = 0; i < amp.length; i++) {
+      modComplex[i] = OregonDSP.filter.iir.Complex.Companion.ComplexFromPolar(
+        amp[i],
+        phase[i],
+      );
+    }
+    return FFTResult.createFromComplex(modComplex, origLength, sampleRate);
   }
 
   /**
@@ -231,65 +238,41 @@ export class FFTResult {
     }
   }
 
-  recalcFromPackedFreq(): void {
-    this.complex = [];
-    this.amp = new Float32Array(this.packedFreq.length / 2 + 1);
-    this.phase = new Float32Array(this.packedFreq.length / 2 + 1);
-    this.numPoints = this.packedFreq.length;
+  asComplex(): Array<Complex> {
+    const complexArray = [];
+    const L = this.packedFreq.length;
+    complexArray.push(createComplex(this.packedFreq[0], 0));
+    for (let i = 1; i < this.packedFreq.length / 2; i++) {
+      const c = createComplex(this.packedFreq[i], this.packedFreq[L - i]);
+      complexArray.push(c);
+    }
+    complexArray.push(createComplex(this.packedFreq[L / 2], 0));
+    return complexArray;
+  }
+
+  asAmpPhase(): [Float32Array, Float32Array] {
+    const amp = new Float32Array(this.packedFreq.length/2);
+    const phase = new Float32Array(this.packedFreq.length/2);
+
     let c = createComplex(this.packedFreq[0], 0);
-    this.complex.push(c);
-    this.amp[0] = c.abs();
-    this.phase[0] = c.angle();
+    amp[0] = c.abs();
+    phase[0] = c.angle();
     const L = this.packedFreq.length;
 
     for (let i = 1; i < this.packedFreq.length / 2; i++) {
       c = createComplex(this.packedFreq[i], this.packedFreq[L - i]);
-      this.complex.push(c);
-      this.amp[i] = c.abs();
-      this.phase[i] = c.angle();
+      amp[i] = c.abs();
+      phase[i] = c.angle();
     }
 
     c = createComplex(this.packedFreq[L / 2], 0);
-    this.complex.push(c);
-    this.amp[this.packedFreq.length / 2] = c.abs();
-    this.phase[this.packedFreq.length / 2] = c.angle();
+    amp[this.packedFreq.length / 2] = c.abs();
+    phase[this.packedFreq.length / 2] = c.angle();
+    return [ amp, phase ];
   }
 
-  /**
-   * recalculate the packedFreq array after modifications
-   * to the complex array.
-   */
-  recalcFromComplex(): void {
-    const N = this.complex.length;
-    let modFreq = new Float32Array(N).fill(0);
-    modFreq[0] = this.complex[0].real();
-
-    for (let i = 1; i < this.complex.length - 1; i++) {
-      modFreq[i] = this.complex[i].real();
-      modFreq[N - i] = this.complex[i].imag();
-    }
-
-    modFreq[N / 2] = this.complex[N - 1].real();
-    this.packedFreq = modFreq;
+  recalcFromPackedFreq(): void {
     this.numPoints = this.packedFreq.length;
-  }
-
-  /**
-   * recalculate the packedFreq array after modifications
-   * to the amp and/or phase arrays.
-   */
-  recalcFromAmpPhase() {
-    let modComplex = new Array(this.amp.length);
-
-    for (let i = 0; i < this.amp.length; i++) {
-      modComplex[i] = OregonDSP.filter.iir.Complex.Companion.ComplexFromPolar(
-        this.amp[i],
-        this.phase[i],
-      );
-    }
-
-    this.complex = modComplex;
-    this.recalcFromComplex();
   }
 
   /**
@@ -324,11 +307,13 @@ export class FFTResult {
   }
 
   amplitudes(): Float32Array {
-    return this.amp;
+    let [ amp ,] = this.asAmpPhase();
+    return amp;
   }
 
   phases(): Float32Array {
-    return this.phase;
+    let [ , phase] = this.asAmpPhase();
+    return phase;
   }
 
   clone(): FFTResult {
