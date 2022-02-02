@@ -8,6 +8,7 @@ import {SeismogramDisplayData, Seismogram} from "./seismogram";
 import {StartEndDuration, isDef} from "./util";
 import moment from "moment";
 import * as d3 from "d3";
+import type {AxisDomain} from "d3-axis";
 import Handlebars from "handlebars";
 export type MarginType = {
   top: number;
@@ -40,7 +41,7 @@ export class SeismographConfig {
   drawingType: string; // canvas or svg
 
   xScaleFormat: (date: Date) => string;
-  yScaleFormat: string | ((value: number) => string);
+  yScaleFormat: (value: number) => string;
   showTitle: boolean;
 
   /** @private */
@@ -751,6 +752,15 @@ export class LinkedTimeScale {
       });
     });
   }
+}
+export function numberFormatWrapper( formater: (arg0: number) => string): ((domainValue: AxisDomain) => string) {
+  return function(domainValue: AxisDomain) {
+    if (typeof domainValue === "number" ) {
+      return formater(domainValue);
+    } else {
+      throw new Error("Can only format number, "+domainValue);
+    }
+  };
 }
 export const formatCount: (arg0: number) => string = d3.format("~s");
 export const formatExp: (arg0: number) => string = d3.format(".2e");

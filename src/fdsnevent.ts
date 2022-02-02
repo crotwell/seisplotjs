@@ -15,6 +15,7 @@ import {
 // special due to flow
 import {
   doStringGetterSetter,
+  doBoolGetterSetter,
   doIntGetterSetter,
   doFloatGetterSetter,
   doMomentGetterSetter,
@@ -64,85 +65,85 @@ export class EventQuery {
   _port: number;
 
   /** @private */
-  _nodata: number;
+  _nodata: number|undefined;
 
   /** @private */
-  _eventId: string;
+  _eventId: string|undefined;
 
   /** @private */
-  _startTime: moment.Moment;
+  _startTime: moment.Moment|undefined;
 
   /** @private */
-  _endTime: moment.Moment;
+  _endTime: moment.Moment|undefined;
 
   /** @private */
-  _updatedAfter: moment.Moment;
+  _updatedAfter: moment.Moment|undefined;
 
   /** @private */
-  _minMag: number;
+  _minMag: number|undefined;
 
   /** @private */
-  _maxMag: number;
+  _maxMag: number|undefined;
 
   /** @private */
-  _magnitudeType: string;
+  _magnitudeType: string|undefined;
 
   /** @private */
-  _minDepth: number;
+  _minDepth: number|undefined;
 
   /** @private */
-  _maxDepth: number;
+  _maxDepth: number|undefined;
 
   /** @private */
-  _minLat: number;
+  _minLat: number|undefined;
 
   /** @private */
-  _maxLat: number;
+  _maxLat: number|undefined;
 
   /** @private */
-  _minLon: number;
+  _minLon: number|undefined;
 
   /** @private */
-  _maxLon: number;
+  _maxLon: number|undefined;
 
   /** @private */
-  _latitude: number;
+  _latitude: number|undefined;
 
   /** @private */
-  _longitude: number;
+  _longitude: number|undefined;
 
   /** @private */
-  _minRadius: number;
+  _minRadius: number|undefined;
 
   /** @private */
-  _maxRadius: number;
+  _maxRadius: number|undefined;
 
   /** @private */
-  _includeArrivals: boolean;
+  _includeArrivals: boolean|undefined;
 
   /** @private */
-  _includeAllOrigins: boolean;
+  _includeAllOrigins: boolean|undefined;
 
   /** @private */
-  _includeAllMagnitudes: boolean;
+  _includeAllMagnitudes: boolean|undefined;
 
   /** @private */
-  _limit: number;
+  _limit: number|undefined;
 
   /** @private */
-  _offset: number;
+  _offset: number|undefined;
 
   /** @private */
-  _orderBy: string;
+  _orderBy: string|undefined;
 
   /** @private */
-  _contributor: string;
+  _contributor: string|undefined;
 
   /** @private */
-  _catalog: string;
+  _catalog: string|undefined;
 
   /** @private */
-  _format: string;
+  _format: string|undefined;
 
   /** @private */
   _timeoutSec: number;
@@ -150,10 +151,10 @@ export class EventQuery {
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
-    this.host(host);
 
-    if (!isNonEmptyStringArg(host)) {
-      this._host = USGS_HOST;
+    this._host = USGS_HOST;
+    if (isNonEmptyStringArg(host)) {
+      this.host(host);
     }
 
     this._port = 80;
@@ -169,16 +170,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   specVersion(value?: number): number | EventQuery {
-    if (hasArgs(value)) {
-      this._specVersion = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._specVersion;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+    return doIntGetterSetter(this, "specVersion", value);
   }
 
   /**
@@ -412,16 +404,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   includeArrivals(value?: boolean): boolean | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._includeArrivals;
-    } else if (hasArgs(value)) {
-      this._includeArrivals = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includeArrivals", value);
   }
 
   /**
@@ -431,16 +414,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   includeAllOrigins(value?: boolean): boolean | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._includeAllOrigins;
-    } else if (hasArgs(value)) {
-      this._includeAllOrigins = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includeAllOrigins", value);
   }
 
   /**
@@ -450,16 +424,7 @@ export class EventQuery {
    * @returns new value if getting, this if setting
    */
   includeAllMagnitudes(value?: boolean): boolean | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._includeAllMagnitudes;
-    } else if (hasArgs(value)) {
-      this._includeAllMagnitudes = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includeAllMagnitudes", value);
   }
 
   /**
@@ -690,14 +655,14 @@ export class EventQuery {
         }
 
         let catalogArray = top.getElementsByTagName("Catalog");
-        let out = [];
+        let out: Array<string> = [];
 
         if (catalogArray) {
           for (let i = 0; i < catalogArray.length; i++) {
             // for flow
             let item = catalogArray.item(i);
 
-            if (item) {
+            if (item && isDef(item.textContent)) {
               out.push(item.textContent);
             }
           }
@@ -744,14 +709,14 @@ export class EventQuery {
         }
 
         let contributorArray = top.getElementsByTagName("Contributor");
-        let out = [];
+        let out: Array<string> = [];
 
         if (contributorArray) {
           for (let i = 0; i < contributorArray.length; i++) {
             // for flow
             let item = contributorArray.item(i);
 
-            if (item) {
+            if (item && isDef(item.textContent)) {
               out.push(item.textContent);
             }
           }

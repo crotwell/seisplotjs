@@ -65,7 +65,7 @@ export class HourMinChooser {
       .classed("pikatime", true)
       .attr("value", this.time.format("HH:mm"))
       .attr("type", "text")
-      .on("click", function (d3event) {
+      .on("click", function (d3event: any) {
         mythis.showHide();
         // don't propagate click up to document
         d3event.stopPropagation();
@@ -93,7 +93,7 @@ export class HourMinChooser {
       .classed("hourminpopup", true)
       .style("position", "absolute")
       .style("visibility", "hidden")
-      .on("click", function (d3event) {
+      .on("click", function (d3event: any) {
         // don't propagate click up to document
         d3event.stopPropagation();
       });
@@ -107,7 +107,7 @@ export class HourMinChooser {
       .attr("min", "0")
       .attr("max", "23")
       .classed("hourSlider", true)
-      .on("input", function () {
+      .on("input", function (this: HTMLInputElement) {
         let nHour = +this.value;
 
         if (mythis.time.hours() !== nHour) {
@@ -127,7 +127,7 @@ export class HourMinChooser {
       .attr("min", "0")
       .attr("max", "59")
       .classed("minuteSlider", true)
-      .on("input", function () {
+      .on("input", function (this: HTMLInputElement) {
         let nMinute = +this.value;
 
         if (mythis.time.minutes() !== nMinute) {
@@ -269,12 +269,14 @@ export class DateTimeChooser {
       //  trigger: inputField.node(),
       format: "YYYY-MM-DD",
       onSelect: function () {
-        let pikaValue = this.getMoment();
+        let pikaValue = mythis.picker.getMoment();
         let origTime = moment.utc(mythis.time);
 
         if (
-          origTime.year() !== pikaValue.year() ||
-          origTime.dayOfYear() !== pikaValue.dayOfYear()
+          pikaValue && (
+            origTime.year() !== pikaValue.year() ||
+            origTime.dayOfYear() !== pikaValue.dayOfYear()
+          )
         ) {
           mythis.time.year(pikaValue.year());
           mythis.time.dayOfYear(pikaValue.dayOfYear());
@@ -383,7 +385,7 @@ export class TimeRangeChooser {
       .classed("pikatime", true)
       .attr("value", this.duration)
       .attr("type", "text")
-      .on("input", function () {
+      .on("input", function (this: HTMLInputElement) {
         let nDur = +Number.parseInt(this.value);
         mythis.duration = nDur;
 
@@ -434,7 +436,7 @@ export class TimeRangeChooser {
  * @param   t new time/time range, not used
  */
 // eslint-disable-next-line no-unused-vars
-function dummyCallback(t) {}
+function dummyCallback(t: any) {}
 
 /**
  * CSS for the parts of HourMin, DateTime and TimeRange choosers

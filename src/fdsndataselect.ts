@@ -9,6 +9,7 @@ import * as util from "./util"; // for util.log
 // special due to flow
 import {
   doStringGetterSetter,
+  doBoolGetterSetter,
   doIntGetterSetter,
   doFloatGetterSetter,
   doMomentGetterSetter,
@@ -69,43 +70,43 @@ export class DataSelectQuery {
   _host: string;
 
   /** @private */
-  _nodata: number;
+  _nodata: number|undefined;
 
   /** @private */
   _port: number;
 
   /** @private */
-  _networkCode: string;
+  _networkCode: string|undefined;
 
   /** @private */
-  _stationCode: string;
+  _stationCode: string|undefined;
 
   /** @private */
-  _locationCode: string;
+  _locationCode: string|undefined;
 
   /** @private */
-  _channelCode: string;
+  _channelCode: string|undefined;
 
   /** @private */
-  _startTime: moment.Moment;
+  _startTime: moment.Moment|undefined;
 
   /** @private */
-  _endTime: moment.Moment;
+  _endTime: moment.Moment|undefined;
 
   /** @private */
-  _quality: string;
+  _quality: string|undefined;
 
   /** @private */
-  _minimumLength: number;
+  _minimumLength: number|undefined;
 
   /** @private */
-  _longestOnly: boolean;
+  _longestOnly: boolean|undefined;
 
   /** @private */
-  _repository: string;
+  _repository: string|undefined;
 
   /** @private */
-  _format: string;
+  _format: string|undefined;
 
   /** @private */
   _timeoutSec: number;
@@ -133,16 +134,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   specVersion(value?: number): number | DataSelectQuery {
-    if (hasArgs(value)) {
-      this._specVersion = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._specVersion;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+    return doIntGetterSetter(this, "specVersion", value);
   }
 
   /**
@@ -286,16 +278,7 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   longestOnly(value?: boolean): boolean | DataSelectQuery {
-    if (hasNoArgs(value)) {
-      return this._longestOnly;
-    } else if (hasArgs(value)) {
-      this._longestOnly = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "longestOnly", value);
   }
 
   /**
@@ -497,9 +480,9 @@ export class DataSelectQuery {
   postQueryRaw(sddList: Array<SeismogramDisplayData>): Promise<Response> {
     if (sddList.length === 0) {
       // return promise faking an not ok fetch response
-      return RSVP.hash({
-        ok: false,
-      });
+      return RSVP.hash(new Response(null, {
+        status: 204,
+      }));
     } else {
       return this.postQueryRawWithBody(DataSelectQuery.createPostBody(sddList));
     }

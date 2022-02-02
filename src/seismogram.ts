@@ -24,6 +24,7 @@ export type MarkerType = {
   time: moment.Moment;
   type: string;
   description: string;
+  link?: string;
 };
 
 /**

@@ -6,6 +6,7 @@
 // special due to flow
 import {
   doStringGetterSetter,
+  doBoolGetterSetter,
   doIntGetterSetter,
   checkProtocol,
   makeParam,
@@ -46,19 +47,19 @@ export class DataCentersQuery {
   _host: string;
 
   /** @private */
-  _nodata: number;
+  _nodata: number|undefined;
 
   /** @private */
   _port: number;
 
   /** @private */
-  _name: string;
+  _name: number|undefined;
 
   /** @private */
-  _services: string;
+  _services: string|undefined;
 
   /** @private */
-  _includedatasets: boolean;
+  _includedatasets: boolean|undefined;
 
   /** @private */
   _timeoutSec: number;
@@ -86,16 +87,7 @@ export class DataCentersQuery {
    * @returns the query when setting, the current value os services if no arguments
    */
   specVersion(value?: number): number | DataCentersQuery {
-    if (hasArgs(value)) {
-      this._specVersion = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._specVersion;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+    return doIntGetterSetter(this, "specVersion", value);
   }
 
   /**
@@ -159,16 +151,7 @@ export class DataCentersQuery {
    * @returns the query when setting, the current value os services if no arguments
    */
   includeDataSets(value?: boolean): boolean | DataCentersQuery {
-    if (hasNoArgs(value)) {
-      return this._includedatasets;
-    } else if (hasArgs(value)) {
-      this._includedatasets = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includedatasets", value);
   }
 
   /**
@@ -377,7 +360,7 @@ export class DataCentersQuery {
     compatibleName: string,
     repoName?: string,
   ): Array<any> {
-    let out = [];
+    let out: Array<any> = [];
     json.datacenters.forEach(dc => {
       dc.repositories.forEach(repo => {
         if (!isDef(repoName) || repoName === repo.name) {

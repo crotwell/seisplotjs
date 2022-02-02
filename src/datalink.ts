@@ -5,7 +5,7 @@
  */
 import * as util from "./util"; // for util.log
 
-import {dataViewToString, stringify, isDef, isNonEmptyStringArg} from "./util";
+import {dataViewToString, stringify, isDef, isNonEmptyStringArg, isError, toError} from "./util";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import RSVP from "rsvp";
@@ -145,8 +145,8 @@ export class DataLinkConnection {
         resolve(that);
       };
     })
-      .then((datalink: DataLinkConnection) => {
-        return datalink.sendId();
+      .then((datalink: unknown) => {
+        return (datalink as DataLinkConnection).sendId();
       })
       .then((idmsg: string) => {
         that.serverId = idmsg;
@@ -548,7 +548,7 @@ export class DataLinkConnection {
           try {
             this.packetHandler(packet);
           } catch (e) {
-            this.errorHandler(e);
+            this.errorHandler(toError(e));
           }
         } else {
           this.errorHandler(new Error("packetHandler not defined"));

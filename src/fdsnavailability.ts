@@ -8,8 +8,10 @@ import RSVP from "rsvp";
 // special due to flow
 import {
   doStringGetterSetter,
+  doBoolGetterSetter,
   doIntGetterSetter,
   doFloatGetterSetter,
+  doMomentGetterSetter,
   checkProtocol,
   toIsoWoZ,
   isDef,
@@ -79,52 +81,52 @@ export class AvailabilityQuery {
   _host: string;
 
   /** @private */
-  _nodata: number;
+  _nodata: number|undefined;
 
   /** @private */
   _port: number;
 
   /** @private */
-  _networkCode: string;
+  _networkCode: string|undefined;
 
   /** @private */
-  _stationCode: string;
+  _stationCode: string|undefined;
 
   /** @private */
-  _locationCode: string;
+  _locationCode: string|undefined;
 
   /** @private */
-  _channelCode: string;
+  _channelCode: string|undefined;
 
   /** @private */
-  _startTime: moment.Moment;
+  _startTime: moment.Moment|undefined;
 
   /** @private */
-  _endTime: moment.Moment;
+  _endTime: moment.Moment|undefined;
 
   /** @private */
-  _quality: string;
+  _quality: string|undefined;
 
   /** @private */
-  _merge: string;
+  _merge: string|undefined;
 
   /** @private */
-  _show: string;
+  _show: string|undefined;
 
   /** @private */
-  _mergeGaps: number;
+  _mergeGaps: number|undefined;
 
   /** @private */
-  _limit: number;
+  _limit: number|undefined;
 
   /** @private */
-  _orderby: string;
+  _orderby: string|undefined;
 
   /** @private */
-  _includerestricted: boolean;
+  _includerestricted: boolean|undefined;
 
   /** @private */
-  _format: string;
+  _format: string|undefined;
 
   /** @private */
   _timeoutSec: number;
@@ -152,7 +154,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   specVersion(value?: number): number | AvailabilityQuery {
-    if (hasArgs(value)) {
+    if (isNumArg(value)) {
       this._specVersion = value;
       return this;
     } else if (hasNoArgs(value)) {
@@ -253,17 +255,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   startTime(value?: moment.Moment): moment.Moment | AvailabilityQuery {
-    if (hasNoArgs(value)) {
-      return this._startTime;
-    } else if (hasArgs(value)) {
-      this._startTime = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or moment or string, but was " +
-          typeof value,
-      );
-    }
+    return doMomentGetterSetter(this, "startTime", value);
   }
 
   /**
@@ -273,17 +265,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   endTime(value?: moment.Moment): moment.Moment | AvailabilityQuery {
-    if (hasNoArgs(value)) {
-      return this._endTime;
-    } else if (hasArgs(value)) {
-      this._endTime = checkStringOrDate(value);
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or moment or string, but was " +
-          typeof value,
-      );
-    }
+    return doMomentGetterSetter(this, "endTime", value);
   }
 
   /**
@@ -345,16 +327,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   limit(value?: number): number | AvailabilityQuery {
-    if (hasNoArgs(value)) {
-      return this._limit;
-    } else if (hasArgs(value)) {
-      this._limit = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+    return doIntGetterSetter(this, "limit", value);
   }
 
   /**
@@ -374,16 +347,7 @@ export class AvailabilityQuery {
    * @returns the query when setting, the current value when no argument
    */
   includeRestricted(value?: boolean): boolean | AvailabilityQuery {
-    if (hasNoArgs(value)) {
-      return this._includerestricted;
-    } else if (hasArgs(value)) {
-      this._includerestricted = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includerestricted", value);
   }
 
   /**
@@ -425,8 +389,9 @@ export class AvailabilityQuery {
    * a channel-time window
    */
   query(): Promise<Array<SeismogramDisplayData>> {
-    return this.queryJson().then(function (json) {
-      return this.extractFromJson(json);
+    const mythis = this;
+    return this.queryJson().then(function (json: RootType) {
+      return mythis.extractFromJson(json);
     });
   }
 
@@ -435,7 +400,7 @@ export class AvailabilityQuery {
    *
    * @returns promise to the result as json
    */
-  queryJson(): Promise<{}> {
+  queryJson(): Promise<RootType> {
     const mythis = this;
     this.format(FORMAT_JSON);
     const url = this.formURL("query");
@@ -473,8 +438,9 @@ export class AvailabilityQuery {
    * a channel-time window
    */
   extent(): Promise<Array<SeismogramDisplayData>> {
-    return this.extentJson().then(function (json) {
-      return this.extractFromJson(json);
+    const mythis = this;
+    return this.extentJson().then(function (json: RootType) {
+      return mythis.extractFromJson(json);
     });
   }
 
@@ -483,7 +449,7 @@ export class AvailabilityQuery {
    *
    * @returns promise to the result as json
    */
-  extentJson(): Promise<{}> {
+  extentJson(): Promise<RootType> {
     const mythis = this;
     this.format(FORMAT_JSON);
     const url = this.formURL("extent");
@@ -581,9 +547,9 @@ export class AvailabilityQuery {
   ): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
-      return RSVP.hash({
-        ok: false,
-      });
+      return RSVP.hash(new Response(null, {
+        status: 204,
+      }));
     } else {
       const fetchInit = defaultFetchInitObj(JSON_MIME);
       fetchInit.method = "POST";

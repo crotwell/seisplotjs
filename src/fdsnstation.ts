@@ -17,6 +17,7 @@ import RSVP from "rsvp";
 // special due to flow
 import {
   doStringGetterSetter,
+  doBoolGetterSetter,
   doIntGetterSetter,
   doFloatGetterSetter,
   doMomentGetterSetter,
@@ -78,76 +79,76 @@ export class StationQuery {
   _port: number;
 
   /** @private */
-  _nodata: number;
+  _nodata: number|undefined;
 
   /** @private */
-  _networkCode: string;
+  _networkCode: string|undefined;
 
   /** @private */
-  _stationCode: string;
+  _stationCode: string|undefined;
 
   /** @private */
-  _locationCode: string;
+  _locationCode: string|undefined;
 
   /** @private */
-  _channelCode: string;
+  _channelCode: string|undefined;
 
   /** @private */
-  _startTime: moment.Moment;
+  _startTime: moment.Moment|undefined;
 
   /** @private */
-  _endTime: moment.Moment;
+  _endTime: moment.Moment|undefined;
 
   /** @private */
-  _startBefore: moment.Moment;
+  _startBefore: moment.Moment|undefined;
 
   /** @private */
-  _endBefore: moment.Moment;
+  _endBefore: moment.Moment|undefined;
 
   /** @private */
-  _startAfter: moment.Moment;
+  _startAfter: moment.Moment|undefined;
 
   /** @private */
-  _endAfter: moment.Moment;
+  _endAfter: moment.Moment|undefined;
 
   /** @private */
-  _minLat: number;
+  _minLat: number|undefined;
 
   /** @private */
-  _maxLat: number;
+  _maxLat: number|undefined;
 
   /** @private */
-  _minLon: number;
+  _minLon: number|undefined;
 
   /** @private */
-  _maxLon: number;
+  _maxLon: number|undefined;
 
   /** @private */
-  _latitude: number;
+  _latitude: number|undefined;
 
   /** @private */
-  _longitude: number;
+  _longitude: number|undefined;
 
   /** @private */
-  _minRadius: number;
+  _minRadius: number|undefined;
 
   /** @private */
-  _maxRadius: number;
+  _maxRadius: number|undefined;
 
   /** @private */
-  _includeRestricted: boolean;
+  _includeRestricted: boolean|undefined;
 
   /** @private */
-  _includeAvailability: boolean;
+  _includeAvailability: boolean|undefined;
 
   /** @private */
-  _format: string;
+  _format: string|undefined;
 
   /** @private */
-  _updatedAfter: moment.Moment;
+  _updatedAfter: moment.Moment|undefined;
 
   /** @private */
-  _matchTimeseries: boolean;
+  _matchTimeseries: boolean|undefined;
 
   /** @private */
   _timeoutSec: number;
@@ -160,10 +161,10 @@ export class StationQuery {
   constructor(host?: string) {
     this._specVersion = 1;
     this._protocol = checkProtocol();
-    this.host(host);
 
-    if (!isNonEmptyStringArg(host)) {
-      this._host = IRIS_HOST;
+    this._host = IRIS_HOST;
+    if (isNonEmptyStringArg(host)) {
+      this.host(host);
     }
 
     this._port = 80;
@@ -179,16 +180,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   specVersion(value?: number): number | StationQuery {
-    if (hasArgs(value)) {
-      this._specVersion = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._specVersion;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+    return doIntGetterSetter(this, "specVersion", value);
   }
 
   /**
@@ -432,16 +424,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   includeRestricted(value?: boolean): boolean | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._includeRestricted;
-    } else if (hasArgs(value)) {
-      this._includeRestricted = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includeRestricted", value);
   }
 
   /**
@@ -451,16 +434,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   includeAvailability(value?: boolean): boolean | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._includeAvailability;
-    } else if (hasArgs(value)) {
-      this._includeAvailability = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includeAvailability", value);
   }
 
   /**
@@ -490,16 +464,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   matchTimeseries(value?: boolean): boolean | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._matchTimeseries;
-    } else if (hasArgs(value)) {
-      this._matchTimeseries = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "matchTimeseries", value);
   }
 
   /**
@@ -509,16 +474,7 @@ export class StationQuery {
    * @returns new value if getting, this if setting
    */
   timeout(value?: number): number | StationQuery {
-    if (hasNoArgs(value)) {
-      return this._timeoutSec;
-    } else if (isNumArg(value)) {
-      this._timeoutSec = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+    return doFloatGetterSetter(this, "timeoutSec", value);
   }
 
   /**
@@ -750,7 +706,10 @@ export class StationQuery {
   postQueryRawXml(level: string, postLines: Array<string>): Promise<Document> {
     if (postLines.length === 0) {
       // return promise faking an not ok fetch response
-      return RSVP.hash(FAKE_EMPTY_XML);
+      return Promise.resolve(FAKE_EMPTY_XML)
+      .then(function (rawXmlText) {
+        return new DOMParser().parseFromString(rawXmlText, "text/xml");
+      });
     } else {
       const mythis = this;
       const fetchInit = defaultFetchInitObj(XML_MIME);

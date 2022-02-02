@@ -15,6 +15,7 @@ import {
   DRAW_CANVAS,
   DRAW_BOTH,
   DRAW_BOTH_ALIGN,
+  numberFormatWrapper,
 } from "./seismographconfig";
 // reexport as was defined here in 2.0.1
 export {LinkedAmpScale};
@@ -53,10 +54,15 @@ export type ScaleChangeListenerType = {
   destinationKey: any;
   notifyScaleChange: (value: any) => void;
 };
+export type BBoxType = {
+  height: number;
+  width: number;
+}
 export type MarkerHolderType = {
   marker: MarkerType;
   sdd: SeismogramDisplayData;
   xscale: any;
+  bbox?: BBoxType;
 };
 
 /* A seismogram plot, using d3. The actual waveform can be drawn
@@ -120,6 +126,8 @@ export class Seismograph {
     if (inSvgParent === null) {
       throw new Error("inSvgParent cannot be null");
     }
+    this.outerWidth = -1;
+    this.outerHeight = -1;
 
     if (!isDef(seismographConfig)) {
       if (
@@ -233,13 +241,13 @@ export class Seismograph {
     if (this.seismographConfig.isYAxis) {
       this.yAxis = d3
         .axisLeft(this.yScaleRmean)
-        .tickFormat(this.seismographConfig.yScaleFormat);
+        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
     }
 
     if (this.seismographConfig.isYAxisRight) {
       this.yAxisRight = d3
         .axisRight(this.yScaleRmean)
-        .tickFormat(this.seismographConfig.yScaleFormat);
+        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
     }
 
     let mythis = this;
@@ -360,17 +368,8 @@ export class Seismograph {
         .attr("width", this.width)
         .attr("height", this.height + 1);
       let style = window.getComputedStyle(this.svg.node());
-      let padTop = style.getPropertyValue("padding-top");
-
-      if (padTop.endsWith("px")) {
-        padTop = Number(padTop.replace("px", ""));
-      }
-
-      let borderTop = style.getPropertyValue("border-top-width");
-
-      if (borderTop.endsWith("px")) {
-        borderTop = Number(borderTop.replace("px", ""));
-      }
+      let padTop =  Number(style.getPropertyValue("padding-top").replace("px", ""));
+      let borderTop = Number(style.getPropertyValue("border-top-width").replace("px", ""));
     }
 
     this.drawSeismograms();
@@ -494,7 +493,7 @@ export class Seismograph {
           xscaleForSDD.domain()[0].valueOf()) /
         1000 /
         (xscaleForSDD.range()[1] - xscaleForSDD.range()[0]);
-      let color;
+      let color: string;
 
       if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
         color = mythis.seismographConfig.getColorForIndex(ti + sddList.length);
@@ -1155,8 +1154,8 @@ export class Seismograph {
   }
 
   drawMarkers() {
-    let allMarkers = this.seisDataList
-      .reduce((acc, sdd) => {
+    let allMarkers: Array<MarkerHolderType> = this.seisDataList
+      .reduce((acc: Array<MarkerHolderType>, sdd) => {
         const sddXScale = this.timeScaleForSeisDisplayData(sdd);
         sdd.markerList.forEach(m =>
           acc.push({
@@ -1178,7 +1177,7 @@ export class Seismograph {
     markerG.selectAll("g.marker").remove();
     let labelSelection = markerG
       .selectAll("g.marker")
-      .data(allMarkers, function (mh) {
+      .data(allMarkers, function (mh: MarkerHolderType) {
         // key for data
         return `${mh.marker.name}_${mh.marker.time.toISOString()}`;
       });
@@ -1189,11 +1188,11 @@ export class Seismograph {
       .enter()
       .append("g")
       .classed("marker", true) // translate so marker time is zero
-      .attr("transform", function (mh) {
+      .attr("transform", function (mh: MarkerHolderType) {
         let textx = mh.xscale(mh.marker.time.toDate());
         return "translate(" + textx + "," + 0 + ")";
       })
-      .each(function (mh) {
+      .each(function (mh: MarkerHolderType) {
         let drawG = d3.select(this);
         drawG.classed(mh.marker.name, true).classed(mh.marker.type, true);
         let innerTextG = drawG
@@ -1215,7 +1214,7 @@ export class Seismograph {
               ")"
             );
           });
-        innerTextG.append("title").text(mh => {
+        innerTextG.append("title").text(() => {
           if (mh.marker.description) {
             return mh.marker.description;
           } else {
@@ -1228,21 +1227,22 @@ export class Seismograph {
           // if marker has link, make it clickable
           textSel
             .append("svg:a")
-            .attr("xlink:href", function (mh) {
-              return mh.marker.link;
-            })
-            .text(function (mh) {
+            .attr("xlink:href", () => ""+mh.marker.link)
+            .text(function (datum) {
+              const mh: MarkerHolderType = datum as MarkerHolderType;
               return mh.marker.name;
             });
         } else {
-          textSel.text(function (mh) {
+          textSel.text(function (datum) {
+            const mh: MarkerHolderType = datum as MarkerHolderType;
             return mh.marker.name;
           });
         }
 
         textSel.attr("dy", "-0.35em").call(function (selection) {
           // this stores the BBox of the text in the bbox field for later use
-          selection.each(function (mh) {
+          selection.each(function (datum) {
+            const mh: MarkerHolderType = datum as MarkerHolderType;
             // set a default just in case
             mh.bbox = {
               height: 15,
@@ -1259,9 +1259,14 @@ export class Seismograph {
           });
         });
         // draw/insert flag behind/before text
-        innerTextG.insert("polygon", "text").attr("points", function (mh) {
-          let bboxH = mh.bbox.height + 5;
-          let bboxW = mh.bbox.width;
+        innerTextG.insert("polygon", "text").attr("points", function (datum) {
+          const mh: MarkerHolderType = datum as MarkerHolderType;
+          let bboxH = 10 + 5; // defaults if no bbox, should not happen
+          let bboxW = 10;
+          if (mh.bbox) {
+            bboxH = mh.bbox.height + 5;
+            bboxW = mh.bbox.width;
+          }
           return (
             "0,0 " +
             -1 * bboxH * Math.tan(radianTextAngle) +
@@ -1702,7 +1707,7 @@ export class Seismograph {
       this._internalAppend(SeismogramDisplayData.fromSeismogram(seismogram));
     } else {
       throw new Error(
-        `Unable to append, doesn't look like Array of Seismogram, Seismogram or SeismogramDisplayData: ${seismogram.constructor.name}`,
+        `Unable to append, doesn't look like Array of Seismogram, Seismogram or SeismogramDisplayData: ${seismogram}`,
       );
     }
 

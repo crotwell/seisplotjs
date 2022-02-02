@@ -7,7 +7,7 @@ import {Station} from "./stationxml";
 import {SeismogramDisplayData} from "./seismogram";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
-import {isDef} from "./util";
+import {isDef, isStringArg, stringify} from "./util";
 import * as d3 from "d3";
 import * as L from "leaflet";
 import * as querystringify from "querystringify";
@@ -30,7 +30,7 @@ export class OrganizedDisplay {
 
   constructor(
     seisData: Array<SeismogramDisplayData>,
-    plottype?: string = SEISMOGRAPH,
+    plottype: string = SEISMOGRAPH,
   ) {
     this.plottype = plottype;
     this.seisData = seisData;
@@ -66,11 +66,13 @@ export class OrganizedDisplay {
   plot(divElement: any) {
     let qIndex = this.plottype.indexOf("?");
     let plotstyle = this.plottype;
-    let queryParams = {};
+    let queryParams: object;
 
     if (qIndex !== -1) {
       queryParams = querystringify.parse(this.plottype.substring(qIndex));
       plotstyle = this.plottype.substring(0, qIndex);
+    } else {
+      queryParams = {};
     }
 
     divElement.attr("plottype", plotstyle);
@@ -83,8 +85,8 @@ export class OrganizedDisplay {
       );
       this.seismograph.draw();
     } else if (this.plottype.startsWith(SPECTRA)) {
-      let loglog = getFromQueryParams(queryParams, "loglog", "true");
-      loglog = queryParams.loglog.toLowerCase() === "true";
+      const loglogqp = getFromQueryParams(queryParams, "loglog", "true");
+      let loglog = loglogqp.toLowerCase() === "true";
       let nonContigList = this.seisData.filter(
         sdd => !(sdd.seismogram && sdd.seismogram.isContiguous()),
       );
@@ -107,7 +109,7 @@ export class OrganizedDisplay {
           ? fftForward(sdd)
           : null;
       });
-      let fftListNoNull = fftList.filter(Boolean);
+      let fftListNoNull = fftList.filter(isDef);
       this.fftPlot = new FFTPlot(
         divElement,
         this.seisConfig,
@@ -177,12 +179,16 @@ export class OrganizedDisplay {
   }
 }
 export function getFromQueryParams(
-  qParams: {},
+  qParams: any,
   name: string,
   defaultValue: string = "",
 ): string {
   if (name in qParams) {
-    return qParams[name];
+    if (isStringArg(qParams[name])) {
+      return qParams[name];
+    } else {
+      throw new Error(`param ${name} exists but is not string: ${stringify(qParams[name])}`);
+    }
   }
 
   return defaultValue;
@@ -205,7 +211,7 @@ export function overlayBySDDFunction(
   key: string,
   sddFun: (arg0: SeismogramDisplayData) => string | number | null,
 ): Array<OrganizedDisplay> {
-  let out = [];
+  let out: Array<OrganizedDisplay> = [];
   sddList.forEach(sdd => {
     let found = false;
     const val = sddFun(sdd);
@@ -290,18 +296,18 @@ export function groupComponentOfMotion(
 ): Array<Array<SeismogramDisplayData>> {
   let tmpSeisDataList = Array.from(sddList);
 
-  const bifurcate = (arr, filter) =>
-    arr.reduce((acc, val) => (acc[filter(val) ? 0 : 1].push(val), acc), [
+  const bifurcate = (arr: Array<SeismogramDisplayData>, filter: (arg0: SeismogramDisplayData) => boolean) =>
+    arr.reduce((acc: Array<Array<SeismogramDisplayData>>, val: SeismogramDisplayData) => (acc[filter(val) ? 0 : 1].push(val), acc), [
       [],
       [],
     ]);
 
   const byFriends = [];
+  let first=tmpSeisDataList.shift();
+  while (isDef(first)) {
 
-  while (tmpSeisDataList.length > 0) {
-    const first = tmpSeisDataList.shift();
-
-    const isFriend = sdddB =>
+    const isFriend = (sdddB: SeismogramDisplayData) =>
+      isDef(first) && /* dumb, typescript */
       first.networkCode === sdddB.networkCode &&
       first.stationCode === sdddB.stationCode &&
       first.locationCode === sdddB.locationCode &&
@@ -313,6 +319,7 @@ export function groupComponentOfMotion(
     nextGroup.unshift(first);
     byFriends.push(nextGroup);
     tmpSeisDataList = splitArray[1];
+    first=tmpSeisDataList.shift()
   }
 
   return byFriends;
@@ -351,7 +358,7 @@ export function attributeDistance(orgDisp: OrganizedDisplay): number | null {
 export function uniqueStations(
   seisData: Array<SeismogramDisplayData>,
 ): Array<Station> {
-  const out = new Set();
+  const out = new Set<Station>();
   seisData.forEach(sdd => {
     if (sdd.channel) {
       out.add(sdd.channel.station);
@@ -362,7 +369,7 @@ export function uniqueStations(
 export function uniqueQuakes(
   seisData: Array<SeismogramDisplayData>,
 ): Array<Quake> {
-  const out = new Set();
+  const out = new Set<Quake>();
   seisData.forEach(sdd => {
     sdd.quakeList.forEach(q => out.add(q));
   });
@@ -378,7 +385,7 @@ export function createPlots(
     .data(organized)
     .enter()
     .append("div")
-    .each(function (org) {
+    .each(function (org: any) {
       const div = d3.select(this);
       org.plot(div);
     });

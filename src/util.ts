@@ -209,6 +209,28 @@ export function log(msg: string): void {
   }
 }
 
+/** typescript-y check if Error. */
+export function isError(error: unknown): error is Error {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    error instanceof Error
+  );
+}
+
+/** typescript-y convert errors. */
+export function toError(maybeError: unknown): Error {
+  if (isError(maybeError)) return maybeError
+
+  try {
+    return new Error(JSON.stringify(maybeError))
+  } catch {
+    // fallback in case there's an error stringifying the maybeError
+    // like with circular references for example.
+    return new Error(String(maybeError))
+  }
+}
+
 /**
  * Log a warning message to the console. Put here to limit lint console errors
  * for the times we really do want to use console.log. Will also append a

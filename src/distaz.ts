@@ -30,10 +30,10 @@ export class DistAzOutput {
   delta: number;
   az: number;
   baz: number;
-  stalat: number;
-  stalon: number;
-  evtlat: number;
-  evtlon: number;
+  stalat: number|undefined;
+  stalon: number|undefined;
+  evtlat: number|undefined;
+  evtlon: number|undefined;
 
   constructor(delta: number, az: number, baz: number) {
     this.delta = delta ? delta : 0.0;
