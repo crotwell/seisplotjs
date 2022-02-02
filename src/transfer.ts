@@ -310,14 +310,14 @@ export function applyFreqTaper(
   highPass: number,
   highCut: number,
 ): FFTResult {
-  const deltaF = sampleRate / fftResult.amp.length / 2;
+  const deltaF = fftResult.fundamentalFrequency;
   return FFTResult.createFromAmpPhase(
-    fftResult.amp.map((v, i) =>
+    fftResult.amplitudes().map((v, i) =>
       i === 0
         ? 0
         : v * calcFreqTaper(i * deltaF, lowCut, lowPass, highPass, highCut),
     ),
-    fftResult.phase,
+    fftResult.phases(),
     fftResult.origLength,
     fftResult.sampleRate,
   );
