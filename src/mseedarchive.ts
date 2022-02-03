@@ -120,7 +120,7 @@ export class MSeedArchive {
       }
     });
     return RSVP.all(promiseArray).then(pArray => {
-      let out = [];
+      let out: Array<SeismogramDisplayData> = [];
       pArray.forEach(p => {
         let seisArray = miniseed.seismogramPerChannel(p.dataRecords);
 
@@ -261,7 +261,7 @@ export function loadDataRecords(
         if (fetchResponse.ok) {
           if (fetchResponse.status === 200 || fetchResponse.status === 304) {
             return fetchResponse.arrayBuffer().then(ab => {
-              let dataRecords = [];
+              let dataRecords: Array<miniseed.DataRecord> = [];
 
               if (ab.byteLength > 0) {
                 dataRecords = miniseed.parseDataRecords(ab);

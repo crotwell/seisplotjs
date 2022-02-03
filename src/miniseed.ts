@@ -592,7 +592,7 @@ export function merge(drList: Array<DataRecord>): Seismogram {
   drList.sort(function (a, b) {
     return a.header.startTime.diff(b.header.startTime);
   });
-  let contig = [];
+  let contig: Array<DataRecord> = [];
 
   for (let i = 0; i < drList.length; i++) {
     currDR = drList[i];

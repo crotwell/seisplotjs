@@ -3,11 +3,12 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import * as util from "./util"; // for util.log
 import * as miniseed from "./miniseed";
 import {DataRecord} from "./miniseed";
 import RSVP from "rsvp";
 import moment from "moment";
-import {dataViewToString} from "./util";
+import {dataViewToString, stringify, toError} from "./util";
 export const SEEDLINK_PROTOCOL = "SeedLink3.1";
 export type SequencedDataRecord = {
   rawsequence: string;
@@ -39,7 +40,7 @@ export class SeedlinkConnection {
   url: string;
   requestConfig: Array<string>;
   receiveMiniseedFn: (packet: SequencedDataRecord) => void;
-  errorFn: (error: Error) => void;
+  errorHandler: (error: Error) => void;
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
   command: string;
@@ -48,14 +49,15 @@ export class SeedlinkConnection {
     url: string,
     requestConfig: Array<string>,
     receiveMiniseedFn: (packet: SequencedDataRecord) => void,
-    errorFn: (error: Error) => void,
+    errorHandler: (error: Error) => void,
   ) {
     this.url = url;
     this.requestConfig = requestConfig;
     this.receiveMiniseedFn = receiveMiniseedFn;
-    this.errorFn = errorFn;
+    this.errorHandler = errorHandler;
     this.closeFn = null;
     this.command = "DATA";
+    this.webSocket = null;
   }
 
   setTimeCommand(startTime: moment.Moment) {
@@ -63,8 +65,8 @@ export class SeedlinkConnection {
       "TIME " + moment.utc(startTime).format("YYYY,MM,DD,HH,mm,ss");
   }
 
-  setOnError(errorFn: (error: Error) => void) {
-    this.errorFn = errorFn;
+  setOnError(errorHandler: (error: Error) => void) {
+    this.errorHandler = errorHandler;
   }
 
   setOnClose(closeFn: (close: CloseEvent) => void) {
@@ -101,8 +103,8 @@ export class SeedlinkConnection {
             return val;
           })
           .catch(err => {
-            if (that.errorFn) {
-              that.errorFn(err);
+            if (that.errorHandler) {
+              that.errorHandler(err);
             } else {
               throw err;
             }
@@ -111,12 +113,9 @@ export class SeedlinkConnection {
           });
       };
 
-      webSocket.onerror = function (err) {
-        if (that.errorFn) {
-          that.errorFn(err);
-        } else {
-          throw err;
-        }
+      webSocket.onerror = function (event: Event) {
+          that.handleError(new Error("" + stringify(event)));
+          that.close();
       };
 
       webSocket.onclose = function (closeEvent) {
@@ -129,8 +128,8 @@ export class SeedlinkConnection {
         }
       };
     } catch (err) {
-      if (this.errorFn) {
-        this.errorFn(err);
+      if (this.errorHandler) {
+        this.errorHandler(toError(err));
       } else {
         throw err;
       }
@@ -160,7 +159,7 @@ export class SeedlinkConnection {
 
     try {
       if (data.byteLength < 64) {
-        this.errorFn(
+        this.errorHandler(
           new Error(
             "message too small to be miniseed: " +
               data.byteLength +
@@ -197,7 +196,7 @@ export class SeedlinkConnection {
         );
       }
     } catch (e) {
-      this.errorFn("Error, closing seedlink. " + e);
+      this.errorHandler(toError(e));
       this.close();
     }
   }
@@ -211,9 +210,9 @@ export class SeedlinkConnection {
    *
    * @returns            Promise that resolves to the response from the server.
    */
-  sendHello(): Promise<string> {
+  sendHello(): Promise<[string,string]> {
     let webSocket = this.webSocket;
-    let promise = new RSVP.Promise(function (resolve, reject) {
+    let promise: Promise<[string,string]> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           //for flow
@@ -222,7 +221,7 @@ export class SeedlinkConnection {
           let lines = replyMsg.trim().split("\r");
 
           if (lines.length === 2) {
-            resolve(lines);
+            resolve([lines[0],lines[1]]);
           } else {
             reject("not 2 lines: " + replyMsg);
           }
@@ -247,10 +246,10 @@ export class SeedlinkConnection {
   sendCmdArray(cmd: Array<string>): Promise<string> {
     let that = this;
     return cmd.reduce(function (accum: Promise<string>, next: string) {
-      return accum.then(function () {
+      return accum.then(function (): Promise<string> {
         return that.createCmdPromise(next);
       });
-    }, RSVP.resolve());
+    }, RSVP.resolve("OK"));
   }
 
   /**
@@ -261,7 +260,7 @@ export class SeedlinkConnection {
    */
   createCmdPromise(mycmd: string): Promise<string> {
     let webSocket = this.webSocket;
-    let promise = new RSVP.Promise(function (resolve, reject) {
+    let promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           //for flow
@@ -281,5 +280,19 @@ export class SeedlinkConnection {
       }
     });
     return promise;
+  }
+
+  /**
+   * handle errors that arise
+   *
+   * @private
+   * @param   error the error
+   */
+  handleError(error: Error): void {
+    if (this.errorHandler) {
+      this.errorHandler(error);
+    } else {
+      util.log("seedlink handleError: " + error.message);
+    }
   }
 }

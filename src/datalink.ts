@@ -116,8 +116,13 @@ export class DataLinkConnection {
    *  @returns a Promise that resolves to the server's ID.
    */
   connect(): Promise<string> {
+    if (this.webSocket) {
+      this.webSocket.close();
+      this.webSocket = null;
+    }
     const that = this;
     return new RSVP.Promise(function (resolve, reject) {
+      if (that.webSocket) {that.webSocket.close();}
       const webSocket = new WebSocket(that.url, DATALINK_PROTOCOL);
       that.webSocket = webSocket;
       webSocket.binaryType = "arraybuffer";

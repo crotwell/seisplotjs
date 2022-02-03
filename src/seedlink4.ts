@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import * as util from "./util"; // for util.log
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import {DataRecord} from "./miniseed";
@@ -10,7 +11,7 @@ import {MSeed3Record} from "./mseed3";
 import RSVP from "rsvp";
 import moment from "moment";
 import {version} from "./util";
-import {dataViewToString, isDef} from "./util";
+import {dataViewToString, isDef, stringify, toError} from "./util";
 export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";
 export const MINISEED_2_FORMAT = "2";
 export const MINISEED_3_FORMAT = "3";
@@ -20,7 +21,7 @@ export class SEPacket {
   dataFormat: string;
   dataSubformat: string;
   payloadLength: number;
-  sequence: number;
+  sequence: bigint;
   stationId: string;
   _miniseed: DataRecord | null;
   _mseed3: MSeed3Record | null;
@@ -31,7 +32,7 @@ export class SEPacket {
     dataFormat: string,
     dataSubformat: string,
     payloadLength: number,
-    sequence: number,
+    sequence: bigint,
     stationId: string,
   ) {
     this.dataFormat = dataFormat;
@@ -196,7 +197,7 @@ export class SeedlinkConnection {
   url: string;
   requestConfig: Array<string>;
   receivePacketFn: (packet: SEPacket) => void;
-  errorFn: (error: Error) => void;
+  errorHandler: (error: Error) => void;
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
   command: string;
@@ -207,12 +208,13 @@ export class SeedlinkConnection {
     url: string,
     requestConfig: Array<string>,
     receivePacketFn: (packet: SEPacket) => void,
-    errorFn: (error: Error) => void,
+    errorHandler: (error: Error) => void,
   ) {
+    this.webSocket = null;
     this.url = url;
     this.requestConfig = requestConfig;
     this.receivePacketFn = receivePacketFn;
-    this.errorFn = errorFn;
+    this.errorHandler = errorHandler;
     this.closeFn = null;
     this.command = "DATA";
     this.agent = "seisplotjs";
@@ -229,8 +231,8 @@ export class SeedlinkConnection {
       "TIME " + moment.utc(startTime).format("YYYY,MM,DD,HH,mm,ss");
   }
 
-  setOnError(errorFn: (error: Error) => void) {
-    this.errorFn = errorFn;
+  setOnError(errorHandler: (error: Error) => void) {
+    this.errorHandler = errorHandler;
   }
 
   setOnClose(closeFn: (close: CloseEvent) => void) {
@@ -262,8 +264,9 @@ export class SeedlinkConnection {
         return that.sendCmdArray([that.command]);
       })
       .then(function (val) {
-        // $FlowFixMe[null]
-        // $FlowFixMe[incompatible-use]
+        if (that.webSocket === null) {
+          throw new Error("websocket is null");
+        }
         that.webSocket.onmessage = function (event) {
           that.handle(event);
         };
@@ -274,8 +277,8 @@ export class SeedlinkConnection {
         return val;
       })
       .catch(err => {
-        if (that.errorFn) {
-          that.errorFn(err);
+        if (that.errorHandler) {
+          that.errorHandler(err);
         } else {
           throw err;
         }
@@ -301,12 +304,9 @@ export class SeedlinkConnection {
           resolve(that);
         };
 
-        webSocket.onerror = function (err) {
-          if (that.errorFn) {
-            that.errorFn(err);
-          }
-
-          reject(err);
+        webSocket.onerror = function (event: Event) {
+          that.handleError(new Error("" + stringify(event)));
+          reject(event);
         };
 
         webSocket.onclose = function (closeEvent) {
@@ -319,20 +319,20 @@ export class SeedlinkConnection {
           }
         };
       } catch (err) {
-        if (that.errorFn) {
-          that.errorFn(err);
+        if (that.errorHandler) {
+          that.errorHandler(toError(err));
         }
 
         reject(err);
       }
-    }).then(function (sl4) {
-      return sl4;
+    }).then(function (sl4: unknown) {
+      return (sl4 as SeedlinkConnection);
     });
   }
 
   checkProto(lines: Array<string>): boolean {
     let sl = lines[0].split("::");
-    let caps = sl[1].trim().split();
+    let caps = sl[1].trim().split(" ");
 
     for (let c of caps) {
       if (c === SEEDLINK4_PROTOCOL) {
@@ -359,7 +359,7 @@ export class SeedlinkConnection {
     if (data[0] === 83 && data[1] === 69) {
       this.handleSEPacket(event);
     } else {
-      this.errorFn(
+      this.errorHandler(
         new Error(`Packet does not look like SE packet: ${data[0]} ${data[1]}`),
       );
     }
@@ -373,7 +373,7 @@ export class SeedlinkConnection {
       let out = SEPacket.parse(data);
       this.receivePacketFn(out);
     } catch (e) {
-      this.errorFn("Error, closing seedlink. " + e);
+      this.errorHandler(toError(e));
       this.close();
     }
   }
@@ -389,7 +389,7 @@ export class SeedlinkConnection {
    */
   sendHello(): Promise<Array<string>> {
     let webSocket = this.webSocket;
-    let promise = new RSVP.Promise(function (resolve, reject) {
+    let promise: Promise<Array<string>> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           //for flow
@@ -426,7 +426,7 @@ export class SeedlinkConnection {
       return accum.then(function () {
         return that.createCmdPromise(next);
       });
-    }, RSVP.resolve());
+    }, RSVP.resolve("OK"));
   }
 
   /**
@@ -437,7 +437,7 @@ export class SeedlinkConnection {
    */
   createCmdPromise(mycmd: string): Promise<string> {
     let webSocket = this.webSocket;
-    let promise = new RSVP.Promise(function (resolve, reject) {
+    let promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           //for flow
@@ -457,5 +457,19 @@ export class SeedlinkConnection {
       }
     });
     return promise;
+  }
+
+  /**
+   * handle errors that arise
+   *
+   * @private
+   * @param   error the error
+   */
+  handleError(error: Error): void {
+    if (this.errorHandler) {
+      this.errorHandler(error);
+    } else {
+      util.log("seedlink4 handleError: " + error.message);
+    }
   }
 }

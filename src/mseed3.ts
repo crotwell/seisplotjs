@@ -267,10 +267,7 @@ export class MSeed3Record {
 
   toString(): string {
     // $FlowIgnore[incompatible-call]
-    return `${this.header.toString()}\n          extra headers: ${JSON.stringify(
-      this.extraHeaders,
-      2,
-    )}`;
+    return `${this.header.toString()}\n          extra headers: ${JSON.stringify(this.extraHeaders,null,2)}`;
   }
 }
 
@@ -289,7 +286,6 @@ export class MSeed3Header {
   second: number;
   encoding: number;
   sampleRatePeriod: number;
-  sampleRate: number|undefined;
   numSamples: number;
   crc: number;
   publicationVersion: number;
@@ -298,8 +294,6 @@ export class MSeed3Header {
   identifier: string;
   extraHeaders: json_object;
   dataLength: number;
-  start: moment.Moment|undefined;
-  end: moment.Moment|undefined;
 
   constructor() {
     // empty construction
@@ -364,12 +358,6 @@ export class MSeed3Header {
     header.encoding = dataView.getUint8(15);
     header.sampleRatePeriod = dataView.getFloat64(16, headerLittleEndian);
 
-    if (header.sampleRatePeriod < 0) {
-      header.sampleRate = 1 / header.sampleRatePeriod;
-    } else {
-      header.sampleRate = header.sampleRatePeriod;
-    }
-
     header.numSamples = dataView.getUint32(24, headerLittleEndian);
     header.crc = dataView.getUint32(28, headerLittleEndian);
     header.publicationVersion = dataView.getUint8(32);
@@ -377,12 +365,22 @@ export class MSeed3Header {
     header.extraHeadersLength = dataView.getUint16(34, headerLittleEndian);
     header.dataLength = dataView.getUint32(36, headerLittleEndian);
     header.identifier = makeString(dataView, 40, header.identifierLength);
-    // lazily extract json and data
-    header.start = header._startToMoment();
-    header.end = header.timeOfSample(header.numSamples - 1);
     return header;
   }
 
+  get start() {
+    return this._startToMoment();
+  }
+  get end() {
+    return this.timeOfSample(this.numSamples - 1);
+  }
+  get sampleRate() {
+    if (this.sampleRatePeriod < 0) {
+      return 1 / this.sampleRatePeriod;
+    } else {
+      return this.sampleRatePeriod;
+    }
+  }
   /**
    * Calculates size of the fixed header including the variable
    * length identifier, but without the extra headers.
@@ -714,7 +712,7 @@ export function merge(drList: Array<MSeed3Record>): Seismogram {
   drList.sort(function (a, b) {
     return a.header.start.valueOf() - b.header.start.valueOf();
   });
-  let contig = [];
+  let contig: Array<MSeed3Record> = [];
 
   for (let i = 0; i < drList.length; i++) {
     currDR = drList[i];
@@ -778,7 +776,7 @@ export function byChannel(
 export function seismogramPerChannel(
   drList: Array<MSeed3Record>,
 ): Array<Seismogram> {
-  let out = [];
+  let out: Array<Seismogram> = [];
   let byChannelMap = byChannel(drList);
   byChannelMap.forEach(segments => out.push(merge(segments)));
   return out;
@@ -812,7 +810,7 @@ export function convertMS2toMSeed3(
  */
 export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   let xHeader = new MSeed3Header();
-  let xExtras = {};
+  let xExtras: Record<string,any> = {};
   let ms2H = ms2record.header;
   xHeader.flags =
     (ms2H.activityFlags & 1) * 2 +
@@ -1181,18 +1179,19 @@ export function calculateCRC32C(
   buf: ArrayBuffer | Uint8Array,
   initial: number = 0,
 ): number {
+  let ubuf: Uint8Array;
   if (buf instanceof ArrayBuffer) {
-    buf = new Uint8Array(buf);
+    ubuf = new Uint8Array(buf);
   } else if (buf instanceof Uint8Array) {
-    // ok
+    ubuf = buf;
   } else {
     throw new Error("arg must be ArrayBuffer or Uint8Array");
   }
 
   let crc = (initial | 0) ^ -1;
 
-  for (let i = 0; i < buf.length; i++) {
-    crc = kCRCTable[(crc ^ buf[i]) & 0xff] ^ (crc >>> 8);
+  for (let i = 0; i < ubuf.length; i++) {
+    crc = kCRCTable[(crc ^ ubuf[i]) & 0xff] ^ (crc >>> 8);
     let tmp = crc;
     tmp = (tmp ^ -1) >>> 0;
 

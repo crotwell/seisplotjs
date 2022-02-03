@@ -1,5 +1,5 @@
 import type {TraveltimeJsonType} from "./traveltime";
-import {distaz} from "./distaz";
+import {distaz, DistAzOutput} from "./distaz";
 import {StartEndDuration} from "./util";
 import {TraveltimeQuery, createOriginArrival} from "./traveltime";
 import {DataSelectQuery} from "./fdsndataselect";
@@ -7,7 +7,7 @@ import {EventQuery} from "./fdsnevent";
 import {StationQuery} from "./fdsnstation";
 import {FedCatalogQuery} from "./irisfedcatalog";
 import {Quake} from "./quakeml";
-import {allStations, Network} from "./stationxml";
+import {allStations, Network, Station} from "./stationxml";
 import {SeismogramDisplayData} from "./seismogram";
 import {
   createMarkersForTravelTimes,
@@ -29,7 +29,7 @@ export class SeismogramLoader {
   _endOffset: moment.Duration;
   networkList: Promise<Array<Network>> | null;
   quakeList: Promise<Array<Quake>> | null;
-  traveltimeList: Promise<TraveltimeJsonType> | null;
+  traveltimeList: Promise<Array<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> | null;
   sddList: Promise<Array<SeismogramDisplayData>> | null;
 
   constructor(
@@ -44,7 +44,7 @@ export class SeismogramLoader {
     if (!(stationQuery instanceof StationQuery)) {
       throw new Error(
         "1st arg must be a StationQuery: " +
-          stringify(stationQuery.constructor),
+          stringify(stationQuery),
       );
     }
 
@@ -54,7 +54,7 @@ export class SeismogramLoader {
 
     if (!(eventQuery instanceof EventQuery)) {
       throw new Error(
-        "2nd arg must be a EventQuery: " + stringify(eventQuery.constructor),
+        "2nd arg must be a EventQuery: " + stringify(eventQuery),
       );
     }
 
@@ -99,7 +99,7 @@ export class SeismogramLoader {
     return this._startOffset;
   }
 
-  set startOffset(val: moment.Duration): void {
+  set startOffset(val: moment.Duration) {
     if (moment.isDuration(val)) {
       this._startOffset = val;
     } else if (typeof val === "number") {
@@ -133,7 +133,7 @@ export class SeismogramLoader {
     return this._endOffset;
   }
 
-  set endOffset(val: moment.Duration): void {
+  set endOffset(val: moment.Duration) {
     if (moment.isDuration(val)) {
       this._endOffset = val;
     } else if (typeof val === "number") {
@@ -185,7 +185,7 @@ export class SeismogramLoader {
     }
 
     this.quakeList = this.eventQuery.query();
-    let allPhaseList = [];
+    let allPhaseList: Array<string> = [];
     allPhaseList = allPhaseList.concat(
       this.startPhaseList,
       this.endPhaseList,
@@ -201,7 +201,7 @@ export class SeismogramLoader {
       .join(",");
     this.traveltimeList = RSVP.all([this.networkList, this.quakeList]).then(
       ([netList, quakeList]) => {
-        let ttpromiseList = [];
+        let ttpromiseList: Array<Promise<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> = [];
 
         for (let q of quakeList) {
           for (let s of allStations(netList)) {
@@ -235,20 +235,20 @@ export class SeismogramLoader {
         let ttjson = ttarr[2];
         let distaz = ttarr[3];
         // find earliest start and end arrival
-        let startArrival;
-        let endArrival;
+        let startArrival = null;
+        let endArrival = null;
 
         for (let pname of this.startPhaseList) {
           if (
             pname === "origin" &&
-            (!isDef(startArrival) || startArrival.time > 0)
+            (startArrival === null || startArrival.time > 0)
           ) {
             startArrival = createOriginArrival(distaz.distanceDeg);
           } else {
             for (let a of ttjson.arrivals) {
               if (
                 a.phase === pname &&
-                (!isDef(startArrival) || startArrival.time > a.time)
+                (startArrival===null || startArrival.time > a.time)
               ) {
                 startArrival = a;
               }
@@ -260,14 +260,14 @@ export class SeismogramLoader {
           // weird, but might as well allow origin to be the end phase
           if (
             pname === "origin" &&
-            (!isDef(startArrival) || startArrival.time > 0)
+            (endArrival===null || endArrival.time < 0)
           ) {
             endArrival = createOriginArrival(distaz.distanceDeg);
           } else {
             for (let a of ttjson.arrivals) {
               if (
                 a.phase === pname &&
-                (!isDef(endArrival) || endArrival.time > a.time)
+                (endArrival===null || endArrival.time < a.time)
               ) {
                 endArrival = a;
               }

@@ -140,7 +140,7 @@ export class TraveltimeQuery {
   /** @private */
   _timeoutSec: number;
 
-  constructor(host: string | null | undefined) {
+  constructor(host?: string | null) {
     this._specVersion = "1";
     this._protocol = checkProtocol();
 

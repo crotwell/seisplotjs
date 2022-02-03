@@ -1275,7 +1275,7 @@ const _grabAttribute = function _grabAttribute(
   return out;
 };
 
-const _requireAttribute = function _grabAttribute(
+const _requireAttribute = function _requireAttribute(
   xml: Element | null | void,
   tagName: string,
 ): string {
@@ -1310,5 +1310,6 @@ export const parseUtil = {
   _grabFirstElFloat: _grabFirstElFloat,
   _grabFirstElInt: _grabFirstElInt,
   _grabAttribute: _grabAttribute,
+  _requireAttribute: _requireAttribute,
   _grabAttributeNS: _grabAttributeNS,
 };

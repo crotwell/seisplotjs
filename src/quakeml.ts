@@ -5,6 +5,7 @@
  */
 import {Station, Channel} from "./stationxml";
 import {
+  isDef,
   isObject,
   isStringArg,
   isNonEmptyStringArg,
@@ -22,6 +23,9 @@ export const ANSS_NS = "http://anss.org/xmlns/event/0.1";
 export const ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1";
 export const USGS_HOST = "earthquake.usgs.gov";
 export const UNKNOWN_MAG_TYPE = "unknown";
+export const UNKNOWN_PUBLIC_ID = "unknownId";
+export const FAKE_ORIGIN_TIME = moment.utc("1900-01-01Z");
+
 // QuakeML classes
 
 /**
@@ -29,24 +33,20 @@ export const UNKNOWN_MAG_TYPE = "unknown";
  * other uses in javascript.
  */
 export class Quake {
-  eventId: string;
+  eventId: string|undefined;
   publicId: string;
-  _time: moment.Moment;
-  latitude: number;
-  longitude: number;
-  depth: number;
-  description: string;
-  magnitude: Magnitude;
-  magnitudeList: Array<Magnitude>;
-  originList: Array<Origin>;
-  pickList: Array<Pick>;
-  preferredOriginId: string | null | undefined;
-  preferredOrigin: Origin;
-  preferredMagnitudeId: string | null | undefined;
-  preferredMagnitude: Magnitude;
+  description: string = "";
+  magnitudeList: Array<Magnitude> = [];
+  originList: Array<Origin> = [];
+  pickList: Array<Pick> = [];
+  preferredOriginId: string | undefined;
+  _preferredOrigin: Origin | null = null;
+  preferredMagnitudeId: string | undefined;
+  _preferredMagnitude: Magnitude | null = null;
 
-  constructor() {
+  constructor(publicId: string) {
     // what is essential???
+    this.publicId = publicId;
   }
 
   /**
@@ -63,29 +63,14 @@ export class Quake {
       throw new Error(`Cannot extract, not a QuakeML Event: ${qml.localName}`);
     }
 
-    let out = new Quake();
 
-    let s = _grabAttribute(qml, "publicID");
-
-    if (!isNonEmptyStringArg(s)) {
-      throw new Error("Quake/Event does not have publicID");
-    }
-
-    out.publicId = s;
+    let publicId = _requireAttribute(qml, "publicID");
+    let out = new Quake(publicId);
 
     const desc = _grabFirstElText(_grabFirstEl(qml, "description"), "text");
 
     if (isStringArg(desc)) {
       out.description = desc;
-    }
-
-    let otimeStr = _grabFirstElText(
-      _grabFirstEl(_grabFirstEl(qml, "origin"), "time"),
-      "value",
-    );
-
-    if (isNonEmptyStringArg(otimeStr)) {
-      out.time = otimeStr;
     }
 
     //need picks before can do origins
@@ -120,35 +105,23 @@ export class Quake {
     if (isNonEmptyStringArg(out.preferredOriginId)) {
       for (let o of allOrigins) {
         if (o.publicId === out.preferredOriginId) {
-          out.preferredOrigin = o;
-          out.latitude = o.latitude;
-          out.longitude = o.longitude;
-          out.depth = o.depth;
-          out.time = o.time;
+          out._preferredOrigin = o;
         } else {
           util.log(
             `no preferredOriginId match: ${o.publicId} ${out.preferredOriginId}`,
           );
+          out._preferredOrigin = null;
         }
       }
-    } else if (out.originList.length > 1) {
-      const o = out.originList[0];
-      out.latitude = o.latitude;
-      out.longitude = o.longitude;
-      out.depth = o.depth;
-    }
-
-    if (allMags.length > 0) {
-      out.magnitude = allMags[0];
     }
 
     if (isNonEmptyStringArg(out.preferredMagnitudeId)) {
       for (let m of allMags) {
         if (m.publicId === out.preferredMagnitudeId) {
-          out.preferredMagnitude = m;
-          out.magnitude = m;
+          out._preferredMagnitude = m;
         } else {
           util.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`);
+          out._preferredMagnitude = null;
         }
       }
     }
@@ -200,15 +173,52 @@ export class Quake {
       }
     }
 
-    return "unknownEventId";
+    return UNKNOWN_PUBLIC_ID;
   }
 
+  get preferredOrigin(): Origin {
+    if (isDef(this._preferredOrigin)) {
+      return this._preferredOrigin;
+    } else {
+      throw new Error("No preferred origin");
+    }
+  }
+  get origin(): Origin {
+    if (isDef(this._preferredOrigin)) {
+      return this._preferredOrigin;
+    } else if (this.originList.length > 1) {
+      return this.originList[0];
+    } else {
+      throw new Error("No origins in quake");
+    }
+  }
+  get preferredMagnitude(): Magnitude {
+    if (isDef(this._preferredMagnitude)) {
+      return this._preferredMagnitude;
+    } else {
+      throw new Error("No preferred Magnitude");
+    }
+  }
+  get magnitude(): Magnitude {
+    if (isDef(this._preferredMagnitude)) {
+      return this._preferredMagnitude;
+    } else if (this.magnitudeList.length > 1) {
+      return this.magnitudeList[0];
+    } else {
+      throw new Error("No magnitudes in quake");
+    }
+  }
   get time(): moment.Moment {
-    return this._time;
+    return this.origin.time;
   }
-
-  set time(value: moment.Moment | string) {
-    this._time = moment.utc(value);
+  get latitude(): number {
+    return this.origin.latitude;
+  }
+  get longitude(): number {
+    return this.origin.longitude;
+  }
+  get depth(): number {
+    return this.origin.depth;
   }
 
   get depthKm(): number {
@@ -250,6 +260,12 @@ export class Origin {
 
   constructor() {
     // what is essential???
+    this.time = FAKE_ORIGIN_TIME;
+    this.latitude = Number.NaN;
+    this.longitude = Number.NaN;
+    this.depth = 0;
+    this.arrivalList = [];
+    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -337,6 +353,7 @@ export class Magnitude {
   constructor(mag: number, type: string) {
     this.mag = mag;
     this.type = type;
+    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -396,6 +413,7 @@ export class Arrival {
   constructor(phase: string, pick: Pick) {
     this.phase = phase;
     this.pick = pick;
+    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -468,6 +486,7 @@ export class Pick {
     this.stationCode = stationCode;
     this.locationCode = locationCode;
     this.channelCode = channelCode;
+    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -577,7 +596,7 @@ const _grabFirstElNS = function (
   xml: Element | null | void,
   namespace: string,
   tagName: string,
-): Element | void {
+): Element | undefined {
   let out = undefined;
 
   if (isObject(xml)) {
@@ -598,7 +617,7 @@ const _grabFirstElNS = function (
 const _grabFirstEl = function (
   xml: Element | null | void,
   tagName: string,
-): Element | void {
+): Element | undefined {
   let out = undefined;
 
   if (isObject(xml)) {
@@ -619,13 +638,14 @@ const _grabFirstEl = function (
 const _grabFirstElText = function (
   xml: Element | null | void,
   tagName: string,
-): string | void {
+): string | undefined {
   let out = undefined;
 
   let el = _grabFirstEl(xml, tagName);
 
   if (isObject(el)) {
     out = el.textContent;
+    if (out === null) {out = undefined;}
   }
 
   return out;
@@ -634,7 +654,7 @@ const _grabFirstElText = function (
 const _grabFirstElInt = function (
   xml: Element | null | void,
   tagName: string,
-): number | void {
+): number | undefined {
   let out = undefined;
 
   let el = _grabFirstElText(xml, tagName);
@@ -649,7 +669,7 @@ const _grabFirstElInt = function (
 const _grabFirstElFloat = function (
   xml: Element | null | void,
   tagName: string,
-): number | void {
+): number | undefined {
   let out = undefined;
 
   let el = _grabFirstElText(xml, tagName);
@@ -664,7 +684,7 @@ const _grabFirstElFloat = function (
 const _grabAttribute = function (
   xml: Element | null | void,
   tagName: string,
-): string | void {
+): string | undefined {
   let out = undefined;
 
   if (isObject(xml)) {
@@ -678,11 +698,22 @@ const _grabAttribute = function (
   return out;
 };
 
+const _requireAttribute = function _requireAttribute(
+  xml: Element | null | void,
+  tagName: string,
+): string {
+  let out = _grabAttribute(xml, tagName);
+  if (typeof out !== "string") {
+    throw new Error(`Attribute ${tagName} not found.`);
+  }
+  return out;
+};
+
 const _grabAttributeNS = function (
   xml: Element | null | void,
   namespace: string,
   tagName: string,
-): string | void {
+): string | undefined {
   let out = undefined;
 
   if (isObject(xml)) {
@@ -703,5 +734,6 @@ export const parseUtil = {
   _grabFirstElFloat: _grabFirstElFloat,
   _grabFirstElInt: _grabFirstElInt,
   _grabAttribute: _grabAttribute,
+  _requireAttribute: _requireAttribute,
   _grabAttributeNS: _grabAttributeNS,
 };

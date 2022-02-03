@@ -30,7 +30,7 @@ export class SacPoleZero {
   constant: number;
 
   /** number of zeros added to convert to displacement, for debugging */
-  gamma: number;
+  gamma: number|undefined;
 
   /** hertz/radian factor, for debugging */
   mulFactor: number;
@@ -45,6 +45,9 @@ export class SacPoleZero {
     this.poles = poles;
     this.zeros = zeros;
     this.constant = constant;
+    this.mulFactor = 1;
+    this.sd = 1;
+    this.A0 = 1;
   }
 
   toString(): string {
@@ -170,8 +173,8 @@ export class SacPoleZero {
    */
   static parse(data: string): SacPoleZero {
     let pz = {
-      zeros: [],
-      poles: [],
+      zeros: Array<Complex>(0),
+      poles: Array<Complex>(0),
       constant: 1,
     };
     let lines = data.split("\n");

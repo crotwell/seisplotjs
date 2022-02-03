@@ -29,14 +29,14 @@ export type PlotDataType = {
 export function createPlotsBySelectorPromise(
   selector: string,
 ): Promise<Array<PlotDataType>> {
-  let out = [];
+  let out: Array<Promise<PlotDataType>> = [];
   d3.selectAll(selector).each(function () {
     let svgParent = d3.select(this);
     let url;
     let startAttr = svgParent.attr("start") ? svgParent.attr("start") : null;
     let endAttr = svgParent.attr("end") ? svgParent.attr("end") : null;
     let duration = svgParent.attr("duration");
-    let timeWindow = null;
+    let timeWindow: StartEndDuration|null = null;
 
     if (isDef(startAttr) || isDef(endAttr) || isDef(duration)) {
       timeWindow = new StartEndDuration(startAttr, endAttr, duration);

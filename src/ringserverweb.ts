@@ -200,9 +200,10 @@ export class RingserverConnection {
     const url = this.formStreamsURL(queryParams);
     return this.pullRaw(url).then(raw => {
       let lines = raw.split("\n");
-      let out = {};
-      out.accessTime = moment.utc();
-      out.streams = [];
+      let out: StreamsResult = {
+        accessTime: moment.utc(),
+        streams: [],
+      };
 
       for (let line of lines) {
         if (line.length === 0) {
@@ -392,21 +393,20 @@ export type NSLCType = {
  */
 export function nslcSplit(id: string): NSLCType {
   let split = id.split("/");
-  let out = {};
-  out.type = split[1];
   let nslc = split[0].split("_");
 
   if (nslc.length === 4) {
     // assume net, station, loc, chan
-    out.networkCode = nslc[0];
-    out.stationCode = nslc[1];
-    out.locationCode = nslc[2];
-    out.channelCode = nslc[3];
+    return {
+      type: split[1],
+      networkCode: nslc[0],
+      stationCode: nslc[1],
+      locationCode: nslc[2],
+      channelCode: nslc[3],
+    };
   } else {
     throw new Error("tried to split, did not find 4 elements in array: " + id);
   }
-
-  return out;
 }
 
 /**

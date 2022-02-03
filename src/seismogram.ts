@@ -50,12 +50,12 @@ export class SeismogramSegment {
   _startTime: moment.Moment;
   _endTime_cache: null | moment.Moment;
   _endTime_cache_numPoints: number;
-  networkCode: string;
-  stationCode: string;
-  locationCode: string;
-  channelCode: string;
+  networkCode: string|null = null;
+  stationCode: string|null = null;
+  locationCode: string|null = null;
+  channelCode: string|null = null;
   yUnit: string;
-  _highlow: HighLowType;
+  _highlow: HighLowType|undefined;
 
   constructor(
     yArray:
@@ -86,6 +86,9 @@ export class SeismogramSegment {
       // numbers in js are 64bit, so...
       this._y = Float64Array.from((yArray as any) as Array<number>);
       this._compressed = null;
+    } else {
+      this._compressed = null;
+      this._y = null;
     }
 
     this._sampleRate = sampleRate;
@@ -217,23 +220,23 @@ export class SeismogramSegment {
     return out;
   }
 
-  get netCode(): string {
+  get netCode(): string|null {
     return this.networkCode;
   }
 
-  get staCode(): string {
+  get staCode(): string|null {
     return this.stationCode;
   }
 
-  get locId(): string {
+  get locId(): string|null {
     return this.locationCode;
   }
 
-  get locCode(): string {
+  get locCode(): string|null {
     return this.locationCode;
   }
 
-  get chanCode(): string {
+  get chanCode(): string|null {
     return this.channelCode;
   }
 
@@ -367,18 +370,16 @@ export class SeismogramSegment {
   }
 
   clone(): SeismogramSegment {
-    let clonedData = this._y;
-
-    if (clonedData !== null) {
-      clonedData = clonedData.slice();
+    let out: SeismogramSegment;
+    if (isDef(this._y)) {
+      out = this.cloneWithNewData(this._y.slice());
     } else if (this.isEncoded()) {
       // shallow copy array, assume Encoded is immutable
-      clonedData = Array.from(this.getEncoded());
+      out = this.cloneWithNewData(Array.from(this.getEncoded()));
     } else {
       throw new Error("no _y and no _compressed");
     }
-
-    return this.cloneWithNewData(clonedData);
+    return out;
   }
 
   cloneWithNewData(
@@ -473,7 +474,7 @@ export class Seismogram {
     }
 
     this.checkAllSimilar();
-    this.findStartEnd();
+    [this._startTime, this._endTime] = this.findStartEnd();
   }
 
   checkAllSimilar() {
@@ -522,18 +523,19 @@ export class Seismogram {
     }
   }
 
-  findStartEnd() {
+  findStartEnd(): [moment.Moment, moment.Moment] {
     let allStart = this._segmentArray.map(seis => {
       return moment.utc(seis.startTime);
     });
 
-    this._startTime = moment.min(allStart);
+    let startTime = moment.min(allStart);
 
     let allEnd = this._segmentArray.map(seis => {
       return moment.utc(seis.endTime);
     });
 
-    this._endTime = moment.max(allEnd);
+    let endTime = moment.max(allEnd);
+    return [startTime, endTime];
   }
 
   findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
@@ -594,35 +596,35 @@ export class Seismogram {
     return this.timeRange;
   }
 
-  get networkCode(): string {
+  get networkCode(): string|null {
     return this._segmentArray[0].networkCode;
   }
 
-  set networkCode(value: string) {
+  set networkCode(value: string|null) {
     this._segmentArray.forEach(s => (s.networkCode = value));
   }
 
-  get stationCode(): string {
+  get stationCode(): string|null {
     return this._segmentArray[0].stationCode;
   }
 
-  set stationCode(value: string) {
+  set stationCode(value: string|null) {
     this._segmentArray.forEach(s => (s.stationCode = value));
   }
 
-  get locationCode(): string {
+  get locationCode(): string|null {
     return this._segmentArray[0].locationCode;
   }
 
-  set locationCode(value: string) {
+  set locationCode(value: string|null) {
     this._segmentArray.forEach(s => (s.locationCode = value));
   }
 
-  get channelCode(): string {
+  get channelCode(): string|null {
     return this._segmentArray[0].channelCode;
   }
 
-  set channelCode(value: string) {
+  set channelCode(value: string|null) {
     this._segmentArray.forEach(s => (s.channelCode = value));
   }
 
@@ -630,7 +632,7 @@ export class Seismogram {
     return this._segmentArray[0].sampleRate;
   }
 
-  get yUnit(): string {
+  get yUnit(): string|null {
     return this._segmentArray[0].yUnit;
   }
 
@@ -695,7 +697,7 @@ export class Seismogram {
     if (out && out._segmentArray) {
       let cutSeisArray = this._segmentArray
         .map(seg => seg.cut(timeWindow))
-        .filter(Boolean);
+        .filter(isDef);
 
       if (cutSeisArray.length > 0) {
         out = new Seismogram(cutSeisArray);
@@ -743,19 +745,20 @@ export class Seismogram {
   break(duration: moment.Duration): void {
     if (this._segmentArray) {
       let breakStart = moment.utc(this.startTime);
-      let out = [];
+      let out: Array<SeismogramSegment> = [];
 
       while (breakStart.isBefore(this.endTime)) {
         let breakWindow = new StartEndDuration(breakStart, null, duration);
 
-        let cutSeisArray = this._segmentArray.map(seg => seg.cut(breakWindow));
+        let cutSeisArray: Array<SeismogramSegment> =
+          this._segmentArray.map(seg => seg.cut(breakWindow)).filter(isDef);
 
         out = out.concat(cutSeisArray);
         breakStart.add(duration);
       }
 
       // check for null, filter true if seg not null
-      out = out.filter(Boolean);
+      out = out.filter(isDef);
       this._segmentArray = out;
     }
   }
@@ -804,7 +807,7 @@ export class Seismogram {
       outArray = new Float64Array(this.numPoints);
     } else {
       throw new Error(
-        `data not one of Int32Array, Float32Array or Float64Array: ${this._segmentArray[0].y.constructor.name}`,
+        `data not one of Int32Array, Float32Array or Float64Array: ${this._segmentArray[0].y}`,
       );
     }
 
@@ -900,19 +903,11 @@ export function ensureIsSeismogram(
     } else if (seisSeismogram instanceof SeismogramSegment) {
       return new Seismogram([seisSeismogram]);
     } else {
-      let s = typeof seisSeismogram;
-
-      if (seisSeismogram.prototype && seisSeismogram.prototype.constructor) {
-        s += " " + seisSeismogram.prototype.constructor.name;
-      } else {
-        s += " " + seisSeismogram;
-      }
-
-      throw new Error("must be Seismogram or SeismogramSegment but " + s);
+      throw new Error("must be Seismogram or SeismogramSegment but " + stringify(seisSeismogram));
     }
   } else {
     throw new Error(
-      "must be Seismogram or SeismogramSegment but not an object",
+      "must be Seismogram or SeismogramSegment but not an object: "+seisSeismogram,
     );
   }
 }
@@ -1044,7 +1039,7 @@ export class SeismogramDisplayData {
   ) {
     if (Array.isArray(ttimes)) {
       ttimes.forEach(m => this.traveltimeList.push(m));
-    } else if (ttimes.arrivals) {
+    } else if ("arrivals" in ttimes ) { //  TraveltimeJsonType
       ttimes.arrivals.forEach(m => this.traveltimeList.push(m));
     } else {
       this.traveltimeList.push(ttimes);
@@ -1103,15 +1098,18 @@ export class SeismogramDisplayData {
    * @returns network code
    */
   get networkCode(): string {
+    let out: string|null = null;
     if (isDef(this.channel)) {
-      return this.channel.networkCode;
+      out = this.channel.networkCode;
     } else if (isDef(this._seismogram)) {
-      return this._seismogram.networkCode;
+      out = this._seismogram.networkCode;
     } else if (isDef(this.channelCodesHolder)) {
-      return this.channelCodesHolder.networkCode;
-    } else {
-      return "unknown";
+      out = this.channelCodesHolder.networkCode;
     }
+    if ( ! isDef(out)) {
+      out = "unknown";
+    }
+    return out;
   }
 
   /**
@@ -1121,15 +1119,18 @@ export class SeismogramDisplayData {
    * @returns station code
    */
   get stationCode(): string {
+    let out: string|null = null;
     if (isDef(this.channel)) {
-      return this.channel.stationCode;
+      out = this.channel.stationCode;
     } else if (isDef(this._seismogram)) {
-      return this._seismogram.stationCode;
+      out = this._seismogram.stationCode;
     } else if (isDef(this.channelCodesHolder)) {
-      return this.channelCodesHolder.stationCode;
-    } else {
-      return "unknown";
+      out = this.channelCodesHolder.stationCode;
     }
+    if ( ! isDef(out)) {
+      out = "unknown";
+    }
+    return out;
   }
 
   /**
@@ -1139,15 +1140,18 @@ export class SeismogramDisplayData {
    * @returns location code
    */
   get locationCode(): string {
+    let out: string|null = null;
     if (isDef(this.channel)) {
-      return this.channel.locationCode;
+      out = this.channel.locationCode;
     } else if (isDef(this._seismogram)) {
-      return this._seismogram.locationCode;
+      out = this._seismogram.locationCode;
     } else if (isDef(this.channelCodesHolder)) {
-      return this.channelCodesHolder.locationCode;
-    } else {
-      return "unknown";
+      out = this.channelCodesHolder.locationCode;
     }
+    if ( ! isDef(out)) {
+      out = "unknown";
+    }
+    return out;
   }
 
   /**
@@ -1157,15 +1161,18 @@ export class SeismogramDisplayData {
    * @returns channel code
    */
   get channelCode(): string {
+    let out: string|null = null;
     if (isDef(this.channel)) {
-      return this.channel.channelCode;
+      out = this.channel.channelCode;
     } else if (isDef(this._seismogram)) {
-      return this._seismogram.channelCode;
+      out = this._seismogram.channelCode;
     } else if (isDef(this.channelCodesHolder)) {
-      return this.channelCodesHolder.channelCode;
-    } else {
-      return "unknown";
+      out = this.channelCodesHolder.channelCode;
     }
+    if ( ! isDef(out)) {
+      out = "unknown";
+    }
+    return out;
   }
 
   /**
@@ -1275,7 +1282,7 @@ export class SeismogramDisplayData {
   }
 
   alignPhaseTime(phaseRegExp: RegExp | string) {
-    let intPhaseRegExp;
+    let intPhaseRegExp: RegExp;
 
     if (typeof phaseRegExp === "string") {
       intPhaseRegExp = new RegExp(phaseRegExp);
@@ -1433,15 +1440,15 @@ export class SeismogramDisplayData {
     let out = new SeismogramDisplayData(this.timeWindow);
     Object.getOwnPropertyNames(this).forEach(name => {
       if (name === "_seismogram") {
-        out._seismogram = seis; // $FlowFixMe
+        out._seismogram = seis; // @ts-ignore
       } else if (moment.isMoment(this[name])) {
-        // $FlowFixMe
-        out[name] = moment.utc(this[name]); // $FlowFixMe
+        // @ts-ignore
+        out[name] = moment.utc(this[name]); // @ts-ignore
       } else if (Array.isArray(this[name])) {
-        // $FlowFixMe
+        // @ts-ignore
         out[name] = this[name].slice();
       } else {
-        // $FlowFixMe
+        // @ts-ignore
         out[name] = this[name];
       }
     });

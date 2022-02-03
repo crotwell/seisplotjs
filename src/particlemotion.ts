@@ -6,7 +6,7 @@
 import * as d3 from "d3";
 import {createPlotsBySelectorPromise} from "./plotutil";
 import {insertCSS} from "./cssutil";
-import {SeismographConfig} from "./seismographconfig";
+import {SeismographConfig, numberFormatWrapper } from "./seismographconfig";
 import {
   SeismogramSegment,
   Seismogram,
@@ -121,8 +121,8 @@ export class ParticleMotion {
   timeWindow: StartEndDuration;
   width: number;
   height: number;
-  outerWidth: number;
-  outerHeight: number;
+  outerWidth: number = -1;
+  outerHeight: number = -1;
   xScale: any;
   xScaleRmean: any;
   xAxis: any;
@@ -139,7 +139,7 @@ export class ParticleMotion {
     seismographConfig: SeismographConfig,
     xSeisData: SeismogramDisplayData | Seismogram,
     ySeisData: SeismogramDisplayData | Seismogram,
-  ): void {
+  ) {
     if (!isDef(inSvgParent)) {
       throw new Error("inSvgParent cannot be null");
     }
@@ -158,12 +158,16 @@ export class ParticleMotion {
       this.xSeisData = SeismogramDisplayData.fromSeismogram(xSeisData);
     } else if (xSeisData instanceof SeismogramDisplayData) {
       this.xSeisData = xSeisData;
+    } else {
+      throw new Error("xSeisData must be Seismogram or SeismogramDisplayData");
     }
 
     if (ySeisData instanceof Seismogram) {
       this.ySeisData = SeismogramDisplayData.fromSeismogram(ySeisData);
     } else if (ySeisData instanceof SeismogramDisplayData) {
       this.ySeisData = ySeisData;
+    } else {
+      throw new Error("ySeisData must be Seismogram or SeismogramDisplayData");
     }
 
     if (isDef(seismographConfig)) {
@@ -174,7 +178,7 @@ export class ParticleMotion {
       this.seismographConfig.yLabel = this.ySeisData.channelCode;
     }
 
-    this.calcTimeWindow();
+    this.timeWindow = this.calcTimeWindow();
     this.svg = inSvgParent.append("svg");
     this.svg.attr("version", "1.1");
     this.svg.classed("particleMotion", true);
@@ -190,17 +194,17 @@ export class ParticleMotion {
     if (this.seismographConfig.doRMean) {
       this.xAxis = d3
         .axisBottom(this.xScaleRmean)
-        .tickFormat(this.seismographConfig.yScaleFormat);
+        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
       this.yAxis = d3
         .axisLeft(this.yScaleRmean)
-        .tickFormat(this.seismographConfig.yScaleFormat);
+        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
     } else {
       this.xAxis = d3
         .axisBottom(this.xScale)
-        .tickFormat(this.seismographConfig.yScaleFormat);
+        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
       this.yAxis = d3
         .axisLeft(this.yScale)
-        .tickFormat(this.seismographConfig.yScaleFormat);
+        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
     }
 
     this.width = 100;
@@ -408,7 +412,7 @@ export class ParticleMotion {
     this.rescaleAxis();
   }
 
-  calcTimeWindow(): void {
+  calcTimeWindow(): StartEndDuration {
     let tw = null;
 
     if (this.seismographConfig.fixedTimeScale) {
@@ -425,6 +429,7 @@ export class ParticleMotion {
     }
 
     this.timeWindow = tw;
+    return tw;
   }
 
   calcWidthHeight(nOuterWidth: number, nOuterHeight: number) {
