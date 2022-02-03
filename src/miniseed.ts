@@ -504,7 +504,7 @@ export class BTime {
    * @returns         BTime as a moment
    */
   toMoment(): moment.Moment {
-    let m = new moment.utc([this.year, 0, 1, this.hour, this.min, this.sec, 0]);
+    let m = moment.utc([this.year, 0, 1, this.hour, this.min, this.sec, 0]);
     m.add(Math.round(this.tenthMilli / 10), "ms");
     m.dayOfYear(this.jday);
 
@@ -656,7 +656,7 @@ export function byChannel(
 export function seismogramPerChannel(
   drList: Array<DataRecord>,
 ): Array<Seismogram> {
-  let out = [];
+  let out: Array<Seismogram> = [];
   let byChannelMap = byChannel(drList);
   byChannelMap.forEach(segments => out.push(merge(segments)));
   return out;

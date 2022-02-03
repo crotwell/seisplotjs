@@ -154,9 +154,8 @@ export class TraveltimeQuery {
     this._phases = null;
     this._nodata = null;
 
-    if (!isNonEmptyStringArg(host)) {
-      this._host = IRIS_HOST;
-    } else {
+    this._host = IRIS_HOST;
+    if (isNonEmptyStringArg(host)) {
       this._host = host;
     }
 

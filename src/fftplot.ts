@@ -10,6 +10,7 @@ import type {Complex} from "./oregondsputil";
 import * as d3 from "d3";
 import {insertCSS, G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
 import {drawAxisLabels} from "./axisutil";
+import {isDef} from "./util";
 
 /**
  * Create a single amplitude plot of FFT data.
@@ -57,31 +58,38 @@ export function createOverlayFFTPlot(
  * in log instead of linearly for plotting PolesZeros stages.
  */
 export class FreqAmp {
-  freq: Array<number>;
+  freq: Float32Array;
   values: Array<Complex>;
 
   /** optional units of the original data for display purposes. */
   inputUnits: string;
   seismogramDisplayData: null | SeismogramDisplayData;
 
-  constructor(freq: Array<number>, values: Array<Complex>) {
+  constructor(freq: Float32Array, values: Array<Complex>) {
     this.freq = freq;
     this.values = values;
     this.inputUnits = ""; // leave blank unless set manually
 
     this.seismogramDisplayData = null;
+    if (freq.length !== values.length) {
+      throw new Error(`Frequencies and complex values must have same length: ${freq.length} ${values.length}`);
+    }
   }
 
-  frequencies(): Array<number> {
+  frequencies(): Float32Array {
     return this.freq;
   }
 
-  amplitudes(): Array<number> {
-    return this.values.map(c => c.abs());
+  amplitudes(): Float32Array {
+    const out = new Float32Array(this.values.length);
+    this.values.forEach((c,i) => out[i] = c.abs());
+    return out;
   }
 
-  phases(): Array<number> {
-    return this.values.map(c => c.angle());
+  phases(): Float32Array {
+    const out = new Float32Array(this.values.length);
+    this.values.forEach((c,i) => out[i] = c.angle());
+    return out;
   }
 
   get numFrequencies(): number {
@@ -183,7 +191,7 @@ export class FFTPlot {
         maxFFTAmpLen = ap.numFrequencies;
       }
 
-      let ampSlice;
+      let ampSlice: Float32Array;
 
       if (this.amplitude) {
         ampSlice = ap.amplitudes();
@@ -202,7 +210,7 @@ export class FFTPlot {
         // replace zero with smallest non-zero / 10 for loglog plot
         currExtent[0] =
           0.1 *
-          ampSlice.reduce((acc, curr) => {
+          ampSlice.reduce(function(acc: number, curr: number): number {
             if (curr > 0 && curr < acc) {
               return curr;
             } else {
@@ -223,10 +231,9 @@ export class FFTPlot {
       }
     }
 
-    if (!extentFFTData) {
-      extentFFTData = d3.extent([0.1, 1]);
+    if (!extentFFTData || extentFFTData[0] === undefined || extentFFTData[1] === undefined ) {
+      extentFFTData = [0.1, 1];
     }
-
     if ((extentFFTData[1] - extentFFTData[0]) / extentFFTData[1] < 1) {
       extentFFTData = d3.extent(
         [
@@ -337,11 +344,11 @@ export class FFTPlot {
         ampSlice = ampSlice.slice(1);
       }
 
-      let line = d3.line();
-      line.x(function (d, i) {
+      let line = d3.line<number>();
+      line.x(function (d: number, i: number) {
         return that.xScale(freqSlice[i]);
       });
-      line.y(function (d) {
+      line.y(function (d: number) {
         if (d !== 0.0 && !isNaN(d)) {
           return that.yScale(d);
         } else {

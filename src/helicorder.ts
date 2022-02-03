@@ -304,9 +304,10 @@ export class HeliTimeRange extends StartEndDuration {
     startTime: moment.Moment | null,
     endTime: moment.Moment | null,
     duration: number | null = null,
-    clockOffset?: number | null = 0,
+    clockOffset: number | null = 0,
   ) {
     super(startTime, endTime, duration, clockOffset);
+    this.lineNumber = 0;
   }
 }
 

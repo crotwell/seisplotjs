@@ -25,6 +25,7 @@ import {
 // special due to flow
 import {
   doStringGetterSetter,
+  doBoolGetterSetter,
   doIntGetterSetter,
   doFloatGetterSetter,
   doMomentGetterSetter,
@@ -234,7 +235,7 @@ export class FedCatalogQuery {
     if (!(stationQuery instanceof StationQuery)) {
       throw new Error(
         "1st arg must be a StationQuery: " +
-          stringify(stationQuery.constructor),
+          stringify(stationQuery),
       );
     }
 
@@ -344,16 +345,7 @@ export class FedCatalogQuery {
    * @returns new value if getting, this if setting
    */
   specVersion(value?: number): number | FedCatalogQuery {
-    if (hasArgs(value)) {
-      this._specVersion = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._specVersion;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+    return doIntGetterSetter(this, "specVersion", value);
   }
 
   /**
@@ -607,16 +599,7 @@ export class FedCatalogQuery {
    * @returns new value if getting, this if setting
    */
   includeRestricted(value?: boolean): boolean | FedCatalogQuery {
-    if (hasNoArgs(value)) {
-      return this._includeRestricted;
-    } else if (hasArgs(value)) {
-      this._includeRestricted = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includeRestricted", value);
   }
 
   /**
@@ -626,16 +609,7 @@ export class FedCatalogQuery {
    * @returns new value if getting, this if setting
    */
   includeAvailability(value?: boolean): boolean | FedCatalogQuery {
-    if (hasNoArgs(value)) {
-      return this._includeAvailability;
-    } else if (hasArgs(value)) {
-      this._includeAvailability = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "includeAvailability", value);
   }
 
   /**
@@ -665,16 +639,7 @@ export class FedCatalogQuery {
    * @returns new value if getting, this if setting
    */
   matchTimeseries(value?: boolean): boolean | FedCatalogQuery {
-    if (hasNoArgs(value)) {
-      return this._matchTimeseries;
-    } else if (hasArgs(value)) {
-      this._matchTimeseries = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or boolean, but was " + typeof value,
-      );
-    }
+    return doBoolGetterSetter(this, "matchTimeseries", value);
   }
 
   /**
@@ -684,16 +649,7 @@ export class FedCatalogQuery {
    * @returns new value if getting, this if setting
    */
   timeout(value?: number): number | FedCatalogQuery {
-    if (hasNoArgs(value)) {
-      return this._timeoutSec;
-    } else if (isNumArg(value)) {
-      this._timeoutSec = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+    return doFloatGetterSetter(this, "timeoutSec", value);
   }
 
   /**
@@ -792,7 +748,7 @@ export class FedCatalogQuery {
         );
       })
       .then(netArrayArray => {
-        let out = [];
+        let out: Array<Network> = [];
         netArrayArray.forEach(netArray => {
           netArray.forEach(net => {
             out.push(net);
@@ -815,8 +771,7 @@ export class FedCatalogQuery {
         r.stationQuery = stationQuery;
         fedCatalogResult.params.forEach((v, k) => {
           const field = `_${k}`;
-          // $FlowIgnore[prop-missing] dynamic setting of field
-          // $FlowIgnore[incompatible-use]
+          // @ts-ignore
           stationQuery[field] = v;
         });
 
@@ -863,8 +818,7 @@ export class FedCatalogQuery {
       r.dataSelectQuery = dataSelectQuery;
       fedCatalogResult.params.forEach((k, v) => {
         const field = `_${k}`;
-        // $FlowIgnore[prop-missing] dynamic setting of field
-        // $FlowIgnore[incompatible-use]
+        // @ts-ignore
         dataSelectQuery[field] = v;
       });
 
@@ -933,7 +887,7 @@ export class FedCatalogQuery {
         }
       }),
     ).then(sddArrayArray => {
-      let out = [];
+      let out: Array<SeismogramDisplayData> = [];
       sddArrayArray.forEach(sddArray => {
         sddArray.forEach(sdd => {
           out.push(sdd);

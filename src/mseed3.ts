@@ -289,7 +289,7 @@ export class MSeed3Header {
   second: number;
   encoding: number;
   sampleRatePeriod: number;
-  sampleRate: number;
+  sampleRate: number|undefined;
   numSamples: number;
   crc: number;
   publicationVersion: number;
@@ -298,8 +298,8 @@ export class MSeed3Header {
   identifier: string;
   extraHeaders: json_object;
   dataLength: number;
-  start: moment.Moment;
-  end: moment.Moment;
+  start: moment.Moment|undefined;
+  end: moment.Moment|undefined;
 
   constructor() {
     // empty construction
@@ -335,7 +335,7 @@ export class MSeed3Header {
     const header = new MSeed3Header();
     header.recordIndicator = makeString(dataView, 0, 2);
 
-    if (!header.recordIndicator === "MS") {
+    if (header.recordIndicator !== "MS") {
       throw new Error(
         "First 2 bytes of record should be MS but found " +
           header.recordIndicator,
@@ -548,7 +548,7 @@ export class MSeed3Header {
    * @returns         start time as moment
    */
   _startToMoment(): moment.Moment {
-    let m = new moment.utc([
+    let m = moment.utc([
       this.year,
       0,
       1,
