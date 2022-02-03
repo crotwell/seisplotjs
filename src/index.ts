@@ -21,7 +21,6 @@ import * as fft from "./fft";
 import * as fftplot from "./fftplot";
 import * as handlebarshelpers from "./handlebarshelpers";
 import * as helicorder from "./helicorder";
-import * as knownDataCenters from "./knowndatacenters";
 import * as leafletutil from "./leafletutil";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
@@ -71,7 +70,6 @@ export {
   handlebarshelpers,
   helicorder,
   filter,
-  knownDataCenters,
   leafletutil,
   miniseed,
   mseed3,
