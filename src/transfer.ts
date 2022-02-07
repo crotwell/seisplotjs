@@ -9,7 +9,7 @@ import {SacPoleZero} from "./sacpolezero";
 import {Response, PolesZeros} from "./stationxml";
 import Qty from "js-quantities";
 import {createComplex} from "./oregondsputil";
-import type {Complex} from "./oregondsputil";
+import * as OregonDSPTop from "oregondsp";
 
 /**
  * Applies response, poles and zeros along with overall gain to the seismogram.
@@ -237,7 +237,7 @@ export function combine(
 export function evalPoleZeroInverse(
   sacPoleZero: SacPoleZero,
   freq: number,
-): Complex {
+): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex {
   return sacPoleZero.evalPoleZeroInverse(freq);
 }
 
@@ -460,8 +460,8 @@ export function convertPoleZeroToSacStyle(
   return sacPZ;
 }
 export function calc_A0(
-  poles: Array<Complex>,
-  zeros: Array<Complex>,
+  poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>,
+  zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>,
   ref_freq: number,
 ): number {
   let numer = createComplex(1, 0);

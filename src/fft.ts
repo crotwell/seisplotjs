@@ -4,9 +4,13 @@
  * http://www.seis.sc.edu
  */
 import {Seismogram, SeismogramDisplayData} from "./seismogram";
-import type {Complex} from "./oregondsputil";
-import {OregonDSP, createComplex} from "./oregondsputil";
+//import type {Complex} from "./oregondsputil";
+import { createComplex, complexFromPolar} from "./oregondsputil";
 import {isDef} from "./util";
+import * as OregonDSPTop from "oregondsp";
+const oregondsp = OregonDSPTop.com.oregondsp.signalProcessing;
+type ComplexType = typeof OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex;
+const Complex = OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex;
 
 /**
  * A higher level function to calculate DFT. Returns a
@@ -65,7 +69,7 @@ export function calcDFT(
     N = 2 * N;
   }
 
-  let dft = new OregonDSP.fft.RDFT(log2N);
+  let dft = new oregondsp.fft.RDFT(log2N);
   let inArray = new Float32Array(N);
   inArray.fill(0);
 
@@ -79,7 +83,7 @@ export function calcDFT(
 }
 
 /**
- * Calculates the inverse discrete fourier transform using the OregonDSP library.
+ * Calculates the inverse discrete fourier transform using the oregondsp library.
  *
  * @param   packedFreq DFT as packed array Float32Array
  * @param   numPoints     number of points in original timeseries array.
@@ -110,7 +114,7 @@ export function inverseDFT(
     throw new Error("power of two check fails: " + N + " " + packedFreq.length);
   }
 
-  let dft = new OregonDSP.fft.RDFT(log2N);
+  let dft = new oregondsp.fft.RDFT(log2N);
   let out = new Float32Array(N).fill(0);
   dft.evaluateInverse(packedFreq, out);
   return out.slice(0, numPoints);
@@ -175,7 +179,7 @@ export class FFTResult {
    * @returns               FFTResult
    */
   static createFromComplex(
-    complexArray: Array<Complex>,
+    complexArray: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>,
     origLength: number,
     sampleRate: number,
   ): FFTResult {
@@ -215,7 +219,7 @@ export class FFTResult {
     }
     let modComplex = new Array(amp.length);
     for (let i = 0; i < amp.length; i++) {
-      modComplex[i] = OregonDSP.filter.iir.Complex.Companion.ComplexFromPolar(
+      modComplex[i] = complexFromPolar(
         amp[i],
         phase[i],
       );
@@ -238,8 +242,8 @@ export class FFTResult {
     }
   }
 
-  asComplex(): Array<Complex> {
-    const complexArray = [];
+  asComplex(): Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex> {
+    const complexArray: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex> = [];
     const L = this.packedFreq.length;
     complexArray.push(createComplex(this.packedFreq[0], 0));
     for (let i = 1; i < this.packedFreq.length / 2; i++) {

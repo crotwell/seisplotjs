@@ -15,7 +15,7 @@ import {
   rethrowWithMessage,
 } from "./util";
 import {createComplex} from "./oregondsputil";
-import type {Complex} from "./oregondsputil";
+import * as OregonDSPTop from "oregondsp";
 import moment from "moment";
 
 /** xml namespace for stationxml */
@@ -434,8 +434,8 @@ export class PolesZeros extends AbstractFilterType {
   pzTransferFunctionType: string;
   normalizationFactor: number;
   normalizationFrequency: number;
-  zeros: Array<Complex>;
-  poles: Array<Complex>;
+  zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
+  poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
 
   constructor(inputUnits: string, outputUnits: string) {
     super(inputUnits, outputUnits);
@@ -1110,7 +1110,7 @@ export function convertToGain(gainXml: Element): Gain {
  * @param   el xml element
  * @returns     Complex instance
  */
-export function extractComplex(el: Element): Complex {
+export function extractComplex(el: Element): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex {
   const re = _grabFirstElFloat(el, "Real");
 
   const im = _grabFirstElFloat(el, "Imaginary");

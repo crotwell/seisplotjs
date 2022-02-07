@@ -4,6 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {createComplex} from "./oregondsputil";
+import * as OregonDSPTop from "oregondsp";
 import type {Complex} from "./oregondsputil";
 import {isNumArg, stringify} from "./util";
 
@@ -17,12 +18,12 @@ export class SacPoleZero {
   /**
    * Complex poles
    */
-  poles: Array<Complex>;
+  poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
 
   /**
    * Complex zeros
    */
-  zeros: Array<Complex>;
+  zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
 
   /**
    * Scalar overall gain
@@ -41,7 +42,7 @@ export class SacPoleZero {
   /** normalization factor for poles and zeros accounting for gamma, for debugging */
   A0: number;
 
-  constructor(poles: Array<Complex>, zeros: Array<Complex>, constant: number) {
+  constructor(poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>, zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>, constant: number) {
     this.poles = poles;
     this.zeros = zeros;
     this.constant = constant;
@@ -81,7 +82,7 @@ export class SacPoleZero {
     return s.join("\n");
   }
 
-  evalPoleZeroInverse(freq: number): Complex {
+  evalPoleZeroInverse(freq: number): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex {
     const s = createComplex(0, 2 * Math.PI * freq);
     let zeroOut = createComplex(1, 0);
     let poleOut = createComplex(1, 0);
@@ -156,7 +157,7 @@ export class SacPoleZero {
    * @param freqs frequencies to compute
    * @returns  frequency response
    */
-  calcForDisplay(freqs: Array<number>): Array<Complex> {
+  calcForDisplay(freqs: Array<number>): Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex> {
     let out = freqs.map(freq => {
       let respAtS = this.evalPoleZeroInverse(freq);
       respAtS = createComplex(1, 0).overComplex(respAtS);
@@ -173,8 +174,8 @@ export class SacPoleZero {
    */
   static parse(data: string): SacPoleZero {
     let pz = {
-      zeros: Array<Complex>(0),
-      poles: Array<Complex>(0),
+      zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>(0),
+      poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>(0),
       constant: 1,
     };
     let lines = data.split("\n");

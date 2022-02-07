@@ -6,7 +6,7 @@
 import {FFTResult} from "./fft";
 import {SeismographConfig} from "./seismographconfig";
 import {SeismogramDisplayData} from "./seismogram";
-import type {Complex} from "./oregondsputil";
+import * as OregonDSPTop from "oregondsp";
 import * as d3 from "d3";
 import {insertCSS, G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
 import {drawAxisLabels} from "./axisutil";
@@ -59,13 +59,13 @@ export function createOverlayFFTPlot(
  */
 export class FreqAmp {
   freq: Float32Array;
-  values: Array<Complex>;
+  values: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
 
   /** optional units of the original data for display purposes. */
   inputUnits: string;
   seismogramDisplayData: null | SeismogramDisplayData;
 
-  constructor(freq: Float32Array, values: Array<Complex>) {
+  constructor(freq: Float32Array, values: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>) {
     this.freq = freq;
     this.values = values;
     this.inputUnits = ""; // leave blank unless set manually

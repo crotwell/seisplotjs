@@ -5,31 +5,33 @@
  */
 import {Seismogram} from "./seismogram";
 import {InstrumentSensitivity} from "./stationxml";
+import * as OregonDSPTop from "oregondsp";
 import {OregonDSP} from "./oregondsputil";
 import {isDef} from "./util";
-import type {
-  IIRFilter,
-  Butterworth,
-  ChebyshevI,
-  ChebyshevII,
-} from "oregondsp/com/oregondsp/signalProcessing/filter/iir";
+// import type {
+//   IIRFilter,
+//   Butterworth,
+//   ChebyshevI,
+//   ChebyshevII,
+// } from "oregondsp.com.oregondsp.signalProcessing.filter.iir";
 const CenteredHilbertTransform =
   OregonDSP.filter.fir.equiripple.CenteredHilbertTransform;
 
 /**
  * Constant for bandpass OregonDSP filter creation.
  */
-export const BAND_PASS = OregonDSP.filter.iir.PassbandType.BANDPASS;
+export const BAND_PASS = "BANDPASS";
 
 /**
  * Constant for lowpass OregonDSP filter creation.
  */
-export const LOW_PASS = OregonDSP.filter.iir.PassbandType.LOWPASS;
+export const LOW_PASS = "LOWPASS";
 
 /**
  * Constant for highpass OregonDSP filter creation.
  */
-export const HIGH_PASS = OregonDSP.filter.iir.PassbandType.HIGHPASS;
+export const HIGH_PASS = "HIGHPASS";
+
 export function amplitude(real: number, imag: number): number {
   return Math.hypot(real, imag);
 }
@@ -118,7 +120,7 @@ export function createButterworth(
   lowFreqCorner: number,
   highFreqCorner: number,
   delta: number,
-): Butterworth {
+): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Butterworth {
   return new OregonDSP.filter.iir.Butterworth(
     numPoles,
     passband,
@@ -146,7 +148,7 @@ export function createChebyshevI(
   lowFreqCorner: number,
   highFreqCorner: number,
   delta: number,
-): ChebyshevI {
+): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.ChebyshevI {
   return new OregonDSP.filter.iir.ChebyshevI(
     numPoles,
     epsilon,
@@ -175,7 +177,7 @@ export function createChebyshevII(
   lowFreqCorner: number,
   highFreqCorner: number,
   delta: number,
-): ChebyshevII {
+): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.ChebyshevII {
   return new OregonDSP.filter.iir.ChebyshevII(
     numPoles,
     epsilon,
@@ -194,7 +196,7 @@ export function createChebyshevII(
  * @returns            filtered seismogram
  */
 export function applyFilter(
-  iirFilter: IIRFilter,
+  iirFilter: OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.IIRFilter,
   seis: Seismogram,
 ): Seismogram {
   let filteredSegments = [];
@@ -272,7 +274,8 @@ export function hilbert(
       highEdge = 0.95;
     }
 
-    let hilbert = new CenteredHilbertTransform(n, lowEdge, highEdge);
+    let hilbert = new OregonDSPTop.com.oregondsp.signalProcessing.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
+    // @ts-ignore
     let coeff = hilbert.getCoefficients();
 
     for (let c of coeff) {
@@ -281,6 +284,7 @@ export function hilbert(
       }
     }
 
+    // @ts-ignore
     let hilbertY = hilbert.filter(seisY);
     let s = seis.cloneWithNewData(hilbertY);
     return s;
