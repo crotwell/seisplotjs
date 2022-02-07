@@ -22,6 +22,7 @@ export {LinkedAmpScale};
 import type {MarkerType} from "./seismogram";
 import type {MarginType} from "./seismographconfig";
 import type {TraveltimeJsonType} from "./traveltime";
+import type {ScaleTime} from "d3-scale"
 import {
   SeismogramDisplayData,
   findStartEnd,
@@ -591,10 +592,10 @@ export class Seismograph {
       .enter()
       .append("circle")
       .attr("fill-opacity", "0.4")
-      .attr("cx", function (d) {
+      .attr("cx", function (d: Array<number>) {
         return mythis.currZoomXScale(d[0]);
       })
-      .attr("cy", function (d) {
+      .attr("cy", function (d: Array<number>) {
         return mythis.yScale(d[1]);
       })
       .attr("r", radius - 2);
@@ -723,7 +724,7 @@ export class Seismograph {
     clip.append("rect").attr("width", this.width).attr("height", this.height);
   }
 
-  timeScaleForSeisDisplayData(sdd: SeismogramDisplayData): any {
+  timeScaleForSeisDisplayData(sdd: SeismogramDisplayData): ScaleTime<number, number> {
     let plotSed;
     let sddXScale = d3.scaleUtc();
 
@@ -762,13 +763,13 @@ export class Seismograph {
       .data(sddList)
       .enter()
       .append("g")
-      .attr("label", s => (s ? s.label : "none"))
-      .attr("codes", s =>
-        s.seismogram && s.seismogram.hasCodes() ? s.seismogram.codes() : "none",
+      .attr("label", (s: SeismogramDisplayData) => (s ? s.label : "none"))
+      .attr("codes", (s: SeismogramDisplayData) =>
+        s.seismogram && s.seismogram.hasCodes ? s.seismogram.codes() : "none",
       )
       .classed("seismogram", true);
     traceJoin.exit().remove();
-    const subtraceJoin = traceJoin.selectAll("path").data(sdd => {
+    const subtraceJoin = traceJoin.selectAll("path").data((sdd: SeismogramDisplayData) => {
       const sddXScale = this.timeScaleForSeisDisplayData(sdd);
       let segArr = sdd.seismogram ? sdd.seismogram.segments : [];
       return segArr.map(seg => {
@@ -788,7 +789,7 @@ export class Seismograph {
       )
       .attr("style", "clip-path: url(#" + CLIP_PREFIX + mythis.plotId + ")")
       .attr("shape-rendering", "crispEdges")
-      .attr("d", function (segHolder) {
+      .attr("d", function (segHolder: {segment: SeismogramSegment, xscale: ScaleTime<number, number>}) {
         return mythis.segmentDrawLine(segHolder.segment, segHolder.xscale);
       });
     subtraceJoin.exit().remove();
@@ -804,7 +805,7 @@ export class Seismograph {
     );
   }
 
-  segmentDrawLine(seg: SeismogramSegment, xScale: any): void {
+  segmentDrawLine(seg: SeismogramSegment, xScale: ScaleTime<number,number>): string|null {
     const mythis = this;
     let secondsPerPixel = this.calcSecondsPerPixel(xScale);
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
@@ -812,10 +813,10 @@ export class Seismograph {
       .line()
       .curve(d3.curveLinear)
       .x(function (d) {
-        return xScale(d.time);
+        return xScale(d[0]);
       })
       .y(function (d) {
-        return mythis.yScale(d.y);
+        return mythis.yScale(d[1]);
       });
 
     if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
@@ -827,15 +828,12 @@ export class Seismograph {
             " " +
             (seg instanceof Seismogram),
         );
-        return;
+        return null;
       }
 
       return lineFunc(
         Array.from(seg.y, function (d, i) {
-          return {
-            time: seg.timeOfSample(i).toDate(),
-            y: d,
-          };
+          return [seg.timeOfSample(i).toDate().valueOf(),d];
         }),
       );
     } else {
@@ -846,26 +844,23 @@ export class Seismograph {
         seg._highlow.xScaleDomain[1] !== xScale.domain()[1]
       ) {
         let highlow = [];
-        let numHL = 2 * Math.ceil(seg.y.length / samplesPerPixel);
+        let y = seg.y;
+        let numHL = 2 * Math.ceil(y.length / samplesPerPixel);
 
         for (let i = 0; i < numHL; i++) {
-          let snippet = seg.y.slice(
-            i * samplesPerPixel,
-            (i + 1) * samplesPerPixel,
-          );
-
-          if (snippet.length !== 0) {
-            highlow[2 * i] = snippet.reduce(function (acc, val) {
-              return Math.min(acc, val);
-            }, snippet[0]);
-            highlow[2 * i + 1] = snippet.reduce(function (acc, val) {
-              return Math.max(acc, val);
-            }, snippet[0]);
+          let startidx = i * samplesPerPixel;
+          let min = y[startidx];
+          let max = y[startidx];
+          for (let j=startidx; j<startidx+ samplesPerPixel&& j<y.length;j++) {
+            min = Math.min(min, y[j]);
+            max = Math.max(max, y[j]);
           }
+          highlow[2 * i] = min;
+          highlow[2 * i + 1] = max;
         }
 
         seg._highlow = {
-          xScaleDomain: xScale.domain(),
+          xScaleDomain: [xScale.domain()[0], xScale.domain()[1]],
           xScaleRange: xScale.range(),
           secondsPerPixel: secondsPerPixel,
           samplesPerPixel: samplesPerPixel,
@@ -875,13 +870,10 @@ export class Seismograph {
 
       return lineFunc(
         seg._highlow.highlowArray.map(function (d: number, i: number) {
-          return {
-            time: new Date(
+          return [
               seg.startTime.valueOf() +
                 1000 * ((Math.floor(i / 2) + 0.5) * secondsPerPixel),
-            ),
-            y: d,
-          };
+              d ];
         }),
       );
     }
@@ -1137,7 +1129,7 @@ export class Seismograph {
             }),
           );
           return acc;
-        }, [])
+        }, new Array<MarkerHolderType>(0))
         .filter(mh => {
           const xpixel = mh.xscale(mh.marker.time.toDate());
           return xpixel < mh.xscale.range()[0] || xpixel > mh.xscale.range()[1];
@@ -1193,6 +1185,7 @@ export class Seismograph {
         return "translate(" + textx + "," + 0 + ")";
       })
       .each(function (mh: MarkerHolderType) {
+        // @ts-ignore
         let drawG = d3.select(this);
         drawG.classed(mh.marker.name, true).classed(mh.marker.type, true);
         let innerTextG = drawG

@@ -386,6 +386,7 @@ export function createPlots(
     .enter()
     .append("div")
     .each(function (org: any) {
+      // @ts-ignore
       const div = d3.select(this);
       org.plot(div);
     });

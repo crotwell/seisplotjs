@@ -13,7 +13,7 @@ import {StartEndDuration} from "./util";
 import type {TraveltimeJsonType, TraveltimeArrivalType} from "./traveltime";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
-  xScaleDomain: Array<number>;
+  xScaleDomain: Array<Date>;
   xScaleRange: Array<number>;
   secondsPerPixel: number;
   samplesPerPixel: number;
