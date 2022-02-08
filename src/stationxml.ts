@@ -23,7 +23,7 @@ export const STAML_NS = "http://www.fdsn.org/xml/station/1";
 export const COUNT_UNIT_NAME = "count";
 export let FIX_INVALID_STAXML: boolean = true;
 export const INVALID_NUMBER = -99999;
-export const FAKE_START_DATE = moment.utc("1900-01-01Z");
+export const FAKE_START_DATE = moment.utc("1900-01-01");
 // StationXML classes
 export class Network {
   networkCode: string;

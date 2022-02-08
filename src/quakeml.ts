@@ -24,7 +24,7 @@ export const ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1";
 export const USGS_HOST = "earthquake.usgs.gov";
 export const UNKNOWN_MAG_TYPE = "unknown";
 export const UNKNOWN_PUBLIC_ID = "unknownId";
-export const FAKE_ORIGIN_TIME = moment.utc("1900-01-01Z");
+export const FAKE_ORIGIN_TIME = moment.utc("1900-01-01");
 
 // QuakeML classes
 
