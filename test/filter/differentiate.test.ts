@@ -1,6 +1,6 @@
 // @flow
 
-import * as filter from '../../src/filter.js';
+import * as filter from '../../src/filter';
 import {Seismogram } from '../../src/seismogram';
 import  {moment} from '../../src/util';
 

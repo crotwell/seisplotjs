@@ -10,8 +10,6 @@ test("formURL", () => {
   expect(query.evlat(35)).toBe(query);
   expect(query.evlon(-101)).toBe(query);
   expect(query.phases("P,S,PcP,PKiKP,PKPPKP")).toBe(query);
-  // for flow
-  query = ((query: any): traveltime.TraveltimeQuery);
   let url = query.formURL();
   expect(url).toBeDefined();
   // evdepth is first, so no &

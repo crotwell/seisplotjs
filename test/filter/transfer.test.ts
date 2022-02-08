@@ -1,13 +1,13 @@
 // @flow
 
-import * as fft from '../../src/fft.js';
-import * as filter from '../../src/filter.js';
-import { createComplex} from '../../src/oregondsputil.js';
-import * as taper from '../../src/taper.js';
-import * as transfer from '../../src/transfer.js';
-import { Seismogram} from '../../src/seismogram.js';
-import {SacPoleZero} from '../../src/sacPoleZero.js';
-import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile.js';
+import * as fft from '../../src/fft';
+import * as filter from '../../src/filter';
+import { createComplex} from '../../src/oregondsputil';
+import * as taper from '../../src/taper';
+import * as transfer from '../../src/transfer';
+import { Seismogram} from '../../src/seismogram';
+import {SacPoleZero} from '../../src/sacPoleZero';
+import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
 import moment from 'moment';
 
 const ONE_COMPLEX = createComplex(1, 0);
@@ -17,7 +17,7 @@ const ONE_COMPLEX = createComplex(1, 0);
 
 const WRITE_TEST_DATA = false;
 
-const ensureFloat32Array = function(a): Float32Array {
+const ensureFloat32Array = function(a) => Float32Array {
   expect(a).toBeInstanceOf(Float32Array);
   return ((a: any): Float32Array);
 };

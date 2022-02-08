@@ -12,11 +12,12 @@ test( "_grabFirstEl test", () => {
   expect(sta).toBeDefined();
   let lat = stationxml.parseUtil._grabFirstEl(sta, LATITUDE);
   expect(lat).toBeDefined();
-  // $FlowExpectedError[incompatible-use]
+  expect(lat).not.toBeNull();
+  if (!!lat) {
     expect(lat.textContent).toBe("34.2818");
     expect(stationxml.parseUtil._grabFirstElText(sta, LATITUDE)).toBe("34.2818");
     expect(stationxml.parseUtil._grabFirstElFloat(sta, LATITUDE)).toBe(34.2818);
-
+  }
 });
 
 const rawXML = `<?xml version="1.0" encoding="ISO-8859-1"?>

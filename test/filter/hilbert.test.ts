@@ -1,6 +1,6 @@
 // @flow
 
-import * as filter from '../../src/filter.js';
+import * as filter from '../../src/filter';
 import {Seismogram} from '../../src/seismogram';
 import {readSac} from './sacfile';
 import  {moment} from '../../src/util';
@@ -18,7 +18,7 @@ test("init hilbert filter", () => {
   let highEdge = .95;
   let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
   let coeff = hilbert.getCoefficients();
-  
+
   coeff.forEach( c => {
     expect(c).toBeFinite();
   });

@@ -1,6 +1,6 @@
-// @flow
 
-import {kmtodeg, degtokm, distaz } from '../src/distaz.js';
+
+import {kmtodeg, degtokm, distaz } from '../src/distaz';
 
 test("deg km convert", () => {
   expect(kmtodeg(degtokm(45))).toBe(45);

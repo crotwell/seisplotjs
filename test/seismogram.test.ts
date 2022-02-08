@@ -1,6 +1,6 @@
 // @flow
 
-import {Quake} from '../src/quakeml.js';
+import {Quake, createQuakeFromValues} from '../src/quakeml.js';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData} from '../src/seismogram';
 import  {moment, StartEndDuration, isDef} from '../src/util';
 
@@ -212,10 +212,7 @@ test("clone sdd test", () => {
   const sampleRate = 20.0;
   const startTime = moment.utc("2013-02-08T09:30:26");
   const seis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
-  const q = new Quake();
-  q.time= startTime;
-  q.latitude = -10;
-  q.longitude = 12;
+  const q = createQuakeFromValues(UNKNOWN_PUBLIC_ID, startTime,-10, 12, 0);
   const sdd = SeismogramDisplayData.fromSeismogram(seis);
   sdd.addQuake(q);
   const processedSeis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
@@ -230,16 +227,13 @@ test("cut clone sdd test", () => {
   const sampleRate = 20.0;
   const startTime = moment.utc("2013-02-08T09:30:26");
   const seis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
-  const q = new Quake();
-  q.time= startTime;
-  q.latitude = -10;
-  q.longitude = 12;
+  const q = createQuakeFromValues(UNKNOWN_PUBLIC_ID, startTime,-10, 12, 0);
   const sdd = SeismogramDisplayData.fromSeismogram(seis);
   sdd.addQuake(q);
   const cutWindow = new StartEndDuration( startTime, null, 10);
   const cutSeis = seis.cut(cutWindow);
   expect(cutSeis).toBeDefined();
-  // $FlowExpectedError[incompatible-use]
+  if (!!cutSeis){
     expect(cutSeis.endTime).toEqual(cutWindow.endTime);
     const cutSeisSdd = sdd.cloneWithNewSeismogram(cutSeis);
     cutSeisSdd.timeWindow = cutWindow; // clone keeps the old time window
@@ -262,5 +256,5 @@ test("cut clone sdd test", () => {
     expect(cutSdd_seis).not.toEqual(seis);
     // $FlowExpectedError[incompatible-use]
     expect(cutSdd.quakeList).toHaveLength(sdd.quakeList.length);
-
+  }
 });

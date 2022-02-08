@@ -1,6 +1,6 @@
 // @flow
 
-import {checkProtocol} from '../src/util.js';
+import {checkProtocol} from '../src/util';
 
 test("simple protocol check", () => {
   expect(checkProtocol()).toBe('http:');

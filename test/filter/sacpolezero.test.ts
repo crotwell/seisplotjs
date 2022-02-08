@@ -1,7 +1,7 @@
 // @flow
 
-import {SacPoleZero} from '../../src/sacPoleZero.js';
-import {readSacPoleZero} from './sacfile.js';
+import {SacPoleZero} from '../../src/sacPoleZero';
+import {readSacPoleZero} from './sacfile';
 
 
 test("parse sac polezero", () => {

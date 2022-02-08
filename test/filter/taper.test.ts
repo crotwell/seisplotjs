@@ -1,7 +1,7 @@
 // @flow
 
-import * as filter from '../../src/filter.js';
-import * as taper from '../../src/taper.js';
+import * as filter from '../../src/filter';
+import * as taper from '../../src/taper';
 import {Seismogram, ensureIsSeismogram } from '../../src/seismogram';
 import {readSac} from './sacfile';
 import  {moment} from '../../src/util';

@@ -3,8 +3,8 @@
 /* global Buffer */
 
 import fs from 'fs';
-import {SacPoleZero} from '../../src/sacPoleZero.js';
-import {Seismogram} from '../../src/seismogram.js';
+import {SacPoleZero} from '../../src/sacPoleZero';
+import {Seismogram} from '../../src/seismogram';
 import moment from 'moment';
 
 export const NVHDR_OFFSET = 76 * 4;
@@ -21,7 +21,7 @@ export type sacType = {
   littleEndian: boolean,
   delta: number,
   npts: number,
-  start: moment,
+  start: moment.Moment,
   y: Float32Array
 }
 
@@ -31,7 +31,7 @@ export function readDataView(filename: string): Promise<DataView> {
       if (err) reject(err);
       else resolve(data.buffer);
     });
-  }).then(data => {
+  }).then(data: ArrayBuffer => {
     return new DataView(data);
   });
 }
@@ -47,7 +47,7 @@ export function asSeismogram(sac: sacType): Seismogram {
 }
 
 export function parseSac(dataView: DataView): sacType {
-  let out = {};
+  let out: sacType = {};
   let littleEndian = false;
   let sacVer = dataView.getUint32(NVHDR_OFFSET, true);
   if (sacVer === 6) {
@@ -100,7 +100,7 @@ export function readSacPoleZero(filename: string): Promise<SacPoleZero> {
       if (err) reject(err);
       else resolve(data);
     });
-  }).then(data => {
+  }).then(data: string => {
     return SacPoleZero.parse(data);
   });
 }
