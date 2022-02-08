@@ -66,7 +66,6 @@ export class SEPacket {
       let dataFormat = slHeader.getUint8(2);
       let dataSubformat = slHeader.getUint8(3);
       let payloadLength = slHeader.getUint32(4, useLittleEndian);
-      // $FlowFixMe[prop-missing]
       let sequenceNum = slHeader.getBigUint64(8, useLittleEndian);
       let stationIdLength = slHeader.getUint8(16);
       let stationIdDV = new DataView(data, 17, stationIdLength);
@@ -222,7 +221,6 @@ export class SeedlinkConnection {
   }
 
   setAgent(agent: string) {
-    // $FlowFixMe[prop-missing]
     this.agent = agent.trim().replaceAll(/\w+/g, "_");
   }
 
@@ -271,8 +269,6 @@ export class SeedlinkConnection {
           that.handle(event);
         };
 
-        // $FlowFixMe[null]
-        // $FlowFixMe[incompatible-use]
         that.webSocket.send("END\r");
         return val;
       })

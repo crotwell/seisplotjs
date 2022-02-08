@@ -410,7 +410,6 @@ export class Seismograph {
     out += "canvas.width " + this.canvas.node().width + "\n";
     out += "this.outerHeight " + this.outerHeight + "\n";
     out += "this.outerWidth " + this.outerWidth + "\n";
-    // $FlowFixMe
     out += "this.margin " + this.seismographConfig.margin + "\n";
     util.log(out);
   }
@@ -821,7 +820,6 @@ export class Seismograph {
 
     if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
       if (!seg.y) {
-        // $FlowFixMe
         util.log(
           "canvasSeis seg.y not defined: " +
             typeof seg +
@@ -1912,7 +1910,6 @@ export function createFullMarkersForQuakeAtStation(
     name: `M${quake.preferredMagnitude.mag} ${quake.time.format("HH:mm")}`,
     time: moment.utc(quake.time),
     link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
-    // $FlowFixMe[incompatible-type]
     description: `${quake.time.toISOString()}
 ${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(
       quake.depth / 1000

@@ -283,7 +283,6 @@ export function loadDataRecords(
         } else if (fetchResponse.status === 404) {
           return []; // empty array means no data
         } else {
-          // $FlowFixMe
           throw new Error(
             "fetch error: " +
               fetchResponse.ok +

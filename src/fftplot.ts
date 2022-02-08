@@ -141,7 +141,6 @@ export class FFTPlot {
   ) {
     this.svgParent = cssSelector;
     this.seismographConfig = seismographConfig;
-    // $FlowFixMe[incompatible-type]
     this.fftResults = Array.isArray(fftResult) ? fftResult : [fftResult];
     this.xScale = null;
     this.yScale = null;

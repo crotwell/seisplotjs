@@ -1384,7 +1384,6 @@ export class SeismogramDisplayData {
       let minMax = this.seismogram.findMinMax();
       stats.min = minMax[0];
       stats.max = minMax[1];
-      // $FlowFixMe  know seismogram is not null
       stats.mean = this.seismogram.mean();
     }
 

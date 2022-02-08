@@ -3,7 +3,6 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-// special due to flow
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -192,7 +191,6 @@ export class DataCentersQuery {
           return response.json();
         }
 
-        // $FlowFixMe
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       },
     );

@@ -883,7 +883,6 @@ export function convertToInstrumentSensitivity(
       isDef(outputUnits)
     )
   ) {
-    // $FlowFixMe
     throw new Error(
       `Not all elements of Sensitivity exist: ${sensitivity} ${frequency} ${inputUnits} ${outputUnits}`,
     );
@@ -1118,7 +1117,6 @@ export function extractComplex(el: Element): OregonDSPTop.com.oregondsp.signalPr
   if (isNumArg(re) && isNumArg(im)) {
     return createComplex(re, im);
   } else {
-    // $FlowFixMe
     throw new Error(`Both Real and Imaginary required: ${re} ${im}`);
   }
 }

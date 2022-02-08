@@ -74,7 +74,6 @@ export function addParticleMotion(
   timeWindow?: StartEndDuration,
 ): ParticleMotion {
   if (!isDef(xSeisData.seismogram) || !isDef(ySeisData.seismogram)) {
-    // $FlowFixMe
     throw new Error(
       `Seismogram has no data: ${xSeisData.seismogram} ${ySeisData.seismogram}`,
     );

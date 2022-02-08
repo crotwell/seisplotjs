@@ -1043,7 +1043,7 @@ function createTextOption(
     .classed("smallconfigtext", true)
     .attr("type", "text")
     .attr("id", key)
-    .attr("name", key) //$FlowExpectedError
+    .attr("name", key) 
     .property("value", config[key])
     .on("change", function () {
       // @ts-ignore

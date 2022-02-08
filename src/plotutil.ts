@@ -98,7 +98,6 @@ export function createPlotsBySelectorPromise(
         host = "service.iris.edu";
       }
 
-      // $FlowFixMe
       let request = new dataselect.DataSelectQuery().timeWindow(timeWindow);
 
       if (host) {

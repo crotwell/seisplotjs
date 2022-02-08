@@ -93,7 +93,7 @@ export class OrganizedDisplay {
 
       if (nonContigList.length > 0) {
         let nonContigMsg =
-          "non-contiguous seismograms, skipping: " + // $FlowIgnore[incompatible-use]
+          "non-contiguous seismograms, skipping: " + 
           nonContigList
             .map(sdd =>
               isDef(sdd.seismogram)

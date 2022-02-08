@@ -23,7 +23,6 @@ export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";
 export const SVG_MIME = "image/svg+xml";
 export const TEXT_MIME = "text/plain";
-// flow predicate %check functions
 export function hasArgs(value: any): boolean {
   return arguments.length !== 0 && typeof value !== "undefined";
 }
@@ -280,11 +279,11 @@ export function stringify(value: unknown): string {
       } else {
         return value.constructor.name + " " + value.toString();
       }
+    } else if (typeof value === 'symbol') {
+      return value.toString();
     } else {
       return "null";
-    } // symbol not yet supported by flow
-    //  } else if (typeof value === 'symbol') {
-    //    return value.toString();
+    }
   } else {
     return "<unknown" + typeof value + "???>";
   }
@@ -663,7 +662,6 @@ export function doFetchWithTimeout(
       }
 
       return response.text().then(text => {
-        // $FlowFixMe
         throw new Error(
           `fetch response was not ok. ${response.ok} ${response.status}\n${text}`,
         );

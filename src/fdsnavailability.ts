@@ -423,7 +423,6 @@ export class AvailabilityQuery {
           return response.json();
         }
 
-        // $FlowFixMe
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       },
     );
@@ -472,7 +471,6 @@ export class AvailabilityQuery {
           return response.json();
         }
 
-        // $FlowFixMe
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
       },
     );
@@ -536,7 +534,6 @@ export class AvailabilityQuery {
         return response.json();
       }
 
-      // $FlowFixMe
       throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
     });
   }

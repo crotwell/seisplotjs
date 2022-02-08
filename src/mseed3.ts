@@ -266,7 +266,6 @@ export class MSeed3Record {
   }
 
   toString(): string {
-    // $FlowIgnore[incompatible-call]
     return `${this.header.toString()}\n          extra headers: ${JSON.stringify(this.extraHeaders,null,2)}`;
   }
 }
@@ -585,7 +584,6 @@ export function parseExtraHeaders(dataView: DataView): {} {
     // looks like json, '{' is ascii 123
     return JSON.parse(makeString(dataView, 0, dataView.byteLength));
   } else {
-    // $FlowFixMe
     throw new Error(
       "do not understand extras with first char val: " +
         firstChar +
