@@ -102,12 +102,10 @@ export function inverseDFT(
     );
   }
 
-  let log2N = 4;
-  let N = 16;
-
-  while (N < packedFreq.length) {
-    log2N += 1;
-    N = 2 * N;
+  let [N,log2N] = findPowerTwo(packedFreq.length);
+  if (N < 16) {
+    log2N = 4;
+    N = 16;
   }
 
   if (N !== packedFreq.length) {
@@ -118,6 +116,17 @@ export function inverseDFT(
   let out = new Float32Array(N).fill(0);
   dft.evaluateInverse(packedFreq, out);
   return out.slice(0, numPoints);
+}
+
+export function findPowerTwo(fftlength: number): [number, number] {
+    let log2N = 1;
+    let N = 2;
+
+    while (N < fftlength) {
+      log2N += 1;
+      N = 2 * N;
+    }
+    return [N,log2N];
 }
 
 /**
@@ -166,7 +175,11 @@ export class FFTResult {
   ): FFTResult {
     let fftResult = new FFTResult(origLength, sampleRate);
     fftResult.packedFreq = packedFreq;
-    fftResult.recalcFromPackedFreq();
+    fftResult.numPoints = packedFreq.length;
+    let [N,log2N] = findPowerTwo(packedFreq.length);
+    if (N < origLength) {
+      throw new Error(`Not enough freq points, ${packedFreq.length}, for orig length of ${origLength}, must be > and power two`);
+    }
     return fftResult;
   }
 
@@ -183,7 +196,8 @@ export class FFTResult {
     origLength: number,
     sampleRate: number,
   ): FFTResult {
-    const N = complexArray.length;
+    // complex array will have 1 extra point, but first and last will have phase=0
+    const N = 2*(complexArray.length-1);
     let modFreq = new Float32Array(N).fill(0);
     modFreq[0] = complexArray[0].real();
 
@@ -192,7 +206,7 @@ export class FFTResult {
       modFreq[N - i] = complexArray[i].imag();
     }
 
-    modFreq[N / 2] = complexArray[N - 1].real();
+    modFreq[N / 2] = complexArray[complexArray.length-1].real();
     return FFTResult.createFromPackedFreq(modFreq, origLength, sampleRate);
   }
 
@@ -217,6 +231,7 @@ export class FFTResult {
         `amp and phase must be same length: ${amp.length} ${phase.length}`,
       );
     }
+
     let modComplex = new Array(amp.length);
     for (let i = 0; i < amp.length; i++) {
       modComplex[i] = complexFromPolar(
@@ -255,8 +270,8 @@ export class FFTResult {
   }
 
   asAmpPhase(): [Float32Array, Float32Array] {
-    const amp = new Float32Array(this.packedFreq.length/2);
-    const phase = new Float32Array(this.packedFreq.length/2);
+    const amp = new Float32Array(1+this.packedFreq.length/2);
+    const phase = new Float32Array(1+this.packedFreq.length/2);
 
     let c = createComplex(this.packedFreq[0], 0);
     amp[0] = c.abs();
@@ -273,10 +288,6 @@ export class FFTResult {
     amp[this.packedFreq.length / 2] = c.abs();
     phase[this.packedFreq.length / 2] = c.angle();
     return [ amp, phase ];
-  }
-
-  recalcFromPackedFreq(): void {
-    this.numPoints = this.packedFreq.length;
   }
 
   /**
