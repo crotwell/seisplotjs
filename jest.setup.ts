@@ -1,7 +1,9 @@
 
-require('jest-extended');
+import {describe, expect, test} from '@jest/globals'
+import "jest-extended/all";
 
-let ratioTest = function(received, argument, digits, closeZero, closeZeroDigits) {
+
+let ratioTest = function(received: number, argument: number, digits: number, closeZero: number, closeZeroDigits: number) {
     if (argument === 0 || Math.abs(argument) < closeZero) {
       expect(received).toBeCloseTo(argument, closeZeroDigits);
       return {
@@ -24,10 +26,10 @@ let ratioTest = function(received, argument, digits, closeZero, closeZeroDigits)
 }
 
  expect.extend({
-   toBeCloseToRatio(received, argument, digits, closeZero=1e-10, closeZeroDigits=7) {
+   toBeCloseToRatio(received: number, argument: number, digits: number, closeZero=1e-10, closeZeroDigits=7) {
      return ratioTest(received, argument, digits, closeZero, closeZeroDigits)
    },
-   arrayToBeCloseToRatio(received, argument, digits, closeZero=1e-10, closeZeroDigits=7) {
+   arrayToBeCloseToRatio(received: Array<number>, argument: Array<number>, digits: number, closeZero=1e-10, closeZeroDigits=7) {
      if ( ! (isArrayOrTypedArray(received) && isArrayOrTypedArray(argument)) ) {
        return {
          message: () => `expect two arrays ${isArrayOrTypedArray(received)} ${isArrayOrTypedArray(argument)}`,
@@ -54,7 +56,7 @@ let ratioTest = function(received, argument, digits, closeZero, closeZeroDigits)
        pass: true,
      };
    },
-   arrayToBeCloseTo(received, argument, digits) {
+   arrayToBeCloseTo(received: Array<number>, argument: Array<number>, digits: number) {
      if ( ! (isArrayOrTypedArray(received) && isArrayOrTypedArray(argument)) ) {
        return {
          message: () => `expect two arrays ${isArrayOrTypedArray(received)} ${isArrayOrTypedArray(argument)}`,
@@ -83,7 +85,17 @@ let ratioTest = function(received, argument, digits, closeZero, closeZeroDigits)
    },
  });
 
- let isArrayOrTypedArray = function(a) {
+declare global {
+   namespace jest {
+     interface Matchers<R> {
+       toBeCloseToRatio(argument: number, digits: number, closeZero?: number, closeZeroDigits?: number): R;
+       arrayToBeCloseTo(argument: Array<number>, digits: number): R;
+       arrayToBeCloseToRatio(argument: Array<number>, digits: number, closeZero?: number, closeZeroDigits?: number): R;
+     }
+   }
+}
+
+let isArrayOrTypedArray = function(a: any) {
    if (Array.isArray(a)) {return true; }
    if (a instanceof Float32Array) { return true;}
    if (a instanceof Int32Array) { return true;}

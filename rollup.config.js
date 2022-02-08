@@ -1,10 +1,10 @@
 import * as pkg from "./package.json";
 import babel from '@rollup/plugin-babel';
-import flowEntry from 'rollup-plugin-flow-entry';
 import json from '@rollup/plugin-json';
+import ts from "rollup-plugin-ts";
 
 export default [{
-  input: 'src/index.js',
+  input: 'src/index.ts',
   output: [
     {
       file: pkg.main,
@@ -28,20 +28,20 @@ export default [{
   ],
   plugins: [
     json(),
-    flowEntry(),
+    ts(),
     babel({
       exclude: 'node_modules/**',
       babelHelpers: 'runtime',
     })
   ]
 },{
-  input: 'src/index.js',
+  input: 'src/index.ts',
   //preserveModules: true,
   output: [
     {
       dir: "dist/module",
       //file: pkg.module,
-      format: 'esm',
+      format: 'es',
       sourcemap: true,
     }
   ],
@@ -59,8 +59,8 @@ export default [{
     '@babel/runtime/regenerator',
   ],
   plugins: [
+    ts(),
     json(),
-    flowEntry(),
     babel({
       exclude: 'node_modules/**',
       babelHelpers: 'runtime',
