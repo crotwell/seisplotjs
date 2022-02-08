@@ -1,4 +1,5 @@
-// @flow
+
+import '../jestRatioMatchers';
 
 import * as fft from '../../src/fft';
 import * as filter from '../../src/filter';
@@ -6,7 +7,7 @@ import { createComplex} from '../../src/oregondsputil';
 import * as taper from '../../src/taper';
 import * as transfer from '../../src/transfer';
 import { Seismogram} from '../../src/seismogram';
-import {SacPoleZero} from '../../src/sacPoleZero';
+import {SacPoleZero} from '../../src/sacpolezero';
 import {readSac, parseSac, readSacPoleZero, readDataView, writeSac, replaceYData} from './sacfile';
 import moment from 'moment';
 
@@ -17,9 +18,15 @@ const ONE_COMPLEX = createComplex(1, 0);
 
 const WRITE_TEST_DATA = false;
 
-const ensureFloat32Array = function(a) => Float32Array {
+function isFloat32Array(obj: any): obj is Float32Array {
+  return obj !== null && typeof obj === "object" && obj instanceof Float32Array;
+}
+function ensureFloat32Array(a: any): Float32Array {
   expect(a).toBeInstanceOf(Float32Array);
-  return ((a: any): Float32Array);
+  if (isFloat32Array(a)) {
+    return a as Float32Array;
+  }
+  throw new Error(`arg is not Float32Array: ${a}`);
 };
 
 test("freq Taper", () => {
@@ -37,8 +44,8 @@ test("freq Taper", () => {
 
 test("applyFreqTaper to FFTResult", () => {
   let numPoints = 512;
-  let inDataAmp = new Float32Array(numPoints/2).fill(1);
-  let inDataPhase = new Float32Array(numPoints/2).fill(0);
+  let inDataAmp = new Float32Array(numPoints/2+1).fill(1);
+  let inDataPhase = new Float32Array(numPoints/2+1).fill(0);
   let sampRate = 100;
   let inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase, numPoints, sampRate);
 
@@ -47,15 +54,18 @@ test("applyFreqTaper to FFTResult", () => {
   let highPass = 20;
   let highCut = 40;
   let ftaper = transfer.applyFreqTaper(inFFT, sampRate, lowCut, lowPass, highPass, highCut);
-  let deltaF = sampRate/numPoints;
+  const deltaF = ftaper.fundamentalFrequency;
+  expect(deltaF).toBeCloseTo(sampRate/numPoints);
 
-  expect(ftaper.amp[0]).toEqual(0);
+  let amp = ftaper.amplitudes();
+  expect(amp[0]).toEqual(0);
   // outside cut, close to zero
-  ftaper.amp.filter((v,i) => deltaF*i < lowCut || deltaF*i > highCut).forEach((v) => {
+  amp.filter((v: number,i: number) => deltaF*i < lowCut || deltaF*i > highCut)
+  .forEach((v) => {
     expect(v).toBeCloseTo(0, 2);
   });
   // inside pass, close to one
-  ftaper.amp.filter((v,i) => lowPass < deltaF*i && deltaF*i < highPass).forEach((v) => {
+  amp.filter((v: number,i: number) => lowPass < deltaF*i && deltaF*i < highPass).forEach((v) => {
     expect(v).toBeCloseTo(1, 2);
   });
 
@@ -155,10 +165,8 @@ test("testEvalPoleZero", () => {
     for(let i = 1; i < sacout.length; i++) {
         let dhi = transfer.evalPoleZeroInverse(sacPoleZero, sacout[i][0]);
         dhi = ONE_COMPLEX.overComplex(dhi);
-        // $FlowFixMe
-        expect(dhi.real).toBeCloseToRatio(sacout[i][1], 5);
-        // $FlowFixMe
-        expect(dhi.imag).toBeCloseToRatio(sacout[i][2], 5);
+        expect(dhi.real()).toBeCloseToRatio(sacout[i][1], 5);
+        expect(dhi.imag()).toBeCloseToRatio(sacout[i][2], 5);
         // if (sacout[i][1] === 0) {
         //   expect(sacout[i][1] / dhi.real()).toBeCloseTo(1.0, 6);
         // } else {
@@ -263,9 +271,7 @@ test("PoleZeroTaper", () => {
           calcRealArray.push(respAtS.real());
           calcImagArray.push(respAtS.imag());
       }
-      // $FlowFixMe
       expect(calcRealArray).arrayToBeCloseToRatio(sacRealArray, 5);
-      // $FlowFixMe
       expect(calcImagArray).arrayToBeCloseToRatio(sacImagArray, 5);
 /*
           if(sacout[i][0] === 0 || respAtS.real() === 0) {
@@ -395,14 +401,15 @@ test("impulse one zero combina amp", () => {
       // sac and oregondsp differ by const len in fft
       let outMulLength = out.map(d => d * out.length);
       const bagAmPh = fft.FFTResult.createFromPackedFreq(outMulLength, data.length, samprate);
+      const [ bagAmp, bagPhase ] = bagAmPh.asAmpPhase();
 
       let saveDataPromise = null;
       if (WRITE_TEST_DATA) {
         // for debugging, save data as sac file
         saveDataPromise = readDataView("./test/filter/data/impulse_onezero_fftam.sac.am").then(dataView => {
             let inSac = parseSac(dataView);
-            if (bagAmPh.amp.length !== inSac.npts) {throw new Error(`length not equal, not writting: ${bagAmPh.amp.length} ${inSac.npts}`);}
-            return writeSac(replaceYData(dataView, bagAmPh.amp), "./test/filter/data/impulse_onezero_fftam.bag.am");
+            if (bagAmp.length !== inSac.npts) {throw new Error(`length not equal, not writting: ${bagAmp.length} ${inSac.npts}`);}
+            return writeSac(replaceYData(dataView, bagAmp), "./test/filter/data/impulse_onezero_fftam.bag.am");
           });
       }
 
@@ -411,8 +418,8 @@ test("impulse one zero combina amp", () => {
         sactfr,
         pz,
         sacAmp,
-        bagAmPh.amp,
-        bagAmPh.phase,
+        bagAmp,
+        bagPhase,
         out,
         saveDataPromise
       ]);
@@ -433,7 +440,6 @@ test("impulse one zero combina amp", () => {
       expect(bagAmp[4]).toBeCloseTo(sacAmp.y[4], 7);
       expect(bagAmp[5]).toBeCloseTo(sacAmp.y[5], 7);
 
-      // $FlowFixMe
       expect(bagAmp.slice(6, bagAmp.length-6)).arrayToBeCloseToRatio(sacAmp.y.slice(6, sacAmp.y.length-6), 5);
 
       expect(bagAmp[bagAmp.length-1]).toBeCloseTo(sacAmp.y[sacAmp.y.length-1], 9);
@@ -467,7 +473,7 @@ test("impulse one zero", () => {
       const sacdata = sactfr.y;
       const bagdata: Float32Array = ensureFloat32Array(bagtfr.y);
 
-      let saveDataPromise = Promise.resolve(null);
+      let saveDataPromise: Promise<void | null> = Promise.resolve(null);
       if (WRITE_TEST_DATA) {
         // for debugging, save data to sac file
         saveDataPromise = saveDataPromise.then(() => {
@@ -507,7 +513,7 @@ test("impulse", () => {
       const sacdata = sactfr.y;
       const bagdata = ensureFloat32Array(bagtfr.y);
 
-      let saveDataPromise = Promise.resolve(null);
+      let saveDataPromise: Promise<void | null> = Promise.resolve(null);
       if (WRITE_TEST_DATA) {
         // for debugging, save data to sac file
         saveDataPromise = saveDataPromise.then(() => {
@@ -574,7 +580,7 @@ test("HRV test", () => {
       // $FlowFixMe
       expect(bagdata).arrayToBeCloseToRatio(sacdata, 5, .0001, 5);
 
-      let saveDataPromise = Promise.resolve(null);
+      let saveDataPromise: Promise<void | null> = Promise.resolve(null);
       if (WRITE_TEST_DATA) {
         // for debugging, save data to sac file
         saveDataPromise = saveDataPromise.then(() => {

@@ -1,9 +1,7 @@
-// @flow
 
-/* global Buffer */
-
-import fs from 'fs';
-import {SacPoleZero} from '../../src/sacPoleZero';
+import * as fs from 'fs/promises';
+import { Buffer } from 'buffer';
+import {SacPoleZero} from '../../src/sacpolezero';
 import {Seismogram} from '../../src/seismogram';
 import moment from 'moment';
 
@@ -26,14 +24,14 @@ export type sacType = {
 }
 
 export function readDataView(filename: string): Promise<DataView> {
-  return new Promise(function(resolve, reject) {
-    fs.readFile(filename, function (err, data) {
-      if (err) reject(err);
-      else resolve(data.buffer);
-    });
-  }).then(data: ArrayBuffer => {
-    return new DataView(data);
-  });
+  return fs.open(filename, 'r')
+  .then((fh: fs.FileHandle) => {
+    const out = fh.readFile();
+    fh.close();
+    return out;
+  })
+  .then((b: Buffer) => b.buffer)
+  .then((data: ArrayBuffer) => new DataView(data));
 }
 
 export function readSac(filename: string): Promise<sacType> {
@@ -47,29 +45,33 @@ export function asSeismogram(sac: sacType): Seismogram {
 }
 
 export function parseSac(dataView: DataView): sacType {
-  let out: sacType = {};
   let littleEndian = false;
   let sacVer = dataView.getUint32(NVHDR_OFFSET, true);
   if (sacVer === 6) {
     littleEndian = true;
   }
-  out.littleEndian = littleEndian;
-  out.delta = dataView.getFloat32(0, littleEndian);
-  out.npts = dataView.getUint32(NPTS_OFFSET, littleEndian);
-  out.start = moment.utc([dataView.getUint32(YEAR_OFFSET),
+  const delta = dataView.getFloat32(0, littleEndian);
+  const npts = dataView.getUint32(NPTS_OFFSET, littleEndian);
+  let start = moment.utc([dataView.getUint32(YEAR_OFFSET),
                           0,
                           1,
                           dataView.getUint32(HOUR_OFFSET),
                           dataView.getUint32(MIN_OFFSET),
                           dataView.getUint32(SEC_OFFSET),
                           dataView.getUint32(MSEC_OFFSET)]);
-  out.start.add(dataView.getUint32(DAY_OF_YEAR_OFFSET), "days");
-  let y = new Float32Array(out.npts);
+  start.add(dataView.getUint32(DAY_OF_YEAR_OFFSET), "days");
+  let y = new Float32Array(npts);
   let j=0;
   for(let i=DATA_OFFSET; i < dataView.byteLength; i+=4, j++) {
     y[j] = dataView.getFloat32(i, littleEndian);
   }
-  out.y = y;
+  let out: sacType = {
+    littleEndian: littleEndian,
+    delta: delta,
+    npts: npts,
+    start: start,
+    y: y,
+  };
   return out;
 }
 
@@ -86,21 +88,16 @@ export function replaceYData(dataView: DataView, yData: Float32Array): DataView 
 }
 
 export function writeSac(sacDataView: DataView, filename: string): Promise<void> {
-  return new Promise(function(resolve, reject) {
-    fs.writeFile(filename, Buffer.from(new Uint8Array(sacDataView.buffer)), function (err) {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
+  return fs.open(filename, 'w')
+  .then((fh: fs.FileHandle) => fh.writeFile(Buffer.from(new Uint8Array(sacDataView.buffer))));
 }
 
 export function readSacPoleZero(filename: string): Promise<SacPoleZero> {
-  return new Promise(function(resolve, reject) {
-    fs.readFile(filename, "utf8", function (err, data) {
-      if (err) reject(err);
-      else resolve(data);
-    });
-  }).then(data: string => {
-    return SacPoleZero.parse(data);
-  });
+  return fs.open(filename, 'r')
+  .then((fh: fs.FileHandle) => {
+    const out = fh.readFile("utf8");
+    fh.close();
+    return out;
+  })
+  .then((data: string) =>  SacPoleZero.parse(data));
 }
