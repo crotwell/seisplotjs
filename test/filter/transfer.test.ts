@@ -257,7 +257,6 @@ test("PoleZeroTaper", () => {
       let calcImagArray = [];
       for(let i = 0; i < sacout.length; i++) {
           freq = i * deltaF;
-          // $FlowFixMe
           expect(freq).toBeCloseToRatio(sacout[i][0], 5);
           respAtS = transfer.evalPoleZeroInverse(poleZero, freq);
           respAtS = respAtS.timesReal(deltaF*transfer.calcFreqTaper(freq,

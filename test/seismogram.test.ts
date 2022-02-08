@@ -1,6 +1,6 @@
 // @flow
 
-import {Quake, createQuakeFromValues} from '../src/quakeml.js';
+import {Quake, createQuakeFromValues, UNKNOWN_PUBLIC_ID} from '../src/quakeml.js';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData} from '../src/seismogram';
 import  {moment, StartEndDuration, isDef} from '../src/util';
 
@@ -240,8 +240,8 @@ test("cut clone sdd test", () => {
     expect(cutSeisSdd.endTime).toEqual(cutWindow.endTime);
     expect(cutSeisSdd.seismogram).toBeDefined();
     const cutSeisSdd_seis = cutSeisSdd.seismogram;
-    // $FlowExpectedError[incompatible-use]
-    expect(cutSeisSdd_seis.endTime).toEqual(cutWindow.endTime);
+    expect(cutSeisSdd_seis).not.toBeNull();
+    expect(cutSeisSdd_seis?.endTime).toEqual(cutWindow.endTime);
     expect(cutSeisSdd_seis).not.toBe(seis);
     // sdd cut has new seismogram and new time window
     const cutSdd = sdd.cut(cutWindow);
@@ -249,12 +249,9 @@ test("cut clone sdd test", () => {
     const cutSdd_seis = isDef(cutSdd) ? cutSdd.seismogram: null;
     expect(cutSdd_seis).toBeDefined();
 
-    // $FlowExpectedError[incompatible-use]
-    expect(cutSdd.endTime).toEqual(cutWindow.endTime);
-    // $FlowExpectedError[incompatible-use]
-    expect(cutSdd_seis.endTime).toEqual(cutWindow.endTime);
+    expect(cutSdd?.endTime).toEqual(cutWindow.endTime);
+    expect(cutSdd_seis?.endTime).toEqual(cutWindow.endTime);
     expect(cutSdd_seis).not.toEqual(seis);
-    // $FlowExpectedError[incompatible-use]
-    expect(cutSdd.quakeList).toHaveLength(sdd.quakeList.length);
+    expect(cutSdd?.quakeList).toHaveLength(sdd.quakeList.length);
   }
 });

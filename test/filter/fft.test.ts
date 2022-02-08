@@ -1,4 +1,4 @@
-// @flow
+import './jestRatioMatchers';
 
 import * as fft from '../../src/fft';
 import {Seismogram } from '../../src/seismogram';
@@ -83,17 +83,18 @@ test("FFT", () => {
           data[i] /= samprate;
       }
       const fftRes = fft.fftForward(sac);
+      const [amp, phase] = fftRes.asAmpPhase();
 
-      let saveDataPromise = Promise.resolve(null);
+      let saveDataPromise: Promise<void| [void,void] | null> = Promise.resolve(null);
       if (OVERWRITE_OUTPUT) {
         saveDataPromise = readDataView("./test/filter/data/IU.HRV.__.BHE_fft.sac.am").then(dataView => {
           let inSac = parseSac(dataView);
-          if (fftRes.amp.length !== inSac.npts) {
-            throw new Error(`npts not same: ${fftRes.amp.length}  ${inSac.npts}, not writing.`);
+          if (amp.length !== inSac.npts) {
+            throw new Error(`npts not same: ${amp.length}  ${inSac.npts}, not writing.`);
           }
           return Promise.all([
-              writeSac(replaceYData(dataView, fftRes.amp), "./test/filter/data/IU.HRV.__.BHE_fft.bag.am"),
-              writeSac(replaceYData(dataView, fftRes.phase), "./test/filter/data/IU.HRV.__.BHE_fft.bag.ph")
+              writeSac(replaceYData(dataView, amp), "./test/filter/data/IU.HRV.__.BHE_fft.bag.am"),
+              writeSac(replaceYData(dataView, phase), "./test/filter/data/IU.HRV.__.BHE_fft.bag.ph")
             ]);
         });
       }
@@ -101,8 +102,8 @@ test("FFT", () => {
         sac,
         sacAmp,
         sacPhase,
-        fftRes.amp,
-        fftRes.phase,
+        amp,
+        phase,
         fftRes,
         saveDataPromise
       ]);
@@ -144,7 +145,6 @@ test("FFT", () => {
 
       }
       expect(bagAmp).toHaveLength(sacAmp.y.length);
-      // $FlowFixMe
       expect(bagAmp).arrayToBeCloseToRatio(sacAmp.y, 2);
       expect(bagPhase).toHaveLength(sacPhase.y.length);
       // $FlowFixMe
@@ -166,5 +166,5 @@ test("fftForward", () => {
   expect(freqData.numPoints).toEqual(nextPowerTwo);
   expect(freqData.sampleRate).toEqual(origseis.sampleRate);
   expect(freqData.fundamentalFrequency).toBeCloseTo(sampleRate/nextPowerTwo);
-  expect(freqData.amp.length).toEqual(nextPowerTwo/2 +1);
+  expect(freqData.amplitudes().length).toEqual(nextPowerTwo/2 +1);
 });
