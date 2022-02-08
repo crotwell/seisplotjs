@@ -1,4 +1,3 @@
-
 import '../jestRatioMatchers';
 
 import * as fft from '../../src/fft';

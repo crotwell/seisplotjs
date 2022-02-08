@@ -27,7 +27,12 @@ expect.extend({
    toBeCloseToRatio(received: number, argument: number, digits: number, closeZero=1e-10, closeZeroDigits=7) {
      return ratioTest(received, argument, digits, closeZero, closeZeroDigits)
    },
-   arrayToBeCloseToRatio(received: Array<number> | Float32Array, argument: Array<number> | Float32Array, digits: number, closeZero=1e-10, closeZeroDigits=7) {
+   arrayToBeCloseToRatio(received: Array<number> | Int32Array | Float32Array | Float64Array,
+      argument: Array<number> | Int32Array | Float32Array | Float64Array,
+      digits: number,
+      closeZero=1e-10,
+      closeZeroDigits=7
+    ) {
      if ( ! (isArrayOrTypedArray(received) && isArrayOrTypedArray(argument)) ) {
        return {
          message: () => `expect two arrays ${isArrayOrTypedArray(received)} ${isArrayOrTypedArray(argument)}`,
@@ -54,8 +59,10 @@ expect.extend({
        pass: true,
      };
    },
-   arrayToBeCloseTo(received: Array<number> | Float32Array, argument: Array<number> | Float32Array, digits: number) {
-     if ( ! (isArrayOrTypedArray(received) && isArrayOrTypedArray(argument)) ) {
+   arrayToBeCloseTo(received: Array<number> | Int32Array | Float32Array | Float64Array,
+      argument: Array<number> | Int32Array | Float32Array | Float64Array,
+      digits: number) {
+    if ( ! (isArrayOrTypedArray(received) && isArrayOrTypedArray(argument)) ) {
        return {
          message: () => `expect two arrays ${isArrayOrTypedArray(received)} ${isArrayOrTypedArray(argument)}`,
          pass: false,
@@ -87,8 +94,8 @@ declare global {
    namespace jest {
      interface Matchers<R> {
        toBeCloseToRatio(argument: number, digits: number, closeZero?: number, closeZeroDigits?: number): R;
-       arrayToBeCloseTo(argument: Array<number> | Float32Array, digits: number): R;
-       arrayToBeCloseToRatio(argument: Array<number> | Float32Array, digits: number, closeZero?: number, closeZeroDigits?: number): R;
+       arrayToBeCloseTo(argument: Array<number> | Int32Array | Float32Array | Float64Array, digits: number): R;
+       arrayToBeCloseToRatio(argument: Array<number> | Int32Array | Float32Array | Float64Array, digits: number, closeZero?: number, closeZeroDigits?: number): R;
      }
    }
 }

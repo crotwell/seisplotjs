@@ -1,4 +1,4 @@
-import './jestRatioMatchers';
+import '../jestRatioMatchers';
 
 import * as fft from '../../src/fft';
 import {Seismogram } from '../../src/seismogram';

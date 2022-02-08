@@ -1,4 +1,4 @@
-// @flow
+import '../jestRatioMatchers';
 
 import * as filter from '../../src/filter';
 import * as taper from '../../src/taper';

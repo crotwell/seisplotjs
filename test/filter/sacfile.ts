@@ -20,7 +20,7 @@ export type sacType = {
   delta: number,
   npts: number,
   start: moment.Moment,
-  y: Float32Array
+  y: Float32Array,
 }
 
 export function readDataView(filename: string): Promise<DataView> {
