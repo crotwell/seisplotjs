@@ -204,8 +204,10 @@ export function log(msg: string): void {
   if (typeof document !== "undefined" && document !== null) {
     let p = document.createElement("p");
     p.textContent = `${stringify(msg)}`;
-    (document.querySelector("div#debug") as HTMLInputElement)
-      .appendChild(p);
+    const divDebug = (document.querySelector("div#debug") as HTMLInputElement);
+    if (isDef(divDebug)) {
+      divDebug.appendChild(p);
+    }
   }
 }
 
@@ -321,6 +323,9 @@ export class StartEndDuration {
     duration: moment.Duration | string | number | null = null,
     clockOffset: number | null = 0,
   ) {
+    if (isDef(startTime) && isDef(endTime) && isDef(duration)) {
+      throw new Error("Only two of three parameters should be used");
+    }
     this._clockOffset = moment.duration(0, "seconds");
     let momentDuration = null;
     if (isDef(duration)) {
@@ -336,7 +341,7 @@ export class StartEndDuration {
       } else if (typeof duration === "number") {
         momentDuration = moment.duration(duration, "seconds");
       } else if (moment.isDuration(duration)) {
-        momentDuration = momentDuration;
+        momentDuration = duration;
       } else {
         throw new Error(
           // @ts-ignore
