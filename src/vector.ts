@@ -193,7 +193,7 @@ export function vectorMagnitude(
   seisA: Seismogram,
   seisB: Seismogram,
   seisC: Seismogram,
-  orientCode: string | null | undefined,
+  orientCode?: string | null,
 ): Seismogram {
   if (seisA.segments.length !== seisB.segments.length) {
     throw new Error(

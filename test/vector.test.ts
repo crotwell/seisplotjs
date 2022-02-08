@@ -1,4 +1,4 @@
-// @flow
+import './jestRatioMatchers';
 
 import * as vector from '../src/vector.js';
 import * as util from '../src/util.js';
@@ -33,7 +33,7 @@ test( "vector magnitude test", () => {
     expect(vecMag.y[2]).toEqual(ans[2]);
 });
 
-let magFunc = function(a, b, c) {
+let magFunc = function(a: number, b: number, c: number) {
   return Math.sqrt(a*a+b*b+c*c);
 };
 
