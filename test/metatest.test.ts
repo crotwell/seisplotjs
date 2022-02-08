@@ -5,4 +5,7 @@ test("metatest", () => {
   expect(7.001).toBeCloseToRatio(7, 3);
   expect([7000.001, 1999.999]).arrayToBeCloseTo([7000, 2000], 2);
   expect([7001, 1999]).arrayToBeCloseToRatio([7000, 2000], 3);
+  expect(Float32Array.from([7001, 1999])).arrayToBeCloseToRatio([7000, 2000], 3);
+  expect(Float32Array.from([7001, 1999])).arrayToBeCloseToRatio(Float32Array.from([7000, 2000]), 3);
+  expect([7001, 1999]).arrayToBeCloseToRatio(Float32Array.from([7000, 2000]), 3);
 });
