@@ -590,6 +590,21 @@ export function parseQuakeML(rawXml: Document, host?: string): Array<Quake> {
   return out;
 }
 
+export function createQuakeFromValues(publicId: string,
+  time: moment.Moment,
+  latitude: number,
+  longitude: number,
+  depth: number): Quake {
+    const origin = new Origin();
+    origin.time = time;
+    origin.latitude =  latitude;
+    origin.longitude = longitude;
+    origin.depth = depth;
+    const quake = new Quake(publicId);
+    quake.originList.push(origin);
+    return quake;
+}
+
 // these are similar methods as in seisplotjs.stationxml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 const _grabFirstElNS = function (
