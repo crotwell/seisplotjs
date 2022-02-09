@@ -44,6 +44,10 @@ export function asSeismogram(sac: sacType): Seismogram {
   return Seismogram.createFromContiguousData(sac.y, 1/sac.delta, sac.start);
 }
 
+export function readSeismogram(filename: string): Promise<Seismogram> {
+  return readSac(filename).then(sac => asSeismogram(sac));
+}
+
 export function parseSac(dataView: DataView): sacType {
   let littleEndian = false;
   let sacVer = dataView.getUint32(NVHDR_OFFSET, true);
