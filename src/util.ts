@@ -279,10 +279,10 @@ export function stringify(value: unknown): string {
       } else {
         return value.constructor.name + " " + value.toString();
       }
-    } else if (typeof value === 'symbol') {
-      return value.toString();
+    //} else if (typeof value === 'symbol') {
+    //  return value.toString();
     } else {
-      return "null";
+      return `${value}`;
     }
   } else {
     return "<unknown" + typeof value + "???>";
