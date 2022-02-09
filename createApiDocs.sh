@@ -105,16 +105,16 @@ cat > docs/api/index.html <<EOF
 EOF
 fi
 
-for path in src/*.js
+for path in src/*.ts
 do
   f=${path##*/}
-  jsfile=${f%.js}
+  jsfile=${f%.ts}
   flowfile=${jsfile%.flow}
-  if [ "${jsfile}" != "${flowfile}" ] || [ "${jsfile}" == "index" ]; then
+  if [ "${jsfile}" != "${flowfile}" ]  || [ "${jsfile}" == "oregondsputil" ] || [ "${jsfile}" == "index" ]; then
     # skip .flow.js files
     continue
   fi
-  if [ -e src/${jsfile}.js ]
+  if [ -e src/${jsfile}.ts ]
   then
     descText=""
     descArg=""
@@ -134,7 +134,7 @@ do
     if [ 'index' != "$jsfile" ]
     then
       #echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
-      npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
+      npx documentation build --parse-extension ts -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.ts
       if [ $? -ne 0 ]
       then
         exit $?
@@ -145,14 +145,14 @@ do
       fi
       # modules links for README.md
       cat >> README_part.md <<EOF
-  * [${jsfile}](https://crotwell.github.io/seisplotjs/api/${jsfile}.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.js) ${descText}
+  * [${jsfile}](https://crotwell.github.io/seisplotjs/api/${jsfile}.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.ts) ${descText}
 EOF
 
     fi
   elif [ -d src/${jsfile} ]
   then
-    #echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile} src/${jsfile}/[a-hj-z]*.js
-    npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile} src/${jsfile}/[a-hj-z]*.js
+    #echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile} src/${jsfile}/[a-hj-z]*.ts
+    npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile} src/${jsfile}/[a-hj-z]*.ts
   else
     echo unknown file ${f}
   fi
@@ -160,7 +160,7 @@ EOF
   then
     # entry of index.html
     cat >> docs/api/index.html <<EOF
-      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.js">source</a> ) - ${descTextHtml}</li>
+      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.ts">source</a> ) - ${descTextHtml}</li>
 EOF
   fi
 done
@@ -191,7 +191,7 @@ then
   cp docs/api/assets/split.css docs/.
   for f in src/*
   do
-    jsfile=`basename ${f} .js`
+    jsfile=`basename ${f} .ts`
     if [ -d docs/api/${jsfile} ]
     then
       rm -r docs/api/${jsfile}
