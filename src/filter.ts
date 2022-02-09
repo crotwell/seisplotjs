@@ -15,12 +15,12 @@ import {isDef} from "./util";
 //   ChebyshevII,
 // } from "oregondsp.com.oregondsp.signalProcessing.filter.iir";
 const CenteredHilbertTransform =
-  OregonDSP.filter.fir.equiripple.CenteredHilbertTransform;
+  OregonDSPTop.com.oregondsp.signalProcessing.filter.fir.equiripple.CenteredHilbertTransform;
 
 /**
  * Constant for bandpass OregonDSP filter creation.
  */
-export const BAND_PASS = "BANDPASS";
+export const BAND_PASS = 'BANDPASS';
 
 /**
  * Constant for lowpass OregonDSP filter creation.
@@ -104,6 +104,32 @@ export type MinMaxMean = {
   mean: number;
 };
 
+export function getPassband(type: string) {
+  // this is really really bad, but kotlin doesn't export
+  // enums and filter requires a enum arg, so we fake it
+  let name ="unknown";
+  let ord = -1;
+  if (type === LOW_PASS) {
+    name = LOW_PASS;
+    ord = 0;
+  } else if (type === BAND_PASS) {
+    name = BAND_PASS;
+    ord = 1;
+  } else if (type === HIGH_PASS) {
+    name = HIGH_PASS;
+    ord = 2;
+  } else {
+    throw new Error(`unknown pass band: ${type}`);
+  }
+  // @ts-ignore
+  return {
+    _name_2: name,
+    _ordinal: ord,
+    equals: function (other: any) {
+      return this._name_2 === other._name_2 && this._ordinal === other._ordinal;
+    },
+  };
+}
 /**
  * Creates a Butterworth IIR filter using the OregonDSP library.
  *
@@ -121,9 +147,10 @@ export function createButterworth(
   highFreqCorner: number,
   delta: number,
 ): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Butterworth {
+  const passbandtype = getPassband(passband);
   return new OregonDSP.filter.iir.Butterworth(
     numPoles,
-    passband,
+    passbandtype,
     lowFreqCorner,
     highFreqCorner,
     delta,
@@ -149,10 +176,11 @@ export function createChebyshevI(
   highFreqCorner: number,
   delta: number,
 ): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.ChebyshevI {
+  const passbandtype = getPassband(passband);
   return new OregonDSP.filter.iir.ChebyshevI(
     numPoles,
     epsilon,
-    passband,
+    passbandtype,
     lowFreqCorner,
     highFreqCorner,
     delta,
@@ -178,10 +206,11 @@ export function createChebyshevII(
   highFreqCorner: number,
   delta: number,
 ): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.ChebyshevII {
+  const passbandtype = getPassband(passband);
   return new OregonDSP.filter.iir.ChebyshevII(
     numPoles,
     epsilon,
-    passband,
+    passbandtype,
     lowFreqCorner,
     highFreqCorner,
     delta,
@@ -199,6 +228,10 @@ export function applyFilter(
   iirFilter: OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.IIRFilter,
   seis: Seismogram,
 ): Seismogram {
+  // check delta and samplePeriod with 0.1% of each other
+  if (Math.abs(iirFilter.getDelta() - seis.samplePeriod)/seis.samplePeriod > 0.001) {
+    throw new Error(`Filter, delta=${iirFilter.getDelta()}, has different delta from seis, ${1/seis.sampleRate}`);
+  }
   let filteredSegments = [];
 
   for (let i = 0; i < seis.segments.length; i++) {
@@ -247,6 +280,9 @@ export function envelope(seis: Seismogram): Seismogram {
  *  and default low and high edge of 0.05 and 0.95. Low and high edge are
  *  given normalized 0 to 1.
  *
+ * Note this uses Float32Array, other array types will be converted,
+ * possibly losing precision.
+ *
  * @param seis seismogram to calculate from
  * @param n optional number of points in transform, default is 10
  * @param lowEdge low edge of filter, normailized to 0-1, default is 0.05
@@ -260,7 +296,12 @@ export function hilbert(
   highEdge?: number,
 ): Seismogram {
   if (seis.isContiguous()) {
-    let seisY = seis.y;
+    let seisY: Float32Array;
+    if (seis.y instanceof Float32Array){
+      seisY = seis.y;
+    } else {
+      seisY = Float32Array.from(seis.y);
+    }
 
     if (!isDef(n)) {
       n = 10;
@@ -275,7 +316,7 @@ export function hilbert(
     }
 
     let hilbert = new OregonDSPTop.com.oregondsp.signalProcessing.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
-    // @ts-ignore
+
     let coeff = hilbert.getCoefficients();
 
     for (let c of coeff) {
@@ -284,7 +325,6 @@ export function hilbert(
       }
     }
 
-    // @ts-ignore
     let hilbertY = hilbert.filter(seisY);
     let s = seis.cloneWithNewData(hilbertY);
     return s;

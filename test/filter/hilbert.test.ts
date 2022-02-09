@@ -1,15 +1,14 @@
-// @flow
 
 import * as filter from '../../src/filter';
 import {Seismogram} from '../../src/seismogram';
-import {readSac} from './sacfile';
+import {readSeismogram} from './sacfile';
 import  {moment} from '../../src/util';
 import * as OregonDSPTop from 'oregondsp';
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 test("init hilbert filter", () => {
   const seisLen = 1024;
-  let seisY = new Array(seisLen);
+  let seisY = new Float32Array(seisLen);
   for(let i=0; i<seisLen; i++) {
     seisY[i] = Math.sin(47*i)+Math.sin(173*i);
   }
@@ -17,22 +16,22 @@ test("init hilbert filter", () => {
   let lowEdge = .05;
   let highEdge = .95;
   let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
+
   let coeff = hilbert.getCoefficients();
 
-  coeff.forEach( c => {
+  coeff.forEach( (c: number) => {
     expect(c).toBeFinite();
   });
   let hilbertY = hilbert.filter(seisY);
 
-  hilbertY.forEach( c => {
+  hilbertY.forEach( (c: number) => {
     expect(c).toBeFinite();
   });
 });
 
 test("simple hilbert", () => {
-    return readSac("./test/filter/data/IU.HRV.__.BHE.SAC")
-      .then( orig => {
-        const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
+    return readSeismogram("./test/filter/data/IU.HRV.__.BHE.SAC")
+      .then( origseis => {
         expect(origseis.y).toHaveLength(31450);
         let hilbertSeismogram = filter.hilbert(origseis);
         // check first for NaN before array length
@@ -43,9 +42,8 @@ test("simple hilbert", () => {
 
 
 test("simple envelope", () => {
-    return readSac("./test/filter/data/IU.HRV.__.BHE.SAC")
-      .then( orig => {
-        const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
+  return readSeismogram("./test/filter/data/IU.HRV.__.BHE.SAC")
+    .then( origseis => {
         expect(origseis.y).toHaveLength(31450);
 
         let envelopeSeis = filter.envelope(origseis);
