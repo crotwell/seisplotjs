@@ -14,8 +14,8 @@ import moment from "moment";
 /** const for datalink protocol for web sockets, DataLink1.0 */
 export const DATALINK_PROTOCOL = "DataLink1.0";
 
-
-enum MODE {
+/** enum for modes, either QUERY or STREAM */
+export enum MODE {
   Query = "QUERY",
   Stream = "STREAM",
 };
@@ -60,7 +60,7 @@ let defaultHandleResponse = function (message: string) {
  * ringserver, https://github.com/iris-edu/ringserver,
  * supports websockets, but it may be possible to use thrid party
  * tools to proxy the websocket to a TCP datalink socket.
- * 
+ *
  * The datalink protocol is documented here
  *  https://raw.githubusercontent.com/iris-edu/libdali/master/doc/DataLink.protocol
  *

@@ -54,19 +54,19 @@ export function fftForward(
 /**
  * Calculates the discrete fourier transform using the OregonDSP library.
  *
+ * This is a lower level function, fftForward is better for most uses.
+ * 
  * @param   timeseries timeseries array
  * @returns           DFT as packed array Float32Array
  */
 export function calcDFT(
   timeseries: Int32Array | Float32Array | Float64Array,
 ): Float32Array {
-  let log2N = 4;
   let npts = timeseries.length;
-  let N = 16;
-
-  while (N < npts) {
-    log2N += 1;
-    N = 2 * N;
+  let [N,log2N] = findPowerTwo(packedFreq.length);
+  if (N < 16) {
+    log2N = 4;
+    N = 16;
   }
 
   let dft = new oregondsp.fft.RDFT(log2N);
@@ -118,6 +118,12 @@ export function inverseDFT(
   return out.slice(0, numPoints);
 }
 
+/**
+ * Finds smallest power of two >= input number.
+ *
+ * @param  fftlength               input number
+ * @return           tuple of N and log2N, like [16,4]
+ */
 export function findPowerTwo(fftlength: number): [number, number] {
     let log2N = 1;
     let N = 2;
@@ -130,7 +136,7 @@ export function findPowerTwo(fftlength: number): [number, number] {
 }
 
 /**
- * Results of FFT calculateion. Allows convertion of the packed real/imag array output from calcDFT into
+ * Results of FFT calculation. Allows convertion of the packed real/imag array output from calcDFT into
  * amplitude and phase.
  */
 export class FFTResult {
