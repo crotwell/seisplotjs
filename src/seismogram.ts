@@ -91,6 +91,9 @@ export class SeismogramSegment {
       this._y = null;
     }
 
+    if (sampleRate <= 0) {
+      throw new Error(`SampleRate must be positive number: ${sampleRate}`);
+    }
     this._sampleRate = sampleRate;
     this._startTime = checkStringOrDate(startTime);
     this.yUnit = COUNT_UNIT;
@@ -204,6 +207,10 @@ export class SeismogramSegment {
     this._sampleRate = value;
 
     this._invalidate_endTime_cache();
+  }
+
+  get samplePeriod(): number {
+    return 1.0/this.sampleRate;
   }
 
   get numPoints(): number {
@@ -630,6 +637,10 @@ export class Seismogram {
 
   get sampleRate(): number {
     return this._segmentArray[0].sampleRate;
+  }
+
+  get samplePeriod(): number {
+    return 1.0/this.sampleRate;
   }
 
   get yUnit(): string|null {
