@@ -51,11 +51,16 @@ let defaultHandleResponse = function (message: string) {
 };
 
 /**
- * A websocket based Datalink connection to a ringserver.
+ * A websocket based Datalink connection.
+ *
+ * Note this cannot connect directly to a native TCP socket, instead it
+ * sends the datalink protocol over a websocket.
+ *
  * Currently only the IRIS
  * ringserver, https://github.com/iris-edu/ringserver,
  * supports websockets, but it may be possible to use thrid party
  * tools to proxy the websocket to a TCP datalink socket.
+ * 
  * The datalink protocol is documented here
  *  https://raw.githubusercontent.com/iris-edu/libdali/master/doc/DataLink.protocol
  *
@@ -76,7 +81,9 @@ export class DataLinkConnection {
   programname: string;
   username: string;
   architecture: string;
+  /** @private */
   _responseResolve: null | ((response: DataLinkResponse) => void);
+  /** @private */
   _responseReject: null | ((error: Error) => void);
   webSocket: WebSocket | null;
 
@@ -655,10 +662,6 @@ export class DataLinkResponse {
 
 /**
  * Represents a Datalink packet from the ringserver.
- * Note this cannot connect directly to a native TCP socket, instead it
- * sends the datalink protocol over a websocket. Currently only the IRIS
- * ringserver supports websockets, but it may be possible to use thrid party
- * tools to proxy the websocket to a TCP datalink socket.
  *
  */
 export class DataLinkPacket {
