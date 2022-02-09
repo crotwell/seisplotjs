@@ -90,6 +90,10 @@ class ChannelListChooser extends HTMLElement {
     this.channels = channels;
     this.draw_element(this.shadowRoot);
   }
+  appendChannels(channels) {
+    this.channels = this.channels.concat(channels);
+    this.draw_element(this.shadowRoot);
+  }
   attributeChangedCallback(name, oldValue, newValue) {
   }
   setCallback(callback) {

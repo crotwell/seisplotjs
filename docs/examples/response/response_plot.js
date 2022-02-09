@@ -3,16 +3,20 @@
 const doLogLog = true;
 let pad_size = 1024*1/16;
 
+const min_exp = 0;
+const max_exp = 2;
+
 document.querySelector("#extstationxml_load").addEventListener('click', event => {
   load_sis();
 });
 document.querySelector("#nrl_load").addEventListener('click', event => {
   load_nrl();
 });
-document.querySelector("#stationxml_load").addEventListener('click', event => {
-  load_fdsn();
-});
-
+if (document.querySelector("#stationxml_load")) {
+  document.querySelector("#stationxml_load").addEventListener('click', event => {
+    load_fdsn();
+  });
+}
 document.querySelector("#clear").addEventListener('click', event => {
   clear_all();
 });
@@ -174,8 +178,6 @@ function process_stages(stages) {
       let sacPoleZero = seisplotjs.transfer.convertPoleZeroToSacStyle(stage.filter, 1,1,gamma);
       sacPoleZero.trimZeros(gamma);
 
-      const min_exp = -3;
-      const max_exp = 4;
       const num = pad_size;
       let freqs = seisplotjs.sacPoleZero.logspace(min_exp, max_exp, num);
       let freqAmp= new seisplotjs.fftplot.FreqAmp(freqs, sacPoleZero.calcForDisplay(freqs));
@@ -253,7 +255,11 @@ function calc_stage_coeff(stage) {
   return longCoeff;
 }
 
-function plot_from_packed_freq(div, stage, idx, impulseResponse) {
+function plot_from_packed_freq(div, stage, idx, impulseResponseList) {
+  if ( ! Array.isArray(impulseResponseList)) {
+    impulseResponseList = [impulseResponseList];
+  }
+  let impulseResponse = impulseResponseList[0];
   impulseResponse.inputUnits = stage.filter.inputUnits;
   let ampdiv = div.append("div");
   ampdiv.classed("stage", true);
@@ -272,7 +278,7 @@ function plot_from_packed_freq(div, stage, idx, impulseResponse) {
   plotConfig.ySublabelIsUnits = true;
   plotConfig.xLabel = "Frequency";
   plotConfig.xSublabel = "Hz";
-  const fftAmpPlot = new seisplotjs.fftplot.FFTPlot(ampdiv, plotConfig, [impulseResponse], doLogLog);
+  const fftAmpPlot = new seisplotjs.fftplot.FFTPlot(ampdiv, plotConfig, impulseResponseList, doLogLog);
   fftAmpPlot.draw();
   let phaseCB = document.querySelector("#showphase");
   if (phaseCB.value) {

@@ -21,6 +21,9 @@ function parse_sis_xml(sisxml) {
       let gval = sisxml.createElementNS(STAML_NS, "Value");
       gval.append(sisxml.createTextNode("1.0"));
       gain.append(gval);
+      let gfreq = sisxml.createElementNS(STAML_NS, "Frequency");
+      gfreq.append(sisxml.createTextNode("0.0"));
+      gain.append(gfreq);
       resp_el.append(gain);
       let stage = seisplotjs.stationxml.convertToStage(rdict);
       resp_dict.set(name, stage.filter);
