@@ -55,7 +55,7 @@ export function fftForward(
  * Calculates the discrete fourier transform using the OregonDSP library.
  *
  * This is a lower level function, fftForward is better for most uses.
- * 
+ *
  * @param   timeseries timeseries array
  * @returns           DFT as packed array Float32Array
  */
@@ -63,7 +63,7 @@ export function calcDFT(
   timeseries: Int32Array | Float32Array | Float64Array,
 ): Float32Array {
   let npts = timeseries.length;
-  let [N,log2N] = findPowerTwo(packedFreq.length);
+  let [N,log2N] = findPowerTwo(timeseries.length);
   if (N < 16) {
     log2N = 4;
     N = 16;
