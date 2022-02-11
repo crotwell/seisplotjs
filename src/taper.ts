@@ -40,7 +40,7 @@ export function taper(
 
     return seis.cloneWithNewData(outData);
   } else {
-    throw new Error("Cannot take taper of non-contiguous seismogram");
+    throw new Error(`Cannot take taper of non-contiguous seismogram: ${seis.segments.length}`);
   }
 }
 
