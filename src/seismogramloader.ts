@@ -164,6 +164,10 @@ export class SeismogramLoader {
   }
 
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
+    return this.load().then(([netList, quakeList, sddList]) => sddList);
+  }
+
+  load(): Promise<[Array<Network>, Array<Quake>, Array<SeismogramDisplayData>]> {
     let fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
 
     if (!this.stationQuery.isSomeParameterSet()) {
@@ -318,6 +322,6 @@ export class SeismogramLoader {
 
       return sddListPromise;
     });
-    return this.sddList;
+    return Promise.all([this.networkList, this.quakeList, this.sddList]);
   }
 }
