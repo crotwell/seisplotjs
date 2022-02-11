@@ -376,6 +376,45 @@ export class SeismogramSegment {
       .replace(/:/g, "");
   }
 
+  /**
+   * return FDSN source id as a string.
+   *
+   * @returns FDSN source id
+   */
+  get sourceId(): string {
+    const sep = "_";
+    let band;
+    let source;
+    let subsource;
+    let chanCode = (this.channelCode ? this.channelCode : "");
+    if (chanCode.length === 3) {
+      band = chanCode.charAt(0);
+      source = chanCode.charAt(1);
+      subsource = chanCode.charAt(2);
+    } else {
+      let items = chanCode.split(sep);
+      band = items[0];
+      source = items[1];
+      subsource = items[2];
+    }
+
+    return (
+      "FDSN:" +
+      (this.networkCode ? this.networkCode : "") +
+      sep +
+      (this.stationCode ? this.stationCode : "") +
+      sep +
+      (this.locationCode ? this.locationCode : "") +
+      sep +
+      band +
+      sep +
+      source +
+      sep +
+      subsource
+    );
+  }
+
+
   clone(): SeismogramSegment {
     let out: SeismogramSegment;
     if (isDef(this._y)) {
@@ -633,6 +672,15 @@ export class Seismogram {
 
   set channelCode(value: string|null) {
     this._segmentArray.forEach(s => (s.channelCode = value));
+  }
+
+  /**
+   * return FDSN source id as a string.
+   *
+   * @returns FDSN source id
+   */
+  get sourceId(): string {
+    return this._segmentArray[0].sourceId;
   }
 
   get sampleRate(): number {
