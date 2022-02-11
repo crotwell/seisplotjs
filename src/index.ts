@@ -8,9 +8,11 @@
 import * as axisutil from "./axisutil";
 import * as cssutil from "./cssutil";
 import * as datalink from "./datalink";
+import * as dataset from "./dataset";
 import * as datechooser from "./datechooser";
 import * as displayorganize from "./displayorganize";
 import * as distaz from "./distaz";
+import * as download from "./download";
 import * as fdsnavailability from "./fdsnavailability";
 import * as fdsndatacenters from "./fdsndatacenters";
 import * as fdsnevent from "./fdsnevent";
@@ -57,9 +59,11 @@ export {
   axisutil,
   cssutil,
   datalink,
+  dataset,
   datechooser,
   displayorganize,
   distaz,
+  download,
   fdsnavailability,
   fdsndatacenters,
   fdsnevent,

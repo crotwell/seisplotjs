@@ -3,7 +3,8 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {EncodedDataSegment} from "./seedcodec";
+import {isDef} from "./util";
+import {EncodedDataSegment, FLOAT, INTEGER, DOUBLE} from "./seedcodec";
 import {SeismogramSegment, Seismogram} from "./seismogram";
 import {
   DataRecord,
@@ -34,6 +35,52 @@ export const LITTLE_ENDIAN = true;
 /** const for big endian, false */
 export const BIG_ENDIAN = false;
 
+export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): Array<MSeed3Record> {
+  const out = new Array<MSeed3Record>(0);
+  if (!isDef(extraHeaders)) {
+    extraHeaders = {};
+  }
+  for (let seg of seis.segments) {
+    let header = new MSeed3Header();
+    let rawData;
+    let encoding = 0;
+    if (seg.isEncoded()) {
+      const encoded = seg.getEncoded();
+      if (encoded.length === 1) {
+        rawData = encoded[0].dataView;
+        encoding = encoded[0].compressionType;
+      } else {
+        throw new Error(`more than one encoded in seis segment: ${encoded.length}`);
+      }
+    } else {
+      rawData = new DataView(seg.y.buffer);
+      if (seg.y instanceof Float32Array) {
+        encoding = FLOAT;
+      } else if (seg.y instanceof Int32Array) {
+        encoding = INTEGER;
+      } else if (seg.y instanceof Float64Array) {
+        encoding = DOUBLE;
+      } else {
+        throw new Error("unable to save data of encoding: ");
+      }
+    }
+    header.setStart(seg.startTime);
+    header.encoding = encoding;
+
+    header.sampleRatePeriod = seg.samplePeriod;
+    header.numSamples = seg.numPoints;
+    header.crc = 0;
+    header.publicationVersion = UNKNOWN_DATA_VERSION;
+    header.extraHeadersLength = 2;
+    header.identifier = seg.sourceId;
+    header.identifierLength = header.identifier.length;
+    header.extraHeaders = extraHeaders;
+    header.dataLength = rawData.buffer.byteLength;
+    let record = new MSeed3Record(header, extraHeaders, rawData);
+    out.push(record);
+  }
+  return out;
+}
 /**
  * parse arrayBuffer into an array of MSeed3Records.
  *
@@ -74,10 +121,10 @@ export function parseMSeed3Records(
  */
 export class MSeed3Record {
   header: MSeed3Header;
-  extraHeaders: any;
+  extraHeaders: Record<string, any>;
   rawData: DataView;
 
-  constructor(header: MSeed3Header, extraHeaders: any, rawData: DataView) {
+  constructor(header: MSeed3Header, extraHeaders: Record<string, any>, rawData: DataView) {
     this.header = header;
     this.rawData = rawData;
     this.extraHeaders = extraHeaders;
@@ -461,6 +508,17 @@ export class MSeed3Header {
       "Z"
     );
   }
+  /**
+  * sets start time headers from Moment.
+  */
+  setStart(starttime: moment.Moment) {
+    this.nanosecond = starttime.milliseconds()*1000;
+    this.year = starttime.year();
+    this.dayOfYear = starttime.dayOfYear();
+    this.hour = starttime.hour();
+    this.minute = starttime.minute();
+    this.second = starttime.second();
+  }
 
   /**
    * Calculates time of the ith sample.
@@ -573,7 +631,7 @@ export class MSeed3Header {
  * @param   dataView json bytes as DataView
  * @returns           json object
  */
-export function parseExtraHeaders(dataView: DataView): {} {
+export function parseExtraHeaders(dataView: DataView): Record<string, any> {
   if (dataView.byteLength === 0) {
     return {};
   }

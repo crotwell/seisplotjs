@@ -93,7 +93,7 @@ export class OrganizedDisplay {
 
       if (nonContigList.length > 0) {
         let nonContigMsg =
-          "non-contiguous seismograms, skipping: " + 
+          "non-contiguous seismograms, skipping: " +
           nonContigList
             .map(sdd =>
               isDef(sdd.seismogram)
@@ -347,13 +347,14 @@ export function sortDistance(
   return sortByKey(organized, key);
 }
 export function attributeDistance(orgDisp: OrganizedDisplay): number | null {
+  let out = Number.MAX_VALUE;
   orgDisp.seisData.forEach(sdd => {
     if (sdd.hasQuake && sdd.hasChannel) {
       const distaz = sdd.distaz;
-      return distaz ? distaz.delta : null;
+      out = distaz ? Math.min(out,distaz.delta) : out;
     }
   });
-  return null;
+  return out;
 }
 export function uniqueStations(
   seisData: Array<SeismogramDisplayData>,
