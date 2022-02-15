@@ -1,5 +1,9 @@
 /*global seisplotjs */
 
+
+function loadTestDatasetEmpty() { //: Promise<Dataset>
+  return Promise.resolve(new seisplotjs.dataset.Dataset());
+}
 function loadTestDataset() { //: Promise<Dataset>
   const START = seisplotjs.moment.utc("2021-12-27");
   const END = seisplotjs.moment.utc("2021-12-28");
@@ -132,20 +136,25 @@ class EQView {
   }
 
   saveToZipFile() {
-    let mseed3Records =
-    this.dataset.waveforms.map( sdd => seisplotjs.mseed3.toMSeed3(sdd.seismogram))
-    .reduce((acc,cur) => acc.concat(cur), []);
-    let byteSize = mseed3Records.reduce( (acc, cur) => acc+cur.calcSize(), 0);
-    let outBuf = new ArrayBuffer(byteSize);
-    let offset = 0;
-    mseed3Records.forEach(ms3Rec => {
-      let recSize = ms3Rec.calcSize();
-      console.log(`Record: ${offset} + ${recSize}  of ${byteSize}`);
-      let dv = new DataView(outBuf, offset, recSize);
-      ms3Rec.save(dv);
-      offset += recSize;
+    this.dataset.saveToZipFile();
+  }
+
+  loadFromZipFile(fileList) {
+    let promiseList = [];
+    for (let f of fileList) {
+      console.log(`read from ${f.name} ${f.size}`);
+      promiseList.push(seisplotjs.dataset.loadFromFile(f));
+    }
+    return Promise.all(promiseList).then(dsList => {
+      let indataset = new seisplotjs.dataset.Dataset();
+      dsList.forEach(ds => {
+        indataset = indataset.merge(ds);
+      });
+      return indataset;
+    }).then(ds => {
+      this.dataset = ds;
+      this.loadAllAndPlot();
     });
-    seisplotjs.download.downloadBlobAsFile(outBuf, "waveform.ms3");
   }
 
   loadAllAndPlot() {
@@ -171,7 +180,6 @@ class EQView {
     let organizedSeis = this.organizePlotting(this.organizetype, this.plottype, this.dataset, filteredSeis);
     organizedSeis = this.sortForPlotting(this.sorttype, organizedSeis);
     this.plotDiv.selectAll('*').remove();
-    console.log(`replot: ${filteredSeis.length}/${this.dataset.waveforms.length}`)
     seisplotjs.displayorganize.createPlots(organizedSeis, this.plotDiv);
     for(let os of organizedSeis) {
       if (seisplotjs.util.isDef(os.seismograph)) {
@@ -250,7 +258,6 @@ class EQView {
   organizePlotting(organizetype, plottype, dataset, seisDataList) {
     let organizedData = [];
     if ( ! seisDataList || seisDataList.length === 0) {
-      console.log(`organizePlotting(${organizetype}, ${plottype}, dataset, seisData) seisDataList is empty`);
       return organizedData;
     }
     if (plottype === "particlemotion") {

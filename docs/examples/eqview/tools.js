@@ -24,6 +24,10 @@ function createTools(viewObspy) {
   seisplotjs.d3.select("button#saveZip").on("click", function() {
     viewObspy.saveToZipFile();
   });
+  seisplotjs.d3.select("input#loadZip").on("change", function() {
+    const input = document.querySelector('input#loadZip');
+    viewObspy.loadFromZipFile(input.files);
+  });
   seisplotjs.d3.select("input#linkx").on("change", function() {
     viewObspy.replot();
   });
@@ -67,15 +71,15 @@ function createTools(viewObspy) {
     viewObspy.replot();
   });
   seisplotjs.d3.select("input#radio_sort_bydistance").on("change", () => {
-    viewObspy.sorttype = "distance";
+    viewObspy.sorttype = "bydistance";
     viewObspy.replot();
   });
   seisplotjs.d3.select("input#radio_sort_bybackazimuth").on("change", () => {
-    viewObspy.sorttype = "backazimuth";
+    viewObspy.sorttype = "bybackazimuth";
     viewObspy.replot();
   });
   seisplotjs.d3.select("input#radio_sort_byazimuth").on("change", () => {
-    viewObspy.sorttype = "azimuth";
+    viewObspy.sorttype = "byazimuth";
     viewObspy.replot();
   });
 
