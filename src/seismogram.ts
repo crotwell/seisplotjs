@@ -199,6 +199,10 @@ export class SeismogramSegment {
     return new StartEndDuration(this.startTime, this.endTime);
   }
 
+  get timeRange(): StartEndDuration {
+    return this.timeWindow;
+  }
+
   get sampleRate(): number {
     return this._sampleRate;
   }

@@ -581,40 +581,52 @@ export function createSeismogramSegment(
  * containing the data as EncodedDataSegment objects. DataRecords are
  * sorted by startTime.
  * This assumes all data records are from the same channel, byChannel
- * can be used first if multiple channels may be present.
+ * can be used first if multiple channels may be present. It also
+ * assumes that new seismograms should not be created for gaps, for example
+ * when getting data from the same channel for multiple earthquakes.
  *
  * @param drList array of data records
  * @returns Seismogram instance
  */
 export function merge(drList: Array<DataRecord>): Seismogram {
-  let out = [];
-  let currDR;
-  drList.sort(function (a, b) {
-    return a.header.startTime.diff(b.header.startTime);
-  });
-  let contig: Array<DataRecord> = [];
+  return new Seismogram(mergeSegments(drList));
+}
 
-  for (let i = 0; i < drList.length; i++) {
-    currDR = drList[i];
+/**
+ * merges contiguous DataRecords into SeismogramSegments.
+ *
+ * @param drList array of data records
+ * @returns array of SeismogramSegments for contiguous data
+ */
+export function mergeSegments(drList: Array<DataRecord>): Array<SeismogramSegment> {
+ let out = [];
+ let currDR;
+ drList.sort(function (a, b) {
+   return a.header.startTime.diff(b.header.startTime);
+ });
+ let contig: Array<DataRecord> = [];
 
-    if (contig.length === 0) {
-      contig.push(currDR);
-    } else if (areContiguous(contig[contig.length - 1], currDR)) {
-      contig.push(currDR);
-    } else {
-      //found a gap
-      out.push(createSeismogramSegment(contig));
-      contig = [currDR];
-    }
-  }
+ for (let i = 0; i < drList.length; i++) {
+   currDR = drList[i];
 
-  if (contig.length > 0) {
-    // last segment
-    out.push(createSeismogramSegment(contig));
-    contig = [];
-  }
+   if (contig.length === 0) {
+     contig.push(currDR);
+   } else if (areContiguous(contig[contig.length - 1], currDR)) {
+     contig.push(currDR);
+   } else {
+     //found a gap
+     out.push(createSeismogramSegment(contig));
+     contig = [currDR];
+   }
+ }
 
-  return new Seismogram(out);
+ if (contig.length > 0) {
+   // last segment
+   out.push(createSeismogramSegment(contig));
+   contig = [];
+ }
+
+ return out;
 }
 
 /**
@@ -646,6 +658,21 @@ export function byChannel(
   return out;
 }
 
+/**
+ * splits the DataRecords by channel and creates a single
+ * SeismogramSegment for each contiguous window from each channel.
+ *
+ * @param   drList DataRecords array
+ * @returns         Array of SeismogramSegment
+ */
+export function seismogramSegmentPerChannel(
+  drList: Array<DataRecord>,
+): Array<SeismogramSegment> {
+  let out = new Array<SeismogramSegment>(0);
+  let byChannelMap = byChannel(drList);
+  byChannelMap.forEach(segments => out = out.concat(mergeSegments(segments)));
+  return out;
+}
 /**
  * splits the DataRecords by channel and creates a single
  * Seismogram for each channel.

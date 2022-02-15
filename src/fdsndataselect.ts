@@ -450,13 +450,13 @@ export class DataSelectQuery {
     if (this._format === FORMAT_MINISEED_THREE) {
       seismogramPromise = this.postQueryMS3Records(sddList).then(
         dataRecords => {
-          return mseed3.seismogramPerChannel(dataRecords);
+          return mseed3.seismogramSegmentPerChannel(dataRecords);
         },
       );
     } else {
       seismogramPromise = this.postQueryDataRecords(sddList).then(
         dataRecords => {
-          return miniseed.seismogramPerChannel(dataRecords);
+          return miniseed.seismogramSegmentPerChannel(dataRecords);
         },
       );
     }
@@ -464,11 +464,12 @@ export class DataSelectQuery {
     return seismogramPromise.then(seisArray => {
       for (let sdd of sddList) {
         let codes = sdd.codes();
-        let seis = seisArray.find(
+        let segList = seisArray.filter(
           s => s.codes() === codes && s.timeRange.overlaps(sdd.timeWindow),
         );
-
-        if (seis) {
+        if (segList.length > 0) {
+          // do coarse trim in case multiple overlapping requests
+          let seis = new Seismogram(segList).trim(sdd.timeWindow);
           sdd.seismogram = seis;
         }
       }

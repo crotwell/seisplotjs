@@ -763,6 +763,16 @@ export function createSeismogramSegment(
  * @returns the seismogram
  */
 export function merge(drList: Array<MSeed3Record>): Seismogram {
+    return new Seismogram(mergeSegments(drList));
+  }
+
+/**
+ * merges contiguous MSeed3Record into SeismogramSegments.
+ *
+ * @param drList array of data records
+ * @returns array of SeismogramSegments for contiguous data
+ */
+export function mergeSegments(drList: Array<MSeed3Record>): Array<SeismogramSegment> {
   let out = [];
   let currDR;
   drList.sort(function (a, b) {
@@ -789,8 +799,7 @@ export function merge(drList: Array<MSeed3Record>): Seismogram {
     out.push(createSeismogramSegment(contig));
     contig = [];
   }
-
-  return new Seismogram(out);
+  return out;
 }
 
 /**
@@ -822,6 +831,21 @@ export function byChannel(
   return out;
 }
 
+/**
+ * splits the records by channel and creates a single
+ * SeismogramSegment for each contiguous window from each channel.
+ *
+ * @param   drList MSeed3Records array
+ * @returns         Array of SeismogramSegment
+ */
+export function seismogramSegmentPerChannel(
+  drList: Array<MSeed3Record>,
+): Array<SeismogramSegment> {
+  let out = new Array<SeismogramSegment>(0);
+  let byChannelMap = byChannel(drList);
+  byChannelMap.forEach(segments => out = out.concat(mergeSegments(segments)));
+  return out;
+}
 /**
  * splits the MSeed3Records by channel and creates a single
  * Seismogram for each channel.
