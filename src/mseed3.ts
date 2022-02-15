@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {isDef} from "./util";
-import {EncodedDataSegment, FLOAT, INTEGER, DOUBLE} from "./seedcodec";
+import {EncodedDataSegment, FLOAT, INTEGER, DOUBLE, STEIM1, STEIM2} from "./seedcodec";
 import {SeismogramSegment, Seismogram} from "./seismogram";
 import {
   DataRecord,
@@ -50,7 +50,39 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
         rawData = encoded[0].dataView;
         encoding = encoded[0].compressionType;
       } else {
-        throw new Error(`more than one encoded in seis segment: ${encoded.length}`);
+        let encodeTypeSet = new Set<number>();
+        encoded.forEach((cur) => {
+          encodeTypeSet.add(cur.compressionType);
+        });
+        let encodeTypes = Array.from(encodeTypeSet.values());
+        if (encodeTypes.length > 1) {
+          throw new Error(`more than one encoding type in seis segment: ${encodeTypes}`);
+        } else if (encodeTypes.length === 0) {
+          throw new Error(`zero encoding type in seis segment`);
+        } else if ( !encodeTypes[0]) {
+          throw new Error(`only encoding type is undef`);
+        }
+        encoding = encodeTypes[0];
+        if (! encoding) {
+          throw new Error(`encoding is undefined`);
+        }
+        if (INTEGER || FLOAT || DOUBLE) {
+          // safe to concat
+          let totSize = encoded.reduce((acc, cur) => acc+cur.dataView.byteLength, 0);
+          const combined = new Uint8Array(totSize);
+          encoded.reduce((offset, cur) => {
+            combined.set(new Uint8Array(cur.dataView.buffer, cur.dataView.byteOffset, cur.dataView.byteLength), offset);
+            return offset+cur.dataView.byteLength;
+          }, 0);
+          rawData = new DataView(combined.buffer);
+          if (encoding === STEIM1 || encoding === STEIM2) {
+            // careful as each encodeddata has first-last sample
+            // copy last sample from last block to first block to check value to start
+            rawData.setUint32(8, encoded[encoded.length-1].dataView.getUint32(8));
+          }
+        } else {
+          throw new Error(`Encoding type not steim 1 or 2 or primitive in seis segment: ${encoding}`);
+        }
       }
     } else {
       rawData = new DataView(seg.y.buffer);
@@ -66,17 +98,19 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
     }
     header.setStart(seg.startTime);
     header.encoding = encoding;
-
-    header.sampleRatePeriod = seg.samplePeriod;
+    if (seg.sampleRate > 0.001) {
+      header.sampleRatePeriod = seg.sampleRate;
+    } else {
+      header.sampleRatePeriod = -1*seg.samplePeriod;
+    }
     header.numSamples = seg.numPoints;
-    header.crc = 0;
     header.publicationVersion = UNKNOWN_DATA_VERSION;
-    header.extraHeadersLength = 2;
     header.identifier = seg.sourceId;
     header.identifierLength = header.identifier.length;
     header.extraHeaders = extraHeaders;
-    header.dataLength = rawData.buffer.byteLength;
+    header.dataLength = rawData.byteLength;
     let record = new MSeed3Record(header, extraHeaders, rawData);
+    record.calcSize();
     out.push(record);
   }
   return out;
@@ -545,13 +579,13 @@ export class MSeed3Header {
     offset: number = 0,
     zeroCrc: boolean = false,
   ): number {
-    dataView.setInt8(offset, this.recordIndicator.charCodeAt(0));
+    dataView.setUint8(offset, this.recordIndicator.charCodeAt(0));
     offset++;
-    dataView.setInt8(offset, this.recordIndicator.charCodeAt(1));
+    dataView.setUint8(offset, this.recordIndicator.charCodeAt(1));
     offset++;
-    dataView.setInt8(offset, this.formatVersion);
+    dataView.setUint8(offset, this.formatVersion);
     offset++;
-    dataView.setInt8(offset, this.flags);
+    dataView.setUint8(offset, this.flags);
     offset++;
     dataView.setUint32(offset, this.nanosecond, true);
     offset += 4;
@@ -559,13 +593,13 @@ export class MSeed3Header {
     offset += 2;
     dataView.setUint16(offset, this.dayOfYear, true);
     offset += 2;
-    dataView.setInt8(offset, this.hour);
+    dataView.setUint8(offset, this.hour);
     offset++;
-    dataView.setInt8(offset, this.minute);
+    dataView.setUint8(offset, this.minute);
     offset++;
-    dataView.setInt8(offset, this.second);
+    dataView.setUint8(offset, this.second);
     offset++;
-    dataView.setInt8(offset, this.encoding);
+    dataView.setUint8(offset, this.encoding);
     offset++;
     dataView.setFloat64(offset, this.sampleRatePeriod, true);
     offset += 8;
@@ -579,9 +613,9 @@ export class MSeed3Header {
     }
 
     offset += 4;
-    dataView.setInt8(offset, this.publicationVersion);
+    dataView.setUint8(offset, this.publicationVersion);
     offset++;
-    dataView.setInt8(offset, this.identifier.length);
+    dataView.setUint8(offset, this.identifier.length);
     offset++;
     dataView.setUint16(offset, this.extraHeadersLength, true);
     offset += 2;
@@ -590,7 +624,7 @@ export class MSeed3Header {
 
     for (let i = 0; i < this.identifier.length; i++) {
       // not ok for unicode?
-      dataView.setInt8(offset, this.identifier.charCodeAt(i));
+      dataView.setUint8(offset, this.identifier.charCodeAt(i));
       offset++;
     }
 
