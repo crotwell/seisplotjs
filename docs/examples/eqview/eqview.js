@@ -162,6 +162,7 @@ class EQView {
       this.createBandCheckboxes(this.dataset.waveforms, this.dataset.inventory);
       this.createGainCheckboxes(this.dataset.waveforms, this.dataset.inventory);
       this.createOrientationCheckboxes(this.dataset.waveforms, this.dataset.inventory);
+      this.createQuakeCheckboxes(this.dataset.waveforms, this.dataset.catalog);
 
       this.reprocess();
 
@@ -365,6 +366,26 @@ class EQView {
     this.createCheckboxes(seisDataList, inventory, chanKeyFun, sddKeyFun, idPrefix);
   }
 
+  createQuakeCheckboxes(waveforms, catalog) {
+    let idPrefix = "quake";
+    seisplotjs.d3.select(`div#${idPrefix}_checkbox`).selectAll("div")
+      .data(catalog, s => s)
+      .join(enter => {
+        let span = enter.append("div").attr('quake', s=>s);
+        span.append("input")
+          .attr("type", "checkbox")
+          .attr("id", function(d) { return `${idPrefix}_${d.eventId}`; })
+          .attr("value", function(d) { return d; })
+          .property("checked", true)
+          .on("change", () => {
+            this.replot();
+          });
+        span.append("label")
+          .attr('for', function(d) { return d; })
+          .text(function(d) { return d; });
+        });
+  }
+
   createCheckboxes(seisDataList, inventory, chanKeyFun, sddKeyFun, idPrefix) {
     let outPromise = [];
     if (inventory) {
@@ -389,7 +410,7 @@ class EQView {
           let span = enter.append("span").attr('sta', s=>s);
           span.append("input")
             .attr("type", "checkbox")
-            .attr("id", function(d) { return `${idPrefix}${d}`; })
+            .attr("id", function(d) { return `${idPrefix}_${d}`; })
             .attr("value", function(d) { return d; })
             .property("checked", true)
             .on("change", () => {
@@ -406,23 +427,23 @@ class EQView {
   }
 
   stationFilter(sdd) {
-    const inputId = `input#station${sdd.stationCode}`;
+    const inputId = `input#station_${sdd.stationCode}`;
     return this.inputIdFilter(inputId);
   }
 
 
   orientFilter(sdd) {
-    const inputId = `input#orient${sdd.channelCode.charAt(2)}`;
+    const inputId = `input#orient_${sdd.channelCode.charAt(2)}`;
     return this.inputIdFilter(inputId);
   }
 
   bandFilter(sdd) {
-    const inputId = `input#band${sdd.channelCode.charAt(0)}`;
+    const inputId = `input#band_${sdd.channelCode.charAt(0)}`;
     return this.inputIdFilter(inputId);
   }
 
   gainFilter(sdd) {
-    const inputId = `input#gain${sdd.channelCode.charAt(1)}`;
+    const inputId = `input#gain_${sdd.channelCode.charAt(1)}`;
     return this.inputIdFilter(inputId);
   }
 
@@ -434,11 +455,21 @@ class EQView {
       return out;
   }
 
+  quakeFilter(sdd) {
+    let idPrefix = "quake";
+    return sdd.quakeList.reduce((acc, cur) => {
+      let inputEl = document.querySelector(`div#${idPrefix}_checkbox input#${idPrefix}_${cur.eventId}`);
+      return acc || inputEl.checked;
+    }, false);
+
+  }
+
   defaultPlotFilter(sdd) {
     return this.stationFilter(sdd)
         && this.bandFilter(sdd)
         && this.gainFilter(sdd)
-        && this.orientFilter(sdd);
+        && this.orientFilter(sdd)
+        && this.quakeFilter(sdd);
   }
 
 
