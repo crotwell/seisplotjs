@@ -5,6 +5,25 @@ function loadTestDatasetEmpty() { //: Promise<Dataset>
   return Promise.resolve(new seisplotjs.dataset.Dataset());
 }
 function loadTestDataset() { //: Promise<Dataset>
+  let dataset;
+  const load_from = "file";
+  if (load_from === "empty") {
+    dataset = loadTestDatasetEmpty();
+  } else if (load_from === "iris") {
+    dataset = loadTestDatasetIRIS();
+  } else {
+    dataset = loadTestDatasetFile();
+  }
+  return dataset;
+}
+function loadTestDatasetFile() { //: Promise<Dataset>
+  return seisplotjs.dataset.load('dataset.zip')
+  .then((ds) => {
+    return ds;
+  });
+
+}
+function loadTestDatasetIRIS() { //: Promise<Dataset>
   const START = seisplotjs.moment.utc("2021-12-27");
   const END = seisplotjs.moment.utc("2021-12-28");
   const NET = 'CO';
@@ -27,7 +46,7 @@ function loadTestDataset() { //: Promise<Dataset>
 
 class EQView {
   constructor(dataset, cssSelector="#myseismograph") {
-    this.dataset = dataset;
+    this.dataset = dataset ? dataset : new seisplotjs.dataset.DataSet();
     this.processedData = dataset.waveforms;
     this.processChain = [];
     this.plotDiv = seisplotjs.d3.select(cssSelector);
@@ -142,7 +161,6 @@ class EQView {
   loadFromZipFile(fileList) {
     let promiseList = [];
     for (let f of fileList) {
-      console.log(`read from ${f.name} ${f.size}`);
       promiseList.push(seisplotjs.dataset.loadFromFile(f));
     }
     return Promise.all(promiseList).then(dsList => {
@@ -166,7 +184,7 @@ class EQView {
 
       this.reprocess();
 
-      //this.replot();
+      this.replot();
   }
 
   reprocess() {
@@ -178,7 +196,14 @@ class EQView {
 
   replot() {
     let filteredSeis = this.processedData.filter(sd => this.seisChanQuakeFilter(sd));
-    let organizedSeis = this.organizePlotting(this.organizetype, this.plottype, this.dataset, filteredSeis);
+
+    let organizetype = this.organizetype;
+    if (this.plottype === "map" || this.plottype === "info") {
+      // rarely useful to have individual maps per seismogram
+      organizetype = "all";
+    }
+    let organizedSeis = this.organizePlotting(organizetype, this.plottype, this.dataset, filteredSeis);
+
     organizedSeis = this.sortForPlotting(this.sorttype, organizedSeis);
     this.plotDiv.selectAll('*').remove();
     seisplotjs.displayorganize.createPlots(organizedSeis, this.plotDiv);

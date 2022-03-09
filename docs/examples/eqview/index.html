@@ -111,6 +111,7 @@
   <body>
     <div id='message'></div>
     <h3>Earthquake view: <span id="title">seismographs</span></h3>
+
     <input id="_1" type="checkbox" class="hidetools"></input>
     <label class="hidetools" for="_1"><span> Tools:</span></label>
     <div class='tools'>
@@ -279,7 +280,15 @@
     <script src="tools.js"></script>
     <script>
       loadTestDataset().then(dataset => {
+        // associate earthquakes with sdd waveforms
+        dataset.associate();
         const viewObspy = new EQView(dataset);
+        createTools(viewObspy);
+        viewObspy.loadAllAndPlot();
+      }).catch(err => {
+        console.error(`problem load dataset: ${err}`);
+        console.alert(false, err);
+        const viewObspy = new EQView();
         createTools(viewObspy);
         viewObspy.loadAllAndPlot();
       });
