@@ -23,6 +23,8 @@ export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";
 export const SVG_MIME = "image/svg+xml";
 export const TEXT_MIME = "text/plain";
+export const BINARY_MIME = "application/octet-stream";
+
 export function hasArgs(value: any): boolean {
   return arguments.length !== 0 && typeof value !== "undefined";
 }

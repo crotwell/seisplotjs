@@ -1,18 +1,22 @@
 
 import {downloadBlobAsFile} from "./download";
 import * as mseed3 from "./mseed3";
-import {Quake} from "./quakeml";
-import {Network, Station} from "./stationxml";
+import {Quake, parseQuakeML} from "./quakeml";
+import {Network, Station, parseStationXml} from "./stationxml";
 import {Seismogram, SeismogramDisplayData} from "./seismogram";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {SeismogramLoader} from "./seismogramloader";
+import {StartEndDuration, doFetchWithTimeout, defaultFetchInitObj,
+  isDef, XML_MIME, BINARY_MIME} from "./util";
 import JSZip from "jszip";
 
 export const DATASET_DIR = "dataset";
 export const DOT_ZIP_EXT = ".zip";
-export const ZIP_FILENAME = DATASET_DIR+DOT_ZIP_EXT
+export const ZIP_FILENAME = DATASET_DIR+DOT_ZIP_EXT;
 export const SEISMOGRAM_DIR = "seismograms";
+export const CATALOG_FILE = "catalog.quakeml";
+export const INVENTORY_FILE = "inventory.staxml";
 
 export class Dataset {
   catalog: Array<Quake>;
@@ -105,33 +109,110 @@ export class Dataset {
     out.catalog = this.catalog.concat(other.catalog);
     return out;
   }
+  associate(timeOverlapSecs: number = 1800) {
+    this.catalog.forEach((q:Quake)=> {
+      this.waveforms.forEach((w: SeismogramDisplayData) => {
+        if (isDef(q.preferredOrigin)) {
+          let window = new StartEndDuration(q.preferredOrigin.time, null, timeOverlapSecs);
+          if (window.overlaps(w.timeWindow)) {
+            w.addQuake(q);
+          }
+        }
+      })
+    });
+  }
 
+}
+export function load(url: string): Promise<Dataset> {
+  const fetchInitOptions = defaultFetchInitObj(BINARY_MIME);
+  return doFetchWithTimeout(url, fetchInitOptions)
+  .then(function (response) {
+    if (response.status === 200 || response.status === 0) {
+      return response.blob();
+    } else {
+      // no data
+      throw new Error("No data");
+    }
+  }).then(data => JSZip.loadAsync(data)).then(zip => loadFromZip(zip));
 }
 export function loadFromFile(file: File): Promise<Dataset> {
   return new JSZip().loadAsync(file)
-  .then(function(zip) {
+  .then(loadFromZip);
+}
+export function loadFromZip(zip: JSZip): Promise<Dataset> {
     // Read from the zip file!
     const promiseArray = new Array<Promise<Array<SeismogramDisplayData>>>(0);
-    const seisDir = zip.folder(SEISMOGRAM_DIR);
-    if (!!seisDir) {
-      seisDir.forEach(function (relativePath, file){
-        if (file.name.endsWith(".ms3")) {
-          const seisPromise = file.async("arraybuffer").then(function (buffer) {
-            let ms3records = mseed3.parseMSeed3Records(buffer);
-            let seismograms = mseed3.seismogramPerChannel(ms3records)
-              .map((seis: Seismogram) => SeismogramDisplayData.fromSeismogram(seis));
-            return seismograms;
-          });
-          promiseArray.push(seisPromise);
+    let datasetDir: JSZip;
+    let possibleDirs = zip.folder(new RegExp('/'+SEISMOGRAM_DIR));
+    /*
+    let possibleDirs = zip.filter(function (relativePath, file){
+      if (!file.dir) {return false;}
+      if (relativePath == DATASET_DIR) { return true; }
+      let possibleSeisDirs = zip.filter(function (seisPath, seisDir){
+        if (seisPath.startsWith(relativePath) && seisDir.dir && seisPath.endsWith(SEISMOGRAM_DIR)) {
+          return true;
         }
+        return false;
       });
+      return possibleSeisDirs.length > 0;
+    });
+    */
+    if (possibleDirs.length == 0) {
+      throw new Error("Unable to find dataset directory in zip file");
+    } else {
+      let tmpdatasetDir = zip.folder(possibleDirs[0].name.slice(0, -1*(SEISMOGRAM_DIR.length+1)));
+      if (tmpdatasetDir === null) {
+        // can't happen, just to keep typescript happy
+        throw new Error("Unable to find dataset directory in zip file");
+      } else {
+        datasetDir = tmpdatasetDir;
+      }
+      const seisDir = datasetDir.folder(SEISMOGRAM_DIR);
+      if (!!seisDir) {
+        seisDir.forEach(function (relativePath, file){
+          if (file.name.endsWith(".ms3")) {
+            const seisPromise = file.async("arraybuffer").then(function (buffer) {
+              let ms3records = mseed3.parseMSeed3Records(buffer);
+              let seismograms = mseed3.seismogramPerChannel(ms3records)
+                .map((seis: Seismogram) => SeismogramDisplayData.fromSeismogram(seis));
+              return seismograms;
+            });
+            promiseArray.push(seisPromise);
+          }
+        });
+      }
     }
+
     return Promise.all(promiseArray).then((sddListList: Array<Array<SeismogramDisplayData>>) => {
       return sddListList.reduce((acc, sddList) => acc.concat(sddList), new Array<SeismogramDisplayData>(0));
     }).then((sddList: Array<SeismogramDisplayData>) => {
+
+      const catalogFile = datasetDir.file(CATALOG_FILE);
+      let qml = catalogFile ? catalogFile.async("string").then(function (rawXmlText) {
+        if (rawXmlText.length < 10) {
+          console.log(`qml text is really short: ${rawXmlText}`);
+          return [];
+        } else {
+          let rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
+          return parseQuakeML(rawXml);
+        }
+      }) : [];
+      const inventoryFile = datasetDir.file(CATALOG_FILE);
+      let staml = inventoryFile ? inventoryFile.async("string").then(function (rawXmlText) {
+        if (rawXmlText.length < 10) {
+          console.log(`staxml text is really short: ${rawXmlText}`);
+          return [];
+        } else {
+          const rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
+          return parseStationXml(rawXml);
+        }
+      }) : [];
+      return Promise.all([sddList, qml, staml]);
+    }).then(promises => {
       const dataset = new Dataset();
-      dataset.waveforms = sddList;
+      dataset.waveforms = promises[0];
+      dataset.catalog = promises[1];
+      dataset.inventory = promises[2];
       return dataset;
     });
-  });
 }
