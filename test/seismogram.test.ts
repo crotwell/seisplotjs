@@ -236,7 +236,7 @@ test("cut clone sdd test", () => {
   if (!!cutSeis){
     expect(cutSeis.endTime).toEqual(cutWindow.endTime);
     const cutSeisSdd = sdd.cloneWithNewSeismogram(cutSeis);
-    cutSeisSdd.timeWindow = cutWindow; // clone keeps the old time window
+    cutSeisSdd.timeRange = cutWindow; // clone keeps the old time window
     expect(cutSeisSdd.endTime).toEqual(cutWindow.endTime);
     expect(cutSeisSdd.seismogram).toBeDefined();
     const cutSeisSdd_seis = cutSeisSdd.seismogram;

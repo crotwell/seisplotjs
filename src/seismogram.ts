@@ -991,14 +991,14 @@ export class SeismogramDisplayData {
   channelCodesHolder: ChannelCodeHolderType | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
-  timeWindow: StartEndDuration;
+  timeRange: StartEndDuration;
   alignmentTime: moment.Moment;
   doShow: boolean;
   _statsCache: SeismogramDisplayStats | null;
 
-  constructor(timeWindow: StartEndDuration) {
-    if (!timeWindow) {
-      throw new Error("timeWindow must not be missing.");
+  constructor(timeRange: StartEndDuration) {
+    if (!timeRange) {
+      throw new Error("timeRange must not be missing.");
     }
 
     this._id = null;
@@ -1010,8 +1010,8 @@ export class SeismogramDisplayData {
     this.channelCodesHolder = null;
     this._instrumentSensitivity = null;
     this.quakeList = [];
-    this.timeWindow = timeWindow;
-    this.alignmentTime = timeWindow.start;
+    this.timeRange = timeRange;
+    this.alignmentTime = timeRange.start;
     this.doShow = true;
     this._statsCache = null;
   }
@@ -1031,13 +1031,13 @@ export class SeismogramDisplayData {
 
   static fromChannelAndTimeWindow(
     channel: Channel,
-    timeWindow: StartEndDuration,
+    timeRange: StartEndDuration,
   ): SeismogramDisplayData {
     if (!channel) {
       throw new Error("fromChannelAndTimeWindow, channel is undef");
     }
 
-    const out = new SeismogramDisplayData(timeWindow);
+    const out = new SeismogramDisplayData(timeRange);
     out.channel = channel;
     return out;
   }
@@ -1317,19 +1317,23 @@ export class SeismogramDisplayData {
   }
 
   get startTime(): moment.Moment {
-    return this.timeWindow.startTime;
+    return this.timeRange.startTime;
   }
 
   get start(): moment.Moment {
-    return this.timeWindow.startTime;
+    return this.timeRange.startTime;
   }
 
   get endTime(): moment.Moment {
-    return this.timeWindow.endTime;
+    return this.timeRange.endTime;
   }
 
   get end(): moment.Moment {
-    return this.timeWindow.endTime;
+    return this.timeRange.endTime;
+  }
+
+  get timeWindow(): StartEndDuration {
+    return this.timeRange;
   }
 
   alignStartTime() {
@@ -1499,7 +1503,7 @@ export class SeismogramDisplayData {
   }
 
   cloneWithNewSeismogram(seis: Seismogram | null): SeismogramDisplayData {
-    let out = new SeismogramDisplayData(this.timeWindow);
+    let out = new SeismogramDisplayData(this.timeRange);
     Object.getOwnPropertyNames(this).forEach(name => {
       if (name === "_seismogram") {
         out._seismogram = seis; // @ts-ignore
@@ -1521,24 +1525,24 @@ export class SeismogramDisplayData {
 
   /**
    * Cut the seismogram. Creates a new seismogramDisplayData with the cut
-   * seismogram and the timeWindow set to the new time window.
+   * seismogram and the timeRange set to the new time window.
    *
-   * @param  timeWindow start and end of cut
+   * @param  timeRange start and end of cut
    * @returns           new seismogramDisplayData
    */
-  cut(timeWindow: StartEndDuration): null | SeismogramDisplayData {
+  cut(timeRange: StartEndDuration): null | SeismogramDisplayData {
     let cutSeis = this.seismogram;
     let out;
 
     if (cutSeis) {
-      cutSeis = cutSeis.cut(timeWindow);
+      cutSeis = cutSeis.cut(timeRange);
       out = this.cloneWithNewSeismogram(cutSeis);
     } else {
       // no seismogram, so just clone?
       out = this.clone();
     }
 
-    out.timeWindow = timeWindow;
+    out.timeRange = timeRange;
     return out;
   }
 }
@@ -1559,11 +1563,11 @@ export function findStartEnd(
   sddList: Array<SeismogramDisplayData>,
 ): StartEndDuration {
   let allStart = sddList.map(sdd => {
-    return moment.utc(sdd.timeWindow.startTime);
+    return moment.utc(sdd.timeRange.startTime);
   });
   let startTime = moment.min(allStart);
   let allEnd = sddList.map(sdd => {
-    return moment.utc(sdd.timeWindow.endTime);
+    return moment.utc(sdd.timeRange.endTime);
   });
   let endTime = moment.max(allEnd);
   return new StartEndDuration(startTime, endTime);
@@ -1578,21 +1582,21 @@ export function findMaxDurationOfType(
   sddList: Array<SeismogramDisplayData>,
 ): moment.Duration {
   return sddList.reduce((acc, sdd) => {
-    let timeWindow;
+    let timeRange;
 
     if (type === "start") {
-      timeWindow = sdd.timeWindow;
+      timeRange = sdd.timeRange;
     } else if (type === "origin" && sdd.hasQuake) {
-      timeWindow = new StartEndDuration(
+      timeRange = new StartEndDuration(
         sdd.quakeList[0].time,
-        sdd.timeWindow.end,
+        sdd.timeRange.end,
       );
     } else {
-      timeWindow = sdd.timeWindow;
+      timeRange = sdd.timeRange;
     }
 
-    if (timeWindow.duration.asMilliseconds() > acc.asMilliseconds()) {
-      return timeWindow.duration.clone();
+    if (timeRange.duration.asMilliseconds() > acc.asMilliseconds()) {
+      return timeRange.duration.clone();
     } else {
       return acc;
     }
@@ -1621,11 +1625,11 @@ const initial_minAmp = Number.MAX_SAFE_INTEGER;
 const initial_maxAmp = -1 * initial_minAmp;
 export function findMinMaxOverTimeRange(
   sddList: Array<SeismogramDisplayData>,
-  timeWindow: StartEndDuration,
+  timeRange: StartEndDuration,
 ): Array<number> {
   let minMaxArr = sddList.map(sdd => {
     if (sdd.seismogram) {
-      const cutSeis = sdd.seismogram.cut(timeWindow);
+      const cutSeis = sdd.seismogram.cut(timeRange);
 
       if (cutSeis) {
         return cutSeis.findMinMax();
@@ -1656,8 +1660,8 @@ export function findMinMaxOverRelativeTimeRange(
   duration: moment.Duration,
 ): Array<number> {
   let minMaxArr = sddList.map(sdd => {
-    let timeWindow = sdd.relativeTimeWindow(startOffset, duration);
-    return findMinMaxOverTimeRange([sdd], timeWindow);
+    let timeRange = sdd.relativeTimeWindow(startOffset, duration);
+    return findMinMaxOverTimeRange([sdd], timeRange);
   });
   let min = minMaxArr
     .map(mm => {

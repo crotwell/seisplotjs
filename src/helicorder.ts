@@ -72,9 +72,9 @@ export class Helicorder {
       return;
     }
 
-    const timeWindow = this.heliConfig.fixedTimeScale;
+    const timeRange = this.heliConfig.fixedTimeScale;
 
-    if (!isDef(timeWindow)) {
+    if (!isDef(timeRange)) {
       throw new Error("Helicorder config must have fixedTimeScale set");
     }
 
@@ -85,7 +85,7 @@ export class Helicorder {
 
       if (!this.heliConfig.fixedYScale) {
         if (this.heliConfig.maxVariation === 0) {
-          let cutSeis = seis.cut(timeWindow);
+          let cutSeis = seis.cut(timeRange);
 
           if (cutSeis) {
             let [min, max] = cutSeis.findMinMax();
@@ -100,10 +100,10 @@ export class Helicorder {
       }
     }
 
-    let startTime = moment.utc(timeWindow.startTime);
+    let startTime = moment.utc(timeRange.startTime);
     this.seismographArray = [];
     const secondsPerLine =
-      timeWindow.duration.asSeconds() / this.heliConfig.numLines;
+      timeRange.duration.asSeconds() / this.heliConfig.numLines;
     this.svgParent.selectAll("div.heliLine").remove();
     let lineTimes = this.calcTimesForLines(
       startTime,
@@ -171,7 +171,7 @@ export class Helicorder {
         lineSeisData = this.seisData.clone();
       }
 
-      lineSeisData.timeWindow = lineTime;
+      lineSeisData.timeRange = lineTime;
 
       if (this.heliConfig.fixedYScale) {
         lineSeisConfig.fixedYScale = this.heliConfig.fixedYScale;
@@ -243,7 +243,7 @@ export const DEFAULT_MAX_HEIGHT = 600;
 /**
  * Configuration of the helicorder
  *
- * @param timeWindow the time range covered by the helicorder, required
+ * @param timeRange the time range covered by the helicorder, required
  */
 export class HelicorderConfig extends SeismographConfig {
   lineSeisConfig: SeismographConfig;
@@ -251,14 +251,14 @@ export class HelicorderConfig extends SeismographConfig {
   numLines: number;
   maxVariation: number;
 
-  constructor(timeWindow: StartEndDuration) {
+  constructor(timeRange: StartEndDuration) {
     super();
 
-    if (!isDef(timeWindow)) {
+    if (!isDef(timeRange)) {
       throw new Error("Helicorder config must have fixedTimeScale set");
     }
 
-    this.fixedTimeScale = timeWindow;
+    this.fixedTimeScale = timeRange;
     this.maxVariation = 0;
     this.maxHeight = DEFAULT_MAX_HEIGHT;
     this.xLabel = "";

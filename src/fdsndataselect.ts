@@ -240,15 +240,19 @@ export class DataSelectQuery {
   }
 
   /**
-   * Sets startTime and endTime using the given time window
+   * Sets startTime and endTime using the given time range
    *
-   * @param   se time window
+   * @param   se time range
    * @returns     this
    */
-  timeWindow(se: StartEndDuration): DataSelectQuery {
+  timeRange(se: StartEndDuration): DataSelectQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;
+  }
+
+  timeWindow(se: StartEndDuration): DataSelectQuery {
+    return this.timeRange(se);
   }
 
   /**

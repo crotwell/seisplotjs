@@ -36,10 +36,10 @@ export function createPlotsBySelectorPromise(
     let startAttr = svgParent.attr("start") ? svgParent.attr("start") : null;
     let endAttr = svgParent.attr("end") ? svgParent.attr("end") : null;
     let duration = svgParent.attr("duration");
-    let timeWindow: StartEndDuration|null = null;
+    let timeRange: StartEndDuration|null = null;
 
     if (isDef(startAttr) || isDef(endAttr) || isDef(duration)) {
-      timeWindow = new StartEndDuration(startAttr, endAttr, duration);
+      timeRange = new StartEndDuration(startAttr, endAttr, duration);
     } else {
       throw new Error(`Need at least one of start, end, duration.`);
     }
@@ -68,8 +68,8 @@ export function createPlotsBySelectorPromise(
             let sddList = seismograms.map(s => {
               let sdd = SeismogramDisplayData.fromSeismogram(s);
 
-              if (timeWindow) {
-                sdd.timeWindow = timeWindow;
+              if (timeRange) {
+                sdd.timeRange = timeRange;
               }
 
               return sdd;
@@ -98,7 +98,7 @@ export function createPlotsBySelectorPromise(
         host = "service.iris.edu";
       }
 
-      let request = new dataselect.DataSelectQuery().timeWindow(timeWindow);
+      let request = new dataselect.DataSelectQuery().timeRange(timeRange);
 
       if (host) {
         request.host(host);
@@ -125,8 +125,8 @@ export function createPlotsBySelectorPromise(
           let sddList = seismograms.map(s => {
             let sdd = SeismogramDisplayData.fromSeismogram(s);
 
-            if (isDef(timeWindow)) {
-              sdd.timeWindow = timeWindow;
+            if (isDef(timeRange)) {
+              sdd.timeRange = timeRange;
             }
 
             return sdd;
