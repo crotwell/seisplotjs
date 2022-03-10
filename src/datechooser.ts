@@ -42,11 +42,7 @@ export class HourMinChooser {
   ) {
     let mythis = this;
 
-    if (typeof div === "string") {
-      this.div = d3.select(div);
-    } else {
-      this.div = div;
-    }
+    this.div = d3.select(div);
 
     this.time = moment.utc(initialTime);
     this.updateCallback = updateCallback ? updateCallback : dummyCallback;
@@ -240,11 +236,7 @@ export class DateTimeChooser {
     initialTime: moment.Moment,
     updateCallback?: (time: moment.Moment) => void,
   ) {
-    if (typeof div === "string") {
-      this.div = d3.select(div);
-    } else {
-      this.div = div;
-    }
+    this.div = d3.select(div);
 
     this.label = label;
     this.time = moment.utc(initialTime);
@@ -356,11 +348,7 @@ export class TimeRangeChooser {
     this.duration = 300;
     let startTime = moment.utc(endTime).subtract(this.duration, "second");
 
-    if (typeof div === "string") {
-      this.div = d3.select(div);
-    } else {
-      this.div = div;
-    }
+    this.div = d3.select(div);
 
     this.div.classed("timeRangeChooser", true);
     let mythis = this;
