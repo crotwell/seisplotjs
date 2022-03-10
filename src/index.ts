@@ -6,6 +6,7 @@
  * http://www.seis.sc.edu
  */
 import * as axisutil from "./axisutil";
+import * as components from "./components";
 import * as cssutil from "./cssutil";
 import * as datalink from "./datalink";
 import * as dataset from "./dataset";
@@ -57,6 +58,7 @@ import {version} from "./util";
 /* reexport */
 export {
   axisutil,
+  components,
   cssutil,
   datalink,
   dataset,
