@@ -5,11 +5,11 @@
  */
 import * as util from "./util"; // for util.log
 
-import {dataViewToString, stringify, isDef, isNonEmptyStringArg, isError, toError} from "./util";
+import {dataViewToString, stringify, isDef, isNonEmptyStringArg, isError, toError, UTC_OPTIONS} from "./util";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import RSVP from "rsvp";
-import moment from "moment";
+import {DateTime} from "luxon";
 
 /** const for datalink protocol for web sockets, DataLink1.0 */
 export const DATALINK_PROTOCOL = "DataLink1.0";
@@ -389,13 +389,13 @@ export class DataLinkConnection {
    */
   writeAck(
     streamid: string,
-    hpdatastart: moment.Moment,
-    hpdataend: moment.Moment,
+    hpdatastart: DateTime,
+    hpdataend: DateTime,
     data?: Uint8Array,
   ): Promise<DataLinkResponse | DataLinkPacket> {
-    let header = `WRITE ${streamid} ${momentToHPTime(
+    let header = `WRITE ${streamid} ${dateTimeToHPTime(
       hpdatastart,
-    )} ${momentToHPTime(hpdataend)} A`;
+    )} ${dateTimeToHPTime(hpdataend)} A`;
     return this.awaitDLBinary(header, data);
   }
 
@@ -475,8 +475,8 @@ export class DataLinkConnection {
    * @param time time to position after
    * @returns promise to server's response
    */
-  positionAfter(time: moment.Moment): Promise<DataLinkResponse> {
-    return this.positionAfterHPTime(momentToHPTime(time)).then(dlResponse =>
+  positionAfter(time: DateTime): Promise<DataLinkResponse> {
+    return this.positionAfterHPTime(dateTimeToHPTime(time)).then(dlResponse =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse),
     );
   }
@@ -697,29 +697,29 @@ export class DataLinkPacket {
   }
 
   /**
-   * Packet start time as a moment.
+   * Packet start time as a DateTime.
    *
    * @returns start time
    */
-  get packetStart(): moment.Moment {
+  get packetStart(): DateTime {
     return hpTimeToMoment(parseInt(this.hppacketstart));
   }
 
   /**
-   * Packet end time as a moment.
+   * Packet end time as a DateTime.
    *
    * @returns end time
    */
-  get packetEnd(): moment.Moment {
+  get packetEnd(): DateTime {
     return hpTimeToMoment(parseInt(this.hppacketend));
   }
 
   /**
-   * Packet time as a moment.
+   * Packet time as a DateTime.
    *
    * @returns packet time
    */
-  get packetTime(): moment.Moment {
+  get packetTime(): DateTime {
     return hpTimeToMoment(parseInt(this.hppackettime));
   }
 
@@ -778,23 +778,23 @@ export class DataLinkPacket {
 }
 
 /**
- * Convert moment to a HPTime number.
+ * Convert DateTime to a HPTime number.
  *
- * @param   m moment to convert
+ * @param   m DateTime to convert
  * @returns  microseconds since epoch
  */
-export function momentToHPTime(m: moment.Moment ): number {
+export function dateTimeToHPTime(m: DateTime ): number {
   return m.valueOf() * 1000;
 }
 
 /**
- * Convert hptime number to a moment.
+ * Convert hptime number to a DateTime.
  *
  * @param   hptime hptime to convert
- * @returns  moment in utc for the hptime
+ * @returns  DateTime in utc for the hptime
  */
-export function hpTimeToMoment(hptime: number): moment.Moment  {
-  return moment.utc(hptime / 1000);
+export function hpTimeToMoment(hptime: number): DateTime  {
+  return DateTime.fromMillis(hptime / 1000, UTC_OPTIONS);
 }
 
 /**

@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
 import * as util from "./util"; // for util.log
 
 import {
@@ -17,6 +17,7 @@ import {
   TEXT_MIME,
   doFetchWithTimeout,
   defaultFetchInitObj,
+  isoToDateTime,
 } from "./util";
 export const SEEDLINK_PATH = "/seedlink";
 export const DATALINK_PATH = "/datalink";
@@ -25,7 +26,7 @@ export type RingserverVersion = {
   serverId: string;
 };
 export type StreamsResult = {
-  accessTime: moment.Moment;
+  accessTime: DateTime;
   streams: Array<StreamStat>;
 };
 export const IRIS_HOST = "rtserve.iris.washington.edu";
@@ -187,7 +188,7 @@ export class RingserverConnection {
    * Result returned is an RSVP Promise.
    *
    * @param matchPattern regular expression to match
-   * @returns promise to object with 'accessTime' as a moment
+   * @returns promise to object with 'accessTime' as a DateTime
    * and 'streams' as an array of StreamStat objects.
    */
   pullStreams(matchPattern: string): Promise<StreamsResult> {
@@ -201,7 +202,7 @@ export class RingserverConnection {
     return this.pullRaw(url).then(raw => {
       let lines = raw.split("\n");
       let out: StreamsResult = {
-        accessTime: moment.utc(),
+        accessTime: DateTime.utc(),
         streams: [],
       };
 
@@ -362,12 +363,12 @@ export function stationsFromStreams(
       stat = new StreamStat(staKey, s.startRaw, s.endRaw);
       out.set(staKey, stat);
     } else {
-      if (stat.start.isAfter(s.start)) {
+      if (stat.start > s.start) {
         stat.start = s.start;
         stat.startRaw = s.startRaw;
       }
 
-      if (stat.end.isBefore(s.end)) {
+      if (stat.end < s.end) {
         stat.end = s.end;
         stat.endRaw = s.endRaw;
       }
@@ -420,8 +421,8 @@ export class StreamStat {
   key: string;
   startRaw: string;
   endRaw: string;
-  start: moment.Moment;
-  end: moment.Moment;
+  start: DateTime;
+  end: DateTime;
 
   constructor(key: string, start: string, end: string) {
     this.key = key;
@@ -453,8 +454,8 @@ export class StreamStat {
       this.endRaw = this.endRaw + "Z";
     }
 
-    this.start = moment.utc(this.startRaw);
-    this.end = moment.utc(this.endRaw);
+    this.start = isoToDateTime(this.startRaw);
+    this.end = isoToDateTime(this.endRaw);
     this.startRaw = start; // reset to unchanged strings
 
     this.endRaw = end;
@@ -466,8 +467,8 @@ export class StreamStat {
    * @param accessTime time latency is calculated relative to
    * @returns latency
    */
-  calcLatency(accessTime?: moment.Moment): moment.Duration {
-    if (!accessTime) accessTime = moment.utc();
-    return moment.duration(this.end.diff(accessTime));
+  calcLatency(accessTime?: DateTime): Duration {
+    if (!accessTime) accessTime = DateTime.utc();
+    return this.end.diff(accessTime);
   }
 }

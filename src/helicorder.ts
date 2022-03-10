@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import * as d3 from "d3";
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
 import {insertCSS, isCSSInserted} from "./cssutil";
 import {SeismogramDisplayData} from "./seismogram";
 import {Seismograph} from "./seismograph";
@@ -100,10 +100,10 @@ export class Helicorder {
       }
     }
 
-    let startTime = moment.utc(timeRange.startTime);
+    let startTime = timeRange.startTime;
     this.seismographArray = [];
     const secondsPerLine =
-      timeRange.duration.asSeconds() / this.heliConfig.numLines;
+      timeRange.duration.toMillis() / 1000 / this.heliConfig.numLines;
     this.svgParent.selectAll("div.heliLine").remove();
     let lineTimes = this.calcTimesForLines(
       startTime,
@@ -150,8 +150,8 @@ export class Helicorder {
         .style("height", height + "px")
         .style("margin-top", marginTop + "px");
       lineSeisConfig.fixedTimeScale = lineTime;
-      lineSeisConfig.yLabel = `${startTime.format("HH:mm")}`;
-      lineSeisConfig.yLabelRight = `${endTime.format("HH:mm")}`;
+      lineSeisConfig.yLabel = `${startTime.toFormat("HH:mm")}`;
+      lineSeisConfig.yLabelRight = `${endTime.toFormat("HH:mm")}`;
       lineSeisConfig.lineColors = [
         this.heliConfig.lineColors[
           lineTime.lineNumber % this.heliConfig.lineColors.length
@@ -221,18 +221,18 @@ export class Helicorder {
    * @returns Array of HeliTimeRange, one per line
    */
   calcTimesForLines(
-    startTime: moment.Moment,
+    startTime: DateTime,
     secondsPerLine: number,
     numberOfLines: number,
   ): Array<HeliTimeRange> {
     let out = [];
-    let s = moment.utc(startTime);
+    let s = startTime;
 
     for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
       let startEnd = new HeliTimeRange(s, null, secondsPerLine);
       startEnd.lineNumber = lineNum;
       out.push(startEnd);
-      s = moment.utc(startEnd.endTime);
+      s = startEnd.endTime;
     }
 
     return out;
@@ -278,7 +278,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.ySublabel = ` `;
     this.lineSeisConfig.xLabel = " ";
-    this.lineSeisConfig.yLabel = ""; // replace later with `${startTime.format("HH:mm")}`;
+    this.lineSeisConfig.yLabel = ""; // replace later with `${startTime.toFormat("HH:mm")}`;
 
     this.lineSeisConfig.yLabelOrientation = "horizontal";
     this.lineSeisConfig.ySublabelIsUnits = false;
@@ -301,8 +301,8 @@ export class HeliTimeRange extends StartEndDuration {
   lineNumber: number;
 
   constructor(
-    startTime: moment.Moment | null,
-    endTime: moment.Moment | null,
+    startTime: DateTime | null,
+    endTime: DateTime | null,
     duration: number | null = null,
     clockOffset: number | null = 0,
   ) {

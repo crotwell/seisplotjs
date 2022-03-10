@@ -2,7 +2,7 @@
 
 import * as miniseed from '../../src/miniseed.js';
 import * as seedcodec from '../../src/seedcodec.js';
-import  {moment} from '../../src/util';
+import {DateTime} from 'luxon';
 
 // eslint-disable-next-line no-undef
 const fs = require('fs');
@@ -26,9 +26,9 @@ test("load miniseed file", () => {
     expect(btime.min).toEqual(48);
     expect(btime.sec).toEqual(0);
     expect(btime.tenthMilli).toEqual(84);
-    let startMoment = moment.utc([2016, 8, 21, 13, 48, 0, 8]);
+    let startMoment = DateTime.fromObject({year: 2016, month: 9, day:21, hour:13, minute: 48, second: 0, millisecond: 8});
     //startMoment.dayOfYear(265); day 265 = Sept 21, months zero based in moment
-    expect(dr.header.startTime.toISOString()).toEqual(startMoment.toISOString());
+    expect(dr.header.startTime.toISO()).toEqual(startMoment.toISO());
     expect(dr.header.numSamples).toEqual(99);
     expect(dr.header.encoding).toEqual(seedcodec.STEIM2);
     let decomp = parsed[0].decompress();

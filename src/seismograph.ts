@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import moment from "moment";
+ import {DateTime, Duration} from "luxon";
 import * as d3 from "d3";
 import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {
@@ -515,8 +515,8 @@ export class Seismograph {
 
           const samplesPerPixel = 1.0 * s.sampleRate * secondsPerPixel;
           const pixelsPerSample = 1.0 / samplesPerPixel;
-          const startPixel = xscaleForSDD(s.startTime.toDate());
-          const endPixel = xscaleForSDD(s.endTime.toDate());
+          const startPixel = xscaleForSDD(s.startTime.toJSDate());
+          const endPixel = xscaleForSDD(s.endTime.toJSDate());
           let leftVisibleSample = 0;
           let rightVisibleSample = s.y.length;
           let leftVisiblePixel = startPixel;
@@ -742,7 +742,7 @@ export class Seismograph {
       );
     }
 
-    sddXScale.domain([plotSed.start.toDate(), plotSed.end.toDate()]);
+    sddXScale.domain([plotSed.start.toJSDate(), plotSed.end.toJSDate()]);
 
     if (this.currZoomXScale.range()) {
       sddXScale.range(this.currZoomXScale.range());
@@ -831,7 +831,7 @@ export class Seismograph {
 
       return lineFunc(
         Array.from(seg.y, function (d, i) {
-          return [seg.timeOfSample(i).toDate().valueOf(),d];
+          return [seg.timeOfSample(i).toJSDate().valueOf(),d];
         }),
       );
     } else {
@@ -1020,8 +1020,8 @@ export class Seismograph {
         let startDelta = xt.domain()[0] - this.origXScale.domain()[0];
         let duration = xt.domain()[1] - xt.domain()[0];
         linkedTS.zoom(
-          moment.duration(startDelta),
-          moment.duration(duration, "milliseconds"),
+          Duration.fromMillis(startDelta),
+          Duration.fromMillis(duration),
         );
       } else {
         let orig = new StartEndDuration(
@@ -1029,7 +1029,7 @@ export class Seismograph {
           this.origXScale.domain()[1],
         );
         let sed = new StartEndDuration(xt.domain()[0], xt.domain()[1]);
-        let startDelta = moment.duration(sed.start.diff(orig.start));
+        let startDelta = sed.start.diff(orig.start);
         linkedTS.zoom(startDelta, sed.duration);
       }
     } else {
@@ -1077,7 +1077,7 @@ export class Seismograph {
         .selectAll("g.marker")
         .attr("transform", function (mh: MarkerHolderType) {
           mh.xscale = mythis.timeScaleForSeisDisplayData(mh.sdd);
-          let textx = mh.xscale(mh.marker.time.toDate());
+          let textx = mh.xscale(mh.marker.time.toJSDate());
           return "translate(" + textx + "," + 0 + ")";
         });
       this.g
@@ -1129,7 +1129,7 @@ export class Seismograph {
           return acc;
         }, new Array<MarkerHolderType>(0))
         .filter(mh => {
-          const xpixel = mh.xscale(mh.marker.time.toDate());
+          const xpixel = mh.xscale(mh.marker.time.toJSDate());
           return xpixel < mh.xscale.range()[0] || xpixel > mh.xscale.range()[1];
         });
 
@@ -1158,7 +1158,7 @@ export class Seismograph {
         return acc;
       }, [])
       .filter(mh => {
-        const xpixel = mh.xscale(mh.marker.time.toDate());
+        const xpixel = mh.xscale(mh.marker.time.toJSDate());
         return xpixel >= mh.xscale.range()[0] && xpixel <= mh.xscale.range()[1];
       });
     // marker overlay
@@ -1169,7 +1169,7 @@ export class Seismograph {
       .selectAll("g.marker")
       .data(allMarkers, function (mh: MarkerHolderType) {
         // key for data
-        return `${mh.marker.name}_${mh.marker.time.toISOString()}`;
+        return `${mh.marker.name}_${mh.marker.time.toISO()}`;
       });
     labelSelection.exit().remove();
     let radianTextAngle =
@@ -1179,7 +1179,7 @@ export class Seismograph {
       .append("g")
       .classed("marker", true) // translate so marker time is zero
       .attr("transform", function (mh: MarkerHolderType) {
-        let textx = mh.xscale(mh.marker.time.toDate());
+        let textx = mh.xscale(mh.marker.time.toJSDate());
         return "translate(" + textx + "," + 0 + ")";
       })
       .each(function (mh: MarkerHolderType) {
@@ -1209,7 +1209,7 @@ export class Seismograph {
           if (mh.marker.description) {
             return mh.marker.description;
           } else {
-            return mh.marker.name + " " + mh.marker.time.toISOString();
+            return mh.marker.name + " " + mh.marker.time.toISO();
           }
         });
         let textSel = innerTextG.append("text");
@@ -1457,17 +1457,17 @@ export class Seismograph {
         const linkedTimeScale = this.seismographConfig.linkedTimeScale;
         const offset = linkedTimeScale.offset;
         const duration = linkedTimeScale.duration;
-        const relStart = offset.asMilliseconds();
-        const relEnd = relStart + duration.asMilliseconds();
+        const relStart = offset.toMillis();
+        const relEnd = relStart + duration.toMillis();
         this.origXScale.domain([relStart, relEnd]);
       } else if (this.seismographConfig.fixedTimeScale) {
         this.origXScale.domain([
           0,
-          this.seismographConfig.fixedTimeScale.duration.asMilliseconds(),
+          this.seismographConfig.fixedTimeScale.duration.toMillis(),
         ]);
       } else {
         let timeRange = findStartEnd(this.seisDataList);
-        this.origXScale.domain([0, timeRange.duration.asSeconds()]);
+        this.origXScale.domain([0, timeRange.duration.toMillis()*1000]);
       }
 
       // force to be same but not to share same array
@@ -1481,13 +1481,13 @@ export class Seismograph {
         if (this.seisDataList.length === 0) {
           timeRange = new StartEndDuration(
             null,
-            moment.utc(),
+            DateTime.utc(),
             linkedTimeScale.duration,
           );
         } else {
           // use first sdd alignmentTime to align, since we are not plotting relative
           const alignTime = this.seisDataList[0].alignmentTime;
-          const start = alignTime.clone().add(linkedTimeScale.offset);
+          const start = alignTime.plus(linkedTimeScale.offset);
           timeRange = new StartEndDuration(
             start,
             null,
@@ -1505,8 +1505,8 @@ export class Seismograph {
       }
 
       this.origXScale.domain([
-        timeRange.startTime.toDate(),
-        timeRange.endTime.toDate(),
+        timeRange.startTime.toJSDate(),
+        timeRange.endTime.toJSDate(),
       ]);
       // force to be same but not to share same array
       this.currZoomXScale = this.origXScale.copy();
@@ -1822,15 +1822,15 @@ export class SeismographTimeScalable extends TimeScalable {
   graph: Seismograph;
 
   constructor(graph: Seismograph) {
-    let alignmentTimeOffset = moment.duration(0);
+    let alignmentTimeOffset = Duration.fromMillis(0);
     let maxDuration = findMaxDuration(graph.seisDataList);
     super(alignmentTimeOffset, maxDuration);
     this.graph = graph;
   }
 
   notifyTimeRangeChange(
-    offset: moment.Duration,
-    duration: moment.Duration,
+    offset: Duration,
+    duration: Duration,
   ) {
     if (this.graph.beforeFirstDraw) {
       return;
@@ -1839,17 +1839,17 @@ export class SeismographTimeScalable extends TimeScalable {
     if (this.graph.seismographConfig.isRelativeTime) {
       let timeScale = d3.scaleLinear();
       timeScale.domain([
-        offset.asMilliseconds(),
-        offset.asMilliseconds() + duration.asMilliseconds(),
+        offset.toMillis(),
+        offset.toMillis() + duration.toMillis(),
       ]);
       timeScale.range(this.graph.origXScale.range());
       this.graph.redrawWithXScale(timeScale);
     } else {
       const coverageSed = findStartEnd(this.graph.seisDataList);
-      const offsetStart = moment.utc(coverageSed.start).add(offset);
+      const offsetStart = coverageSed.start.plus(offset);
       let sed = new StartEndDuration(offsetStart, null, duration);
       let timeScale = this.graph.origXScale.copy();
-      timeScale.domain([sed.startTime.toDate(), sed.endTime.toDate()]);
+      timeScale.domain([sed.startTime.toJSDate(), sed.endTime.toJSDate()]);
       this.graph.redrawWithXScale(timeScale);
     }
   }
@@ -1874,7 +1874,7 @@ export function createMarkersForTravelTimes(
     return {
       type: "predicted",
       name: a.phase,
-      time: moment.utc(quake.time).add(a.time, "seconds"),
+      time: quake.time.plus(Duration.fromMillis(1000*a.time)),
       description: "",
     };
   });
@@ -1890,7 +1890,7 @@ export function createMarkerForOriginTime(quake: Quake): MarkerType {
   return {
     type: "predicted",
     name: "origin",
-    time: moment.utc(quake.time),
+    time: quake.time,
     description: "",
   };
 }
@@ -1907,10 +1907,10 @@ export function createFullMarkersForQuakeAtStation(
   );
   markers.push({
     type: "predicted",
-    name: `M${quake.preferredMagnitude.mag} ${quake.time.format("HH:mm")}`,
-    time: moment.utc(quake.time),
+    name: `M${quake.preferredMagnitude.mag} ${quake.time.toFormat("HH:mm")}`,
+    time: quake.time,
     link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
-    description: `${quake.time.toISOString()}
+    description: `${quake.time.toISO()}
 ${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(
       quake.depth / 1000
     ).toFixed(2)} km

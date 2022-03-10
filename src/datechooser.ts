@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import Pikaday from "pikaday";
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
 import * as d3 from "d3";
 import {insertCSS} from "./cssutil";
 import {StartEndDuration} from "./util";
@@ -19,8 +19,8 @@ import {StartEndDuration} from "./util";
 export class HourMinChooser {
   div: any; // d3 not yet in flow-typed :(
 
-  time: moment.Moment;
-  updateCallback: (time: moment.Moment) => void;
+  time: DateTime;
+  updateCallback: (time: DateTime) => void;
   hourMinRegEx: RegExp;
   myOnClick: (event: Event) => void;
   hourMinField: any; // d3 not yet in flow-typed :(
@@ -37,14 +37,14 @@ export class HourMinChooser {
 
   constructor(
     div: any,
-    initialTime: moment.Moment,
-    updateCallback?: (time: moment.Moment) => void,
+    initialTime: DateTime,
+    updateCallback?: (time: DateTime) => void,
   ) {
     let mythis = this;
 
     this.div = d3.select(div);
 
-    this.time = moment.utc(initialTime);
+    this.time = initialTime;
     this.updateCallback = updateCallback ? updateCallback : dummyCallback;
     this.hourMinRegEx = /^([0-1]?[0-9]):([0-5]?[0-9])$/;
 
@@ -59,7 +59,7 @@ export class HourMinChooser {
     this.hourMinField = this.div
       .append("input")
       .classed("pikatime", true)
-      .attr("value", this.time.format("HH:mm"))
+      .attr("value", this.time.toFormat("HH:mm"))
       .attr("type", "text")
       .on("click", function (d3event: any) {
         mythis.showHide();
@@ -75,12 +75,11 @@ export class HourMinChooser {
           mythis.hourMinField.style("background-color", null);
           let h = match[1];
           let m = match[2];
-          mythis.time.hours(parseInt(h));
-          mythis.time.minutes(parseInt(m));
+          mythis.time = mythis.time.set({hour: parseInt(h), minute: parseInt(m)});
           mythis.popupDiv.style("visibility", "hidden");
           mythis.timeModified();
         } else {
-          mythis.hourMinField.property("value", mythis.time.format("HH:mm"));
+          mythis.hourMinField.property("value", mythis.time.toFormat("HH:mm"));
         }
       });
     this.div.append("span").classed("utclabel", true).text("UTC");
@@ -106,13 +105,13 @@ export class HourMinChooser {
       .on("input", function (this: HTMLInputElement) {
         let nHour = +this.value;
 
-        if (mythis.time.hours() !== nHour) {
-          mythis.time.hours(nHour);
+        if (mythis.time.hour !== nHour) {
+          mythis.time = mythis.time.set({hour:nHour});
           mythis.hourSlider.property("value", nHour);
           mythis.timeModified();
         }
       });
-    this.hourSlider.attr("value", this.time.hour());
+    this.hourSlider.attr("value", this.time.hour);
     this.minuteDiv = this.popupDiv.append("div").classed("minute", true);
     this.minuteSlider = this.minuteDiv
       .append("label")
@@ -126,13 +125,13 @@ export class HourMinChooser {
       .on("input", function (this: HTMLInputElement) {
         let nMinute = +this.value;
 
-        if (mythis.time.minutes() !== nMinute) {
-          mythis.time.minutes(nMinute);
+        if (mythis.time.minute !== nMinute) {
+          mythis.time = mythis.time.set({minute: nMinute});
           mythis.minuteSlider.property("value", nMinute);
           mythis.timeModified();
         }
       });
-    this.minuteSlider.attr("value", this.time.minute());
+    this.minuteSlider.attr("value", this.time.minute);
   }
 
   /**
@@ -140,20 +139,20 @@ export class HourMinChooser {
    *
    * @param  newTime new time to update sliders
    */
-  updateTime(newTime: moment.Moment): void {
+  updateTime(newTime: DateTime): void {
     this.time = newTime;
-    this.hourMinField.property("value", this.time.format("HH:mm"));
-    this.hourSlider.property("value", this.time.hour());
-    this.minuteSlider.property("value", this.time.minute());
+    this.hourMinField.property("value", this.time.toFormat("HH:mm"));
+    this.hourSlider.property("value", this.time.hour);
+    this.minuteSlider.property("value", this.time.minute);
   }
 
   /**
    * Updates the sliders based on this.time and triggers the callback function.
    */
   timeModified(): void {
-    this.hourSlider.property("value", this.time.hour());
-    this.minuteSlider.property("value", this.time.minute());
-    this.hourMinField.property("value", this.time.format("HH:mm"));
+    this.hourSlider.property("value", this.time.hour);
+    this.minuteSlider.property("value", this.time.minute);
+    this.hourMinField.property("value", this.time.toFormat("HH:mm"));
     this.updateCallback(this.time);
   }
 
@@ -223,8 +222,8 @@ export class HourMinChooser {
 export class DateTimeChooser {
   div: any; // d3 not yet in flow-typed :(
 
-  time: moment.Moment;
-  updateCallback: (time: moment.Moment) => void;
+  time: DateTime;
+  updateCallback: (time: DateTime) => void;
   label: string;
   dateField: any;
   picker: Pikaday;
@@ -233,14 +232,14 @@ export class DateTimeChooser {
   constructor(
     div: any,
     label: string,
-    initialTime: moment.Moment,
-    updateCallback?: (time: moment.Moment) => void,
+    initialTime: DateTime,
+    updateCallback?: (time: DateTime) => void,
   ) {
     this.div = d3.select(div);
 
     this.label = label;
-    this.time = moment.utc(initialTime);
-    this.time.second(0).millisecond(0); // only hour and min?
+    this.time = initialTime;
+    this.time.set({second: 0, millisecond: 0}); // only hour and min?
 
     this.updateCallback = updateCallback ? updateCallback : dummyCallback;
     this.dateField = this.div
@@ -248,7 +247,7 @@ export class DateTimeChooser {
       .text(this.label)
       .append("input")
       .classed("pikaday", true)
-      .attr("value", this.time.toISOString())
+      .attr("value", this.time.toISO())
       .attr("type", "text")
       .on("click", function () {
         if (mythis.picker.isVisible()) {
@@ -262,16 +261,15 @@ export class DateTimeChooser {
       format: "YYYY-MM-DD",
       onSelect: function () {
         let pikaValue = mythis.picker.getMoment();
-        let origTime = moment.utc(mythis.time);
+        let origTime = mythis.time;
 
         if (
           pikaValue && (
-            origTime.year() !== pikaValue.year() ||
-            origTime.dayOfYear() !== pikaValue.dayOfYear()
+            origTime.year !== pikaValue.year() ||
+            origTime.ordinal !== pikaValue.dayOfYear()
           )
         ) {
-          mythis.time.year(pikaValue.year());
-          mythis.time.dayOfYear(pikaValue.dayOfYear());
+          mythis.time.set({year: pikaValue.year(), ordinal: pikaValue.dayOfYear()});
           mythis.timeModified();
         }
       },
@@ -291,7 +289,7 @@ export class DateTimeChooser {
    *
    * @param  newTime new time to update sliders
    */
-  updateTime(newTime: moment.Moment): void {
+  updateTime(newTime: DateTime): void {
     this._internalSetTime(newTime);
 
     this.hourMin.updateTime(newTime);
@@ -304,7 +302,7 @@ export class DateTimeChooser {
     this.updateCallback(this.time);
   }
 
-  getTime(): moment.Moment {
+  getTime(): DateTime {
     return this.time;
   }
 
@@ -314,13 +312,11 @@ export class DateTimeChooser {
    * @private
    * @param  newTime new time to update
    */
-  _internalSetTime(newTime: moment.Moment): void {
-    this.time = moment.utc(newTime);
-    this.dateField.attr("value", this.time.toISOString());
-    // re-moment to avoid utc issue, using utc messes up picker, so pretend
-    this.picker.setMoment(
-      moment([this.time.year(), this.time.month(), this.time.date()]),
-    );
+  _internalSetTime(newTime: DateTime): void {
+    this.time = newTime;
+    this.dateField.attr("value", this.time.toISO());
+    // re-do as string to avoid utc issue, using utc messes up picker, so pretend
+    this.picker.setDate(this.time.toISODate());
   }
 }
 
@@ -344,9 +340,9 @@ export class TimeRangeChooser {
   ) {
     this._mostRecentChanged = "start";
     this.updateCallback = updateCallback ? updateCallback : dummyCallback;
-    let endTime = moment.utc();
+    let endTime = DateTime.utc();
     this.duration = 300;
-    let startTime = moment.utc(endTime).subtract(this.duration, "second");
+    let startTime = endTime.minus(Duration.fromMillis(1000*this.duration));//seconds
 
     this.div = d3.select(div);
 
@@ -359,7 +355,7 @@ export class TimeRangeChooser {
       startTime,
       function (startTime) {
         mythis.endChooser.updateTime(
-          moment.utc(startTime).add(mythis.duration, "seconds"),
+          startTime.plus(Duration.fromMillis(mythis.duration)),
         );
         mythis.updateCallback(mythis.getTimeRange());
         mythis._mostRecentChanged = "start";
@@ -379,17 +375,15 @@ export class TimeRangeChooser {
 
         if (mythis._mostRecentChanged === "end") {
           mythis.startChooser.updateTime(
-            moment
-              .utc(mythis.endChooser.getTime())
-              .subtract(mythis.duration, "seconds"),
+            mythis.endChooser.getTime()
+              .minus(Duration.fromMillis(1000*mythis.duration)),//seconds
           );
           mythis.updateCallback(mythis.getTimeRange());
         } else {
           // change end
           mythis.endChooser.updateTime(
-            moment
-              .utc(mythis.startChooser.getTime())
-              .add(mythis.duration, "seconds"),
+            mythis.startChooser.getTime()
+              .plus(Duration.fromMillis(1000*mythis.duration)),//seconds
           );
           mythis.updateCallback(mythis.getTimeRange());
         }
@@ -401,7 +395,7 @@ export class TimeRangeChooser {
       endTime,
       function (endTime) {
         mythis.startChooser.updateTime(
-          moment.utc(endTime).subtract(mythis.duration, "seconds"),
+          endTime.minus(Duration.fromMillis(1000*mythis.duration)),
         );
         mythis.updateCallback(mythis.getTimeRange());
         mythis._mostRecentChanged = "end";

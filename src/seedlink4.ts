@@ -9,7 +9,7 @@ import * as mseed3 from "./mseed3";
 import {DataRecord} from "./miniseed";
 import {MSeed3Record} from "./mseed3";
 import RSVP from "rsvp";
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
 import {version} from "./util";
 import {dataViewToString, isDef, stringify, toError} from "./util";
 export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";
@@ -224,9 +224,9 @@ export class SeedlinkConnection {
     this.agent = agent.trim().replaceAll(/\w+/g, "_");
   }
 
-  setTimeCommand(startTime: moment.Moment) {
+  setTimeCommand(startTime: DateTime) {
     this.command =
-      "TIME " + moment.utc(startTime).format("YYYY,MM,DD,HH,mm,ss");
+      "TIME " + startTime.toFormat("YYYY,MM,DD,HH,mm,ss");
   }
 
   setOnError(errorHandler: (error: Error) => void) {

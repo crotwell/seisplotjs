@@ -114,12 +114,12 @@ function rotateSeismogramSegment(
     );
   }
 
-  if (!seisA.startTime.isSame(seisB.startTime)) {
+  if (!seisA.startTime.equals(seisB.startTime)) {
     throw new Error(
       "Expect startTime to be same, but was " +
-        seisA.startTime.toISOString() +
+        seisA.startTime.toISO() +
         " " +
-        seisB.startTime.toISOString(),
+        seisB.startTime.toISO(),
     );
   }
 

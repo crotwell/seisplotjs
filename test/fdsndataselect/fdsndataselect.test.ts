@@ -2,7 +2,7 @@
 
 import * as fdsndataselect from '../../src/fdsndataselect.js';
 import * as util from '../../src/util.js';
-let moment = util.moment;
+import {DateTime} from 'luxon';
 
 
 test( "query setter test", () => {
@@ -12,7 +12,7 @@ test( "query setter test", () => {
   const LOC = '00';
   const CHAN = 'HHZ';
   const DURATION = 300;
-  const timeWindow = new util.StartEndDuration(moment.utc('2018-01-01T12:34:45.000Z'), null, DURATION, 0);
+  const timeWindow = new util.StartEndDuration('2018-01-01T12:34:45.000Z', null, DURATION, 0);
   const MIN_LENGTH = 120;
   const QUALITY = 'D';
   const FORMAT = 'miniseed';

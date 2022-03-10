@@ -1,13 +1,14 @@
 import '../jestRatioMatchers';
 
 import * as filter from '../../src/filter';
+import {isoToDateTime} from '../../src/util';
 import {Seismogram } from '../../src/seismogram';
-import  {moment} from '../../src/util';
+import {DateTime, Duration} from 'luxon';
 
 
 test("constant", () => {
   let sampleRate = 20.0;
-  let startTime = moment.utc("2013-02-08T09:30:26");
+  let startTime = isoToDateTime("2013-02-08T09:30:26Z");
   let dataLen = 100;
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
@@ -17,14 +18,14 @@ test("constant", () => {
   // $FlowFixMe
   expect(diffseis.y).arrayToBeCloseToRatio(expected, 9);
 
-  let secondStart = moment.utc(startTime).add(0.5/sampleRate, 'seconds');
-  expect(diffseis.startTime.toISOString()).toEqual(secondStart.toISOString());
+  let secondStart = startTime.plus(Duration.fromMillis(1000*0.5/sampleRate));
+  expect(diffseis.startTime.toISO()).toEqual(secondStart.toISO());
 });
 
 
 test("linear", () => {
   let sampleRate = 20.0;
-  let startTime = moment.utc("2013-02-08T09:30:26");
+  let startTime = isoToDateTime("2013-02-08T09:30:26");
   let dataLen = 100;
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
@@ -37,6 +38,6 @@ test("linear", () => {
   // $FlowFixMe
   expect(diffseis.y).arrayToBeCloseToRatio(expected, 9);
 
-  let secondStart = moment.utc(startTime).add(0.5/sampleRate, 'seconds');
-  expect(diffseis.startTime.toISOString()).toEqual(secondStart.toISOString());
+  let secondStart = startTime.plus(Duration.fromMillis(1000*0.5/sampleRate));
+  expect(diffseis.startTime.toISO()).toEqual(secondStart.toISO());
 });

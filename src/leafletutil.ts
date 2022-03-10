@@ -64,7 +64,7 @@ export function createQuakeMarker(quake: Quake, magScaleFactor: number = 5) {
     className: QuakeMarkerClassName,
   });
   circle.bindTooltip(
-    `${quake.time.toISOString()} ${
+    `${quake.time.toISO()} ${
       quake.magnitude
         ? quake.magnitude.mag + " " + quake.magnitude.type
         : "unkn"

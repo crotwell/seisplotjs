@@ -3,8 +3,8 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import moment from "moment";
-import {checkStringOrDate, meanOfSlice, isDef, stringify} from "./util";
+import {DateTime, Duration} from "luxon";
+import {checkStringOrDate, meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
 import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
 import {Channel, InstrumentSensitivity} from "./stationxml";
@@ -21,7 +21,7 @@ export type HighLowType = {
 };
 export type MarkerType = {
   name: string;
-  time: moment.Moment;
+  time: DateTime;
   type: string;
   description: string;
   link?: string;
@@ -32,7 +32,7 @@ export type MarkerType = {
  *
  * @param  yArray array of Y sample values, ie the timeseries
  * @param  sampleRate sample rate of the seismogram, hertz
- * @param  startTime start time of seismogrm as a momentjs moment in utc or a string that can be parsed
+ * @param  startTime start time of seismogrm as a luxon DateTime in utc or a string that can be parsed
  */
 export class SeismogramSegment {
   /** Array of y values */
@@ -47,8 +47,8 @@ export class SeismogramSegment {
   _sampleRate: number;
 
   /** @private */
-  _startTime: moment.Moment;
-  _endTime_cache: null | moment.Moment;
+  _startTime: DateTime;
+  _endTime_cache: null | DateTime;
   _endTime_cache_numPoints: number;
   networkCode: string|null = null;
   stationCode: string|null = null;
@@ -64,7 +64,7 @@ export class SeismogramSegment {
       | Float32Array
       | Float64Array,
     sampleRate: number,
-    startTime: moment.Moment,
+    startTime: DateTime,
   ) {
     if (
       yArray instanceof Int32Array ||
@@ -158,29 +158,29 @@ export class SeismogramSegment {
     this._invalidate_endTime_cache();
   }
 
-  get start(): moment.Moment {
+  get start(): DateTime {
     return this.startTime;
   }
 
-  set start(value: moment.Moment | string) {
+  set start(value: DateTime | string) {
     this.startTime = value;
   }
 
-  get startTime(): moment.Moment {
+  get startTime(): DateTime {
     return this._startTime;
   }
 
-  set startTime(value: moment.Moment | string) {
+  set startTime(value: DateTime | string) {
     this._startTime = checkStringOrDate(value);
 
     this._invalidate_endTime_cache();
   }
 
-  get end(): moment.Moment {
+  get end(): DateTime {
     return this.endTime;
   }
 
-  get endTime(): moment.Moment {
+  get endTime(): DateTime {
     if (
       !this._endTime_cache ||
       this._endTime_cache_numPoints !== this.numPoints
@@ -319,19 +319,19 @@ export class SeismogramSegment {
     return [minAmp, maxAmp];
   }
 
-  timeOfSample(i: number): moment.Moment {
-    return moment.utc(this.startTime).add(i / this.sampleRate, "seconds");
+  timeOfSample(i: number): DateTime {
+    return this.startTime.plus(Duration.fromMillis(1000*i / this.sampleRate));
   }
 
-  indexOfTime(t: moment.Moment): number {
+  indexOfTime(t: DateTime): number {
     if (
-      t.isBefore(this.startTime) ||
-      t.isAfter(moment.utc(this.endTime).add(1 / this.sampleRate, "seconds"))
+      t < this.startTime ||
+      t > this.endTime.plus(Duration.fromMillis(1000 / this.sampleRate))
     ) {
       return -1;
     }
 
-    return Math.round((t.diff(this.startTime) * this.sampleRate) / 1000);
+    return Math.round((t.diff(this.startTime).toMillis() * this.sampleRate) / 1000);
   }
 
   get hasCodes(): boolean {
@@ -375,9 +375,9 @@ export class SeismogramSegment {
     return (
       this.codes() +
       "_" +
-      this.startTime.toISOString() +
+      this.startTime.toISO() +
       "_" +
-      this.endTime.toISOString()
+      this.endTime.toISO()
     )
       .replace(/\./g, "_")
       .replace(/:/g, "");
@@ -441,12 +441,12 @@ export class SeismogramSegment {
       | Int32Array
       | Float32Array
       | Float64Array,
-    clonedStartTime: moment.Moment = this._startTime,
+    clonedStartTime: DateTime = this._startTime,
   ): SeismogramSegment {
     let out = new SeismogramSegment(
       clonedData,
       this.sampleRate,
-      moment.utc(clonedStartTime),
+      clonedStartTime,
     );
     out.networkCode = this.networkCode;
     out.stationCode = this.stationCode;
@@ -458,24 +458,24 @@ export class SeismogramSegment {
 
   cut(timeRange: StartEndDuration): SeismogramSegment | null {
     if (
-      timeRange.endTime.isBefore(this._startTime) ||
-      timeRange.startTime.isAfter(this.endTime)
+      timeRange.endTime < this._startTime ||
+      timeRange.startTime > this.endTime
     ) {
       return null;
     }
 
     let sIndex = 0;
 
-    if (timeRange.startTime.isAfter(this._startTime)) {
-      let milliDiff = timeRange.startTime.diff(this._startTime);
+    if (timeRange.startTime > this._startTime) {
+      let milliDiff = timeRange.startTime.diff(this._startTime).toMillis();
       let offset = (milliDiff * this.sampleRate) / 1000.0;
       sIndex = Math.floor(offset);
     }
 
     let eIndex = this.y.length;
 
-    if (timeRange.endTime.isBefore(this.endTime)) {
-      let milliDiff = moment.utc(this.endTime).diff(timeRange.endTime);
+    if (timeRange.endTime < this.endTime) {
+      let milliDiff = this.endTime.diff(timeRange.endTime).toMillis();
       let offset = (milliDiff * this.sampleRate) / 1000.0;
       eIndex = this.y.length - Math.floor(offset);
     }
@@ -483,7 +483,7 @@ export class SeismogramSegment {
     let cutY = this.y.slice(sIndex, eIndex);
     let out = this.cloneWithNewData(
       cutY,
-      moment.utc(this._startTime).add(sIndex / this.sampleRate, "seconds"),
+      this._startTime.plus(Duration.fromMillis(1000 * sIndex / this.sampleRate)),
     );
     return out;
   }
@@ -504,8 +504,8 @@ export class SeismogramSegment {
  */
 export class Seismogram {
   _segmentArray: Array<SeismogramSegment>;
-  _startTime: moment.Moment;
-  _endTime: moment.Moment;
+  _startTime: DateTime;
+  _endTime: DateTime;
   _y: null | Int32Array | Float32Array | Float64Array;
 
   constructor(segmentArray: SeismogramSegment | Array<SeismogramSegment>) {
@@ -576,18 +576,22 @@ export class Seismogram {
     }
   }
 
-  findStartEnd(): [moment.Moment, moment.Moment] {
+  findStartEnd(): [DateTime, DateTime] {
     let allStart = this._segmentArray.map(seis => {
-      return moment.utc(seis.startTime);
+      return seis.startTime;
     });
 
-    let startTime = moment.min(allStart);
+    let startTime = allStart.reduce((acc, cur)=> {
+      return acc<cur ? acc : cur;
+    }, allStart[0] );
 
     let allEnd = this._segmentArray.map(seis => {
-      return moment.utc(seis.endTime);
+      return seis.endTime;
     });
 
-    let endTime = moment.max(allEnd);
+    let endTime = allEnd.reduce((acc, cur)=> {
+      return acc>cur ? acc : cur;
+    }, allStart[0] );
     return [startTime, endTime];
   }
 
@@ -625,19 +629,19 @@ export class Seismogram {
     return meanVal;
   }
 
-  get start(): moment.Moment {
+  get start(): DateTime {
     return this.startTime;
   }
 
-  get startTime(): moment.Moment {
+  get startTime(): DateTime {
     return this._startTime;
   }
 
-  get end(): moment.Moment {
+  get end(): DateTime {
     return this.endTime;
   }
 
-  get endTime(): moment.Moment {
+  get endTime(): DateTime {
     return this._endTime;
   }
 
@@ -736,14 +740,10 @@ export class Seismogram {
       seismogram._segmentArray.forEach(s => this.append(s));
     } else {
       this.checkSimilar(this._segmentArray[0], seismogram);
-      this._startTime = moment.min([
-        this.startTime,
-        moment.utc(seismogram.startTime),
-      ]);
-      this._endTime = moment.max([
-        this.endTime,
-        moment.utc(seismogram.endTime),
-      ]);
+      this._startTime =
+        this.startTime<seismogram.startTime ? this.startTime : seismogram.startTime;
+      this._endTime =
+        this.endTime > seismogram.endTime ? this.endTime : seismogram.endTime;
 
       this._segmentArray.push(seismogram);
     }
@@ -794,10 +794,10 @@ export class Seismogram {
     if (this._segmentArray) {
       let trimSeisArray = this._segmentArray
         .filter(function (d) {
-          return d.endTime.isSameOrAfter(timeRange.startTime);
+          return d.endTime >= timeRange.startTime;
         })
         .filter(function (d) {
-          return d.startTime.isSameOrBefore(timeRange.endTime);
+          return d.startTime <= timeRange.endTime;
         });
 
       if (trimSeisArray.length > 0) {
@@ -808,19 +808,19 @@ export class Seismogram {
     return out;
   }
 
-  break(duration: moment.Duration): void {
+  break(duration: Duration): void {
     if (this._segmentArray) {
-      let breakStart = moment.utc(this.startTime);
+      let breakStart = this.startTime;
       let out: Array<SeismogramSegment> = [];
 
-      while (breakStart.isBefore(this.endTime)) {
+      while (breakStart < this.endTime) {
         let breakWindow = new StartEndDuration(breakStart, null, duration);
 
         let cutSeisArray: Array<SeismogramSegment> =
           this._segmentArray.map(seg => seg.cut(breakWindow)).filter(isDef);
 
         out = out.concat(cutSeisArray);
-        breakStart.add(duration);
+        breakStart = breakStart.plus(duration);
       }
 
       // check for null, filter true if seg not null
@@ -840,10 +840,10 @@ export class Seismogram {
       if (
         prev &&
         !(
-          prev.endTime.isBefore(s.startTime) &&
+          prev.endTime < s.startTime &&
           prev.endTime
-            .add((1000 * 1.5) / prev.sampleRate, "ms")
-            .isAfter(s.startTime)
+            .plus(Duration.fromMillis((1000 * 1.5) / prev.sampleRate))
+            > s.startTime
         )
       ) {
         return false;
@@ -948,7 +948,7 @@ export class Seismogram {
       | Float32Array
       | Float64Array,
     sampleRate: number,
-    startTime: moment.Moment,
+    startTime: DateTime,
   ): Seismogram {
     const seg = new SeismogramSegment(yArray, sampleRate, startTime);
     return new Seismogram([seg]);
@@ -995,7 +995,7 @@ export class SeismogramDisplayData {
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
   timeRange: StartEndDuration;
-  alignmentTime: moment.Moment;
+  alignmentTime: DateTime;
   doShow: boolean;
   _statsCache: SeismogramDisplayStats | null;
 
@@ -1047,8 +1047,8 @@ export class SeismogramDisplayData {
 
   static fromChannelAndTimes(
     channel: Channel,
-    startTime: moment.Moment,
-    endTime: moment.Moment,
+    startTime: DateTime,
+    endTime: DateTime,
   ): SeismogramDisplayData {
     const out = new SeismogramDisplayData(
       new StartEndDuration(startTime, endTime),
@@ -1062,8 +1062,8 @@ export class SeismogramDisplayData {
     stationCode: string,
     locationCode: string,
     channelCode: string,
-    startTime: moment.Moment,
-    endTime: moment.Moment,
+    startTime: DateTime,
+    endTime: DateTime,
   ): SeismogramDisplayData {
     const out = new SeismogramDisplayData(
       new StartEndDuration(startTime, endTime),
@@ -1319,19 +1319,19 @@ export class SeismogramDisplayData {
     }
   }
 
-  get startTime(): moment.Moment {
+  get startTime(): DateTime {
     return this.timeRange.startTime;
   }
 
-  get start(): moment.Moment {
+  get start(): DateTime {
     return this.timeRange.startTime;
   }
 
-  get endTime(): moment.Moment {
+  get endTime(): DateTime {
     return this.timeRange.endTime;
   }
 
-  get end(): moment.Moment {
+  get end(): DateTime {
     return this.timeRange.endTime;
   }
 
@@ -1370,9 +1370,8 @@ export class SeismogramDisplayData {
       });
 
       if (matchArrival) {
-        this.alignmentTime = moment
-          .utc(q.time)
-          .add(moment.duration(matchArrival.time, "seconds"));
+        this.alignmentTime = q.time
+          .plus(Duration.fromMillis(matchArrival.time * 1000)); //seconds
       } else {
         this.alignmentTime = this.start;
       }
@@ -1380,18 +1379,18 @@ export class SeismogramDisplayData {
   }
 
   relativeTimeWindow(
-    startOffset: moment.Duration,
-    duration: moment.Duration,
+    startOffset: Duration,
+    duration: Duration,
   ): StartEndDuration {
     if (this.alignmentTime) {
       return new StartEndDuration(
-        moment.utc(this.alignmentTime).add(startOffset),
+        this.alignmentTime.plus(startOffset),
         null,
         duration,
       );
     } else {
       return new StartEndDuration(
-        moment.utc(this.startTime).add(startOffset),
+        this.startTime.plus(startOffset),
         null,
         duration,
       );
@@ -1510,9 +1509,9 @@ export class SeismogramDisplayData {
     Object.getOwnPropertyNames(this).forEach(name => {
       if (name === "_seismogram") {
         out._seismogram = seis; // @ts-ignore
-      } else if (moment.isMoment(this[name])) {
+      } else if (DateTime.isDateTime(this[name])) {
         // @ts-ignore
-        out[name] = moment.utc(this[name]); // @ts-ignore
+        out[name] = this[name]; // @ts-ignore
       } else if (Array.isArray(this[name])) {
         // @ts-ignore
         out[name] = this[name].slice();
@@ -1565,25 +1564,24 @@ export class SeismogramDisplayStats {
 export function findStartEnd(
   sddList: Array<SeismogramDisplayData>,
 ): StartEndDuration {
-  let allStart = sddList.map(sdd => {
-    return moment.utc(sdd.timeRange.startTime);
-  });
-  let startTime = moment.min(allStart);
-  let allEnd = sddList.map(sdd => {
-    return moment.utc(sdd.timeRange.endTime);
-  });
-  let endTime = moment.max(allEnd);
+  let startTime = sddList.reduce((acc, sdd) => {
+    return acc < sdd.timeRange.startTime ? acc : sdd.timeRange.startTime;
+  }, sddList[0].timeRange.startTime);
+
+  let endTime = sddList.reduce((acc, sdd) => {
+    return acc > sdd.timeRange.endTime ? acc : sdd.timeRange.endTime;
+  }, sddList[0].timeRange.endTime);
   return new StartEndDuration(startTime, endTime);
 }
 export function findMaxDuration(
   sddList: Array<SeismogramDisplayData>,
-): moment.Duration {
+): Duration {
   return findMaxDurationOfType("start", sddList);
 }
 export function findMaxDurationOfType(
   type: string,
   sddList: Array<SeismogramDisplayData>,
-): moment.Duration {
+): Duration {
   return sddList.reduce((acc, sdd) => {
     let timeRange;
 
@@ -1598,12 +1596,12 @@ export function findMaxDurationOfType(
       timeRange = sdd.timeRange;
     }
 
-    if (timeRange.duration.asMilliseconds() > acc.asMilliseconds()) {
-      return timeRange.duration.clone();
+    if (timeRange.duration > acc) {
+      return timeRange.duration;
     } else {
       return acc;
     }
-  }, moment.duration(0, "seconds"));
+  }, Duration.fromMillis(0));
 }
 export function findMinMax(
   sddList: Array<SeismogramDisplayData>,
@@ -1659,8 +1657,8 @@ export function findMinMaxOverTimeRange(
 }
 export function findMinMaxOverRelativeTimeRange(
   sddList: Array<SeismogramDisplayData>,
-  startOffset: moment.Duration,
-  duration: moment.Duration,
+  startOffset: Duration,
+  duration: Duration,
 ): Array<number> {
   let minMaxArr = sddList.map(sdd => {
     let timeRange = sdd.relativeTimeWindow(startOffset, duration);
@@ -1692,8 +1690,8 @@ export function findStartEndOfSeismograms(
     throw new Error("data and accumulator are not defined");
   } else if (!accumulator) {
     out = new StartEndDuration(
-      moment.utc("2500-01-01"),
-      moment.utc("1001-01-01"),
+      isoToDateTime("2500-01-01T00:00:00Z"),
+      isoToDateTime("1001-01-01T00:00:00Z"),
     );
   } else {
     out = accumulator;
@@ -1701,12 +1699,12 @@ export function findStartEndOfSeismograms(
 
   if (Array.isArray(data)) {
     for (let s of data) {
-      if (s.startTime.isSameOrBefore(out.startTime)) {
-        out = new StartEndDuration(moment.utc(s.startTime), out.endTime);
+      if (s.startTime <= out.startTime) {
+        out = new StartEndDuration(s.startTime, out.endTime);
       }
 
-      if (out.endTime.isSameOrBefore(s.endTime)) {
-        out = new StartEndDuration(out.startTime, moment.utc(s.endTime));
+      if (out.endTime <= s.endTime) {
+        out = new StartEndDuration(out.startTime, s.endTime);
       }
     }
   } else {

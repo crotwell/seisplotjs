@@ -13,7 +13,7 @@ import {
   Q_TYPECODE,
   M_TYPECODE,
 } from "./miniseed";
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
 export type json_object = Record<string, any>;
 export const MINISEED_THREE_MIME = "application/vnd.fdsn.mseed3";
 
@@ -545,13 +545,13 @@ export class MSeed3Header {
   /**
   * sets start time headers from Moment.
   */
-  setStart(starttime: moment.Moment) {
-    this.nanosecond = starttime.milliseconds()*1000;
-    this.year = starttime.year();
-    this.dayOfYear = starttime.dayOfYear();
-    this.hour = starttime.hour();
-    this.minute = starttime.minute();
-    this.second = starttime.second();
+  setStart(starttime: DateTime) {
+    this.nanosecond = starttime.millisecond*1000;
+    this.year = starttime.year;
+    this.dayOfYear = starttime.ordinal;
+    this.hour = starttime.hour;
+    this.minute = starttime.minute;
+    this.second = starttime.second;
   }
 
   /**
@@ -560,10 +560,9 @@ export class MSeed3Header {
    * @param   i sample number
    * @returns the time
    */
-  timeOfSample(i: number): moment.Moment {
-    return moment
-      .utc(this.start)
-      .add((1000 * i) / this.sampleRate, "milliseconds");
+  timeOfSample(i: number): DateTime {
+    return this.start
+      .plus(Duration.fromMillis((1000 * i) / this.sampleRate));
   }
 
   /**
@@ -632,30 +631,19 @@ export class MSeed3Header {
   }
 
   /**
-   * Converts header start time to moment
+   * Converts header start time to DateTime
    *
-   * @returns         start time as moment
+   * @returns         start time as DateTime
    */
-  _startToMoment(): moment.Moment {
-    let m = moment.utc([
-      this.year,
-      0,
-      1,
-      this.hour,
-      this.minute,
-      this.second,
-      0,
-    ]);
-    m.add(Math.round(this.nanosecond / 1000000), "ms");
-    m.dayOfYear(this.dayOfYear);
-
-    if (m.isValid()) {
-      return m;
-    } else {
-      throw new Error(
-        `Header start is invalid moment: ${this.year} ${this.dayOfYear} ${this.hour} ${this.minute} ${this.second} ${this.nanosecond}`,
-      );
-    }
+  _startToMoment(): DateTime {
+    return DateTime.fromObject({
+      year: this.year,
+      ordinal: this.dayOfYear,
+      hour: this.hour,
+      minute: this.minute,
+      second: this.second,
+      millisecond: Math.round(this.nanosecond / 1000000),
+    });
   }
 }
 
@@ -752,11 +740,9 @@ export function areContiguous(
   let h1 = dr1.header;
   let h2 = dr2.header;
   return (
-    h1.end.isBefore(h2.start) &&
-    moment
-      .utc(h1.end)
-      .add(sampRatio / h1.sampleRate, "seconds")
-      .isSameOrAfter(h2.start)
+    h1.end < h2.start &&
+    h1.end.plus(Duration.fromMillis(1000*sampRatio / h1.sampleRate))
+      >= h2.start
   );
 }
 

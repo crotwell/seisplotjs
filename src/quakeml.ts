@@ -10,12 +10,14 @@ import {
   isStringArg,
   isNonEmptyStringArg,
   isNumArg,
+  isoToDateTime,
   checkStringOrDate,
   stringify,
 } from "./util";
 import * as util from "./util"; // for util.log
 
-import moment from "moment";
+import {DateTime} from "luxon";
+
 export const QML_NS = "http://quakeml.org/xmlns/quakeml/1.2";
 export const BED_NS = "http://quakeml.org/xmlns/bed/1.2";
 export const IRIS_NS = "http://service.iris.edu/fdsnws/event/1/";
@@ -24,7 +26,7 @@ export const ANSS_CATALOG_NS = "http://anss.org/xmlns/catalog/0.1";
 export const USGS_HOST = "earthquake.usgs.gov";
 export const UNKNOWN_MAG_TYPE = "unknown";
 export const UNKNOWN_PUBLIC_ID = "unknownId";
-export const FAKE_ORIGIN_TIME = moment.utc("1900-01-01");
+export const FAKE_ORIGIN_TIME = DateTime.fromISO("1900-01-01T00:00:00Z");
 
 // QuakeML classes
 
@@ -208,7 +210,7 @@ export class Quake {
       throw new Error("No magnitudes in quake");
     }
   }
-  get time(): moment.Moment {
+  get time(): DateTime {
     return this.origin.time;
   }
   get latitude(): number {
@@ -251,7 +253,7 @@ export class Quake {
 
 /** Represents a QuakeML Origin. */
 export class Origin {
-  time: moment.Moment;
+  time: DateTime;
   latitude: number;
   longitude: number;
   depth: number;
@@ -285,7 +287,7 @@ export class Origin {
     let otimeStr = _grabFirstElText(_grabFirstEl(qml, "time"), "value");
 
     if (isNonEmptyStringArg(otimeStr)) {
-      out.time = moment.utc(otimeStr);
+      out.time = isoToDateTime(otimeStr);
     } else {
       util.log("origintime is missing...");
     }
@@ -467,7 +469,7 @@ export class Arrival {
   Represents a QuakeML Pick.
  */
 export class Pick {
-  time: moment.Moment;
+  time: DateTime;
   networkCode: string;
   stationCode: string;
   locationCode: string;
@@ -475,7 +477,7 @@ export class Pick {
   publicId: string;
 
   constructor(
-    time: moment.Moment,
+    time: DateTime,
     networkCode: string,
     stationCode: string,
     locationCode: string,
@@ -503,7 +505,7 @@ export class Pick {
     }
 
     let otimeStr = _grabFirstElText(_grabFirstEl(pickQML, "time"), "value");
-
+    if (! isDef(otimeStr)) {throw new Error("Missing time");}
     let time = checkStringOrDate(otimeStr);
 
     let waveformIdEl = _grabFirstEl(pickQML, "waveformID");
@@ -591,7 +593,7 @@ export function parseQuakeML(rawXml: Document, host?: string): Array<Quake> {
 }
 
 export function createQuakeFromValues(publicId: string,
-  time: moment.Moment,
+  time: DateTime,
   latitude: number,
   longitude: number,
   depth: number): Quake {

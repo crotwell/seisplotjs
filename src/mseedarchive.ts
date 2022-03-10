@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
 import * as util from "./util";
 import * as miniseed from "./miniseed";
 import RSVP from "rsvp";
@@ -147,8 +147,8 @@ export class MSeedArchive {
    */
   loadDataForChannel(
     channel: Channel,
-    startTime: moment.Moment,
-    endTime: moment.Moment,
+    startTime: DateTime,
+    endTime: DateTime,
   ): Promise<Array<miniseed.DataRecord>> {
     return this.loadData(
       channel.station.network.networkCode,
@@ -178,8 +178,8 @@ export class MSeedArchive {
     sta: string,
     loc: string,
     chan: string,
-    startTime: moment.Moment,
-    endTime: moment.Moment,
+    startTime: DateTime,
+    endTime: DateTime,
     sampleRate: number,
   ): Promise<Array<miniseed.DataRecord>> {
     let basePattern = this.fillBasePattern(net, sta, loc, chan);
@@ -189,16 +189,16 @@ export class MSeedArchive {
     }
 
     let recordTime = maxTimeForRecord(this._recordSize, sampleRate);
-    let t = moment.utc(startTime).subtract(recordTime, "seconds");
+    let t = startTime.minus(recordTime);
     let urlList = [];
 
-    while (t.isBefore(endTime)) {
+    while (t < endTime) {
       let url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
-      t.add(1, "hour");
+      t = t.plus(Duration.fromObject({hour: 1,}));
       urlList.push(url);
     }
 
-    if (moment.utc(t).add(recordTime, "seconds").isAfter(endTime)) {
+    if (t.plus(recordTime) > endTime) {
       let url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
       urlList.push(url);
     }
@@ -207,8 +207,8 @@ export class MSeedArchive {
       if (dataRecords) {
         dataRecords = dataRecords.filter(
           dr =>
-            dr.header.endTime.isSameOrAfter(startTime) &&
-            dr.header.startTime.isSameOrBefore(endTime),
+            dr.header.endTime >= startTime &&
+            dr.header.startTime <= endTime
         );
       } else {
         dataRecords = []; // for flow
@@ -239,14 +239,14 @@ export class MSeedArchive {
    * Replaces time entries ( %Y, %j, %H ) in pattern.
    *
    * @param   basePattern pattern to replace in
-   * @param   t           moment in time
+   * @param   t           DateTime in time
    * @returns              string with time replaces
    */
-  fillTimePattern(basePattern: string, t: moment.Moment): string {
+  fillTimePattern(basePattern: string, t: DateTime): string {
     return basePattern
-      .replace(/%Y/g, t.format("YYYY"))
-      .replace(/%j/g, t.format("DDDD"))
-      .replace(/%H/g, t.format("HH"));
+      .replace(/%Y/g, t.toFormat("YYYY"))
+      .replace(/%j/g, t.toFormat("DDDD"))
+      .replace(/%H/g, t.toFormat("HH"));
   }
 }
 export function loadDataRecords(
@@ -430,6 +430,6 @@ export function minSampleRate(chan: string): number {
 export function maxTimeForRecord(
   recordSize: number,
   sampleRate: number,
-): number {
-  return ((recordSize - 40) * 2) / sampleRate;
+): Duration {
+  return Duration.fromMillis(1000*((recordSize - 40) * 2) / sampleRate);
 }

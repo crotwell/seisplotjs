@@ -1,29 +1,34 @@
 // @flow
 
 import * as util from '../src/util.js';
-import {toIsoWoZ, StartEndDuration, moment} from '../src/util.js';
+import {isoToDateTime, toIsoWoZ, StartEndDuration} from '../src/util.js';
+import {DateTime, Duration} from 'luxon';
 
 test( "_toIsoWoZ test", () => {
   const s = "2018-01-01T12:34:45.000";
-  expect(toIsoWoZ(util.moment.utc(s))).toBe(s);
+  expect(toIsoWoZ(isoToDateTime(s))).toBe(s);
 });
 
 test("StartEndDuration", () => {
   const s = "2018-01-01T12:34:45.000";
   const e = "2018-01-01T12:44:45.000";
-  const d = moment.duration("PT10M");
-  expect(d.humanize()).toBe("10 minutes");
+  const d = Duration.fromISO("PT10M");
+  expect(d.toHuman()).toBe("10 minutes");
   let sed = new StartEndDuration(s,e);
-  expect(sed.duration.humanize()).toBe("10 minutes");
+  expect(sed.duration.toISO()).toBe("PT600S");
+  // luxon toHuman doesn't work well yet
+  //expect(sed.duration.toHuman()).toBe("10 minutes");
   sed = new StartEndDuration(s,null,d);
-  expect(sed.duration.humanize()).toBe("10 minutes");
+  expect(sed.duration.toISO()).toBe("PT10M");
+  //expect(sed.duration.toHuman()).toBe("10 minutes");
   sed = new StartEndDuration(null,e,d);
-  expect(sed.duration.humanize()).toBe("10 minutes");
+  expect(sed.duration.toISO()).toBe("PT10M");
+  //expect(sed.duration.toHuman()).toBe("10 minutes");
 
   sed = new StartEndDuration(null, null, d);
-  expect(sed.duration.humanize()).toBe("10 minutes");
+  expect(sed.duration.toHuman()).toBe("10 minutes");
   sed = new StartEndDuration(s,null,null);
-  expect(sed.duration.asYears()).toBeGreaterThan(300);
+  expect(sed.duration.as('years')).toBeGreaterThan(300);
   expect(sed.endTime).toEqual(util.WAY_FUTURE);
 
 });

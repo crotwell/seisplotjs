@@ -2,7 +2,6 @@
 
 import * as fdsnavailability from '../src/fdsnavailability';
 import * as util from '../src/util';
-let moment = util.moment;
 
 
 test( "query setter test", () => {
@@ -12,7 +11,7 @@ test( "query setter test", () => {
   const LOC = '00';
   const CHAN = 'HHZ';
   const DURATION = 300;
-  const timeWindow = new util.StartEndDuration( moment.utc('2018-01-01T12:34:45.000Z'), null, DURATION, 0);
+  const timeWindow = new util.StartEndDuration( '2018-01-01T12:34:45.000Z', null, DURATION, 0);
   const QUALITY = 'D';
   const FORMAT = 'json';
   expect(dsQuery.networkCode(NET)).toBe(dsQuery);

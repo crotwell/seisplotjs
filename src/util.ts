@@ -8,9 +8,7 @@
  * Current version of seisplotjs
  */
 export const version = process.env.npm_package_version ?? "unknown";
-import moment from "moment";
-//reexport
-export {moment};
+import {DateTime, Duration, FixedOffsetZone} from "luxon";
 import RSVP from "rsvp";
 RSVP.on("error", function (reason: string) {
   // eslint-disable-next-line no-console
@@ -24,6 +22,8 @@ export const JSONAPI_MIME = "application/vnd.api+json";
 export const SVG_MIME = "image/svg+xml";
 export const TEXT_MIME = "text/plain";
 export const BINARY_MIME = "application/octet-stream";
+
+export const UTC_OPTIONS = {zone: FixedOffsetZone.utcInstance};
 
 export function hasArgs(value: any): boolean {
   return arguments.length !== 0 && typeof value !== "undefined";
@@ -152,19 +152,19 @@ export function doFloatGetterSetter(
 export function doMomentGetterSetter(
   obj: any,
   field: string,
-  value?: moment.Moment,
-): any | moment.Moment {
+  value?: DateTime | string,
+): any | DateTime {
   const hiddenField = `_${field}`;
 
-  if (hasNoArgs(value)) {
-    return obj[hiddenField] as moment.Moment;
-  } else if (hasArgs(value) && isObject(value) && moment.isMoment(value)) {
+  if ( ! isDef(value)) {
+    return obj[hiddenField] as DateTime;
+  } else if (hasArgs(value) && isObject(value) && DateTime.isDateTime(value)) {
     obj[hiddenField] = value;
-  } else if (hasArgs(value) && moment.isMoment(checkStringOrDate(value))) {
+  } else if (hasArgs(value) && DateTime.isDateTime(checkStringOrDate(value))) {
     obj[hiddenField] = checkStringOrDate(value);
   } else {
     throw new Error(
-      `${field} value argument is optional, moment, date or date string, but was type ${typeof value}, '${stringify(
+      `${field} value argument is optional, DateTime, date or date string, but was type ${typeof value}, '${stringify(
         value,
       )}' `,
     );
@@ -275,9 +275,9 @@ export function stringify(value: unknown): string {
     return "function " + value.name;
   } else if (typeof value === "object") {
     if (value) {
-      if (moment.isMoment(value)) {
-        const momentValue = (value as any) as moment.Moment;
-        return momentValue.toISOString();
+      if (DateTime.isDateTime(value)) {
+        const dateTimeValue = (value as any) as DateTime;
+        return dateTimeValue.toISO();
       } else {
         return value.constructor.name + " " + value.toString();
       }
@@ -291,6 +291,10 @@ export function stringify(value: unknown): string {
   }
 }
 
+export function isoToDateTime(val: string): DateTime {
+  return DateTime.fromISO(val, UTC_OPTIONS);
+}
+
 /**
  * Calculates offset of remote server versus local time. It is assumed that the
  * argument was acquired as close in time to calling this as possible.
@@ -298,51 +302,50 @@ export function stringify(value: unknown): string {
  * @param  serverTimeUTC now as reported by remote server
  * @returns offset in seconds to now on local machine
  */
-export function calcClockOffset(serverTimeUTC: moment.Moment): number {
-  return moment.utc().diff(serverTimeUTC, "seconds", true);
+export function calcClockOffset(serverTimeUTC: DateTime): number {
+  return DateTime.utc().diff(serverTimeUTC).toMillis()*1000.0;
 }
-export const WAY_FUTURE: moment.Moment = moment.utc("2500-01-01T00:00:00");
+export const WAY_FUTURE: DateTime = DateTime.fromISO("2500-01-01T00:00:00Z");
 
 /**
  * Any two of startTime, endTime and duration can be specified, or just duration which
  * then assumes endTime is now.
- * startTime and endTime are moment objects, duration is in seconds.
+ * startTime and endTime are DateTime objects, duration is in seconds.
  * clockOffset is the seconds that should be subtracted from the computer time
  * to get real world time, ie computerUTC - UTC
- * or moment.utc().diff(serverTimeUTC, 'seconds', true).
+ * or DateTime.utc().diff(serverTimeUTC, 'seconds', true).
  * default is zero.
  */
 export class StartEndDuration {
-  _startTime: moment.Moment;
-  _endTime: moment.Moment;
-  _duration: moment.Duration;
-  _clockOffset: moment.Duration;
+  _startTime: DateTime;
+  _endTime: DateTime;
+  _duration: Duration;
+  _clockOffset: Duration;
 
   constructor(
-    startTime: moment.Moment | string | null,
-    endTime: moment.Moment | string | null,
-    duration: moment.Duration | string | number | null = null,
+    startTime: DateTime | string | null,
+    endTime: DateTime | string | null,
+    duration: Duration | string | number | null = null,
     clockOffset: number | null = 0,
   ) {
     if (isDef(startTime) && isDef(endTime) && isDef(duration)) {
       throw new Error("Only two of three parameters should be used");
     }
-    this._clockOffset = moment.duration(0, "seconds");
-    let momentDuration = null;
+    this._clockOffset = Duration.fromMillis(0);
+    let theDuration = null;
     if (isDef(duration)) {
       if (typeof duration === "string") {
         if (duration.charAt(0) === "P") {
-          momentDuration = moment.duration(duration);
+          theDuration = Duration.fromISO(duration);
         } else {
-          momentDuration = moment.duration(
-            Number.parseFloat(duration),
-            "seconds",
+          theDuration = Duration.fromMillis(
+            Number.parseFloat(duration)*1000 // seconds
           );
         }
       } else if (typeof duration === "number") {
-        momentDuration = moment.duration(duration, "seconds");
-      } else if (moment.isDuration(duration)) {
-        momentDuration = duration;
+        theDuration = Duration.fromMillis(duration*1000); // seconds
+      } else if (Duration.isDuration(duration)) {
+        theDuration = duration;
       } else {
         throw new Error(
           // @ts-ignore
@@ -354,32 +357,32 @@ export class StartEndDuration {
     if (isDef(startTime) && isDef(endTime)) {
       this._startTime = checkStringOrDate(startTime);
       this._endTime = checkStringOrDate(endTime);
-      this._duration = moment.duration(this.endTime.diff(this.startTime));
-    } else if (isDef(startTime) && isDef(momentDuration)) {
-      this._duration = momentDuration;
+      this._duration = this.endTime.diff(this.startTime);
+    } else if (isDef(startTime) && isDef(theDuration)) {
+      this._duration = theDuration;
       this._startTime = checkStringOrDate(startTime);
-      this._endTime = moment.utc(this.startTime).add(this.duration);
-    } else if (isDef(endTime) && isDef(momentDuration)) {
-      this._duration = momentDuration;
+      this._endTime = this.startTime.plus(this.duration);
+    } else if (isDef(endTime) && isDef(theDuration)) {
+      this._duration = theDuration;
       this._endTime = checkStringOrDate(endTime);
-      this._startTime = moment.utc(this.endTime).subtract(this.duration);
-    } else if (isDef(momentDuration)) {
-      this._duration = momentDuration;
+      this._startTime = this.endTime.minus(this.duration);
+    } else if (isDef(theDuration)) {
+      this._duration = theDuration;
       if (!isDef(clockOffset)) {
-        this._clockOffset = moment.duration(0, "seconds");
+        this._clockOffset = Duration.fromMillis(0);
       } else if (typeof clockOffset === "number") {
-        this._clockOffset = moment.duration(clockOffset, "seconds");
+        this._clockOffset = Duration.fromMillis(clockOffset*1000); // seconds
       } else {
         this._clockOffset = clockOffset;
       }
 
-      this._endTime = moment.utc().subtract(this._clockOffset);
-      this._startTime = moment.utc(this.endTime).subtract(this.duration);
+      this._endTime = DateTime.utc().minus(this._clockOffset);
+      this._startTime = this.endTime.minus(this.duration);
     } else if (isDef(startTime)) {
       // only a start time, maybe like a Channel that is active currently
       this._startTime = checkStringOrDate(startTime);
-      this._endTime = moment.utc(WAY_FUTURE);
-      this._duration = moment.duration(this.endTime.diff(this.startTime));
+      this._endTime = WAY_FUTURE;
+      this._duration = this.endTime.diff(this.startTime);
     } else {
       throw new Error(
         `need some combination of startTime, endTime and duration: ${stringify(
@@ -389,44 +392,44 @@ export class StartEndDuration {
     }
   }
 
-  get start(): moment.Moment {
+  get start(): DateTime {
     return this._startTime;
   }
 
-  get startTime(): moment.Moment {
+  get startTime(): DateTime {
     return this._startTime;
   }
 
-  get end(): moment.Moment {
+  get end(): DateTime {
     return this._endTime;
   }
 
-  get endTime(): moment.Moment {
+  get endTime(): DateTime {
     return this._endTime;
   }
 
-  get duration(): moment.Duration {
+  get duration(): Duration {
     return this._duration;
   }
 
-  get clockOffset(): moment.Duration {
+  get clockOffset(): Duration {
     return this._clockOffset;
   }
 
   /**
-   * Check if this time window contains the given moment. Equality to start
+   * Check if this time window contains the given DateTime. Equality to start
    * or end is considered being contained in.
    *
-   * @param   other moment to check
-   * @returns        true if moment is inside this time range
+   * @param   other DateTime to check
+   * @returns        true if DateTime is inside this time range
    */
-  contains(other: moment.Moment | StartEndDuration): boolean {
-    if (moment.isMoment(other)) {
-      const momentOther = (other as any) as moment.Moment;
+  contains(other: DateTime | StartEndDuration): boolean {
+    if (DateTime.isDateTime(other)) {
+      const dateTimeOther = (other as any) as DateTime;
 
       if (
-        this.startTime.isAfter(momentOther) ||
-        this.endTime.isBefore(momentOther)
+        this.startTime > dateTimeOther ||
+        this.endTime < dateTimeOther
       ) {
         return false;
       }
@@ -444,15 +447,15 @@ export class StartEndDuration {
       }
 
       throw new Error(
-        `expect moment or StartEndDuration: "${stringify(other)}" ${otherType}`,
+        `expect DateTime or StartEndDuration: \"${stringify(other)}\" ${otherType}`,
       );
     }
   }
 
   overlaps(other: StartEndDuration): boolean {
     if (
-      this.startTime.isAfter(other.endTime) ||
-      this.endTime.isBefore(other.startTime)
+      this.startTime > other.endTime ||
+      this.endTime < other.startTime
     ) {
       return false;
     }
@@ -466,13 +469,13 @@ export class StartEndDuration {
     if (this.overlaps(other)) {
       let tb = this.startTime;
 
-      if (tb.isBefore(other.startTime)) {
+      if (tb < other.startTime) {
         tb = other.startTime;
       }
 
       let te = this.endTime;
 
-      if (te.isAfter(other.endTime)) {
+      if (te > other.endTime) {
         te = other.endTime;
       }
 
@@ -485,13 +488,13 @@ export class StartEndDuration {
   union(other: StartEndDuration): StartEndDuration {
     let tb = this.startTime;
 
-    if (tb.isAfter(other.startTime)) {
+    if (tb > other.startTime) {
       tb = other.startTime;
     }
 
     let te = this.endTime;
 
-    if (te.isBefore(other.endTime)) {
+    if (te < other.endTime) {
       te = other.endTime;
     }
 
@@ -501,32 +504,32 @@ export class StartEndDuration {
   toString(): string {
     return `StartEndDuration: ${toIsoWoZ(this.startTime)} to ${toIsoWoZ(
       this.endTime,
-    )} ${this.duration.toISOString()}`;
+    )} ${this.duration.toISO()}`;
   }
 }
 
 /**
- * converts the input value is a moment, throws Error if not
- * a string, Date or moment. Zero length string or "now" return
+ * converts the input value is a DateTime, throws Error if not
+ * a string, Date or DateTime. Zero length string or "now" return
  * current time.
  *
- * @param d 'now', string time, Date, number of milliseconds since epoch, or moment
- * @returns moment created from argument
+ * @param d 'now', string time, Date, number of milliseconds since epoch, or DateTime
+ * @returns DateTime created from argument
  */
-export function checkStringOrDate(d: moment.MomentInput): moment.Moment {
-  if (moment.isMoment(d)) {
+export function checkStringOrDate(d: string | Date | DateTime): DateTime {
+  if (DateTime.isDateTime(d)) {
     return d;
   } else if (d instanceof Date) {
-    return moment.utc(d);
+    return DateTime.fromJSDate(d, UTC_OPTIONS);
   } else if (isNumArg(d)) {
-    return moment.unix(d).utc();
+    return DateTime.fromMillis(d, UTC_OPTIONS);
   } else if (isNonEmptyStringArg(d)) {
     let lc = d.toLowerCase();
 
     if (d.length === 0 || lc === "now") {
-      return moment.utc();
+      return DateTime.utc();
     } else {
-      return moment.utc(d);
+      return isoToDateTime(d);
     }
   }
 
@@ -560,11 +563,11 @@ export function makePostParam(name: string, val: unknown): string {
  * converts to ISO8601 but removes the trailing Z as FDSN web services
  * do not allow that.
  *
- * @param  date moment to convert to string
+ * @param  date DateTime to convert to string
  * @returns ISO8601 without timezone Z
  */
-export function toIsoWoZ(date: moment.Moment): string {
-  let out = date.toISOString();
+export function toIsoWoZ(date: DateTime): string {
+  let out = date.toISO();
   return out.substring(0, out.length - 1);
 }
 

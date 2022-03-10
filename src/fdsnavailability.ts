@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import moment from "moment";
+import {DateTime} from "luxon";
 import RSVP from "rsvp";
 // special due to flow
 import {
@@ -14,6 +14,7 @@ import {
   doMomentGetterSetter,
   checkProtocol,
   toIsoWoZ,
+  isoToDateTime,
   isDef,
   hasArgs,
   hasNoArgs,
@@ -67,6 +68,17 @@ export const IRIS_HOST = "service.iris.edu";
 /**
  * Query to a FDSN Availability web service.
  *
+ * ```
+ * const avail = AvailabilityQuery()
+ *    .networkCode("CO")
+ *    .stationCode("BIRD")
+ *    .startTime("2021-12-27T19:18:54Z")
+ *    .endTime("2021-12-27T19:22:54Z");
+ * avail.query().then(sddList => {
+ *   sddList.forEach(sdd => console.log(sdd))
+ * });
+ * ```
+ *
  * @see http://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to IRIS
  */
@@ -99,10 +111,10 @@ export class AvailabilityQuery {
   _channelCode: string|undefined;
 
   /** @private */
-  _startTime: moment.Moment|undefined;
+  _startTime: DateTime|undefined;
 
   /** @private */
-  _endTime: moment.Moment|undefined;
+  _endTime: DateTime|undefined;
 
   /** @private */
   _quality: string|undefined;
@@ -254,7 +266,7 @@ export class AvailabilityQuery {
    * @param value start time
    * @returns the query when setting, the current value when no argument
    */
-  startTime(value?: moment.Moment): moment.Moment | AvailabilityQuery {
+  startTime(value?: DateTime | string): DateTime | AvailabilityQuery {
     return doMomentGetterSetter(this, "startTime", value);
   }
 
@@ -264,7 +276,7 @@ export class AvailabilityQuery {
    * @param value end time
    * @returns the query when setting, the current value when no argument
    */
-  endTime(value?: moment.Moment): moment.Moment | AvailabilityQuery {
+  endTime(value?: DateTime | string): DateTime | AvailabilityQuery {
     return doMomentGetterSetter(this, "endTime", value);
   }
 
@@ -606,8 +618,8 @@ export class AvailabilityQuery {
           out.push(
             SeismogramDisplayData.fromChannelAndTimes(
               c,
-              moment.utc(ds.earliest),
-              moment.utc(ds.latest),
+              isoToDateTime(ds.earliest),
+              isoToDateTime(ds.latest),
             ),
           );
         } else if (ds.timespans) {
@@ -615,8 +627,8 @@ export class AvailabilityQuery {
             out.push(
               SeismogramDisplayData.fromChannelAndTimes(
                 c,
-                moment.utc(ts[0]),
-                moment.utc(ts[1]),
+                isoToDateTime(ts[0]),
+                isoToDateTime(ts[1]),
               ),
             );
           }
@@ -680,7 +692,7 @@ export class AvailabilityQuery {
           ct.channel.locationCode
         } ${
           ct.channel.channelCode
-        } ${ct.startTime.toISOString()} ${ct.endTime.toISOString()}`;
+        } ${ct.startTime.toISO()} ${ct.endTime.toISO()}`;
         out += "\n";
       } else {
         throw new Error("Channel in missing in createPostBody");

@@ -16,19 +16,19 @@ import {
 } from "./util";
 import {createComplex} from "./oregondsputil";
 import * as OregonDSPTop from "oregondsp";
-import moment from "moment";
+import {DateTime} from "luxon";
 
 /** xml namespace for stationxml */
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
 export const COUNT_UNIT_NAME = "count";
 export let FIX_INVALID_STAXML: boolean = true;
 export const INVALID_NUMBER = -99999;
-export const FAKE_START_DATE = moment.utc("1900-01-01");
+export const FAKE_START_DATE = DateTime.fromISO("1900-01-01T00:00:00Z");
 // StationXML classes
 export class Network {
   networkCode: string;
-  _startDate: moment.Moment;
-  _endDate: moment.Moment | null;
+  _startDate: DateTime;
+  _endDate: DateTime | null;
   restrictedStatus: string;
   description: string;
   totalNumberStations: number | null;
@@ -48,19 +48,19 @@ export class Network {
     return "FDSN:" + (this.networkCode ? this.networkCode : "");
   }
 
-  get startDate(): moment.Moment {
+  get startDate(): DateTime {
     return this._startDate;
   }
 
-  set startDate(value: moment.Moment | string) {
+  set startDate(value: DateTime | string) {
     this._startDate = checkStringOrDate(value);
   }
 
-  get endDate(): null | moment.Moment {
+  get endDate(): null | DateTime {
     return this._endDate;
   }
 
-  set endDate(value: moment.Moment | string | null) {
+  set endDate(value: DateTime | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -91,10 +91,10 @@ export class Station {
   stationCode: string;
 
   /** @private */
-  _startDate: moment.Moment;
+  _startDate: DateTime;
 
   /** @private */
-  _endDate: moment.Moment | null;
+  _endDate: DateTime | null;
   restrictedStatus: string;
   name: string;
   latitude: number;
@@ -124,19 +124,19 @@ export class Station {
     );
   }
 
-  get startDate(): moment.Moment {
+  get startDate(): DateTime {
     return this._startDate;
   }
 
-  set startDate(value: moment.Moment | string) {
+  set startDate(value: DateTime | string) {
     this._startDate = checkStringOrDate(value);
   }
 
-  get endDate(): moment.Moment | null {
+  get endDate(): DateTime | null {
     return this._endDate;
   }
 
-  set endDate(value: moment.Moment | string | null) {
+  set endDate(value: DateTime | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -164,10 +164,10 @@ export class Channel {
   channelCode: string;
 
   /** @private */
-  _startDate: moment.Moment;
+  _startDate: DateTime;
 
   /** @private */
-  _endDate: moment.Moment | null;
+  _endDate: DateTime | null;
   restrictedStatus: string;
   latitude: number;
   longitude: number;
@@ -248,19 +248,19 @@ export class Channel {
     );
   }
 
-  get startDate(): moment.Moment {
+  get startDate(): DateTime {
     return this._startDate;
   }
 
-  set startDate(value: moment.Moment | string) {
+  set startDate(value: DateTime | string) {
     this._startDate = checkStringOrDate(value);
   }
 
-  get endDate(): null | moment.Moment {
+  get endDate(): null | DateTime {
     return this._endDate;
   }
 
-  set endDate(value: moment.Moment | string | null) {
+  set endDate(value: DateTime | string | null) {
     if (!isDef(value)) {
       this._endDate = null;
     } else {
@@ -365,9 +365,9 @@ export class Equipment {
   vendor: string;
   model: string;
   serialNumber: string;
-  installationDate: moment.Moment | null;
-  removalDate: moment.Moment | null;
-  calibrationDateList: Array<moment.Moment>;
+  installationDate: DateTime | null;
+  removalDate: DateTime | null;
+  calibrationDateList: Array<DateTime>;
   constructor() {
     this.resourceId = "";
     this.type = "";
@@ -808,7 +808,10 @@ export function convertToEquipment(xml: Element): Equipment {
   out.calibrationDateList = [];
 
   for (let cal of calibXml) {
-    out.calibrationDateList.push(checkStringOrDate(cal.textContent));
+    if (isDef(cal.textContent)) {
+      const d = checkStringOrDate(cal.textContent);
+      if (isDef(d)) {out.calibrationDateList.push(d);}
+    }
   }
 
   return out;

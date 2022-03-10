@@ -3,7 +3,8 @@
 import * as fdsnevent from '../../src/fdsnevent.js';
 import * as quakeml from '../../src/quakeml.js';
 import * as util from '../../src/util.js';
-let moment = util.moment;
+import {isoToDateTime} from '../../src/util';
+import {DateTime} from 'luxon';
 
 test( "query setter test", () => {
   let eventQuery = new fdsnevent.EventQuery();
@@ -19,8 +20,8 @@ test( "form url test", () => {
   const MINMAG = 5.5;
   const MIN_DEPTH = 100;
   const MAX_DEPTH = 500;
-  const START = moment.utc("2018-01-01");
-  const END = moment.utc("2018-01-11");
+  const START = isoToDateTime("2018-01-01");
+  const END = isoToDateTime("2018-01-11");
   const IRIS_HOST = "service.iris.edu";
   const MAG_TYPE = "mw";
   expect(query.host(IRIS_HOST)).toBe(query);
@@ -135,7 +136,7 @@ test( "qml parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_QML, "text/xml");
   let quakes = quakeml.parseQuakeML(xml);
   expect(quakes.length).toBe(7);
-  expect(quakes[0].time.toISOString()).toEqual("2018-06-04T01:50:48.520Z");
+  expect(quakes[0].time.toISO()).toEqual("2018-06-04T01:50:48.520Z");
   expect(quakes[0].latitude).toEqual(19.4053333);
   expect(quakes[0].longitude).toEqual(-155.2843333);
   expect(quakes[0].depth).toEqual(-1140);

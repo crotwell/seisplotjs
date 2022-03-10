@@ -1,5 +1,7 @@
 import Handlebars from "handlebars";
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
+import {checkStringOrDate} from './util';
+
 export function registerHelpers() {
   Handlebars.registerHelper(
     "onlyChangesChannel",
@@ -71,14 +73,14 @@ export function registerHelpers() {
     let format = hash.format === undefined ? defaultFormat : hash.format;
     let m = param;
 
-    if (!moment.isMoment(param)) {
-      m = moment(param).utc();
+    if (!DateTime.isDateTime(param)) {
+      m = checkStringOrDate(param);
     }
 
-    return m.format(format);
+    return m.toFormat(format);
   });
   Handlebars.registerHelper("formatDuration", function (param) {
     if (typeof param === "undefined" || param === null) return "no time";
-    return `${param.asSeconds()} sec`;
+    return `${param.toSeconds()} sec`;
   });
 }

@@ -3,6 +3,7 @@
  * University of South Carolina, 2020
  * http://www.seis.sc.edu
  */
+import {DateTime} from 'luxon';
 import {Network} from "./stationxml";
 import {
   LEVELS,
@@ -30,6 +31,7 @@ import {
   doFloatGetterSetter,
   doMomentGetterSetter,
   checkProtocol,
+  isoToDateTime,
   toIsoWoZ,
   isDef,
   hasArgs,
@@ -39,7 +41,6 @@ import {
   isNonEmptyStringArg,
   isNumArg,
 } from "./util";
-import moment from "moment";
 import RSVP from "rsvp";
 
 /**
@@ -144,22 +145,22 @@ export class FedCatalogQuery {
   _channelCode: string|undefined;
 
   /** @private */
-  _startTime: moment.Moment|undefined;
+  _startTime: DateTime|undefined;
 
   /** @private */
-  _endTime: moment.Moment|undefined;
+  _endTime: DateTime|undefined;
 
   /** @private */
-  _startBefore: moment.Moment|undefined;
+  _startBefore: DateTime|undefined;
 
   /** @private */
-  _endBefore: moment.Moment|undefined;
+  _endBefore: DateTime|undefined;
 
   /** @private */
-  _startAfter: moment.Moment|undefined;
+  _startAfter: DateTime|undefined;
 
   /** @private */
-  _endAfter: moment.Moment|undefined;
+  _endAfter: DateTime|undefined;
 
   /** @private */
   _minLat: number|undefined;
@@ -195,7 +196,7 @@ export class FedCatalogQuery {
   _format: string|undefined;
 
   /** @private */
-  _updatedAfter: moment.Moment|undefined;
+  _updatedAfter: DateTime|undefined;
 
   /** @private */
   _matchTimeseries: boolean|undefined;
@@ -446,7 +447,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment.Moment): moment.Moment | FedCatalogQuery {
+  startTime(value?: DateTime): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "startTime", value);
   }
 
@@ -456,7 +457,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment.Moment): moment.Moment | FedCatalogQuery {
+  endTime(value?: DateTime): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "endTime", value);
   }
 
@@ -486,7 +487,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: moment.Moment): moment.Moment | FedCatalogQuery {
+  startBefore(value?: DateTime): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "startBefore", value);
   }
 
@@ -496,7 +497,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: moment.Moment): moment.Moment | FedCatalogQuery {
+  endBefore(value?: DateTime): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "endBefore", value);
   }
 
@@ -506,7 +507,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: moment.Moment): moment.Moment | FedCatalogQuery {
+  startAfter(value?: DateTime): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "startAfter", value);
   }
 
@@ -516,7 +517,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: moment.Moment): moment.Moment | FedCatalogQuery {
+  endAfter(value?: DateTime): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "endAfter", value);
   }
 
@@ -636,7 +637,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: moment.Moment): moment.Moment | FedCatalogQuery {
+  updatedAfter(value?: DateTime): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "updatedAfter", value);
   }
 
@@ -874,8 +875,8 @@ export class FedCatalogQuery {
       fedCatalogResult.queries.map(query => {
         let sddList = query.postLines.map(line => {
           const items = line.split(" ");
-          const start = moment.utc(items[4]);
-          const end = moment.utc(items[5]);
+          const start = isoToDateTime(items[4]);
+          const end = isoToDateTime(items[5]);
           return SeismogramDisplayData.fromCodesAndTimes(
             items[0],
             items[1],

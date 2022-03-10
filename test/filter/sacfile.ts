@@ -3,7 +3,8 @@ import * as fs from 'fs/promises';
 import { Buffer } from 'buffer';
 import {SacPoleZero} from '../../src/sacpolezero';
 import {Seismogram} from '../../src/seismogram';
-import moment from 'moment';
+import {UTC_OPTIONS} from '../../src/util';
+import {DateTime} from 'luxon';
 
 export const NVHDR_OFFSET = 76 * 4;
 export const NPTS_OFFSET = 79 * 4;
@@ -19,7 +20,7 @@ export type sacType = {
   littleEndian: boolean,
   delta: number,
   npts: number,
-  start: moment.Moment,
+  start: DateTime,
   y: Float32Array,
 }
 
@@ -56,14 +57,12 @@ export function parseSac(dataView: DataView): sacType {
   }
   const delta = dataView.getFloat32(0, littleEndian);
   const npts = dataView.getUint32(NPTS_OFFSET, littleEndian);
-  let start = moment.utc([dataView.getUint32(YEAR_OFFSET),
-                          0,
-                          1,
-                          dataView.getUint32(HOUR_OFFSET),
-                          dataView.getUint32(MIN_OFFSET),
-                          dataView.getUint32(SEC_OFFSET),
-                          dataView.getUint32(MSEC_OFFSET)]);
-  start.add(dataView.getUint32(DAY_OF_YEAR_OFFSET), "days");
+  let start = DateTime.fromObject({ year: dataView.getUint32(YEAR_OFFSET),
+                          ordinal: dataView.getUint32(DAY_OF_YEAR_OFFSET),
+                          hour: dataView.getUint32(HOUR_OFFSET),
+                          minute: dataView.getUint32(MIN_OFFSET),
+                          second: dataView.getUint32(SEC_OFFSET),
+                          millisecond: dataView.getUint32(MSEC_OFFSET)}, UTC_OPTIONS);
   let y = new Float32Array(npts);
   let j=0;
   for(let i=DATA_OFFSET; i < dataView.byteLength; i+=4, j++) {

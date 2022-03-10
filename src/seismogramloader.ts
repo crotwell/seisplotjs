@@ -1,3 +1,5 @@
+
+import {DateTime, Duration} from 'luxon';
 import type {TraveltimeJsonType} from "./traveltime";
 import {distaz, DistAzOutput} from "./distaz";
 import {StartEndDuration} from "./util";
@@ -14,7 +16,6 @@ import {
   createMarkerForOriginTime,
 } from "./seismograph";
 import {isDef, isStringArg, stringify} from "./util";
-import moment from "moment";
 import RSVP from "rsvp";
 export class SeismogramLoader {
   stationQuery: StationQuery;
@@ -25,8 +26,8 @@ export class SeismogramLoader {
   _startPhaseList: Array<string>;
   _endPhaseList: Array<string>;
   _markedPhaseList: Array<string>;
-  _startOffset: moment.Duration;
-  _endOffset: moment.Duration;
+  _startOffset: Duration;
+  _endOffset: Duration;
   networkList: Promise<Array<Network>> | null;
   quakeList: Promise<Array<Quake>> | null;
   traveltimeList: Promise<Array<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> | null;
@@ -71,8 +72,8 @@ export class SeismogramLoader {
     this._startPhaseList = ["p", "P", "Pdiff", "PKP"];
     this._endPhaseList = ["s", "S", "Sdiff", "SKS"];
     this._markedPhaseList = [];
-    this._startOffset = moment.duration(-30, "seconds");
-    this._endOffset = moment.duration(60, "seconds");
+    this._startOffset = Duration.fromMillis(-30*1000);// seconds;
+    this._endOffset = Duration.fromMillis(60); //seconds
     this.networkList = null;
     this.quakeList = null;
     this.traveltimeList = null;
@@ -95,12 +96,12 @@ export class SeismogramLoader {
     }
   }
 
-  get startOffset(): moment.Duration {
+  get startOffset(): Duration {
     return this._startOffset;
   }
 
-  set startOffset(val: moment.Duration) {
-    if (moment.isDuration(val)) {
+  set startOffset(val: Duration) {
+    if (Duration.isDuration(val)) {
       this._startOffset = val;
     } else if (typeof val === "number") {
       this.startOffsetOfSeconds(val);
@@ -110,7 +111,7 @@ export class SeismogramLoader {
   }
 
   startOffsetOfSeconds(val: number) {
-    this._startOffset = moment.duration(val, "seconds");
+    this._startOffset = Duration.fromMillis(val*1000); // seconds
   }
 
   get endPhaseList(): Array<string> {
@@ -129,12 +130,12 @@ export class SeismogramLoader {
     }
   }
 
-  get endOffset(): moment.Duration {
+  get endOffset(): Duration {
     return this._endOffset;
   }
 
-  set endOffset(val: moment.Duration) {
-    if (moment.isDuration(val)) {
+  set endOffset(val: Duration) {
+    if (Duration.isDuration(val)) {
       this._endOffset = val;
     } else if (typeof val === "number") {
       this.endOffsetOfSeconds(val);
@@ -144,7 +145,7 @@ export class SeismogramLoader {
   }
 
   endOffsetOfSeconds(val: number) {
-    this._endOffset = moment.duration(val, "seconds");
+    this._endOffset = Duration.fromMillis(val*1000); //seconds
   }
 
   get markedPhaseList(): Array<string> {
@@ -280,14 +281,12 @@ export class SeismogramLoader {
         }
 
         if (isDef(startArrival) && isDef(endArrival)) {
-          let startTime = moment
-            .utc(quake.time)
-            .add(startArrival.time, "seconds")
-            .add(this.startOffset);
-          let endTime = moment
-            .utc(quake.time)
-            .add(endArrival.time, "seconds")
-            .add(this.endOffset);
+          let startTime = quake.time
+            .plus(Duration.fromMillis(1000*startArrival.time)) // seconds
+            .plus(this.startOffset);
+          let endTime = quake.time
+            .plus(Duration.fromMillis(1000*endArrival.time)) // seconds
+            .plus(this.endOffset);
           let timeRange = new StartEndDuration(startTime, endTime);
           let phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
 

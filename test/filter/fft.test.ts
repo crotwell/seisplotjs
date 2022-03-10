@@ -3,7 +3,7 @@ import '../jestRatioMatchers';
 import * as fft from '../../src/fft';
 import {Seismogram } from '../../src/seismogram';
 import {readSac, parseSac, readDataView, writeSac, replaceYData, asSeismogram} from './sacfile';
-import moment from 'moment';
+import {DateTime} from 'luxon';
 
 const OVERWRITE_OUTPUT = false;
 
@@ -38,7 +38,7 @@ test("Round Trip FFT, Spike", () => {
     expect(out[i]/data[i]).toBeCloseTo(1, 5);
   }
   let sampleRate = 1;
-  let start = moment.utc();
+  let start = DateTime.utc();
   let seis = Seismogram.createFromContiguousData(data, sampleRate, start);
   const fftresult = fft.fftForward(seis);
   for(let i=0; i<fftresult.packedFreq.length; i++) {
@@ -159,7 +159,7 @@ test("fftForward", () => {
   let rawData = new Float32Array(dataLen);
   rawData[500] = 1;
   const sampleRate = 1;
-  const start = moment.utc();
+  const start = DateTime.utc();
   const origseis = Seismogram.createFromContiguousData(rawData, sampleRate, start);
   const freqData = fft.fftForward(origseis);
   expect(freqData.origLength).toEqual(dataLen);

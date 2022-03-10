@@ -2,7 +2,7 @@ import './jestRatioMatchers';
 
 import * as vector from '../src/vector.js';
 import * as util from '../src/util.js';
-let moment = util.moment;
+import {DateTime} from 'luxon';
 
 import { Seismogram }  from "../src/seismogram";
 
@@ -12,7 +12,7 @@ const b = Float32Array.from([ 2, 0, 2]);
 test( "vector magnitude test", () => {
     let yValues = Float32Array.from([0, 1, 2]);
     let sampleRate = 20.0;
-    let startTime = moment.utc();
+    let startTime = DateTime.utc();
     let netCode = "XX";
     let staCode = "ABCD";
     let locCode = "00";
@@ -42,7 +42,7 @@ test("trace rotation", () => {
   let az = 0;
   let rotAzInc = 30;
   const rotRadian = rotAzInc*vector.DtoR;
-  let now = moment.utc();
+  let now = DateTime.utc();
   let seisA = Seismogram.createFromContiguousData(a, 1.0, now);
   seisA.networkCode = "XX";
   seisA.stationCode = "AAA";
@@ -63,7 +63,7 @@ test("trace rotation", () => {
 test("simple rotation", () => {
   let az = 0;
   let rotToAz = 90;
-  let now = moment.utc();
+  let now = DateTime.utc();
   let seisA = Seismogram.createFromContiguousData(a, 1.0, now);
   seisA.networkCode = "XX";
   seisA.stationCode = "AAA";

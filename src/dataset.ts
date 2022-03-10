@@ -90,7 +90,7 @@ export class Dataset {
         }
         let filename = `${seisId}.${ext}`;
         if (out.has(filename)) {
-          seisId = `${seisId}_${sdd.startTime.year()}-${sdd.startTime.month()}-${sdd.startTime.day()}`;
+          seisId = `${seisId}_${sdd.startTime.year}-${sdd.startTime.month}-${sdd.startTime.day}`;
         }
         while (out.has(filename)) {
           i+=1;

@@ -49,7 +49,6 @@ import * as util from "./util";
 import * as vector from "./vector";
 import * as OregonDSPTop from "oregondsp";
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
-import moment from "moment";
 import RSVP from "rsvp";
 import * as d3 from "d3";
 import * as leaflet from "leaflet";
@@ -103,6 +102,5 @@ export {
   OregonDSP,
   d3,
   leaflet,
-  moment,
   RSVP,
 };

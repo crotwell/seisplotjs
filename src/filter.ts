@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import {Duration} from "luxon";
 import {Seismogram} from "./seismogram";
 import {InstrumentSensitivity} from "./stationxml";
 import * as OregonDSPTop from "oregondsp";
@@ -353,7 +354,7 @@ export function differentiate(seis: Seismogram): Seismogram {
         }
 
         let out = s.cloneWithNewData(diffY);
-        out.startTime = out.startTime.add(1 / out.sampleRate / 2, "second");
+        out.startTime = out.startTime.plus(Duration.fromMillis(1000 / out.sampleRate / 2));// second
         out.yUnit = out.yUnit + "/s";
         return out;
       }),

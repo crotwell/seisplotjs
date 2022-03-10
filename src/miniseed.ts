@@ -3,7 +3,8 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import moment from "moment";
+
+import {DateTime, Duration} from "luxon";
 import {SeismogramSegment, Seismogram} from "./seismogram";
 import {EncodedDataSegment} from "./seedcodec";
 import {isDef, isNonEmptyStringArg} from "./util";
@@ -94,7 +95,7 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   out.blocketteList = [];
   out.recordSize = 4096;
   out.sampleRate = out.calcSampleRate();
-  out.startTime = out.startBTime.toMoment();
+  out.startTime = out.startBTime.toDateTime();
 
   for (let i = 0; i < out.numBlockettes; i++) {
     let nextOffset = dataView.getUint16(offset + 2, headerByteSwap);
@@ -262,8 +263,8 @@ export class DataHeader {
   blocketteOffset: number;
   recordSize: number;
   blocketteList: Array<Blockette>;
-  startTime: moment.Moment;
-  endTime: moment.Moment;
+  startTime: DateTime;
+  endTime: DateTime;
 
   constructor() {
     this.seq = "      ";
@@ -291,8 +292,8 @@ export class DataHeader {
     this.encoding = 0;
     this.littleEndian = false;
     this.sampleRate = 0;
-    this.startTime = this.startBTime.toMoment();
-    this.endTime = moment.utc(this.startTime);
+    this.startTime = this.startBTime.toDateTime();
+    this.endTime = this.startTime;
   }
 
   toString(): string {
@@ -305,7 +306,7 @@ export class DataHeader {
       "." +
       this.chanCode +
       " " +
-      this.startTime.toISOString() +
+      this.startTime.toISO() +
       " " +
       this.encoding
     );
@@ -337,10 +338,10 @@ export class DataHeader {
    *  so timeOfSample(0) is the start and timeOfSample(this.numSamples-1) is end.
    *
    * @param i sample index
-   * @returns time at i-th sample as moment
+   * @returns time at i-th sample as DateTime
    */
-  timeOfSample(i: number): moment.Moment {
-    return moment.utc(this.startTime).add(i / this.sampleRate, "second");
+  timeOfSample(i: number): DateTime {
+    return this.startTime.plus(Duration.fromMillis(1000*i / this.sampleRate));//seconds
   }
 }
 export class Blockette {
@@ -493,28 +494,23 @@ export class BTime {
       "." +
       this.tenthMilli.toFixed().padStart(4, "0") +
       " " +
-      this.toMoment().toISOString()
+      this.toDateTime().toISO()
     );
   }
 
   /**
-   * Converts this BTime to a momentjs utc moment. Note momentjs's precision
+   * Converts this BTime to a luxon utc DateTime. Note DateTime's precision
    * is limited to milliseconds.
    *
-   * @returns         BTime as a moment
+   * @returns         BTime as a DateTime
    */
-  toMoment(): moment.Moment {
-    let m = moment.utc([this.year, 0, 1, this.hour, this.min, this.sec, 0]);
-    m.add(Math.round(this.tenthMilli / 10), "ms");
-    m.dayOfYear(this.jday);
-
-    if (m.isValid()) {
-      return m;
-    } else {
-      throw new Error(
-        `BTime.start is invalid moment: ${this.year} ${this.jday} ${this.hour} ${this.min} ${this.sec} ${this.tenthMilli}`,
-      );
-    }
+  toDateTime(): DateTime {
+    return DateTime.fromObject({year: this.year,
+                                ordinal: this.jday,
+                                hour: this.hour,
+                                minute: this.min,
+                                second: this.sec,
+                                millisecond: Math.round(this.tenthMilli / 10)});
   }
 }
 
@@ -542,7 +538,7 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord): boolean {
   let h1 = dr1.header;
   let h2 = dr2.header;
   return (
-    h1.endTime.isBefore(h2.startTime) &&
+    h1.endTime < h2.startTime &&
     h1.endTime.valueOf() + (1000 * 1.5) / h1.sampleRate > h2.startTime.valueOf()
   );
 }
@@ -602,7 +598,7 @@ export function mergeSegments(drList: Array<DataRecord>): Array<SeismogramSegmen
  let out = [];
  let currDR;
  drList.sort(function (a, b) {
-   return a.header.startTime.diff(b.header.startTime);
+   return a.header.startTime.toMillis() - b.header.startTime.toMillis();
  });
  let contig: Array<DataRecord> = [];
 

@@ -3,7 +3,8 @@
 import * as fdsnstation from '../../src/fdsnstation.js';
 import * as stationxml from '../../src/stationxml.js';
 import * as util from '../../src/util.js';
-let moment = util.moment;
+import {isoToDateTime} from '../../src/util';
+import {DateTime} from 'luxon';
 
 
 test( "station parse test", () => {
@@ -27,8 +28,8 @@ test("form url test", () => {
   const STA = 'JSC';
   const LOC = '00';
   const CHAN = 'HHZ';
-  const START = moment.utc("1990-01-01");
-  const END = moment.utc("2018-01-01");
+  const START = isoToDateTime("1990-01-01");
+  const END = isoToDateTime("2018-01-01");
   let stationQuery = new fdsnstation.StationQuery();
   expect(stationQuery.networkCode(NET)).toBe(stationQuery);
   expect(stationQuery.networkCode()).toBe(NET);

@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
 import RSVP from "rsvp";
 import * as d3 from "d3";
 import * as dataselect from "./fdsndataselect";
@@ -12,7 +12,7 @@ import {Seismogram, SeismogramDisplayData} from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
 import {Seismograph} from "./seismograph";
 import {StartEndDuration, isDef} from "./util";
-export {dataselect, miniseed, d3, RSVP, moment};
+export {dataselect, miniseed, d3};
 export type PlotDataType = {
   sddList: Array<SeismogramDisplayData>;
   svgParent: any;

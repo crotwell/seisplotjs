@@ -4,7 +4,7 @@ import * as filter from '../../src/filter';
 import * as taper from '../../src/taper';
 import {Seismogram, ensureIsSeismogram } from '../../src/seismogram';
 import {readSac} from './sacfile';
-import  {moment} from '../../src/util';
+import {DateTime} from 'luxon';
 
 test("simple value taper", () => {
   let taperLen = 10;
@@ -19,7 +19,7 @@ test("constant", () => {
   let taperWidth = 0.05;
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
-  const origseis = Seismogram.createFromContiguousData(orig, 1, moment.utc());
+  const origseis = Seismogram.createFromContiguousData(orig, 1, DateTime.utc());
   let bagtaper = taper.taper(origseis, taperWidth);
   const omega = Math.PI / (dataLen * taperWidth);
   const f0 = .5;
@@ -40,7 +40,7 @@ test("const100 taper", () => {
  .then ( result => {
      let orig = result[0];
      let sactaper = result[1];
-     const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
+     const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
      let bagtaper = taper.taper(origseis);
      const sacdata = sactaper.y;
      const bagdata = bagtaper.y;
@@ -83,7 +83,7 @@ test("HRV taper", () => {
   .then ( result => {
       let sactaper = result[0];
       let orig = result[1];
-      const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, moment.utc());
+      const origseis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
       let bagtaper = taper.taper(filter.rMean(ensureIsSeismogram(origseis)));
       const sacdata = sactaper.y;
       const bagdata = bagtaper.y;

@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+ import {DateTime} from 'luxon';
 import {Quake, USGS_HOST, parseQuakeML} from "./quakeml";
 import {
   XML_MIME,
@@ -71,13 +72,13 @@ export class EventQuery {
   _eventId: string|undefined;
 
   /** @private */
-  _startTime: moment.Moment|undefined;
+  _startTime: DateTime|undefined;
 
   /** @private */
-  _endTime: moment.Moment|undefined;
+  _endTime: DateTime|undefined;
 
   /** @private */
-  _updatedAfter: moment.Moment|undefined;
+  _updatedAfter: DateTime|undefined;
 
   /** @private */
   _minMag: number|undefined;
@@ -231,7 +232,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: moment.Moment): moment.Moment | EventQuery {
+  startTime(value?: DateTime): DateTime | EventQuery {
     return doMomentGetterSetter(this, "startTime", value);
   }
 
@@ -241,7 +242,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: moment.Moment): moment.Moment | EventQuery {
+  endTime(value?: DateTime): DateTime | EventQuery {
     return doMomentGetterSetter(this, "endTime", value);
   }
 
@@ -271,7 +272,7 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: moment.Moment): moment.Moment | EventQuery {
+  updatedAfter(value?: DateTime): DateTime | EventQuery {
     return doMomentGetterSetter(this, "updatedAfter", value);
   }
 

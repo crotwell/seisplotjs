@@ -6,7 +6,7 @@
 import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
 import {StartEndDuration, isDef} from "./util";
-import moment from "moment";
+import {DateTime, Duration} from "luxon";
 import * as d3 from "d3";
 import type {AxisDomain} from "d3-axis";
 import Handlebars from "handlebars";
@@ -427,7 +427,7 @@ export class SeismographConfig {
       min,
     ]);
     const fakeSampleRate =
-      1 / (timeRange.duration.asSeconds() / (fakeData.length - 1));
+      1 / (1000*timeRange.duration.toMillis() / (fakeData.length - 1));
     const fakeSeis = Seismogram.createFromContiguousData(
       fakeData,
       fakeSampleRate,
@@ -494,11 +494,7 @@ export class SeismographConfig {
     let out = new SeismographConfig();
     Object.getOwnPropertyNames(this).forEach(name => {
       // @ts-ignore
-      if (moment.isMoment(this[name])) {
-        // @ts-ignore
-        out[name] = moment.utc(this[name]);
-        // @ts-ignore
-      } else if (Array.isArray(this[name])) {
+      if (Array.isArray(this[name])) {
         // @ts-ignore
         out[name] = this[name].slice();
       } else {
@@ -557,12 +553,12 @@ export class AmplitudeScalable {
   }
 }
 export class TimeScalable {
-  alignmentTimeOffset: moment.Duration;
-  duration: moment.Duration;
+  alignmentTimeOffset: Duration;
+  duration: Duration;
 
   constructor(
-    alignmentTimeOffset: moment.Duration,
-    duration: moment.Duration,
+    alignmentTimeOffset: Duration,
+    duration: Duration,
   ) {
     this.alignmentTimeOffset = alignmentTimeOffset;
     this.duration = duration;
@@ -570,8 +566,8 @@ export class TimeScalable {
 
   // eslint-disable-next-line no-unused-vars
   notifyTimeRangeChange(
-    alignmentTimeOffset: moment.Duration,
-    duration: moment.Duration,
+    alignmentTimeOffset: Duration,
+    duration: Duration,
   ) {
     // no-op
   }
@@ -640,15 +636,15 @@ export class LinkedTimeScale {
    * @private
    */
   _graphSet: Set<TimeScalable>;
-  _originalDuration: moment.Duration;
-  _originalStartOffset: moment.Duration;
-  _zoomedDuration: null | moment.Duration;
-  _zoomedStartOffset: null | moment.Duration;
+  _originalDuration: Duration;
+  _originalStartOffset: Duration;
+  _zoomedDuration: null | Duration;
+  _zoomedStartOffset: null | Duration;
 
   constructor(
     graphList?: Array<TimeScalable>,
-    originalDuration?: moment.Duration,
-    originalStartOffset?: moment.Duration,
+    originalDuration?: Duration,
+    originalStartOffset?: Duration,
   ) {
     const glist = graphList ? graphList : []; // in case null
 
@@ -663,16 +659,16 @@ export class LinkedTimeScale {
       this._zoomedDuration = originalDuration;
     } else {
       this._originalDuration = glist.reduce((acc, cur) => {
-        return acc.asMilliseconds() > cur.duration.asMilliseconds()
+        return acc > cur.duration
           ? acc
           : cur.duration;
-      }, moment.duration(0));
+      }, Duration.fromMillis(0));
     }
 
     if (originalStartOffset) {
       this._originalStartOffset = originalStartOffset;
     } else {
-      this._originalStartOffset = moment.duration(0, "seconds");
+      this._originalStartOffset = Duration.fromMillis(0);
     }
   }
 
@@ -687,10 +683,10 @@ export class LinkedTimeScale {
     if (!isDef(this._zoomedDuration)) {
       // assume before any zooming, so recalc duration
       if (
-        graph.duration.asMilliseconds() >
-        this._originalDuration.asMilliseconds()
+        graph.duration >
+        this._originalDuration
       ) {
-        this._originalDuration = graph.duration.clone();
+        this._originalDuration = graph.duration;
       }
     }
 
@@ -708,7 +704,7 @@ export class LinkedTimeScale {
     this.recalculate();
   }
 
-  zoom(startOffset: moment.Duration, duration: moment.Duration) {
+  zoom(startOffset: Duration, duration: Duration) {
     this._zoomedDuration = duration;
     this._zoomedStartOffset = startOffset;
     this.recalculate();
@@ -720,22 +716,22 @@ export class LinkedTimeScale {
     this.recalculate();
   }
 
-  get offset(): moment.Duration {
+  get offset(): Duration {
     return this._zoomedStartOffset
       ? this._zoomedStartOffset
       : this._originalStartOffset;
   }
 
-  set offset(offset: moment.Duration) {
+  set offset(offset: Duration) {
     this._originalStartOffset = offset;
     this.recalculate();
   }
 
-  get duration(): moment.Duration {
+  get duration(): Duration {
     return this._zoomedDuration ? this._zoomedDuration : this._originalDuration;
   }
 
-  set duration(duration: moment.Duration) {
+  set duration(duration: Duration) {
     this._originalDuration = duration;
     this.recalculate();
   }
