@@ -31,7 +31,7 @@
     "lint": "eslint 'src/*.js' 'test/*.js' 'test/*/*.js'  ",
     "examplelint": "eslint -c .eslintrc.js 'docs/examples/viewobspy/www/[otv]*.js' 'docs/examples/*/[a-r]*.js'  'docs/examples/*/s[t-z]*.js'",
     "test": "jest --config=jest.config.js",
-    "livetest": "jest -c jest.config.live.cjs",
+    "livetest": "jest --config=jest.config.live.js",
     "rollup": "rollup --config rollup.config.js",
     "build:clean": "rimraf dist",
     "apidoc:clean": "rimraf docs/api",
