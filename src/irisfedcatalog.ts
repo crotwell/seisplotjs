@@ -466,10 +466,18 @@ export class FedCatalogQuery {
    * @param   se time window
    * @returns     this
    */
-  timeWindow(se: StartEndDuration): FedCatalogQuery {
+  timeRange(se: StartEndDuration): FedCatalogQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;
+  }
+  /**
+   * @deprecated
+   * @param  se               [description]
+   * @return    [description]
+   */
+  timeWindow(se: StartEndDuration): FedCatalogQuery {
+    return this.timeRange(se);
   }
 
   /**
@@ -922,7 +930,7 @@ export class FedCatalogQuery {
         for (let sdd of sddList) {
           let codes = sdd.codes();
           let matchSdd = sddResultArray.find(
-            s => s.codes() === codes && s.timeWindow.overlaps(sdd.timeWindow),
+            s => s.codes() === codes && s.timeRange.overlaps(sdd.timeRange),
           );
 
           if (matchSdd) {

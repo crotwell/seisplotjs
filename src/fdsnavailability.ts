@@ -274,10 +274,18 @@ export class AvailabilityQuery {
    * @param   se time window
    * @returns    the query
    */
-  timeWindow(se: StartEndDuration): AvailabilityQuery {
+  timeRange(se: StartEndDuration): AvailabilityQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;
+  }
+  /**
+   * @deprecated
+   * @param  se               [description]
+   * @return    [description]
+   */
+  timeWindow(se: StartEndDuration): AvailabilityQuery {
+    return this.timeRange(se);
   }
 
   /**

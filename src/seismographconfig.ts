@@ -403,13 +403,13 @@ export class SeismographConfig {
    * Fake data to use to test alignment of seismograph axis and between canvas
    *  and svg drawing.
    *
-   * @param   timeWindow start and end of fake data
+   * @param   timeRange start and end of fake data
    * @param   min        min amplitude for fake data, default is -100
    * @param   max        max amplitude for fake data, default is 100
    * @returns             fake data
    */
   createAlignmentData(
-    timeWindow: StartEndDuration,
+    timeRange: StartEndDuration,
     min: number = -100,
     max: number = 100,
   ): SeismogramDisplayData {
@@ -427,11 +427,11 @@ export class SeismographConfig {
       min,
     ]);
     const fakeSampleRate =
-      1 / (timeWindow.duration.asSeconds() / (fakeData.length - 1));
+      1 / (timeRange.duration.asSeconds() / (fakeData.length - 1));
     const fakeSeis = Seismogram.createFromContiguousData(
       fakeData,
       fakeSampleRate,
-      timeWindow.startTime,
+      timeRange.startTime,
     );
     const fakeSDD = SeismogramDisplayData.fromSeismogram(fakeSeis);
     return fakeSDD;
@@ -1043,7 +1043,7 @@ function createTextOption(
     .classed("smallconfigtext", true)
     .attr("type", "text")
     .attr("id", key)
-    .attr("name", key) 
+    .attr("name", key)
     .property("value", config[key])
     .on("change", function () {
       // @ts-ignore

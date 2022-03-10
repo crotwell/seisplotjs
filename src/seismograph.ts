@@ -1466,20 +1466,20 @@ export class Seismograph {
           this.seismographConfig.fixedTimeScale.duration.asMilliseconds(),
         ]);
       } else {
-        let timeWindow = findStartEnd(this.seisDataList);
-        this.origXScale.domain([0, timeWindow.duration.asSeconds()]);
+        let timeRange = findStartEnd(this.seisDataList);
+        this.origXScale.domain([0, timeRange.duration.asSeconds()]);
       }
 
       // force to be same but not to share same array
       this.currZoomXScale = this.origXScale.copy();
     } else {
-      let timeWindow;
+      let timeRange;
 
       if (isDef(this.seismographConfig.linkedTimeScale)) {
         const linkedTimeScale = this.seismographConfig.linkedTimeScale;
 
         if (this.seisDataList.length === 0) {
-          timeWindow = new StartEndDuration(
+          timeRange = new StartEndDuration(
             null,
             moment.utc(),
             linkedTimeScale.duration,
@@ -1488,16 +1488,16 @@ export class Seismograph {
           // use first sdd alignmentTime to align, since we are not plotting relative
           const alignTime = this.seisDataList[0].alignmentTime;
           const start = alignTime.clone().add(linkedTimeScale.offset);
-          timeWindow = new StartEndDuration(
+          timeRange = new StartEndDuration(
             start,
             null,
             linkedTimeScale.duration,
           );
         }
       } else if (this.seismographConfig.fixedTimeScale) {
-        timeWindow = this.seismographConfig.fixedTimeScale;
+        timeRange = this.seismographConfig.fixedTimeScale;
       } else {
-        timeWindow = findStartEnd(this.seisDataList);
+        timeRange = findStartEnd(this.seisDataList);
       }
 
       if (!isDef(this.origXScale)) {
@@ -1505,8 +1505,8 @@ export class Seismograph {
       }
 
       this.origXScale.domain([
-        timeWindow.startTime.toDate(),
-        timeWindow.endTime.toDate(),
+        timeRange.startTime.toDate(),
+        timeRange.endTime.toDate(),
       ]);
       // force to be same but not to share same array
       this.currZoomXScale = this.origXScale.copy();
@@ -1532,18 +1532,18 @@ export class Seismograph {
             );
           } else {
             // ??
-            let timeWindow = new StartEndDuration(
+            let timeRange = new StartEndDuration(
               this.currZoomXScale.domain()[0],
               this.currZoomXScale.domain()[1],
             );
-            minMax = findMinMaxOverTimeRange(this.seisDataList, timeWindow);
+            minMax = findMinMaxOverTimeRange(this.seisDataList, timeRange);
           }
         } else {
-          let timeWindow = new StartEndDuration(
+          let timeRange = new StartEndDuration(
             this.currZoomXScale.domain()[0],
             this.currZoomXScale.domain()[1],
           );
-          minMax = findMinMaxOverTimeRange(this.seisDataList, timeWindow);
+          minMax = findMinMaxOverTimeRange(this.seisDataList, timeRange);
         }
       } else {
         minMax = findMinMax(this.seisDataList);
@@ -1740,12 +1740,12 @@ export class Seismograph {
   /**
    * Removes seismograms that do not overlap the window.
    *
-   * @param   timeWindow overlap data to keep
+   * @param   timeRange overlap data to keep
    */
-  trim(timeWindow: StartEndDuration): void {
+  trim(timeRange: StartEndDuration): void {
     if (this.seisDataList) {
       this.seisDataList = this.seisDataList.filter(function (d) {
-        return d.timeWindow.overlaps(timeWindow);
+        return d.timeRange.overlaps(timeRange);
       });
 
       if (this.seisDataList.length > 0) {

@@ -251,6 +251,11 @@ export class DataSelectQuery {
     return this;
   }
 
+  /**
+   * @deprecated
+   * @param  se               [description]
+   * @return    [description]
+   */
   timeWindow(se: StartEndDuration): DataSelectQuery {
     return this.timeRange(se);
   }
@@ -469,11 +474,11 @@ export class DataSelectQuery {
       for (let sdd of sddList) {
         let codes = sdd.codes();
         let segList = seisArray.filter(
-          s => s.codes() === codes && s.timeRange.overlaps(sdd.timeWindow),
+          s => s.codes() === codes && s.timeRange.overlaps(sdd.timeRange),
         );
         if (segList.length > 0) {
           // do coarse trim in case multiple overlapping requests
-          let seis = new Seismogram(segList).trim(sdd.timeWindow);
+          let seis = new Seismogram(segList).trim(sdd.timeRange);
           sdd.seismogram = seis;
         }
       }

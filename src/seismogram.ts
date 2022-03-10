@@ -195,12 +195,15 @@ export class SeismogramSegment {
     return this._endTime_cache;
   }
 
+  /**
+   * @deprecated
+   */
   get timeWindow(): StartEndDuration {
-    return new StartEndDuration(this.startTime, this.endTime);
+    return this.timeRange;
   }
 
   get timeRange(): StartEndDuration {
-    return this.timeWindow;
+    return new StartEndDuration(this.startTime, this.endTime);
   }
 
   get sampleRate(): number {
@@ -453,26 +456,26 @@ export class SeismogramSegment {
     return out;
   }
 
-  cut(timeWindow: StartEndDuration): SeismogramSegment | null {
+  cut(timeRange: StartEndDuration): SeismogramSegment | null {
     if (
-      timeWindow.endTime.isBefore(this._startTime) ||
-      timeWindow.startTime.isAfter(this.endTime)
+      timeRange.endTime.isBefore(this._startTime) ||
+      timeRange.startTime.isAfter(this.endTime)
     ) {
       return null;
     }
 
     let sIndex = 0;
 
-    if (timeWindow.startTime.isAfter(this._startTime)) {
-      let milliDiff = timeWindow.startTime.diff(this._startTime);
+    if (timeRange.startTime.isAfter(this._startTime)) {
+      let milliDiff = timeRange.startTime.diff(this._startTime);
       let offset = (milliDiff * this.sampleRate) / 1000.0;
       sIndex = Math.floor(offset);
     }
 
     let eIndex = this.y.length;
 
-    if (timeWindow.endTime.isBefore(this.endTime)) {
-      let milliDiff = moment.utc(this.endTime).diff(timeWindow.endTime);
+    if (timeRange.endTime.isBefore(this.endTime)) {
+      let milliDiff = moment.utc(this.endTime).diff(timeRange.endTime);
       let offset = (milliDiff * this.sampleRate) / 1000.0;
       eIndex = this.y.length - Math.floor(offset);
     }
@@ -750,16 +753,16 @@ export class Seismogram {
    * Cut the seismogram. Creates a new seismogram with all datapoints
    * contained in the time window.
    *
-   * @param  timeWindow start and end of cut
+   * @param  timeRange start and end of cut
    * @returns            new seismogram
    */
-  cut(timeWindow: StartEndDuration): null | Seismogram {
+  cut(timeRange: StartEndDuration): null | Seismogram {
     // coarse trim first
-    let out = this.trim(timeWindow);
+    let out = this.trim(timeRange);
 
     if (out && out._segmentArray) {
       let cutSeisArray = this._segmentArray
-        .map(seg => seg.cut(timeWindow))
+        .map(seg => seg.cut(timeRange))
         .filter(isDef);
 
       if (cutSeisArray.length > 0) {
@@ -781,20 +784,20 @@ export class Seismogram {
    * time window. For most seismograms that consist of a single contiguous
    * data segment, this will do nothing.
    *
-   * @param timeWindow time range to trim to
+   * @param timeRange time range to trim to
    * @returns seismogram if data in the window, null otherwise
    * @see cut
    */
-  trim(timeWindow: StartEndDuration): null | Seismogram {
+  trim(timeRange: StartEndDuration): null | Seismogram {
     let out = null;
 
     if (this._segmentArray) {
       let trimSeisArray = this._segmentArray
         .filter(function (d) {
-          return d.endTime.isSameOrAfter(timeWindow.startTime);
+          return d.endTime.isSameOrAfter(timeRange.startTime);
         })
         .filter(function (d) {
-          return d.startTime.isSameOrBefore(timeWindow.endTime);
+          return d.startTime.isSameOrBefore(timeRange.endTime);
         });
 
       if (trimSeisArray.length > 0) {

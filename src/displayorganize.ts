@@ -312,7 +312,7 @@ export function groupComponentOfMotion(
       first.stationCode === sdddB.stationCode &&
       first.locationCode === sdddB.locationCode &&
       first.channelCode.slice(0, 2) === sdddB.channelCode.slice(0, 2) &&
-      first.timeWindow.overlaps(sdddB.timeWindow);
+      first.timeRange.overlaps(sdddB.timeRange);
 
     const splitArray = bifurcate(tmpSeisDataList, isFriend);
     let nextGroup = splitArray[0];
@@ -428,7 +428,7 @@ export const defaultInfoTemplate = `
     <tr>
       <td>{{sdd.nslc}}</td>
       <td>{{formatIsoDate sdd.seismogram.startTime}}</td>
-      <td>{{formatDuration sdd.seismogram.timeWindow.duration}}</td>
+      <td>{{formatDuration sdd.seismogram.timeRange.duration}}</td>
       <td>{{formatIsoDate sdd.seismogram.endTime}}</td>
       <td>{{sdd.seismogram.numPoints}}</td>
       <td>{{sdd.seismogram.sampleRate}}</td>

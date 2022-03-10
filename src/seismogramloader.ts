@@ -288,7 +288,7 @@ export class SeismogramLoader {
             .utc(quake.time)
             .add(endArrival.time, "seconds")
             .add(this.endOffset);
-          let timeWindow = new StartEndDuration(startTime, endTime);
+          let timeRange = new StartEndDuration(startTime, endTime);
           let phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
 
           if (this.markOrigin) {
@@ -298,7 +298,7 @@ export class SeismogramLoader {
           for (let chan of station.channels) {
             let sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
               chan,
-              timeWindow,
+              timeRange,
             );
             sdd.addQuake(quake);
             sdd.addTravelTimes(ttjson);

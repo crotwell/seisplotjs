@@ -251,10 +251,18 @@ export class EventQuery {
    * @param   se time window
    * @returns     this
    */
-  timeWindow(se: StartEndDuration): EventQuery {
+  timeRange(se: StartEndDuration): EventQuery {
     this.startTime(se.startTime);
     this.endTime(se.endTime);
     return this;
+  }
+  /**
+   *@deprecated
+   * @param  se               [description]
+   * @return    [description]
+   */
+  timeWindow(se: StartEndDuration): EventQuery {
+    return this.timeRange(se);
   }
 
   /**

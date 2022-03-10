@@ -50,7 +50,7 @@ export function addDivForParticleMotion(
   svgParent: any,
   xSeisData: SeismogramDisplayData,
   ySeisData: SeismogramDisplayData,
-  timeWindow?: StartEndDuration,
+  timeRange?: StartEndDuration,
 ): ParticleMotion {
   let svgDiv = svgParent.append("div");
 
@@ -65,13 +65,13 @@ export function addDivForParticleMotion(
   svgDiv.classed(xSeisData.channelCode, true);
   svgDiv.classed(ySeisData.channelCode, true);
   svgDiv.classed("particleMotionContainer", true);
-  return addParticleMotion(svgDiv, xSeisData, ySeisData, timeWindow);
+  return addParticleMotion(svgDiv, xSeisData, ySeisData, timeRange);
 }
 export function addParticleMotion(
   svgParent: any,
   xSeisData: SeismogramDisplayData,
   ySeisData: SeismogramDisplayData,
-  timeWindow?: StartEndDuration,
+  timeRange?: StartEndDuration,
 ): ParticleMotion {
   if (!isDef(xSeisData.seismogram) || !isDef(ySeisData.seismogram)) {
     throw new Error(
@@ -79,19 +79,19 @@ export function addParticleMotion(
     );
   }
 
-  let seisConfig = createParticleMotionConfig(timeWindow);
+  let seisConfig = createParticleMotionConfig(timeRange);
   let pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
   pmp.draw();
   return pmp;
 }
 export function createParticleMotionConfig(
-  timeWindow?: StartEndDuration,
+  timeRange?: StartEndDuration,
 ): SeismographConfig {
   let seisConfig = new SeismographConfig();
   seisConfig.title = DEFAULT_TITLE;
 
-  if (isDef(timeWindow)) {
-    seisConfig.fixedTimeScale = timeWindow;
+  if (isDef(timeRange)) {
+    seisConfig.fixedTimeScale = timeRange;
   }
 
   seisConfig.xLabel = DEFAULT_XLABEL;
@@ -117,7 +117,7 @@ export class ParticleMotion {
   xSeisData: SeismogramDisplayData;
   ySeisData: SeismogramDisplayData;
   seismographConfig: SeismographConfig;
-  timeWindow: StartEndDuration;
+  timeRange: StartEndDuration;
   width: number;
   height: number;
   outerWidth: number = -1;
@@ -177,7 +177,7 @@ export class ParticleMotion {
       this.seismographConfig.yLabel = this.ySeisData.channelCode;
     }
 
-    this.timeWindow = this.calcTimeWindow();
+    this.timeRange = this.calcTimeWindow();
     this.svg = inSvgParent.append("svg");
     this.svg.attr("version", "1.1");
     this.svg.classed("particleMotion", true);
@@ -307,17 +307,17 @@ export class ParticleMotion {
     segB: SeismogramSegment,
   ) {
     const mythis = this;
-    const timeWindow = segA.timeWindow.intersect(segB.timeWindow);
+    const timeRange = segA.timeRange.intersect(segB.timeRange);
 
-    if (!isDef(timeWindow)) {
+    if (!isDef(timeRange)) {
       // no overlap
       return;
     }
 
-    const idxA = segA.indexOfTime(timeWindow.startTime);
-    const lastIdxA = segA.indexOfTime(timeWindow.endTime);
-    const idxB = segB.indexOfTime(timeWindow.startTime);
-    const lastIdxB = segB.indexOfTime(timeWindow.endTime);
+    const idxA = segA.indexOfTime(timeRange.startTime);
+    const lastIdxA = segA.indexOfTime(timeRange.endTime);
+    const idxB = segB.indexOfTime(timeRange.startTime);
+    const lastIdxB = segB.indexOfTime(timeRange.endTime);
 
     if (idxA === -1 || lastIdxA === -1 || idxB === -1 || lastIdxB === -1) {
       return;
@@ -417,17 +417,17 @@ export class ParticleMotion {
     if (this.seismographConfig.fixedTimeScale) {
       tw = this.seismographConfig.fixedTimeScale;
     } else {
-      tw = this.xSeisData.timeWindow.intersect(this.ySeisData.timeWindow);
+      tw = this.xSeisData.timeRange.intersect(this.ySeisData.timeRange);
     }
 
     if (!tw) {
       // intersection might be null
       throw new Error(
-        `Seismograms do not overlap: ${this.xSeisData.timeWindow.toString()} ${this.ySeisData.timeWindow.toString()}`,
+        `Seismograms do not overlap: ${this.xSeisData.timeRange.toString()} ${this.ySeisData.timeRange.toString()}`,
       );
     }
 
-    this.timeWindow = tw;
+    this.timeRange = tw;
     return tw;
   }
 

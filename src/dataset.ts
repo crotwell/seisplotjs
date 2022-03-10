@@ -114,7 +114,7 @@ export class Dataset {
       this.waveforms.forEach((w: SeismogramDisplayData) => {
         if (isDef(q.preferredOrigin)) {
           let window = new StartEndDuration(q.preferredOrigin.time, null, timeOverlapSecs);
-          if (window.overlaps(w.timeWindow)) {
+          if (window.overlaps(w.timeRange)) {
             w.addQuake(q);
           }
         }
