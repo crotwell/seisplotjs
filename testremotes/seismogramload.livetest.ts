@@ -4,7 +4,7 @@ import {StartEndDuration} from '../src/util.js';
 import {EventQuery} from '../src/fdsnevent.js';
 import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation.js';
 import {allChannels} from '../src/stationxml.js';
-import moment from 'moment';
+import {DateTime, Duration} from 'luxon';
 import RSVP from 'rsvp';
 
 // eslint-disable-next-line no-undef
@@ -33,7 +33,7 @@ test( "load HODGE for local eq test", () => {
   seisLoad.endPhaseList = "S";
   seisLoad.markedPhaseList = "PcP";
   seisLoad.startOffset = -30; // seconds
-  seisLoad.endOffset = moment.duration(120, 'seconds'); // or as duration
+  seisLoad.endOffset = Duration.fromMillis(120*1000); // or as duration
   return RSVP.all([
     seisLoad.loadSeismograms().then( sddList  => {
       expect(sddList).toHaveLength(3);

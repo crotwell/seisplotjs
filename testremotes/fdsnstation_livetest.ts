@@ -2,7 +2,6 @@
 import * as fdsnstation from '../src/fdsnstation.js';
 import * as stationxml from '../src/stationxml.js';
 import * as util from '../src/util.js';
-let moment = util.moment;
 
 // eslint-disable-next-line no-undef
 const fetch = require('node-fetch');

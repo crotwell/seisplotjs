@@ -447,7 +447,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime): DateTime | FedCatalogQuery {
+  startTime(value?: DateTime | string): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "startTime", value);
   }
 
@@ -457,7 +457,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime): DateTime | FedCatalogQuery {
+  endTime(value?: DateTime | string): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "endTime", value);
   }
 
@@ -487,7 +487,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: DateTime): DateTime | FedCatalogQuery {
+  startBefore(value?: DateTime | string): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "startBefore", value);
   }
 
@@ -497,7 +497,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: DateTime): DateTime | FedCatalogQuery {
+  endBefore(value?: DateTime | string): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "endBefore", value);
   }
 
@@ -507,7 +507,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: DateTime): DateTime | FedCatalogQuery {
+  startAfter(value?: DateTime | string): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "startAfter", value);
   }
 
@@ -517,7 +517,7 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: DateTime): DateTime | FedCatalogQuery {
+  endAfter(value?: DateTime | string): DateTime | FedCatalogQuery {
     return doMomentGetterSetter(this, "endAfter", value);
   }
 

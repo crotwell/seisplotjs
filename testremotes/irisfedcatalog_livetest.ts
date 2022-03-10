@@ -5,7 +5,6 @@ import { allChannels } from '../src/stationxml.js';
 import { StartEndDuration } from '../src/util.js';
 import { SeismogramDisplayData } from '../src/seismogram.js';
 import { isDef } from '../src/util.js';
-import moment from 'moment';
 
 // eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
@@ -57,8 +56,8 @@ test("run CO active stations", () => {
     const NET = 'CO';
     expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
     expect(fedCatQuery.networkCode()).toBe(NET);
-    expect(fedCatQuery.endAfter(moment.utc('2021-01-01'))).toBe(fedCatQuery);
-    expect(fedCatQuery.startBefore(moment.utc('2021-01-01'))).toBe(fedCatQuery);
+    expect(fedCatQuery.endAfter('2021-01-01')).toBe(fedCatQuery);
+    expect(fedCatQuery.startBefore('2021-01-01')).toBe(fedCatQuery);
     return fedCatQuery.queryStations().then(netArray => {
       expect(netArray[0]).toBeDefined();
       expect(netArray[0].networkCode).toBe(NET);
@@ -75,8 +74,8 @@ test("channels for CO", () => {
   fedCatQuery.stationCode(STA);
   fedCatQuery.channelCode(CHAN);
 
-  const START = moment.utc('2013-09-01T00:00:00Z');
-  const END = moment.utc('2013-09-01T00:10:00Z');
+  const START = '2013-09-01T00:00:00Z';
+  const END = '2013-09-01T00:10:00Z';
   fedCatQuery.startTime(START);
   fedCatQuery.endTime(END);
   return fedCatQuery.queryChannels().then(netList => {
@@ -94,8 +93,8 @@ test( "run dataselect test", () => {
   const STA = 'JSC';
   const LOC = '00';
   const CHAN = "HHZ";
-  const START = moment.utc('2020-09-01T00:00:00Z');
-  const END = moment.utc('2020-09-01T00:10:00Z');
+  const START = '2020-09-01T00:00:00Z';
+  const END = '2020-09-01T00:10:00Z';
   expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
   expect(fedCatQuery.networkCode()).toBe(NET);
   expect(fedCatQuery.stationCode(STA)).toBe(fedCatQuery);
@@ -124,8 +123,8 @@ test("seismograms for CO.BIRD for timewindow", () => {
   fedCatQuery.stationCode(STA);
   fedCatQuery.channelCode(CHAN);
 
-  const START = moment.utc('2013-09-01T00:00:00Z');
-  const END = moment.utc('2013-09-01T00:01:00Z');
+  const START = '2013-09-01T00:00:00Z';
+  const END = '2013-09-01T00:01:00Z';
   const sed = new StartEndDuration(START, END);
   fedCatQuery.startTime(START);
   fedCatQuery.endTime(END);
@@ -140,7 +139,7 @@ test("seismograms for CO.BIRD for timewindow", () => {
     // $FlowExpectedError[incompatible-use]
     expect(seismogram.isContiguous()).toBeTrue();
     // $FlowExpectedError[incompatible-use]
-    expect(seismogram.y).toHaveLength(sed.duration.asSeconds()*100+1);
+    expect(seismogram.y).toHaveLength(sed.duration.toMillis()/1000*100+1);
   });
 });
 
@@ -154,8 +153,8 @@ test("sddlist seismograms for CO.BIRD for timewindow", () => {
   fedCatQuery.stationCode(STA);
   fedCatQuery.channelCode(CHAN);
 
-  const START = moment.utc('2013-09-01T00:00:00Z');
-  const END = moment.utc('2013-09-01T00:01:00Z');
+  const START = '2013-09-01T00:00:00Z';
+  const END = '2013-09-01T00:01:00Z';
   const sed = new StartEndDuration(START, END);
   fedCatQuery.startTime(START);
   fedCatQuery.endTime(END);
@@ -179,6 +178,6 @@ test("sddlist seismograms for CO.BIRD for timewindow", () => {
     // $FlowExpectedError[incompatible-use]
     expect(seismogram.isContiguous()).toBeTrue();
     // $FlowExpectedError[incompatible-use]
-    expect(seismogram.y).toHaveLength(sed.duration.asSeconds()*100+1);
+    expect(seismogram.y).toHaveLength(sed.duration.toMillis()/1000*100+1);
   });
 });
