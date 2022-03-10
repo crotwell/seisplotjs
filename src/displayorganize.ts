@@ -395,7 +395,7 @@ export function createPlots(
 export const defaultInfoTemplate = `
   <table>
     <tr>
-      <th colspan="6">Waveform</th>
+      <th colspan="7">Waveform</th>
       <th colspan="4">Channel</th>
       <th colspan="5">Event</th>
       <th colspan="4">DistAz</th>
@@ -407,6 +407,7 @@ export const defaultInfoTemplate = `
       <th>End</th>
       <th>Num Pts</th>
       <th>Sample Rate</th>
+      <th>Seg</th>
 
       <th>Lat</th>
       <th>Lon</th>
@@ -432,6 +433,7 @@ export const defaultInfoTemplate = `
       <td>{{formatIsoDate sdd.seismogram.endTime}}</td>
       <td>{{sdd.seismogram.numPoints}}</td>
       <td>{{sdd.seismogram.sampleRate}}</td>
+      <td>{{sdd.seismogram.segments.length}}</td>
 
       {{#if sdd.hasChannel}}
         <td>{{sdd.channel.latitude}}</td>
