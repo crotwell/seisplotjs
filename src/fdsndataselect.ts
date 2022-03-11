@@ -134,7 +134,12 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   specVersion(value?: number): number | DataSelectQuery {
-    return doIntGetterSetter(this, "specVersion", value);
+    doIntGetterSetter(this, "specVersion", value);
+    return this;
+  }
+
+  getSpecVersion(): number | undefined {
+    return this._specVersion;
   }
 
   /**
@@ -145,7 +150,12 @@ export class DataSelectQuery {
    * @returns new value if getting, this if setting
    */
   protocol(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "protocol", value);
+    doStringGetterSetter(this, "protocol", value);
+    return this;
+  }
+
+  getProtocol(): string {
+    return this._protocol;
   }
 
   /**
@@ -154,8 +164,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  host(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "host", value);
+  host(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "host", value);
+    return this;
+  }
+
+  getHost(): string {
+    return this._host;
   }
 
   /**
@@ -165,8 +180,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  nodata(value?: number): number | DataSelectQuery {
-    return doIntGetterSetter(this, "nodata", value);
+  nodata(value?: number): DataSelectQuery {
+    doIntGetterSetter(this, "nodata", value);
+    return this;
+  }
+
+  getNodata(): number | undefined {
+    return this._nodata;
   }
 
   /**
@@ -175,8 +195,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  port(value?: number): number | DataSelectQuery {
-    return doIntGetterSetter(this, "port", value);
+  port(value?: number): DataSelectQuery {
+    doIntGetterSetter(this, "port", value);
+    return this;
+  }
+
+  getPort(): number | undefined {
+    return this._port;
   }
 
   /**
@@ -185,8 +210,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  networkCode(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "networkCode", value);
+  networkCode(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "networkCode", value);
+    return this;
+  }
+
+  getNetworkCode(): string | undefined {
+    return this._networkCode;
   }
 
   /**
@@ -195,8 +225,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  stationCode(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "stationCode", value);
+  stationCode(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "stationCode", value);
+    return this;
+  }
+
+  getStationCode(): string | undefined {
+    return this._stationCode;
   }
 
   /**
@@ -205,8 +240,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  locationCode(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "locationCode", value);
+  locationCode(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "locationCode", value);
+    return this;
+  }
+
+  getLocationCode(): string | undefined {
+    return this._locationCode;
   }
 
   /**
@@ -215,8 +255,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  channelCode(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "channelCode", value);
+  channelCode(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "channelCode", value);
+    return this;
+  }
+
+  getChannelCode(): string | undefined {
+    return this._channelCode;
   }
 
   /**
@@ -225,8 +270,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime): DateTime | DataSelectQuery {
-    return doMomentGetterSetter(this, "startTime", value);
+  startTime(value?: DateTime): DataSelectQuery {
+    doMomentGetterSetter(this, "startTime", value);
+    return this;
+  }
+
+  getStartTime(): DateTime | undefined {
+    return this._startTime;
   }
 
   /**
@@ -235,8 +285,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime): DateTime | DataSelectQuery {
-    return doMomentGetterSetter(this, "endTime", value);
+  endTime(value?: DateTime): DataSelectQuery {
+    doMomentGetterSetter(this, "endTime", value);
+    return this;
+  }
+
+  getEndTime(): DateTime | undefined {
+    return this._endTime;
   }
 
   /**
@@ -266,8 +321,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  quality(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "quality", value);
+  quality(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "quality", value);
+    return this;
+  }
+
+  getQuality(): string | undefined {
+    return this._quality;
   }
 
   /**
@@ -276,8 +336,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minimumLength(value?: number): number | DataSelectQuery {
-    return doFloatGetterSetter(this, "minimumLength", value);
+  minimumLength(value?: number): DataSelectQuery {
+    doFloatGetterSetter(this, "minimumLength", value);
+    return this;
+  }
+
+  getMinimumLength(): number | undefined {
+    return this._minimumLength;
   }
 
   /**
@@ -286,8 +351,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  longestOnly(value?: boolean): boolean | DataSelectQuery {
-    return doBoolGetterSetter(this, "longestOnly", value);
+  longestOnly(value?: boolean): DataSelectQuery {
+    doBoolGetterSetter(this, "longestOnly", value);
+    return this;
+  }
+
+  getLongestOnly(): boolean | undefined {
+    return this._longestOnly;
   }
 
   /**
@@ -298,8 +368,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  repository(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "repository", value);
+  repository(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "repository", value);
+    return this;
+  }
+
+  getRepository(): string | undefined {
+    return this._repository;
   }
 
   /**
@@ -308,8 +383,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  format(value?: string): string | DataSelectQuery {
-    return doStringGetterSetter(this, "format", value);
+  format(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "format", value);
+    return this;
+  }
+
+  getFormat(): string | undefined {
+    return this._format;
   }
 
   /**
@@ -318,17 +398,13 @@ export class DataSelectQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  timeout(value?: number): number | DataSelectQuery {
-    if (hasNoArgs(value)) {
-      return this._timeoutSec;
-    } else if (isNumArg(value)) {
-      this._timeoutSec = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+  timeout(value?: number): DataSelectQuery {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   /**
@@ -346,7 +422,7 @@ export class DataSelectQuery {
       .then(function (response) {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis.getNodata())
         ) {
           // no data
           return new ArrayBuffer(0);
@@ -375,7 +451,7 @@ export class DataSelectQuery {
       .then(function (response) {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis.getNodata())
         ) {
           // no data
           return new ArrayBuffer(0);
@@ -568,19 +644,19 @@ export class DataSelectQuery {
     let url = this.formBaseURL() + "/query?";
 
     if (this._networkCode) {
-      url = url + makeParam("net", this.networkCode());
+      url = url + makeParam("net", this._networkCode);
     }
 
     if (this._stationCode) {
-      url = url + makeParam("sta", this.stationCode());
+      url = url + makeParam("sta", this._stationCode);
     }
 
     if (this._locationCode) {
-      url = url + makeParam("loc", this.locationCode());
+      url = url + makeParam("loc", this._locationCode);
     }
 
     if (this._channelCode) {
-      url = url + makeParam("cha", this.channelCode());
+      url = url + makeParam("cha", this._channelCode);
     }
 
     if (this._startTime) {
@@ -592,27 +668,27 @@ export class DataSelectQuery {
     }
 
     if (this._quality) {
-      url = url + makeParam("quality", this.quality());
+      url = url + makeParam("quality", this._quality);
     }
 
     if (this._minimumLength) {
-      url = url + makeParam("minimumlength", this.minimumLength());
+      url = url + makeParam("minimumlength", this._minimumLength);
     }
 
     if (this._repository) {
-      url = url + makeParam("repository", this.repository());
+      url = url + makeParam("repository", this._repository);
     }
 
     if (this._longestOnly) {
-      url = url + makeParam("longestonly", this.longestOnly());
+      url = url + makeParam("longestonly", this._longestOnly);
     }
 
     if (this._format) {
-      url = url + makeParam("format", this.format());
+      url = url + makeParam("format", this._format);
     }
 
     if (this._nodata) {
-      url = url + makeParam("nodata", this.nodata());
+      url = url + makeParam("nodata", this._nodata);
     }
 
     if (url.endsWith("&") || url.endsWith("?")) {

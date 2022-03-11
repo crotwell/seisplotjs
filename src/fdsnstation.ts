@@ -180,8 +180,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  specVersion(value?: number): number | StationQuery {
-    return doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: number): StationQuery {
+    doIntGetterSetter(this, "specVersion", value);
+    return this;
+  }
+
+  getSpecVersion(): number | undefined {
+    return this._specVersion;
   }
 
   /**
@@ -191,8 +196,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  protocol(value?: string): string | StationQuery {
-    return doStringGetterSetter(this, "protocol", value);
+  protocol(value?: string): StationQuery {
+    doStringGetterSetter(this, "protocol", value);
+    return this;
+  }
+
+  getProtocol(): string | undefined {
+    return this._protocol;
   }
 
   /**
@@ -201,8 +211,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  host(value?: string): string | StationQuery {
-    return doStringGetterSetter(this, "host", value);
+  host(value?: string): StationQuery {
+    doStringGetterSetter(this, "host", value);
+    return this;
+  }
+
+  getHost(): string | undefined {
+    return this._host;
   }
 
   /**
@@ -211,8 +226,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  port(value?: number): number | StationQuery {
-    return doIntGetterSetter(this, "port", value);
+  port(value?: number): StationQuery {
+    doIntGetterSetter(this, "port", value);
+    return this;
+  }
+
+  getPort(): number | undefined {
+    return this._port;
   }
 
   /**
@@ -222,8 +242,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  nodata(value?: number): number | StationQuery {
-    return doIntGetterSetter(this, "nodata", value);
+  nodata(value?: number): StationQuery {
+    doIntGetterSetter(this, "nodata", value);
+    return this;
+  }
+
+  getNodata(): number | undefined {
+    return this._nodata;
   }
 
   /**
@@ -232,8 +257,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  networkCode(value?: string): string | StationQuery {
-    return doStringGetterSetter(this, "networkCode", value);
+  networkCode(value?: string): StationQuery {
+    doStringGetterSetter(this, "networkCode", value);
+    return this;
+  }
+
+  getNetworkCode(): string | undefined {
+    return this._networkCode;
   }
 
   /**
@@ -242,8 +272,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  stationCode(value?: string): string | StationQuery {
-    return doStringGetterSetter(this, "stationCode", value);
+  stationCode(value?: string): StationQuery {
+    doStringGetterSetter(this, "stationCode", value);
+    return this;
+  }
+
+  getStationCode(): string | undefined {
+    return this._stationCode;
   }
 
   /**
@@ -252,8 +287,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  locationCode(value?: string): string | StationQuery {
-    return doStringGetterSetter(this, "locationCode", value);
+  locationCode(value?: string): StationQuery {
+    doStringGetterSetter(this, "locationCode", value);
+    return this;
+  }
+
+  getLocationCode(): string | undefined {
+    return this._locationCode;
   }
 
   /**
@@ -262,8 +302,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  channelCode(value?: string): string | StationQuery {
-    return doStringGetterSetter(this, "channelCode", value);
+  channelCode(value?: string): StationQuery {
+    doStringGetterSetter(this, "channelCode", value);
+    return this;
+  }
+
+  getChannelCode(): string | undefined {
+    return this._channelCode;
   }
 
   /**
@@ -272,8 +317,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime): DateTime | StationQuery {
-    return doMomentGetterSetter(this, "startTime", value);
+  startTime(value?: DateTime): StationQuery {
+    doMomentGetterSetter(this, "startTime", value);
+    return this;
+  }
+
+  getStartTime(): DateTime | undefined {
+    return this._startTime;
   }
 
   /**
@@ -282,8 +332,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime): DateTime | StationQuery {
-    return doMomentGetterSetter(this, "endTime", value);
+  endTime(value?: DateTime): StationQuery {
+    doMomentGetterSetter(this, "endTime", value);
+    return this;
+  }
+
+  getEndTime(): DateTime | undefined {
+    return this._endTime;
   }
 
   /**
@@ -304,8 +359,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: DateTime): DateTime | StationQuery {
-    return doMomentGetterSetter(this, "startBefore", value);
+  startBefore(value?: DateTime): StationQuery {
+    doMomentGetterSetter(this, "startBefore", value);
+    return this;
+  }
+
+  getStartBefore(): DateTime | undefined {
+    return this._startBefore;
   }
 
   /**
@@ -314,8 +374,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: DateTime): DateTime | StationQuery {
-    return doMomentGetterSetter(this, "endBefore", value);
+  endBefore(value?: DateTime): StationQuery {
+    doMomentGetterSetter(this, "endBefore", value);
+    return this;
+  }
+
+  getEndBefore(): DateTime | undefined {
+    return this._endBefore;
   }
 
   /**
@@ -324,8 +389,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: DateTime): DateTime | StationQuery {
-    return doMomentGetterSetter(this, "startAfter", value);
+  startAfter(value?: DateTime): StationQuery {
+    doMomentGetterSetter(this, "startAfter", value);
+    return this;
+  }
+
+  getStartAfter(): DateTime | undefined {
+    return this._startAfter;
   }
 
   /**
@@ -334,8 +404,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: DateTime): DateTime | StationQuery {
-    return doMomentGetterSetter(this, "endAfter", value);
+  endAfter(value?: DateTime): StationQuery {
+    doMomentGetterSetter(this, "endAfter", value);
+    return this;
+  }
+
+  getEndAfter(): DateTime | undefined {
+    return this._endAfter;
   }
 
   /**
@@ -344,8 +419,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minLat(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "minLat", value);
+  minLat(value?: number): StationQuery {
+    doFloatGetterSetter(this, "minLat", value);
+    return this;
+  }
+
+  getMinLat(): number | undefined {
+    return this._minLat;
   }
 
   /**
@@ -354,8 +434,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxLat(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "maxLat", value);
+  maxLat(value?: number): StationQuery {
+    doFloatGetterSetter(this, "maxLat", value);
+    return this;
+  }
+
+  getMaxLat(): number | undefined {
+    return this._maxLat;
   }
 
   /**
@@ -364,8 +449,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minLon(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "minLon", value);
+  minLon(value?: number): StationQuery {
+    doFloatGetterSetter(this, "minLon", value);
+    return this;
+  }
+
+  getMinLon(): number | undefined {
+    return this._minLon;
   }
 
   /**
@@ -374,8 +464,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxLon(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "maxLon", value);
+  maxLon(value?: number): StationQuery {
+    doFloatGetterSetter(this, "maxLon", value);
+    return this;
+  }
+
+  getMaxLon(): number | undefined {
+    return this._maxLon;
   }
 
   /**
@@ -384,8 +479,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  latitude(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "latitude", value);
+  latitude(value?: number): StationQuery {
+    doFloatGetterSetter(this, "latitude", value);
+    return this;
+  }
+
+  getLatitude(): number | undefined {
+    return this._latitude;
   }
 
   /**
@@ -394,8 +494,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  longitude(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "longitude", value);
+  longitude(value?: number): StationQuery {
+    doFloatGetterSetter(this, "longitude", value);
+    return this;
+  }
+
+  getLongitude(): number | undefined {
+    return this._longitude;
   }
 
   /**
@@ -404,8 +509,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minRadius(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "minRadius", value);
+  minRadius(value?: number): StationQuery {
+    doFloatGetterSetter(this, "minRadius", value);
+    return this;
+  }
+
+  getMinRadius(): number | undefined {
+    return this._minRadius;
   }
 
   /**
@@ -414,8 +524,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxRadius(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "maxRadius", value);
+  maxRadius(value?: number): StationQuery {
+    doFloatGetterSetter(this, "maxRadius", value);
+    return this;
+  }
+
+  getMaxRadius(): number | undefined {
+    return this._maxRadius;
   }
 
   /**
@@ -424,8 +539,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeRestricted(value?: boolean): boolean | StationQuery {
-    return doBoolGetterSetter(this, "includeRestricted", value);
+  includeRestricted(value?: boolean): StationQuery {
+    doBoolGetterSetter(this, "includeRestricted", value);
+    return this;
+  }
+
+  getIncludeRestricted(): boolean | undefined {
+    return this._includeRestricted;
   }
 
   /**
@@ -434,8 +554,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeAvailability(value?: boolean): boolean | StationQuery {
-    return doBoolGetterSetter(this, "includeAvailability", value);
+  includeAvailability(value?: boolean): StationQuery {
+    doBoolGetterSetter(this, "includeAvailability", value);
+    return this;
+  }
+
+  getIncludeAvailability(): boolean | undefined {
+    return this._includeAvailability;
   }
 
   /**
@@ -444,8 +569,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  format(value?: string): string | StationQuery {
-    return doStringGetterSetter(this, "format", value);
+  format(value?: string): StationQuery {
+    doStringGetterSetter(this, "format", value);
+    return this;
+  }
+
+  getFormat(): string | undefined {
+    return this._format;
   }
 
   /**
@@ -454,8 +584,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: DateTime): DateTime | StationQuery {
-    return doMomentGetterSetter(this, "updatedAfter", value);
+  updatedAfter(value?: DateTime): StationQuery {
+    doMomentGetterSetter(this, "updatedAfter", value);
+    return this;
+  }
+
+  getUpdatedAfter(): DateTime | undefined {
+    return this._updatedAfter;
   }
 
   /**
@@ -464,8 +599,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  matchTimeseries(value?: boolean): boolean | StationQuery {
-    return doBoolGetterSetter(this, "matchTimeseries", value);
+  matchTimeseries(value?: boolean): StationQuery {
+    doBoolGetterSetter(this, "matchTimeseries", value);
+    return this;
+  }
+
+  getMatchTimeseries(): boolean | undefined {
+    return this._matchTimeseries;
   }
 
   /**
@@ -474,8 +614,13 @@ export class StationQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  timeout(value?: number): number | StationQuery {
-    return doFloatGetterSetter(this, "timeoutSec", value);
+  timeout(value?: number): StationQuery {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   /**
@@ -679,7 +824,7 @@ export class StationQuery {
           return response.text();
         } else if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis._nodata)
         ) {
           // 204 is nodata, so successful but empty
           return FAKE_EMPTY_XML;
@@ -726,7 +871,7 @@ export class StationQuery {
             return response.text();
           } else if (
             response.status === 204 ||
-            (isDef(mythis._nodata) && response.status === mythis.nodata())
+            (isDef(mythis._nodata) && response.status === mythis._nodata)
           ) {
             // 204 is nodata, so successful but empty
             return FAKE_EMPTY_XML;
@@ -780,44 +925,44 @@ export class StationQuery {
     }
 
     if (isNumArg(this._minLat)) {
-      out = out + makePostParam("minlat", this.minLat());
+      out = out + makePostParam("minlat", this._minLat);
     }
 
     if (isNumArg(this._maxLat)) {
-      out = out + makePostParam("maxlat", this.maxLat());
+      out = out + makePostParam("maxlat", this._maxLat);
     }
 
     if (isNumArg(this._minLon)) {
-      out = out + makePostParam("minlon", this.minLon());
+      out = out + makePostParam("minlon", this._minLon);
     }
 
     if (isNumArg(this._maxLon)) {
-      out = out + makePostParam("maxlon", this.maxLon());
+      out = out + makePostParam("maxlon", this._maxLon);
     }
 
     if (isNumArg(this._latitude)) {
-      out = out + makePostParam("lat", this.latitude());
+      out = out + makePostParam("lat", this._latitude);
     }
 
     if (isNumArg(this._longitude)) {
-      out = out + makePostParam("lon", this.longitude());
+      out = out + makePostParam("lon", this._longitude);
     }
 
     if (isNumArg(this._minRadius)) {
-      out = out + makePostParam("minradius", this.minRadius());
+      out = out + makePostParam("minradius", this._minRadius);
     }
 
     if (isNumArg(this._maxRadius)) {
-      out = out + makePostParam("maxradius", this.maxRadius());
+      out = out + makePostParam("maxradius", this._maxRadius);
     }
 
     if (isDef(this._includeRestricted)) {
-      out = out + makePostParam("includerestricted", this.includeRestricted());
+      out = out + makePostParam("includerestricted", this._includeRestricted);
     }
 
     if (isDef(this._includeAvailability)) {
       out =
-        out + makePostParam("includeavailability", this.includeAvailability());
+        out + makePostParam("includeavailability", this._includeAvailability);
     }
 
     if (isObject(this._updatedAfter)) {
@@ -825,15 +970,15 @@ export class StationQuery {
     }
 
     if (isDef(this._matchTimeseries)) {
-      out = out + makePostParam("matchtimeseries", this.matchTimeseries());
+      out = out + makePostParam("matchtimeseries", this._matchTimeseries);
     }
 
     if (isStringArg(this._format)) {
-      out = out + makePostParam("format", this.format());
+      out = out + makePostParam("format", this._format);
     }
 
     if (isNumArg(this._nodata)) {
-      out = out + makePostParam("nodata", this.nodata());
+      out = out + makePostParam("nodata", this._nodata);
     }
 
     postLines.forEach(line => (out = out + line.trim() + "\n"));
@@ -909,19 +1054,19 @@ export class StationQuery {
     url = url + makeParam("level", level);
 
     if (isStringArg(this._networkCode)) {
-      url = url + makeParam("net", this.networkCode());
+      url = url + makeParam("net", this._networkCode);
     }
 
     if (isStringArg(this._stationCode)) {
-      url = url + makeParam("sta", this.stationCode());
+      url = url + makeParam("sta", this._stationCode);
     }
 
     if (isStringArg(this._locationCode)) {
-      url = url + makeParam("loc", this.locationCode());
+      url = url + makeParam("loc", this._locationCode);
     }
 
     if (isStringArg(this._channelCode)) {
-      url = url + makeParam("cha", this.channelCode());
+      url = url + makeParam("cha", this._channelCode);
     }
 
     if (isObject(this._startTime)) {
@@ -949,43 +1094,43 @@ export class StationQuery {
     }
 
     if (isNumArg(this._minLat)) {
-      url = url + makeParam("minlat", this.minLat());
+      url = url + makeParam("minlat", this._minLat);
     }
 
     if (isNumArg(this._maxLat)) {
-      url = url + makeParam("maxlat", this.maxLat());
+      url = url + makeParam("maxlat", this.maxLat);
     }
 
     if (isNumArg(this._minLon)) {
-      url = url + makeParam("minlon", this.minLon());
+      url = url + makeParam("minlon", this._minLon);
     }
 
     if (isNumArg(this._maxLon)) {
-      url = url + makeParam("maxlon", this.maxLon());
+      url = url + makeParam("maxlon", this._maxLon);
     }
 
     if (isNumArg(this._latitude)) {
-      url = url + makeParam("lat", this.latitude());
+      url = url + makeParam("lat", this._latitude);
     }
 
     if (isNumArg(this._longitude)) {
-      url = url + makeParam("lon", this.longitude());
+      url = url + makeParam("lon", this._longitude);
     }
 
     if (isNumArg(this._minRadius)) {
-      url = url + makeParam("minradius", this.minRadius());
+      url = url + makeParam("minradius", this._minRadius);
     }
 
     if (isNumArg(this._maxRadius)) {
-      url = url + makeParam("maxradius", this.maxRadius());
+      url = url + makeParam("maxradius", this._maxRadius);
     }
 
     if (isDef(this._includeRestricted)) {
-      url = url + makeParam("includerestricted", this.includeRestricted());
+      url = url + makeParam("includerestricted", this._includeRestricted);
     }
 
     if (isDef(this._includeAvailability)) {
-      url = url + makeParam("includeavailability", this.includeAvailability());
+      url = url + makeParam("includeavailability", this._includeAvailability);
     }
 
     if (isObject(this._updatedAfter)) {
@@ -993,15 +1138,15 @@ export class StationQuery {
     }
 
     if (isDef(this._matchTimeseries)) {
-      url = url + makeParam("matchtimeseries", this.matchTimeseries());
+      url = url + makeParam("matchtimeseries", this._matchTimeseries);
     }
 
     if (isStringArg(this._format)) {
-      url = url + makeParam("format", this.format());
+      url = url + makeParam("format", this._format);
     }
 
     if (isNumArg(this._nodata)) {
-      url = url + makeParam("nodata", this.nodata());
+      url = url + makeParam("nodata", this._nodata);
     }
 
     if (url.endsWith("&") || url.endsWith("?")) {

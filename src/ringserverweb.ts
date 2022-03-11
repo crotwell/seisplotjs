@@ -8,6 +8,8 @@ import * as util from "./util"; // for util.log
 
 import {
   doIntGetterSetter,
+  doStringGetterSetter,
+  doFloatGetterSetter,
   checkProtocol,
   hasNoArgs,
   isStringArg,
@@ -85,18 +87,15 @@ export class RingserverConnection {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  host(value?: string): string | RingserverConnection {
-    if (isStringArg(value)) {
-      this._host = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._host;
-    } else {
-      throw new Error(
-        "value argument is optional or string, but was " + typeof value,
-      );
-    }
+  host(value?: string): RingserverConnection {
+    doStringGetterSetter(this, "host", value);
+    return this;
   }
+
+  getHost(): string {
+    return this._host;
+  }
+
 
   /**
    * Gets/Sets the remote port to connect to.
@@ -105,7 +104,12 @@ export class RingserverConnection {
    * @returns new value if getting, this if setting
    */
   port(value?: number): number | RingserverConnection {
-    return doIntGetterSetter(this, "port", value);
+    doIntGetterSetter(this, "port", value);
+    return this;
+  }
+
+  getPort(): number | undefined {
+    return this._port;
   }
 
   /**
@@ -114,17 +118,13 @@ export class RingserverConnection {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  timeout(value?: number): number | RingserverConnection {
-    if (hasNoArgs(value)) {
-      return this._timeoutSec;
-    } else if (isNumArg(value)) {
-      this._timeoutSec = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+  timeout(value?: number): RingserverConnection {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   /**

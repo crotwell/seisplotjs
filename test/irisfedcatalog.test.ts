@@ -7,7 +7,7 @@ test( "query setter test", () => {
   let fedCatQuery = new FedCatalogQuery();
   const net = 'CO';
   fedCatQuery.networkCode(net);
-  expect(fedCatQuery.networkCode()).toBe(net);
+  expect(fedCatQuery.getNetworkCode()).toBe(net);
 });
 
 test("parse response test", () => {

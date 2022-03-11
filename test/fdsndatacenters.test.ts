@@ -10,13 +10,13 @@ test( "form url test", () => {
   const INCLUDE_DATASETS = true;
   const FDNS_HOST = "www.fdsn.org";
   expect(query.host(FDNS_HOST)).toBe(query);
-  expect(query.host()).toBe(FDNS_HOST);
+  expect(query.getHost()).toBe(FDNS_HOST);
   expect(query.name(NAME)).toBe(query);
-  expect(query.name()).toBe(NAME);
+  expect(query.getName()).toBe(NAME);
   expect(query.services(SERVICES)).toBe(query);
-  expect(query.services()).toBe(SERVICES);
+  expect(query.getServices()).toBe(SERVICES);
   expect(query.includeDataSets(INCLUDE_DATASETS)).toBe(query);
-  expect(query.includeDataSets()).toBe(INCLUDE_DATASETS);
+  expect(query.getIncludeDataSets()).toBe(INCLUDE_DATASETS);
   const url = query.formURL();
   expect(url).toBeDefined();
   // eventid is first, so no &

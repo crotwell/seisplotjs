@@ -170,8 +170,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  specVersion(value?: number): number | EventQuery {
-    return doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: number): EventQuery {
+    doIntGetterSetter(this, "specVersion", value);
+    return this;
+  }
+
+  getSpecVersion(): number | undefined {
+    return this._specVersion;
   }
 
   /**
@@ -181,8 +186,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  protocol(value?: string): string | EventQuery {
-    return doStringGetterSetter(this, "protocol", value);
+  protocol(value?: string): EventQuery {
+    doStringGetterSetter(this, "protocol", value);
+    return this;
+  }
+
+  getProtocol(): string | undefined {
+    return this._protocol;
   }
 
   /**
@@ -191,8 +201,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  host(value?: string): string | EventQuery {
-    return doStringGetterSetter(this, "host", value);
+  host(value?: string): EventQuery {
+    doStringGetterSetter(this, "host", value);
+    return this;
+  }
+
+  getHost(): string {
+    return this._host;
   }
 
   /**
@@ -201,8 +216,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  port(value?: number): number | EventQuery {
-    return doIntGetterSetter(this, "port", value);
+  port(value?: number): EventQuery {
+    doIntGetterSetter(this, "port", value);
+    return this;
+  }
+
+  getPort(): number | undefined {
+    return this._port;
   }
 
   /**
@@ -212,8 +232,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  nodata(value?: number): number | EventQuery {
-    return doIntGetterSetter(this, "nodata", value);
+  nodata(value?: number): EventQuery {
+    doIntGetterSetter(this, "nodata", value);
+    return this;
+  }
+
+  getNodata(): number | undefined {
+    return this._nodata;
   }
 
   /**
@@ -222,8 +247,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  eventId(value?: string): string | EventQuery {
-    return doStringGetterSetter(this, "eventId", value);
+  eventId(value?: string): EventQuery {
+    doStringGetterSetter(this, "eventId", value);
+    return this;
+  }
+
+  getEventId(): string | undefined {
+    return this._eventId;
   }
 
   /**
@@ -232,8 +262,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime): DateTime | EventQuery {
-    return doMomentGetterSetter(this, "startTime", value);
+  startTime(value?: DateTime): EventQuery {
+    doMomentGetterSetter(this, "startTime", value);
+    return this;
+  }
+
+  getStartTime(): DateTime | undefined {
+    return this._startTime;
   }
 
   /**
@@ -242,8 +277,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime): DateTime | EventQuery {
-    return doMomentGetterSetter(this, "endTime", value);
+  endTime(value?: DateTime): EventQuery {
+    doMomentGetterSetter(this, "endTime", value);
+    return this;
+  }
+
+  getEndTime(): DateTime | undefined {
+    return this._endTime;
   }
 
   /**
@@ -257,6 +297,7 @@ export class EventQuery {
     this.endTime(se.endTime);
     return this;
   }
+
   /**
    *@deprecated
    * @param  se               [description]
@@ -272,8 +313,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: DateTime): DateTime | EventQuery {
-    return doMomentGetterSetter(this, "updatedAfter", value);
+  updatedAfter(value?: DateTime): EventQuery {
+    doMomentGetterSetter(this, "updatedAfter", value);
+    return this;
+  }
+
+  getUpdatedAfter(): DateTime | undefined {
+    return this._updatedAfter;
   }
 
   /**
@@ -282,8 +328,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minMag(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "minMag", value);
+  minMag(value?: number): EventQuery {
+    doFloatGetterSetter(this, "minMag", value);
+    return this;
+  }
+
+  getMinMag(): number | undefined {
+    return this._minMag;
   }
 
   /**
@@ -292,8 +343,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxMag(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "maxMag", value);
+  maxMag(value?: number): EventQuery {
+    doFloatGetterSetter(this, "maxMag", value);
+    return this;
+  }
+
+  getMaxMag(): number | undefined {
+    return this._maxMag;
   }
 
   /**
@@ -302,8 +358,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  magnitudeType(value?: string): string | EventQuery {
-    return doStringGetterSetter(this, "magnitudeType", value);
+  magnitudeType(value?: string): EventQuery {
+    doStringGetterSetter(this, "magnitudeType", value);
+    return this;
+  }
+
+  getMagnitudeType(): string | undefined {
+    return this._magnitudeType;
   }
 
   /**
@@ -312,8 +373,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minDepth(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "minDepth", value);
+  minDepth(value?: number): EventQuery {
+    doFloatGetterSetter(this, "minDepth", value);
+    return this;
+  }
+
+  getMinDepth(): number | undefined {
+    return this._minDepth;
   }
 
   /**
@@ -322,8 +388,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxDepth(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "maxDepth", value);
+  maxDepth(value?: number): EventQuery {
+    doFloatGetterSetter(this, "maxDepth", value);
+    return this;
+  }
+
+  getMaxDepth(): number | undefined {
+    return this._maxDepth;
   }
 
   /**
@@ -332,8 +403,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minLat(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "minLat", value);
+  minLat(value?: number): EventQuery {
+    doFloatGetterSetter(this, "minLat", value);
+    return this;
+  }
+
+  getMinLat(): number | undefined {
+    return this._minLat;
   }
 
   /**
@@ -342,8 +418,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxLat(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "maxLat", value);
+  maxLat(value?: number): EventQuery {
+    doFloatGetterSetter(this, "maxLat", value);
+    return this;
+  }
+
+  getMaxLat(): number | undefined {
+    return this._maxLat;
   }
 
   /**
@@ -352,8 +433,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minLon(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "minLon", value);
+  minLon(value?: number): EventQuery {
+    doFloatGetterSetter(this, "minLon", value);
+    return this;
+  }
+
+  getMinLon(): number | undefined {
+    return this._minLon;
   }
 
   /**
@@ -362,8 +448,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxLon(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "maxLon", value);
+  maxLon(value?: number): EventQuery {
+    doFloatGetterSetter(this, "maxLon", value);
+    return this;
+  }
+
+  getMaxLon(): number | undefined {
+    return this._maxLon;
   }
 
   /**
@@ -372,8 +463,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  latitude(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "latitude", value);
+  latitude(value?: number): EventQuery {
+    doFloatGetterSetter(this, "latitude", value);
+    return this;
+  }
+
+  getLatitude(): number | undefined {
+    return this._latitude;
   }
 
   /**
@@ -382,8 +478,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  longitude(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "longitude", value);
+  longitude(value?: number): EventQuery {
+    doFloatGetterSetter(this, "longitude", value);
+    return this;
+  }
+
+  getLongitude(): number | undefined {
+    return this._longitude;
   }
 
   /**
@@ -392,8 +493,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minRadius(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "minRadius", value);
+  minRadius(value?: number): EventQuery {
+    doFloatGetterSetter(this, "minRadius", value);
+    return this;
+  }
+
+  getMinRadius(): number | undefined {
+    return this._minRadius;
   }
 
   /**
@@ -402,8 +508,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxRadius(value?: number): number | EventQuery {
-    return doFloatGetterSetter(this, "maxRadius", value);
+  maxRadius(value?: number): EventQuery {
+    doFloatGetterSetter(this, "maxRadius", value);
+    return this;
+  }
+
+  getMaxRadius(): number | undefined {
+    return this._maxRadius;
   }
 
   /**
@@ -412,8 +523,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeArrivals(value?: boolean): boolean | EventQuery {
-    return doBoolGetterSetter(this, "includeArrivals", value);
+  includeArrivals(value?: boolean): EventQuery {
+    doBoolGetterSetter(this, "includeArrivals", value);
+    return this;
+  }
+
+  getIncludeArrivals(): boolean | undefined {
+    return this._includeArrivals;
   }
 
   /**
@@ -422,8 +538,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeAllOrigins(value?: boolean): boolean | EventQuery {
-    return doBoolGetterSetter(this, "includeAllOrigins", value);
+  includeAllOrigins(value?: boolean): EventQuery {
+    doBoolGetterSetter(this, "includeAllOrigins", value);
+    return this;
+  }
+
+  getIncludeAllOrigins(): boolean | undefined {
+    return this._includeAllOrigins;
   }
 
   /**
@@ -432,8 +553,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeAllMagnitudes(value?: boolean): boolean | EventQuery {
-    return doBoolGetterSetter(this, "includeAllMagnitudes", value);
+  includeAllMagnitudes(value?: boolean): EventQuery {
+    doBoolGetterSetter(this, "includeAllMagnitudes", value);
+    return this;
+  }
+
+  getIncludeAllMagnitudes(): boolean | undefined {
+    return this._includeAllMagnitudes;
   }
 
   /**
@@ -442,8 +568,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  format(value?: string): string | EventQuery {
-    return doStringGetterSetter(this, "format", value);
+  format(value?: string): EventQuery {
+    doStringGetterSetter(this, "format", value);
+    return this;
+  }
+
+  getFormat(): string | undefined {
+    return this._format;
   }
 
   /**
@@ -452,8 +583,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  limit(value?: number): number | EventQuery {
-    return doIntGetterSetter(this, "limit", value);
+  limit(value?: number): EventQuery {
+    doIntGetterSetter(this, "limit", value);
+    return this;
+  }
+
+  getLimit(): number | undefined {
+    return this._limit;
   }
 
   /**
@@ -462,8 +598,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  offset(value?: number): number | EventQuery {
-    return doIntGetterSetter(this, "offset", value);
+  offset(value?: number): EventQuery {
+    doIntGetterSetter(this, "offset", value);
+    return this;
+  }
+
+  getOffset(): number | undefined {
+    return this._offset;
   }
 
   /**
@@ -472,8 +613,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  orderBy(value?: string): string | EventQuery {
-    return doStringGetterSetter(this, "orderBy", value);
+  orderBy(value?: string): EventQuery {
+    doStringGetterSetter(this, "orderBy", value);
+    return this;
+  }
+
+  getOrderBy(): string | undefined {
+    return this._orderBy;
   }
 
   /**
@@ -482,8 +628,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  catalog(value?: string): string | EventQuery {
-    return doStringGetterSetter(this, "catalog", value);
+  catalog(value?: string): EventQuery {
+    doStringGetterSetter(this, "catalog", value);
+    return this;
+  }
+
+  getCatalog(): string | undefined {
+    return this._catalog;
   }
 
   /**
@@ -492,8 +643,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  contributor(value?: string): string | EventQuery {
-    return doStringGetterSetter(this, "contributor", value);
+  contributor(value?: string): EventQuery {
+    doStringGetterSetter(this, "contributor", value);
+    return this;
+  }
+
+  getContributor(): string | undefined {
+    return this._contributor;
   }
 
   /**
@@ -502,17 +658,13 @@ export class EventQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  timeout(value?: number): number | EventQuery {
-    if (hasNoArgs(value)) {
-      return this._timeoutSec;
-    } else if (isNumArg(value)) {
-      this._timeoutSec = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+  timeout(value?: number): EventQuery {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   /**
@@ -579,7 +731,7 @@ export class EventQuery {
           return response.text();
         } else if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis._nodata)
         ) {
           // 204 is nodata, so successful but empty
           return FAKE_EMPTY_XML;
@@ -778,7 +930,7 @@ export class EventQuery {
     let url = this.formBaseURL() + "/query?";
 
     if (this._eventId) {
-      url = url + makeParam("eventid", this.eventId());
+      url = url + makeParam("eventid", this._eventId);
     }
 
     if (this._startTime) {
@@ -866,44 +1018,44 @@ export class EventQuery {
     }
 
     if (isObject(this._updatedAfter)) {
-      url = url + makeParam("updatedafter", this.updatedAfter());
+      url = url + makeParam("updatedafter", this._updatedAfter);
     }
 
     if (isDef(this._includeAllOrigins)) {
-      url = url + makeParam("includeallorigins", this.includeAllOrigins());
+      url = url + makeParam("includeallorigins", this._includeAllOrigins);
     }
 
     if (isDef(this._includeAllMagnitudes)) {
       url =
-        url + makeParam("includeallmagnitudes", this.includeAllMagnitudes());
+        url + makeParam("includeallmagnitudes", this._includeAllMagnitudes);
     }
 
     if (isStringArg(this._format)) {
-      url = url + makeParam("format", this.format());
+      url = url + makeParam("format", this._format);
     }
 
     if (isNumArg(this._limit)) {
-      url = url + makeParam("limit", this.limit());
+      url = url + makeParam("limit", this._limit);
     }
 
     if (isNumArg(this._offset)) {
-      url = url + makeParam("offset", this.offset());
+      url = url + makeParam("offset", this._offset);
     }
 
     if (isStringArg(this._orderBy)) {
-      url = url + makeParam("orderby", this.orderBy());
+      url = url + makeParam("orderby", this._orderBy);
     }
 
     if (isStringArg(this._catalog)) {
-      url = url + makeParam("catalog", this.catalog());
+      url = url + makeParam("catalog", this._catalog);
     }
 
     if (isStringArg(this._contributor)) {
-      url = url + makeParam("contributor", this.contributor());
+      url = url + makeParam("contributor", this._contributor);
     }
 
     if (isDef(this._nodata)) {
-      url = url + makeParam("nodata", this.nodata());
+      url = url + makeParam("nodata", this._nodata);
     }
 
     if (url.endsWith("&") || url.endsWith("?")) {

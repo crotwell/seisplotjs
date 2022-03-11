@@ -1,4 +1,3 @@
-// @flow
 
 import { FedCatalogQuery } from '../src/irisfedcatalog.js';
 import { allChannels } from '../src/stationxml.js';
@@ -17,7 +16,7 @@ test("station queries test", () => {
     let fedCatQuery = new FedCatalogQuery();
     const NET = 'CO';
     expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
-    expect(fedCatQuery.networkCode()).toBe(NET);
+    expect(fedCatQuery.getNetworkCode()).toBe(NET);
     return fedCatQuery.setupQueryFdsnStation('network').then(parsedResult => {
       expect(parsedResult.queries).toHaveLength(1);
       expect(parsedResult.queries[0]).toBeDefined();
@@ -41,7 +40,7 @@ test("run BK networks", () => {
     let fedCatQuery = new FedCatalogQuery();
     const NET = 'BK';
     expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
-    expect(fedCatQuery.networkCode()).toBe(NET);
+    expect(fedCatQuery.getNetworkCode()).toBe(NET);
     return fedCatQuery.queryNetworks().then(netArray => {
       expect(netArray).toHaveLength(2);
       expect(netArray[0]).toBeDefined();
@@ -55,7 +54,7 @@ test("run CO active stations", () => {
     let fedCatQuery = new FedCatalogQuery();
     const NET = 'CO';
     expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
-    expect(fedCatQuery.networkCode()).toBe(NET);
+    expect(fedCatQuery.getNetworkCode()).toBe(NET);
     expect(fedCatQuery.endAfter('2021-01-01')).toBe(fedCatQuery);
     expect(fedCatQuery.startBefore('2021-01-01')).toBe(fedCatQuery);
     return fedCatQuery.queryStations().then(netArray => {
@@ -96,7 +95,7 @@ test( "run dataselect test", () => {
   const START = '2020-09-01T00:00:00Z';
   const END = '2020-09-01T00:10:00Z';
   expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
-  expect(fedCatQuery.networkCode()).toBe(NET);
+  expect(fedCatQuery.getNetworkCode()).toBe(NET);
   expect(fedCatQuery.stationCode(STA)).toBe(fedCatQuery);
   expect(fedCatQuery.locationCode(LOC)).toBe(fedCatQuery);
   expect(fedCatQuery.channelCode(CHAN)).toBe(fedCatQuery);
@@ -133,16 +132,14 @@ test("seismograms for CO.BIRD for timewindow", () => {
     const sdd = sddList[0];
     expect(sdd.stationCode).toEqual(STA);
     expect(sdd.channelCode).toEqual(CHAN);
-    // for flow
-    const seismogram = isDef(sdd.seismogram) ? sdd.seismogram : null;
+    const seismogram = sdd.seismogram;
     expect(seismogram).toBeDefined();
-    // $FlowExpectedError[incompatible-use]
-    expect(seismogram.isContiguous()).toBeTrue();
-    // $FlowExpectedError[incompatible-use]
-    expect(seismogram.y).toHaveLength(sed.duration.toMillis()/1000*100+1);
+    if (isDef(seismogram)) {
+      expect(seismogram.isContiguous()).toBeTrue();
+      expect(seismogram.y).toHaveLength(sed.duration.toMillis()/1000*100+1);
+    }
   });
 });
-
 
 test("sddlist seismograms for CO.BIRD for timewindow", () => {
   let fedCatQuery = new FedCatalogQuery();
@@ -173,11 +170,11 @@ test("sddlist seismograms for CO.BIRD for timewindow", () => {
     expect(sdd.stationCode).toEqual(STA);
     expect(sdd.channelCode).toEqual(CHAN);
 
-    const seismogram = isDef(sdd.seismogram) ? sdd.seismogram : null;
+    const seismogram = sdd.seismogram;
     expect(seismogram).toBeDefined();
-    // $FlowExpectedError[incompatible-use]
-    expect(seismogram.isContiguous()).toBeTrue();
-    // $FlowExpectedError[incompatible-use]
-    expect(seismogram.y).toHaveLength(sed.duration.toMillis()/1000*100+1);
+    if (isDef(seismogram)) {
+      expect(seismogram.isContiguous()).toBeTrue();
+      expect(seismogram.y).toHaveLength(sed.duration.toMillis()/1000*100+1);
+    }
   });
 });

@@ -6,6 +6,7 @@
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
+  doFloatGetterSetter,
   doIntGetterSetter,
   checkProtocol,
   makeParam,
@@ -52,7 +53,7 @@ export class DataCentersQuery {
   _port: number;
 
   /** @private */
-  _name: number|undefined;
+  _name: string|undefined;
 
   /** @private */
   _services: string|undefined;
@@ -85,8 +86,13 @@ export class DataCentersQuery {
    * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
    */
-  specVersion(value?: number): number | DataCentersQuery {
-    return doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: number): DataCentersQuery {
+    doIntGetterSetter(this, "specVersion", value);
+    return this;
+  }
+
+  getSpecVersion(): number {
+    return this._specVersion;
   }
 
   /**
@@ -96,8 +102,13 @@ export class DataCentersQuery {
    * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
    */
-  protocol(value?: string): string | DataCentersQuery {
-    return doStringGetterSetter(this, "protocol", value);
+  protocol(value?: string): DataCentersQuery {
+    doStringGetterSetter(this, "protocol", value);
+    return this;
+  }
+
+  getProtocol(): string | undefined {
+    return this._protocol;
   }
 
   /**
@@ -107,8 +118,13 @@ export class DataCentersQuery {
    * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
    */
-  host(value?: string): string | DataCentersQuery {
-    return doStringGetterSetter(this, "host", value);
+  host(value?: string): DataCentersQuery {
+    doStringGetterSetter(this, "host", value);
+    return this;
+  }
+
+  getHost(): string {
+    return this._host;
   }
 
   /**
@@ -118,8 +134,13 @@ export class DataCentersQuery {
    * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
    */
-  port(value?: number): number | DataCentersQuery {
-    return doIntGetterSetter(this, "port", value);
+  port(value?: number): DataCentersQuery {
+    doIntGetterSetter(this, "port", value);
+    return this;
+  }
+
+  getPort(): number | undefined {
+    return this._port;
   }
 
   /**
@@ -128,8 +149,13 @@ export class DataCentersQuery {
    * @param   value names to search for
    * @returns the query when setting, the current value os services if no arguments
    */
-  name(value?: string): string | DataCentersQuery {
-    return doStringGetterSetter(this, "name", value);
+  name(value?: string): DataCentersQuery {
+    doStringGetterSetter(this, "name", value);
+    return this;
+  }
+
+  getName(): string | undefined {
+    return this._name;
   }
 
   /**
@@ -138,8 +164,13 @@ export class DataCentersQuery {
    * @param  value glob style pattern to match against
    * @returns the query when setting, the current value os services if no arguments
    */
-  services(value?: string): string | DataCentersQuery {
-    return doStringGetterSetter(this, "services", value);
+  services(value?: string): DataCentersQuery {
+    doStringGetterSetter(this, "services", value);
+    return this;
+  }
+
+  getServices(): string | undefined {
+    return this._services;
   }
 
   /**
@@ -149,8 +180,13 @@ export class DataCentersQuery {
    * @param  value true to include datasets
    * @returns the query when setting, the current value os services if no arguments
    */
-  includeDataSets(value?: boolean): boolean | DataCentersQuery {
-    return doBoolGetterSetter(this, "includedatasets", value);
+  includeDataSets(value?: boolean): DataCentersQuery {
+    doBoolGetterSetter(this, "includedatasets", value);
+    return this;
+  }
+
+  getIncludeDataSets(): boolean | undefined {
+    return this._includedatasets;
   }
 
   /**
@@ -159,17 +195,13 @@ export class DataCentersQuery {
    * @param  value timeout seconds
    * @returns the query when setting, the current value os services if no arguments
    */
-  timeout(value?: number): number | DataCentersQuery {
-    if (hasNoArgs(value)) {
-      return this._timeoutSec;
-    } else if (isNumArg(value)) {
-      this._timeoutSec = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+  timeout(value?: number): DataCentersQuery {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   /**
@@ -438,15 +470,15 @@ export class DataCentersQuery {
     let url = this.formBaseURL() + `/${method}?`;
 
     if (this._name) {
-      url = url + makeParam("name", this.name());
+      url = url + makeParam("name", this._name);
     }
 
     if (this._services) {
-      url = url + makeParam("services", this.services());
+      url = url + makeParam("services", this._services);
     }
 
     if (this._includedatasets) {
-      url = url + makeParam("includedatasets", this.includeDataSets());
+      url = url + makeParam("includedatasets", this._includedatasets);
     }
 
     if (url.endsWith("&") || url.endsWith("?")) {

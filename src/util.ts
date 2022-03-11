@@ -73,16 +73,17 @@ export function doStringGetterSetter(
   obj: any,
   field: string,
   value?: string,
-): string | any {
+) {
   const hiddenField = `_${field}`;
 
-  if (hasNoArgs(value)) {
-    return obj[hiddenField];
+  if (hasNoArgs(value) || value === null) {
+    // passing no args or null effectively unsets field
+    obj[hiddenField] = undefined;
   } else if (isStringArg(value)) {
     obj[hiddenField] = value;
   } else {
     throw new Error(
-      `${field} value argument is optional or number, but was type ${typeof value}, '${value}' `,
+      `${field} value argument is optional or string, but was type ${typeof value}, '${value}' `,
     );
   }
 
@@ -95,8 +96,9 @@ export function doBoolGetterSetter(
 ): boolean | any {
   const hiddenField = `_${field}`;
 
-  if (hasNoArgs(value)) {
-    return obj[hiddenField];
+  if (hasNoArgs(value) || value === null) {
+    // passing no args or null effectively unsets field
+    obj[hiddenField] = undefined;
   } else if (value === true || value === false) {
     obj[hiddenField] = value;
   } else {
@@ -111,11 +113,12 @@ export function doIntGetterSetter(
   obj: any,
   field: string,
   value?: number,
-): number | any {
+) {
   const hiddenField = `_${field}`;
 
-  if (hasNoArgs(value)) {
-    return obj[hiddenField];
+  if (hasNoArgs(value) || value === null) {
+    // passing no args or null effectively unsets field
+    obj[hiddenField] = undefined;
   } else if (isNumArg(value)) {
     obj[hiddenField] = value;
   } else if (isStringArg(value) && Number.isFinite(Number(value))) {
@@ -132,11 +135,12 @@ export function doFloatGetterSetter(
   obj: any,
   field: string,
   value?: number,
-): number | any {
+) {
   const hiddenField = `_${field}`;
 
-  if (hasNoArgs(value)) {
-    return obj[hiddenField];
+  if (hasNoArgs(value) || value === null) {
+    // passing no args or null effectively unsets field
+    obj[hiddenField] = undefined;
   } else if (isNumArg(value)) {
     obj[hiddenField] = value;
   } else if (isStringArg(value) && Number.isFinite(Number(value))) {
@@ -153,14 +157,15 @@ export function doMomentGetterSetter(
   obj: any,
   field: string,
   value?: DateTime | string,
-): any | DateTime {
+) {
   const hiddenField = `_${field}`;
 
-  if ( ! isDef(value)) {
-    return obj[hiddenField] as DateTime;
-  } else if (hasArgs(value) && isObject(value) && DateTime.isDateTime(value)) {
+  if (hasNoArgs(value) || value === null) {
+    // passing no args or null effectively unsets field
+    obj[hiddenField] = undefined;
+  } else if (isDef(value) && isObject(value) && DateTime.isDateTime(value)) {
     obj[hiddenField] = value;
-  } else if (hasArgs(value) && DateTime.isDateTime(checkStringOrDate(value))) {
+  } else if (isDef(value) && DateTime.isDateTime(checkStringOrDate(value))) {
     obj[hiddenField] = checkStringOrDate(value);
   } else {
     throw new Error(

@@ -165,17 +165,13 @@ export class AvailabilityQuery {
    * @param value spec version, usually 1
    * @returns the query when setting, the current value when no argument
    */
-  specVersion(value?: number): number | AvailabilityQuery {
-    if (isNumArg(value)) {
-      this._specVersion = value;
-      return this;
-    } else if (hasNoArgs(value)) {
-      return this._specVersion;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+  specVersion(value?: number): AvailabilityQuery {
+    doIntGetterSetter(this, "specVersion", value);
+    return this;
+  }
+
+  getSpecVersion(): number {
+    return this._specVersion;
   }
 
   /**
@@ -185,9 +181,15 @@ export class AvailabilityQuery {
    * @param value protocol, usually http or https
    * @returns the query when setting, the current value when no argument
    */
-  protocol(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "protocol", value);
+  protocol(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "protocol", value);
+    return this;
   }
+
+  getProtocol(): string | undefined {
+    return this._protocol;
+  }
+
 
   /**
    * Gets/Sets the remote host to connect to.
@@ -195,8 +197,13 @@ export class AvailabilityQuery {
    * @param value host
    * @returns the query when setting, the current value when no argument
    */
-  host(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "host", value);
+  host(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "host", value);
+    return this;
+  }
+
+  getHost(): string {
+    return this._host;
   }
 
   /**
@@ -206,8 +213,13 @@ export class AvailabilityQuery {
    * @param value number for nodata, usually 404 or 204
    * @returns the query when setting, the current value when no argument
    */
-  nodata(value?: number): number | AvailabilityQuery {
-    return doIntGetterSetter(this, "nodata", value);
+  nodata(value?: number): AvailabilityQuery {
+    doIntGetterSetter(this, "nodata", value);
+    return this;
+  }
+
+  getNodata(): number | undefined {
+    return this._nodata;
   }
 
   /**
@@ -216,8 +228,13 @@ export class AvailabilityQuery {
    * @param value port
    * @returns the query when setting, the current value when no argument
    */
-  port(value?: number): number | AvailabilityQuery {
-    return doIntGetterSetter(this, "port", value);
+  port(value?: number): AvailabilityQuery {
+    doIntGetterSetter(this, "port", value);
+    return this;
+  }
+
+  getPort(): number {
+    return this._port;
   }
 
   /**
@@ -226,8 +243,13 @@ export class AvailabilityQuery {
    * @param value network code like IU
    * @returns the query when setting, the current value when no argument
    */
-  networkCode(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "networkCode", value);
+  networkCode(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "networkCode", value);
+    return this;
+  }
+
+  getNetworkCode(): string | undefined {
+    return this._networkCode;
   }
 
   /**
@@ -236,8 +258,13 @@ export class AvailabilityQuery {
    * @param value station code like ANMO
    * @returns the query when setting, the current value when no argument
    */
-  stationCode(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "stationCode", value);
+  stationCode(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "stationCode", value);
+    return this;
+  }
+
+  getStationCode(): string | undefined {
+    return this._stationCode;
   }
 
   /**
@@ -246,8 +273,13 @@ export class AvailabilityQuery {
    * @param value location code like 00
    * @returns the query when setting, the current value when no argument
    */
-  locationCode(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "locationCode", value);
+  locationCode(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "locationCode", value);
+    return this;
+  }
+
+  getLocationCode(): string | undefined {
+    return this._locationCode;
   }
 
   /**
@@ -256,8 +288,13 @@ export class AvailabilityQuery {
    * @param value channel code like BHZ
    * @returns the query when setting, the current value when no argument
    */
-  channelCode(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "channelCode", value);
+  channelCode(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "channelCode", value);
+    return this;
+  }
+
+  getChannelCode(): string | undefined {
+    return this._channelCode;
   }
 
   /**
@@ -266,8 +303,13 @@ export class AvailabilityQuery {
    * @param value start time
    * @returns the query when setting, the current value when no argument
    */
-  startTime(value?: DateTime | string): DateTime | AvailabilityQuery {
-    return doMomentGetterSetter(this, "startTime", value);
+  startTime(value?: DateTime | string): AvailabilityQuery {
+    doMomentGetterSetter(this, "startTime", value);
+    return this;
+  }
+
+  getStartTime(): DateTime | undefined {
+    return this._startTime;
   }
 
   /**
@@ -276,8 +318,13 @@ export class AvailabilityQuery {
    * @param value end time
    * @returns the query when setting, the current value when no argument
    */
-  endTime(value?: DateTime | string): DateTime | AvailabilityQuery {
-    return doMomentGetterSetter(this, "endTime", value);
+  endTime(value?: DateTime | string): AvailabilityQuery {
+    doMomentGetterSetter(this, "endTime", value);
+    return this;
+  }
+
+  getEndTime(): DateTime | undefined {
+    return this._endTime;
   }
 
   /**
@@ -306,8 +353,13 @@ export class AvailabilityQuery {
    * @param value quality
    * @returns the query when setting, the current value when no argument
    */
-  quality(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "quality", value);
+  quality(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "quality", value);
+    return this;
+  }
+
+  getQuality(): string | undefined {
+    return this._quality;
   }
 
   /**
@@ -316,8 +368,13 @@ export class AvailabilityQuery {
    * @param value merge
    * @returns the query when setting, the current value when no argument
    */
-  merge(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "merge", value);
+  merge(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "merge", value);
+    return this;
+  }
+
+  getMerge(): string | undefined {
+    return this._merge;
   }
 
   /**
@@ -326,8 +383,13 @@ export class AvailabilityQuery {
    * @param value merge gaps
    * @returns the query when setting, the current value when no argument
    */
-  mergeGaps(value?: number): number | AvailabilityQuery {
-    return doFloatGetterSetter(this, "mergeGaps", value);
+  mergeGaps(value?: number): AvailabilityQuery {
+    doFloatGetterSetter(this, "mergeGaps", value);
+    return this;
+  }
+
+  getMergeGaps(): number | undefined {
+    return this._mergeGaps;
   }
 
   /**
@@ -336,8 +398,13 @@ export class AvailabilityQuery {
    * @param value show
    * @returns the query when setting, the current value when no argument
    */
-  show(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "show", value);
+  show(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "show", value);
+    return this;
+  }
+
+  getShow(): string | undefined {
+    return this._show;
   }
 
   /**
@@ -346,8 +413,13 @@ export class AvailabilityQuery {
    * @param value limit
    * @returns the query when setting, the current value when no argument
    */
-  limit(value?: number): number | AvailabilityQuery {
-    return doIntGetterSetter(this, "limit", value);
+  limit(value?: number): AvailabilityQuery {
+    doIntGetterSetter(this, "limit", value);
+    return this;
+  }
+
+  getLimit(): number | undefined {
+    return this._limit;
   }
 
   /**
@@ -356,8 +428,13 @@ export class AvailabilityQuery {
    * @param value order by
    * @returns the query when setting, the current value when no argument
    */
-  orderby(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "orderBy", value);
+  orderby(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "orderBy", value);
+    return this;
+  }
+
+  getOrderBy(): string | undefined {
+    return this._orderby;
   }
 
   /**
@@ -366,8 +443,13 @@ export class AvailabilityQuery {
    * @param value true to include restricted data
    * @returns the query when setting, the current value when no argument
    */
-  includeRestricted(value?: boolean): boolean | AvailabilityQuery {
-    return doBoolGetterSetter(this, "includerestricted", value);
+  includeRestricted(value?: boolean): AvailabilityQuery {
+    doBoolGetterSetter(this, "includerestricted", value);
+    return this;
+  }
+
+  getIncludeRestricted(): boolean | undefined {
+    return this._includerestricted;
   }
 
   /**
@@ -377,8 +459,13 @@ export class AvailabilityQuery {
    * @param value format
    * @returns the query when setting, the current value when no argument
    */
-  format(value?: string): string | AvailabilityQuery {
-    return doStringGetterSetter(this, "format", value);
+  format(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "format", value);
+    return this;
+  }
+
+  getFormat(): string | undefined {
+    return this._format;
   }
 
   /**
@@ -387,17 +474,13 @@ export class AvailabilityQuery {
    * @param value timeout in seconds
    * @returns the query when setting, the current value when no argument
    */
-  timeout(value?: number): number | AvailabilityQuery {
-    if (hasNoArgs(value)) {
-      return this._timeoutSec;
-    } else if (isNumArg(value)) {
-      this._timeoutSec = value;
-      return this;
-    } else {
-      throw new Error(
-        "value argument is optional or number, but was " + typeof value,
-      );
-    }
+  timeout(value?: number): AvailabilityQuery {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   /**
@@ -429,7 +512,7 @@ export class AvailabilityQuery {
       function (response) {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis._nodata)
         ) {
           return RSVP.hash(EMPTY_JSON);
         }
@@ -477,7 +560,7 @@ export class AvailabilityQuery {
       function (response) {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis._nodata)
         ) {
           return EMPTY_JSON;
         }
@@ -543,7 +626,7 @@ export class AvailabilityQuery {
     return this.postRaw(channelTimeList, method).then(function (response) {
       if (
         response.status === 204 ||
-        (isDef(mythis._nodata) && response.status === mythis.nodata())
+        (isDef(mythis._nodata) && response.status === mythis._nodata)
       ) {
         return EMPTY_JSON;
       }
@@ -755,19 +838,19 @@ export class AvailabilityQuery {
     let url = this.formBaseURL() + `/${method}?`;
 
     if (this._networkCode) {
-      url = url + makeParam("net", this.networkCode());
+      url = url + makeParam("net", this._networkCode);
     }
 
     if (this._stationCode) {
-      url = url + makeParam("sta", this.stationCode());
+      url = url + makeParam("sta", this._stationCode);
     }
 
     if (this._locationCode) {
-      url = url + makeParam("loc", this.locationCode());
+      url = url + makeParam("loc", this._locationCode);
     }
 
     if (this._channelCode) {
-      url = url + makeParam("cha", this.channelCode());
+      url = url + makeParam("cha", this._channelCode);
     }
 
     if (this._startTime) {
@@ -779,39 +862,39 @@ export class AvailabilityQuery {
     }
 
     if (this._quality) {
-      url = url + makeParam("quality", this.quality());
+      url = url + makeParam("quality", this._quality);
     }
 
     if (this._merge) {
-      url = url + makeParam("merge", this.merge());
+      url = url + makeParam("merge", this._merge);
     }
 
     if (this._mergeGaps) {
-      url = url + makeParam("mergegaps", this.mergeGaps());
+      url = url + makeParam("mergegaps", this._mergeGaps);
     }
 
     if (this._show) {
-      url = url + makeParam("show", this.show());
+      url = url + makeParam("show", this._show);
     }
 
     if (isNumArg(this._limit) && this._limit > 0) {
-      url = url + makeParam("limit", this.limit());
+      url = url + makeParam("limit", this._limit);
     }
 
     if (this._orderby) {
-      url = url + makeParam("orderby", this.orderby());
+      url = url + makeParam("orderby", this._orderby);
     }
 
     if (this._includerestricted) {
-      url = url + makeParam("includerestricted", this.includeRestricted());
+      url = url + makeParam("includerestricted", this._includerestricted);
     }
 
     if (this._format) {
-      url = url + makeParam("format", this.format());
+      url = url + makeParam("format", this._format);
     }
 
     if (this._nodata) {
-      url = url + makeParam("nodata", this.nodata());
+      url = url + makeParam("nodata", this._nodata);
     }
 
     if (url.endsWith("&") || url.endsWith("?")) {

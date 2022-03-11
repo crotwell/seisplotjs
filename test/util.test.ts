@@ -1,4 +1,3 @@
-// @flow
 
 import * as util from '../src/util.js';
 import {isoToDateTime, toIsoWoZ, StartEndDuration} from '../src/util.js';

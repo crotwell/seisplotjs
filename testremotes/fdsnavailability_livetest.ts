@@ -15,7 +15,7 @@ test("do test", () => {
     .stationCode("BIRD")
     .startTime("2021-12-27T19:18:54Z")
     .endTime("2021-12-27T19:22:54Z");
-  avail.query().then((sddList: Array<SeismogramDisplayData>) => {
-     sddList.forEach(sdd => console.log(sdd))
+  return avail.query().then((sddList: Array<SeismogramDisplayData>) => {
+     sddList.forEach(sdd => console.log(sdd.codes()))
   });
 });

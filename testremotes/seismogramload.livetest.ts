@@ -32,7 +32,7 @@ test( "load HODGE for local eq test", () => {
   seisLoad.startPhaseList = "P";
   seisLoad.endPhaseList = "S";
   seisLoad.markedPhaseList = "PcP";
-  seisLoad.startOffset = -30; // seconds
+  seisLoad.startOffset = Duration.fromMillis(-30*1000); // seconds
   seisLoad.endOffset = Duration.fromMillis(120*1000); // or as duration
   return RSVP.all([
     seisLoad.loadSeismograms().then( sddList  => {

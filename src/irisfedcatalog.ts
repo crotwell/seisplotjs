@@ -345,8 +345,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  specVersion(value?: number): number | FedCatalogQuery {
-    return doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: number): FedCatalogQuery {
+    doIntGetterSetter(this, "specVersion", value);
+    return this;
+  }
+
+  getSpecVersion(): number | undefined {
+    return this._specVersion;
   }
 
   /**
@@ -356,8 +361,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  protocol(value?: string): string | FedCatalogQuery {
-    return doStringGetterSetter(this, "protocol", value);
+  protocol(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "protocol", value);
+    return this;
+  }
+
+  getProtocol(): string | undefined {
+    return this._protocol;
   }
 
   /**
@@ -366,8 +376,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  host(value?: string): string | FedCatalogQuery {
-    return doStringGetterSetter(this, "host", value);
+  host(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "host", value);
+    return this;
+  }
+
+  getHost(): string | undefined {
+    return this._host;
   }
 
   /**
@@ -376,8 +391,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  port(value?: number): number | FedCatalogQuery {
-    return doIntGetterSetter(this, "port", value);
+  port(value?: number): FedCatalogQuery {
+    doIntGetterSetter(this, "port", value);
+    return this;
+  }
+
+  getPort(): number | undefined {
+    return this._port;
   }
 
   /**
@@ -387,8 +407,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  nodata(value?: number): number | FedCatalogQuery {
-    return doIntGetterSetter(this, "nodata", value);
+  nodata(value?: number): FedCatalogQuery {
+    doIntGetterSetter(this, "nodata", value);
+    return this;
+  }
+
+  getNodata(): number | undefined {
+    return this._nodata;
   }
 
   /**
@@ -397,8 +422,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  targetService(value?: string): string | FedCatalogQuery {
-    return doStringGetterSetter(this, "targetService", value);
+  targetService(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "targetService", value);
+    return this;
+  }
+
+  getTargetService(): string | undefined {
+    return this._targetService;
   }
 
   /**
@@ -407,8 +437,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  networkCode(value?: string): string | FedCatalogQuery {
-    return doStringGetterSetter(this, "networkCode", value);
+  networkCode(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "networkCode", value);
+    return this;
+  }
+
+  getNetworkCode(): string | undefined {
+    return this._networkCode;
   }
 
   /**
@@ -417,8 +452,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  stationCode(value?: string): string | FedCatalogQuery {
-    return doStringGetterSetter(this, "stationCode", value);
+  stationCode(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "stationCode", value);
+    return this;
+  }
+
+  getStationCode(): string | undefined {
+    return this._stationCode;
   }
 
   /**
@@ -427,8 +467,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  locationCode(value?: string): string | FedCatalogQuery {
-    return doStringGetterSetter(this, "locationCode", value);
+  locationCode(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "locationCode", value);
+    return this;
+  }
+
+  getLocationCode(): string | undefined {
+    return this._locationCode;
   }
 
   /**
@@ -437,8 +482,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  channelCode(value?: string): string | FedCatalogQuery {
-    return doStringGetterSetter(this, "channelCode", value);
+  channelCode(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "channelCode", value);
+    return this;
+  }
+
+  getChannelCode(): string | undefined {
+    return this._channelCode;
   }
 
   /**
@@ -447,8 +497,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime | string): DateTime | FedCatalogQuery {
-    return doMomentGetterSetter(this, "startTime", value);
+  startTime(value?: DateTime | string): FedCatalogQuery {
+    doMomentGetterSetter(this, "startTime", value);
+    return this;
+  }
+
+  getStartTime(): DateTime | undefined {
+    return this._startTime;
   }
 
   /**
@@ -457,8 +512,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime | string): DateTime | FedCatalogQuery {
-    return doMomentGetterSetter(this, "endTime", value);
+  endTime(value?: DateTime | string): FedCatalogQuery {
+    doMomentGetterSetter(this, "endTime", value);
+    return this;
+  }
+
+  getEndTime(): DateTime | undefined {
+    return this._endTime;
   }
 
   /**
@@ -487,8 +547,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startBefore(value?: DateTime | string): DateTime | FedCatalogQuery {
-    return doMomentGetterSetter(this, "startBefore", value);
+  startBefore(value?: DateTime | string): FedCatalogQuery {
+    doMomentGetterSetter(this, "startBefore", value);
+    return this;
+  }
+
+  getStartBefore(): DateTime | undefined {
+    return this._startBefore;
   }
 
   /**
@@ -497,8 +562,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endBefore(value?: DateTime | string): DateTime | FedCatalogQuery {
-    return doMomentGetterSetter(this, "endBefore", value);
+  endBefore(value?: DateTime | string): FedCatalogQuery {
+    doMomentGetterSetter(this, "endBefore", value);
+    return this;
+  }
+
+  getEndBefore(): DateTime | undefined {
+    return this._endBefore;
   }
 
   /**
@@ -507,8 +577,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startAfter(value?: DateTime | string): DateTime | FedCatalogQuery {
-    return doMomentGetterSetter(this, "startAfter", value);
+  startAfter(value?: DateTime | string): FedCatalogQuery {
+    doMomentGetterSetter(this, "startAfter", value);
+    return this;
+  }
+
+  getStartAfter(): DateTime | undefined {
+    return this._startAfter;
   }
 
   /**
@@ -517,8 +592,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endAfter(value?: DateTime | string): DateTime | FedCatalogQuery {
-    return doMomentGetterSetter(this, "endAfter", value);
+  endAfter(value?: DateTime | string): FedCatalogQuery {
+    doMomentGetterSetter(this, "endAfter", value);
+    return this;
+  }
+
+  getEndAfter(): DateTime | undefined {
+    return this._endAfter;
   }
 
   /**
@@ -527,8 +607,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minLat(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "minLat", value);
+  minLat(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "minLat", value);
+    return this;
+  }
+
+  getMinLat(): number | undefined {
+    return this._minLat;
   }
 
   /**
@@ -537,8 +622,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxLat(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "maxLat", value);
+  maxLat(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "maxLat", value);
+    return this;
+  }
+
+  getMaxLat(): number | undefined {
+    return this._maxLat;
   }
 
   /**
@@ -547,8 +637,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minLon(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "minLon", value);
+  minLon(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "minLon", value);
+    return this;
+  }
+
+  getMinLon(): number | undefined {
+    return this._minLon;
   }
 
   /**
@@ -557,8 +652,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxLon(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "maxLon", value);
+  maxLon(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "maxLon", value);
+    return this;
+  }
+
+  getMaxLon(): number | undefined {
+    return this._maxLon;
   }
 
   /**
@@ -567,8 +667,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  latitude(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "latitude", value);
+  latitude(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "latitude", value);
+    return this;
+  }
+
+  getLatitude(): number | undefined {
+    return this._latitude;
   }
 
   /**
@@ -577,8 +682,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  longitude(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "longitude", value);
+  longitude(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "longitude", value);
+    return this;
+  }
+
+  getLongitude(): number | undefined {
+    return this._longitude;
   }
 
   /**
@@ -587,8 +697,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  minRadius(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "minRadius", value);
+  minRadius(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "minRadius", value);
+    return this;
+  }
+
+  getMinRadius(): number | undefined {
+    return this._minRadius;
   }
 
   /**
@@ -597,8 +712,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  maxRadius(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "maxRadius", value);
+  maxRadius(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "maxRadius", value);
+    return this;
+  }
+
+  getMaxRadius(): number | undefined {
+    return this._maxRadius;
   }
 
   /**
@@ -607,8 +727,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeRestricted(value?: boolean): boolean | FedCatalogQuery {
-    return doBoolGetterSetter(this, "includeRestricted", value);
+  includeRestricted(value?: boolean): FedCatalogQuery {
+    doBoolGetterSetter(this, "includeRestricted", value);
+    return this;
+  }
+
+  getIncludeRestricted(): boolean | undefined {
+    return this._includeRestricted;
   }
 
   /**
@@ -617,8 +742,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  includeAvailability(value?: boolean): boolean | FedCatalogQuery {
-    return doBoolGetterSetter(this, "includeAvailability", value);
+  includeAvailability(value?: boolean): FedCatalogQuery {
+    doBoolGetterSetter(this, "includeAvailability", value);
+    return this;
+  }
+
+  getIncludeAvailability(): boolean | undefined {
+    return this._includeAvailability;
   }
 
   /**
@@ -627,8 +757,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  format(value?: string): string | FedCatalogQuery {
-    return doStringGetterSetter(this, "format", value);
+  format(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "format", value);
+    return this;
+  }
+
+  getFormat(): string | undefined {
+    return this._format;
   }
 
   /**
@@ -637,8 +772,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  updatedAfter(value?: DateTime): DateTime | FedCatalogQuery {
-    return doMomentGetterSetter(this, "updatedAfter", value);
+  updatedAfter(value?: DateTime): FedCatalogQuery {
+    doMomentGetterSetter(this, "updatedAfter", value);
+    return this;
+  }
+
+  getUpdatedAfter(): DateTime | undefined {
+    return this._updatedAfter;
   }
 
   /**
@@ -647,8 +787,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  matchTimeseries(value?: boolean): boolean | FedCatalogQuery {
-    return doBoolGetterSetter(this, "matchTimeseries", value);
+  matchTimeseries(value?: boolean): FedCatalogQuery {
+    doBoolGetterSetter(this, "matchTimeseries", value);
+    return this;
+  }
+
+  getMatchTimeseries(): boolean | undefined {
+    return this._matchTimeseries;
   }
 
   /**
@@ -657,8 +802,13 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  timeout(value?: number): number | FedCatalogQuery {
-    return doFloatGetterSetter(this, "timeoutSec", value);
+  timeout(value?: number): FedCatalogQuery {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   /**
@@ -1006,7 +1156,7 @@ export class FedCatalogQuery {
       return response.text();
     } else if (
       response.status === 204 ||
-      (isDef(this._nodata) && response.status === this.nodata())
+      (isDef(this._nodata) && response.status === this._nodata)
     ) {
       // 204 is nodata, so successful but empty
       return Promise.resolve(FAKE_EMPTY_TEXT);
@@ -1127,11 +1277,11 @@ export class FedCatalogQuery {
     }
 
     if (isStringArg(this._targetService)) {
-      url = url + makeParam("targetservice", this.targetService());
+      url = url + makeParam("targetservice", this._targetService);
     }
 
     if (isStringArg(this._networkCode)) {
-      url = url + makeParam("net", this.networkCode());
+      url = url + makeParam("net", this._networkCode);
     } else {
       // this is dumb, just to workaround a bug with IRIS fedcat server requiring one
       // of net, sta, loc, chan, but net=* seems to satisfy this
@@ -1139,15 +1289,15 @@ export class FedCatalogQuery {
     }
 
     if (isStringArg(this._stationCode)) {
-      url = url + makeParam("sta", this.stationCode());
+      url = url + makeParam("sta", this._stationCode);
     }
 
     if (isStringArg(this._locationCode)) {
-      url = url + makeParam("loc", this.locationCode());
+      url = url + makeParam("loc", this._locationCode);
     }
 
     if (isStringArg(this._channelCode)) {
-      url = url + makeParam("cha", this.channelCode());
+      url = url + makeParam("cha", this._channelCode);
     }
 
     if (isObject(this._startTime)) {
@@ -1175,43 +1325,43 @@ export class FedCatalogQuery {
     }
 
     if (isNumArg(this._minLat)) {
-      url = url + makeParam("minlat", this.minLat());
+      url = url + makeParam("minlat", this._minLat);
     }
 
     if (isNumArg(this._maxLat)) {
-      url = url + makeParam("maxlat", this.maxLat());
+      url = url + makeParam("maxlat", this._maxLat);
     }
 
     if (isNumArg(this._minLon)) {
-      url = url + makeParam("minlon", this.minLon());
+      url = url + makeParam("minlon", this._minLon);
     }
 
     if (isNumArg(this._maxLon)) {
-      url = url + makeParam("maxlon", this.maxLon());
+      url = url + makeParam("maxlon", this._maxLon);
     }
 
     if (isNumArg(this._latitude)) {
-      url = url + makeParam("lat", this.latitude());
+      url = url + makeParam("lat", this._latitude);
     }
 
     if (isNumArg(this._longitude)) {
-      url = url + makeParam("lon", this.longitude());
+      url = url + makeParam("lon", this._longitude);
     }
 
     if (isNumArg(this._minRadius)) {
-      url = url + makeParam("minradius", this.minRadius());
+      url = url + makeParam("minradius", this._minRadius);
     }
 
     if (isNumArg(this._maxRadius)) {
-      url = url + makeParam("maxradius", this.maxRadius());
+      url = url + makeParam("maxradius", this._maxRadius);
     }
 
     if (isDef(this._includeRestricted)) {
-      url = url + makeParam("includerestricted", this.includeRestricted());
+      url = url + makeParam("includerestricted", this._includeRestricted);
     }
 
     if (isDef(this._includeAvailability)) {
-      url = url + makeParam("includeavailability", this.includeAvailability());
+      url = url + makeParam("includeavailability", this._includeAvailability);
     }
 
     if (isObject(this._updatedAfter)) {
@@ -1219,15 +1369,15 @@ export class FedCatalogQuery {
     }
 
     if (isDef(this._matchTimeseries)) {
-      url = url + makeParam("matchtimeseries", this.matchTimeseries());
+      url = url + makeParam("matchtimeseries", this._matchTimeseries);
     }
 
     if (isStringArg(this._format)) {
-      url = url + makeParam("format", this.format());
+      url = url + makeParam("format", this._format);
     }
 
     if (isNumArg(this._nodata)) {
-      url = url + makeParam("nodata", this.nodata());
+      url = url + makeParam("nodata", this._nodata);
     }
 
     if (url.endsWith("&") || url.endsWith("?")) {

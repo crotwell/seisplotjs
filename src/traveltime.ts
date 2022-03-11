@@ -105,31 +105,31 @@ export class TraveltimeQuery {
   _port: number;
 
   /** @private */
-  _nodata: number | null;
+  _nodata: number | undefined;
 
   /** @private */
   _evdepth: number;
 
   /** @private */
-  _distdeg: number | null;
+  _distdeg: number | undefined;
 
   /** @private */
-  _model: string | null;
+  _model: string | undefined;
 
   /** @private */
-  _phases: string | null;
+  _phases: string | undefined;
 
   /** @private */
-  _stalat: number | null;
+  _stalat: number | undefined;
 
   /** @private */
-  _stalon: number | null;
+  _stalon: number | undefined;
 
   /** @private */
-  _evlat: number | null;
+  _evlat: number | undefined;
 
   /** @private */
-  _evlon: number | null;
+  _evlon: number | undefined;
 
   /** @private */
   _format: string;
@@ -144,15 +144,7 @@ export class TraveltimeQuery {
     this._specVersion = "1";
     this._protocol = checkProtocol();
 
-    this._stalat = null;
-    this._stalon = null;
-    this._evlat = null;
-    this._evlon = null;
     this._evdepth = 0;
-    this._distdeg = null;
-    this._model = null;
-    this._phases = null;
-    this._nodata = null;
 
     this._host = IRIS_HOST;
     if (isNonEmptyStringArg(host)) {
@@ -166,12 +158,22 @@ export class TraveltimeQuery {
     this._timeoutSec = 30;
   }
 
-  protocol(value?: string): string | TraveltimeQuery {
-    return doStringGetterSetter(this, "protocol", value);
+  protocol(value?: string): TraveltimeQuery {
+    doStringGetterSetter(this, "protocol", value);
+    return this;
   }
 
-  host(value?: string): string | TraveltimeQuery {
-    return doStringGetterSetter(this, "host", value);
+  getProtocol(): string | undefined {
+    return this._protocol;
+  }
+
+  host(value?: string): TraveltimeQuery {
+    doStringGetterSetter(this, "host", value);
+    return this;
+  }
+
+  getHost(): string {
+    return this._host;
   }
 
   /**
@@ -180,8 +182,13 @@ export class TraveltimeQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  port(value?: number): number | TraveltimeQuery {
-    return doIntGetterSetter(this, "port", value);
+  port(value?: number): TraveltimeQuery {
+    doIntGetterSetter(this, "port", value);
+    return this;
+  }
+
+  getPort(): number | undefined {
+    return this._port;
   }
 
   /**
@@ -191,44 +198,85 @@ export class TraveltimeQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  nodata(value?: number): number | TraveltimeQuery {
-    return doIntGetterSetter(this, "nodata", value);
+  nodata(value?: number): TraveltimeQuery {
+    doIntGetterSetter(this, "nodata", value);
+    return this;
   }
 
-  specVersion(value?: string): string | TraveltimeQuery {
-    return doStringGetterSetter(this, "specVersion", value);
+  getNodata(): number | undefined {
+    return this._nodata;
   }
 
-  evdepth(value?: number): number | TraveltimeQuery {
-    return doFloatGetterSetter(this, "evdepth", value);
+  specVersion(value?: string): TraveltimeQuery {
+    doStringGetterSetter(this, "specVersion", value);
+    return this;
   }
 
-  evdepthInMeter(value?: number): number | TraveltimeQuery {
-    return doFloatGetterSetter(
+  getSpecVersion(): string | undefined {
+    return this._specVersion;
+  }
+
+  evdepth(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(this, "evdepth", value);
+    return this;
+  }
+
+  evdepthInMeter(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(
       this,
       "evdepth",
       isDef(value) ? value / 1000 : value,
     );
+    return this;
   }
 
-  distdeg(value?: number): number | TraveltimeQuery {
-    return doFloatGetterSetter(this, "distdeg", value);
+  getEvdepth(): number | undefined {
+    return this._evdepth;
   }
 
-  model(value?: string): string | TraveltimeQuery {
-    return doStringGetterSetter(this, "model", value);
+  distdeg(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(this, "distdeg", value);
+    return this;
   }
 
-  phases(value?: string): string | TraveltimeQuery {
-    return doStringGetterSetter(this, "phases", value);
+  getDistdeg(): number | undefined {
+    return this._distdeg;
   }
 
-  stalat(value?: number): number | TraveltimeQuery {
-    return doFloatGetterSetter(this, "stalat", value);
+  model(value?: string): TraveltimeQuery {
+    doStringGetterSetter(this, "model", value);
+    return this;
   }
 
-  stalon(value?: number): number | TraveltimeQuery {
-    return doFloatGetterSetter(this, "stalon", value);
+  getModel(): string | undefined {
+    return this._model;
+  }
+
+  phases(value?: string): TraveltimeQuery {
+    doStringGetterSetter(this, "phases", value);
+    return this;
+  }
+
+  getPhases(): string | undefined {
+    return this._phases;
+  }
+
+  stalat(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(this, "stalat", value);
+    return this;
+  }
+
+  getStalat(): number | undefined {
+    return this._stalat;
+  }
+
+  stalon(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(this, "stalon", value);
+    return this;
+  }
+
+  getStalon(): number | undefined {
+    return this._stalon;
   }
 
   latLonFromStation(station: Station): TraveltimeQuery {
@@ -237,12 +285,22 @@ export class TraveltimeQuery {
     return this;
   }
 
-  evlat(value?: number): number | TraveltimeQuery {
-    return doFloatGetterSetter(this, "evlat", value);
+  evlat(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(this, "evlat", value);
+    return this;
   }
 
-  evlon(value?: number): number | TraveltimeQuery {
-    return doFloatGetterSetter(this, "evlon", value);
+  getEvlat(): number | undefined {
+    return this._evlat;
+  }
+
+  evlon(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(this, "evlon", value);
+    return this;
+  }
+
+  getEvlon(): number | undefined {
+    return this._evlon;
   }
 
   latLonFromQuake(quake: Quake): TraveltimeQuery {
@@ -254,10 +312,20 @@ export class TraveltimeQuery {
 
   format(value?: string): string | TraveltimeQuery {
     return doStringGetterSetter(this, "format", value);
+    return this;
   }
 
-  noheader(value?: boolean): boolean | TraveltimeQuery {
-    return doBoolGetterSetter(this, "noheader", value);
+  getFormat(): string | undefined {
+    return this._format;
+  }
+
+  noheader(value?: boolean): TraveltimeQuery {
+    doBoolGetterSetter(this, "noheader", value);
+    return this;
+  }
+
+  getNoheader(): boolean | undefined {
+    return this._noheader;
   }
 
   /**
@@ -266,8 +334,13 @@ export class TraveltimeQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  timeout(value?: number): number | TraveltimeQuery {
-    return doFloatGetterSetter(this, "timeout", value);
+  timeout(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   queryText(): Promise<string> {
@@ -279,7 +352,7 @@ export class TraveltimeQuery {
       function (response) {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis._nodata)
         ) {
           // no data, create empty
           return (
@@ -303,7 +376,7 @@ export class TraveltimeQuery {
       function (response) {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis._nodata)
         ) {
           // no data, create empty
           return {
@@ -331,7 +404,7 @@ export class TraveltimeQuery {
           return response.text();
         } else if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.nodata())
+          (isDef(mythis._nodata) && response.status === mythis._nodata)
         ) {
           // 204 is nodata, so successful but empty
           return FAKE_EMPTY_SVG;
@@ -411,7 +484,7 @@ export class TraveltimeQuery {
     }
 
     if (isDef(this._evdepth) && this._evdepth !== 0) {
-      url = url + makeParam("evdepth", this.evdepth());
+      url = url + makeParam("evdepth", this._evdepth);
     }
 
     if (isDef(this._stalat) && isDef(this._stalon)) {
@@ -419,7 +492,7 @@ export class TraveltimeQuery {
         url +
         makeParam(
           "staloc",
-          "[" + stringify(this.stalat()) + "," + stringify(this.stalon()) + "]",
+          "[" + stringify(this._stalat) + "," + stringify(this._stalon) + "]",
         );
     }
 
@@ -428,28 +501,28 @@ export class TraveltimeQuery {
         url +
         makeParam(
           "evloc",
-          "[" + stringify(this.evlat()) + "," + stringify(this.evlon()) + "]",
+          "[" + stringify(this._evlat) + "," + stringify(this._evlon) + "]",
         );
     }
 
     if (isDef(this._distdeg)) {
-      url = url + makeParam("distdeg", this.distdeg());
+      url = url + makeParam("distdeg", this._distdeg);
     }
 
     if (isDef(this._model)) {
-      url = url + makeParam("model", this.model());
+      url = url + makeParam("model", this._model);
     }
 
     if (isDef(this._phases)) {
-      url = url + makeParam("phases", this.phases());
+      url = url + makeParam("phases", this._phases);
     }
 
     if (isDef(this._format)) {
-      url = url + makeParam("format", this.format());
+      url = url + makeParam("format", this._format);
     }
 
     if (isDef(this._nodata)) {
-      url = url + makeParam("nodata", this.nodata());
+      url = url + makeParam("nodata", this._nodata);
     }
 
     if (url.endsWith("&") || url.endsWith("?")) {
