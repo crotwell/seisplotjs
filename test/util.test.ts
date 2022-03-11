@@ -31,6 +31,21 @@ test("StartEndDuration", () => {
   expect(sed.duration.as('years')).toBeGreaterThan(300);
   expect(sed.endTime).toEqual(util.WAY_FUTURE);
 
+  let ss = isoToDateTime(s);
+  let ee = isoToDateTime(e);
+  let day = Duration.fromObject({ days: 1, hours: 2, minutes: 7 });
+  let overlap = new StartEndDuration(ss.minus(day),ee.plus(day));
+  expect(sed.overlaps(overlap)).toBeTrue();
+  expect(overlap.overlaps(sed)).toBeTrue();
+  overlap = new StartEndDuration(ss.minus(day),ee.minus(day));
+  expect(sed.overlaps(overlap)).toBeFalse();
+  expect(overlap.overlaps(sed)).toBeFalse();
+  overlap = new StartEndDuration(ss.minus(day),ss.minus(Duration.fromMillis(1)));
+  expect(sed.overlaps(overlap)).toBeFalse();
+  expect(overlap.overlaps(sed)).toBeFalse();
+  overlap = new StartEndDuration(ss.minus(day),ss.plus(Duration.fromMillis(1)));
+  expect(sed.overlaps(overlap)).toBeTrue();
+  expect(overlap.overlaps(sed)).toBeTrue();
 });
 
 test("isStringArg isNumArg", () => {
@@ -56,5 +71,5 @@ test("isStringArg isNumArg", () => {
 
 
 test("version", () => {
-  expect(util.version).toContain('2.1');
+  expect(util.version).toContain('3.0');
 });
