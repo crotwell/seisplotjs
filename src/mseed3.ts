@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {isDef} from "./util";
+import {isDef, UTC_OPTIONS} from "./util";
 import {EncodedDataSegment, FLOAT, INTEGER, DOUBLE, STEIM1, STEIM2} from "./seedcodec";
 import {SeismogramSegment, Seismogram} from "./seismogram";
 import {
@@ -643,7 +643,7 @@ export class MSeed3Header {
       minute: this.minute,
       second: this.second,
       millisecond: Math.round(this.nanosecond / 1000000),
-    });
+    }, UTC_OPTIONS);
   }
 }
 

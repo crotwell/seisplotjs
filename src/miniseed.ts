@@ -7,7 +7,7 @@
 import {DateTime, Duration} from "luxon";
 import {SeismogramSegment, Seismogram} from "./seismogram";
 import {EncodedDataSegment} from "./seedcodec";
-import {isDef, isNonEmptyStringArg} from "./util";
+import {isDef, isNonEmptyStringArg, UTC_OPTIONS} from "./util";
 export const MINISEED_MIME = "application/vnd.fdsn.mseed";
 // type codes as number (ascii)
 export const R_TYPECODE: number = "R".charCodeAt(0);
@@ -510,7 +510,8 @@ export class BTime {
                                 hour: this.hour,
                                 minute: this.min,
                                 second: this.sec,
-                                millisecond: Math.round(this.tenthMilli / 10)});
+                                millisecond: Math.round(this.tenthMilli / 10)},
+                              UTC_OPTIONS);
   }
 }
 
