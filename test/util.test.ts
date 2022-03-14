@@ -6,6 +6,8 @@ import {DateTime, Duration} from 'luxon';
 test( "_toIsoWoZ test", () => {
   const s = "2018-01-01T12:34:45.000";
   expect(toIsoWoZ(isoToDateTime(s))).toBe(s);
+  const sz = "2018-01-01T12:34:45.000Z";
+  expect(toIsoWoZ(isoToDateTime(sz))).toBe(s);
 });
 
 test("StartEndDuration", () => {
