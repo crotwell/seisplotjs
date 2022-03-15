@@ -297,6 +297,9 @@ export function stringify(value: unknown): string {
 }
 
 export function isoToDateTime(val: string): DateTime {
+  if (val.toLowerCase() === "now") {
+    return DateTime.utc();
+  }
   return DateTime.fromISO(val, UTC_OPTIONS);
 }
 

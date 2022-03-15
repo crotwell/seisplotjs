@@ -51,6 +51,7 @@ import * as OregonDSPTop from "oregondsp";
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 import RSVP from "rsvp";
 import * as d3 from "d3";
+import * as luxon from "luxon";
 import * as leaflet from "leaflet";
 import {version} from "./util";
 
@@ -102,5 +103,6 @@ export {
   OregonDSP,
   d3,
   leaflet,
+  luxon,
   RSVP,
 };

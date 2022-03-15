@@ -52,7 +52,7 @@ let createFIR = function() {
   d3.select("div.message").append('p').text(`Zero Freq Gain: ${impulseResponse.amp[0]}`);
 
   let sampleRate = 1;
-  let start = seisplotjs.moment.utc('2000-01-01T00:00:00Z');
+  let start = seisplotjs.util.isoToDateTime('2000-01-01T00:00:00Z');
   let impulseSeis = seisplotjs.seismogram.Seismogram.createFromContiguousData(longCoeff, sampleRate, start);
   // snip start draw
   let div = seisplotjs.d3.select('div.impulse');
