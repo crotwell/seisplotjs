@@ -5,481 +5,215 @@
  */
 import Pikaday from "pikaday";
 import {DateTime, Duration} from "luxon";
-import * as d3 from "d3";
-import {insertCSS} from "./cssutil";
-import {StartEndDuration} from "./util";
+import {StartEndDuration, isoToDateTime} from "./util";
+
+
+export const hourMinRegEx = /^([0-1]?[0-9]):([0-5]?[0-9])$/;
+export const HOUR_MIN_24 = "HH:mm";
+
 
 /**
  * Hour and Minute chooser using sliders.
- *
- * @param div selected div to append chooser to
- * @param initialTime initial chooser time value
- * @param updateCallback optional callback function when time is selected
+ * Use as '<hour-min-chooser></hour-min-chooser>'
  */
-export class HourMinChooser {
-  div: any; // d3 not yet in flow-typed :(
-
-  time: DateTime;
+export class HourMinChooser extends HTMLElement {
+  _time: DateTime;
   updateCallback: (time: DateTime) => void;
-  hourMinRegEx: RegExp;
-  myOnClick: (event: Event) => void;
-  hourMinField: any; // d3 not yet in flow-typed :(
+  popupDiv: HTMLDivElement;
+  constructor() {
+    super();
+    const mythis = this;
+    this._time = DateTime.utc().set({second: 0, millisecond: 0});
+    const attr_date_time = this.getAttribute("date-time");
+    if (attr_date_time) {
+      this._time = isoToDateTime(attr_date_time);
+      this._time.set({second: 0, millisecond: 0}); // only hour and min?
+    }
+    this.updateCallback = function(time: DateTime) {};
+    const shadow = this.attachShadow({mode: 'open'});
 
-  popupDiv: any; // d3 not yet in flow-typed :(
+    // style
+    let style = document.createElement('style');
 
-  hourDiv: any; // d3 not yet in flow-typed :(
-
-  hourSlider: any; // d3 not yet in flow-typed :(
-
-  minuteDiv: any; // d3 not yet in flow-typed :(
-
-  minuteSlider: any; // d3 not yet in flow-typed :(
-
-  constructor(
-    div: any,
-    initialTime: DateTime,
-    updateCallback?: (time: DateTime) => void,
-  ) {
-    let mythis = this;
-
-    this.div = d3.select(div);
-
-    this.time = initialTime;
-    this.updateCallback = updateCallback ? updateCallback : dummyCallback;
-    this.hourMinRegEx = /^([0-1]?[0-9]):([0-5]?[0-9])$/;
-
-    this.myOnClick = function (e) {
-      // click document outside popup closes popup
-      // not sure this if matters???
-      if (e.target !== mythis.hourMinField && e.target !== mythis.popupDiv) {
-        mythis.hide();
+    style.textContent = `
+      .hourminpopup {
+        position: absolute;
+        box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
+        background-color: white;
+        z-index: 10;
       }
+      .hidden {
+        visibility: hidden;
+      }
+      .shown {
+        visibility: visible;
+      }
+      hourminpopup div {
+        position: relative;
+      }
+      input.hourMin {
+        width: 3em;
+      }
+    `;
+    shadow.appendChild(style);
+
+    const wrapper = document.createElement('span');
+    wrapper.addEventListener('mouseleave', e => {
+      console.log("mouseleave wrapper")
+      mythis.hide();
+    });
+
+
+    const popupDiv = document.createElement('div');
+    this.popupDiv = popupDiv;
+    popupDiv.setAttribute("class", "hourminpopup hidden");
+    const hourDiv = popupDiv.appendChild(document.createElement('div'));
+    const hour_label = hourDiv.appendChild(document.createElement('label'));
+    hour_label.textContent = "Hour:";
+    const hour_slider = hourDiv.appendChild(document.createElement('input'));
+    hour_slider.setAttribute("type", "range");
+    hour_slider.setAttribute("min", "0");
+    hour_slider.setAttribute("max", "23");
+    hour_slider.setAttribute("value", `${this.time.hour}`);
+    hour_slider.setAttribute("class", "hourSlider");
+    hour_slider.oninput = function(e: Event) {
+      if (e.target !== null) {
+        const target = e.target as HTMLInputElement;
+        const hour = Number.parseInt(target.value);
+        if (!Number.isNaN(hour)) {
+          mythis.time = mythis.time.set({hour: hour});
+        }
+      }
+    }
+
+    const minDiv = popupDiv.appendChild(document.createElement('div'));
+    const min_label = hourDiv.appendChild(document.createElement('label'));
+    min_label.textContent = "Min:";
+    const min_slider = hourDiv.appendChild(document.createElement('input'));
+    min_slider.setAttribute("type", "range");
+    min_slider.setAttribute("min", "0");
+    min_slider.setAttribute("max", "59");
+    min_slider.setAttribute("value", `${this.time.minute}`);
+    min_slider.setAttribute("class", "minSlider");
+    min_slider.oninput = function(e: Event) {
+      // @ts-ignore
+      console.log(`min slider: ${e.target.value}`)
+      if (e.target !== null) {
+        const target = e.target as HTMLInputElement;
+        const min = Number.parseInt(target.value);
+        if (!Number.isNaN(min)) {
+          mythis.time = mythis.time.set({minute: min});
+        }
+      }
+    }
+
+
+    const ntext = wrapper.appendChild(document.createElement('input'));
+    ntext.setAttribute('type','text');
+    ntext.setAttribute('name','hourMin');
+    ntext.setAttribute('class','hourMin');
+    ntext.setAttribute('value',this.time.toFormat(HOUR_MIN_24));
+    ntext.onchange = function(e: Event) {
+      let val = ntext.getAttribute("value");
+      if (val === null ) {
+        val = mythis.time.toFormat(HOUR_MIN_24);
+        ntext.setAttribute("value", val);
+      }
+      let match = hourMinRegEx.exec(val);
+
+      if (match) {
+        //ntext.style("background-color", null);
+        let h = match[1];
+        let m = match[2];
+        const newTime = mythis.time.set({hour: parseInt(h), minute: parseInt(m)});
+        if (newTime !== mythis.time) {
+          mythis.time = newTime;
+        }
+        mythis.popupDiv.setAttribute("class", "hidden");
+      } else {
+        ntext.setAttribute("value", mythis.time.toFormat(HOUR_MIN_24));
+      }
+    }
+    ntext.onclick = function(e) {
+      console.log('ntext onclick -> showHide')
+      e.stopPropagation();
+      mythis.showHide()
     };
-
-    this.hourMinField = this.div
-      .append("input")
-      .classed("pikatime", true)
-      .attr("value", this.time.toFormat("HH:mm"))
-      .attr("type", "text")
-      .on("click", function (d3event: any) {
-        mythis.showHide();
-        // don't propagate click up to document
-        d3event.stopPropagation();
-      })
-      .on("change", function () {
-        let match = mythis.hourMinRegEx.exec(
-          mythis.hourMinField.property("value"),
-        );
-
-        if (match) {
-          mythis.hourMinField.style("background-color", null);
-          let h = match[1];
-          let m = match[2];
-          mythis.time = mythis.time.set({hour: parseInt(h), minute: parseInt(m)});
-          mythis.popupDiv.style("visibility", "hidden");
-          mythis.timeModified();
-        } else {
-          mythis.hourMinField.property("value", mythis.time.toFormat("HH:mm"));
-        }
-      });
-    this.div.append("span").classed("utclabel", true).text("UTC");
-    this.popupDiv = this.div
-      .append("div")
-      .classed("hourminpopup", true)
-      .style("position", "absolute")
-      .style("visibility", "hidden")
-      .on("click", function (d3event: any) {
-        // don't propagate click up to document
-        d3event.stopPropagation();
-      });
-    this.hourDiv = this.popupDiv.append("div").classed("hour", true);
-    this.hourSlider = this.hourDiv
-      .append("label")
-      .text("Hour:")
-      .append("input");
-    this.hourSlider
-      .attr("type", "range")
-      .attr("min", "0")
-      .attr("max", "23")
-      .classed("hourSlider", true)
-      .on("input", function (this: HTMLInputElement) {
-        let nHour = +this.value;
-
-        if (mythis.time.hour !== nHour) {
-          mythis.time = mythis.time.set({hour:nHour});
-          mythis.hourSlider.property("value", nHour);
-          mythis.timeModified();
-        }
-      });
-    this.hourSlider.attr("value", this.time.hour);
-    this.minuteDiv = this.popupDiv.append("div").classed("minute", true);
-    this.minuteSlider = this.minuteDiv
-      .append("label")
-      .text("Minute:")
-      .append("input");
-    this.minuteSlider
-      .attr("type", "range")
-      .attr("min", "0")
-      .attr("max", "59")
-      .classed("minuteSlider", true)
-      .on("input", function (this: HTMLInputElement) {
-        let nMinute = +this.value;
-
-        if (mythis.time.minute !== nMinute) {
-          mythis.time = mythis.time.set({minute: nMinute});
-          mythis.minuteSlider.property("value", nMinute);
-          mythis.timeModified();
-        }
-      });
-    this.minuteSlider.attr("value", this.time.minute);
+    wrapper.appendChild(popupDiv);
+    shadow.appendChild(wrapper);
   }
-
-  /**
-   * Updates the time without triggering the callback function.
-   *
-   * @param  newTime new time to update sliders
-   */
-  updateTime(newTime: DateTime): void {
-    this.time = newTime;
-    this.hourMinField.property("value", this.time.toFormat("HH:mm"));
-    this.hourSlider.property("value", this.time.hour);
-    this.minuteSlider.property("value", this.time.minute);
-  }
-
-  /**
-   * Updates the sliders based on this.time and triggers the callback function.
-   */
-  timeModified(): void {
-    this.hourSlider.property("value", this.time.hour);
-    this.minuteSlider.property("value", this.time.minute);
-    this.hourMinField.property("value", this.time.toFormat("HH:mm"));
-    this.updateCallback(this.time);
-  }
-
   /**
    * Shows or hides the popup based on current visibility style
    */
   showHide(): void {
-    if (this.popupDiv.style("visibility") === "hidden") {
-      this.popupDiv.style("visibility", "visible").classed("is-bound", true);
-
-      this._adjustPopupPosition();
-
-      window.document.addEventListener("click", this.myOnClick, false);
+    if (this.popupDiv.getAttribute("class")?.includes("hidden")) {
+      this.show();
     } else {
-      this.popupDiv.style("visibility", "hidden");
-      window.document.removeEventListener("click", this.myOnClick);
+      this.hide();
     }
   }
-
-  /**
-   * Hides the popup with sliders.
-   */
   hide(): void {
-    this.popupDiv.style("visibility", "hidden").classed("is-bound", false);
-    window.document.removeEventListener("click", this.myOnClick);
+    console.log("hide")
+    if ( ! this.popupDiv.getAttribute("class")?.includes("hidden")) {
+      this.popupDiv.setAttribute("class", "hourminpopup hidden");
+    }
   }
-
+  show(): void {
+    console.log("show")
+    this.popupDiv.setAttribute("class", "hourminpopup visible");
+    this._adjustPopupPosition();
+  }
   /** @private */
   _adjustPopupPosition(): void {
-    let field = this.hourMinField.node();
-    let width = this.hourMinField.offsetWidth;
-    let height = this.hourMinField.offsetHeight;
+    let hourMinField = (this.shadowRoot?.querySelector('input.'+'hourMin') as HTMLInputElement);
+    let width = hourMinField.offsetWidth;
+    let height = hourMinField.offsetHeight;
     let viewportWidth: number = window.innerWidth;
     let viewportHeight: number = window.innerHeight;
     let scrollTop: number = window.pageYOffset;
-    let left = field.offsetLeft;
-    let top = field.offsetTop + field.offsetHeight;
+    let left = hourMinField.offsetLeft;
+    let top = hourMinField.offsetTop + hourMinField.offsetHeight;
 
-    while ((field = field.offsetParent)) {
-      left += field.offsetLeft;
-      top += field.offsetTop;
+    let parentField = hourMinField.offsetParent;
+    while (parentField !== null) {
+      if (parentField instanceof HTMLElement) {
+        left += parentField.offsetLeft;
+        top += parentField.offsetTop;
+        parentField = parentField.offsetParent;
+      }
     }
 
     // default position is bottom & left
     if (left + width > viewportWidth) {
-      left = left - width + field.offsetWidth;
+      left = left - width + hourMinField.offsetWidth;
     }
 
     if (top + height > viewportHeight + scrollTop) {
-      top = top - height - field.offsetHeight;
+      top = top - height - hourMinField.offsetHeight;
     }
-
-    this.popupDiv.style("left", left + "px");
-    this.popupDiv.style("top", top + "px");
+console.log(`hourmin popup position: {left: ${left} px; top: ${top} px;}`)
+    this.popupDiv.setAttribute("style", `{left: ${left} px; top: ${top} px;}`);
   }
-}
-
-/**
- * Date and Time chooser using pikaday for the date and the above
- * HourMinChooser for the hour and minute of time.
- *
- * @param div selected div to append chooser to
- * @param label label for chooser
- * @param initialTime initial chooser time value
- * @param updateCallback optional callback function when time is selected
- */
-export class DateTimeChooser {
-  div: any; // d3 not yet in flow-typed :(
-
-  time: DateTime;
-  updateCallback: (time: DateTime) => void;
-  label: string;
-  dateField: any;
-  picker: Pikaday;
-  hourMin: HourMinChooser;
-
-  constructor(
-    div: any,
-    label: string,
-    initialTime: DateTime,
-    updateCallback?: (time: DateTime) => void,
-  ) {
-    this.div = d3.select(div);
-
-    this.label = label;
-    this.time = initialTime;
-    this.time.set({second: 0, millisecond: 0}); // only hour and min?
-
-    this.updateCallback = updateCallback ? updateCallback : dummyCallback;
-    this.dateField = this.div
-      .append("label")
-      .text(this.label)
-      .append("input")
-      .classed("pikaday", true)
-      .attr("value", this.time.toISO())
-      .attr("type", "text")
-      .on("click", function () {
-        if (mythis.picker.isVisible()) {
-          mythis.picker.hide();
-        }
-      });
-    let mythis = this;
-    this.picker = new Pikaday({
-      field: this.dateField.node(),
-      //  trigger: inputField.node(),
-      format: "YYYY-MM-DD",
-      onSelect: function () {
-        let pikaValue = mythis.picker.getMoment();
-        let origTime = mythis.time;
-
-        if (
-          pikaValue && (
-            origTime.year !== pikaValue.year() ||
-            origTime.ordinal !== pikaValue.dayOfYear()
-          )
-        ) {
-          mythis.time.set({year: pikaValue.year(), ordinal: pikaValue.dayOfYear()});
-          mythis.timeModified();
-        }
-      },
-    });
-
-    this._internalSetTime(this.time);
-
-    this.hourMin = new HourMinChooser(div, this.time, function (time) {
-      mythis._internalSetTime(time);
-
-      mythis.timeModified();
-    });
+  get time(): DateTime {
+    return this._time;
   }
-
-  /**
-   * Updates the time without triggering the callback function.
-   *
-   * @param  newTime new time to update sliders
-   */
-  updateTime(newTime: DateTime): void {
-    this._internalSetTime(newTime);
-
-    this.hourMin.updateTime(newTime);
-  }
-
-  /**
-   * triggers the callback function.
-   */
-  timeModified(): void {
+  set time(dt: DateTime) {
+    this._internalSetTime(dt);
     this.updateCallback(this.time);
   }
-
-  getTime(): DateTime {
-    return this.time;
-  }
-
-  /**
-   * internal time set
-   *
-   * @private
-   * @param  newTime new time to update
-   */
-  _internalSetTime(newTime: DateTime): void {
-    this.time = newTime;
-    this.dateField.attr("value", this.time.toISO());
-    // re-do as string to avoid utc issue, using utc messes up picker, so pretend
-    this.picker.setDate(this.time.toISODate());
+  _internalSetTime(dt: DateTime) {
+    this._time = dt;
+    console.log(`set time: ${dt.hour}:${dt.minute}`)
+    const ntext = (this.shadowRoot?.querySelector('input.'+'hourMin') as HTMLInputElement);
+    ntext.setAttribute('value',this._time.toFormat(HOUR_MIN_24));
+    const hourSlider = (this.popupDiv?.querySelector('input.hourSlider') as HTMLInputElement);
+    hourSlider.setAttribute("value", `${this._time.hour}`);
+    const minuteSlider = (this.popupDiv?.querySelector('input.minSlider') as HTMLInputElement);
+    minuteSlider.setAttribute("value", `${this._time.minute}`);
   }
 }
+customElements.define('hour-min-chooser', HourMinChooser);
 
-/**
- * Combination of two DateTimeChoosers to specify a start and end time.
- *
- * @param div selected div to append chooser to
- * @param updateCallback optional callback function when time is selected/changed
- */
-export class TimeRangeChooser {
-  div: any;
-  updateCallback: (timerange: StartEndDuration) => void;
-  duration: number;
-  startChooser: DateTimeChooser;
-  endChooser: DateTimeChooser;
-  _mostRecentChanged: string;
-
-  constructor(
-    div: any,
-    updateCallback?: (timerange: StartEndDuration) => void,
-  ) {
-    this._mostRecentChanged = "start";
-    this.updateCallback = updateCallback ? updateCallback : dummyCallback;
-    let endTime = DateTime.utc();
-    this.duration = 300;
-    let startTime = endTime.minus(Duration.fromMillis(1000*this.duration));//seconds
-
-    this.div = d3.select(div);
-
-    this.div.classed("timeRangeChooser", true);
-    let mythis = this;
-    let startDiv = this.div.append("span").classed("start", true);
-    this.startChooser = new DateTimeChooser(
-      startDiv,
-      "Start:",
-      startTime,
-      function (startTime) {
-        mythis.endChooser.updateTime(
-          startTime.plus(Duration.fromMillis(mythis.duration)),
-        );
-        mythis.updateCallback(mythis.getTimeRange());
-        mythis._mostRecentChanged = "start";
-      },
-    );
-    let durationDiv = this.div.append("span").classed("duration", true);
-    durationDiv
-      .append("label")
-      .text("Duration:")
-      .append("input")
-      .classed("pikatime", true)
-      .attr("value", this.duration)
-      .attr("type", "text")
-      .on("input", function (this: HTMLInputElement) {
-        let nDur = +Number.parseInt(this.value);
-        mythis.duration = nDur;
-
-        if (mythis._mostRecentChanged === "end") {
-          mythis.startChooser.updateTime(
-            mythis.endChooser.getTime()
-              .minus(Duration.fromMillis(1000*mythis.duration)),//seconds
-          );
-          mythis.updateCallback(mythis.getTimeRange());
-        } else {
-          // change end
-          mythis.endChooser.updateTime(
-            mythis.startChooser.getTime()
-              .plus(Duration.fromMillis(1000*mythis.duration)),//seconds
-          );
-          mythis.updateCallback(mythis.getTimeRange());
-        }
-      });
-    let endDiv = this.div.append("span").classed("end", true);
-    this.endChooser = new DateTimeChooser(
-      endDiv,
-      "End:",
-      endTime,
-      function (endTime) {
-        mythis.startChooser.updateTime(
-          endTime.minus(Duration.fromMillis(1000*mythis.duration)),
-        );
-        mythis.updateCallback(mythis.getTimeRange());
-        mythis._mostRecentChanged = "end";
-      },
-    );
-  }
-
-  getTimeRange(): StartEndDuration {
-    return new StartEndDuration(
-      this.startChooser.getTime(),
-      this.endChooser.getTime(),
-    );
-  }
-}
-
-/**
- * Dummy callback function for cases where user doesn't need this. Mainly here
- * to keep eslint happy.
- *
- * @param   t new time/time range, not used
- */
-// eslint-disable-next-line no-unused-vars
-function dummyCallback(t: any) {}
-
-/**
- * CSS for the parts of HourMin, DateTime and TimeRange choosers
- * that are not using pikaday.
- */
-export const chooser_css = `
-
-div.timeRangeChooser .utclabel {
-  font-size: smaller;
-}
-
-div.timeRangeChooser span div.hourminpopup {
-    z-index: 9999;
-    display: block;
-    position: relative;
-    color: #333;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-bottom-color: #bbb;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
-}
-
-
-
-.hourminpopup.is-hidden {
-    display: none;
-}
-.hourminpopup.is-bound {
-    position: absolute;
-    box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
-    background-color: white;
-}
-
-div.hourminpopup div label {
-  display: block;
-  float: right;
-}
-div.hourminpopup div {
-    display: block;
-    float: right;
-    clear: both;
-}
-
-div.hourminpopup input {
-    width: 150px;
-}
-
-div.timeRangeChooser span {
-  margin: 2px;
-  margin-right: 5px;
-}
-
-input.pikaday {
-  width: 80px;
-}
-input.pikatime {
-  width: 50px;
-}
-
-`;
 
 /**
  * CSS for the pikaday chooser.
@@ -718,7 +452,299 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 
 `;
 
-if (document) {
-  insertCSS(chooser_css, "datechooser");
-  insertCSS(pikaday_css, "pikaday");
+
+/**
+ * Date and Time chooser using pikaday for the date and the above
+ * HourMinChooser for the hour and minute of time.
+ *
+ * @param div selected div to append chooser to
+ * @param label label for chooser
+ * @param initialTime initial chooser time value
+ * @param updateCallback optional callback function when time is selected
+ */
+export class DateTimeChooser extends HTMLElement {
+
+  _time: DateTime;
+  updateCallback: (time: DateTime) => void;
+  picker: Pikaday;
+  hourMin: HourMinChooser;
+
+  constructor() {
+    super();
+    const mythis = this;
+    this._time = DateTime.utc().set({second: 0, millisecond: 0});
+
+    const attr_date_time = this.getAttribute("date-time");
+    if (attr_date_time) {
+      this._time = isoToDateTime(attr_date_time);
+      this._time.set({second: 0, millisecond: 0}); // only hour and min?
+    }
+    this.updateCallback = function(time: DateTime) {};
+    const shadow = this.attachShadow({mode: 'open'});
+
+    const wrapper = document.createElement('span');
+    wrapper.addEventListener('mouseleave', e => {
+      console.log("mouseleave wrapper")
+      //mythis.picker.hide();
+    });
+    // style
+    let style = document.createElement('style');
+    style.textContent = pikaday_css + `
+          input {
+            width: 6em;
+          }
+        `;
+    shadow.appendChild(style);
+
+    const dateField = wrapper.appendChild(document.createElement('input'));
+    dateField.setAttribute('type','text');
+    dateField.setAttribute('name','pikaday');
+    dateField.setAttribute('class','pikaday');
+    dateField.setAttribute('value',this._time.toISODate());
+
+    const hourMin = wrapper.appendChild(document.createElement('hour-min-chooser')) as HourMinChooser;
+    hourMin.updateCallback = time => {
+      mythis._internalSetTime(time);
+      mythis.timeModified();
+    };
+    hourMin._time = mythis.time;
+    this.hourMin = hourMin;
+
+    dateField.onclick = function(e) {
+      console.log('ntext onclick -> showHide')
+      e.stopPropagation();
+      if (mythis.picker.isVisible()) {
+        mythis.picker.hide();
+      }
+    };
+    shadow.appendChild(wrapper);
+
+    this.picker = new Pikaday({
+      field: dateField,
+      container: wrapper,
+      //  trigger: inputField.node(),
+      format: "YYYY-MM-DD",
+      onSelect: function () {
+        let pikaValue = mythis.picker.getDate();
+        let origTime = mythis._time;
+        console.log(`pika: ${pikaValue}  prev: ${origTime}`)
+        if (
+          pikaValue && (
+            origTime.year !== pikaValue.getFullYear() ||
+            origTime.month !== pikaValue.getMonth() +1 ||
+            origTime.day !== pikaValue.getDate()
+          )
+        ) {
+          mythis.time = mythis.time.set({ year: pikaValue.getFullYear(),
+                           month: pikaValue.getMonth() +1,
+                             day: pikaValue.getDate()
+                          });
+          mythis.timeModified();
+        }
+      },
+    });
+
+    this._internalSetTime(this.time);
+  }
+
+  /**
+   * Updates the time without triggering the callback function.
+   *
+   * @param  newTime new time to update sliders
+   */
+  updateTime(newTime: DateTime): void {
+    this._internalSetTime(newTime);
+  }
+
+  /**
+   * triggers the callback function.
+   */
+  timeModified(): void {
+    this.updateCallback(this.time);
+  }
+
+  get time(): DateTime {
+    return this._time;
+  }
+  set time(dt: DateTime) {
+    this._internalSetTime(dt);
+    this.updateCallback(this.time);
+  }
+
+  /**
+   * internal time set
+   *
+   * @private
+   * @param  newTime new time to update
+   */
+  _internalSetTime(newTime: DateTime): void {
+    this._time = newTime;
+    const ntext = (this.shadowRoot?.querySelector('input.pikaday') as HTMLInputElement);
+    ntext.setAttribute('value',this.time.toISODate());
+    // re-do as string to avoid utc issue, using utc messes up picker, so pretend
+    this.picker.setDate(this.time.toISO(), true);
+    this.hourMin._internalSetTime(newTime);
+  }
 }
+customElements.define('date-time-chooser', DateTimeChooser);
+
+/**
+ * Combination of two DateTimeChoosers to specify a start and end time.
+ *
+ * @param div selected div to append chooser to
+ * @param updateCallback optional callback function when time is selected/changed
+ */
+export class TimeRangeChooser extends HTMLElement {
+  updateCallback: (timerange: StartEndDuration) => void;
+  duration: number;
+  startChooser: DateTimeChooser;
+  endChooser: DateTimeChooser;
+  _mostRecentChanged: string;
+
+  constructor() {
+    super();
+    this._mostRecentChanged = "start";
+    this.updateCallback = (timerange: StartEndDuration) => {};
+    let endTime = DateTime.utc();
+    this.duration = 300;
+    let startTime = endTime.minus(Duration.fromMillis(1000*this.duration));//seconds
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const wrapper = document.createElement('span');
+
+    let mythis = this;
+
+    const startLabel = wrapper.appendChild(document.createElement('label'));
+    startLabel.textContent = "Start:";
+    const startChooser = wrapper.appendChild(document.createElement('date-time-chooser'));
+    this.startChooser = startChooser as DateTimeChooser;
+    startChooser.setAttribute("class", "start");
+    this.startChooser.updateCallback = (startTime) => {
+      mythis.endChooser.updateTime(
+        startTime.plus(Duration.fromMillis(1000*mythis.duration)),
+      );
+      mythis.updateCallback(mythis.getTimeRange());
+      mythis._mostRecentChanged = "start";
+    };
+    let durationDiv = wrapper.appendChild(document.createElement('span'));
+    durationDiv.setAttribute("class", "duration");
+    const durationLabel = wrapper.appendChild(document.createElement('label'));
+    durationLabel.textContent = "Duration:";
+    const durationInput = wrapper.appendChild(document.createElement('input'));
+    durationInput.setAttribute("value", `${this.duration}`);
+    durationInput.setAttribute("type", "number");
+    durationInput.setAttribute("class", "pikatime");
+    durationInput.onclick = (e) => {
+        let nDur = +Number.parseInt(durationInput.value);
+        mythis.duration = nDur;
+
+        if (mythis._mostRecentChanged === "end") {
+          mythis.startChooser.updateTime(
+            mythis.endChooser.time = mythis.endChooser.time
+              .minus(Duration.fromMillis(1000*mythis.duration)),//seconds
+          );
+          mythis.updateCallback(mythis.getTimeRange());
+        } else {
+          // change end
+          mythis.endChooser.updateTime(
+            mythis.startChooser.time = mythis.startChooser.time
+              .plus(Duration.fromMillis(1000*mythis.duration)),//seconds
+          );
+          mythis.updateCallback(mythis.getTimeRange());
+        }
+      };
+
+    const endLabel = wrapper.appendChild(document.createElement('label'));
+    endLabel.textContent = "End:";
+    const endChooser = wrapper.appendChild(document.createElement('date-time-chooser'));
+    this.endChooser = endChooser as DateTimeChooser;
+    endChooser.setAttribute("class", "end");
+    this.endChooser.updateCallback = (startTime) => {
+      mythis.startChooser.updateTime(
+        endTime.minus(Duration.fromMillis(1000*mythis.duration))
+      );
+      mythis.updateCallback(mythis.getTimeRange());
+      mythis._mostRecentChanged = "end";
+    };
+
+    shadow.appendChild(wrapper);
+  }
+
+  getTimeRange(): StartEndDuration {
+    return new StartEndDuration(
+      this.startChooser.time,
+      this.endChooser.time,
+    );
+  }
+}
+customElements.define('time-range-chooser', TimeRangeChooser);
+
+/**
+ * Dummy callback function for cases where user doesn't need this. Mainly here
+ * to keep eslint happy.
+ *
+ * @param   t new time/time range, not used
+ */
+// eslint-disable-next-line no-unused-vars
+function dummyCallback(t: DateTime) {}
+
+/**
+ * CSS for the parts of HourMin, DateTime and TimeRange choosers
+ * that are not using pikaday.
+ */
+export const chooser_css = `
+
+div.timeRangeChooser .utclabel {
+  font-size: smaller;
+}
+
+div.timeRangeChooser span div.hourminpopup {
+    z-index: 9999;
+    display: block;
+    position: relative;
+    color: #333;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-bottom-color: #bbb;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
+}
+
+
+
+.hourminpopup.is-hidden {
+    display: none;
+}
+.hourminpopup.is-bound {
+    position: absolute;
+    box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
+    background-color: white;
+}
+
+div.hourminpopup div label {
+  display: block;
+  float: right;
+}
+div.hourminpopup div {
+    display: block;
+    float: right;
+    clear: both;
+}
+
+div.hourminpopup input {
+    width: 150px;
+}
+
+div.timeRangeChooser span {
+  margin: 2px;
+  margin-right: 5px;
+}
+
+input.pikaday {
+  width: 80px;
+}
+input.pikatime {
+  width: 50px;
+}
+
+`;
