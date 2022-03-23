@@ -612,7 +612,15 @@ export class TimeRangeChooser extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
 
-    let mythis = this;
+    const mythis = this;
+    // style
+    const style = document.createElement('style');
+    style.textContent = `
+          input.duration {
+            width: 6em;
+          }
+        `;
+    shadow.appendChild(style);
 
     const startLabel = wrapper.appendChild(document.createElement('label'));
     startLabel.textContent = "Start:";
@@ -633,21 +641,19 @@ export class TimeRangeChooser extends HTMLElement {
     const durationInput = wrapper.appendChild(document.createElement('input'));
     durationInput.setAttribute("value", `${this.duration}`);
     durationInput.setAttribute("type", "number");
-    durationInput.setAttribute("class", "pikatime");
+    durationInput.setAttribute("class", "duration");
     durationInput.onclick = (e) => {
         let nDur = +Number.parseInt(durationInput.value);
         mythis.duration = nDur;
 
         if (mythis._mostRecentChanged === "end") {
-          mythis.startChooser.updateTime(
-            mythis.endChooser.time = mythis.endChooser.time
+          mythis.startChooser.updateTime(mythis.endChooser.time
               .minus(Duration.fromMillis(1000*mythis.duration)),//seconds
           );
           mythis.updateCallback(mythis.getTimeRange());
         } else {
           // change end
-          mythis.endChooser.updateTime(
-            mythis.startChooser.time = mythis.startChooser.time
+          mythis.endChooser.updateTime(mythis.startChooser.time
               .plus(Duration.fromMillis(1000*mythis.duration)),//seconds
           );
           mythis.updateCallback(mythis.getTimeRange());
