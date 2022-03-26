@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {DateTime, Duration} from "luxon";
+import {DateTime, Duration, Interval} from "luxon";
 import {StartEndDuration, isoToDateTime} from "./util";
 
 
