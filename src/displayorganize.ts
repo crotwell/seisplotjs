@@ -1,5 +1,5 @@
 import {fftForward} from "./fft";
-import {FFTPlot} from "./fftplot";
+import * as spectraplot from "./spectraplot";
 import * as leafletutil from "./leafletutil";
 import {ParticleMotion, createParticleMotionConfig} from "./particlemotion";
 import {Quake} from "./quakeml";
@@ -24,7 +24,7 @@ export class OrganizedDisplay {
   seisData: Array<SeismogramDisplayData>;
   seisConfig: SeismographConfig;
   seismograph: Seismograph | null;
-  fftPlot: FFTPlot | null;
+  spectraPlot: spectraplot.SpectraPlot | null;
   particleMotionPlot: ParticleMotion | null;
   attributes: Map<string, any>;
 
@@ -42,7 +42,7 @@ export class OrganizedDisplay {
     }
 
     this.seismograph = null;
-    this.fftPlot = null;
+    this.spectraPlot = null;
     this.particleMotionPlot = null;
     this.attributes = new Map();
   }
@@ -85,8 +85,7 @@ export class OrganizedDisplay {
       );
       this.seismograph.draw();
     } else if (this.plottype.startsWith(SPECTRA)) {
-      const loglogqp = getFromQueryParams(queryParams, "loglog", "true");
-      let loglog = loglogqp.toLowerCase() === "true";
+      const loglog = getFromQueryParams(queryParams, "loglog", "true");
       let nonContigList = this.seisData.filter(
         sdd => !(sdd.seismogram && sdd.seismogram.isContiguous()),
       );
@@ -110,13 +109,10 @@ export class OrganizedDisplay {
           : null;
       });
       let fftListNoNull = fftList.filter(isDef);
-      this.fftPlot = new FFTPlot(
-        divElement,
-        this.seisConfig,
-        fftListNoNull,
-        loglog,
-      );
-      this.fftPlot.draw();
+      let spectraPlot = document.createElement("spectra-plot") as spectraplot.SpectraPlot;
+      spectraPlot.seismographConfig = this.seisConfig;
+      spectraPlot.setAttribute(spectraplot.LOGFREQ, loglog);
+      divElement.node().appendChild(spectraPlot);
     } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
       if (this.seisData.length !== 2) {
         throw new Error(

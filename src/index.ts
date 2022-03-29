@@ -21,7 +21,7 @@ import * as fdsnstation from "./fdsnstation";
 import * as fdsndataselect from "./fdsndataselect";
 import * as filter from "./filter";
 import * as fft from "./fft";
-import * as fftplot from "./fftplot";
+import * as spectraplot from "./spectraplot";
 import * as handlebarshelpers from "./handlebarshelpers";
 import * as helicorder from "./helicorder";
 import * as leafletutil from "./leafletutil";
@@ -72,7 +72,6 @@ export {
   fdsnstation,
   fdsndataselect,
   fft,
-  fftplot,
   handlebarshelpers,
   helicorder,
   filter,
@@ -93,6 +92,7 @@ export {
   seismogramloader,
   seismograph,
   seismographconfig,
+  spectraplot,
   stationxml,
   taper,
   transfer,

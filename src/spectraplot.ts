@@ -73,7 +73,7 @@ export class FreqAmp {
 /**
  * Defualt CSS for styling fft plots.
  */
-export const fftplot_css = `
+export const spectra_plot_css = `
 :host {
   display: block
 }
@@ -88,13 +88,13 @@ path.fftpath {
   stroke-width: 1px;
 }
 
-svg.fftplot {
+svg.spectra_plot {
   height: 100%;
   width: 100%;
   min-height: 100px;
   display: block;
 }
-svg.fftplot text.title {
+svg.spectra_plot text.title {
   font-size: larger;
   font-weight: bold;
   fill: black;
@@ -102,12 +102,12 @@ svg.fftplot text.title {
   dominant-baseline: hanging;
 }
 
-svg.fftplot text.sublabel {
+svg.spectra_plot text.sublabel {
   font-size: smaller;
 }
 
 /* links in svg */
-svg.fftplot text a {
+svg.spectra_plot text a {
   fill: #0000EE;
   text-decoration: underline;
 }
@@ -130,22 +130,20 @@ export const KIND = "kind";
  * Amplitude is plotted with y axis log, phase is y axis linear.
  *
  */
-export class FFTPlot extends HTMLElement {
+export class SpectraPlot extends HTMLElement {
   _seismographConfig: SeismographConfig;
   _fftResults: Array<FFTResult | FreqAmp>;
-  svg: any;
 
   constructor() {
     super();
     this._seismographConfig = new SeismographConfig();
     this._fftResults = [];
-    this.svg = null;
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
     const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = fftplot_css;
+    style.textContent = spectra_plot_css;
 
     shadow.appendChild(wrapper);
   }
@@ -279,8 +277,7 @@ export class FFTPlot extends HTMLElement {
     let svg_element = document.createElementNS("http://www.w3.org/2000/svg","svg");
     wrapper.appendChild(svg_element);
     const svg = d3.select(svg_element);
-    this.svg = svg;
-    svg.classed("fftplot", true).classed(AUTO_COLOR_SELECTOR, true);
+    svg.classed("spectra_plot", true).classed(AUTO_COLOR_SELECTOR, true);
     let rect = svg_element.getBoundingClientRect();
     let width =
       +rect.width -
@@ -358,6 +355,7 @@ export class FFTPlot extends HTMLElement {
       if (this.kind === PHASE) {
         this.seismographConfig.ySublabel = "radian";
       } else {
+        this.seismographConfig.ySublabel = "";
         for (const ap of ampPhaseList) {
           this.seismographConfig.ySublabel += ap.inputUnits;
         }
@@ -408,7 +406,7 @@ export class FFTPlot extends HTMLElement {
       seisConfig: this.seismographConfig,
     };
     drawAxisLabels(
-      this.svg,
+      svg,
       this.seismographConfig,
       height,
       width,
@@ -416,4 +414,4 @@ export class FFTPlot extends HTMLElement {
     );
   }
 }
-customElements.define('spectra-plot', FFTPlot);
+customElements.define('spectra-plot', SpectraPlot);
