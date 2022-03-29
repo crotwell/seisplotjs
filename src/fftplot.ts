@@ -12,45 +12,6 @@ import {insertCSS, G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
 import {drawAxisLabels} from "./axisutil";
 import {isDef} from "./util";
 
-/**
- * Create a single amplitude plot of FFT data.
- *
- * @param   cssSelector selection of the containing element, usually a div
- * @param   fftResult         data to plot
- * @param   config configuration of the plot, note not all options are supported by fft plots
- * @param   loglog      true for loglog plot, false for linlog
- * @returns             the plot
- */
-export function createSimpleFFTPlot(
-  cssSelector: string,
-  fftResult: FFTResult,
-  config: SeismographConfig,
-  loglog: boolean = true,
-): FFTPlot {
-  let fftplot = new FFTPlot(cssSelector, config, fftResult, loglog);
-  fftplot.draw();
-  return fftplot;
-}
-
-/**
- * Create a amplitude plot of multiple FFT data.
- *
- * @param   cssSelector selection of the containing element, usually a div
- * @param   fftResults         data to plot
- * @param   config configuration of the plot, note not all options are supported by fft plots
- * @param   loglog      true for loglog plot, false for linlog
- * @returns             the plot
- */
-export function createOverlayFFTPlot(
-  cssSelector: string,
-  fftResults: Array<FFTResult>,
-  config: SeismographConfig = new SeismographConfig(),
-  loglog: boolean = true,
-): FFTPlot {
-  let fftplot = new FFTPlot(cssSelector, config, fftResults, loglog);
-  fftplot.draw();
-  return fftplot;
-}
 
 /**
  * Similar to FFTResult, but used for plotting non-fft generated data.
@@ -109,66 +70,141 @@ export class FreqAmp {
     return this.freq[0];
   }
 }
+/**
+ * Defualt CSS for styling fft plots.
+ */
+export const fftplot_css = `
+:host {
+  display: block
+}
+
+div.wrapper {
+  height: 100%;
+  min-height: 100px;
+}
+path.fftpath {
+  stroke: skyblue;
+  fill: none;
+  stroke-width: 1px;
+}
+
+svg.fftplot {
+  height: 100%;
+  width: 100%;
+  min-height: 100px;
+  display: block;
+}
+svg.fftplot text.title {
+  font-size: larger;
+  font-weight: bold;
+  fill: black;
+  color: black;
+  dominant-baseline: hanging;
+}
+
+svg.fftplot text.sublabel {
+  font-size: smaller;
+}
+
+/* links in svg */
+svg.fftplot text a {
+  fill: #0000EE;
+  text-decoration: underline;
+}
+
+`;
+
+export const AMPLITUDE = "amplitude";
+export const PHASE = "phase";
+export const LOGFREQ = "logfreq";
+export const KIND = "kind";
 
 /**
- * A amplitude or phase plot of fft data.
+ * A amplitude or phase plot of fft data. The 'kind' attribute controls whether
+ * 'amplitude' or 'phase' is plotted and the 'logfreq' attribute controls
+ * whether frequency, x axis, is linear or log.
+ * Setting the seismogramConfig changes
+ * the plot configuration, althought not all values are used.
+ * The data as an array of FFTResult or FreqAmp
+ * sets the data to be plotted.
+ * Amplitude is plotted with y axis log, phase is y axis linear.
  *
- * @param cssSelector selector or d3 selection
- * @param seismographConfig config of the plot, not all values are used
- * @param fftResult fft data to plot
- * @param loglog log or linear frequency
  */
-export class FFTPlot {
-  svgParent: any;
-  seismographConfig: SeismographConfig;
-  fftResults: Array<FFTResult | FreqAmp>;
-  xScale: any;
-  yScale: any;
-  xAxis: any;
-  yAxis: any;
+export class FFTPlot extends HTMLElement {
+  _seismographConfig: SeismographConfig;
+  _fftResults: Array<FFTResult | FreqAmp>;
   svg: any;
-  loglog: boolean;
-  amplitude: boolean;
-  phase: boolean;
 
-  constructor(
-    cssSelector: string,
-    seismographConfig: SeismographConfig,
-    fftResult: FFTResult | FreqAmp | Array<FFTResult>,
-    loglog: boolean = true,
-    amplitude: boolean = true,
-    phase: boolean = false,
-  ) {
-    this.svgParent = cssSelector;
-    this.seismographConfig = seismographConfig;
-    this.fftResults = Array.isArray(fftResult) ? fftResult : [fftResult];
-    this.xScale = null;
-    this.yScale = null;
+  constructor() {
+    super();
+    this._seismographConfig = new SeismographConfig();
+    this._fftResults = [];
     this.svg = null;
-    this.loglog = loglog;
-    this.amplitude = amplitude;
-    this.phase = phase;
 
-    if (typeof cssSelector === "string") {
-      this.svgParent = d3.select(cssSelector);
-    } else {
-      this.svgParent = cssSelector;
-    }
+    const shadow = this.attachShadow({mode: 'open'});
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute("class", "wrapper");
+    const style = shadow.appendChild(document.createElement('style'));
+    style.textContent = fftplot_css;
+
+    shadow.appendChild(wrapper);
+  }
+  get fftResults() {
+    return this._fftResults;
+  }
+  set fftResults(fftResults: Array<FFTResult | FreqAmp>) {
+    this._fftResults = fftResults;
+    this.draw();
+  }
+  get seismographConfig() {
+    return this._seismographConfig;
+  }
+  set seismographConfig(seismographConfig: SeismographConfig) {
+    this._seismographConfig = seismographConfig;
+    this.draw();
+  }
+  get kind(): string {
+    let k = this.hasAttribute(KIND) ? this.getAttribute(KIND) : AMPLITUDE;
+    // typescript null
+    if (!k) { k = AMPLITUDE;}
+    return k;
+  }
+  set kind(val: string) {
+    this.setAttribute(KIND, val);
+  }
+  get logfreq(): boolean {
+    if ( ! this.hasAttribute(LOGFREQ) ) { return true;}
+    let b = this.getAttribute(LOGFREQ);
+    if (b && b.toLowerCase()==="true") {return true;}
+    return false;
+  }
+  set logfreq(val: boolean) {
+    this.setAttribute(LOGFREQ, `${val}`);
+  }
+  connectedCallback() {
+    this.draw();
+  }
+
+  static get observedAttributes() { return [LOGFREQ, KIND]; }
+  attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+    this.draw();
   }
 
   draw() {
+    if ( ! this.isConnected) { return; }
     const that = this;
     let ampPhaseList = [];
     let maxFFTAmpLen = 0;
-    let extentFFTData = null;
-    let freqMinMax = [];
+    let extentFFTData: Array<number> = [];
+    let freqMinMax: Array<number> = [];
 
-    if (this.phase) {
-      extentFFTData = d3.extent([-Math.PI, Math.PI]);
+    if (this.kind === PHASE) {
+      extentFFTData.push(-Math.PI);
+      extentFFTData.push(Math.PI);
     }
 
     for (const fftA of this.fftResults) {
-      if (this.loglog) {
+      if (this.logfreq === true) {
         freqMinMax.push(fftA.fundamentalFrequency); // min freq
       } else {
         freqMinMax.push(0);
@@ -192,21 +228,23 @@ export class FFTPlot {
 
       let ampSlice: Float32Array;
 
-      if (this.amplitude) {
+      if (this.kind === AMPLITUDE) {
         ampSlice = ap.amplitudes();
-      } else {
+      } else if (this.kind === PHASE) {
         ampSlice = ap.phases();
+      } else {
+        throw new Error(`Unknown plot kind=${this.kind}`);
       }
 
-      if (this.loglog) {
+      if (this.kind === AMPLITUDE) {
         // don't plot zero freq amp
         ampSlice = ampSlice.slice(1);
       }
 
       let currExtent = d3.extent(ampSlice);
 
-      if (this.amplitude && currExtent[0] === 0) {
-        // replace zero with smallest non-zero / 10 for loglog plot
+      if (this.kind === AMPLITUDE && currExtent[0] === 0) {
+        // replace zero with smallest non-zero / 10 for log amp plot
         currExtent[0] =
           0.1 *
           ampSlice.reduce(function(acc: number, curr: number): number {
@@ -218,39 +256,32 @@ export class FFTPlot {
           }, 1e-9);
       }
 
-      if (extentFFTData) {
-        extentFFTData = d3.extent(
-          [extentFFTData[0], extentFFTData[1], currExtent[0], currExtent[1]],
-          function (d) {
-            return d;
-          },
-        );
-      } else {
-        extentFFTData = currExtent;
-      }
+      if (currExtent[0]) { extentFFTData.push(currExtent[0]); }
+      if (currExtent[1]) { extentFFTData.push(currExtent[1]); }
+    }
+    if (freqMinMax.length < 2) {
+      freqMinMax.push(0.1);
+      freqMinMax.push(10.0);
     }
 
-    if (!extentFFTData || extentFFTData[0] === undefined || extentFFTData[1] === undefined ) {
-      extentFFTData = [0.1, 1];
-    }
-    if ((extentFFTData[1] - extentFFTData[0]) / extentFFTData[1] < 1) {
-      extentFFTData = d3.extent(
-        [
-          extentFFTData[0],
-          extentFFTData[1],
-          extentFFTData[0] * 2,
-          extentFFTData[0] * 0.1,
-        ],
-        function (d) {
-          return d;
-        },
-      );
+    if (extentFFTData.length < 2 ) {
+      extentFFTData.push(0.1);
+      extentFFTData.push(1);
     }
 
-    let svg = this.svgParent.append("svg");
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+
+    while (wrapper.firstChild) {
+      // @ts-ignore
+      wrapper.removeChild(wrapper.lastChild);
+    }
+
+    let svg_element = document.createElementNS("http://www.w3.org/2000/svg","svg");
+    wrapper.appendChild(svg_element);
+    const svg = d3.select(svg_element);
     this.svg = svg;
     svg.classed("fftplot", true).classed(AUTO_COLOR_SELECTOR, true);
-    let rect = svg.node().getBoundingClientRect();
+    let rect = svg_element.getBoundingClientRect();
     let width =
       +rect.width -
       this.seismographConfig.margin.left -
@@ -269,46 +300,54 @@ export class FFTPlot {
           this.seismographConfig.margin.top +
           ")",
       );
-
-    if (this.loglog) {
-      this.xScale = d3.scaleLog().rangeRound([0, width]);
+    let xScale: d3.ScaleContinuousNumeric<number, number, never>;
+    if (this.logfreq) {
+      xScale = d3.scaleLog().rangeRound([0, width]);
     } else {
-      this.xScale = d3.scaleLinear().rangeRound([0, width]);
+      xScale = d3.scaleLinear().rangeRound([0, width]);
     }
+    const freqMin = freqMinMax.reduce((acc, cur) => Math.min(acc, cur));
+    const freqMax = freqMinMax.reduce((acc, cur) => Math.max(acc, cur));
+    xScale.domain([freqMin, freqMax]);
 
-    this.xScale.domain(d3.extent(freqMinMax));
+    let fftMin = extentFFTData.reduce((acc, cur) => Math.min(acc, cur), Number.MAX_VALUE);
+    let fftMax = extentFFTData.reduce((acc, cur) => Math.max(acc, cur), -1.0);
+    if ((fftMax - fftMin) / fftMax < .1) {
+      // min and max are close, expand range a bit
+      fftMin = fftMin*0.1;
+      fftMax = fftMax*2;
+    }
+    let yScale: d3.ScaleContinuousNumeric<number, number, never>;
+    if (this.kind === AMPLITUDE) {
+      yScale = d3.scaleLog().rangeRound([height, 0]);
+      yScale.domain([fftMin, fftMax]);
 
-    if (this.loglog && this.amplitude) {
-      this.yScale = d3.scaleLog().rangeRound([height, 0]);
-      this.yScale.domain(extentFFTData);
-
-      if (this.yScale.domain()[0] === this.yScale.domain()[1]) {
-        this.yScale.domain([
-          this.yScale.domain()[0] / 2,
-          this.yScale.domain()[1] * 2,
+      if (yScale.domain()[0] === yScale.domain()[1]) {
+        yScale.domain([
+          yScale.domain()[0] / 2,
+          yScale.domain()[1] * 2,
         ]);
       }
     } else {
-      this.yScale = d3.scaleLinear().rangeRound([height, 0]);
-      this.yScale.domain(extentFFTData);
+      yScale = d3.scaleLinear().rangeRound([height, 0]);
+      yScale.domain([fftMin, fftMax]);
 
-      if (this.yScale.domain()[0] === this.yScale.domain()[1]) {
-        this.yScale.domain([
-          this.yScale.domain()[0] - 1,
-          this.yScale.domain()[1] + 1,
+      if (yScale.domain()[0] === yScale.domain()[1]) {
+        yScale.domain([
+          yScale.domain()[0] - 1,
+          yScale.domain()[1] + 1,
         ]);
       }
     }
-
-    this.xAxis = d3.axisBottom(this.xScale);
+    const xAxis = d3.axisBottom(xScale);
     g.append("g")
       .attr("transform", "translate(0," + height + ")")
-      .call(this.xAxis);
-    this.yAxis = d3.axisLeft(this.yScale);
-    g.append("g").call(this.yAxis);
+      .call(xAxis);
+    const yAxis = d3.axisLeft(yScale);
+    g.append("g").call(yAxis);
     this.seismographConfig.yLabel = "Amp";
 
-    if (!this.amplitude) {
+    if (this.kind === PHASE) {
       this.seismographConfig.yLabel = "Phase";
     }
 
@@ -316,7 +355,7 @@ export class FFTPlot {
     this.seismographConfig.xSublabel = "Hz";
 
     if (this.seismographConfig.ySublabelIsUnits) {
-      if (this.phase) {
+      if (this.kind === PHASE) {
         this.seismographConfig.ySublabel = "radian";
       } else {
         for (const ap of ampPhaseList) {
@@ -330,28 +369,30 @@ export class FFTPlot {
     for (const ap of ampPhaseList) {
       let ampSlice;
 
-      if (this.amplitude) {
+      if (this.kind === AMPLITUDE) {
         ampSlice = ap.amplitudes();
-      } else {
+      } else if (this.kind === PHASE) {
         ampSlice = ap.phases();
+      } else {
+        throw new Error(`Unknown plot kind=${this.kind}`);
       }
 
       let freqSlice = ap.frequencies();
 
-      if (this.loglog) {
+      if (this.logfreq) {
         freqSlice = freqSlice.slice(1);
         ampSlice = ampSlice.slice(1);
       }
 
       let line = d3.line<number>();
       line.x(function (d: number, i: number) {
-        return that.xScale(freqSlice[i]);
+        return xScale(freqSlice[i]);
       });
       line.y(function (d: number) {
         if (d !== 0.0 && !isNaN(d)) {
-          return that.yScale(d);
+          return yScale(d);
         } else {
-          return that.yScale.range()[0];
+          return yScale.range()[0];
         }
       });
       pathg
@@ -375,43 +416,4 @@ export class FFTPlot {
     );
   }
 }
-
-/**
- * Defualt CSS for styling fft plots.
- */
-export const fftplot_css = `
-
-
-path.fftpath {
-  stroke: skyblue;
-  fill: none;
-  stroke-width: 1px;
-}
-
-svg.fftplot {
-  height: 100%;
-  width: 100%;
-}
-svg.fftplot text.title {
-  font-size: larger;
-  font-weight: bold;
-  fill: black;
-  color: black;
-  dominant-baseline: hanging;
-}
-
-svg.fftplot text.sublabel {
-  font-size: smaller;
-}
-
-/* links in svg */
-svg.fftplot text a {
-  fill: #0000EE;
-  text-decoration: underline;
-}
-
-`;
-
-if (document) {
-  insertCSS(fftplot_css, "fftplot");
-}
+customElements.define('spectra-plot', FFTPlot);
