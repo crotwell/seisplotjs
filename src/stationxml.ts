@@ -75,6 +75,13 @@ export class Network {
   codes(): string {
     return this.networkCode;
   }
+  
+  isActiveAt(d?: DateTime): boolean {
+    if ( ! isDef(d)) {
+      d = DateTime.utc();
+    }
+    return this.timeRange.contains(d);
+  }
 
   isTempNet(): boolean {
     const first = this.networkCode.charAt(0);
@@ -150,6 +157,13 @@ export class Station {
 
   get networkCode(): string {
     return this.network.networkCode;
+  }
+
+  isActiveAt(d?: DateTime): boolean {
+    if ( ! isDef(d)) {
+      d = DateTime.utc();
+    }
+    return this.timeRange.contains(d);
   }
 
   codes(sep: string = "."): string {
@@ -338,7 +352,15 @@ export class Channel {
       this.station.codes(sep) + sep + this.locationCode + sep + this.channelCode
     );
   }
+
+  isActiveAt(d?: DateTime): boolean {
+    if ( ! isDef(d)) {
+      d = DateTime.utc();
+    }
+    return this.timeRange.contains(d);
+  }
 }
+
 export class InstrumentSensitivity {
   sensitivity: number;
   frequency: number;
