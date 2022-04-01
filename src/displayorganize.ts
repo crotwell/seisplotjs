@@ -78,12 +78,10 @@ export class OrganizedDisplay {
     divElement.attr("plottype", plotstyle);
 
     if (this.plottype.startsWith(SEISMOGRAPH)) {
-      this.seismograph = new Seismograph(
-        divElement,
-        this.seisConfig,
-        this.seisData,
-      );
-      this.seismograph.draw();
+      this.seismograph = new Seismograph();
+      this.seismograph.seismographConfig = this.seisConfig;
+      this.seismograph.seisData = this.seisData;
+      divElement.node().appendChild(this.seismograph);
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
       let nonContigList = this.seisData.filter(

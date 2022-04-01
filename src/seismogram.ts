@@ -583,7 +583,7 @@ export class Seismogram {
 
     let startTime = allStart.reduce((acc, cur)=> {
       return acc<cur ? acc : cur;
-    }, allStart[0] );
+    } );
 
     let allEnd = this._segmentArray.map(seis => {
       return seis.endTime;
@@ -591,7 +591,7 @@ export class Seismogram {
 
     let endTime = allEnd.reduce((acc, cur)=> {
       return acc>cur ? acc : cur;
-    }, allStart[0] );
+    } );
     return [startTime, endTime];
   }
 
@@ -1628,6 +1628,7 @@ export function findMinMaxOverTimeRange(
   sddList: Array<SeismogramDisplayData>,
   timeRange: StartEndDuration,
 ): Array<number> {
+  if (sddList.length === 0) { return [-1, 1]; }
   let minMaxArr = sddList.map(sdd => {
     if (sdd.seismogram) {
       const cutSeis = sdd.seismogram.cut(timeRange);

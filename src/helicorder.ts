@@ -189,9 +189,11 @@ export class Helicorder {
         }
       }
 
-      let seismograph = new Seismograph(seisDiv, lineSeisConfig, lineSeisData);
+      let seismograph = new Seismograph();
+      seismograph.seismographConfig = lineSeisConfig;
+      seismograph.appendSeisData(lineSeisData);
       seismograph.svg.classed(HELICORDER_SELECTOR, true);
-      seismograph.draw();
+      seisDiv.node().appendChild(seismograph);
 
       if (lineTime.lineNumber === 0) {
         // add UTC to top left

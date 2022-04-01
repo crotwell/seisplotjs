@@ -30,7 +30,6 @@ import * as mseed3 from "./mseed3";
 import * as mseedarchive from "./mseedarchive";
 import * as oregondsputil from "./oregondsputil";
 import * as particlemotion from "./particlemotion";
-import * as plotutil from "./plotutil";
 import * as quakeml from "./quakeml";
 import * as ringserverweb from "./ringserverweb";
 import * as sacPoleZero from "./sacpolezero";
@@ -81,7 +80,6 @@ export {
   mseedarchive,
   oregondsputil,
   particlemotion,
-  plotutil,
   quakeml,
   ringserverweb,
   sacPoleZero,

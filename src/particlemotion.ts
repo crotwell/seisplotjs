@@ -4,7 +4,6 @@
  * http://www.seis.sc.edu
  */
 import * as d3 from "d3";
-import {createPlotsBySelectorPromise} from "./plotutil";
 import {insertCSS} from "./cssutil";
 import {SeismographConfig, numberFormatWrapper } from "./seismographconfig";
 import {
@@ -19,33 +18,6 @@ export const DEFAULT_TITLE =
 export const DEFAULT_XLABEL = "{{seisXData.channelCode}}";
 export const DEFAULT_YLABEL = "{{seisYData.channelCode}}";
 
-/**
- * Creates particle motion plots, for each selected element. This assumes each
- * element has some combination of start, end, duration, net, sta, loc, and chan
- * attributes sufficient to form the data query to return all components of
- * motion. Or an href to a miniseed file.
- *
- * @param selector css selector
- */
-export function createParticleMotionBySelector(selector: string): void {
-  createPlotsBySelectorPromise(selector).then(function (resultArray) {
-    resultArray.forEach(function (result) {
-      result.svgParent.append("p").text("Build plot");
-      const sddList = result.sddList;
-
-      if (sddList.length > 1) {
-        addDivForParticleMotion(result.svgParent, sddList[0], sddList[1]);
-
-        if (sddList.length > 2) {
-          addDivForParticleMotion(result.svgParent, sddList[0], sddList[2]);
-          addDivForParticleMotion(result.svgParent, sddList[1], sddList[2]);
-        }
-      } else {
-        result.svgParent.append("p").text(`Not Enough Data: ${sddList.length}`);
-      }
-    });
-  });
-}
 export function addDivForParticleMotion(
   svgParent: any,
   xSeisData: SeismogramDisplayData,
@@ -193,17 +165,17 @@ export class ParticleMotion {
     if (this.seismographConfig.doRMean) {
       this.xAxis = d3
         .axisBottom(this.xScaleRmean)
-        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
+        .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
       this.yAxis = d3
         .axisLeft(this.yScaleRmean)
-        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
+        .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
     } else {
       this.xAxis = d3
         .axisBottom(this.xScale)
-        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
+        .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
       this.yAxis = d3
         .axisLeft(this.yScale)
-        .tickFormat(numberFormatWrapper(this.seismographConfig.yScaleFormat));
+        .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
     }
 
     this.width = 100;

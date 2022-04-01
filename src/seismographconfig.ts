@@ -40,8 +40,9 @@ export const DEFAULT_TITLE =
 export class SeismographConfig {
   drawingType: string; // canvas or svg
 
-  xScaleFormat: (date: Date) => string;
-  yScaleFormat: (value: number) => string;
+  timeFormat: (date: Date) => string;
+  relativeTimeFormat: (value: number) => string;
+  amplitudeFormat: (value: number) => string;
   showTitle: boolean;
 
   /** @private */
@@ -110,8 +111,9 @@ export class SeismographConfig {
     this.isYAxisNice = true;
     this.isYAxis = true;
     this.isYAxisRight = false;
-    this.xScaleFormat = multiFormatHour;
-    this.yScaleFormat = formatCountOrAmp;
+    this.timeFormat = multiFormatHour;
+    this.relativeTimeFormat = formatCountOrAmp;
+    this.amplitudeFormat = formatCountOrAmp;
     this._title = [DEFAULT_TITLE];
     this._titleHandlebarsCompiled = null;
     this.showTitle = true;
