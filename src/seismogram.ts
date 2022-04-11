@@ -7,7 +7,7 @@ import {DateTime, Duration} from "luxon";
 import {checkStringOrDate, meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
 import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
-import {Channel, InstrumentSensitivity} from "./stationxml";
+import {Station, Channel, InstrumentSensitivity} from "./stationxml";
 import {Quake} from "./quakeml";
 import {StartEndDuration} from "./util";
 import type {TraveltimeJsonType, TraveltimeArrivalType} from "./traveltime";
@@ -1564,6 +1564,10 @@ export class SeismogramDisplayStats {
 export function findStartEnd(
   sddList: Array<SeismogramDisplayData>,
 ): StartEndDuration {
+  if (sddList.length === 0) {
+    // just use the default???
+    return new StartEndDuration(null, null, 300);
+  }
   let startTime = sddList.reduce((acc, sdd) => {
     return acc < sdd.timeRange.startTime ? acc : sdd.timeRange.startTime;
   }, sddList[0].timeRange.startTime);
@@ -1727,4 +1731,24 @@ export function findMinMaxOfSeismograms(
   } else {
     return [-1, 1];
   }
+}
+export function uniqueStations(
+  seisData: Array<SeismogramDisplayData>,
+): Array<Station> {
+  const out = new Set<Station>();
+  seisData.forEach(sdd => {
+    if (sdd.channel) {
+      out.add(sdd.channel.station);
+    }
+  });
+  return Array.from(out.values());
+}
+export function uniqueQuakes(
+  seisData: Array<SeismogramDisplayData>,
+): Array<Quake> {
+  const out = new Set<Quake>();
+  seisData.forEach(sdd => {
+    sdd.quakeList.forEach(q => out.add(q));
+  });
+  return Array.from(out.values());
 }

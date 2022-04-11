@@ -1,7 +1,10 @@
 import {insertCSS} from "./cssutil";
 import {Quake} from "./quakeml";
 import {Station} from "./stationxml";
+import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
 import * as L from "leaflet";
+
+export const MAP_ELEMENT = 'station-event-map';
 export const triangle = "\u25B2";
 export const StationMarkerClassName = "stationMapMarker";
 export const InactiveStationMarkerClassName = "inactiveStationMapMarker";
@@ -15,6 +18,20 @@ export const inactiveStationIcon = L.divIcon({
 // note currentcolor is svg var that lets use use css, otherwise leaflet will
 // put its default color, blue, which can't be overridden
 export const stationMarker_css = `
+
+:host {
+  display: block
+}
+
+div.wrapper {
+  height: 100%;
+  min-height: 100px;
+}
+
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+}
 
 .${InactiveStationMarkerClassName} {
   color: darkgrey;
@@ -715,7 +732,110 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	}
 `;
 
-if (document) {
-  insertCSS(leaflet_css, "leaflet");
-  insertCSS(stationMarker_css, "stationMarker");
+export const CENTER_LAT = "centerLat";
+export const DEFAULT_CENTER_LAT = 35;
+export const CENTER_LON = "centerLon";
+export const DEFAULT_CENTER_LON = -81;
+export const ZOOM_LEVEL = "zoomLevel";
+export const DEFAULT_ZOOM_LEVEL = 1;
+export const MAG_SCALE = "magScale";
+export const DEFAULT_MAG_SCALE = 5.0;
+
+export class QuakeStationMap extends HTMLElement {
+  _seisDataList: Array<SeismogramDisplayData>;
+  constructor() {
+    super();
+    this._seisDataList = [];
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute("class", "wrapper");
+    const style = shadow.appendChild(document.createElement('style'));
+    style.textContent = leaflet_css;
+    const markerStyle = shadow.appendChild(document.createElement('style'));
+    markerStyle.textContent = stationMarker_css;
+
+    shadow.appendChild(wrapper);
+  }
+
+  get centerLat(): number {
+    const ks = this.hasAttribute(CENTER_LAT) ? this.getAttribute(CENTER_LAT) : null;
+    // typescript null
+    let k;
+    if (!ks) { k = DEFAULT_CENTER_LAT;} else { k= parseFloat(ks);}
+    return k;
+  }
+  set centerLat(val: number) {
+    this.setAttribute(CENTER_LAT, `${val}`);
+  }
+  get centerLon(): number {
+    const ks = this.hasAttribute(CENTER_LAT) ? this.getAttribute(CENTER_LAT) : null;
+    let k;
+    // typescript null
+    if (!ks) { k = DEFAULT_CENTER_LAT;} else { k= parseFloat(ks);}
+    return k;
+  }
+  set centerLon(val: number) {
+    this.setAttribute(CENTER_LAT, `${val}`);
+  }
+  get zoomLevel(): number {
+    const ks = this.hasAttribute(ZOOM_LEVEL) ? this.getAttribute(ZOOM_LEVEL) : null;
+    // typescript null
+    let k;
+    if (!ks) { k = DEFAULT_ZOOM_LEVEL;} else { k= parseInt(ks);}
+    return k;
+  }
+  set zoomLevel(val: number) {
+    this.setAttribute(ZOOM_LEVEL, `${val}`);
+  }
+  get magScale(): number {
+    const ks = this.hasAttribute(MAG_SCALE) ? this.getAttribute(MAG_SCALE) : null;
+    let k;
+    // typescript null
+    if (!ks) { k = DEFAULT_MAG_SCALE;} else { k= parseFloat(ks);}
+    return k;
+  }
+  set magScale(val: number) {
+    this.setAttribute(MAG_SCALE, `${val}`);
+  }
+  get seisData() {
+    return this._seisDataList;
+  }
+  set seisData(seisData: Array<SeismogramDisplayData>) {
+    this._seisDataList = seisData;
+    this.draw();
+  }
+  draw() {
+    if ( ! this.isConnected) { return; }
+
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+
+    while (wrapper.firstChild) {
+      // @ts-ignore
+      wrapper.removeChild(wrapper.lastChild);
+    }
+    const mapid = "map";
+    const divElement = wrapper.appendChild(document.createElement("div"));
+    divElement.setAttribute("id", mapid);
+    const mymap = L.map(divElement).setView([this.centerLat, this.centerLon], this.zoomLevel);
+    L.tileLayer(
+      "http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
+      {
+        maxZoom: 17,
+        attribution:
+          'Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)',
+      },
+    ).addTo(mymap);
+    const magScale = this.magScale;
+    uniqueQuakes(this.seisData).forEach(q => {
+      let circle = createQuakeMarker(q, magScale);
+      circle.addTo(mymap);
+    });
+    uniqueStations(this.seisData).forEach(s => {
+      let m = createStationMarker(s);
+      m.addTo(mymap);
+    });
+  }
 }
+
+customElements.define(MAP_ELEMENT, QuakeStationMap);
