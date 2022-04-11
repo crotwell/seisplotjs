@@ -67,6 +67,7 @@ export type MarkerHolderType = {
   bbox?: BBoxType;
 };
 
+export const SEISMOGRAPH_ELEMENT = 'seismo-graph';
 export const seismograph_css = `
 
 :host {
@@ -1679,7 +1680,7 @@ export class Seismograph extends HTMLElement {
 }
 
 
-customElements.define('seismo-graph', Seismograph);
+customElements.define(SEISMOGRAPH_ELEMENT, Seismograph);
 
 export class SeismographAmplitudeScalable extends AmplitudeScalable {
   graph: Seismograph;
