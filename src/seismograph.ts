@@ -330,8 +330,8 @@ export class Seismograph extends HTMLElement {
     return this._seisDataList;
   }
   set seisData(seisData: Array<SeismogramDisplayData>) {
-    this._seisDataList = seisData;
-    this.draw();
+    this._seisDataList = [];
+    this.appendSeisData(seisData);
   }
   get seismographConfig() {
     return this._seismographConfig;
@@ -1357,6 +1357,10 @@ export class Seismograph extends HTMLElement {
     if (this.seismographConfig.isRelativeTime) {
 
       if (isDef(this.seismographConfig.linkedTimeScale)) {
+        if (this.seismographConfig.linkedTimeScale.duration.toMillis()===0) {
+          let timeRange = findStartEnd(this._seisDataList);
+          this.seismographConfig.linkedTimeScale.duration = timeRange.duration;
+        }
         const linkedTimeScale = this.seismographConfig.linkedTimeScale;
         const offset = linkedTimeScale.offset;
         const duration = linkedTimeScale.duration;
@@ -1370,7 +1374,7 @@ export class Seismograph extends HTMLElement {
         ]);
       } else {
         let timeRange = findStartEnd(this._seisDataList);
-        this.origXScale.domain([0, timeRange.duration.toMillis()*1000]);
+        this.origXScale.domain([0, timeRange.duration.toMillis()]);
       }
 
       // force to be same but not to share same array
@@ -1388,6 +1392,10 @@ export class Seismograph extends HTMLElement {
             linkedTimeScale.duration,
           );
         } else {
+          if (linkedTimeScale.duration.toMillis()===0) {
+            let timeRange = findStartEnd(this._seisDataList);
+            linkedTimeScale.duration = timeRange.duration;
+          }
           // use first sdd alignmentTime to align, since we are not plotting relative
           const alignTime = this._seisDataList[0].alignmentTime;
           const start = alignTime.plus(linkedTimeScale.offset);
@@ -1586,28 +1594,17 @@ export class Seismograph extends HTMLElement {
    *
    * @param seismogram data to append
    */
-  appendSeisData(seismogram: Array<Seismogram> | Seismogram | SeismogramDisplayData) {
-    if (seismogram instanceof SeismogramDisplayData) {
-      this._internalAppend(seismogram);
-    } else if (Array.isArray(seismogram)) {
-      let sdd = seismogram.map(s => SeismogramDisplayData.fromSeismogram(s));
-
-      this._internalAppend(sdd);
-    } else if (seismogram instanceof Seismogram) {
-      this._internalAppend(SeismogramDisplayData.fromSeismogram(seismogram));
-    } else {
-      throw new Error(
-        `Unable to append, doesn't look like Array of Seismogram, Seismogram or SeismogramDisplayData: ${seismogram}`,
-      );
-    }
-
+  appendSeisData(seismogram: Array<Seismogram> | Array<SeismogramDisplayData> | Seismogram | SeismogramDisplayData) {
+    this._internalAppend(seismogram);
+    this.calcTimeScaleDomain();
     this.calcAmpScaleDomain();
-
     if (!this.beforeFirstDraw) {
       // only trigger a draw if appending after already drawn on screen
       // otherwise, just append the data and wait for outside to call first draw()
-      this.drawSeismograms();
+      //this.drawSeismograms();
+      this.draw();
     }
+
   }
 
   /**
