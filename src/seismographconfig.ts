@@ -223,6 +223,7 @@ export class SeismographConfig {
   }
 
   set fixedTimeScale(ts: null | StartEndDuration) {
+    if (!isDef(ts)) {throw new Error("time scale must be defined");}
     this._fixedTimeScale = ts;
     this._linkedTimeScale = null;
   }
@@ -232,6 +233,7 @@ export class SeismographConfig {
   }
 
   set linkedTimeScale(ts: null | LinkedTimeScale) {
+    if (!isDef(ts)) {throw new Error("time scale must be defined");}
     this._linkedTimeScale = ts;
     this._fixedTimeScale = null;
   }

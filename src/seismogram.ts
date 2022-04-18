@@ -1200,6 +1200,9 @@ export function findMinMaxOverRelativeTimeRange(
   startOffset: Duration,
   duration: Duration,
 ): Array<number> {
+  if (sddList.length === 0) {
+    return [0,0];
+  }
   let minMaxArr = sddList.map(sdd => {
     let timeRange = sdd.relativeTimeWindow(startOffset, duration);
     return findMinMaxOverTimeRange([sdd], timeRange);

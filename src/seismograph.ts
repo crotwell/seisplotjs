@@ -22,7 +22,7 @@ export {LinkedAmpScale};
 import type {MarkerType} from "./seismogram";
 import type {MarginType} from "./seismographconfig";
 import type {TraveltimeJsonType} from "./traveltime";
-import type {ScaleTime} from "d3-scale"
+import type {ScaleLinear, ScaleTime} from "d3-scale"
 import {
   SeismogramDisplayData,
   findStartEnd,
@@ -52,10 +52,6 @@ import {registerHelpers} from "./handlebarshelpers";
 registerHelpers();
 
 const CLIP_PREFIX = "seismographclip";
-export type ScaleChangeListenerType = {
-  destinationKey: any;
-  notifyScaleChange: (value: any) => void;
-};
 export type BBoxType = {
   height: number;
   width: number;
@@ -179,8 +175,7 @@ export class Seismograph extends HTMLElement {
   svg: any;
   canvasHolder: any;
   canvas: any;
-  _origXScale: null | d3.ScaleTime<number, number, never>;
-  _currZoomXScale: null | d3.ScaleTime<number, number, never>;
+
   yScale: any; // for drawing seismogram
 
   yScaleRmean: any; // for drawing y axis
@@ -193,7 +188,6 @@ export class Seismograph extends HTMLElement {
   throttleResize: any;
   myTimeScalable: TimeScalable;
   myAmpScalable: AmplitudeScalable;
-  xScaleChangeListeners: Array<ScaleChangeListenerType>;
 
   constructor() {
     super();
@@ -209,8 +203,6 @@ export class Seismograph extends HTMLElement {
     this.width = 200;
     this.height = 100;
 
-    this._origXScale = null;
-    this._currZoomXScale = null;
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
@@ -265,7 +257,6 @@ export class Seismograph extends HTMLElement {
     this.svg.attr("version", "1.1");
     this.svg.attr("plotId", this.plotId);
 
-    this.xScaleChangeListeners = [];
     this.myTimeScalable = new SeismographTimeScalable(this);
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
@@ -345,25 +336,6 @@ export class Seismograph extends HTMLElement {
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     this.draw();
-  }
-  get currZoomXScale(): d3.ScaleTime<number, number, never> {
-    if ( ! isDef(this._currZoomXScale)) {
-      this._currZoomXScale = this.origXScale.copy();
-    }
-    return this._currZoomXScale;
-  }
-  get origXScale(): d3.ScaleTime<number, number, never> {
-    let xscale = this._origXScale;
-    if (!isDef(xscale)) {
-      xscale = d3.scaleUtc();
-      this._origXScale = xscale;
-      this.calcTimeScaleDomain();
-      if (this.seismographConfig.isRelativeTime) {
-        //this._origXScale = d3.scaleLinear();
-      } else {
-      }
-    }
-    return xscale;
   }
 
   checkResize(): boolean {
@@ -627,28 +599,19 @@ export class Seismograph extends HTMLElement {
     let plotSed;
     let sddXScale = d3.scaleUtc();
 
-    if (
-      this.seismographConfig.isRelativeTime &&
-      this.seismographConfig.linkedTimeScale
-    ) {
+    if (this.seismographConfig.linkedTimeScale) {
       plotSed = sdd.relativeTimeWindow(
         this.seismographConfig.linkedTimeScale.offset,
         this.seismographConfig.linkedTimeScale.duration,
       );
+    } else if (this.seismographConfig.fixedTimeScale) {
+      plotSed = this.seismographConfig.fixedTimeScale;
     } else {
-      const start = DateTime.fromJSDate(this.currZoomXScale.domain()[0] as Date);
-      const end = DateTime.fromJSDate(this.currZoomXScale.domain()[1] as Date);
-      plotSed = new StartEndDuration(start, end);
+      throw new Error("neither fixed nor linked time scale");
     }
 
     sddXScale.domain([plotSed.start.toJSDate(), plotSed.end.toJSDate()]);
-
-    if (this.currZoomXScale.range()) {
-      sddXScale.range(this.currZoomXScale.range());
-    } else {
-      throw new Error(`this.currZoomXScale.range() no defined`);
-    }
-
+    sddXScale.range([0, this.width]);
     return sddXScale;
   }
 
@@ -784,6 +747,42 @@ export class Seismograph extends HTMLElement {
     this.drawLeftRightAxis();
   }
 
+  timeScaleForAxis(): ScaleLinear<number, number, never> | ScaleTime<number, number, never> {
+    let xScaleToDraw;
+    if (this.seismographConfig.isRelativeTime) {
+      xScaleToDraw = d3.scaleLinear();
+      xScaleToDraw.range([0, this.width]);
+      if (this.seismographConfig.linkedTimeScale) {
+        const startOffset = this.seismographConfig.linkedTimeScale.offset;
+        const duration = this.seismographConfig.linkedTimeScale.duration;
+        xScaleToDraw.domain([startOffset, startOffset.plus(duration)]);
+      } else if (this.seismographConfig.fixedTimeScale) {
+        const psed = this.seismographConfig.fixedTimeScale;
+        xScaleToDraw.domain([psed.start.toMillis()/1000, psed.end.toMillis()/1000]);
+      } else {
+        throw new Error("neither fixed nor linked time scale");
+      }
+    } else {
+      if (this.seismographConfig.linkedTimeScale) {
+        if (this.seisData.length > 0) {
+          xScaleToDraw = this.timeScaleForSeisDisplayData(this.seisData[0]);
+        } else {
+          const psed = new StartEndDuration(null, null, this.seismographConfig.linkedTimeScale.duration);
+          xScaleToDraw = d3.scaleUtc();
+          xScaleToDraw.range([0, this.width]);
+          xScaleToDraw.domain([psed.start.toJSDate(), psed.end.toJSDate()]);
+        }
+      } else if (this.seismographConfig.fixedTimeScale) {
+        const psed = this.seismographConfig.fixedTimeScale;
+        xScaleToDraw = d3.scaleUtc();
+        xScaleToDraw.range([0, this.width]);
+        xScaleToDraw.domain([psed.start.toJSDate(), psed.end.toJSDate()]);
+      } else {
+        throw new Error("neither fixed nor linked time scale");
+      }
+    }
+    return xScaleToDraw;
+  }
   /**
    * Draws the left and right (amplitude) axis if configured.
    *
@@ -795,15 +794,7 @@ export class Seismograph extends HTMLElement {
     let xAxis;
 
     if (this.seismographConfig.isRelativeTime) {
-      xScaleToDraw = d3.scaleLinear();
-      xScaleToDraw.range(this.currZoomXScale.range());
-      const millisecondDomain = this.currZoomXScale.domain();
-      // scale in seconds
-      const minDate: Date = millisecondDomain[0];
-      const minMillis = millisecondDomain[0].valueOf();
-      const duration = (millisecondDomain[1].valueOf() - minMillis)/1000;
-      const startOffset = (minMillis - this.origXScale.domain()[0].valueOf())/1000;
-      xScaleToDraw.domain([startOffset, startOffset+duration]);
+      xScaleToDraw = this.timeScaleForAxis();
       if (this.seismographConfig.isXAxis) {
         const xAxis = d3.axisBottom(xScaleToDraw);
         xAxis.tickFormat(createNumberFormatWrapper(this.seismographConfig.relativeTimeFormat));
@@ -819,7 +810,7 @@ export class Seismograph extends HTMLElement {
       }
 
     } else {
-      xScaleToDraw = this.currZoomXScale;
+      xScaleToDraw = this.timeScaleForAxis();
       if (this.seismographConfig.isXAxis) {
         const xAxis = d3.axisBottom(xScaleToDraw);
         xAxis.tickFormat(createDateFormatWrapper(this.seismographConfig.timeFormat));
@@ -930,19 +921,20 @@ export class Seismograph extends HTMLElement {
     if (this.seismographConfig.linkedTimeScale) {
       this.seismographConfig.linkedTimeScale.unzoom();
     } else {
-      this.redrawWithXScale(this.origXScale.copy());
+      throw new Error("can't reset zoom for fixedTimeScale");
     }
   }
 
   zoomed(e: any): void {
     let t = e.transform;
-    let xt = t.rescaleX(this.origXScale);
+    const origXScale = this.timeScaleForAxis();
+    let xt = t.rescaleX(origXScale);
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTS = this.seismographConfig.linkedTimeScale;
 
-      if (false && this.seismographConfig.isRelativeTime) {
-        let startDelta = xt.domain()[0].valueOf() - this.origXScale.domain()[0].valueOf();
+      if (this.seismographConfig.isRelativeTime) {
+        let startDelta = xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
         let duration = xt.domain()[1] - xt.domain()[0];
         linkedTS.zoom(
           Duration.fromMillis(startDelta),
@@ -950,32 +942,19 @@ export class Seismograph extends HTMLElement {
         );
       } else {
         let orig = new StartEndDuration(
-          DateTime.fromJSDate(this.origXScale.domain()[0]),
-          DateTime.fromJSDate(this.origXScale.domain()[1]),
+          DateTime.fromJSDate(origXScale.domain()[0] as Date),
+          DateTime.fromJSDate(origXScale.domain()[1] as Date),
         );
         let sed = new StartEndDuration(xt.domain()[0], xt.domain()[1]);
         let startDelta = sed.start.diff(orig.start);
         linkedTS.zoom(startDelta, sed.duration);
       }
     } else {
-      this.redrawWithXScale(xt);
+      throw new Error("can't zoom fixedTimeScale");
     }
   }
 
-  redrawWithXScale(xt: d3.ScaleTime<number, number, never>): void {
-    if (
-      this.currZoomXScale &&
-      xt.range()[0] === this.currZoomXScale.range()[0] &&
-      xt.range()[1] === this.currZoomXScale.range()[1]
-    ) {
-      if (xt.domain()[0].getTime() ===
-          this.currZoomXScale.domain()[0].getTime() &&
-        xt.domain()[1].getTime() === this.currZoomXScale.domain()[1].getTime()
-      ) {
-        return;
-      }
-    }
-    this._currZoomXScale = xt;
+  redrawWithXScale(): void {
     let mythis = this;
 
     if (!this.beforeFirstDraw) {
@@ -1053,8 +1032,6 @@ export class Seismograph extends HTMLElement {
 
       this.drawTopBottomAxis();
     }
-
-    this.xScaleChangeListeners.forEach(l => l.notifyScaleChange(xt));
   }
 
   drawMarkers() {
@@ -1248,7 +1225,6 @@ export class Seismograph extends HTMLElement {
       this.outerWidth -
       this.seismographConfig.margin.left -
       this.seismographConfig.margin.right;
-    this.origXScale.range([0, this.width]);
     this.yScale.range([this.height, 0]);
     this.yScaleRmean.range([this.height, 0]);
 
@@ -1261,12 +1237,7 @@ export class Seismograph extends HTMLElement {
       this.canvas.attr("width", this.width).attr("height", this.height + 1);
     }
 
-    const resizeXScale = this.currZoomXScale.copy();
-    // keep same time window
-    // but use new pixel range
-    resizeXScale.range([0, this.width]);
-    // this updates currZoomXScale
-    this.redrawWithXScale(resizeXScale);
+    this.redrawWithXScale();
   }
 
   // see http://blog.kevinchisholm.com/javascript/javascript-function-throttling/
@@ -1357,66 +1328,25 @@ export class Seismograph extends HTMLElement {
     if (this.seismographConfig.isRelativeTime) {
 
       if (isDef(this.seismographConfig.linkedTimeScale)) {
-        if (this.seismographConfig.linkedTimeScale.duration.toMillis()===0) {
-          let timeRange = findStartEnd(this._seisDataList);
-          this.seismographConfig.linkedTimeScale.duration = timeRange.duration;
+        if (this._seisDataList.length !== 0 && this.seismographConfig.linkedTimeScale.duration.toMillis()===0) {
+          this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
         }
-        const linkedTimeScale = this.seismographConfig.linkedTimeScale;
-        const offset = linkedTimeScale.offset;
-        const duration = linkedTimeScale.duration;
-        const relStart = offset.toMillis();
-        const relEnd = relStart + duration.toMillis();
-        this.origXScale.domain([relStart, relEnd]);
       } else if (this.seismographConfig.fixedTimeScale) {
-        this.origXScale.domain([
-          0,
-          this.seismographConfig.fixedTimeScale.duration.toMillis(),
-        ]);
       } else {
-        let timeRange = findStartEnd(this._seisDataList);
-        this.origXScale.domain([0, timeRange.duration.toMillis()]);
       }
-
-      // force to be same but not to share same array
-      this._currZoomXScale = this.origXScale.copy();
     } else {
       let timeRange;
 
       if (isDef(this.seismographConfig.linkedTimeScale)) {
         const linkedTimeScale = this.seismographConfig.linkedTimeScale;
 
-        if (this._seisDataList.length === 0) {
-          timeRange = new StartEndDuration(
-            null,
-            DateTime.utc(),
-            linkedTimeScale.duration,
-          );
-        } else {
-          if (linkedTimeScale.duration.toMillis()===0) {
-            let timeRange = findStartEnd(this._seisDataList);
-            linkedTimeScale.duration = timeRange.duration;
-          }
-          // use first sdd alignmentTime to align, since we are not plotting relative
-          const alignTime = this._seisDataList[0].alignmentTime;
-          const start = alignTime.plus(linkedTimeScale.offset);
-          timeRange = new StartEndDuration(
-            start,
-            null,
-            linkedTimeScale.duration,
-          );
+        if (this._seisDataList.length !== 0 && linkedTimeScale.duration.toMillis()===0) {
+          this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
         }
       } else if (this.seismographConfig.fixedTimeScale) {
-        timeRange = this.seismographConfig.fixedTimeScale;
       } else {
-        timeRange = findStartEnd(this._seisDataList);
       }
 
-      this.origXScale.domain([
-        timeRange.startTime.toJSDate(),
-        timeRange.endTime.toJSDate(),
-      ]);
-      // force to be same but not to share same array
-      this._currZoomXScale = this.origXScale.copy();
     }
   }
 
@@ -1430,27 +1360,16 @@ export class Seismograph extends HTMLElement {
       let minMax;
 
       if (this.seismographConfig.windowAmp) {
-        if (this.seismographConfig.isRelativeTime) {
-          if (isDef(this.seismographConfig.linkedTimeScale)) {
-            minMax = findMinMaxOverRelativeTimeRange(
-              this._seisDataList,
-              this.seismographConfig.linkedTimeScale.offset,
-              this.seismographConfig.linkedTimeScale.duration,
-            );
-          } else {
-            // ??
-            let timeRange = new StartEndDuration(
-              DateTime.fromJSDate(this.currZoomXScale.domain()[0]),
-              DateTime.fromJSDate(this.currZoomXScale.domain()[1]),
-            );
-            minMax = findMinMaxOverTimeRange(this._seisDataList, timeRange);
-          }
-        } else {
-          let timeRange = new StartEndDuration(
-            DateTime.fromJSDate(this.currZoomXScale.domain()[0]),
-            DateTime.fromJSDate(this.currZoomXScale.domain()[1]),
+        if (isDef(this.seismographConfig.linkedTimeScale)) {
+          minMax = findMinMaxOverRelativeTimeRange(
+            this._seisDataList,
+            this.seismographConfig.linkedTimeScale.offset,
+            this.seismographConfig.linkedTimeScale.duration,
           );
-          minMax = findMinMaxOverTimeRange(this._seisDataList, timeRange);
+        } else if (isDef(this.seismographConfig.fixedTimeScale)) {
+          minMax = findMinMaxOverTimeRange(this._seisDataList, this.seismographConfig.fixedTimeScale);
+        } else {
+          throw new Error("neither fixed nor linked time scale");
         }
       } else {
         minMax = findMinMax(this._seisDataList);
@@ -1735,23 +1654,7 @@ export class SeismographTimeScalable extends TimeScalable {
     if (this.graph.beforeFirstDraw) {
       return;
     }
-
-    if (this.graph.seismographConfig.isRelativeTime) {
-      let timeScale = d3.scaleTime();
-      timeScale.domain([
-        offset,
-        offset.toMillis() + duration.toMillis(),
-      ]);
-      timeScale.range(this.graph.origXScale.range());
-      this.graph.redrawWithXScale(timeScale);
-    } else {
-      const coverageSed = findStartEnd(this.graph.seisData);
-      const offsetStart = coverageSed.start.plus(offset);
-      let sed = new StartEndDuration(offsetStart, null, duration);
-      let timeScale = this.graph.origXScale.copy();
-      timeScale.domain([sed.startTime.toJSDate(), sed.endTime.toJSDate()]);
-      this.graph.redrawWithXScale(timeScale);
-    }
+    this.graph.redrawWithXScale();
   }
 }
 // static ID for seismogram

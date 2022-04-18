@@ -4,14 +4,15 @@ import * as leafletutil from "./leafletutil";
 import {ParticleMotion, createParticleMotionConfig} from "./particlemotion";
 import {Quake} from "./quakeml";
 import {Station} from "./stationxml";
-import {SeismogramDisplayData} from "./seismogram";
-import {Seismograph} from "./seismograph";
+import {SeismogramDisplayData, uniqueQuakes, uniqueStations} from "./seismogram";
+import {Seismograph, SEISMOGRAPH_ELEMENT} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {isDef, isStringArg, stringify} from "./util";
 import * as d3 from "d3";
 import * as L from "leaflet";
 import * as querystringify from "querystringify";
 import Handlebars from "handlebars";
+export const PLOT_TYPE = "plottype";
 export const SEISMOGRAPH = "seismograph";
 export const SPECTRA = "amp_spectra";
 export const PARTICLE_MOTION = "particlemotion";
@@ -19,50 +20,96 @@ export const MAP = "map";
 export const INFO = "info";
 export const QUAKE_TABLE = "quake_table";
 export const STATION_TABLE = "station_table";
-export class OrganizedDisplay {
-  plottype: string;
-  seisData: Array<SeismogramDisplayData>;
-  seisConfig: SeismographConfig;
+export class OrganizedDisplay extends HTMLElement {
+  _seisDataList: Array<SeismogramDisplayData>;
+  _seismographConfig: SeismographConfig;
   seismograph: Seismograph | null;
   spectraPlot: spectraplot.SpectraPlot | null;
   particleMotionPlot: ParticleMotion | null;
-  attributes: Map<string, any>;
+  extras: Map<string, any>;
 
-  constructor(
-    seisData: Array<SeismogramDisplayData>,
-    plottype: string = SEISMOGRAPH,
-  ) {
-    this.plottype = plottype;
-    this.seisData = seisData;
-
+  constructor() {
+    super();
+    console.log(`OrganizedDisplay constructor`)
+    this._seisDataList = [];
     if (this.plottype.startsWith(PARTICLE_MOTION)) {
-      this.seisConfig = createParticleMotionConfig();
+      this._seismographConfig = createParticleMotionConfig();
     } else {
-      this.seisConfig = new SeismographConfig();
+      this._seismographConfig = new SeismographConfig();
     }
 
     this.seismograph = null;
     this.spectraPlot = null;
     this.particleMotionPlot = null;
-    this.attributes = new Map();
+    this.extras = new Map();
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute("class", "wrapper");
+    const style = shadow.appendChild(document.createElement('style'));
+    style.textContent = "";
+    shadow.appendChild(wrapper);
   }
 
-  setAttribute(key: string, value: any) {
-    this.attributes.set(key, value);
+  get seisData() {
+    return this._seisDataList;
+  }
+  set seisData(seisData: Array<SeismogramDisplayData>) {
+    console.log(`Org Disp seisData setter: ${seisData.length}`)
+    this._seisDataList = seisData;
+    this.draw();
+  }
+  get seismographConfig() {
+    return this._seismographConfig;
+  }
+  set seismographConfig(seismographConfig: SeismographConfig) {
+    console.log(`Org Disp seismographConfig setter: ${this.seisData.length}`)
+    this._seismographConfig = seismographConfig;
+    this.draw();
   }
 
-  hasAttribute(key: string): boolean {
-    return this.attributes.has(key);
+  get plottype(): string {
+    let k = this.hasAttribute(PLOT_TYPE) ? this.getAttribute(PLOT_TYPE) : SEISMOGRAPH;
+    // typescript null
+    if (!k) { k = SEISMOGRAPH;}
+    return k;
+  }
+  set plottype(val: string) {
+    this.setAttribute(PLOT_TYPE, val);
+    this.draw();
+  }
+  connectedCallback() {
+    this.draw();
+  }
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    this.draw();
+  }
+  setExtra(key: string, value: any) {
+    this.extras.set(key, value);
   }
 
-  getAttribute(key: string): any {
-    if (this.attributes.has(key)) {
-      return this.attributes.get(key);
+  hasExtra(key: string): boolean {
+    return this.extras.has(key);
+  }
+
+  getExtra(key: string): any {
+    if (this.extras.has(key)) {
+      return this.extras.get(key);
     }
-
     return null;
   }
 
+  draw(): void {
+    if ( ! this.isConnected) { return; }
+
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+
+    while (wrapper.firstChild) {
+      // @ts-ignore
+      wrapper.removeChild(wrapper.lastChild);
+    }
+    this.plot(d3.select(wrapper));
+  }
   plot(divElement: any) {
     let qIndex = this.plottype.indexOf("?");
     let plotstyle = this.plottype;
@@ -77,11 +124,18 @@ export class OrganizedDisplay {
 
     divElement.attr("plottype", plotstyle);
 
+console.log(`OrganizedDisplay plot: ${plotstyle}  ${this.seisData.length}`)
     if (this.plottype.startsWith(SEISMOGRAPH)) {
-      this.seismograph = new Seismograph();
-      this.seismograph.seismographConfig = this.seisConfig;
+      if (this.seismograph === null ) {
+        console.log(`create seismograph via createElement`)
+        this.seismograph = document.createElement(SEISMOGRAPH_ELEMENT) as Seismograph;
+      }
+      this.seismograph.seismographConfig = this._seismographConfig;
       this.seismograph.seisData = this.seisData;
+      //this.seismograph.appendSeisData(this.seisData);
       divElement.node().appendChild(this.seismograph);
+      this.seismograph.draw();
+      console.log(`plot time range: ${this.seismograph?.seismographConfig?.linkedTimeScale?.duration}`)
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
       let nonContigList = this.seisData.filter(
@@ -108,7 +162,7 @@ export class OrganizedDisplay {
       });
       let fftListNoNull = fftList.filter(isDef);
       let spectraPlot = document.createElement("spectra-plot") as spectraplot.SpectraPlot;
-      spectraPlot.seismographConfig = this.seisConfig;
+      spectraPlot.seismographConfig = this._seismographConfig;
       spectraPlot.setAttribute(spectraplot.LOGFREQ, loglog);
       divElement.node().appendChild(spectraPlot);
     } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
@@ -118,7 +172,7 @@ export class OrganizedDisplay {
         );
       }
 
-      let pmpSeisConfig = this.seisConfig.clone();
+      let pmpSeisConfig = this._seismographConfig.clone();
       this.particleMotionPlot = new ParticleMotion(
         divElement,
         pmpSeisConfig,
@@ -162,16 +216,19 @@ export class OrganizedDisplay {
     } else if (this.plottype.startsWith(INFO)) {
       let infoTemplate = defaultInfoTemplate;
 
-      if (this.getAttribute("infoTemplate")) {
-        infoTemplate = this.getAttribute("infoTemplate");
+      if (this.getExtra("infoTemplate")) {
+        infoTemplate = this.getExtra("infoTemplate");
       }
 
-      stationInfoPlot(divElement, this.seisConfig, this.seisData, infoTemplate);
+      stationInfoPlot(divElement, this._seismographConfig, this.seisData, infoTemplate);
     } else {
       throw new Error(`Unkown plottype "${this.plottype}"`);
     }
   }
 }
+
+customElements.define('organized-display', OrganizedDisplay);
+
 export function getFromQueryParams(
   qParams: any,
   name: string,
@@ -190,12 +247,18 @@ export function getFromQueryParams(
 export function individualDisplay(
   sddList: Array<SeismogramDisplayData>,
 ): Array<OrganizedDisplay> {
-  return sddList.map(sdd => new OrganizedDisplay([sdd]));
+  return sddList.map(sdd => {
+    const odisp = new OrganizedDisplay();
+    odisp.seisData = [ sdd ];
+    return odisp;
+  });
 }
 export function mapAndIndividualDisplay(
   sddList: Array<SeismogramDisplayData>,
 ): Array<OrganizedDisplay> {
-  let map = new OrganizedDisplay(sddList, MAP);
+  let map = new OrganizedDisplay();
+  map.seisData = sddList;
+  map.plottype = MAP;
   let individual = individualDisplay(sddList);
   individual.unshift(map);
   return individual;
@@ -216,15 +279,16 @@ export function overlayBySDDFunction(
     }
 
     out.forEach(org => {
-      if (org.getAttribute(key) === val) {
+      if (org.getExtra(key) === val) {
         org.seisData.push(sdd);
         found = true;
       }
     });
 
     if (!found) {
-      const org = new OrganizedDisplay([sdd]);
-      org.setAttribute(key, val);
+      const org = new OrganizedDisplay();
+      org.seisData = [ sdd ];
+      org.setExtra(key, val);
       out.push(org);
     }
   });
@@ -256,8 +320,8 @@ export function sortByKey(
   key: string,
 ): Array<OrganizedDisplay> {
   organized.sort((orgA, orgB) => {
-    const valA = orgA.getAttribute(key);
-    const valB = orgB.getAttribute(key);
+    const valA = orgA.getExtra(key);
+    const valB = orgB.getExtra(key);
 
     if (!valA && !valB) {
       return 0;
@@ -326,9 +390,9 @@ export function createAttribute(
   organized.forEach(org => {
     if (org.seisData.length > 0) {
       const v = valueFun(org);
-      org.setAttribute(key, v);
+      org.setExtra(key, v);
     } else {
-      org.setAttribute(key, null);
+      org.setExtra(key, null);
     }
   });
   return organized;
@@ -349,26 +413,6 @@ export function attributeDistance(orgDisp: OrganizedDisplay): number | null {
     }
   });
   return out;
-}
-export function uniqueStations(
-  seisData: Array<SeismogramDisplayData>,
-): Array<Station> {
-  const out = new Set<Station>();
-  seisData.forEach(sdd => {
-    if (sdd.channel) {
-      out.add(sdd.channel.station);
-    }
-  });
-  return Array.from(out.values());
-}
-export function uniqueQuakes(
-  seisData: Array<SeismogramDisplayData>,
-): Array<Quake> {
-  const out = new Set<Quake>();
-  seisData.forEach(sdd => {
-    sdd.quakeList.forEach(q => out.add(q));
-  });
-  return Array.from(out.values());
 }
 export function createPlots(
   organized: Array<OrganizedDisplay>,
