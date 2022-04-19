@@ -14,6 +14,7 @@ import * as datechooser from "./datechooser";
 import * as displayorganize from "./displayorganize";
 import * as distaz from "./distaz";
 import * as download from "./download";
+import * as infotable from "./infotable";
 import * as fdsnavailability from "./fdsnavailability";
 import * as fdsndatacenters from "./fdsndatacenters";
 import * as fdsnevent from "./fdsnevent";
@@ -65,6 +66,7 @@ export {
   displayorganize,
   distaz,
   download,
+  infotable,
   fdsnavailability,
   fdsndatacenters,
   fdsnevent,
