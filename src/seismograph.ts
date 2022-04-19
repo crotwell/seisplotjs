@@ -34,6 +34,7 @@ import {
   Seismogram,
   COUNT_UNIT,
 } from "./seismogram";
+import {SeisPlotElement} from "./spelement";
 import {Quake, Origin} from "./quakeml";
 import {Station, Channel} from "./stationxml";
 import * as distaz from "./distaz";
@@ -68,7 +69,13 @@ export const seismograph_css = `
 
 :host {
   display: block;
-  min-height: 100;
+  min-height: 100px;
+  height: 100%;
+}
+
+div.wrapper {
+  min-height: 100px;
+  height: 100%;
 }
 
 .marker .markerpath {
@@ -147,6 +154,9 @@ svg.seismograph text a {
 
 `;
 
+export const COLOR_CSS_ID = "seismographcolors";
+
+
 
 /* A seismogram plot, using d3. The actual waveform can be drawn
  * with a separate Canvas (default) or with SVG.
@@ -158,7 +168,7 @@ svg.seismograph text a {
  * }<br/>
  * in order to have the seismogram display.
  */
-export class Seismograph extends HTMLElement {
+export class Seismograph extends SeisPlotElement {
   /** @private */
   static _lastID: number;
   plotId: number;
@@ -1790,13 +1800,4 @@ export function createDateFormatWrapper(formatter: (value: Date) => string): (nV
       return formatter(new Date(nValue.valueOf()));
     }
   };
-}
-
-
-
-export const COLOR_CSS_ID = "seismographcolors";
-
-if (document) {
-  // default seis colors
-  insertCSS(new SeismographConfig().createCSSForLineColors(), COLOR_CSS_ID);
 }

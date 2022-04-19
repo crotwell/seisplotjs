@@ -1,8 +1,10 @@
 import {insertCSS} from "./cssutil";
 import {Quake} from "./quakeml";
 import {Station} from "./stationxml";
+import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
 import * as L from "leaflet";
+import {LatLngTuple} from "leaflet";
 
 export const MAP_ELEMENT = 'station-event-map';
 export const triangle = "\u25B2";
@@ -741,11 +743,9 @@ export const DEFAULT_ZOOM_LEVEL = 1;
 export const MAG_SCALE = "magScale";
 export const DEFAULT_MAG_SCALE = 5.0;
 
-export class QuakeStationMap extends HTMLElement {
-  _seisDataList: Array<SeismogramDisplayData>;
+export class QuakeStationMap extends SeisPlotElement {
   constructor() {
     super();
-    this._seisDataList = [];
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
@@ -769,14 +769,14 @@ export class QuakeStationMap extends HTMLElement {
     this.setAttribute(CENTER_LAT, `${val}`);
   }
   get centerLon(): number {
-    const ks = this.hasAttribute(CENTER_LAT) ? this.getAttribute(CENTER_LAT) : null;
+    const ks = this.hasAttribute(CENTER_LON) ? this.getAttribute(CENTER_LON) : null;
     let k;
     // typescript null
-    if (!ks) { k = DEFAULT_CENTER_LAT;} else { k= parseFloat(ks);}
+    if (!ks) { k = DEFAULT_CENTER_LON;} else { k= parseFloat(ks);}
     return k;
   }
   set centerLon(val: number) {
-    this.setAttribute(CENTER_LAT, `${val}`);
+    this.setAttribute(CENTER_LON, `${val}`);
   }
   get zoomLevel(): number {
     const ks = this.hasAttribute(ZOOM_LEVEL) ? this.getAttribute(ZOOM_LEVEL) : null;
@@ -797,13 +797,6 @@ export class QuakeStationMap extends HTMLElement {
   }
   set magScale(val: number) {
     this.setAttribute(MAG_SCALE, `${val}`);
-  }
-  get seisData() {
-    return this._seisDataList;
-  }
-  set seisData(seisData: Array<SeismogramDisplayData>) {
-    this._seisDataList = seisData;
-    this.draw();
   }
   draw() {
     if ( ! this.isConnected) { return; }
@@ -827,14 +820,20 @@ export class QuakeStationMap extends HTMLElement {
       },
     ).addTo(mymap);
     const magScale = this.magScale;
+    let mapItems: Array<LatLngTuple> = [];
     uniqueQuakes(this.seisData).forEach(q => {
       let circle = createQuakeMarker(q, magScale);
       circle.addTo(mymap);
+      mapItems.push([q.latitude, q.longitude]);
     });
     uniqueStations(this.seisData).forEach(s => {
       let m = createStationMarker(s);
       m.addTo(mymap);
+      mapItems.push([s.latitude, s.longitude]);
     });
+    if (mapItems.length > 1) {
+      mymap.fitBounds(mapItems);
+    }
   }
 }
 
