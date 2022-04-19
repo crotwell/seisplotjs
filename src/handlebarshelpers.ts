@@ -69,7 +69,7 @@ export function registerHelpers() {
   );
   Handlebars.registerHelper("formatIsoDate", function (param, hash) {
     if (typeof param === "undefined" || param === null) return "no time";
-    let defaultFormat = "YYYY-MM-DD[T]HH:mm:ss.SSSS";
+    let defaultFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     let format = hash.format === undefined ? defaultFormat : hash.format;
     let m = param;
 
@@ -81,6 +81,10 @@ export function registerHelpers() {
   });
   Handlebars.registerHelper("formatDuration", function (param) {
     if (typeof param === "undefined" || param === null) return "no time";
-    return `${param.toSeconds()} sec`;
+
+    if (!Duration.isDuration(param)) {
+      return `${param}`;
+    }
+    return `${param.toMillis()/1000} sec`;
   });
 }
