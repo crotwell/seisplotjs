@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="style.css">
+  <title>Spectra</title>
+  <script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
+  <style>
+    spectra-plot {
+      height: 300px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>Spectra:</h3>
+  <h3>Amplitude:</h3>
+  <spectra-plot kind="amplitude" logfreq="false"></spectra-plot>
+  <spectra-plot kind="amplitude" logfreq="true"></spectra-plot>
+  <h3>Phase:</h3>
+  <spectra-plot kind="phase" logfreq="false"></spectra-plot>
+  <spectra-plot kind="phase" logfreq="true"></spectra-plot>
+
+  <script>
+    const ranData = [];
+    for( let i=0; i<1024; i++) {ranData.push((Math.random()-0.5)*1000);}
+    const fData = Float32Array.from(ranData);
+    const now = seisplotjs.luxon.DateTime.utc();
+    const seis = seisplotjs.seismogram.Seismogram.createFromContiguousData(fData, 1, now);
+    seis.networkCode = "XX";
+    seis.stationCode = "STA";
+    seis.locationCode = "00";
+    seis.channelCode = "BHZ";
+
+    const ampPhase = seisplotjs.fft.fftForward(seis);
+    const spectraList = (document.querySelectorAll('spectra-plot'));
+    spectraList.forEach( spectra => {
+      spectra.fftResults = [ ampPhase ];
+      //spectra.setAttribute("kind", "amplitude");
+    });
+
+
+    //spectra.draw();
+  </script>
+</body>
+</html>

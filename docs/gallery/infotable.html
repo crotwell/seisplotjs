@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="style.css">
+  <title>Info Table</title>
+  <script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
+  <style>
+    station-event-table {
+      height: 400px;
+
+    }
+
+    station-event-table
+    {
+      --even-row-background: NavajoWhite;
+      --odd-row-background: DeepSkyBlue;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>Info Table:</h3>
+  <div>
+    <station-event-table ></station-event-table>
+  </div>
+  <script >
+    seisplotjs.dataset.load('dataset.zip')
+    .then((ds) => {
+      let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+      const seismographList = (document.querySelectorAll('station-event-table'));
+      seismographList.forEach( graph => {
+        graph.seisData = ds.waveforms;
+        graph.seismographConfig = seisConfig;
+        graph.draw();
+      });
+      return ds;
+    });
+  </script>
+</body>
+</html>

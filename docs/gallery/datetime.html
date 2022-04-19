@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <link rel="stylesheet" href="style.css">
+   <title>Date and Time Choosers</title>
+</head>
+<body>
+
+  <h3>Dates and Times:</h3>
+  <div>
+    <label>Time: </label><hour-min-chooser/>
+  </div>
+  <div>
+    <label>Date and Time: </label><date-time-chooser/>
+  </div>
+  <div>
+    <label>Time Range: </label><time-range-chooser duration="900"/>
+  </div>
+  <div>
+    <h5>Output:</h5>
+    <p id="output"></p>
+  </div>
+  <div>
+    <label>native</label>
+    <input type="date" ></input>
+    <hour-min-chooser></hour-min-chooser>
+  </div>
+
+  <script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
+  <script>
+    const outputArea = document.querySelector('#output');
+    const timeInput = document.querySelector('hour-min-chooser');
+    timeInput.updateCallback = (time) => {
+      outputArea.textContent = `Time: ${time.toISO()}`;
+    }
+    const dateInput = document.querySelector('date-time-chooser');
+    dateInput.updateCallback = (time) => {
+      outputArea.textContent = `Date: ${time.toISO()}`;
+    }
+    const rangeInput = document.querySelector('time-range-chooser');
+    rangeInput.updateCallback = (timeRange) => {
+      outputArea.textContent = `Range: ${timeRange.start.toISO()} to ${timeRange.end.toISO()}`;
+    }
+
+  </script>
+</body>
+</html>

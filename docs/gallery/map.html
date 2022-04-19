@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="style.css">
+  <title>Map</title>
+  <script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
+  <style>
+    station-event-map {
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>Map:</h3>
+  <div>
+    <station-event-map centerLat="34" centerLon="-80" zoomLevel="8"></station-event-map>
+  </div>
+  <script >
+    seisplotjs.dataset.load('dataset.zip')
+    .then((ds) => {
+      let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+      const seismographList = (document.querySelectorAll('station-event-map'));
+      seismographList.forEach( graph => {
+        graph.seisData = ds.waveforms;
+        graph.seismographConfig = seisConfig;
+        graph.draw();
+      });
+      return ds;
+    });
+  </script>
+</body>
+</html>

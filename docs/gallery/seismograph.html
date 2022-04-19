@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="style.css">
+  <title>Seismograph</title>
+  <script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
+  <style>
+    seismo-graph {
+      height: 200px;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>Seismograph:</h3>
+  <div>
+    <seismo-graph ></seismo-graph>
+  </div>
+  <script>
+
+    let dataArray = new Float32Array(1000).map(function(d, i) {
+      return Math.sin(2*Math.PI*i/100) * 100;
+    });
+    let sampleRate = 20;
+    let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
+    const seis = seisplotjs.seismogram.Seismogram.createFromContiguousData(dataArray, sampleRate, start);
+    seis.networkCode = "XX";
+    seis.stationCode = "STA";
+    seis.locationCode = "00";
+    seis.channelCode = "BHZ";
+
+    const seismographList = (document.querySelectorAll('seismo-graph'));
+    seismographList.forEach( graph => {
+      graph.seismographConfig.isRelativeTime = false;
+      graph.appendSeisData(seis);
+      graph.draw();
+    });
+  </script>
+</body>
+</html>
