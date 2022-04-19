@@ -4,12 +4,18 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration, Interval} from "luxon";
-import {StartEndDuration, isoToDateTime} from "./util";
+import {StartEndDuration, isoToDateTime, isDef} from "./util";
 
 
 export const hourMinRegEx = /^([0-1]?[0-9]):([0-5]?[0-9])$/;
 export const HOUR_MIN_24 = "HH:mm";
 
+export const START_LABEL = "startlabel";
+export const DEFAULT_START_LABEL = "Start:";
+export const END_LABEL = "endlabel";
+export const DEFAULT_END_LABEL = "End:";
+export const DUR_LABEL = "durLabel";
+export const DEFAULT_DUR_LABEL = "Dur:";
 
 /**
  * Hour and Minute chooser using sliders.
@@ -216,14 +222,9 @@ customElements.define('hour-min-chooser', HourMinChooser);
 
 
 /**
- * Date and Time chooser using pikaday for the date and the above
+ * Date and Time chooser using native date chooser and the above
  * HourMinChooser for the hour and minute of time.
- *
- * @param div selected div to append chooser to
- * @param label label for chooser
- * @param initialTime initial chooser time value
- * @param updateCallback optional callback function when time is selected
- */
+ * */
 export class DateTimeChooser extends HTMLElement {
 
   _time: DateTime;
@@ -340,9 +341,32 @@ export class TimeRangeChooser extends HTMLElement {
     super();
     this._mostRecentChanged = "start";
     this.updateCallback = (timerange: StartEndDuration) => {};
-    let endTime = DateTime.utc();
-    this.duration = 300;
-    let startTime = endTime.minus(Duration.fromMillis(1000*this.duration));//seconds
+    let endAttr = this.getAttribute("end");
+    let endTime: DateTime;
+    if (endAttr) {
+      endTime = isoToDateTime(endAttr);
+    } else {
+      endTime = DateTime.utc();
+    }
+    let durAttr = this.getAttribute("duration");
+    if (durAttr) {
+      this.duration = Number.parseFloat(durAttr);
+    } else {
+      this.duration = 300;
+    }
+    let startAttr = this.getAttribute("start");
+    let startTime: DateTime;
+    if (startAttr) {
+      startTime = isoToDateTime(startAttr);
+      if (endAttr) {
+        let durInterval = Interval.fromDateTimes(startTime, endTime);
+        this.duration = durInterval.length("seconds");
+      } else {
+        endTime = startTime.plus(Duration.fromMillis(1000*this.duration));
+      }
+    } else {
+      startTime = endTime.minus(Duration.fromMillis(1000*this.duration));//seconds
+    }
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
@@ -358,7 +382,7 @@ export class TimeRangeChooser extends HTMLElement {
     shadow.appendChild(style);
 
     const startLabel = wrapper.appendChild(document.createElement('label'));
-    startLabel.textContent = "Start:";
+    startLabel.textContent = this.startLabel;
     const startChooser = wrapper.appendChild(document.createElement('date-time-chooser'));
     this.startChooser = startChooser as DateTimeChooser;
     startChooser.setAttribute("class", "start");
@@ -372,7 +396,7 @@ export class TimeRangeChooser extends HTMLElement {
     let durationDiv = wrapper.appendChild(document.createElement('span'));
     durationDiv.setAttribute("class", "duration");
     const durationLabel = wrapper.appendChild(document.createElement('label'));
-    durationLabel.textContent = "Duration:";
+    durationLabel.textContent = this.durationLabel;
     const durationInput = wrapper.appendChild(document.createElement('input'));
     durationInput.setAttribute("value", `${this.duration}`);
     durationInput.setAttribute("type", "number");
@@ -396,7 +420,7 @@ export class TimeRangeChooser extends HTMLElement {
       };
 
     const endLabel = wrapper.appendChild(document.createElement('label'));
-    endLabel.textContent = "End:";
+    endLabel.textContent = this.endLabel;
     const endChooser = wrapper.appendChild(document.createElement('date-time-chooser'));
     this.endChooser = endChooser as DateTimeChooser;
     endChooser.setAttribute("class", "end");
@@ -417,66 +441,17 @@ export class TimeRangeChooser extends HTMLElement {
       this.endChooser.time,
     );
   }
+  get startLabel(): string {
+    const l = this.getAttribute(START_LABEL);
+    if (isDef(l)) { return l; } else { return DEFAULT_START_LABEL; }
+  }
+  get endLabel(): string {
+    const l =  this.getAttribute(END_LABEL);
+    if (isDef(l)) { return l; } else { return DEFAULT_END_LABEL; }
+  }
+  get durationLabel(): string {
+    const l =  this.getAttribute(DUR_LABEL);
+    if (isDef(l)) { return l; } else { return DEFAULT_DUR_LABEL; }
+  }
 }
 customElements.define('time-range-chooser', TimeRangeChooser);
-
-/**
- * CSS for the parts of HourMin, DateTime and TimeRange choosers
- * that are not using pikaday.
- */
-export const chooser_css = `
-
-div.timeRangeChooser .utclabel {
-  font-size: smaller;
-}
-
-div.timeRangeChooser span div.hourminpopup {
-    z-index: 9999;
-    display: block;
-    position: relative;
-    color: #333;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-bottom-color: #bbb;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
-}
-
-
-
-.hourminpopup.is-hidden {
-    display: none;
-}
-.hourminpopup.is-bound {
-    position: absolute;
-    box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
-    background-color: white;
-}
-
-div.hourminpopup div label {
-  display: block;
-  float: right;
-}
-div.hourminpopup div {
-    display: block;
-    float: right;
-    clear: both;
-}
-
-div.hourminpopup input {
-    width: 150px;
-}
-
-div.timeRangeChooser span {
-  margin: 2px;
-  margin-right: 5px;
-}
-
-input.pikaday {
-  width: 80px;
-}
-input.pikatime {
-  width: 50px;
-}
-
-`;
