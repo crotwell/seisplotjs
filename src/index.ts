@@ -34,6 +34,7 @@ import * as particlemotion from "./particlemotion";
 import * as quakeml from "./quakeml";
 import * as ringserverweb from "./ringserverweb";
 import * as sacPoleZero from "./sacpolezero";
+import * as scale from "./scale";
 import * as seedcodec from "./seedcodec";
 import * as seedlink from "./seedlink";
 import * as seedlink4 from "./seedlink4";

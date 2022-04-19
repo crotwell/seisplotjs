@@ -7,18 +7,17 @@
 import * as d3 from "d3";
 import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {
-  SeismographConfig,
-  LinkedAmpScale,
   AmplitudeScalable,
   TimeScalable,
+} from "./scale";
+import {
+  SeismographConfig,
   DRAW_SVG,
   DRAW_CANVAS,
   DRAW_BOTH,
   DRAW_BOTH_ALIGN,
   numberFormatWrapper,
 } from "./seismographconfig";
-// reexport as was defined here in 2.0.1
-export {LinkedAmpScale};
 import type {MarkerType} from "./seismogram";
 import type {MarginType} from "./seismographconfig";
 import type {TraveltimeJsonType} from "./traveltime";
@@ -1577,29 +1576,6 @@ export class Seismograph extends SeisPlotElement {
     }
   }
 
-  // eslint-disable-next-line jsdoc/require-param
-
-  /**
-   * @deprecated
-   */
-  // eslint-disable-next-line no-unused-vars
-  linkXScaleTo(seismograph: Seismograph) {
-    throw new Error(
-      "no longer supported, use SeismogramConfig.linkedTimeScale",
-    );
-  }
-
-  // eslint-disable-next-line jsdoc/require-param
-
-  /**
-   * @deprecated
-   */
-  // eslint-disable-next-line no-unused-vars
-  unlinkXScaleTo(seismograph: Seismograph) {
-    throw new Error(
-      "no longer supported, use SeismogramConfig.linkedTimeScale",
-    );
-  }
 }
 
 
