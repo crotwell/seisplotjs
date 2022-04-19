@@ -28,10 +28,10 @@ export class SeismogramLoader {
   _markedPhaseList: Array<string>;
   _startOffset: Duration;
   _endOffset: Duration;
-  networkList: Promise<Array<Network>> | null;
-  quakeList: Promise<Array<Quake>> | null;
+  _networkList: Promise<Array<Network>> | null;
+  _quakeList: Promise<Array<Quake>> | null;
   traveltimeList: Promise<Array<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> | null;
-  sddList: Promise<Array<SeismogramDisplayData>> | null;
+  _sddList: Promise<Array<SeismogramDisplayData>> | null;
 
   constructor(
     stationQuery: StationQuery,
@@ -74,10 +74,10 @@ export class SeismogramLoader {
     this._markedPhaseList = [];
     this._startOffset = Duration.fromMillis(-30*1000);// seconds;
     this._endOffset = Duration.fromMillis(60); //seconds
-    this.networkList = null;
-    this.quakeList = null;
+    this._networkList = null;
+    this._quakeList = null;
     this.traveltimeList = null;
-    this.sddList = null;
+    this._sddList = null;
   }
 
   get startPhaseList(): Array<string> {
@@ -163,6 +163,24 @@ export class SeismogramLoader {
       );
     }
   }
+  get networkList(): Promise<Array<Network>> {
+    if (this._networkList === null) {
+      return this.load().then(([ netList, quakeList, sddList]) => netList);
+    }
+    return this._networkList;
+  }
+  get quakeList(): Promise<Array<Quake>> {
+    if (this._quakeList === null) {
+      return this.load().then(([ netList, quakeList, sddList]) => quakeList);
+    }
+    return this._quakeList;
+  }
+  get sddList(): Promise<Array<SeismogramDisplayData>> {
+    if (this._sddList === null) {
+      return this.load().then(([ netList, quakeList, sddList]) => sddList);
+    }
+    return this._sddList;
+  }
 
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
     return this.load().then(([netList, quakeList, sddList]) => sddList);
@@ -184,12 +202,12 @@ export class SeismogramLoader {
     }
 
     if (this.withResponse) {
-      this.networkList = fedcat.queryResponses();
+      this._networkList = fedcat.queryResponses();
     } else {
-      this.networkList = fedcat.queryChannels();
+      this._networkList = fedcat.queryChannels();
     }
 
-    this.quakeList = this.eventQuery.query();
+    this._quakeList = this.eventQuery.query();
     let allPhaseList: Array<string> = [];
     allPhaseList = allPhaseList.concat(
       this.startPhaseList,
@@ -204,7 +222,7 @@ export class SeismogramLoader {
     const allPhasesWithoutOrigin = allPhaseList
       .filter(p => p !== "origin")
       .join(",");
-    this.traveltimeList = RSVP.all([this.networkList, this.quakeList]).then(
+    this.traveltimeList = RSVP.all([this._networkList, this._quakeList]).then(
       ([netList, quakeList]) => {
         let ttpromiseList: Array<Promise<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> = [];
 
@@ -231,7 +249,7 @@ export class SeismogramLoader {
         return Promise.all(ttpromiseList);
       },
     );
-    this.sddList = this.traveltimeList.then(ttpromiseList => {
+    this._sddList = this.traveltimeList.then(ttpromiseList => {
       let seismogramDataList = [];
 
       for (let ttarr of ttpromiseList) {
@@ -321,6 +339,6 @@ export class SeismogramLoader {
 
       return sddListPromise;
     });
-    return Promise.all([this.networkList, this.quakeList, this.sddList]);
+    return Promise.all([this._networkList, this._quakeList, this._sddList]);
   }
 }
