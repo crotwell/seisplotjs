@@ -740,6 +740,13 @@ export class LinkedTimeScale {
     this.recalculate();
   }
 
+  get origOffset(): Duration {
+    return this._originalStartOffset;
+  }
+  get origDuration(): Duration {
+    return this._originalDuration;
+  }
+
   /**
    * Recalculate the best time scale for all Seismographs. Causes a redraw.
    */

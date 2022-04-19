@@ -763,9 +763,9 @@ export class Seismograph extends SeisPlotElement {
       xScaleToDraw = d3.scaleLinear();
       xScaleToDraw.range([0, this.width]);
       if (this.seismographConfig.linkedTimeScale) {
-        const startOffset = this.seismographConfig.linkedTimeScale.offset;
-        const duration = this.seismographConfig.linkedTimeScale.duration;
-        xScaleToDraw.domain([startOffset, startOffset.plus(duration)]);
+        const startOffset = this.seismographConfig.linkedTimeScale.offset.toMillis()/1000;
+        const duration = this.seismographConfig.linkedTimeScale.duration.toMillis()/1000;
+        xScaleToDraw.domain([startOffset, startOffset+duration]);
       } else if (this.seismographConfig.fixedTimeScale) {
         const psed = this.seismographConfig.fixedTimeScale;
         xScaleToDraw.domain([psed.start.toMillis()/1000, psed.end.toMillis()/1000]);
@@ -937,28 +937,25 @@ export class Seismograph extends SeisPlotElement {
 
   zoomed(e: any): void {
     let t = e.transform;
-    const origXScale = this.timeScaleForAxis();
-    let xt = t.rescaleX(origXScale);
+    console.log(`transform: ${t}`)
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTS = this.seismographConfig.linkedTimeScale;
 
-      if (this.seismographConfig.isRelativeTime) {
-        let startDelta = xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
-        let duration = xt.domain()[1] - xt.domain()[0];
-        linkedTS.zoom(
-          Duration.fromMillis(startDelta),
-          Duration.fromMillis(duration),
-        );
-      } else {
-        let orig = new StartEndDuration(
-          DateTime.fromJSDate(origXScale.domain()[0] as Date),
-          DateTime.fromJSDate(origXScale.domain()[1] as Date),
-        );
-        let sed = new StartEndDuration(xt.domain()[0], xt.domain()[1]);
-        let startDelta = sed.start.diff(orig.start);
-        linkedTS.zoom(startDelta, sed.duration);
-      }
+      const origOffset = linkedTS.origOffset.toMillis()/1000;
+      const origDuration = linkedTS.origDuration.toMillis()/1000;
+      const origXScale = d3.scaleLinear();
+      origXScale.range([0, this.width]);
+      origXScale.domain([origOffset, origOffset+origDuration]);
+      let xt = t.rescaleX(origXScale);
+      let startDelta = xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
+      let duration = xt.domain()[1] - xt.domain()[0];
+      console.log(`linked zoom: ${linkedTS.offset}  ${linkedTS.duration}`)
+      console.log(`         to: ${Duration.fromMillis(startDelta*1000)}  ${Duration.fromMillis(duration*1000)}`)
+      linkedTS.zoom(
+        Duration.fromMillis(startDelta*1000),
+        Duration.fromMillis(duration*1000),
+      );
     } else {
       throw new Error("can't zoom fixedTimeScale");
     }
