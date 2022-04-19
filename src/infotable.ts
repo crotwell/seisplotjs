@@ -15,7 +15,7 @@ export const DEFAULT_TEMPLATE = `
       <tr>
         <th colspan="7">Waveform</th>
         <th colspan="4">Channel</th>
-        <th colspan="5">Event</th>
+        <th colspan="6">Event</th>
         <th colspan="4">DistAz</th>
       </tr>
       <tr>
@@ -35,7 +35,7 @@ export const DEFAULT_TEMPLATE = `
         <th>Time</th>
         <th>Lat</th>
         <th>Lon</th>
-        <th colspan="4">Mag</th>
+        <th colspan="2">Mag</th>
         <th>Depth</th>
 
         <th>Dist deg</th>
@@ -76,6 +76,7 @@ export const DEFAULT_TEMPLATE = `
           <td>{{sdd.quake.depthKm}}</td>
         {{else}}
           <td>no quake</td>
+          <td/>
           <td/>
           <td/>
           <td/>
