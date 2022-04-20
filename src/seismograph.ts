@@ -172,8 +172,6 @@ export class Seismograph extends SeisPlotElement {
   static _lastID: number;
   plotId: number;
   beforeFirstDraw: boolean;
-  _seismographConfig: SeismographConfig;
-  _seisDataList: Array<SeismogramDisplayData>;
 
   /** @private */
   _debugAlignmentSeisData: Array<SeismogramDisplayData>;
@@ -198,15 +196,13 @@ export class Seismograph extends SeisPlotElement {
   myTimeScalable: TimeScalable;
   myAmpScalable: AmplitudeScalable;
 
-  constructor() {
-    super();
+  constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
+    super(seisData, seisConfig);
     this.outerWidth = -1;
     this.outerHeight = -1;
 
     this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
-    this._seismographConfig = new SeismographConfig();
-    this._seisDataList = [];
 
     this._debugAlignmentSeisData = [];
     this.width = 200;
@@ -327,17 +323,33 @@ export class Seismograph extends SeisPlotElement {
   }
 
   get seisData() {
-    return this._seisDataList;
+    return super.seisData;
   }
   set seisData(seisData: Array<SeismogramDisplayData>) {
-    this._seisDataList = [];
+    super._seisDataList = [];
     this.appendSeisData(seisData);
   }
   get seismographConfig() {
-    return this._seismographConfig;
+    return super.seismographConfig;
   }
   set seismographConfig(seismographConfig: SeismographConfig) {
-    this._seismographConfig = seismographConfig;
+    super.seismographConfig = seismographConfig
+    const mythis = this;
+    if (this.seismographConfig.linkedAmplitudeScale) {
+      this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
+    }
+    if (isDef(this.seismographConfig.linkedTimeScale)) {
+      this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
+    }
+    const z = this.svg.call(
+      d3.zoom().on("zoom", function (e) {
+        mythis.zoomed(e);
+      }),
+    );
+    if (!this.seismographConfig.wheelZoom) {
+      z.on("wheel.zoom", null);
+    }
+
     this.draw();
   }
   connectedCallback() {
@@ -936,7 +948,6 @@ export class Seismograph extends SeisPlotElement {
 
   zoomed(e: any): void {
     let t = e.transform;
-    console.log(`transform: ${t}`)
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTS = this.seismographConfig.linkedTimeScale;
@@ -949,8 +960,6 @@ export class Seismograph extends SeisPlotElement {
       let xt = t.rescaleX(origXScale);
       let startDelta = xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
       let duration = xt.domain()[1] - xt.domain()[0];
-      console.log(`linked zoom: ${linkedTS.offset}  ${linkedTS.duration}`)
-      console.log(`         to: ${Duration.fromMillis(startDelta*1000)}  ${Duration.fromMillis(duration*1000)}`)
       linkedTS.zoom(
         Duration.fromMillis(startDelta*1000),
         Duration.fromMillis(duration*1000),

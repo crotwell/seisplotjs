@@ -109,8 +109,8 @@ tbody tr:nth-child(odd)
 
 export class QuakeStationTable extends SeisPlotElement {
   _template: string;
-  constructor() {
-    super();
+  constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
+    super(seisData, seisConfig);
     this._template = DEFAULT_TEMPLATE;
 
     const shadow = this.attachShadow({mode: 'open'});

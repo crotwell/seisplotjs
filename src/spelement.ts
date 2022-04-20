@@ -3,14 +3,23 @@ import {Quake, Origin} from "./quakeml";
 import {Station, Channel} from "./stationxml";
 import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
+import { isDef } from "./util";
 
 export class SeisPlotElement extends HTMLElement {
   _seisDataList: Array<SeismogramDisplayData>;
   _seismographConfig: SeismographConfig;
-  constructor() {
+  constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super();
-    this._seisDataList = [];
-    this._seismographConfig = new SeismographConfig();
+    if (isDef(seisData)) {
+      this._seisDataList = seisData;
+    } else {
+      this._seisDataList = [];
+    }
+    if (isDef(seisConfig)) {
+      this._seismographConfig = seisConfig;
+    } else {
+      this._seismographConfig = new SeismographConfig();
+    }
   }
   get seisData() {
     return this._seisDataList;

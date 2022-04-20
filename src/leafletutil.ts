@@ -3,6 +3,8 @@ import {Quake} from "./quakeml";
 import {Station} from "./stationxml";
 import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
+import { SeismographConfig} from "./seismographconfig";
+
 import * as L from "leaflet";
 import {LatLngTuple} from "leaflet";
 
@@ -744,8 +746,8 @@ export const MAG_SCALE = "magScale";
 export const DEFAULT_MAG_SCALE = 5.0;
 
 export class QuakeStationMap extends SeisPlotElement {
-  constructor() {
-    super();
+  constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
+    super(seisData, seisConfig);
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
