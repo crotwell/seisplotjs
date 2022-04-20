@@ -1,6 +1,5 @@
 import {Channel} from './stationxml';
-import {StartEndDuration, isDef} from './util';
-import {DateTime, Duration} from 'luxon';
+import { isDef} from './util';
 
 export function labeledTextInput(label: string, wrapper: HTMLElement, defaultVal: string): HTMLElement {
   const ndiv = wrapper.appendChild(document.createElement('div'));
