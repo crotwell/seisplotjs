@@ -73,7 +73,7 @@ export class SeismogramLoader {
     this._endPhaseList = ["s", "S", "Sdiff", "SKS"];
     this._markedPhaseList = [];
     this._startOffset = Duration.fromMillis(-30*1000);// seconds;
-    this._endOffset = Duration.fromMillis(60); //seconds
+    this._endOffset = Duration.fromMillis(60*1000); //seconds
     this._networkList = null;
     this._quakeList = null;
     this.traveltimeList = null;
