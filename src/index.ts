@@ -86,6 +86,7 @@ export {
   quakeml,
   ringserverweb,
   sacPoleZero,
+  scale,
   seedcodec,
   seedlink,
   seedlink4,
