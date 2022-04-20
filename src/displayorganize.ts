@@ -209,7 +209,13 @@ export const DEFAULT_WITH_MAP = "false";
 export const SORT_BY = "sort";
 export const SORT_NONE = "none";
 export const OVERLAY_BY = "overlay";
-export const INDIVIDUAL = "individual";
+export const OVERLAY_INDIVIDUAL = "individual";
+export const OVERLAY_VECTOR = "vector";
+export const OVERLAY_COMPONENT = "component";
+export const OVERLAY_STATION = "station";
+export const OVERLAY_ALL = "all";
+export const OVERLAY_FUNCTION = "function";
+
 export class OrganizedDisplay extends SeisPlotElement {
   _items: Array<SeisPlotElement>;
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
@@ -232,7 +238,7 @@ export class OrganizedDisplay extends SeisPlotElement {
 
 
   get orgtype(): string {
-    let k = this.hasAttribute(ORG_TYPE) ? this.getAttribute(ORG_TYPE) : INDIVIDUAL;
+    let k = this.hasAttribute(ORG_TYPE) ? this.getAttribute(ORG_TYPE) : OVERLAY_INDIVIDUAL;
     // typescript null
     if (!k) { k = SEISMOGRAPH;}
     return k;
@@ -264,9 +270,9 @@ export class OrganizedDisplay extends SeisPlotElement {
     this.draw();
   }
   get overlayby(): string {
-    let k = this.hasAttribute(OVERLAY_BY) ? this.getAttribute(OVERLAY_BY) : INDIVIDUAL;
+    let k = this.hasAttribute(OVERLAY_BY) ? this.getAttribute(OVERLAY_BY) : OVERLAY_INDIVIDUAL;
     // typescript null
-    if (!k) { k = INDIVIDUAL;}
+    if (!k) { k = OVERLAY_INDIVIDUAL;}
     return k;
   }
   set overlayby(val: string) {
@@ -303,11 +309,29 @@ export class OrganizedDisplay extends SeisPlotElement {
       const infodisp = new QuakeStationTable(mythis.seisData, mythis.seismographConfig);
       wrapper.appendChild(infodisp);
     }
-    if (this.overlayby === INDIVIDUAL) {
+    let organized_sdd = [];
+    if (this.overlayby === OVERLAY_INDIVIDUAL) {
       this.seisData.forEach(sdd => {
-          const odisp = new OrganizedDisplayItem([sdd], mythis.seismographConfig);
-          wrapper.appendChild(odisp);
+          const oi = new OrganizedDisplayItem([sdd], mythis.seismographConfig);
+          wrapper.appendChild(oi);
       })
+    } else if (this.overlayby === OVERLAY_VECTOR) {
+      const groupedSDD = groupComponentOfMotion(this.seisData);
+      groupedSDD.forEach(gsdd => {
+          const oi = new OrganizedDisplayItem(gsdd, mythis.seismographConfig);
+          wrapper.appendChild(oi);
+      })
+    } else if (this.overlayby === OVERLAY_COMPONENT) {
+      const oitems = overlayByComponent(this.seisData, mythis.seismographConfig);
+      oitems.forEach(oi => wrapper.appendChild(oi));
+    } else if (this.overlayby === OVERLAY_STATION) {
+      const oitems = overlayByComponent(this.seisData, mythis.seismographConfig);
+      oitems.forEach(oi => wrapper.appendChild(oi));
+    } else if (this.overlayby === OVERLAY_ALL) {
+      const oi = new OrganizedDisplayItem(this.seisData, mythis.seismographConfig);
+      wrapper.appendChild(oi);
+    } else {
+      throw new Error(`Unknown overlay: ${this.overlayby}`);
     }
   }
 }
@@ -351,6 +375,7 @@ export function overlayBySDDFunction(
   sddList: Array<SeismogramDisplayData>,
   key: string,
   sddFun: (arg0: SeismogramDisplayData) => string | number | null,
+  seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
   let out: Array<OrganizedDisplayItem> = [];
   sddList.forEach(sdd => {
@@ -370,8 +395,7 @@ export function overlayBySDDFunction(
     });
 
     if (!found) {
-      const org = new OrganizedDisplayItem();
-      org.seisData = [ sdd ];
+      const org = new OrganizedDisplayItem([ sdd ], seisConfig);
       org.setExtra(key, val);
       out.push(org);
     }
@@ -380,24 +404,29 @@ export function overlayBySDDFunction(
 }
 export function overlayByComponent(
   sddList: Array<SeismogramDisplayData>,
+  seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
   return overlayBySDDFunction(sddList, "component", sdd =>
     sdd.channelCode.charAt(2),
+    seisConfig
   );
 }
 export function overlayByStation(
   sddList: Array<SeismogramDisplayData>,
+  seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
   return overlayBySDDFunction(
     sddList,
     "station",
     sdd => sdd.networkCode + "_" + sdd.stationCode,
+    seisConfig
   );
 }
 export function overlayAll(
   sddList: Array<SeismogramDisplayData>,
+  seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
-  return overlayBySDDFunction(sddList, "all", () => "all");
+  return overlayBySDDFunction(sddList, "all", () => "all", seisConfig);
 }
 export function sortByKey(
   organized: Array<OrganizedDisplayItem>,
