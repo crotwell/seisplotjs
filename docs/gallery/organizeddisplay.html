@@ -18,38 +18,104 @@
 <body>
 
   <h3>Organized Display:</h3>
-  <form>
-    <fieldset>
-    <legend>Overlay Type</legend>
-    <span>
-      <input type="radio" name="overlay" id="overlay_individual" value="individual" checked>
-      <label for="overlay_1">individual</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_vector" value="vector">
-      <label for="overlay_vector">vector</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_component" value="component">
-      <label for="overlay_component">component</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_station" value="station">
-      <label for="overlay_station">station</label>
-    </span>
-    <span>
-      <input type="radio" name="overlay" id="overlay_all" value="all">
-      <label for="overlay_all">all</label>
-    </span>
-  </fieldset>
-  </form>
+  <details>
+    <summary>Tools</summary>
+    <form>
+      <fieldset class="plottype">
+        <legend>Plot</legend>
+        <span>
+          <input type="checkbox" name="with_map" id="with_map">
+          <label for="with_map">map</label>
+        </span>
+        <span>
+          <input type="checkbox" name="with_info" id="with_info">
+          <label for="with_info">info</label>
+        </span>
+      </fieldset>
+      <fieldset class="overlay">
+      <legend>Overlay Type</legend>
+      <span>
+        <input type="radio" name="overlay" id="overlay_individual" value="individual" checked>
+        <label for="overlay_individual">individual</label>
+      </span>
+      <span>
+        <input type="radio" name="overlay" id="overlay_vector" value="vector">
+        <label for="overlay_vector">vector</label>
+      </span>
+      <span>
+        <input type="radio" name="overlay" id="overlay_component" value="component">
+        <label for="overlay_component">component</label>
+      </span>
+      <span>
+        <input type="radio" name="overlay" id="overlay_station" value="station">
+        <label for="overlay_station">station</label>
+      </span>
+      <span>
+        <input type="radio" name="overlay" id="overlay_all" value="all">
+        <label for="overlay_all">all</label>
+      </span>
+      <span>
+        <input type="radio" name="overlay" id="overlay_none" value="none">
+        <label for="overlay_none">none</label>
+      </span>
+    </fieldset>
+    <fieldset class="sort">
+      <legend>Sort Type</legend>
+      <span>
+        <input type="radio" name="sort" id="sort_distance" value="distance">
+        <label for="sort_distance">distance</label>
+      </span>
+      <span>
+        <input type="radio" name="sort" id="sort_azimuth" value="azimuth">
+        <label for="sort_azimuth">azimuth</label>
+      </span>
+      <span>
+        <input type="radio" name="sort" id="sort_backazimuth" value="backazimuth">
+        <label for="sort_backazimuth">back azimuth</label>
+      </span>
+      <span>
+        <input type="radio" name="sort" id="sort_alphabetical" value="alphabetical">
+        <label for="sort_alphabetical">alphabetical</label>
+      </span>
+      <span>
+        <input type="radio" name="sort" id="sort_starttime" value="starttime">
+        <label for="sort_starttime">starttime</label>
+      </span>
+      <span>
+        <input type="radio" name="sort" id="sort_origin" value="origin">
+        <label for="sort_origin">origin</label>
+      </span>
+      <span>
+        <input type="radio" name="sort" id="sort_all" value="all">
+        <label for="sort_all">all</label>
+      </span>
+      <span>
+        <input type="radio" name="sort" id="sort_none" value="none" checked>
+        <label for="sort_none">none</label>
+      </span>
+    </fieldset>
+    </form>
+  </details>
   <div>
     <organized-display map="false" info="false" overlay="individual"></organized-display>
   </div>
   <script>
-    document.querySelectorAll('input').forEach(i => i.addEventListener('change', e => {
+    document.querySelectorAll('fieldset.plottype input').forEach(i => i.addEventListener('change', e => {
+      console.log(`onchange: ${i.name}`)
+      if (i.name === "with_map") {
+        document.querySelector('organized-display').setAttribute('map', i.checked);
+      }
+      if (i.name === "with_info") {
+        document.querySelector('organized-display').setAttribute('info', i.checked);
+      }
+    }));
+    document.querySelectorAll('fieldset.overlay input').forEach(i => i.addEventListener('change', e => {
       console.log(`onchange: ${i.value}`)
       document.querySelector('organized-display').setAttribute('overlay', i.value);
+    }));
+    document.querySelectorAll('fieldset.sort input').forEach(i => i.addEventListener('change', e => {
+      console.log(`onchange: ${i.value}`)
+      document.querySelector('organized-display').setAttribute('sort', i.value);
     }));
   </script>
   <script >

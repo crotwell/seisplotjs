@@ -5,6 +5,7 @@ import * as leafletutil from "./leafletutil";
 import {MAP_ELEMENT, QuakeStationMap} from "./leafletutil";
 import {ParticleMotion, createParticleMotionConfig} from "./particlemotion";
 import {Quake} from "./quakeml";
+import {sort, SORT_NONE, SORT_ALPHABETICAL, SORT_DISTANCE, SORT_STARTTIME, SORT_ORIGINTIME} from './sorting';
 import {SeisPlotElement} from "./spelement";
 import {Station} from "./stationxml";
 import {SeismogramDisplayData, uniqueQuakes, uniqueStations} from "./seismogram";
@@ -206,9 +207,11 @@ export const WITH_INFO = "info";
 export const DEFAULT_WITH_INFO = "false";
 export const WITH_MAP = "map";
 export const DEFAULT_WITH_MAP = "false";
+
 export const SORT_BY = "sort";
-export const SORT_NONE = "none";
+
 export const OVERLAY_BY = "overlay";
+export const OVERLAY_NONE = "none";
 export const OVERLAY_INDIVIDUAL = "individual";
 export const OVERLAY_VECTOR = "vector";
 export const OVERLAY_COMPONENT = "component";
@@ -281,9 +284,9 @@ export class OrganizedDisplay extends SeisPlotElement {
     this.draw();
   }
   get sortby(): string {
-    let k = this.hasAttribute(SORT_BY) ? this.getAttribute(SORT_BY) : "none";
+    let k = this.hasAttribute(SORT_BY) ? this.getAttribute(SORT_BY) : SORT_NONE;
     // typescript null
-    if (!k) { k = "none";}
+    if (!k) { k = SORT_NONE;}
     return k;
   }
   set sortby(val: string) {
@@ -302,35 +305,37 @@ export class OrganizedDisplay extends SeisPlotElement {
     }
 
     const mythis = this;
+    const sortedData = sort(mythis.seisData, this.sortby);
     if (this.map === 'true') {
-      const mapdisp = new QuakeStationMap(mythis.seisData, mythis.seismographConfig);
+      const mapdisp = new QuakeStationMap(sortedData, mythis.seismographConfig);
       wrapper.appendChild(mapdisp);
     }
     if (this.info === 'true') {
-      const infodisp = new QuakeStationTable(mythis.seisData, mythis.seismographConfig);
+      const infodisp = new QuakeStationTable(sortedData, mythis.seismographConfig);
       wrapper.appendChild(infodisp);
     }
     let organized_sdd = [];
     if (this.overlayby === OVERLAY_INDIVIDUAL) {
-      this.seisData.forEach(sdd => {
+      sortedData.forEach(sdd => {
           const oi = new OrganizedDisplayItem([sdd], mythis.seismographConfig);
           wrapper.appendChild(oi);
       })
     } else if (this.overlayby === OVERLAY_VECTOR) {
-      const groupedSDD = groupComponentOfMotion(this.seisData);
+      const groupedSDD = groupComponentOfMotion(sortedData);
       groupedSDD.forEach(gsdd => {
           const oi = new OrganizedDisplayItem(gsdd, mythis.seismographConfig);
           wrapper.appendChild(oi);
       })
     } else if (this.overlayby === OVERLAY_COMPONENT) {
-      const oitems = overlayByComponent(this.seisData, mythis.seismographConfig);
+      const oitems = overlayByComponent(sortedData, mythis.seismographConfig);
       oitems.forEach(oi => wrapper.appendChild(oi));
     } else if (this.overlayby === OVERLAY_STATION) {
-      const oitems = overlayByStation(this.seisData, mythis.seismographConfig);
+      const oitems = overlayByStation(sortedData, mythis.seismographConfig);
       oitems.forEach(oi => wrapper.appendChild(oi));
     } else if (this.overlayby === OVERLAY_ALL) {
-      const oi = new OrganizedDisplayItem(this.seisData, mythis.seismographConfig);
+      const oi = new OrganizedDisplayItem(sortedData, mythis.seismographConfig);
       wrapper.appendChild(oi);
+    } else if (this.overlayby === OVERLAY_NONE) {
     } else {
       throw new Error(`Unknown overlay: ${this.overlayby}`);
     }
@@ -514,7 +519,7 @@ export function createAttribute(
 export function sortDistance(
   organized: Array<OrganizedDisplayItem>,
 ): Array<OrganizedDisplayItem> {
-  const key = "distance";
+  const key = SORT_DISTANCE;
   createAttribute(organized, key, attributeDistance);
   return sortByKey(organized, key);
 }
