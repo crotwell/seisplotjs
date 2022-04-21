@@ -18,9 +18,40 @@
 <body>
 
   <h3>Organized Display:</h3>
+  <form>
+    <fieldset>
+    <legend>Overlay Type</legend>
+    <span>
+      <input type="radio" name="overlay" id="overlay_individual" value="individual" checked>
+      <label for="overlay_1">individual</label>
+    </span>
+    <span>
+      <input type="radio" name="overlay" id="overlay_vector" value="vector">
+      <label for="overlay_vector">vector</label>
+    </span>
+    <span>
+      <input type="radio" name="overlay" id="overlay_component" value="component">
+      <label for="overlay_component">component</label>
+    </span>
+    <span>
+      <input type="radio" name="overlay" id="overlay_station" value="station">
+      <label for="overlay_station">station</label>
+    </span>
+    <span>
+      <input type="radio" name="overlay" id="overlay_all" value="all">
+      <label for="overlay_all">all</label>
+    </span>
+  </fieldset>
+  </form>
   <div>
-    <organized-display map="false" info="true" overlay="vector"></organized-display>
+    <organized-display map="false" info="false" overlay="individual"></organized-display>
   </div>
+  <script>
+    document.querySelectorAll('input').forEach(i => i.addEventListener('change', e => {
+      console.log(`onchange: ${i.value}`)
+      document.querySelector('organized-display').setAttribute('overlay', i.value);
+    }));
+  </script>
   <script >
 
     seisplotjs.dataset.load('dataset.zip')
@@ -28,6 +59,7 @@
         let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
         seisConfig.doGain = false;
         seisConfig.doRmean = true;
+        seisConfig.isRelativeTime = false;
         console.log(`seisconfig in html: ${seisConfig.configId}  ${seisConfig.doGain}`)
         const seismographList = (document.querySelectorAll('organized-display'));
         seismographList.forEach( graph => {

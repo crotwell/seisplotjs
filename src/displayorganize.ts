@@ -235,6 +235,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     `;
     shadow.appendChild(wrapper);
   }
+  static get observedAttributes() { return [ORG_TYPE, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY]; }
 
 
   get orgtype(): string {
@@ -325,7 +326,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       const oitems = overlayByComponent(this.seisData, mythis.seismographConfig);
       oitems.forEach(oi => wrapper.appendChild(oi));
     } else if (this.overlayby === OVERLAY_STATION) {
-      const oitems = overlayByComponent(this.seisData, mythis.seismographConfig);
+      const oitems = overlayByStation(this.seisData, mythis.seismographConfig);
       oitems.forEach(oi => wrapper.appendChild(oi));
     } else if (this.overlayby === OVERLAY_ALL) {
       const oi = new OrganizedDisplayItem(this.seisData, mythis.seismographConfig);
@@ -354,18 +355,18 @@ export function getFromQueryParams(
 }
 export function individualDisplay(
   sddList: Array<SeismogramDisplayData>,
+  seisConfig?: SeismographConfig,
 ): Array<OrganizedDisplayItem> {
   return sddList.map(sdd => {
-    const odisp = new OrganizedDisplayItem();
-    odisp.seisData = [ sdd ];
+    const odisp = new OrganizedDisplayItem([ sdd ], seisConfig);
     return odisp;
   });
 }
 export function mapAndIndividualDisplay(
   sddList: Array<SeismogramDisplayData>,
+  seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
-  let map = new OrganizedDisplayItem();
-  map.seisData = sddList;
+  let map = new OrganizedDisplayItem(sddList, seisConfig);
   map.plottype = MAP;
   let individual = individualDisplay(sddList);
   individual.unshift(map);
