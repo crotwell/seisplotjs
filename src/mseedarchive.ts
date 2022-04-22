@@ -115,6 +115,18 @@ export class MSeedArchive {
             ct.endTime,
           ),
         });
+      } else if (isDef(ct.channelCodesHolder)) {
+        return RSVP.hash({
+          request: ct,
+          dataRecords: this.loadData(
+            ct.channelCodesHolder.networkCode,
+            ct.channelCodesHolder.stationCode,
+            ct.channelCodesHolder.locationCode,
+            ct.channelCodesHolder.channelCode,
+            ct.startTime,
+            ct.endTime,
+          ),
+        });
       } else {
         throw new Error("channel is missing in loadSeismograms ");
       }
@@ -180,7 +192,7 @@ export class MSeedArchive {
     chan: string,
     startTime: DateTime,
     endTime: DateTime,
-    sampleRate: number,
+    sampleRate?: number,
   ): Promise<Array<miniseed.DataRecord>> {
     let basePattern = this.fillBasePattern(net, sta, loc, chan);
 
@@ -244,8 +256,8 @@ export class MSeedArchive {
    */
   fillTimePattern(basePattern: string, t: DateTime): string {
     return basePattern
-      .replace(/%Y/g, t.toFormat("YYYY"))
-      .replace(/%j/g, t.toFormat("DDDD"))
+      .replace(/%Y/g, t.toFormat("yyyy"))
+      .replace(/%j/g, t.toFormat("ooo"))
       .replace(/%H/g, t.toFormat("HH"));
   }
 }
