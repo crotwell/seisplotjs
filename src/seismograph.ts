@@ -324,11 +324,11 @@ export class Seismograph extends SeisPlotElement {
   set seismographConfig(seismographConfig: SeismographConfig) {
     super.seismographConfig = seismographConfig
     const mythis = this;
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
-    }
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
+    }
+    if (this.seismographConfig.linkedAmplitudeScale) {
+      this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
     }
     const z = this.svg.call(
       d3.zoom().on("zoom", function (e) {
