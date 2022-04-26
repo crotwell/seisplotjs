@@ -46,15 +46,16 @@ export class TimeScalable {
  *
  * @param graphList optional list of AmplitudeScalable to link
  */
-export class LinkedAmpScale {
+export class LinkedAmplitudeScale {
   /**
    * @private
    */
   _graphSet: Set<AmplitudeScalable>;
+  halfWidth: number;
 
   constructor(graphList?: Array<AmplitudeScalable>) {
     const glist = graphList ? graphList : []; // in case null
-
+    this.halfWidth = 0;
     this._graphSet = new Set(glist);
   }
 
@@ -88,6 +89,7 @@ export class LinkedAmpScale {
     const maxHalfRange = graphList.reduce((acc, cur) => {
       return acc > cur.halfWidth ? acc : cur.halfWidth;
     }, 0);
+    this.halfWidth = maxHalfRange;
     graphList.forEach(g => {
       g.notifyAmplitudeChange(g.middle - maxHalfRange, g.middle + maxHalfRange);
     });

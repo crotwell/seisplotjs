@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
-import {LinkedAmpScale, LinkedTimeScale} from "./scale";
+import {LinkedAmplitudeScale, LinkedTimeScale} from "./scale";
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
 import {StartEndDuration, isDef} from "./util";
 import {DateTime, Duration} from "luxon";
@@ -39,6 +39,8 @@ export const DEFAULT_TITLE =
  *
  */
 export class SeismographConfig {
+  static _lastID: number;
+  configId: number;
   drawingType: string; // canvas or svg
 
   timeFormat: (date: Date) => string;
@@ -95,17 +97,22 @@ export class SeismographConfig {
   doRMean: boolean;
   doGain: boolean;
   windowAmp: boolean;
-  fixedYScale: null | Array<number>;
+  /** @private */
+  _fixedAmplitudeScale: null | Array<number>;
 
   /** @private */
   _fixedTimeScale: null | StartEndDuration;
-  linkedAmplitudeScale: null | LinkedAmpScale;
+
+  /** @private */
+  _linkedAmplitudeScale: null | LinkedAmplitudeScale;
 
   /** @private */
   _linkedTimeScale: null | LinkedTimeScale;
   isRelativeTime: boolean;
 
   constructor() {
+    this.configId = ++SeismographConfig._lastID;
+    console.log(`seisconfig constructor ${this.configId}`)
     this.drawingType = DRAW_CANVAS;
     this.isXAxis = true;
     this.isXAxisTop = false;
@@ -133,10 +140,10 @@ export class SeismographConfig {
     this.doRMean = true;
     this.doGain = true;
     this.windowAmp = true;
-    this.fixedYScale = null;
+    this._fixedAmplitudeScale = null;
     this._fixedTimeScale = null;
-    this.linkedAmplitudeScale = null;
-    this._linkedTimeScale = new LinkedTimeScale();
+    this._linkedAmplitudeScale = new LinkedAmplitudeScale();
+    this._linkedTimeScale = new LinkedTimeScale([], Duration.fromMillis(0), Duration.fromMillis(0), this.configId);
     this.isRelativeTime = false;
     this.doMarkers = true;
     this.markerTextOffset = 0.85;
@@ -169,8 +176,8 @@ export class SeismographConfig {
 
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample
 
+    this.wheelZoom = false;
     // separated by pixels
-    this.wheelZoom = true;
     this.connectSegments = false;
     this.lineColors = [
       "skyblue",
@@ -190,14 +197,13 @@ export class SeismographConfig {
   static fromJSON(json: any): SeismographConfig {
     let seisConfig = new SeismographConfig();
     Object.assign(seisConfig, json);
-    seisConfig.linkedAmplitudeScale = null;
 
     if (json.isLinkedTimeScale) {
       seisConfig._linkedTimeScale = new LinkedTimeScale();
     }
 
     if (json.isLinkedAmplitudeScale) {
-      seisConfig.linkedAmplitudeScale = new LinkedAmpScale();
+      seisConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
     }
 
     return seisConfig;
@@ -208,8 +214,8 @@ export class SeismographConfig {
     let out = JSON.parse(JSON.stringify(this));
     out.title = out._title;
     delete out._title;
-    out.fixedYScale = out._fixedYScale;
-    delete out._fixedYScale;
+    out.fixedAmplitudeScale = out._fixedAmplitudeScale;
+    delete out._fixedAmplitudeScale;
     out.fixedTimeScale = out._fixedTimeScale;
     delete out._fixedTimeScale;
     delete out._linkedTimeScale;
@@ -217,6 +223,26 @@ export class SeismographConfig {
     out.isLinkedAmplitudeScale = isDef(this.linkedAmplitudeScale);
     delete out._titleHandlebarsCompiled;
     return out;
+  }
+
+  get fixedAmplitudeScale(): null | Array<number> {
+    return this._fixedAmplitudeScale;
+  }
+
+  set fixedAmplitudeScale(ts: null | Array<number>) {
+    if (!isDef(ts)) {throw new Error("amp scale must be defined");}
+    this._fixedAmplitudeScale = ts;
+    this._linkedAmplitudeScale = null;
+  }
+
+  get linkedAmplitudeScale(): null | LinkedAmplitudeScale {
+    return this._linkedAmplitudeScale;
+  }
+
+  set linkedAmplitudeScale(ts: null | LinkedAmplitudeScale) {
+    if (!isDef(ts)) {throw new Error("amp scale must be defined");}
+    this._linkedAmplitudeScale = ts;
+    this._fixedAmplitudeScale = null;
   }
 
   get fixedTimeScale(): null | StartEndDuration {
@@ -849,6 +875,8 @@ input[type="text"].bigconfigtext {
   width: 27em;
 }
 `;
+
+SeismographConfig._lastID = 0;
 
 if (document) {
   insertCSS(configEditor_css, "configeditor");

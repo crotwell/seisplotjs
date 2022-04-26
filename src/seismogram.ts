@@ -1144,17 +1144,26 @@ export function findMaxDurationOfType(
 }
 export function findMinMax(
   sddList: Array<SeismogramDisplayData>,
+  doGain: boolean = false
 ): Array<number> {
   let min = sddList
     .map(sdd => {
-      return sdd.min;
+      let sens = 1.0;
+      if (doGain && sdd.sensitivity) {
+        sens = sdd.sensitivity.sensitivity;
+      }
+      return sdd.min/sens;
     })
     .reduce(function (p, v) {
       return p < v ? p : v;
     });
   let max = sddList
     .map(sdd => {
-      return sdd.max;
+    let sens = 1.0;
+    if (doGain && sdd.sensitivity) {
+      sens = sdd.sensitivity.sensitivity;
+    }
+      return sdd.max/sens;
     })
     .reduce(function (p, v) {
       return p > v ? p : v;
@@ -1166,6 +1175,7 @@ const initial_maxAmp = -1 * initial_minAmp;
 export function findMinMaxOverTimeRange(
   sddList: Array<SeismogramDisplayData>,
   timeRange: StartEndDuration,
+  doGain: boolean = false
 ): Array<number> {
   if (sddList.length === 0) { return [-1, 1]; }
   let minMaxArr = sddList.map(sdd => {
@@ -1173,7 +1183,12 @@ export function findMinMaxOverTimeRange(
       const cutSeis = sdd.seismogram.cut(timeRange);
 
       if (cutSeis) {
-        return cutSeis.findMinMax();
+        const countMinMax = cutSeis.findMinMax();
+        let sens = 1.0;
+        if (doGain && sdd.sensitivity) {
+          sens = sdd.sensitivity.sensitivity;
+        }
+        return [countMinMax[0]/sens, countMinMax[1]/sens];
       }
     }
 
@@ -1199,13 +1214,14 @@ export function findMinMaxOverRelativeTimeRange(
   sddList: Array<SeismogramDisplayData>,
   startOffset: Duration,
   duration: Duration,
+  doGain: boolean = false
 ): Array<number> {
   if (sddList.length === 0) {
     return [0,0];
   }
   let minMaxArr = sddList.map(sdd => {
-    let timeRange = sdd.relativeTimeWindow(startOffset, duration);
-    return findMinMaxOverTimeRange([sdd], timeRange);
+    const timeRange = sdd.relativeTimeWindow(startOffset, duration);
+    return findMinMaxOverTimeRange([sdd], timeRange, doGain);
   });
   let min = minMaxArr
     .map(mm => {

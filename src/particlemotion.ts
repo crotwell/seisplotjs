@@ -350,13 +350,13 @@ export class ParticleMotion {
   calcScaleDomain() {
     let halfDomainDelta = 1;
 
-    if (this.seismographConfig.fixedYScale) {
+    if (this.seismographConfig.fixedAmplitudeScale) {
       halfDomainDelta =
-        (this.seismographConfig.fixedYScale[1] -
-          this.seismographConfig.fixedYScale[0]) /
+        (this.seismographConfig.fixedAmplitudeScale[1] -
+          this.seismographConfig.fixedAmplitudeScale[0]) /
         2;
-      this.xScale.domain(this.seismographConfig.fixedYScale).nice();
-      this.yScale.domain(this.seismographConfig.fixedYScale).nice();
+      this.xScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
+      this.yScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
     } else {
       let xMinMax = [this.xSeisData.min, this.xSeisData.max];
       let yMinMax = [this.ySeisData.min, this.ySeisData.max];

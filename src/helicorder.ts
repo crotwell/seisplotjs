@@ -83,7 +83,7 @@ export class Helicorder {
     if (this.seisData.seismogram) {
       const seis = this.seisData.seismogram; // for flow
 
-      if (!this.heliConfig.fixedYScale) {
+      if (!this.heliConfig.fixedAmplitudeScale) {
         if (this.heliConfig.maxVariation === 0) {
           let cutSeis = seis.cut(timeRange);
 
@@ -173,16 +173,16 @@ export class Helicorder {
 
       lineSeisData.timeRange = lineTime;
 
-      if (this.heliConfig.fixedYScale) {
-        lineSeisConfig.fixedYScale = this.heliConfig.fixedYScale;
+      if (this.heliConfig.fixedAmplitudeScale) {
+        lineSeisConfig.fixedAmplitudeScale = this.heliConfig.fixedAmplitudeScale;
       } else {
         if (this.heliConfig.doRMean) {
-          lineSeisConfig.fixedYScale = [
+          lineSeisConfig.fixedAmplitudeScale = [
             lineMean - maxVariation,
             lineMean + maxVariation,
           ];
         } else {
-          lineSeisConfig.fixedYScale = [
+          lineSeisConfig.fixedAmplitudeScale = [
             lineMean - maxVariation,
             lineMean + maxVariation,
           ];
