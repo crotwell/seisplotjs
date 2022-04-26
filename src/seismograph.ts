@@ -1444,11 +1444,14 @@ export class Seismograph extends SeisPlotElement {
 
 
     }
+    const oldMiddle = this.myAmpScalable.middle;
+    const oldHalfWidth = this.myAmpScalable.halfWidth;
     this.myAmpScalable.middle = (minMax[1]+minMax[0])/2;
     this.myAmpScalable.halfWidth = (minMax[1]-minMax[0])/2;
 
     if (this.seismographConfig.linkedAmplitudeScale) {
-      if (oldMinMax[0] !== minMax[0] || oldMinMax[1] !== minMax[1]) {
+      if (this.myAmpScalable.middle !== oldMiddle || this.myAmpScalable.halfWidth !== oldHalfWidth) {
+        console.log(`calcAmpScaleDomain() -> linkedAmplitudeScale.recalculate()`)
         this.seismographConfig.linkedAmplitudeScale.recalculate(); // sets yScale.domain
       }
     } else {
