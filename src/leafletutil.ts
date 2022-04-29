@@ -4,6 +4,7 @@ import {Station} from "./stationxml";
 import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
 import { SeismographConfig} from "./seismographconfig";
+import {isDef} from './util';
 
 import * as L from "leaflet";
 import {LatLngTuple} from "leaflet";
@@ -736,6 +737,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	}
 `;
 
+export const TILE_TEMPLATE = "tileUrl";
+export const DEFAULT_TILE_TEMPLATE = "http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}";
+export const TILE_ATTRIBUTION = "tileAttribution";
+export const MAX_ZOOM = "maxZoom";
+export const DEFAULT_MAX_ZOOM = 17;
 export const CENTER_LAT = "centerLat";
 export const DEFAULT_CENTER_LAT = 35;
 export const CENTER_LON = "centerLon";
@@ -813,14 +819,22 @@ export class QuakeStationMap extends SeisPlotElement {
     const divElement = wrapper.appendChild(document.createElement("div"));
     divElement.setAttribute("id", mapid);
     const mymap = L.map(divElement).setView([this.centerLat, this.centerLon], this.zoomLevel);
-    L.tileLayer(
-      "http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
-      {
-        maxZoom: 17,
-        attribution:
-          'Map data: <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">Esri, Garmin, GEBCO, NOAA NGDC, and other contributors</a>)',
-      },
-    ).addTo(mymap);
+    let tileUrl = DEFAULT_TILE_TEMPLATE;
+    let tileAttribution = null;
+    let maxZoom = DEFAULT_MAX_ZOOM;
+    if (this.getAttribute(TILE_TEMPLATE)) {
+      tileUrl = this.getAttribute(TILE_TEMPLATE);
+    }
+    if (this.getAttribute(MAX_ZOOM)) {
+      maxZoom = Number.parseInt(this.getAttribute(MAX_ZOOM));
+    }
+    const tileOptions: TileLayerOptions = {
+      maxZoom: maxZoom
+    };
+    if (isDef(tileAttribution)) {
+      tileOptions.attribution = tileAttribution;
+    }
+    L.tileLayer(tileUrl, tileOptions).addTo(mymap);
     const magScale = this.magScale;
     let mapItems: Array<LatLngTuple> = [];
     uniqueQuakes(this.seisData).forEach(q => {
@@ -836,6 +850,18 @@ export class QuakeStationMap extends SeisPlotElement {
     if (mapItems.length > 1) {
       mymap.fitBounds(mapItems);
     }
+  }
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    this.draw();
+  }
+  static get observedAttributes() {
+    return [TILE_TEMPLATE,
+      TILE_ATTRIBUTION,
+      MAX_ZOOM,
+      CENTER_LAT,
+      CENTER_LON,
+      ZOOM_LEVEL,
+      MAG_SCALE];
   }
 }
 
