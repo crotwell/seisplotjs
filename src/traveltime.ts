@@ -310,8 +310,8 @@ export class TraveltimeQuery {
     return this;
   }
 
-  format(value?: string): string | TraveltimeQuery {
-    return doStringGetterSetter(this, "format", value);
+  format(value?: string): TraveltimeQuery {
+    doStringGetterSetter(this, "format", value);
     return this;
   }
 
