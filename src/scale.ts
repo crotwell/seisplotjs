@@ -214,7 +214,7 @@ export class LinkedTimeScale {
     const graphList = Array.from(this._graphSet.values());
     if (!isDef(this._zoomedDuration) || this._originalDuration.toMillis() === 0) {
       graphList.forEach(graph => {
-        if (graph.duration > this._originalDuration) {
+        if (graph && graph.duration > this._originalDuration) {
           this._originalDuration = graph.duration;
         }
       });
@@ -224,10 +224,12 @@ export class LinkedTimeScale {
   notifyAll() {
     const graphList = Array.from(this._graphSet.values());
     graphList.forEach(graph => {
-      // run later via event loop
-      setTimeout(() => {
-        graph.notifyTimeRangeChange(this.offset, this.duration);
-      });
+      if (graph) {
+        // run later via event loop
+        setTimeout(() => {
+          graph.notifyTimeRangeChange(this.offset, this.duration);
+        });
+      }
     });
   }
 }

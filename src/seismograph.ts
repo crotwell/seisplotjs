@@ -255,7 +255,13 @@ export class Seismograph extends SeisPlotElement {
     this.svg.attr("version", "1.1");
     this.svg.attr("plotId", this.plotId);
 
-    this.myTimeScalable = new SeismographTimeScalable(this);
+    const alignmentTimeOffset = Duration.fromMillis(0);
+    let maxDuration = Duration.fromMillis(0);
+    if (seisData) {
+      maxDuration = findMaxDuration(seisData);
+    }
+
+    this.timeScalable = new SeismographTimeScalable(this, alignmentTimeOffset, maxDuration)
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
@@ -1643,7 +1649,6 @@ export class Seismograph extends SeisPlotElement {
 }
 
 
-customElements.define(SEISMOGRAPH_ELEMENT, Seismograph);
 
 export class SeismographAmplitudeScalable extends AmplitudeScalable {
   graph: Seismograph;
@@ -1668,10 +1673,8 @@ export class SeismographAmplitudeScalable extends AmplitudeScalable {
 export class SeismographTimeScalable extends TimeScalable {
   graph: Seismograph;
 
-  constructor(graph: Seismograph) {
-    let alignmentTimeOffset = Duration.fromMillis(0);
-    let maxDuration = findMaxDuration(graph.seisData);
-    super(alignmentTimeOffset, maxDuration);
+  constructor(graph: Seismograph, alignmentTimeOffset: Duration, duration: Duration) {
+    super(alignmentTimeOffset, duration);
     this.graph = graph;
   }
 
@@ -1679,7 +1682,7 @@ export class SeismographTimeScalable extends TimeScalable {
     offset: Duration,
     duration: Duration,
   ) {
-    if (this.graph.beforeFirstDraw) {
+    if (!isDef(this.graph) || this.graph.beforeFirstDraw) {
       return;
     }
     this.graph.redrawWithXScale();
@@ -1819,3 +1822,4 @@ export function createDateFormatWrapper(formatter: (value: Date) => string): (nV
     }
   };
 }
+customElements.define(SEISMOGRAPH_ELEMENT, Seismograph);
