@@ -16,7 +16,7 @@ export class AmplitudeScalable {
   }
 
   // eslint-disable-next-line no-unused-vars
-  notifyAmplitudeChange(minAmp: number, maxAmp: number) {
+  notifyAmplitudeChange(middle: number, halfWidth: number) {
     // no-op
   }
 }
@@ -85,13 +85,28 @@ export class LinkedAmplitudeScale {
    * Recalculate the best amplitude scale for all Seismographs. Causes a redraw.
    */
   recalculate() {
+    console.log(`LinkedAmplitudeScale.recalculate`)
     const graphList = Array.from(this._graphSet.values());
     const maxHalfRange = graphList.reduce((acc, cur) => {
       return acc > cur.halfWidth ? acc : cur.halfWidth;
     }, 0);
     this.halfWidth = maxHalfRange;
     graphList.forEach(g => {
-      g.notifyAmplitudeChange(g.middle - maxHalfRange, g.middle + maxHalfRange);
+      g.notifyAmplitudeChange(g.middle, maxHalfRange);
+    });
+  }
+}
+
+export class IndividualAmplitudeScale extends LinkedAmplitudeScale {
+  constructor(graphList?: Array<AmplitudeScalable>) {
+    super(graphList);
+  }
+  recalculate() {
+    const graphList = Array.from(this._graphSet.values());
+    graphList.forEach(g => {
+      if (g) {
+        g.notifyAmplitudeChange(g.middle, g.halfWidth);
+      }
     });
   }
 }
@@ -122,6 +137,9 @@ export class LinkedTimeScale {
     const glist = graphList ? graphList : []; // in case null
 
     this._graphSet = new Set(glist);
+    console.log(`set LinkedTimeScale duration to zero in const`)
+    this._originalDuration = Duration.fromMillis(0);
+    this._originalStartOffset = Duration.fromMillis(0)
     this._zoomedDuration = null;
     this._zoomedStartOffset = null;
 
@@ -130,7 +148,7 @@ export class LinkedTimeScale {
       // so know that duration passed in instead of calculated
       // this prevents future links from causeing recalc
       this._zoomedDuration = originalDuration;
-    } else {
+    } else if (glist.length > 0) {
       this._originalDuration = glist.reduce((acc, cur) => {
         return acc > cur.duration
           ? acc
@@ -191,10 +209,13 @@ export class LinkedTimeScale {
   }
 
   get duration(): Duration {
-    return this._zoomedDuration ? this._zoomedDuration : this._originalDuration;
+    return isDef(this._zoomedDuration) ? this._zoomedDuration : this._originalDuration;
   }
 
   set duration(duration: Duration) {
+    if (!isDef(duration)) {
+      throw new Error(`Duration must be defined: ${duration}`)
+    }
     this._originalDuration = duration;
     this._zoomedDuration = duration;
     this.recalculate();

@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
-import {LinkedAmplitudeScale, LinkedTimeScale} from "./scale";
+import {IndividualAmplitudeScale, LinkedAmplitudeScale, LinkedTimeScale} from "./scale";
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
 import {StartEndDuration, isDef} from "./util";
 import {DateTime, Duration} from "luxon";
@@ -142,7 +142,7 @@ export class SeismographConfig {
     this.windowAmp = true;
     this._fixedAmplitudeScale = null;
     this._fixedTimeScale = null;
-    this._linkedAmplitudeScale = new LinkedAmplitudeScale();
+    this._linkedAmplitudeScale = new IndividualAmplitudeScale();
     this._linkedTimeScale = new LinkedTimeScale([], Duration.fromMillis(0), Duration.fromMillis(0), this.configId);
     this.isRelativeTime = false;
     this.doMarkers = true;
@@ -199,11 +199,14 @@ export class SeismographConfig {
     Object.assign(seisConfig, json);
 
     if (json.isLinkedTimeScale) {
-      seisConfig._linkedTimeScale = new LinkedTimeScale();
+      seisConfig.linkedTimeScale = new LinkedTimeScale();
     }
 
     if (json.isLinkedAmplitudeScale) {
       seisConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
+    } else if (! isDef(seisConfig.fixedAmplitudeScale)) {
+      // neither fixed nor linked, so individual
+      seisConfig.linkedAmplitudeScale = new IndividualAmplitudeScale();
     }
 
     return seisConfig;
@@ -220,7 +223,7 @@ export class SeismographConfig {
     delete out._fixedTimeScale;
     delete out._linkedTimeScale;
     out.isLinkedTimeScale = isDef(this._linkedTimeScale);
-    out.isLinkedAmplitudeScale = isDef(this.linkedAmplitudeScale);
+    out.isLinkedAmplitudeScale = isDef(this._linkedAmplitudeScale) && ! (this._linkedAmplitudeScale instanceof IndividualAmplitudeScale);
     delete out._titleHandlebarsCompiled;
     return out;
   }

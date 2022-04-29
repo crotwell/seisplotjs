@@ -186,8 +186,8 @@ export class Seismograph extends SeisPlotElement {
   g: any;
   throttleRescale: any;
   throttleResize: any;
-  myTimeScalable: TimeScalable;
-  myAmpScalable: AmplitudeScalable;
+  myTimeScalable: SeismographTimeScalable;
+  myAmpScalable: SeismographAmplitudeScalable;
 
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
@@ -267,9 +267,9 @@ export class Seismograph extends SeisPlotElement {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
     }
 
-    this.myAmpScalable = new SeismographAmplitudeScalable(0, 1, this);
+    const calcMidHW = this.calcAmpScaleDomain();
+    this.myAmpScalable = new SeismographAmplitudeScalable(calcMidHW[0], calcMidHW[1], this);
     this.calcTimeScaleDomain();
-    this.calcAmpScaleDomain();
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
@@ -616,7 +616,7 @@ export class Seismograph extends SeisPlotElement {
       const ampScale = d3.scaleLinear();
       ampScale.range([this.height, 0]);
       if (this.seismographConfig.linkedAmplitudeScale) {
-        const halfWidth = this.seismographConfig.linkedAmplitudeScale.halfWidth;
+        const halfWidth = this.myAmpScalable.drawHalfWidth;
 
         let gainOffset = 0;
         if (this.seismographConfig.doRMean) {
@@ -799,12 +799,12 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.fixedAmplitudeScale) {
       ampAxisScale.domain(this.seismographConfig.fixedAmplitudeScale);
     } else if (this.seismographConfig.linkedAmplitudeScale) {
-      let middle = this.myAmpScalable.middle;
+      let middle = this.myAmpScalable.drawMiddle;
       if (this.seismographConfig.doRMean) {
         middle = 0;
       }
-      ampAxisScale.domain([ middle - this.seismographConfig.linkedAmplitudeScale.halfWidth,
-                      middle + this.seismographConfig.linkedAmplitudeScale.halfWidth ]);
+      ampAxisScale.domain([ middle - this.myAmpScalable.drawHalfWidth,
+                      middle + this.myAmpScalable.drawHalfWidth ]);
     } else {
       throw new Error("ampScaleForAxis Must be either linked or fixed amp scale");
     }
@@ -1020,7 +1020,7 @@ export class Seismograph extends SeisPlotElement {
       this.g.select("g.allseismograms").selectAll("g.seismogram").remove();
 
       if (this.seismographConfig.windowAmp) {
-        this.calcAmpScaleDomain();
+        this.recheckAmpScaleDomain();
       }
 
       this.drawSeismograms();
@@ -1410,8 +1410,7 @@ export class Seismograph extends SeisPlotElement {
     }
   }
 
-  calcAmpScaleDomain(): void {
-    const oldMinMax = this.ampScaleForAxis().domain();
+  calcAmpScaleDomain(): [number, number] {
 
     let minMax;
     if (this.seismographConfig.fixedAmplitudeScale) {
@@ -1450,14 +1449,21 @@ export class Seismograph extends SeisPlotElement {
 
 
     }
+    const middle = (minMax[1]+minMax[0])/2;
+    const halfWidth = (minMax[1]-minMax[0])/2;
+    return [middle, halfWidth];
+  }
+
+  recheckAmpScaleDomain(): void {
+    const calcMidHW = this.calcAmpScaleDomain();
     const oldMiddle = this.myAmpScalable.middle;
     const oldHalfWidth = this.myAmpScalable.halfWidth;
-    this.myAmpScalable.middle = (minMax[1]+minMax[0])/2;
-    this.myAmpScalable.halfWidth = (minMax[1]-minMax[0])/2;
+    this.myAmpScalable.middle = calcMidHW[0];
+    this.myAmpScalable.halfWidth = calcMidHW[1];
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       if (this.myAmpScalable.middle !== oldMiddle || this.myAmpScalable.halfWidth !== oldHalfWidth) {
-        console.log(`calcAmpScaleDomain() -> linkedAmplitudeScale.recalculate()`)
+        console.log(`recheckAmpScaleDomain() -> linkedAmplitudeScale.recalculate()`)
         this.seismographConfig.linkedAmplitudeScale.recalculate(); // sets yScale.domain
       }
     } else {
@@ -1466,8 +1472,8 @@ export class Seismograph extends SeisPlotElement {
   }
 
   redoDisplayYScale(): void {
-    const middle = this.myAmpScalable.middle;
-    const halfWidth = this.myAmpScalable.halfWidth;
+    const middle = this.myAmpScalable.drawMiddle;
+    const halfWidth = this.myAmpScalable.drawHalfWidth;
     if (
       this.seismographConfig.doGain &&
       this._seisDataList.length > 0 &&
@@ -1592,7 +1598,7 @@ export class Seismograph extends SeisPlotElement {
   appendSeisData(seismogram: Array<Seismogram> | Array<SeismogramDisplayData> | Seismogram | SeismogramDisplayData) {
     this._internalAppend(seismogram);
     this.calcTimeScaleDomain();
-    this.calcAmpScaleDomain();
+    this.recheckAmpScaleDomain();
     if (!this.beforeFirstDraw) {
       // only trigger a draw if appending after already drawn on screen
       // otherwise, just append the data and wait for outside to call first draw()
@@ -1640,7 +1646,7 @@ export class Seismograph extends SeisPlotElement {
       });
 
       if (this._seisDataList.length > 0) {
-        this.calcAmpScaleDomain();
+        this.recheckAmpScaleDomain();
         this.drawSeismograms();
       }
     }
@@ -1652,26 +1658,34 @@ export class Seismograph extends SeisPlotElement {
 
 export class SeismographAmplitudeScalable extends AmplitudeScalable {
   graph: Seismograph;
-
+  drawHalfWidth: number;
+  drawMiddle: number;
   constructor(middle: number, halfWidth: number, graph: Seismograph) {
     super(middle, halfWidth);
     this.graph = graph;
+    this.drawHalfWidth = halfWidth;
+    this.drawMiddle = middle;
   }
 
-  notifyAmplitudeChange(minAmp: number, maxAmp: number) {
-    console.log(`seismograph notifyAmplitudeChange ${minAmp} to ${maxAmp}`)
+  notifyAmplitudeChange(middle: number, halfWidth: number) {
+    console.log(`seismograph notifyAmplitudeChange mid: ${middle} hw: ${halfWidth}`)
+    if (middle !== this.drawMiddle || halfWidth !== this.drawHalfWidth) {
+      this.drawMiddle = middle;
+      this.drawHalfWidth = halfWidth;
+      this.graph.redoDisplayYScale();
 
-    this.graph.redoDisplayYScale();
-
-    if (!this.graph.beforeFirstDraw) {
-      // only trigger a draw if appending after already drawn on screen
-      // otherwise, just append the data and wait for outside to call first draw()
-      this.graph.draw();
+      if (!this.graph.beforeFirstDraw) {
+        // only trigger a draw if appending after already drawn on screen
+        // otherwise, just append the data and wait for outside to call first draw()
+        this.graph.draw();
+      }
     }
   }
 }
 export class SeismographTimeScalable extends TimeScalable {
   graph: Seismograph;
+  drawAlignmentTimeOffset: undefined | Duration;
+  drawDuration: undefined | Duration;
 
   constructor(graph: Seismograph, alignmentTimeOffset: Duration, duration: Duration) {
     super(alignmentTimeOffset, duration);
@@ -1682,10 +1696,17 @@ export class SeismographTimeScalable extends TimeScalable {
     offset: Duration,
     duration: Duration,
   ) {
-    if (!isDef(this.graph) || this.graph.beforeFirstDraw) {
-      return;
+    if (!isDef(this.drawAlignmentTimeOffset) ||
+        this.drawAlignmentTimeOffset.toMillis() !== offset.toMillis() ||
+        !isDef(this.drawDuration) ||
+        this.drawDuration.toMillis() !== duration.toMillis()) {
+      this.drawAlignmentTimeOffset = offset;
+      this.drawDuration = duration;
+      // something changed, maybe redraw
+      if (isDef(this.graph) && ! this.graph.beforeFirstDraw) {
+        this.graph.redrawWithXScale();
+      }
     }
-    this.graph.redrawWithXScale();
   }
 }
 // static ID for seismogram
