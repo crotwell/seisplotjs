@@ -11,7 +11,11 @@ export class SeisPlotElement extends HTMLElement {
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super();
     if (isDef(seisData)) {
-      this._seisDataList = seisData;
+      if (Array.isArray(seisData) && (seisData.length === 0 || seisData[0] instanceof SeismogramDisplayData)) {
+        this._seisDataList = seisData;
+      } else {
+        throw new Error("first arg must be array of SeismogramDisplayData");
+      }
     } else {
       this._seisDataList = [];
     }
