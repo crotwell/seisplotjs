@@ -252,7 +252,6 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   set map(val: string) {
     this.setAttribute(WITH_MAP, val);
-    this.draw();
   }
   get info(): string {
     let k = this.hasAttribute(WITH_INFO) ? this.getAttribute(WITH_INFO) : DEFAULT_WITH_INFO;
@@ -263,7 +262,6 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   set info(val: string) {
     this.setAttribute(WITH_INFO, val.toLowerCase().trim());
-    this.draw();
   }
   get overlayby(): string {
     let k = this.hasAttribute(OVERLAY_BY) ? this.getAttribute(OVERLAY_BY) : OVERLAY_INDIVIDUAL;
@@ -273,7 +271,6 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   set overlayby(val: string) {
     this.setAttribute(OVERLAY_BY, val);
-    this.draw();
   }
   get sortby(): string {
     let k = this.hasAttribute(SORT_BY) ? this.getAttribute(SORT_BY) : SORT_NONE;
@@ -283,35 +280,29 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   set sortby(val: string) {
     this.setAttribute(SORT_BY, val);
-    this.draw();
   }
 
   draw() {
     if ( ! this.isConnected) { return; }
-
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
 
     while (wrapper.firstChild) {
+      // remove last until there is no longer a first, easier for dom redrawing
       // @ts-ignore
       wrapper.removeChild(wrapper.lastChild);
     }
 
     const mythis = this;
     const sortedData = sort(mythis.seisData, this.sortby);
-    if (this.map === 'true') {
-      const mapdisp = new QuakeStationMap(sortedData, mythis.seismographConfig);
-      wrapper.appendChild(mapdisp);
-    }
-    if (this.info === 'true') {
-      const infodisp = new QuakeStationTable(sortedData, mythis.seismographConfig);
-      wrapper.appendChild(infodisp);
-    }
+    this.drawMap();
+    this.drawInfo();
     let organized_sdd = [];
+    mythis.seismographConfig
     if (this.overlayby === OVERLAY_INDIVIDUAL) {
       sortedData.forEach(sdd => {
           const oi = new OrganizedDisplayItem([sdd], mythis.seismographConfig);
           wrapper.appendChild(oi);
-      })
+      });
     } else if (this.overlayby === OVERLAY_VECTOR) {
       const groupedSDD = groupComponentOfMotion(sortedData);
       groupedSDD.forEach(gsdd => {
@@ -330,6 +321,56 @@ export class OrganizedDisplay extends SeisPlotElement {
     } else if (this.overlayby === OVERLAY_NONE) {
     } else {
       throw new Error(`Unknown overlay: ${this.overlayby}`);
+    }
+    if (mythis.seismographConfig.linkedTimeScale) {
+      mythis.seismographConfig.linkedTimeScale.notifyAll();
+    }
+    if (mythis.seismographConfig.linkedAmplitudeScale) {
+      mythis.seismographConfig.linkedAmplitudeScale.notifyAll();
+    }
+  }
+  drawMap() {
+    if ( ! this.isConnected) { return; }
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const mapElement = wrapper.querySelector(MAP_ELEMENT);
+    if (this.map !== 'true' && mapElement) {
+      wrapper.removeChild(mapElement);
+    } else if (this.map === 'true' && ! isDef(mapElement)) {
+      const sortedData = sort(this.seisData, this.sortby);
+      const mapdisp = new QuakeStationMap(sortedData, this.seismographConfig);
+      // map is first
+      wrapper.insertBefore(mapdisp, wrapper.firstElementChild);
+    }
+  }
+  drawInfo() {
+    if ( ! this.isConnected) { return; }
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const infoElement = wrapper.querySelector(INFO_ELEMENT);
+    if (this.info !== 'true' && infoElement) {
+      wrapper.removeChild(infoElement);
+    } else if (this.info === 'true' && ! isDef(infoElement)) {
+      const sortedData = sort(this.seisData, this.sortby);
+      const infoDisp = new QuakeStationTable(sortedData, this.seismographConfig);
+      const mapElement = wrapper.querySelector(MAP_ELEMENT);
+      // info second after map
+      if (mapElement) {
+        if (mapElement.nextElementSibling) {
+          wrapper.insertBefore(infoDisp, mapElement.nextElementSibling);
+        } else {
+          wrapper.appendChild(infoDisp);
+        }
+      } else {
+        wrapper.insertBefore(infoDisp, wrapper.firstElementChild);
+      }
+    }
+  }
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === WITH_MAP) {
+      this.drawMap();
+    } else if (name === WITH_INFO) {
+      this.drawInfo();
+    } else {
+      this.draw();
     }
   }
 }
