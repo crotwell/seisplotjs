@@ -2,6 +2,8 @@
 import {isDef} from "./util";
 import {Duration} from "luxon";
 
+let _lastId = 0;
+
 export class AmplitudeScalable {
   middle: number;
   halfWidth: number;
@@ -51,12 +53,26 @@ export class LinkedAmplitudeScale {
    * @private
    */
   _graphSet: Set<AmplitudeScalable>;
-  halfWidth: number;
+  _halfWidth: number;
+  _recalcTimeoutID: ReturnType<typeof setTimeout> | null;
+  _scaleId: number;
 
   constructor(graphList?: Array<AmplitudeScalable>) {
+    this._scaleId = ++_lastId;
     const glist = graphList ? graphList : []; // in case null
-    this.halfWidth = 0;
+    this._halfWidth = 0;
     this._graphSet = new Set(glist);
+    this._recalcTimeoutID = null;
+  }
+
+  get halfWidth(): number {
+    return this._halfWidth;
+  }
+  set halfWidth(val: number) {
+    if (this._halfWidth !== val) {
+      this._halfWidth = val;
+      this.notifyAll();
+    }
   }
 
   /**
@@ -85,14 +101,33 @@ export class LinkedAmplitudeScale {
    * Recalculate the best amplitude scale for all Seismographs. Causes a redraw.
    */
   recalculate() {
-    console.log(`LinkedAmplitudeScale.recalculate`)
+    if (this._recalcTimeoutID) {
+      clearTimeout(this._recalcTimeoutID);
+    }
+    const mythis = this;
+    this._recalcTimeoutID = setTimeout(() => {
+
+      const graphList = Array.from(mythis._graphSet.values());
+      const maxHalfRange = graphList.reduce((acc, cur) => {
+        return acc > cur.halfWidth ? acc : cur.halfWidth;
+      }, 0);
+      console.log(`LinkedAmplitudeScale.recalculate ${mythis.halfWidth} -> ${maxHalfRange}`)
+      if (mythis.halfWidth !== maxHalfRange) {
+        mythis.halfWidth = maxHalfRange;
+        graphList.forEach(g => {
+          g.notifyAmplitudeChange(g.middle, maxHalfRange);
+        });
+      }
+    }, 100);
+  }
+  notifyAll() {
     const graphList = Array.from(this._graphSet.values());
-    const maxHalfRange = graphList.reduce((acc, cur) => {
-      return acc > cur.halfWidth ? acc : cur.halfWidth;
-    }, 0);
-    this.halfWidth = maxHalfRange;
+    const hw = this.halfWidth;
+    console.log(`amp notifyAll ${graphList.length}  hw: ${hw}`)
     graphList.forEach(g => {
-      g.notifyAmplitudeChange(g.middle, maxHalfRange);
+      setTimeout(() => {
+        g.notifyAmplitudeChange(g.middle, hw);
+      }, 10);
     });
   }
 }
@@ -187,7 +222,7 @@ export class LinkedTimeScale {
   zoom(startOffset: Duration, duration: Duration) {
     this._zoomedDuration = duration;
     this._zoomedStartOffset = startOffset;
-    this.recalculate();
+    this.notifyAll();
   }
 
   unzoom() {
