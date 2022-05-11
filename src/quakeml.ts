@@ -76,21 +76,21 @@ export class Quake {
     }
 
     //need picks before can do origins
-    let allPickEls = qml.getElementsByTagNameNS(BED_NS, "pick");
+    let allPickEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "pick"));
     let allPicks = [];
 
     for (let pickEl of allPickEls) {
       allPicks.push(Pick.createFromXml(pickEl));
     }
 
-    let allOriginEls = qml.getElementsByTagNameNS(BED_NS, "origin");
+    let allOriginEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "origin"));
     let allOrigins = [];
 
     for (let originEl of allOriginEls) {
       allOrigins.push(Origin.createFromXml(originEl, allPicks));
     }
 
-    let allMagEls = qml.getElementsByTagNameNS(BED_NS, "magnitude");
+    let allMagEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "magnitude"));
     let allMags = [];
 
     for (let magEl of allMagEls) {
@@ -316,7 +316,7 @@ export class Origin {
       out.publicId = pid;
     }
 
-    let allArrivalEls = qml.getElementsByTagNameNS(BED_NS, "arrival");
+    let allArrivalEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "arrival"));
     let allArrivals = [];
 
     for (let arrivalEl of allArrivalEls) {
@@ -582,7 +582,7 @@ export function parseQuakeML(rawXml: Document, host?: string): Array<Quake> {
     throw new Error("Can't get documentElement");
   }
 
-  let eventArray = top.getElementsByTagName("event");
+  let eventArray = Array.from(top.getElementsByTagName("event"));
   let out = [];
 
   for (let eventEl of eventArray) {

@@ -184,8 +184,9 @@ export class Seismograph extends SeisPlotElement {
   canvas: any;
 
   g: any;
-  throttleRescale: any;
-  throttleResize: any;
+  throttleRescale: ReturnType<typeof setTimeout> | null;
+  throttleResize: ReturnType<typeof setTimeout> | null;
+  throttleRedraw: ReturnType<typeof setTimeout> | null;
   myTimeScalable: SeismographTimeScalable;
   myAmpScalable: SeismographAmplitudeScalable;
 
@@ -193,6 +194,9 @@ export class Seismograph extends SeisPlotElement {
     super(seisData, seisConfig);
     this.outerWidth = -1;
     this.outerHeight = -1;
+    this.throttleRescale = null;
+    this.throttleResize = null;
+    this.throttleRedraw = null;
 
     this.plotId = ++Seismograph._lastID;
     this.beforeFirstDraw = true;
@@ -261,7 +265,7 @@ export class Seismograph extends SeisPlotElement {
       maxDuration = findMaxDuration(seisData);
     }
 
-    this.timeScalable = new SeismographTimeScalable(this, alignmentTimeOffset, maxDuration)
+    this.myTimeScalable = new SeismographTimeScalable(this, alignmentTimeOffset, maxDuration)
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
@@ -311,7 +315,7 @@ export class Seismograph extends SeisPlotElement {
       "resize.canvasseismograph" + mythis.plotId,
       function () {
         if (!mythis.beforeFirstDraw && mythis.checkResize()) {
-          mythis.draw();
+          mythis.redraw();
         }
       },
     );
@@ -328,14 +332,20 @@ export class Seismograph extends SeisPlotElement {
     return super.seismographConfig;
   }
   set seismographConfig(seismographConfig: SeismographConfig) {
+    if (isDef(this.seismographConfig.linkedTimeScale)) {
+      this.seismographConfig.linkedTimeScale.unlink(this.myTimeScalable);
+    }
+    if (this.seismographConfig.linkedAmplitudeScale) {
+      this.seismographConfig.linkedAmplitudeScale.unlink(this.myAmpScalable);
+    }
     super.seismographConfig = seismographConfig
-    const mythis = this;
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
     }
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
     }
+    const mythis = this;
     const z = this.svg.call(
       d3.zoom().on("zoom", function (e) {
         mythis.zoomed(e);
@@ -345,13 +355,21 @@ export class Seismograph extends SeisPlotElement {
       z.on("wheel.zoom", null);
     }
 
-    this.draw();
+    this.redraw();
   }
   connectedCallback() {
-    this.draw();
+    this.redraw();
+  }
+  disconnectedCallback() {
+    if (this.seismographConfig.linkedAmplitudeScale) {
+      this.seismographConfig.linkedAmplitudeScale.unlink(this.myAmpScalable);
+    }
+    if (this.seismographConfig.linkedTimeScale) {
+      this.seismographConfig.linkedTimeScale.unlink(this.myTimeScalable);
+    }
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.draw();
+    this.redraw();
   }
 
   checkResize(): boolean {
@@ -364,6 +382,16 @@ export class Seismograph extends SeisPlotElement {
     return false;
   }
 
+  redraw(): void {
+    if (this.throttleRedraw) {
+      clearTimeout(this.throttleRedraw);
+    }
+    const mythis = this;
+    this.throttleRedraw = setTimeout(() => {
+      mythis.draw();
+      mythis.throttleRedraw = null;
+    }, 10);
+  }
   draw(): void {
     if ( ! this.isConnected) { return; }
     let rect = this.svg.node().getBoundingClientRect();
@@ -503,7 +531,8 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
       context.lineWidth = this.seismographConfig.lineWidth * 2;
     }
-
+    console.log(`Seismograph amp scale: ${this.plotId} ac: ${this.seismographConfig.linkedAmplitudeScale?.constructor.name} ${this.seismographConfig.linkedAmplitudeScale?._scaleId} hw: ${this.myAmpScalable?.drawHalfWidth}`)
+    console.log(`           time scale: ${this?.myTimeScalable.drawAlignmentTimeOffset}`)
     const sddList = this._seisDataList.concat(this._debugAlignmentSeisData);
     sddList.forEach((sdd, sddIndex) => {
       let ti = sddIndex;
@@ -617,7 +646,7 @@ export class Seismograph extends SeisPlotElement {
       ampScale.range([this.height, 0]);
       if (this.seismographConfig.linkedAmplitudeScale) {
         const halfWidth = this.myAmpScalable.drawHalfWidth;
-
+console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
         let gainOffset = 0;
         if (this.seismographConfig.doRMean) {
           gainOffset = sdd.mean;
@@ -644,10 +673,13 @@ export class Seismograph extends SeisPlotElement {
     let sddXScale = d3.scaleUtc();
 
     if (this.seismographConfig.linkedTimeScale) {
-      plotSed = sdd.relativeTimeWindow(
-        this.seismographConfig.linkedTimeScale.offset,
-        this.seismographConfig.linkedTimeScale.duration,
-      );
+      if (this.myTimeScalable.drawDuration.equals(ZERO_DURATION)) {
+        this.seismographConfig.linkedTimeScale.recalculate();
+      }
+      // drawDuration should be set via recalculate now
+      const startOffset = this.myTimeScalable.drawAlignmentTimeOffset;
+      const duration = this.myTimeScalable.drawDuration;
+      plotSed = sdd.relativeTimeWindow(startOffset, duration);
     } else if (this.seismographConfig.fixedTimeScale) {
       plotSed = this.seismographConfig.fixedTimeScale;
     } else {
@@ -817,8 +849,8 @@ export class Seismograph extends SeisPlotElement {
       xScaleToDraw = d3.scaleLinear();
       xScaleToDraw.range([0, this.width]);
       if (this.seismographConfig.linkedTimeScale) {
-        const startOffset = this.seismographConfig.linkedTimeScale.offset.toMillis()/1000;
-        const duration = this.seismographConfig.linkedTimeScale.duration.toMillis()/1000;
+        const startOffset = this.myTimeScalable.drawAlignmentTimeOffset.toMillis()/1000;
+        const duration = this.myTimeScalable.drawDuration.toMillis()/1000;
         xScaleToDraw.domain([startOffset, startOffset+duration]);
       } else if (this.seismographConfig.fixedTimeScale) {
         const psed = this.seismographConfig.fixedTimeScale;
@@ -940,10 +972,10 @@ export class Seismograph extends SeisPlotElement {
       let mythis = this;
 
       if (this.throttleRescale) {
-        window.clearTimeout(this.throttleRescale);
+        clearTimeout(this.throttleRescale);
       }
 
-      this.throttleRescale = window.setTimeout(function () {
+      this.throttleRescale = setTimeout(function () {
 
         let [yAxis, yAxisRight] = mythis.createLeftRightAxis();
         if (yAxis) {
@@ -992,6 +1024,7 @@ export class Seismograph extends SeisPlotElement {
 
   zoomed(e: any): void {
     let t = e.transform;
+    console.log(`zoom: ${this.plotId}  ${t}`)
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTS = this.seismographConfig.linkedTimeScale;
@@ -1303,10 +1336,10 @@ export class Seismograph extends SeisPlotElement {
   // see http://blog.kevinchisholm.com/javascript/javascript-function-throttling/
   throttle(func: () => void, delay: number): void {
     if (this.throttleResize) {
-      window.clearTimeout(this.throttleResize);
+      clearTimeout(this.throttleResize);
     }
 
-    this.throttleResize = window.setTimeout(func, delay);
+    this.throttleResize = setTimeout(func, delay);
   }
 
   resizeNeeded() {
@@ -1398,8 +1431,10 @@ export class Seismograph extends SeisPlotElement {
       let timeRange;
 
       if (isDef(this.seismographConfig.linkedTimeScale)) {
+        console.log(`linkedTimeScale: ${this.seismographConfig.linkedTimeScale.constructor.name}`)
         const linkedTimeScale = this.seismographConfig.linkedTimeScale;
-
+console.log(`calcTimeScaleDomain lts _dur=${linkedTimeScale._originalDuration}`)
+console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
         if (this._seisDataList.length !== 0 && linkedTimeScale.duration.toMillis()===0) {
           this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
         }
@@ -1437,7 +1472,7 @@ export class Seismograph extends SeisPlotElement {
 
       if (minMax[0] === minMax[1]) {
         // flatlined data, use -1, +1
-        minMax = [minMax[0] - 1, minMax[1] + 1];
+        //minMax = [minMax[0] - 1, minMax[1] + 1];
       }
       if (this.seismographConfig.isYAxisNice) {
         // use d3 scale's nice function
@@ -1451,6 +1486,7 @@ export class Seismograph extends SeisPlotElement {
     }
     const middle = (minMax[1]+minMax[0])/2;
     const halfWidth = (minMax[1]-minMax[0])/2;
+    console.log(`calcAmp: mid ${middle}  hw: ${halfWidth} sdd: ${this.seisData.length}`)
     return [middle, halfWidth];
   }
 
@@ -1603,7 +1639,7 @@ export class Seismograph extends SeisPlotElement {
       // only trigger a draw if appending after already drawn on screen
       // otherwise, just append the data and wait for outside to call first draw()
       //this.drawSeismograms();
-      this.draw();
+      this.redraw();
     }
 
   }
@@ -1677,29 +1713,33 @@ export class SeismographAmplitudeScalable extends AmplitudeScalable {
       if (!this.graph.beforeFirstDraw) {
         // only trigger a draw if appending after already drawn on screen
         // otherwise, just append the data and wait for outside to call first draw()
-        this.graph.draw();
+        this.graph.redraw();
       }
     }
   }
 }
+
+export const ZERO_DURATION = Duration.fromMillis(0);
+
 export class SeismographTimeScalable extends TimeScalable {
   graph: Seismograph;
-  drawAlignmentTimeOffset: undefined | Duration;
-  drawDuration: undefined | Duration;
+  drawAlignmentTimeOffset: Duration;
+  drawDuration: Duration;
 
   constructor(graph: Seismograph, alignmentTimeOffset: Duration, duration: Duration) {
     super(alignmentTimeOffset, duration);
     this.graph = graph;
+    this.drawAlignmentTimeOffset = ZERO_DURATION;
+    this.drawDuration = ZERO_DURATION;
   }
 
   notifyTimeRangeChange(
     offset: Duration,
     duration: Duration,
   ) {
-    if (!isDef(this.drawAlignmentTimeOffset) ||
-        this.drawAlignmentTimeOffset.toMillis() !== offset.toMillis() ||
-        !isDef(this.drawDuration) ||
-        this.drawDuration.toMillis() !== duration.toMillis()) {
+    console.log(`notifyTimeRangeChange ${offset} ${duration}`)
+    if (!this.drawAlignmentTimeOffset.equals(offset) ||
+        !this.drawDuration.equals(duration)) {
       this.drawAlignmentTimeOffset = offset;
       this.drawDuration = duration;
       // something changed, maybe redraw

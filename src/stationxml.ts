@@ -75,7 +75,7 @@ export class Network {
   codes(): string {
     return this.networkCode;
   }
-  
+
   isActiveAt(d?: DateTime): boolean {
     if ( ! isDef(d)) {
       d = DateTime.utc();
@@ -523,7 +523,7 @@ export function parseStationXml(rawXml: Document): Array<Network> {
     throw new Error("No documentElement in XML");
   }
 
-  let netArray = top.getElementsByTagNameNS(STAML_NS, "Network");
+  let netArray = Array.from(top.getElementsByTagNameNS(STAML_NS, "Network"));
   let out = [];
 
   for (let n of netArray) {
@@ -570,7 +570,7 @@ export function convertToNetwork(xml: Element): Network {
       out.totalNumberStations = _grabFirstElInt(xml, "TotalNumberStations");
     }
 
-    let staArray = xml.getElementsByTagNameNS(STAML_NS, "Station");
+    let staArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Station"));
     let stations = [];
 
     for (let s of staArray) {
@@ -640,7 +640,7 @@ export function convertToStation(network: Network, xml: Element): Station {
       out.endDate = _grabAttribute(xml, "endDate");
     }
 
-    let chanArray = xml.getElementsByTagNameNS(STAML_NS, "Channel");
+    let chanArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Channel"));
     let channels = [];
 
     for (let c of chanArray) {
@@ -826,7 +826,7 @@ export function convertToEquipment(xml: Element): Equipment {
     out.removalDate = checkStringOrDate(val);
   }
 
-  let calibXml = xml.getElementsByTagNameNS(STAML_NS, "CalibrationDate");
+  let calibXml = Array.from(xml.getElementsByTagNameNS(STAML_NS, "CalibrationDate"));
   out.calibrationDateList = [];
 
   for (let cal of calibXml) {

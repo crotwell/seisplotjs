@@ -822,17 +822,20 @@ export class QuakeStationMap extends SeisPlotElement {
     let tileUrl = DEFAULT_TILE_TEMPLATE;
     let tileAttribution = null;
     let maxZoom = DEFAULT_MAX_ZOOM;
-    if (this.getAttribute(TILE_TEMPLATE)) {
-      tileUrl = this.getAttribute(TILE_TEMPLATE);
+    const tileUrlAttr = this.getAttribute(TILE_TEMPLATE);
+    if (tileUrlAttr) {
+      tileUrl = tileUrlAttr;
     }
-    if (this.getAttribute(MAX_ZOOM)) {
-      maxZoom = Number.parseInt(this.getAttribute(MAX_ZOOM));
+    const maxZoomAttr = this.getAttribute(MAX_ZOOM);
+    if (maxZoomAttr) {
+      maxZoom = Number.parseInt(maxZoomAttr);
     }
-    const tileOptions: TileLayerOptions = {
+    const tileOptions: L.TileLayerOptions = {
       maxZoom: maxZoom
     };
-    if (isDef(tileAttribution)) {
-      tileOptions.attribution = tileAttribution;
+    const tileAttributionAttr = this.getAttribute(TILE_ATTRIBUTION);
+    if (tileAttributionAttr) {
+      tileOptions.attribution = tileAttributionAttr;
     }
     L.tileLayer(tileUrl, tileOptions).addTo(mymap);
     const magScale = this.magScale;

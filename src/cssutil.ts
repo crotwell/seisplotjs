@@ -24,7 +24,7 @@ export function insertCSS(cssText: string, id: string): HTMLElement {
   }
 
   if (id) {
-    for (let c of head.children) {
+    for (let c of Array.from(head.children)) {
       // only remove if a <style> element, classed with autoseisplotjs and same id within head
       if (isIdStyleElement(c, id)) {
         // null check for flow
@@ -56,7 +56,7 @@ export function isCSSInserted(id: string): boolean {
     throw new Error("document.head is null");
   }
 
-  for (let c of head.children) {
+  for (let c of Array.from(head.children)) {
     if (isIdStyleElement(c, id)) {
       return true;
     }

@@ -134,10 +134,18 @@ export class SpectraPlot extends HTMLElement {
   _seismographConfig: SeismographConfig;
   _fftResults: Array<FFTResult | FreqAmp>;
 
-  constructor() {
+  constructor(fftResults?: Array<FFTResult | FreqAmp>, seismographConfig?: SeismographConfig) {
     super();
-    this._seismographConfig = new SeismographConfig();
-    this._fftResults = [];
+    if (seismographConfig) {
+      this._seismographConfig = seismographConfig;
+    } else {
+      this._seismographConfig = new SeismographConfig();
+    }
+    if (fftResults) {
+      this._fftResults = fftResults;
+    } else {
+      this._fftResults = [];
+    }
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');

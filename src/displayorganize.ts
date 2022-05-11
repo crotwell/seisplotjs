@@ -114,13 +114,9 @@ export class OrganizedDisplayItem extends SeisPlotElement {
 
     if (this.plottype.startsWith(SEISMOGRAPH)) {
       if (this.seismograph === null ) {
-        this.seismograph = document.createElement(SEISMOGRAPH_ELEMENT) as Seismograph;
+        this.seismograph = new Seismograph(this.seisData, this._seismographConfig);
       }
-      this.seismograph.seismographConfig = this._seismographConfig;
-      this.seismograph.seisData = this.seisData;
-      //this.seismograph.appendSeisData(this.seisData);
       divElement.node().appendChild(this.seismograph);
-      this.seismograph.draw();
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
       let nonContigList = this.seisData.filter(
@@ -146,8 +142,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
           : null;
       });
       let fftListNoNull = fftList.filter(isDef);
-      let spectraPlot = document.createElement("spectra-plot") as spectraplot.SpectraPlot;
-      spectraPlot.seismographConfig = this._seismographConfig;
+      let spectraPlot = new spectraplot.SpectraPlot(fftListNoNull, this._seismographConfig);
       spectraPlot.setAttribute(spectraplot.LOGFREQ, loglog);
       divElement.node().appendChild(spectraPlot);
     } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
@@ -169,7 +164,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       const mapid =
         "map" + (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 
-      const seismap = document.createElement(MAP_ELEMENT) as Seismograph;
+      const seismap = new QuakeStationMap(this.seisData);
       seismap.setAttribute("id", mapid);
       divElement.classed("map", true).attr("id", mapid);
       const centerLat = parseFloat(
@@ -188,12 +183,9 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         getFromQueryParams(queryParams, "magScale", "5.0"),
       );
       seismap.setAttribute(leafletutil.MAG_SCALE, `${magScale}`);
-      seismap.seisData = this.seisData;
       divElement.node().appendChild(seismap);
     } else if (this.plottype.startsWith(INFO)) {
-      let infotable = document.createElement(INFO_ELEMENT) as QuakeStationTable;
-      infotable.seisData = this.seisData;
-      infotable.seismographConfig = this._seismographConfig;
+      let infotable = new QuakeStationTable(this.seisData, this._seismographConfig);
       divElement.node().appendChild(infotable);
     } else {
       throw new Error(`Unkown plottype "${this.plottype}"`);
