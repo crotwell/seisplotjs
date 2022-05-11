@@ -42,9 +42,6 @@ export class SeisPlotElement extends HTMLElement {
   connectedCallback() {
     this.draw();
   }
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    this.draw();
-  }
   draw() {
     if ( ! this.isConnected) { return; }
   }
