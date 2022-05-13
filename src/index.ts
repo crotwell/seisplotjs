@@ -48,6 +48,7 @@ import * as taper from "./taper";
 import * as transfer from "./transfer";
 import * as traveltime from "./traveltime";
 import * as util from "./util";
+import version from "./version";
 import * as vector from "./vector";
 import * as OregonDSPTop from "oregondsp";
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
@@ -55,7 +56,6 @@ import RSVP from "rsvp";
 import * as d3 from "d3";
 import * as luxon from "luxon";
 import * as leaflet from "leaflet";
-import {version} from "./util";
 
 /* reexport */
 export {
