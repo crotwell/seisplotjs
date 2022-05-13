@@ -1566,7 +1566,7 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
       }
     }
 
-    if (this.seismographConfig.doRMean) {
+    if (this.seismographConfig.ySublabelIsUnits && this.seismographConfig.doRMean) {
       this.seismographConfig.ySublabel = `centered ${this.seismographConfig.ySublabel}`;
     }
 
