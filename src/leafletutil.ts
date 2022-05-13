@@ -1,10 +1,8 @@
-import {insertCSS} from "./cssutil";
 import {Quake} from "./quakeml";
 import {Station} from "./stationxml";
 import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
 import { SeismographConfig} from "./seismographconfig";
-import {isDef} from './util';
 
 import * as L from "leaflet";
 import {LatLngTuple} from "leaflet";
@@ -820,7 +818,6 @@ export class QuakeStationMap extends SeisPlotElement {
     divElement.setAttribute("id", mapid);
     const mymap = L.map(divElement).setView([this.centerLat, this.centerLon], this.zoomLevel);
     let tileUrl = DEFAULT_TILE_TEMPLATE;
-    let tileAttribution = null;
     let maxZoom = DEFAULT_MAX_ZOOM;
     const tileUrlAttr = this.getAttribute(TILE_TEMPLATE);
     if (tileUrlAttr) {

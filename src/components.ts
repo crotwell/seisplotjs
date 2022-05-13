@@ -82,7 +82,6 @@ export class ChannelListChooser extends HTMLElement {
     super();
     this.channels = [];
     this.callback = (c: Channel) => {};
-    const shadow = this.attachShadow({mode: 'open'});
     this.draw_element();
   }
   draw_element() {

@@ -1,7 +1,5 @@
 
 import { SeismogramDisplayData } from './seismogram';
-import { Quake, Origin, Magnitude } from './quakeml';
-import { Station, Channel } from './stationxml';
 import {WAY_FUTURE} from './util';
 
 export const SORT_NONE = "none";

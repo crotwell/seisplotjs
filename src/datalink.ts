@@ -5,7 +5,7 @@
  */
 import * as util from "./util"; // for util.log
 
-import {dataViewToString, stringify, isDef, isNonEmptyStringArg, isError, toError, UTC_OPTIONS} from "./util";
+import {dataViewToString, stringify, isDef, isNonEmptyStringArg, toError, UTC_OPTIONS} from "./util";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import RSVP from "rsvp";

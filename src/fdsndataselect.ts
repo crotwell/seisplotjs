@@ -16,10 +16,7 @@ import {
   isDef,
   checkProtocol,
   toIsoWoZ,
-  hasArgs,
-  hasNoArgs,
   isNonEmptyStringArg,
-  isNumArg,
 } from "./util";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";

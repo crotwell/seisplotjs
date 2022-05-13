@@ -5,7 +5,6 @@
  */
 import {createComplex} from "./oregondsputil";
 import * as OregonDSPTop from "oregondsp";
-import type {Complex} from "./oregondsputil";
 import {isNumArg, stringify} from "./util";
 
 /**

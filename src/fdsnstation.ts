@@ -13,10 +13,6 @@ import {
   makePostParam,
   doFetchWithTimeout,
   defaultFetchInitObj,
-} from "./util";
-import RSVP from "rsvp";
-// special due to flow
-import {
   doStringGetterSetter,
   doBoolGetterSetter,
   doIntGetterSetter,
@@ -25,8 +21,6 @@ import {
   checkProtocol,
   toIsoWoZ,
   isDef,
-  hasArgs,
-  hasNoArgs,
   isObject,
   isStringArg,
   isNonEmptyStringArg,

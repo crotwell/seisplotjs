@@ -92,9 +92,9 @@ export class HourMinChooser extends HTMLElement {
     }
 
     const minDiv = popupDiv.appendChild(document.createElement('div'));
-    const min_label = hourDiv.appendChild(document.createElement('label'));
+    const min_label = minDiv.appendChild(document.createElement('label'));
     min_label.textContent = "Min:";
-    const min_slider = hourDiv.appendChild(document.createElement('input'));
+    const min_slider = minDiv.appendChild(document.createElement('input'));
     min_slider.setAttribute("type", "range");
     min_slider.setAttribute("min", "0");
     min_slider.setAttribute("max", "59");
@@ -265,7 +265,6 @@ export class DateTimeChooser extends HTMLElement {
 
         let pikaValue = DateTime.fromISO(value);
         let origTime = mythis._time;
-        console.log(`pika: ${pikaValue}  prev: ${origTime}`)
         if (
           pikaValue && (
             origTime.year !== pikaValue.year ||

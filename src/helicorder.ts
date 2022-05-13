@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import * as d3 from "d3";
-import {DateTime, Duration} from "luxon";
+import {DateTime} from "luxon";
 import {insertCSS, isCSSInserted} from "./cssutil";
 import {SeismogramDisplayData} from "./seismogram";
 import {Seismograph} from "./seismograph";

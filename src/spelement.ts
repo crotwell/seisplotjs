@@ -1,7 +1,5 @@
 
-import {Quake, Origin} from "./quakeml";
-import {Station, Channel} from "./stationxml";
-import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
+import { SeismogramDisplayData } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
 import { isDef } from "./util";
 

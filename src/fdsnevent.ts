@@ -22,8 +22,6 @@ import {
   doMomentGetterSetter,
   checkProtocol,
   toIsoWoZ,
-  hasArgs,
-  hasNoArgs,
   isDef,
   isObject,
   isStringArg,

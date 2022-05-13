@@ -9,8 +9,6 @@ import { createComplex, complexFromPolar} from "./oregondsputil";
 import {isDef} from "./util";
 import * as OregonDSPTop from "oregondsp";
 const oregondsp = OregonDSPTop.com.oregondsp.signalProcessing;
-type ComplexType = typeof OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex;
-const Complex = OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex;
 
 /**
  * A higher level function to calculate DFT. Returns a
@@ -62,7 +60,6 @@ export function fftForward(
 export function calcDFT(
   timeseries: Int32Array | Float32Array | Float64Array,
 ): Float32Array {
-  let npts = timeseries.length;
   let [N,log2N] = findPowerTwo(timeseries.length);
   if (N < 16) {
     log2N = 4;
@@ -184,7 +181,7 @@ export class FFTResult {
     fftResult.numPoints = packedFreq.length;
     let [N,log2N] = findPowerTwo(packedFreq.length);
     if (N < origLength) {
-      throw new Error(`Not enough freq points, ${packedFreq.length}, for orig length of ${origLength}, must be > and power two`);
+      throw new Error(`Not enough freq points, ${packedFreq.length}, for orig length of ${origLength}, must be > and power two, (${N}, ${log2N})`);
     }
     return fftResult;
   }

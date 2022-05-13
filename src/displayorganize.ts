@@ -4,18 +4,14 @@ import {INFO_ELEMENT, QuakeStationTable} from "./infotable";
 import * as leafletutil from "./leafletutil";
 import {MAP_ELEMENT, QuakeStationMap} from "./leafletutil";
 import {ParticleMotion, createParticleMotionConfig} from "./particlemotion";
-import {Quake} from "./quakeml";
-import {sort, SORT_NONE, SORT_ALPHABETICAL, SORT_DISTANCE, SORT_STARTTIME, SORT_ORIGINTIME} from './sorting';
+import {sort, SORT_NONE} from './sorting';
 import {SeisPlotElement} from "./spelement";
-import {Station} from "./stationxml";
-import {SeismogramDisplayData, uniqueQuakes, uniqueStations} from "./seismogram";
-import {Seismograph, SEISMOGRAPH_ELEMENT} from "./seismograph";
+import {SeismogramDisplayData } from "./seismogram";
+import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {isDef, isStringArg, stringify} from "./util";
 import * as d3 from "d3";
-import * as L from "leaflet";
 import * as querystringify from "querystringify";
-import Handlebars from "handlebars";
 
 export const ORG_DISP_ITEM = 'organized-display-item';
 export const ORG_DISPLAY = 'organized-display';
@@ -296,7 +292,6 @@ export class OrganizedDisplay extends SeisPlotElement {
     const sortedData = sort(mythis.seisData, this.sortby);
     this.drawMap();
     this.drawInfo();
-    let organized_sdd = [];
     mythis.seismographConfig
     if (this.overlayby === OVERLAY_INDIVIDUAL) {
       sortedData.forEach(sdd => {
@@ -548,23 +543,6 @@ export function createAttribute(
     }
   });
   return organized;
-}
-export function sortDistance(
-  organized: Array<OrganizedDisplayItem>,
-): Array<OrganizedDisplayItem> {
-  const key = SORT_DISTANCE;
-  createAttribute(organized, key, attributeDistance);
-  return sortByKey(organized, key);
-}
-export function attributeDistance(orgDisp: OrganizedDisplayItem): number | null {
-  let out = Number.MAX_VALUE;
-  orgDisp.seisData.forEach(sdd => {
-    if (sdd.hasQuake && sdd.hasChannel) {
-      const distaz = sdd.distaz;
-      out = distaz ? Math.min(out,distaz.delta) : out;
-    }
-  });
-  return out;
 }
 export function createPlots(
   organized: Array<OrganizedDisplayItem>,

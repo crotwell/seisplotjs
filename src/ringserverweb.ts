@@ -11,8 +11,6 @@ import {
   doStringGetterSetter,
   doFloatGetterSetter,
   checkProtocol,
-  hasNoArgs,
-  isStringArg,
   isNonEmptyStringArg,
   isNumArg,
   isDef,

@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration} from "luxon";
-import {checkStringOrDate, meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
+import {checkStringOrDate, isDef} from "./util";
 import * as seedcodec from "./seedcodec";
 import {StartEndDuration} from "./util";
 export const COUNT_UNIT = "count";

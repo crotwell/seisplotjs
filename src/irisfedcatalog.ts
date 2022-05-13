@@ -34,8 +34,6 @@ import {
   isoToDateTime,
   toIsoWoZ,
   isDef,
-  hasArgs,
-  hasNoArgs,
   isObject,
   isStringArg,
   isNonEmptyStringArg,

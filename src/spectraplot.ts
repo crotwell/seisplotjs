@@ -8,9 +8,8 @@ import {SeismographConfig} from "./seismographconfig";
 import {SeismogramDisplayData} from "./seismogram";
 import * as OregonDSPTop from "oregondsp";
 import * as d3 from "d3";
-import {insertCSS, G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
+import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
 import {drawAxisLabels} from "./axisutil";
-import {isDef} from "./util";
 
 
 /**
@@ -198,7 +197,6 @@ export class SpectraPlot extends HTMLElement {
 
   draw() {
     if ( ! this.isConnected) { return; }
-    const that = this;
     let ampPhaseList = [];
     let maxFFTAmpLen = 0;
     let extentFFTData: Array<number> = [];

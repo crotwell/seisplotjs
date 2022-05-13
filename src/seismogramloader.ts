@@ -1,5 +1,5 @@
 
-import {DateTime, Duration} from 'luxon';
+import { Duration} from 'luxon';
 import type {TraveltimeJsonType} from "./traveltime";
 import {distaz, DistAzOutput} from "./distaz";
 import {StartEndDuration} from "./util";

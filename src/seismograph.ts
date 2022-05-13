@@ -3,18 +3,15 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
- import {DateTime, Duration} from "luxon";
+ import { Duration} from "luxon";
 import * as d3 from "d3";
-import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
+import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {
   AmplitudeScalable,
   TimeScalable,
 } from "./scale";
 import {
   SeismographConfig,
-  DRAW_SVG,
-  DRAW_CANVAS,
-  DRAW_BOTH,
   DRAW_BOTH_ALIGN,
   numberFormatWrapper,
 } from "./seismographconfig";
@@ -24,7 +21,6 @@ import type {TraveltimeJsonType} from "./traveltime";
 import type {ScaleLinear, ScaleTime} from "d3-scale"
 import {
   SeismogramDisplayData,
-  findStartEnd,
   findMaxDuration,
   findMinMax,
   findMinMaxOverTimeRange,
@@ -447,9 +443,6 @@ export class Seismograph extends SeisPlotElement {
         .attr("y", 0)
         .attr("width", this.width)
         .attr("height", this.height + 1);
-      let style = window.getComputedStyle(this.svg.node());
-      let padTop =  Number(style.getPropertyValue("padding-top").replace("px", ""));
-      let borderTop = Number(style.getPropertyValue("border-top-width").replace("px", ""));
     }
 
     this.drawSeismograms();
@@ -538,7 +531,6 @@ export class Seismograph extends SeisPlotElement {
       let ti = sddIndex;
       const xscaleForSDD: d3.ScaleTime<number, number, never> = this.timeScaleForSeisDisplayData(sdd);
       const yscaleForSDD = this.ampScaleForSeisDisplayData(sdd);
-      const rangeTop: number = xscaleForSDD.range()[1];
       const secondsPerPixel =
         (xscaleForSDD.domain()[1].valueOf() -
           xscaleForSDD.domain()[0].valueOf()) /
@@ -745,7 +737,6 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
   }
 
   segmentDrawLine(seg: SeismogramSegment, timeScale: ScaleTime<number,number>, ampScale: ScaleLinear<number, number>): string|null {
-    const mythis = this;
     let secondsPerPixel = this.calcSecondsPerPixel(timeScale);
     let samplesPerPixel = seg.sampleRate * secondsPerPixel;
     let lineFunc = d3
@@ -887,7 +878,6 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
     this.g.selectAll("g.axis--x").remove();
     this.g.selectAll("g.axis--x-top").remove();
     let xScaleToDraw;
-    let xAxis;
 
     if (this.seismographConfig.isRelativeTime) {
       xScaleToDraw = this.timeScaleForAxis();
@@ -1428,7 +1418,6 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
       } else {
       }
     } else {
-      let timeRange;
 
       if (isDef(this.seismographConfig.linkedTimeScale)) {
         console.log(`linkedTimeScale: ${this.seismographConfig.linkedTimeScale.constructor.name}`)
@@ -1508,8 +1497,6 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
   }
 
   redoDisplayYScale(): void {
-    const middle = this.myAmpScalable.drawMiddle;
-    const halfWidth = this.myAmpScalable.drawHalfWidth;
     if (
       this.seismographConfig.doGain &&
       this._seisDataList.length > 0 &&

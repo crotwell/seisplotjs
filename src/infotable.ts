@@ -1,8 +1,6 @@
 
-import {Quake} from "./quakeml";
-import {Station} from "./stationxml";
 import {SeisPlotElement} from "./spelement";
-import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
+import { SeismogramDisplayData } from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
 
 import Handlebars from "handlebars";

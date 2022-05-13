@@ -9,7 +9,7 @@ import * as mseed3 from "./mseed3";
 import {DataRecord} from "./miniseed";
 import {MSeed3Record} from "./mseed3";
 import RSVP from "rsvp";
-import {DateTime, Duration} from "luxon";
+import {DateTime} from "luxon";
 import {version} from "./util";
 import {dataViewToString, isDef, stringify, toError} from "./util";
 export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";

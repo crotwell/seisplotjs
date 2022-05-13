@@ -9,7 +9,6 @@ import {
   doIntGetterSetter,
   doFloatGetterSetter,
   checkProtocol,
-  hasArgs,
   stringify,
   isDef,
   isNonEmptyStringArg,

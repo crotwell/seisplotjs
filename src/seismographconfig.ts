@@ -7,7 +7,7 @@ import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {IndividualAmplitudeScale, LinkedAmplitudeScale, LinkedTimeScale} from "./scale";
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
 import {StartEndDuration, isDef} from "./util";
-import {DateTime, Duration} from "luxon";
+import { Duration} from "luxon";
 import * as d3 from "d3";
 import type {AxisDomain} from "d3-axis";
 import Handlebars from "handlebars";

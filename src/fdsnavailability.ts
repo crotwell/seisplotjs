@@ -16,11 +16,9 @@ import {
   toIsoWoZ,
   isoToDateTime,
   isDef,
-  hasArgs,
   hasNoArgs,
   isNonEmptyStringArg,
   isNumArg,
-  checkStringOrDate,
   stringify,
 } from "./util";
 import {SeismogramDisplayData} from "./seismogram";

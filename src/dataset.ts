@@ -2,10 +2,8 @@
 import {downloadBlobAsFile} from "./download";
 import * as mseed3 from "./mseed3";
 import {Quake, parseQuakeML} from "./quakeml";
-import {Network, Station, parseStationXml, allChannels} from "./stationxml";
+import {Network, parseStationXml, allChannels} from "./stationxml";
 import {Seismogram, SeismogramDisplayData} from "./seismogram";
-import {Seismograph} from "./seismograph";
-import {SeismographConfig} from "./seismographconfig";
 import {SeismogramLoader} from "./seismogramloader";
 import {StartEndDuration, doFetchWithTimeout, defaultFetchInitObj,
   isDef, XML_MIME, BINARY_MIME} from "./util";

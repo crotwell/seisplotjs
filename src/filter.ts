@@ -15,8 +15,6 @@ import {isDef} from "./util";
 //   ChebyshevI,
 //   ChebyshevII,
 // } from "oregondsp.com.oregondsp.signalProcessing.filter.iir";
-const CenteredHilbertTransform =
-  OregonDSPTop.com.oregondsp.signalProcessing.filter.fir.equiripple.CenteredHilbertTransform;
 
 /**
  * Constant for bandpass OregonDSP filter creation.

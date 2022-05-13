@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration} from "luxon";
-import {checkStringOrDate, meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
+import {meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
 import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
 import {Station, Channel, InstrumentSensitivity} from "./stationxml";

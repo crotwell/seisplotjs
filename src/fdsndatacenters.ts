@@ -11,10 +11,7 @@ import {
   checkProtocol,
   makeParam,
   isDef,
-  hasArgs,
-  hasNoArgs,
   isNonEmptyStringArg,
-  isNumArg,
 } from "./util";
 import {
   TEXT_MIME,
