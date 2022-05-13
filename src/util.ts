@@ -4,10 +4,6 @@
  * http://www.seis.sc.edu
  */
 
-/**
- * Current version of seisplotjs
- */
-export const version = process.env.npm_package_version ?? "unknown";
 import {DateTime, Duration, FixedOffsetZone} from "luxon";
 import RSVP from "rsvp";
 RSVP.on("error", function (reason: string) {
