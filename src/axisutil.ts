@@ -12,7 +12,7 @@ export function drawXLabel(
   svg.selectAll("g.xLabel").remove();
 
   if (seismographConfig.xLabel && seismographConfig.xLabel.length > 0) {
-    let svgText = svg
+    const svgText = svg
       .append("g")
       .classed("xLabel", true)
       .attr(
@@ -27,7 +27,7 @@ export function drawXLabel(
       .classed("x label", true)
       .attr("text-anchor", "middle")
       .text(seismographConfig.xLabel);
-    let handlebarOut = seismographConfig.handlebarsXLabel(handlebarsInput, {
+    const handlebarOut = seismographConfig.handlebarsXLabel(handlebarsInput, {
       allowProtoPropertiesByDefault: true, // this might be a security issue???
     });
     svgText.html(handlebarOut);
@@ -42,7 +42,7 @@ export function drawXSublabel(
 ) {
   const svg = d3.select(svgEl);
   svg.selectAll("g.xSublabel").remove();
-  svg
+  const svgText = svg
     .append("g")
     .classed("xSublabel", true)
     .attr(
@@ -55,6 +55,10 @@ export function drawXSublabel(
     .classed("x label sublabel", true)
     .attr("text-anchor", "middle")
     .text(seismographConfig.xSublabel);
+    const handlebarOut = seismographConfig.handlebarsXLabel(handlebarsInput, {
+      allowProtoPropertiesByDefault: true, // this might be a security issue???
+    });
+    svgText.html(handlebarOut);
 }
 export function drawYLabel(
   svgEl: SVGElement,
@@ -66,10 +70,10 @@ export function drawYLabel(
   const svg = d3.select(svgEl);
   svg.selectAll("g.yLabel").remove();
 
-  for (let side of ["left", "right"]) {
-    let hTranslate =
+  for (const side of ["left", "right"]) {
+    const hTranslate =
       side === "left" ? 0 : seismographConfig.margin.left + width + 1;
-    let svgText = svg
+    const svgText = svg
       .append("g")
       .classed("yLabel", true)
       .classed(side, true)
@@ -95,7 +99,7 @@ export function drawYLabel(
     }
 
     if (side === "left") {
-      let handlebarOut = seismographConfig.handlebarsYLabel(handlebarsInput, {
+      const handlebarOut = seismographConfig.handlebarsYLabel(handlebarsInput, {
         allowProtoPropertiesByDefault: true, // this might be a security issue???
       });
       svgText.html(handlebarOut);
@@ -162,7 +166,7 @@ export function drawTitle(
   svg.selectAll("g.title").remove();
 
   if (seismographConfig.showTitle) {
-    let titleSVGText = svg
+    const titleSVGText = svg
       .append("g")
       .classed("title", true)
       .attr(
@@ -174,7 +178,7 @@ export function drawTitle(
       .attr("x", 0)
       .attr("y", 2) // give little extra space at top, css style as hanging doesn't quite do it
       .attr("text-anchor", "middle");
-    let handlebarOut = seismographConfig.handlebarsTitle(handlebarsInput, {
+    const handlebarOut = seismographConfig.handlebarsTitle(handlebarsInput, {
       allowProtoPropertiesByDefault: true, // this might be a security issue???
     });
     titleSVGText.html(handlebarOut);

@@ -18,7 +18,7 @@ export const DATALINK_PROTOCOL = "DataLink1.0";
 export enum MODE {
   Query = "QUERY",
   Stream = "STREAM",
-};
+}
 /** const for query mode, QUERY */
 export const QUERY_MODE = MODE.Query;
 
@@ -46,7 +46,7 @@ export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
-let defaultHandleResponse = function (message: string) {
+const defaultHandleResponse = function (message: string) {
   util.log("Unhandled datalink response: " + message);
 };
 
@@ -272,7 +272,7 @@ export class DataLinkConnection {
 
     let rawPacket = new ArrayBuffer(len);
     const binaryPacket = new Uint8Array(rawPacket);
-    let packet = new DataView(rawPacket);
+    const packet = new DataView(rawPacket);
     packet.setUint8(0, 68); // ascii D
 
     packet.setUint8(1, 76); // ascii L
@@ -344,8 +344,8 @@ export class DataLinkConnection {
     header: string,
     data?: Uint8Array,
   ): Promise<DataLinkResponse| DataLinkPacket> {
-    let that = this;
-    let promise = new RSVP.Promise(function (resolve: (a: DataLinkResponse|DataLinkPacket) => void, reject) {
+    const that = this;
+    const promise = new RSVP.Promise(function (resolve: (a: DataLinkResponse|DataLinkPacket) => void, reject) {
       that._responseResolve = resolve;
       that._responseReject = reject;
       that.sendDLBinary(header, data);
@@ -450,7 +450,7 @@ export class DataLinkConnection {
     processid: string,
     architecture: string,
   ): Promise<DataLinkResponse> {
-    let command = `ID ${programname}:${username}:${processid}:${architecture}`;
+    const command = `ID ${programname}:${username}:${processid}:${architecture}`;
     return this.awaitDLCommand(command).then(dlResponse =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse),
     );
@@ -463,7 +463,7 @@ export class DataLinkConnection {
    * @returns promise to server's response
    */
   info(infoType: string): Promise<DataLinkResponse> {
-    let command = `INFO ${infoType}`;
+    const command = `INFO ${infoType}`;
     return this.awaitDLCommand(command).then(dlResponse =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse),
     );
@@ -488,7 +488,7 @@ export class DataLinkConnection {
    * @returns promise to server's response
    */
   positionAfterHPTime(hpTime: number): Promise<DataLinkResponse> {
-    let command = `POSITION AFTER ${hpTime}`;
+    const command = `POSITION AFTER ${hpTime}`;
     return this.awaitDLCommand(command).then(dlResponse =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse),
     );
@@ -501,7 +501,7 @@ export class DataLinkConnection {
    * @returns promise to server's response
    */
   match(pattern: string): Promise<DataLinkResponse> {
-    let command = `MATCH`;
+    const command = `MATCH`;
     return this.awaitDLCommand(command, pattern).then(dlResponse =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse),
     );
@@ -514,7 +514,7 @@ export class DataLinkConnection {
    * @returns promise to server's response
    */
   reject(pattern: string): Promise<DataLinkResponse> {
-    let command = `REJECT ${pattern}`;
+    const command = `REJECT ${pattern}`;
     return this.awaitDLCommand(command).then(dlResponse =>
       DataLinkConnection.ensureDataLinkResponse(dlResponse),
     );
@@ -527,7 +527,7 @@ export class DataLinkConnection {
    * @returns promise to server's response
    */
   read(packetId: string): Promise<DataLinkPacket> {
-    let command = `READ ${packetId}`;
+    const command = `READ ${packetId}`;
     return this.awaitDLBinary(command).then(dlResponse =>
       DataLinkConnection.ensureDataLinkPacket(dlResponse),
     );
@@ -541,7 +541,7 @@ export class DataLinkConnection {
    */
   handle(wsEvent: MessageEvent): void {
     const rawData: ArrayBuffer = wsEvent.data;
-    let dlPreHeader = new DataView(rawData, 0, 3);
+    const dlPreHeader = new DataView(rawData, 0, 3);
 
     if (
       "D" === String.fromCharCode(dlPreHeader.getUint8(0)) &&
@@ -551,7 +551,7 @@ export class DataLinkConnection {
       const header = dataViewToString(new DataView(rawData, 3, headerLen));
 
       if (header.startsWith(PACKET)) {
-        let packet = new DataLinkPacket(
+        const packet = new DataLinkPacket(
           header,
           new DataView(rawData, 3 + headerLen),
         );
@@ -632,8 +632,8 @@ export class DataLinkResponse {
 
   static parse(header: string, data?: DataView): DataLinkResponse {
     let value = "";
-    let s = header.split(" ");
-    let type = s[0];
+    const s = header.split(" ");
+    const type = s[0];
     let message = "";
 
     if (type === "ID") {
@@ -681,7 +681,7 @@ export class DataLinkPacket {
     this._mseed3 = null;
     this.header = header;
     this.data = dataview;
-    let split = this.header.split(" ");
+    const split = this.header.split(" ");
     this.streamId = split[1];
     this.pktid = split[2];
     this.hppackettime = split[3];
@@ -691,7 +691,7 @@ export class DataLinkPacket {
 
     if (dataview.byteLength < this.dataSize) {
       throw new Error(
-        "not enough bytes in dataview for packet: " + this.dataSize,
+        `not enough bytes in dataview for packet:  ${this.dataSize}`,
       );
     }
   }

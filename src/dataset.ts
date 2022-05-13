@@ -32,10 +32,10 @@ export class Dataset {
     .then( ([networkList, quakeList, sddList]) => {
       const dataset = new Dataset();
       dataset.waveforms = sddList;
-      if (quakeList != null ) {
+      if (quakeList !== null ) {
         dataset.catalog = quakeList;
       }
-      if (networkList != null) {
+      if (networkList !== null) {
         dataset.inventory = networkList;
       }
       return dataset;
@@ -46,20 +46,20 @@ export class Dataset {
     if (filename.endsWith(DOT_ZIP_EXT)) {
       dirname = filename.slice(0,-4);
     }
-    let zipfile = new JSZip();
-    let zip = zipfile.folder(dirname);
+    const zipfile = new JSZip();
+    const zip = zipfile.folder(dirname);
     if (!zip) {
       throw new Error("unable to create subfolder in zip file: "+dirname);
     }
 
     zip.file("Hello.txt", "Hello World\n");
 
-    let seisFolder = zip.folder(SEISMOGRAM_DIR);
+    const seisFolder = zip.folder(SEISMOGRAM_DIR);
     if (seisFolder === null) {throw new Error("can't make folder");}
-    for (let [key,val] of this.waveformsToMSeed3()) {
+    for (const [key,val] of this.waveformsToMSeed3()) {
       seisFolder.file(key, val);
     }
-    zipfile.generateAsync({type:"uint8array", compression: "DEFLATE"}).then(function(content) {
+    return zipfile.generateAsync({type:"uint8array", compression: "DEFLATE"}).then(function(content) {
         downloadBlobAsFile(content, filename);
     });
 
@@ -69,13 +69,13 @@ export class Dataset {
     const ext = "ms3";
     this.waveforms.forEach(sdd => {
       if (sdd.seismogram) {
-        let mseed3Records = mseed3.toMSeed3(sdd.seismogram);
-        let byteSize = mseed3Records.reduce( (acc, cur) => acc+cur.calcSize(), 0);
-        let outBuf = new ArrayBuffer(byteSize);
+        const mseed3Records = mseed3.toMSeed3(sdd.seismogram);
+        const byteSize = mseed3Records.reduce( (acc, cur) => acc+cur.calcSize(), 0);
+        const outBuf = new ArrayBuffer(byteSize);
         let offset = 0;
         mseed3Records.forEach(ms3Rec => {
-          let recSize = ms3Rec.calcSize();
-          let dv = new DataView(outBuf, offset, recSize);
+          const recSize = ms3Rec.calcSize();
+          const dv = new DataView(outBuf, offset, recSize);
           ms3Rec.save(dv);
           offset += recSize;
         });
@@ -107,7 +107,7 @@ export class Dataset {
     out.catalog = this.catalog.concat(other.catalog);
     return out;
   }
-  associateQuakes(timeOverlapSecs: number = 1800) {
+  associateQuakes(timeOverlapSecs = 1800) {
     this.waveforms.forEach((w: SeismogramDisplayData) => {
       // only try to set quake if don't already have one
       if ( ! w.hasQuake) {
