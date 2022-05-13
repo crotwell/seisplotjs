@@ -3,8 +3,7 @@ import { SeismogramLoader } from '../src/seismogramloader.js';
 import {StartEndDuration} from '../src/util.js';
 import {EventQuery} from '../src/fdsnevent.js';
 import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation.js';
-import {allChannels} from '../src/stationxml.js';
-import {DateTime, Duration} from 'luxon';
+import { Duration} from 'luxon';
 import RSVP from 'rsvp';
 
 // eslint-disable-next-line no-undef

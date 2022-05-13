@@ -1,7 +1,6 @@
 
 import {AvailabilityQuery} from '../src/fdsnavailability';
 import { SeismogramDisplayData} from '../src/seismogram';
-import * as util from '../src/util.js';
 
 // eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
