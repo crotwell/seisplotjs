@@ -412,7 +412,7 @@ export class SpectraPlot extends HTMLElement {
       seisConfig: this.seismographConfig,
     };
     drawAxisLabels(
-      svg,
+      svg_element,
       this.seismographConfig,
       height,
       width,

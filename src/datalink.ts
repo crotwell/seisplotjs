@@ -540,7 +540,7 @@ export class DataLinkConnection {
    * @param wsEvent web socket event to handle
    */
   handle(wsEvent: MessageEvent): void {
-    const rawData: ArrayBuffer = (wsEvent.data as any) as ArrayBuffer;
+    const rawData: ArrayBuffer = wsEvent.data;
     let dlPreHeader = new DataView(rawData, 0, 3);
 
     if (

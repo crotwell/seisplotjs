@@ -48,7 +48,7 @@ import * as taper from "./taper";
 import * as transfer from "./transfer";
 import * as traveltime from "./traveltime";
 import * as util from "./util";
-import version from "./version";
+import {version} from "./version";
 import * as vector from "./vector";
 import * as OregonDSPTop from "oregondsp";
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;

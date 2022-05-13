@@ -10,7 +10,7 @@ import {DataRecord} from "./miniseed";
 import {MSeed3Record} from "./mseed3";
 import RSVP from "rsvp";
 import {DateTime} from "luxon";
-import {version} from "./util";
+import {version} from "./version";
 import {dataViewToString, isDef, stringify, toError} from "./util";
 export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";
 export const MINISEED_2_FORMAT = "2";

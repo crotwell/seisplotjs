@@ -1,11 +1,14 @@
 import {SeismographConfig} from "./seismographconfig";
+import * as d3 from "d3";
+
 export function drawXLabel(
-  svg: any,
+  svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
   handlebarsInput: any = {},
 ) {
+  const svg = d3.select(svgEl);
   svg.selectAll("g.xLabel").remove();
 
   if (seismographConfig.xLabel && seismographConfig.xLabel.length > 0) {
@@ -31,12 +34,13 @@ export function drawXLabel(
   }
 }
 export function drawXSublabel(
-  svg: any,
+  svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
   width: number, // eslint-disable-next-line no-unused-vars
   handlebarsInput: any = {},
 ) {
+  const svg = d3.select(svgEl);
   svg.selectAll("g.xSublabel").remove();
   svg
     .append("g")
@@ -53,12 +57,13 @@ export function drawXSublabel(
     .text(seismographConfig.xSublabel);
 }
 export function drawYLabel(
-  svg: any,
+  svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
   handlebarsInput: any = {},
 ) {
+  const svg = d3.select(svgEl);
   svg.selectAll("g.yLabel").remove();
 
   for (let side of ["left", "right"]) {
@@ -106,12 +111,13 @@ export function drawYLabel(
   }
 }
 export function drawYSublabel(
-  svg: any,
+  svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
   width: number, // eslint-disable-next-line no-unused-vars
   handlebarsInput: any = {},
 ) {
+  const svg = d3.select(svgEl);
   svg.selectAll("g.ySublabel").remove();
   let svgText = svg
     .append("g")
@@ -142,12 +148,13 @@ export function drawYSublabel(
   svgText.text(seismographConfig.ySublabel);
 }
 export function drawTitle(
-  svg: any,
+  svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
   handlebarsInput: any = {},
 ) {
+  const svg = d3.select(svgEl);
   if (!handlebarsInput.seisConfig) {
     handlebarsInput.seisConfig = seismographConfig;
   }
@@ -174,15 +181,15 @@ export function drawTitle(
   }
 }
 export function drawAxisLabels(
-  svg: any,
+  svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
   handlebarsInput: any = {},
 ) {
-  drawTitle(svg, seismographConfig, height, width, handlebarsInput);
-  drawXLabel(svg, seismographConfig, height, width, handlebarsInput);
-  drawXSublabel(svg, seismographConfig, height, width);
-  drawYLabel(svg, seismographConfig, height, width, handlebarsInput);
-  drawYSublabel(svg, seismographConfig, height, width);
+  drawTitle(svgEl, seismographConfig, height, width, handlebarsInput);
+  drawXLabel(svgEl, seismographConfig, height, width, handlebarsInput);
+  drawXSublabel(svgEl, seismographConfig, height, width);
+  drawYLabel(svgEl, seismographConfig, height, width, handlebarsInput);
+  drawYSublabel(svgEl, seismographConfig, height, width);
 }
