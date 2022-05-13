@@ -14,7 +14,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
-    "skipLibCheck": true
+    "skipLibCheck": false,
+    "declaration": true,
+    "declarationDir": "dist/module"
   },
   "files": ["global.d.ts"],
   "include": ["src"]
