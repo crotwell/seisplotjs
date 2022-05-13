@@ -144,7 +144,7 @@ export class EarthquakeSearch extends HTMLElement {
     const tr_div = wrapper.appendChild(document.createElement('div'));
     const tr_label = tr_div.appendChild(document.createElement('label'));
     tr_label.textContent = "Time Range";
-    const tr_timerange = tr_div.appendChild(document.createElement('time-range-chooser'));
+    tr_div.appendChild(document.createElement('time-range-chooser'));
 
     labeledTextInput("Start Time", wrapper, "now");
     labeledTextInput("End Time", wrapper, "now");
@@ -152,13 +152,13 @@ export class EarthquakeSearch extends HTMLElement {
     const mag_div = wrapper.appendChild(document.createElement('div'));
     const mag_label = mag_div.appendChild(document.createElement('label'));
     mag_label.textContent = "Magnitude";
-    const mag_range = mag_div.appendChild(document.createElement('min-max'));
+    mag_div.appendChild(document.createElement('min-max'));
 
 
     const depth_div = wrapper.appendChild(document.createElement('div'));
     const depth_label = mag_div.appendChild(document.createElement('label'));
     depth_label.textContent = "Depth";
-    const depth_range = depth_div.appendChild(document.createElement('min-max'));
+    depth_div.appendChild(document.createElement('min-max'));
     const depth_km_label = mag_div.appendChild(document.createElement('label'));
     depth_km_label.textContent = "km";
 
