@@ -1,7 +1,7 @@
 
 // this global comes from the seisplotjs_ standalone js
 const d3 = seisplotjs.d3;
-const moment = seisplotjs.moment;
+const luxon = seisplotjs.luxon;
 
 const staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
 const locCodeList = ['00', '01'];
@@ -189,8 +189,8 @@ let numSteps = 0;
 let heli = null;
 
 const getNowTime = function() {
-  let e = moment.utc().endOf('hour').add(1, 'millisecond');
-  e.add(e.hour() % HOURS_PER_LINE, 'hours');
+  let e = luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
+  e.plus({hours: e.hour % HOURS_PER_LINE});
   return e;
 }
 
@@ -199,33 +199,31 @@ if ( state.endTime) {
   if (state.endTime === "now") {
     chooserEnd = getNowTime();
   } else {
-    chooserEnd = moment.utc(state.endTime);
+    chooserEnd = seisplotjs.util.isoToDateTime(state.endTime);
   }
 } else {
-  chooserEnd = moment.utc();
+  chooserEnd = luxon.DateTime.utc();
 }
-const chooserStart = chooserEnd.subtract(moment.duration(state.duration));
+const chooserStart = chooserEnd.minus(luxon.Duration.fromISO(state.duration));
 
 let throttleRedisplay = null;
 let throttleRedisplayDelay = 500;
 
-let dateChooserSpan = seisplotjs.d3.select('span#datechooser');
-let dateChooser = new seisplotjs.datechooser.DateTimeChooser(dateChooserSpan,
-    "Start Time",
-    chooserStart,
-    time => {
-      if (throttleRedisplay) {
-        window.clearTimeout(throttleRedisplay);
-      }
-      throttleRedisplay = window.setTimeout(() => {
-        let updatedTime = moment(time).add(moment.duration(state.duration));
-        state.endTime = updatedTime;
-        loadAndPlot(state);
-      }, throttleRedisplayDelay);
-    });
+let dateChooser = document.querySelector("date-time-chooser");
+dateChooser.time = chooserStart;
+dateChooser.updateCallback = time => {
+  if (throttleRedisplay) {
+    window.clearTimeout(throttleRedisplay);
+  }
+  throttleRedisplay = window.setTimeout(() => {
+    let updatedTime = time.plus(luxon.Duration.fromISO(state.duration));
+    state.endTime = updatedTime;
+    loadAndPlot(state);
+  }, throttleRedisplayDelay);
+};
 let updateDateChooser = function(state) {
   if ( state.endTime && state.duration) {
-    dateChooser.updateTime(moment.utc(state.endTime).subtract(moment.duration(state.duration)));
+    dateChooser.updateTime(seisplotjs.util.isoToDateTime(state.endTime).minus(luxon.Duration.fromISO(state.duration)));
   } else {
     throw new Error(`missing end/duration: ${state.endTime} ${state.duration}`);
   }
@@ -263,7 +261,7 @@ d3.select("button#loadNow").on("click", function(d) {
 });
 
 d3.select("button#loadToday").on("click", function(d) {
-  state.endTime = moment.utc().endOf('day').add(1, 'millisecond');
+  state.endTime = luxon.DateTime.utc().endOf('day').plus({millisecond: 1});
   console.log(`today ${state.endTime}`);
   updateDateChooser(state);
   loadAndPlot(state);
@@ -274,7 +272,7 @@ d3.select("button#loadPrev").on("click", function(d) {
   if (  !e || e === 'now' ) {
     e = getNowTime();
   }
-  state.endTime = moment.utc(e).subtract(1, 'day');
+  state.endTime = luxon.DateTime.utc(e).minus({days: 1});
   console.log(`prev ${state.endTime}`);
   updateDateChooser(state);
   loadAndPlot(state);
@@ -285,7 +283,7 @@ d3.select("button#loadNext").on("click", function(d) {
   if ( !e || e === 'now' ) {
     e = getNowTime();
   }
-  state.endTime = moment.utc(e).add(1, 'day');
+  state.endTime = luxon.DateTime.utc(e).plut({day: 1});
   console.log(`next ${state.endTime}`);
   updateDateChooser(state);
   loadAndPlot(state);

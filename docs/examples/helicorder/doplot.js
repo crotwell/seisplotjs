@@ -7,18 +7,16 @@ const Helicorder = seisplotjs.helicorder.Helicorder;
 const MINMAX_URL = "http://eeyore.seis.sc.edu/minmax";
 const MSEED_URL = "http://eeyore.seis.sc.edu/mseed";
 
-const QUAKE_START_OFFSET = seisplotjs.moment.duration(1, 'hours');
+const QUAKE_START_OFFSET = seisplotjs.luxon.Duration.fromObject({hours: 1});
 const divClass = "heli";
 
 doPlot = function(config) {
-  // this global comes from the seisplotjs standalone js
-  const moment = seisplotjs.moment;
   // this global comes from the seisplotjs_waveformplot standalone js
   const d3 = seisplotjs.d3;
+  const luxon = seisplotjs.luxon;
+  const ONE_MILLISECOND = luxon.Duration.fromMillis(1);
 
-
-  let nowHour = moment.utc().endOf('hour').add(1, 'millisecond');
-  //nowHour = moment.utc("2019-01-11T21:58:00Z").endOf('hour').add(1, 'millisecond');
+  let nowHour = seisplotjs.util.isoToDateTime("now").endOf('hour').plus({milliseconds: 1});
 
   if ( ! config.station) {
     return;
@@ -26,22 +24,22 @@ doPlot = function(config) {
   if ( ! config.duration) {
     config.duration = DEFAULT_DURATION;
   }
-  // stringify moment...
+  // stringify end...
   let end = config.endTime;
-  if (moment.isMoment(end)) {
-    config.endTime = end.toISOString();
+  if (luxon.DateTime.isDateTime(end)) {
+    config.endTime = end.toISO();
   }
   history.pushState(config, "title");
   config.endTime = end;
 
   let plotEnd;
-  if (moment.isMoment(end)) {
+  if (luxon.DateTime.isDateTime(end)) {
     plotEnd = end;
   } else if( ! end || end.length === 0 || end === 'now') {
-    plotEnd = moment.utc().endOf('hour').add(1, 'millisecond');
-    if (plotEnd.hour() % 2 === 1) {plotEnd.add(1, 'hour');}
+    plotEnd = luxon.DateTime.utc().endOf('hour').plus(ONE_MILLISECOND);
+    if (plotEnd.hour % 2 === 1) {plotEnd.plus(luxon.Duration.fromObject({'hour': 1}));}
   } else if( end === 'today') {
-    plotEnd = moment.utc().endOf('day').add(1, 'millisecond');
+    plotEnd = luxon.DateTime.utc().endOf('day').plus(ONE_MILLISECOND);
   } else {
     plotEnd = config.endTime;
   }
@@ -62,8 +60,8 @@ doPlot = function(config) {
   d3.selectAll("span.textStaCode").text(staCodeQuery);
   d3.selectAll("span.textLocCode").text(locCodeQuery);
   d3.selectAll("span.textChanCode").text(chanCodeQuery);
-  d3.selectAll("span.startTime").text(timeWindow.startTime.format('ddd, MMM D, YYYY HH:mm [GMT]'));
-  d3.selectAll("span.endTime").text(timeWindow.endTime.format('ddd, MMM D, YYYY HH:mm [GMT]'));
+  d3.selectAll("span.startTime").text(`${timeWindow.startTime.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`);
+  d3.selectAll("span.endTime").text(`${timeWindow.endTime.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`);
   let channelQuery = new seisplotjs.fdsnstation.StationQuery()
     .nodata(404)
     .networkCode(netCodeQuery)
@@ -158,7 +156,7 @@ doPlot = function(config) {
       throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient}`);
     }
     hash.seisData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
-    let nowMarker = { markertype: 'predicted', name: "now", time: moment.utc() };
+    let nowMarker = { markertype: 'predicted', name: "now", time: luxon.DateTime.utc() };
     hash.seisData.addMarkers(nowMarker);
     redrawHeli(hash);
     return hash;
@@ -171,7 +169,7 @@ doPlot = function(config) {
 
 queryEarthquakes = function(hash) {
   return seisplotjs.RSVP.hash(hash).then(hash => {
-    let quakeStart = moment.utc(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
+    let quakeStart = seisplotjs.util.isoToDateTime(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
     let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     localQuakesQuery
       .minMag(0)
@@ -184,7 +182,7 @@ queryEarthquakes = function(hash) {
     hash.localQuakes = localQuakesQuery.query();
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    let quakeStart = moment.utc(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
+    let quakeStart = seisplotjs.util.isoToDateTime(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
     let regionalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     regionalQuakesQuery
       .startTime(quakeStart)
@@ -196,7 +194,7 @@ queryEarthquakes = function(hash) {
     hash.regionalQuakes = regionalQuakesQuery.query();
     return seisplotjs.RSVP.hash(hash);
   }).then(hash => {
-    let quakeStart = moment.utc(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
+    let quakeStart = seisplotjs.util.isoToDateTime(hash.timeWindow.startTime).subtract(QUAKE_START_OFFSET);
     let globalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     globalQuakesQuery
       .startTime(quakeStart)
@@ -242,9 +240,9 @@ queryEarthquakes = function(hash) {
           }
           return {
             firstP: firstP,
-            firstPTime: moment(quake.time).add(firstP.time, 'seconds'),
+            firstPTime: seisplotjs.util.isoToDateTime(quake.time).plus({seconds: firstP.time}),
             firstS: firstS,
-            firstSTime: moment(quake.time).add(firstS.time, 'seconds'),
+            firstSTime: seisplotjs.util.isoToDateTime(quake.time).plus({seconds: firstS.time}),
             ttimes: ttimes
           };
         });
@@ -282,7 +280,7 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
       markers.push({ markertype: 'predicted', name: tt.firstP.phase, time: tt.firstPTime });
       markers.push({ markertype: 'predicted', name: tt.firstS.phase, time: tt.firstSTime });
     });
-    markers.push({ markertype: 'predicted', name: "now", time: moment.utc() });
+    markers.push({ markertype: 'predicted', name: "now", time: luxon.utc() });
     hash.seisData.addMarkers(markers);
     hash.heli.draw();
     return hash;
@@ -293,7 +291,7 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
 redrawHeli = function(hash) {
   console.log(`heli redraw... ${hash.amp}`)
   // this global comes from the seisplotjs standalone js
-  const moment = seisplotjs.moment;
+  const luxon = seisplotjs.luxon;
   // this global comes from the seisplotjs_waveformplot standalone js
   const d3 = seisplotjs.d3;
 

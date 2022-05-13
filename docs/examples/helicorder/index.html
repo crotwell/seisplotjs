@@ -17,11 +17,12 @@
   <span id="instruments"><label class="rbgroup">Instrument: </label></span>
   <span id="orientations"><label class="rbgroup">Orientation: </label></span>
 </div>
-<div id="amp"><label class="rbgroup" title="Amplitude Range">Amp Range: </label>
-  <span><input type="radio" id="maxAmp" class="shape" name="ampMode" value="0" checked="true">Max Value </input></span>
+<div id="amp">
+  <label class="rbgroup" title="Amplitude Range">Amp Range: </label>
+  <span><input type="radio" id="maxAmp" class="shape" name="ampMode" value="0" checked="true"/>Max Value </span>
   <span>
-    <input type="radio" id="fixedAmp" class="shape" name="ampMode" value="1">
-    <label>Fixed: </label><input type="text" id="fixedAmpText" name="fixedAmp" pattern="[1-9][0-9]*" value="10000"></input>
+    <input type="radio" id="fixedAmp" class="shape" name="ampMode" value="1"/>
+    <label>Fixed: </label><input type="text" id="fixedAmpText" name="fixedAmp" pattern="[1-9][0-9]*" value="10000">
   </span>
   <span>
     <input type="radio" id="percentAmp" class="shape" name="ampMode" value="2">
@@ -34,7 +35,7 @@
   <button id="loadNow">Now</button>
   <button id="loadPrev">Previous</button>
   <button id="loadNext">Next</button>
-  <span id="datechooser"></span>
+  <date-time-chooser></date-time-chooser>
 </div>
 
 <h3><span class="textNetCode"></span>.<span class="textStaCode"></span>.<span class="textLocCode">00</span>.<span class="textChanCode">H??</span> from <span class="startTime"></span> to <span class="endTime"></span>.</h3>
@@ -50,20 +51,20 @@
   </div>
   <div id="local">
     <h5>Local Earthquakes:</h5>
-    <label>Min Lat: </label><input type="text" id="localMinLat" name="localMinLat" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="31.75"></input>
-    <label>Max Lat: </label><input type="text" id="localMaxLat" name="localMaxLat" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="35.5"></input>
-    <label>Min Lon: </label><input type="text" id="localMinLon" name="localMinLon" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="-84"></input>
-    <label>Max Lon: </label><input type="text" id="localMaxLon" name="localMaxLon" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="-78"></input>
+    <label>Min Lat: </label><input type="text" id="localMinLat" name="localMinLat" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="31.75"/>
+    <label>Max Lat: </label><input type="text" id="localMaxLat" name="localMaxLat" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="35.5"/>
+    <label>Min Lon: </label><input type="text" id="localMinLon" name="localMinLon" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="-84"/>
+    <label>Max Lon: </label><input type="text" id="localMaxLon" name="localMaxLon" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="-78"/>
   </div>
   <div id="regional">
     <h5>Regional Earthquakes:</h5>
-    <label>Max Radius: </label><input type="text" id="regionalMaxRadius" name="regionalMaxRadius" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="10"></input>
-    <label>Min Mag: </label><input type="text" id="regionalMinMag" name="regionalMinMag" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="4.5"></input>
+    <label>Max Radius: </label><input type="text" id="regionalMaxRadius" name="regionalMaxRadius" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="10"/>
+    <label>Min Mag: </label><input type="text" id="regionalMinMag" name="regionalMinMag" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="4.5"/>
 
   </div>
   <div id="global">
     <h5>Global Earthquakes:</h5>
-    <label>Min Mag: </label><input type="text" id="globalMinMag" name="globalMinMag" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="6"></input>
+    <label>Min Mag: </label><input type="text" id="globalMinMag" name="globalMinMag" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="6"/>
   </div>
 </div>
 
