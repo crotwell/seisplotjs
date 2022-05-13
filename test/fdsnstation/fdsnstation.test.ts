@@ -2,9 +2,7 @@
 
 import * as fdsnstation from '../../src/fdsnstation.js';
 import * as stationxml from '../../src/stationxml.js';
-import * as util from '../../src/util.js';
 import {isoToDateTime} from '../../src/util';
-import {DateTime} from 'luxon';
 
 
 test( "station parse test", () => {

@@ -1,7 +1,6 @@
 import './jestRatioMatchers';
 
 import * as vector from '../src/vector.js';
-import * as util from '../src/util.js';
 import {DateTime} from 'luxon';
 
 import { Seismogram }  from "../src/seismogram";

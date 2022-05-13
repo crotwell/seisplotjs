@@ -3,7 +3,7 @@
 import fs from 'fs';
 
 import * as stationxml from '../../src/stationxml.js';
-import { PolesZeros, Network, Station, Channel } from '../../src/stationxml';
+import { PolesZeros, Network } from '../../src/stationxml';
 import {convertToSacPoleZero} from '../../src/transfer.js';
 import { createComplex} from '../../src/oregondsputil.js';
 

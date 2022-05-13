@@ -1,7 +1,7 @@
 
 
 import * as miniseed from '../../src/miniseed.js';
-import  {DateTime, Duration} from 'luxon';
+import  {Duration} from 'luxon';
 
 
 test("time of sample", () => {

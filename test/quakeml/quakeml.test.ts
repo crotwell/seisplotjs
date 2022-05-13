@@ -4,7 +4,6 @@ import fs from 'fs';
 
 import * as quakeml from '../../src/quakeml.js';
 import {isoToDateTime} from '../../src/util';
-import {DateTime} from 'luxon';
 
 test("viewobspy quake", () => {
 

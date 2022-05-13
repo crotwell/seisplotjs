@@ -2,7 +2,6 @@
 
 import * as fdsndataselect from '../../src/fdsndataselect.js';
 import * as util from '../../src/util.js';
-import {DateTime} from 'luxon';
 
 
 test( "query setter test", () => {

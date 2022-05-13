@@ -1,6 +1,6 @@
 // @flow
 
-import {Quake, createQuakeFromValues, UNKNOWN_PUBLIC_ID} from '../src/quakeml.js';
+import { createQuakeFromValues, UNKNOWN_PUBLIC_ID} from '../src/quakeml.js';
 import {SeismogramSegment, Seismogram, SeismogramDisplayData} from '../src/seismogram';
 import  { StartEndDuration, isDef, isoToDateTime} from '../src/util';
 import {DateTime, Duration} from 'luxon';

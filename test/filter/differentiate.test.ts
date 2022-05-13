@@ -3,7 +3,7 @@ import '../jestRatioMatchers';
 import * as filter from '../../src/filter';
 import {isoToDateTime} from '../../src/util';
 import {Seismogram } from '../../src/seismogram';
-import {DateTime, Duration} from 'luxon';
+import { Duration} from 'luxon';
 
 
 test("constant", () => {

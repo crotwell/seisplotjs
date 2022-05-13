@@ -24,7 +24,6 @@ test("simple butterworth", () => {
         let type = filter.BAND_PASS;
         let lowCut = 1;
         let highCut = 5;
-        let delta = 1;
         let butterworth = filter.createButterworth(n, type, lowCut, highCut, origseis.samplePeriod);
         expect(butterworth).toBeTruthy();
         let butterSeismogram = filter.applyFilter(butterworth, origseis);

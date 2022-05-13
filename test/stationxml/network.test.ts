@@ -12,12 +12,17 @@ test("empty iterate", () => {
   let inventory = new Array<Network>(0);
   let i=0;
   for (let s of allStations(inventory)) {
-    i+=1;
+    // keep typescrip happy
+    if (s) {
+      i+=1;
+    }
   }
   expect(i).toEqual(0);
   let chanList = allChannels(inventory);
   for (let c of chanList) {
-    i+=1;
+    if (c) {
+      i+=1;
+    }
   }
   expect(i).toEqual(0);
 });

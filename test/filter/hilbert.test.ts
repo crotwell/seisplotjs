@@ -1,8 +1,6 @@
 
 import * as filter from '../../src/filter';
-import {Seismogram} from '../../src/seismogram';
 import {readSeismogram} from './sacfile';
-import {DateTime} from 'luxon';
 import * as OregonDSPTop from 'oregondsp';
 const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 

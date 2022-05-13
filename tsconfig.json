@@ -16,5 +16,6 @@
     "noImplicitReturns": true,
     "skipLibCheck": true
   },
+  "files": ["global.d.ts"],
   "include": ["src"]
 }

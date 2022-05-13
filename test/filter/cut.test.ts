@@ -2,7 +2,7 @@
 
 import {SeismogramSegment, Seismogram} from '../../src/seismogram';
 import  {StartEndDuration, isoToDateTime} from '../../src/util';
-import {DateTime, Duration} from 'luxon';
+import { Duration} from 'luxon';
 
 test("simple seismogram cut", () => {
   let yValues = new Int32Array(100);

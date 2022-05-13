@@ -4,7 +4,6 @@ import * as fdsnevent from '../../src/fdsnevent.js';
 import * as quakeml from '../../src/quakeml.js';
 import * as util from '../../src/util.js';
 import {isoToDateTime} from '../../src/util';
-import {DateTime} from 'luxon';
 
 test( "query setter test", () => {
   let eventQuery = new fdsnevent.EventQuery();
@@ -64,11 +63,11 @@ test( "form url test", () => {
   expect(query.maxRadius(12)).toBe(query);
   expect(query.getMaxRadius()).toBe(12);
   expect(query.includeArrivals(true)).toBe(query);
-  expect(query.getIncludeArrivals()).toBe(true);
+  expect(query.getIncludeArrivals()).toBeTrue();
   expect(query.includeAllOrigins(true)).toBe(query);
-  expect(query.getIncludeAllOrigins()).toBe(true);
+  expect(query.getIncludeAllOrigins()).toBeTrue();
   expect(query.includeAllMagnitudes(true)).toBe(query);
-  expect(query.getIncludeAllMagnitudes()).toBe(true);
+  expect(query.getIncludeAllMagnitudes()).toBeTrue();
   expect(query.updatedAfter(END)).toBe(query);
   expect(query.getUpdatedAfter()).toBe(END);
   expect(query.format("miniseed")).toBe(query);
@@ -110,11 +109,11 @@ test( "form url test", () => {
 test( "qml util test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_QML, "text/xml");
   expect(util.isObject(xml)).toBeTrue();
-  let eventArray = xml.getElementsByTagName("event");
+  let eventArray = Array.from(xml.getElementsByTagName("event"));
   for (let eventEl of eventArray) {
     expect(util.isObject(eventEl)).toBeTrue();
 
-    let allMagEls = eventEl.getElementsByTagNameNS(quakeml.BED_NS, "magnitude");
+    let allMagEls = Array.from(eventEl.getElementsByTagNameNS(quakeml.BED_NS, "magnitude"));
     for (let magEl of allMagEls) {
       expect(util.isObject(magEl)).toBeTrue();
       let mag = quakeml.parseUtil._grabFirstElNS(magEl, quakeml.BED_NS, 'mag');
