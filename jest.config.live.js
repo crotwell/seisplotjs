@@ -1,6 +1,6 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-  testRegex: "(/testremotes/.*|(\\.|/)(livetest))\\.[jt]sx?$",
+  testRegex: "/testremotes/.*livetest\\.[jt]sx?$",
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
