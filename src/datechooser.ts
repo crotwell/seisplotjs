@@ -38,7 +38,7 @@ export class HourMinChooser extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
 
     // style
-    let style = document.createElement('style');
+    const style = document.createElement('style');
 
     style.textContent = `
       .hourminpopup {
@@ -89,7 +89,7 @@ export class HourMinChooser extends HTMLElement {
           mythis.time = mythis.time.set({hour: hour});
         }
       }
-    }
+    };
 
     const minDiv = popupDiv.appendChild(document.createElement('div'));
     const min_label = minDiv.appendChild(document.createElement('label'));
@@ -110,7 +110,7 @@ export class HourMinChooser extends HTMLElement {
           mythis.time = mythis.time.set({minute: min});
         }
       }
-    }
+    };
 
 
     const ntext = wrapper.appendChild(document.createElement('input'));
@@ -124,12 +124,12 @@ export class HourMinChooser extends HTMLElement {
         val = mythis.time.toFormat(HOUR_MIN_24);
         ntext.setAttribute("value", val);
       }
-      let match = hourMinRegEx.exec(val);
+      const match = hourMinRegEx.exec(val);
 
       if (match) {
         //ntext.style("background-color", null);
-        let h = match[1];
-        let m = match[2];
+        const h = match[1];
+        const m = match[2];
         const newTime = mythis.time.set({hour: parseInt(h), minute: parseInt(m)});
         if (newTime !== mythis.time) {
           mythis.time = newTime;
@@ -224,7 +224,7 @@ customElements.define('hour-min-chooser', HourMinChooser);
 /**
  * Date and Time chooser using native date chooser and the above
  * HourMinChooser for the hour and minute of time.
- * */
+ */
 export class DateTimeChooser extends HTMLElement {
 
   _time: DateTime;
@@ -263,8 +263,8 @@ export class DateTimeChooser extends HTMLElement {
       const value = dateField.value;
       console.log(`got change ${value}`);
 
-        let pikaValue = DateTime.fromISO(value);
-        let origTime = mythis._time;
+        const pikaValue = DateTime.fromISO(value);
+        const origTime = mythis._time;
         if (
           pikaValue && (
             origTime.year !== pikaValue.year ||
@@ -278,7 +278,7 @@ export class DateTimeChooser extends HTMLElement {
                           });
           mythis.timeModified();
         }
-    }
+    };
     shadow.appendChild(wrapper);
 
     this._internalSetTime(this.time);
@@ -340,25 +340,25 @@ export class TimeRangeChooser extends HTMLElement {
     super();
     this._mostRecentChanged = "start";
     this.updateCallback = (timerange: StartEndDuration) => {};
-    let endAttr = this.getAttribute("end");
+    const endAttr = this.getAttribute("end");
     let endTime: DateTime;
     if (endAttr) {
       endTime = isoToDateTime(endAttr);
     } else {
       endTime = DateTime.utc();
     }
-    let durAttr = this.getAttribute("duration");
+    const durAttr = this.getAttribute("duration");
     if (durAttr) {
       this.duration = Number.parseFloat(durAttr);
     } else {
       this.duration = 300;
     }
-    let startAttr = this.getAttribute("start");
+    const startAttr = this.getAttribute("start");
     let startTime: DateTime;
     if (startAttr) {
       startTime = isoToDateTime(startAttr);
       if (endAttr) {
-        let durInterval = Interval.fromDateTimes(startTime, endTime);
+        const durInterval = Interval.fromDateTimes(startTime, endTime);
         this.duration = durInterval.length("seconds");
       } else {
         endTime = startTime.plus(Duration.fromMillis(1000*this.duration));

@@ -21,7 +21,7 @@ import {DateTime} from "luxon";
 /** xml namespace for stationxml */
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
 export const COUNT_UNIT_NAME = "count";
-export let FIX_INVALID_STAXML: boolean = true;
+export const FIX_INVALID_STAXML = true;
 export const INVALID_NUMBER = -99999;
 export const FAKE_START_DATE = DateTime.fromISO("1900-01-01T00:00:00Z");
 // StationXML classes
@@ -166,7 +166,7 @@ export class Station {
     return this.timeRange.contains(d);
   }
 
-  codes(sep: string = "."): string {
+  codes(sep = "."): string {
     return this.network.codes() + sep + this.stationCode;
   }
 }
@@ -243,7 +243,7 @@ export class Channel {
       source = this.channelCode.charAt(1);
       subsource = this.channelCode.charAt(2);
     } else {
-      let items = this.channelCode.split(sep);
+      const items = this.channelCode.split(sep);
       band = items[0];
       source = items[1];
       subsource = items[2];
@@ -347,7 +347,7 @@ export class Channel {
    * @param sep separator, defaults to dot '.'
    * @returns net.sta.loc.chan
    */
-  codes(sep: string = "."): string {
+  codes(sep = "."): string {
     return (
       this.station.codes(sep) + sep + this.locationCode + sep + this.channelCode
     );
@@ -517,16 +517,16 @@ export class Gain {
  * @returns an Array of Network objects.
  */
 export function parseStationXml(rawXml: Document): Array<Network> {
-  let top = rawXml.documentElement;
+  const top = rawXml.documentElement;
 
   if (!top) {
     throw new Error("No documentElement in XML");
   }
 
-  let netArray = Array.from(top.getElementsByTagNameNS(STAML_NS, "Network"));
-  let out = [];
+  const netArray = Array.from(top.getElementsByTagNameNS(STAML_NS, "Network"));
+  const out = [];
 
-  for (let n of netArray) {
+  for (const n of netArray) {
     out.push(convertToNetwork(n));
   }
 
@@ -545,7 +545,7 @@ export function convertToNetwork(xml: Element): Network {
   try {
     netCode = _requireAttribute(xml, "code");
 
-    let out = new Network(netCode);
+    const out = new Network(netCode);
     out.startDate = _requireAttribute(xml, "startDate");
 
     const rs = _grabAttribute(xml, "restrictedStatus");
@@ -564,16 +564,16 @@ export function convertToNetwork(xml: Element): Network {
       out.endDate = _grabAttribute(xml, "endDate");
     }
 
-    let totSta = xml.getElementsByTagNameNS(STAML_NS, "TotalNumberStations");
+    const totSta = xml.getElementsByTagNameNS(STAML_NS, "TotalNumberStations");
 
     if (totSta && totSta.length > 0) {
       out.totalNumberStations = _grabFirstElInt(xml, "TotalNumberStations");
     }
 
-    let staArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Station"));
-    let stations = [];
+    const staArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Station"));
+    const stations = [];
 
-    for (let s of staArray) {
+    for (const s of staArray) {
       stations.push(convertToStation(out, s));
     }
 
@@ -601,7 +601,7 @@ export function convertToStation(network: Network, xml: Element): Station {
       throw new Error("station code missing in station!");
     }
 
-    let out = new Station(network, staCode);
+    const out = new Station(network, staCode);
     out.startDate = _requireAttribute(xml, "startDate");
 
     const rs = _grabAttribute(xml, "restrictedStatus");
@@ -640,10 +640,10 @@ export function convertToStation(network: Network, xml: Element): Station {
       out.endDate = _grabAttribute(xml, "endDate");
     }
 
-    let chanArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Channel"));
-    let channels = [];
+    const chanArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Channel"));
+    const channels = [];
 
-    for (let c of chanArray) {
+    for (const c of chanArray) {
       channels.push(convertToChannel(out, c));
     }
 
@@ -664,7 +664,7 @@ export function convertToStation(network: Network, xml: Element): Station {
 export function convertToChannel(station: Station, xml: Element): Channel {
   let locCode: string | null = ""; // so can use in rethrow exception
 
-  let chanCode = "";
+  const chanCode = "";
 
   try {
     locCode = _grabAttribute(xml, "locationCode");
@@ -673,9 +673,9 @@ export function convertToChannel(station: Station, xml: Element): Channel {
       locCode = "";
     }
 
-    let chanCode = _requireAttribute(xml, "code");
+    const chanCode = _requireAttribute(xml, "code");
 
-    let out = new Channel(station, chanCode, locCode);
+    const out = new Channel(station, chanCode, locCode);
     out.startDate = checkStringOrDate(_requireAttribute(xml, "startDate"));
 
     const rs = _grabAttribute(xml, "restrictedStatus");
@@ -760,7 +760,7 @@ export function convertToChannel(station: Station, xml: Element): Channel {
       }
     }
 
-    let responseXml = xml.getElementsByTagNameNS(STAML_NS, "Response");
+    const responseXml = xml.getElementsByTagNameNS(STAML_NS, "Response");
 
     if (responseXml && responseXml.length > 0) {
       const r = responseXml.item(0);
@@ -776,7 +776,7 @@ export function convertToChannel(station: Station, xml: Element): Channel {
   }
 }
 export function convertToEquipment(xml: Element): Equipment {
-  let out = new Equipment();
+  const out = new Equipment();
   let val;
   val = _grabFirstElText(xml, "Type");
 
@@ -826,10 +826,10 @@ export function convertToEquipment(xml: Element): Equipment {
     out.removalDate = checkStringOrDate(val);
   }
 
-  let calibXml = Array.from(xml.getElementsByTagNameNS(STAML_NS, "CalibrationDate"));
+  const calibXml = Array.from(xml.getElementsByTagNameNS(STAML_NS, "CalibrationDate"));
   out.calibrationDateList = [];
 
-  for (let cal of calibXml) {
+  for (const cal of calibXml) {
     if (isDef(cal.textContent)) {
       const d = checkStringOrDate(cal.textContent);
       if (isDef(d)) {out.calibrationDateList.push(d);}
@@ -847,7 +847,7 @@ export function convertToEquipment(xml: Element): Equipment {
  */
 export function convertToResponse(responseXml: Element): Response {
   let out = new Response();
-  let inst = responseXml.getElementsByTagNameNS(
+  const inst = responseXml.getElementsByTagNameNS(
     STAML_NS,
     "InstrumentSensitivity",
   );
@@ -866,10 +866,10 @@ export function convertToResponse(responseXml: Element): Response {
     out = new Response();
   }
 
-  let xmlStages = responseXml.getElementsByTagNameNS(STAML_NS, "Stage");
+  const xmlStages = responseXml.getElementsByTagNameNS(STAML_NS, "Stage");
 
   if (xmlStages && xmlStages.length > 0) {
-    let jsStages = Array.from(xmlStages).map(function (stageXml) {
+    const jsStages = Array.from(xmlStages).map(function (stageXml) {
       return convertToStage(stageXml);
     });
     out.stages = jsStages;
@@ -887,11 +887,11 @@ export function convertToResponse(responseXml: Element): Response {
 export function convertToInstrumentSensitivity(
   xml: Element,
 ): InstrumentSensitivity {
-  let sensitivity = _grabFirstElFloat(xml, "Value");
+  const sensitivity = _grabFirstElFloat(xml, "Value");
 
-  let frequency = _grabFirstElFloat(xml, "Frequency");
+  const frequency = _grabFirstElFloat(xml, "Frequency");
 
-  let inputUnits = _grabFirstElText(_grabFirstEl(xml, "InputUnits"), "Name");
+  const inputUnits = _grabFirstElText(_grabFirstEl(xml, "InputUnits"), "Name");
 
   let outputUnits = _grabFirstElText(_grabFirstEl(xml, "OutputUnits"), "Name");
 
@@ -928,7 +928,7 @@ export function convertToInstrumentSensitivity(
  * @returns Stage instance
  */
 export function convertToStage(stageXml: Element): Stage {
-  let subEl = stageXml.firstElementChild;
+  const subEl = stageXml.firstElementChild;
   let filter: AbstractFilterType | null = null;
 
   if (!subEl) {
@@ -941,12 +941,12 @@ export function convertToStage(stageXml: Element): Stage {
     // fix the lack of units after all stages are converted.
   } else {
     // shoudl be a filter of some kind, check for units
-    let inputUnits = _grabFirstElText(
+    const inputUnits = _grabFirstElText(
       _grabFirstEl(stageXml, "InputUnits"),
       "Name",
     );
 
-    let outputUnits = _grabFirstElText(
+    const outputUnits = _grabFirstElText(
       _grabFirstEl(stageXml, "OutputUnits"),
       "Name",
     );
@@ -981,12 +981,12 @@ export function convertToStage(stageXml: Element): Stage {
         pzFilter.normalizationFrequency = nfr;
       }
 
-      let zeros = Array.from(
+      const zeros = Array.from(
         stageXml.getElementsByTagNameNS(STAML_NS, "Zero"),
       ).map(function (zeroEl) {
         return extractComplex(zeroEl);
       });
-      let poles = Array.from(
+      const poles = Array.from(
         stageXml.getElementsByTagNameNS(STAML_NS, "Pole"),
       ).map(function (poleEl) {
         return extractComplex(poleEl);
@@ -995,7 +995,7 @@ export function convertToStage(stageXml: Element): Stage {
       pzFilter.poles = poles;
       filter = pzFilter;
     } else if (subEl.localName === "Coefficients") {
-      let coeffXml = subEl;
+      const coeffXml = subEl;
       const cFilter = new CoefficientsFilter(inputUnits, outputUnits);
 
       const cft = _grabFirstElText(coeffXml, "CfTransferFunctionType");
@@ -1018,7 +1018,7 @@ export function convertToStage(stageXml: Element): Stage {
     } else if (subEl.localName === "ResponseList") {
       throw new Error("ResponseList not supported: ");
     } else if (subEl.localName === "FIR") {
-      let firXml = subEl;
+      const firXml = subEl;
       const firFilter = new FIR(inputUnits, outputUnits);
 
       const s = _grabFirstElText(firXml, "Symmetry");
@@ -1043,7 +1043,7 @@ export function convertToStage(stageXml: Element): Stage {
 
     if (filter) {
       // add description and name if it was there
-      let description = _grabFirstElText(subEl, "Description");
+      const description = _grabFirstElText(subEl, "Description");
 
       if (isNonEmptyStringArg(description)) {
         filter.description = description;
@@ -1059,7 +1059,7 @@ export function convertToStage(stageXml: Element): Stage {
     }
   }
 
-  let decimationXml = _grabFirstEl(stageXml, "Decimation");
+  const decimationXml = _grabFirstEl(stageXml, "Decimation");
 
   let decimation: Decimation | null = null;
 
@@ -1067,7 +1067,7 @@ export function convertToStage(stageXml: Element): Stage {
     decimation = convertToDecimation(decimationXml);
   }
 
-  let gainXml = _grabFirstEl(stageXml, "StageGain");
+  const gainXml = _grabFirstEl(stageXml, "StageGain");
 
   let gain = null;
 
@@ -1080,7 +1080,7 @@ export function convertToStage(stageXml: Element): Stage {
     );
   }
 
-  let out = new Stage(filter, decimation, gain);
+  const out = new Stage(filter, decimation, gain);
   return out;
 }
 
@@ -1155,8 +1155,8 @@ export function extractComplex(el: Element): OregonDSPTop.com.oregondsp.signalPr
 export function* allStations(
   networks: Array<Network>,
 ): Generator<Station, void, any> {
-  for (let n of networks) {
-    for (let s of n.stations) {
+  for (const n of networks) {
+    for (const s of n.stations) {
       yield s;
     }
   }
@@ -1172,8 +1172,8 @@ export function* allStations(
 export function* allChannels(
   networks: Array<Network>,
 ): Generator<Channel, void, any> {
-  for (let s of allStations(networks)) {
-    for (let c of s.channels) {
+  for (const s of allStations(networks)) {
+    for (const c of s.channels) {
       yield c;
     }
   }
@@ -1202,9 +1202,9 @@ export function* findChannels(
   const locRE = new RegExp(`^${locCode}$`);
   const chanRE = new RegExp(`^${chanCode}$`);
 
-  for (let n of networks.filter(n => netRE.test(n.networkCode))) {
-    for (let s of n.stations.filter(s => staRE.test(s.stationCode))) {
-      for (let c of s.channels.filter(
+  for (const n of networks.filter(n => netRE.test(n.networkCode))) {
+    for (const s of n.stations.filter(s => staRE.test(s.stationCode))) {
+      for (const c of s.channels.filter(
         c => locRE.test(c.locationCode) && chanRE.test(c.channelCode),
       )) {
         yield c;
@@ -1222,7 +1222,7 @@ const _grabFirstEl = function (
   let out = null;
 
   if (xml instanceof Element) {
-    let el = xml.getElementsByTagName(tagName);
+    const el = xml.getElementsByTagName(tagName);
 
     if (isObject(el) && el.length > 0) {
       const e = el.item(0);
@@ -1242,7 +1242,7 @@ const _grabFirstElText = function _grabFirstElText(
 ): string | null {
   let out = null;
 
-  let el = _grabFirstEl(xml, tagName);
+  const el = _grabFirstEl(xml, tagName);
 
   if (el instanceof Element) {
     out = el.textContent;
@@ -1257,7 +1257,7 @@ const _grabFirstElFloat = function _grabFirstElFloat(
 ): number | null {
   let out = null;
 
-  let elText = _grabFirstElText(xml, tagName);
+  const elText = _grabFirstElText(xml, tagName);
 
   if (isStringArg(elText)) {
     out = parseFloat(elText);
@@ -1272,7 +1272,7 @@ const _grabFirstElInt = function _grabFirstElInt(
 ): number | null {
   let out = null;
 
-  let elText = _grabFirstElText(xml, tagName);
+  const elText = _grabFirstElText(xml, tagName);
 
   if (isStringArg(elText)) {
     out = parseInt(elText);
@@ -1288,7 +1288,7 @@ const _grabAttribute = function _grabAttribute(
   let out = null;
 
   if (xml instanceof Element) {
-    let a = xml.getAttribute(tagName);
+    const a = xml.getAttribute(tagName);
 
     if (isStringArg(a)) {
       out = a;
@@ -1302,7 +1302,7 @@ const _requireAttribute = function _requireAttribute(
   xml: Element | null | void,
   tagName: string,
 ): string {
-  let out = _grabAttribute(xml, tagName);
+  const out = _grabAttribute(xml, tagName);
   if (typeof out !== "string") {
     throw new Error(`Attribute ${tagName} not found.`);
   }
@@ -1317,7 +1317,7 @@ const _grabAttributeNS = function (
   let out = null;
 
   if (xml instanceof Element) {
-    let a = xml.getAttributeNS(namespace, tagName);
+    const a = xml.getAttributeNS(namespace, tagName);
 
     if (isStringArg(a)) {
       out = a;

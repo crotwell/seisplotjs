@@ -70,7 +70,7 @@ export class Seismogram {
       throw new Error("Seismogram is empty");
     }
 
-    let f = this._segmentArray[0];
+    const f = this._segmentArray[0];
 
     this._segmentArray.forEach((s, i) => {
       if (!s) {
@@ -112,19 +112,19 @@ export class Seismogram {
   }
 
   findStartEnd(): [DateTime, DateTime] {
-    let allStart = this._segmentArray.map(seis => {
+    const allStart = this._segmentArray.map(seis => {
       return seis.startTime;
     });
 
-    let startTime = allStart.reduce((acc, cur)=> {
+    const startTime = allStart.reduce((acc, cur)=> {
       return acc<cur ? acc : cur;
     } );
 
-    let allEnd = this._segmentArray.map(seis => {
+    const allEnd = this._segmentArray.map(seis => {
       return seis.endTime;
     });
 
-    let endTime = allEnd.reduce((acc, cur)=> {
+    const endTime = allEnd.reduce((acc, cur)=> {
       return acc>cur ? acc : cur;
     } );
     return [startTime, endTime];
@@ -135,7 +135,7 @@ export class Seismogram {
       throw new Error("No data");
     }
 
-    for (let s of this._segmentArray) {
+    for (const s of this._segmentArray) {
       minMaxAccumulator = s.findMinMax(minMaxAccumulator);
     }
 
@@ -153,9 +153,9 @@ export class Seismogram {
    */
   mean(): number {
     let meanVal = 0;
-    let npts = this.numPoints;
+    const npts = this.numPoints;
 
-    for (let s of this.segments) {
+    for (const s of this.segments) {
       meanVal += meanOfSlice(s.y, s.y.length) * s.numPoints;
     }
 
@@ -295,7 +295,7 @@ export class Seismogram {
     let out = this.trim(timeRange);
 
     if (out && out._segmentArray) {
-      let cutSeisArray = this._segmentArray
+      const cutSeisArray = this._segmentArray
         .map(seg => seg.cut(timeRange))
         .filter(isDef);
 
@@ -326,7 +326,7 @@ export class Seismogram {
     let out = null;
 
     if (this._segmentArray) {
-      let trimSeisArray = this._segmentArray
+      const trimSeisArray = this._segmentArray
         .filter(function (d) {
           return d.endTime >= timeRange.startTime;
         })
@@ -348,9 +348,9 @@ export class Seismogram {
       let out: Array<SeismogramSegment> = [];
 
       while (breakStart < this.endTime) {
-        let breakWindow = new StartEndDuration(breakStart, null, duration);
+        const breakWindow = new StartEndDuration(breakStart, null, duration);
 
-        let cutSeisArray: Array<SeismogramSegment> =
+        const cutSeisArray: Array<SeismogramSegment> =
           this._segmentArray.map(seg => seg.cut(breakWindow)).filter(isDef);
 
         out = out.concat(cutSeisArray);
@@ -414,7 +414,7 @@ export class Seismogram {
     let i = 0;
 
     this._segmentArray.forEach(seg => {
-      for (let v of seg.y) {
+      for (const v of seg.y) {
         outArray[i] = v;
         i++;
       }
@@ -451,14 +451,14 @@ export class Seismogram {
   }
 
   clone(): Seismogram {
-    let cloned = this._segmentArray.map(s => s.clone());
+    const cloned = this._segmentArray.map(s => s.clone());
 
     return new Seismogram(cloned);
   }
 
   cloneWithNewData(newY: Int32Array | Float32Array | Float64Array): Seismogram {
     if (newY && newY.length > 0) {
-      let seg = this._segmentArray[0].cloneWithNewData(newY);
+      const seg = this._segmentArray[0].cloneWithNewData(newY);
 
       return new Seismogram([seg]);
     } else {
@@ -795,7 +795,7 @@ export class SeismogramDisplayData {
         source = this.channelCode.charAt(1);
         subsource = this.channelCode.charAt(2);
       } else {
-        let items = this.channelCode.split(sep);
+        const items = this.channelCode.split(sep);
         band = items[0];
         source = items[1];
         subsource = items[2];
@@ -837,7 +837,7 @@ export class SeismogramDisplayData {
    * @param sep separator, defaults to '.'
    * @returns nslc codes separated by sep
    */
-  codes(sep: string = "."): string {
+  codes(sep = "."): string {
     if (this.channel !== null) {
       return this.channel.codes();
     } else {
@@ -896,8 +896,8 @@ export class SeismogramDisplayData {
 
     if (this.quake && this.traveltimeList) {
       const q = this.quake;
-      let matchArrival = this.traveltimeList.find(ttArrival => {
-        let match = intPhaseRegExp.exec(ttArrival.phase);
+      const matchArrival = this.traveltimeList.find(ttArrival => {
+        const match = intPhaseRegExp.exec(ttArrival.phase);
         // make sure regexp matches whole string, not just partial
         return match !== null && match[0] === ttArrival.phase;
       });
@@ -980,10 +980,10 @@ export class SeismogramDisplayData {
   }
 
   calcStats(): SeismogramDisplayStats {
-    let stats = new SeismogramDisplayStats();
+    const stats = new SeismogramDisplayStats();
 
     if (this.seismogram) {
-      let minMax = this.seismogram.findMinMax();
+      const minMax = this.seismogram.findMinMax();
       stats.min = minMax[0];
       stats.max = minMax[1];
       stats.mean = this.seismogram.mean();
@@ -1037,7 +1037,7 @@ export class SeismogramDisplayData {
   }
 
   cloneWithNewSeismogram(seis: Seismogram | null): SeismogramDisplayData {
-    let out = new SeismogramDisplayData(this.timeRange);
+    const out = new SeismogramDisplayData(this.timeRange);
     Object.getOwnPropertyNames(this).forEach(name => {
       if (name === "_seismogram") {
         out._seismogram = seis; // @ts-ignore
@@ -1100,11 +1100,11 @@ export function findStartEnd(
     // just use the default???
     return new StartEndDuration(null, null, 300);
   }
-  let startTime = sddList.reduce((acc, sdd) => {
+  const startTime = sddList.reduce((acc, sdd) => {
     return acc < sdd.timeRange.startTime ? acc : sdd.timeRange.startTime;
   }, sddList[0].timeRange.startTime);
 
-  let endTime = sddList.reduce((acc, sdd) => {
+  const endTime = sddList.reduce((acc, sdd) => {
     return acc > sdd.timeRange.endTime ? acc : sdd.timeRange.endTime;
   }, sddList[0].timeRange.endTime);
   return new StartEndDuration(startTime, endTime);
@@ -1141,9 +1141,9 @@ export function findMaxDurationOfType(
 }
 export function findMinMax(
   sddList: Array<SeismogramDisplayData>,
-  doGain: boolean = false
+  doGain = false
 ): Array<number> {
-  let min = sddList
+  const min = sddList
     .map(sdd => {
       let sens = 1.0;
       if (doGain && sdd.sensitivity) {
@@ -1154,7 +1154,7 @@ export function findMinMax(
     .reduce(function (p, v) {
       return p < v ? p : v;
     });
-  let max = sddList
+  const max = sddList
     .map(sdd => {
     let sens = 1.0;
     if (doGain && sdd.sensitivity) {
@@ -1172,10 +1172,10 @@ const initial_maxAmp = -1 * initial_minAmp;
 export function findMinMaxOverTimeRange(
   sddList: Array<SeismogramDisplayData>,
   timeRange: StartEndDuration,
-  doGain: boolean = false
+  doGain = false
 ): Array<number> {
   if (sddList.length === 0) { return [-1, 1]; }
-  let minMaxArr = sddList.map(sdd => {
+  const minMaxArr = sddList.map(sdd => {
     if (sdd.seismogram) {
       const cutSeis = sdd.seismogram.cut(timeRange);
 
@@ -1191,14 +1191,14 @@ export function findMinMaxOverTimeRange(
 
     return [initial_minAmp, initial_maxAmp];
   });
-  let min = minMaxArr
+  const min = minMaxArr
     .map(mm => {
       return mm[0];
     })
     .reduce(function (p, v) {
       return p < v ? p : v;
     });
-  let max = minMaxArr
+  const max = minMaxArr
     .map(mm => {
       return mm[1];
     })
@@ -1211,23 +1211,23 @@ export function findMinMaxOverRelativeTimeRange(
   sddList: Array<SeismogramDisplayData>,
   startOffset: Duration,
   duration: Duration,
-  doGain: boolean = false
+  doGain = false
 ): Array<number> {
   if (sddList.length === 0) {
     return [0,0];
   }
-  let minMaxArr = sddList.map(sdd => {
+  const minMaxArr = sddList.map(sdd => {
     const timeRange = sdd.relativeTimeWindow(startOffset, duration);
     return findMinMaxOverTimeRange([sdd], timeRange, doGain);
   });
-  let min = minMaxArr
+  const min = minMaxArr
     .map(mm => {
       return mm[0];
     })
     .reduce(function (p, v) {
       return p < v ? p : v;
     });
-  let max = minMaxArr
+  const max = minMaxArr
     .map(mm => {
       return mm[1];
     })
@@ -1254,7 +1254,7 @@ export function findStartEndOfSeismograms(
   }
 
   if (Array.isArray(data)) {
-    for (let s of data) {
+    for (const s of data) {
       if (s.startTime <= out.startTime) {
         out = new StartEndDuration(s.startTime, out.endTime);
       }
@@ -1273,7 +1273,7 @@ export function findMinMaxOfSeismograms(
   data: Array<Seismogram>,
   minMaxAccumulator?: Array<number>,
 ): Array<number> {
-  for (let s of data) {
+  for (const s of data) {
     minMaxAccumulator = s.findMinMax(minMaxAccumulator);
   }
 

@@ -187,7 +187,7 @@ export class SeismogramLoader {
   }
 
   load(): Promise<[Array<Network>, Array<Quake>, Array<SeismogramDisplayData>]> {
-    let fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
+    const fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
 
     if (!this.stationQuery.isSomeParameterSet()) {
       throw new Error(
@@ -224,13 +224,13 @@ export class SeismogramLoader {
       .join(",");
     this.traveltimeList = RSVP.all([this._networkList, this._quakeList]).then(
       ([netList, quakeList]) => {
-        let ttpromiseList: Array<Promise<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> = [];
+        const ttpromiseList: Array<Promise<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> = [];
 
-        for (let q of quakeList) {
-          for (let s of allStations(netList)) {
+        for (const q of quakeList) {
+          for (const s of allStations(netList)) {
             if (s.timeRange.contains(q.time)) {
-              let taupQuery = new TraveltimeQuery();
-              let daz = distaz(
+              const taupQuery = new TraveltimeQuery();
+              const daz = distaz(
                 s.latitude,
                 s.longitude,
                 q.latitude,
@@ -250,25 +250,25 @@ export class SeismogramLoader {
       },
     );
     this._sddList = this.traveltimeList.then(ttpromiseList => {
-      let seismogramDataList = [];
+      const seismogramDataList = [];
 
-      for (let ttarr of ttpromiseList) {
-        let station = ttarr[0];
-        let quake = ttarr[1];
-        let ttjson = ttarr[2];
-        let distaz = ttarr[3];
+      for (const ttarr of ttpromiseList) {
+        const station = ttarr[0];
+        const quake = ttarr[1];
+        const ttjson = ttarr[2];
+        const distaz = ttarr[3];
         // find earliest start and end arrival
         let startArrival = null;
         let endArrival = null;
 
-        for (let pname of this.startPhaseList) {
+        for (const pname of this.startPhaseList) {
           if (
             pname === "origin" &&
             (startArrival === null || startArrival.time > 0)
           ) {
             startArrival = createOriginArrival(distaz.distanceDeg);
           } else {
-            for (let a of ttjson.arrivals) {
+            for (const a of ttjson.arrivals) {
               if (
                 a.phase === pname &&
                 (startArrival===null || startArrival.time > a.time)
@@ -279,7 +279,7 @@ export class SeismogramLoader {
           }
         }
 
-        for (let pname of this.endPhaseList) {
+        for (const pname of this.endPhaseList) {
           // weird, but might as well allow origin to be the end phase
           if (
             pname === "origin" &&
@@ -287,7 +287,7 @@ export class SeismogramLoader {
           ) {
             endArrival = createOriginArrival(distaz.distanceDeg);
           } else {
-            for (let a of ttjson.arrivals) {
+            for (const a of ttjson.arrivals) {
               if (
                 a.phase === pname &&
                 (endArrival===null || endArrival.time < a.time)
@@ -299,21 +299,21 @@ export class SeismogramLoader {
         }
 
         if (isDef(startArrival) && isDef(endArrival)) {
-          let startTime = quake.time
+          const startTime = quake.time
             .plus(Duration.fromMillis(1000*startArrival.time)) // seconds
             .plus(this.startOffset);
-          let endTime = quake.time
+          const endTime = quake.time
             .plus(Duration.fromMillis(1000*endArrival.time)) // seconds
             .plus(this.endOffset);
-          let timeRange = new StartEndDuration(startTime, endTime);
-          let phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
+          const timeRange = new StartEndDuration(startTime, endTime);
+          const phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
 
           if (this.markOrigin) {
             phaseMarkers.push(createMarkerForOriginTime(quake));
           }
 
-          for (let chan of station.channels) {
-            let sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
+          for (const chan of station.channels) {
+            const sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
               chan,
               timeRange,
             );
@@ -333,7 +333,7 @@ export class SeismogramLoader {
         );
       } else {
         // use IrisFedCat
-        let fedcatDS = new FedCatalogQuery();
+        const fedcatDS = new FedCatalogQuery();
         sddListPromise = fedcatDS.postQuerySeismograms(seismogramDataList);
       }
 

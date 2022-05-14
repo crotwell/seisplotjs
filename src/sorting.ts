@@ -35,37 +35,37 @@ export function sort(seisData: Array<SeismogramDisplayData>, key: string) {
     } else {
       return 0;
     }
-  })
+  });
 }
 
 export function createSortValueFunction(key: string): (sdd: SeismogramDisplayData) => any {
   if (key === SORT_DISTANCE) {
     return (sdd: SeismogramDisplayData) => {
-      let out = Number.MAX_VALUE;;
+      let out = Number.MAX_VALUE;
       if (sdd.hasQuake && sdd.hasChannel) {
         const distaz = sdd.distaz;
         out = distaz ? Math.min(Number.MAX_VALUE,distaz.delta) : Number.MAX_VALUE;
       }
       return out;
-    }
+    };
   } else if (key === SORT_AZIMUTH) {
     return (sdd: SeismogramDisplayData) => {
-      let out = Number.MAX_VALUE;;
+      let out = Number.MAX_VALUE;
       if (sdd.hasQuake && sdd.hasChannel) {
         const distaz = sdd.distaz;
         out = distaz ? Math.min(Number.MAX_VALUE,distaz.az) : Number.MAX_VALUE;
       }
       return out;
-    }
+    };
   } else if (key === SORT_BACKAZIMUTH) {
     return (sdd: SeismogramDisplayData) => {
-      let out = Number.MAX_VALUE;;
+      let out = Number.MAX_VALUE;
       if (sdd.hasQuake && sdd.hasChannel) {
         const distaz = sdd.distaz;
         out = distaz ? Math.min(Number.MAX_VALUE,distaz.baz) : Number.MAX_VALUE;
       }
       return out;
-    }
+    };
   } else if (key === SORT_ALPHABETICAL) {
     return (sdd: SeismogramDisplayData) => sdd.sourceId;
   } else if (key === SORT_STARTTIME) {

@@ -18,7 +18,7 @@ import {
 import type {MarkerType} from "./seismogram";
 import type {MarginType} from "./seismographconfig";
 import type {TraveltimeJsonType} from "./traveltime";
-import type {ScaleLinear, ScaleTime} from "d3-scale"
+import type {ScaleLinear, ScaleTime} from "d3-scale";
 import {
   SeismogramDisplayData,
   findMaxDuration,
@@ -261,7 +261,7 @@ export class Seismograph extends SeisPlotElement {
       maxDuration = findMaxDuration(seisData);
     }
 
-    this.myTimeScalable = new SeismographTimeScalable(this, alignmentTimeOffset, maxDuration)
+    this.myTimeScalable = new SeismographTimeScalable(this, alignmentTimeOffset, maxDuration);
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
@@ -276,7 +276,7 @@ export class Seismograph extends SeisPlotElement {
     }
 
 
-    let mythis = this;
+    const mythis = this;
     this.g = this.svg
       .append("g")
       .classed("marginTransform", true)
@@ -292,7 +292,7 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .classed("allseismograms", true)
       .classed(AUTO_COLOR_SELECTOR, true);
-    let z = this.svg.call(
+    const z = this.svg.call(
       d3.zoom().on("zoom", function (e) {
         mythis.zoomed(e);
       }),
@@ -334,7 +334,7 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.unlink(this.myAmpScalable);
     }
-    super.seismographConfig = seismographConfig
+    super.seismographConfig = seismographConfig;
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
     }
@@ -369,7 +369,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   checkResize(): boolean {
-    let rect = this.svg.node().getBoundingClientRect();
+    const rect = this.svg.node().getBoundingClientRect();
 
     if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
       return true;
@@ -390,7 +390,7 @@ export class Seismograph extends SeisPlotElement {
   }
   draw(): void {
     if ( ! this.isConnected) { return; }
-    let rect = this.svg.node().getBoundingClientRect();
+    const rect = this.svg.node().getBoundingClientRect();
 
     if (
       rect.width === 0 ||
@@ -465,13 +465,13 @@ export class Seismograph extends SeisPlotElement {
 
   printSizes(): void {
     let out = "";
-    let rect = this.svg.node().getBoundingClientRect();
+    const rect = this.svg.node().getBoundingClientRect();
     out += "svg rect.height " + rect.height + "\n";
     out += "svg rect.width " + rect.width + "\n";
-    let grect = this.getBoundingClientRect();
+    const grect = this.getBoundingClientRect();
     out += "parent rect.height " + grect.height + "\n";
     out += "parent rect.width " + grect.width + "\n";
-    let crect = this.canvas.node().getBoundingClientRect();
+    const crect = this.canvas.node().getBoundingClientRect();
     out += "c rect.height " + crect.height + "\n";
     out += "c rect.width " + crect.width + "\n";
     out += "c style.height " + this.canvas.style("height") + "\n";
@@ -524,11 +524,11 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
       context.lineWidth = this.seismographConfig.lineWidth * 2;
     }
-    console.log(`Seismograph amp scale: ${this.plotId} ac: ${this.seismographConfig.linkedAmplitudeScale?.constructor.name} ${this.seismographConfig.linkedAmplitudeScale?._scaleId} hw: ${this.myAmpScalable?.drawHalfWidth}`)
-    console.log(`           time scale: ${this?.myTimeScalable.drawAlignmentTimeOffset}`)
+    console.log(`Seismograph amp scale: ${this.plotId} ac: ${this.seismographConfig.linkedAmplitudeScale?.constructor.name} ${this.seismographConfig.linkedAmplitudeScale?._scaleId} hw: ${this.myAmpScalable?.drawHalfWidth}`);
+    console.log(`           time scale: ${this?.myTimeScalable.drawAlignmentTimeOffset}`);
     const sddList = this._seisDataList.concat(this._debugAlignmentSeisData);
     sddList.forEach((sdd, sddIndex) => {
-      let ti = sddIndex;
+      const ti = sddIndex;
       const xscaleForSDD: d3.ScaleTime<number, number, never> = this.timeScaleForSeisDisplayData(sdd);
       const yscaleForSDD = this.ampScaleForSeisDisplayData(sdd);
       const secondsPerPixel =
@@ -617,7 +617,7 @@ export class Seismograph extends SeisPlotElement {
   calcScaleAndZoom(): void {
     this.rescaleYAxis();
     // check if clip exists, wonky d3 convention
-    let container = this.svg
+    const container = this.svg
       .select("defs")
       .select("#" + CLIP_PREFIX + this.plotId);
 
@@ -628,7 +628,7 @@ export class Seismograph extends SeisPlotElement {
         .attr("id", CLIP_PREFIX + this.plotId);
     }
 
-    let clip = this.svg.select("defs").select("#" + CLIP_PREFIX + this.plotId);
+    const clip = this.svg.select("defs").select("#" + CLIP_PREFIX + this.plotId);
     clip.selectAll("rect").remove();
     clip.append("rect").attr("width", this.width).attr("height", this.height);
   }
@@ -638,7 +638,7 @@ export class Seismograph extends SeisPlotElement {
       ampScale.range([this.height, 0]);
       if (this.seismographConfig.linkedAmplitudeScale) {
         const halfWidth = this.myAmpScalable.drawHalfWidth;
-console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
+console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
         let gainOffset = 0;
         if (this.seismographConfig.doRMean) {
           gainOffset = sdd.mean;
@@ -649,8 +649,8 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
         }
         // if doGain, halfWidth is in real world units, so mul sensitivity to
         // get counts for drawing
-        let myMin = gainOffset - halfWidth*sensitivityVal;
-        let myMax = gainOffset + halfWidth*sensitivityVal;
+        const myMin = gainOffset - halfWidth*sensitivityVal;
+        const myMax = gainOffset + halfWidth*sensitivityVal;
         ampScale.domain([myMin, myMax]);
       } else if (this.seismographConfig.fixedAmplitudeScale) {
         ampScale.domain(this.seismographConfig.fixedAmplitudeScale);
@@ -662,7 +662,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
 
   timeScaleForSeisDisplayData(sdd: SeismogramDisplayData): ScaleTime<number, number, never> {
     let plotSed;
-    let sddXScale = d3.scaleUtc();
+    const sddXScale = d3.scaleUtc();
 
     if (this.seismographConfig.linkedTimeScale) {
       if (this.myTimeScalable.drawDuration.equals(ZERO_DURATION)) {
@@ -701,7 +701,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
     const subtraceJoin = traceJoin.selectAll("path").data((sdd: SeismogramDisplayData) => {
       const sddTimeScale = this.timeScaleForSeisDisplayData(sdd);
       const sddAmpScale = this.ampScaleForSeisDisplayData(sdd);
-      let segArr = sdd.seismogram ? sdd.seismogram.segments : [];
+      const segArr = sdd.seismogram ? sdd.seismogram.segments : [];
       return segArr.map(seg => {
         return {
           segment: seg,
@@ -727,9 +727,9 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
   }
 
   calcSecondsPerPixel(xScale: d3.ScaleTime<number, number, never>): number {
-    let domain = xScale.domain(); // rel time and absolute both milliseconds
+    const domain = xScale.domain(); // rel time and absolute both milliseconds
 
-    let range = xScale.range(); // pixels
+    const range = xScale.range(); // pixels
 
     return (
       (domain[1].getTime() - domain[0].getTime()) / 1000 / (range[1] - range[0])
@@ -737,9 +737,9 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
   }
 
   segmentDrawLine(seg: SeismogramSegment, timeScale: ScaleTime<number,number>, ampScale: ScaleLinear<number, number>): string|null {
-    let secondsPerPixel = this.calcSecondsPerPixel(timeScale);
-    let samplesPerPixel = seg.sampleRate * secondsPerPixel;
-    let lineFunc = d3
+    const secondsPerPixel = this.calcSecondsPerPixel(timeScale);
+    const samplesPerPixel = seg.sampleRate * secondsPerPixel;
+    const lineFunc = d3
       .line()
       .curve(d3.curveLinear)
       .x(function (d) {
@@ -772,12 +772,12 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
         seg._highlow.secondsPerPixel !== secondsPerPixel ||
         seg._highlow.xScaleDomain[1] !== timeScale.domain()[1]
       ) {
-        let highlow = [];
-        let y = seg.y;
-        let numHL = 2 * Math.ceil(y.length / samplesPerPixel);
+        const highlow = [];
+        const y = seg.y;
+        const numHL = 2 * Math.ceil(y.length / samplesPerPixel);
 
         for (let i = 0; i < numHL; i++) {
-          let startidx = i * samplesPerPixel;
+          const startidx = i * samplesPerPixel;
           let min = y[startidx];
           let max = y[startidx];
           for (let j=startidx; j<startidx+ samplesPerPixel&& j<y.length;j++) {
@@ -919,7 +919,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
   drawLeftRightAxis(): void {
     this.g.selectAll("g.axis--y").remove();
     this.g.selectAll("g.axis--y-right").remove();
-    let [yAxis, yAxisRight] = this.createLeftRightAxis();
+    const [yAxis, yAxisRight] = this.createLeftRightAxis();
     if (isDef(yAxis)) {
       this.g.append("g").attr("class", "axis axis--y").call(yAxis);
     }
@@ -958,8 +958,8 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
 
   rescaleYAxis(): void {
     if (!this.beforeFirstDraw) {
-      let delay = 500;
-      let mythis = this;
+      const delay = 500;
+      const mythis = this;
 
       if (this.throttleRescale) {
         clearTimeout(this.throttleRescale);
@@ -967,7 +967,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
 
       this.throttleRescale = setTimeout(function () {
 
-        let [yAxis, yAxisRight] = mythis.createLeftRightAxis();
+        const [yAxis, yAxisRight] = mythis.createLeftRightAxis();
         if (yAxis) {
           mythis.g
             .select(".axis--y")
@@ -1013,8 +1013,8 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
   }
 
   zoomed(e: any): void {
-    let t = e.transform;
-    console.log(`zoom: ${this.plotId}  ${t}`)
+    const t = e.transform;
+    console.log(`zoom: ${this.plotId}  ${t}`);
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTS = this.seismographConfig.linkedTimeScale;
@@ -1024,9 +1024,9 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
       const origXScale = d3.scaleLinear();
       origXScale.range([0, this.width]);
       origXScale.domain([origOffset, origOffset+origDuration]);
-      let xt = t.rescaleX(origXScale);
-      let startDelta = xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
-      let duration = xt.domain()[1] - xt.domain()[0];
+      const xt = t.rescaleX(origXScale);
+      const startDelta = xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
+      const duration = xt.domain()[1] - xt.domain()[0];
       linkedTS.zoom(
         Duration.fromMillis(startDelta*1000),
         Duration.fromMillis(duration*1000),
@@ -1037,7 +1037,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
   }
 
   redrawWithXScale(): void {
-    let mythis = this;
+    const mythis = this;
 
     if (!this.beforeFirstDraw) {
       this.g.select("g.allseismograms").selectAll("g.seismogram").remove();
@@ -1052,7 +1052,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
         .selectAll("g.marker")
         .attr("transform", function (mh: MarkerHolderType) {
           mh.xscale = mythis.timeScaleForSeisDisplayData(mh.sdd);
-          let textx = mh.xscale(mh.marker.time.toJSDate());
+          const textx = mh.xscale(mh.marker.time.toJSDate());
           return "translate(" + textx + "," + 0 + ")";
         });
       const axisScale = mythis.ampScaleForAxis();
@@ -1062,9 +1062,9 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
         .attr("transform", function () {
           // shift up by this.seismographConfig.markerTextOffset percentage
           const axisScale = mythis.ampScaleForAxis();
-          let maxY = axisScale.range()[0];
-          let deltaY = axisScale.range()[0] - axisScale.range()[1];
-          let texty = maxY - mythis.seismographConfig.markerTextOffset * deltaY;
+          const maxY = axisScale.range()[0];
+          const deltaY = axisScale.range()[0] - axisScale.range()[1];
+          const texty = maxY - mythis.seismographConfig.markerTextOffset * deltaY;
           return (
             "translate(" +
             0 +
@@ -1092,7 +1092,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
               axisScale.domain()[1],
           ] ]); // call the d3 function created by line with data
         });
-      let undrawnMarkers = this._seisDataList
+      const undrawnMarkers = this._seisDataList
         .reduce((acc, sdd) => {
           const sddXScale = this.timeScaleForSeisDisplayData(sdd);
           sdd.markerList.forEach(m =>
@@ -1120,7 +1120,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
 
   drawMarkers() {
     const axisScale = this.ampScaleForAxis();
-    let allMarkers: Array<MarkerHolderType> = this._seisDataList
+    const allMarkers: Array<MarkerHolderType> = this._seisDataList
       .reduce((acc: Array<MarkerHolderType>, sdd) => {
         const sddXScale = this.timeScaleForSeisDisplayData(sdd);
         sdd.markerList.forEach(m =>
@@ -1138,38 +1138,38 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
         return xpixel >= mh.xscale.range()[0] && xpixel <= mh.xscale.range()[1];
       });
     // marker overlay
-    let mythis = this;
-    let markerG = this.g.select("g.allmarkers");
+    const mythis = this;
+    const markerG = this.g.select("g.allmarkers");
     markerG.selectAll("g.marker").remove();
-    let labelSelection = markerG
+    const labelSelection = markerG
       .selectAll("g.marker")
       .data(allMarkers, function (mh: MarkerHolderType) {
         // key for data
         return `${mh.marker.name}_${mh.marker.time.toISO()}`;
       });
     labelSelection.exit().remove();
-    let radianTextAngle =
+    const radianTextAngle =
       (this.seismographConfig.markerTextAngle * Math.PI) / 180;
     labelSelection
       .enter()
       .append("g")
       .classed("marker", true) // translate so marker time is zero
       .attr("transform", function (mh: MarkerHolderType) {
-        let textx = mh.xscale(mh.marker.time.toJSDate());
+        const textx = mh.xscale(mh.marker.time.toJSDate());
         return "translate(" + textx + "," + 0 + ")";
       })
       .each(function (mh: MarkerHolderType) {
         // @ts-ignore
-        let drawG = d3.select(this);
+        const drawG = d3.select(this);
         drawG.classed(mh.marker.name, true).classed(mh.marker.type, true);
-        let innerTextG = drawG
+        const innerTextG = drawG
           .append("g")
           .attr("class", "markertext")
           .attr("transform", () => {
             // shift up by this.seismographConfig.markerTextOffset percentage
-            let maxY = axisScale.range()[0];
-            let deltaY = axisScale.range()[0] - axisScale.range()[1];
-            let texty =
+            const maxY = axisScale.range()[0];
+            const deltaY = axisScale.range()[0] - axisScale.range()[1];
+            const texty =
               maxY - mythis.seismographConfig.markerTextOffset * deltaY;
             return (
               "translate(" +
@@ -1188,7 +1188,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
             return mh.marker.name + " " + mh.marker.time.toISO();
           }
         });
-        let textSel = innerTextG.append("text");
+        const textSel = innerTextG.append("text");
 
         if (mh.marker.link && mh.marker.link.length > 0) {
           // if marker has link, make it clickable
@@ -1333,7 +1333,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
   }
 
   resizeNeeded() {
-    let myThis = this;
+    const myThis = this;
     this.throttle(function () {
       myThis.draw();
     }, 250);
@@ -1420,10 +1420,10 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`)
     } else {
 
       if (isDef(this.seismographConfig.linkedTimeScale)) {
-        console.log(`linkedTimeScale: ${this.seismographConfig.linkedTimeScale.constructor.name}`)
+        console.log(`linkedTimeScale: ${this.seismographConfig.linkedTimeScale.constructor.name}`);
         const linkedTimeScale = this.seismographConfig.linkedTimeScale;
-console.log(`calcTimeScaleDomain lts _dur=${linkedTimeScale._originalDuration}`)
-console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
+console.log(`calcTimeScaleDomain lts _dur=${linkedTimeScale._originalDuration}`);
+console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`);
         if (this._seisDataList.length !== 0 && linkedTimeScale.duration.toMillis()===0) {
           this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
         }
@@ -1475,7 +1475,7 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
     }
     const middle = (minMax[1]+minMax[0])/2;
     const halfWidth = (minMax[1]-minMax[0])/2;
-    console.log(`calcAmp: mid ${middle}  hw: ${halfWidth} sdd: ${this.seisData.length}`)
+    console.log(`calcAmp: mid ${middle}  hw: ${halfWidth} sdd: ${this.seisData.length}`);
     return [middle, halfWidth];
   }
 
@@ -1488,7 +1488,7 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       if (this.myAmpScalable.middle !== oldMiddle || this.myAmpScalable.halfWidth !== oldHalfWidth) {
-        console.log(`recheckAmpScaleDomain() -> linkedAmplitudeScale.recalculate()`)
+        console.log(`recheckAmpScaleDomain() -> linkedAmplitudeScale.recalculate()`);
         this.seismographConfig.linkedAmplitudeScale.recalculate(); // sets yScale.domain
       }
     } else {
@@ -1516,10 +1516,10 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
           firstSensitivity.outputUnits === sdd.sensitivity.outputUnits,
       );
       if (!allSameSensitivity) {
-        console.log(`not all same sensitivity: ${this._seisDataList.length}`)
+        console.log(`not all same sensitivity: ${this._seisDataList.length}`);
         this._seisDataList.forEach(sdd => {
-          console.log(` ${sdd.sensitivity?.sensitivity} ${sdd.sensitivity?.inputUnits} ${sdd.sensitivity?.outputUnits}`)
-        })
+          console.log(` ${sdd.sensitivity?.sensitivity} ${sdd.sensitivity?.inputUnits} ${sdd.sensitivity?.outputUnits}`);
+        });
       }
 
       if (
@@ -1548,11 +1548,11 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
     } else {
       if (this.seismographConfig.ySublabelIsUnits) {
         this.seismographConfig.ySublabel = "";
-        let allUnits = [];
+        const allUnits = [];
 
-        for (let t of this._seisDataList) {
+        for (const t of this._seisDataList) {
           if (t.seismogram) {
-            let u = t.seismogram.yUnit;
+            const u = t.seismogram.yUnit;
             allUnits.push(u);
             this.seismographConfig.ySublabel += `${u} `;
           }
@@ -1597,7 +1597,7 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
     if (!sddList) {
       // don't append a null
     } else if (Array.isArray(sddList)) {
-      for (let s of sddList) {
+      for (const s of sddList) {
         if (s instanceof SeismogramDisplayData) {
           this._seisDataList.push(s);
         } else {
@@ -1639,7 +1639,7 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`)
    * @returns       SeismogramDisplayData if found or null if not
    */
   getDisplayDataForSeismogram(seis: Seismogram): SeismogramDisplayData | null {
-    let out = this._seisDataList.find(sd => sd.seismogram === seis);
+    const out = this._seisDataList.find(sd => sd.seismogram === seis);
 
     if (out) {
       return out;
@@ -1691,7 +1691,7 @@ export class SeismographAmplitudeScalable extends AmplitudeScalable {
   }
 
   notifyAmplitudeChange(middle: number, halfWidth: number) {
-    console.log(`seismograph notifyAmplitudeChange mid: ${middle} hw: ${halfWidth}`)
+    console.log(`seismograph notifyAmplitudeChange mid: ${middle} hw: ${halfWidth}`);
     if (middle !== this.drawMiddle || halfWidth !== this.drawHalfWidth) {
       this.drawMiddle = middle;
       this.drawHalfWidth = halfWidth;
@@ -1724,7 +1724,7 @@ export class SeismographTimeScalable extends TimeScalable {
     offset: Duration,
     duration: Duration,
   ) {
-    console.log(`notifyTimeRangeChange ${offset} ${duration}`)
+    console.log(`notifyTimeRangeChange ${offset} ${duration}`);
     if (!this.drawAlignmentTimeOffset.equals(offset) ||
         !this.drawDuration.equals(duration)) {
       this.drawAlignmentTimeOffset = offset;
@@ -1780,8 +1780,8 @@ export function createFullMarkersForQuakeAtStation(
   quake: Quake,
   station: Station,
 ): Array<MarkerType> {
-  let markers: Array<MarkerType> = [];
-  let daz = distaz.distaz(
+  const markers: Array<MarkerType> = [];
+  const daz = distaz.distaz(
     station.latitude,
     station.longitude,
     quake.latitude,
@@ -1807,7 +1807,7 @@ export function createFullMarkersForQuakeAtChannel(
   quake: Quake,
   channel: Channel,
 ): Array<MarkerType> {
-  let markers = createFullMarkersForQuakeAtStation(quake, channel.station);
+  const markers = createFullMarkersForQuakeAtStation(quake, channel.station);
   return markers.concat(createMarkerForPicks(quake.preferredOrigin, channel));
 }
 
@@ -1822,7 +1822,7 @@ export function createMarkerForPicks(
   origin: Origin,
   channel: Channel,
 ): Array<MarkerType> {
-  let markers: Array<MarkerType> = [];
+  const markers: Array<MarkerType> = [];
 
   if (origin.arrivals) {
     origin.arrivals.forEach(arrival => {
@@ -1841,8 +1841,9 @@ export function createMarkerForPicks(
 }
 /**
  * Creates a wrapper for d3 formatter for numbers for axis that keeps typescript happy.
+ *
  * @param  formatter simple formatter
- * @return           function that converts input types
+ * @returns           function that converts input types
  */
 
 export function createNumberFormatWrapper(formatter: (value: number) => string): (nValue: d3.NumberValue) => string {
@@ -1856,8 +1857,9 @@ export function createNumberFormatWrapper(formatter: (value: number) => string):
 }
 /**
  * Creates a wrapper for d3 formatter for Dates for axis that keeps typescript happy.
+ *
  * @param  formatter simple formatter
- * @return           function that converts input types
+ * @returns           function that converts input types
  */
 export function createDateFormatWrapper(formatter: (value: Date) => string): (nValue: Date | d3.NumberValue, index: number) => string {
   return (nValue: Date | d3.NumberValue) => {

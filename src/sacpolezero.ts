@@ -51,7 +51,7 @@ export class SacPoleZero {
   }
 
   toString(): string {
-    let s = ["sacPoleZero:"];
+    const s = ["sacPoleZero:"];
     s.push("ZEROS " + this.zeros.length);
 
     for (let i = 0; i < this.zeros.length; i++) {
@@ -101,7 +101,7 @@ export class SacPoleZero {
       zeroOut = zeroOut.timesComplex(s.minusComplex(this.zeros[i]));
     }
 
-    let out = poleOut.overComplex(zeroOut);
+    const out = poleOut.overComplex(zeroOut);
     return out.overReal(this.constant);
   }
 
@@ -109,7 +109,7 @@ export class SacPoleZero {
     const sacPoleZero = this;
 
     for (let i = 0; i < gamma; i++) {
-      let z = sacPoleZero.zeros[sacPoleZero.zeros.length - 1 - i];
+      const z = sacPoleZero.zeros[sacPoleZero.zeros.length - 1 - i];
 
       if (z.real() !== 0 || z.imag() !== 0) {
         throw new Error(
@@ -124,7 +124,7 @@ export class SacPoleZero {
     let trimmedZeros = sacPoleZero.zeros.slice().reverse();
 
     for (let i = 0; i < gamma; i++) {
-      let idx = trimmedZeros.findIndex(d => d.real() === 0 && d.imag() === 0);
+      const idx = trimmedZeros.findIndex(d => d.real() === 0 && d.imag() === 0);
       trimmedZeros.splice(idx, 1);
     }
 
@@ -133,7 +133,7 @@ export class SacPoleZero {
   }
 
   toText(): string {
-    let s = [];
+    const s = [];
     s.push("ZEROS " + this.zeros.length);
 
     for (let i = 0; i < this.zeros.length; i++) {
@@ -157,7 +157,7 @@ export class SacPoleZero {
    * @returns  frequency response
    */
   calcForDisplay(freqs: Array<number>): Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex> {
-    let out = freqs.map(freq => {
+    const out = freqs.map(freq => {
       let respAtS = this.evalPoleZeroInverse(freq);
       respAtS = createComplex(1, 0).overComplex(respAtS);
       return respAtS;
@@ -172,12 +172,12 @@ export class SacPoleZero {
    * @returns SacPoleZero instance
    */
   static parse(data: string): SacPoleZero {
-    let pz = {
+    const pz = {
       zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>(0),
       poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>(0),
       constant: 1,
     };
-    let lines = data.split("\n");
+    const lines = data.split("\n");
     let numZeros = 0;
     let numPoles = 0;
     let i = 0;
@@ -201,8 +201,8 @@ export class SacPoleZero {
 
             break;
           } else {
-            let real = parseFloat(items[0]);
-            let imag = parseFloat(items[1]);
+            const real = parseFloat(items[0]);
+            const imag = parseFloat(items[1]);
             pz.zeros.push(createComplex(real, imag));
           }
 
@@ -227,8 +227,8 @@ export class SacPoleZero {
 
             break;
           } else {
-            let real = parseFloat(items[0]);
-            let imag = parseFloat(items[1]);
+            const real = parseFloat(items[0]);
+            const imag = parseFloat(items[1]);
             pz.poles.push(createComplex(real, imag));
           }
 
@@ -253,8 +253,8 @@ export function geomspace(
   stop: number,
   num: number,
 ): Array<number> {
-  let log_start = Math.log(start);
-  let log_stop = Math.log(stop);
+  const log_start = Math.log(start);
+  const log_stop = Math.log(stop);
   return logspace(log_start, log_stop, num);
 }
 export function logspace(
@@ -269,8 +269,8 @@ export function linspace(
   stop: number,
   num: number,
 ): Array<number> {
-  let delta = (stop - start) / (num - 1);
-  let out = [];
+  const delta = (stop - start) / (num - 1);
+  const out = [];
 
   for (let i = 0; i < num; i++) {
     out.push(start + i * delta);

@@ -37,7 +37,7 @@ export const FAKE_ORIGIN_TIME = DateTime.fromISO("1900-01-01T00:00:00Z");
 export class Quake {
   eventId: string|undefined;
   publicId: string;
-  description: string = "";
+  description = "";
   magnitudeList: Array<Magnitude> = [];
   originList: Array<Origin> = [];
   pickList: Array<Pick> = [];
@@ -66,8 +66,8 @@ export class Quake {
     }
 
 
-    let publicId = _requireAttribute(qml, "publicID");
-    let out = new Quake(publicId);
+    const publicId = _requireAttribute(qml, "publicID");
+    const out = new Quake(publicId);
 
     const desc = _grabFirstElText(_grabFirstEl(qml, "description"), "text");
 
@@ -76,24 +76,24 @@ export class Quake {
     }
 
     //need picks before can do origins
-    let allPickEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "pick"));
-    let allPicks = [];
+    const allPickEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "pick"));
+    const allPicks = [];
 
-    for (let pickEl of allPickEls) {
+    for (const pickEl of allPickEls) {
       allPicks.push(Pick.createFromXml(pickEl));
     }
 
-    let allOriginEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "origin"));
-    let allOrigins = [];
+    const allOriginEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "origin"));
+    const allOrigins = [];
 
-    for (let originEl of allOriginEls) {
+    for (const originEl of allOriginEls) {
       allOrigins.push(Origin.createFromXml(originEl, allPicks));
     }
 
-    let allMagEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "magnitude"));
-    let allMags = [];
+    const allMagEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "magnitude"));
+    const allMags = [];
 
-    for (let magEl of allMagEls) {
+    for (const magEl of allMagEls) {
       allMags.push(Magnitude.createFromXml(magEl));
     }
 
@@ -105,7 +105,7 @@ export class Quake {
     out.preferredMagnitudeId = _grabFirstElText(qml, "preferredMagnitudeID");
 
     if (isNonEmptyStringArg(out.preferredOriginId)) {
-      for (let o of allOrigins) {
+      for (const o of allOrigins) {
         if (o.publicId === out.preferredOriginId) {
           out._preferredOrigin = o;
         } else {
@@ -118,7 +118,7 @@ export class Quake {
     }
 
     if (isNonEmptyStringArg(out.preferredMagnitudeId)) {
-      for (let m of allMags) {
+      for (const m of allMags) {
         if (m.publicId === out.preferredMagnitudeId) {
           out._preferredMagnitude = m;
         } else {
@@ -140,9 +140,9 @@ export class Quake {
    * @returns     Extracted Id, or "unknownEventId" if we can't figure it out
    */
   static extractEventId(qml: Element, host?: string): string {
-    let eventId = _grabAttributeNS(qml, ANSS_CATALOG_NS, "eventid");
+    const eventId = _grabAttributeNS(qml, ANSS_CATALOG_NS, "eventid");
 
-    let catalogEventSource = _grabAttributeNS(
+    const catalogEventSource = _grabAttributeNS(
       qml,
       ANSS_CATALOG_NS,
       "eventsource",
@@ -157,7 +157,7 @@ export class Quake {
       }
     }
 
-    let publicid = _grabAttribute(qml, "publicID");
+    const publicid = _grabAttribute(qml, "publicID");
 
     if (isNonEmptyStringArg(publicid)) {
       let re = /eventid=([\w\d]+)/;
@@ -282,9 +282,9 @@ export class Origin {
       throw new Error(`Cannot extract, not a QuakeML Origin: ${qml.localName}`);
     }
 
-    let out = new Origin();
+    const out = new Origin();
 
-    let otimeStr = _grabFirstElText(_grabFirstEl(qml, "time"), "value");
+    const otimeStr = _grabFirstElText(_grabFirstEl(qml, "time"), "value");
 
     if (isNonEmptyStringArg(otimeStr)) {
       out.time = isoToDateTime(otimeStr);
@@ -316,10 +316,10 @@ export class Origin {
       out.publicId = pid;
     }
 
-    let allArrivalEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "arrival"));
-    let allArrivals = [];
+    const allArrivalEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "arrival"));
+    const allArrivals = [];
 
-    for (let arrivalEl of allArrivalEls) {
+    for (const arrivalEl of allArrivalEls) {
       allArrivals.push(Arrival.createFromXml(arrivalEl, allPicks));
     }
 
@@ -371,7 +371,7 @@ export class Magnitude {
       );
     }
 
-    let mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, "mag"), "value");
+    const mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, "mag"), "value");
 
     let type = _grabFirstElText(qml, "type");
 
@@ -381,7 +381,7 @@ export class Magnitude {
         type = UNKNOWN_MAG_TYPE;
       }
 
-      let out = new Magnitude(mag, type);
+      const out = new Magnitude(mag, type);
 
       const pid = _grabAttribute(qml, "publicID");
 
@@ -432,12 +432,12 @@ export class Arrival {
       );
     }
 
-    let pickId = _grabFirstElText(arrivalQML, "pickID");
+    const pickId = _grabFirstElText(arrivalQML, "pickID");
 
-    let phase = _grabFirstElText(arrivalQML, "phase");
+    const phase = _grabFirstElText(arrivalQML, "phase");
 
     if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
-      let myPick = allPicks.find(function (p: Pick) {
+      const myPick = allPicks.find(function (p: Pick) {
         return p.publicId === pickId;
       });
 
@@ -445,7 +445,7 @@ export class Arrival {
         throw new Error("Can't find pick with Id=" + pickId + " for Arrival");
       }
 
-      let out = new Arrival(phase, myPick);
+      const out = new Arrival(phase, myPick);
 
       const pid = _grabAttribute(arrivalQML, "publicID");
 
@@ -504,19 +504,19 @@ export class Pick {
       );
     }
 
-    let otimeStr = _grabFirstElText(_grabFirstEl(pickQML, "time"), "value");
+    const otimeStr = _grabFirstElText(_grabFirstEl(pickQML, "time"), "value");
     if (! isDef(otimeStr)) {throw new Error("Missing time");}
-    let time = checkStringOrDate(otimeStr);
+    const time = checkStringOrDate(otimeStr);
 
-    let waveformIdEl = _grabFirstEl(pickQML, "waveformID");
+    const waveformIdEl = _grabFirstEl(pickQML, "waveformID");
 
-    let netCode = _grabAttribute(waveformIdEl, "networkCode");
+    const netCode = _grabAttribute(waveformIdEl, "networkCode");
 
-    let stationCode = _grabAttribute(waveformIdEl, "stationCode");
+    const stationCode = _grabAttribute(waveformIdEl, "stationCode");
 
     let locationCode = _grabAttribute(waveformIdEl, "locationCode");
 
-    let channelCode = _grabAttribute(waveformIdEl, "channelCode");
+    const channelCode = _grabAttribute(waveformIdEl, "channelCode");
 
     // handle empty loc code, it can be missing
     if (!isNonEmptyStringArg(locationCode)) {
@@ -540,7 +540,7 @@ export class Pick {
       );
     }
 
-    let out = new Pick(time, netCode, stationCode, locationCode, channelCode);
+    const out = new Pick(time, netCode, stationCode, locationCode, channelCode);
 
     const pid = _grabAttribute(pickQML, "publicID");
 
@@ -576,16 +576,16 @@ export class Pick {
  *  @returns array of Quake objects
  */
 export function parseQuakeML(rawXml: Document, host?: string): Array<Quake> {
-  let top = rawXml.documentElement;
+  const top = rawXml.documentElement;
 
   if (!top) {
     throw new Error("Can't get documentElement");
   }
 
-  let eventArray = Array.from(top.getElementsByTagName("event"));
-  let out = [];
+  const eventArray = Array.from(top.getElementsByTagName("event"));
+  const out = [];
 
-  for (let eventEl of eventArray) {
+  for (const eventEl of eventArray) {
     out.push(Quake.createFromXml(eventEl, host));
   }
 
@@ -617,7 +617,7 @@ const _grabFirstElNS = function (
   let out = undefined;
 
   if (isObject(xml)) {
-    let elList = xml.getElementsByTagNameNS(namespace, tagName);
+    const elList = xml.getElementsByTagNameNS(namespace, tagName);
 
     if (isObject(elList) && elList.length > 0) {
       const e = elList.item(0);
@@ -638,7 +638,7 @@ const _grabFirstEl = function (
   let out = undefined;
 
   if (isObject(xml)) {
-    let elList = xml.getElementsByTagName(tagName);
+    const elList = xml.getElementsByTagName(tagName);
 
     if (isObject(elList) && elList.length > 0) {
       const e = elList.item(0);
@@ -658,7 +658,7 @@ const _grabFirstElText = function (
 ): string | undefined {
   let out = undefined;
 
-  let el = _grabFirstEl(xml, tagName);
+  const el = _grabFirstEl(xml, tagName);
 
   if (isObject(el)) {
     out = el.textContent;
@@ -674,7 +674,7 @@ const _grabFirstElInt = function (
 ): number | undefined {
   let out = undefined;
 
-  let el = _grabFirstElText(xml, tagName);
+  const el = _grabFirstElText(xml, tagName);
 
   if (isStringArg(el)) {
     out = parseInt(el);
@@ -689,7 +689,7 @@ const _grabFirstElFloat = function (
 ): number | undefined {
   let out = undefined;
 
-  let el = _grabFirstElText(xml, tagName);
+  const el = _grabFirstElText(xml, tagName);
 
   if (isStringArg(el)) {
     out = parseFloat(el);
@@ -705,7 +705,7 @@ const _grabAttribute = function (
   let out = undefined;
 
   if (isObject(xml)) {
-    let a = xml.getAttribute(tagName);
+    const a = xml.getAttribute(tagName);
 
     if (isStringArg(a)) {
       out = a;
@@ -719,7 +719,7 @@ const _requireAttribute = function _requireAttribute(
   xml: Element | null | void,
   tagName: string,
 ): string {
-  let out = _grabAttribute(xml, tagName);
+  const out = _grabAttribute(xml, tagName);
   if (typeof out !== "string") {
     throw new Error(`Attribute ${tagName} not found.`);
   }
@@ -734,7 +734,7 @@ const _grabAttributeNS = function (
   let out = undefined;
 
   if (isObject(xml)) {
-    let a = xml.getAttributeNS(namespace, tagName);
+    const a = xml.getAttributeNS(namespace, tagName);
 
     if (isStringArg(a)) {
       out = a;

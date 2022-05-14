@@ -22,12 +22,12 @@ export const M_TYPECODE: number = "M".charCodeAt(0);
  * @returns arry of data records
  */
 export function parseDataRecords(arrayBuffer: ArrayBuffer): Array<DataRecord> {
-  let dataRecords = [];
+  const dataRecords = [];
   let offset = 0;
 
   while (offset < arrayBuffer.byteLength) {
-    let dataView = new DataView(arrayBuffer, offset);
-    let dr = parseSingleDataRecord(dataView);
+    const dataView = new DataView(arrayBuffer, offset);
+    const dr = parseSingleDataRecord(dataView);
     dataRecords.push(dr);
     offset += dr.header.recordSize;
   }
@@ -44,8 +44,8 @@ export function parseDataRecords(arrayBuffer: ArrayBuffer): Array<DataRecord> {
  * @returns data record
  */
 export function parseSingleDataRecord(dataView: DataView): DataRecord {
-  let header = parseSingleDataRecordHeader(dataView);
-  let data = new DataView(
+  const header = parseSingleDataRecordHeader(dataView);
+  const data = new DataView(
     dataView.buffer,
     dataView.byteOffset + header.dataOffset,
     header.recordSize - header.dataOffset,
@@ -66,7 +66,7 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
     );
   }
 
-  let out = new DataHeader();
+  const out = new DataHeader();
   out.seq = makeString(dataView, 0, 6);
   out.typeCode = dataView.getUint8(6);
   out.continuationCode = dataView.getUint8(7);
@@ -75,7 +75,7 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
   out.chanCode = makeString(dataView, 15, 3);
   out.netCode = makeString(dataView, 18, 2);
   out.startBTime = parseBTime(dataView, 20);
-  let headerByteSwap = checkByteSwap(out.startBTime);
+  const headerByteSwap = checkByteSwap(out.startBTime);
 
   if (headerByteSwap) {
     out.startBTime = parseBTime(dataView, 20, headerByteSwap);
@@ -109,7 +109,7 @@ export function parseSingleDataRecordHeader(dataView: DataView): DataHeader {
       nextOffset = offset; // zero length, probably an error...
     }
 
-    let blockette = parseBlockette(
+    const blockette = parseBlockette(
       dataView,
       offset,
       nextOffset - offset,
@@ -319,8 +319,8 @@ export class DataHeader {
    * @returns sample rate
    */
   calcSampleRate(): number {
-    let factor = this.sampRateFac;
-    let multiplier = this.sampRateMul;
+    const factor = this.sampRateFac;
+    const multiplier = this.sampRateMul;
     let sampleRate = 10000.0; // default (impossible) value;
 
     if (factor * multiplier !== 0.0) {
@@ -423,7 +423,7 @@ function makeString(
   let out = "";
 
   for (let i = offset; i < offset + length; i++) {
-    let charCode = dataView.getUint8(i);
+    const charCode = dataView.getUint8(i);
 
     if (charCode > 31) {
       out += String.fromCharCode(charCode);
@@ -442,13 +442,13 @@ export function parseBTime(
     byteSwap = false;
   }
 
-  let year = dataView.getInt16(offset, byteSwap);
-  let jday = dataView.getInt16(offset + 2, byteSwap);
-  let hour = dataView.getInt8(offset + 4);
-  let min = dataView.getInt8(offset + 5);
-  let sec = dataView.getInt8(offset + 6);
+  const year = dataView.getInt16(offset, byteSwap);
+  const jday = dataView.getInt16(offset + 2, byteSwap);
+  const hour = dataView.getInt8(offset + 4);
+  const min = dataView.getInt8(offset + 5);
+  const sec = dataView.getInt8(offset + 6);
   // byte 7 unused, alignment
-  let tenthMilli = dataView.getInt16(offset + 8, byteSwap);
+  const tenthMilli = dataView.getInt16(offset + 8, byteSwap);
   return new BTime(year, jday, hour, min, sec, tenthMilli);
 }
 export class BTime {
@@ -536,8 +536,8 @@ export function checkByteSwap(bTime: BTime): boolean {
  * @returns true if contiguous
  */
 export function areContiguous(dr1: DataRecord, dr2: DataRecord): boolean {
-  let h1 = dr1.header;
-  let h2 = dr2.header;
+  const h1 = dr1.header;
+  const h2 = dr2.header;
   return (
     h1.endTime < h2.startTime &&
     h1.endTime.valueOf() + (1000 * 1.5) / h1.sampleRate > h2.startTime.valueOf()
@@ -559,8 +559,8 @@ export function createSeismogramSegment(
     contig = [contig];
   }
 
-  let contigData = contig.map(dr => dr.asEncodedDataSegment());
-  let out = new SeismogramSegment(
+  const contigData = contig.map(dr => dr.asEncodedDataSegment());
+  const out = new SeismogramSegment(
     contigData,
     contig[0].header.sampleRate,
     contig[0].header.startTime,
@@ -596,7 +596,7 @@ export function merge(drList: Array<DataRecord>): Seismogram {
  * @returns array of SeismogramSegments for contiguous data
  */
 export function mergeSegments(drList: Array<DataRecord>): Array<SeismogramSegment> {
- let out = [];
+ const out = [];
  let currDR;
  drList.sort(function (a, b) {
    return a.header.startTime.toMillis() - b.header.startTime.toMillis();
@@ -636,11 +636,11 @@ export function mergeSegments(drList: Array<DataRecord>): Array<SeismogramSegmen
 export function byChannel(
   drList: Array<DataRecord>,
 ): Map<string, Array<DataRecord>> {
-  let out: Map<string, Array<DataRecord>> = new Map();
+  const out: Map<string, Array<DataRecord>> = new Map();
   let key;
 
   for (let i = 0; i < drList.length; i++) {
-    let currDR = drList[i];
+    const currDR = drList[i];
     key = currDR.codes();
     let drArray = out.get(key);
 
@@ -666,7 +666,7 @@ export function seismogramSegmentPerChannel(
   drList: Array<DataRecord>,
 ): Array<SeismogramSegment> {
   let out = new Array<SeismogramSegment>(0);
-  let byChannelMap = byChannel(drList);
+  const byChannelMap = byChannel(drList);
   byChannelMap.forEach(segments => out = out.concat(mergeSegments(segments)));
   return out;
 }
@@ -680,8 +680,8 @@ export function seismogramSegmentPerChannel(
 export function seismogramPerChannel(
   drList: Array<DataRecord>,
 ): Array<Seismogram> {
-  let out: Array<Seismogram> = [];
-  let byChannelMap = byChannel(drList);
+  const out: Array<Seismogram> = [];
+  const byChannelMap = byChannel(drList);
   byChannelMap.forEach(segments => out.push(merge(segments)));
   return out;
 }

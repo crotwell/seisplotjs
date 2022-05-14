@@ -213,7 +213,11 @@ export function log(msg: string): void {
   }
 }
 
-/** typescript-y check if Error. */
+/**
+ * typescript-y check if Error.
+ *
+ * @param error
+ */
 export function isError(error: unknown): error is Error {
   return (
     typeof error === 'object' &&
@@ -222,7 +226,11 @@ export function isError(error: unknown): error is Error {
   );
 }
 
-/** typescript-y convert errors. */
+/**
+ * typescript-y convert errors.
+ *
+ * @param maybeError
+ */
 export function toError(maybeError: unknown): Error {
   if (isError(maybeError)) return maybeError;
 
@@ -602,7 +610,7 @@ export function checkProtocol(): string {
  * @returns           object with fetch configuration parameters
  */
 export function defaultFetchInitObj(mimeType?: string): Record<string, any> {
-  let headers: Record<string, string> = {};
+  const headers: Record<string, string> = {};
 
   if (isStringArg(mimeType)) {
     headers.Accept = mimeType;
@@ -696,7 +704,7 @@ export function meanOfSlice(
         return acc + val;
       }, 0) / totalPts;
   } else {
-    let byTwo = Math.floor(dataSlice.length / 2);
+    const byTwo = Math.floor(dataSlice.length / 2);
     return (
       meanOfSlice(dataSlice.slice(0, byTwo), totalPts) +
       meanOfSlice(dataSlice.slice(byTwo, dataSlice.length), totalPts)

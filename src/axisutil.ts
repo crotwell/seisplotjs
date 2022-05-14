@@ -104,7 +104,7 @@ export function drawYLabel(
       });
       svgText.html(handlebarOut);
     } else {
-      let handlebarOut = seismographConfig.handlebarsYLabelRight(
+      const handlebarOut = seismographConfig.handlebarsYLabelRight(
         handlebarsInput,
         {
           allowProtoPropertiesByDefault: true, // this might be a security issue???
@@ -123,7 +123,7 @@ export function drawYSublabel(
 ) {
   const svg = d3.select(svgEl);
   svg.selectAll("g.ySublabel").remove();
-  let svgText = svg
+  const svgText = svg
     .append("g")
     .classed("ySublabel", true)
     .attr("x", 0)

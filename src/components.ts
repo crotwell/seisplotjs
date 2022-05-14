@@ -194,17 +194,17 @@ export class LabeledMinMax extends HTMLElement {
     shadow.appendChild(wrapper);
   }
   updateMinMax() {
-    let min_s = this.getAttribute('min');
+    const min_s = this.getAttribute('min');
     if (isDef(min_s)) {
-      let min = Number.parseFloat(min_s);
+      const min = Number.parseFloat(min_s);
       if ( ! Number.isNaN(min)) {
        this.default_min = min;
       }
     }
 
-    let max_s = this.getAttribute('max');
+    const max_s = this.getAttribute('max');
     if (isDef(max_s)) {
-      let max = Number.parseFloat(max_s);
+      const max = Number.parseFloat(max_s);
       if ( ! Number.isNaN(max)) {
        this.default_max = max;
       }

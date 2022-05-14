@@ -85,13 +85,13 @@ export class Helicorder {
 
       if (!this.heliConfig.fixedAmplitudeScale) {
         if (this.heliConfig.maxVariation === 0) {
-          let cutSeis = seis.cut(timeRange);
+          const cutSeis = seis.cut(timeRange);
 
           if (cutSeis) {
-            let [min, max] = cutSeis.findMinMax();
-            let mean = cutSeis.mean();
-            let posOffset = max - mean;
-            let negOffset = mean - min;
+            const [min, max] = cutSeis.findMinMax();
+            const mean = cutSeis.mean();
+            const posOffset = max - mean;
+            const negOffset = mean - min;
             maxVariation = Math.max(posOffset, negOffset);
           }
         } else {
@@ -100,12 +100,12 @@ export class Helicorder {
       }
     }
 
-    let startTime = timeRange.startTime;
+    const startTime = timeRange.startTime;
     this.seismographArray = [];
     const secondsPerLine =
       timeRange.duration.toMillis() / 1000 / this.heliConfig.numLines;
     this.svgParent.selectAll("div.heliLine").remove();
-    let lineTimes = this.calcTimesForLines(
+    const lineTimes = this.calcTimesForLines(
       startTime,
       secondsPerLine,
       this.heliConfig.numLines,
@@ -120,15 +120,15 @@ export class Helicorder {
       (maxHeight - margin.top - margin.bottom) /
       (nl - (nl - 1) * this.heliConfig.overlap);
 
-    for (let lineTime of lineTimes) {
+    for (const lineTime of lineTimes) {
       let startTime = lineTime.startTime;
-      let endTime = lineTime.endTime;
+      const endTime = lineTime.endTime;
       let height = baseHeight;
-      let marginTop =
+      const marginTop =
         lineTime.lineNumber === 0
           ? 0
           : Math.round(-1.0 * height * this.heliConfig.overlap);
-      let lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
+      const lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
       // don't title lines past the first
       lineSeisConfig.title = null;
 
@@ -143,7 +143,7 @@ export class Helicorder {
         height += this.heliConfig.margin.bottom;
       }
 
-      let seisDiv = this.svgParent
+      const seisDiv = this.svgParent
         .append("div")
         .classed("heliLine", true)
         .style("height", height + "px")
@@ -188,7 +188,7 @@ export class Helicorder {
         }
       }
 
-      let seismograph = new Seismograph();
+      const seismograph = new Seismograph();
       seismograph.seismographConfig = lineSeisConfig;
       seismograph.appendSeisData(lineSeisData);
       seismograph.svg.classed(HELICORDER_SELECTOR, true);
@@ -226,11 +226,11 @@ export class Helicorder {
     secondsPerLine: number,
     numberOfLines: number,
   ): Array<HeliTimeRange> {
-    let out = [];
+    const out = [];
     let s = startTime;
 
     for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
-      let startEnd = new HeliTimeRange(s, null, secondsPerLine);
+      const startEnd = new HeliTimeRange(s, null, secondsPerLine);
       startEnd.lineNumber = lineNum;
       out.push(startEnd);
       s = startEnd.endTime;

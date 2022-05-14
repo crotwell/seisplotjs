@@ -40,8 +40,8 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
   if (!isDef(extraHeaders)) {
     extraHeaders = {};
   }
-  for (let seg of seis.segments) {
-    let header = new MSeed3Header();
+  for (const seg of seis.segments) {
+    const header = new MSeed3Header();
     let rawData;
     let encoding = 0;
     if (seg.isEncoded()) {
@@ -50,11 +50,11 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
         rawData = encoded[0].dataView;
         encoding = encoded[0].compressionType;
       } else {
-        let encodeTypeSet = new Set<number>();
+        const encodeTypeSet = new Set<number>();
         encoded.forEach((cur) => {
           encodeTypeSet.add(cur.compressionType);
         });
-        let encodeTypes = Array.from(encodeTypeSet.values());
+        const encodeTypes = Array.from(encodeTypeSet.values());
         if (encodeTypes.length > 1) {
           throw new Error(`more than one encoding type in seis segment: ${encodeTypes}`);
         } else if (encodeTypes.length === 0) {
@@ -68,7 +68,7 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
         }
         if (INTEGER || FLOAT || DOUBLE) {
           // safe to concat
-          let totSize = encoded.reduce((acc, cur) => acc+cur.dataView.byteLength, 0);
+          const totSize = encoded.reduce((acc, cur) => acc+cur.dataView.byteLength, 0);
           const combined = new Uint8Array(totSize);
           encoded.reduce((offset, cur) => {
             combined.set(new Uint8Array(cur.dataView.buffer, cur.dataView.byteOffset, cur.dataView.byteLength), offset);
@@ -109,7 +109,7 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
     header.identifierLength = header.identifier.length;
     header.extraHeaders = extraHeaders;
     header.dataLength = rawData.byteLength;
-    let record = new MSeed3Record(header, extraHeaders, rawData);
+    const record = new MSeed3Record(header, extraHeaders, rawData);
     record.calcSize();
     out.push(record);
   }
@@ -124,11 +124,11 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
 export function parseMSeed3Records(
   arrayBuffer: ArrayBuffer,
 ): Array<MSeed3Record> {
-  let dataRecords = [];
+  const dataRecords = [];
   let offset = 0;
 
   while (offset < arrayBuffer.byteLength) {
-    let dataView = new DataView(arrayBuffer, offset);
+    const dataView = new DataView(arrayBuffer, offset);
 
     if (!(dataView.getUint8(0) === 77 && dataView.getUint8(1) === 83)) {
       throw new Error(
@@ -138,7 +138,7 @@ export function parseMSeed3Records(
       );
     }
 
-    let dr = MSeed3Record.createFromDataView(dataView);
+    const dr = MSeed3Record.createFromDataView(dataView);
     dataRecords.push(dr);
     offset += dr.getSize();
   }
@@ -174,13 +174,13 @@ export class MSeed3Record {
     const header = MSeed3Header.createFromDataView(dataView);
     const ehoffset = header.getSize();
     const dataoffset = header.getSize() + header.extraHeadersLength;
-    let extraDataView = new DataView(
+    const extraDataView = new DataView(
       dataView.buffer,
       dataView.byteOffset + ehoffset,
       header.extraHeadersLength,
     );
     const extraHeaders = parseExtraHeaders(extraDataView);
-    let sliceStart = dataView.byteOffset + dataoffset;
+    const sliceStart = dataView.byteOffset + dataoffset;
     const rawData = new DataView(
       dataView.buffer.slice(sliceStart, sliceStart + header.dataLength),
     );
@@ -207,7 +207,7 @@ export class MSeed3Record {
    * @returns size in bytes
    */
   calcSize(): number {
-    let json = JSON.stringify(this.extraHeaders);
+    const json = JSON.stringify(this.extraHeaders);
 
     if (json.length > 2) {
       this.header.extraHeadersLength = json.length;
@@ -286,7 +286,7 @@ export class MSeed3Record {
    * for writting the next record.
    */
   save(dataView: DataView): number {
-    let json = JSON.stringify(this.extraHeaders);
+    const json = JSON.stringify(this.extraHeaders);
 
     if (json.length > 2) {
       this.header.extraHeadersLength = json.length;
@@ -315,13 +315,13 @@ export class MSeed3Record {
       throw new Error("rawData is null");
     }
 
-    let dvcrc = dataView.getUint32(CRC_OFFSET, true);
+    const dvcrc = dataView.getUint32(CRC_OFFSET, true);
 
     if (dvcrc !== 0) {
       throw new Error(`CRC is not zero before calculate! ${dvcrc}`);
     }
 
-    let crc = calculateCRC32C(dataView.buffer);
+    const crc = calculateCRC32C(dataView.buffer);
     dataView.setUint32(CRC_OFFSET, crc, true);
     return offset;
   }
@@ -333,16 +333,16 @@ export class MSeed3Record {
    * @returns         crc pulled from saved miniseed3 record
    */
   calcCrc(): number {
-    let size = this.calcSize();
-    let buff = new ArrayBuffer(size);
-    let dataView = new DataView(buff);
-    let offset = this.save(dataView);
+    const size = this.calcSize();
+    const buff = new ArrayBuffer(size);
+    const dataView = new DataView(buff);
+    const offset = this.save(dataView);
 
     if (offset !== size) {
       throw new Error(`expect to write ${size} bytes but only ${offset}`);
     }
 
-    let crc = dataView.getUint32(CRC_OFFSET, true);
+    const crc = dataView.getUint32(CRC_OFFSET, true);
     return crc;
   }
 
@@ -543,8 +543,10 @@ export class MSeed3Header {
     );
   }
   /**
-  * sets start time headers from Moment.
-  */
+   * sets start time headers from Moment.
+   *
+   * @param starttime
+   */
   setStart(starttime: DateTime) {
     this.nanosecond = starttime.millisecond*1000;
     this.year = starttime.year;
@@ -575,8 +577,8 @@ export class MSeed3Header {
    */
   save(
     dataView: DataView,
-    offset: number = 0,
-    zeroCrc: boolean = false,
+    offset = 0,
+    zeroCrc = false,
   ): number {
     dataView.setUint8(offset, this.recordIndicator.charCodeAt(0));
     offset++;
@@ -658,7 +660,7 @@ export function parseExtraHeaders(dataView: DataView): Record<string, any> {
     return {};
   }
 
-  let firstChar = dataView.getUint8(0);
+  const firstChar = dataView.getUint8(0);
 
   if (firstChar === 123) {
     // looks like json, '{' is ascii 123
@@ -705,7 +707,7 @@ export function makeString(
   length: number,
 ): string {
   const utf8decoder = new TextDecoder("utf-8");
-  let u8arr = new Uint8Array(
+  const u8arr = new Uint8Array(
     dataView.buffer,
     dataView.byteOffset + offset,
     length,
@@ -735,10 +737,10 @@ function checkByteSwap(year: number) {
 export function areContiguous(
   dr1: MSeed3Record,
   dr2: MSeed3Record,
-  sampRatio: number = 1.5,
+  sampRatio = 1.5,
 ): boolean {
-  let h1 = dr1.header;
-  let h2 = dr2.header;
+  const h1 = dr1.header;
+  const h2 = dr2.header;
   return (
     h1.end < h2.start &&
     h1.end.plus(Duration.fromMillis(1000*sampRatio / h1.sampleRate))
@@ -757,13 +759,13 @@ export function areContiguous(
 export function createSeismogramSegment(
   contig: Array<MSeed3Record>,
 ): SeismogramSegment {
-  let contigData = contig.map(dr => dr.asEncodedDataSegment());
-  let out = new SeismogramSegment(
+  const contigData = contig.map(dr => dr.asEncodedDataSegment());
+  const out = new SeismogramSegment(
     contigData,
     contig[0].header.sampleRate,
     contig[0].header.start,
   );
-  let codes = contig[0].header.identifier.slice(5).split("_");
+  const codes = contig[0].header.identifier.slice(5).split("_");
   out.networkCode = codes[0];
   out.stationCode = codes[1];
   out.locationCode = codes[2];
@@ -793,7 +795,7 @@ export function merge(drList: Array<MSeed3Record>): Seismogram {
  * @returns array of SeismogramSegments for contiguous data
  */
 export function mergeSegments(drList: Array<MSeed3Record>): Array<SeismogramSegment> {
-  let out = [];
+  const out = [];
   let currDR;
   drList.sort(function (a, b) {
     return a.header.start.valueOf() - b.header.start.valueOf();
@@ -832,11 +834,11 @@ export function mergeSegments(drList: Array<MSeed3Record>): Array<SeismogramSegm
 export function byChannel(
   drList: Array<MSeed3Record>,
 ): Map<string, Array<MSeed3Record>> {
-  let out: Map<string, Array<MSeed3Record>> = new Map();
+  const out: Map<string, Array<MSeed3Record>> = new Map();
   let key;
 
   for (let i = 0; i < drList.length; i++) {
-    let currDR = drList[i];
+    const currDR = drList[i];
     key = currDR.codes();
     let drArray = out.get(key);
 
@@ -862,7 +864,7 @@ export function seismogramSegmentPerChannel(
   drList: Array<MSeed3Record>,
 ): Array<SeismogramSegment> {
   let out = new Array<SeismogramSegment>(0);
-  let byChannelMap = byChannel(drList);
+  const byChannelMap = byChannel(drList);
   byChannelMap.forEach(segments => out = out.concat(mergeSegments(segments)));
   return out;
 }
@@ -876,8 +878,8 @@ export function seismogramSegmentPerChannel(
 export function seismogramPerChannel(
   drList: Array<MSeed3Record>,
 ): Array<Seismogram> {
-  let out: Array<Seismogram> = [];
-  let byChannelMap = byChannel(drList);
+  const out: Array<Seismogram> = [];
+  const byChannelMap = byChannel(drList);
   byChannelMap.forEach(segments => out.push(merge(segments)));
   return out;
 }
@@ -893,7 +895,7 @@ export function seismogramPerChannel(
 export function convertMS2toMSeed3(
   mseed2: Array<DataRecord>,
 ): Array<MSeed3Record> {
-  let out = [];
+  const out = [];
 
   for (let i = 0; i < mseed2.length; i++) {
     out.push(convertMS2Record(mseed2[i]));
@@ -909,9 +911,9 @@ export function convertMS2toMSeed3(
  * @returns            MSeed3Record
  */
 export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
-  let xHeader = new MSeed3Header();
-  let xExtras: Record<string,any> = {};
-  let ms2H = ms2record.header;
+  const xHeader = new MSeed3Header();
+  const xExtras: Record<string,any> = {};
+  const ms2H = ms2record.header;
   xHeader.flags =
     (ms2H.activityFlags & 1) * 2 +
     (ms2H.ioClockFlags & 64) * 4 +
@@ -987,7 +989,7 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
 
   xHeader.extraHeadersLength = JSON.stringify(xExtras).length;
   // need to convert if not steim1 or 2
-  let out = new MSeed3Record(xHeader, xExtras, ms2record.data);
+  const out = new MSeed3Record(xHeader, xExtras, ms2record.data);
   return out;
 }
 
@@ -1277,7 +1279,7 @@ const kCRCTable = new Int32Array([
  */
 export function calculateCRC32C(
   buf: ArrayBuffer | Uint8Array,
-  initial: number = 0,
+  initial = 0,
 ): number {
   let ubuf: Uint8Array;
   if (buf instanceof ArrayBuffer) {
@@ -1314,6 +1316,6 @@ export function crcToHexString(crc: number): string {
     crc = 0xffffffff + crc + 1;
   }
 
-  let s = crc.toString(16).toUpperCase();
+  const s = crc.toString(16).toUpperCase();
   return "0x" + s;
 }

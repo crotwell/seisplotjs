@@ -58,19 +58,19 @@ export class SEPacket {
       );
     }
 
-    let slHeader = new DataView(data, 0, 16);
+    const slHeader = new DataView(data, 0, 16);
     // check for 'SE' at start
-    let sig = String.fromCharCode(slHeader.getUint8(0), slHeader.getUint8(1));
+    const sig = String.fromCharCode(slHeader.getUint8(0), slHeader.getUint8(1));
 
     if (sig === SE_PACKET_SIGNATURE) {
-      let dataFormat = slHeader.getUint8(2);
-      let dataSubformat = slHeader.getUint8(3);
-      let payloadLength = slHeader.getUint32(4, useLittleEndian);
-      let sequenceNum = slHeader.getBigUint64(8, useLittleEndian);
-      let stationIdLength = slHeader.getUint8(16);
-      let stationIdDV = new DataView(data, 17, stationIdLength);
-      let stationId = dataViewToString(stationIdDV);
-      let dataView = new DataView(
+      const dataFormat = slHeader.getUint8(2);
+      const dataSubformat = slHeader.getUint8(3);
+      const payloadLength = slHeader.getUint32(4, useLittleEndian);
+      const sequenceNum = slHeader.getBigUint64(8, useLittleEndian);
+      const stationIdLength = slHeader.getUint8(16);
+      const stationIdDV = new DataView(data, 17, stationIdLength);
+      const stationId = dataViewToString(stationIdDV);
+      const dataView = new DataView(
         data,
         17 + stationIdLength,
         data.byteLength - 16,
@@ -327,10 +327,10 @@ export class SeedlinkConnection {
   }
 
   checkProto(lines: Array<string>): boolean {
-    let sl = lines[0].split("::");
-    let caps = sl[1].trim().split(" ");
+    const sl = lines[0].split("::");
+    const caps = sl[1].trim().split(" ");
 
-    for (let c of caps) {
+    for (const c of caps) {
       if (c === SEEDLINK4_PROTOCOL) {
         return true;
       }
@@ -364,7 +364,7 @@ export class SeedlinkConnection {
     const data: ArrayBuffer = event.data;
 
     try {
-      let out = SEPacket.parse(data);
+      const out = SEPacket.parse(data);
       this.receivePacketFn(out);
     } catch (e) {
       this.errorHandler(toError(e));
@@ -382,13 +382,13 @@ export class SeedlinkConnection {
    * @returns            Promise that resolves to the response from the server.
    */
   sendHello(): Promise<Array<string>> {
-    let webSocket = this.webSocket;
-    let promise: Promise<Array<string>> = new RSVP.Promise(function (resolve, reject) {
+    const webSocket = this.webSocket;
+    const promise: Promise<Array<string>> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           const data: ArrayBuffer = event.data;
-          let replyMsg = dataViewToString(new DataView(data));
-          let lines = replyMsg.trim().split("\r");
+          const replyMsg = dataViewToString(new DataView(data));
+          const lines = replyMsg.trim().split("\r");
 
           if (lines.length === 2) {
             resolve(lines);
@@ -414,7 +414,7 @@ export class SeedlinkConnection {
    *   command if successful, or rejects on the first failure.
    */
   sendCmdArray(cmd: Array<string>): Promise<string> {
-    let that = this;
+    const that = this;
     return cmd.reduce(function (accum: Promise<string>, next: string) {
       return accum.then(function () {
         return that.createCmdPromise(next);
@@ -429,12 +429,12 @@ export class SeedlinkConnection {
    * @returns        Promise that resolves to the reply from the server.
    */
   createCmdPromise(mycmd: string): Promise<string> {
-    let webSocket = this.webSocket;
-    let promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
+    const webSocket = this.webSocket;
+    const promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           const data: ArrayBuffer = event.data;
-          let replyMsg = dataViewToString(new DataView(data)).trim();
+          const replyMsg = dataViewToString(new DataView(data)).trim();
 
           if (replyMsg === "OK") {
             resolve(replyMsg);

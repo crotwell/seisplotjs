@@ -112,7 +112,7 @@ export class SeismographConfig {
 
   constructor() {
     this.configId = ++SeismographConfig._lastID;
-    console.log(`seisconfig constructor ${this.configId}`)
+    console.log(`seisconfig constructor ${this.configId}`);
     this.drawingType = DRAW_CANVAS;
     this.isXAxis = true;
     this.isXAxisTop = false;
@@ -195,7 +195,7 @@ export class SeismographConfig {
   }
 
   static fromJSON(json: any): SeismographConfig {
-    let seisConfig = new SeismographConfig();
+    const seisConfig = new SeismographConfig();
     Object.assign(seisConfig, json);
 
     if (json.isLinkedTimeScale) {
@@ -214,7 +214,7 @@ export class SeismographConfig {
 
   asJSON(): any {
     // kind of dumb...
-    let out = JSON.parse(JSON.stringify(this));
+    const out = JSON.parse(JSON.stringify(this));
     out.title = out._title;
     delete out._title;
     out.fixedAmplitudeScale = out._fixedAmplitudeScale;
@@ -444,8 +444,8 @@ export class SeismographConfig {
    */
   createAlignmentData(
     timeRange: StartEndDuration,
-    min: number = -100,
-    max: number = 100,
+    min = -100,
+    max = 100,
   ): SeismogramDisplayData {
     const mid = (max + min) / 2;
     const fakeData = Float32Array.from([
@@ -481,7 +481,7 @@ export class SeismographConfig {
 
   createCSSForLineColors(svgClass?: string): string {
     let cssText = "";
-    let numColors = this.lineColors.length;
+    const numColors = this.lineColors.length;
     let svgEl = "svg";
 
     if (!isDef(svgClass)) {
@@ -525,7 +525,7 @@ export class SeismographConfig {
   }
 
   clone(): SeismographConfig {
-    let out = new SeismographConfig();
+    const out = new SeismographConfig();
     Object.getOwnPropertyNames(this).forEach(name => {
       // @ts-ignore
       if (Array.isArray(this[name])) {
@@ -614,7 +614,7 @@ export function createEditor(
     throw new Error("div is Required");
   }
 
-  let titleDiv = div.append("div");
+  const titleDiv = div.append("div");
   createBooleanOptionByKey(
     titleDiv.append("span"),
     "",
@@ -627,7 +627,7 @@ export function createEditor(
     .selectAll("input")
     .classed("smallconfigtext", false)
     .classed("bigconfigtext", true);
-  let xLabelDiv = div.append("div");
+  const xLabelDiv = div.append("div");
   xLabelDiv.append("span").text("X Axis:");
   createBooleanOptionByKey(
     xLabelDiv.append("span"),
@@ -664,7 +664,7 @@ export function createEditor(
     config,
     onChange,
   );
-  let yLabelDiv = div.append("div");
+  const yLabelDiv = div.append("div");
   yLabelDiv.append("span").text("Y Axis:");
   createBooleanOptionByKey(
     yLabelDiv.append("span"),
@@ -701,7 +701,7 @@ export function createEditor(
     config,
     onChange,
   );
-  let yLabelDivB = div.append("div");
+  const yLabelDivB = div.append("div");
   createBooleanOptionByKey(
     yLabelDivB.append("span"),
     "Nice",
@@ -723,7 +723,7 @@ export function createEditor(
     config,
     onChange,
   );
-  let marginDiv = div.append("div");
+  const marginDiv = div.append("div");
   marginDiv.append("label").text("Margin:");
   createTextOption(
     marginDiv.append("span"),
@@ -753,11 +753,11 @@ export function createEditor(
     config.margin,
     onChange,
   );
-  let colorDiv = div.append("div");
+  const colorDiv = div.append("div");
   colorDiv.append("label").text("Color:");
-  let subDiv = colorDiv.append("span");
+  const subDiv = colorDiv.append("span");
   config.lineColors.forEach((color, index) => {
-    let colorspan = subDiv.append("span");
+    const colorspan = subDiv.append("span");
     colorspan.style("color", color);
     colorspan.append("label").text(`${index + 1}:`);
     colorspan
@@ -768,7 +768,7 @@ export function createEditor(
       .property("value", color)
       .on("change", function () {
         // @ts-ignore
-        let val = d3.select(this).property("value");
+        const val = d3.select(this).property("value");
         config.lineColors[index] = val;
         colorspan.style("color", val);
         colorspan.select("input").style("color", val);
@@ -799,7 +799,7 @@ export function createEditor(
   );
   const heightDiv = div.append("div");
   heightDiv.append("label").text("Height:");
-  let subHeightDiv = heightDiv.append("span");
+  const subHeightDiv = heightDiv.append("span");
   createTextOption(
     subHeightDiv.append("span"),
     "Min",

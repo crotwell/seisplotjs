@@ -53,10 +53,10 @@ export class RingserverConnection {
   _timeoutSec: number;
 
   constructor(host?: string, port?: number) {
-    let hostStr = isNonEmptyStringArg(host) ? host : IRIS_HOST;
+    const hostStr = isNonEmptyStringArg(host) ? host : IRIS_HOST;
 
     if (hostStr.startsWith("http")) {
-      let rs_url = new URL(hostStr);
+      const rs_url = new URL(hostStr);
       this._host = rs_url.hostname;
       this._port = parseInt(rs_url.port);
 
@@ -133,7 +133,7 @@ export class RingserverConnection {
    */
   pullId(): Promise<RingserverVersion> {
     return this.pullRaw(this.formIdURL()).then(raw => {
-      let lines = raw.split("\n");
+      const lines = raw.split("\n");
       let organization = lines[1];
 
       if (organization.startsWith(ORG)) {
@@ -198,18 +198,18 @@ export class RingserverConnection {
 
     const url = this.formStreamsURL(queryParams);
     return this.pullRaw(url).then(raw => {
-      let lines = raw.split("\n");
-      let out: StreamsResult = {
+      const lines = raw.split("\n");
+      const out: StreamsResult = {
         accessTime: DateTime.utc(),
         streams: [],
       };
 
-      for (let line of lines) {
+      for (const line of lines) {
         if (line.length === 0) {
           continue;
         }
 
-        let vals = line.split(/\s+/);
+        const vals = line.split(/\s+/);
 
         if (vals.length === 0) {
           // blank line, skip
@@ -350,7 +350,7 @@ export class RingserverConnection {
 export function stationsFromStreams(
   streams: Array<StreamStat>,
 ): Array<StreamStat> {
-  let out: Map<string, StreamStat> = new Map();
+  const out: Map<string, StreamStat> = new Map();
 
   for (const s of streams) {
     const nslc = nslcSplit(s.key);
@@ -391,8 +391,8 @@ export type NSLCType = {
  * @returns  object with the split fields
  */
 export function nslcSplit(id: string): NSLCType {
-  let split = id.split("/");
-  let nslc = split[0].split("_");
+  const split = id.split("/");
+  const nslc = split[0].split("_");
 
   if (nslc.length === 4) {
     // assume net, station, loc, chan

@@ -211,7 +211,7 @@ export class DataCentersQuery {
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       function (response) {
-        let contentType = response.headers.get("content-type");
+        const contentType = response.headers.get("content-type");
 
         if (
           isNonEmptyStringArg(contentType) &&
@@ -244,14 +244,14 @@ export class DataCentersQuery {
 
     this.services(fdsnavailability.SERVICE_NAME);
     return this.queryJson().then(json => {
-      let out = this.extractCompatibleServices(
+      const out = this.extractCompatibleServices(
         json,
         fdsnavailability.SERVICE_NAME,
         repoName,
       );
       return out.map(service => {
-        let url = new URL(service.url);
-        let q = new fdsnavailability.AvailabilityQuery(url.hostname);
+        const url = new URL(service.url);
+        const q = new fdsnavailability.AvailabilityQuery(url.hostname);
 
         if (url.port && url.port.length > 0) {
           q.port(Number.parseInt(url.port));
@@ -281,14 +281,14 @@ export class DataCentersQuery {
 
     this.services(fdsndataselect.SERVICE_NAME);
     return this.queryJson().then(json => {
-      let out = this.extractCompatibleServices(
+      const out = this.extractCompatibleServices(
         json,
         fdsndataselect.SERVICE_NAME,
         repoName,
       );
       return out.map(service => {
-        let url = new URL(service.url);
-        let q = new fdsndataselect.DataSelectQuery(url.hostname);
+        const url = new URL(service.url);
+        const q = new fdsndataselect.DataSelectQuery(url.hostname);
 
         if (url.port && url.port.length > 0) {
           q.port(Number.parseInt(url.port));
@@ -318,14 +318,14 @@ export class DataCentersQuery {
 
     this.services(fdsnevent.SERVICE_NAME);
     return this.queryJson().then(json => {
-      let out = this.extractCompatibleServices(
+      const out = this.extractCompatibleServices(
         json,
         fdsnevent.SERVICE_NAME,
         repoName,
       );
       return out.map(service => {
-        let url = new URL(service.url);
-        let q = new fdsnevent.EventQuery(url.hostname);
+        const url = new URL(service.url);
+        const q = new fdsnevent.EventQuery(url.hostname);
 
         if (url.port && url.port.length > 0) {
           q.port(Number.parseInt(url.port));
@@ -355,14 +355,14 @@ export class DataCentersQuery {
 
     this.services(fdsnstation.SERVICE_NAME);
     return this.queryJson().then(json => {
-      let out = this.extractCompatibleServices(
+      const out = this.extractCompatibleServices(
         json,
         fdsnstation.SERVICE_NAME,
         repoName,
       );
       return out.map(service => {
-        let url = new URL(service.url);
-        let q = new fdsnstation.StationQuery(url.hostname);
+        const url = new URL(service.url);
+        const q = new fdsnstation.StationQuery(url.hostname);
 
         if (url.port && url.port.length > 0) {
           q.port(Number.parseInt(url.port));
@@ -387,7 +387,7 @@ export class DataCentersQuery {
     compatibleName: string,
     repoName?: string,
   ): Array<any> {
-    let out: Array<any> = [];
+    const out: Array<any> = [];
     json.datacenters.forEach(dc => {
       dc.repositories.forEach(repo => {
         if (!isDef(repoName) || repoName === repo.name) {
@@ -444,7 +444,7 @@ export class DataCentersQuery {
    * @returns Promise to version string
    */
   queryVersion(): Promise<string> {
-    let url = this.formVersionURL();
+    const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       response => {

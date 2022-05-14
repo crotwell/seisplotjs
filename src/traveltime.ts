@@ -58,7 +58,7 @@ export type TraveltimeArrivalType = {
 export function convertTravelTimeLineToObject(
   ttimeline: string,
 ): TraveltimeArrivalType {
-  let items = ttimeline.trim().split(/\s+/);
+  const items = ttimeline.trim().split(/\s+/);
   return {
     distdeg: parseFloat(items[0]),
     phase: items[2],
@@ -415,7 +415,7 @@ export class TraveltimeQuery {
         return new DOMParser().parseFromString(rawXmlText, SVG_MIME);
       })
       .then(xml => {
-        let elArray = xml.getElementsByTagName("svg");
+        const elArray = xml.getElementsByTagName("svg");
 
         if (elArray.length > 0) {
           return elArray[0];

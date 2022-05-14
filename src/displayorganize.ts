@@ -410,7 +410,7 @@ export function overlayBySDDFunction(
   sddFun: (arg0: SeismogramDisplayData) => string | number | null,
   seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
-  let out: Array<OrganizedDisplayItem> = [];
+  const out: Array<OrganizedDisplayItem> = [];
   sddList.forEach(sdd => {
     let found = false;
     const val = sddFun(sdd);

@@ -336,7 +336,7 @@ export class AvailabilityQuery {
   /**
    * @deprecated
    * @param  se               [description]
-   * @return    [description]
+   * @returns    [description]
    */
   timeWindow(se: StartEndDuration): AvailabilityQuery {
     return this.timeRange(se);
@@ -512,7 +512,7 @@ export class AvailabilityQuery {
           return RSVP.hash(EMPTY_JSON);
         }
 
-        let contentType = response.headers.get("content-type");
+        const contentType = response.headers.get("content-type");
 
         if (
           isNonEmptyStringArg(contentType) &&
@@ -560,7 +560,7 @@ export class AvailabilityQuery {
           return EMPTY_JSON;
         }
 
-        let contentType = response.headers.get("content-type");
+        const contentType = response.headers.get("content-type");
 
         if (
           isNonEmptyStringArg(contentType) &&
@@ -626,7 +626,7 @@ export class AvailabilityQuery {
         return EMPTY_JSON;
       }
 
-      let contentType = response.headers.get("content-type");
+      const contentType = response.headers.get("content-type");
 
       if (isNonEmptyStringArg(contentType) && contentType.includes(JSON_MIME)) {
         return response.json();
@@ -662,11 +662,11 @@ export class AvailabilityQuery {
   }
 
   extractFromJson(jsonChanTimes: RootType): Array<SeismogramDisplayData> {
-    let out = [];
-    let knownNets = new Map();
+    const out = [];
+    const knownNets = new Map();
 
     if (isDef(jsonChanTimes.datasources)) {
-      for (let ds of jsonChanTimes.datasources) {
+      for (const ds of jsonChanTimes.datasources) {
         let n = knownNets.get(ds.network);
 
         if (!n) {
@@ -676,7 +676,7 @@ export class AvailabilityQuery {
 
         let s = null;
 
-        for (let ss of n.stations) {
+        for (const ss of n.stations) {
           if (ss.stationCode === ds.station) {
             s = ss;
           }
@@ -687,7 +687,7 @@ export class AvailabilityQuery {
           n.stations.push(s);
         }
 
-        let c = new Channel(s, ds.channel, ds.locationCode);
+        const c = new Channel(s, ds.channel, ds.locationCode);
 
         if (
           isNonEmptyStringArg(ds.earliest) &&
@@ -701,7 +701,7 @@ export class AvailabilityQuery {
             ),
           );
         } else if (ds.timespans) {
-          for (let ts of ds.timespans) {
+          for (const ts of ds.timespans) {
             out.push(
               SeismogramDisplayData.fromChannelAndTimes(
                 c,
@@ -762,10 +762,10 @@ export class AvailabilityQuery {
       out += this.makePostParm("nodata", this.nodata());
     }
 
-    for (let ct of channelTimeList) {
+    for (const ct of channelTimeList) {
       if (isDef(ct.channel)) {
-        let sta = ct.channel.station;
-        let net = sta.network;
+        const sta = ct.channel.station;
+        const net = sta.network;
         out += `${net.networkCode} ${sta.stationCode} ${
           ct.channel.locationCode
         } ${
@@ -808,7 +808,7 @@ export class AvailabilityQuery {
    * @returns Promise to version string
    */
   queryVersion(): Promise<string> {
-    let url = this.formVersionURL();
+    const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       response => {

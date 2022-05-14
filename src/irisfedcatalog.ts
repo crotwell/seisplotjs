@@ -530,7 +530,7 @@ export class FedCatalogQuery {
   /**
    * @deprecated
    * @param  se               [description]
-   * @return    [description]
+   * @returns    [description]
    */
   timeWindow(se: StartEndDuration): FedCatalogQuery {
     return this.timeRange(se);
@@ -902,7 +902,7 @@ export class FedCatalogQuery {
         );
       })
       .then(netArrayArray => {
-        let out: Array<Network> = [];
+        const out: Array<Network> = [];
         netArrayArray.forEach(netArray => {
           netArray.forEach(net => {
             out.push(net);
@@ -920,7 +920,7 @@ export class FedCatalogQuery {
     this._level = level;
     this.targetService("station");
     return this.queryRaw().then(function (fedCatalogResult) {
-      for (let r of fedCatalogResult.queries) {
+      for (const r of fedCatalogResult.queries) {
         const stationQuery = new StationQuery();
         r.stationQuery = stationQuery;
         fedCatalogResult.params.forEach((v, k) => {
@@ -967,7 +967,7 @@ export class FedCatalogQuery {
    * @returns               result with dataSelectQuery added to each item
    */
   setupForFdnsDataSelect(fedCatalogResult: FedCatalogResult): FedCatalogResult {
-    for (let r of fedCatalogResult.queries) {
+    for (const r of fedCatalogResult.queries) {
       const dataSelectQuery = new DataSelectQuery();
       r.dataSelectQuery = dataSelectQuery;
       fedCatalogResult.params.forEach((k, v) => {
@@ -1018,7 +1018,7 @@ export class FedCatalogQuery {
   ): Promise<Array<SeismogramDisplayData>> {
     return RSVP.all(
       fedCatalogResult.queries.map(query => {
-        let sddList = query.postLines.map(line => {
+        const sddList = query.postLines.map(line => {
           const items = line.split(" ");
           const start = isoToDateTime(items[4]);
           const end = isoToDateTime(items[5]);
@@ -1041,7 +1041,7 @@ export class FedCatalogQuery {
         }
       }),
     ).then(sddArrayArray => {
-      let out: Array<SeismogramDisplayData> = [];
+      const out: Array<SeismogramDisplayData> = [];
       sddArrayArray.forEach(sddArray => {
         sddArray.forEach(sdd => {
           out.push(sdd);
@@ -1073,9 +1073,9 @@ export class FedCatalogQuery {
         return this.postFdsnDataselectForFedCatResult(fedCatalogResult);
       })
       .then((sddResultArray: Array<SeismogramDisplayData>) => {
-        for (let sdd of sddList) {
-          let codes = sdd.codes();
-          let matchSdd = sddResultArray.find(
+        for (const sdd of sddList) {
+          const codes = sdd.codes();
+          const matchSdd = sddResultArray.find(
             s => s.codes() === codes && s.timeRange.overlaps(sdd.timeRange),
           );
 
@@ -1098,7 +1098,7 @@ export class FedCatalogQuery {
       // return promise faking an empty response
       return RSVP.hash(this.parseRequest(FAKE_EMPTY_TEXT));
     } else {
-      let body =
+      const body =
         `targetservice=${targetService}\n` +
         DataSelectQuery.createPostBody(sddList);
       return this.postQueryRawWithBody(body);
@@ -1161,8 +1161,8 @@ export class FedCatalogQuery {
   }
 
   parseRequest(requestText: string): FedCatalogResult {
-    let out = new FedCatalogResult();
-    let lines = requestText.split("\n");
+    const out = new FedCatalogResult();
+    const lines = requestText.split("\n");
     let inParams = true;
     let query = null;
 
@@ -1174,7 +1174,7 @@ export class FedCatalogQuery {
           //empty line, end of section
           inParams = false;
         } else {
-          let keyval = l.split("=");
+          const keyval = l.split("=");
           out.params.set(keyval[0], keyval[1]);
         }
       } else {
@@ -1189,7 +1189,7 @@ export class FedCatalogQuery {
           }
 
           if (l.indexOf("=") !== -1) {
-            let keyval = l.split("=");
+            const keyval = l.split("=");
 
             if (keyval[0] === "DATACENTER") {
               query.dataCenter = keyval[1];
@@ -1223,7 +1223,7 @@ export class FedCatalogQuery {
    * @returns Promise to version string
    */
   queryVersion(): Promise<string> {
-    let url = this.formVersionURL();
+    const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       response => {

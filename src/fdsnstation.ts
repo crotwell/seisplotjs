@@ -994,7 +994,7 @@ export class StationQuery {
    * @returns Promise to version string
    */
   queryVersion(): Promise<string> {
-    let url = this.formVersionURL();
+    const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       response => {

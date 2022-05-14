@@ -63,17 +63,17 @@ div.wrapper {
 `;
 export function createStationMarker(
   station: Station,
-  isactive: boolean = true,
+  isactive = true,
 ) {
-  let i = isactive ? stationIcon : inactiveStationIcon;
-  let m = L.marker([station.latitude, station.longitude], {
+  const i = isactive ? stationIcon : inactiveStationIcon;
+  const m = L.marker([station.latitude, station.longitude], {
     icon: i,
   });
   m.bindTooltip(station.codes());
   return m;
 }
-export function createQuakeMarker(quake: Quake, magScaleFactor: number = 5) {
-  let circle = L.circleMarker([quake.latitude, quake.longitude], {
+export function createQuakeMarker(quake: Quake, magScaleFactor = 5) {
+  const circle = L.circleMarker([quake.latitude, quake.longitude], {
     color: "currentColor",
     radius: quake.magnitude
       ? quake.magnitude.mag * magScaleFactor
@@ -834,14 +834,14 @@ export class QuakeStationMap extends SeisPlotElement {
     }
     L.tileLayer(tileUrl, tileOptions).addTo(mymap);
     const magScale = this.magScale;
-    let mapItems: Array<LatLngTuple> = [];
+    const mapItems: Array<LatLngTuple> = [];
     uniqueQuakes(this.seisData).forEach(q => {
-      let circle = createQuakeMarker(q, magScale);
+      const circle = createQuakeMarker(q, magScale);
       circle.addTo(mymap);
       mapItems.push([q.latitude, q.longitude]);
     });
     uniqueStations(this.seisData).forEach(s => {
-      let m = createStationMarker(s);
+      const m = createStationMarker(s);
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
     });

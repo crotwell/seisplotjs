@@ -17,14 +17,14 @@ export const G_DATA_SELECTOR = "seisplotjsdata";
  * @returns the style html element inserted
  */
 export function insertCSS(cssText: string, id: string): HTMLElement {
-  let head = document.head;
+  const head = document.head;
 
   if (head === null) {
     throw new Error("document.head is null");
   }
 
   if (id) {
-    for (let c of Array.from(head.children)) {
+    for (const c of Array.from(head.children)) {
       // only remove if a <style> element, classed with autoseisplotjs and same id within head
       if (isIdStyleElement(c, id)) {
         // null check for flow
@@ -37,7 +37,7 @@ export function insertCSS(cssText: string, id: string): HTMLElement {
     }
   }
 
-  let styleElement = document.createElement("style");
+  const styleElement = document.createElement("style");
 
   if (id) {
     styleElement.id = id;
@@ -50,13 +50,13 @@ export function insertCSS(cssText: string, id: string): HTMLElement {
   return styleElement;
 }
 export function isCSSInserted(id: string): boolean {
-  let head = document.head;
+  const head = document.head;
 
   if (head === null) {
     throw new Error("document.head is null");
   }
 
-  for (let c of Array.from(head.children)) {
+  for (const c of Array.from(head.children)) {
     if (isIdStyleElement(c, id)) {
       return true;
     }

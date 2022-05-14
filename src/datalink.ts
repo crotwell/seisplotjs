@@ -270,7 +270,7 @@ export class DataLinkConnection {
       len += data.length;
     }
 
-    let rawPacket = new ArrayBuffer(len);
+    const rawPacket = new ArrayBuffer(len);
     const binaryPacket = new Uint8Array(rawPacket);
     const packet = new DataView(rawPacket);
     packet.setUint8(0, 68); // ascii D
@@ -393,7 +393,7 @@ export class DataLinkConnection {
     hpdataend: DateTime,
     data?: Uint8Array,
   ): Promise<DataLinkResponse | DataLinkPacket> {
-    let header = `WRITE ${streamid} ${dateTimeToHPTime(
+    const header = `WRITE ${streamid} ${dateTimeToHPTime(
       hpdatastart,
     )} ${dateTimeToHPTime(hpdataend)} A`;
     return this.awaitDLBinary(header, data);

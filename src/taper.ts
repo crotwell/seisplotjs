@@ -15,7 +15,7 @@ import {Seismogram} from "./seismogram";
  */
 export function taper(
   seis: Seismogram,
-  width: number = 0.05,
+  width = 0.05,
   taperType: string = HANNING,
 ): Seismogram {
   if (width > 0.5) {
@@ -23,10 +23,10 @@ export function taper(
   }
 
   if (seis.isContiguous()) {
-    let data = seis.y;
-    let outData = Float32Array.from(data);
-    let w = Math.floor(data.length * width);
-    let coeff = getCoefficients(taperType, w);
+    const data = seis.y;
+    const outData = Float32Array.from(data);
+    const w = Math.floor(data.length * width);
+    const coeff = getCoefficients(taperType, w);
     const omega = coeff[0];
     const f0 = coeff[1];
     const f1 = coeff[2];

@@ -168,7 +168,7 @@ export class SeedlinkConnection {
         return;
       }
 
-      let slHeader = new DataView(data, 0, 8);
+      const slHeader = new DataView(data, 0, 8);
 
       // check for 'SL' at start
       if (slHeader.getInt8(0) === 83 && slHeader.getInt8(1) === 76) {
@@ -178,8 +178,8 @@ export class SeedlinkConnection {
           seqStr = seqStr + String.fromCharCode(slHeader.getInt8(2 + i));
         }
 
-        let dataView = new DataView(data, 8, data.byteLength - 8);
-        let out = {
+        const dataView = new DataView(data, 8, data.byteLength - 8);
+        const out = {
           rawsequence: seqStr,
           sequence: parseInt(seqStr, 16),
           miniseed: miniseed.parseSingleDataRecord(dataView),
@@ -209,13 +209,13 @@ export class SeedlinkConnection {
    * @returns            Promise that resolves to the response from the server.
    */
   sendHello(): Promise<[string,string]> {
-    let webSocket = this.webSocket;
-    let promise: Promise<[string,string]> = new RSVP.Promise(function (resolve, reject) {
+    const webSocket = this.webSocket;
+    const promise: Promise<[string,string]> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           const data: ArrayBuffer = event.data;
-          let replyMsg = dataViewToString(new DataView(data));
-          let lines = replyMsg.trim().split("\r");
+          const replyMsg = dataViewToString(new DataView(data));
+          const lines = replyMsg.trim().split("\r");
 
           if (lines.length === 2) {
             resolve([lines[0],lines[1]]);
@@ -241,7 +241,7 @@ export class SeedlinkConnection {
    *   command if successful, or rejects on the first failure.
    */
   sendCmdArray(cmd: Array<string>): Promise<string> {
-    let that = this;
+    const that = this;
     return cmd.reduce(function (accum: Promise<string>, next: string) {
       return accum.then(function (): Promise<string> {
         return that.createCmdPromise(next);
@@ -256,12 +256,12 @@ export class SeedlinkConnection {
    * @returns        Promise that resolves to the reply from the server.
    */
   createCmdPromise(mycmd: string): Promise<string> {
-    let webSocket = this.webSocket;
-    let promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
+    const webSocket = this.webSocket;
+    const promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           const data: ArrayBuffer = event.data;
-          let replyMsg = dataViewToString(new DataView(data)).trim();
+          const replyMsg = dataViewToString(new DataView(data)).trim();
 
           if (replyMsg === "OK") {
             resolve(replyMsg);

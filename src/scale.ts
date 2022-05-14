@@ -111,7 +111,7 @@ export class LinkedAmplitudeScale {
       const maxHalfRange = graphList.reduce((acc, cur) => {
         return acc > cur.halfWidth ? acc : cur.halfWidth;
       }, 0);
-      console.log(`LinkedAmplitudeScale.recalculate ${mythis.halfWidth} -> ${maxHalfRange}`)
+      console.log(`LinkedAmplitudeScale.recalculate ${mythis.halfWidth} -> ${maxHalfRange}`);
       if (mythis.halfWidth !== maxHalfRange) {
         mythis.halfWidth = maxHalfRange;
         graphList.forEach(g => {
@@ -123,7 +123,7 @@ export class LinkedAmplitudeScale {
   notifyAll() {
     const graphList = Array.from(this._graphSet.values());
     const hw = this.halfWidth;
-    console.log(`amp notifyAll ${graphList.length}  hw: ${hw}`)
+    console.log(`amp notifyAll ${graphList.length}  hw: ${hw}`);
     graphList.forEach(g => {
       setTimeout(() => {
         g.notifyAmplitudeChange(g.middle, hw);
@@ -172,9 +172,9 @@ export class LinkedTimeScale {
     const glist = graphList ? graphList : []; // in case null
 
     this._graphSet = new Set(glist);
-    console.log(`set LinkedTimeScale duration to zero in const`)
+    console.log(`set LinkedTimeScale duration to zero in const`);
     this._originalDuration = Duration.fromMillis(0);
-    this._originalStartOffset = Duration.fromMillis(0)
+    this._originalStartOffset = Duration.fromMillis(0);
     this._zoomedDuration = null;
     this._zoomedStartOffset = null;
 
@@ -249,7 +249,7 @@ export class LinkedTimeScale {
 
   set duration(duration: Duration) {
     if (!isDef(duration)) {
-      throw new Error(`Duration must be defined: ${duration}`)
+      throw new Error(`Duration must be defined: ${duration}`);
     }
     this._originalDuration = duration;
     this._zoomedDuration = duration;

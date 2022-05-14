@@ -52,12 +52,12 @@ export function registerHelpers() {
   });
   Handlebars.registerHelper(
     "formatNumber",
-    function (val: number, digits: number = 2) {
+    function (val: number, digits = 2) {
       if (typeof val === "undefined" || val === null) {
         return "";
       }
 
-      let decimalDigits = digits === undefined ? 2 : digits;
+      const decimalDigits = digits === undefined ? 2 : digits;
 
       if (typeof val === "number") {
         return val.toFixed(decimalDigits);
@@ -69,8 +69,8 @@ export function registerHelpers() {
   );
   Handlebars.registerHelper("formatIsoDate", function (param, hash) {
     if (typeof param === "undefined" || param === null) return "no time";
-    let defaultFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    let format = hash.format === undefined ? defaultFormat : hash.format;
+    const defaultFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    const format = hash.format === undefined ? defaultFormat : hash.format;
     let m = param;
 
     if (!DateTime.isDateTime(param)) {

@@ -107,7 +107,7 @@ export class SeismogramSegment {
       }
 
       // data is still compressed
-      let outLen = this.numPoints;
+      const outLen = this.numPoints;
 
       if (this._compressed === null) {
         throw new Error("Seismogram not y as TypedArray or encoded.");
@@ -123,7 +123,7 @@ export class SeismogramSegment {
 
       let currIdx = 0;
 
-      for (let c of this._compressed) {
+      for (const c of this._compressed) {
         const cData = c.decode();
 
         for (let i = 0; i < c.numSamples; i++) {
@@ -214,7 +214,7 @@ export class SeismogramSegment {
     if (this._y) {
       out = this._y.length;
     } else if (this._compressed) {
-      for (let c of this._compressed) {
+      for (const c of this._compressed) {
         out += c.numSamples;
       }
     }
@@ -292,7 +292,7 @@ export class SeismogramSegment {
       maxAmp = minMaxAccumulator[1];
     }
 
-    let yData = this.y;
+    const yData = this.y;
 
     for (let n = 0; n < yData.length; n++) {
       if (minAmp > yData[n]) {
@@ -347,7 +347,7 @@ export class SeismogramSegment {
    * @param sep separator, defaults to '.'
    * @returns nslc codes separated by sep
    */
-  codes(sep: string = "."): string {
+  codes(sep = "."): string {
     return (
       (this.networkCode ? this.networkCode : "") +
       sep +
@@ -381,13 +381,13 @@ export class SeismogramSegment {
     let band;
     let source;
     let subsource;
-    let chanCode = (this.channelCode ? this.channelCode : "");
+    const chanCode = (this.channelCode ? this.channelCode : "");
     if (chanCode.length === 3) {
       band = chanCode.charAt(0);
       source = chanCode.charAt(1);
       subsource = chanCode.charAt(2);
     } else {
-      let items = chanCode.split(sep);
+      const items = chanCode.split(sep);
       band = items[0];
       source = items[1];
       subsource = items[2];
@@ -431,7 +431,7 @@ export class SeismogramSegment {
       | Float64Array,
     clonedStartTime: DateTime = this._startTime,
   ): SeismogramSegment {
-    let out = new SeismogramSegment(
+    const out = new SeismogramSegment(
       clonedData,
       this.sampleRate,
       clonedStartTime,
@@ -455,21 +455,21 @@ export class SeismogramSegment {
     let sIndex = 0;
 
     if (timeRange.startTime > this._startTime) {
-      let milliDiff = timeRange.startTime.diff(this._startTime).toMillis();
-      let offset = (milliDiff * this.sampleRate) / 1000.0;
+      const milliDiff = timeRange.startTime.diff(this._startTime).toMillis();
+      const offset = (milliDiff * this.sampleRate) / 1000.0;
       sIndex = Math.floor(offset);
     }
 
     let eIndex = this.y.length;
 
     if (timeRange.endTime < this.endTime) {
-      let milliDiff = this.endTime.diff(timeRange.endTime).toMillis();
-      let offset = (milliDiff * this.sampleRate) / 1000.0;
+      const milliDiff = this.endTime.diff(timeRange.endTime).toMillis();
+      const offset = (milliDiff * this.sampleRate) / 1000.0;
       eIndex = this.y.length - Math.floor(offset);
     }
 
-    let cutY = this.y.slice(sIndex, eIndex);
-    let out = this.cloneWithNewData(
+    const cutY = this.y.slice(sIndex, eIndex);
+    const out = this.cloneWithNewData(
       cutY,
       this._startTime.plus(Duration.fromMillis(1000 * sIndex / this.sampleRate)),
     );

@@ -34,7 +34,7 @@ export function fftForward(
     const seismogram = sdd.seismogram;
 
     if (seismogram.isContiguous()) {
-      let result = FFTResult.createFromPackedFreq(
+      const result = FFTResult.createFromPackedFreq(
         calcDFT(seismogram.y),
         seismogram.numPoints,
         seismogram.sampleRate,
@@ -66,15 +66,15 @@ export function calcDFT(
     N = 16;
   }
 
-  let dft = new oregondsp.fft.RDFT(log2N);
-  let inArray = new Float32Array(N);
+  const dft = new oregondsp.fft.RDFT(log2N);
+  const inArray = new Float32Array(N);
   inArray.fill(0);
 
   for (let i = 0; i < timeseries.length; i++) {
     inArray[i] = timeseries[i];
   }
 
-  let out = new Float32Array(N).fill(0);
+  const out = new Float32Array(N).fill(0);
   dft.evaluate(inArray, out);
   return out;
 }
@@ -109,8 +109,8 @@ export function inverseDFT(
     throw new Error("power of two check fails: " + N + " " + packedFreq.length);
   }
 
-  let dft = new oregondsp.fft.RDFT(log2N);
-  let out = new Float32Array(N).fill(0);
+  const dft = new oregondsp.fft.RDFT(log2N);
+  const out = new Float32Array(N).fill(0);
   dft.evaluateInverse(packedFreq, out);
   return out.slice(0, numPoints);
 }
@@ -119,7 +119,7 @@ export function inverseDFT(
  * Finds smallest power of two >= input number.
  *
  * @param  fftlength               input number
- * @return           tuple of N and log2N, like [16,4]
+ * @returns           tuple of N and log2N, like [16,4]
  */
 export function findPowerTwo(fftlength: number): [number, number] {
     let log2N = 1;
@@ -176,10 +176,10 @@ export class FFTResult {
     origLength: number,
     sampleRate: number,
   ): FFTResult {
-    let fftResult = new FFTResult(origLength, sampleRate);
+    const fftResult = new FFTResult(origLength, sampleRate);
     fftResult.packedFreq = packedFreq;
     fftResult.numPoints = packedFreq.length;
-    let [N,log2N] = findPowerTwo(packedFreq.length);
+    const [N,log2N] = findPowerTwo(packedFreq.length);
     if (N < origLength) {
       throw new Error(`Not enough freq points, ${packedFreq.length}, for orig length of ${origLength}, must be > and power two, (${N}, ${log2N})`);
     }
@@ -201,7 +201,7 @@ export class FFTResult {
   ): FFTResult {
     // complex array will have 1 extra point, but first and last will have phase=0
     const N = 2*(complexArray.length-1);
-    let modFreq = new Float32Array(N).fill(0);
+    const modFreq = new Float32Array(N).fill(0);
     modFreq[0] = complexArray[0].real();
 
     for (let i = 1; i < complexArray.length - 1; i++) {
@@ -235,7 +235,7 @@ export class FFTResult {
       );
     }
 
-    let modComplex = new Array(amp.length);
+    const modComplex = new Array(amp.length);
     for (let i = 0; i < amp.length; i++) {
       modComplex[i] = complexFromPolar(
         amp[i],
@@ -303,7 +303,7 @@ export class FFTResult {
   }
 
   frequencies(): Float32Array {
-    let out = new Float32Array(this.numPoints / 2 + 1).fill(0);
+    const out = new Float32Array(this.numPoints / 2 + 1).fill(0);
 
     for (let i = 0; i < out.length; i++) {
       out[i] = i * this.fundamentalFrequency;
@@ -325,17 +325,17 @@ export class FFTResult {
   }
 
   amplitudes(): Float32Array {
-    let [ amp ,] = this.asAmpPhase();
+    const [ amp ,] = this.asAmpPhase();
     return amp;
   }
 
   phases(): Float32Array {
-    let [ , phase] = this.asAmpPhase();
+    const [ , phase] = this.asAmpPhase();
     return phase;
   }
 
   clone(): FFTResult {
-    let out = FFTResult.createFromPackedFreq(
+    const out = FFTResult.createFromPackedFreq(
       this.packedFreq.slice(),
       this.origLength,
       this.sampleRate,

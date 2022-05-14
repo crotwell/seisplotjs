@@ -303,7 +303,7 @@ export class DataSelectQuery {
   /**
    * @deprecated
    * @param  se               [description]
-   * @return    [description]
+   * @returns    [description]
    */
   timeWindow(se: StartEndDuration): DataSelectQuery {
     return this.timeRange(se);
@@ -425,7 +425,7 @@ export class DataSelectQuery {
         }
       })
       .then(function (rawBuffer) {
-        let dataRecords = miniseed.parseDataRecords(rawBuffer);
+        const dataRecords = miniseed.parseDataRecords(rawBuffer);
         return dataRecords;
       });
   }
@@ -454,7 +454,7 @@ export class DataSelectQuery {
         }
       })
       .then(function (rawBuffer) {
-        let dataRecords = mseed3.parseMSeed3Records(rawBuffer);
+        const dataRecords = mseed3.parseMSeed3Records(rawBuffer);
         return dataRecords;
       });
   }
@@ -541,14 +541,14 @@ export class DataSelectQuery {
     }
 
     return seismogramPromise.then(seisArray => {
-      for (let sdd of sddList) {
-        let codes = sdd.codes();
-        let segList = seisArray.filter(
+      for (const sdd of sddList) {
+        const codes = sdd.codes();
+        const segList = seisArray.filter(
           s => s.codes() === codes && s.timeRange.overlaps(sdd.timeRange),
         );
         if (segList.length > 0) {
           // do coarse trim in case multiple overlapping requests
-          let seis = new Seismogram(segList).trim(sdd.timeRange);
+          const seis = new Seismogram(segList).trim(sdd.timeRange);
           sdd.seismogram = seis;
         }
       }
@@ -582,7 +582,7 @@ export class DataSelectQuery {
   static createPostBody(sddList: Array<SeismogramDisplayData>): string {
     let out = "";
 
-    for (let sdd of sddList) {
+    for (const sdd of sddList) {
       const locCode = sdd.locationCode.trim() === "" ? "--" : sdd.locationCode;
       out += `${sdd.networkCode} ${sdd.stationCode} ${locCode} ${
         sdd.channelCode
@@ -621,7 +621,7 @@ export class DataSelectQuery {
    * @returns Promise to version string
    */
   queryVersion(): Promise<string> {
-    let url = this.formVersionURL();
+    const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       response => {
@@ -699,7 +699,7 @@ export function createDataSelectQuery(
     throw new Error("params null or not an object");
   }
 
-  let out = new DataSelectQuery();
+  const out = new DataSelectQuery();
 
   if (params.net) {
     out.networkCode(params.net);

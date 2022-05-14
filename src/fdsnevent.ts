@@ -296,7 +296,7 @@ export class EventQuery {
   /**
    *@deprecated
    * @param  se               [description]
-   * @return    [description]
+   * @returns    [description]
    */
   timeWindow(se: StartEndDuration): EventQuery {
     return this.timeRange(se);
@@ -710,7 +710,7 @@ export class EventQuery {
    * @returns xml Document
    */
   queryRawXml(): Promise<Document> {
-    let mythis = this;
+    const mythis = this;
 
     if (!this.isSomeParameterSet()) {
       throw new Error(
@@ -783,8 +783,8 @@ export class EventQuery {
    * @returns Promise to Array of catalog names
    */
   queryCatalogs(): Promise<Array<string>> {
-    let mythis = this;
-    let url = mythis.formCatalogsURL();
+    const mythis = this;
+    const url = mythis.formCatalogsURL();
     const fetchInit = defaultFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then(response => {
@@ -802,18 +802,18 @@ export class EventQuery {
           throw new Error("raw xml from DOMParser is null.");
         }
 
-        let top = rawXml.documentElement;
+        const top = rawXml.documentElement;
 
         if (!top) {
           throw new Error("documentElement in xml from DOMParser is null.");
         }
 
-        let catalogArray = top.getElementsByTagName("Catalog");
-        let out: Array<string> = [];
+        const catalogArray = top.getElementsByTagName("Catalog");
+        const out: Array<string> = [];
 
         if (catalogArray) {
           for (let i = 0; i < catalogArray.length; i++) {
-            let item = catalogArray.item(i);
+            const item = catalogArray.item(i);
 
             if (item && isDef(item.textContent)) {
               out.push(item.textContent);
@@ -840,7 +840,7 @@ export class EventQuery {
    * @returns Promise to Array of contributor names
    */
   queryContributors(): Promise<Array<string>> {
-    let url = this.formContributorsURL();
+    const url = this.formContributorsURL();
     const fetchInit = defaultFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then(response => {
@@ -854,18 +854,18 @@ export class EventQuery {
         return new DOMParser().parseFromString(rawXmlText, XML_MIME);
       })
       .then(function (rawXml) {
-        let top = rawXml.documentElement;
+        const top = rawXml.documentElement;
 
         if (!top) {
           throw new Error("documentElement in xml from DOMParser is null.");
         }
 
-        let contributorArray = top.getElementsByTagName("Contributor");
-        let out: Array<string> = [];
+        const contributorArray = top.getElementsByTagName("Contributor");
+        const out: Array<string> = [];
 
         if (contributorArray) {
           for (let i = 0; i < contributorArray.length; i++) {
-            let item = contributorArray.item(i);
+            const item = contributorArray.item(i);
 
             if (item && isDef(item.textContent)) {
               out.push(item.textContent);
@@ -892,7 +892,7 @@ export class EventQuery {
    * @returns Promise to version string
    */
   queryVersion(): Promise<string> {
-    let url = this.formVersionURL();
+    const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       response => {

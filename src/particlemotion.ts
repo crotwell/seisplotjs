@@ -24,7 +24,7 @@ export function addDivForParticleMotion(
   ySeisData: SeismogramDisplayData,
   timeRange?: StartEndDuration,
 ): ParticleMotion {
-  let svgDiv = svgParent.append("div");
+  const svgDiv = svgParent.append("div");
 
   if (!isDef(xSeisData)) {
     throw new Error("xSeisData cannot be null");
@@ -51,15 +51,15 @@ export function addParticleMotion(
     );
   }
 
-  let seisConfig = createParticleMotionConfig(timeRange);
-  let pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
+  const seisConfig = createParticleMotionConfig(timeRange);
+  const pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
   pmp.draw();
   return pmp;
 }
 export function createParticleMotionConfig(
   timeRange?: StartEndDuration,
 ): SeismographConfig {
-  let seisConfig = new SeismographConfig();
+  const seisConfig = new SeismographConfig();
   seisConfig.title = DEFAULT_TITLE;
 
   if (isDef(timeRange)) {
@@ -92,8 +92,8 @@ export class ParticleMotion {
   timeRange: StartEndDuration;
   width: number;
   height: number;
-  outerWidth: number = -1;
-  outerHeight: number = -1;
+  outerWidth = -1;
+  outerHeight = -1;
   xScale: any;
   xScaleRmean: any;
   xAxis: any;
@@ -180,7 +180,7 @@ export class ParticleMotion {
 
     this.width = 100;
     this.height = 100;
-    let mythis = this;
+    const mythis = this;
     // for line ends to show direction of particle motion
     const arrow = this.svg.append("defs").append("marker");
     arrow
@@ -217,7 +217,7 @@ export class ParticleMotion {
   draw() {
     this.checkResize();
     this.drawAxis();
-    let handlebarsInput = {
+    const handlebarsInput = {
       seisDataList: [this.xSeisData, this.ySeisData],
       seisXData: this.xSeisData,
       seisYData: this.ySeisData,
@@ -234,7 +234,7 @@ export class ParticleMotion {
   }
 
   checkResize(): boolean {
-    let rect = this.svgParent.node().getBoundingClientRect();
+    const rect = this.svgParent.node().getBoundingClientRect();
 
     if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
       this.calcWidthHeight(rect.width, rect.height);
@@ -246,7 +246,7 @@ export class ParticleMotion {
 
   drawParticleMotion() {
     this.g.selectAll("g.particleMotion").remove();
-    let lineG = this.g.append("g");
+    const lineG = this.g.append("g");
     lineG
       .classed("particleMotion", true)
       .classed("seisplotjsdata", true)
@@ -259,10 +259,10 @@ export class ParticleMotion {
           this.ySeisData.channelCode.charAt(2),
         true,
       );
-    let xSegments = this.xSeisData.seismogram
+    const xSegments = this.xSeisData.seismogram
       ? this.xSeisData.seismogram.segments
       : [];
-    let ySegments = this.ySeisData.seismogram
+    const ySegments = this.ySeisData.seismogram
       ? this.ySeisData.seismogram.segments
       : [];
     xSegments.forEach(segX => {
@@ -295,8 +295,8 @@ export class ParticleMotion {
     }
 
     const numPts = Math.min(lastIdxA - idxA, lastIdxB - idxB) + 1;
-    let segmentG = lineG.append("g").classed("segment", true);
-    let path = segmentG.selectAll("path").data([segA.y.slice(idxA, numPts)]);
+    const segmentG = lineG.append("g").classed("segment", true);
+    const path = segmentG.selectAll("path").data([segA.y.slice(idxA, numPts)]);
     path.exit().remove();
     path
       .enter()
@@ -314,7 +314,7 @@ export class ParticleMotion {
   }
 
   drawAxis() {
-    let svgG = this.g;
+    const svgG = this.g;
     svgG.selectAll("g.axis").remove();
     svgG
       .append("g")
@@ -333,7 +333,7 @@ export class ParticleMotion {
   }
 
   rescaleAxis() {
-    let delay = 500;
+    const delay = 500;
     this.g
       .select(".axis--y")
       .transition()
@@ -365,19 +365,19 @@ export class ParticleMotion {
         halfDomainDelta = (yMinMax[1] - yMinMax[0]) / 2;
       }
 
-      let xMid = (xMinMax[1] + xMinMax[0]) / 2;
-      let yMid = (yMinMax[1] + yMinMax[0]) / 2;
+      const xMid = (xMinMax[1] + xMinMax[0]) / 2;
+      const yMid = (yMinMax[1] + yMinMax[0]) / 2;
       xMinMax = [xMid - halfDomainDelta, xMid + halfDomainDelta];
       yMinMax = [yMid - halfDomainDelta, yMid + halfDomainDelta];
       this.xScale.domain(xMinMax).nice();
       this.yScale.domain(yMinMax).nice();
     }
 
-    let xNiceMinMax = this.xScale.domain();
-    let xHalfNice = (xNiceMinMax[1] - xNiceMinMax[0]) / 2;
+    const xNiceMinMax = this.xScale.domain();
+    const xHalfNice = (xNiceMinMax[1] - xNiceMinMax[0]) / 2;
     this.xScaleRmean.domain([-1 * xHalfNice, xHalfNice]);
-    let yNiceMinMax = this.yScale.domain();
-    let yHalfNice = (yNiceMinMax[1] - yNiceMinMax[0]) / 2;
+    const yNiceMinMax = this.yScale.domain();
+    const yHalfNice = (yNiceMinMax[1] - yNiceMinMax[0]) / 2;
     this.yScaleRmean.domain([-1 * yHalfNice, yHalfNice]);
     this.rescaleAxis();
   }
@@ -429,7 +429,7 @@ export class ParticleMotion {
    */
   drawTitle(): ParticleMotion {
     this.svg.selectAll("g.title").remove();
-    let titleSVGText = this.svg
+    const titleSVGText = this.svg
       .append("g")
       .classed("title", true)
       .attr(
@@ -441,7 +441,7 @@ export class ParticleMotion {
       .attr("x", 0)
       .attr("y", 2) // give little extra space at top, css style as hanging doesn't quite do it
       .attr("text-anchor", "middle");
-    let handlebarOut = this.seismographConfig.handlebarsTitle(
+    const handlebarOut = this.seismographConfig.handlebarsTitle(
       {
         seisDataList: [this.xSeisData, this.ySeisData],
         seisXData: this.xSeisData,
@@ -460,7 +460,7 @@ export class ParticleMotion {
     this.svg.selectAll("g.xLabel").remove();
 
     if (isNumArg(this.width) && isNumArg(this.outerWidth)) {
-      let svgText = this.svg
+      const svgText = this.svg
         .append("g")
         .classed("xLabel", true)
         .attr(
@@ -475,7 +475,7 @@ export class ParticleMotion {
         .classed("x label", true)
         .attr("text-anchor", "middle")
         .text(this.seismographConfig.xLabel);
-      let handlebarOut = this.seismographConfig.handlebarsXLabel(
+      const handlebarOut = this.seismographConfig.handlebarsXLabel(
         {
           seisDataList: [this.xSeisData, this.ySeisData],
           seisXData: this.xSeisData,
@@ -493,12 +493,12 @@ export class ParticleMotion {
   drawYLabel() {
     this.svg.selectAll("g.yLabel").remove();
 
-    for (let side of ["left", "right"]) {
-      let hTranslate =
+    for (const side of ["left", "right"]) {
+      const hTranslate =
         side === "left"
           ? 0
           : this.seismographConfig.margin.left + this.width + 1;
-      let svgText = this.svg
+      const svgText = this.svg
         .append("g")
         .classed("yLabel", true)
         .classed(side, true)
@@ -526,7 +526,7 @@ export class ParticleMotion {
       }
 
       if (side === "left") {
-        let handlebarOut = this.seismographConfig.handlebarsYLabel(
+        const handlebarOut = this.seismographConfig.handlebarsYLabel(
           {
             seisDataList: [this.xSeisData, this.ySeisData],
             seisXData: this.xSeisData,
@@ -539,7 +539,7 @@ export class ParticleMotion {
         );
         svgText.html(handlebarOut);
       } else {
-        let handlebarOut = this.seismographConfig.handlebarsYLabelRight(
+        const handlebarOut = this.seismographConfig.handlebarsYLabelRight(
           {
             seisDataList: [this.xSeisData, this.ySeisData],
             seisXData: this.xSeisData,
@@ -576,7 +576,7 @@ export class ParticleMotion {
 
   drawYSublabel() {
     this.svg.selectAll("g.ySublabel").remove();
-    let svgText = this.svg
+    const svgText = this.svg
       .append("g")
       .classed("ySublabel", true)
       .attr("x", 0)

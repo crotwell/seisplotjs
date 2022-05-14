@@ -269,10 +269,10 @@ export function decodeSteim1(
     );
   }
 
-  let buf = new ArrayBuffer(4 * numSamples);
-  let samples = new Int32Array(buf);
+  const buf = new ArrayBuffer(4 * numSamples);
+  const samples = new Int32Array(buf);
   let tempSamples;
-  let numFrames = dataView.byteLength / 64;
+  const numFrames = dataView.byteLength / 64;
   let current = 0;
   let start = 0;
   let firstData = 0;
@@ -342,9 +342,9 @@ function extractSteim1Samples(
   littleEndian: boolean,
 ): Array<number> {
   /* get nibbles */
-  let nibbles = dataView.getInt32(offset, littleEndian);
+  const nibbles = dataView.getInt32(offset, littleEndian);
   let currNibble = 0;
-  let temp = []; // 4 samples * 16 longwords, can't be more than 64
+  const temp = []; // 4 samples * 16 longwords, can't be more than 64
 
   let currNum = 0;
   let i, n;
@@ -435,10 +435,10 @@ export function decodeSteim2(
     );
   }
 
-  let buf = new ArrayBuffer(4 * numSamples);
-  let samples = new Int32Array(buf);
+  const buf = new ArrayBuffer(4 * numSamples);
+  const samples = new Int32Array(buf);
   let tempSamples;
-  let numFrames = dataView.byteLength / 64;
+  const numFrames = dataView.byteLength / 64;
   let current = 0;
   let start = 0;
   let firstData = 0;
@@ -513,10 +513,10 @@ function extractSteim2Samples(
   swapBytes: boolean,
 ): Int32Array {
   /* get nibbles */
-  let nibbles = dataView.getUint32(offset, swapBytes);
+  const nibbles = dataView.getUint32(offset, swapBytes);
   let currNibble = 0;
   let dnib = 0;
-  let temp = new Int32Array(106); //max 106 = 7 samples * 15 long words + 1 nibble int
+  const temp = new Int32Array(106); //max 106 = 7 samples * 15 long words + 1 nibble int
 
   let tempInt;
   let currNum = 0;

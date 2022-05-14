@@ -74,13 +74,13 @@ export class MSeedArchive {
    * @returns true if all flags are allowed
    */
   checkPattern(p: string): boolean {
-    let regexp = /%[a-zA-Z]/g;
-    let allFlags = p.match(regexp);
+    const regexp = /%[a-zA-Z]/g;
+    const allFlags = p.match(regexp);
 
     if (!allFlags) {
       return false;
     } else {
-      for (let f of allFlags) {
+      for (const f of allFlags) {
         if (Allowed_Flags.indexOf(f.slice(1)) === -1) {
           throw new Error(`${f} not allowed in pattern`);
         }
@@ -105,7 +105,7 @@ export class MSeedArchive {
   loadSeismograms(
     channelTimeList: Array<SeismogramDisplayData>,
   ): Promise<Array<SeismogramDisplayData>> {
-    let promiseArray = channelTimeList.map(ct => {
+    const promiseArray = channelTimeList.map(ct => {
       if (isDef(ct.channel)) {
         return RSVP.hash({
           request: ct,
@@ -132,13 +132,13 @@ export class MSeedArchive {
       }
     });
     return RSVP.all(promiseArray).then(pArray => {
-      let out: Array<SeismogramDisplayData> = [];
+      const out: Array<SeismogramDisplayData> = [];
       pArray.forEach(p => {
-        let seisArray = miniseed.seismogramPerChannel(p.dataRecords);
+        const seisArray = miniseed.seismogramPerChannel(p.dataRecords);
 
         // should only be one
-        for (let seis of seisArray) {
-          let cutSeis = seis.cut(
+        for (const seis of seisArray) {
+          const cutSeis = seis.cut(
             new StartEndDuration(p.request.startTime, p.request.endTime),
           );
           p.request.seismogram = cutSeis;
@@ -194,24 +194,24 @@ export class MSeedArchive {
     endTime: DateTime,
     sampleRate?: number,
   ): Promise<Array<miniseed.DataRecord>> {
-    let basePattern = this.fillBasePattern(net, sta, loc, chan);
+    const basePattern = this.fillBasePattern(net, sta, loc, chan);
 
     if (!util.isDef(sampleRate)) {
       sampleRate = minSampleRate(chan);
     }
 
-    let recordTime = maxTimeForRecord(this._recordSize, sampleRate);
+    const recordTime = maxTimeForRecord(this._recordSize, sampleRate);
     let t = startTime.minus(recordTime);
-    let urlList = [];
+    const urlList = [];
 
     while (t < endTime) {
-      let url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
+      const url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
       t = t.plus(Duration.fromObject({hour: 1,}));
       urlList.push(url);
     }
 
     if (t.plus(recordTime) > endTime) {
-      let url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
+      const url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
       urlList.push(url);
     }
 
@@ -266,7 +266,7 @@ export function loadDataRecords(
   fetchInit?: Record<string, any>,
   timeoutSec?: number,
 ): Promise<Array<miniseed.DataRecord>> {
-  let promiseArray = urlList.map(url => {
+  const promiseArray = urlList.map(url => {
     return util
       .doFetchWithTimeout(url, fetchInit, timeoutSec)
       .then(fetchResponse => {
@@ -327,7 +327,7 @@ export function loadDataRecords(
  * @returns mimumum sample rate this could be
  */
 export function maxSampleRate(chan: string): number {
-  let f = chan.slice(0, 1);
+  const f = chan.slice(0, 1);
 
   switch (f) {
     case "F":
@@ -380,7 +380,7 @@ export function maxSampleRate(chan: string): number {
  * @returns mimumum sample rate this could be
  */
 export function minSampleRate(chan: string): number {
-  let f = chan.slice(0, 1);
+  const f = chan.slice(0, 1);
 
   switch (f) {
     case "F":

@@ -43,13 +43,13 @@ export function amplitude(real: number, imag: number): number {
  */
 export function rMean(seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
-    let meanVal = seis.mean();
-    let rmeanSeismogram = new Seismogram(
+    const meanVal = seis.mean();
+    const rmeanSeismogram = new Seismogram(
       seis.segments.map(s => {
-        let demeanY = s.y.map(function (d) {
+        const demeanY = s.y.map(function (d) {
           return d - meanVal;
         });
-        let out = s.cloneWithNewData(demeanY);
+        const out = s.cloneWithNewData(demeanY);
         return out;
       }),
     );
@@ -73,8 +73,8 @@ export function gainCorrect(
   instrumentSensitivity: InstrumentSensitivity,
 ): Seismogram {
   if (seis instanceof Seismogram) {
-    let gain = instrumentSensitivity.sensitivity;
-    let gainSeismogram = new Seismogram(
+    const gain = instrumentSensitivity.sensitivity;
+    const gainSeismogram = new Seismogram(
       seis.segments.map(s => {
         let gainY;
 
@@ -87,7 +87,7 @@ export function gainCorrect(
         gainY = gainY.map(function (d) {
           return d / gain;
         });
-        let outS = s.cloneWithNewData(gainY);
+        const outS = s.cloneWithNewData(gainY);
         outS.yUnit = instrumentSensitivity.inputUnits;
         return outS;
       }),
@@ -231,10 +231,10 @@ export function applyFilter(
   if (Math.abs(iirFilter.getDelta() - seis.samplePeriod)/seis.samplePeriod > 0.001) {
     throw new Error(`Filter, delta=${iirFilter.getDelta()}, has different delta from seis, ${1/seis.sampleRate}`);
   }
-  let filteredSegments = [];
+  const filteredSegments = [];
 
   for (let i = 0; i < seis.segments.length; i++) {
-    let outData = Float32Array.from(seis.segments[i].y);
+    const outData = Float32Array.from(seis.segments[i].y);
     iirFilter.filterInPlace(outData);
     filteredSegments.push(seis.segments[i].cloneWithNewData(outData));
   }
@@ -252,9 +252,9 @@ export function applyFilter(
  */
 export function envelope(seis: Seismogram): Seismogram {
   if (seis.isContiguous()) {
-    let seisY = seis.y;
-    let s = hilbert(seis);
-    let hilbertY = s.y;
+    const seisY = seis.y;
+    const s = hilbert(seis);
+    const hilbertY = s.y;
     let outY;
 
     if (seis.y instanceof Int32Array || seis.y instanceof Float32Array) {
@@ -314,18 +314,18 @@ export function hilbert(
       highEdge = 0.95;
     }
 
-    let hilbert = new OregonDSPTop.com.oregondsp.signalProcessing.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
+    const hilbert = new OregonDSPTop.com.oregondsp.signalProcessing.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
 
-    let coeff = hilbert.getCoefficients();
+    const coeff = hilbert.getCoefficients();
 
-    for (let c of coeff) {
+    for (const c of coeff) {
       if (Number.isNaN(c)) {
         throw new Error(`Hilbert FIR coeff includes NaN: ${coeff.join()}`);
       }
     }
 
-    let hilbertY = hilbert.filter(seisY);
-    let s = seis.cloneWithNewData(hilbertY);
+    const hilbertY = hilbert.filter(seisY);
+    const s = seis.cloneWithNewData(hilbertY);
     return s;
   } else {
     throw new Error("Cannot take hilbert of non-contiguous seismogram");
@@ -340,18 +340,18 @@ export function hilbert(
  */
 export function differentiate(seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
-    let diffSeismogram = new Seismogram(
+    const diffSeismogram = new Seismogram(
       seis.segments.map(s => {
-        let origY = s.y;
+        const origY = s.y;
         const sampRate = 1.0 * s.sampleRate; // same as 1/delta
 
-        let diffY = new Float32Array(origY.length - 1);
+        const diffY = new Float32Array(origY.length - 1);
 
         for (let i = 0; i < diffY.length; i++) {
           diffY[i] = (origY[i + 1] - origY[i]) * sampRate;
         }
 
-        let out = s.cloneWithNewData(diffY);
+        const out = s.cloneWithNewData(diffY);
         out.startTime = out.startTime.plus(Duration.fromMillis(1000 / out.sampleRate / 2));// second
         out.yUnit = out.yUnit + "/s";
         return out;

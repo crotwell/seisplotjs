@@ -47,10 +47,10 @@ export function transferSacPZ(
   highPass: number,
   highCut: number,
 ): Seismogram {
-  let outSeis = [];
+  const outSeis = [];
 
   for (let i = 0; i < seis.segments.length; i++) {
-    let result = transferSacPZSegment(
+    const result = transferSacPZSegment(
       seis.segments[i],
       sacPoleZero,
       lowCut,
@@ -72,7 +72,7 @@ export function transferSacPZSegment(
   highCut: number,
 ): SeismogramSegment {
   const sampFreq = seis.sampleRate;
-  let values = seis.y;
+  const values = seis.y;
   let outData = Float32Array.from(values);
 
   /* sac premultiplies the data by the sample period before doing the fft. Later it
@@ -94,7 +94,7 @@ export function transferSacPZSegment(
   outData = inverseDFT(freqValues, values.length);
   // a extra factor of nfft gets in somehow???
   outData.forEach((d, i) => (outData[i] = d * freqValues.length));
-  let out = seis.cloneWithNewData(outData);
+  const out = seis.cloneWithNewData(outData);
   //out.y_unit = UNITS.METER;
   out.yUnit = "m";
   return out;
@@ -123,7 +123,7 @@ export function calcResponse(
   }
 
   sacPoleZero.trimZeros(gamma);
-  let out = calcResponseFromSacPoleZero(sacPoleZero, numPoints, sampleRate);
+  const out = calcResponseFromSacPoleZero(sacPoleZero, numPoints, sampleRate);
   return out;
 }
 
@@ -142,7 +142,7 @@ export function calcResponseFromSacPoleZero(
 ): FFTResult {
   const deltaF = sampleRate / numPoints;
   // inst response as packed frequency array
-  let freqValues = new Float32Array(numPoints);
+  const freqValues = new Float32Array(numPoints);
   let respAtS;
   // zero freq
   respAtS = evalPoleZeroInverse(sacPoleZero, 0);
@@ -169,7 +169,7 @@ export function calcResponseFromSacPoleZero(
     }
   }
 
-  let out = FFTResult.createFromPackedFreq(freqValues, numPoints, sampleRate);
+  const out = FFTResult.createFromPackedFreq(freqValues, numPoints, sampleRate);
   return out;
 }
 
@@ -214,7 +214,7 @@ export function combine(
     respAtS = respAtS.timesReal(
       deltaF * calcFreqTaper(freq, lowCut, lowPass, highPass, highCut),
     );
-    let freqComplex = createComplex(
+    const freqComplex = createComplex(
       freqValues[i],
       freqValues[freqValues.length - i],
     ).timesComplex(respAtS);
@@ -408,7 +408,7 @@ export function convertPoleZeroToSacStyle(
     mulFactor = 2 * Math.PI;
   }
 
-  let zeros = [];
+  const zeros = [];
 
   // extra gamma zeros are (0,0)
   for (let i = 0; i < polesZeros.zeros.length; i++) {
@@ -422,7 +422,7 @@ export function convertPoleZeroToSacStyle(
     zeros.push(createComplex(0, 0));
   }
 
-  let poles = [];
+  const poles = [];
 
   for (let i = 0; i < polesZeros.poles.length; i++) {
     poles[i] = createComplex(
@@ -433,10 +433,10 @@ export function convertPoleZeroToSacStyle(
 
   let constant = polesZeros.normalizationFactor;
   let sd = sensitivity;
-  let fs = sensitivity_freq;
+  const fs = sensitivity_freq;
   sd *= Math.pow(2 * Math.PI * fs, gamma);
   let A0 = polesZeros.normalizationFactor;
-  let fn = polesZeros.normalizationFrequency;
+  const fn = polesZeros.normalizationFrequency;
   A0 = A0 / Math.pow(2 * Math.PI * fn, gamma);
 
   if (polesZeros.pzTransferFunctionType === "LAPLACE (HERTZ)") {
@@ -452,7 +452,7 @@ export function convertPoleZeroToSacStyle(
     constant = sd * calc_A0(poles, zeros, fs);
   }
 
-  let sacPZ = new SacPoleZero(poles, zeros, constant);
+  const sacPZ = new SacPoleZero(poles, zeros, constant);
   sacPZ.gamma = gamma;
   sacPZ.mulFactor = mulFactor;
   sacPZ.sd = sd;

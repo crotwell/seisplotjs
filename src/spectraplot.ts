@@ -179,7 +179,7 @@ export class SpectraPlot extends HTMLElement {
   }
   get logfreq(): boolean {
     if ( ! this.hasAttribute(LOGFREQ) ) { return true;}
-    let b = this.getAttribute(LOGFREQ);
+    const b = this.getAttribute(LOGFREQ);
     if (b && b.toLowerCase()==="true") {return true;}
     return false;
   }
@@ -197,10 +197,10 @@ export class SpectraPlot extends HTMLElement {
 
   draw() {
     if ( ! this.isConnected) { return; }
-    let ampPhaseList = [];
+    const ampPhaseList = [];
     let maxFFTAmpLen = 0;
-    let extentFFTData: Array<number> = [];
-    let freqMinMax: Array<number> = [];
+    const extentFFTData: Array<number> = [];
+    const freqMinMax: Array<number> = [];
 
     if (this.kind === PHASE) {
       extentFFTData.push(-Math.PI);
@@ -245,7 +245,7 @@ export class SpectraPlot extends HTMLElement {
         ampSlice = ampSlice.slice(1);
       }
 
-      let currExtent = d3.extent(ampSlice);
+      const currExtent = d3.extent(ampSlice);
 
       if (this.kind === AMPLITUDE && currExtent[0] === 0) {
         // replace zero with smallest non-zero / 10 for log amp plot
@@ -280,20 +280,20 @@ export class SpectraPlot extends HTMLElement {
       wrapper.removeChild(wrapper.lastChild);
     }
 
-    let svg_element = document.createElementNS("http://www.w3.org/2000/svg","svg");
+    const svg_element = document.createElementNS("http://www.w3.org/2000/svg","svg");
     wrapper.appendChild(svg_element);
     const svg = d3.select(svg_element);
     svg.classed("spectra_plot", true).classed(AUTO_COLOR_SELECTOR, true);
-    let rect = svg_element.getBoundingClientRect();
-    let width =
+    const rect = svg_element.getBoundingClientRect();
+    const width =
       +rect.width -
       this.seismographConfig.margin.left -
       this.seismographConfig.margin.right;
-    let height =
+    const height =
       +rect.height -
       this.seismographConfig.margin.top -
       this.seismographConfig.margin.bottom;
-    let g = svg
+    const g = svg
       .append("g")
       .attr(
         "transform",
@@ -368,7 +368,7 @@ export class SpectraPlot extends HTMLElement {
       }
     }
 
-    let pathg = g.append("g").classed(G_DATA_SELECTOR, true);
+    const pathg = g.append("g").classed(G_DATA_SELECTOR, true);
 
     for (const ap of ampPhaseList) {
       let ampSlice;
@@ -388,7 +388,7 @@ export class SpectraPlot extends HTMLElement {
         ampSlice = ampSlice.slice(1);
       }
 
-      let line = d3.line<number>();
+      const line = d3.line<number>();
       line.x(function (d: number, i: number) {
         return xScale(freqSlice[i]);
       });
