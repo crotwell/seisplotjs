@@ -204,7 +204,7 @@ export function log(msg: string): void {
   }
 
   if (typeof document !== "undefined" && document !== null) {
-    let p = document.createElement("p");
+    const p = document.createElement("p");
     p.textContent = `${stringify(msg)}`;
     const divDebug = (document.querySelector("div#debug") as HTMLInputElement);
     if (isDef(divDebug)) {
@@ -224,14 +224,14 @@ export function isError(error: unknown): error is Error {
 
 /** typescript-y convert errors. */
 export function toError(maybeError: unknown): Error {
-  if (isError(maybeError)) return maybeError
+  if (isError(maybeError)) return maybeError;
 
   try {
-    return new Error(JSON.stringify(maybeError))
+    return new Error(JSON.stringify(maybeError));
   } catch {
     // fallback in case there's an error stringifying the maybeError
     // like with circular references for example.
-    return new Error(String(maybeError))
+    return new Error(String(maybeError));
   }
 }
 
@@ -249,7 +249,7 @@ export function warn(msg: string): void {
   }
 
   if (typeof document !== "undefined" && document !== null) {
-    let p = document.createElement("p");
+    const p = document.createElement("p");
     p.textContent = `${stringify(msg)}`;
     (document.querySelector("div#debug") as HTMLInputElement)
       .appendChild(p);
@@ -451,7 +451,7 @@ export class StartEndDuration {
       }
 
       throw new Error(
-        `expect DateTime or StartEndDuration: \"${stringify(other)}\" ${otherType}`,
+        `expect DateTime or StartEndDuration: "${stringify(other)}" ${otherType}`,
       );
     }
   }
@@ -528,7 +528,7 @@ export function checkStringOrDate(d: string | Date | DateTime): DateTime {
   } else if (isNumArg(d)) {
     return DateTime.fromMillis(d, UTC_OPTIONS);
   } else if (isNonEmptyStringArg(d)) {
-    let lc = d.toLowerCase();
+    const lc = d.toLowerCase();
 
     if (d.length === 0 || lc === "now") {
       return DateTime.utc();
@@ -537,7 +537,7 @@ export function checkStringOrDate(d: string | Date | DateTime): DateTime {
     }
   }
 
-  throw new Error("unknown date type: " + d + " " + typeof d);
+  throw new Error(`unknown date type: ${d} ${typeof d}`);
 }
 
 /**
@@ -548,7 +548,7 @@ export function checkStringOrDate(d: string | Date | DateTime): DateTime {
  * @returns      formated query parameter
  */
 export function makeParam(name: string, val: unknown): string {
-  return name + "=" + encodeURIComponent(stringify(val)) + "&";
+  return `${name}=${encodeURIComponent(stringify(val))}&`;
 }
 
 /**
@@ -571,7 +571,7 @@ export function makePostParam(name: string, val: unknown): string {
  * @returns ISO8601 without timezone Z
  */
 export function toIsoWoZ(date: DateTime): string {
-  let out = date.toISO();
+  const out = date.toISO();
   return out.substring(0, out.length - 1);
 }
 

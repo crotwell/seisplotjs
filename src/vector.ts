@@ -57,17 +57,15 @@ export function rotate(
   if (seisA.segments.length !== seisB.segments.length) {
     throw new Error(
       "Seismograms do not have same number of segments: " +
-        seisA.segments.length +
-        " !== " +
-        seisB.segments.length,
+        `${seisA.segments.length} !== ${seisB.segments.length}`,
     );
   }
 
-  let rotOutRad = [];
-  let rotOutTrans = [];
+  const rotOutRad = [];
+  const rotOutTrans = [];
 
   for (let i = 0; i < seisA.segments.length; i++) {
-    let result = rotateSeismogramSegment(
+    const result = rotateSeismogramSegment(
       seisA.segments[i],
       azimuthA,
       seisB.segments[i],
@@ -78,7 +76,7 @@ export function rotate(
     rotOutTrans.push(result.transverse);
   }
 
-  let out = new RotatedSeismograms(
+  const out = new RotatedSeismograms(
     new Seismogram(rotOutRad),
     azimuth % 360,
     new Seismogram(rotOutTrans),
@@ -108,36 +106,28 @@ function rotateSeismogramSegment(
   if (seisA.y.length !== seisB.y.length) {
     throw new Error(
       "seisA and seisB should be of same lenght but was " +
-        seisA.y.length +
-        " " +
-        seisB.y.length,
+        `${seisA.y.length} ${seisB.y.length}`,
     );
   }
 
   if (!seisA.startTime.equals(seisB.startTime)) {
     throw new Error(
       "Expect startTime to be same, but was " +
-        seisA.startTime.toISO() +
-        " " +
-        seisB.startTime.toISO(),
+        `${seisA.startTime.toISO()} ${seisB.startTime.toISO()}`,
     );
   }
 
   if (seisA.sampleRate !== seisB.sampleRate) {
     throw new Error(
       "Expect sampleRate to be same, but was " +
-        seisA.sampleRate +
-        " " +
-        seisB.sampleRate,
+        `${seisA.sampleRate} ${seisB.sampleRate}`,
     );
   }
 
   if ((azimuthA + 90) % 360 !== azimuthB % 360) {
     throw new Error(
       "Expect azimuthB to be azimuthA + 90, but was " +
-        azimuthA +
-        " " +
-        azimuthB,
+        `${azimuthA} ${azimuthB}`,
     );
   }
 
@@ -150,21 +140,21 @@ function rotateSeismogramSegment(
   const rotRadian = 1 * DtoR * (azimuth - azimuthA);
   const cosTheta = Math.cos(rotRadian);
   const sinTheta = Math.sin(rotRadian);
-  let x = new Float32Array(seisA.y.length);
-  let y = new Float32Array(seisA.y.length);
+  const x = new Float32Array(seisA.y.length);
+  const y = new Float32Array(seisA.y.length);
 
   for (let i = 0; i < seisA.y.length; i++) {
     x[i] = cosTheta * seisB.yAtIndex(i) - sinTheta * seisA.yAtIndex(i);
     y[i] = sinTheta * seisB.yAtIndex(i) + cosTheta * seisA.yAtIndex(i);
   }
 
-  let outSeisRad = seisA.cloneWithNewData(y);
-  let outSeisTan = seisA.cloneWithNewData(x);
+  const outSeisRad = seisA.cloneWithNewData(y);
+  const outSeisTan = seisA.cloneWithNewData(x);
   if (seisA.chanCode) {
     outSeisRad.channelCode = seisA.chanCode.slice(0, 2) + "R";
     outSeisTan.channelCode = seisA.chanCode.slice(0, 2) + "T";
   }
-  let out = {
+  const out = {
     radial: outSeisRad,
     transverse: outSeisTan,
     azimuthRadial: azimuth % 360,
@@ -195,32 +185,18 @@ export function vectorMagnitude(
   seisC: Seismogram,
   orientCode?: string | null,
 ): Seismogram {
-  if (seisA.segments.length !== seisB.segments.length) {
+  if (seisA.segments.length !== seisB.segments.length ||
+    seisA.segments.length !== seisC.segments.length) {
     throw new Error(
       "Seismograms do not have same number of segments: " +
-        seisA.segments.length +
-        " !== " +
-        seisB.segments.length +
-        " !== " +
-        seisC.segments.length,
+      `${seisA.segments.length}  !== ${seisB.segments.length}  !== ${seisC.segments.length}`,
     );
   }
 
-  if (seisA.segments.length !== seisC.segments.length) {
-    throw new Error(
-      "Seismograms do not have same number of segments: " +
-        seisA.segments.length +
-        " !== " +
-        seisB.segments.length +
-        " !== " +
-        seisC.segments.length,
-    );
-  }
-
-  let outData = [];
+  const outData = [];
 
   for (let i = 0; i < seisA.segments.length; i++) {
-    let result = vectorMagnitudeSegment(
+    const result = vectorMagnitudeSegment(
       seisA.segments[i],
       seisB.segments[i],
       seisC.segments[i],
@@ -249,39 +225,19 @@ function vectorMagnitudeSegment(
   seisC: SeismogramSegment,
   orientCode: string | null | undefined,
 ): SeismogramSegment {
-  if (seisA.y.length !== seisB.y.length) {
+  if (seisA.y.length !== seisB.y.length ||
+    seisA.y.length !== seisC.y.length) {
     throw new Error(
-      "seisA and seisB should be of same lenght but was " +
-        seisA.y.length +
-        " " +
-        seisB.y.length,
+      "seis should be of same length but was " +
+        `${seisA.y.length} ${seisB.y.length} ${seisC.y.length}`,
     );
   }
 
-  if (seisA.sampleRate !== seisB.sampleRate) {
+  if (seisA.sampleRate !== seisB.sampleRate ||
+    seisA.sampleRate !== seisC.sampleRate) {
     throw new Error(
       "Expect sampleRate to be same, but was " +
-        seisA.sampleRate +
-        " " +
-        seisB.sampleRate,
-    );
-  }
-
-  if (seisA.y.length !== seisC.y.length) {
-    throw new Error(
-      "seisA and seisC should be of same lenght but was " +
-        seisA.y.length +
-        " " +
-        seisC.y.length,
-    );
-  }
-
-  if (seisA.sampleRate !== seisC.sampleRate) {
-    throw new Error(
-      "Expect sampleRate to be same, but was " +
-        seisA.sampleRate +
-        " " +
-        seisC.sampleRate,
+        `${seisA.sampleRate} ${seisB.sampleRate} ${seisC.sampleRate}`,
     );
   }
 
@@ -301,7 +257,7 @@ function vectorMagnitudeSegment(
     );
   }
 
-  let outSeis = seisA.cloneWithNewData(y);
+  const outSeis = seisA.cloneWithNewData(y);
 
   if (!isDef(orientCode)) {
     orientCode = "M";
