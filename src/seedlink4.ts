@@ -348,8 +348,7 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    //for flow
-    const rawdata = (event.data as any) as ArrayBuffer;
+    const rawdata: ArrayBuffer = event.data;
     const data = new Uint8Array(rawdata);
 
     if (data[0] === 83 && data[1] === 69) {
@@ -362,8 +361,7 @@ export class SeedlinkConnection {
   }
 
   handleSEPacket(event: MessageEvent): void {
-    //for flow
-    const data = (event.data as any) as ArrayBuffer;
+    const data: ArrayBuffer = event.data;
 
     try {
       let out = SEPacket.parse(data);
@@ -388,8 +386,7 @@ export class SeedlinkConnection {
     let promise: Promise<Array<string>> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          //for flow
-          const data = (event.data as any) as ArrayBuffer;
+          const data: ArrayBuffer = event.data;
           let replyMsg = dataViewToString(new DataView(data));
           let lines = replyMsg.trim().split("\r");
 
@@ -436,8 +433,7 @@ export class SeedlinkConnection {
     let promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          //for flow
-          const data = (event.data as any) as ArrayBuffer;
+          const data: ArrayBuffer = event.data;
           let replyMsg = dataViewToString(new DataView(data)).trim();
 
           if (replyMsg === "OK") {

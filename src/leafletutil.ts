@@ -61,7 +61,6 @@ div.wrapper {
   fill-opacity: 0.15;
 }
 `;
-// eslint-disable-next-line flowtype/no-types-missing-file-annotation
 export function createStationMarker(
   station: Station,
   isactive: boolean = true,
@@ -73,7 +72,6 @@ export function createStationMarker(
   m.bindTooltip(station.codes());
   return m;
 }
-// eslint-disable-next-line flowtype/no-types-missing-file-annotation
 export function createQuakeMarker(quake: Quake, magScaleFactor: number = 5) {
   let circle = L.circleMarker([quake.latitude, quake.longitude], {
     color: "currentColor",

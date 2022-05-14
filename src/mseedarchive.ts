@@ -223,7 +223,7 @@ export class MSeedArchive {
             dr.header.startTime <= endTime
         );
       } else {
-        dataRecords = []; // for flow
+        dataRecords = [];
       }
 
       return dataRecords;

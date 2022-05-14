@@ -143,8 +143,7 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    //for flow
-    const data = (event.data as any) as ArrayBuffer;
+    const data: ArrayBuffer = event.data;
 
     if (data.byteLength < 64) {
       //assume text
@@ -154,8 +153,7 @@ export class SeedlinkConnection {
   }
 
   handleMiniseed(event: MessageEvent): void {
-    //for flow
-    const data = (event.data as any) as ArrayBuffer;
+    const data: ArrayBuffer = event.data;
 
     try {
       if (data.byteLength < 64) {
@@ -215,8 +213,7 @@ export class SeedlinkConnection {
     let promise: Promise<[string,string]> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          //for flow
-          const data = (event.data as any) as ArrayBuffer;
+          const data: ArrayBuffer = event.data;
           let replyMsg = dataViewToString(new DataView(data));
           let lines = replyMsg.trim().split("\r");
 
@@ -263,8 +260,7 @@ export class SeedlinkConnection {
     let promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          //for flow
-          const data = (event.data as any) as ArrayBuffer;
+          const data: ArrayBuffer = event.data;
           let replyMsg = dataViewToString(new DataView(data)).trim();
 
           if (replyMsg === "OK") {

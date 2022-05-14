@@ -259,7 +259,6 @@ export class ParticleMotion {
           this.ySeisData.channelCode.charAt(2),
         true,
       );
-    // for flow
     let xSegments = this.xSeisData.seismogram
       ? this.xSeisData.seismogram.segments
       : [];

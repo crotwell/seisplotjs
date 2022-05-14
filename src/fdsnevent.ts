@@ -12,9 +12,6 @@ import {
   makeParam,
   doFetchWithTimeout,
   defaultFetchInitObj,
-} from "./util";
-// special due to flow
-import {
   doStringGetterSetter,
   doBoolGetterSetter,
   doIntGetterSetter,
@@ -801,14 +798,12 @@ export class EventQuery {
         return new DOMParser().parseFromString(rawXmlText, XML_MIME);
       })
       .then(function (rawXml) {
-        // for flow
         if (!rawXml) {
           throw new Error("raw xml from DOMParser is null.");
         }
 
         let top = rawXml.documentElement;
 
-        // for flow
         if (!top) {
           throw new Error("documentElement in xml from DOMParser is null.");
         }
@@ -818,7 +813,6 @@ export class EventQuery {
 
         if (catalogArray) {
           for (let i = 0; i < catalogArray.length; i++) {
-            // for flow
             let item = catalogArray.item(i);
 
             if (item && isDef(item.textContent)) {
@@ -862,7 +856,6 @@ export class EventQuery {
       .then(function (rawXml) {
         let top = rawXml.documentElement;
 
-        // for flow
         if (!top) {
           throw new Error("documentElement in xml from DOMParser is null.");
         }
@@ -872,7 +865,6 @@ export class EventQuery {
 
         if (contributorArray) {
           for (let i = 0; i < contributorArray.length; i++) {
-            // for flow
             let item = contributorArray.item(i);
 
             if (item && isDef(item.textContent)) {

@@ -6,7 +6,9 @@
 import RSVP from "rsvp";
 import * as util from "./util"; // for util.log
 import {DateTime} from 'luxon';
-// special due to flow
+import * as miniseed from "./miniseed";
+import * as mseed3 from "./mseed3";
+import {Seismogram, SeismogramDisplayData} from "./seismogram";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -17,11 +19,6 @@ import {
   checkProtocol,
   toIsoWoZ,
   isNonEmptyStringArg,
-} from "./util";
-import * as miniseed from "./miniseed";
-import * as mseed3 from "./mseed3";
-import {Seismogram, SeismogramDisplayData} from "./seismogram";
-import {
   TEXT_MIME,
   StartEndDuration,
   makeParam,

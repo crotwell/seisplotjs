@@ -22,9 +22,6 @@ import {
   doFetchWithTimeout,
   defaultFetchInitObj,
   stringify,
-} from "./util";
-// special due to flow
-import {
   doStringGetterSetter,
   doBoolGetterSetter,
   doIntGetterSetter,

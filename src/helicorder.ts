@@ -81,7 +81,7 @@ export class Helicorder {
     let maxVariation = 1;
 
     if (this.seisData.seismogram) {
-      const seis = this.seisData.seismogram; // for flow
+      const seis = this.seisData.seismogram;
 
       if (!this.heliConfig.fixedAmplitudeScale) {
         if (this.heliConfig.maxVariation === 0) {
@@ -112,7 +112,6 @@ export class Helicorder {
     );
     const margin = this.heliConfig.margin;
     const nl = this.heliConfig.numLines;
-    // for flow
     const maxHeight =
       this.heliConfig.maxHeight !== null
         ? this.heliConfig.maxHeight

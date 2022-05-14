@@ -142,7 +142,6 @@ export class Seismogram {
     if (minMaxAccumulator) {
       return minMaxAccumulator;
     } else {
-      // should never happen, for flow
       throw new Error("No data to calc minmax");
     }
   }
@@ -896,7 +895,6 @@ export class SeismogramDisplayData {
     }
 
     if (this.quake && this.traveltimeList) {
-      // for flow
       const q = this.quake;
       let matchArrival = this.traveltimeList.find(ttArrival => {
         let match = intPhaseRegExp.exec(ttArrival.phase);
@@ -1002,7 +1000,6 @@ export class SeismogramDisplayData {
    */
   get distazList(): Array<DistAzOutput> {
     if (this.quakeList.length > 0 && isDef(this.channel)) {
-      // for flow
       const c = this.channel;
       return this.quakeList.map(q =>
         distaz(c.latitude, c.longitude, q.latitude, q.longitude),

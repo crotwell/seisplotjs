@@ -110,7 +110,6 @@ export class SeismogramSegment {
       let outLen = this.numPoints;
 
       if (this._compressed === null) {
-        // for flow
         throw new Error("Seismogram not y as TypedArray or encoded.");
       }
 

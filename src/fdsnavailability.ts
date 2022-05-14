@@ -5,7 +5,7 @@
  */
 import {DateTime} from "luxon";
 import RSVP from "rsvp";
-// special due to flow
+import {SeismogramDisplayData} from "./seismogram";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -20,9 +20,6 @@ import {
   isNonEmptyStringArg,
   isNumArg,
   stringify,
-} from "./util";
-import {SeismogramDisplayData} from "./seismogram";
-import {
   TEXT_MIME,
   JSON_MIME,
   StartEndDuration,
