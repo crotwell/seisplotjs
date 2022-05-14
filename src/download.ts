@@ -1,11 +1,11 @@
 
-export function downloadBlobAsFile(data: ArrayBuffer, filename: string, mimeType: string = 'application/octet-stream') {
+export function downloadBlobAsFile(data: ArrayBuffer, filename: string, mimeType = 'application/octet-stream') {
   if(!data) {
-      console.error(' No data')
+      console.error(' No data');
       return;
   }
 
-  if(!filename) filename = 'filetodownload.txt'
+  if(!filename) filename = 'filetodownload.txt';
 
   const blob = new Blob([data], {type: mimeType});
   const e    = document.createEvent('MouseEvents');

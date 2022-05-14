@@ -35,7 +35,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     if (this.plottype.startsWith(PARTICLE_MOTION)) {
-      console.log("maybe don't want to recreate config for parmo here???")
+      console.log("maybe don't want to recreate config for parmo here???");
       this._seismographConfig = createParticleMotionConfig();
     }
 
@@ -95,7 +95,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     this.plot(d3.select(wrapper));
   }
   plot(divElement: any) {
-    let qIndex = this.plottype.indexOf("?");
+    const qIndex = this.plottype.indexOf("?");
     let plotstyle = this.plottype;
     let queryParams: object;
 
@@ -115,12 +115,12 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       divElement.node().appendChild(this.seismograph);
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
-      let nonContigList = this.seisData.filter(
+      const nonContigList = this.seisData.filter(
         sdd => !(sdd.seismogram && sdd.seismogram.isContiguous()),
       );
 
       if (nonContigList.length > 0) {
-        let nonContigMsg =
+        const nonContigMsg =
           "non-contiguous seismograms, skipping: " +
           nonContigList
             .map(sdd =>
@@ -132,13 +132,13 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         divElement.append("p").text(nonContigMsg);
       }
 
-      let fftList = this.seisData.map(sdd => {
+      const fftList = this.seisData.map(sdd => {
         return sdd.seismogram && sdd.seismogram.isContiguous()
           ? fftForward(sdd)
           : null;
       });
-      let fftListNoNull = fftList.filter(isDef);
-      let spectraPlot = new spectraplot.SpectraPlot(fftListNoNull, this._seismographConfig);
+      const fftListNoNull = fftList.filter(isDef);
+      const spectraPlot = new spectraplot.SpectraPlot(fftListNoNull, this._seismographConfig);
       spectraPlot.setAttribute(spectraplot.LOGFREQ, loglog);
       divElement.node().appendChild(spectraPlot);
     } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
@@ -148,7 +148,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         );
       }
 
-      let pmpSeisConfig = this._seismographConfig.clone();
+      const pmpSeisConfig = this._seismographConfig.clone();
       this.particleMotionPlot = new ParticleMotion(
         divElement,
         pmpSeisConfig,
@@ -181,7 +181,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       seismap.setAttribute(leafletutil.MAG_SCALE, `${magScale}`);
       divElement.node().appendChild(seismap);
     } else if (this.plottype.startsWith(INFO)) {
-      let infotable = new QuakeStationTable(this.seisData, this._seismographConfig);
+      const infotable = new QuakeStationTable(this.seisData, this._seismographConfig);
       divElement.node().appendChild(infotable);
     } else {
       throw new Error(`Unkown plottype "${this.plottype}"`);
@@ -292,7 +292,6 @@ export class OrganizedDisplay extends SeisPlotElement {
     const sortedData = sort(mythis.seisData, this.sortby);
     this.drawMap();
     this.drawInfo();
-    mythis.seismographConfig
     if (this.overlayby === OVERLAY_INDIVIDUAL) {
       sortedData.forEach(sdd => {
           const oi = new OrganizedDisplayItem([sdd], mythis.seismographConfig);
@@ -303,7 +302,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       groupedSDD.forEach(gsdd => {
           const oi = new OrganizedDisplayItem(gsdd, mythis.seismographConfig);
           wrapper.appendChild(oi);
-      })
+      });
     } else if (this.overlayby === OVERLAY_COMPONENT) {
       const oitems = overlayByComponent(sortedData, mythis.seismographConfig);
       oitems.forEach(oi => wrapper.appendChild(oi));
@@ -374,7 +373,7 @@ customElements.define(ORG_DISPLAY, OrganizedDisplay);
 export function getFromQueryParams(
   qParams: any,
   name: string,
-  defaultValue: string = "",
+  defaultValue = "",
 ): string {
   if (name in qParams) {
     if (isStringArg(qParams[name])) {
@@ -399,9 +398,9 @@ export function mapAndIndividualDisplay(
   sddList: Array<SeismogramDisplayData>,
   seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
-  let map = new OrganizedDisplayItem(sddList, seisConfig);
+  const map = new OrganizedDisplayItem(sddList, seisConfig);
   map.plottype = MAP;
-  let individual = individualDisplay(sddList);
+  const individual = individualDisplay(sddList);
   individual.unshift(map);
   return individual;
 }
@@ -520,11 +519,11 @@ export function groupComponentOfMotion(
       first.timeRange.overlaps(sdddB.timeRange);
 
     const splitArray = bifurcate(tmpSeisDataList, isFriend);
-    let nextGroup = splitArray[0];
+    const nextGroup = splitArray[0];
     nextGroup.unshift(first);
     byFriends.push(nextGroup);
     tmpSeisDataList = splitArray[1];
-    first=tmpSeisDataList.shift()
+    first=tmpSeisDataList.shift();
   }
 
   return byFriends;
