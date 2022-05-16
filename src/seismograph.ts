@@ -252,7 +252,6 @@ export class Seismograph extends SeisPlotElement {
 
     this.svg.classed("seismograph", true);
     this.svg.classed(AUTO_COLOR_SELECTOR, true);
-    this.svg.attr("version", "1.1");
     this.svg.attr("plotId", this.plotId);
 
     const alignmentTimeOffset = Duration.fromMillis(0);
