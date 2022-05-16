@@ -369,7 +369,9 @@ export class Seismograph extends SeisPlotElement {
   }
 
   checkResize(): boolean {
-    const rect = this.svg.node().getBoundingClientRect();
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
+    const rect = svgEl.getBoundingClientRect();
 
     if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
       return true;
@@ -390,7 +392,13 @@ export class Seismograph extends SeisPlotElement {
   }
   draw(): void {
     if ( ! this.isConnected) { return; }
-    const rect = this.svg.node().getBoundingClientRect();
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
+    if (! svgEl) {
+      console.log(`svgEl is not def in draw()`)
+      return;
+    }
+    const rect = svgEl.getBoundingClientRect();
 
     if (
       rect.width === 0 ||
@@ -428,7 +436,8 @@ export class Seismograph extends SeisPlotElement {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
       this.canvas.attr("width", this.width).attr("height", this.height);
     } else {
-      this.canvasHolder = this.svg
+      const svg = d3.select(svgEl);
+      this.canvasHolder = svg
         .insert("foreignObject", ":first-child")
         .classed("seismograph", true)
         .attr("x", this.seismographConfig.margin.left)
@@ -448,7 +457,7 @@ export class Seismograph extends SeisPlotElement {
     this.drawSeismograms();
     this.drawAxis();
     drawAxisLabels(
-      this.svg,
+      svgEl,
       this.seismographConfig,
       this.height,
       this.width,
@@ -464,8 +473,10 @@ export class Seismograph extends SeisPlotElement {
   }
 
   printSizes(): void {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
     let out = "";
-    const rect = this.svg.node().getBoundingClientRect();
+    const rect = svgEl.getBoundingClientRect();
     out += "svg rect.height " + rect.height + "\n";
     out += "svg rect.width " + rect.width + "\n";
     const grect = this.getBoundingClientRect();
@@ -1358,8 +1369,10 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   }
 
   drawTitle() {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
     drawTitle(
-      this.svg,
+      svgEl,
       this.seismographConfig,
       this.height,
       this.width,
@@ -1368,8 +1381,10 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   }
 
   drawXLabel() {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
     drawXLabel(
-      this.svg,
+      svgEl,
       this.seismographConfig,
       this.height,
       this.width,
@@ -1378,8 +1393,10 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   }
 
   drawXSublabel() {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
     drawXSublabel(
-      this.svg,
+      svgEl,
       this.seismographConfig,
       this.height,
       this.width,
@@ -1388,8 +1405,10 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   }
 
   drawYLabel() {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
     drawYLabel(
-      this.svg,
+      svgEl,
       this.seismographConfig,
       this.height,
       this.width,
@@ -1398,8 +1417,10 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   }
 
   drawYSublabel() {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
     drawYSublabel(
-      this.svg,
+      svgEl,
       this.seismographConfig,
       this.height,
       this.width,
@@ -1573,7 +1594,9 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`);
     this.rescaleYAxis();
 
     if (this.seismographConfig.ySublabelIsUnits) {
-      drawYSublabel(this.svg, this.seismographConfig, this.height, this.width);
+      const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+      const svgEl = wrapper.querySelector('svg') as SVGElement;
+      drawYSublabel(svgEl, this.seismographConfig, this.height, this.width);
     }
   }
 
