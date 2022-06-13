@@ -10,7 +10,7 @@ import {distaz, DistAzOutput} from "./distaz";
 import {Station, Channel, InstrumentSensitivity} from "./stationxml";
 import {Quake} from "./quakeml";
 import {SeismogramSegment} from "./seismogramsegment";
-export {SeismogramSegment} from "./seismogramsegment";
+//export {SeismogramSegment} from "./seismogramsegment";
 import {StartEndDuration} from "./util";
 import type {TraveltimeJsonType, TraveltimeArrivalType} from "./traveltime";
 export const COUNT_UNIT = "count";

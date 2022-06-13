@@ -5,7 +5,8 @@
  */
 
 import {DateTime, Duration} from "luxon";
-import {SeismogramSegment, Seismogram} from "./seismogram";
+import {SeismogramSegment} from "./seismogramsegment";
+import {Seismogram} from "./seismogram";
 import {EncodedDataSegment} from "./seedcodec";
 import {isDef, isNonEmptyStringArg, UTC_OPTIONS} from "./util";
 export const MINISEED_MIME = "application/vnd.fdsn.mseed";

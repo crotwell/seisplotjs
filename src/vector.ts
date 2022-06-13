@@ -3,7 +3,8 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {SeismogramSegment, Seismogram} from "./seismogram";
+import {SeismogramSegment} from "./seismogramsegment";
+import {Seismogram} from "./seismogram";
 import {isDef} from "./util";
 
 /**

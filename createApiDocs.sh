@@ -48,6 +48,7 @@ desc_seedcodec='decompression for seismic data, often used from miniseed'
 desc_seedlink='seedlink protocol over web socket to a [Ringserver](https://seiscode.iris.washington.edu/projects/ringserver) seedlink server'
 desc_seismogram='objects representing seismograms and timeseries'
 desc_seismogramloader='uses fdsnstation, fdsnevent, traveltime and fdsndataselect to load seismograms'
+desc_seismogramsegment='objects representing contiguous segments of seismograms'
 desc_seismograph='plotting of seismograms using [d3](http://d3js.org)'
 desc_seismographconfig='configuration of seismograph plots'
 desc_stationxml='objects corresponding to elements in a StationXML xml file'
@@ -57,7 +58,7 @@ desc_traveltime='travel times of seismic waves via the IRIS traveltime web servi
 desc_util='general utility functions'
 desc_vector='vector process of seismograms'
 desc_d3='the [d3](http://d3js.org) library, for easy access'
-desc_moment='the [momentjs](http://momentjs.com) library, for easy access'
+desc_luxon='the [luxon](https://moment.github.io/luxon/) library, for easy access'
 
 if [ -e README_part.md ]; then
   rm README_part.md
@@ -132,7 +133,7 @@ do
     done
     if [ 'index' != "$jsfile" ]
     then
-      #echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.js
+      #echo npx documentation build --parse-extension ts -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.ts
       npx documentation build --parse-extension ts -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.ts
       if [ $? -ne 0 ]
       then

@@ -7,10 +7,10 @@ import * as d3 from "d3";
 import {insertCSS} from "./cssutil";
 import {SeismographConfig, numberFormatWrapper } from "./seismographconfig";
 import {
-  SeismogramSegment,
   Seismogram,
   SeismogramDisplayData,
 } from "./seismogram";
+import {SeismogramSegment} from "./seismogramsegment";
 import {isDef, isNumArg, StartEndDuration} from "./util";
 import {drawAxisLabels} from "./axisutil";
 export const DEFAULT_TITLE =

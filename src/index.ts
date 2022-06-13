@@ -40,6 +40,7 @@ import * as seedlink from "./seedlink";
 import * as seedlink4 from "./seedlink4";
 import * as seismogram from "./seismogram";
 import * as seismogramloader from "./seismogramloader";
+import * as seismogramsegment from "./seismogramsegment";
 import * as seismograph from "./seismograph";
 import * as seismographconfig from "./seismographconfig";
 import * as sorting from './sorting';
@@ -93,6 +94,7 @@ export {
   seedlink4,
   seismogram,
   seismogramloader,
+  seismogramsegment,
   seismograph,
   seismographconfig,
   sorting,

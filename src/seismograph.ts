@@ -25,10 +25,10 @@ import {
   findMinMax,
   findMinMaxOverTimeRange,
   findMinMaxOverRelativeTimeRange,
-  SeismogramSegment,
   Seismogram,
   COUNT_UNIT,
 } from "./seismogram";
+import {SeismogramSegment} from "./seismogramsegment";
 import {SeisPlotElement} from "./spelement";
 import {Quake, Origin} from "./quakeml";
 import {Station, Channel} from "./stationxml";

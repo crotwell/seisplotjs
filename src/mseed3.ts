@@ -5,7 +5,8 @@
  */
 import {isDef, UTC_OPTIONS} from "./util";
 import {EncodedDataSegment, FLOAT, INTEGER, DOUBLE, STEIM1, STEIM2} from "./seedcodec";
-import {SeismogramSegment, Seismogram} from "./seismogram";
+import {SeismogramSegment} from "./seismogramsegment";
+import {Seismogram} from "./seismogram";
 import {
   DataRecord,
   R_TYPECODE,

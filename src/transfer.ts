@@ -4,7 +4,8 @@
  * http://www.seis.sc.edu
  */
 import {calcDFT, inverseDFT, FFTResult} from "./fft";
-import {SeismogramSegment, Seismogram} from "./seismogram";
+import {SeismogramSegment} from "./seismogramsegment";
+import {Seismogram} from "./seismogram";
 import {SacPoleZero} from "./sacpolezero";
 import {Response, PolesZeros} from "./stationxml";
 import Qty from "js-quantities";
