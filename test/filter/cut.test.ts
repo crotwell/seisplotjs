@@ -1,6 +1,7 @@
 // @flow
 
-import {SeismogramSegment, Seismogram} from '../../src/seismogram';
+import {Seismogram} from '../../src/seismogram';
+import {SeismogramSegment} from '../../src/seismogramsegment';
 import  {StartEndDuration, isoToDateTime} from '../../src/util';
 import { Duration} from 'luxon';
 
