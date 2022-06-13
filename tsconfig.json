@@ -16,7 +16,7 @@
     "noImplicitReturns": true,
     "skipLibCheck": false,
     "declaration": true,
-    "declarationDir": "dist/module"
+    "declarationDir": "dist/dts"
   },
   "files": ["global.d.ts"],
   "include": ["src"]
