@@ -8,7 +8,10 @@ import {SeismogramSegment} from "./seismogramsegment";
 import {Seismogram} from "./seismogram";
 import {SacPoleZero} from "./sacpolezero";
 import {Response, PolesZeros} from "./stationxml";
-import Qty from "js-quantities";
+// `allMeasures` includes all the measures packaged with this library
+import configureMeasurements, { allMeasures,  AllMeasuresUnits } from 'convert-units';
+const convert = configureMeasurements(allMeasures);
+
 import {createComplex} from "./oregondsputil";
 import * as OregonDSPTop from "oregondsp";
 
@@ -96,7 +99,6 @@ export function transferSacPZSegment(
   // a extra factor of nfft gets in somehow???
   outData.forEach((d, i) => (outData[i] = d * freqValues.length));
   const out = seis.cloneWithNewData(outData);
-  //out.y_unit = UNITS.METER;
   out.yUnit = "m";
   return out;
 }
@@ -107,14 +109,16 @@ export function calcResponse(
   unit: string,
 ): FFTResult {
   const sacPoleZero = convertToSacPoleZero(response);
-  const unitQty = new Qty(unit);
+  const unitQty = convert(1).getUnit(unit as AllMeasuresUnits);
   let gamma = 0;
 
-  if (unitQty.isCompatible(UNITS.METER)) {
+  if (unitQty === null) {
+    throw new Error("unknown response unit: " + unit);
+  } else if (unitQty.measure == 'length') {
     gamma = 0;
-  } else if (unitQty.isCompatible(UNITS.METER_PER_SECOND)) {
+  } else if (unitQty.measure == 'speed') {
     gamma = 1;
-  } else if (unitQty.isCompatible(UNITS.METER_PER_SECOND_PER_SECOND)) {
+  } else if (unitQty.measure == 'acceleration') {
     gamma = 2;
   } else {
     throw new Error(
@@ -325,21 +329,51 @@ export function applyFreqTaper(
 }
 
 /**
- * commonly used units as Qty
+ * commonly used units
  */
-export const UNITS: {
-  // for flow, seems dumb, but...
-  COUNT: Qty;
-  METER: Qty;
-  METER_PER_SECOND: Qty;
-  METER_PER_SECOND_PER_SECOND: Qty;
-} = {
-  COUNT: new Qty("count"),
-  METER: new Qty("m"),
-  METER_PER_SECOND: new Qty("m/s"),
-  METER_PER_SECOND_PER_SECOND: new Qty("m/s2"),
-};
 
+export const METER = convert().getUnit("m");
+export const METER_PER_SECOND = convert().getUnit("m/s");
+export const METER_PER_SECOND_PER_SECOND = convert().getUnit("m/s2");
+
+export function calcGamma(unit: string): number {
+  let gamma;
+  const unitQty = convert(1).getUnit(unit as AllMeasuresUnits);
+  if (unitQty === null) {
+    throw new Error("unknown response unit: " + unit);
+  } else if (unitQty.measure == 'length') {
+    gamma = 0;
+  } else if (unitQty.measure == 'speed') {
+    gamma = 1;
+  } else if (unitQty.measure == 'acceleration') {
+    gamma = 2;
+  } else {
+    throw new Error(
+      "response unit is not displacement (m), velocity (m/s) or acceleration (m/s^2): " +
+        unit,
+    );
+  }
+  return gamma;
+}
+export function calcScaleUnit(unit: string): number {
+  let scale;
+  const unitQty = convert(1).getUnit(unit as AllMeasuresUnits);
+  if (unitQty === null) {
+    throw new Error("unknown response unit: " + unit);
+  } else if (unitQty.measure == 'length') {
+    scale = convert(1).from(unit as AllMeasuresUnits).to('m');
+  } else if (unitQty.measure == 'speed') {
+    scale = convert(1).from(unit as AllMeasuresUnits).to('m/s');
+  } else if (unitQty.measure == 'acceleration') {
+    scale = convert(1).from(unit as AllMeasuresUnits).to('m/s2');
+  } else {
+    throw new Error(
+      "response unit is not displacement (m), velocity (m/s) or acceleration (m/s^2): " +
+        unit,
+    );
+  }
+  return scale;
+}
 /**
  * Converts a StationXML response to SAC PoleZero style. This
  * converts the analog to digital stage (usually 0) along
@@ -369,27 +403,11 @@ export function convertToSacPoleZero(response: Response): SacPoleZero {
     unit = "m/s";
   }
 
-  const unitQty = new Qty(unit);
-  let scaleUnit = new Qty(1, unit);
-  let gamma = 0;
-
-  if (unitQty.isCompatible(UNITS.METER)) {
-    gamma = 0;
-    scaleUnit = scaleUnit.to(UNITS.METER);
-  } else if (unitQty.isCompatible(UNITS.METER_PER_SECOND)) {
-    gamma = 1;
-    scaleUnit = scaleUnit.to(UNITS.METER_PER_SECOND);
-  } else if (unitQty.isCompatible(UNITS.METER_PER_SECOND_PER_SECOND)) {
-    gamma = 2;
-    scaleUnit = scaleUnit.to(UNITS.METER_PER_SECOND_PER_SECOND);
-  } else {
-    throw new Error(
-      "response unit is not displacement, velocity or acceleration: " + unit,
-    );
-  }
+  let gamma = calcGamma(unit);
+  let scaleUnit = calcScaleUnit(unit);
 
   const scale_sensitivity =
-    scaleUnit.scalar * response.instrumentSensitivity.sensitivity;
+    scaleUnit * response.instrumentSensitivity.sensitivity;
   return convertPoleZeroToSacStyle(
     polesZeros,
     scale_sensitivity,

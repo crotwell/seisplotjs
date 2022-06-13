@@ -13,10 +13,10 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.16.7",
+    "convert-units": "^3.0.0-beta.4",
     "crc-32": "^1.2.1",
     "d3": "^6.6.2",
     "handlebars": "^4.7.7",
-    "js-quantities": "^1.7.6",
     "jszip": "^3.7.1",
     "leaflet": "^1.7.1",
     "luxon": "^2.3.1",
