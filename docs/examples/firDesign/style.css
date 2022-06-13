@@ -2,10 +2,10 @@ div.fftfir {
   height: 500px;
 }
 
-div.fftfir svg {
-  height: 50%;
+spectra-plot {
+  height: 250px;
 }
 
-div.impulse {
+seismo-graph {
   height: 300px;
 }

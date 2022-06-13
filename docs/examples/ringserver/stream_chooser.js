@@ -12,10 +12,13 @@ class StreamListChooser extends HTMLElement {
     while (shadow.firstChild) {
       shadow.removeChild(shadow.lastChild);
     }
+    const details = document.createElement('details');
     const wrapper = document.createElement('div');
     wrapper.setAttribute('class','wrapper');
-    const label = wrapper.appendChild(document.createElement('label'));
+    const label = wrapper.appendChild(document.createElement('summary'));
     label.textContent = "Channels:";
+    details.appendChild(label);
+    details.appendChild(wrapper);
     this.streams.forEach(c => {
       const div = wrapper.appendChild(document.createElement('div'));
       const cb = div.appendChild(document.createElement('input'));
@@ -29,7 +32,7 @@ class StreamListChooser extends HTMLElement {
       const nlabel = div.appendChild(document.createElement('label'));
       nlabel.textContent = `${c.key} ${c.calcLatency().humanize()}`;
     });
-    shadow.appendChild(wrapper);
+    shadow.appendChild(details);
   }
   setStreamStats(streams) {
     this.streams = streams;

@@ -45,25 +45,42 @@ let createFIR = function() {
   const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
   plotConfig.title = "FIR Filter"
   let impulseResponse = fftForwardArray(longCoeff);
-  const firPlot = new seisplotjs.fftplot.FFTPlot("div.fftfir", plotConfig, [impulseResponse],  doLogLog, true, false);
+  const fftfir_div = document.querySelector('div.fftfir');
+  const firPlot = fftfir_div.appendChild(document.createElement('spectra-plot'));
+
+  firPlot.fftResults = [impulseResponse];
+  firPlot.seismographConfig = plotConfig;
+  firPlot.logfreq = doLogLog;
   firPlot.draw();
-  const firPhasePlot = new seisplotjs.fftplot.FFTPlot("div.fftfir", plotConfig, [impulseResponse],  doLogLog, false, true);
+  const firPhasePlot = fftfir_div.appendChild(document.createElement('spectra-plot'));
+  firPhasePlot.fftResults = [impulseResponse];
+  firPhasePlot.seismographConfig = plotConfig;
+  firPhasePlot.logfreq = doLogLog;
+  firPhasePlot.kind = "phase";
   firPhasePlot.draw();
-  d3.select("div.message").append('p').text(`Zero Freq Gain: ${impulseResponse.amp[0]}`);
+  d3.select("div.message").append('p').text(`Zero Freq Gain: ${impulseResponse.amplitudes()[0]}`);
 
   let sampleRate = 1;
   let start = seisplotjs.util.isoToDateTime('2000-01-01T00:00:00Z');
   let impulseSeis = seisplotjs.seismogram.Seismogram.createFromContiguousData(longCoeff, sampleRate, start);
   // snip start draw
-  let div = seisplotjs.d3.select('div.impulse');
+  const impluseresp_div = document.querySelector('div.impulse');
   let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
   seisConfig.title = "Impulse Response";
   seisConfig.margin.top = 25;
   seisConfig.doRMean = false;
   seisConfig.wheelZoom = false;
   let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(impulseSeis);
-  let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
+  let graph = document.createElement('seismo-graph');
+  graph.appendSeisData(seisData);
+  graph.seismographConfig = seisConfig;
+  graph.seismographConfig.isRelativeTime = true;
+  graph.seismographConfig.linkedTimeScale.duration = seisData.timeRange.duration;
+  graph.calcTimeScaleDomain();
+  graph.calcAmpScaleDomain();
+  impluseresp_div.appendChild(graph);
   graph.draw();
+
 }
 
 

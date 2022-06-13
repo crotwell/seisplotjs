@@ -296,7 +296,7 @@ function plot_impulse(div, stage, idx, coeff) {
   let plotdiv = div.append("div");
   plotdiv.classed("stage", true);
   let sampleRate = 1;
-  let start = seisplotjs.moment.utc('2000-01-01T00:00:00Z');
+  let start = seisplotjs.util.isoToDateTime('2000-01-01T00:00:00Z');
   if (stage.decimation) {
     sampleRate = stage.decimation.inputSampleRate;
   }
