@@ -1,4 +1,8 @@
-import Handlebars from "handlebars";
+
+// browser field in package.json for handlebars 4.7.7 is bad,
+// direct import from file works for now, but is fragile
+import Handlebars from "handlebars/dist/cjs/handlebars.js";
+//import Handlebars from "handlebars";
 import {DateTime, Duration} from "luxon";
 import {checkStringOrDate} from './util';
 

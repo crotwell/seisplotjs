@@ -1,12 +1,12 @@
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset='utf-8'/>
     <title>seisplotjs 3.0 | Documentation</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
-    <link href='bass.css' rel='stylesheet'>
-    <link href='split.css' rel='stylesheet'>
-    <link href="prism.css" rel="stylesheet" />
+    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'/>
+    <meta name='viewport' content='width=device-width,initial-scale=1'/>
+    <link href='./bass.css' rel='stylesheet'/>
+    <link href='./split.css' rel='stylesheet'/>
+    <link href="./prism.css" rel="stylesheet" />
     <style>
       div#myseismograph {
         height: 300px;
@@ -29,45 +29,47 @@
         </div>
       </div>
       <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+          <div class='clearfix'>
 
-          <h3>Seisplotjs 3.0.0-alpha.0</h3>
-          <p>Seisplotjs is a collection of javascript routines for requesting,
-            manipulating and plotting seismic data.
-          </p>
-          <div class="seismograph" id="myseismograph">
+            <h3>Seisplotjs 3.0.0-alpha.0</h3>
+            <p>Seisplotjs is a collection of javascript routines for requesting,
+              manipulating and plotting seismic data.
+            </p>
+            <div id="myseismograph">
+              <seismo-graph ></seismo-graph>
+            </div>
+            <p>Seisplotjs is available via
+              <a href="https://www.npmjs.com/package/seisplotjs">npm</a>, by
+              <code class="language-bash">npm i --save seisplotjs</code>.
+            </p>
+            <p>Full source at
+              <a href="https://github.com/crotwell/seisplotjs">Github</a>.
+            </p>
+            <p>A standalone js file with all dependencies included as available
+              at <a href="http://www.seis.sc.edu/downloads/seisplotjs/">
+                http://www.seis.sc.edu/downloads/seisplotjs/</a>. This is used
+                by the tutorial and examples.
+            </p>
           </div>
-          <p>Seisplotjs is available via
-            <a href="https://www.npmjs.com/package/seisplotjs">npm</a>, by
-            <code class="language-bash">npm i --save seisplotjs</code>.
-          </p>
-          <p>Full source at
-            <a href="https://github.com/crotwell/seisplotjs">Github</a>.
-          </p>
-          <p>A standalone js file with all dependencies included as available
-            at <a href="http://www.seis.sc.edu/downloads/seisplotjs/">
-              http://www.seis.sc.edu/downloads/seisplotjs/</a>. This is used
-              by the tutorial and examples.
-          </p>
-        </div>
+        </section>
       </div>
     </div>
 
-    <script src="https://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.0.0-alpha.0_standalone.js"></script>
-    <script>
+    <script type="module">
+      import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
       let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
       let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+
+      const seismograph = (document.querySelector('seismo-graph'));
+      seismograph.seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
       dsQuery.networkCode('CO')
         .stationCode('HODGE')
         .locationCode('00')
         .channelCode('LHZ')
         .timeWindow(times);
       dsQuery.querySeismograms().then(seisArray => {
-        let div = seisplotjs.d3.select('div#myseismograph');
-        let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-        let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisArray);
-        graph.draw();
+        seismograph.seisData = seisArray;
       }).catch( function(error) {
         seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
         console.assert(false, error);
