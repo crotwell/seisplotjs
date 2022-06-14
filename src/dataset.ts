@@ -1,5 +1,5 @@
 
-import {downloadBlobAsFile} from "./download";
+import {downloadBlobAsFile} from "./util";
 import * as mseed3 from "./mseed3";
 import {Quake, parseQuakeML} from "./quakeml";
 import {Network, parseStationXml, allChannels} from "./stationxml";
