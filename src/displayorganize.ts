@@ -49,11 +49,11 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     wrapper.setAttribute("class", "wrapper");
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = `
-    station-event-map {
+    sp-station-event-map {
       height: 400px;
     }
-    seismo-graph {
-      height: 400px;
+    sp-seismograph {
+      height: 200px;
     }
     `;
     shadow.appendChild(wrapper);
@@ -217,10 +217,10 @@ export class OrganizedDisplay extends SeisPlotElement {
     wrapper.setAttribute("class", "wrapper");
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = `
-    station-event-map {
+    sp-station-event-map {
       height: 400px;
     }
-    seismo-graph {
+    sp-seismograph {
       height: 200px;
     }
     `;

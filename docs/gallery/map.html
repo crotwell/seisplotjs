@@ -4,9 +4,8 @@
   <meta charset="utf-8" />
   <link rel="stylesheet" href="style.css">
   <title>Map</title>
-  <script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
   <style>
-    station-event-map {
+    sp-station-event-map {
       height: 400px;
     }
   </style>
@@ -15,18 +14,23 @@
 
   <h3>Map:</h3>
   <div>
-    <station-event-map centerLat="34" centerLon="-80" zoomLevel="8"></station-event-map>
+    <sp-station-event-map centerLat="34" centerLon="-80" zoomLevel="9"></sp-station-event-map>
   </div>
-  <script >
+  <script type="module">
+  import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
     seisplotjs.dataset.load('dataset.zip')
     .then((ds) => {
-      let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-      const seismographList = (document.querySelectorAll('station-event-map'));
-      seismographList.forEach( graph => {
-        graph.seisData = ds.waveforms;
-        graph.seismographConfig = seisConfig;
-        graph.draw();
+      const mapList = document.querySelectorAll('sp-station-event-map');
+      mapList.forEach( map => {
+        // plot quakes and station from seismograms
+        map.seisData = ds.waveforms;
+        // or plot other quakes
+        map.addQuake(ds.catalog);
+        // or plot other stations
+        map.addStation(Array.from(seisplotjs.stationxml.allStations(ds.inventory)));
+        map.draw();
       });
+      console.log(`${ds.catalog.length}  ${Array.from(seisplotjs.stationxml.allStations(ds.inventory)).length}`);
       return ds;
     });
   </script>

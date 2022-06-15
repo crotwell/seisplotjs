@@ -4,13 +4,12 @@
   <meta charset="utf-8" />
   <link rel="stylesheet" href="style.css">
   <title>Organized Display</title>
-  <script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
   <style>
     spectra-plot {
       height: 400px;
       display: block;
     }
-    organized-display {
+    sp-organized-display {
       min-height: 100px;
     }
   </style>
@@ -97,42 +96,43 @@
     </form>
   </details>
   <div>
-    <organized-display map="false" info="false" overlay="individual"></organized-display>
+    <sp-organized-display map="false" info="false" overlay="individual" sort="distance"></sp-organized-display>
   </div>
   <script>
     document.querySelectorAll('fieldset.plottype input').forEach(i => i.addEventListener('change', e => {
       console.log(`onchange: ${i.name}`)
       if (i.name === "with_map") {
-        document.querySelector('organized-display').setAttribute('map', i.checked);
+        document.querySelector('sp-organized-display').setAttribute('map', i.checked);
       }
       if (i.name === "with_info") {
-        document.querySelector('organized-display').setAttribute('info', i.checked);
+        document.querySelector('sp-organized-display').setAttribute('info', i.checked);
       }
     }));
     document.querySelectorAll('fieldset.overlay input').forEach(i => i.addEventListener('change', e => {
       console.log(`onchange: ${i.value}`)
-      document.querySelector('organized-display').setAttribute('overlay', i.value);
+      document.querySelector('sp-organized-display').setAttribute('overlay', i.value);
     }));
     document.querySelectorAll('fieldset.sort input').forEach(i => i.addEventListener('change', e => {
       console.log(`onchange: ${i.value}`)
-      document.querySelector('organized-display').setAttribute('sort', i.value);
+      document.querySelector('sp-organized-display').setAttribute('sort', i.value);
     }));
   </script>
-  <script >
+  <script type="module">
 
+  import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+    //seisplotjs.dataset.load('dataset_onlyZ.zip')
     seisplotjs.dataset.load('dataset.zip')
       .then((ds) => {
         let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-        seisConfig.doGain = false;
+        //seisConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
+        seisConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
+        seisConfig.doGain = true;
         seisConfig.doRmean = true;
         seisConfig.isRelativeTime = false;
         console.log(`seisconfig in html: ${seisConfig.configId}  ${seisConfig.doGain}`)
-        const seismographList = (document.querySelectorAll('organized-display'));
-        seismographList.forEach( graph => {
+        document.querySelectorAll('sp-organized-display').forEach( graph => {
           graph.seismographConfig = seisConfig;
-          //graph.appendSeisData(sdd);
           graph.seisData = ds.waveforms;
-          graph.draw();
         });
       });
   </script>

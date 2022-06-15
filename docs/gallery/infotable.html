@@ -4,17 +4,16 @@
   <meta charset="utf-8" />
   <link rel="stylesheet" href="style.css">
   <title>Info Table</title>
-  <script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
   <style>
-    station-event-table {
+    sp-station-event-table {
       height: 400px;
 
     }
 
-    station-event-table
+    sp-station-event-table
     {
-      --even-row-background: NavajoWhite;
-      --odd-row-background: DeepSkyBlue;
+      --even-row-background: aliceblue;
+      --odd-row-background: White;
     }
   </style>
 </head>
@@ -22,16 +21,16 @@
 
   <h3>Info Table:</h3>
   <div>
-    <station-event-table ></station-event-table>
+    <sp-station-event-table ></sp-station-event-table>
   </div>
-  <script >
+
+  <script type="module">
+
+    import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
     seisplotjs.dataset.load('dataset.zip')
     .then((ds) => {
-      let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-      const seismographList = (document.querySelectorAll('station-event-table'));
-      seismographList.forEach( graph => {
+      document.querySelectorAll('sp-station-event-table').forEach( graph => {
         graph.seisData = ds.waveforms;
-        graph.seismographConfig = seisConfig;
         graph.draw();
       });
       return ds;
