@@ -130,14 +130,21 @@
             that allows many channel-time range pairs to be requested at once.
       </p>
       <pre><code class="language-javascript" snippet="querystation">
-            let timeWindow = new seisplotjs.util.StartEndDuration("2019-07-06T03:19:53Z", null, 1800);
-            let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
-            dsQuery.networkCode("CO")
-              .stationCode("HODGE")
-              .locationCode("00")
-              .channelCode("LHZ")
-              .timeWindow(timeWindow);
-          </code></pre>
+import {
+  fdsndataselect,
+  seismogram, seismograph,
+  seismographconfig, util} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+
+let timeWindow = new util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
+let dsQuery = new fdsndataselect.DataSelectQuery();
+console.log(`miniseed3: ${fdsndataselect.FORMAT_MINISEED_THREE}`);
+dsQuery.networkCode('CO')
+  .stationCode('HODGE')
+  .locationCode('00')
+  .channelCode('LHZ')
+  .format(fdsndataselect.FORMAT_MINISEED_THREE)
+  .timeWindow(timeWindow);
+</code></pre>
       <p>
        One important difference here is that, unlike the previous example,
             getting data remotely is inherently an asynchronous operation, and
@@ -164,20 +171,22 @@
             to display the first one.
       </p>
       <pre><code class="language-javascript" snippet="queryseis">
-            dsQuery.querySeismograms().then(seisArray =&gt; {
-                // only plot the first seismogram
-                let seismogram = seisArray[0];
-                let div = seisplotjs.d3.select("div#myseismograph");
-                let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-                seisConfig.title = seismogram.codes();
-                let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-                let graph = new seisplotjs.seismograph.Seismograph(div, seisConfig, seisData);
-                graph.draw();
-              }).catch( function(error) {
-                seisplotjs.d3.select("div#myseismograph").append("p").html("Error loading data." +error);
-                console.assert(false, error);
-              });
-          </code></pre>
+dsQuery.querySeismograms().then(seisArray =&gt; {
+    // only plot the first seismogram
+    const div = document.querySelector('div#myseismograph');
+    let seisConfig = new seismographconfig.SeismographConfig();
+    let seisData = [];
+    seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]));
+    let graph = new seismograph.Seismograph(seisData, seisConfig);
+    div.appendChild(graph);
+  }).catch( function(error) {
+    const div = document.querySelector('div#myseismograph');
+    div.innerHTML = `
+      &lt;p&gt;Error loading data. ${error}&lt;/p&gt;
+    `;
+    console.assert(false, error);
+  });
+</code></pre>
       <h3>
        See it live in
        <a href="tutorial2.html" target="_blank">
