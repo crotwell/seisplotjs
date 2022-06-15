@@ -33,6 +33,7 @@ import {SeisPlotElement} from "./spelement";
 import {Quake, Origin} from "./quakeml";
 import {Station, Channel} from "./stationxml";
 import * as distaz from "./distaz";
+import * as axisutil from "./axisutil";
 import {
   drawAxisLabels,
   drawTitle,
@@ -266,9 +267,9 @@ export class Seismograph extends SeisPlotElement {
       this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
     }
 
+    this.calcTimeScaleDomain();
     const calcMidHW = this.calcAmpScaleDomain();
     this.myAmpScalable = new SeismographAmplitudeScalable(calcMidHW[0], calcMidHW[1], this);
-    this.calcTimeScaleDomain();
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
@@ -1260,34 +1261,17 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
         });
         // let style be in css?
         //              .style("fill", "rgba(220,220,220,.4)");
+        let markerPoleY =0;
+        if (mythis.seismographConfig.markerFlagpoleBase === "center") {
+          markerPoleY = (axisScale.range()[0] + axisScale.range()[1]) / 2;
+        } else {
+          markerPoleY = axisScale.range()[0];
+        }
+        let markerPole = `M0,0l0,${markerPoleY}`;
         drawG
           .append("path")
           .classed("markerpath", true)
-          .attr("d", () => {
-            return d3
-              .line()
-              .x(0) // g is translated so marker time is zero
-              .y(function (d, i) {
-                let out = 0;
-
-                if (mythis.seismographConfig.markerFlagpoleBase === "center") {
-                  out =
-                    i === 0
-                      ? 0
-                      : (axisScale.range()[0] + axisScale.range()[1]) /
-                        2;
-                } else {
-                  // mythis.seismographConfig.markerFlagpoleBase === 'bottom'
-                  out = i === 0 ? 0 : axisScale.range()[0];
-                }
-
-                return out;
-              })
-              .curve(d3.curveLinear)([ [
-                axisScale.domain()[0],
-                axisScale.domain()[1],
-              ] ]); // call the d3 function created by line with data
-          });
+          .attr("d", markerPole);
       });
   }
 
@@ -1370,7 +1354,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   drawTitle() {
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
-    drawTitle(
+    axisutil.drawTitle(
       svgEl,
       this.seismographConfig,
       this.height,
@@ -1382,7 +1366,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   drawXLabel() {
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
-    drawXLabel(
+    axisutil.drawXLabel(
       svgEl,
       this.seismographConfig,
       this.height,
@@ -1394,7 +1378,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   drawXSublabel() {
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
-    drawXSublabel(
+    axisutil.drawXSublabel(
       svgEl,
       this.seismographConfig,
       this.height,
@@ -1406,7 +1390,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   drawYLabel() {
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
-    drawYLabel(
+    axisutil.drawYLabel(
       svgEl,
       this.seismographConfig,
       this.height,
@@ -1418,7 +1402,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
   drawYSublabel() {
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
-    drawYSublabel(
+    axisutil.drawYSublabel(
       svgEl,
       this.seismographConfig,
       this.height,
