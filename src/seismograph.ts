@@ -268,8 +268,7 @@ export class Seismograph extends SeisPlotElement {
     }
 
     this.calcTimeScaleDomain();
-    const calcMidHW = this.calcAmpScaleDomain();
-    this.myAmpScalable = new SeismographAmplitudeScalable(calcMidHW[0], calcMidHW[1], this);
+    this.myAmpScalable = new SeismographAmplitudeScalable(this);
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
@@ -394,10 +393,6 @@ export class Seismograph extends SeisPlotElement {
     if ( ! this.isConnected) { return; }
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
-    if (! svgEl) {
-      console.log(`svgEl is not def in draw()`)
-      return;
-    }
     const rect = svgEl.getBoundingClientRect();
 
     if (
@@ -649,7 +644,6 @@ export class Seismograph extends SeisPlotElement {
       ampScale.range([this.height, 0]);
       if (this.seismographConfig.linkedAmplitudeScale) {
         const halfWidth = this.myAmpScalable.drawHalfWidth;
-console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
         let gainOffset = 0;
         if (this.seismographConfig.doRMean) {
           gainOffset = sdd.mean;
@@ -1025,7 +1019,6 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
 
   zoomed(e: any): void {
     const t = e.transform;
-    console.log(`zoom: ${this.plotId}  ${t}`);
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTS = this.seismographConfig.linkedTimeScale;
@@ -1424,10 +1417,7 @@ console.log(`ampScaleForSeisDisplayData: ${this.plotId} hw: ${halfWidth}`);
     } else {
 
       if (isDef(this.seismographConfig.linkedTimeScale)) {
-        console.log(`linkedTimeScale: ${this.seismographConfig.linkedTimeScale.constructor.name}`);
         const linkedTimeScale = this.seismographConfig.linkedTimeScale;
-console.log(`calcTimeScaleDomain lts _dur=${linkedTimeScale._originalDuration}`);
-console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`);
         if (this._seisDataList.length !== 0 && linkedTimeScale.duration.toMillis()===0) {
           this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
         }
@@ -1479,7 +1469,6 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`);
     }
     const middle = (minMax[1]+minMax[0])/2;
     const halfWidth = (minMax[1]-minMax[0])/2;
-    console.log(`calcAmp: mid ${middle}  hw: ${halfWidth} sdd: ${this.seisData.length}`);
     return [middle, halfWidth];
   }
 
@@ -1492,7 +1481,6 @@ console.log(`calcTimeScaleDomain lts  dur=${linkedTimeScale.duration}`);
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       if (this.myAmpScalable.middle !== oldMiddle || this.myAmpScalable.halfWidth !== oldHalfWidth) {
-        console.log(`recheckAmpScaleDomain() -> linkedAmplitudeScale.recalculate()`);
         this.seismographConfig.linkedAmplitudeScale.recalculate(); // sets yScale.domain
       }
     } else {
@@ -1689,15 +1677,14 @@ export class SeismographAmplitudeScalable extends AmplitudeScalable {
   graph: Seismograph;
   drawHalfWidth: number;
   drawMiddle: number;
-  constructor(middle: number, halfWidth: number, graph: Seismograph) {
-    super(middle, halfWidth);
+  constructor(graph: Seismograph) {
+    const calcMidHW = graph.calcAmpScaleDomain();
+    super(calcMidHW[0], calcMidHW[1]);
     this.graph = graph;
-    this.drawHalfWidth = halfWidth;
-    this.drawMiddle = middle;
+    this.drawHalfWidth = super.halfWidth;
+    this.drawMiddle = super.middle;
   }
-
   notifyAmplitudeChange(middle: number, halfWidth: number) {
-    console.log(`seismograph notifyAmplitudeChange mid: ${middle} hw: ${halfWidth}`);
     if (middle !== this.drawMiddle || halfWidth !== this.drawHalfWidth) {
       this.drawMiddle = middle;
       this.drawHalfWidth = halfWidth;
@@ -1730,7 +1717,6 @@ export class SeismographTimeScalable extends TimeScalable {
     offset: Duration,
     duration: Duration,
   ) {
-    console.log(`notifyTimeRangeChange ${offset} ${duration}`);
     if (!this.drawAlignmentTimeOffset.equals(offset) ||
         !this.drawDuration.equals(duration)) {
       this.drawAlignmentTimeOffset = offset;

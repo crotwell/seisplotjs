@@ -76,6 +76,16 @@ export class LinkedAmplitudeScale {
   }
 
   /**
+   * Links new Seismograph with this amplitude scale.
+   *
+   * @param   graphList Array of AmplitudeScalable to link
+   */
+  linkAll(graphList: Array<AmplitudeScalable>) {
+    graphList.forEach(graph => this._graphSet.add(graph));
+
+    this.recalculate();
+  }
+  /**
    * Link new Seismograph with this amplitude scale.
    *
    * @param   graph AmplitudeScalable to link
@@ -107,28 +117,27 @@ export class LinkedAmplitudeScale {
     const mythis = this;
     this._recalcTimeoutID = setTimeout(() => {
 
-      const graphList = Array.from(mythis._graphSet.values());
-      const maxHalfRange = graphList.reduce((acc, cur) => {
+      const maxHalfRange = mythis.graphList.reduce((acc, cur) => {
         return acc > cur.halfWidth ? acc : cur.halfWidth;
       }, 0);
-      console.log(`LinkedAmplitudeScale.recalculate ${mythis.halfWidth} -> ${maxHalfRange}`);
       if (mythis.halfWidth !== maxHalfRange) {
         mythis.halfWidth = maxHalfRange;
-        graphList.forEach(g => {
+        mythis.graphList.forEach(g => {
           g.notifyAmplitudeChange(g.middle, maxHalfRange);
         });
       }
     }, 100);
   }
   notifyAll() {
-    const graphList = Array.from(this._graphSet.values());
     const hw = this.halfWidth;
-    console.log(`amp notifyAll ${graphList.length}  hw: ${hw}`);
-    graphList.forEach(g => {
+    this.graphList.forEach(g => {
       setTimeout(() => {
         g.notifyAmplitudeChange(g.middle, hw);
       }, 10);
     });
+  }
+  get graphList() {
+    return Array.from(this._graphSet.values());
   }
 }
 
@@ -143,6 +152,10 @@ export class IndividualAmplitudeScale extends LinkedAmplitudeScale {
         g.notifyAmplitudeChange(g.middle, g.halfWidth);
       }
     });
+  }
+  notifyAll() {
+    // just to override super
+    this.recalculate();
   }
 }
 
@@ -172,7 +185,6 @@ export class LinkedTimeScale {
     const glist = graphList ? graphList : []; // in case null
 
     this._graphSet = new Set(glist);
-    console.log(`set LinkedTimeScale duration to zero in const`);
     this._originalDuration = Duration.fromMillis(0);
     this._originalStartOffset = Duration.fromMillis(0);
     this._zoomedDuration = null;
@@ -267,9 +279,8 @@ export class LinkedTimeScale {
    * Recalculate the best time scale for all Seismographs. Causes a redraw.
    */
   recalculate() {
-    const graphList = Array.from(this._graphSet.values());
     if (!isDef(this._zoomedDuration) || this._originalDuration.toMillis() === 0) {
-      graphList.forEach(graph => {
+      this.graphList.forEach(graph => {
         if (graph && graph.duration > this._originalDuration) {
           this._originalDuration = graph.duration;
         }
@@ -278,8 +289,7 @@ export class LinkedTimeScale {
     this.notifyAll();
   }
   notifyAll() {
-    const graphList = Array.from(this._graphSet.values());
-    graphList.forEach(graph => {
+    this.graphList.forEach(graph => {
       if (graph) {
         // run later via event loop
         setTimeout(() => {
@@ -287,5 +297,8 @@ export class LinkedTimeScale {
         });
       }
     });
+  }
+  get graphList() {
+    return Array.from(this._graphSet.values());
   }
 }

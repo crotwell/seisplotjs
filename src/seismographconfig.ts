@@ -249,6 +249,9 @@ export class SeismographConfig {
 
   set linkedAmplitudeScale(ts: null | LinkedAmplitudeScale) {
     if (!isDef(ts)) {throw new Error("amp scale must be defined");}
+    if (this._linkedAmplitudeScale) {
+      ts.linkAll(this._linkedAmplitudeScale.graphList);
+    }
     this._linkedAmplitudeScale = ts;
     this._fixedAmplitudeScale = null;
   }
@@ -269,6 +272,9 @@ export class SeismographConfig {
 
   set linkedTimeScale(ts: null | LinkedTimeScale) {
     if (!isDef(ts)) {throw new Error("time scale must be defined");}
+    if (this._linkedTimeScale) {
+      ts.linkAll(this._linkedTimeScale.graphList);
+    }
     this._linkedTimeScale = ts;
     this._fixedTimeScale = null;
   }
