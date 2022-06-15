@@ -136,11 +136,11 @@
             returns a Promise.
       </p>
       <pre><code class="language-javascript" snippet="window">
-            const plotEnd = seisplotjs.moment.utc().endOf("hour").add(1, "millisecond");
-            if (plotEnd.hour() % 2 === 1) {plotEnd.add(1, "hour");}
-            const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, seisplotjs.moment.duration(1, "day"));
-            new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
-          </code></pre>
+const plotEnd = seisplotjs.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
+if (plotEnd.hour % 2 === 1) {plotEnd.plus({hours: 1});}
+const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, seisplotjs.luxon.Duration.fromISO('P1D'));
+new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
+</code></pre>
       <p>
        In the then method of the Promise from findFdsnDataSelect, we construct our dataselect
             query. Because the helicorder will need 24 hours of data, it is
@@ -153,14 +153,14 @@
             of course returns a Promise.
       </p>
       <pre><code class="language-javascript" snippet="seismogram">
-            .then(dataSelectArray =&gt; {
-              return dataSelectArray[0].networkCode("CO")
-                .stationCode("JSC")
-                .locationCode("00")
-                .channelCode("LHZ")
-                .timeWindow(timeWindow)
-                .querySeismograms();
-          </code></pre>
+  .then(dataSelectArray =&gt; {
+    return dataSelectArray[0].networkCode('CO')
+      .stationCode('JSC')
+      .locationCode('00')
+      .channelCode('LHZ')
+      .timeWindow(timeWindow)
+      .querySeismograms();
+</code></pre>
       <p>
        In the following
        <code class="language-javascript">
@@ -180,23 +180,24 @@
             message to the page.
       </p>
       <pre><code class="language-javascript" snippet="heli">
-          }).then(seisArray =&gt; {
-            seisplotjs.d3.select("span#channel").text(seisArray[0].codes());
-            seisplotjs.d3.select("span#starttime").text(timeWindow.start.format("YYYY-MM-DD HH:mm")+"Z");
-            seisplotjs.d3.select("span#endtime").text(timeWindow.end.format("YYYY-MM-DD HH:mm")+"Z");
-            let heliConfig = new seisplotjs.helicorder.HelicorderConfig(timeWindow);
-            heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
-            let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
-            seisData.addMarkers([ { markertype: "predicted", name: "now", time: seisplotjs.moment.utc() } ]);
-            let helicorder = new seisplotjs.helicorder.Helicorder("div#helicorder",
-                                          heliConfig,
-                                          seisData);
-            helicorder.draw();
-          }).catch( function(error) {
-            seisplotjs.d3.select("div#helicorder").append("p").html("Error loading data." +error);
-            console.assert(false, error);
-          });
-          </code></pre>
+  }).then(seisArray =&gt; {
+    seisplotjs.d3.select("span#channel").text(seisArray[0].codes());
+    seisplotjs.d3.select("span#starttime").text(timeWindow.start.toFormat('yyyy-MM-DD HH:mm')+"Z");
+    seisplotjs.d3.select("span#endtime").text(timeWindow.end.toFormat('yyyy-MM-DD HH:mm')+"Z");
+    let heliConfig = new seisplotjs.helicorder.HelicorderConfig(timeWindow);
+
+    heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
+    let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
+    seisData.addMarkers([ { markertype: 'predicted', name: "now", time: seisplotjs.luxon.DateTime.utc() } ]);
+    let helicorder = new seisplotjs.helicorder.Helicorder("div#helicorder",
+                                  heliConfig,
+                                  seisData);
+    helicorder.draw();
+  }).catch( function(error) {
+    seisplotjs.d3.select("div#helicorder").append('p').html("Error loading data." +error);
+    console.assert(false, error);
+  });
+</code></pre>
       <h3>
        See it live in
        <a href="tutorial6.html" target="_blank">

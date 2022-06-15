@@ -1,3 +1,4 @@
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
 // snip start eventandstation
 let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
@@ -55,20 +56,18 @@ loaderSDDPromise.then((seismogramDataList) => {
     return seismogramDataList ;
 // snip start seisconfig
   }).then( seismogramDataList  => {
-    let div = seisplotjs.d3.select('div#myseismograph');
+    let div = document.querySelector('div#myseismograph');
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    seisConfig.linkedTimeScale = new seisplotjs.seismographconfig.LinkedTimeScale();
-    seisConfig.linkedAmplitudeScale = new seisplotjs.seismograph.LinkedAmpScale();
+    seisConfig.linkedTimeScale = new seisplotjs.scale.LinkedTimeScale();
+    seisConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
     seisConfig.wheelZoom = false;
 // snip start gain
     seisConfig.doGain = false;
     seisConfig.doRMean = false;
     for( let sdd of seismogramDataList) {
-      let subdiv = div.append('div').classed('seismograph', true);
-      let graph = new seisplotjs.seismograph.Seismograph(subdiv,
-                                                         seisConfig,
-                                                         sdd);
-      graph.draw();
+      let graph = new seisplotjs.seismograph.Seismograph([sdd],
+                                                         seisConfig);
+      div.appendChild(graph);
     }
     return seismogramDataList;
 // snip start fft
@@ -82,8 +81,8 @@ loaderSDDPromise.then((seismogramDataList) => {
       }
     }).filter(x => x); // to remove nulls
     let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    let fftPlot = new seisplotjs.fftplot.FFTPlot('div#fftplot', seisConfig, fftList, true);
-    fftPlot.draw();
+    let fftPlot = new seisplotjs.spectraplot.SpectraPlot(fftList, seisConfig);
+    document.querySelector('div#fftplot').appendChild(fftPlot);
     return seismogramDataList;
   });
 

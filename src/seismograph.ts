@@ -530,8 +530,6 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
       context.lineWidth = this.seismographConfig.lineWidth * 2;
     }
-    console.log(`Seismograph amp scale: ${this.plotId} ac: ${this.seismographConfig.linkedAmplitudeScale?.constructor.name} ${this.seismographConfig.linkedAmplitudeScale?._scaleId} hw: ${this.myAmpScalable?.drawHalfWidth}`);
-    console.log(`           time scale: ${this?.myTimeScalable.drawAlignmentTimeOffset}`);
     const sddList = this._seisDataList.concat(this._debugAlignmentSeisData);
     sddList.forEach((sdd, sddIndex) => {
       const ti = sddIndex;

@@ -11,6 +11,8 @@ import * as d3 from "d3";
 import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
 import {drawAxisLabels} from "./axisutil";
 
+export const SPECTRA_ELEMENT = 'sp-spectra';
+
 
 /**
  * Similar to FFTResult, but used for plotting non-fft generated data.
@@ -151,6 +153,9 @@ export class SpectraPlot extends HTMLElement {
     wrapper.setAttribute("class", "wrapper");
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = spectra_plot_css;
+    const lineColorsStyle = shadow.appendChild(document.createElement('style'));
+    const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
+    lineColorsStyle.textContent = lineColorsCSS;
 
     shadow.appendChild(wrapper);
   }
@@ -420,4 +425,4 @@ export class SpectraPlot extends HTMLElement {
     );
   }
 }
-customElements.define('spectra-plot', SpectraPlot);
+customElements.define(SPECTRA_ELEMENT, SpectraPlot);

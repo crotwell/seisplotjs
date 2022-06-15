@@ -226,11 +226,11 @@ export class LinkedTimeScale {
    *
    * @param   graphList Array of TimeScalable to link
    */
-  linkAll(graphList: Array<AmplitudeScalable>) {
+  linkAll(graphList: Array<TimeScalable>) {
     graphList.forEach(graph => this._graphSet.add(graph));
     this.recalculate();
   }
-  
+
   /**
    * Unlink TimeScalable with this amplitude scale.
    *

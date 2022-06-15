@@ -1,20 +1,24 @@
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+
 // snip start vars
 const matchPattern = `CO_JSC_00_HH./MSEED`;
 seisplotjs.d3.select('span#channel').text(matchPattern);
-const duration = seisplotjs.moment.duration(5, 'minutes');
+const duration = seisplotjs.luxon.Duration.fromISO('PT5M');
+console.log(`duration: ${duration}`)
 const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
 const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
-seisPlotConfig.linkedTimeScale.offset = seisplotjs.moment.duration(-1*duration.asMilliseconds(), 'milliseconds');
+seisPlotConfig.linkedTimeScale.offset = seisplotjs.luxon.Duration.fromMillis(-1*duration.toMillis());
 seisPlotConfig.linkedTimeScale.duration = duration;
+seisPlotConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
 let graphList = new Map();
 let numPackets = 0;
 let paused = false;
 let stopped = true;
 let redrawInProgress = false;
-let realtimeDiv = seisplotjs.d3.select("div#realtime");
-let rect = realtimeDiv.node().getBoundingClientRect();
-let timerInterval = duration.asMilliseconds()/
+let realtimeDiv = document.querySelector("div#realtime");
+let rect = realtimeDiv.getBoundingClientRect();
+let timerInterval = duration.toMillis()/
                     (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
 console.log("start time with interval "+timerInterval);
 while (timerInterval < 100) { timerInterval *= 2;}
@@ -36,13 +40,14 @@ const packetHandler = function(packet) {
     if ( ! seisPlot) {
         let seismogram = new seisplotjs.seismogram.Seismogram( [ seisSegment ]);
         let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-        seisData.alignmentTime = seisplotjs.moment.utc();
-        let plotDiv = realtimeDiv.append("div").classed("seismograph", true);
-        seisPlot = new seisplotjs.seismograph.Seismograph(plotDiv, seisPlotConfig, seisData);
+        seisData.alignmentTime = seisplotjs.luxon.DateTime.utc();
+        seisPlot = new seisplotjs.seismograph.Seismograph([seisData], seisPlotConfig);
+        realtimeDiv.appendChild(seisPlot);
         graphList.set(codes, seisPlot);
         console.log(`new plot: ${codes}`)
       } else {
-        seisPlot.seisDataList[0].seismogram.append(seisSegment);
+        seisPlot.seisData[0].seismogram.append(seisSegment);
+        seisPlot.recheckAmpScaleDomain();
       }
       seisPlot.draw();
   } else {
@@ -51,7 +56,7 @@ const packetHandler = function(packet) {
 };
 // snip start datalink
 const datalink = new seisplotjs.datalink.DataLinkConnection(
-    seisplotjs.datalink.IRIS_RINGSERVER_URL,
+    "ws://thecloud.seis.sc.edu/ringserver/datalink",
     packetHandler,
     errorFn);
 
@@ -63,9 +68,9 @@ let timer = seisplotjs.d3.interval(function(elapsed) {
   redrawInProgress = true;
   window.requestAnimationFrame(timestamp => {
     try {
-      const now = seisplotjs.moment.utc();
+      const now = seisplotjs.luxon.DateTime.utc();
       graphList.forEach(function(graph, key) {
-        graph.seisDataList.forEach(sdd => {
+        graph.seisData.forEach(sdd => {
           sdd.alignmentTime = now;
         });
         graph.calcTimeScaleDomain();
