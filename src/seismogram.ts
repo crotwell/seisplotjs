@@ -565,7 +565,21 @@ export class SeismogramDisplayData {
     out.seismogram = seismogram;
     return out;
   }
-
+  /**
+   * Useful for creating fake data from an array, sample rate and start time
+   * @return [description]
+   */
+  static fromContiguousData(
+      yArray:
+        | Array<seedcodec.EncodedDataSegment>
+        | Int32Array
+        | Float32Array
+        | Float64Array,
+      sampleRate: number,
+      startTime: DateTime,): SeismogramDisplayData {
+    return SeismogramDisplayData.fromSeismogram(
+      Seismogram.createFromContiguousData(yArray, sampleRate, startTime));
+  }
   static fromChannelAndTimeWindow(
     channel: Channel,
     timeRange: StartEndDuration,

@@ -129,7 +129,6 @@ export class ParticleMotion extends SeisPlotElement {
   plotId: number;
   xSeisData: SeismogramDisplayData;
   ySeisData: SeismogramDisplayData;
-  timeRange: StartEndDuration;
   width: number;
   height: number;
   outerWidth = -1;
@@ -147,7 +146,8 @@ export class ParticleMotion extends SeisPlotElement {
   constructor(xSeisData?: Array<SeismogramDisplayData>,
       ySeisData?: Array<SeismogramDisplayData>,
       seisConfig?: SeismographConfig) {
-    super([xSeisData,ySeisData], seisConfig);
+    const seisData = [].concat(xSeisData?xSeisData:[]).concat(ySeisData?ySeisData:[]);
+    super(seisData, seisConfig);
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
@@ -164,41 +164,33 @@ export class ParticleMotion extends SeisPlotElement {
     this.canvas = null;
     this.svg = d3.select(svgWrapped);
 
-    if (!isDef(xSeisData)) {
-      throw new Error("xSeisData cannot be null");
-    }
-
-    if (!isDef(ySeisData)) {
-      throw new Error("ySeisData cannot be null");
-    }
-
     this.plotId = ++ParticleMotion._lastID;
 
     if (xSeisData instanceof Seismogram) {
       this.xSeisData = SeismogramDisplayData.fromSeismogram(xSeisData);
     } else if (xSeisData instanceof SeismogramDisplayData) {
       this.xSeisData = xSeisData;
-    } else {
-      throw new Error("xSeisData must be Seismogram or SeismogramDisplayData");
     }
 
     if (ySeisData instanceof Seismogram) {
       this.ySeisData = SeismogramDisplayData.fromSeismogram(ySeisData);
     } else if (ySeisData instanceof SeismogramDisplayData) {
       this.ySeisData = ySeisData;
-    } else {
-      throw new Error("ySeisData must be Seismogram or SeismogramDisplayData");
     }
 
     if (isDef(seisConfig)) {
       //this.seismographConfig = seismographConfig;
     } else {
-      this.seismographConfig = createParticleMotionConfig();
-      this.seismographConfig.xLabel = this.xSeisData.channelCode;
-      this.seismographConfig.yLabel = this.ySeisData.channelCode;
+      // avoid setter as it calls draw()
+      this._seismographConfig = createParticleMotionConfig();
+      if (this.xSeisData) {
+        this.seismographConfig.xLabel = this.xSeisData.channelCode;
+      }
+      if (this.ySeisData) {
+        this.seismographConfig.yLabel = this.ySeisData.channelCode;
+      }
     }
 
-    this.timeRange = this.calcTimeWindow();
     this.svg.attr("version", "1.1");
     this.svg.classed("particleMotion", true);
     this.svg.attr("plotId", this.plotId);
@@ -291,9 +283,11 @@ export class ParticleMotion extends SeisPlotElement {
 
       this.calcWidthHeight(rect.width, calcHeight);
     }
+    this.calcScaleDomain();
     this.drawAxis();
+    const seisData = [].concat(this.xSeisData?this.xSeisData:[]).concat(this.ySeisData?this.ySeisData:[]);
     const handlebarsInput = {
-      seisDataList: [this.xSeisData, this.ySeisData],
+      seisDataList: seisData,
       seisXData: this.xSeisData,
       seisYData: this.ySeisData,
       seisConfig: this.seismographConfig,
@@ -322,19 +316,26 @@ export class ParticleMotion extends SeisPlotElement {
 
   drawParticleMotion() {
     this.g.selectAll("g.particleMotion").remove();
+    if ( ! this.xSeisData || ! this.ySeisData) {
+      // no data yet
+console.log(`no data for parmo: ${this.xSeisData} ${this.ySeisData}`)
+      return;
+    }
     const lineG = this.g.append("g");
+    let xOrientCode = 'X';
+    let yOrientCode = 'Y';
+    if (this.xSeisData.channelCode && this.xSeisData.channelCode.length > 2) {
+      xOrientCode = this.xSeisData.channelCode.charAt(2);
+    }
+    if (this.ySeisData.channelCode && this.ySeisData.channelCode.length > 2) {
+      yOrientCode = this.ySeisData.channelCode.charAt(2);
+    }
     lineG
       .classed("particleMotion", true)
       .classed("seisplotjsdata", true)
       .classed("seispath", true)
       .classed(this.xSeisData.codes(), true)
-      .classed(
-        "orient" +
-          this.xSeisData.channelCode.charAt(2) +
-          "_" +
-          this.ySeisData.channelCode.charAt(2),
-        true,
-      );
+      .classed("orient" +xOrientCode +"_" +yOrientCode, true);
     const xSegments = this.xSeisData.seismogram
       ? this.xSeisData.seismogram.segments
       : [];
@@ -425,8 +426,14 @@ export class ParticleMotion extends SeisPlotElement {
       this.xScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
       this.yScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
     } else {
-      let xMinMax = [this.xSeisData.min, this.xSeisData.max];
-      let yMinMax = [this.ySeisData.min, this.ySeisData.max];
+      let xMinMax = [-1, 1];
+      if (this.xSeisData ) {
+        xMinMax = [this.xSeisData.min, this.xSeisData.max];
+      }
+      let yMinMax = [-1, 1];
+      if (this.ySeisData) {
+        yMinMax = [this.ySeisData.min, this.ySeisData.max];
+      }
       halfDomainDelta = (xMinMax[1] - xMinMax[0]) / 2;
 
       if (yMinMax[1] - yMinMax[0] > xMinMax[1] - xMinMax[0]) {
@@ -466,7 +473,6 @@ export class ParticleMotion extends SeisPlotElement {
       );
     }
 
-    this.timeRange = tw;
     return tw;
   }
 

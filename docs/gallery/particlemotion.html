@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="style.css">
+  <title>Particle Motion</title>
+  <style>
+    sp-particlemotion {
+      float:left;
+      width: 32vw;
+      height: 32vw;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>Seismograph:</h3>
+  <div>
+    <sp-particlemotion></sp-particlemotion>
+    <sp-particlemotion></sp-particlemotion>
+    <sp-particlemotion></sp-particlemotion>
+  </div>
+
+  <script type="module">
+
+    import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+    let dataArray = new Float32Array(1000).map(function(d, i) {
+      return Math.sin(2*Math.PI*i/100) * 100;
+    });
+    let dataArrayB = dataArray.map((d,i) => d*10+(i%200)*5);
+    let dataArrayC = new Float32Array(1000).map(function(d, i) {
+      return Math.sin(-3*Math.PI*i/200) * 800;
+    });
+    let sampleRate = 20;
+    let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
+    const seis = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
+    const seisB = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start);
+    const seisC = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start);
+    seis.seismogram.networkCode = "XX";
+    seis.seismogram.stationCode = "STA";
+    seis.seismogram.locationCode = "00";
+    seis.seismogram.channelCode = "BHZ";
+    seisB.seismogram.networkCode = "XX";
+    seisB.seismogram.stationCode = "STA";
+    seisB.seismogram.locationCode = "00";
+    seisB.seismogram.channelCode = "BHN";
+    seisC.seismogram.networkCode = "XX";
+    seisC.seismogram.stationCode = "STA";
+    seisC.seismogram.locationCode = "00";
+    seisC.seismogram.channelCode = "BHE";
+    const seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+    console.log(`manual seisconfig: ${seisConfig.configId}`)
+    const seismographList = (document.querySelectorAll(seisplotjs.particlemotion.PARTICLE_MOTION_ELEMENT));
+    seismographList[0].xSeisData = seis;
+    seismographList[0].ySeisData = seisB;
+    seismographList[1].xSeisData = seis;
+    seismographList[1].ySeisData = seisC;
+    seismographList[2].xSeisData = seisB;
+    seismographList[2].ySeisData = seisC;
+    seismographList.forEach( graph => {
+      graph.seismographConfig = seisConfig;
+      graph.seismographConfig.isRelativeTime = false;
+      graph.draw();
+    });
+  </script>
+</body>
+</html>
