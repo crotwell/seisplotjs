@@ -1,4 +1,5 @@
 import {SeismographConfig} from "./seismographconfig";
+import {SVG_NS, createSVGElement} from "./util";
 import * as d3 from "d3";
 
 export function drawXLabel(
@@ -158,32 +159,41 @@ export function drawTitle(
   width: number,
   handlebarsInput: any = {},
 ) {
-  const svg = d3.select(svgEl);
+  if (!svgEl) {
+    console.log("warn, drawTitle, but no svg element");
+    return;
+  }
+  let titleG = svgEl.querySelector("g.title");
+  if ( ! seismographConfig.showTitle) {
+    if (titleG) { svgEl.removeChild(titleG); }
+    return;
+  }
+
+  if ( ! titleG) {
+    titleG = svgEl.appendChild(createSVGElement("g"));
+    titleG.setAttribute("class", "title");
+  }
+  titleG.setAttribute(
+    "transform",
+    `translate(${seismographConfig.margin.left + width / 2}, 0)`,
+  );
+  let textEl= titleG.querySelector("text");
+  if ( ! textEl) {
+    textEl = titleG.appendChild(createSVGElement("text"));
+  }
+  textEl.setAttribute("class", "title label");
+  textEl.setAttribute("x", 0);
+  textEl.setAttribute("y", 2); // give little extra space at top, css style as hanging doesn't quite do it
+  textEl.setAttribute("text-anchor", "middle");
   if (!handlebarsInput.seisConfig) {
     handlebarsInput.seisConfig = seismographConfig;
   }
-
-  svg.selectAll("g.title").remove();
-
-  if (seismographConfig.showTitle) {
-    const titleSVGText = svg
-      .append("g")
-      .classed("title", true)
-      .attr(
-        "transform",
-        `translate(${seismographConfig.margin.left + width / 2}, 0)`,
-      )
-      .append("text")
-      .classed("title label", true)
-      .attr("x", 0)
-      .attr("y", 2) // give little extra space at top, css style as hanging doesn't quite do it
-      .attr("text-anchor", "middle");
-    const handlebarOut = seismographConfig.handlebarsTitle(handlebarsInput, {
-      allowProtoPropertiesByDefault: true, // this might be a security issue???
-    });
-    titleSVGText.html(handlebarOut);
-  }
+  const handlebarOut = seismographConfig.handlebarsTitle(handlebarsInput, {
+    allowProtoPropertiesByDefault: true, // this might be a security issue???
+  });
+  textEl.innerHTML = handlebarOut;
 }
+
 export function drawAxisLabels(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
@@ -191,6 +201,15 @@ export function drawAxisLabels(
   width: number,
   handlebarsInput: any = {},
 ) {
+  if (!svgEl || !(svgEl instanceof SVGElement)) {
+    console.log(`warn, axisutil.drawAxisLabels, but no svg element: ${svgEl}`);
+    return;
+  }
+  if (!(svgEl instanceof SVGElement)) {
+    let cname = (typeof svgEl === 'object')?svgEl.constructor.name:`${svgEl}`;
+    console.log(`warn, axisutil.drawAxisLabels, but not SVGElement: ${cname}`);
+    return;
+  }
   drawTitle(svgEl, seismographConfig, height, width, handlebarsInput);
   drawXLabel(svgEl, seismographConfig, height, width, handlebarsInput);
   drawXSublabel(svgEl, seismographConfig, height, width);
