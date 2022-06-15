@@ -6,7 +6,7 @@ import {Network, parseStationXml, allChannels} from "./stationxml";
 import {Seismogram, SeismogramDisplayData} from "./seismogram";
 import {SeismogramLoader} from "./seismogramloader";
 import {StartEndDuration, doFetchWithTimeout, defaultFetchInitObj,
-  isDef, XML_MIME, BINARY_MIME} from "./util";
+  isDef, XML_MIME, BINARY_MIME, isoToDateTime} from "./util";
 import JSZip from "jszip";
 
 export const DATASET_DIR = "dataset";
@@ -69,7 +69,7 @@ export class Dataset {
     const ext = "ms3";
     this.waveforms.forEach(sdd => {
       if (sdd.seismogram) {
-        const mseed3Records = mseed3.toMSeed3(sdd.seismogram);
+        const mseed3Records = mseed3.toMSeed3(sdd.seismogram, createExtraHeaders("spjs", sdd));
         const byteSize = mseed3Records.reduce( (acc, cur) => acc+cur.calcSize(), 0);
         const outBuf = new ArrayBuffer(byteSize);
         let offset = 0;
@@ -173,9 +173,7 @@ export function loadFromZip(zip: JSZip): Promise<Dataset> {
           if (file.name.endsWith(".ms3")) {
             const seisPromise = file.async("arraybuffer").then(function (buffer) {
               const ms3records = mseed3.parseMSeed3Records(buffer);
-              const seismograms = mseed3.seismogramPerChannel(ms3records)
-                .map((seis: Seismogram) => SeismogramDisplayData.fromSeismogram(seis));
-              return seismograms;
+              return sddFromMSeed3(ms3records);
             });
             promiseArray.push(seisPromise);
           }
@@ -217,4 +215,64 @@ export function loadFromZip(zip: JSZip): Promise<Dataset> {
       dataset.associateQuakes();
       return dataset;
     });
+}
+
+export function sddFromMSeed3(ms3records: Array<MSeed3Record>, ds?: Dataset): Array<SeismogramDisplayData> {
+  const out: Array<SeismogramDisplayData> = [];
+  const byChannelMap = mseed3.byChannel(ms3records);
+  byChannelMap.forEach(ms3segments => {
+    const seis = mseed3.merge(ms3segments);
+    const sdd = SeismogramDisplayData.fromSeismogram(seis);
+    ms3segments.forEach(msr => {
+      insertExtraHeaders(msr.extraHeaders, sdd, "spjs", ds);
+    })
+    out.push(sdd);
+  });
+  return out;
+}
+
+export function insertExtraHeaders(eh: Record<string, any>, sdd: SeismogramDisplayData, key: string, ds?: Dataset) {
+  const myEH = eh[key];
+  if (! myEH) {
+    // key not in extra headers
+    return;
+  }
+  if ("quake" in myEH) {
+    for(const pid of myEH["quake"]) {
+      if (ds) {
+        for(const q of ds.catalog) {
+          if (q.publicId === pid) {
+            sdd.addQuake(q);
+          }
+        }
+      } else {
+        // no dataset, how to find Quake from publicId?
+      }
+    }
+  }
+  if ("traveltimes" in myEH) {
+    sdd.traveltimeList = myEH["traveltimes"];
+  }
+  if ("markers" in myEH) {
+    myEH["markers"].forEach(m => {
+      m.time = isoToDateTime(m.time);
+      sdd.markerList.push(m);
+    })
+  }
+}
+
+export function createExtraHeaders(key: string, sdd: SeismogramDisplayData): Record<string, any> {
+  const h = {};
+  const out = {};
+  out[key] = h;
+  if (sdd.quakeList && sdd.quakeList.length > 0) {
+    h["quake"] = sdd.quakeList.map(q => q.publicId);
+  }
+  if (sdd.traveltimeList && sdd.traveltimeList.length > 0) {
+    h["traveltimes"] = sdd.traveltimeList;
+  }
+  if (sdd.markerList && sdd.markerList.length > 0) {
+    h["markers"] = sdd.markerList;
+  }
+  return out;
 }
