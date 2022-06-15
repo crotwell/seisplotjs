@@ -389,12 +389,12 @@ export class StartEndDuration {
       }
 
       this._endTime = DateTime.utc().minus(this._clockOffset);
-      this._startTime = this.endTime.minus(this.duration);
+      this._startTime = this._endTime.minus(this._duration);
     } else if (isDef(startTime)) {
       // only a start time, maybe like a Channel that is active currently
       this._startTime = checkStringOrDate(startTime);
       this._endTime = WAY_FUTURE;
-      this._duration = this.endTime.diff(this.startTime);
+      this._duration = this._endTime.diff(this.startTime);
     } else {
       throw new Error(
         `need some combination of startTime, endTime and duration: ${stringify(
