@@ -4,19 +4,60 @@
  * http://www.seis.sc.edu
  */
 import * as d3 from "d3";
-import {insertCSS} from "./cssutil";
+import {SeisPlotElement} from "./spelement";
 import {SeismographConfig, numberFormatWrapper } from "./seismographconfig";
 import {
   Seismogram,
   SeismogramDisplayData,
 } from "./seismogram";
 import {SeismogramSegment} from "./seismogramsegment";
-import {isDef, isNumArg, StartEndDuration} from "./util";
+import {COLOR_CSS_ID} from "./seismograph";
+import {isDef, isNumArg, StartEndDuration, SVG_NS} from "./util";
 import {drawAxisLabels} from "./axisutil";
 export const DEFAULT_TITLE =
   "<tspan>{{#each seisDataList}}{{onlyChangesChannel ../seisDataList @index}} {{else}}No Data{{/each}}</tspan>";
 export const DEFAULT_XLABEL = "{{seisXData.channelCode}}";
 export const DEFAULT_YLABEL = "{{seisYData.channelCode}}";
+
+export const PARTICLE_MOTION_ELEMENT = 'sp-particlemotion';
+
+
+export const particleMotion_css = `
+
+:host {
+  display: block;
+  min-height: 200px;
+  height: 100%;
+}
+
+div.wrapper {
+  min-height: 100px;
+  height: 100%;
+  width: 100%;
+}
+
+svg {
+  height: 100%;
+  width: 100%;
+  min-height: 125px;
+  min-width: 125px;
+  z-index: 100;
+}
+
+svg text.title {
+  font-size: larger;
+  font-weight: bold;
+  fill: black;
+  color: black;
+  dominant-baseline: hanging;
+}
+
+svg path.seispath {
+    stroke: skyblue;
+    fill: none;
+    stroke-width: 1px;
+}
+`;
 
 export function addDivForParticleMotion(
   svgParent: any,
@@ -52,7 +93,8 @@ export function addParticleMotion(
   }
 
   const seisConfig = createParticleMotionConfig(timeRange);
-  const pmp = new ParticleMotion(svgParent, seisConfig, xSeisData, ySeisData);
+  const pmp = new ParticleMotion(xSeisData, ySeisData, seisConfig);
+  svgParent.append(pmp);
   pmp.draw();
   return pmp;
 }
@@ -78,17 +120,15 @@ export function createParticleMotionConfig(
 /**
  * Particle motion plot.
  *
- * @param inSvgParent parent element, often a div
- * @param seismographConfig config, not all parameters are used in
- * particle motion plots. Can be null for defaults.
  * @param xSeisData x axis seismogram
  * @param ySeisData y axis seismogram
+ * @param seismographConfig config, not all parameters are used in
+ * particle motion plots. Can be null for defaults.
  */
-export class ParticleMotion {
+export class ParticleMotion extends SeisPlotElement {
   plotId: number;
   xSeisData: SeismogramDisplayData;
   ySeisData: SeismogramDisplayData;
-  seismographConfig: SeismographConfig;
   timeRange: StartEndDuration;
   width: number;
   height: number;
@@ -101,19 +141,28 @@ export class ParticleMotion {
   yScaleRmean: any;
   yAxis: any;
   svg: any;
-  svgParent: any;
   g: any;
   static _lastID: number;
 
-  constructor(
-    inSvgParent: any,
-    seismographConfig: SeismographConfig,
-    xSeisData: SeismogramDisplayData | Seismogram,
-    ySeisData: SeismogramDisplayData | Seismogram,
-  ) {
-    if (!isDef(inSvgParent)) {
-      throw new Error("inSvgParent cannot be null");
-    }
+  constructor(xSeisData?: Array<SeismogramDisplayData>,
+      ySeisData?: Array<SeismogramDisplayData>,
+      seisConfig?: SeismographConfig) {
+    super([xSeisData,ySeisData], seisConfig);
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute("class", "wrapper");
+    const style = shadow.appendChild(document.createElement('style'));
+    style.textContent = particleMotion_css;
+    const lineColorsStyle = shadow.appendChild(document.createElement('style'));
+    const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
+    lineColorsStyle.setAttribute("id", COLOR_CSS_ID);
+    lineColorsStyle.textContent = lineColorsCSS;
+    const svgWrapped = wrapper.appendChild(document.createElementNS(SVG_NS, 'svg'));
+    shadow.appendChild(wrapper);
+
+    this.canvas = null;
+    this.svg = d3.select(svgWrapped);
 
     if (!isDef(xSeisData)) {
       throw new Error("xSeisData cannot be null");
@@ -141,8 +190,8 @@ export class ParticleMotion {
       throw new Error("ySeisData must be Seismogram or SeismogramDisplayData");
     }
 
-    if (isDef(seismographConfig)) {
-      this.seismographConfig = seismographConfig;
+    if (isDef(seisConfig)) {
+      //this.seismographConfig = seismographConfig;
     } else {
       this.seismographConfig = createParticleMotionConfig();
       this.seismographConfig.xLabel = this.xSeisData.channelCode;
@@ -150,7 +199,6 @@ export class ParticleMotion {
     }
 
     this.timeRange = this.calcTimeWindow();
-    this.svg = inSvgParent.append("svg");
     this.svg.attr("version", "1.1");
     this.svg.classed("particleMotion", true);
     this.svg.attr("plotId", this.plotId);
@@ -160,7 +208,6 @@ export class ParticleMotion {
     this.yScale = d3.scaleLinear();
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.yScaleRmean = d3.scaleLinear();
-    this.svgParent = inSvgParent;
 
     if (this.seismographConfig.doRMean) {
       this.xAxis = d3
@@ -215,7 +262,35 @@ export class ParticleMotion {
   }
 
   draw() {
-    this.checkResize();
+
+    if ( ! this.isConnected) { return; }
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
+    if (! svgEl) {
+      console.log(`svgEl is not def in particlemotion draw()`)
+      return;
+    }
+    const rect = svgEl.getBoundingClientRect();
+
+    let calcHeight = rect.height;
+
+    if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
+      if (
+        isNumArg(this.seismographConfig.minHeight) &&
+        calcHeight < this.seismographConfig.minHeight
+      ) {
+        calcHeight = this.seismographConfig.minHeight;
+      }
+
+      if (
+        isNumArg(this.seismographConfig.maxHeight) &&
+        calcHeight > this.seismographConfig.maxHeight
+      ) {
+        calcHeight = this.seismographConfig.maxHeight;
+      }
+
+      this.calcWidthHeight(rect.width, calcHeight);
+    }
     this.drawAxis();
     const handlebarsInput = {
       seisDataList: [this.xSeisData, this.ySeisData],
@@ -224,7 +299,7 @@ export class ParticleMotion {
       seisConfig: this.seismographConfig,
     };
     drawAxisLabels(
-      this.svg,
+      svgEl,
       this.seismographConfig,
       this.height,
       this.width,
@@ -234,10 +309,11 @@ export class ParticleMotion {
   }
 
   checkResize(): boolean {
-    const rect = this.svgParent.node().getBoundingClientRect();
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const svgEl = wrapper.querySelector('svg') as SVGElement;
+    const rect = svgEl.getBoundingClientRect();
 
     if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
-      this.calcWidthHeight(rect.width, rect.height);
       return true;
     }
 
@@ -324,14 +400,6 @@ export class ParticleMotion {
     svgG.append("g").attr("class", "axis axis--y").call(this.yAxis);
   }
 
-  drawAxisLabels() {
-    this.drawTitle();
-    this.drawXLabel();
-    this.drawXSublabel();
-    this.drawYLabel();
-    this.drawYSublabel();
-  }
-
   rescaleAxis() {
     const delay = 500;
     this.g
@@ -403,8 +471,9 @@ export class ParticleMotion {
   }
 
   calcWidthHeight(nOuterWidth: number, nOuterHeight: number) {
-    this.outerWidth = nOuterWidth ? Math.max(100, nOuterWidth) : 100;
-    this.outerHeight = nOuterHeight ? Math.max(100, nOuterHeight) : 100;
+    const defHW = 200;
+    this.outerWidth = nOuterWidth ? Math.max(defHW, nOuterWidth) : defHW;
+    this.outerHeight = nOuterHeight ? Math.max(defHW, nOuterHeight) : defHW;
     this.height =
       this.outerHeight -
       this.seismographConfig.margin.top -
@@ -421,217 +490,17 @@ export class ParticleMotion {
     this.yScaleRmean.range([this.height, 0]);
   }
 
-  /**
-   * Draws the title as simple string or array of strings. If an array
-   * then each item will be in a separate tspan for easier formatting.
-   *
-   * @returns this
-   */
-  drawTitle(): ParticleMotion {
-    this.svg.selectAll("g.title").remove();
-    const titleSVGText = this.svg
-      .append("g")
-      .classed("title", true)
-      .attr(
-        "transform",
-        `translate(${this.seismographConfig.margin.left + this.width / 2}, 0)`,
-      )
-      .append("text")
-      .classed("title label", true)
-      .attr("x", 0)
-      .attr("y", 2) // give little extra space at top, css style as hanging doesn't quite do it
-      .attr("text-anchor", "middle");
-    const handlebarOut = this.seismographConfig.handlebarsTitle(
-      {
-        seisDataList: [this.xSeisData, this.ySeisData],
-        seisXData: this.xSeisData,
-        seisYData: this.ySeisData,
-        seisConfig: this.seismographConfig,
-      },
-      {
-        allowProtoPropertiesByDefault: true, // this might be a security issue???
-      },
-    );
-    titleSVGText.html(handlebarOut);
-    return this;
+  createHandlebarsInput(): any {
+    return {
+      seisDataList: this._seisDataList,
+      seisConfig: this._seismographConfig,
+      seisXData: this.xSeisData,
+      seisYData: this.ySeisData,
+    };
   }
 
-  drawXLabel() {
-    this.svg.selectAll("g.xLabel").remove();
-
-    if (isNumArg(this.width) && isNumArg(this.outerWidth)) {
-      const svgText = this.svg
-        .append("g")
-        .classed("xLabel", true)
-        .attr(
-          "transform",
-          "translate(" +
-            (this.seismographConfig.margin.left + this.width / 2) +
-            ", " +
-            (this.outerHeight - this.seismographConfig.margin.bottom / 3) +
-            ")",
-        )
-        .append("text")
-        .classed("x label", true)
-        .attr("text-anchor", "middle")
-        .text(this.seismographConfig.xLabel);
-      const handlebarOut = this.seismographConfig.handlebarsXLabel(
-        {
-          seisDataList: [this.xSeisData, this.ySeisData],
-          seisXData: this.xSeisData,
-          seisYData: this.ySeisData,
-          seisConfig: this.seismographConfig,
-        },
-        {
-          allowProtoPropertiesByDefault: true, // this might be a security issue???
-        },
-      );
-      svgText.html(handlebarOut);
-    }
-  }
-
-  drawYLabel() {
-    this.svg.selectAll("g.yLabel").remove();
-
-    for (const side of ["left", "right"]) {
-      const hTranslate =
-        side === "left"
-          ? 0
-          : this.seismographConfig.margin.left + this.width + 1;
-      const svgText = this.svg
-        .append("g")
-        .classed("yLabel", true)
-        .classed(side, true)
-        .attr("x", 0)
-        .attr(
-          "transform",
-          `translate(${hTranslate}, ${
-            this.seismographConfig.margin.top + this.height / 2
-          })`,
-        )
-        .append("text");
-      svgText.classed("y label", true);
-
-      if (this.seismographConfig.yLabelOrientation === "vertical") {
-        // vertical
-        svgText
-          .attr("text-anchor", "middle")
-          .attr("dy", ".75em")
-          .attr("transform", "rotate(-90, 0, 0)");
-      } else {
-        // horizontal
-        svgText
-          .attr("text-anchor", "start")
-          .attr("dominant-baseline", "central");
-      }
-
-      if (side === "left") {
-        const handlebarOut = this.seismographConfig.handlebarsYLabel(
-          {
-            seisDataList: [this.xSeisData, this.ySeisData],
-            seisXData: this.xSeisData,
-            seisYData: this.ySeisData,
-            seisConfig: this.seismographConfig,
-          },
-          {
-            allowProtoPropertiesByDefault: true, // this might be a security issue???
-          },
-        );
-        svgText.html(handlebarOut);
-      } else {
-        const handlebarOut = this.seismographConfig.handlebarsYLabelRight(
-          {
-            seisDataList: [this.xSeisData, this.ySeisData],
-            seisXData: this.xSeisData,
-            seisYData: this.ySeisData,
-            seisConfig: this.seismographConfig,
-          },
-          {
-            allowProtoPropertiesByDefault: true, // this might be a security issue???
-          },
-        );
-        svgText.html(handlebarOut);
-      }
-    }
-  }
-
-  drawXSublabel() {
-    this.svg.selectAll("g.xSublabel").remove();
-    this.svg
-      .append("g")
-      .classed("xSublabel", true)
-      .attr(
-        "transform",
-        "translate(" +
-          (this.seismographConfig.margin.left + this.width / 2) +
-          ", " +
-          this.outerHeight +
-          ")",
-      )
-      .append("text")
-      .classed("x label sublabel", true)
-      .attr("text-anchor", "middle")
-      .text(this.seismographConfig.xSublabel);
-  }
-
-  drawYSublabel() {
-    this.svg.selectAll("g.ySublabel").remove();
-    const svgText = this.svg
-      .append("g")
-      .classed("ySublabel", true)
-      .attr("x", 0)
-      .attr(
-        "transform",
-        "translate( " +
-          this.seismographConfig.ySublabelTrans +
-          " , " +
-          (this.seismographConfig.margin.top + this.height / 2) +
-          ")",
-      )
-      .append("text")
-      .classed("y label sublabel", true);
-
-    if (this.seismographConfig.yLabelOrientation === "vertical") {
-      // vertical
-      svgText
-        .attr("text-anchor", "middle")
-        .attr("dy", ".75em")
-        .attr("transform", "rotate(-90, 0, 0)");
-    } else {
-      // horizontal
-      svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
-    }
-
-    svgText.text(this.seismographConfig.ySublabel);
-  }
-}
-export const particleMotion_css = `
-
-svg.particleMotion {
-  height: 100%;
-  width: 100%;
-  min-height: 25px;
-  min-width: 25px;
-}
-
-svg.particleMotion text.title {
-  font-size: larger;
-  font-weight: bold;
-  fill: black;
-  color: black;
-  dominant-baseline: hanging;
-}
-
-svg.particleMotion path.seispath {
-    stroke: skyblue;
-    fill: none;
-    stroke-width: 1px;
-}
-`;
-
-if (document) {
-  insertCSS(particleMotion_css, "particlemotion");
 }
 
 // static ID for particle motion
 ParticleMotion._lastID = 0;
+customElements.define(PARTICLE_MOTION_ELEMENT, ParticleMotion);
