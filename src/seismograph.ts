@@ -60,7 +60,7 @@ export type MarkerHolderType = {
   bbox?: BBoxType;
 };
 
-export const SEISMOGRAPH_ELEMENT = 'seismo-graph';
+export const SEISMOGRAPH_ELEMENT = 'sp-seismograph';
 export const seismograph_css = `
 
 :host {

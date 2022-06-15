@@ -13,8 +13,8 @@ import {isDef, isStringArg, stringify} from "./util";
 import * as d3 from "d3";
 import * as querystringify from "querystringify";
 
-export const ORG_DISP_ITEM = 'organized-display-item';
-export const ORG_DISPLAY = 'organized-display';
+export const ORG_DISP_ITEM = 'sp-organized-display-item';
+export const ORG_DISPLAY = 'sp-organized-display';
 
 export const ORG_TYPE = "orgtype";
 export const PLOT_TYPE = "plottype";

@@ -8,7 +8,7 @@ import {SeismographConfig} from "./seismographconfig";
 import Handlebars from "handlebars/dist/cjs/handlebars.js";
 //import Handlebars from "handlebars";
 
-export const INFO_ELEMENT = 'station-event-table';
+export const INFO_ELEMENT = 'sp-station-event-table';
 
 export const DEFAULT_TEMPLATE = `
   <table>

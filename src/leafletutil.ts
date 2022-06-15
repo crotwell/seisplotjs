@@ -7,7 +7,7 @@ import { SeismographConfig} from "./seismographconfig";
 import * as L from "leaflet";
 import {LatLngTuple} from "leaflet";
 
-export const MAP_ELEMENT = 'station-event-map';
+export const MAP_ELEMENT = 'sp-station-event-map';
 export const triangle = "\u25B2";
 export const StationMarkerClassName = "stationMapMarker";
 export const InactiveStationMarkerClassName = "inactiveStationMapMarker";
@@ -734,7 +734,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 `;
 
 export const TILE_TEMPLATE = "tileUrl";
-export const DEFAULT_TILE_TEMPLATE = "http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}";
+export const DEFAULT_TILE_TEMPLATE = "https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}";
 export const TILE_ATTRIBUTION = "tileAttribution";
 export const MAX_ZOOM = "maxZoom";
 export const DEFAULT_MAX_ZOOM = 17;
@@ -748,6 +748,8 @@ export const MAG_SCALE = "magScale";
 export const DEFAULT_MAG_SCALE = 5.0;
 
 export class QuakeStationMap extends SeisPlotElement {
+  quakeList: Array<Quake> = [];
+  stationList: Array<StationList> = [];
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
 
@@ -762,6 +764,20 @@ export class QuakeStationMap extends SeisPlotElement {
     shadow.appendChild(wrapper);
   }
 
+  addQuake(quake: Quake | Array<Quake>) {
+    if (Array.isArray(quake)) {
+      quake.forEach(q => this.quakeList.push(q));
+    } else {
+      this.quakeList.push(quake);
+    }
+  }
+  addStation(station: Station | Array<Station>) {
+    if (Array.isArray(station)) {
+      station.forEach(s => this.stationList.push(s));
+    } else {
+      this.stationList.push(station);
+    }
+  }
   get centerLat(): number {
     const ks = this.hasAttribute(CENTER_LAT) ? this.getAttribute(CENTER_LAT) : null;
     // typescript null
@@ -835,12 +851,12 @@ export class QuakeStationMap extends SeisPlotElement {
     L.tileLayer(tileUrl, tileOptions).addTo(mymap);
     const magScale = this.magScale;
     const mapItems: Array<LatLngTuple> = [];
-    uniqueQuakes(this.seisData).forEach(q => {
+    this.quakeList.concat(uniqueQuakes(this.seisData)).forEach(q => {
       const circle = createQuakeMarker(q, magScale);
       circle.addTo(mymap);
       mapItems.push([q.latitude, q.longitude]);
     });
-    uniqueStations(this.seisData).forEach(s => {
+    this.stationList.concat(uniqueStations(this.seisData)).forEach(s => {
       const m = createStationMarker(s);
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
