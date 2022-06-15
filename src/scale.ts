@@ -222,6 +222,16 @@ export class LinkedTimeScale {
   }
 
   /**
+   * Links new Seismograph with this time scale.
+   *
+   * @param   graphList Array of TimeScalable to link
+   */
+  linkAll(graphList: Array<AmplitudeScalable>) {
+    graphList.forEach(graph => this._graphSet.add(graph));
+    this.recalculate();
+  }
+  
+  /**
    * Unlink TimeScalable with this amplitude scale.
    *
    * @param   graph TimeScalable to unlink
