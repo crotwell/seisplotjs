@@ -15,11 +15,11 @@
 
   <h3>Spectra:</h3>
   <h3>Amplitude:</h3>
-  <spectra-plot kind="amplitude" logfreq="false"></spectra-plot>
-  <spectra-plot kind="amplitude" logfreq="true"></spectra-plot>
+  <sp-spectra kind="amplitude" logfreq="false"></sp-spectra>
+  <sp-spectra kind="amplitude" logfreq="true"></sp-spectra>
   <h3>Phase:</h3>
-  <spectra-plot kind="phase" logfreq="false"></spectra-plot>
-  <spectra-plot kind="phase" logfreq="true"></spectra-plot>
+  <sp-spectra kind="phase" logfreq="false"></sp-spectra>
+  <sp-spectra kind="phase" logfreq="true"></sp-spectra>
 
   <script type="module">
   import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
@@ -34,7 +34,7 @@
     seis.channelCode = "BHZ";
 
     const ampPhase = seisplotjs.fft.fftForward(seis);
-    const spectraList = (document.querySelectorAll('spectra-plot'));
+    const spectraList = (document.querySelectorAll('sp-spectra'));
     spectraList.forEach( spectra => {
       spectra.fftResults = [ ampPhase ];
       //spectra.setAttribute("kind", "amplitude");
