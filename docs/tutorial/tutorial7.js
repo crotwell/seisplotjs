@@ -4,7 +4,6 @@ import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 const matchPattern = `CO_JSC_00_HH./MSEED`;
 seisplotjs.d3.select('span#channel').text(matchPattern);
 const duration = seisplotjs.luxon.Duration.fromISO('PT5M');
-console.log(`duration: ${duration}`)
 const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
 const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
@@ -20,7 +19,6 @@ let realtimeDiv = document.querySelector("div#realtime");
 let rect = realtimeDiv.getBoundingClientRect();
 let timerInterval = duration.toMillis()/
                     (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
-console.log("start time with interval "+timerInterval);
 while (timerInterval < 100) { timerInterval *= 2;}
 
 const errorFn = function(error) {

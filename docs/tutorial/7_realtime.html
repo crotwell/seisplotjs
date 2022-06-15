@@ -115,7 +115,10 @@
        </a>
        protocol. If you run your own ringserver and wish to configure it to
        allow websocket access, some additional information is
-       <a href="https://github.com/crotwell/seisplotjs/wiki/Proxy-seedlink-and-datalink-over-websockets-using-apache2">here</a>.
+       <a href="https://github.com/crotwell/seisplotjs/wiki/Proxy-seedlink-and-datalink-over-websockets-using-apache2">
+        here
+       </a>
+       .
       </p>
       <p>
        First we need to set up a bunch of variables we will use to keep track
@@ -125,31 +128,33 @@
             need an error handling function.
       </p>
       <pre><code class="language-javascript" snippet="vars">
+const matchPattern = `CO_JSC_00_HH./MSEED`;
+seisplotjs.d3.select('span#channel').text(matchPattern);
+const duration = seisplotjs.luxon.Duration.fromISO('PT5M');
+const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
+const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
+seisPlotConfig.wheelZoom = false;
+seisPlotConfig.linkedTimeScale.offset = seisplotjs.luxon.Duration.fromMillis(-1*duration.toMillis());
+seisPlotConfig.linkedTimeScale.duration = duration;
+seisPlotConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
+let graphList = new Map();
+let numPackets = 0;
+let paused = false;
+let stopped = true;
+let redrawInProgress = false;
+let realtimeDiv = document.querySelector("div#realtime");
+let rect = realtimeDiv.getBoundingClientRect();
+let timerInterval = duration.toMillis()/
+                    (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
+while (timerInterval &lt; 100) { timerInterval *= 2;}
 
-            const matchPattern = `CO_JSC_00_HH./MSEED`;
-            seisplotjs.d3.select("span#channel").text(matchPattern);
-            const duration = seisplotjs.moment.duration(5, "minutes");
-            const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
-            const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
-            seisPlotConfig.wheelZoom = false;
-            let graphList = new Map();
-            let numPackets = 0;
-            let paused = false;
-            let stopped = true;
-            let redrawInProgress = false;
-            let realtimeDiv = seisplotjs.d3.select("div#realtime");
-            let rect = realtimeDiv.node().getBoundingClientRect();
-            let timerInterval = duration.asMilliseconds()/
-                                (rect.width)-margin.left-margin.right);
-            console.log("start time with interval "+timerInterval);
-            while (timerInterval &lt; 100) { timerInterval *= 2;}
+const errorFn = function(error) {
+  console.assert(false, error);
+  if (datalink) {datalink.close();}
+  seisplotjs.d3.select("p#error").text("Error: "+error);
+};
 
-            const errorFn = function(error) {
-              console.assert(false, error);
-              if (datalink) {datalink.close();}
-              seisplotjs.d3.select("p#error").text("Error: "+error);
-            };
-          </code></pre>
+</code></pre>
       <p>
        And a function to handle each datalink packet as it arrives. In this
             case all datalink packets should contain a single miniseed record,
@@ -157,31 +162,31 @@
             other types of data as the payload.
       </p>
       <pre><code class="language-javascript" snippet="handle">
-            const packetHandler = function(packet) {
-              if (packet.isMiniseed()) {
-                numPackets++;
-                seisplotjs.d3.select("span#numPackets").text(numPackets);
-                let seisSegment = seisplotjs.miniseed.createSeismogramSegment(packet.miniseed);
-                const codes = seisSegment.codes();
-                let seisPlot = graphList.get(codes);
-                if ( ! seisPlot) {
-                    let seismogram = new seisplotjs.seismogram.Seismogram( [ seisSegment ]);
-                    let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-                    let plotDiv = realtimeDiv.append("div").classed("seismograph", true);
-                    let myseisPlotConfig = seisPlotConfig.clone();
-                    myseisPlotConfig.title = codes;
-                    seisPlot = new seisplotjs.seismograph.Seismograph(plotDiv, myseisPlotConfig, seisData);
-                    graphList.set(codes, seisPlot);
-                    console.log(`new plot: ${codes}`)
-                  } else {
-                    seisPlot.seisDataList[0].seismogram.append(seisSegment);
-                  }
-                  seisPlot.draw();
-              } else {
-                console.log(`not a mseed packet: ${packet.streamId}`)
-              }
-            };
-          </code></pre>
+const packetHandler = function(packet) {
+  if (packet.isMiniseed()) {
+    numPackets++;
+    seisplotjs.d3.select("span#numPackets").text(numPackets);
+    let seisSegment = seisplotjs.miniseed.createSeismogramSegment(packet.miniseed);
+    const codes = seisSegment.codes();
+    let seisPlot = graphList.get(codes);
+    if ( ! seisPlot) {
+        let seismogram = new seisplotjs.seismogram.Seismogram( [ seisSegment ]);
+        let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+        seisData.alignmentTime = seisplotjs.luxon.DateTime.utc();
+        seisPlot = new seisplotjs.seismograph.Seismograph([seisData], seisPlotConfig);
+        realtimeDiv.appendChild(seisPlot);
+        graphList.set(codes, seisPlot);
+        console.log(`new plot: ${codes}`)
+      } else {
+        seisPlot.seisData[0].seismogram.append(seisSegment);
+        seisPlot.recheckAmpScaleDomain();
+      }
+      seisPlot.draw();
+  } else {
+    console.log(`not a mseed packet: ${packet.streamId}`)
+  }
+};
+</code></pre>
       <p>
        Now we create the actual Datalink connection to the
        <a href="https://seiscode.iris.washington.edu/projects/ringserver">
@@ -190,101 +195,102 @@
        .
       </p>
       <pre><code class="language-javascript" snippet="datalink">
+const datalink = new seisplotjs.datalink.DataLinkConnection(
+    "ws://thecloud.seis.sc.edu/ringserver/datalink",
+    packetHandler,
+    errorFn);
 
-            const datalink = new seisplotjs.datalink.DataLinkConnection(
-                seisplotjs.datalink.IRIS_RINGSERVER_URL,
-                packetHandler,
-                errorFn);
-
-          </code></pre>
+</code></pre>
       <p>
        Here is the timer that will periodically refresh the displays.
       </p>
       <pre><code class="language-javascript" snippet="timer">
+let timer = seisplotjs.d3.interval(function(elapsed) {
+  if ( paused || redrawInProgress) {
+    return;
+  }
+  redrawInProgress = true;
+  window.requestAnimationFrame(timestamp =&gt; {
+    try {
+      const now = seisplotjs.luxon.DateTime.utc();
+      graphList.forEach(function(graph, key) {
+        graph.seisData.forEach(sdd =&gt; {
+          sdd.alignmentTime = now;
+        });
+        graph.calcTimeScaleDomain();
+        graph.calcAmpScaleDomain();
+        graph.draw();
+      });
+    } catch(err) {
+      console.assert(false, err);
+    }
+    redrawInProgress = false;
+  });
 
-              let timer = seisplotjs.d3.interval(function(elapsed) {
-                if ( paused || redrawInProgress) {
-                  return;
-                }
-                redrawInProgress = true;
-                window.requestAnimationFrame(timestamp =&gt; {
-                  try {
-                    seisPlotConfig.fixedTimeScale = new seisplotjs.util.StartEndDuration(null, null, duration);
-                    graphList.forEach(function(value, key) {
-                        value.calcTimeScaleDomain();
-                        value.calcAmpScaleDomain();
-                        value.draw();
-                    });
-                    redrawInProgress = false;
-                  } catch(err) {
-                    console.assert(false, err);
-                  }
-                });
+  }, timerInterval);
 
-                }, timerInterval);
-          </code></pre>
+</code></pre>
       <p>
        We wire up the pause button.
       </p>
       <pre><code class="language-javascript" snippet="pause">
+seisplotjs.d3.select("button#pause").on("click", function(d) {
+  togglePause( );
+});
 
-  seisplotjs.d3.select("button#pause").on("click", function(d) {
-    togglePause( );
-  });
-
-  let togglePause = function() {
-    paused = ! paused;
-    if (paused) {
-      seisplotjs.d3.select("button#pause").text("Play");
-    } else {
-      seisplotjs.d3.select("button#pause").text("Pause");
-    }
+let togglePause = function() {
+  paused = ! paused;
+  if (paused) {
+    seisplotjs.d3.select("button#pause").text("Play");
+  } else {
+    seisplotjs.d3.select("button#pause").text("Pause");
   }
+}
 
-          </code></pre>
+</code></pre>
       <p>
        And wire up the disconnect button
       </p>
       <pre><code class="language-javascript" snippet="disconnet">
-            seisplotjs.d3.select("button#disconnect").on("click", function(d) {
-              toggleConnect();
-            });
+seisplotjs.d3.select("button#disconnect").on("click", function(d) {
+  toggleConnect();
+});
 
-            let toggleConnect = function() {
-              stopped = ! stopped;
-              if (stopped) {
-                if (datalink) {
-                  datalink.endStream();
-                  datalink.close();
-                }
-                seisplotjs.d3.select("button#disconnect").text("Reconnect");
-              } else {
-                if (datalink) {
-                  datalink.connect()
-                  .then(serverId =&gt; {
-                    console.log(`id response: ${serverId}`);
-                    return datalink.match(matchPattern);
-                  }).then(response =&gt; {
-                    console.log(`match response: ${response}`)
-                    return datalink.positionAfter(timeWindow.start);
-                  }).then(response =&gt; {
-                    console.log(`positionAfter response: ${response}`)
-                    return datalink.stream();
-                  }).catch( function(error) {
-                    seisplotjs.d3.select("div#debug").append("p").html("Error: " +error);
-                    console.assert(false, error);
-                  });
-                }
-                seisplotjs.d3.select("button#disconnect").text("Disconnect");
-              }
-            }
-          </code></pre>
+let toggleConnect = function() {
+  stopped = ! stopped;
+  if (stopped) {
+    if (datalink) {
+      datalink.endStream();
+      datalink.close();
+    }
+    seisplotjs.d3.select("button#disconnect").text("Reconnect");
+  } else {
+    if (datalink) {
+      datalink.connect()
+      .then(serverId =&gt; {
+        console.log(`id response: ${serverId}`);
+        return datalink.match(matchPattern);
+      }).then(response =&gt; {
+        console.log(`match response: ${response}`)
+        return datalink.positionAfter(timeWindow.start);
+      }).then(response =&gt; {
+        console.log(`positionAfter response: ${response}`)
+        return datalink.stream();
+      }).catch( function(error) {
+        seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+        console.assert(false, error);
+      });
+    }
+    seisplotjs.d3.select("button#disconnect").text("Disconnect");
+  }
+}
+</code></pre>
       <p>
        And then we start it going!
       </p>
       <pre><code class="language-javascript" snippet="go">
-            toggleConnect();
-          </code></pre>
+toggleConnect();
+</code></pre>
       <h3>
        See it live in
        <a href="tutorial7.html" target="_blank">

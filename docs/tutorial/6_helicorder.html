@@ -138,7 +138,8 @@
       <pre><code class="language-javascript" snippet="window">
 const plotEnd = seisplotjs.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
 if (plotEnd.hour % 2 === 1) {plotEnd.plus({hours: 1});}
-const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, seisplotjs.luxon.Duration.fromISO('P1D'));
+const oneDay = seisplotjs.luxon.Duration.fromISO('P1D');
+const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, oneDay);
 new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
 </code></pre>
       <p>
