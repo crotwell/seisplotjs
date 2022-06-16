@@ -3,7 +3,7 @@ import {downloadBlobAsFile} from "./util";
 import * as mseed3 from "./mseed3";
 import {Quake, parseQuakeML} from "./quakeml";
 import {Network, parseStationXml, allChannels} from "./stationxml";
-import {Seismogram, SeismogramDisplayData} from "./seismogram";
+import {SeismogramDisplayData} from "./seismogram";
 import {SeismogramLoader} from "./seismogramloader";
 import {StartEndDuration, doFetchWithTimeout, defaultFetchInitObj,
   isDef, XML_MIME, BINARY_MIME, isoToDateTime} from "./util";
@@ -217,7 +217,7 @@ export function loadFromZip(zip: JSZip): Promise<Dataset> {
     });
 }
 
-export function sddFromMSeed3(ms3records: Array<MSeed3Record>, ds?: Dataset): Array<SeismogramDisplayData> {
+export function sddFromMSeed3(ms3records: Array<mseed3.MSeed3Record>, ds?: Dataset): Array<SeismogramDisplayData> {
   const out: Array<SeismogramDisplayData> = [];
   const byChannelMap = mseed3.byChannel(ms3records);
   byChannelMap.forEach(ms3segments => {
@@ -262,8 +262,8 @@ export function insertExtraHeaders(eh: Record<string, any>, sdd: SeismogramDispl
 }
 
 export function createExtraHeaders(key: string, sdd: SeismogramDisplayData): Record<string, any> {
-  const h = {};
-  const out = {};
+  const h: Record<string, any> = {};
+  const out: Record<string, any> = {};
   out[key] = h;
   if (sdd.quakeList && sdd.quakeList.length > 0) {
     h["quake"] = sdd.quakeList.map(q => q.publicId);

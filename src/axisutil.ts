@@ -1,5 +1,5 @@
 import {SeismographConfig} from "./seismographconfig";
-import {SVG_NS, createSVGElement} from "./util";
+import {createSVGElement} from "./util";
 import * as d3 from "d3";
 
 export function drawXLabel(
@@ -182,8 +182,8 @@ export function drawTitle(
     textEl = titleG.appendChild(createSVGElement("text"));
   }
   textEl.setAttribute("class", "title label");
-  textEl.setAttribute("x", 0);
-  textEl.setAttribute("y", 2); // give little extra space at top, css style as hanging doesn't quite do it
+  textEl.setAttribute("x", "0");
+  textEl.setAttribute("y", "2"); // give little extra space at top, css style as hanging doesn't quite do it
   textEl.setAttribute("text-anchor", "middle");
   if (!handlebarsInput.seisConfig) {
     handlebarsInput.seisConfig = seismographConfig;
@@ -201,13 +201,12 @@ export function drawAxisLabels(
   width: number,
   handlebarsInput: any = {},
 ) {
-  if (!svgEl || !(svgEl instanceof SVGElement)) {
+  if (!svgEl) {
     console.log(`warn, axisutil.drawAxisLabels, but no svg element: ${svgEl}`);
     return;
   }
   if (!(svgEl instanceof SVGElement)) {
-    let cname = (typeof svgEl === 'object')?svgEl.constructor.name:`${svgEl}`;
-    console.log(`warn, axisutil.drawAxisLabels, but not SVGElement: ${cname}`);
+    console.log(`warn, axisutil.drawAxisLabels, but not SVGElement: ${svgEl}`);
     return;
   }
   drawTitle(svgEl, seismographConfig, height, width, handlebarsInput);

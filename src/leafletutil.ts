@@ -749,7 +749,7 @@ export const DEFAULT_MAG_SCALE = 5.0;
 
 export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
-  stationList: Array<StationList> = [];
+  stationList: Array<Station> = [];
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
 

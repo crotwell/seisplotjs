@@ -3,13 +3,14 @@
 // direct import from file works for now, but is fragile
 import Handlebars from "handlebars/dist/cjs/handlebars.js";
 //import Handlebars from "handlebars";
+import {SeismogramDisplayData} from './seismogram';
 import {DateTime, Duration} from "luxon";
 import {checkStringOrDate} from './util';
 
 export function registerHelpers() {
   Handlebars.registerHelper(
     "onlyChangesChannel",
-    function (sddDataList, index) {
+    function (sddDataList: Array<SeismogramDisplayData>, index: number): string {
       let out = "";
       const curr = sddDataList[index];
 
@@ -36,7 +37,7 @@ export function registerHelpers() {
       return out;
     },
   );
-  Handlebars.registerHelper("distdeg", function (sdd) {
+  Handlebars.registerHelper("distdeg", function (sdd: SeismogramDisplayData) {
     const distaz = sdd.distaz;
 
     if (distaz) {
@@ -45,7 +46,7 @@ export function registerHelpers() {
       return "";
     }
   });
-  Handlebars.registerHelper("distkm", function (sdd) {
+  Handlebars.registerHelper("distkm", function (sdd: SeismogramDisplayData) {
     const distaz = sdd.distaz;
 
     if (distaz) {
@@ -71,7 +72,7 @@ export function registerHelpers() {
       return val;
     },
   );
-  Handlebars.registerHelper("formatIsoDate", function (param, hash) {
+  Handlebars.registerHelper("formatIsoDate", function (param: DateTime, hash: Record<string, any>) {
     if (typeof param === "undefined" || param === null) return "no time";
     const defaultFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     const format = hash.format === undefined ? defaultFormat : hash.format;
@@ -83,7 +84,7 @@ export function registerHelpers() {
 
     return m.toFormat(format);
   });
-  Handlebars.registerHelper("formatDuration", function (param) {
+  Handlebars.registerHelper("formatDuration", function (param: Duration) {
     if (typeof param === "undefined" || param === null) return "no time";
 
     if (!Duration.isDuration(param)) {

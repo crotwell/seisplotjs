@@ -27,9 +27,6 @@ export const QUAKE_TABLE = "quake_table";
 export const STATION_TABLE = "station_table";
 
 export class OrganizedDisplayItem extends SeisPlotElement {
-  seismograph: Seismograph | null;
-  spectraPlot: spectraplot.SpectraPlot | null;
-  particleMotionPlot: ParticleMotion | null;
   extras: Map<string, any>;
 
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
@@ -39,9 +36,6 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       this._seismographConfig = createParticleMotionConfig();
     }
 
-    this.seismograph = null;
-    this.spectraPlot = null;
-    this.particleMotionPlot = null;
     this.extras = new Map();
 
     const shadow = this.attachShadow({mode: 'open'});
@@ -68,6 +62,11 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     this.setAttribute(PLOT_TYPE, val);
     this.draw();
   }
+
+  static get observedAttributes() { return [PLOT_TYPE]; }
+  attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+    this.draw();
+  }
   setExtra(key: string, value: any) {
     this.extras.set(key, value);
   }
@@ -92,27 +91,18 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       // @ts-ignore
       wrapper.removeChild(wrapper.lastChild);
     }
-    this.plot(d3.select(wrapper));
-  }
-  plot(divElement: any) {
     const qIndex = this.plottype.indexOf("?");
-    let plotstyle = this.plottype;
     let queryParams: object;
 
     if (qIndex !== -1) {
       queryParams = querystringify.parse(this.plottype.substring(qIndex));
-      plotstyle = this.plottype.substring(0, qIndex);
     } else {
       queryParams = {};
     }
 
-    divElement.attr("plottype", plotstyle);
-
     if (this.plottype.startsWith(SEISMOGRAPH)) {
-      if (this.seismograph === null ) {
-        this.seismograph = new Seismograph(this.seisData, this._seismographConfig);
-      }
-      divElement.node().appendChild(this.seismograph);
+      const seismograph = new Seismograph(this.seisData, this._seismographConfig);
+      wrapper.appendChild(seismograph);
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
       const nonContigList = this.seisData.filter(
@@ -129,7 +119,8 @@ export class OrganizedDisplayItem extends SeisPlotElement {
                 : "null",
             )
             .join(",");
-        divElement.append("p").text(nonContigMsg);
+        const p = wrapper.appendChild(document.createElement("p"));
+        p.textContent = nonContigMsg;
       }
 
       const fftList = this.seisData.map(sdd => {
@@ -140,7 +131,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       const fftListNoNull = fftList.filter(isDef);
       const spectraPlot = new spectraplot.SpectraPlot(fftListNoNull, this._seismographConfig);
       spectraPlot.setAttribute(spectraplot.LOGFREQ, loglog);
-      divElement.node().appendChild(spectraPlot);
+      wrapper.appendChild(spectraPlot);
     } else if (this.plottype.startsWith(PARTICLE_MOTION)) {
       if (this.seisData.length !== 2) {
         throw new Error(
@@ -149,20 +140,18 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       }
 
       const pmpSeisConfig = this._seismographConfig.clone();
-      this.particleMotionPlot = new ParticleMotion(
-        divElement,
-        pmpSeisConfig,
-        this.seisData[0],
-        this.seisData[1],
-      );
-      this.particleMotionPlot.draw();
+      const particleMotionPlot = new ParticleMotion(
+          [this.seisData[0]],
+          [this.seisData[1]],
+          pmpSeisConfig,
+        );
+      wrapper.appendChild(particleMotionPlot);
     } else if (this.plottype.startsWith(MAP)) {
       const mapid =
         "map" + (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 
       const seismap = new QuakeStationMap(this.seisData);
       seismap.setAttribute("id", mapid);
-      divElement.classed("map", true).attr("id", mapid);
       const centerLat = parseFloat(
         getFromQueryParams(queryParams, "centerLat", "35"),
       );
@@ -179,10 +168,10 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         getFromQueryParams(queryParams, "magScale", "5.0"),
       );
       seismap.setAttribute(leafletutil.MAG_SCALE, `${magScale}`);
-      divElement.node().appendChild(seismap);
+      wrapper.appendChild(seismap);
     } else if (this.plottype.startsWith(INFO)) {
       const infotable = new QuakeStationTable(this.seisData, this._seismographConfig);
-      divElement.node().appendChild(infotable);
+      wrapper.appendChild(infotable);
     } else {
       throw new Error(`Unkown plottype "${this.plottype}"`);
     }
