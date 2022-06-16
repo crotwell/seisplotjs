@@ -34,14 +34,6 @@ import {Quake, Origin} from "./quakeml";
 import {Station, Channel} from "./stationxml";
 import * as distaz from "./distaz";
 import * as axisutil from "./axisutil";
-import {
-  drawAxisLabels,
-  drawTitle,
-  drawXLabel,
-  drawXSublabel,
-  drawYLabel,
-  drawYSublabel,
-} from "./axisutil";
 import * as util from "./util"; // for util.log to replace console.log
 
 import {StartEndDuration, isDef, isNumArg} from "./util";
@@ -451,7 +443,7 @@ export class Seismograph extends SeisPlotElement {
 
     this.drawSeismograms();
     this.drawAxis();
-    drawAxisLabels(
+    axisutil.drawAxisLabels(
       svgEl,
       this.seismographConfig,
       this.height,
@@ -1563,9 +1555,7 @@ export class Seismograph extends SeisPlotElement {
     this.rescaleYAxis();
 
     if (this.seismographConfig.ySublabelIsUnits) {
-      const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
-      const svgEl = wrapper.querySelector('svg') as SVGElement;
-      drawYSublabel(svgEl, this.seismographConfig, this.height, this.width);
+      this.drawYSublabel();
     }
   }
 
