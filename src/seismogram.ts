@@ -1297,6 +1297,12 @@ export function findMinMaxOfSeismograms(
     return [-1, 1];
   }
 }
+export function findMinMaxOfSDD(
+  data: Array<SeismogramDisplayData>,
+  minMaxAccumulator?: Array<number>,
+): Array<number> {
+  return findMinMaxOfSeismograms(data.map(sdd => sdd.seismogram), minMaxAccumulator);
+}
 export function uniqueStations(
   seisData: Array<SeismogramDisplayData>,
 ): Array<Station> {
