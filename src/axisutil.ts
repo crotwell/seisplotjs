@@ -177,9 +177,14 @@ export function drawTitle(
     "transform",
     `translate(${seismographConfig.margin.left + width / 2}, 0)`,
   );
-  let textEl= titleG.querySelector("text");
-  if ( ! textEl) {
-    textEl = titleG.appendChild(createSVGElement("text"));
+  let textEl: SVGTextElement;
+  // fighting with typescript null
+  let queryTextEl = titleG.querySelector("text");
+  if ( ! queryTextEl) {
+    textEl = createSVGElement("text") as SVGTextElement;
+    titleG.appendChild(textEl);
+  } else {
+    textEl = queryTextEl;
   }
   textEl.setAttribute("class", "title label");
   textEl.setAttribute("x", "0");
