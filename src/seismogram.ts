@@ -993,6 +993,14 @@ export class SeismogramDisplayData {
     this._statsCache = null;
   }
 
+  get segments(): Array<SeismogramSegment> {
+    if (this._seismogram) {
+      return this._seismogram.segments;
+    } else {
+      return [];
+    }
+  }
+
   calcStats(): SeismogramDisplayStats {
     const stats = new SeismogramDisplayStats();
 
@@ -1301,7 +1309,9 @@ export function findMinMaxOfSDD(
   data: Array<SeismogramDisplayData>,
   minMaxAccumulator?: Array<number>,
 ): Array<number> {
-  return findMinMaxOfSeismograms(data.map(sdd => sdd.seismogram), minMaxAccumulator);
+  const seisData: Array<Seismogram> = [];
+  data.forEach(sdd => {if (!!sdd && !! sdd.seismogram) {seisData.push(sdd.seismogram);}});
+  return findMinMaxOfSeismograms(seisData, minMaxAccumulator);
 }
 export function uniqueStations(
   seisData: Array<SeismogramDisplayData>,

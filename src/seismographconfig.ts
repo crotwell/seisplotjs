@@ -324,7 +324,10 @@ export class SeismographConfig {
         );
       }
     }
-
+    // don't think this can happen, keep typescript happy
+    if (! this._titleHandlebarsCompiled) {
+      throw new Error(`Unable to compile handlebars title for ${this._title}`);
+    }
     return this._titleHandlebarsCompiled(context, runtimeOptions);
   }
 
@@ -361,6 +364,10 @@ export class SeismographConfig {
       } else {
         this._xLabelHandlebarsCompiled = Handlebars.compile(this._xLabel);
       }
+    }
+    // don't think this can happen, keep typescript happy
+    if (! this._xLabelHandlebarsCompiled) {
+      throw new Error(`Unable to compile handlebars xLabel for ${this._xLabel}`);
     }
 
     return this._xLabelHandlebarsCompiled(context, runtimeOptions);
@@ -399,6 +406,10 @@ export class SeismographConfig {
       } else {
         this._yLabelHandlebarsCompiled = Handlebars.compile(this._yLabel);
       }
+    }
+    // don't think this can happen, keep typescript happy
+    if (! this._yLabelHandlebarsCompiled) {
+      throw new Error(`Unable to compile handlebars yLabel for ${this._yLabel}`);
     }
 
     return this._yLabelHandlebarsCompiled(context, runtimeOptions);
@@ -439,6 +450,10 @@ export class SeismographConfig {
           this._yLabelRight,
         );
       }
+    }
+    // don't think this can happen, keep typescript happy
+    if (! this._yLabelRightHandlebarsCompiled) {
+      throw new Error(`Unable to compile handlebars yLabelRight for ${this._yLabelRight}`);
     }
 
     return this._yLabelRightHandlebarsCompiled(context, runtimeOptions);

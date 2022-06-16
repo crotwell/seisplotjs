@@ -277,9 +277,8 @@ export class ParticleMotion extends SeisPlotElement {
     }
     this.calcScaleDomain();
     this.drawAxis();
-    const seisData = [].concat(this.xSeisData?this.xSeisData:[]).concat(this.ySeisData?this.ySeisData:[]);
     const handlebarsInput = {
-      seisDataList: seisData,
+      seisDataList: this.seisData,
       seisXData: this.xSeisData,
       seisYData: this.ySeisData,
       seisConfig: this.seismographConfig,
@@ -328,15 +327,11 @@ export class ParticleMotion extends SeisPlotElement {
       .classed("seispath", true)
       .classed(this.xSeisData[0].codes(), true)
       .classed("orient" +xOrientCode +"_" +yOrientCode, true);
-    let xSegments;
-    let ySegments;
+    let xSegments: Array<SeismogramSegment>;
+    let ySegments: Array<SeismogramSegment>;
     for(let i =0; i<this.xSeisData.length; i++) {
-      xSegments = this.xSeisData[i].seismogram
-        ? this.xSeisData[i].seismogram.segments
-        : [];
-      ySegments = this.ySeisData[i].seismogram
-        ? this.ySeisData[i].seismogram.segments
-        : [];
+      xSegments = this.xSeisData[i].segments;
+      ySegments = this.ySeisData[i].segments;
       xSegments.forEach(segX => {
         ySegments.forEach(segY => {
           this.drawParticleMotionForSegment(lineG, segX, segY);
@@ -451,25 +446,6 @@ export class ParticleMotion extends SeisPlotElement {
     const yHalfNice = (yNiceMinMax[1] - yNiceMinMax[0]) / 2;
     this.yScaleRmean.domain([-1 * yHalfNice, yHalfNice]);
     this.rescaleAxis();
-  }
-
-  calcTimeWindow(): StartEndDuration {
-    let tw = null;
-
-    if (this.seismographConfig.fixedTimeScale) {
-      tw = this.seismographConfig.fixedTimeScale;
-    } else {
-      tw = this.xSeisData.timeRange.intersect(this.ySeisData.timeRange);
-    }
-
-    if (!tw) {
-      // intersection might be null
-      throw new Error(
-        `Seismograms do not overlap: ${this.xSeisData.timeRange.toString()} ${this.ySeisData.timeRange.toString()}`,
-      );
-    }
-
-    return tw;
   }
 
   calcWidthHeight(nOuterWidth: number, nOuterHeight: number) {

@@ -254,9 +254,11 @@ export function insertExtraHeaders(eh: Record<string, any>, sdd: SeismogramDispl
     sdd.traveltimeList = myEH["traveltimes"];
   }
   if ("markers" in myEH) {
-    myEH["markers"].forEach(m => {
-      m.time = isoToDateTime(m.time);
-      sdd.markerList.push(m);
+    myEH["markers"].forEach((m: any) => {
+      if (typeof m === 'object' && 'time' in m) {
+        m.time = isoToDateTime(m.time);
+        sdd.markerList.push(m);
+      }
     })
   }
 }
