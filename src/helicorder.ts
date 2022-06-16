@@ -188,9 +188,7 @@ export class Helicorder {
         }
       }
 
-      const seismograph = new Seismograph();
-      seismograph.seismographConfig = lineSeisConfig;
-      seismograph.appendSeisData(lineSeisData);
+      const seismograph = new Seismograph([lineSeisData], lineSeisConfig);
       seismograph.svg.classed(HELICORDER_SELECTOR, true);
       seisDiv.node().appendChild(seismograph);
 
