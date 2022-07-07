@@ -80,9 +80,16 @@ export class LinkedAmplitudeScale {
    *
    * @param   graphList Array of AmplitudeScalable to link
    */
-  linkAll(graphList: Array<AmplitudeScalable>) {
-    graphList.forEach(graph => this._graphSet.add(graph));
-
+  linkAll(graphList: Array<AmplitudeScalable | { amp_scalable: AmplitudeScalable}>) {
+    graphList.forEach(graph => {
+        if ("notifyAmplitudeChange" in graph) {
+          this._graphSet.add(graph);
+        } else if ("amp_scalable" in graph) {
+          this._graphSet.add(graph.amp_scalable);
+        } else {
+          console.warn(`graph does not have notifyAmplitudeChange method or amp_scalable field, skipping: ${graph}`);
+        }
+    });
     this.recalculate();
   }
   /**
@@ -90,10 +97,8 @@ export class LinkedAmplitudeScale {
    *
    * @param   graph AmplitudeScalable to link
    */
-  link(graph: AmplitudeScalable) {
-    this._graphSet.add(graph);
-
-    this.recalculate();
+  link(graph: AmplitudeScalable | { amp_scalable: AmplitudeScalable}) {
+    this.linkAll([graph]);
   }
 
   /**
@@ -216,18 +221,27 @@ export class LinkedTimeScale {
    *
    * @param   graph TimeScalable to link
    */
-  link(graph: TimeScalable) {
-    this._graphSet.add(graph);
-    this.recalculate();
+  link(graph: TimeScalable | { time_scalable: TimeScalable}) {
+    this.linkAll([graph]);
   }
 
   /**
-   * Links new Seismograph with this time scale.
+   * Links TimeScalable with this time scale. Each
+   * object in the array should either be a TimeScalable
+   * or have a time_scalable field that is a TimeScalable.
    *
    * @param   graphList Array of TimeScalable to link
    */
-  linkAll(graphList: Array<TimeScalable>) {
-    graphList.forEach(graph => this._graphSet.add(graph));
+  linkAll(graphList: Array<TimeScalable | { time_scalable: TimeScalable}>) {
+    graphList.forEach(graph => {
+        if ("notifyTimeRangeChange" in graph) {
+          this._graphSet.add(graph);
+        } else if ("time_scalable" in graph) {
+          this._graphSet.add(graph.time_scalable);
+        } else {
+          console.warn(`graph does not have notifyTimeRangeChange method or time_scalable field, skipping: ${graph}`);
+        }
+    });
     this.recalculate();
   }
 

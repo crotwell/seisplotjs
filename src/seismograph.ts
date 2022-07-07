@@ -176,8 +176,8 @@ export class Seismograph extends SeisPlotElement {
   throttleRescale: ReturnType<typeof setTimeout> | null;
   throttleResize: ReturnType<typeof setTimeout> | null;
   throttleRedraw: ReturnType<typeof setTimeout> | null;
-  myTimeScalable: SeismographTimeScalable;
-  myAmpScalable: SeismographAmplitudeScalable;
+  time_scalable: SeismographTimeScalable;
+  amp_scalable: SeismographAmplitudeScalable;
 
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
@@ -253,17 +253,17 @@ export class Seismograph extends SeisPlotElement {
       maxDuration = findMaxDuration(seisData);
     }
 
-    this.myTimeScalable = new SeismographTimeScalable(this, alignmentTimeOffset, maxDuration);
+    this.time_scalable = new SeismographTimeScalable(this, alignmentTimeOffset, maxDuration);
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
-      this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
+      this.seismographConfig.linkedTimeScale.link(this.time_scalable);
     }
 
     this.calcTimeScaleDomain();
-    this.myAmpScalable = new SeismographAmplitudeScalable(this);
+    this.amp_scalable = new SeismographAmplitudeScalable(this);
 
     if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
+      this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
 
 
@@ -320,17 +320,17 @@ export class Seismograph extends SeisPlotElement {
   }
   set seismographConfig(seismographConfig: SeismographConfig) {
     if (isDef(this.seismographConfig.linkedTimeScale)) {
-      this.seismographConfig.linkedTimeScale.unlink(this.myTimeScalable);
+      this.seismographConfig.linkedTimeScale.unlink(this.time_scalable);
     }
     if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.unlink(this.myAmpScalable);
+      this.seismographConfig.linkedAmplitudeScale.unlink(this.amp_scalable);
     }
     super.seismographConfig = seismographConfig;
     if (isDef(this.seismographConfig.linkedTimeScale)) {
-      this.seismographConfig.linkedTimeScale.link(this.myTimeScalable);
+      this.seismographConfig.linkedTimeScale.link(this.time_scalable);
     }
     if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.link(this.myAmpScalable);
+      this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
     const mythis = this;
     const z = this.svg.call(
@@ -349,10 +349,10 @@ export class Seismograph extends SeisPlotElement {
   }
   disconnectedCallback() {
     if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.unlink(this.myAmpScalable);
+      this.seismographConfig.linkedAmplitudeScale.unlink(this.amp_scalable);
     }
     if (this.seismographConfig.linkedTimeScale) {
-      this.seismographConfig.linkedTimeScale.unlink(this.myTimeScalable);
+      this.seismographConfig.linkedTimeScale.unlink(this.time_scalable);
     }
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -635,7 +635,7 @@ export class Seismograph extends SeisPlotElement {
       const ampScale = d3.scaleLinear();
       ampScale.range([this.height, 0]);
       if (this.seismographConfig.linkedAmplitudeScale) {
-        const halfWidth = this.myAmpScalable.drawHalfWidth;
+        const halfWidth = this.amp_scalable.drawHalfWidth;
         let gainOffset = 0;
         if (this.seismographConfig.doRMean) {
           gainOffset = sdd.mean;
@@ -662,12 +662,12 @@ export class Seismograph extends SeisPlotElement {
     const sddXScale = d3.scaleUtc();
 
     if (this.seismographConfig.linkedTimeScale) {
-      if (this.myTimeScalable.drawDuration.equals(ZERO_DURATION)) {
+      if (this.time_scalable.drawDuration.equals(ZERO_DURATION)) {
         this.seismographConfig.linkedTimeScale.recalculate();
       }
       // drawDuration should be set via recalculate now
-      const startOffset = this.myTimeScalable.drawAlignmentTimeOffset;
-      const duration = this.myTimeScalable.drawDuration;
+      const startOffset = this.time_scalable.drawAlignmentTimeOffset;
+      const duration = this.time_scalable.drawDuration;
       plotSed = sdd.relativeTimeWindow(startOffset, duration);
     } else if (this.seismographConfig.fixedTimeScale) {
       plotSed = this.seismographConfig.fixedTimeScale;
@@ -819,12 +819,12 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.fixedAmplitudeScale) {
       ampAxisScale.domain(this.seismographConfig.fixedAmplitudeScale);
     } else if (this.seismographConfig.linkedAmplitudeScale) {
-      let middle = this.myAmpScalable.drawMiddle;
+      let middle = this.amp_scalable.drawMiddle;
       if (this.seismographConfig.doRMean) {
         middle = 0;
       }
-      ampAxisScale.domain([ middle - this.myAmpScalable.drawHalfWidth,
-                      middle + this.myAmpScalable.drawHalfWidth ]);
+      ampAxisScale.domain([ middle - this.amp_scalable.drawHalfWidth,
+                      middle + this.amp_scalable.drawHalfWidth ]);
     } else {
       throw new Error("ampScaleForAxis Must be either linked or fixed amp scale");
     }
@@ -837,8 +837,8 @@ export class Seismograph extends SeisPlotElement {
       xScaleToDraw = d3.scaleLinear();
       xScaleToDraw.range([0, this.width]);
       if (this.seismographConfig.linkedTimeScale) {
-        const startOffset = this.myTimeScalable.drawAlignmentTimeOffset.toMillis()/1000;
-        const duration = this.myTimeScalable.drawDuration.toMillis()/1000;
+        const startOffset = this.time_scalable.drawAlignmentTimeOffset.toMillis()/1000;
+        const duration = this.time_scalable.drawDuration.toMillis()/1000;
         xScaleToDraw.domain([startOffset, startOffset+duration]);
       } else if (this.seismographConfig.fixedTimeScale) {
         const psed = this.seismographConfig.fixedTimeScale;
@@ -1466,13 +1466,13 @@ export class Seismograph extends SeisPlotElement {
 
   recheckAmpScaleDomain(): void {
     const calcMidHW = this.calcAmpScaleDomain();
-    const oldMiddle = this.myAmpScalable.middle;
-    const oldHalfWidth = this.myAmpScalable.halfWidth;
-    this.myAmpScalable.middle = calcMidHW[0];
-    this.myAmpScalable.halfWidth = calcMidHW[1];
+    const oldMiddle = this.amp_scalable.middle;
+    const oldHalfWidth = this.amp_scalable.halfWidth;
+    this.amp_scalable.middle = calcMidHW[0];
+    this.amp_scalable.halfWidth = calcMidHW[1];
 
     if (this.seismographConfig.linkedAmplitudeScale) {
-      if (this.myAmpScalable.middle !== oldMiddle || this.myAmpScalable.halfWidth !== oldHalfWidth) {
+      if (this.amp_scalable.middle !== oldMiddle || this.amp_scalable.halfWidth !== oldHalfWidth) {
         this.seismographConfig.linkedAmplitudeScale.recalculate(); // sets yScale.domain
       }
     } else {
