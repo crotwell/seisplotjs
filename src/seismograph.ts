@@ -421,6 +421,8 @@ export class Seismograph extends SeisPlotElement {
 
     if (this.canvas) {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
+      this.canvasHolder.attr("x", this.seismographConfig.margin.left);
+      this.canvasHolder.attr("y", this.seismographConfig.margin.top);
       this.canvas.attr("width", this.width).attr("height", this.height);
     } else {
       const svg = d3.select(svgEl);
