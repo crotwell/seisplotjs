@@ -132,8 +132,8 @@ export function createParticleMotionConfig(
  */
 export class ParticleMotion extends SeisPlotElement {
   plotId: number;
-  xSeisData: Array<SeismogramDisplayData>;
-  ySeisData: Array<SeismogramDisplayData>;
+  _xSeisData: Array<SeismogramDisplayData>;
+  _ySeisData: Array<SeismogramDisplayData>;
   width: number;
   height: number;
   outerWidth = -1;
@@ -244,6 +244,32 @@ export class ParticleMotion extends SeisPlotElement {
         mythis.draw();
       }
     });
+  }
+  get xSeisData(): Array<SeismogramDisplayData> {
+    return this._xSeisData;
+  }
+  set xSeisData(xsdd: Array<SeismogramDisplayData> | SeismogramDisplayData) {
+    if (Array.isArray(xsdd)) {
+      this._xSeisData = xsdd;
+    } else if (xsdd instanceof SeismogramDisplayData) {
+      this._xSeisData = [ xsdd ];
+    } else {
+      throw new Error(`Unknown data for xSeisData: ${xsdd}`);
+    }
+    this._seisDataList = this._xSeisData.concat(this._ySeisData);
+  }
+  get ySeisData(): Array<SeismogramDisplayData> {
+    return this._ySeisData;
+  }
+  set ySeisData(ysdd: Array<SeismogramDisplayData> | SeismogramDisplayData) {
+    if (Array.isArray(ysdd)) {
+      this._ySeisData = ysdd;
+    } else if (ysdd instanceof SeismogramDisplayData) {
+      this._ySeisData = [ ysdd ];
+    } else {
+      throw new Error(`Unknown data for xSeisData: ${ysdd}`);
+    }
+    this._seisDataList = this._xSeisData.concat(this._ySeisData);
   }
 
   draw() {
