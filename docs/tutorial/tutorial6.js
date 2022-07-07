@@ -4,7 +4,7 @@ import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 const plotEnd = seisplotjs.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
 if (plotEnd.hour % 2 === 1) {plotEnd.plus({hours: 1});}
 const oneDay = seisplotjs.luxon.Duration.fromISO('P1D');
-const timeWindow = new seisplotjs.util.StartEndDuration(null, plotEnd, oneDay);
+const timeWindow = seisplotjs.luxon.Interval.before(plotEnd, oneDay);
 new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
 // snip start seismogram
   .then(dataSelectArray => {

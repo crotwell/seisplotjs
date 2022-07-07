@@ -4,14 +4,14 @@ import {
   seismogram, seismograph,
   seismographconfig,
   stationxml,
-  util} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+  util, luxon} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
 const mymap = document.querySelector('sp-station-event-map');
 //mymap.scrollWheelZoom.disable();
 
 
 // snip start quakechan
-let queryTimeWindow = new util.StartEndDuration('2019-07-01', '2019-07-31');
+let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
 let eventQuery = new fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
@@ -31,7 +31,7 @@ Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) => {
   let seismogramDataList = [];
   for (const q of quakeList) {
-    let timeWindow = new util.StartEndDuration(q.time, null, 2400);
+    let timeWindow = luxon.Interval.after(q.time, luxon.Duration.fromMillis(1000*2400));
     for (const c of stationxml.allChannels(networkList)) {
       let sdd = seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
       sdd.addQuake(q);

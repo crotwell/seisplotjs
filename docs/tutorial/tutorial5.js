@@ -1,7 +1,9 @@
 import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
 // snip start eventandstation
-let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
+let queryTimeWindow = seisplotjs.luxon.Interval.fromDateTimes(
+  seisplotjs.util.isoToDateTime('2019-07-01'),
+  seisplotjs.util.isoToDateTime('2019-07-31'));
 let eventQuery = new seisplotjs.fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)

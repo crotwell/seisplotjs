@@ -4,7 +4,7 @@ import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 const matchPattern = `CO_JSC_00_HH./MSEED`;
 seisplotjs.d3.select('span#channel').text(matchPattern);
 const duration = seisplotjs.luxon.Duration.fromISO('PT5M');
-const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
+const timeWindow = new seisplotjs.luxon.Interval.before(seisplotjs.luxon.DateTime.utc(), duration);
 const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
 seisPlotConfig.linkedTimeScale.offset = seisplotjs.luxon.Duration.fromMillis(-1*duration.toMillis());

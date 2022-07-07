@@ -116,7 +116,10 @@
   &lt;body&gt;
     &lt;h3&gt;Tutorial 1: Sine Wave&lt;/h3&gt;
     &lt;h3&gt;A Seismograph!&lt;/h3&gt;
-    &lt;div class="seismograph" id="myseismograph"&gt;
+    &lt;sp-seismograph&gt;
+    &lt;/sp-seismograph&gt;
+    &lt;h3&gt;Another Seismograph!&lt;/h3&gt;
+    &lt;div class="seismograph" id="sinewave"&gt;
     &lt;/div&gt;
 
     &lt;script type="module" src="https://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.0.0-alpha.0_standalone.mjs"&gt;&lt;/script&gt;
@@ -166,7 +169,9 @@ let dataArray = new Float32Array(1000).map(function(d, i) {
 let sampleRate = 20;
 let start = util.isoToDateTime('2019-07-04T05:46:23');
 let myseismogram = seismogram.Seismogram.createFromContiguousData(dataArray, sampleRate, start);
-const seisData = [ seismogram.SeismogramDisplayData.fromSeismogram(myseismogram) ];
+let seisData = seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
+// or in one step
+seisData = seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
 </code></pre>
       <p>
        Now we have created a contiguous (no gaps) seismogram that represents
@@ -201,18 +206,43 @@ const seisData = [ seismogram.SeismogramDisplayData.fromSeismogram(myseismogram)
        <code class="language-javascript">
         SeismogramDisplayData
        </code>
-       object allows that. Just for fun we add a title and give a bit of space
+       object allows that. Note that the
+       <code class="language-javascript">
+        Seismograph
+       </code>
+       takes an array of
+       <code class="language-javascript">
+        SeismogramDisplayData
+       </code>
+       objects.
+       Just for fun we add a title and give a bit of space
             at the top for the title to be without overlapping the seismograph.
       </p>
       <pre><code class="language-javascript" snippet="draw">
+const graph = document.querySelector('sp-seismograph');
+graph.seismographConfig.title = "A sine wave!";
+graph.seismographConfig.margin.top = 25;
+graph.seisData = [ seisData ];
+</code></pre>
+      <p>
+       A second way is to create a seismograph dynamically and then insert it into
+        the html. We will add a second display for the same data using this
+        method. They are equivalent, but some cases it makes more sense to
+        find the
+       <code class="language-javascript">
+        Seismograph
+       </code>
+       element and add data to it, other times it is
+        easier to create a new element as needed.
+       <pre><code class="language-javascript" snippet="divdraw">
 const div = document.querySelector('div#sinewave');
 const seisConfig = new seismographconfig.SeismographConfig();
-seisConfig.title = "A sine wave!";
+seisConfig.title = "Another sine wave!";
 seisConfig.margin.top = 25;
-const graph = new seismograph.Seismograph(seisData, seisConfig);
-div.appendChild(graph);
-// snip end
+const div_graph = new seismograph.Seismograph([seisData], seisConfig);
+div.appendChild(div_graph);
 </code></pre>
+      </p>
       <p>
        We should have a seismograph displayed. But it might be a bit small,
             so let"s make it bigger. We will style it with CSS. In the
@@ -226,18 +256,25 @@ div.appendChild(graph);
        element
             to make the height be 300 pixels and the width be 100% of the
             space available.
-            Note also that zoom in and out by double click and shift-double click
-            plus dragging left and right is enabled by default, give it a try.
-            The mouse wheel also zooms, although this can be a bit annoying
-            at times.
       </p>
       <pre><code class="language-html">
 &lt;style&gt;
-  div.seismograph {
+  sp-seismograph {
     height: 300px;
+    width: 100%;
   }
 &lt;/style&gt;
-          </code></pre>
+        </code></pre>
+      <p>
+       Note also that zoom in and out by double click and shift-double click
+          plus dragging left and right is enabled by default, give it a try.
+          The mouse wheel can also be set up to zoom,
+          although this can be a bit annoying at times. We can link the
+          time scale of the two seismographs so that they zoom and drag together.
+      </p>
+      <pre><code class="language-javascript" snippet="timescale">
+graph.seismographConfig.linkedTimeScale.link(div_graph);
+</code></pre>
       <h3>
        See it live in
        <a href="tutorial1.html" target="_blank">

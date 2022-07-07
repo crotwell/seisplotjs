@@ -10,7 +10,7 @@ import {
   seismograph,
   seismographconfig,
   stationxml,
-  util} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+  util, luxon} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 const mymap = document.querySelector('sp-station-event-map');
 //mymap.scrollWheelZoom.disable();
 
@@ -18,7 +18,7 @@ let loadPromise;
 const loadFrom = "dataset";
 if (loadFrom === "iris") {
 // snip start seismogramload
-let queryTimeWindow = new util.StartEndDuration('2019-07-01', '2019-07-31');
+let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
 let eventQuery = new fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
@@ -70,18 +70,17 @@ console.log(`loaded ${seismogramDataList.length} sdd`)
   console.log(`pmdiv: ${pmdiv}`)
   let firstS = seismogramDataList[0].traveltimeList.find(a => a.phase.startsWith("S"));
   let windowDuration = 60;
-  let firstSTimeWindow = new util.StartEndDuration(
+  let firstSTimeWindow = luxon.Interval.after(
     quakeList[0].time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4}),
-    null,
-    windowDuration);
+    luxon.Duration.fromMillis(1000*windowDuration));
   seismogramDataList.forEach(sdd => sdd.addMarkers({
     name: "pm start",
-    time: firstSTimeWindow.startTime,
+    time: firstSTimeWindow.start,
     type: "other",
     description: "pm start"}));
   seismogramDataList.forEach(sdd => sdd.addMarkers({
     name: "pm end",
-    time: firstSTimeWindow.endTime,
+    time: firstSTimeWindow.end,
     type: "other",
     description: "pm end"}));
   graphList.forEach(g => g.drawMarkers());

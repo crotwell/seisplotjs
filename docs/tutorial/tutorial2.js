@@ -2,9 +2,9 @@
 import {
   fdsndataselect,
   seismogram, seismograph,
-  seismographconfig, util} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+  seismographconfig, util, luxon} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
-let timeWindow = new util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
+let timeWindow = luxon.Interval.after(util.isoToDateTime('2019-07-06T03:19:53Z'), luxon.Duration.fromMillis(1000*1800));
 let dsQuery = new fdsndataselect.DataSelectQuery();
 console.log(`miniseed3: ${fdsndataselect.FORMAT_MINISEED_THREE}`);
 dsQuery.networkCode('CO')
