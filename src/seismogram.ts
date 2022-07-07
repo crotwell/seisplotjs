@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {DateTime, Duration} from "luxon";
+import {DateTime, Duration, Interval} from "luxon";
 import {meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
 import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
@@ -11,7 +11,6 @@ import {Station, Channel, InstrumentSensitivity} from "./stationxml";
 import {Quake} from "./quakeml";
 import {SeismogramSegment} from "./seismogramsegment";
 //export {SeismogramSegment} from "./seismogramsegment";
-import {StartEndDuration} from "./util";
 import type {TraveltimeJsonType, TraveltimeArrivalType} from "./traveltime";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
@@ -179,11 +178,11 @@ export class Seismogram {
     return this._endTime;
   }
 
-  get timeRange(): StartEndDuration {
-    return new StartEndDuration(this.startTime, this.endTime);
+  get timeRange(): Interval {
+    return Interval.fromDateTimes(this.startTime, this.endTime);
   }
 
-  get timeWindow(): StartEndDuration {
+  get timeWindow(): Interval {
     return this.timeRange;
   }
 
@@ -290,7 +289,7 @@ export class Seismogram {
    * @param  timeRange start and end of cut
    * @returns            new seismogram
    */
-  cut(timeRange: StartEndDuration): null | Seismogram {
+  cut(timeRange: Interval): null | Seismogram {
     // coarse trim first
     let out = this.trim(timeRange);
 
@@ -322,16 +321,16 @@ export class Seismogram {
    * @returns seismogram if data in the window, null otherwise
    * @see cut
    */
-  trim(timeRange: StartEndDuration): null | Seismogram {
+  trim(timeRange: Interval): null | Seismogram {
     let out = null;
 
     if (this._segmentArray) {
       const trimSeisArray = this._segmentArray
         .filter(function (d) {
-          return d.endTime >= timeRange.startTime;
+          return d.endTime >= timeRange.start;
         })
         .filter(function (d) {
-          return d.startTime <= timeRange.endTime;
+          return d.startTime <= timeRange.end;
         });
 
       if (trimSeisArray.length > 0) {
@@ -348,7 +347,7 @@ export class Seismogram {
       let out: Array<SeismogramSegment> = [];
 
       while (breakStart < this.endTime) {
-        const breakWindow = new StartEndDuration(breakStart, null, duration);
+        const breakWindow = Interval.after(breakStart, duration);
 
         const cutSeisArray: Array<SeismogramSegment> =
           this._segmentArray.map(seg => seg.cut(breakWindow)).filter(isDef);
@@ -528,12 +527,12 @@ export class SeismogramDisplayData {
   channelCodesHolder: ChannelCodeHolderType | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
-  timeRange: StartEndDuration;
+  timeRange: Interval;
   alignmentTime: DateTime;
   doShow: boolean;
   _statsCache: SeismogramDisplayStats | null;
 
-  constructor(timeRange: StartEndDuration) {
+  constructor(timeRange: Interval) {
     if (!timeRange) {
       throw new Error("timeRange must not be missing.");
     }
@@ -555,11 +554,9 @@ export class SeismogramDisplayData {
 
   static fromSeismogram(seismogram: Seismogram): SeismogramDisplayData {
     const out = new SeismogramDisplayData(
-      new StartEndDuration(
+      Interval.fromDateTimes(
         seismogram.startTime,
         seismogram.endTime,
-        null,
-        null,
       ),
     );
     out.seismogram = seismogram;
@@ -582,7 +579,7 @@ export class SeismogramDisplayData {
   }
   static fromChannelAndTimeWindow(
     channel: Channel,
-    timeRange: StartEndDuration,
+    timeRange: Interval,
   ): SeismogramDisplayData {
     if (!channel) {
       throw new Error("fromChannelAndTimeWindow, channel is undef");
@@ -599,7 +596,7 @@ export class SeismogramDisplayData {
     endTime: DateTime,
   ): SeismogramDisplayData {
     const out = new SeismogramDisplayData(
-      new StartEndDuration(startTime, endTime),
+      Interval.fromDateTimes(startTime, endTime),
     );
     out.channel = channel;
     return out;
@@ -614,7 +611,7 @@ export class SeismogramDisplayData {
     endTime: DateTime,
   ): SeismogramDisplayData {
     const out = new SeismogramDisplayData(
-      new StartEndDuration(startTime, endTime),
+      Interval.fromDateTimes(startTime, endTime),
     );
     out.channelCodesHolder = {
       networkCode: networkCode,
@@ -868,22 +865,22 @@ export class SeismogramDisplayData {
   }
 
   get startTime(): DateTime {
-    return this.timeRange.startTime;
+    return this.timeRange.start;
   }
 
   get start(): DateTime {
-    return this.timeRange.startTime;
+    return this.timeRange.start;
   }
 
   get endTime(): DateTime {
-    return this.timeRange.endTime;
+    return this.timeRange.end;
   }
 
   get end(): DateTime {
-    return this.timeRange.endTime;
+    return this.timeRange.end;
   }
 
-  get timeWindow(): StartEndDuration {
+  get timeWindow(): Interval {
     return this.timeRange;
   }
 
@@ -928,17 +925,15 @@ export class SeismogramDisplayData {
   relativeTimeWindow(
     startOffset: Duration,
     duration: Duration,
-  ): StartEndDuration {
+  ): Interval {
     if (this.alignmentTime) {
-      return new StartEndDuration(
+      return Interval.after(
         this.alignmentTime.plus(startOffset),
-        null,
         duration,
       );
     } else {
-      return new StartEndDuration(
+      return Interval.after(
         this.startTime.plus(startOffset),
-        null,
         duration,
       );
     }
@@ -1086,7 +1081,7 @@ export class SeismogramDisplayData {
    * @param  timeRange start and end of cut
    * @returns           new seismogramDisplayData
    */
-  cut(timeRange: StartEndDuration): null | SeismogramDisplayData {
+  cut(timeRange: Interval): null | SeismogramDisplayData {
     let cutSeis = this.seismogram;
     let out;
 
@@ -1117,19 +1112,19 @@ export class SeismogramDisplayStats {
 }
 export function findStartEnd(
   sddList: Array<SeismogramDisplayData>,
-): StartEndDuration {
+): Interval {
   if (sddList.length === 0) {
     // just use the default???
-    return new StartEndDuration(null, null, 300);
+    return Interval.before(DateTime.utc(), 300);
   }
   const startTime = sddList.reduce((acc, sdd) => {
-    return acc < sdd.timeRange.startTime ? acc : sdd.timeRange.startTime;
-  }, sddList[0].timeRange.startTime);
+    return acc < sdd.timeRange.start ? acc : sdd.timeRange.start;
+  }, sddList[0].timeRange.start);
 
   const endTime = sddList.reduce((acc, sdd) => {
-    return acc > sdd.timeRange.endTime ? acc : sdd.timeRange.endTime;
-  }, sddList[0].timeRange.endTime);
-  return new StartEndDuration(startTime, endTime);
+    return acc > sdd.timeRange.end ? acc : sdd.timeRange.end;
+  }, sddList[0].timeRange.end);
+  return Interval.fromDateTimes(startTime, endTime);
 }
 export function findMaxDuration(
   sddList: Array<SeismogramDisplayData>,
@@ -1146,7 +1141,7 @@ export function findMaxDurationOfType(
     if (type === "start") {
       timeRange = sdd.timeRange;
     } else if (type === "origin" && sdd.hasQuake) {
-      timeRange = new StartEndDuration(
+      timeRange = Interval.fromDateTimes(
         sdd.quakeList[0].time,
         sdd.timeRange.end,
       );
@@ -1154,8 +1149,8 @@ export function findMaxDurationOfType(
       timeRange = sdd.timeRange;
     }
 
-    if (timeRange.duration > acc) {
-      return timeRange.duration;
+    if (timeRange.toDuration().toMillis() > acc.toMillis()) {
+      return timeRange.toDuration();
     } else {
       return acc;
     }
@@ -1193,7 +1188,7 @@ const initial_minAmp = Number.MAX_SAFE_INTEGER;
 const initial_maxAmp = -1 * initial_minAmp;
 export function findMinMaxOverTimeRange(
   sddList: Array<SeismogramDisplayData>,
-  timeRange: StartEndDuration,
+  timeRange: Interval,
   doGain = false
 ): Array<number> {
   if (sddList.length === 0) { return [-1, 1]; }
@@ -1260,14 +1255,14 @@ export function findMinMaxOverRelativeTimeRange(
 }
 export function findStartEndOfSeismograms(
   data: Array<Seismogram>,
-  accumulator?: StartEndDuration,
-): StartEndDuration {
-  let out: StartEndDuration;
+  accumulator?: Interval,
+): Interval {
+  let out: Interval;
 
   if (!accumulator && !data) {
     throw new Error("data and accumulator are not defined");
   } else if (!accumulator) {
-    out = new StartEndDuration(
+    out = Interval.fromDateTimes(
       isoToDateTime("2500-01-01T00:00:00Z"),
       isoToDateTime("1001-01-01T00:00:00Z"),
     );
@@ -1277,12 +1272,12 @@ export function findStartEndOfSeismograms(
 
   if (Array.isArray(data)) {
     for (const s of data) {
-      if (s.startTime <= out.startTime) {
-        out = new StartEndDuration(s.startTime, out.endTime);
+      if (s.startTime <= out.start) {
+        out = Interval.fromDateTimes(s.startTime, out.end);
       }
 
-      if (out.endTime <= s.endTime) {
-        out = new StartEndDuration(out.startTime, s.endTime);
+      if (out.end <= s.endTime) {
+        out = Interval.fromDateTimes(out.start, s.endTime);
       }
     }
   } else {

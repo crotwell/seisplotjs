@@ -1,9 +1,10 @@
 
 import { FedCatalogQuery } from '../src/irisfedcatalog.js';
 import { allChannels } from '../src/stationxml.js';
-import { StartEndDuration } from '../src/util.js';
+import { isoToDateTime } from '../src/util.js';
 import { SeismogramDisplayData } from '../src/seismogram.js';
 import { isDef } from '../src/util.js';
+import {Interval} from 'luxon';
 
 // eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
@@ -73,8 +74,8 @@ test("channels for CO", () => {
   fedCatQuery.stationCode(STA);
   fedCatQuery.channelCode(CHAN);
 
-  const START = '2013-09-01T00:00:00Z';
-  const END = '2013-09-01T00:10:00Z';
+  const START = isoToDateTime('2013-09-01T00:00:00Z');
+  const END = isoToDateTime('2013-09-01T00:10:00Z');
   fedCatQuery.startTime(START);
   fedCatQuery.endTime(END);
   return fedCatQuery.queryChannels().then(netList => {
@@ -92,8 +93,8 @@ test( "run dataselect test", () => {
   const STA = 'JSC';
   const LOC = '00';
   const CHAN = "HHZ";
-  const START = '2020-09-01T00:00:00Z';
-  const END = '2020-09-01T00:10:00Z';
+  const START = isoToDateTime('2020-09-01T00:00:00Z');
+  const END = isoToDateTime('2020-09-01T00:10:00Z');
   expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
   expect(fedCatQuery.getNetworkCode()).toBe(NET);
   expect(fedCatQuery.stationCode(STA)).toBe(fedCatQuery);
@@ -122,9 +123,9 @@ test("seismograms for CO.BIRD for timewindow", () => {
   fedCatQuery.stationCode(STA);
   fedCatQuery.channelCode(CHAN);
 
-  const START = '2013-09-01T00:00:00Z';
-  const END = '2013-09-01T00:01:00Z';
-  const sed = new StartEndDuration(START, END);
+  const START = isoToDateTime('2013-09-01T00:00:00Z');
+  const END = isoToDateTime('2013-09-01T00:01:00Z');
+  const sed = Interval.fromDateTimes(START, END);
   fedCatQuery.startTime(START);
   fedCatQuery.endTime(END);
   return fedCatQuery.queryFdsnDataselect().then(sddList => {
@@ -136,7 +137,7 @@ test("seismograms for CO.BIRD for timewindow", () => {
     expect(seismogram).toBeDefined();
     if (isDef(seismogram)) {
       expect(seismogram.isContiguous()).toBeTrue();
-      expect(seismogram.y).toHaveLength(sed.duration.toMillis()/1000*100+1);
+      expect(seismogram.y).toHaveLength(sed.toDuration().toMillis()/1000*100+1);
     }
   });
 });
@@ -150,9 +151,9 @@ test("sddlist seismograms for CO.BIRD for timewindow", () => {
   fedCatQuery.stationCode(STA);
   fedCatQuery.channelCode(CHAN);
 
-  const START = '2013-09-01T00:00:00Z';
-  const END = '2013-09-01T00:01:00Z';
-  const sed = new StartEndDuration(START, END);
+  const START = isoToDateTime('2013-09-01T00:00:00Z');
+  const END = isoToDateTime('2013-09-01T00:01:00Z');
+  const sed = Interval.fromDateTimes(START, END);
   fedCatQuery.startTime(START);
   fedCatQuery.endTime(END);
   return fedCatQuery.queryChannels().then(netList => {
@@ -174,7 +175,7 @@ test("sddlist seismograms for CO.BIRD for timewindow", () => {
     expect(seismogram).toBeDefined();
     if (isDef(seismogram)) {
       expect(seismogram.isContiguous()).toBeTrue();
-      expect(seismogram.y).toHaveLength(sed.duration.toMillis()/1000*100+1);
+      expect(seismogram.y).toHaveLength(sed.toDuration().toMillis()/1000*100+1);
     }
   });
 });

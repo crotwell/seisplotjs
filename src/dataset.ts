@@ -1,11 +1,12 @@
 
+import {Interval} from "luxon";
 import {downloadBlobAsFile} from "./util";
 import * as mseed3 from "./mseed3";
 import {Quake, parseQuakeML} from "./quakeml";
 import {Network, parseStationXml, allChannels} from "./stationxml";
 import {SeismogramDisplayData} from "./seismogram";
 import {SeismogramLoader} from "./seismogramloader";
-import {StartEndDuration, doFetchWithTimeout, defaultFetchInitObj,
+import {doFetchWithTimeout, defaultFetchInitObj,
   isDef, XML_MIME, BINARY_MIME, isoToDateTime} from "./util";
 import JSZip from "jszip";
 
@@ -113,7 +114,7 @@ export class Dataset {
       if ( ! w.hasQuake) {
         this.catalog.forEach((q:Quake)=> {
           if (isDef(q.preferredOrigin)) {
-            const window = new StartEndDuration(q.preferredOrigin.time, null, timeOverlapSecs);
+            const window = Interval.after(q.preferredOrigin.time, timeOverlapSecs);
             if (window.overlaps(w.timeRange)) {
               w.addQuake(q);
             }

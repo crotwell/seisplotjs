@@ -4,6 +4,7 @@
  * http://www.seis.sc.edu
  */
 import * as d3 from "d3";
+import {Interval} from "luxon";
 import {SeisPlotElement} from "./spelement";
 import {SeismographConfig, numberFormatWrapper } from "./seismographconfig";
 import {
@@ -13,7 +14,7 @@ import {
 } from "./seismogram";
 import {SeismogramSegment} from "./seismogramsegment";
 import {COLOR_CSS_ID} from "./seismograph";
-import {isDef, isNumArg, StartEndDuration, SVG_NS} from "./util";
+import {isDef, isNumArg, SVG_NS} from "./util";
 import * as axisutil from "./axisutil";
 export const DEFAULT_TITLE =
   "<tspan>{{#each seisDataList}}{{onlyChangesChannel ../seisDataList @index}} {{else}}No Data{{/each}}</tspan>";
@@ -67,7 +68,7 @@ export function addDivForParticleMotion(
   svgParent: any,
   xSeisData: SeismogramDisplayData,
   ySeisData: SeismogramDisplayData,
-  timeRange?: StartEndDuration,
+  timeRange?: Interval,
 ): ParticleMotion {
   const svgDiv = svgParent.append("div");
 
@@ -88,7 +89,7 @@ export function addParticleMotion(
   svgParent: any,
   xSeisData: SeismogramDisplayData,
   ySeisData: SeismogramDisplayData,
-  timeRange?: StartEndDuration,
+  timeRange?: Interval,
 ): ParticleMotion {
   if (!isDef(xSeisData.seismogram) || !isDef(ySeisData.seismogram)) {
     throw new Error(
@@ -103,7 +104,7 @@ export function addParticleMotion(
   return pmp;
 }
 export function createParticleMotionConfig(
-  timeRange?: StartEndDuration,
+  timeRange?: Interval,
 ): SeismographConfig {
   const seisConfig = new SeismographConfig();
   seisConfig.title = DEFAULT_TITLE;
@@ -346,17 +347,17 @@ export class ParticleMotion extends SeisPlotElement {
     segB: SeismogramSegment,
   ) {
     const mythis = this;
-    const timeRange = segA.timeRange.intersect(segB.timeRange);
+    const timeRange = segA.timeRange.intersection(segB.timeRange);
 
     if (!isDef(timeRange)) {
       // no overlap
       return;
     }
 
-    const idxA = segA.indexOfTime(timeRange.startTime);
-    const lastIdxA = segA.indexOfTime(timeRange.endTime);
-    const idxB = segB.indexOfTime(timeRange.startTime);
-    const lastIdxB = segB.indexOfTime(timeRange.endTime);
+    const idxA = segA.indexOfTime(timeRange.start);
+    const lastIdxA = segA.indexOfTime(timeRange.end);
+    const idxB = segB.indexOfTime(timeRange.start);
+    const lastIdxB = segB.indexOfTime(timeRange.end);
 
     if (idxA === -1 || lastIdxA === -1 || idxB === -1 || lastIdxB === -1) {
       return;

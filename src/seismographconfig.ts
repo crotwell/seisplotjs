@@ -6,8 +6,8 @@
 import {insertCSS, AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {IndividualAmplitudeScale, LinkedAmplitudeScale, LinkedTimeScale} from "./scale";
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
-import {StartEndDuration, isDef} from "./util";
-import { Duration} from "luxon";
+import {isDef} from "./util";
+import { Duration, Interval} from "luxon";
 import * as d3 from "d3";
 import type {AxisDomain} from "d3-axis";
 
@@ -106,7 +106,7 @@ export class SeismographConfig {
   _fixedAmplitudeScale: null | Array<number>;
 
   /** @private */
-  _fixedTimeScale: null | StartEndDuration;
+  _fixedTimeScale: null | Interval;
 
   /** @private */
   _linkedAmplitudeScale: null | LinkedAmplitudeScale;
@@ -256,11 +256,11 @@ export class SeismographConfig {
     this._fixedAmplitudeScale = null;
   }
 
-  get fixedTimeScale(): null | StartEndDuration {
+  get fixedTimeScale(): null | Interval {
     return this._fixedTimeScale;
   }
 
-  set fixedTimeScale(ts: null | StartEndDuration) {
+  set fixedTimeScale(ts: null | Interval) {
     if (!isDef(ts)) {throw new Error("time scale must be defined");}
     this._fixedTimeScale = ts;
     this._linkedTimeScale = null;
@@ -469,7 +469,7 @@ export class SeismographConfig {
    * @returns             fake data
    */
   createAlignmentData(
-    timeRange: StartEndDuration,
+    timeRange: Interval,
     min = -100,
     max = 100,
   ): SeismogramDisplayData {
@@ -487,11 +487,11 @@ export class SeismographConfig {
       min,
     ]);
     const fakeSampleRate =
-      1 / (1000*timeRange.duration.toMillis() / (fakeData.length - 1));
+      1 / (1000*timeRange.toDuration().toMillis() / (fakeData.length - 1));
     const fakeSeis = Seismogram.createFromContiguousData(
       fakeData,
       fakeSampleRate,
-      timeRange.startTime,
+      timeRange.start,
     );
     const fakeSDD = SeismogramDisplayData.fromSeismogram(fakeSeis);
     return fakeSDD;

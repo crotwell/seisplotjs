@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {DateTime} from "luxon";
+import {DateTime, Interval} from "luxon";
 import RSVP from "rsvp";
 import {SeismogramDisplayData} from "./seismogram";
 import {
@@ -22,7 +22,6 @@ import {
   stringify,
   TEXT_MIME,
   JSON_MIME,
-  StartEndDuration,
   makeParam,
   doFetchWithTimeout,
   defaultFetchInitObj,
@@ -328,17 +327,17 @@ export class AvailabilityQuery {
    * @param   se time window
    * @returns    the query
    */
-  timeRange(se: StartEndDuration): AvailabilityQuery {
-    this.startTime(se.startTime);
-    this.endTime(se.endTime);
+  timeRange(se: Interval): AvailabilityQuery {
+    this.startTime(se.start);
+    this.endTime(se.end);
     return this;
   }
   /**
    * @deprecated
-   * @param  se               [description]
-   * @returns    [description]
+   * @param  se               time interval
+   * @returns    this
    */
-  timeWindow(se: StartEndDuration): AvailabilityQuery {
+  timeWindow(se: Interval): AvailabilityQuery {
     return this.timeRange(se);
   }
 

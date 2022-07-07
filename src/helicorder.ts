@@ -1,15 +1,15 @@
-/*
+Interval/*
  * Philip Crotwell
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
 import * as d3 from "d3";
-import {DateTime} from "luxon";
+import {DateTime, Duration, Interval} from "luxon";
 import {insertCSS, isCSSInserted} from "./cssutil";
 import {SeismogramDisplayData} from "./seismogram";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
-import {StartEndDuration, isDef} from "./util";
+import { isDef} from "./util";
 
 /**
  * A helicorder-like multi-line seismogram display usually covering 24 hours
@@ -100,10 +100,10 @@ export class Helicorder {
       }
     }
 
-    const startTime = timeRange.startTime;
+    const startTime = timeRange.start;
     this.seismographArray = [];
     const secondsPerLine =
-      timeRange.duration.toMillis() / 1000 / this.heliConfig.numLines;
+      timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
     this.svgParent.selectAll("div.heliLine").remove();
     const lineTimes = this.calcTimesForLines(
       startTime,
@@ -121,23 +121,25 @@ export class Helicorder {
       (nl - (nl - 1) * this.heliConfig.overlap);
 
     for (const lineTime of lineTimes) {
-      let startTime = lineTime.startTime;
-      const endTime = lineTime.endTime;
+      const lineNumber = lineTime.lineNumber;
+      const lineInterval = lineTime.interval;
+      let startTime = lineTime.interval.start;
+      const endTime = lineTime.interval.end;
       let height = baseHeight;
       const marginTop =
-        lineTime.lineNumber === 0
+        lineNumber === 0
           ? 0
           : Math.round(-1.0 * height * this.heliConfig.overlap);
       const lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
       // don't title lines past the first
       lineSeisConfig.title = null;
 
-      if (lineTime.lineNumber === 0) {
+      if (lineNumber === 0) {
         lineSeisConfig.title = this.heliConfig.title;
         lineSeisConfig.isXAxisTop = this.heliConfig.isXAxisTop;
         lineSeisConfig.margin.top += this.heliConfig.margin.top;
         height += this.heliConfig.margin.top;
-      } else if (lineTime.lineNumber === nl - 1) {
+      } else if (lineNumber === nl - 1) {
         lineSeisConfig.isXAxis = this.heliConfig.isXAxis;
         lineSeisConfig.margin.bottom += this.heliConfig.margin.bottom;
         height += this.heliConfig.margin.bottom;
@@ -148,12 +150,12 @@ export class Helicorder {
         .classed("heliLine", true)
         .style("height", height + "px")
         .style("margin-top", marginTop + "px");
-      lineSeisConfig.fixedTimeScale = lineTime;
+      lineSeisConfig.fixedTimeScale = lineInterval;
       lineSeisConfig.yLabel = `${startTime.toFormat("HH:mm")}`;
       lineSeisConfig.yLabelRight = `${endTime.toFormat("HH:mm")}`;
       lineSeisConfig.lineColors = [
         this.heliConfig.lineColors[
-          lineTime.lineNumber % this.heliConfig.lineColors.length
+          lineNumber % this.heliConfig.lineColors.length
         ],
       ];
       //      [ seisDiv.style("color")];
@@ -162,7 +164,7 @@ export class Helicorder {
       let lineMean = 0;
 
       if (this.seisData.seismogram) {
-        lineCutSeis = this.seisData.seismogram.cut(lineTime);
+        lineCutSeis = this.seisData.seismogram.cut(lineInterval);
         lineSeisData = this.seisData.cloneWithNewSeismogram(lineCutSeis);
         lineMean = lineSeisData.mean;
       } else {
@@ -170,7 +172,7 @@ export class Helicorder {
         lineSeisData = this.seisData.clone();
       }
 
-      lineSeisData.timeRange = lineTime;
+      lineSeisData.timeRange = lineInterval;
 
       if (this.heliConfig.fixedAmplitudeScale) {
         lineSeisConfig.fixedAmplitudeScale = this.heliConfig.fixedAmplitudeScale;
@@ -192,7 +194,7 @@ export class Helicorder {
       seismograph.svg.classed(HELICORDER_SELECTOR, true);
       seisDiv.node().appendChild(seismograph);
 
-      if (lineTime.lineNumber === 0) {
+      if (lineNumber === 0) {
         // add UTC to top left
         seismograph.svg
           .append("g")
@@ -226,12 +228,11 @@ export class Helicorder {
   ): Array<HeliTimeRange> {
     const out = [];
     let s = startTime;
-
+    let durationPerLine = Duration.fromMillis(secondsPerLine*1000);
     for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
-      const startEnd = new HeliTimeRange(s, null, secondsPerLine);
-      startEnd.lineNumber = lineNum;
+      const startEnd = new HeliTimeRange(s, durationPerLine, lineNum);
       out.push(startEnd);
-      s = startEnd.endTime;
+      s = startEnd.interval.end;
     }
 
     return out;
@@ -250,7 +251,7 @@ export class HelicorderConfig extends SeismographConfig {
   numLines: number;
   maxVariation: number;
 
-  constructor(timeRange: StartEndDuration) {
+  constructor(timeRange: Interval) {
     super();
 
     if (!isDef(timeRange)) {
@@ -293,20 +294,20 @@ export class HelicorderConfig extends SeismographConfig {
 }
 
 /**
- * Time range for a single line of the helicorder, extends StartEndDuration
+ * Time range for a single line of the helicorder, extends Interval
  * to add the line number
  */
-export class HeliTimeRange extends StartEndDuration {
+export class HeliTimeRange {
   lineNumber: number;
+  interval: Interval;
 
   constructor(
-    startTime: DateTime | null,
-    endTime: DateTime | null,
-    duration: number | null = null,
-    clockOffset: number | null = 0,
+    startTime: DateTime,
+    duration: Duration,
+    lineNumber: number,
   ) {
-    super(startTime, endTime, duration, clockOffset);
-    this.lineNumber = 0;
+    this.interval = Interval.after(startTime, duration);
+    this.lineNumber = lineNumber;
   }
 }
 

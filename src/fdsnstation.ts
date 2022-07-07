@@ -3,12 +3,11 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
- import {DateTime} from 'luxon';
+ import {DateTime, Interval} from 'luxon';
 import {parseStationXml, Network} from "./stationxml";
 import {
   XML_MIME,
   TEXT_MIME,
-  StartEndDuration,
   makeParam,
   makePostParam,
   doFetchWithTimeout,
@@ -341,10 +340,19 @@ export class StationQuery {
    * @param   se time window
    * @returns     this
    */
-  timeWindow(se: StartEndDuration): StationQuery {
-    this.startTime(se.startTime);
-    this.endTime(se.endTime);
+  timeRange(se: Interval): StationQuery {
+    this.startTime(se.start);
+    this.endTime(se.end);
     return this;
+  }
+
+  /**
+   *@deprecated
+   * @param  se   time interval
+   * @returns    this
+   */
+  timeWindow(se: Interval): StationQuery {
+    return this.timeRange(se);
   }
 
   /**

@@ -2,7 +2,7 @@
 
 import * as fdsndataselect from '../../src/fdsndataselect.js';
 import * as util from '../../src/util.js';
-
+import {Duration, Interval} from 'luxon';
 
 test( "query setter test", () => {
   let dsQuery = new fdsndataselect.DataSelectQuery();
@@ -10,8 +10,9 @@ test( "query setter test", () => {
   const STA = 'JSC';
   const LOC = '00';
   const CHAN = 'HHZ';
-  const DURATION = 300;
-  const timeWindow = new util.StartEndDuration('2018-01-01T12:34:45.000Z', null, DURATION, 0);
+  const DURATION = Duration.fromMillis(300*1000);
+  const START = util.isoToDateTime('2018-01-01T12:34:45.000Z');
+  const timeWindow = Interval.after(START, DURATION);
   const MIN_LENGTH = 120;
   const QUALITY = 'D';
   const FORMAT = 'miniseed';
@@ -23,10 +24,10 @@ test( "query setter test", () => {
   expect(dsQuery.getLocationCode()).toBe(LOC);
   expect(dsQuery.channelCode(CHAN)).toBe(dsQuery);
   expect(dsQuery.getChannelCode()).toBe(CHAN);
-  expect(dsQuery.startTime(timeWindow.startTime)).toBe(dsQuery);
-  expect(dsQuery.getStartTime()).toBe(timeWindow.startTime);
-  expect(dsQuery.endTime(timeWindow.endTime)).toBe(dsQuery);
-  expect(dsQuery.getEndTime()).toBe(timeWindow.endTime);
+  expect(dsQuery.startTime(timeWindow.start)).toBe(dsQuery);
+  expect(dsQuery.getStartTime()).toBe(timeWindow.start);
+  expect(dsQuery.endTime(timeWindow.end)).toBe(dsQuery);
+  expect(dsQuery.getEndTime()).toBe(timeWindow.end);
   expect(dsQuery.minimumLength(MIN_LENGTH)).toBe(dsQuery);
   expect(dsQuery.getMinimumLength()).toBe(MIN_LENGTH);
   expect(dsQuery.longestOnly(true)).toBe(dsQuery);

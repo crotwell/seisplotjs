@@ -1,9 +1,9 @@
 import { SeismogramLoader } from '../src/seismogramloader.js';
 
-import {StartEndDuration} from '../src/util.js';
+import {isoToDateTime} from '../src/util.js';
 import {EventQuery} from '../src/fdsnevent.js';
 import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation.js';
-import { Duration} from 'luxon';
+import { Duration, Interval} from 'luxon';
 import RSVP from 'rsvp';
 
 // eslint-disable-next-line no-undef
@@ -13,7 +13,7 @@ global.fetch = fetch;
 
 
 test( "load HODGE for local eq test", () => {
-  let localQueryTimeWindow = new StartEndDuration('2020-08-21', '2020-08-22');
+  let localQueryTimeWindow = Interval.fromDateTimes(isoToDateTime('2020-08-21'), isoToDateTime('2020-08-22'));
   let localEventQuery = new EventQuery()
     .timeWindow(localQueryTimeWindow)
     .latitude(33.72).longitude(-81)

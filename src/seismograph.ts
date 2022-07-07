@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
- import { Duration} from "luxon";
+ import { DateTime, Duration, Interval} from "luxon";
 import * as d3 from "d3";
 import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {
@@ -36,7 +36,7 @@ import * as distaz from "./distaz";
 import * as axisutil from "./axisutil";
 import * as util from "./util"; // for util.log to replace console.log
 
-import {StartEndDuration, isDef, isNumArg} from "./util";
+import {isDef, isNumArg} from "./util";
 import {registerHelpers} from "./handlebarshelpers";
 registerHelpers();
 
@@ -851,7 +851,7 @@ export class Seismograph extends SeisPlotElement {
         if (this.seisData.length > 0) {
           xScaleToDraw = this.timeScaleForSeisDisplayData(this.seisData[0]);
         } else {
-          const psed = new StartEndDuration(null, null, this.seismographConfig.linkedTimeScale.duration);
+          const psed = Interval.before(DateTime.utc(), this.seismographConfig.linkedTimeScale.duration);
           xScaleToDraw = d3.scaleUtc();
           xScaleToDraw.range([0, this.width]);
           xScaleToDraw.domain([psed.start.toJSDate(), psed.end.toJSDate()]);
@@ -1646,7 +1646,7 @@ export class Seismograph extends SeisPlotElement {
    *
    * @param   timeRange overlap data to keep
    */
-  trim(timeRange: StartEndDuration): void {
+  trim(timeRange: Interval): void {
     if (this._seisDataList) {
       this._seisDataList = this._seisDataList.filter(function (d) {
         return d.timeRange.overlaps(timeRange);

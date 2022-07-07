@@ -5,7 +5,7 @@
  */
 import RSVP from "rsvp";
 import * as util from "./util"; // for util.log
-import {DateTime} from 'luxon';
+import {DateTime, Interval} from 'luxon';
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import {Seismogram, SeismogramDisplayData} from "./seismogram";
@@ -20,7 +20,6 @@ import {
   toIsoWoZ,
   isNonEmptyStringArg,
   TEXT_MIME,
-  StartEndDuration,
   makeParam,
   doFetchWithTimeout,
   defaultFetchInitObj,
@@ -294,18 +293,18 @@ export class DataSelectQuery {
    * @param   se time range
    * @returns     this
    */
-  timeRange(se: StartEndDuration): DataSelectQuery {
-    this.startTime(se.startTime);
-    this.endTime(se.endTime);
+  timeRange(se: Interval): DataSelectQuery {
+    this.startTime(se.start);
+    this.endTime(se.end);
     return this;
   }
 
   /**
    * @deprecated
-   * @param  se               [description]
-   * @returns    [description]
+   * @param  se               time range
+   * @returns    this
    */
-  timeWindow(se: StartEndDuration): DataSelectQuery {
+  timeWindow(se: Interval): DataSelectQuery {
     return this.timeRange(se);
   }
 

@@ -1,8 +1,7 @@
 
-import { Duration} from 'luxon';
+import { Duration, Interval} from 'luxon';
 import type {TraveltimeJsonType} from "./traveltime";
 import {distaz, DistAzOutput} from "./distaz";
-import {StartEndDuration} from "./util";
 import {TraveltimeQuery, createOriginArrival} from "./traveltime";
 import {DataSelectQuery} from "./fdsndataselect";
 import {EventQuery} from "./fdsnevent";
@@ -305,7 +304,7 @@ export class SeismogramLoader {
           const endTime = quake.time
             .plus(Duration.fromMillis(1000*endArrival.time)) // seconds
             .plus(this.endOffset);
-          const timeRange = new StartEndDuration(startTime, endTime);
+          const timeRange = Interval.fromDateTimes(startTime, endTime);
           const phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
 
           if (this.markOrigin) {

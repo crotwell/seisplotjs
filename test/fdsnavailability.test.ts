@@ -1,7 +1,7 @@
 
 import * as fdsnavailability from '../src/fdsnavailability';
 import * as util from '../src/util';
-
+import {Duration, Interval} from 'luxon';
 
 test( "query setter test", () => {
   let dsQuery = new fdsnavailability.AvailabilityQuery();
@@ -9,8 +9,8 @@ test( "query setter test", () => {
   const STA = 'JSC';
   const LOC = '00';
   const CHAN = 'HHZ';
-  const DURATION = 300;
-  const timeWindow = new util.StartEndDuration( '2018-01-01T12:34:45.000Z', null, DURATION, 0);
+  const DURATION = Duration.fromMillis(300*1000);
+  const timeWindow = Interval.after(util.isoToDateTime('2018-01-01T12:34:45.000Z'), DURATION);
   const QUALITY = 'D';
   const FORMAT = 'json';
   expect(dsQuery.networkCode(NET)).toBe(dsQuery);
@@ -21,10 +21,10 @@ test( "query setter test", () => {
   expect(dsQuery.getLocationCode()).toBe(LOC);
   expect(dsQuery.channelCode(CHAN)).toBe(dsQuery);
   expect(dsQuery.getChannelCode()).toBe(CHAN);
-  expect(dsQuery.startTime(timeWindow.startTime)).toBe(dsQuery);
-  expect(dsQuery.getStartTime()).toBe(timeWindow.startTime);
-  expect(dsQuery.endTime(timeWindow.endTime)).toBe(dsQuery);
-  expect(dsQuery.getEndTime()).toBe(timeWindow.endTime);
+  expect(dsQuery.startTime(timeWindow.start)).toBe(dsQuery);
+  expect(dsQuery.getStartTime()).toBe(timeWindow.start);
+  expect(dsQuery.endTime(timeWindow.end)).toBe(dsQuery);
+  expect(dsQuery.getEndTime()).toBe(timeWindow.end);
   expect(dsQuery.merge('quality')).toBe(dsQuery);
   expect(dsQuery.getMerge()).toEqual('quality');
   expect(dsQuery.quality(QUALITY)).toBe(dsQuery);

@@ -2,8 +2,8 @@
 
 import {Seismogram} from '../../src/seismogram';
 import {SeismogramSegment} from '../../src/seismogramsegment';
-import  {StartEndDuration, isoToDateTime} from '../../src/util';
-import { Duration} from 'luxon';
+import  {isoToDateTime} from '../../src/util';
+import { Duration, Interval} from 'luxon';
 
 test("simple seismogram cut", () => {
   let yValues = new Int32Array(100);
@@ -22,7 +22,7 @@ test("simple seismogram cut", () => {
   seg.channelCode = chanCode;
   let segB = seg.cloneWithNewData(yValuesB, startTimeB);
   let cutSeconds = 10;
-  let cutBeginWindow = new StartEndDuration(startTime, null, cutSeconds);
+  let cutBeginWindow = Interval.after(startTime, Duration.fromMillis(1000*cutSeconds));
   let cutSeg = seg.cut(cutBeginWindow);
   let cutSegB = segB.cut(cutBeginWindow);
   expect(cutSeg).not.toBeNull();
@@ -43,7 +43,8 @@ test("simple seismogram cut", () => {
   expect(seg.y.length).toEqual(yValues.length);
 
   let nearEndTime = seg.endTime.minus(Duration.fromMillis(1000));
-  let cutEndWindow = new StartEndDuration(nearEndTime, null, cutSeconds);
+
+  let cutEndWindow = Interval.after(nearEndTime, Duration.fromMillis(1000*cutSeconds));
   cutSeg = seg.cut(cutEndWindow);
   expect(cutSeg).not.toBeNull();
   // for flow
@@ -61,30 +62,30 @@ test("simple seismogram cut", () => {
   // for flow
   if ( ! cutSeis ) {throw new Error("cutSeis is null");}
 
-  expect(cutSeis.startTime).toEqual(cutBeginWindow.startTime);
+  expect(cutSeis.startTime).toEqual(cutBeginWindow.start);
   expect(cutSeis.numPoints).toEqual(cutSeconds+1);
 
   let shiftStart = startTime.plus(Duration.fromMillis(1000));
-  let cutShiftWindow = new StartEndDuration(shiftStart, null, cutSeconds);
+  let cutShiftWindow = Interval.after(shiftStart, Duration.fromMillis(1000*cutSeconds));
   let cutShiftSeis = seis.cut(cutShiftWindow);
   expect(cutShiftSeis).not.toBeNull();
   // for flow
   if ( ! cutShiftSeis ) {throw new Error("cutShiftSeis is null");}
-  expect(cutShiftSeis.startTime).toEqual(cutShiftWindow.startTime);
+  expect(cutShiftSeis.startTime).toEqual(cutShiftWindow.start);
   expect(cutShiftSeis.numPoints).toEqual(cutSeconds+1);
 
   shiftStart = seis.endTime.minus(Duration.fromMillis(1000));
-  let cutSeisNearEndWindow = new StartEndDuration(shiftStart, null, cutSeconds);
+  let cutSeisNearEndWindow = Interval.after(shiftStart, Duration.fromMillis(1000*cutSeconds));
   cutShiftSeis = seis.cut(cutSeisNearEndWindow);
   expect(cutShiftSeis).not.toBeNull();
   // for flow
   if ( ! cutShiftSeis ) {throw new Error("cutShiftSeis is null");}
-  expect(cutShiftSeis.startTime).toEqual(cutSeisNearEndWindow.startTime);
+  expect(cutShiftSeis.startTime).toEqual(cutSeisNearEndWindow.start);
   expect(cutShiftSeis.numPoints).toEqual(2);
 
 
   let bigStart = startTime.minus(Duration.fromMillis(10*1000));
-  let cutBigWindow = new StartEndDuration(bigStart, null, seis.numPoints+1000);
+  let cutBigWindow = Interval.after(bigStart, Duration.fromMillis(1000*(seis.numPoints+1000)));
   let cutBigSeis = seis.cut(cutBigWindow);
   expect(cutBigSeis).not.toBeNull();
   // for flow

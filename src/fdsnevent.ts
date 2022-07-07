@@ -3,12 +3,11 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
- import {DateTime} from 'luxon';
+ import {DateTime, Interval} from 'luxon';
 import {Quake, USGS_HOST, parseQuakeML} from "./quakeml";
 import {
   XML_MIME,
   TEXT_MIME,
-  StartEndDuration,
   makeParam,
   doFetchWithTimeout,
   defaultFetchInitObj,
@@ -287,18 +286,18 @@ export class EventQuery {
    * @param   se time window
    * @returns     this
    */
-  timeRange(se: StartEndDuration): EventQuery {
-    this.startTime(se.startTime);
-    this.endTime(se.endTime);
+  timeRange(se: Interval): EventQuery {
+    this.startTime(se.start);
+    this.endTime(se.end);
     return this;
   }
 
   /**
    *@deprecated
-   * @param  se               [description]
-   * @returns    [description]
+   * @param  se   time interval
+   * @returns    this
    */
-  timeWindow(se: StartEndDuration): EventQuery {
+  timeWindow(se: Interval): EventQuery {
     return this.timeRange(se);
   }
 

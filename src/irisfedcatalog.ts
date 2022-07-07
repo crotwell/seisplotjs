@@ -3,7 +3,7 @@
  * University of South Carolina, 2020
  * http://www.seis.sc.edu
  */
-import {DateTime} from 'luxon';
+import {DateTime, Interval} from 'luxon';
 import {Network} from "./stationxml";
 import {
   LEVELS,
@@ -17,7 +17,6 @@ import {DataSelectQuery} from "./fdsndataselect";
 import {SeismogramDisplayData} from "./seismogram";
 import {
   TEXT_MIME,
-  StartEndDuration,
   makeParam,
   doFetchWithTimeout,
   defaultFetchInitObj,
@@ -522,9 +521,9 @@ export class FedCatalogQuery {
    * @param   se time window
    * @returns     this
    */
-  timeRange(se: StartEndDuration): FedCatalogQuery {
-    this.startTime(se.startTime);
-    this.endTime(se.endTime);
+  timeRange(se: Interval): FedCatalogQuery {
+    this.startTime(se.start);
+    this.endTime(se.end);
     return this;
   }
   /**
@@ -532,7 +531,7 @@ export class FedCatalogQuery {
    * @param  se               [description]
    * @returns    [description]
    */
-  timeWindow(se: StartEndDuration): FedCatalogQuery {
+  timeWindow(se: Interval): FedCatalogQuery {
     return this.timeRange(se);
   }
 

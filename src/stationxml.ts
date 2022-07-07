@@ -4,7 +4,6 @@
  * http://www.seis.sc.edu
  */
 import {
-  StartEndDuration,
   isObject,
   isDef,
   isStringArg,
@@ -13,10 +12,11 @@ import {
   checkStringOrDate,
   stringify,
   rethrowWithMessage,
+  WAY_FUTURE,
 } from "./util";
 import {createComplex} from "./oregondsputil";
 import * as OregonDSPTop from "oregondsp";
-import {DateTime} from "luxon";
+import {DateTime, Interval} from "luxon";
 
 /** xml namespace for stationxml */
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
@@ -68,8 +68,8 @@ export class Network {
     }
   }
 
-  get timeRange(): StartEndDuration {
-    return new StartEndDuration(this.startDate, this.endDate);
+  get timeRange(): Interval {
+    return createInterval(this.startDate, this.endDate);
   }
 
   codes(): string {
@@ -151,8 +151,8 @@ export class Station {
     }
   }
 
-  get timeRange(): StartEndDuration {
-    return new StartEndDuration(this.startDate, this.endDate);
+  get timeRange(): Interval {
+    return createInterval(this.startDate, this.endDate);
   }
 
   get networkCode(): string {
@@ -282,8 +282,8 @@ export class Channel {
     }
   }
 
-  get timeRange(): StartEndDuration {
-    return new StartEndDuration(this.startDate, this.endDate);
+  get timeRange(): Interval {
+    return createInterval(this.startDate, this.endDate);
   }
 
   get locationCode(): string {
@@ -1128,6 +1128,13 @@ export function convertToGain(gainXml: Element): Gain {
   return out;
 }
 
+export function createInterval(start: DateTime, end: null | DateTime): Interval {
+  if (end) {
+    return Interval.fromDateTimes(start, end);
+  } else {
+    return Interval.fromDateTimes(start, WAY_FUTURE);
+  }
+}
 /**
  * Extracts a complex number from an stationxml element.
  *

@@ -3,10 +3,9 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {DateTime, Duration} from "luxon";
+import {DateTime, Duration, Interval} from "luxon";
 import {checkStringOrDate, isDef} from "./util";
 import * as seedcodec from "./seedcodec";
-import {StartEndDuration} from "./util";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
   xScaleDomain: Array<Date>;
@@ -186,12 +185,12 @@ export class SeismogramSegment {
   /**
    * @deprecated
    */
-  get timeWindow(): StartEndDuration {
+  get timeWindow(): Interval {
     return this.timeRange;
   }
 
-  get timeRange(): StartEndDuration {
-    return new StartEndDuration(this.startTime, this.endTime);
+  get timeRange(): Interval {
+    return Interval.fromDateTimes(this.startTime, this.endTime);
   }
 
   get sampleRate(): number {
@@ -444,26 +443,26 @@ export class SeismogramSegment {
     return out;
   }
 
-  cut(timeRange: StartEndDuration): SeismogramSegment | null {
+  cut(timeRange: Interval): SeismogramSegment | null {
     if (
-      timeRange.endTime < this._startTime ||
-      timeRange.startTime > this.endTime
+      timeRange.end < this._startTime ||
+      timeRange.start > this.endTime
     ) {
       return null;
     }
 
     let sIndex = 0;
 
-    if (timeRange.startTime > this._startTime) {
-      const milliDiff = timeRange.startTime.diff(this._startTime).toMillis();
+    if (timeRange.start > this._startTime) {
+      const milliDiff = timeRange.start.diff(this._startTime).toMillis();
       const offset = (milliDiff * this.sampleRate) / 1000.0;
       sIndex = Math.floor(offset);
     }
 
     let eIndex = this.y.length;
 
-    if (timeRange.endTime < this.endTime) {
-      const milliDiff = this.endTime.diff(timeRange.endTime).toMillis();
+    if (timeRange.end < this.endTime) {
+      const milliDiff = this.endTime.diff(timeRange.end).toMillis();
       const offset = (milliDiff * this.sampleRate) / 1000.0;
       eIndex = this.y.length - Math.floor(offset);
     }

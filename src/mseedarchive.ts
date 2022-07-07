@@ -3,13 +3,13 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {DateTime, Duration} from "luxon";
+import {DateTime, Duration, Interval} from "luxon";
 import * as util from "./util";
 import * as miniseed from "./miniseed";
 import RSVP from "rsvp";
 import {SeismogramDisplayData} from "./seismogram";
 import {Channel} from "./stationxml";
-import {StartEndDuration, isDef} from "./util";
+import {isDef} from "./util";
 export const Allowed_Flags = ["n", "s", "l", "c", "Y", "j", "H"];
 
 /**
@@ -139,7 +139,7 @@ export class MSeedArchive {
         // should only be one
         for (const seis of seisArray) {
           const cutSeis = seis.cut(
-            new StartEndDuration(p.request.startTime, p.request.endTime),
+            Interval.fromDateTimes(p.request.startTime, p.request.endTime),
           );
           p.request.seismogram = cutSeis;
           out.push(p.request);
