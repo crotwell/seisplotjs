@@ -6,13 +6,20 @@ import { isDef } from "./util";
 export class SeisPlotElement extends HTMLElement {
   _seisDataList: Array<SeismogramDisplayData>;
   _seismographConfig: SeismographConfig;
-  constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
+  constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>,
+      seisConfig?: SeismographConfig) {
     super();
     if (isDef(seisData)) {
-      if (Array.isArray(seisData) && (seisData.length === 0 || seisData[0] instanceof SeismogramDisplayData)) {
+      if (seisData instanceof SeismogramDisplayData) {
+        this._seisDataList = [ seisData ];
+      } else if (Array.isArray(seisData) && (seisData.length === 0 || seisData[0] instanceof SeismogramDisplayData)) {
         this._seisDataList = seisData;
       } else {
-        throw new Error("first arg must be array of SeismogramDisplayData");
+        let msg = `length: ${seisData.length}  `;
+        if (seisData.length > 0) {
+          msg = `${msg} ${seisData[0]}`;
+        }
+        throw new Error(`first arg must be array of SeismogramDisplayData: ${msg}`);
       }
     } else {
       this._seisDataList = [];
@@ -27,7 +34,13 @@ export class SeisPlotElement extends HTMLElement {
     return this._seisDataList;
   }
   set seisData(seisData: Array<SeismogramDisplayData>) {
-    this._seisDataList = seisData;
+    if (seisData instanceof SeismogramDisplayData) {
+      this._seisDataList = [ seisData ];
+    } else if (Array.isArray(seisData)) {
+      this._seisDataList = seisData;
+    } else {
+      throw new Error(`Unknown type for seisData: ${seisData}`);
+    }
     this.draw();
   }
   get seismographConfig() {
