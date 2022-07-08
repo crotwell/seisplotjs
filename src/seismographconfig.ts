@@ -65,7 +65,10 @@ export class SeismographConfig {
   /** @private */
   _xLabelHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
   xLabelOrientation: string;
-  xSublabel: string;
+  _xSublabel: string;
+  xSublabelIsUnits: boolean;
+  /** @private */
+  _xSublabelHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
   isYAxis: boolean;
   isYAxisRight: boolean;
   isYAxisNice: boolean;
@@ -78,7 +81,9 @@ export class SeismographConfig {
   /** @private */
   _yLabelRightHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
   yLabelOrientation: string;
-  ySublabel: string;
+  _ySublabel: string;
+  /** @private */
+  _ySublabelHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
   ySublabelTrans: number;
   ySublabelIsUnits: boolean;
   doMarkers: boolean;
@@ -132,14 +137,17 @@ export class SeismographConfig {
     this.showTitle = true;
     this._xLabel = "Time";
     this.xLabelOrientation = "horizontal";
-    this.xSublabel = "";
+    this._xSublabel = "";
+    this.xSublabelIsUnits = false;
     this._yLabel = "Amplitude";
     this._yLabelRight = "";
     this._xLabelHandlebarsCompiled = null;
+    this._xSublabelHandlebarsCompiled = null;
     this.yLabelOrientation = "vertical";
     this._yLabelHandlebarsCompiled = null;
     this._yLabelRightHandlebarsCompiled = null;
-    this.ySublabel = "";
+    this._ySublabel = "";
+    this._ySublabelHandlebarsCompiled = null;
     this.ySublabelTrans = 15;
     this.ySublabelIsUnits = true;
     this.doRMean = true;
@@ -356,6 +364,31 @@ export class SeismographConfig {
     this._xLabelHandlebarsCompiled = null;
   }
 
+  /**
+   * gets the current x sublabel
+   *
+   * @returns        x sublabel
+   */
+  get xSublabel(): string {
+    return this._xSublabel;
+  }
+
+  /**
+   * Sets the xSublabel as simple string or a
+   * handlebars template.
+   *
+   * @param value string  to be the x sublabel
+   */
+  set xSublabel(value: null | string) {
+    if (!isDef(value)) {
+      this._xSublabel = "";
+    } else {
+      this._xSublabel = value;
+    }
+
+    this._xSublabelHandlebarsCompiled = null;
+  }
+
   handlebarsXLabel(context: {}, runtimeOptions: {}): string {
     if (!isDef(this._xLabelHandlebarsCompiled)) {
       if (!isDef(this._xLabel) || this._xLabel.length === 0) {
@@ -373,8 +406,25 @@ export class SeismographConfig {
     return this._xLabelHandlebarsCompiled(context, runtimeOptions);
   }
 
+
+  handlebarsXSublabel(context: {}, runtimeOptions: {}): string {
+    if (!isDef(this._xSublabelHandlebarsCompiled)) {
+      if (!isDef(this._xSublabel) || this._xSublabel.length === 0) {
+        // empty label
+        return "";
+      } else {
+        this._xSublabelHandlebarsCompiled = Handlebars.compile(this._xSublabel);
+      }
+    }
+    // don't think this can happen, keep typescript happy
+    if (! this._xSublabelHandlebarsCompiled) {
+      throw new Error(`Unable to compile handlebars xLabel for ${this._xSublabel}`);
+    }
+
+    return this._xSublabelHandlebarsCompiled(context, runtimeOptions);
+  }
   /**
-   * gets the current title
+   * gets the current y label
    *
    * @returns        yLabel
    */
@@ -398,6 +448,31 @@ export class SeismographConfig {
     this._yLabelHandlebarsCompiled = null;
   }
 
+  /**
+   * gets the current y sublabel
+   *
+   * @returns        ySublabel
+   */
+  get ySublabel(): string {
+    return this._ySublabel;
+  }
+
+  /**
+   * Sets the y sublabel as simple string or a
+   * handlebars template.
+   *
+   * @param value string to be the y sublabel
+   */
+  set ySublabel(value: null | string) {
+    if (!isDef(value)) {
+      this._ySublabel = "";
+    } else {
+      this._ySublabel = value;
+    }
+
+    this._ySublabelHandlebarsCompiled = null;
+  }
+
   handlebarsYLabel(context: {}, runtimeOptions: {}): string {
     if (!isDef(this._yLabelHandlebarsCompiled)) {
       if (!isDef(this._yLabel) || this._yLabel.length === 0) {
@@ -413,6 +488,23 @@ export class SeismographConfig {
     }
 
     return this._yLabelHandlebarsCompiled(context, runtimeOptions);
+  }
+
+  handlebarsYSublabel(context: {}, runtimeOptions: {}): string {
+    if (!isDef(this._ySublabelHandlebarsCompiled)) {
+      if (!isDef(this._ySublabel) || this._ySublabel.length === 0) {
+        // empty label
+        return "";
+      } else {
+        this._ySublabelHandlebarsCompiled = Handlebars.compile(this._ySublabel);
+      }
+    }
+    // don't think this can happen, keep typescript happy
+    if (! this._ySublabelHandlebarsCompiled) {
+      throw new Error(`Unable to compile handlebars yLabel for ${this._ySublabel}`);
+    }
+
+    return this._ySublabelHandlebarsCompiled(context, runtimeOptions);
   }
 
   /**

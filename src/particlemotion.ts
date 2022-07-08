@@ -115,6 +115,8 @@ export function createParticleMotionConfig(
 
   seisConfig.xLabel = DEFAULT_XLABEL;
   seisConfig.yLabel = DEFAULT_YLABEL;
+  seisConfig.xSublabelIsUnits = true;
+  seisConfig.ySublabelIsUnits = true;
   seisConfig.margin.top = 40;
   seisConfig.margin.bottom = 40;
   seisConfig.margin.right = 40;
@@ -161,8 +163,8 @@ export class ParticleMotion extends SeisPlotElement {
     const seisData = xSeisData.concat(ySeisData);
     if ( ! seisConfig) {seisConfig = createParticleMotionConfig();}
     super(seisData, seisConfig);
-    this.xSeisData = xSeisData;
-    this.ySeisData = ySeisData;
+    this._xSeisData = xSeisData;
+    this._ySeisData = ySeisData;
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
@@ -304,12 +306,7 @@ export class ParticleMotion extends SeisPlotElement {
     }
     this.calcScaleDomain();
     this.drawAxis();
-    const handlebarsInput = {
-      seisDataList: this.seisData,
-      seisXData: this.xSeisData,
-      seisYData: this.ySeisData,
-      seisConfig: this.seismographConfig,
-    };
+    const handlebarsInput = this.createHandlebarsInput();
     axisutil.drawAxisLabels(
       svgEl,
       this.seismographConfig,

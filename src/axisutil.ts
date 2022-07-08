@@ -54,9 +54,8 @@ export function drawXSublabel(
     )
     .append("text")
     .classed("x label sublabel", true)
-    .attr("text-anchor", "middle")
-    .text(seismographConfig.xSublabel);
-    const handlebarOut = seismographConfig.handlebarsXLabel(handlebarsInput, {
+    .attr("text-anchor", "middle");
+    const handlebarOut = seismographConfig.handlebarsXSublabel(handlebarsInput, {
       allowProtoPropertiesByDefault: true, // this might be a security issue???
     });
     svgText.html(handlebarOut);
@@ -149,8 +148,10 @@ export function drawYSublabel(
     // horizontal
     svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
   }
-
-  svgText.text(seismographConfig.ySublabel);
+  const handlebarOut = seismographConfig.handlebarsYSublabel(handlebarsInput, {
+    allowProtoPropertiesByDefault: true, // this might be a security issue???
+  });
+  svgText.html(handlebarOut);
 }
 export function drawTitle(
   svgEl: SVGElement,
