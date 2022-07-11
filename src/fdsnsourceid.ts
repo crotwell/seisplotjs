@@ -66,10 +66,10 @@ export class FDSNSourceId {
     }
     return FDSNSourceId.fromNSLC(items[0],items[1],items[2],items[3]);
   }
-  stationSourceId(): StationSouceId {
+  stationSourceId(): StationSourceId {
     return new StationSourceId(this.networkCode, this.stationCode);
   }
-  networkSourceId(): StationSouceId {
+  networkSourceId(): NetworkSourceId {
     return new NetworkSourceId(this.networkCode);
   }
   toString(): string {
@@ -103,10 +103,10 @@ export class StationSourceId {
   toString(): string {
     return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}`;
   }
-  networkSourceId(): StationSouceId {
+  networkSourceId(): NetworkSourceId {
     return new NetworkSourceId(this.networkCode);
   }
-  equals(other: StationSouceId): boolean {
+  equals(other: StationSourceId): boolean {
     return this.toString() === other.toString();
   }
 }

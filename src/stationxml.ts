@@ -173,7 +173,8 @@ export class Channel {
   /** @private */
   _locationCode: string;
   channelCode: string;
-
+  /** @private */
+  _sourceId: FDSNSourceId | undefined;
   /** @private */
   _startDate: DateTime;
 
