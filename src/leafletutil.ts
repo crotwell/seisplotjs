@@ -831,6 +831,11 @@ export class QuakeStationMap extends SeisPlotElement {
     const divElement = wrapper.appendChild(document.createElement("div"));
     divElement.setAttribute("id", mapid);
     const mymap = L.map(divElement).setView([this.centerLat, this.centerLon], this.zoomLevel);
+    if (this.seismographConfig.wheelZoom) {
+      mymap.scrollWheelZoom.enable();
+    } else {
+      mymap.scrollWheelZoom.disable();
+    }
     let tileUrl = DEFAULT_TILE_TEMPLATE;
     let maxZoom = DEFAULT_MAX_ZOOM;
     const tileUrlAttr = this.getAttribute(TILE_TEMPLATE);
