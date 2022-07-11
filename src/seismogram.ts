@@ -4,6 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration, Interval} from "luxon";
+import {FDSNSourceId} from "./fdsnsourceid";
 import {meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
 import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
@@ -792,7 +793,7 @@ export class SeismogramDisplayData {
    *
    * @returns FDSN source id
    */
-  get sourceId(): string {
+  get sourceId(): FDSNSourceId {
     if (isDef(this.channel)) {
       return this.channel.sourceId;
     } else if (isDef(this._seismogram)) {
@@ -807,25 +808,17 @@ export class SeismogramDisplayData {
         subsource = this.channelCode.charAt(2);
       } else {
         const items = this.channelCode.split(sep);
-        band = items[0];
-        source = items[1];
-        subsource = items[2];
+        band = items[0] ? items[0] : "";
+        source = items[1] ? items[1] : "";
+        subsource = items[2] ? items[2] : "";
       }
 
-      return (
-        "FDSN:" +
-        (this.networkCode ? this.networkCode : "") +
-        sep +
-        (this.stationCode ? this.stationCode : "") +
-        sep +
-        (this.locationCode ? this.locationCode : "") +
-        sep +
-        band +
-        sep +
-        source +
-        sep +
-        subsource
-      );
+      return new FDSNSourceId((this.networkCode ? this.networkCode : ""),
+                              (this.stationCode ? this.stationCode : ""),
+                              (this.locationCode ? this.locationCode : ""),
+                              band,
+                              source,
+                              subsource);
     } else {
       throw new Error("unable to create Id, neither channel nor seismogram");
     }
@@ -1095,6 +1088,9 @@ export class SeismogramDisplayData {
 
     out.timeRange = timeRange;
     return out;
+  }
+  toString(): string {
+    return `${this.sourceId} ${this.timeRange}`;
   }
 }
 export class SeismogramDisplayStats {

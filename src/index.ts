@@ -19,6 +19,7 @@ import * as fdsndatacenters from "./fdsndatacenters";
 import * as fdsnevent from "./fdsnevent";
 import * as fdsnstation from "./fdsnstation";
 import * as fdsndataselect from "./fdsndataselect";
+import * as fdsnsourceid from "./fdsnsourceid";
 import * as filter from "./filter";
 import * as fft from "./fft";
 import * as spectraplot from "./spectraplot";
@@ -73,6 +74,7 @@ export {
   fdsnevent,
   fdsnstation,
   fdsndataselect,
+  fdsnsourceid,
   fft,
   handlebarshelpers,
   helicorder,

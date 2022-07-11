@@ -16,6 +16,7 @@ import {
 } from "./util";
 import {createComplex} from "./oregondsputil";
 import * as OregonDSPTop from "oregondsp";
+import {FDSNSourceId, NetworkSourceId, StationSourceId} from "./fdsnsourceid";
 import {DateTime, Interval} from "luxon";
 
 /** xml namespace for stationxml */
@@ -44,8 +45,8 @@ export class Network {
     this.totalNumberStations = null;
   }
 
-  get sourceId(): string {
-    return "FDSN:" + (this.networkCode ? this.networkCode : "");
+  get sourceId(): NetworkSourceId {
+    return new NetworkSourceId(this.networkCode ? this.networkCode : "");
   }
 
   get startDate(): DateTime {
@@ -122,13 +123,9 @@ export class Station {
     this.elevation = 0;
   }
 
-  get sourceId(): string {
-    const sep = "_";
-    return (
-      (this.network ? this.network.sourceId : "FDSN:") +
-      sep +
-      (this.stationCode ? this.stationCode : "")
-    );
+  get sourceId(): StationSourceId {
+    return new StationSourceId(this.networkCode ? this.networkCode : "",
+                              (this.stationCode ? this.stationCode : ""));
   }
 
   get startDate(): DateTime {
@@ -232,34 +229,14 @@ export class Channel {
     }
   }
 
-  get sourceId(): string {
-    const sep = "_";
-    let band;
-    let source;
-    let subsource;
-
-    if (this.channelCode.length === 3) {
-      band = this.channelCode.charAt(0);
-      source = this.channelCode.charAt(1);
-      subsource = this.channelCode.charAt(2);
-    } else {
-      const items = this.channelCode.split(sep);
-      band = items[0];
-      source = items[1];
-      subsource = items[2];
+  get sourceId(): FDSNSourceId {
+    if (this._sourceId) {
+      return this._sourceId;
     }
-
-    return (
-      (this.station ? this.station.sourceId : "FDSN:_") +
-      sep +
-      (this.locationCode ? this.locationCode : "") +
-      sep +
-      band +
-      sep +
-      source +
-      sep +
-      subsource
-    );
+    return FDSNSourceId.fromNSLC(this.networkCode,
+                                 this.stationCode,
+                                 this.locationCode,
+                                 this.channelCode);
   }
 
   get startDate(): DateTime {
