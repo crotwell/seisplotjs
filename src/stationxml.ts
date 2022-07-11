@@ -234,7 +234,7 @@ export class Channel {
     if (this._sourceId) {
       return this._sourceId;
     }
-    return FDSNSourceId.fromNSLC(this.networkCode,
+    return FDSNSourceId.fromNslc(this.networkCode,
                                  this.stationCode,
                                  this.locationCode,
                                  this.channelCode);

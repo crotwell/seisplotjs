@@ -6,6 +6,7 @@
 import {DateTime, Duration, Interval} from "luxon";
 import {checkStringOrDate, isDef} from "./util";
 import * as seedcodec from "./seedcodec";
+import {FDSNSourceId} from "./fdsnsourceid";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
   xScaleDomain: Array<Date>;
@@ -38,6 +39,7 @@ export class SeismogramSegment {
   _startTime: DateTime;
   _endTime_cache: null | DateTime;
   _endTime_cache_numPoints: number;
+  _sourceId: FDSNSourceId | null = null;
   networkCode: string|null = null;
   stationCode: string|null = null;
   locationCode: string|null = null;
@@ -371,41 +373,24 @@ export class SeismogramSegment {
   }
 
   /**
-   * return FDSN source id as a string.
+   * return FDSN source id.
    *
    * @returns FDSN source id
    */
-  get sourceId(): string {
-    const sep = "_";
-    let band;
-    let source;
-    let subsource;
-    const chanCode = (this.channelCode ? this.channelCode : "");
-    if (chanCode.length === 3) {
-      band = chanCode.charAt(0);
-      source = chanCode.charAt(1);
-      subsource = chanCode.charAt(2);
+  get sourceId(): FDSNSourceId | null {
+    if (isDef(this._sourceId)) {
+      return this._sourceId;
     } else {
-      const items = chanCode.split(sep);
-      band = items[0];
-      source = items[1];
-      subsource = items[2];
+      if (!this.channelCode || this.channelCode.length === 0) {
+        // need 3 chars,
+        return null;
+      }
+      return FDSNSourceId.fromNslc(
+        (this.networkCode ? this.networkCode : ""),
+        (this.stationCode ? this.stationCode : ""),
+        (this.locationCode ? this.locationCode : ""),
+        this.channelCode);
     }
-
-    return (
-      "FDSN:" +
-      (this.networkCode ? this.networkCode : "") +
-      sep +
-      (this.stationCode ? this.stationCode : "") +
-      sep +
-      (this.locationCode ? this.locationCode : "") +
-      sep +
-      band +
-      sep +
-      source +
-      sep +
-      subsource
-    );
   }
 
 

@@ -106,7 +106,7 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
     }
     header.numSamples = seg.numPoints;
     header.publicationVersion = UNKNOWN_DATA_VERSION;
-    header.identifier = seg.sourceId;
+    header.identifier = seg.sourceId.toString();
     header.identifierLength = header.identifier.length;
     header.extraHeaders = extraHeaders;
     header.dataLength = rawData.byteLength;

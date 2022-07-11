@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration, Interval} from "luxon";
-import {FDSNSourceId} from "./fdsnsourceid";
+import {FDSNSourceId, NslcId} from "./fdsnsourceid";
 import {meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
 import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
@@ -224,7 +224,7 @@ export class Seismogram {
    *
    * @returns FDSN source id
    */
-  get sourceId(): string {
+  get sourceId(): FDSNSourceId {
     return this._segmentArray[0].sourceId;
   }
 
@@ -511,21 +511,16 @@ export function ensureIsSeismogram(
     );
   }
 }
-export type ChannelCodeHolderType = {
-  networkCode: string;
-  stationCode: string;
-  locationCode: string;
-  channelCode: string;
-};
 export class SeismogramDisplayData {
   /** @private */
   _seismogram: Seismogram | null;
   _id: string | null;
+  _sourceId: FDSNSourceId | null;
   label: string | null;
   markerList: Array<MarkerType>;
   traveltimeList: Array<TraveltimeArrivalType>;
   channel: Channel | null;
-  channelCodesHolder: ChannelCodeHolderType | null;
+  channelCodesHolder: NslcId | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
   timeRange: Interval;
@@ -539,6 +534,7 @@ export class SeismogramDisplayData {
     }
 
     this._id = null;
+    this._sourceId = null;
     this._seismogram = null;
     this.label = null;
     this.markerList = [];
@@ -793,34 +789,21 @@ export class SeismogramDisplayData {
    *
    * @returns FDSN source id
    */
-  get sourceId(): FDSNSourceId {
+  get sourceId(): FDSNSourceId | null {
     if (isDef(this.channel)) {
       return this.channel.sourceId;
     } else if (isDef(this._seismogram)) {
-      const sep = "_";
-      let band;
-      let source;
-      let subsource;
-
-      if (this.channelCode.length === 3) {
-        band = this.channelCode.charAt(0);
-        source = this.channelCode.charAt(1);
-        subsource = this.channelCode.charAt(2);
-      } else {
-        const items = this.channelCode.split(sep);
-        band = items[0] ? items[0] : "";
-        source = items[1] ? items[1] : "";
-        subsource = items[2] ? items[2] : "";
-      }
-
-      return new FDSNSourceId((this.networkCode ? this.networkCode : ""),
-                              (this.stationCode ? this.stationCode : ""),
-                              (this.locationCode ? this.locationCode : ""),
-                              band,
-                              source,
-                              subsource);
+      return this._seismogram.sourceId;
+    } else if (isDef(this._sourceId)) {
+      return this._sourceId;
+    } else if(isDef(this.channelCodesHolder)) {
+      return FDSNSourceId.fromNslc(this.networkCode,
+        this.stationCode,
+        this.locationCode,
+        this.channelCode);
     } else {
-      throw new Error("unable to create Id, neither channel nor seismogram");
+      return null;
+      //throw new Error("unable to create Id, neither channel, channelCodesHolder nor seismogram");
     }
   }
 
@@ -1064,6 +1047,14 @@ export class SeismogramDisplayData {
     });
     out.seismogram = seis;
     out._statsCache = null;
+    out.channelCodesHolder = this.channelCodesHolder;
+    if (!isDef(out._seismogram) && !isDef(out.channel)) {
+      // so we con't forget our channel
+      out._sourceId = this.sourceId;
+      if (this._seismogram) {
+        out.channelCodesHolder = this._seismogram.sourceId.asNslc();
+      }
+    }
     return out;
   }
 
@@ -1081,11 +1072,14 @@ export class SeismogramDisplayData {
     if (cutSeis) {
       cutSeis = cutSeis.cut(timeRange);
       out = this.cloneWithNewSeismogram(cutSeis);
+      if (!isDef(out._seismogram) && !isDef(out.channel)) {
+        // so we con't forget our channel
+        out._sourceId = this.sourceId;
+      }
     } else {
       // no seismogram, so just clone?
       out = this.clone();
     }
-
     out.timeRange = timeRange;
     return out;
   }

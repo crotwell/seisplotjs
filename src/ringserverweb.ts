@@ -4,6 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration} from "luxon";
+import {NslcId} from "./fdsnsourceid";
 import * as util from "./util"; // for util.log
 
 import {
@@ -353,7 +354,8 @@ export function stationsFromStreams(
   const out: Map<string, StreamStat> = new Map();
 
   for (const s of streams) {
-    const nslc = nslcSplit(s.key);
+    const nslc_type = nslcSplit(s.key);
+    const nslc = nslc_type.nslc;
     const staKey = nslc.networkCode + "." + nslc.stationCode;
     let stat = out.get(staKey);
 
@@ -375,13 +377,14 @@ export function stationsFromStreams(
 
   return Array.from(out.values());
 }
-export type NSLCType = {
+export class NslcWithType {
   type: string;
-  networkCode: string;
-  stationCode: string;
-  locationCode: string;
-  channelCode: string;
-};
+  nslc: NslcId;
+  constructor(type: string, nslc: NslcId) {
+    this.type = type;
+    this.nslc = nslc;
+  }
+}
 
 /**
  * Split type, networkCode, stationCode, locationCode and channelCode
@@ -390,19 +393,13 @@ export type NSLCType = {
  * @param   id id string to split
  * @returns  object with the split fields
  */
-export function nslcSplit(id: string): NSLCType {
+export function nslcSplit(id: string): NslcWithType {
   const split = id.split("/");
   const nslc = split[0].split("_");
 
   if (nslc.length === 4) {
     // assume net, station, loc, chan
-    return {
-      type: split[1],
-      networkCode: nslc[0],
-      stationCode: nslc[1],
-      locationCode: nslc[2],
-      channelCode: nslc[3],
-    };
+    return new NslcWithType(split[1], new NslcId(nslc[0], nslc[1], nslc[2], nslc[3]));
   } else {
     throw new Error("tried to split, did not find 4 elements in array: " + id);
   }

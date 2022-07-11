@@ -122,7 +122,6 @@ export class SeismographConfig {
 
   constructor() {
     this.configId = ++SeismographConfig._lastID;
-    console.log(`seisconfig constructor ${this.configId}`);
     this.drawingType = DRAW_CANVAS;
     this.isXAxis = true;
     this.isXAxisTop = false;

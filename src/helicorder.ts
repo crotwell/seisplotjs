@@ -3,13 +3,14 @@ Interval/*
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import * as d3 from "d3";
 import {DateTime, Duration, Interval} from "luxon";
-import {insertCSS, isCSSInserted} from "./cssutil";
 import {SeismogramDisplayData} from "./seismogram";
-import {Seismograph} from "./seismograph";
+import {Seismograph, COLOR_CSS_ID} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
+import {SeisPlotElement} from "./spelement";
 import { isDef} from "./util";
+
+export const HELICORDER_ELEMENT = 'sp-helicorder';
 
 /**
  * A helicorder-like multi-line seismogram display usually covering 24 hours
@@ -18,41 +19,42 @@ import { isDef} from "./util";
  * @param heliConfig configuration object
  * @param seisData the data to display
  */
-export class Helicorder {
+export class Helicorder extends SeisPlotElement {
   seismographArray: Array<Seismograph>;
-  svgParent: any;
-  heliConfig: HelicorderConfig;
-  seisData: SeismogramDisplayData;
-  xScaleArray: any;
-  yScale: any;
 
-  constructor(
-    inSvgParent: any,
-    heliConfig: HelicorderConfig,
-    seisData: SeismogramDisplayData,
-  ) {
-    this.seismographArray = [];
-    this.seisData = seisData;
-
-    if (typeof inSvgParent === "string") {
-      this.svgParent = d3.select(inSvgParent);
+  constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
+    let heliConfig;
+    if ( ! seisConfig) {
+      let timeWindow = Interval.before(DateTime.utc(), Duration.fromObject({hours: 24}));
+      heliConfig = new HelicorderConfig(timeWindow);
+    } else if (seisConfig instanceof HelicorderConfig) {
+      heliConfig = seisConfig;
     } else {
-      this.svgParent = inSvgParent;
+      heliConfig = HelicorderConfig.fromSeismographConfig(seisConfig);
     }
-
-    this.svgParent = this.svgParent
-      .append("div")
-      .classed(HELICORDER_SELECTOR, true);
-    this.heliConfig = heliConfig;
-
-    if (!isCSSInserted(HELI_COLOR_CSS_ID)) {
-      insertCSS(
-        this.heliConfig.createCSSForLineColors(HELICORDER_SELECTOR),
-        HELI_COLOR_CSS_ID,
-      );
+    super(seisData, heliConfig);
+    if (seisData && seisData.length > 1) {
+      throw new Error(`Helicorder seisData must be length 1, but was ${seisData.length}`);
     }
+    this.seismographArray = [];
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute("class", "wrapper");
+    const style = shadow.appendChild(document.createElement('style'));
+    style.textContent = helicorder_css;
+    const lineColorsStyle = shadow.appendChild(document.createElement('style'));
+    const lineColorsCSS = heliConfig.createCSSForLineColors();
+    lineColorsStyle.setAttribute("id", COLOR_CSS_ID);
+    lineColorsStyle.textContent = lineColorsCSS;
+    shadow.appendChild(wrapper);
   }
-
+  get heliConfig(): HelicorderConfig {
+    return this.seismographConfig as HelicorderConfig;
+  }
+  set heliConfig(config: HelicorderConfig) {
+    this.seismographConfig = config;
+  }
   /**
    * draws, or redraws, the helicorder.
    */
@@ -67,11 +69,8 @@ export class Helicorder {
    * @private
    */
   drawSeismograms(): void {
-    if (!this.seisData) {
-      // no data
-      return;
-    }
-
+    if ( ! this.isConnected) { return; }
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
     const timeRange = this.heliConfig.fixedTimeScale;
 
     if (!isDef(timeRange)) {
@@ -79,9 +78,14 @@ export class Helicorder {
     }
 
     let maxVariation = 1;
-
-    if (this.seisData.seismogram) {
-      const seis = this.seisData.seismogram;
+    let singleSeisData;
+    if (this.seisData.length !== 0) {
+      singleSeisData = this.seisData[0];
+    } else {
+      singleSeisData = new SeismogramDisplayData(timeRange);
+    }
+    if (singleSeisData.seismogram) {
+      const seis = singleSeisData.seismogram;
 
       if (!this.heliConfig.fixedAmplitudeScale) {
         if (this.heliConfig.maxVariation === 0) {
@@ -104,7 +108,8 @@ export class Helicorder {
     this.seismographArray = [];
     const secondsPerLine =
       timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
-    this.svgParent.selectAll("div.heliLine").remove();
+    wrapper.querySelectorAll("sp-seismograph").forEach(e => e.remove());
+
     const lineTimes = this.calcTimesForLines(
       startTime,
       secondsPerLine,
@@ -145,11 +150,6 @@ export class Helicorder {
         height += this.heliConfig.margin.bottom;
       }
 
-      const seisDiv = this.svgParent
-        .append("div")
-        .classed("heliLine", true)
-        .style("height", height + "px")
-        .style("margin-top", marginTop + "px");
       lineSeisConfig.fixedTimeScale = lineInterval;
       lineSeisConfig.yLabel = `${startTime.toFormat("HH:mm")}`;
       lineSeisConfig.yLabelRight = `${endTime.toFormat("HH:mm")}`;
@@ -163,13 +163,13 @@ export class Helicorder {
       let lineSeisData;
       let lineMean = 0;
 
-      if (this.seisData.seismogram) {
-        lineCutSeis = this.seisData.seismogram.cut(lineInterval);
-        lineSeisData = this.seisData.cloneWithNewSeismogram(lineCutSeis);
+      if (singleSeisData.seismogram) {
+        lineCutSeis = singleSeisData.seismogram.cut(lineInterval);
+        lineSeisData = singleSeisData.cloneWithNewSeismogram(lineCutSeis);
         lineMean = lineSeisData.mean;
       } else {
         // no data in window, but keep seisData in case of markers, etc
-        lineSeisData = this.seisData.clone();
+        lineSeisData = singleSeisData.clone();
       }
 
       lineSeisData.timeRange = lineInterval;
@@ -192,7 +192,9 @@ export class Helicorder {
 
       const seismograph = new Seismograph([lineSeisData], lineSeisConfig);
       seismograph.svg.classed(HELICORDER_SELECTOR, true);
-      seisDiv.node().appendChild(seismograph);
+      seismograph.setAttribute("class", "heliLine");
+      seismograph.setAttribute("style", `height: ${height}px;margin-top: ${marginTop}px`);
+      wrapper.appendChild(seismograph);
 
       if (lineNumber === 0) {
         // add UTC to top left
@@ -284,12 +286,22 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.ySublabelIsUnits = false;
     this.lineSeisConfig.isXAxis = false;
     this.lineSeisConfig.isYAxis = false;
+    this.lineSeisConfig.minHeight = 80;
     this.lineSeisConfig.margin.top = 0;
     this.lineSeisConfig.margin.bottom = 0;
     this.lineSeisConfig.margin.left = 37;
     this.lineSeisConfig.margin.right = 37;
     this.lineSeisConfig.wheelZoom = false;
     this.lineSeisConfig.doRMean = true;
+  }
+  static fromSeismographConfig(seisConfig: SeismographConfig): HelicorderConfig {
+    if (! seisConfig.fixedTimeScale) {
+      throw new Error("Helicorder config must have fixedTimeScale set");
+    }
+    const heliConfig = new HelicorderConfig(seisConfig.fixedTimeScale);
+    heliConfig.lineSeisConfig = seisConfig;
+    heliConfig.lineColors = seisConfig.lineColors;
+    return heliConfig;
   }
 }
 
@@ -355,6 +367,4 @@ div.helicorder div.heliLine:nth-child(3n) .yLabel text {
 export const HELICORDER_SELECTOR = "helicorder";
 export const HELI_COLOR_CSS_ID = "helicordercolors";
 
-if (document) {
-  insertCSS(helicorder_css, "helicorder");
-}
+customElements.define(HELICORDER_ELEMENT, Helicorder);

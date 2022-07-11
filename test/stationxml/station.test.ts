@@ -37,7 +37,7 @@ test("fdsn source identifier", () => {
     let net = new Network(NET_CODE);
     let station = new Station(net, STA_CODE);
     let channel = new Channel(station, CHAN_CODE, LOC_CODE);
-    expect(net.sourceId).toBe(`FDSN:${NET_CODE}`);
-    expect(station.sourceId).toBe(`FDSN:${NET_CODE}_${STA_CODE}`);
-    expect(channel.sourceId).toBe(`FDSN:${NET_CODE}_${STA_CODE}_${LOC_CODE}_B_H_Z`);
+    expect(net.sourceId.toString()).toBe(`FDSN:${NET_CODE}`);
+    expect(station.sourceId.toString()).toBe(`FDSN:${NET_CODE}_${STA_CODE}`);
+    expect(channel.sourceId.toString()).toBe(`FDSN:${NET_CODE}_${STA_CODE}_${LOC_CODE}_B_H_Z`);
 });
