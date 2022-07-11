@@ -691,7 +691,7 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .attr("label", (s: SeismogramDisplayData) => (s ? s.label : "none"))
       .attr("codes", (s: SeismogramDisplayData) =>
-        s.seismogram && s.seismogram.hasCodes ? s.seismogram.codes() : "none",
+        s.seismogram && s.seismogram.hasCodes() ? s.seismogram.codes() : "none",
       )
       .classed("seismogram", true);
     traceJoin.exit().remove();
@@ -1484,7 +1484,7 @@ export class Seismograph extends SeisPlotElement {
     if (
       this.seismographConfig.doGain &&
       this._seisDataList.length > 0 &&
-      this._seisDataList.every(sdd => sdd.hasSensitivity) &&
+      this._seisDataList.every(sdd => sdd.hasSensitivity()) &&
       this._seisDataList.every(
         sdd => isDef(sdd.seismogram) && sdd.seismogram.yUnit === COUNT_UNIT,
       )

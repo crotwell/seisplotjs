@@ -247,8 +247,8 @@ export class Seismogram {
     );
   }
 
-  get hasCodes(): boolean {
-    return this._segmentArray[0].hasCodes;
+  hasCodes(): boolean {
+    return this._segmentArray[0].hasCodes();
   }
 
   /**
@@ -658,27 +658,27 @@ export class SeismogramDisplayData {
     }
   }
 
-  get hasQuake(): boolean {
+  hasQuake(): boolean {
     return this.quakeList.length > 0;
   }
 
   get quake(): Quake | null {
-    if (this.hasQuake) {
+    if (this.hasQuake()) {
       return this.quakeList[0];
     }
 
     return null;
   }
 
-  get hasSeismogram(): boolean {
+  hasSeismogram(): this is {_seismogram: Seismogram} {
     return isDef(this._seismogram);
   }
 
-  get hasChannel(): boolean {
-    return this.channel !== null;
+  hasChannel(): this is {channel: Channel} {
+    return isDef(this.channel);
   }
 
-  get hasSensitivity(): boolean {
+  hasSensitivity(): this is {_instrumentSensitivity: InstrumentSensitivity} {
     return (
       this._instrumentSensitivity !== null ||
       (isDef(this.channel) && this.channel.hasInstrumentSensitivity())
@@ -1136,7 +1136,7 @@ export function findMaxDurationOfType(
 
     if (type === "start") {
       timeRange = sdd.timeRange;
-    } else if (type === "origin" && sdd.hasQuake) {
+    } else if (type === "origin" && sdd.hasQuake()) {
       timeRange = Interval.fromDateTimes(
         sdd.quakeList[0].time,
         sdd.timeRange.end,

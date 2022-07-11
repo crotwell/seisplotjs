@@ -321,7 +321,7 @@ export class SeismogramSegment {
     return Math.round((t.diff(this.startTime).toMillis() * this.sampleRate) / 1000);
   }
 
-  get hasCodes(): boolean {
+  hasCodes(): boolean {
     return (
       isDef(this.networkCode) ||
       isDef(this.stationCode) ||

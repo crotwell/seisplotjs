@@ -517,6 +517,7 @@ export function groupComponentOfMotion(
 
   return byFriends;
 }
+
 export function createAttribute(
   organized: Array<OrganizedDisplayItem>,
   key: string,

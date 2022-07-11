@@ -9,6 +9,7 @@ import {
   seismogramloader,
   seismograph,
   seismographconfig,
+  sorting,
   stationxml,
   util, luxon} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 const mymap = document.querySelector('sp-station-event-map');
@@ -41,13 +42,8 @@ dataset.Dataset.fromSeismogramLoader(loader).then(dataset => dataset.saveToZipFi
   loadPromise = dataset.load('tutorial4_dataset.zip').then(ds => [ ds.inventory, ds.catalog, ds.waveforms]);
 }
 loadPromise.then(([ networkList, quakeList, seismogramDataList]) => {
+  seismogramDataList = sorting.reorderXYZ(seismogramDataList);
   mymap.seisData = seismogramDataList;
-
-console.log(`loaded ${seismogramDataList.length} sdd`)
-  seismogramDataList.forEach(sdd => {
-    console.log(sdd.traveltimeList.length);
-    sdd.traveltimeList.forEach(tt => console.log(`tt: ${JSON.stringify(tt)}`));
-  })
 
 // snip start seismograph
   let div = document.querySelector('div#myseismograph');
