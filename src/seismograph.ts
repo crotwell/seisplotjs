@@ -57,12 +57,12 @@ export const seismograph_css = `
 
 :host {
   display: block;
-  min-height: 100px;
+  min-height: 50px;
   height: 100%;
 }
 
 div.wrapper {
-  min-height: 100px;
+  min-height: 50px;
   height: 100%;
 }
 
