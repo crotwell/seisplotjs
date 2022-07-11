@@ -111,7 +111,7 @@ export class Dataset {
   associateQuakes(timeOverlapSecs = 1800) {
     this.waveforms.forEach((w: SeismogramDisplayData) => {
       // only try to set quake if don't already have one
-      if ( ! w.hasQuake) {
+      if ( ! w.hasQuake()) {
         this.catalog.forEach((q:Quake)=> {
           if (isDef(q.preferredOrigin)) {
             const window = Interval.after(q.preferredOrigin.time, 1000*timeOverlapSecs);
@@ -125,7 +125,7 @@ export class Dataset {
   }
   associateChannels() {
     this.waveforms.forEach(sdd => {
-      if ( ! sdd.hasChannel) {
+      if ( ! sdd.hasChannel()) {
         for (const c of allChannels(this.inventory)) {
           if (c.sourceId.equals(sdd.sourceId) && sdd.timeRange.overlaps(c.timeRange)) {
             sdd.channel = c;
