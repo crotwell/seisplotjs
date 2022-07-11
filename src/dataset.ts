@@ -114,7 +114,7 @@ export class Dataset {
       if ( ! w.hasQuake) {
         this.catalog.forEach((q:Quake)=> {
           if (isDef(q.preferredOrigin)) {
-            const window = Interval.after(q.preferredOrigin.time, timeOverlapSecs);
+            const window = Interval.after(q.preferredOrigin.time, 1000*timeOverlapSecs);
             if (window.overlaps(w.timeRange)) {
               w.addQuake(q);
             }
@@ -127,7 +127,7 @@ export class Dataset {
     this.waveforms.forEach(sdd => {
       if ( ! sdd.hasChannel) {
         for (const c of allChannels(this.inventory)) {
-          if (c.sourceId === sdd.sourceId && sdd.timeRange.overlaps(c.timeRange)) {
+          if (c.sourceId.equals(sdd.sourceId) && sdd.timeRange.overlaps(c.timeRange)) {
             sdd.channel = c;
             break;
           }
