@@ -50,13 +50,13 @@ export const DEFAULT_TEMPLATE = `
       <tr>
         <td>{{sdd.nslc}}</td>
         <td>{{formatIsoDate sdd.seismogram.startTime}}</td>
-        <td>{{formatDuration sdd.seismogram.timeRange.duration}}</td>
+        <td>{{formatDuration sdd.seismogram.timeRange}}</td>
         <td>{{formatIsoDate sdd.seismogram.endTime}}</td>
         <td>{{sdd.seismogram.numPoints}}</td>
         <td>{{sdd.seismogram.sampleRate}}</td>
         <td>{{sdd.seismogram.segments.length}}</td>
 
-        {{#if sdd.hasChannel}}
+        {{#if sdd.channel}}
           <td>{{sdd.channel.latitude}}</td>
           <td>{{sdd.channel.longitude}}</td>
           <td>{{sdd.channel.elevation}}</td>
@@ -68,7 +68,7 @@ export const DEFAULT_TEMPLATE = `
           <td/>
         {{/if}}
 
-        {{#if sdd.hasQuake}}
+        {{#if sdd.quake }}
           <td>{{formatIsoDate sdd.quake.time}}</td>
           <td>{{sdd.quake.latitude}}</td>
           <td>{{sdd.quake.longitude}}</td>
@@ -83,8 +83,8 @@ export const DEFAULT_TEMPLATE = `
           <td/>
           <td/>
         {{/if}}
-        {{#if sdd.hasQuake }}
-          {{#if sdd.hasChannel }}
+        {{#if sdd.quake }}
+          {{#if sdd.channel }}
             <td>{{formatNumber sdd.distaz.distanceDeg 2}}</td>
             <td>{{formatNumber sdd.distaz.distanceKm 0}}</td>
             <td>{{formatNumber sdd.distaz.az 2}}</td>

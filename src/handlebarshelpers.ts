@@ -4,7 +4,7 @@
 import Handlebars from "handlebars/dist/cjs/handlebars.js";
 //import Handlebars from "handlebars";
 import {SeismogramDisplayData} from './seismogram';
-import {DateTime, Duration} from "luxon";
+import {DateTime, Duration, Interval} from "luxon";
 import {checkStringOrDate} from './util';
 
 export function registerHelpers() {
@@ -84,9 +84,11 @@ export function registerHelpers() {
 
     return m.toFormat(format);
   });
-  Handlebars.registerHelper("formatDuration", function (param: Duration) {
+  Handlebars.registerHelper("formatDuration", function (param: Duration | Interval) {
     if (typeof param === "undefined" || param === null) return "no time";
-
+    if (Interval.isInterval(param)) {
+      param = param.toDuration();
+    }
     if (!Duration.isDuration(param)) {
       return `${param}`;
     }
