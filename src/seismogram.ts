@@ -224,7 +224,7 @@ export class Seismogram {
    *
    * @returns FDSN source id
    */
-  get sourceId(): FDSNSourceId {
+  get sourceId(): FDSNSourceId | null {
     return this._segmentArray[0].sourceId;
   }
 
@@ -1051,7 +1051,7 @@ export class SeismogramDisplayData {
     if (!isDef(out._seismogram) && !isDef(out.channel)) {
       // so we con't forget our channel
       out._sourceId = this.sourceId;
-      if (this._seismogram) {
+      if (this._seismogram && this._seismogram.sourceId) {
         out.channelCodesHolder = this._seismogram.sourceId.asNslc();
       }
     }

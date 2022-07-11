@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import {FDSNSourceId} from "./fdsnsourceid";
 import {isDef, UTC_OPTIONS} from "./util";
 import {EncodedDataSegment, FLOAT, INTEGER, DOUBLE, STEIM1, STEIM2} from "./seedcodec";
 import {SeismogramSegment} from "./seismogramsegment";
@@ -106,7 +107,8 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
     }
     header.numSamples = seg.numPoints;
     header.publicationVersion = UNKNOWN_DATA_VERSION;
-    header.identifier = seg.sourceId.toString();
+    const sid = seg.sourceId?seg.sourceId:FDSNSourceId.createUnknown(seg.sampleRate);
+    header.identifier = sid.toString();
     header.identifierLength = header.identifier.length;
     header.extraHeaders = extraHeaders;
     header.dataLength = rawData.byteLength;

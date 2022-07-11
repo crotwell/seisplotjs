@@ -29,7 +29,7 @@ export class FDSNSourceId {
     this.subsourceCode = subsourceCode;
   }
   static createUnknown(sampRate?: number): FDSNSourceId {
-    return new FDSNSourceId("XX", "ABC", "", bandCodeForRate(sampRate)+"YX");
+    return FDSNSourceId.fromNslc("XX", "ABC", "", bandCodeForRate(sampRate)+"YX");
   }
   static parse(id: string): FDSNSourceId {
     if (! id.startsWith(FDSN_PREFIX)) {
@@ -87,7 +87,11 @@ export class FDSNSourceId {
   toString(): string {
     return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
   }
-  equals(other: FDSNSourceId): boolean {
+  equals(other: FDSNSourceId | null): boolean {
+    if (! other) {
+      // useful to be able to check equals to null
+      return false;
+    }
     return this.toString() === other.toString();
   }
 }

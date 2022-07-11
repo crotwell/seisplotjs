@@ -105,7 +105,13 @@ function xyzCompareFun(a: SeismogramDisplayData, b: SeismogramDisplayData): numb
   // which works out for ZNE and almost for Z12
   const aSID = a.sourceId;
   const bSID = b.sourceId;
-  return aSID.subsourceCode.localeCompare(bSID.subsourceCode);
+  if (aSID && bSID) {
+    return aSID.subsourceCode.localeCompare(bSID.subsourceCode);
+  } else if (aSID === bSID) {
+    return 0;
+  } else {
+    return -1;
+  }
 }
 
 /**
