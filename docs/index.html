@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset='utf-8'/>
@@ -8,7 +9,7 @@
     <link href='./split.css' rel='stylesheet'/>
     <link href="./prism.css" rel="stylesheet" />
     <style>
-      div#myseismograph {
+      sp-seismograph {
         height: 300px;
         width: 700px;
       }
@@ -37,7 +38,7 @@
               manipulating and plotting seismic data.
             </p>
             <div id="myseismograph">
-              <seismo-graph ></seismo-graph>
+              <sp-seismograph ></sp-seismograph>
             </div>
             <p>Seisplotjs is available via
               <a href="https://www.npmjs.com/package/seisplotjs">npm</a>, by
@@ -58,10 +59,11 @@
 
     <script type="module">
       import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
-      let times = new seisplotjs.util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
+      const start = seisplotjs.util.isoToDateTime('2019-07-06T03:19:53Z');
+      let times = new seisplotjs.luxon.Interval.after(start, seisplotjs.luxon.Duration.fromMillis(1000*1800));
       let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
 
-      const seismograph = (document.querySelector('seismo-graph'));
+      const seismograph = (document.querySelector('sp-seismograph'));
       seismograph.seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
       dsQuery.networkCode('CO')
         .stationCode('HODGE')
