@@ -20,7 +20,6 @@ export const HELICORDER_ELEMENT = 'sp-helicorder';
  * @param seisData the data to display
  */
 export class Helicorder extends SeisPlotElement {
-  seismographArray: Array<Seismograph>;
 
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     let heliConfig;
@@ -36,7 +35,6 @@ export class Helicorder extends SeisPlotElement {
     if (seisData && seisData.length > 1) {
       throw new Error(`Helicorder seisData must be length 1, but was ${seisData.length}`);
     }
-    this.seismographArray = [];
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
@@ -105,7 +103,6 @@ export class Helicorder extends SeisPlotElement {
     }
 
     const startTime = timeRange.start;
-    this.seismographArray = [];
     const secondsPerLine =
       timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
     wrapper.querySelectorAll("sp-seismograph").forEach(e => e.remove());
@@ -210,7 +207,6 @@ export class Helicorder extends SeisPlotElement {
           .text("UTC");
       }
 
-      this.seismographArray.push(seismograph);
       startTime = endTime;
     }
   }

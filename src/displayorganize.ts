@@ -215,7 +215,9 @@ export class OrganizedDisplay extends SeisPlotElement {
     `;
     shadow.appendChild(wrapper);
   }
-  static get observedAttributes() { return [ORG_TYPE, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY]; }
+  static get observedAttributes() {
+    return [ORG_TYPE, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY];
+  }
 
 
   get orgtype(): string {
