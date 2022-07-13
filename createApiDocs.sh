@@ -110,7 +110,7 @@ do
   f=${path##*/}
   jsfile=${f%.ts}
   flowfile=${jsfile%.flow}
-  if [ "${jsfile}" != "${flowfile}" ]  || [ "${jsfile}" == "oregondsputil" ] || [ "${jsfile}" == "index" ]; then
+  if [ "${jsfile}" != "${flowfile}" ]  || [ "${jsfile}" == "index" ]; then
     # skip .flow.js files
     continue
   fi
@@ -145,7 +145,7 @@ do
       fi
       # modules links for README.md
       cat >> README_part.md <<EOF
-  * [${jsfile}](https://crotwell.github.io/seisplotjs/api/${jsfile}.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.ts) ${descText}
+  * [${jsfile}](https://crotwell.github.io/seisplotjs/api/${jsfile}.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.0/src/${jsfile}.ts) ${descText}
 EOF
 
     fi
@@ -160,7 +160,7 @@ EOF
   then
     # entry of index.html
     cat >> docs/api/index.html <<EOF
-      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version2.0/src/${jsfile}.ts">source</a> ) - ${descTextHtml}</li>
+      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.0/src/${jsfile}.ts">source</a> ) - ${descTextHtml}</li>
 EOF
   fi
 done

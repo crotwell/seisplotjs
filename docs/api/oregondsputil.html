@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.oregondsputil 2.0.2-alpha.0 | Documentation</title>
+  <title>seisplotjs.oregondsputil 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.oregondsputil</h3>
-          <div class='mb1'><code>2.0.2-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -29,16 +29,6 @@
               
                 
                 <li><a
-                  href='#oregondsp'
-                  class="">
-                  OregonDSP
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
                   href='#complex'
                   class="">
                   Complex
@@ -49,9 +39,29 @@
               
                 
                 <li><a
+                  href='#oregondsp'
+                  class="">
+                  OregonDSP
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#createcomplex'
                   class="">
                   createComplex
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#complexfrompolar'
+                  class="">
+                  complexFromPolar
                   
                 </a>
                 
@@ -72,13 +82,71 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='complex'>
+      Complex
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/6debb135010b98d2aa9e5cde86899f84b907ca5e/src/oregondsputil.ts#L8-L8'>
+      <span>src/oregondsputil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>Complex</div>
+  
+    <p>
+      Type:
+      any
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='oregondsp'>
       OregonDSP
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/oregondsputil.js#L11-L11'>
-      <span>src/oregondsputil.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/6debb135010b98d2aa9e5cde86899f84b907ca5e/src/oregondsputil.ts#L10-L10'>
+      <span>src/oregondsputil.ts</span>
       </a>
     
   </div>
@@ -125,73 +193,20 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='complex'>
-      Complex
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/oregondsputil.js#L12-L12'>
-      <span>src/oregondsputil.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>Complex</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
     <h3 class='fl m0' id='createcomplex'>
       createComplex
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/b2d183987532ea5b484f37355c88b0d9302f84ce/src/oregondsputil.js#L14-L16'>
-      <span>src/oregondsputil.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/6debb135010b98d2aa9e5cde86899f84b907ca5e/src/oregondsputil.ts#L12-L14'>
+      <span>src/oregondsputil.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>createComplex(real: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, imag: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+    <div class='pre p1 fill-light mt0'>createComplex(real: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, imag: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex</div>
   
   
 
@@ -227,6 +242,90 @@
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='complexfrompolar'>
+      complexFromPolar
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/6debb135010b98d2aa9e5cde86899f84b907ca5e/src/oregondsputil.ts#L15-L19'>
+      <span>src/oregondsputil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>complexFromPolar(amp: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, phase: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>amp</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>phase</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex</code>
+    
   
 
   
