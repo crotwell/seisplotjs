@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="style.css">
+  <title>Helicorder</title>
+  <style>
+    sp-helicorder {
+      float:left;
+      width: 100%;
+      height: 600px;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>Helicorder:</h3>
+  <div>
+    <sp-helicorder></sp-helicorder>
+  </div>
+
+  <script type="module">
+
+    import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+    let dataArray = new Float32Array(1000).map(function(d, i) {
+      return Math.sin(2*Math.PI*i/100) * 100;
+    });
+    let sampleRate = .1;
+    let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
+    const seis = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
+    seis.seismogram.networkCode = "XX";
+    seis.seismogram.stationCode = "STA";
+    seis.seismogram.locationCode = "00";
+    seis.seismogram.channelCode = "BHZ";
+    const heli = (document.querySelector(seisplotjs.helicorder.HELICORDER_ELEMENT));
+    heli.seisData = [seis];
+    heli.heliConfig.fixedTimeScale = seisplotjs.luxon.Interval.after(start.startOf("day"),
+        seisplotjs.luxon.Duration.fromObject({hours: 24}));
+    heli.draw();
+  </script>
+</body>
+</html>
