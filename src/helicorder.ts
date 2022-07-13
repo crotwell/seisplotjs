@@ -5,10 +5,10 @@ Interval/*
  */
 import {DateTime, Duration, Interval} from "luxon";
 import {SeismogramDisplayData} from "./seismogram";
-import {Seismograph, COLOR_CSS_ID} from "./seismograph";
+import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {SeisPlotElement} from "./spelement";
-import { isDef, createSVGElement} from "./util";
+import { isDef} from "./util";
 
 export const HELICORDER_ELEMENT = 'sp-helicorder';
 
@@ -189,13 +189,16 @@ export class Helicorder extends SeisPlotElement {
       seismograph.setAttribute("style", `height: ${height}px;margin-top: ${marginTop}px`);
       const seismographWrapper = (seismograph.shadowRoot?.querySelector('div') as HTMLDivElement);
       const styleEl= document.createElement('style');
-      const helicss = seismograph.shadowRoot.insertBefore(styleEl, seismographWrapper);
-      helicss.textContent = `
-      .yLabel text {
-        font-size: x-small;
-        fill: ${lineSeisConfig.lineColors[0]};
+      const seismographRoot = seismograph.shadowRoot;
+      if (seismographRoot) {
+        const helicss = seismographRoot.insertBefore(styleEl, seismographWrapper);
+        helicss.textContent = `
+        .yLabel text {
+          font-size: x-small;
+          fill: ${lineSeisConfig.lineColors[0]};
+        }
+        `;
       }
-      `;
 
       wrapper.appendChild(seismograph);
       if (lineNumber === 0) {
