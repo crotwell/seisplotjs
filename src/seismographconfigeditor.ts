@@ -4,21 +4,14 @@
  * http://www.seis.sc.edu
  */
 import {insertCSS,} from "./cssutil";
-import {SeismogramDisplayData, Seismogram} from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
 import {isDef} from "./util";
 import * as d3 from "d3";
-import { Duration, Interval} from "luxon";
-
-// browser field in package.json for handlebars 4.7.7 is bad,
-// direct import from file works for now, but is fragile
-import Handlebars from "handlebars/dist/cjs/handlebars.js";
-//import Handlebars from "handlebars";
 
 export function createEditor(
   div: any,
   config: SeismographConfig,
-  onChange?: () => void,
+  onChange: () => void,
 ) {
   if (!isDef(div)) {
     throw new Error("div is Required");
@@ -281,7 +274,6 @@ function createTextOption(
     .attr("name", key)
     .property("value", config[key])
     .on("change", function () {
-      console.log(`configedit set ${key} from ${config[key]} to ${d3.select(this).property("value")}`)
       // @ts-ignore
       config[key] = d3.select(this).property("value");
       onChange();
@@ -306,7 +298,6 @@ function createNumberOption(
     .attr("name", key)
     .property("value", config[key])
     .on("change", function () {
-      console.log(`configedit set ${key} from ${config[key]} to ${d3.select(this).property("value")}`)
       // @ts-ignore
       config[key] = Number.parseInt(d3.select(this).property("value"));
       onChange();

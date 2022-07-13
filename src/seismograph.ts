@@ -16,7 +16,6 @@ import {
   numberFormatWrapper,
 } from "./seismographconfig";
 import type {MarkerType} from "./seismogram";
-import type {MarginType} from "./seismographconfig";
 import type {TraveltimeJsonType} from "./traveltime";
 import type {ScaleLinear, ScaleTime} from "d3-scale";
 import {
