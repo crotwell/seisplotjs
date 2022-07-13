@@ -416,9 +416,17 @@ export class Seismograph extends SeisPlotElement {
         calcHeight = this.seismographConfig.maxHeight;
       }
 
-      this.calcWidthHeight(rect.width, calcHeight);
     }
+    this.calcWidthHeight(rect.width, calcHeight);
 
+    this.g.attr(
+      "transform",
+      "translate(" +
+        this.seismographConfig.margin.left +
+        "," +
+        this.seismographConfig.margin.top +
+        ")",
+    );
     if (this.canvas) {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
       this.canvasHolder.attr("x", this.seismographConfig.margin.left);
@@ -1275,7 +1283,7 @@ export class Seismograph extends SeisPlotElement {
       this.seismographConfig.margin.top + this.seismographConfig.margin.bottom
     ) {
       throw new Error(
-        `height too small for margin: ${nOuterWidth} < ${this.seismographConfig.margin.top} + ${this.seismographConfig.margin.bottom}`,
+        `height too small for margin: ${nOuterHeight} < ${this.seismographConfig.margin.top} + ${this.seismographConfig.margin.bottom}`,
       );
     }
 
@@ -1298,11 +1306,8 @@ export class Seismograph extends SeisPlotElement {
         .attr("height", this.height + 1);
       this.canvas.attr("width", this.width).attr("height", this.height + 1);
     }
-
-    this.redrawWithXScale();
   }
 
-  // see http://blog.kevinchisholm.com/javascript/javascript-function-throttling/
   throttle(func: () => void, delay: number): void {
     if (this.throttleResize) {
       clearTimeout(this.throttleResize);
@@ -1316,24 +1321,6 @@ export class Seismograph extends SeisPlotElement {
     this.throttle(function () {
       myThis.draw();
     }, 250);
-  }
-
-  setMargin(value: MarginType): Seismograph {
-    this.seismographConfig.margin = value;
-
-    if (!this.beforeFirstDraw) {
-      this.calcWidthHeight(this.outerWidth, this.outerHeight);
-      this.g.attr(
-        "transform",
-        "translate(" +
-          this.seismographConfig.margin.left +
-          "," +
-          this.seismographConfig.margin.top +
-          ")",
-      );
-    }
-
-    return this;
   }
 
   drawTitle() {
