@@ -5,6 +5,12 @@ const plotEnd = seisplotjs.luxon.DateTime.utc().endOf('hour').plus({milliseconds
 if (plotEnd.hour % 2 === 1) {plotEnd.plus({hours: 1});}
 const oneDay = seisplotjs.luxon.Duration.fromISO('P1D');
 const timeWindow = seisplotjs.luxon.Interval.before(plotEnd, oneDay);
+const luxOpts = {
+  suppressMilliseconds: true,
+  suppressSeconds: true,
+};
+document.querySelector("span#starttime").textContent = timeWindow.start.toISO(luxOpts);
+document.querySelector("span#endtime").textContent = timeWindow.end.toISO(luxOpts);
 new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
 // snip start seismogram
   .then(dataSelectArray => {
@@ -16,19 +22,18 @@ new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
       .querySeismograms();
 // snip start heli
   }).then(seisArray => {
-    seisplotjs.d3.select("span#channel").text(seisArray[0].codes());
-    seisplotjs.d3.select("span#starttime").text(timeWindow.start.toFormat('yyyy-MM-DD HH:mm')+"Z");
-    seisplotjs.d3.select("span#endtime").text(timeWindow.end.toFormat('yyyy-MM-DD HH:mm')+"Z");
+    document.querySelector("span#channel").textContent = seisArray[0].codes();
     let heliConfig = new seisplotjs.helicorder.HelicorderConfig(timeWindow);
 
     heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
     let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
     seisData.addMarkers([ { markertype: 'predicted', name: "now", time: seisplotjs.luxon.DateTime.utc() } ]);
-    let helicorder = new seisplotjs.helicorder.Helicorder("div#helicorder",
-                                  heliConfig,
-                                  seisData);
+    let helicorder = new seisplotjs.helicorder.Helicorder(seisData, heliConfig);
+    document.querySelector("div#helicorder").append(helicorder);
     helicorder.draw();
   }).catch( function(error) {
-    seisplotjs.d3.select("div#helicorder").append('p').html("Error loading data." +error);
+    const p = document.createElement('p');
+    document.querySelector("div#helicorder").appendChild(p)
+    p.textContent = "Error loading data." +error;
     console.assert(false, error);
   });
