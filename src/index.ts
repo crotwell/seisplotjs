@@ -43,6 +43,7 @@ import * as seismogramloader from "./seismogramloader";
 import * as seismogramsegment from "./seismogramsegment";
 import * as seismograph from "./seismograph";
 import * as seismographconfig from "./seismographconfig";
+import * as seismographconfigeditor from "./seismographconfigeditor";
 import * as sorting from './sorting';
 import * as stationxml from "./stationxml";
 import * as taper from "./taper";
@@ -97,6 +98,7 @@ export {
   seismogramsegment,
   seismograph,
   seismographconfig,
+  seismographconfigeditor,
   sorting,
   spectraplot,
   stationxml,
