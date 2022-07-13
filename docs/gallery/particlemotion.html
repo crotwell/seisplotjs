@@ -48,7 +48,7 @@
     seisC.seismogram.stationCode = "STA";
     seisC.seismogram.locationCode = "00";
     seisC.seismogram.channelCode = "BHE";
-    const seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+    const seisConfig = seisplotjs.particlemotion.createParticleMotionConfig();
     console.log(`manual seisconfig: ${seisConfig.configId}`)
     const seismographList = (document.querySelectorAll(seisplotjs.particlemotion.PARTICLE_MOTION_ELEMENT));
     seismographList[0].xSeisData = seis;
