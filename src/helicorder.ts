@@ -8,7 +8,7 @@ import {SeismogramDisplayData} from "./seismogram";
 import {Seismograph, COLOR_CSS_ID} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {SeisPlotElement} from "./spelement";
-import { isDef} from "./util";
+import { isDef, createSVGElement} from "./util";
 
 export const HELICORDER_ELEMENT = 'sp-helicorder';
 
@@ -41,10 +41,6 @@ export class Helicorder extends SeisPlotElement {
     wrapper.setAttribute("class", "wrapper");
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = helicorder_css;
-    const lineColorsStyle = shadow.appendChild(document.createElement('style'));
-    const lineColorsCSS = heliConfig.createCSSForLineColors();
-    lineColorsStyle.setAttribute("id", COLOR_CSS_ID);
-    lineColorsStyle.textContent = lineColorsCSS;
     shadow.appendChild(wrapper);
   }
   get heliConfig(): HelicorderConfig {
@@ -94,7 +90,8 @@ export class Helicorder extends SeisPlotElement {
             const mean = cutSeis.mean();
             const posOffset = max - mean;
             const negOffset = mean - min;
-            maxVariation = Math.max(posOffset, negOffset);
+            const mul_percent = 1.01;
+            maxVariation = Math.max(mul_percent*posOffset, mul_percent*negOffset);
           }
         } else {
           maxVariation = this.heliConfig.maxVariation;
@@ -155,7 +152,6 @@ export class Helicorder extends SeisPlotElement {
           lineNumber % this.heliConfig.lineColors.length
         ],
       ];
-      //      [ seisDiv.style("color")];
       let lineCutSeis = null;
       let lineSeisData;
       let lineMean = 0;
@@ -191,20 +187,25 @@ export class Helicorder extends SeisPlotElement {
       seismograph.svg.classed(HELICORDER_SELECTOR, true);
       seismograph.setAttribute("class", "heliLine");
       seismograph.setAttribute("style", `height: ${height}px;margin-top: ${marginTop}px`);
-      wrapper.appendChild(seismograph);
+      const seismographWrapper = (seismograph.shadowRoot?.querySelector('div') as HTMLDivElement);
+      const styleEl= document.createElement('style');
+      const helicss = seismograph.shadowRoot.insertBefore(styleEl, seismographWrapper);
+      helicss.textContent = `
+      .yLabel text {
+        font-size: x-small;
+        fill: ${lineSeisConfig.lineColors[0]};
+      }
+      `;
 
+      wrapper.appendChild(seismograph);
       if (lineNumber === 0) {
         // add UTC to top left
-        seismograph.svg
-          .append("g")
-          .classed("yLabel", true)
-          .classed("utcLabel", true)
-          .append("text")
-          .attr("x", 0)
-          .attr("y", 0)
-          .attr("text-anchor", "start")
-          .attr("dy", ".75em")
-          .text("UTC");
+        const utcDiv = document.createElement('div');
+        utcDiv.setAttribute("style", "position: relative");
+        const textEl = utcDiv.appendChild(document.createElement('text'));
+        textEl.textContent = "UTC";
+        textEl.setAttribute("style", `font-size: x-small;position: absolute; left: 0px; top: ${lineSeisConfig.margin.top}px;`);
+        seismographWrapper.insertBefore(utcDiv, seismographWrapper.lastChild);
       }
 
       startTime = endTime;
@@ -321,45 +322,13 @@ export class HeliTimeRange {
 
 /** default styling for helicorder plots. */
 export const helicorder_css = `
-
-div.helicorder {
+:host {
+  display: block;
+  min-height: 200px;
   height: 100%;
-  width: 100%;
 }
-
-div.helicorder div.heliLine .yLabel text {
-  font-size: smaller;
-}
-
-div.helicorder div.heliLine:nth-child(3n+1) {
-  color: skyblue;
-}
-div.helicorder div.heliLine:nth-child(3n+1) path.seispath {
-  stroke: skyblue;
-}
-div.helicorder div.heliLine:nth-child(3n+2) {
-  color: olivedrab;
-}
-div.helicorder div.heliLine:nth-child(3n+2) path.seispath {
-  stroke: olivedrab;
-}
-div.helicorder div.heliLine:nth-child(3n) {
-  color: goldenrod;
-}
-div.helicorder div.heliLine:nth-child(3n) path.seispath {
-  stroke: goldenrod;
-}
-div.helicorder div.heliLine:nth-child(3n+1) .yLabel text {
-  fill: skyblue;
-}
-div.helicorder div.heliLine:nth-child(3n+2) .yLabel text {
-  fill: olivedrab;
-}
-div.helicorder div.heliLine:nth-child(3n) .yLabel text {
-  fill: goldenrod;
-}
-
 `;
+
 export const HELICORDER_SELECTOR = "helicorder";
 export const HELI_COLOR_CSS_ID = "helicordercolors";
 
