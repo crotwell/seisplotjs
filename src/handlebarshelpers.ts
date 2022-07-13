@@ -74,15 +74,16 @@ export function registerHelpers() {
   );
   Handlebars.registerHelper("formatIsoDate", function (param: DateTime, hash: Record<string, any>) {
     if (typeof param === "undefined" || param === null) return "no time";
-    const defaultFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    const format = hash.format === undefined ? defaultFormat : hash.format;
     let m = param;
 
     if (!DateTime.isDateTime(param)) {
       m = checkStringOrDate(param);
     }
-
-    return m.toFormat(format);
+    if (hash.format) {
+      return m.toFormat(hash.format);
+    } else {
+      return m.toISO();
+    }
   });
   Handlebars.registerHelper("formatDuration", function (param: Duration | Interval) {
     if (typeof param === "undefined" || param === null) return "no time";
