@@ -53,7 +53,7 @@ export class Helicorder extends SeisPlotElement {
    * draws, or redraws, the helicorder.
    */
   draw() {
-    this.heliConfig.lineSeisConfig.doRMean = this.heliConfig.doRMean;
+    this.heliConfig.lineSeisConfig.centeredAmp = this.heliConfig.centeredAmp;
     this.drawSeismograms();
   }
 
@@ -154,12 +154,12 @@ export class Helicorder extends SeisPlotElement {
       ];
       let lineCutSeis = null;
       let lineSeisData;
-      let lineMean = 0;
+      let lineMiddle = 0;
 
       if (singleSeisData.seismogram) {
         lineCutSeis = singleSeisData.seismogram.cut(lineInterval);
         lineSeisData = singleSeisData.cloneWithNewSeismogram(lineCutSeis);
-        lineMean = lineSeisData.mean;
+        lineMiddle = lineSeisData.middle;
       } else {
         // no data in window, but keep seisData in case of markers, etc
         lineSeisData = singleSeisData.clone();
@@ -170,15 +170,15 @@ export class Helicorder extends SeisPlotElement {
       if (this.heliConfig.fixedAmplitudeScale) {
         lineSeisConfig.fixedAmplitudeScale = this.heliConfig.fixedAmplitudeScale;
       } else {
-        if (this.heliConfig.doRMean) {
+        if (this.heliConfig.centeredAmp) {
           lineSeisConfig.fixedAmplitudeScale = [
-            lineMean - maxVariation,
-            lineMean + maxVariation,
+            lineMiddle - maxVariation,
+            lineMiddle + maxVariation,
           ];
         } else {
           lineSeisConfig.fixedAmplitudeScale = [
-            lineMean - maxVariation,
-            lineMean + maxVariation,
+            lineMiddle - maxVariation,
+            lineMiddle + maxVariation,
           ];
         }
       }
@@ -292,7 +292,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.margin.left = 37;
     this.lineSeisConfig.margin.right = 37;
     this.lineSeisConfig.wheelZoom = false;
-    this.lineSeisConfig.doRMean = true;
+    this.lineSeisConfig.centeredAmp = true;
   }
   static fromSeismographConfig(seisConfig: SeismographConfig): HelicorderConfig {
     if (! seisConfig.fixedTimeScale) {

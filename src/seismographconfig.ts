@@ -104,7 +104,7 @@ export class SeismographConfig {
   lineColors: Array<string>;
   lineWidth: number;
   wheelZoom: boolean;
-  doRMean: boolean;
+  centeredAmp: boolean;
   doGain: boolean;
   windowAmp: boolean;
   /** @private */
@@ -149,7 +149,7 @@ export class SeismographConfig {
     this._ySublabelHandlebarsCompiled = null;
     this.ySublabelTrans = 15;
     this.ySublabelIsUnits = true;
-    this.doRMean = true;
+    this.centeredAmp = true;
     this.doGain = true;
     this.windowAmp = true;
     this._fixedAmplitudeScale = null;

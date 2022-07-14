@@ -118,7 +118,7 @@ export function createEditor(
   createBooleanOptionByKey(
     yLabelDivB.append("span"),
     "From Mid",
-    "doRMean",
+    "centeredAmp",
     config,
     onChange,
   );

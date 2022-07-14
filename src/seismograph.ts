@@ -639,18 +639,19 @@ export class Seismograph extends SeisPlotElement {
       ampScale.range([this.height, 0]);
       if (this.seismographConfig.linkedAmplitudeScale) {
         const halfWidth = this.amp_scalable.drawHalfWidth;
-        let gainOffset = 0;
-        if (this.seismographConfig.doRMean) {
-          gainOffset = sdd.mean;
+        let middle = this.amp_scalable.drawMiddle;
+        if (this.seismographConfig.centeredAmp) {
+          middle = sdd.middle;
         }
+
         let sensitivityVal = 1;
         if (this.seismographConfig.doGain && sdd.sensitivity?.sensitivity) {
           sensitivityVal = sdd.sensitivity.sensitivity;
         }
         // if doGain, halfWidth is in real world units, so mul sensitivity to
         // get counts for drawing
-        const myMin = gainOffset - halfWidth*sensitivityVal;
-        const myMax = gainOffset + halfWidth*sensitivityVal;
+        const myMin = (middle - halfWidth)*sensitivityVal;
+        const myMax = (middle + halfWidth)*sensitivityVal;
         ampScale.domain([myMin, myMax]);
       } else if (this.seismographConfig.fixedAmplitudeScale) {
         ampScale.domain(this.seismographConfig.fixedAmplitudeScale);
@@ -823,7 +824,7 @@ export class Seismograph extends SeisPlotElement {
       ampAxisScale.domain(this.seismographConfig.fixedAmplitudeScale);
     } else if (this.seismographConfig.linkedAmplitudeScale) {
       let middle = this.amp_scalable.drawMiddle;
-      if (this.seismographConfig.doRMean) {
+      if (this.seismographConfig.centeredAmp) {
         middle = 0;
       }
       ampAxisScale.domain([ middle - this.amp_scalable.drawHalfWidth,
@@ -1414,17 +1415,22 @@ export class Seismograph extends SeisPlotElement {
             this._seisDataList,
             this.seismographConfig.linkedTimeScale.offset,
             this.seismographConfig.linkedTimeScale.duration,
-            this.seismographConfig.doGain
+            this.seismographConfig.doGain,
+            this.seismographConfig.centeredAmp
           );
         } else if (isDef(this.seismographConfig.fixedTimeScale)) {
           minMax = findMinMaxOverTimeRange(this._seisDataList,
             this.seismographConfig.fixedTimeScale,
-            this.seismographConfig.doGain);
+            this.seismographConfig.doGain,
+            this.seismographConfig.centeredAmp);
         } else {
           throw new Error("neither fixed nor linked time scale");
         }
       } else {
-        minMax = findMinMax(this._seisDataList);
+
+        minMax = findMinMax(this._seisDataList,
+          this.seismographConfig.doGain,
+          this.seismographConfig.centeredAmp);
       }
 
       if (minMax[0] === minMax[1]) {
@@ -1532,7 +1538,7 @@ export class Seismograph extends SeisPlotElement {
       }
     }
 
-    if (this.seismographConfig.ySublabelIsUnits && this.seismographConfig.doRMean) {
+    if (this.seismographConfig.ySublabelIsUnits && this.seismographConfig.centeredAmp) {
       this.seismographConfig.ySublabel = `centered ${this.seismographConfig.ySublabel}`;
     }
 

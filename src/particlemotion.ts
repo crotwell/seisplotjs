@@ -196,7 +196,7 @@ export class ParticleMotion extends SeisPlotElement {
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.yScaleRmean = d3.scaleLinear();
 
-    if (this.seismographConfig.doRMean) {
+    if (this.seismographConfig.centeredAmp) {
       this.xAxis = d3
         .axisBottom(this.xScaleRmean)
         .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
