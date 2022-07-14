@@ -650,8 +650,8 @@ export class Seismograph extends SeisPlotElement {
         }
         // if doGain, halfWidth is in real world units, so mul sensitivity to
         // get counts for drawing
-        const myMin = (middle - halfWidth)*sensitivityVal;
-        const myMax = (middle + halfWidth)*sensitivityVal;
+        const myMin = middle - halfWidth*sensitivityVal;
+        const myMax = middle + halfWidth*sensitivityVal;
         ampScale.domain([myMin, myMax]);
       } else if (this.seismographConfig.fixedAmplitudeScale) {
         ampScale.domain(this.seismographConfig.fixedAmplitudeScale);
