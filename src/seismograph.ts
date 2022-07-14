@@ -282,15 +282,7 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .classed("allseismograms", true)
       .classed(AUTO_COLOR_SELECTOR, true);
-    const z = this.svg.call(
-      d3.zoom().on("zoom", function (e) {
-        mythis.zoomed(e);
-      }),
-    );
-
-    if (!this.seismographConfig.wheelZoom) {
-      z.on("wheel.zoom", null);
-    }
+    this.enableZoom();
 
     // create marker g
     this.g
@@ -331,15 +323,7 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
-    const mythis = this;
-    const z = this.svg.call(
-      d3.zoom().on("zoom", function (e) {
-        mythis.zoomed(e);
-      }),
-    );
-    if (!this.seismographConfig.wheelZoom) {
-      z.on("wheel.zoom", null);
-    }
+    this.enableZoom();
 
     this.redraw();
   }
@@ -368,6 +352,18 @@ export class Seismograph extends SeisPlotElement {
     }
 
     return false;
+  }
+  enableZoom(): void {
+    const mythis = this;
+    const z = this.svg.call(
+      d3.zoom().on("zoom", function (e) {
+        mythis.zoomed(e);
+      }),
+    );
+
+    if (!this.seismographConfig.wheelZoom) {
+      z.on("wheel.zoom", null);
+    }
   }
 
   redraw(): void {
