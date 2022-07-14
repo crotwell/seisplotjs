@@ -21,6 +21,9 @@ export class AmplitudeScalable {
   notifyAmplitudeChange(middle: number, halfWidth: number) {
     // no-op
   }
+  toString(): string {
+    return `mid: ${this.middle} hw: ${this.halfWidth}`;
+  }
 }
 export class TimeScalable {
   alignmentTimeOffset: Duration;
