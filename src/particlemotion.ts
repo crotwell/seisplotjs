@@ -465,10 +465,18 @@ export class ParticleMotion extends SeisPlotElement {
 
     const xNiceMinMax = this.xScale.domain();
     const xHalfNice = (xNiceMinMax[1] - xNiceMinMax[0]) / 2;
-    this.xScaleRmean.domain([-1 * xHalfNice, xHalfNice]);
+    if (this.seismographConfig.centeredAmp) {
+      this.xScaleRmean.domain([-1 * xHalfNice, xHalfNice]);
+    } else {
+      this.xScaleRmean.domain(this.xScale.domain());
+    }
     const yNiceMinMax = this.yScale.domain();
     const yHalfNice = (yNiceMinMax[1] - yNiceMinMax[0]) / 2;
-    this.yScaleRmean.domain([-1 * yHalfNice, yHalfNice]);
+    if (this.seismographConfig.centeredAmp) {
+      this.yScaleRmean.domain([-1 * yHalfNice, yHalfNice]);
+    } else {
+      this.yScaleRmean.domain(this.yScale.domain());
+    }
     this.rescaleAxis();
   }
 
