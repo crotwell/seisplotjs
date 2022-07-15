@@ -117,8 +117,8 @@ export function createParticleMotionConfig(
   seisConfig.yLabel = DEFAULT_YLABEL;
   seisConfig.xSublabelIsUnits = true;
   seisConfig.ySublabelIsUnits = true;
-  seisConfig.margin.top = 40;
-  seisConfig.margin.bottom = 40;
+  seisConfig.margin.top = 20;
+  seisConfig.margin.bottom = 45;
   seisConfig.margin.right = 40;
   seisConfig.margin.left = 40;
   return seisConfig;
