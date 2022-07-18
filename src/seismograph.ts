@@ -1107,7 +1107,7 @@ export class Seismograph extends SeisPlotElement {
         }, new Array<MarkerHolderType>(0))
         .filter(mh => {
           const xpixel = mh.xscale(mh.marker.time.toJSDate());
-          return xpixel < mh.xscale.range()[0] || xpixel > mh.xscale.range()[1];
+          return xpixel >= mh.xscale.range()[0] && xpixel <= mh.xscale.range()[1];
         });
 
       if (undrawnMarkers.length !== 0) {
