@@ -1075,23 +1075,7 @@ export class Seismograph extends SeisPlotElement {
             ")"
           );
         });
-      this.g
-        .select("g.allmarkers")
-        .selectAll("path.markerpath")
-        .attr("d", () => {
-          return d3
-            .line()
-            .x(function () {
-              return 0; // g is translated so marker time is zero
-            })
-            .y(function (d, i) {
-              return i === 0 ? 0 : axisScale.range()[0];
-            })
-            .curve(d3.curveLinear)([ [
-              axisScale.domain()[0],
-              axisScale.domain()[1],
-          ] ]); // call the d3 function created by line with data
-        });
+
       const undrawnMarkers = this._seisDataList
         .reduce((acc, sdd) => {
           const sddXScale = this.timeScaleForSeisDisplayData(sdd);
