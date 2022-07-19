@@ -1,12 +1,12 @@
-/*global seisplotjs */
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
 
-function loadTestDatasetEmpty() { //: Promise<Dataset>
+export function loadTestDatasetEmpty() { //: Promise<Dataset>
   return Promise.resolve(new seisplotjs.dataset.Dataset());
 }
-function loadTestDataset() { //: Promise<Dataset>
+export function loadTestDataset() { //: Promise<Dataset>
   let dataset;
-  const load_from = "file";
+  const load_from = "iris";
   if (load_from === "empty") {
     dataset = loadTestDatasetEmpty();
   } else if (load_from === "iris") {
@@ -16,7 +16,7 @@ function loadTestDataset() { //: Promise<Dataset>
   }
   return dataset;
 }
-function loadTestDatasetFile() { //: Promise<Dataset>
+export function loadTestDatasetFile() { //: Promise<Dataset>
   return seisplotjs.dataset.load('dataset.zip')
   .then((ds) => {
     return ds;
@@ -24,11 +24,11 @@ function loadTestDatasetFile() { //: Promise<Dataset>
 
 }
 function loadTestDatasetIRIS() { //: Promise<Dataset>
-  const START = seisplotjs.moment.utc("2021-12-27");
-  const END = seisplotjs.moment.utc("2021-12-28");
+  const START = seisplotjs.util.isoToDateTime("2021-12-27");
+  const END = seisplotjs.util.isoToDateTime("2021-12-28");
   const NET = 'CO';
   const STA = 'BIRD,JSC';
-  const CHAN = 'HHZ';
+  const CHAN = 'HH?,HN?';
   let eventQuery = new seisplotjs.fdsnevent.EventQuery()
   .startTime(START)
   .endTime(END)
@@ -44,7 +44,7 @@ function loadTestDatasetIRIS() { //: Promise<Dataset>
   return seisplotjs.dataset.Dataset.fromSeismogramLoader(loader);
 }
 
-class EQView {
+export class EQView {
   constructor(dataset, cssSelector="#myseismograph") {
     this.dataset = dataset ? dataset : new seisplotjs.dataset.DataSet();
     this.processedData = dataset.waveforms;
@@ -196,26 +196,31 @@ class EQView {
 
   replot() {
     let filteredSeis = this.processedData.filter(sd => this.seisChanQuakeFilter(sd));
-
+console.log(`filtered ${filteredSeis.length}`)
     let organizetype = this.organizetype;
     if (this.plottype === "map" || this.plottype === "info") {
       // rarely useful to have individual maps per seismogram
       organizetype = "all";
     }
-    let organizedSeis = this.organizePlotting(organizetype, this.plottype, this.dataset, filteredSeis);
+    let sortedSeis = seisplotjs.sorting.sort(filteredSeis, this.sorttype);
+    let organizedSeis = this.organizePlotting(organizetype, this.plottype, this.dataset, sortedSeis);
 
-    organizedSeis = this.sortForPlotting(this.sorttype, organizedSeis);
     this.plotDiv.selectAll('*').remove();
-    seisplotjs.displayorganize.createPlots(organizedSeis, this.plotDiv);
+    organizedSeis.forEach(org => {
+      this.plotDiv.node().appendChild(org);
+    });
     for(let os of organizedSeis) {
       if (seisplotjs.util.isDef(os.seismograph)) {
         const graph = os.seismograph;
         const canvasNode = graph.svg.select('foreignObject canvas').node();
         canvasNode.addEventListener('mousemove', evt => {
-          let clickTime = graph.xAxis.scale().invert(evt.offsetX);
-          clickTime = seisplotjs.moment.utc(clickTime);
-          seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
-          let clickAmp = graph.yAxis.scale().invert(evt.offsetY);
+          let xAxisScale = graph.timeScaleForAxis();
+          let clickTime = xAxisScale.invert(evt.offsetX);
+          console.log(`clickTime: ${clickTime}  ${typeof clickTime}`);
+          clickTime = seisplotjs.luxon.DateTime.fromJSDate(clickTime, seisplotjs.util.UTC_OPTIONS);
+          seisplotjs.d3.select('input#mousex').property('value', clickTime.toISO());
+          let ampAxisScale = graph.ampScaleForAxis();
+          let clickAmp = ampAxisScale.invert(evt.offsetY);
           seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
         });
       }
@@ -269,18 +274,6 @@ class EQView {
     this.updateProcessDisplay(this.processChain);
   }
 
-  sortForPlotting(sorttype, organizedSeis) {
-    let out = organizedSeis;
-    if (sorttype === "none") {
-      out = organizedSeis;
-    } else if (sorttype === "bydistance") {
-      out = seisplotjs.displayorganize.sortDistance(organizedSeis);
-    } else {
-      this.showErrorMessage("Sorting not yet implemented: "+sorttype);
-    }
-    return out;
-  }
-
   organizePlotting(organizetype, plottype, dataset, seisDataList) {
     let organizedData = [];
     if ( ! seisDataList || seisDataList.length === 0) {
@@ -306,10 +299,10 @@ class EQView {
     let seisConfig = this.defaultSeismographConfig.clone();
     seisConfig.doGain = seisplotjs.d3.select("input#doGain").property("checked");
     if (seisplotjs.d3.select("input#linkx").property("checked")) {
-      seisConfig.linkedTimeScale = new seisplotjs.seismographconfig.LinkedTimeScale();
+      seisConfig.linkedTimeScale = new seisplotjs.scale.LinkedTimeScale();
     }
     if (seisplotjs.d3.select("input#linky").property("checked")) {
-      seisConfig.linkedAmplitudeScale = new seisplotjs.seismographconfig.LinkedAmpScale();
+      seisConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
     }
     if (plottype === seisplotjs.displayorganize.PARTICLE_MOTION) {
       let pmpSeisConfig = seisConfig.clone();
@@ -482,8 +475,11 @@ class EQView {
 
   quakeFilter(sdd) {
     let idPrefix = "quake";
+    console.log(`quakeFileter: ${sdd.quakeList.length}`);
     return sdd.quakeList.reduce((acc, cur) => {
-      let inputEl = document.querySelector(`div#${idPrefix}_checkbox input#${idPrefix}_${cur.eventId}`);
+      let sel = `div#${idPrefix}_checkbox input#${idPrefix}_${cur.eventId}`;
+      let inputEl = document.querySelector(sel);
+      console.log(`${sel} ${inputEl.checked}`)
       return acc || inputEl.checked;
     }, false);
 

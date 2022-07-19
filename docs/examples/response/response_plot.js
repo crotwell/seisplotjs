@@ -1,4 +1,6 @@
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
+import {parse_sis_xml} from './response_parse.js';
 
 const doLogLog = true;
 let pad_size = 1024*1/16;
@@ -26,7 +28,7 @@ document.querySelector("#showphase").addEventListener('change', event => {
 
 function clear_all() {
   clear_plots();
-  const chanChooser = document.querySelector("channel-list-chooser");
+  const chanChooser = document.querySelector("sp-channellist");
   chanChooser.setChannels([]);
 }
 function clear_plots() {
@@ -42,7 +44,7 @@ function clear_plots() {
 
 function load_fdsn() {
   clear_all();
-  let chan_chooser = document.querySelector("channel-code-input");
+  let chan_chooser = document.querySelector("sp-channel-code-input");
   let sta = chan_chooser.station;
   // here grab a channel response from IRIS DMC and plot stages
   let queryTimeWindow = new seisplotjs.util.StartEndDuration('now', 'now');
@@ -64,7 +66,7 @@ function load_fdsn() {
       console.log(`No response: ${firstChan.channelCode}`);
       seisplotjs.d3.select("div.stageplot").append("p").text(`No response: ${firstChan.channelCode}`);
     }
-    const chanChooser = document.querySelector("channel-list-chooser");
+    const chanChooser = document.querySelector("sp-channellist");
     chanChooser.setCallback(c => process_stages(c.response.stages));
     chanChooser.setChannels(Array.from(seisplotjs.stationxml.allChannels(networkList)));
     chanChooser.setAttribute('channel',"a");
@@ -168,8 +170,8 @@ function process_stages(stages) {
           stage.filter.numerator.length > 0) ) {
       let coeff = calc_stage_coeff(stage);
       let impulseResponse = seisplotjs.fft.FFTResult.createFromPackedFreq(seisplotjs.fft.calcDFT(coeff.reverse()), coeff.length, stage.decimation.inputSampleRate);
-      plot_from_packed_freq(div, stage, idx, impulseResponse);
-      plot_impulse(div, stage, idx, coeff);
+      plot_from_packed_freq(div.node(), stage, idx, impulseResponse);
+      plot_impulse(div.node(), stage, idx, coeff);
       all_resp.push(impulseResponse);
     } else if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros &&
       stage.filter.pzTransferFunctionType === "LAPLACE (RADIANS/SECOND)") {
@@ -180,11 +182,11 @@ function process_stages(stages) {
 
       const num = pad_size;
       let freqs = seisplotjs.sacPoleZero.logspace(min_exp, max_exp, num);
-      let freqAmp= new seisplotjs.fftplot.FreqAmp(freqs, sacPoleZero.calcForDisplay(freqs));
+      let freqAmp= new seisplotjs.spectraplot.FreqAmp(freqs, sacPoleZero.calcForDisplay(freqs));
 
       //let impulseResponse = seisplotjs.transfer.calcResponseFromSacPoleZero(sacPoleZero, numPoints, 2*first_sps);
 
-      plot_from_packed_freq(div, stage, idx, freqAmp);
+      plot_from_packed_freq(div.node(), stage, idx, freqAmp);
       all_resp.push(freqAmp);
     } else {
       let div = seisplotjs.d3.select("div.stageplot").append("div");
@@ -261,8 +263,8 @@ function plot_from_packed_freq(div, stage, idx, impulseResponseList) {
   }
   let impulseResponse = impulseResponseList[0];
   impulseResponse.inputUnits = stage.filter.inputUnits;
-  let ampdiv = div.append("div");
-  ampdiv.classed("stage", true);
+  let ampdiv = div.appendChild(document.createElement("div"));
+  ampdiv.setAttribute("class", "stage");
   const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
   let title;
   if (stage.filter && stage.filter instanceof seisplotjs.stationxml.PolesZeros) {
@@ -278,23 +280,28 @@ function plot_from_packed_freq(div, stage, idx, impulseResponseList) {
   plotConfig.ySublabelIsUnits = true;
   plotConfig.xLabel = "Frequency";
   plotConfig.xSublabel = "Hz";
-  const fftAmpPlot = new seisplotjs.fftplot.FFTPlot(ampdiv, plotConfig, impulseResponseList, doLogLog);
-  fftAmpPlot.draw();
+
+  const fftAmpPlot = new seisplotjs.spectraplot.SpectraPlot(impulseResponseList, plotConfig);
+  fftAmpPlot.logfreq = doLogLog;
+  ampdiv.appendChild(fftAmpPlot);
   let phaseCB = document.querySelector("#showphase");
   if (phaseCB.value) {
-    let phasediv = div.append("div");
-    phasediv.classed("stage", true);
+
+    let phasediv = div.appendChild(document.createElement("div"));
+    phasediv.setAttribute("class", "stage");
     const phasePlotConfig = plotConfig.clone();
     phasePlotConfig.title=`Phase Stage ${idx+1}`;
-    const fftPhasePlot = new seisplotjs.fftplot.FFTPlot(phasediv, phasePlotConfig, [impulseResponse], doLogLog, false, true);
-    fftPhasePlot.draw();
+    const fftPhasePlot = new seisplotjs.spectraplot.SpectraPlot(impulseResponseList, plotConfig);
+    fftPhasePlot.logfreq = doLogLog;
+    fftPhasePlot.kind = "phase";
+    phasediv.appendChild(fftPhasePlot);
   }
   return fftAmpPlot;
 }
 
 function plot_impulse(div, stage, idx, coeff) {
-  let plotdiv = div.append("div");
-  plotdiv.classed("stage", true);
+  let plotdiv = div.appendChild(document.createElement("div"));
+  plotdiv.setAttribute("class", "stage");
   let sampleRate = 1;
   let start = seisplotjs.util.isoToDateTime('2000-01-01T00:00:00Z');
   if (stage.decimation) {
@@ -308,19 +315,22 @@ function plot_impulse(div, stage, idx, coeff) {
   seisConfig.doRMean = false;
   seisConfig.wheelZoom = false;
   let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(impulseSeis);
-  let graph = new seisplotjs.seismograph.Seismograph(plotdiv, seisConfig, seisData);
-  graph.draw();
+  let graph = new seisplotjs.seismograph.Seismograph([seisData], seisConfig);
+  plotdiv.appendChild(graph);
 }
 
 
 function overlay_plot_from_coefficients(all_resp, in_samp_rate) {
   const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
   plotConfig.title=`Overlay Stages, in sps: ${in_samp_rate}`;
-  let div = seisplotjs.d3.select("div.overlayplot").append("div");
-  div.classed("stage", true);
-  div.append("p").text(`Overlay Stages`);
-  const fftRatioPlot = new seisplotjs.fftplot.FFTPlot(div, plotConfig, all_resp, doLogLog);
-  fftRatioPlot.draw();
+  let div = document.querySelector("div.overlayplot").appendChild(document.createElement("div"));
+  div.setAttribute("class", "stage");
+  let div_p = div.appendChild(document.createElement("p"));
+  div_p.textContent =`Overlay Stages`;
+
+  const fftRatioPlot = new seisplotjs.spectraplot.SpectraPlot(all_resp, plotConfig);
+  fftRatioPlot.logfreq = doLogLog;
+  div.appendChild(fftRatioPlot);
 }
 
 function stage_details(stage, idx) {

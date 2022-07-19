@@ -22,15 +22,15 @@
     </div>
     <div>
       <label>IRIS NRL Url:</label>
-      <input type="text" id="nrl_url" name="nrl_url" value="http://service.iris.edu/iriswsbeta/nrl/1/combine?instconfig=sensor_CEADASE_CPHM-500_LP1_PG8_SG2250_STgroundVel%3Adatalogger_EQMet_SMA_PG1_FR50&format=stationxml-resp&nodata=404"></input>
+      <input type="text" id="nrl_url" name="nrl_url" value="http://service.iris.edu/irisws/nrl/1/combine?instconfig=sensor_CEADASE_CPHM-500_LP1_PG8_SG2250_STgroundVel%3Adatalogger_EQMet_SMA_FR50&format=stationxml-resp&nodata=404"></input>
       <button id="nrl_load">Load</button>
     </div>
     <div>
       <label>FDSN StationXML from IRIS:</label>
-      <channel-code-input></channel-code-input>
+      <sp-channel-code-input></sp-channel-code-input>
       <button id="stationxml_load">Load</button>
     </div>
-    <channel-list-chooser></channel-list-chooser>
+    <sp-channellist></sp-channellist>
     <div>
     <button id="clear">Clear</button>
     <input id="showphase" type="checkbox">Phase</input>
@@ -56,8 +56,6 @@
 
     <h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
 
-<script src="seisplotjs_3.0.0-alpha.0_standalone.js"></script>
-<script src="response_parse.js"></script>
-<script src="response_plot.js"></script>
+    <script type="module" src="response_plot.js"></script>
   </body>
 </html>

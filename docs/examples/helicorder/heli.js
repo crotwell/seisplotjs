@@ -199,7 +199,7 @@ const chooserStart = chooserEnd.minus(luxon.Duration.fromISO(state.duration));
 let throttleRedisplay = null;
 let throttleRedisplayDelay = 500;
 
-let dateChooser = document.querySelector("date-time-chooser");
+let dateChooser = document.querySelector("sp-datetime");
 dateChooser.time = chooserStart;
 dateChooser.updateCallback = time => {
   if (throttleRedisplay) {

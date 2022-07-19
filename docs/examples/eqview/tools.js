@@ -1,9 +1,9 @@
-/*global seisplotjs */
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
 
-function createTools(viewObspy) {
+export function createTools(viewObspy) {
   seisplotjs.d3.select("div.seisConfig").selectAll("*").remove();
-  seisplotjs.seismographconfig.createEditor(seisplotjs.d3.select("div.seisConfig"),
+  seisplotjs.seismographconfigeditor.createEditor(seisplotjs.d3.select("div.seisConfig"),
                                             viewObspy.defaultSeismographConfig,
                                             () => {viewObspy.replot();});
 
@@ -71,15 +71,23 @@ function createTools(viewObspy) {
     viewObspy.replot();
   });
   seisplotjs.d3.select("input#radio_sort_bydistance").on("change", () => {
-    viewObspy.sorttype = "bydistance";
+    viewObspy.sorttype = "distance";
     viewObspy.replot();
   });
   seisplotjs.d3.select("input#radio_sort_bybackazimuth").on("change", () => {
-    viewObspy.sorttype = "bybackazimuth";
+    viewObspy.sorttype = "backazimuth";
     viewObspy.replot();
   });
   seisplotjs.d3.select("input#radio_sort_byazimuth").on("change", () => {
-    viewObspy.sorttype = "byazimuth";
+    viewObspy.sorttype = "azimuth";
+    viewObspy.replot();
+  });
+  seisplotjs.d3.select("input#radio_sort_bystarttime").on("change", () => {
+    viewObspy.sorttype = "starttime";
+    viewObspy.replot();
+  });
+  seisplotjs.d3.select("input#radio_sort_byorigintime").on("change", () => {
+    viewObspy.sorttype = "origintime";
     viewObspy.replot();
   });
 

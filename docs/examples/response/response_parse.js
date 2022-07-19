@@ -1,8 +1,9 @@
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
-const SIS_NS = "http://anss-sis.scsn.org/xml/ext-stationxml/3.0";
-const STAML_NS = seisplotjs.stationxml.STAML_NS;
+export const SIS_NS = "http://anss-sis.scsn.org/xml/ext-stationxml/3.0";
+export const STAML_NS = seisplotjs.stationxml.STAML_NS;
 
-function parse_sis_xml(sisxml) {
+export function parse_sis_xml(sisxml) {
   const parser = new DOMParser();
   const dom = parser.parseFromString(sisxml, "application/xml");
   const top = sisxml.documentElement;
