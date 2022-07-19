@@ -105,7 +105,7 @@ export class SeismogramLoader {
     } else if (typeof val === "number") {
       this.startOffsetOfSeconds(val);
     } else {
-      throw new Error("startOffset must be moment Duration: " + stringify(val));
+      throw new Error("startOffset must be luxon Duration or number of seconds: " + stringify(val));
     }
   }
 
@@ -139,7 +139,7 @@ export class SeismogramLoader {
     } else if (typeof val === "number") {
       this.endOffsetOfSeconds(val);
     } else {
-      throw new Error("startOffset must be moment Duration: " + stringify(val));
+      throw new Error("startOffset must be luxon Duration or number of seconds: " + stringify(val));
     }
   }
 
