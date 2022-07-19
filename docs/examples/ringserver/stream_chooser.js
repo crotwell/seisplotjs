@@ -30,7 +30,7 @@ class StreamListChooser extends HTMLElement {
         }
       });
       const nlabel = div.appendChild(document.createElement('label'));
-      nlabel.textContent = `${c.key} ${c.calcLatency().humanize()}`;
+      nlabel.textContent = `${c.key} ${c.calcLatency().toHuman()}`;
     });
     shadow.appendChild(details);
   }
