@@ -1,14 +1,14 @@
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+import {HOURS_PER_LINE, doPlot, queryEarthquakes, redrawHeli, getNowTime} from './doplot.js';
 
-// this global comes from the seisplotjs_ standalone js
 const d3 = seisplotjs.d3;
 const luxon = seisplotjs.luxon;
 
-const staList = ['BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
+const staList = ['BARN', 'BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
 const locCodeList = ['00', '01'];
 const orientList = ['Z', 'N/1', 'E/2'];
 const bandInstCodeList = [ 'HN', 'HH', 'LH'];
 const DEFAULT_FIXED_AMP = 10000;
-const HOURS_PER_LINE = 2;
 
 // state preserved for browser history
 // also see near bottom where we check if page history has state obj and use that
@@ -33,7 +33,6 @@ let loadAndPlot = function(state) {
 };
 
 let updateAmpRadioButtons = function(currentState) {
-  console.log(`updateAmpRadioButtons:  ${currentState.amp}`)
   d3.select("#amp")
     .select("input#maxAmp").property("checked", "false");
   d3.select("#amp")
@@ -41,20 +40,16 @@ let updateAmpRadioButtons = function(currentState) {
   d3.select("#amp")
     .select("input#percentAmp").property("checked", "false");
   if (currentState) {
-    console.log(`updateAmpRadioButtons: ${currentState.amp}`)
     if (typeof currentState.amp === 'string' && currentState.amp.endsWith('%')) {
-      console.log(`percent`)
       let percent = Number(currentState.amp.substring(0, currentState.amp.length-1));
       d3.select("input#percentAmpSlider").property("value", percent);
       d3.select("#amp")
         .select("input#percentAmp").property("checked", "true");
     } else if (currentState.amp === "max") {
-      console.log(`max`)
       d3.select("#amp")
         .select("input#maxAmp").property("checked", "true");
       currentState.amp = "max";
     } else if ( Number.isFinite(Number(currentState.amp))) {
-      console.log(`fixed`)
       d3.select("#amp")
         .select("input#fixedAmp").property("checked", "true");
       d3.select("#amp")
@@ -63,7 +58,6 @@ let updateAmpRadioButtons = function(currentState) {
         .select("input#fixedAmpText").text(currentState.amp);
     } else {
       // default to max?
-        console.log(`default max`)
         d3.select("#amp")
           .select("input#maxAmp").property("checked", "true");
         currentState.amp = "max";
@@ -188,11 +182,6 @@ let numSteps = 0;
 
 let heli = null;
 
-const getNowTime = function() {
-  let e = luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
-  e.plus({hours: e.hour % HOURS_PER_LINE});
-  return e;
-}
 
 let chooserEnd;
 if ( state.endTime) {
@@ -202,6 +191,7 @@ if ( state.endTime) {
     chooserEnd = seisplotjs.util.isoToDateTime(state.endTime);
   }
 } else {
+  state.endTime = "now";
   chooserEnd = luxon.DateTime.utc();
 }
 const chooserStart = chooserEnd.minus(luxon.Duration.fromISO(state.duration));
@@ -217,7 +207,7 @@ dateChooser.updateCallback = time => {
   }
   throttleRedisplay = window.setTimeout(() => {
     let updatedTime = time.plus(luxon.Duration.fromISO(state.duration));
-    state.endTime = updatedTime;
+    state.endTime = updatedTime.toISO();
     loadAndPlot(state);
   }, throttleRedisplayDelay);
 };
@@ -254,14 +244,14 @@ let staButtonSpan = d3.select("#scsnStations")
   });
 
 d3.select("button#loadNow").on("click", function(d) {
-  state.endTime = getNowTime();
+  state.endTime = getNowTime().toISO();
   console.log(`now ${state.endTime}`);
   updateDateChooser(state);
   loadAndPlot(state);
 });
 
 d3.select("button#loadToday").on("click", function(d) {
-  state.endTime = luxon.DateTime.utc().endOf('day').plus({millisecond: 1});
+  state.endTime = luxon.DateTime.utc().endOf('day').plus({millisecond: 1}).toISO();
   console.log(`today ${state.endTime}`);
   updateDateChooser(state);
   loadAndPlot(state);
@@ -271,8 +261,10 @@ d3.select("button#loadPrev").on("click", function(d) {
   let e = state.endTime;
   if (  !e || e === 'now' ) {
     e = getNowTime();
+  } else {
+    e = luxon.DateTime.fromISO(e).toUTC();
   }
-  state.endTime = luxon.DateTime.utc(e).minus({days: 1});
+  state.endTime = e.minus({days: 1}).toISO();
   console.log(`prev ${state.endTime}`);
   updateDateChooser(state);
   loadAndPlot(state);
@@ -282,8 +274,10 @@ d3.select("button#loadNext").on("click", function(d) {
   let e = state.endTime;
   if ( !e || e === 'now' ) {
     e = getNowTime();
+  } else {
+    e = luxon.DateTime.fromISO(e).toUTC();
   }
-  state.endTime = luxon.DateTime.utc(e).plut({day: 1});
+  state.endTime = e.plus({day: 1}).toISO();
   console.log(`next ${state.endTime}`);
   updateDateChooser(state);
   loadAndPlot(state);
@@ -420,8 +414,8 @@ d3.select("#amp")
   });
 d3.select("#amp")
   .select("input#fixedAmpText")
-  .on("keypress", function() {
-    if(d3.event.keyCode === 13) {
+  .on("keypress", function(e) {
+    if(e.keyCode === 13) {
       // return  is 13
       let value = Number(d3.select("input#fixedAmpText").property("value"));
       handleAmpChange(value);
@@ -491,8 +485,9 @@ let timer = d3.interval(function(elapsed) {
     return;
   }
   nowHour = getNowTime();
-  timeWindow = new seisplotjs.fdsndataselect.StartEndDuration(null, nowHour, duration, clockOffset);
-  console.log("reset time window for "+timeWindow.startTime+" "+timeWindow.endTime );
+  const luxDur = luxon.Duration.fromISO(duration);
+  timeWindow = luxon.Interval.before(nowHour, luxDur);
+  console.log("reset time window for "+timeWindow.start+" "+timeWindow.end );
 
   heli.config.fixedTimeScale = timeWindow;
   heli.draw();
