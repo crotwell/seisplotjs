@@ -10,7 +10,6 @@ import {SeismogramDisplayData } from "./seismogram";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {isDef, isStringArg, stringify} from "./util";
-import * as d3 from "d3";
 import * as querystringify from "querystringify";
 
 export const ORG_DISP_ITEM = 'sp-organized-display-item';
@@ -537,17 +536,9 @@ export function createAttribute(
 }
 export function createPlots(
   organized: Array<OrganizedDisplayItem>,
-  divElement: any,
+  divElement: HTMLElement,
 ) {
-  // arrow function doesn't work well with d3.select(this)
-  divElement
-    .selectAll("div")
-    .data(organized)
-    .enter()
-    .append("div")
-    .each(function (org: any) {
-      // @ts-ignore
-      const div = d3.select(this);
-      org.plot(div);
-    });
+  organized.forEach(org => {
+    divElement.appendChild(org);
+  });
 }

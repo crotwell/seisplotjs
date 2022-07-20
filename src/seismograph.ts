@@ -1055,7 +1055,6 @@ export class Seismograph extends SeisPlotElement {
           const textx = mh.xscale(mh.marker.time.toJSDate());
           return "translate(" + textx + "," + 0 + ")";
         });
-      const axisScale = mythis.ampScaleForAxis();
       this.g
         .select("g.allmarkers")
         .selectAll("g.markertext")

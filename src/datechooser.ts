@@ -425,7 +425,6 @@ export class TimeRangeChooser extends HTMLElement {
       this.start = startTime;
     };
     durationInput.onchange = (e: Event) => {
-      const target = e.target as HTMLInputElement;
       if (! durationInput.value) {
         return;
       }
