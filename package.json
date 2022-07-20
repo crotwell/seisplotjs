@@ -53,7 +53,7 @@
     "bumpversion_version": "replace-in-file 2.1.0-alpha.0 ${npm_package_version} createApiDocs.sh src/index.js docs/index.html docs/tutorial/*.html docs/examples/*.html docs/examples/*/*.html docs/examples/*/*/*.html --verbose ",
     "doingdevelopment": "git update-index --skip-worktree docs/api/*.html",
     "prepublishOnly": "npm run lint && npm run test && npm outdated && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code",
-    "servedocs": "npx http-server ./docs",
+    "servedocs": "npx http-server ./docs -c-1 --cors -a 127.0.0.1",
     "tsc": "tsc --project tsconfig.json"
   },
   "repository": {
