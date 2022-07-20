@@ -579,8 +579,11 @@ export function makePostParam(name: string, val: unknown): string {
  * @returns ISO8601 without timezone Z
  */
 export function toIsoWoZ(date: DateTime): string {
-  const out = date.toISO();
-  return out.substring(0, out.length - 1);
+  let out = date.toISO();
+  if (out.endsWith('Z')) {
+    out = out.substring(0, out.length - 1);
+  }
+  return out;
 }
 
 /**
