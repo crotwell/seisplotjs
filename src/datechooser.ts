@@ -4,8 +4,11 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration, Interval} from "luxon";
-import {StartEndDuration, isoToDateTime, isDef} from "./util";
+import {isoToDateTime, isDef} from "./util";
 
+export const HOURMIN_ELEMENT = 'sp-hourmin';
+export const DATETIME_ELEMENT = 'sp-datetime';
+export const TIMERANGE_ELEMENT = 'sp-timerange';
 
 export const hourMinRegEx = /^([0-1]?[0-9]):([0-5]?[0-9])$/;
 export const HOUR_MIN_24 = "HH:mm";
@@ -18,8 +21,8 @@ export const DUR_LABEL = "durLabel";
 export const DEFAULT_DUR_LABEL = "Dur:";
 
 /**
- * Hour and Minute chooser using sliders.
- * Use as '<hour-min-chooser></hour-min-chooser>'
+ * Hour and Minute chooser.
+ * Use as '<sp-hourmin></sp-hourmin>'
  */
 export class HourMinChooser extends HTMLElement {
   _time: DateTime;
@@ -43,6 +46,7 @@ export class HourMinChooser extends HTMLElement {
     style.textContent = `
       .hourminpopup {
         position: absolute;
+        top: 17px;
         box-shadow: 0 5px 15px -5px rgba(0,0,0,.5);
         background-color: white;
         z-index: 10;
@@ -53,7 +57,7 @@ export class HourMinChooser extends HTMLElement {
       .shown {
         visibility: visible;
       }
-      hourminpopup div {
+      .popupDivRel {
         position: relative;
       }
       input.hourMin {
@@ -63,8 +67,8 @@ export class HourMinChooser extends HTMLElement {
     shadow.appendChild(style);
 
     const wrapper = document.createElement('span');
-    wrapper.addEventListener('mouseleave', e => {
-      console.log("mouseleave wrapper")
+    document.addEventListener('click', e => {
+      //console.log("mouseleave wrapper");
       mythis.hide();
     });
 
@@ -79,7 +83,7 @@ export class HourMinChooser extends HTMLElement {
     hour_slider.setAttribute("type", "range");
     hour_slider.setAttribute("min", "0");
     hour_slider.setAttribute("max", "23");
-    hour_slider.setAttribute("value", `${this.time.hour}`);
+    hour_slider.value = `${this.time.hour}`;
     hour_slider.setAttribute("class", "hourSlider");
     hour_slider.oninput = function(e: Event) {
       if (e.target !== null) {
@@ -98,11 +102,9 @@ export class HourMinChooser extends HTMLElement {
     min_slider.setAttribute("type", "range");
     min_slider.setAttribute("min", "0");
     min_slider.setAttribute("max", "59");
-    min_slider.setAttribute("value", `${this.time.minute}`);
+    min_slider.value = `${this.time.minute}`;
     min_slider.setAttribute("class", "minSlider");
     min_slider.oninput = function(e: Event) {
-      // @ts-ignore
-      console.log(`min slider: ${e.target.value}`)
       if (e.target !== null) {
         const target = e.target as HTMLInputElement;
         const min = Number.parseInt(target.value);
@@ -112,17 +114,22 @@ export class HourMinChooser extends HTMLElement {
       }
     };
 
+    const ntextSpan = wrapper.appendChild(document.createElement('span'));
 
-    const ntext = wrapper.appendChild(document.createElement('input'));
+    const relDiv = ntextSpan.appendChild(document.createElement('span'));
+    relDiv.setAttribute("class", "popupDivRel");
+    relDiv.appendChild(popupDiv);
+
+    const ntext = ntextSpan.appendChild(document.createElement('input'));
     ntext.setAttribute('type','text');
     ntext.setAttribute('name','hourMin');
     ntext.setAttribute('class','hourMin');
-    ntext.setAttribute('value',this.time.toFormat(HOUR_MIN_24));
+    ntext.value = this.time.toFormat(HOUR_MIN_24);
     ntext.onchange = function(e: Event) {
-      let val = ntext.getAttribute("value");
+      let val = ntext.value;
       if (val === null ) {
         val = mythis.time.toFormat(HOUR_MIN_24);
-        ntext.setAttribute("value", val);
+        ntext.value = val;
       }
       const match = hourMinRegEx.exec(val);
 
@@ -136,15 +143,13 @@ export class HourMinChooser extends HTMLElement {
         }
         mythis.hide();
       } else {
-        ntext.setAttribute("value", mythis.time.toFormat(HOUR_MIN_24));
+        ntext.value = mythis.time.toFormat(HOUR_MIN_24);
       }
-    }
-    ntext.onclick = function(e) {
-      console.log('ntext onclick -> showHide')
-      e.stopPropagation();
-      mythis.showHide()
     };
-    wrapper.appendChild(popupDiv);
+    ntext.onclick = function(e) {
+      e.stopPropagation();
+      mythis.showHide();
+    };
     shadow.appendChild(wrapper);
   }
   /**
@@ -158,24 +163,29 @@ export class HourMinChooser extends HTMLElement {
     }
   }
   hide(): void {
-    console.log("hide")
     if ( ! this.popupDiv.getAttribute("class")?.includes("hidden")) {
       this.popupDiv.setAttribute("class", "hourminpopup hidden");
     }
   }
   show(): void {
-    console.log("show")
     this.popupDiv.setAttribute("class", "hourminpopup visible");
     this._adjustPopupPosition();
   }
+
+  /** @private */
+  xxx_adjustPopupPosition(): void {
+    const left = 0;
+    const top = 0;
+    this.popupDiv.setAttribute("style", `{left: ${left} px; top: ${top} px;}`);
+  }
   /** @private */
   _adjustPopupPosition(): void {
-    let hourMinField = (this.shadowRoot?.querySelector('input.'+'hourMin') as HTMLInputElement);
-    let width = hourMinField.offsetWidth;
-    let height = hourMinField.offsetHeight;
-    let viewportWidth: number = window.innerWidth;
-    let viewportHeight: number = window.innerHeight;
-    let scrollTop: number = window.pageYOffset;
+    const hourMinField = (this.shadowRoot?.querySelector('input.'+'hourMin') as HTMLInputElement);
+    const width = hourMinField.offsetWidth;
+    const height = hourMinField.offsetHeight;
+    const viewportWidth: number = window.innerWidth;
+    const viewportHeight: number = window.innerHeight;
+    const scrollTop: number = window.pageYOffset;
     let left = hourMinField.offsetLeft;
     let top = hourMinField.offsetTop + hourMinField.offsetHeight;
 
@@ -196,8 +206,8 @@ export class HourMinChooser extends HTMLElement {
     if (top + height > viewportHeight + scrollTop) {
       top = top - height - hourMinField.offsetHeight;
     }
-console.log(`hourmin popup position: {left: ${left} px; top: ${top} px;}`)
-    this.popupDiv.setAttribute("style", `{left: ${left} px; top: ${top} px;}`);
+console.log(`hourmin popup position: {left: ${left} px; top: ${top} px;}`);
+    this.popupDiv.setAttribute("style", `{position: absolute; left: ${left} px; top: ${top} px; }`);
   }
   get time(): DateTime {
     return this._time;
@@ -208,16 +218,15 @@ console.log(`hourmin popup position: {left: ${left} px; top: ${top} px;}`)
   }
   _internalSetTime(dt: DateTime) {
     this._time = dt;
-    console.log(`set time: ${dt.hour}:${dt.minute}`)
     const ntext = (this.shadowRoot?.querySelector('input.'+'hourMin') as HTMLInputElement);
-    ntext.setAttribute('value',this._time.toFormat(HOUR_MIN_24));
+    ntext.value = this._time.toFormat(HOUR_MIN_24);
     const hourSlider = (this.popupDiv?.querySelector('input.hourSlider') as HTMLInputElement);
-    hourSlider.setAttribute("value", `${this._time.hour}`);
+    hourSlider.value = `${this._time.hour}`;
     const minuteSlider = (this.popupDiv?.querySelector('input.minSlider') as HTMLInputElement);
-    minuteSlider.setAttribute("value", `${this._time.minute}`);
+    minuteSlider.value = `${this._time.minute}`;
   }
 }
-customElements.define('hour-min-chooser', HourMinChooser);
+customElements.define(HOURMIN_ELEMENT, HourMinChooser);
 
 
 
@@ -250,9 +259,9 @@ export class DateTimeChooser extends HTMLElement {
     dateField.setAttribute('type','date');
     dateField.setAttribute('name','date');
     dateField.setAttribute('class','date');
-    dateField.setAttribute('value',this._time.toISODate());
+    dateField.value = this._time.toISODate();
 
-    const hourMin = wrapper.appendChild(document.createElement('hour-min-chooser')) as HourMinChooser;
+    const hourMin = wrapper.appendChild(new HourMinChooser());
     hourMin.updateCallback = time => {
       mythis._internalSetTime(time);
       mythis.timeModified();
@@ -261,7 +270,6 @@ export class DateTimeChooser extends HTMLElement {
     this.hourMin = hourMin;
     dateField.onchange = function(e) {
       const value = dateField.value;
-      console.log(`got change ${value}`);
 
         const pikaValue = DateTime.fromISO(value);
         const origTime = mythis._time;
@@ -317,11 +325,19 @@ export class DateTimeChooser extends HTMLElement {
   _internalSetTime(newTime: DateTime): void {
     this._time = newTime;
     const ntext = (this.shadowRoot?.querySelector('input.date') as HTMLInputElement);
-    ntext.setAttribute('value',this.time.toISODate());
+    ntext.value = this.time.toISODate();
     this.hourMin._internalSetTime(newTime);
   }
+
+  static get observedAttributes() {
+    return ["date-time"];
+  }
 }
-customElements.define('date-time-chooser', DateTimeChooser);
+customElements.define(DATETIME_ELEMENT, DateTimeChooser);
+
+export const START_CHANGED = "start";
+export const END_CHANGED = "end";
+export const DURATION_CHANGED = "duration";
 
 /**
  * Combination of two DateTimeChoosers to specify a start and end time.
@@ -330,8 +346,8 @@ customElements.define('date-time-chooser', DateTimeChooser);
  * @param updateCallback optional callback function when time is selected/changed
  */
 export class TimeRangeChooser extends HTMLElement {
-  updateCallback: (timerange: StartEndDuration) => void;
-  duration: number;
+  updateCallback: (timerange: Interval) => void;
+  _duration: Duration;
   startChooser: DateTimeChooser;
   endChooser: DateTimeChooser;
   _mostRecentChanged: string;
@@ -339,19 +355,19 @@ export class TimeRangeChooser extends HTMLElement {
   constructor() {
     super();
     this._mostRecentChanged = "start";
-    this.updateCallback = (timerange: StartEndDuration) => {};
+    this.updateCallback = (timerange: Interval) => {};
     const endAttr = this.getAttribute("end");
     let endTime: DateTime;
     if (endAttr) {
       endTime = isoToDateTime(endAttr);
     } else {
-      endTime = DateTime.utc();
+      endTime = DateTime.utc().startOf('minute');
     }
     const durAttr = this.getAttribute("duration");
     if (durAttr) {
-      this.duration = Number.parseFloat(durAttr);
+      this._duration = extractDuration(durAttr);
     } else {
-      this.duration = 300;
+      this._duration = Duration.fromMillis(1000*300);
     }
     const startAttr = this.getAttribute("start");
     let startTime: DateTime;
@@ -359,86 +375,76 @@ export class TimeRangeChooser extends HTMLElement {
       startTime = isoToDateTime(startAttr);
       if (endAttr) {
         const durInterval = Interval.fromDateTimes(startTime, endTime);
-        this.duration = durInterval.length("seconds");
+        this._duration = durInterval.toDuration();
       } else {
-        endTime = startTime.plus(Duration.fromMillis(1000*this.duration));
+        endTime = startTime.plus(this._duration);
       }
     } else {
-      startTime = endTime.minus(Duration.fromMillis(1000*this.duration));//seconds
+      startTime = endTime.minus(this._duration);
     }
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
 
-    const mythis = this;
     // style
     const style = document.createElement('style');
     style.textContent = `
           input.duration {
-            width: 6em;
+            width: 8em;
+          }
+          label {
+            margin-left: 3px;
+            margin-right: 1px;
           }
         `;
     shadow.appendChild(style);
 
     const startLabel = wrapper.appendChild(document.createElement('label'));
     startLabel.textContent = this.startLabel;
-    const startChooser = wrapper.appendChild(document.createElement('date-time-chooser'));
+    const startChooser = wrapper.appendChild(document.createElement(DATETIME_ELEMENT));
     this.startChooser = startChooser as DateTimeChooser;
     startChooser.setAttribute("class", "start");
-    this.startChooser.updateCallback = (startTime) => {
-      mythis.endChooser.updateTime(
-        startTime.plus(Duration.fromMillis(1000*mythis.duration)),
-      );
-      mythis.updateCallback(mythis.getTimeRange());
-      mythis._mostRecentChanged = "start";
-    };
-    let durationDiv = wrapper.appendChild(document.createElement('span'));
+
+    const durationDiv = wrapper.appendChild(document.createElement('span'));
     durationDiv.setAttribute("class", "duration");
     const durationLabel = wrapper.appendChild(document.createElement('label'));
     durationLabel.textContent = this.durationLabel;
     const durationInput = wrapper.appendChild(document.createElement('input'));
-    durationInput.setAttribute("value", `${this.duration}`);
-    durationInput.setAttribute("type", "number");
+    durationInput.value = `${this.duration}`;
+    //durationInput.setAttribute("type", "number");
     durationInput.setAttribute("class", "duration");
-    durationInput.onclick = (e) => {
-        let nDur = +Number.parseInt(durationInput.value);
-        mythis.duration = nDur;
-
-        if (mythis._mostRecentChanged === "end") {
-          mythis.startChooser.updateTime(mythis.endChooser.time
-              .minus(Duration.fromMillis(1000*mythis.duration)),//seconds
-          );
-          mythis.updateCallback(mythis.getTimeRange());
-        } else {
-          // change end
-          mythis.endChooser.updateTime(mythis.startChooser.time
-              .plus(Duration.fromMillis(1000*mythis.duration)),//seconds
-          );
-          mythis.updateCallback(mythis.getTimeRange());
-        }
-      };
 
     const endLabel = wrapper.appendChild(document.createElement('label'));
     endLabel.textContent = this.endLabel;
-    const endChooser = wrapper.appendChild(document.createElement('date-time-chooser'));
+    const endChooser = wrapper.appendChild(document.createElement(DATETIME_ELEMENT));
     this.endChooser = endChooser as DateTimeChooser;
     endChooser.setAttribute("class", "end");
-    this.endChooser.updateCallback = (startTime) => {
-      mythis.startChooser.updateTime(
-        endTime.minus(Duration.fromMillis(1000*mythis.duration))
-      );
-      mythis.updateCallback(mythis.getTimeRange());
-      mythis._mostRecentChanged = "end";
+
+
+    this.startChooser.updateCallback = (startTime) => {
+      this.start = startTime;
     };
+    durationInput.onchange = (e: Event) => {
+      const target = e.target as HTMLInputElement;
+      if (! durationInput.value) {
+        return;
+      }
+      this.duration = extractDuration(durationInput.value);
+    };
+    this.endChooser.updateCallback = (endTime) => {
+      this.end = endTime;
+    };
+    this.startChooser.updateTime(startTime);
+    this.endChooser.updateTime(endTime);
 
     shadow.appendChild(wrapper);
   }
+  toInterval(): Interval {
+    return Interval.fromDateTimes(this.startChooser.time, this.endChooser.time);
+  }
 
-  getTimeRange(): StartEndDuration {
-    return new StartEndDuration(
-      this.startChooser.time,
-      this.endChooser.time,
-    );
+  getTimeRange(): Interval {
+    return this.toInterval();
   }
   get startLabel(): string {
     const l = this.getAttribute(START_LABEL);
@@ -452,5 +458,86 @@ export class TimeRangeChooser extends HTMLElement {
     const l =  this.getAttribute(DUR_LABEL);
     if (isDef(l)) { return l; } else { return DEFAULT_DUR_LABEL; }
   }
+  get start(): DateTime {
+    return this.startChooser.time;
+  }
+  set start(time: DateTime) {
+    this.startChooser.updateTime(time);
+    this.setAttribute('start', time.toISO());
+    this.resyncValues(START_CHANGED);
+  }
+  get end(): DateTime {
+    return this.endChooser.time;
+  }
+  set end(time: DateTime) {
+    this.endChooser.updateTime(time);
+    this.setAttribute('end', time.toISO());
+    this.resyncValues(END_CHANGED);
+  }
+  set duration(duration: Duration) {
+    this._updateDuration(duration);
+    this.resyncValues(DURATION_CHANGED);
+  }
+  get duration(): Duration {
+    return this._duration;
+  }
+  _updateDuration(duration: Duration) {
+    this._duration = duration;
+    this.setAttribute('duration', duration.toISO());
+    const dur_input = this.shadowRoot?.querySelector('input.duration') as HTMLInputElement;
+    if ( ! dur_input) {throw new Error("can't find input.duration in sp-timerange");}
+    dur_input.value = this._duration.toISO();
+  }
+  resyncValues(curChanged: string) {
+    if (curChanged === START_CHANGED) {
+      if (this._mostRecentChanged === END_CHANGED && this.start < this.end) {
+        this._updateDuration(this.toInterval().toDuration());
+      } else {
+        // this._mostRecentChanged === DURATION_CHANGED || this._mostRecentChanged === START_CHANGED
+        this.endChooser.updateTime(this.startChooser.time.plus(this._duration));
+      }
+    } else if (curChanged === DURATION_CHANGED) {
+      if (this._mostRecentChanged === START_CHANGED) {
+        this.endChooser.updateTime(this.startChooser.time.plus(this._duration));
+      } else {
+        // this._mostRecentChanged === END_CHANGED || this._mostRecentChanged === DURATION_CHANGED
+        this.startChooser.updateTime(this.endChooser.time.minus(this._duration));
+      }
+    } else {
+      // assume end
+      if (this._mostRecentChanged === START_CHANGED && this.start < this.end) {
+        this._updateDuration(this.toInterval().toDuration());
+      } else {
+        // this._mostRecentChanged === END_CHANGED || this._mostRecentChanged === DURATION_CHANGED
+        this.startChooser.updateTime(this.endChooser.time.minus(this._duration));
+      }
+    }
+    if (curChanged !== this._mostRecentChanged) {
+      this._mostRecentChanged = curChanged;
+    }
+    this.updateCallback(this.getTimeRange());
+
+  }
+  static get observedAttributes() {
+    return ["start", "duration", "end", START_LABEL, END_LABEL, DUR_LABEL];
+  }
+
 }
-customElements.define('time-range-chooser', TimeRangeChooser);
+customElements.define(TIMERANGE_ELEMENT, TimeRangeChooser);
+
+
+/**
+ * extracts duration from either string as ISO or number as seconds.
+ * @param  value               ISO string or number
+ * @return       duration
+ */
+export function extractDuration(value: string): Duration {
+  let dur;
+  if (value.startsWith("P")) {
+    dur = Duration.fromISO(value);
+  } else {
+    const nDur = +Number.parseInt(value);
+    dur = Duration.fromMillis(nDur*1000);
+  }
+  return dur
+}

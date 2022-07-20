@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <link rel="stylesheet" href="style.css">
+   <title>Channel Choosers</title>
+</head>
+<body>
+
+  <h3>Channel:</h3>
+  <div>
+    <label>Code: </label><sp-channel-code-input/>
+  </div>
+  <div>
+    <label>List: </label><sp-channellist/>
+  </div>
+  <div>
+    <h5>Output:</h5>
+    <p id="output"></p>
+  </div>
+
+  <script type="module">
+    import {components, fdsnstation, stationxml} from '../seisplotjs_3.0.0-alpha.0_standalone.mjs';
+
+    const listInput = document.querySelector('sp-channellist');
+
+    const outputArea = document.querySelector('#output');
+    const codeInput = document.querySelector('sp-channel-code-input');
+    codeInput.updateCallback = (time) => {
+      outputArea.textContent = `Codes: ${codeInput.network}_${codeInput.station}_${codeInput.location}_${codeInput.channel}`;
+      const query = new fdsnstation.StationQuery();
+      query.networkCode(codeInput.network);
+      query.stationCode(codeInput.station);
+      query.locationCode(codeInput.location);
+      query.channelCode(codeInput.channel);
+      query.queryChannels().then(netList => {
+        listInput.setChannels(Array.from(stationxml.allChannels(netList)));
+      })
+    }
+    listInput.updateCallback = (chan) => {
+      outputArea.textContent = `Chan: ${chan.sourceId}`;
+    }
+
+  </script>
+</body>
+</html>
