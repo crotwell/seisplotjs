@@ -7,7 +7,7 @@ from html.parser import HTMLParser
 from bs4 import BeautifulSoup
 
 StartSnip = re.compile('// snip start (\w+)')
-EndSnip = re.compile('// snip end ')
+EndSnip = re.compile('// snip end.*')
 StartTag = re.compile('^<\w+.*>')
 EndTag = re.compile('^</\w+>')
 ComboStartEndTag = re.compile('^<\w+.*/>')
@@ -54,7 +54,7 @@ def snippetReplace(dirpath, jsfilename, htmlfilename):
                         c.append(f"{line}")
                         snipLines.append(f"{line}")
             if not foundStart:
-                raise Exception(f"Did not find a start snip for {snipname}")
+                raise Exception(f"Did not find a start snip for {snipname} jsfile={jsfilename}  htmlfile={htmlfilename}")
     with open(filepath+".mod.html", 'w', encoding='utf-8') as file:
         #file.write(redoIndent(soup.encode(formatter="html")))
         file.write(soup.prettify(formatter="html"))
