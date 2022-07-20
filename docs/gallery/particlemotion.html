@@ -23,13 +23,13 @@
 
   <script type="module">
 
-    import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.0_standalone.mjs';
     let dataArray = new Float32Array(1000).map(function(d, i) {
       return Math.sin(2*Math.PI*i/100) * 100;
     });
     let dataArrayB = dataArray.map((d,i) => d*10+(i%200)*5);
     let dataArrayC = new Float32Array(1000).map(function(d, i) {
-      return Math.sin(-3*Math.PI*i/200) * 800;
+      return 1000+Math.sin(-3*Math.PI*i/200) * 800;
     });
     let sampleRate = 20;
     let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
@@ -49,14 +49,15 @@
     seisC.seismogram.locationCode = "00";
     seisC.seismogram.channelCode = "BHE";
     const seisConfig = seisplotjs.particlemotion.createParticleMotionConfig();
+    seisConfig.centeredAmp = false;
     console.log(`manual seisconfig: ${seisConfig.configId}`)
     const seismographList = (document.querySelectorAll(seisplotjs.particlemotion.PARTICLE_MOTION_ELEMENT));
-    seismographList[0].xSeisData = seis;
-    seismographList[0].ySeisData = seisB;
-    seismographList[1].xSeisData = seis;
-    seismographList[1].ySeisData = seisC;
-    seismographList[2].xSeisData = seisB;
-    seismographList[2].ySeisData = seisC;
+    seismographList[0].xSeisData = seisB;
+    seismographList[0].ySeisData = seis;
+    seismographList[1].xSeisData = seisC;
+    seismographList[1].ySeisData = seis;
+    seismographList[2].xSeisData = seisC;
+    seismographList[2].ySeisData = seisB;
     seismographList.forEach( graph => {
       graph.seismographConfig = seisConfig;
       graph.seismographConfig.isRelativeTime = false;

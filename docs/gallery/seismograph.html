@@ -14,20 +14,23 @@
 
   <h3>Seismograph:</h3>
   <div>
-    <sp-seismograph ></sp-seismograph>
-    <h5>other</h5>
-    <sp-seismograph ></sp-seismograph>
+    <h5>plain</h5>
+    <sp-seismograph id="plain"></sp-seismograph>
+    <h5>gain</h5>
+    <sp-seismograph id="gain"></sp-seismograph>
+    <h5>rmean</h5>
+    <sp-seismograph id="rmean"></sp-seismograph>
   </div>
 
   <script type="module">
 
-    import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.0_standalone.mjs';
     let dataArray = new Float32Array(1000).map(function(d, i) {
-      return Math.sin(2*Math.PI*i/100) * 100;
+      return 200+Math.sin(2*Math.PI*i/100) * 100;
     });
     let dataArrayB = dataArray.map((d,i) => d*10+(i%200)*5);
     let dataArrayC = new Float32Array(1000).map(function(d, i) {
-      return Math.sin(-3*Math.PI*i/200) * 800;
+      return Math.sin(-3*Math.PI*i/200) * 100;
     });
     let sampleRate = 20;
     let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
@@ -39,15 +42,37 @@
     seis.locationCode = "00";
     seis.channelCode = "BHZ";
     const seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+    seisConfig.isRelativeTime = false;
+    seisConfig.doGain = false;
+    seisConfig.centeredAmp = false;
+    console.log("PLAIN!!!!")
+    const seisConfig_gain = new seisplotjs.seismographconfig.SeismographConfig();
+    seisConfig.isRelativeTime = false;
+    seisConfig.doGain = false;
+    seisConfig.centeredAmp = false;
+    const seisConfig_rmean = new seisplotjs.seismographconfig.SeismographConfig();
+    seisConfig.isRelativeTime = false;
+    seisConfig.doGain = false;
+    seisConfig.centeredAmp = false;
+    seisConfig.title = `Plain: ${seisConfig.title}`;
+    seisConfig_gain.doGain = true;
+    seisConfig_gain.centeredAmp = false;
+    seisConfig_gain.title = `Gain: ${seisConfig.title}`;
+    seisConfig_rmean.centeredAmp = true;
+    seisConfig_rmean.title = `RMean: ${seisConfig.title}`;
     console.log(`manual seisconfig: ${seisConfig.configId}`)
+    document.querySelector('sp-seismograph#plain').seismographConfig = seisConfig;
+  //  document.querySelector('sp-seismograph#plain').remove()
+    document.querySelector('sp-seismograph#gain').seismographConfig = seisConfig_gain;
+  //document.querySelector('sp-seismograph#rmean').remove()
+    document.querySelector('sp-seismograph#rmean').seismographConfig = seisConfig_rmean;
     const seismographList = (document.querySelectorAll('sp-seismograph'));
+    console.log(`before set data`)
     seismographList.forEach( graph => {
-      graph.seismographConfig = seisConfig;
-      graph.seismographConfig.isRelativeTime = false;
-      graph.appendSeisData([seis, seisB]);
+      graph.appendSeisData([seis, seisC]);
       graph.draw();
+      console.log(`scale ${graph.seismographConfig.title.slice(0,5)}  ${graph.amp_scalable}`)
     });
-    seismographList[0].appendSeisData([seisC])
   </script>
 </body>
 </html>

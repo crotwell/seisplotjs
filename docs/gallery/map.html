@@ -17,7 +17,7 @@
     <sp-station-event-map centerLat="34" centerLon="-80" zoomLevel="9"></sp-station-event-map>
   </div>
   <script type="module">
-  import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.0_standalone.mjs';
     seisplotjs.dataset.load('dataset.zip')
     .then((ds) => {
       const mapList = document.querySelectorAll('sp-station-event-map');

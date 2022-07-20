@@ -20,8 +20,7 @@
   <sp-seismograph></sp-seismograph>
 
   <script type="module">
-
-    import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.0_standalone.mjs';
     const div = seisplotjs.d3.select("div");
     const seismograph = document.querySelector("sp-seismograph");
     let dataArray = new Float32Array(1000).map(function(d, i) {
