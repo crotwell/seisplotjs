@@ -1,4 +1,5 @@
 dist
+docs/module
 seisplotjs_1.2.0_standalone.js
 node_modules
 example/**/seisplotjs_*_standalone.js
@@ -10,7 +11,7 @@ example/huddle
 example/simpleHttp.sh
 jsonSchema
 es6example
-docs/**/seisplotjs_*_standalone.js
+docs/**/seisplotjs_*_standalone.mjs
 README_part.md
 __pycache__
 .DS_Store
