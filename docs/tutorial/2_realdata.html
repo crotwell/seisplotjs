@@ -100,15 +100,14 @@
       </h5>
       <p>
        A sine wave is kind of boring, so perhaps some real data would be
-            more interesting. We will use the IRIS
+        more interesting. We will use the IRIS
        <a href="http://service.iris.edu/fdsnws/dataselect/1/">
-        FDSNWS
-            dataselect
+        FDSNWS dataselect
        </a>
        web service to grab some actual seismic data.
-            StartEndDuration makes it easy to get start and end times from
-            any combination of start, end and duration. The parameters
-            for the DataSelectQuery match those listed in the
+        StartEndDuration makes it easy to get start and end times from
+        any combination of start, end and duration. The parameters
+        for the DataSelectQuery match those listed in the
        <a href="http://www.fdsn.org/webservices/">
         fdsnws-dataselect
        </a>
@@ -133,15 +132,15 @@
 import {
   fdsndataselect,
   seismogram, seismograph,
-  seismographconfig, util} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+  seismographconfig, util, luxon} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
-let timeWindow = new util.StartEndDuration('2019-07-06T03:19:53Z', null, 1800);
+let timeWindow = luxon.Interval.after(util.isoToDateTime('2019-07-06T03:19:53Z'), luxon.Duration.fromMillis(1000*1800));
 let dsQuery = new fdsndataselect.DataSelectQuery();
 console.log(`miniseed3: ${fdsndataselect.FORMAT_MINISEED_THREE}`);
 dsQuery.networkCode('CO')
   .stationCode('HODGE')
   .locationCode('00')
-  .channelCode('LHZ')
+  .channelCode('LH?')
   .format(fdsndataselect.FORMAT_MINISEED_THREE)
   .timeWindow(timeWindow);
 </code></pre>
@@ -177,7 +176,10 @@ dsQuery.querySeismograms().then(seisArray =&gt; {
     let seisConfig = new seismographconfig.SeismographConfig();
     let seisData = [];
     seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]));
+    seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[1]));
+    seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[2]));
     let graph = new seismograph.Seismograph(seisData, seisConfig);
+
     div.appendChild(graph);
   }).catch( function(error) {
     const div = document.querySelector('div#myseismograph');

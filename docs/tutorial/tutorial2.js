@@ -10,7 +10,7 @@ console.log(`miniseed3: ${fdsndataselect.FORMAT_MINISEED_THREE}`);
 dsQuery.networkCode('CO')
   .stationCode('HODGE')
   .locationCode('00')
-  .channelCode('LHZ')
+  .channelCode('LH?')
   .format(fdsndataselect.FORMAT_MINISEED_THREE)
   .timeWindow(timeWindow);
 // snip start queryseis
@@ -20,7 +20,10 @@ dsQuery.querySeismograms().then(seisArray => {
     let seisConfig = new seismographconfig.SeismographConfig();
     let seisData = [];
     seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]));
+    seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[1]));
+    seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[2]));
     let graph = new seismograph.Seismograph(seisData, seisConfig);
+
     div.appendChild(graph);
   }).catch( function(error) {
     const div = document.querySelector('div#myseismograph');

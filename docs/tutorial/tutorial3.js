@@ -49,9 +49,16 @@ Promise.all( [ quakePromise, stationsPromise ] )
 }).then( ( [ quakeList, networkList, seismogramDataList ] ) => {
     let div = document.querySelector('div#myseismograph');
     let seisConfig = new seismographconfig.SeismographConfig();
-    seisConfig.doGain = true;
-    let graph = new seismograph.Seismograph(seismogramDataList, seisConfig);
-    div.appendChild(graph);
+    seisConfig.doGain = false;
+    seisConfig.centeredAmp = true;
+    let graphCount = new seismograph.Seismograph(seismogramDataList, seisConfig);
+    div.appendChild(graphCount);
+
+    let seisConfigGain = new seismographconfig.SeismographConfig();
+    seisConfigGain.doGain = true;
+    seisConfigGain.centeredAmp = true;
+    let graphGain = new seismograph.Seismograph(seismogramDataList, seisConfigGain);
+    div.appendChild(graphGain);
     return seismogramDataList;
 }).catch( function(error) {
   const div = document.querySelector('div#myseismograph');

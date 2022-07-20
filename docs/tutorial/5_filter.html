@@ -136,7 +136,9 @@
         set up the stationQuery and eventQuery with our search parameters.
       </p>
       <pre><code class="language-javascript" snippet="eventandstation">
-let queryTimeWindow = new seisplotjs.util.StartEndDuration('2019-07-01', '2019-07-31');
+let queryTimeWindow = seisplotjs.luxon.Interval.fromDateTimes(
+  seisplotjs.util.isoToDateTime('2019-07-01'),
+  seisplotjs.util.isoToDateTime('2019-07-31'));
 let eventQuery = new seisplotjs.fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
@@ -240,7 +242,7 @@ loaderSDDPromise.then((seismogramDataList) =&gt; {
       </p>
       <pre><code class="language-javascript" snippet="gain">
     seisConfig.doGain = false;
-    seisConfig.doRMean = false;
+    seisConfig.centeredAmp = false;
     for( let sdd of seismogramDataList) {
       let graph = new seisplotjs.seismograph.Seismograph([sdd],
                                                          seisConfig);

@@ -53,6 +53,7 @@ loadPromise.then(([ networkList, quakeList, seismogramDataList]) => {
   commonSeisConfig.linkedTimeScale = new scale.LinkedTimeScale();
   commonSeisConfig.wheelZoom = false;
   commonSeisConfig.doGain = true;
+  commonSeisConfig.centeredAmp = false;
   for( let sdd of seismogramDataList) {
     let seisConfig = commonSeisConfig.clone();
     let graph = new seismograph.Seismograph([ sdd ], seisConfig);
@@ -84,16 +85,20 @@ loadPromise.then(([ networkList, quakeList, seismogramDataList]) => {
   let ySeisData = seismogramDataList[1].cut(firstSTimeWindow);
   let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
 
-  let minMax = seismogram.findMinMax([ xSeisData, ySeisData, zSeisData]);
-  let seisConfig = new particlemotion.createParticleMotionConfig(firstSTimeWindow);
-  seisConfig.fixedYScale = minMax;
-  let pmpA = new particlemotion.ParticleMotion(xSeisData, ySeisData, seisConfig);
+  const doGain = true;
+  const centeredAmp = true;
+  let minMax = seismogram.findMinMax([ xSeisData, ySeisData, zSeisData], doGain, centeredAmp);
+  let pmSeisConfig = new particlemotion.createParticleMotionConfig(firstSTimeWindow);
+  pmSeisConfig.fixedYScale = minMax;
+  pmSeisConfig.doGain = doGain;
+  pmSeisConfig.centeredAmp = centeredAmp;
+  let pmpA = new particlemotion.ParticleMotion(xSeisData, ySeisData, pmSeisConfig);
   pmdiv.appendChild(pmpA);
   //pmpA.draw();
-  let pmpB = new particlemotion.ParticleMotion(xSeisData, zSeisData, seisConfig);
+  let pmpB = new particlemotion.ParticleMotion(xSeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpB);
   //pmpB.draw();
-  let pmpC = new particlemotion.ParticleMotion(ySeisData, zSeisData, seisConfig);
+  let pmpC = new particlemotion.ParticleMotion(ySeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpC);
   //pmpC.draw();
 

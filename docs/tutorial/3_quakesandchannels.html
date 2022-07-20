@@ -175,7 +175,7 @@ import {
   seismogram, seismograph,
   seismographconfig,
   stationxml,
-  util} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+  util, luxon} from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
 const mymap = document.querySelector('sp-station-event-map');
 //mymap.scrollWheelZoom.disable();
@@ -197,7 +197,7 @@ const mymap = document.querySelector('sp-station-event-map');
        objects.
       </p>
       <pre><code class="language-javascript" snippet="quakechan">
-let queryTimeWindow = new util.StartEndDuration('2019-07-01', '2019-07-31');
+let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
 let eventQuery = new fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
@@ -266,7 +266,7 @@ Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) =&gt; {
   let seismogramDataList = [];
   for (const q of quakeList) {
-    let timeWindow = new util.StartEndDuration(q.time, null, 2400);
+    let timeWindow = luxon.Interval.after(q.time, luxon.Duration.fromMillis(1000*2400));
     for (const c of stationxml.allChannels(networkList)) {
       let sdd = seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
       sdd.addQuake(q);
@@ -294,9 +294,16 @@ Promise.all( [ quakePromise, stationsPromise ] )
 }).then( ( [ quakeList, networkList, seismogramDataList ] ) =&gt; {
     let div = document.querySelector('div#myseismograph');
     let seisConfig = new seismographconfig.SeismographConfig();
-    seisConfig.doGain = true;
-    let graph = new seismograph.Seismograph(seismogramDataList, seisConfig);
-    div.appendChild(graph);
+    seisConfig.doGain = false;
+    seisConfig.centeredAmp = true;
+    let graphCount = new seismograph.Seismograph(seismogramDataList, seisConfig);
+    div.appendChild(graphCount);
+
+    let seisConfigGain = new seismographconfig.SeismographConfig();
+    seisConfigGain.doGain = true;
+    seisConfigGain.centeredAmp = true;
+    let graphGain = new seismograph.Seismograph(seismogramDataList, seisConfigGain);
+    div.appendChild(graphGain);
     return seismogramDataList;
 }).catch( function(error) {
   const div = document.querySelector('div#myseismograph');

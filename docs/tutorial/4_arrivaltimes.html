@@ -142,13 +142,8 @@ dataset.Dataset.fromSeismogramLoader(loader).then(dataset =&gt; dataset.saveToZi
   loadPromise = dataset.load('tutorial4_dataset.zip').then(ds =&gt; [ ds.inventory, ds.catalog, ds.waveforms]);
 }
 loadPromise.then(([ networkList, quakeList, seismogramDataList]) =&gt; {
+  seismogramDataList = sorting.reorderXYZ(seismogramDataList);
   mymap.seisData = seismogramDataList;
-
-console.log(`loaded ${seismogramDataList.length} sdd`)
-  seismogramDataList.forEach(sdd =&gt; {
-    console.log(sdd.traveltimeList.length);
-    sdd.traveltimeList.forEach(tt =&gt; console.log(`tt: ${JSON.stringify(tt)}`));
-  })
 
 </code></pre>
       <p>
@@ -194,7 +189,7 @@ console.log(`loaded ${seismogramDataList.length} sdd`)
             window, channel, and quake.
       </p>
       <pre><code class="language-javascript" snippet="seismogramload">
-let queryTimeWindow = new util.StartEndDuration('2019-07-01', '2019-07-31');
+let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
 let eventQuery = new fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
@@ -221,6 +216,7 @@ let stationQuery = new fdsnstation.StationQuery()
   commonSeisConfig.linkedTimeScale = new scale.LinkedTimeScale();
   commonSeisConfig.wheelZoom = false;
   commonSeisConfig.doGain = true;
+  commonSeisConfig.centeredAmp = false;
   for( let sdd of seismogramDataList) {
     let seisConfig = commonSeisConfig.clone();
     let graph = new seismograph.Seismograph([ sdd ], seisConfig);
@@ -255,21 +251,19 @@ let stationQuery = new fdsnstation.StationQuery()
       <pre><code class="language-javascript" snippet="particlemotion">
 }).then( ( [ quakeList, networkList, seismogramDataList, graphList ] ) =&gt; {
   let pmdiv = document.querySelector("div#myparticlemotion");
-  console.log(`pmdiv: ${pmdiv}`)
   let firstS = seismogramDataList[0].traveltimeList.find(a =&gt; a.phase.startsWith("S"));
   let windowDuration = 60;
-  let firstSTimeWindow = new util.StartEndDuration(
+  let firstSTimeWindow = luxon.Interval.after(
     quakeList[0].time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4}),
-    null,
-    windowDuration);
+    luxon.Duration.fromMillis(1000*windowDuration));
   seismogramDataList.forEach(sdd =&gt; sdd.addMarkers({
     name: "pm start",
-    time: firstSTimeWindow.startTime,
+    time: firstSTimeWindow.start,
     type: "other",
     description: "pm start"}));
   seismogramDataList.forEach(sdd =&gt; sdd.addMarkers({
     name: "pm end",
-    time: firstSTimeWindow.endTime,
+    time: firstSTimeWindow.end,
     type: "other",
     description: "pm end"}));
   graphList.forEach(g =&gt; g.drawMarkers());
@@ -277,16 +271,20 @@ let stationQuery = new fdsnstation.StationQuery()
   let ySeisData = seismogramDataList[1].cut(firstSTimeWindow);
   let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
 
-  let minMax = seismogram.findMinMax([ xSeisData, ySeisData, zSeisData]);
-  let seisConfig = new particlemotion.createParticleMotionConfig(firstSTimeWindow);
-  seisConfig.fixedYScale = minMax;
-  let pmpA = new particlemotion.ParticleMotion(xSeisData, ySeisData, seisConfig);
+  const doGain = true;
+  const centeredAmp = true;
+  let minMax = seismogram.findMinMax([ xSeisData, ySeisData, zSeisData], doGain, centeredAmp);
+  let pmSeisConfig = new particlemotion.createParticleMotionConfig(firstSTimeWindow);
+  pmSeisConfig.fixedYScale = minMax;
+  pmSeisConfig.doGain = doGain;
+  pmSeisConfig.centeredAmp = centeredAmp;
+  let pmpA = new particlemotion.ParticleMotion(xSeisData, ySeisData, pmSeisConfig);
   pmdiv.appendChild(pmpA);
   //pmpA.draw();
-  let pmpB = new particlemotion.ParticleMotion(xSeisData, zSeisData, seisConfig);
+  let pmpB = new particlemotion.ParticleMotion(xSeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpB);
   //pmpB.draw();
-  let pmpC = new particlemotion.ParticleMotion(ySeisData, zSeisData, seisConfig);
+  let pmpC = new particlemotion.ParticleMotion(ySeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpC);
   //pmpC.draw();
 
