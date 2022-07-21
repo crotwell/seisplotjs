@@ -4,7 +4,9 @@ import { isDef} from './util';
 export const CHANNEL_LIST_ELEMENT = 'sp-channellist';
 export const CHANNEL_CODE_ELEMENT = 'sp-channel-code-input';
 export const MINMAX_ELEMENT = 'sp-minmax';
-export const LATLONRADIUS_ELEMENT = 'sp-latlonradius';
+export const LATLONRADIUS_ELEMENT = 'sp-latlon-radius';
+export const LATLONBOX_ELEMENT = 'sp-latlon-box';
+export const LATLON_CHOICE_ELEMENT = 'sp-latlon-choice';
 
 export function labeledTextInput(label: string, defaultVal: string): HTMLElement {
   const ndiv = document.createElement('span');
@@ -155,6 +157,10 @@ export class LabeledMinMax extends HTMLElement {
       input {
         width: 6em;
       }
+      label {
+        margin-left: 3px;
+        margin-right: 3px;
+      }
     `;
 
     const wrapper = document.createElement('span');
@@ -252,15 +258,35 @@ export class LatLonRadius extends HTMLElement {
       input {
         width: 4em;
       }
+      label {
+        margin-left: 3px;
+        margin-right: 3px;
+      }
     `;
     const wrapper = document.createElement('div');
     wrapper.setAttribute('class','wrapper');
-    let latIn = wrapper.appendChild(labeledNumberInput("Lat", "0"));
-    latIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    let lonIn = wrapper.appendChild(labeledNumberInput("Lon", "0"));
-    lonIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    let latDiv = wrapper.appendChild(labeledNumberInput("Lat: ", "0"));
+    let latIn = latDiv.querySelector("input");
+    latIn.setAttribute("min", "-90.0");
+    latIn.setAttribute("max", "90.0");
+    latIn.addEventListener("change", () => {
+      const value = Number.parseFloat(latIn.value);
+      if (value < -90.0) { latIn.value = -90.0;}
+      if (value > 90.0) { latIn.value = 90.0;}
+      this.dispatchEvent(new Event("change"));
+    });
+    let lonDiv = wrapper.appendChild(labeledNumberInput("Lon: ", "0"));
+    let lonIn = lonDiv.querySelector("input");
+    lonIn.setAttribute("min", "-180.0");
+    lonIn.setAttribute("max", "360.0");
+    lonIn.addEventListener("change", () => {
+      const value = Number.parseFloat(lonIn.value);
+      if (value < -180.0) { lonIn.value = -180.0;}
+      if (value > 360.0) { lonIn.value = 360.0;}
+      this.dispatchEvent(new Event("change"));
+    });
     const radius_label = wrapper.appendChild(document.createElement('label'));
-    radius_label.textContent = "Radius";
+    radius_label.textContent = "Radius: ";
     const minmax = wrapper.appendChild(new LabeledMinMax());
     minmax.addEventListener("change", () => this.dispatchEvent(new Event("change")));
     shadow.appendChild(wrapper);
@@ -324,3 +350,131 @@ export class LatLonRadius extends HTMLElement {
 }
 
 customElements.define(LATLONRADIUS_ELEMENT, LatLonRadius);
+
+const latlonbox_html = `
+<style>
+input {
+  width: 4em;
+}
+label {
+  margin-right: 2px;
+  margin-left: 2px;
+}
+div.latlon {
+  display: grid;
+  width: 360px;
+  grid-template-columns: 2fr 1fr 2fr;
+}
+</style>
+<div class="latlon">
+  <div></div>
+  <div style="text-align: center;">
+    <div><label for="maxlat">Max Lat</label></div>
+    <div><input id="maxlat" type="number"/></div>
+  </div>
+  <div></div>
+  <div style="text-align: right;"><label for="minlon">Min Lon</label><input id="minlon" type="number"/></div>
+  <div style="text-align: center;margin-top: 2px;"><label>Lat/Lon</label></div>
+  <div style="text-align: left;"><input id="maxlon" type="number"/><label for="maxlon">Max Lon</label></div>
+  <div></div>
+  <div style="text-align: center;">
+    <div><input id="minlat" type="number"/></div>
+    <div><label for="minlat">Min Lat</label></div>
+  </div>
+  <div></div>
+</div
+`;
+
+export class LatLonBox extends HTMLElement {
+  constructor() {
+    super();
+    this.draw();
+  }
+  draw() {
+    let shadow = this.shadowRoot;
+    if (shadow === null) {
+      shadow = this.attachShadow({mode: 'open'});
+    }
+    shadow.innerHTML = latlonbox_html;
+    const minLat = shadow.querySelector('input#minlat');
+    minLat.value = -90.0;
+    minLat?.addEventListener("change", () => {
+      if (minLat.value < -90.0) {minLat.value = -90.0;}
+      if (minLat.value > 90.0) {minLat.value = 90.0;}
+      this.dispatchEvent(new Event("change"));
+    });
+    const maxLat = shadow.querySelector('input#maxlat');
+    maxLat.value = 90.0;
+    maxLat?.addEventListener("change", () => {
+      if (maxLat.value < -90.0) {maxLat.value = -90.0;}
+      if (maxLat.value > 90.0) {maxLat.value = 90.0;}
+      this.dispatchEvent(new Event("change"));
+    });
+
+    const minLon = shadow.querySelector('input#minlon');
+    minLon.value = -180.0;
+    minLon?.addEventListener("change", () => {
+      if (minLon.value < -180.0) { minLon.value = -180.0;}
+      if (minLon.value > 360.0) { minLon.value = 360.0;}
+      this.dispatchEvent(new Event("change"));
+    });
+    const maxLon = shadow.querySelector('input#maxlon');
+    maxLon.value = 180.0;
+    maxLon?.addEventListener("change", () => {
+      if (maxLon.value < -180.0) { maxLon.value = -180.0;}
+      if (maxLon.value > 360.0) { maxLon.value = 360.0;}
+      this.dispatchEvent(new Event("change"));
+    });
+  }
+  get minLat(): number {
+    return this.shadowRoot?.querySelector('input#minlat').value;
+  }
+}
+
+customElements.define(LATLONBOX_ELEMENT, LatLonBox);
+
+const latlonchoice_html = `
+<style>
+label {
+}
+.labeled {
+}
+${LATLONRADIUS_ELEMENT} {
+  display:inline-block;
+}
+${LATLONBOX_ELEMENT} {
+  display:inline-block;
+}
+</style>
+<div class="top">
+  <div class="labeled">
+    <input type="radio" id="latlonall" name="latlon" value="all" checked>
+    <label for="latlonradius">All: </label>
+  </div>
+  <div class="labeled">
+    <input type="radio" id="latlonradius" name="latlon" value="radius">
+    <label for="latlonradius">Radius: </label>
+    <${LATLONRADIUS_ELEMENT}></${LATLONRADIUS_ELEMENT}>
+  </div>
+  <div class="labeled">
+    <input type="radio" id="latlonbox" name="latlon" value="box">
+    <label for="latlonbox">Box: </label>
+    <${LATLONBOX_ELEMENT}></${LATLONBOX_ELEMENT}>
+  </div>
+</div>
+`;
+
+export class LatLonChoice extends HTMLElement {
+  constructor() {
+    super();
+    this.draw();
+  }
+  draw() {
+    let shadow = this.shadowRoot;
+    if (shadow === null) {
+      shadow = this.attachShadow({mode: 'open'});
+    }
+    shadow.innerHTML = latlonchoice_html;
+  }
+}
+customElements.define(LATLON_CHOICE_ELEMENT, LatLonChoice);
