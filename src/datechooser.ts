@@ -362,7 +362,7 @@ export class TimeRangeChooser extends HTMLElement {
 
   constructor() {
     super();
-    this._mostRecentChanged = "start";
+    this._mostRecentChanged = "end";
     this.updateCallback = (timerange: Interval) => {};
     const endAttr = this.getAttribute("end");
     let endTime: DateTime;
