@@ -215,6 +215,8 @@ console.log(`hourmin popup position: {left: ${left} px; top: ${top} px;}`);
   set time(dt: DateTime) {
     this._internalSetTime(dt);
     this.updateCallback(this.time);
+    console.log(`dispatch change from HourMinChooser ${dt.toISO()}`)
+    this.dispatchEvent(new Event("change"));
   }
   _internalSetTime(dt: DateTime) {
     this._time = dt;
@@ -262,31 +264,35 @@ export class DateTimeChooser extends HTMLElement {
     dateField.value = this._time.toISODate();
 
     const hourMin = wrapper.appendChild(new HourMinChooser());
-    hourMin.updateCallback = time => {
-      mythis._internalSetTime(time);
-      mythis.timeModified();
-    };
     hourMin._time = mythis.time;
     this.hourMin = hourMin;
-    dateField.onchange = function(e) {
+    hourMin.addEventListener("change", () => {
+      const origTime = mythis._time;
+      const time = hourMin.time;
+      if (origTime !== time) {
+        mythis._internalSetTime(time);
+        mythis.timeModified();
+      }
+    });
+    dateField.addEventListener("change", () => {
       const value = dateField.value;
+      const pikaValue = DateTime.fromISO(value);
+      const origTime = mythis._time;
+      if (
+        pikaValue && (
+          origTime.year !== pikaValue.year ||
+          origTime.month !== pikaValue.month ||
+          origTime.day !== pikaValue.day
+        )
+      ) {
+        mythis.time = mythis.time.set({ year: pikaValue.year,
+                         month: pikaValue.month,
+                           day: pikaValue.day
+                        });
+        mythis.timeModified();
+      }
+    });
 
-        const pikaValue = DateTime.fromISO(value);
-        const origTime = mythis._time;
-        if (
-          pikaValue && (
-            origTime.year !== pikaValue.year ||
-            origTime.month !== pikaValue.month ||
-            origTime.day !== pikaValue.day
-          )
-        ) {
-          mythis.time = mythis.time.set({ year: pikaValue.year,
-                           month: pikaValue.month,
-                             day: pikaValue.day
-                          });
-          mythis.timeModified();
-        }
-    };
     shadow.appendChild(wrapper);
 
     this._internalSetTime(this.time);
@@ -306,6 +312,7 @@ export class DateTimeChooser extends HTMLElement {
    */
   timeModified(): void {
     this.updateCallback(this.time);
+    this.dispatchEvent(new Event("change"));
   }
 
   get time(): DateTime {
@@ -314,6 +321,7 @@ export class DateTimeChooser extends HTMLElement {
   set time(dt: DateTime) {
     this._internalSetTime(dt);
     this.updateCallback(this.time);
+    this.dispatchEvent(new Event("change"));
   }
 
   /**
@@ -420,19 +428,18 @@ export class TimeRangeChooser extends HTMLElement {
     this.endChooser = endChooser as DateTimeChooser;
     endChooser.setAttribute("class", "end");
 
-
-    this.startChooser.updateCallback = (startTime) => {
-      this.start = startTime;
-    };
-    durationInput.onchange = (e: Event) => {
+    startChooser.addEventListener("change", () => {
+      this.start = startChooser.time;
+    });
+    durationInput.addEventListener("change", () => {
       if (! durationInput.value) {
         return;
       }
       this.duration = extractDuration(durationInput.value);
-    };
-    this.endChooser.updateCallback = (endTime) => {
-      this.end = endTime;
-    };
+    });
+    endChooser.addEventListener("change", () => {
+      this.end = endChooser.time;
+    });
     this.startChooser.updateTime(startTime);
     this.endChooser.updateTime(endTime);
 
@@ -514,6 +521,7 @@ export class TimeRangeChooser extends HTMLElement {
     if (curChanged !== this._mostRecentChanged) {
       this._mostRecentChanged = curChanged;
     }
+    this.dispatchEvent(new Event("change"));
     this.updateCallback(this.getTimeRange());
 
   }

@@ -1085,11 +1085,22 @@ export class EarthquakeSearch extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
     this.draw_element(shadow);
   }
+  _registerEvent(wrapper: HTMLElement, sel: string) {
+    const mythis = this;
+    const component = wrapper.querySelector(sel) as HTMLElement;
+    if ( ! component) {throw new Error(`can't find ${sel}`);}
+    component.addEventListener("change", () => mythis.dispatchEvent(new Event("change")));
+  }
   draw_element(shadow: ShadowRoot) {
     const wrapper = document.createElement('div');
     wrapper.setAttribute('class','wrapper');
     wrapper.innerHTML = eqsearchHtml;
     shadow.appendChild(wrapper);
+    this._registerEvent(wrapper, 'sp-timerange');
+    this._registerEvent(wrapper, 'sp-latlonradius');
+    this._registerEvent(wrapper, 'sp-minmax#magnitude');
+    this._registerEvent(wrapper, 'sp-minmax#depth');
+
     const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;
     if ( ! trChooser) {throw new Error("can't find sp-timerange");}
 

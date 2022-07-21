@@ -6,7 +6,7 @@ export const CHANNEL_CODE_ELEMENT = 'sp-channel-code-input';
 export const MINMAX_ELEMENT = 'sp-minmax';
 export const LATLONRADIUS_ELEMENT = 'sp-latlonradius';
 
-export function labeledTextInput(label: string, defaultVal: string, callback?: (val: string) => void): HTMLElement {
+export function labeledTextInput(label: string, defaultVal: string): HTMLElement {
   const ndiv = document.createElement('span');
   const nlabel = ndiv.appendChild(document.createElement('label'));
   nlabel.textContent = label;
@@ -15,12 +15,18 @@ export function labeledTextInput(label: string, defaultVal: string, callback?: (
   ntext.setAttribute('name',label);
   ntext.setAttribute('class',label);
   ntext.value = defaultVal;
-  if (callback) {
-    ntext.onchange = function(e) {
-      const value = ntext.value;
-      callback(value);
-    }
-  }
+  return ndiv;
+}
+
+export function labeledNumberInput(label: string, defaultVal: string): HTMLElement {
+  const ndiv = document.createElement('span');
+  const nlabel = ndiv.appendChild(document.createElement('label'));
+  nlabel.textContent = label;
+  const ntext = ndiv.appendChild(document.createElement('input'));
+  ntext.setAttribute('type','number');
+  ntext.setAttribute('name',label);
+  ntext.setAttribute('class',label);
+  ntext.value = defaultVal;
   return ndiv;
 }
 
@@ -28,18 +34,20 @@ export function labeledTextInput(label: string, defaultVal: string, callback?: (
 const ATTR_LIST = ["Network", "Station", "Location", "Channel"];
 
 export class ChannelCodeInput extends HTMLElement {
-  updateCallback: () => void;
   constructor() {
     super();
-    this.updateCallback = () => {};
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
     wrapper.setAttribute('class','wrapper');
     const default_vals = { "Network": "CO", "Station": "CASEE", "Location":"00","Channel":"HHZ"};
-    wrapper.appendChild(labeledTextInput("Network", default_vals.Network, (v: string) => {this._doUpdateCallback();}));
-    wrapper.appendChild(labeledTextInput("Station", default_vals.Station, (v: string) => {this._doUpdateCallback();}));
-    wrapper.appendChild(labeledTextInput("Location", default_vals.Location, (v: string) => {this._doUpdateCallback();}));
-    wrapper.appendChild(labeledTextInput("Channel", default_vals.Channel, (v: string) => {this._doUpdateCallback();}));
+    let netIn = wrapper.appendChild(labeledTextInput("Network", default_vals.Network));
+    netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    let staIn = wrapper.appendChild(labeledTextInput("Station", default_vals.Station));
+    netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    let locIn = wrapper.appendChild(labeledTextInput("Location", default_vals.Location));
+    netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    let chanIn = wrapper.appendChild(labeledTextInput("Channel", default_vals.Channel));
+    netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
 
 
     // Create some CSS to apply to the shadow dom
@@ -55,19 +63,6 @@ export class ChannelCodeInput extends HTMLElement {
     `;
     shadow.appendChild(style);
     shadow.appendChild(wrapper);
-  }
-  _doUpdateCallback() {
-    this.updateCallback();
-  }
-  _createInput(wrapper: HTMLElement, name: string, default_val: string) {
-      const ndiv = wrapper.appendChild(document.createElement('span'));
-      const nlabel = ndiv.appendChild(document.createElement('label'));
-      nlabel.textContent = name;
-      const ntext = ndiv.appendChild(document.createElement('input'));
-      ntext.setAttribute('class',name);
-      ntext.setAttribute('type','text');
-      ntext.setAttribute('name',name);
-      ntext.value = default_val;
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
   }
@@ -94,11 +89,9 @@ customElements.define(CHANNEL_CODE_ELEMENT, ChannelCodeInput);
 
 export class ChannelListChooser extends HTMLElement {
   channels: Array<Channel>;
-  updateCallback: (c: Channel) => void;
   constructor() {
     super();
     this.channels = [];
-    this.updateCallback = (c: Channel) => {};
     this.draw_element();
   }
   draw_element() {
@@ -121,9 +114,7 @@ export class ChannelListChooser extends HTMLElement {
       cb.setAttribute('type','radio');
       cb.setAttribute('name','radiogroup');
       cb.addEventListener('change', event => {
-        if (that.updateCallback) {
-          that.updateCallback(c);
-        }
+        this.dispatchEvent(new Event("change"));
       });
       const nlabel = div.appendChild(document.createElement('label'));
       nlabel.textContent = `${c.codes()} ${c.startDate.toISO()}`;
@@ -133,15 +124,14 @@ export class ChannelListChooser extends HTMLElement {
   setChannels(channels: Array<Channel>) {
     this.channels = channels;
     this.draw_element();
+    this.dispatchEvent(new Event("change"))
   }
   appendChannels(channels: Array<Channel>) {
     this.channels = this.channels.concat(channels);
     this.draw_element();
+    this.dispatchEvent(new Event("change"))
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-  }
-  setCallback(callback: (c: Channel) => void  ) {
-    this.updateCallback = callback;
   }
 }
 
@@ -174,6 +164,8 @@ export class LabeledMinMax extends HTMLElement {
     min_text.setAttribute('name','min');
     min_text.setAttribute('class','min');
     min_text.value = `${this.default_min}`;
+    min_text.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+
     const to_label = wrapper.appendChild(document.createElement('label'));
     to_label.textContent = "to";
     const max_text = wrapper.appendChild(document.createElement('input'));
@@ -181,6 +173,7 @@ export class LabeledMinMax extends HTMLElement {
     max_text.setAttribute('name','max');
     max_text.setAttribute('class','max');
     max_text.value = `${this.default_max}`;
+    max_text.addEventListener("change", () => this.dispatchEvent(new Event("change")));
 
     shadow.appendChild(wrapper);
   }
@@ -241,12 +234,8 @@ export class LabeledMinMax extends HTMLElement {
 customElements.define(MINMAX_ELEMENT, LabeledMinMax);
 
 export class LatLonRadius extends HTMLElement {
-  latitude: number;
-  longitude: number;
   constructor() {
     super();
-    this.latitude = 0;
-    this.longitude = 0;
     this.draw();
   }
   draw() {
@@ -258,16 +247,41 @@ export class LatLonRadius extends HTMLElement {
       // @ts-ignore
       shadow.removeChild(shadow.lastChild);
     }
+    const style = shadow.appendChild(document.createElement('style'));
+    style.textContent = `
+      input {
+        width: 4em;
+      }
+    `;
     const wrapper = document.createElement('div');
     wrapper.setAttribute('class','wrapper');
-    wrapper.appendChild(labeledTextInput("Lat", "0", (v: string) => {this.latitude = Number.parseFloat(v);this._doUpdateCallback();}));
-    wrapper.appendChild(labeledTextInput("Lon", "0", (v: string) => {this.longitude = Number.parseFloat(v);this._doUpdateCallback();}));
+    let latIn = wrapper.appendChild(labeledNumberInput("Lat", "0"));
+    latIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    let lonIn = wrapper.appendChild(labeledNumberInput("Lon", "0"));
+    lonIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
     const radius_label = wrapper.appendChild(document.createElement('label'));
     radius_label.textContent = "Radius";
     const minmax = wrapper.appendChild(new LabeledMinMax());
+    minmax.addEventListener("change", () => this.dispatchEvent(new Event("change")));
     shadow.appendChild(wrapper);
     minmax.min = 0;
     minmax.max = 180;
+  }
+  get latitude() {
+    const inEl = this.shadowRoot?.querySelector("input.Lat") as HTMLInputElement;
+    return Number.parseFloat(inEl.value);
+  }
+  set latitude(v: number) {
+    const inEl = this.shadowRoot?.querySelector("input.Lat") as HTMLInputElement;
+    inEl.value = v;
+  }
+  get longitude() {
+    const inEl = this.shadowRoot?.querySelector("input.Lon") as HTMLInputElement;
+    return Number.parseFloat(inEl.value);
+  }
+  set latitude(v: number) {
+    const inEl = this.shadowRoot?.querySelector("input.Lon") as HTMLInputElement;
+    inEl.value = v;
   }
   get minRadius() {
     const mm = this.shadowRoot?.querySelector(MINMAX_ELEMENT) as LabeledMinMax;
@@ -281,6 +295,7 @@ export class LatLonRadius extends HTMLElement {
     const mm = this.shadowRoot?.querySelector(MINMAX_ELEMENT) as LabeledMinMax;
     if (mm) {
       mm.min = v;
+      this._doUpdateCallback();
     } else {
       throw new Error(`cant find ${MINMAX_ELEMENT}`);
     }
@@ -297,12 +312,14 @@ export class LatLonRadius extends HTMLElement {
     const mm = this.shadowRoot?.querySelector(MINMAX_ELEMENT) as LabeledMinMax;
     if (mm) {
       mm.max = v;
+      this._doUpdateCallback();
     } else {
       throw new Error(`cant find ${MINMAX_ELEMENT}`);
     }
   }
   _doUpdateCallback() {
     console.log(`update lat/lon: ${this.latitude}/${this.longitude}  rad: ${this.minRadius} to ${this.maxRadius}`);
+    this.dispatchEvent(new Event("change"));
   }
 }
 
