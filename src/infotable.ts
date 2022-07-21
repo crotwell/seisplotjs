@@ -9,6 +9,7 @@ import Handlebars from "handlebars/dist/cjs/handlebars.js";
 //import Handlebars from "handlebars";
 
 export const INFO_ELEMENT = 'sp-station-event-table';
+export const QUAKE_INFO_ELEMENT = 'sp-event-table';
 
 export const DEFAULT_TEMPLATE = `
   <table>
@@ -152,3 +153,88 @@ export class QuakeStationTable extends SeisPlotElement {
 }
 
 customElements.define(INFO_ELEMENT, QuakeStationTable);
+
+
+
+export const DEFAULT_QUAKE_TEMPLATE = `
+  <table>
+  <thead>
+      <tr>
+
+        <th>Time</th>
+        <th>Lat</th>
+        <th>Lon</th>
+        <th colspan="2">Mag</th>
+        <th>Depth</th>
+
+      </tr>
+    </thead>
+    <tbody>
+    {{#each quakeList as |quake|}}
+      <tr>
+          <td>{{formatIsoDate quake.time}}</td>
+          <td>{{quake.latitude}}</td>
+          <td>{{quake.longitude}}</td>
+          <td>{{quake.magnitude.mag}}</td>
+          <td>{{quake.magnitude.type}}</td>
+          <td>{{quake.depthKm}}</td>
+      </tr>
+    {{/each}}
+    </tbody>
+  </table>
+`;
+
+export class QuakeTable extends HTMLElement {
+  _template: string;
+  _quakeList: Array<Quake>;
+  constructor(quakeList?: Array<Quake>) {
+    super();
+    if ( ! quakeList) {
+      quakeList = [];
+    }
+    this._quakeList = quakeList
+    this._template = DEFAULT_QUAKE_TEMPLATE;
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute("class", "wrapper");
+    const style = shadow.appendChild(document.createElement('style'));
+    style.textContent = TABLE_CSS;
+
+    shadow.appendChild(wrapper);
+  }
+  get template(): string {
+    return this._template;
+  }
+  set template(t: string) {
+    this._template = t;
+    this.draw();
+  }
+  get quakeList(): Array<Quake> {
+    return this._quakeList;
+  }
+  set quakeList(ql: Array<Quake>) {
+    this._quakeList = ql;
+    this.draw();
+  }
+  draw() {
+    if ( ! this.isConnected) { return; }
+    const mythis = this;
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    while (wrapper.firstChild) {
+      // @ts-ignore
+      wrapper.removeChild(wrapper.lastChild);
+    }
+    const handlebarsCompiled = Handlebars.compile(this.template);
+    wrapper.innerHTML = handlebarsCompiled(
+        {
+          quakeList: mythis.quakeList,
+        },
+        {
+          allowProtoPropertiesByDefault: true, // this might be a security issue???
+        },
+      );
+  }
+}
+
+customElements.define(QUAKE_INFO_ELEMENT, QuakeTable);
