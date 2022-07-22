@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import {FDSNCommon} from './fdsncommonalities';
  import {DateTime, Interval} from 'luxon';
 import {parseStationXml, Network} from "./stationxml";
 import {
@@ -17,12 +18,10 @@ import {
   doIntGetterSetter,
   doFloatGetterSetter,
   doMomentGetterSetter,
-  checkProtocol,
   toIsoWoZ,
   isDef,
   isObject,
   isStringArg,
-  isNonEmptyStringArg,
   isNumArg,
 } from "./util";
 export const LEVEL_NETWORK = "network";
@@ -47,7 +46,6 @@ export const SERVICE_VERSION = 1;
  * http://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `fdsnws-station-${SERVICE_VERSION}`;
-export const IRIS_HOST = "service.iris.edu";
 
 /** a fake, completely empty stationxml document in case of no data. */
 export const FAKE_EMPTY_XML =
@@ -59,21 +57,7 @@ export const FAKE_EMPTY_XML =
  * @see http://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to IRIS
  */
-export class StationQuery {
-  /** @private */
-  _specVersion: number;
-
-  /** @private */
-  _protocol: string;
-
-  /** @private */
-  _host: string;
-
-  /** @private */
-  _port: number;
-
-  /** @private */
-  _nodata: number|undefined;
+export class StationQuery extends FDSNCommon {
 
   /** @private */
   _networkCode: string|undefined;
@@ -144,25 +128,13 @@ export class StationQuery {
   /** @private */
   _matchTimeseries: boolean|undefined;
 
-  /** @private */
-  _timeoutSec: number;
-
   /**
    * Construct a query
    *
    * @param host the host to connect to , defaults to service.iris.edu
    */
   constructor(host?: string) {
-    this._specVersion = 1;
-    this._protocol = checkProtocol();
-
-    this._host = IRIS_HOST;
-    if (isNonEmptyStringArg(host)) {
-      this.host(host);
-    }
-
-    this._port = 80;
-    this._timeoutSec = 30;
+    super(host);
   }
 
   /**

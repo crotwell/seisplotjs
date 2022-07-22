@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import {FDSNCommon} from './fdsncommonalities';
 import RSVP from "rsvp";
 import * as util from "./util"; // for util.log
 import {DateTime, Interval} from 'luxon';
@@ -16,7 +17,6 @@ import {
   doFloatGetterSetter,
   doMomentGetterSetter,
   isDef,
-  checkProtocol,
   toIsoWoZ,
   isNonEmptyStringArg,
   TEXT_MIME,
@@ -52,21 +52,7 @@ export const IRIS_HOST = "service.iris.edu";
  * @see http://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to IRIS
  */
-export class DataSelectQuery {
-  /** @private */
-  _specVersion: number;
-
-  /** @private */
-  _protocol: string;
-
-  /** @private */
-  _host: string;
-
-  /** @private */
-  _nodata: number|undefined;
-
-  /** @private */
-  _port: number;
+export class DataSelectQuery extends FDSNCommon {
 
   /** @private */
   _networkCode: string|undefined;
@@ -101,21 +87,11 @@ export class DataSelectQuery {
   /** @private */
   _format: string|undefined;
 
-  /** @private */
-  _timeoutSec: number;
-
   constructor(host?: string) {
-    this._specVersion = 1;
-    this._protocol = checkProtocol();
-
-    if (isNonEmptyStringArg(host)) {
-      this._host = host;
-    } else {
-      this._host = IRIS_HOST;
+    if ( ! isNonEmptyStringArg(host)) {
+      host = IRIS_HOST;
     }
-
-    this._port = 80;
-    this._timeoutSec = 30;
+    super(host);
   }
 
   /**

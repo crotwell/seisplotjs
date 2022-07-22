@@ -3,12 +3,13 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {
+
+ import {FDSNCommon} from './fdsncommonalities';
+ import {
   doStringGetterSetter,
   doBoolGetterSetter,
   doFloatGetterSetter,
   doIntGetterSetter,
-  checkProtocol,
   makeParam,
   isDef,
   isNonEmptyStringArg,
@@ -33,21 +34,7 @@ export const FDSN_HOST = "www.fdsn.org";
  * @see http://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to FDSN
  */
-export class DataCentersQuery {
-  /** @private */
-  _specVersion: number;
-
-  /** @private */
-  _protocol: string;
-
-  /** @private */
-  _host: string;
-
-  /** @private */
-  _nodata: number|undefined;
-
-  /** @private */
-  _port: number;
+export class DataCentersQuery extends FDSNCommon {
 
   /** @private */
   _name: string|undefined;
@@ -58,21 +45,12 @@ export class DataCentersQuery {
   /** @private */
   _includedatasets: boolean|undefined;
 
-  /** @private */
-  _timeoutSec: number;
 
   constructor(host?: string) {
-    this._specVersion = 1;
-    this._protocol = checkProtocol();
-
-    if (isNonEmptyStringArg(host)) {
-      this._host = host;
-    } else {
-      this._host = FDSN_HOST;
+    if ( ! isNonEmptyStringArg(host)) {
+      host = FDSN_HOST;
     }
-
-    this._port = 80;
-    this._timeoutSec = 30;
+    super(host);
   }
 
   /**

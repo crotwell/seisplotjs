@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import {FDSNCommon} from './fdsncommonalities';
 import {DateTime, Duration, Interval} from 'luxon';
 import {Quake, USGS_HOST, parseQuakeML} from "./quakeml";
 import {
@@ -16,7 +17,6 @@ import {
   doIntGetterSetter,
   doFloatGetterSetter,
   doMomentGetterSetter,
-  checkProtocol,
   toIsoWoZ,
   isDef,
   isObject,
@@ -46,21 +46,7 @@ export const FAKE_EMPTY_XML =
  * @see http://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to USGS
  */
-export class EventQuery {
-  /** @private */
-  _specVersion: number;
-
-  /** @private */
-  _protocol: string;
-
-  /** @private */
-  _host: string;
-
-  /** @private */
-  _port: number;
-
-  /** @private */
-  _nodata: number|undefined;
+export class EventQuery extends FDSNCommon {
 
   /** @private */
   _eventId: string|undefined;
@@ -140,20 +126,11 @@ export class EventQuery {
   /** @private */
   _format: string|undefined;
 
-  /** @private */
-  _timeoutSec: number;
-
   constructor(host?: string) {
-    this._specVersion = 1;
-    this._protocol = checkProtocol();
-
-    this._host = USGS_HOST;
-    if (isNonEmptyStringArg(host)) {
-      this.host(host);
+    if ( ! isNonEmptyStringArg(host)) {
+      host = USGS_HOST;
     }
-
-    this._port = 80;
-    this._timeoutSec = 30;
+    super(host);
   }
 
   /**
@@ -233,6 +210,21 @@ export class EventQuery {
 
   getNodata(): number | undefined {
     return this._nodata;
+  }
+
+  /**
+   * Get/Set the timeout in seconds for the request. Default is 30.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
+  timeout(value?: number): EventQuery {
+    doFloatGetterSetter(this, "timeoutSec", value);
+    return this;
+  }
+
+  getTimeout(): number | undefined {
+    return this._timeoutSec;
   }
 
   /**
@@ -646,20 +638,6 @@ export class EventQuery {
     return this._contributor;
   }
 
-  /**
-   * Get/Set the timeout in seconds for the request. Default is 30.
-   *
-   * @param value optional new value if setting
-   * @returns new value if getting, this if setting
-   */
-  timeout(value?: number): EventQuery {
-    doFloatGetterSetter(this, "timeoutSec", value);
-    return this;
-  }
-
-  getTimeout(): number | undefined {
-    return this._timeoutSec;
-  }
 
   /**
    * Checks to see if any parameter that would limit the data

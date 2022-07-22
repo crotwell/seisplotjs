@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import {FDSNCommon, IRIS_HOST} from './fdsncommonalities';
 import {DateTime, Interval} from "luxon";
 import RSVP from "rsvp";
 import {SeismogramDisplayData} from "./seismogram";
@@ -12,7 +13,6 @@ import {
   doIntGetterSetter,
   doFloatGetterSetter,
   doMomentGetterSetter,
-  checkProtocol,
   toIsoWoZ,
   isoToDateTime,
   isDef,
@@ -57,7 +57,6 @@ export const SERVICE_VERSION = 1;
  * http://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `fdsnws-availability-${SERVICE_VERSION}`;
-export const IRIS_HOST = "service.iris.edu";
 
 /**
  * Query to a FDSN Availability web service.
@@ -76,21 +75,7 @@ export const IRIS_HOST = "service.iris.edu";
  * @see http://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to IRIS
  */
-export class AvailabilityQuery {
-  /** @private */
-  _specVersion: number;
-
-  /** @private */
-  _protocol: string;
-
-  /** @private */
-  _host: string;
-
-  /** @private */
-  _nodata: number|undefined;
-
-  /** @private */
-  _port: number;
+export class AvailabilityQuery extends FDSNCommon {
 
   /** @private */
   _networkCode: string|undefined;
@@ -134,21 +119,11 @@ export class AvailabilityQuery {
   /** @private */
   _format: string|undefined;
 
-  /** @private */
-  _timeoutSec: number;
-
   constructor(host?: string) {
-    this._specVersion = 1;
-    this._protocol = checkProtocol();
-
-    if (isNonEmptyStringArg(host)) {
-      this._host = host;
-    } else {
-      this._host = IRIS_HOST;
+    if ( ! isNonEmptyStringArg(host)) {
+      host = IRIS_HOST;
     }
-
-    this._port = 80;
-    this._timeoutSec = 30;
+    super(host);
   }
 
   /**
