@@ -58,6 +58,9 @@ export const SERVICE_VERSION = 1;
  */
 export const SERVICE_NAME = `fdsnws-availability-${SERVICE_VERSION}`;
 
+/** const for the default IRIS web service host, service.iris.edu */
+export {IRIS_HOST};
+
 /**
  * Query to a FDSN Availability web service.
  *
