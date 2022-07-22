@@ -473,25 +473,38 @@ label {
 }
 fieldset.latlon {
   display: grid;
-  width: 360px;
-  grid-template-columns: 2fr 1fr 2fr;
+  width: 250px;
+  grid-template-columns:  1fr  1fr  1fr  1fr  1fr ;
 }
 </style>
 <fieldset class="latlon">
+  <div></div>
   <div></div>
   <div style="text-align: center;">
   <div><label for="north">North</label></div>
     <div><input id="north" type="number"/></div>
   </div>
   <div></div>
-  <div style="text-align: right;"><label for="west">West</label><input id="west" type="number"/></div>
+  <div></div>
+  <div style="text-align: right;">
+    <label for="west">West</label>
+  </div>
+  <div>
+    <input id="west" type="number"/></div>
   <div style="text-align: center;margin-top: 2px;"><label>Lat/Lon</label></div>
-  <div style="text-align: left;"><input id="east" type="number"/><label for="east">East</label></div>
+  <div style="text-align: left;">
+    <input id="east" type="number"/>
+  </div>
+  <div>
+    <label for="east">East</label>
+  </div>
+  <div></div>
   <div></div>
   <div style="text-align: center;">
     <div><input id="south" type="number"/></div>
     <div><label for="south">South</label></div>
   </div>
+  <div></div>
   <div></div>
 </fieldset>
 `;
