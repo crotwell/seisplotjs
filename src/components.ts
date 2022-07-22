@@ -365,9 +365,10 @@ export class LatLonRadius extends HTMLElement {
     `;
     const wrapper = document.createElement('div');
     wrapper.setAttribute('class','wrapper');
-    const latDiv = wrapper.appendChild(labeledNumberInput("Lat: ", "0"));
+    const latDiv = wrapper.appendChild(labeledNumberInput("Lat", "0"));
     const latIn = latDiv.querySelector("input");
     if (!latIn) {throw new Error("can't find input");}
+    latIn.textContent = 'Lat: ';
     latIn.setAttribute("min", "-90.0");
     latIn.setAttribute("max", "90.0");
     latIn.addEventListener("change", () => {
@@ -377,9 +378,10 @@ export class LatLonRadius extends HTMLElement {
       }
       this.dispatchEvent(new Event("change"));
     });
-    const lonDiv = wrapper.appendChild(labeledNumberInput("Lon: ", "0"));
+    const lonDiv = wrapper.appendChild(labeledNumberInput("Lon", "0"));
     const lonIn = lonDiv.querySelector("input");
     if (!lonIn) {throw new Error("can't find input");}
+    lonIn.textContent = 'Lon: ';
     lonIn.setAttribute("min", "-180.0");
     lonIn.setAttribute("max", "360.0");
     lonIn.addEventListener("change", () => {
@@ -692,6 +694,27 @@ export class LatLonChoice extends HTMLElement {
       shadow = this.attachShadow({mode: 'open'});
     }
     shadow.innerHTML = latlonchoice_html;
+    this.shadowRoot?.querySelectorAll('input[type=radio]').forEach(inEl => {
+      inEl?.addEventListener("change", () => {
+        this.dispatchEvent(new Event("change"));
+      });
+    });
+    this.shadowRoot?.querySelector('sp-latlon-box')?.addEventListener("change", () => {
+      this.dispatchEvent(new Event("change"));
+    });
+    this.shadowRoot?.querySelector('sp-latlon-radius')?.addEventListener("change", () => {
+      this.dispatchEvent(new Event("change"));
+    });
+  }
+  choosen(): null | LatLonBox | LatLonRadius {
+    let radio = this.shadowRoot?.querySelector('input[type=radio]:checked') as HTMLInputElement;
+    if (radio.value === 'box') {
+      return this.shadowRoot?.querySelector('sp-latlon-box') as LatLonBox;
+    } else if (radio.value === 'radius') {
+      return this.shadowRoot?.querySelector('sp-latlon-radius') as LatLonRadius;
+    } else {
+      return null; // means all
+    }
   }
 }
 customElements.define(LATLON_CHOICE_ELEMENT, LatLonChoice);

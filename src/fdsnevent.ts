@@ -1056,7 +1056,10 @@ export class EventQuery {
 }
 
 //@ts-ignore
-import {LatLonRadius, LabeledMinMax} from './components';
+import {LatLonChoice,
+  LatLonBox,
+  LatLonRadius,
+  LabeledMinMax} from './components';
 import {TimeRangeChooser,} from './datechooser';
 
 const eqsearchHtml = `
@@ -1069,10 +1072,8 @@ const eqsearchHtml = `
   <button id="year">Year</button>
   </div>
   <div>
-    <label>Geo:</label><sp-latlonradius></sp-latlonradius>
-  </div>
-  <div>
-    <label>End Time</label><input type="text" name="End Time" value="now" />
+    <label>Geo:</label>
+    <sp-latlon-choice></sp-latlon-choice>
   </div>
   <div><label>Magnitude</label><sp-minmax id="magnitude" min="-1" max="10"></sp-minmax></div>
   <div><label>Depth</label><sp-minmax id="depth" min="0" max="1000"></sp-minmax><label>km</label></div>
@@ -1097,7 +1098,7 @@ export class EarthquakeSearch extends HTMLElement {
     wrapper.innerHTML = eqsearchHtml;
     shadow.appendChild(wrapper);
     this._registerEvent(wrapper, 'sp-timerange');
-    this._registerEvent(wrapper, 'sp-latlonradius');
+    this._registerEvent(wrapper, 'sp-latlon-choice');
     this._registerEvent(wrapper, 'sp-minmax#magnitude');
     this._registerEvent(wrapper, 'sp-minmax#depth');
 
@@ -1143,13 +1144,24 @@ export class EarthquakeSearch extends HTMLElement {
     if ( ! trChooser) {throw new Error("can't find sp-timerange");}
     query.startTime(trChooser.start);
     query.endTime(trChooser.end);
-    const latlonrad = wrapper.querySelector('sp-latlonradius') as LatLonRadius;
-    if ( ! latlonrad) {throw new Error("can't find sp-latlonradius");}
-    if (latlonrad.minRadius>0 || latlonrad.maxRadius<180) {
-      query.latitude(latlonrad.latitude);
-      query.longitude(latlonrad.longitude);
-      if (latlonrad.minRadius>0) {query.minRadius(latlonrad.minRadius);}
-      if (latlonrad.maxRadius<180) {query.maxRadius(latlonrad.maxRadius);}
+    const latlonchoice = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
+    const choosenLatLon = latlonchoice.choosen();
+    if (choosenLatLon instanceof LatLonBox) {
+      const latlonbox = choosenLatLon as LatLonBox;
+      if (latlonbox.south > -90) {query.minLat(latlonbox.south);}
+      if (latlonbox.north < 90) {query.maxLat(latlonbox.north);}
+      if (latlonbox.west > -180 && latlonbox.west+360 !==latlonbox.east) {query.minLon(latlonbox.west);}
+      if (latlonbox.east < 360 && latlonbox.west+360 !==latlonbox.east) {query.maxLon(latlonbox.east);}
+    } else if (choosenLatLon instanceof LatLonRadius) {
+      const latlonrad = choosenLatLon as LatLonRadius;
+      if (latlonrad.minRadius>0 || latlonrad.maxRadius<180) {
+        query.latitude(latlonrad.latitude);
+        query.longitude(latlonrad.longitude);
+        if (latlonrad.minRadius>0) {query.minRadius(latlonrad.minRadius);}
+        if (latlonrad.maxRadius<180) {query.maxRadius(latlonrad.maxRadius);}
+      }
+    } else {
+      console.log(`latlon choice is: ${choosenLatLon}`)
     }
     const mag = wrapper.querySelector('sp-minmax#magnitude') as LabeledMinMax;
     if (mag.min > 0) {query.minMag(mag.min);}
