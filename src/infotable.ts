@@ -1,4 +1,5 @@
 
+import {Quake} from './quakeml';
 import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
@@ -109,6 +110,15 @@ tbody tr:nth-child(odd)
 }
 `;
 
+/**
+ * Table displaying information about waveforms, quakes, channels and stations.
+ *
+ * The CSS vars --even-row-background and --odd-row-background will change
+ * the color of even and odd rows. Default for odd is nothing, even is Cornsilk.
+ *
+ * @param seisData    Array of SeismogramDisplayData for display
+ * @param seisConfig  configuration
+ */
 export class QuakeStationTable extends SeisPlotElement {
   _template: string;
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {

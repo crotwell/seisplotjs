@@ -242,16 +242,20 @@ export class DateTimeChooser extends HTMLElement {
   updateCallback: (time: DateTime) => void;
   hourMin: HourMinChooser;
 
-  constructor() {
+  constructor(time?: DateTime) {
     super();
     const mythis = this;
-    this._time = DateTime.utc().set({second: 0, millisecond: 0});
-
     const attr_date_time = this.getAttribute("date-time");
-    if (attr_date_time) {
+    if (time) {
+      this._time = time;
+      this.setAttribute("date-time", time.toISO());
+    } else if (attr_date_time) {
       this._time = isoToDateTime(attr_date_time);
       this._time.set({second: 0, millisecond: 0}); // only hour and min?
+    } else {
+      this._time = DateTime.utc().set({second: 0, millisecond: 0});
     }
+    
     this.updateCallback = function(time: DateTime) {};
     const shadow = this.attachShadow({mode: 'open'});
 
@@ -409,7 +413,7 @@ export class TimeRangeChooser extends HTMLElement {
 
     const startLabel = wrapper.appendChild(document.createElement('label'));
     startLabel.textContent = this.startLabel;
-    const startChooser = wrapper.appendChild(document.createElement(DATETIME_ELEMENT));
+    const startChooser = wrapper.appendChild(new DateTimeChooser());
     this.startChooser = startChooser as DateTimeChooser;
     startChooser.setAttribute("class", "start");
 
@@ -424,7 +428,7 @@ export class TimeRangeChooser extends HTMLElement {
 
     const endLabel = wrapper.appendChild(document.createElement('label'));
     endLabel.textContent = this.endLabel;
-    const endChooser = wrapper.appendChild(document.createElement(DATETIME_ELEMENT));
+    const endChooser = wrapper.appendChild(new DateTimeChooser());
     this.endChooser = endChooser as DateTimeChooser;
     endChooser.setAttribute("class", "end");
 

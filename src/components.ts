@@ -1,5 +1,4 @@
 import {Channel} from './stationxml';
-import { isDef} from './util';
 
 export const CHANNEL_LIST_ELEMENT = 'sp-channellist';
 export const CHANNEL_CODE_ELEMENT = 'sp-channel-code-input';
@@ -7,6 +6,18 @@ export const MINMAX_ELEMENT = 'sp-minmax';
 export const LATLONRADIUS_ELEMENT = 'sp-latlon-radius';
 export const LATLONBOX_ELEMENT = 'sp-latlon-box';
 export const LATLON_CHOICE_ELEMENT = 'sp-latlon-choice';
+
+export function numberOrNaN(a: any): number {
+  return Number.parseFloat(`${a}`);
+}
+
+export function numberFromInput(root: ShadowRoot|Element|null, query: string): number {
+  if (! root) {throw new Error(`no root`);}
+  const el = root.querySelector(query);
+  if (el instanceof HTMLInputElement) {
+    return Number.parseFloat(el.value);
+  } else {throw new Error("element is not HTMLInputElement");}
+}
 
 export function labeledTextInput(label: string, defaultVal: string): HTMLElement {
   const ndiv = document.createElement('span');
@@ -45,11 +56,11 @@ export class ChannelCodeInput extends HTMLElement {
     let netIn = wrapper.appendChild(labeledTextInput("Network", default_vals.Network));
     netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
     let staIn = wrapper.appendChild(labeledTextInput("Station", default_vals.Station));
-    netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    staIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
     let locIn = wrapper.appendChild(labeledTextInput("Location", default_vals.Location));
-    netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    locIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
     let chanIn = wrapper.appendChild(labeledTextInput("Channel", default_vals.Channel));
-    netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    chanIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
 
 
     // Create some CSS to apply to the shadow dom
@@ -101,7 +112,6 @@ export class ChannelListChooser extends HTMLElement {
     if (shadow === null) {
       shadow = this.attachShadow({mode: 'open'});
     }
-    const that = this;
     while (shadow.firstChild) {
       // @ts-ignore
       shadow.removeChild(shadow.lastChild);
@@ -144,14 +154,46 @@ export class LabeledMinMax extends HTMLElement {
   default_max = 10.0;
   constructor() {
     super();
-    const shadow = this.attachShadow({mode: 'open'});
-    this.draw_element(shadow);
+    this.attachShadow({mode: 'open'});
+    this.draw_element();
   }
-  draw_element(shadow: ShadowRoot) {
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === "lowerbound") {
+      const lowerbound = numberOrNaN(newValue);
+      this.shadowRoot?.querySelector("input.min")?.setAttribute("min", `${lowerbound}`);
+      this.shadowRoot?.querySelector("input.max")?.setAttribute("min", `${lowerbound}`);
+    }
+    if (name === "upperbound") {
+      const upperbound = numberOrNaN(newValue);
+      this.shadowRoot?.querySelector("input.min")?.setAttribute("max", `${upperbound}`);
+      this.shadowRoot?.querySelector("input.max")?.setAttribute("max", `${upperbound}`);
+    }
+    if (name === "min" && ! Number.isNaN(numberOrNaN(newValue))) {
+      this.min = numberOrNaN(newValue);
+    }
+    if (name === "max" && ! Number.isNaN(numberOrNaN(newValue))) {
+      this.max = numberOrNaN(newValue);
+    }
+    this.validate();
+  }
+  static get observedAttributes() { return ["lowerbound", "upperbound", "min", "max"]; }
+  draw_element() {
+    let shadow = this.shadowRoot;
+    if (! shadow) {
+      shadow = this.attachShadow({mode: 'open'});
+    }
     const minAttr = this.getAttribute("min");
     if (!!minAttr) {this.default_min = Number.parseFloat(minAttr);}
     const maxAttr = this.getAttribute("max");
     if (!!maxAttr) {this.default_max = Number.parseFloat(maxAttr);}
+
+    let lowerbound = Number.NaN;
+    let upperbound = Number.NaN;
+    const lbAttr = this.getAttribute("lowerbound");
+    if (!!lbAttr) {lowerbound = Number.parseFloat(lbAttr);}
+    const upAttr = this.getAttribute("upperbound");
+    if (!!upAttr) {upperbound = Number.parseFloat(upAttr);}
+
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = `
       input {
@@ -169,8 +211,13 @@ export class LabeledMinMax extends HTMLElement {
     min_text.setAttribute('type','number');
     min_text.setAttribute('name','min');
     min_text.setAttribute('class','min');
+    if (lowerbound) {min_text.setAttribute("min", `${lowerbound}`);}
+    if (upperbound) {min_text.setAttribute("max", `${upperbound}`);}
     min_text.value = `${this.default_min}`;
-    min_text.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    min_text.addEventListener("change", () => {
+      this.validate("min");
+      this.dispatchEvent(new Event("change"));
+    });
 
     const to_label = wrapper.appendChild(document.createElement('label'));
     to_label.textContent = "to";
@@ -178,10 +225,45 @@ export class LabeledMinMax extends HTMLElement {
     max_text.setAttribute('type','number');
     max_text.setAttribute('name','max');
     max_text.setAttribute('class','max');
+    if (lowerbound) {max_text.setAttribute("min", `${lowerbound}`);}
+    if (upperbound) {max_text.setAttribute("max", `${upperbound}`);}
     max_text.value = `${this.default_max}`;
-    max_text.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    max_text.addEventListener("change", () => {
+      this.validate("max");
+      this.dispatchEvent(new Event("change"));
+    });
 
     shadow.appendChild(wrapper);
+    this.validate("min");
+  }
+  validate(lastChanged?: string) {
+    // will be NaN if not an attr
+    let lowerbound = numberOrNaN(this.getAttribute("lowerbound"));
+    let upperbound = numberOrNaN(this.getAttribute("upperbound"));
+    console.log(`validate minmax: ${lowerbound}  ${upperbound}`)
+    if (! Number.isNaN(lowerbound)) {
+      if (this.min < lowerbound) {
+        this.min = lowerbound;
+      }
+      if (this.max < lowerbound) {
+        this.max = lowerbound;
+      }
+    }
+    if (! Number.isNaN(upperbound)) {
+      if (this.min > upperbound) {
+        this.min = upperbound;
+      }
+      if (this.max > upperbound) {
+        this.max = upperbound;
+      }
+    }
+    if (this.min > this.max) {
+      if (lastChanged === "max") {
+        this.min = this.max;
+      } else {
+        this.max = this.min;
+      }
+    }
   }
   get min(): number {
     const input = this.shadowRoot?.querySelector("input.min") as HTMLInputElement;
@@ -216,20 +298,14 @@ export class LabeledMinMax extends HTMLElement {
     }
   }
   updateMinMax() {
-    const min_s = this.getAttribute('min');
-    if (isDef(min_s)) {
-      const min = Number.parseFloat(min_s);
-      if ( ! Number.isNaN(min)) {
-       this.default_min = min;
-      }
+    const min = numberOrNaN(this.getAttribute('min'));
+    if ( ! Number.isNaN(min)) {
+     this.default_min = min;
     }
 
-    const max_s = this.getAttribute('max');
-    if (isDef(max_s)) {
-      const max = Number.parseFloat(max_s);
-      if ( ! Number.isNaN(max)) {
-       this.default_max = max;
-      }
+    const max = numberOrNaN(this.getAttribute('max'));
+    if ( ! Number.isNaN(max)) {
+     this.default_max = max;
     }
   }
   connectedCallback() {
@@ -238,6 +314,30 @@ export class LabeledMinMax extends HTMLElement {
 }
 
 customElements.define(MINMAX_ELEMENT, LabeledMinMax);
+
+/**
+ * ensures input number is -90 <= value <= 90
+ * @param  value              input latitude
+ * @return       output latitude in range, zero if NaN
+ */
+export function validateLatitude(value: number): number {
+  if (Number.isNaN(value)) { return 0;}
+  if (value < -90.0) { return -90.0;}
+  if (value > 90.0) { return 90.0;}
+  return value;
+}
+
+/**
+ * ensures input number is -180 <= value <= 360
+ * @param  value              input longitude
+ * @return       output longitude in range, zero if NaN
+ */
+export function validateLongitude(value: number): number {
+  if (Number.isNaN(value)) { return 0;}
+  if (value < -180.0) { return -180.0;}
+  if (value > 360.0) { return 360.0;}
+  return value;
+}
 
 export class LatLonRadius extends HTMLElement {
   constructor() {
@@ -265,33 +365,41 @@ export class LatLonRadius extends HTMLElement {
     `;
     const wrapper = document.createElement('div');
     wrapper.setAttribute('class','wrapper');
-    let latDiv = wrapper.appendChild(labeledNumberInput("Lat: ", "0"));
-    let latIn = latDiv.querySelector("input");
+    const latDiv = wrapper.appendChild(labeledNumberInput("Lat: ", "0"));
+    const latIn = latDiv.querySelector("input");
+    if (!latIn) {throw new Error("can't find input");}
     latIn.setAttribute("min", "-90.0");
     latIn.setAttribute("max", "90.0");
     latIn.addEventListener("change", () => {
       const value = Number.parseFloat(latIn.value);
-      if (value < -90.0) { latIn.value = -90.0;}
-      if (value > 90.0) { latIn.value = 90.0;}
+      if (value !== validateLatitude(value)) {
+        latIn.value = `${validateLatitude(value)}`;
+      }
       this.dispatchEvent(new Event("change"));
     });
-    let lonDiv = wrapper.appendChild(labeledNumberInput("Lon: ", "0"));
-    let lonIn = lonDiv.querySelector("input");
+    const lonDiv = wrapper.appendChild(labeledNumberInput("Lon: ", "0"));
+    const lonIn = lonDiv.querySelector("input");
+    if (!lonIn) {throw new Error("can't find input");}
     lonIn.setAttribute("min", "-180.0");
     lonIn.setAttribute("max", "360.0");
     lonIn.addEventListener("change", () => {
       const value = Number.parseFloat(lonIn.value);
-      if (value < -180.0) { lonIn.value = -180.0;}
-      if (value > 360.0) { lonIn.value = 360.0;}
+      if (value !== validateLongitude(value)) {
+        lonIn.value = `${validateLongitude(value)}`;
+      }
       this.dispatchEvent(new Event("change"));
     });
     const radius_label = wrapper.appendChild(document.createElement('label'));
     radius_label.textContent = "Radius: ";
-    const minmax = wrapper.appendChild(new LabeledMinMax());
-    minmax.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+    radius_label.setAttribute("for", "radiusminmax");
+    const radius_minmax = wrapper.appendChild(new LabeledMinMax());
+    radius_label.setAttribute("id", "radiusminmax");
+    radius_minmax.setAttribute("lowerbound", "0.0");
+    radius_minmax.setAttribute("upperbound", "180.0");
+    radius_minmax.min = 0;
+    radius_minmax.max = 180;
+    radius_minmax.addEventListener("change", () => this.dispatchEvent(new Event("change")));
     shadow.appendChild(wrapper);
-    minmax.min = 0;
-    minmax.max = 180;
   }
   get latitude() {
     const inEl = this.shadowRoot?.querySelector("input.Lat") as HTMLInputElement;
@@ -299,15 +407,17 @@ export class LatLonRadius extends HTMLElement {
   }
   set latitude(v: number) {
     const inEl = this.shadowRoot?.querySelector("input.Lat") as HTMLInputElement;
-    inEl.value = v;
+    inEl.value = `${validateLatitude(v)}`;
+    this.dispatchEvent(new Event("change"));
   }
   get longitude() {
     const inEl = this.shadowRoot?.querySelector("input.Lon") as HTMLInputElement;
     return Number.parseFloat(inEl.value);
   }
-  set latitude(v: number) {
+  set longitude(v: number) {
     const inEl = this.shadowRoot?.querySelector("input.Lon") as HTMLInputElement;
-    inEl.value = v;
+    inEl.value = `${validateLongitude(v)}`;
+    this.dispatchEvent(new Event("change"));
   }
   get minRadius() {
     const mm = this.shadowRoot?.querySelector(MINMAX_ELEMENT) as LabeledMinMax;
@@ -345,6 +455,7 @@ export class LatLonRadius extends HTMLElement {
   }
   _doUpdateCallback() {
     console.log(`update lat/lon: ${this.latitude}/${this.longitude}  rad: ${this.minRadius} to ${this.maxRadius}`);
+
     this.dispatchEvent(new Event("change"));
   }
 }
@@ -360,29 +471,29 @@ label {
   margin-right: 2px;
   margin-left: 2px;
 }
-div.latlon {
+fieldset.latlon {
   display: grid;
   width: 360px;
   grid-template-columns: 2fr 1fr 2fr;
 }
 </style>
-<div class="latlon">
+<fieldset class="latlon">
   <div></div>
   <div style="text-align: center;">
-    <div><label for="maxlat">Max Lat</label></div>
-    <div><input id="maxlat" type="number"/></div>
+  <div><label for="north">North</label></div>
+    <div><input id="north" type="number"/></div>
   </div>
   <div></div>
-  <div style="text-align: right;"><label for="minlon">Min Lon</label><input id="minlon" type="number"/></div>
+  <div style="text-align: right;"><label for="west">West</label><input id="west" type="number"/></div>
   <div style="text-align: center;margin-top: 2px;"><label>Lat/Lon</label></div>
-  <div style="text-align: left;"><input id="maxlon" type="number"/><label for="maxlon">Max Lon</label></div>
+  <div style="text-align: left;"><input id="east" type="number"/><label for="east">East</label></div>
   <div></div>
   <div style="text-align: center;">
-    <div><input id="minlat" type="number"/></div>
-    <div><label for="minlat">Min Lat</label></div>
+    <div><input id="south" type="number"/></div>
+    <div><label for="south">South</label></div>
   </div>
   <div></div>
-</div
+</fieldset>
 `;
 
 export class LatLonBox extends HTMLElement {
@@ -390,45 +501,138 @@ export class LatLonBox extends HTMLElement {
     super();
     this.draw();
   }
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    this.innerHTML='';
+    this.draw();
+  }
+  static get observedAttributes() { return ["south", "north", "east", "west"]; }
   draw() {
     let shadow = this.shadowRoot;
     if (shadow === null) {
       shadow = this.attachShadow({mode: 'open'});
     }
     shadow.innerHTML = latlonbox_html;
-    const minLat = shadow.querySelector('input#minlat');
-    minLat.value = -90.0;
-    minLat?.addEventListener("change", () => {
-      if (minLat.value < -90.0) {minLat.value = -90.0;}
-      if (minLat.value > 90.0) {minLat.value = 90.0;}
+    const southEl = shadow.querySelector('input#south') as HTMLInputElement;
+    if (!southEl) {throw new Error("cant find input");}
+    const southAttr = numberOrNaN(this.getAttribute("south"));
+    southEl.value = `${Number.isNaN(southAttr) ? -90 : validateLatitude(southAttr)}`;
+    southEl?.addEventListener("change", () => {
+      const value = Number.parseFloat(southEl.value);
+      if (value !== validateLatitude(value)) {
+        southEl.value = `${validateLatitude(value)}`;
+      }
+      this.validate("south");
       this.dispatchEvent(new Event("change"));
     });
-    const maxLat = shadow.querySelector('input#maxlat');
-    maxLat.value = 90.0;
-    maxLat?.addEventListener("change", () => {
-      if (maxLat.value < -90.0) {maxLat.value = -90.0;}
-      if (maxLat.value > 90.0) {maxLat.value = 90.0;}
+    const northEl = shadow.querySelector('input#north') as HTMLInputElement;
+    if (!northEl) {throw new Error("cant find input");}
+    const northAttr = numberOrNaN(this.getAttribute("north"));
+    northEl.value = `${Number.isNaN(northAttr) ? 90 : validateLatitude(northAttr)}`;
+    northEl?.addEventListener("change", () => {
+      const value = Number.parseFloat(northEl.value);
+      if (value !== validateLatitude(value)) {
+        northEl.value = `${validateLatitude(value)}`;
+      }
+      this.validate("north");
       this.dispatchEvent(new Event("change"));
     });
 
-    const minLon = shadow.querySelector('input#minlon');
-    minLon.value = -180.0;
-    minLon?.addEventListener("change", () => {
-      if (minLon.value < -180.0) { minLon.value = -180.0;}
-      if (minLon.value > 360.0) { minLon.value = 360.0;}
+    const westEl = shadow.querySelector('input#west') as HTMLInputElement;
+    if (!westEl) {throw new Error("cant find input");}
+    const westAttr = numberOrNaN(this.getAttribute("west"));
+    westEl.value = `${Number.isNaN(westAttr) ? -180 : validateLongitude(westAttr)}`;
+    westEl?.addEventListener("change", () => {
+      const value = Number.parseFloat(westEl.value);
+      if (value !== validateLongitude(value)) {
+        westEl.value = `${validateLongitude(value)}`;
+      }
+      this.validate("west");
       this.dispatchEvent(new Event("change"));
     });
-    const maxLon = shadow.querySelector('input#maxlon');
-    maxLon.value = 180.0;
-    maxLon?.addEventListener("change", () => {
-      if (maxLon.value < -180.0) { maxLon.value = -180.0;}
-      if (maxLon.value > 360.0) { maxLon.value = 360.0;}
+    const eastEl = shadow.querySelector('input#east') as HTMLInputElement;
+    if (!eastEl) {throw new Error("cant find input");}
+    const eastAttr = numberOrNaN(this.getAttribute("east"));
+    eastEl.value = `${Number.isNaN(eastAttr) ? 180 : validateLongitude(eastAttr)}`;
+    eastEl?.addEventListener("change", () => {
+      const value = Number.parseFloat(eastEl.value);
+      if (value !== validateLongitude(value)) {
+        eastEl.value = `${validateLongitude(value)}`;
+      }
+      this.validate("east");
       this.dispatchEvent(new Event("change"));
     });
   }
-  get minLat(): number {
-    return this.shadowRoot?.querySelector('input#minlat').value;
+  get south(): number {
+    return numberFromInput(this.shadowRoot, 'input#south');
   }
+  set south(value: number) {
+    console.log(`set south ${value}`)
+    const inputEl = this.shadowRoot?.querySelector('input#south') as HTMLInputElement;
+    if (!inputEl) {throw new Error("can't find input");}
+    inputEl.value = `${validateLatitude(value)}`;
+    this.validate("south");
+    this.dispatchEvent(new Event("change"));
+  }
+  get north(): number {
+    return numberFromInput(this.shadowRoot, 'input#north');
+  }
+  set north(value: number) {
+    console.log(`set north ${value}`)
+    const inputEl = this.shadowRoot?.querySelector('input#north') as HTMLInputElement;
+    if (!inputEl) {throw new Error("can't find input");}
+    inputEl.value = `${validateLatitude(value)}`;
+    this.validate("north");
+    this.dispatchEvent(new Event("change"));
+  }
+  get west(): number {
+    return numberFromInput(this.shadowRoot, 'input#west');
+  }
+  set west(value: number) {
+    console.log(`set west ${value}`)
+    const inputEl = this.shadowRoot?.querySelector('input#west') as HTMLInputElement;
+    if (!inputEl) {throw new Error("can't find input");}
+    inputEl.value = `${validateLongitude(value)}`;
+    this.validate("west");
+    this.dispatchEvent(new Event("change"));
+  }
+  get east(): number {
+    return numberFromInput(this.shadowRoot, 'input#east');
+  }
+  set east(value: number) {
+    console.log(`set east ${value}`)
+    const inputEl = this.shadowRoot?.querySelector('input#east') as HTMLInputElement;
+    if (!inputEl) {throw new Error("can't find input");}
+    inputEl.value = `${validateLongitude(value)}`;
+    this.validate("east");
+    this.dispatchEvent(new Event("change"));
+  }
+  validate(lastChanged: string) {
+    console.log(`validate ${lastChanged}  lat: ${this.south},${this.north}  lon:${this.west},${this.east}`)
+    if (this.south > this.north) {
+      if (lastChanged === "south") {
+        this.north = this.south;
+      } else {
+        this.south = this.north;
+      }
+    }
+    if (this.west > this.east) {
+      console.log(`west ${this.west} > ${this.east} east`)
+      if (lastChanged === "east") {
+        if (this.west > 180 && this.west-360 < this.east) {
+          this.west = this.west-360;
+        } else {
+          this.west = this.east;
+        }
+      } else {
+        if (this.east < 0 && this.east+360 > this.west) {
+          this.east = this.east+360;
+        } else {
+          this.east = this.west;
+        }
+      }
+    }
+  }
+
 }
 
 customElements.define(LATLONBOX_ELEMENT, LatLonBox);
