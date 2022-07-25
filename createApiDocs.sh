@@ -19,8 +19,11 @@ if [ ! -e docs/api ]; then
 fi
 
 # descriptions of each module
+desc_axisutil='draw title and axis labels'
+desc_components='simple web components'
 desc_cssutil='simple util to inject css into web document'
 desc_datalink='datalink protocol over web socket to a [Ringserver](https://seiscode.iris.washington.edu/projects/ringserver) datalink server'
+desc_dataset='load/save seismic data as zip file'
 desc_datechooser='widget to choose dates and times'
 desc_displayorganize='organize more complex displays composed of individual pieces'
 desc_distaz='calculates distance between to lat/lon points'
@@ -28,13 +31,15 @@ desc_fdsnavailability='query data availability from an FDSN availability web ser
 desc_fdsndatacenters='query FDSN data center registry'
 desc_fdsndataselect='query seismograms from an FDSN web service'
 desc_fdsnevent='query earthquakes from an FDSN web service'
+desc_fdsnsourceid='parse FDSN sourceId'
 desc_fdsnstation='query networks, stations and channels from an FDSN web service'
 desc_fft='discrete fourier transforms via [OregonDSP](https://www.npmjs.com/package/oregondsp)'
-desc_fftplot='plotting of specta output from the fft module using [d3](http://d3js.org)'
 desc_filter='timeseries filtering and utility functionality via [OregonDSP](https://www.npmjs.com/package/oregondsp)'
 desc_handlebarshelpers='helpers for use with [handlebars](http://handlebarsjs.com/), eg in titles'
 desc_helicorder='helicorder style 24 hour plots using [d3](http://d3js.org)'
+desc_infotable='component to display information about seismograms'
 desc_irisfedcatalog='query IRIS fedcatalog web service'
+desc_leafletutil='create leaflet maps with stations and earthquakes'
 desc_miniseed='parsing miniseed files'
 desc_mseed3='next generation miniseed file format for seismic data'
 desc_mseedarchive='http access to remote miniseed files in a archive format'
@@ -44,19 +49,25 @@ desc_plotutil='utility functions for plotting'
 desc_quakeml='objects corresponding to elements in a QuakeML xml file'
 desc_ringserverweb='presentation of data pulled from the web interface of a [Ringserver](https://seiscode.iris.washington.edu/projects/ringserver)'
 desc_sacpolezero='parsing of SAC polezero response file'
+desc_scale='time and amplitude scale change notification'
 desc_seedcodec='decompression for seismic data, often used from miniseed'
 desc_seedlink='seedlink protocol over web socket to a [Ringserver](https://seiscode.iris.washington.edu/projects/ringserver) seedlink server'
+desc_seedlink4='seedlink version 4 protocol over web socket to a [Ringserver](https://seiscode.iris.washington.edu/projects/ringserver) seedlink server'
 desc_seismogram='objects representing seismograms and timeseries'
 desc_seismogramloader='uses fdsnstation, fdsnevent, traveltime and fdsndataselect to load seismograms'
 desc_seismogramsegment='objects representing contiguous segments of seismograms'
-desc_seismograph='plotting of seismograms using [d3](http://d3js.org)'
+desc_seismograph='plotting of seismograms'
 desc_seismographconfig='configuration of seismograph plots'
+desc_sorting='sorting utilites for seismic data'
+desc_spectraplot='plotting of specta output from the fft module'
+desc_spelement='superclass for some custom elements'
 desc_stationxml='objects corresponding to elements in a StationXML xml file'
 desc_taper='tapering of timeseries'
 desc_transfer='instrument deconvolution of seismograms using response'
 desc_traveltime='travel times of seismic waves via the IRIS traveltime web service'
 desc_util='general utility functions'
 desc_vector='vector process of seismograms'
+desc_version='version of this library'
 desc_d3='the [d3](http://d3js.org) library, for easy access'
 desc_luxon='the [luxon](https://moment.github.io/luxon/) library, for easy access'
 
@@ -119,7 +130,7 @@ do
     descText=""
     descArg=""
     descVarName="desc_${jsfile}"
-    if [ -n "${descVarName}" ]; then
+    if [[ "${!descVarName}" ]]; then
       descText="${!descVarName}"
       descArg='--project-description'
     else
