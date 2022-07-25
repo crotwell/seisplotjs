@@ -9,7 +9,7 @@
 
   <h3>Lat Lon:</h3>
   <div>
-    <h5>Box: </h5><sp-latlon-box/>
+    <h5>Box: </h5><sp-latlon-box south="-10" north="33" west="-40" east="-20"></sp-latlon-box >
   </div>
   <div>
     <h5>Radius: </h5><sp-latlon-radius/>
@@ -25,6 +25,12 @@
   <script type="module">
     import {components, fdsnstation, stationxml} from '../seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
+    const outputArea = document.querySelector('#output');
+    const choiceEl = document.querySelector('sp-latlon-choice');
+    choiceEl.addEventListener("change", () => {
+      const choosen = choiceEl.choosen();
+      outputArea.textContent = `Choice: ${choosen} `;
+    });
 
   </script>
 </body>

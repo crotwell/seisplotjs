@@ -41,6 +41,9 @@
     seis.stationCode = "STA";
     seis.locationCode = "00";
     seis.channelCode = "BHZ";
+    const sddA = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seis);
+    const sddB = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisB);
+    const sddC = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisC);
     const seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
     seisConfig.isRelativeTime = false;
     seisConfig.doGain = false;
@@ -69,7 +72,7 @@
     const seismographList = (document.querySelectorAll('sp-seismograph'));
     console.log(`before set data`)
     seismographList.forEach( graph => {
-      graph.appendSeisData([seis, seisC]);
+      graph.appendSeisData([sddA, sddC]);
       graph.draw();
       console.log(`scale ${graph.seismographConfig.title.slice(0,5)}  ${graph.amp_scalable}`)
     });

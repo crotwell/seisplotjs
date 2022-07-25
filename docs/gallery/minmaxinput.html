@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <link rel="stylesheet" href="style.css">
+   <title>Min-max input</title>
+</head>
+<body>
+
+  <h3>Min Max:</h3>
+  <div>
+    <label>MinMax: </label><sp-minmax lowerbound="0" upperbound="10" min="3" max="5"></sp-minmax>
+  </div>
+  <div>
+    <h5>Output:</h5>
+    <p id="output"></p>
+  </div>
+
+  <script type="module">
+    import {components} from '../seisplotjs_3.0.0-alpha.0_standalone.mjs';
+
+    const outputArea = document.querySelector('#output');
+    const minmaxEl = document.querySelector('sp-minmax');
+    minmaxEl.addEventListener("change", () => {
+      outputArea.textContent = `Range: ${minmaxEl.min} ${minmaxEl.max} out of ${minmaxEl.lowerbound} ${minmaxEl.upperbound}`;
+    })
+
+  </script>
+</body>
+</html>

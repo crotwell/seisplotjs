@@ -7,7 +7,7 @@
 </head>
 <body>
 
-  <h3>Channel:</h3>
+  <h3 id="sp-channel-code-input">Channel:</h3>
   <div>
     <label>Code: </label><sp-channel-code-input/>
   </div>
@@ -26,7 +26,7 @@
 
     const outputArea = document.querySelector('#output');
     const codeInput = document.querySelector('sp-channel-code-input');
-    codeInput.updateCallback = (time) => {
+    function doUpdateCodes() {
       outputArea.textContent = `Codes: ${codeInput.network}_${codeInput.station}_${codeInput.location}_${codeInput.channel}`;
       const query = new fdsnstation.StationQuery();
       query.networkCode(codeInput.network);
@@ -37,10 +37,14 @@
         listInput.setChannels(Array.from(stationxml.allChannels(netList)));
       })
     }
-    listInput.updateCallback = (chan) => {
-      outputArea.textContent = `Chan: ${chan.sourceId}`;
-    }
-
+    codeInput.addEventListener("change", doUpdateCodes);
+    listInput.addEventListener("change", () => {
+      outputArea.textContent = ``;
+      for (let chan of listInput.selectedChannels()) {
+        outputArea.textContent += ` ${chan.codes()} ${chan.timeRange}`;
+      }
+    });
+    doUpdateCodes();
   </script>
 </body>
 </html>

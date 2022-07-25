@@ -19,7 +19,12 @@
 </head>
 <body>
 
-  <h3>Info Table:</h3>
+  <h3>Earthquake Table:</h3>
+  <div>
+    <sp-event-table ></sp-event-table>
+  </div>
+
+  <h3>Station-Event Table:</h3>
   <div>
     <sp-station-event-table ></sp-station-event-table>
   </div>
@@ -34,6 +39,11 @@
         graph.draw();
       });
       return ds;
+    }).then((ds) => {
+        document.querySelectorAll('sp-event-table').forEach( graph => {
+          graph.quakeList = seisplotjs.seismogram.uniqueQuakes(ds.waveforms);
+        });
+        return ds;
     });
   </script>
 </body>

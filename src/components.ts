@@ -102,6 +102,7 @@ customElements.define(CHANNEL_CODE_ELEMENT, ChannelCodeInput);
 
 export class ChannelListChooser extends HTMLElement {
   channels: Array<Channel>;
+  selected_channels: Set<Channel> = new Set();
   constructor() {
     super();
     this.channels = [];
@@ -121,11 +122,17 @@ export class ChannelListChooser extends HTMLElement {
     const label = wrapper.appendChild(document.createElement('label'));
     label.textContent = "Channels:";
     this.channels.forEach(c => {
+      const channel = c;
       const div = wrapper.appendChild(document.createElement('div'));
       const cb = div.appendChild(document.createElement('input'));
-      cb.setAttribute('type','radio');
+      cb.setAttribute('type','checkbox');
       cb.setAttribute('name','radiogroup');
       cb.addEventListener('change', event => {
+        if (cb.checked) {
+          this.selected_channels.add(channel);
+        } else {
+          this.selected_channels.delete(channel);
+        }
         this.dispatchEvent(new Event("change"));
       });
       const nlabel = div.appendChild(document.createElement('label'));
@@ -144,6 +151,10 @@ export class ChannelListChooser extends HTMLElement {
     this.dispatchEvent(new Event("change"))
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  }
+  selectedChannels(): Array<Channel> {
+    console.log(`selectedChannels(): ${this.selected_channels.size}`)
+    return Array.from(this.selected_channels.values());
   }
 }
 
@@ -264,6 +275,18 @@ export class LabeledMinMax extends HTMLElement {
         this.max = this.min;
       }
     }
+  }
+  get lowerbound(): number {
+      return numberOrNaN(this.getAttribute("lowerbound"));
+  }
+  set lowerbound(v: number) {
+    this.setAttribute("lowerbound", `${v}`);
+  }
+  get upperbound(): number {
+      return numberOrNaN(this.getAttribute("upperbound"));
+  }
+  set upperbound(v: number) {
+    this.setAttribute("upperbound", `${v}`);
   }
   get min(): number {
     const input = this.shadowRoot?.querySelector("input.min") as HTMLInputElement;
@@ -454,6 +477,9 @@ export class LatLonRadius extends HTMLElement {
     } else {
       throw new Error(`cant find ${MINMAX_ELEMENT}`);
     }
+  }
+  toString(): string {
+    return `LatLon Radius: ${this.latitude}/${this.longitude} ${this.minRadius}/${this.maxRadius}`;
   }
   _doUpdateCallback() {
     console.log(`update lat/lon: ${this.latitude}/${this.longitude}  rad: ${this.minRadius} to ${this.maxRadius}`);
@@ -646,6 +672,9 @@ export class LatLonBox extends HTMLElement {
         }
       }
     }
+  }
+  toString(): string {
+    return `LatLon Box: ${this.west}/${this.east}/${this.south}/${this.north}`;
   }
 
 }
