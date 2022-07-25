@@ -67,7 +67,9 @@ function load_fdsn() {
       seisplotjs.d3.select("div.stageplot").append("p").text(`No response: ${firstChan.channelCode}`);
     }
     const chanChooser = document.querySelector("sp-channellist");
-    chanChooser.setCallback(c => process_stages(c.response.stages));
+    chanChooser.addEventListener("change", () => {
+      chanChooser.selectedChannels().forEach(c => process_stages(c.response.stages));
+    });
     chanChooser.setChannels(Array.from(seisplotjs.stationxml.allChannels(networkList)));
     chanChooser.setAttribute('channel',"a");
   }).catch(e => {

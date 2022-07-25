@@ -2,10 +2,10 @@ div.fftfir {
   height: 500px;
 }
 
-spectra-plot {
+sp-spectra {
   height: 250px;
 }
 
-seismo-graph {
+sp-seismograph {
   height: 300px;
 }

@@ -4,6 +4,11 @@
    <meta charset="utf-8" />
    <link rel="stylesheet" href="style.css">
    <title>SCSN Ringserver</title>
+   <style>
+     input#level {
+       width: 3em;
+     }
+   </style>
 </head>
 <body>
 
@@ -13,7 +18,7 @@
     <button id="id">Id</button>
     <div>
       <button id="streamids">Stream Ids</button>
-      <label>Level: </label><input type="text" id="level" name="level" pattern="[0-6]" value="1"></input>
+      <label>Level: </label><input type="number" id="level" name="level" pattern="[0-6]" value="1" min="1" max="6"></input>
       <label>Match: </label><input type="text" id="match" name="match" value=""></input>
     </div>
     <div>

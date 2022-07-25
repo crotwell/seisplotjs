@@ -1,3 +1,4 @@
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
 const odsp = seisplotjs.OregonDSP;
 const d3 = seisplotjs.d3;
@@ -46,15 +47,11 @@ let createFIR = function() {
   plotConfig.title = "FIR Filter"
   let impulseResponse = fftForwardArray(longCoeff);
   const fftfir_div = document.querySelector('div.fftfir');
-  const firPlot = fftfir_div.appendChild(document.createElement('spectra-plot'));
+  const firPlot = fftfir_div.appendChild(new seisplotjs.spectraplot.SpectraPlot([impulseResponse], plotConfig));
 
-  firPlot.fftResults = [impulseResponse];
-  firPlot.seismographConfig = plotConfig;
   firPlot.logfreq = doLogLog;
   firPlot.draw();
-  const firPhasePlot = fftfir_div.appendChild(document.createElement('spectra-plot'));
-  firPhasePlot.fftResults = [impulseResponse];
-  firPhasePlot.seismographConfig = plotConfig;
+  const firPhasePlot = fftfir_div.appendChild(new seisplotjs.spectraplot.SpectraPlot([impulseResponse], plotConfig));
   firPhasePlot.logfreq = doLogLog;
   firPhasePlot.kind = "phase";
   firPhasePlot.draw();
@@ -71,11 +68,9 @@ let createFIR = function() {
   seisConfig.doRMean = false;
   seisConfig.wheelZoom = false;
   let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(impulseSeis);
-  let graph = document.createElement('seismo-graph');
-  graph.appendSeisData(seisData);
-  graph.seismographConfig = seisConfig;
+  let graph = new seisplotjs.seismograph.Seismograph([seisData], seisConfig);
   graph.seismographConfig.isRelativeTime = true;
-  graph.seismographConfig.linkedTimeScale.duration = seisData.timeRange.duration;
+  graph.seismographConfig.linkedTimeScale.duration = seisData.timeRange.toDuration();
   graph.calcTimeScaleDomain();
   graph.calcAmpScaleDomain();
   impluseresp_div.appendChild(graph);
