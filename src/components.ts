@@ -125,13 +125,20 @@ export class ChannelListChooser extends HTMLElement {
       const channel = c;
       const div = wrapper.appendChild(document.createElement('div'));
       const cb = div.appendChild(document.createElement('input'));
-      cb.setAttribute('type','checkbox');
+      cb.setAttribute('type',this.type);
       cb.setAttribute('name','radiogroup');
       cb.addEventListener('change', event => {
-        if (cb.checked) {
-          this.selected_channels.add(channel);
+        if (this.type === "radio") {
+          // radio, only one selected, notify only on select not unselect
+          this.selected_channels.clear();
+          this.selected_channels.add(channel)
         } else {
-          this.selected_channels.delete(channel);
+          // checkbox
+          if (cb.checked) {
+            this.selected_channels.add(channel);
+          } else {
+            this.selected_channels.delete(channel);
+          }
         }
         this.dispatchEvent(new Event("change"));
       });
@@ -150,7 +157,23 @@ export class ChannelListChooser extends HTMLElement {
     this.draw_element();
     this.dispatchEvent(new Event("change"))
   }
+  get type(): string {
+    const t = this.getAttribute("type");
+    if (t) {
+      return t;
+    } else {
+      return "checkbox";
+    }
+  }
+  set type(s: string) {
+    if (s === "checkbox" || s === "radio") {
+      this.setAttribute("type", s);
+    } else {
+      throw new Error("must be one of checkbox or radio");
+    }
+  }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    this.draw_element();
   }
   selectedChannels(): Array<Channel> {
     console.log(`selectedChannels(): ${this.selected_channels.size}`)
