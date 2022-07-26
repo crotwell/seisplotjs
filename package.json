@@ -103,7 +103,6 @@
     "eslint-plugin-jsdoc": "^39.2.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-standard": "^5.0.0",
     "esmify": "^2.1.1",
     "genversion": "^3.1.1",
     "jest": "^28.1.0",
