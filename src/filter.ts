@@ -7,7 +7,7 @@ import {Duration} from "luxon";
 import {Seismogram} from "./seismogram";
 import {InstrumentSensitivity} from "./stationxml";
 import * as OregonDSPTop from "oregondsp";
-import {OregonDSP} from "./oregondsputil";
+import {OregonDSP, PassbandType, LOWPASS, BANDPASS, HIGHPASS} from "./oregondsputil";
 import {isDef} from "./util";
 // import type {
 //   IIRFilter,
@@ -103,31 +103,16 @@ export type MinMaxMean = {
   mean: number;
 };
 
-export function getPassband(type: string) {
-  // this is really really bad, but kotlin doesn't export
-  // enums and filter requires a enum arg, so we fake it
-  let name ="unknown";
-  let ord = -1;
+export function getPassband(type: string): (typeof LOWPASS | typeof BANDPASS | typeof HIGHPASS) {
   if (type === LOW_PASS) {
-    name = LOW_PASS;
-    ord = 0;
+    return LOWPASS;
   } else if (type === BAND_PASS) {
-    name = BAND_PASS;
-    ord = 1;
+    return PassbandType.BANDPASS;
   } else if (type === HIGH_PASS) {
-    name = HIGH_PASS;
-    ord = 2;
+    return PassbandType.HIGHPASS;
   } else {
     throw new Error(`unknown pass band: ${type}`);
   }
-  // @ts-ignore
-  return {
-    _name_2: name,
-    _ordinal: ord,
-    equals: function (other: any) {
-      return this._name_2 === other._name_2 && this._ordinal === other._ordinal;
-    },
-  };
 }
 /**
  * Creates a Butterworth IIR filter using the OregonDSP library.
