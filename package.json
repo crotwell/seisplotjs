@@ -91,7 +91,6 @@
     "@types/rsvp": "^4.0.4",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
-    "babel-eslint": "^10.1.0",
     "babel-jest": "^28.1.0",
     "babelify": "^10.0.0",
     "browserify": "^17.0.0",
