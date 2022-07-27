@@ -1,6 +1,5 @@
 import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
 
-const odsp = seisplotjs.OregonDSP;
 const d3 = seisplotjs.d3;
 d3.select("button#load").on("click", function(d) { createFIR(); });
 
@@ -16,7 +15,7 @@ let createFIR = function() {
   // Weight given to stopband ripple?
   let Ws=parseFloat(document.getElementsByName('Ws')[0].value);
   const doLogLog = d3.select("input[name=loglog]").property('checked');
-  let firLp = new odsp.filter.fir.equiripple.EquirippleLowpass(N, OmegaP, Wp, OmegaS, Ws);
+  let firLp = new seisplotjs.oregondsputil.EquirippleLowpass(N, OmegaP, Wp, OmegaS, Ws);
 
   d3.select("div.message").selectAll("*").remove();
   d3.select("h3.coefficients").selectAll("*").remove();
