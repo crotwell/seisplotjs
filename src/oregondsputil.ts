@@ -10,7 +10,7 @@ export type Complex = typeof OregonDSPTop.com.oregondsp.signalProcessing.filter.
 export const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 //export const Complex = OregonDSP.filter.iir.Complex;
 export function createComplex(real: number, imag: number): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex {
-  return OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex.Complex_init(real, imag);
+  return new OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex(real, imag);
 }
 const PassbandType = OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.PassbandType;
 const LOWPASS = PassbandType.LOWPASS;
@@ -20,6 +20,6 @@ export {PassbandType, LOWPASS, BANDPASS, HIGHPASS};
 export function complexFromPolar(amp: number, phase: number): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex {
   const real = amp*Math.cos(phase);
   const imag = amp*Math.sin(phase);
-  return OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex.Complex_init(real, imag);
+  return new OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex(real, imag);
 }
 //export {Complex};
