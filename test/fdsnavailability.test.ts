@@ -33,8 +33,8 @@ test( "query setter test", () => {
   expect(dsQuery.getFormat()).toEqual(FORMAT);
   expect(dsQuery.nodata(404)).toBe(dsQuery);
   expect(dsQuery.getNodata()).toEqual(404);
-  expect(dsQuery.specVersion(1)).toBe(dsQuery);
-  expect(dsQuery.getSpecVersion()).toEqual(1);
+  expect(dsQuery.specVersion("1")).toBe(dsQuery);
+  expect(dsQuery.getSpecVersion()).toEqual("1");
   expect(dsQuery.port(80)).toBe(dsQuery);
   expect(dsQuery.getPort()).toEqual(80);
   expect(dsQuery.getHost()).toEqual("service.iris.edu");

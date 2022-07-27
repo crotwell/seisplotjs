@@ -1,4 +1,3 @@
-// @flow
 
 import {Network, allStations, allChannels} from '../../src/stationxml';
 
