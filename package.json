@@ -1,6 +1,6 @@
 {
   "name": "seisplotjs",
-  "version": "3.0.0-alpha.0",
+  "version": "3.0.0-alpha.1",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "main": "./dist/module/index.js",
   "browser": "./dist/module/index.js",
