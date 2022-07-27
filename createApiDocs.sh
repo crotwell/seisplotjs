@@ -170,8 +170,11 @@ EOF
     fi
   elif [ -d src/${jsfile} ]
   then
+    echo
+    echo WARN: doc script doesnot deal with subdirs in src yet
+    echo
     #echo npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile} src/${jsfile}/[a-hj-z]*.ts
-    npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile} src/${jsfile}/[a-hj-z]*.ts
+    #npx documentation build -f ${format} -o docs/api/${jsfile}${md} --document-exported --github --project-name seisplotjs.${jsfile} src/${jsfile}
   else
     echo unknown file ${f}
   fi
