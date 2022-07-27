@@ -3,8 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {createComplex} from "./oregondsputil";
-import * as OregonDSPTop from "oregondsp";
+import {Complex} from "./oregondsputil";
 import {isNumArg, stringify} from "./util";
 
 /**
@@ -17,12 +16,12 @@ export class SacPoleZero {
   /**
    * Complex poles
    */
-  poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
+  poles: Array<InstanceType<typeof Complex>>;
 
   /**
    * Complex zeros
    */
-  zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
+  zeros: Array<InstanceType<typeof Complex>>;
 
   /**
    * Scalar overall gain
@@ -41,7 +40,7 @@ export class SacPoleZero {
   /** normalization factor for poles and zeros accounting for gamma, for debugging */
   A0: number;
 
-  constructor(poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>, zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>, constant: number) {
+  constructor(poles: Array<InstanceType<typeof Complex>>, zeros: Array<InstanceType<typeof Complex>>, constant: number) {
     this.poles = poles;
     this.zeros = zeros;
     this.constant = constant;
@@ -81,10 +80,10 @@ export class SacPoleZero {
     return s.join("\n");
   }
 
-  evalPoleZeroInverse(freq: number): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex {
-    const s = createComplex(0, 2 * Math.PI * freq);
-    let zeroOut = createComplex(1, 0);
-    let poleOut = createComplex(1, 0);
+  evalPoleZeroInverse(freq: number): InstanceType<typeof Complex> {
+    const s = new Complex(0, 2 * Math.PI * freq);
+    let zeroOut = new Complex(1, 0);
+    let poleOut = new Complex(1, 0);
 
     for (let i = 0; i < this.poles.length; i++) {
       poleOut = poleOut.timesComplex(s.minusComplex(this.poles[i]));
@@ -95,7 +94,7 @@ export class SacPoleZero {
         s.real() === this.zeros[i].real() &&
         s.imag() === this.zeros[i].imag()
       ) {
-        return createComplex(0, 0);
+        return new Complex(0, 0);
       }
 
       zeroOut = zeroOut.timesComplex(s.minusComplex(this.zeros[i]));
@@ -156,10 +155,10 @@ export class SacPoleZero {
    * @param freqs frequencies to compute
    * @returns  frequency response
    */
-  calcForDisplay(freqs: Array<number>): Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex> {
+  calcForDisplay(freqs: Array<number>): Array<InstanceType<typeof Complex>> {
     const out = freqs.map(freq => {
       let respAtS = this.evalPoleZeroInverse(freq);
-      respAtS = createComplex(1, 0).overComplex(respAtS);
+      respAtS = new Complex(1, 0).overComplex(respAtS);
       return respAtS;
     });
     return out;
@@ -173,8 +172,8 @@ export class SacPoleZero {
    */
   static parse(data: string): SacPoleZero {
     const pz = {
-      zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>(0),
-      poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>(0),
+      zeros: Array<InstanceType<typeof Complex>>(0),
+      poles: Array<InstanceType<typeof Complex>>(0),
       constant: 1,
     };
     const lines = data.split("\n");
@@ -196,14 +195,14 @@ export class SacPoleZero {
           if (items[0] === "POLES") {
             // no more zeros, fill array with 0
             for (let z = pz.zeros.length; z < numZeros; z++) {
-              pz.zeros.push(createComplex(0, 0));
+              pz.zeros.push(new Complex(0, 0));
             }
 
             break;
           } else {
             const real = parseFloat(items[0]);
             const imag = parseFloat(items[1]);
-            pz.zeros.push(createComplex(real, imag));
+            pz.zeros.push(new Complex(real, imag));
           }
 
           i++;
@@ -222,14 +221,14 @@ export class SacPoleZero {
           if (items[0] === "CONSTANT") {
             // no more poles, fill array with 0
             for (let z = pz.poles.length; z < numPoles; z++) {
-              pz.poles.push(createComplex(0, 0));
+              pz.poles.push(new Complex(0, 0));
             }
 
             break;
           } else {
             const real = parseFloat(items[0]);
             const imag = parseFloat(items[1]);
-            pz.poles.push(createComplex(real, imag));
+            pz.poles.push(new Complex(real, imag));
           }
 
           i++;

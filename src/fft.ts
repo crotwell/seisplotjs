@@ -4,11 +4,8 @@
  * http://www.seis.sc.edu
  */
 import {Seismogram, SeismogramDisplayData} from "./seismogram";
-//import type {Complex} from "./oregondsputil";
-import { createComplex, complexFromPolar} from "./oregondsputil";
 import {isDef} from "./util";
-import * as OregonDSPTop from "oregondsp";
-const oregondsp = OregonDSPTop.com.oregondsp.signalProcessing;
+import {RDFT, Complex, complexFromPolar} from "./oregondsputil";
 
 /**
  * A higher level function to calculate DFT. Returns a
@@ -66,7 +63,7 @@ export function calcDFT(
     N = 16;
   }
 
-  const dft = new oregondsp.fft.RDFT(log2N);
+  const dft = new RDFT(log2N);
   const inArray = new Float32Array(N);
   inArray.fill(0);
 
@@ -109,7 +106,7 @@ export function inverseDFT(
     throw new Error("power of two check fails: " + N + " " + packedFreq.length);
   }
 
-  const dft = new oregondsp.fft.RDFT(log2N);
+  const dft = new RDFT(log2N);
   const out = new Float32Array(N).fill(0);
   dft.evaluateInverse(packedFreq, out);
   return out.slice(0, numPoints);
@@ -195,7 +192,7 @@ export class FFTResult {
    * @returns               FFTResult
    */
   static createFromComplex(
-    complexArray: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>,
+    complexArray: Array<InstanceType<typeof Complex>>,
     origLength: number,
     sampleRate: number,
   ): FFTResult {
@@ -237,10 +234,7 @@ export class FFTResult {
 
     const modComplex = new Array(amp.length);
     for (let i = 0; i < amp.length; i++) {
-      modComplex[i] = complexFromPolar(
-        amp[i],
-        phase[i],
-      );
+      modComplex[i] = complexFromPolar(amp[i],phase[i]);
     }
     return FFTResult.createFromComplex(modComplex, origLength, sampleRate);
   }
@@ -260,15 +254,15 @@ export class FFTResult {
     }
   }
 
-  asComplex(): Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex> {
-    const complexArray: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex> = [];
+  asComplex(): Array<InstanceType<typeof Complex>> {
+    const complexArray: Array<InstanceType<typeof Complex>> = [];
     const L = this.packedFreq.length;
-    complexArray.push(createComplex(this.packedFreq[0], 0));
+    complexArray.push(new Complex(this.packedFreq[0], 0));
     for (let i = 1; i < this.packedFreq.length / 2; i++) {
-      const c = createComplex(this.packedFreq[i], this.packedFreq[L - i]);
+      const c = new Complex(this.packedFreq[i], this.packedFreq[L - i]);
       complexArray.push(c);
     }
-    complexArray.push(createComplex(this.packedFreq[L / 2], 0));
+    complexArray.push(new Complex(this.packedFreq[L / 2], 0));
     return complexArray;
   }
 
@@ -276,18 +270,18 @@ export class FFTResult {
     const amp = new Float32Array(1+this.packedFreq.length/2);
     const phase = new Float32Array(1+this.packedFreq.length/2);
 
-    let c = createComplex(this.packedFreq[0], 0);
+    let c = new Complex(this.packedFreq[0], 0);
     amp[0] = c.abs();
     phase[0] = c.angle();
     const L = this.packedFreq.length;
 
     for (let i = 1; i < this.packedFreq.length / 2; i++) {
-      c = createComplex(this.packedFreq[i], this.packedFreq[L - i]);
+      c = new Complex(this.packedFreq[i], this.packedFreq[L - i]);
       amp[i] = c.abs();
       phase[i] = c.angle();
     }
 
-    c = createComplex(this.packedFreq[L / 2], 0);
+    c = new Complex(this.packedFreq[L / 2], 0);
     amp[this.packedFreq.length / 2] = c.abs();
     phase[this.packedFreq.length / 2] = c.angle();
     return [ amp, phase ];

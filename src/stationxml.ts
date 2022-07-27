@@ -14,8 +14,7 @@ import {
   rethrowWithMessage,
   WAY_FUTURE,
 } from "./util";
-import {createComplex} from "./oregondsputil";
-import * as OregonDSPTop from "oregondsp";
+import {Complex} from "./oregondsputil";
 import {FDSNSourceId, NetworkSourceId, StationSourceId} from "./fdsnsourceid";
 import {DateTime, Interval} from "luxon";
 
@@ -434,8 +433,8 @@ export class PolesZeros extends AbstractFilterType {
   pzTransferFunctionType: string;
   normalizationFactor: number;
   normalizationFrequency: number;
-  zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
-  poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
+  zeros: Array<InstanceType<typeof Complex>>;
+  poles: Array<InstanceType<typeof Complex>>;
 
   constructor(inputUnits: string, outputUnits: string) {
     super(inputUnits, outputUnits);
@@ -1119,13 +1118,13 @@ export function createInterval(start: DateTime, end: null | DateTime): Interval 
  * @param   el xml element
  * @returns     Complex instance
  */
-export function extractComplex(el: Element): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex {
+export function extractComplex(el: Element): InstanceType<typeof Complex> {
   const re = _grabFirstElFloat(el, "Real");
 
   const im = _grabFirstElFloat(el, "Imaginary");
 
   if (isNumArg(re) && isNumArg(im)) {
-    return createComplex(re, im);
+    return new Complex(re, im);
   } else {
     throw new Error(`Both Real and Imaginary required: ${re} ${im}`);
   }

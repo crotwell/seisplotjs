@@ -6,15 +6,16 @@
 import {Duration} from "luxon";
 import {Seismogram} from "./seismogram";
 import {InstrumentSensitivity} from "./stationxml";
-import * as OregonDSPTop from "oregondsp";
-import {OregonDSP, PassbandType, LOWPASS, BANDPASS, HIGHPASS} from "./oregondsputil";
+import {
+  Butterworth,
+  ChebyshevI,
+  ChebyshevII,
+  PassbandType,
+  IIRFilter,
+  CenteredHilbertTransform,
+  LOWPASS, BANDPASS, HIGHPASS
+} from "./oregondsputil";
 import {isDef} from "./util";
-// import type {
-//   IIRFilter,
-//   Butterworth,
-//   ChebyshevI,
-//   ChebyshevII,
-// } from "oregondsp.com.oregondsp.signalProcessing.filter.iir";
 
 /**
  * Constant for bandpass OregonDSP filter creation.
@@ -130,9 +131,9 @@ export function createButterworth(
   lowFreqCorner: number,
   highFreqCorner: number,
   delta: number,
-): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Butterworth {
+): InstanceType<typeof Butterworth> {
   const passbandtype = getPassband(passband);
-  return new OregonDSP.filter.iir.Butterworth(
+  return new Butterworth(
     numPoles,
     passbandtype,
     lowFreqCorner,
@@ -159,9 +160,9 @@ export function createChebyshevI(
   lowFreqCorner: number,
   highFreqCorner: number,
   delta: number,
-): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.ChebyshevI {
+): InstanceType<typeof ChebyshevI> {
   const passbandtype = getPassband(passband);
-  return new OregonDSP.filter.iir.ChebyshevI(
+  return new ChebyshevI(
     numPoles,
     epsilon,
     passbandtype,
@@ -189,9 +190,9 @@ export function createChebyshevII(
   lowFreqCorner: number,
   highFreqCorner: number,
   delta: number,
-): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.ChebyshevII {
+): InstanceType<typeof ChebyshevII> {
   const passbandtype = getPassband(passband);
-  return new OregonDSP.filter.iir.ChebyshevII(
+  return new ChebyshevII(
     numPoles,
     epsilon,
     passbandtype,
@@ -209,7 +210,7 @@ export function createChebyshevII(
  * @returns            filtered seismogram
  */
 export function applyFilter(
-  iirFilter: OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.IIRFilter,
+  iirFilter: InstanceType<typeof IIRFilter>,
   seis: Seismogram,
 ): Seismogram {
   // check delta and samplePeriod with 0.1% of each other
@@ -299,7 +300,7 @@ export function hilbert(
       highEdge = 0.95;
     }
 
-    const hilbert = new OregonDSPTop.com.oregondsp.signalProcessing.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
+    const hilbert = new CenteredHilbertTransform(n, lowEdge, highEdge);
 
     const coeff = hilbert.getCoefficients();
 

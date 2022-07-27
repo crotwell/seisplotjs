@@ -8,12 +8,11 @@ import {SeismogramSegment} from "./seismogramsegment";
 import {Seismogram} from "./seismogram";
 import {SacPoleZero} from "./sacpolezero";
 import {Response, PolesZeros} from "./stationxml";
+import {Complex} from "./oregondsputil";
 // `allMeasures` includes all the measures packaged with this library
 import configureMeasurements, { allMeasures,  AllMeasuresUnits } from 'convert-units';
 const convert = configureMeasurements(allMeasures);
 
-import {createComplex} from "./oregondsputil";
-import * as OregonDSPTop from "oregondsp";
 
 /**
  * Applies response, poles and zeros along with overall gain to the seismogram.
@@ -151,19 +150,19 @@ export function calcResponseFromSacPoleZero(
   let respAtS;
   // zero freq
   respAtS = evalPoleZeroInverse(sacPoleZero, 0);
-  respAtS = createComplex(1, 0).overComplex(respAtS);
+  respAtS = new Complex(1, 0).overComplex(respAtS);
   freqValues[0] = respAtS.real();
   // nyquist
   let freq = sampleRate / 2;
   respAtS = evalPoleZeroInverse(sacPoleZero, freq);
-  respAtS = createComplex(1, 0).overComplex(respAtS);
+  respAtS = new Complex(1, 0).overComplex(respAtS);
   freqValues[freqValues.length / 2] = respAtS.real();
 
   for (let i = 1; i < freqValues.length / 2; i++) {
     freq = i * deltaF;
     respAtS = evalPoleZeroInverse(sacPoleZero, freq);
     //respAtS = respAtS.timesReal(deltaF*i);
-    respAtS = createComplex(1, 0).overComplex(respAtS);
+    respAtS = new Complex(1, 0).overComplex(respAtS);
 
     if (respAtS.real() !== 0 || respAtS.imag() !== 0) {
       freqValues[i] = respAtS.real();
@@ -219,7 +218,7 @@ export function combine(
     respAtS = respAtS.timesReal(
       deltaF * calcFreqTaper(freq, lowCut, lowPass, highPass, highCut),
     );
-    const freqComplex = createComplex(
+    const freqComplex = new Complex(
       freqValues[i],
       freqValues[freqValues.length - i],
     ).timesComplex(respAtS);
@@ -242,7 +241,7 @@ export function combine(
 export function evalPoleZeroInverse(
   sacPoleZero: SacPoleZero,
   freq: number,
-): OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex {
+): InstanceType<typeof Complex> {
   return sacPoleZero.evalPoleZeroInverse(freq);
 }
 
@@ -431,20 +430,20 @@ export function convertPoleZeroToSacStyle(
 
   // extra gamma zeros are (0,0)
   for (let i = 0; i < polesZeros.zeros.length; i++) {
-    zeros[i] = createComplex(
+    zeros[i] = new Complex(
       polesZeros.zeros[i].real() * mulFactor,
       polesZeros.zeros[i].imag() * mulFactor,
     );
   }
 
   for (let i = 0; i < gamma; i++) {
-    zeros.push(createComplex(0, 0));
+    zeros.push(new Complex(0, 0));
   }
 
   const poles = [];
 
   for (let i = 0; i < polesZeros.poles.length; i++) {
-    poles[i] = createComplex(
+    poles[i] = new Complex(
       polesZeros.poles[i].real() * mulFactor,
       polesZeros.poles[i].imag() * mulFactor,
     );
@@ -479,15 +478,15 @@ export function convertPoleZeroToSacStyle(
   return sacPZ;
 }
 export function calc_A0(
-  poles: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>,
-  zeros: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>,
+  poles: Array<InstanceType<typeof Complex>>,
+  zeros: Array<InstanceType<typeof Complex>>,
   ref_freq: number,
 ): number {
-  let numer = createComplex(1, 0);
-  let denom = createComplex(1, 0);
+  let numer = new Complex(1, 0);
+  let denom = new Complex(1, 0);
   let f0;
   let a0;
-  f0 = createComplex(0, 2 * Math.PI * ref_freq);
+  f0 = new Complex(0, 2 * Math.PI * ref_freq);
 
   for (let i = 0; i < zeros.length; i++) {
     denom = denom.timesComplex(f0.minusComplex(zeros[i]));

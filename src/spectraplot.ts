@@ -6,7 +6,7 @@
 import {FFTResult} from "./fft";
 import {SeismographConfig} from "./seismographconfig";
 import {SeismogramDisplayData} from "./seismogram";
-import * as OregonDSPTop from "oregondsp";
+import {Complex} from "./oregondsputil";
 import * as d3 from "d3";
 import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
 import {drawAxisLabels} from "./axisutil";
@@ -21,13 +21,13 @@ export const SPECTRA_ELEMENT = 'sp-spectra';
  */
 export class FreqAmp {
   freq: Float32Array;
-  values: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>;
+  values: Array<InstanceType<typeof Complex>>;
 
   /** optional units of the original data for display purposes. */
   inputUnits: string;
   seismogramDisplayData: null | SeismogramDisplayData;
 
-  constructor(freq: Float32Array, values: Array<OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex>) {
+  constructor(freq: Float32Array, values: Array<InstanceType<typeof Complex>>) {
     this.freq = freq;
     this.values = values;
     this.inputUnits = ""; // leave blank unless set manually
