@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <title>Earthquake Search</title>
+
+    <!-- this stops flavicon loading -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  </head>
+  <body>
+    <div id='message'>
+      <p></p>
+    </div>
+    <h3>Earthquake query: <span id="title">seismographs</span></h3>
+    <sp-earthquake-search></sp-earthquake-search>
+    <button id="query">Query</button>
+    <sp-event-table></sp-event-table>
+    <div id="messages">
+      <p></p>
+    </div>
+
+    <div id="myseismograph">
+    </div>
+
+    <h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
+
+    <script type="module" >
+      import {fdsnevent} from '../seisplotjs_3.0.0-alpha.0_standalone.mjs';
+      const eqSearch = document.querySelector('sp-earthquake-search');
+      eqSearch.addEventListener("change", () => {
+        const eqQuery = eqSearch.populateQuery();
+        console.log(eqQuery.formURL());
+        const mesgDiv = document.querySelector("#messages");
+        const pEl = mesgDiv.querySelector("p");
+        pEl.textContent = eqQuery.formURL();
+      });
+      const queryBtn = document.querySelector('#query');
+      if ( ! queryBtn) {throw new Error("can't find button#query");}
+      queryBtn.addEventListener('click', event => {
+        const eqQuery = eqSearch.populateQuery();
+        const mesgDiv = document.querySelector("#messages");
+        const pEl = mesgDiv.querySelector("p");
+        pEl.textContent = eqQuery.formURL();
+        eqQuery.query().then(quakeList => {
+          const quakeTable = document.querySelector("sp-event-table");
+          quakeTable.quakeList = quakeList;
+        }).catch(e => {
+          pEl.textContent = e;
+          console.alert(false, e);
+        });
+      });
+    </script>
+  </body>
+</html>
