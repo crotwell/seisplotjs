@@ -61,12 +61,12 @@ export class DataCentersQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns the query when setting, the current value os services if no arguments
    */
-  specVersion(value?: number): DataCentersQuery {
-    doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: string): DataCentersQuery {
+    doStringGetterSetter(this, "specVersion", value);
     return this;
   }
 
-  getSpecVersion(): number {
+  getSpecVersion(): string {
     return this._specVersion;
   }
 

@@ -137,12 +137,12 @@ export class AvailabilityQuery extends FDSNCommon {
    * @param value spec version, usually 1
    * @returns the query when setting, the current value when no argument
    */
-  specVersion(value?: number): AvailabilityQuery {
-    doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "specVersion", value);
     return this;
   }
 
-  getSpecVersion(): number {
+  getSpecVersion(): string {
     return this._specVersion;
   }
 

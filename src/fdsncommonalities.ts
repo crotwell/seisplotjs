@@ -9,7 +9,7 @@ export const IRIS_HOST = "service.iris.edu";
 
 export class FDSNCommon {
   /** @private */
-  _specVersion: number;
+  _specVersion: string;
 
   /** @private */
   _protocol: string;
@@ -27,7 +27,7 @@ export class FDSNCommon {
   _timeoutSec: number;
 
   constructor(host?: string) {
-    this._specVersion = 1;
+    this._specVersion = "1";
     this._host = IRIS_HOST;
     this._protocol = checkProtocol();
 

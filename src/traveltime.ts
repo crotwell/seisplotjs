@@ -3,12 +3,12 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import {FDSNCommon} from './fdsncommonalities';
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
   doIntGetterSetter,
   doFloatGetterSetter,
-  checkProtocol,
   stringify,
   isDef,
   isNonEmptyStringArg,
@@ -90,21 +90,7 @@ export function createOriginArrival(dist: number): TraveltimeArrivalType {
  *
  * @param host optional host to connect to, defaults to IRIS
  */
-export class TraveltimeQuery {
-  /** @private */
-  _specVersion: string;
-
-  /** @private */
-  _protocol: string;
-
-  /** @private */
-  _host: string;
-
-  /** @private */
-  _port: number;
-
-  /** @private */
-  _nodata: number | undefined;
+export class TraveltimeQuery extends FDSNCommon {
 
   /** @private */
   _evdepth: number;
@@ -136,25 +122,15 @@ export class TraveltimeQuery {
   /** @private */
   _noheader: boolean;
 
-  /** @private */
-  _timeoutSec: number;
-
   constructor(host?: string | null) {
-    this._specVersion = "1";
-    this._protocol = checkProtocol();
-
-    this._evdepth = 0;
-
-    this._host = IRIS_HOST;
-    if (isNonEmptyStringArg(host)) {
-      this._host = host;
+    if ( ! isNonEmptyStringArg(host)) {
+      host = IRIS_HOST;
     }
-
-    this._port = 80;
+    super(host);
+    this._evdepth = 0;
     this._format = JSON_FORMAT;
     this._noheader = false; // only for text format
 
-    this._timeoutSec = 30;
   }
 
   protocol(value?: string): TraveltimeQuery {

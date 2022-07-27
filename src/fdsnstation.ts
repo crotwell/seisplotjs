@@ -148,12 +148,12 @@ export class StationQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  specVersion(value?: number): StationQuery {
-    doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: string): StationQuery {
+    doStringGetterSetter(this, "specVersion", value);
     return this;
   }
 
-  getSpecVersion(): number | undefined {
+  getSpecVersion(): string {
     return this._specVersion;
   }
 

@@ -3,6 +3,7 @@
  * University of South Carolina, 2020
  * http://www.seis.sc.edu
  */
+import {FDSNCommon} from './fdsncommonalities';
 import {DateTime, Interval} from 'luxon';
 import {Network} from "./stationxml";
 import {
@@ -26,7 +27,6 @@ import {
   doIntGetterSetter,
   doFloatGetterSetter,
   doMomentGetterSetter,
-  checkProtocol,
   isoToDateTime,
   toIsoWoZ,
   isDef,
@@ -104,21 +104,7 @@ export class FedCatalogResult {
  * @see http://service.iris.edu/irisws/fedcatalog/1/
  * @param host optional host to connect to, defaults to IRIS
  */
-export class FedCatalogQuery {
-  /** @private */
-  _specVersion: number;
-
-  /** @private */
-  _protocol: string;
-
-  /** @private */
-  _host: string;
-
-  /** @private */
-  _port: number;
-
-  /** @private */
-  _nodata: number|undefined;
+export class FedCatalogQuery extends FDSNCommon {
 
   /** @private */
   _targetService: string|undefined;
@@ -195,8 +181,6 @@ export class FedCatalogQuery {
   /** @private */
   _matchTimeseries: boolean|undefined;
 
-  /** @private */
-  _timeoutSec: number;
   fedCatResult: Promise<FedCatalogResult> | null;
 
   /**
@@ -205,16 +189,10 @@ export class FedCatalogQuery {
    * @param host the host to connect to , defaults to service.iris.edu
    */
   constructor(host?: string) {
-    this._specVersion = 1;
-    this._protocol = checkProtocol();
-
-    this._host = IRIS_HOST;
-    if (isNonEmptyStringArg(host)) {
-      this.host(host);
+    if ( ! isNonEmptyStringArg(host)) {
+      host = IRIS_HOST;
     }
-
-    this._port = 80;
-    this._timeoutSec = 30;
+    super(host);
     this.fedCatResult = null;
   }
 
@@ -339,12 +317,12 @@ export class FedCatalogQuery {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  specVersion(value?: number): FedCatalogQuery {
-    doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "specVersion", value);
     return this;
   }
 
-  getSpecVersion(): number | undefined {
+  getSpecVersion(): string {
     return this._specVersion;
   }
 

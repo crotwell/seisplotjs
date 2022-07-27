@@ -102,12 +102,12 @@ export class DataSelectQuery extends FDSNCommon {
    * @param value spec version, usually 1
    * @returns new value if getting, this if setting
    */
-  specVersion(value?: number): number | DataSelectQuery {
-    doIntGetterSetter(this, "specVersion", value);
+  specVersion(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "specVersion", value);
     return this;
   }
 
-  getSpecVersion(): number | undefined {
+  getSpecVersion(): string {
     return this._specVersion;
   }
 
@@ -118,7 +118,7 @@ export class DataSelectQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  protocol(value?: string): string | DataSelectQuery {
+  protocol(value?: string): DataSelectQuery {
     doStringGetterSetter(this, "protocol", value);
     return this;
   }
