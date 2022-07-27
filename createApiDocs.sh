@@ -2,6 +2,8 @@
 
 format=html
 md='.md'
+github_branch='version3'
+
 
 if [[ 'html' == "$format"  ]]
 then
@@ -118,6 +120,10 @@ cat > docs/api/index.html <<EOF
 EOF
 fi
 
+if [ -e docs/tutorial/8_andmore_part.html ]; then
+  rm docs/tutorial/8_andmore_part.html
+fi
+
 for path in src/*.ts
 do
   f=${path##*/}
@@ -173,7 +179,12 @@ EOF
   then
     # entry of index.html
     cat >> docs/api/index.html <<EOF
-      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.0/src/${jsfile}.ts">source</a> ) - ${descTextHtml}</li>
+      <li><a href="${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/${github_branch}/src/${jsfile}.ts">source</a> ) - ${descTextHtml}</li>
+EOF
+
+    # also for tutorial8 "and more" entry of index.html
+    cat >> docs/tutorial/8_andmore_part.html <<EOF
+      <li><a href="../api/${jsfile}${md}.html">${jsfile}</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/${github_branch}/src/${jsfile}.ts">source</a> ) - ${descTextHtml}</li>
 EOF
   fi
 done

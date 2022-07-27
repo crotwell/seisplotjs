@@ -16,7 +16,7 @@ const mymap = document.querySelector('sp-station-event-map');
 //mymap.scrollWheelZoom.disable();
 
 let loadPromise;
-const loadFrom = "dataset";
+const loadFrom = "iris"; // iris or dataset
 if (loadFrom === "iris") {
 // snip start seismogramload
 let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
