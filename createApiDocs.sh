@@ -87,7 +87,7 @@ cat > docs/api/index.html <<EOF
 <html>
   <head>
     <meta charset='utf-8'>
-    <title>Seisplotjs 2.0 API Documentation</title>
+    <title>Seisplotjs 3.0 API Documentation</title>
     <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
     <meta name='viewport' content='width=device-width,initial-scale=1'>
     <link href='../api/assets/bass.css' rel='stylesheet'>
