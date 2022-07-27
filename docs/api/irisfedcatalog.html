@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.irisfedcatalog 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.irisfedcatalog 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.irisfedcatalog</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -59,11 +59,107 @@
               
                 
                 <li><a
+                  href='#target_dataselect'
+                  class="">
+                  TARGET_DATASELECT
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#target_station'
+                  class="">
+                  TARGET_STATION
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#fake_empty_text'
                   class="">
                   FAKE_EMPTY_TEXT
                   
                 </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#fedcatalogdatacenter'
+                  class=" toggle-sibling">
+                  FedCatalogDataCenter
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacenterdatacenter'
+                        class='regular pre-open'>
+                        #dataCenter
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacenterservices'
+                        class='regular pre-open'>
+                        #services
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacenterstationservice'
+                        class='regular pre-open'>
+                        #stationService
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacenterdataselectservice'
+                        class='regular pre-open'>
+                        #dataSelectService
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacenterpostlines'
+                        class='regular pre-open'>
+                        #postLines
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacenterstationquery'
+                        class='regular pre-open'>
+                        #stationQuery
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacenterdataselectquery'
+                        class='regular pre-open'>
+                        #dataSelectQuery
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacenternetworklist'
+                        class='regular pre-open'>
+                        #networkList
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogdatacentersddlist'
+                        class='regular pre-open'>
+                        #sddList
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
                 
                 </li>
               
@@ -82,45 +178,15 @@
                       <li class='h5'><span>Instance members</span></li>
                       
                       <li><a
-                        href='#fedcatalogresultdatacenter'
+                        href='#fedcatalogresultparams'
                         class='regular pre-open'>
-                        #dataCenter
+                        #params
                       </a></li>
                       
                       <li><a
-                        href='#fedcatalogresultservices'
+                        href='#fedcatalogresultqueries'
                         class='regular pre-open'>
-                        #services
-                      </a></li>
-                      
-                      <li><a
-                        href='#fedcatalogresultstationservice'
-                        class='regular pre-open'>
-                        #stationService
-                      </a></li>
-                      
-                      <li><a
-                        href='#fedcatalogresultdataselectservice'
-                        class='regular pre-open'>
-                        #dataSelectService
-                      </a></li>
-                      
-                      <li><a
-                        href='#fedcatalogresultpostlines'
-                        class='regular pre-open'>
-                        #postLines
-                      </a></li>
-                      
-                      <li><a
-                        href='#fedcatalogresultstationquery'
-                        class='regular pre-open'>
-                        #stationQuery
-                      </a></li>
-                      
-                      <li><a
-                        href='#fedcatalogresultdataselectquery'
-                        class='regular pre-open'>
-                        #dataSelectQuery
+                        #queries
                       </a></li>
                       
                     </ul>
@@ -128,16 +194,6 @@
                   
                   
                 </div>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#parsedresulttype'
-                  class="">
-                  ParsedResultType
-                  
-                </a>
                 
                 </li>
               
@@ -151,14 +207,37 @@
                 
                 <div class='toggle-target display-none'>
                   
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#fedcatalogqueryfromstationquery'
+                        class='regular pre-open'>
+                        .fromStationQuery
+                      </a></li>
+                    
+                    </ul>
+                  
                   
                     <ul class='list-reset py1-ul pl1'>
                       <li class='h5'><span>Instance members</span></li>
                       
                       <li><a
+                        href='#fedcatalogqueryfedcatresult'
+                        class='regular pre-open'>
+                        #fedCatResult
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogqueryspecversion'
                         class='regular pre-open'>
                         #specVersion
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetspecversion'
+                        class='regular pre-open'>
+                        #getSpecVersion
                       </a></li>
                       
                       <li><a
@@ -168,9 +247,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetprotocol'
+                        class='regular pre-open'>
+                        #getProtocol
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogqueryhost'
                         class='regular pre-open'>
                         #host
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygethost'
+                        class='regular pre-open'>
+                        #getHost
                       </a></li>
                       
                       <li><a
@@ -180,9 +271,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetport'
+                        class='regular pre-open'>
+                        #getPort
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerynodata'
                         class='regular pre-open'>
                         #nodata
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetnodata'
+                        class='regular pre-open'>
+                        #getNodata
                       </a></li>
                       
                       <li><a
@@ -192,9 +295,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygettargetservice'
+                        class='regular pre-open'>
+                        #getTargetService
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerynetworkcode'
                         class='regular pre-open'>
                         #networkCode
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetnetworkcode'
+                        class='regular pre-open'>
+                        #getNetworkCode
                       </a></li>
                       
                       <li><a
@@ -204,9 +319,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetstationcode'
+                        class='regular pre-open'>
+                        #getStationCode
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerylocationcode'
                         class='regular pre-open'>
                         #locationCode
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetlocationcode'
+                        class='regular pre-open'>
+                        #getLocationCode
                       </a></li>
                       
                       <li><a
@@ -216,15 +343,39 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetchannelcode'
+                        class='regular pre-open'>
+                        #getChannelCode
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerystarttime'
                         class='regular pre-open'>
                         #startTime
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetstarttime'
+                        class='regular pre-open'>
+                        #getStartTime
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogqueryendtime'
                         class='regular pre-open'>
                         #endTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetendtime'
+                        class='regular pre-open'>
+                        #getEndTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerytimerange'
+                        class='regular pre-open'>
+                        #timeRange
                       </a></li>
                       
                       <li><a
@@ -240,9 +391,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetstartbefore'
+                        class='regular pre-open'>
+                        #getStartBefore
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogqueryendbefore'
                         class='regular pre-open'>
                         #endBefore
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetendbefore'
+                        class='regular pre-open'>
+                        #getEndBefore
                       </a></li>
                       
                       <li><a
@@ -252,9 +415,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetstartafter'
+                        class='regular pre-open'>
+                        #getStartAfter
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogqueryendafter'
                         class='regular pre-open'>
                         #endAfter
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetendafter'
+                        class='regular pre-open'>
+                        #getEndAfter
                       </a></li>
                       
                       <li><a
@@ -264,9 +439,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetminlat'
+                        class='regular pre-open'>
+                        #getMinLat
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerymaxlat'
                         class='regular pre-open'>
                         #maxLat
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetmaxlat'
+                        class='regular pre-open'>
+                        #getMaxLat
                       </a></li>
                       
                       <li><a
@@ -276,9 +463,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetminlon'
+                        class='regular pre-open'>
+                        #getMinLon
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerymaxlon'
                         class='regular pre-open'>
                         #maxLon
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetmaxlon'
+                        class='regular pre-open'>
+                        #getMaxLon
                       </a></li>
                       
                       <li><a
@@ -288,9 +487,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetlatitude'
+                        class='regular pre-open'>
+                        #getLatitude
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerylongitude'
                         class='regular pre-open'>
                         #longitude
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetlongitude'
+                        class='regular pre-open'>
+                        #getLongitude
                       </a></li>
                       
                       <li><a
@@ -300,9 +511,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetminradius'
+                        class='regular pre-open'>
+                        #getMinRadius
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerymaxradius'
                         class='regular pre-open'>
                         #maxRadius
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetmaxradius'
+                        class='regular pre-open'>
+                        #getMaxRadius
                       </a></li>
                       
                       <li><a
@@ -312,9 +535,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetincluderestricted'
+                        class='regular pre-open'>
+                        #getIncludeRestricted
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogqueryincludeavailability'
                         class='regular pre-open'>
                         #includeAvailability
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetincludeavailability'
+                        class='regular pre-open'>
+                        #getIncludeAvailability
                       </a></li>
                       
                       <li><a
@@ -324,9 +559,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetformat'
+                        class='regular pre-open'>
+                        #getFormat
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogqueryupdatedafter'
                         class='regular pre-open'>
                         #updatedAfter
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygetupdatedafter'
+                        class='regular pre-open'>
+                        #getUpdatedAfter
                       </a></li>
                       
                       <li><a
@@ -336,9 +583,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerygetmatchtimeseries'
+                        class='regular pre-open'>
+                        #getMatchTimeseries
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogquerytimeout'
                         class='regular pre-open'>
                         #timeout
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerygettimeout'
+                        class='regular pre-open'>
+                        #getTimeout
                       </a></li>
                       
                       <li><a
@@ -384,9 +643,9 @@
                       </a></li>
                       
                       <li><a
-                        href='#fedcatalogquerysetupqueryfdnsdataselect'
+                        href='#fedcatalogquerysetupforfdnsdataselect'
                         class='regular pre-open'>
-                        #setupQueryFdnsDataSelect
+                        #setupForFdnsDataSelect
                       </a></li>
                       
                       <li><a
@@ -396,9 +655,39 @@
                       </a></li>
                       
                       <li><a
+                        href='#fedcatalogquerypostfdsndataselectforfedcatresult'
+                        class='regular pre-open'>
+                        #postFdsnDataselectForFedCatResult
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerypostqueryseismograms'
+                        class='regular pre-open'>
+                        #postQuerySeismograms
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerypostqueryraw'
+                        class='regular pre-open'>
+                        #postQueryRaw
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogquerypostqueryrawwithbody'
+                        class='regular pre-open'>
+                        #postQueryRawWithBody
+                      </a></li>
+                      
+                      <li><a
                         href='#fedcatalogqueryqueryraw'
                         class='regular pre-open'>
                         #queryRaw
+                      </a></li>
+                      
+                      <li><a
+                        href='#fedcatalogqueryhandlehttpresponsecodes'
+                        class='regular pre-open'>
+                        #handleHttpResponseCodes
                       </a></li>
                       
                       <li><a
@@ -459,14 +748,14 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L27-L27'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L44-L44'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
   
 
-  <p>Major version of the FDSN spec supported here.
+  <p>Major version of the IRIS web service supported here.
 Currently is 1.</p>
 
     <div class='pre p1 fill-light mt0'>SERVICE_VERSION</div>
@@ -519,8 +808,8 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L32-L32'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L50-L50'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -574,8 +863,8 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L34-L34'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L51-L51'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -627,13 +916,129 @@ Currently is 1.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='target_dataselect'>
+      TARGET_DATASELECT
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L52-L52'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>TARGET_DATASELECT</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='target_station'>
+      TARGET_STATION
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L53-L53'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>TARGET_STATION</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='fake_empty_text'>
       FAKE_EMPTY_TEXT
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L37-L37'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L56-L56'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -686,20 +1091,22 @@ Currently is 1.</p>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='fedcatalogresult'>
-      FedCatalogResult
+    <h3 class='fl m0' id='fedcatalogdatacenter'>
+      FedCatalogDataCenter
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L39-L56'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L63-L85'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
   
 
-  
-    <div class='pre p1 fill-light mt0'>new FedCatalogResult()</div>
+  <p>Represents the part of the results of a fedcatalog query for a single
+datacenter, a section of the larger FedCatalogResult.</p>
+
+    <div class='pre p1 fill-light mt0'>new FedCatalogDataCenter()</div>
   
   
 
@@ -728,7 +1135,7 @@ Currently is 1.</p>
     <div class='py1 quiet mt1 prose-big'>Instance Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='fedcatalogresultdatacenter'>
+    <div class='border-bottom' id='fedcatalogdatacenterdatacenter'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -742,8 +1149,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L40-L40'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L64-L64'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -790,7 +1197,7 @@ Currently is 1.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fedcatalogresultservices'>
+    <div class='border-bottom' id='fedcatalogdatacenterservices'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -804,8 +1211,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L41-L41'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L65-L65'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -852,7 +1259,7 @@ Currently is 1.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fedcatalogresultstationservice'>
+    <div class='border-bottom' id='fedcatalogdatacenterstationservice'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -866,8 +1273,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L42-L42'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L66-L66'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -914,7 +1321,7 @@ Currently is 1.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fedcatalogresultdataselectservice'>
+    <div class='border-bottom' id='fedcatalogdatacenterdataselectservice'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -928,8 +1335,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L43-L43'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L67-L67'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -976,7 +1383,7 @@ Currently is 1.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fedcatalogresultpostlines'>
+    <div class='border-bottom' id='fedcatalogdatacenterpostlines'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -990,8 +1397,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L44-L44'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L68-L68'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1038,7 +1445,7 @@ Currently is 1.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fedcatalogresultstationquery'>
+    <div class='border-bottom' id='fedcatalogdatacenterstationquery'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -1052,8 +1459,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L45-L45'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L69-L69'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1100,7 +1507,7 @@ Currently is 1.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fedcatalogresultdataselectquery'>
+    <div class='border-bottom' id='fedcatalogdatacenterdataselectquery'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
@@ -1114,8 +1521,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L46-L46'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L70-L70'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1127,6 +1534,130 @@ Currently is 1.</p>
     <p>
       Type:
       (DataSelectQuery | null)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogdatacenternetworklist'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>networkList</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L71-L71'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>networkList</div>
+  
+    <p>
+      Type:
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Network>> | null)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogdatacentersddlist'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>sddList</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L72-L72'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>sddList</div>
+  
+    <p>
+      Type:
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>> | null)
     </p>
   
   
@@ -1179,20 +1710,77 @@ Currently is 1.</p>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='parsedresulttype'>
-      ParsedResultType
+    <h3 class='fl m0' id='fedcatalogresult'>
+      FedCatalogResult
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L58-L61'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L91-L99'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Represents the results of a fedcatalog query.</p>
+
+    <div class='pre p1 fill-light mt0'>new FedCatalogResult()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='fedcatalogresultparams'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>params</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L92-L92'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>ParsedResultType</div>
+    <div class='pre p1 fill-light mt0'>params</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+    </p>
   
   
 
@@ -1206,23 +1794,72 @@ Currently is 1.</p>
   
 
   
-    <div class='py1 quiet mt1 prose-big'>Properties</div>
-    <div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>params</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
-          
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <span class='code bold'>queries</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>>)</code>
-          
-          
-        </div>
-      
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
     </div>
   
+    <div class='border-bottom' id='fedcatalogresultqueries'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>queries</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L93-L93'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>queries</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#fedcatalogdatacenter">FedCatalogDataCenter</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
 
   
 
@@ -1233,6 +1870,14 @@ Currently is 1.</p>
   
 
   
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
 
   
 
@@ -1254,8 +1899,8 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L70-L770'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L107-L1361'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1265,6 +1910,13 @@ Currently is 1.</p>
 
     <div class='pre p1 fill-light mt0'>new FedCatalogQuery(host: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</div>
   
+  
+    <p>
+      Extends
+      
+        FDSNCommon
+      
+    </p>
   
 
   
@@ -1298,7 +1950,7 @@ Currently is 1.</p>
     <div class='py1 quiet mt1 prose-big'>Related</div>
     
       
-        <a href="http://www.fdsn.org/webservices/">http://www.fdsn.org/webservices/</a>
+        <a href="http://service.iris.edu/irisws/fedcatalog/1/">http://service.iris.edu/irisws/fedcatalog/1/</a>
 
       
     
@@ -1309,16 +1961,14 @@ Currently is 1.</p>
   
 
   
-
-  
-    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='fedcatalogqueryspecversion'>
+    <div class='border-bottom' id='fedcatalogqueryfromstationquery'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>specVersion(value?)</span>
+            <span class='code strong strong truncate'>fromStationQuery(stationQuery)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1328,18 +1978,16 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L154-L163'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L205-L310'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
   
 
-  <p>Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
-Setting this is probably a bad idea as the code may not be compatible with
-the web service.</p>
+  <p>Constructs a station FedCatalogQuery using the parameters in a StationQuery.</p>
 
-    <div class='pre p1 fill-light mt0'>specVersion(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>fromStationQuery(stationQuery: StationQuery): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -1356,7 +2004,159 @@ the web service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?)</code>
+            <span class='code bold'>stationQuery</span> <code class='quiet'>(StationQuery)</code>
+	    query to pull parameters from
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
+        fedcatalog query
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='fedcatalogqueryfedcatresult'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>fedCatResult</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L184-L184'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>fedCatResult</div>
+  
+    <p>
+      Type:
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>> | null)
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogqueryspecversion'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>specVersion(value?)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L320-L323'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Gets/Sets the version of the fdsnws spec, 1 is currently the only value.
+Setting this is probably a bad idea as the code may not be compatible with
+the web service.</p>
+
+    <div class='pre p1 fill-light mt0'>specVersion(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
 	    optional new value if setting
 
           </div>
@@ -1371,10 +2171,72 @@ the web service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetspecversion'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getSpecVersion()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L325-L327'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getSpecVersion(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
     
   
 
@@ -1410,8 +2272,8 @@ the web service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L170-L172'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L336-L339'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1420,7 +2282,7 @@ the web service.</p>
   <p>Gets/Sets the protocol, http or https. This should match the protocol
 of the page loaded, but is autocalculated and generally need not be set.</p>
 
-    <div class='pre p1 fill-light mt0'>protocol(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>protocol(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -1452,10 +2314,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetprotocol'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getProtocol()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L341-L343'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getProtocol(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1491,8 +2415,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L178-L180'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L351-L354'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1500,7 +2424,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
 
   <p>Gets/Sets the remote host to connect to.</p>
 
-    <div class='pre p1 fill-light mt0'>host(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>host(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -1532,10 +2456,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygethost'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getHost()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L356-L358'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getHost(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1571,8 +2557,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L186-L188'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L366-L369'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1580,7 +2566,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
 
   <p>Gets/Sets the remote port to connect to.</p>
 
-    <div class='pre p1 fill-light mt0'>port(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>port(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -1612,10 +2598,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetport'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getPort()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L371-L373'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getPort(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1651,8 +2699,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L195-L197'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L382-L385'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1661,7 +2709,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <p>Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
 the status code when no matching data is found by the service.</p>
 
-    <div class='pre p1 fill-light mt0'>nodata(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>nodata(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -1693,10 +2741,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetnodata'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getNodata()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L387-L389'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getNodata(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1732,8 +2842,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L203-L205'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L397-L400'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1741,7 +2851,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the targetservice query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>targetService(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>targetService(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -1773,10 +2883,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygettargetservice'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getTargetService()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L402-L404'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getTargetService(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1812,8 +2984,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L211-L213'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L412-L415'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1821,7 +2993,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the network query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>networkCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>networkCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -1853,10 +3025,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetnetworkcode'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getNetworkCode()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L417-L419'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getNetworkCode(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1892,8 +3126,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L219-L221'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L427-L430'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1901,7 +3135,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the station query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>stationCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>stationCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -1933,10 +3167,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetstationcode'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStationCode()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L432-L434'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStationCode(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1972,8 +3268,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L227-L229'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L442-L445'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -1981,7 +3277,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the location code query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>locationCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>locationCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2013,10 +3309,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetlocationcode'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLocationCode()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L447-L449'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLocationCode(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2052,8 +3410,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L235-L237'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L457-L460'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2061,7 +3419,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the channel query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>channelCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>channelCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2093,10 +3451,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetchannelcode'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getChannelCode()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L462-L464'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getChannelCode(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2132,8 +3552,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L243-L245'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L472-L475'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2141,7 +3561,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the starttime query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>startTime(value: moment$Moment?): (moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>startTime(value: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2158,7 +3578,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
 	    optional new value if setting
 
           </div>
@@ -2173,10 +3593,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetstarttime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStartTime()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L477-L479'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStartTime(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2212,8 +3694,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L251-L253'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L487-L490'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2221,7 +3703,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the endtime query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>endTime(value: moment$Moment?): (moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>endTime(value: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2238,7 +3720,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
 	    optional new value if setting
 
           </div>
@@ -2253,7 +3735,7 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
@@ -2278,11 +3760,11 @@ the status code when no matching data is found by the service.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fedcatalogquerytimewindow'>
+    <div class='border-bottom' id='fedcatalogquerygetendtime'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>timeWindow(se)</span>
+            <span class='code strong strong truncate'>getEndTime()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2292,8 +3774,70 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L260-L264'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L492-L494'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getEndTime(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerytimerange'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeRange(se)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L502-L506'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2301,7 +3845,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Sets startTime and endTime using the given time window</p>
 
-    <div class='pre p1 fill-light mt0'>timeWindow(se: StartEndDuration): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
+    <div class='pre p1 fill-light mt0'>timeRange(se: Interval): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2318,7 +3862,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>se</span> <code class='quiet'>(StartEndDuration)</code>
+            <span class='code bold'>se</span> <code class='quiet'>(Interval)</code>
 	    time window
 
           </div>
@@ -2358,6 +3902,86 @@ the status code when no matching data is found by the service.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='fedcatalogquerytimewindow'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeWindow(se)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L512-L514'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>timeWindow(se: Interval): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
+  
+  
+
+  <div>Deprecated: This is deprecated.
+</div>
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>se</span> <code class='quiet'>(Interval)</code>
+	    [description]
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
+        [description]
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='fedcatalogquerystartbefore'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -2372,8 +3996,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L270-L272'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L522-L525'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2381,7 +4005,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the startbefore query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>startBefore(value: moment$Moment?): (moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>startBefore(value: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2398,7 +4022,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
 	    optional new value if setting
 
           </div>
@@ -2413,10 +4037,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetstartbefore'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStartBefore()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L527-L529'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStartBefore(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2452,8 +4138,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L278-L280'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L537-L540'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2461,7 +4147,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the endbefore query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>endBefore(value: moment$Moment?): (moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>endBefore(value: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2478,7 +4164,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
 	    optional new value if setting
 
           </div>
@@ -2493,10 +4179,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetendbefore'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getEndBefore()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L542-L544'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getEndBefore(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2532,8 +4280,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L286-L288'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L552-L555'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2541,7 +4289,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the startafter query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>startAfter(value: moment$Moment?): (moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>startAfter(value: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2558,7 +4306,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
 	    optional new value if setting
 
           </div>
@@ -2573,10 +4321,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetstartafter'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStartAfter()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L557-L559'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStartAfter(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2612,8 +4422,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L294-L296'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L567-L570'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2621,7 +4431,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the endafter query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>endAfter(value: moment$Moment?): (moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>endAfter(value: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2638,7 +4448,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
 	    optional new value if setting
 
           </div>
@@ -2653,10 +4463,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetendafter'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getEndAfter()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L572-L574'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getEndAfter(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2692,8 +4564,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L302-L304'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L582-L585'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2701,7 +4573,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minlat query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2733,10 +4605,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetminlat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinLat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L587-L589'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinLat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2772,8 +4706,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L310-L312'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L597-L600'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2781,7 +4715,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxlon query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2813,10 +4747,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetmaxlat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxLat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L602-L604'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxLat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2852,8 +4848,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L318-L320'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L612-L615'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2861,7 +4857,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minlon query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2893,10 +4889,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetminlon'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinLon()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L617-L619'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinLon(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2932,8 +4990,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L326-L328'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L627-L630'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -2941,7 +4999,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxlon query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -2973,10 +5031,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetmaxlon'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxLon()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L632-L634'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxLon(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3012,8 +5132,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L334-L336'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L642-L645'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3021,7 +5141,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the latitude query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>latitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>latitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3053,10 +5173,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetlatitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLatitude()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L647-L649'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLatitude(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3092,8 +5274,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L342-L344'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L657-L660'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3101,7 +5283,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the longitude query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>longitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>longitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3133,10 +5315,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetlongitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLongitude()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L662-L664'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLongitude(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3172,8 +5416,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L350-L352'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L672-L675'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3181,7 +5425,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minradius query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3213,10 +5457,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetminradius'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinRadius()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L677-L679'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinRadius(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3252,8 +5558,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L358-L360'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L687-L690'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3261,7 +5567,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxradius query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3293,10 +5599,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetmaxradius'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxRadius()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L692-L694'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxRadius(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3332,8 +5700,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L366-L375'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L702-L705'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3341,7 +5709,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the includerestricted query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>includeRestricted(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>includeRestricted(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3373,10 +5741,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetincluderestricted'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getIncludeRestricted()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L707-L709'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getIncludeRestricted(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3412,8 +5842,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L381-L390'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L717-L720'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3421,7 +5851,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the includeavailability query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>includeAvailability(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>includeAvailability(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3453,10 +5883,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetincludeavailability'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getIncludeAvailability()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L722-L724'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getIncludeAvailability(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3492,8 +5984,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L396-L398'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L732-L735'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3501,7 +5993,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the format query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>format(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>format(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3533,10 +6025,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetformat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getFormat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L737-L739'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getFormat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3572,8 +6126,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L404-L406'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L747-L750'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3581,7 +6135,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the updatedafter query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>updatedAfter(value: moment$Moment?): (moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>updatedAfter(value: DateTime?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3598,7 +6152,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -3613,10 +6167,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetupdatedafter'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getUpdatedAfter()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L752-L754'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getUpdatedAfter(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3652,8 +6268,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L412-L421'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L762-L765'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3661,7 +6277,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the matchtimeseries query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>matchTimeseries(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>matchTimeseries(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3693,10 +6309,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygetmatchtimeseries'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMatchTimeseries()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L767-L769'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMatchTimeseries(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3732,8 +6410,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L427-L436'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L777-L780'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3741,7 +6419,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the timeout in seconds for the request. Default is 30.</p>
 
-    <div class='pre p1 fill-light mt0'>timeout(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>timeout(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#fedcatalogquery">FedCatalogQuery</a></div>
   
   
 
@@ -3773,10 +6451,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#fedcatalogquery">FedCatalogQuery</a>)</code>:
+      <code><a href="#fedcatalogquery">FedCatalogQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerygettimeout'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getTimeout()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L782-L784'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getTimeout(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3812,8 +6552,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L444-L464'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L793-L815'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3880,8 +6620,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L471-L473'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L822-L824'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -3946,8 +6686,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L480-L482'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L832-L834'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4013,8 +6753,8 @@ are contained within their respective Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L489-L491'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L842-L844'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4080,8 +6820,8 @@ are contained within their respective Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L499-L501'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L853-L855'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4148,8 +6888,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L509-L528'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L863-L890'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4228,15 +6968,15 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L531-L561'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L892-L936'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>setupQueryFdsnStation(level: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#parsedresulttype">ParsedResultType</a>></div>
+    <div class='pre p1 fill-light mt0'>setupQueryFdsnStation(level: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>></div>
   
   
 
@@ -4267,7 +7007,7 @@ which are in Stations which are in Networks.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#parsedresulttype">ParsedResultType</a>></code>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>></code>
     
   
 
@@ -4289,11 +7029,11 @@ which are in Stations which are in Networks.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fedcatalogquerysetupqueryfdnsdataselect'>
+    <div class='border-bottom' id='fedcatalogquerysetupforfdnsdataselect'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>setupQueryFdnsDataSelect()</span>
+            <span class='code strong strong truncate'>setupForFdnsDataSelect(fedCatalogResult)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -4303,15 +7043,18 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L563-L591'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L946-L979'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
   
 
-  
-    <div class='pre p1 fill-light mt0'>setupQueryFdnsDataSelect(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#parsedresulttype">ParsedResultType</a>></div>
+  <p>For each item in a parsed result returned from a FedCat service, create a
+DataSelectQuery with host and port, or url filled in correctly, ready to
+be called with the result lines.</p>
+
+    <div class='pre p1 fill-light mt0'>setupForFdnsDataSelect(fedCatalogResult: <a href="#fedcatalogresult">FedCatalogResult</a>): <a href="#fedcatalogresult">FedCatalogResult</a></div>
   
   
 
@@ -4322,6 +7065,20 @@ which are in Stations which are in Networks.</p>
   
   
 
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>fedCatalogResult</span> <code class='quiet'>(<a href="#fedcatalogresult">FedCatalogResult</a>)</code>
+	    result from a FedCat web service
+
+          </div>
+          
+        </div>
+      
+    </div>
   
 
   
@@ -4329,7 +7086,10 @@ which are in Stations which are in Networks.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#parsedresulttype">ParsedResultType</a>></code>
+      <code><a href="#fedcatalogresult">FedCatalogResult</a></code>:
+        result with dataSelectQuery added to each item
+
+      
     
   
 
@@ -4365,8 +7125,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L593-L620'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L981-L991'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4413,6 +7173,326 @@ which are in Stations which are in Networks.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='fedcatalogquerypostfdsndataselectforfedcatresult'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>postFdsnDataselectForFedCatResult(fedCatalogResult)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L993-L1029'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>postFdsnDataselectForFedCatResult(fedCatalogResult: <a href="#fedcatalogresult">FedCatalogResult</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>fedCatalogResult</span> <code class='quiet'>(<a href="#fedcatalogresult">FedCatalogResult</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerypostqueryseismograms'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>postQuerySeismograms(sddList)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1044-L1068'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>query the fed cat server for dataselect using post, which allows for multiple
+channel-timeranges at once. This assumes that there are not multiple
+time ranges for the same channel as the results, encapsulated as
+SeismogramDisplayData objects, are returned one seismogram
+per channel, which may contain gaps. The original channel and timerange are
+also populated with each result.</p>
+
+    <div class='pre p1 fill-light mt0'>postQuerySeismograms(sddList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sddList</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>)</code>
+	    array of SeismogramDisplayData objects
+that will be filled in with the resulting seismogram
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>></code>:
+        Promise to the input Array of SeismogramDisplayData objects, each with the
+seismogram containing the data returned from the server
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerypostqueryraw'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>postQueryRaw(sddList, targetService)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1070-L1083'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>postQueryRaw(sddList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>, targetService: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sddList</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>targetService</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogquerypostqueryrawwithbody'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>postQueryRawWithBody(body)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1085-L1101'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>postQueryRawWithBody(body: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>body</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='fedcatalogqueryqueryraw'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -4427,8 +7507,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L627-L644'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1108-L1124'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4436,7 +7516,7 @@ which are in Stations which are in Networks.</p>
 
   <p>Queries the remote web service.</p>
 
-    <div class='pre p1 fill-light mt0'>queryRaw(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#parsedresulttype">ParsedResultType</a>></div>
+    <div class='pre p1 fill-light mt0'>queryRaw(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>></div>
   
   
 
@@ -4454,10 +7534,85 @@ which are in Stations which are in Networks.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#parsedresulttype">ParsedResultType</a>></code>:
-        a Promise to an xml Document.
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#fedcatalogresult">FedCatalogResult</a>></code>:
+        a Promise to an parsed result.
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fedcatalogqueryhandlehttpresponsecodes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>handleHttpResponseCodes(response)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1126-L1138'>
+      <span>src/irisfedcatalog.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>handleHttpResponseCodes(response: <a href="https://developer.mozilla.org/docs/Web/Guide/HTML/HTML5">Response</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>response</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/Guide/HTML/HTML5">Response</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>></code>
     
   
 
@@ -4493,15 +7648,15 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L646-L690'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1140-L1186'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>parseRequest(requestText: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="#parsedresulttype">ParsedResultType</a></div>
+    <div class='pre p1 fill-light mt0'>parseRequest(requestText: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="#fedcatalogresult">FedCatalogResult</a></div>
   
   
 
@@ -4532,7 +7687,7 @@ which are in Stations which are in Networks.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="#parsedresulttype">ParsedResultType</a></code>
+      <code><a href="#fedcatalogresult">FedCatalogResult</a></code>
     
   
 
@@ -4568,8 +7723,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L697-L699'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1193-L1195'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4634,8 +7789,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L707-L718'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1202-L1214'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4700,8 +7855,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L724-L730'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1221-L1237'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>
@@ -4766,8 +7921,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/irisfedcatalog.js#L736-L768'>
-      <span>src/irisfedcatalog.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/irisfedcatalog.ts#L1244-L1360'>
+      <span>src/irisfedcatalog.ts</span>
       </a>
     
   </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.stationxml 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.stationxml 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.stationxml</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -32,6 +32,46 @@
                   href='#staml_ns'
                   class="">
                   STAML_NS
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#count_unit_name'
+                  class="">
+                  COUNT_UNIT_NAME
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#fix_invalid_staxml'
+                  class="">
+                  FIX_INVALID_STAXML
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#invalid_number'
+                  class="">
+                  INVALID_NUMBER
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#fake_start_date'
+                  class="">
+                  FAKE_START_DATE
                   
                 </a>
                 
@@ -133,6 +173,12 @@
                         href='#networkcodes'
                         class='regular pre-open'>
                         #codes
+                      </a></li>
+                      
+                      <li><a
+                        href='#networkisactiveat'
+                        class='regular pre-open'>
+                        #isActiveAt
                       </a></li>
                       
                       <li><a
@@ -251,6 +297,12 @@
                         href='#stationnetworkcode'
                         class='regular pre-open'>
                         #networkCode
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationisactiveat'
+                        class='regular pre-open'>
+                        #isActiveAt
                       </a></li>
                       
                       <li><a
@@ -453,6 +505,12 @@
                         href='#channelcodes'
                         class='regular pre-open'>
                         #codes
+                      </a></li>
+                      
+                      <li><a
+                        href='#channelisactiveat'
+                        class='regular pre-open'>
+                        #isActiveAt
                       </a></li>
                       
                     </ul>
@@ -1025,6 +1083,16 @@
               
                 
                 <li><a
+                  href='#createinterval'
+                  class="">
+                  createInterval
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#extractcomplex'
                   class="">
                   extractComplex
@@ -1107,6 +1175,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#parseutil_requireattribute'
+                        class='regular pre-open'>
+                        ._requireAttribute
+                      </a></li>
+                    
+                      <li><a
                         href='#parseutil_grabattributens'
                         class='regular pre-open'>
                         ._grabAttributeNS
@@ -1141,8 +1215,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L17-L17'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L22-L22'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1195,13 +1269,235 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='count_unit_name'>
+      COUNT_UNIT_NAME
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L23-L23'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>COUNT_UNIT_NAME</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='fix_invalid_staxml'>
+      FIX_INVALID_STAXML
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L24-L24'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>FIX_INVALID_STAXML</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='invalid_number'>
+      INVALID_NUMBER
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L25-L25'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>INVALID_NUMBER</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='fake_start_date'>
+      FAKE_START_DATE
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L26-L26'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>FAKE_START_DATE</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='network'>
       Network
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L22-L65'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L28-L95'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1264,8 +1560,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L23-L23'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L29-L29'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1326,8 +1622,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L24-L24'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L30-L30'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1338,7 +1634,7 @@
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -1388,8 +1684,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L25-L25'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L31-L31'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1400,7 +1696,7 @@
   
     <p>
       Type:
-      (moment$Moment | null)
+      (DateTime | null)
     </p>
   
   
@@ -1450,8 +1746,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L26-L26'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L32-L32'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1512,8 +1808,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L27-L27'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L33-L33'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1574,8 +1870,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L28-L28'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L34-L34'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1586,7 +1882,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null)
     </p>
   
   
@@ -1636,8 +1932,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L29-L29'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L35-L35'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1698,8 +1994,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L36-L38'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L47-L49'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1710,7 +2006,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+      NetworkSourceId
     </p>
   
   
@@ -1729,7 +2025,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+      <code>NetworkSourceId</code>
     
   
 
@@ -1765,8 +2061,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L39-L41'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L51-L53'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1777,7 +2073,7 @@
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -1796,7 +2092,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>
+      <code>DateTime</code>
     
   
 
@@ -1832,8 +2128,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L42-L44'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L55-L57'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1844,7 +2140,7 @@
   
     <p>
       Type:
-      (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)
+      (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)
     </p>
   
   
@@ -1862,7 +2158,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>))</code>
 	    
           </div>
           
@@ -1907,8 +2203,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L45-L47'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L59-L61'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1919,7 +2215,7 @@
   
     <p>
       Type:
-      (null | moment$Moment)
+      (null | DateTime)
     </p>
   
   
@@ -1938,7 +2234,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(null | moment$Moment)</code>
+      <code>(null | DateTime)</code>
     
   
 
@@ -1974,8 +2270,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L48-L54'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L63-L69'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -1986,7 +2282,7 @@
   
     <p>
       Type:
-      (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)
+      (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)
     </p>
   
   
@@ -2004,7 +2300,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null))</code>
 	    
           </div>
           
@@ -2049,8 +2345,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L55-L57'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L71-L73'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2061,7 +2357,7 @@
   
     <p>
       Type:
-      StartEndDuration
+      Interval
     </p>
   
   
@@ -2080,7 +2376,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>StartEndDuration</code>
+      <code>Interval</code>
     
   
 
@@ -2116,8 +2412,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L58-L60'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L75-L77'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2164,6 +2460,81 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='networkisactiveat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>isActiveAt(d?)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L79-L84'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>isActiveAt(d: DateTime?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>d</span> <code class='quiet'>(DateTime?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='networkistempnet'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -2178,8 +2549,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L61-L64'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L86-L94'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2248,8 +2619,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L67-L117'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L96-L168'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2320,8 +2691,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L68-L68'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L97-L97'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2382,8 +2753,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L69-L69'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L98-L98'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2444,8 +2815,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L74-L74'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L105-L105'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2506,8 +2877,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L75-L75'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L106-L106'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2568,8 +2939,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L76-L76'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L107-L107'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2630,8 +3001,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L77-L77'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L108-L108'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2692,8 +3063,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L78-L78'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L109-L109'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2754,8 +3125,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L79-L79'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L110-L110'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2816,8 +3187,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L86-L90'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L125-L128'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2828,7 +3199,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+      StationSourceId
     </p>
   
   
@@ -2847,7 +3218,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+      <code>StationSourceId</code>
     
   
 
@@ -2883,8 +3254,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L92-L94'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L130-L132'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2895,7 +3266,7 @@
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2914,7 +3285,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>
+      <code>DateTime</code>
     
   
 
@@ -2950,8 +3321,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L95-L97'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L134-L136'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -2962,7 +3333,7 @@
   
     <p>
       Type:
-      (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)
+      (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)
     </p>
   
   
@@ -2980,7 +3351,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>))</code>
 	    
           </div>
           
@@ -3025,8 +3396,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L98-L100'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L138-L140'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3037,7 +3408,7 @@
   
     <p>
       Type:
-      (moment$Moment | null)
+      (DateTime | null)
     </p>
   
   
@@ -3056,7 +3427,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | null)</code>
+      <code>(DateTime | null)</code>
     
   
 
@@ -3092,8 +3463,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L101-L107'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L142-L148'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3104,7 +3475,7 @@
   
     <p>
       Type:
-      (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)
+      (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)
     </p>
   
   
@@ -3122,7 +3493,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null))</code>
 	    
           </div>
           
@@ -3167,8 +3538,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L108-L110'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L150-L152'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3179,7 +3550,7 @@
   
     <p>
       Type:
-      StartEndDuration
+      Interval
     </p>
   
   
@@ -3198,7 +3569,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>StartEndDuration</code>
+      <code>Interval</code>
     
   
 
@@ -3234,8 +3605,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L111-L113'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L154-L156'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3287,11 +3658,11 @@
       </div>
     </div>
   
-    <div class='border-bottom' id='stationcodes'>
+    <div class='border-bottom' id='stationisactiveat'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>codes(sep)</span>
+            <span class='code strong strong truncate'>isActiveAt(d?)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -3301,15 +3672,15 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L114-L116'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L158-L163'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>codes(sep: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+    <div class='pre p1 fill-light mt0'>isActiveAt(d: DateTime?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
   
   
 
@@ -3326,8 +3697,83 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>sep</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
-            = <code>&#39;.&#39;</code>)</code>
+            <span class='code bold'>d</span> <code class='quiet'>(DateTime?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationcodes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>codes(sep)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L165-L167'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>codes(sep: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sep</span> <code class='quiet'>(any
+            = <code>&quot;.&quot;</code>)</code>
 	    
           </div>
           
@@ -3385,8 +3831,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L119-L253'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L169-L339'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3465,8 +3911,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L120-L120'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L170-L170'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3527,8 +3973,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L123-L123'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L174-L174'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3589,8 +4035,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L128-L128'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L182-L182'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3651,8 +4097,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L129-L129'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L183-L183'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3713,8 +4159,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L130-L130'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L184-L184'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3775,8 +4221,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L131-L131'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L185-L185'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3837,8 +4283,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L132-L132'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L186-L186'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3899,8 +4345,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L133-L133'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L187-L187'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -3961,8 +4407,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L134-L134'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L188-L188'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4023,8 +4469,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L135-L135'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L189-L189'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4085,8 +4531,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L136-L136'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L190-L190'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4097,7 +4543,7 @@
   
     <p>
       Type:
-      <a href="#response">Response</a>
+      (<a href="#response">Response</a> | null)
     </p>
   
   
@@ -4147,8 +4593,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L137-L137'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L191-L191'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4159,7 +4605,7 @@
   
     <p>
       Type:
-      <a href="#equipment">Equipment</a>
+      (<a href="#equipment">Equipment</a> | null)
     </p>
   
   
@@ -4209,8 +4655,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L138-L138'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L192-L192'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4221,7 +4667,7 @@
   
     <p>
       Type:
-      <a href="#equipment">Equipment</a>
+      (<a href="#equipment">Equipment</a> | null)
     </p>
   
   
@@ -4271,8 +4717,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L139-L139'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L193-L193'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4283,7 +4729,7 @@
   
     <p>
       Type:
-      <a href="#equipment">Equipment</a>
+      (<a href="#equipment">Equipment</a> | null)
     </p>
   
   
@@ -4333,8 +4779,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L157-L175'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L232-L240'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4345,7 +4791,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+      FDSNSourceId
     </p>
   
   
@@ -4364,7 +4810,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+      <code>FDSNSourceId</code>
     
   
 
@@ -4400,8 +4846,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L177-L179'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L242-L244'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4412,7 +4858,7 @@
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -4431,7 +4877,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>
+      <code>DateTime</code>
     
   
 
@@ -4467,8 +4913,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L180-L182'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L246-L248'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4479,7 +4925,7 @@
   
     <p>
       Type:
-      (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)
+      (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)
     </p>
   
   
@@ -4497,7 +4943,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>))</code>
 	    
           </div>
           
@@ -4542,8 +4988,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L183-L185'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L250-L252'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4554,7 +5000,7 @@
   
     <p>
       Type:
-      (null | moment$Moment)
+      (null | DateTime)
     </p>
   
   
@@ -4573,7 +5019,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(null | moment$Moment)</code>
+      <code>(null | DateTime)</code>
     
   
 
@@ -4609,8 +5055,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L186-L192'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L254-L260'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4621,7 +5067,7 @@
   
     <p>
       Type:
-      (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)
+      (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)
     </p>
   
   
@@ -4639,7 +5085,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null)?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null))</code>
 	    
           </div>
           
@@ -4684,8 +5130,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L193-L195'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L262-L264'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4696,7 +5142,7 @@
   
     <p>
       Type:
-      StartEndDuration
+      Interval
     </p>
   
   
@@ -4715,7 +5161,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>StartEndDuration</code>
+      <code>Interval</code>
     
   
 
@@ -4751,8 +5197,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L196-L198'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L266-L268'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4818,8 +5264,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L199-L205'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L270-L277'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4893,8 +5339,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L206-L208'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L279-L281'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -4960,8 +5406,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L209-L211'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L283-L285'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5027,8 +5473,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L217-L219'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L292-L294'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5093,8 +5539,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L220-L226'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L296-L302'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5168,8 +5614,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L227-L233'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L304-L310'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5235,8 +5681,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L240-L242'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L317-L319'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5306,8 +5752,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L250-L252'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L327-L331'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5315,7 +5761,7 @@
 
   <p>return network, station, location and channels codes as one string.</p>
 
-    <div class='pre p1 fill-light mt0'>codes(sep: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+    <div class='pre p1 fill-light mt0'>codes(sep: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -5332,8 +5778,8 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>sep</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
-            = <code>&#39;.&#39;</code>)</code>
+            <span class='code bold'>sep</span> <code class='quiet'>(any
+            = <code>&quot;.&quot;</code>)</code>
 	    separator, defaults to dot '.'
 
           </div>
@@ -5352,6 +5798,81 @@
         net.sta.loc.chan
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='channelisactiveat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>isActiveAt(d?)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L333-L338'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>isActiveAt(d: DateTime?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>d</span> <code class='quiet'>(DateTime?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
     
   
 
@@ -5395,8 +5916,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L255-L266'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L341-L358'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5483,8 +6004,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L256-L256'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L342-L342'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5545,8 +6066,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L257-L257'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L343-L343'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5607,8 +6128,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L258-L258'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L344-L344'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5669,8 +6190,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L259-L259'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L345-L345'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5739,8 +6260,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L268-L279'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L359-L382'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5790,8 +6311,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L269-L269'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L360-L360'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5852,8 +6373,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L270-L270'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L361-L361'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5914,8 +6435,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L271-L271'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L362-L362'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -5976,8 +6497,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L272-L272'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L363-L363'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6038,8 +6559,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L273-L273'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L364-L364'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6100,8 +6621,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L274-L274'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L365-L365'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6162,8 +6683,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L275-L275'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L366-L366'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6224,8 +6745,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L276-L276'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L367-L367'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6236,7 +6757,7 @@
   
     <p>
       Type:
-      moment$Moment
+      (DateTime | null)
     </p>
   
   
@@ -6286,8 +6807,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L277-L277'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L368-L368'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6298,7 +6819,7 @@
   
     <p>
       Type:
-      moment$Moment
+      (DateTime | null)
     </p>
   
   
@@ -6348,8 +6869,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L278-L278'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L369-L369'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6360,7 +6881,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;moment>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;DateTime>
     </p>
   
   
@@ -6418,8 +6939,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L281-L292'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L383-L403'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6490,8 +7011,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L282-L282'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L384-L384'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6502,7 +7023,7 @@
   
     <p>
       Type:
-      <a href="#instrumentsensitivity">InstrumentSensitivity</a>
+      (<a href="#instrumentsensitivity">InstrumentSensitivity</a> | null)
     </p>
   
   
@@ -6552,8 +7073,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L283-L283'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L385-L385'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6622,8 +7143,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L294-L303'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L404-L418'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6702,8 +7223,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L295-L295'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L405-L405'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6764,8 +7285,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L296-L296'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L406-L406'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6826,8 +7347,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L297-L297'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L407-L407'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6896,8 +7417,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L305-L314'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L419-L431'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -6968,8 +7489,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L306-L306'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L420-L420'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7030,8 +7551,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L307-L307'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L421-L421'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7092,8 +7613,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L308-L308'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L422-L422'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7154,8 +7675,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L309-L309'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L423-L423'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7224,8 +7745,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L315-L324'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L432-L447'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7303,8 +7824,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L316-L316'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L433-L433'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7365,8 +7886,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L317-L317'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L434-L434'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7427,8 +7948,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L318-L318'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L435-L435'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7489,8 +8010,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L319-L319'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L436-L436'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7501,7 +8022,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>
     </p>
   
   
@@ -7551,8 +8072,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L320-L320'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L437-L437'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7563,7 +8084,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>
     </p>
   
   
@@ -7621,8 +8142,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L326-L332'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L448-L457'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7700,8 +8221,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L327-L327'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L449-L449'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7762,8 +8283,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L328-L328'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L450-L450'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7832,8 +8353,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L334-L341'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L458-L469'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7911,8 +8432,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L335-L335'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L459-L459'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -7973,8 +8494,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L336-L336'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L460-L460'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8035,8 +8556,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L337-L337'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L461-L461'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8105,15 +8626,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L343-L349'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L470-L480'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>new Decimation()</div>
+    <div class='pre p1 fill-light mt0'>new Decimation(inputSampleRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, factor: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
   
   
 
@@ -8124,6 +8645,27 @@
   
   
 
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>inputSampleRate</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>factor</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
   
 
   
@@ -8156,8 +8698,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L344-L344'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L471-L471'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8218,8 +8760,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L345-L345'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L472-L472'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8280,8 +8822,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L346-L346'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L473-L473'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8292,7 +8834,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -8342,8 +8884,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L347-L347'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L474-L474'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8354,7 +8896,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -8404,8 +8946,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L348-L348'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L475-L475'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8416,7 +8958,7 @@
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -8474,15 +9016,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L351-L354'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L481-L488'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>new Gain()</div>
+    <div class='pre p1 fill-light mt0'>new Gain(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, frequency: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
   
   
 
@@ -8493,6 +9035,27 @@
   
   
 
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>frequency</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
   
 
   
@@ -8525,8 +9088,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L352-L352'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L482-L482'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8587,8 +9150,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L353-L353'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L483-L483'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8657,8 +9220,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L362-L371'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L496-L511'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8733,8 +9296,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L378-L401'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L519-L562'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8809,8 +9372,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L409-L433'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L571-L632'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8894,8 +9457,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L441-L497'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L641-L754'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -8979,8 +9542,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L499-L525'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L755-L817'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9050,8 +9613,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L532-L552'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L825-L856'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9126,8 +9689,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L560-L570'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L864-L899'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9202,8 +9765,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L578-L675'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L907-L1062'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9278,8 +9841,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L683-L693'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1070-L1086'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9354,8 +9917,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L701-L708'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1094-L1106'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9425,13 +9988,92 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='createinterval'>
+      createInterval
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1108-L1114'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>createInterval(start: DateTime, end: (null | DateTime)): Interval</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>start</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>end</span> <code class='quiet'>((null | DateTime))</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>Interval</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='extractcomplex'>
       extractComplex
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L716-L725'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1121-L1131'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9439,7 +10081,7 @@
 
   <p>Extracts a complex number from an stationxml element.</p>
 
-    <div class='pre p1 fill-light mt0'>extractComplex(el: <a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>): Complex</div>
+    <div class='pre p1 fill-light mt0'>extractComplex(el: <a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>): InstanceType&#x3C;any></div>
   
   
 
@@ -9471,7 +10113,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>Complex</code>:
+      <code>InstanceType&#x3C;any></code>:
         Complex instance
 
       
@@ -9506,8 +10148,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L733-L739'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1139-L1147'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9515,7 +10157,7 @@
 
   <p>Generator function to access all stations within all networks in the array.</p>
 
-    <div class='pre p1 fill-light mt0'>allStations(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>): void</div>
+    <div class='pre p1 fill-light mt0'>allStations(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>): Generator&#x3C;<a href="#station">Station</a>, void, any></div>
   
   
 
@@ -9547,7 +10189,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>void</code>
+      <code>Generator&#x3C;<a href="#station">Station</a>, void, any></code>
     
   
 
@@ -9579,8 +10221,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L748-L754'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1156-L1164'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9589,7 +10231,7 @@
   <p>Generator function to access all channels within all stations
 within all networks in the array.</p>
 
-    <div class='pre p1 fill-light mt0'>allChannels(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>): void</div>
+    <div class='pre p1 fill-light mt0'>allChannels(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>): Generator&#x3C;<a href="#channel">Channel</a>, void, any></div>
   
   
 
@@ -9621,7 +10263,7 @@ within all networks in the array.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>void</code>
+      <code>Generator&#x3C;<a href="#channel">Channel</a>, void, any></code>
     
   
 
@@ -9653,8 +10295,8 @@ within all networks in the array.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L767-L779'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1177-L1198'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9663,7 +10305,7 @@ within all networks in the array.</p>
   <p>Extract all channels from all stations from all networks in the input array.
 Regular expressions may be used instaed of exact code matchs.</p>
 
-    <div class='pre p1 fill-light mt0'>findChannels(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>, netCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, staCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, locCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, chanCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): void</div>
+    <div class='pre p1 fill-light mt0'>findChannels(networks: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#network">Network</a>>, netCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, staCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, locCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, chanCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): Generator&#x3C;<a href="#channel">Channel</a>, void, any></div>
   
   
 
@@ -9731,7 +10373,7 @@ Regular expressions may be used instaed of exact code matchs.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>void</code>
+      <code>Generator&#x3C;<a href="#channel">Channel</a>, void, any></code>
     
   
 
@@ -9763,8 +10405,8 @@ Regular expressions may be used instaed of exact code matchs.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L848-L855'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1314-L1322'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9812,8 +10454,8 @@ Regular expressions may be used instaed of exact code matchs.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L849-L849'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1315-L1315'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9869,8 +10511,8 @@ Regular expressions may be used instaed of exact code matchs.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L850-L850'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1316-L1316'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9926,8 +10568,8 @@ Regular expressions may be used instaed of exact code matchs.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L851-L851'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1317-L1317'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -9983,8 +10625,8 @@ Regular expressions may be used instaed of exact code matchs.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L852-L852'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1318-L1318'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -10040,8 +10682,8 @@ Regular expressions may be used instaed of exact code matchs.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L853-L853'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1319-L1319'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>
@@ -10049,6 +10691,63 @@ Regular expressions may be used instaed of exact code matchs.</p>
 
   
     <div class='pre p1 fill-light mt0'>_grabAttribute</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='parseutil_requireattribute'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_requireAttribute</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1320-L1320'>
+      <span>src/stationxml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_requireAttribute</div>
   
   
 
@@ -10097,8 +10796,8 @@ Regular expressions may be used instaed of exact code matchs.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/stationxml.js#L854-L854'>
-      <span>src/stationxml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/stationxml.ts#L1321-L1321'>
+      <span>src/stationxml.ts</span>
       </a>
     
   </div>

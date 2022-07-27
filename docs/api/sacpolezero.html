@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.sacpolezero 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.sacpolezero 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.sacpolezero</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -101,9 +101,27 @@
                       </a></li>
                       
                       <li><a
+                        href='#sacpolezeroevalpolezeroinverse'
+                        class='regular pre-open'>
+                        #evalPoleZeroInverse
+                      </a></li>
+                      
+                      <li><a
+                        href='#sacpolezerotrimzeros'
+                        class='regular pre-open'>
+                        #trimZeros
+                      </a></li>
+                      
+                      <li><a
                         href='#sacpolezerototext'
                         class='regular pre-open'>
                         #toText
+                      </a></li>
+                      
+                      <li><a
+                        href='#sacpolezerocalcfordisplay'
+                        class='regular pre-open'>
+                        #calcForDisplay
                       </a></li>
                       
                     </ul>
@@ -111,6 +129,36 @@
                   
                   
                 </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#geomspace'
+                  class="">
+                  geomspace
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#logspace'
+                  class="">
+                  logspace
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#linspace'
+                  class="">
+                  linspace
+                  
+                </a>
                 
                 </li>
               
@@ -134,8 +182,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L19-L147'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L15-L249'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -146,7 +194,7 @@ analog stage, plus a constant for the overall gain. See
 seisplotjs.transfer.convertToSacPoleZero() for conversion from a
 StationXML response to SacPoleZero.</p>
 
-    <div class='pre p1 fill-light mt0'>new SacPoleZero(poles: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>, zeros: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>, constant: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+    <div class='pre p1 fill-light mt0'>new SacPoleZero(poles: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>, zeros: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>, constant: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
   
   
 
@@ -163,7 +211,7 @@ StationXML response to SacPoleZero.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>poles</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>)</code>
+            <span class='code bold'>poles</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>)</code>
 	    
           </div>
           
@@ -171,7 +219,7 @@ StationXML response to SacPoleZero.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>zeros</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>)</code>
+            <span class='code bold'>zeros</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>)</code>
 	    
           </div>
           
@@ -216,8 +264,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L83-L146'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L173-L248'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -304,8 +352,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L23-L23'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L19-L19'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -317,7 +365,7 @@ StationXML response to SacPoleZero.</p>
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>
     </p>
   
   
@@ -367,8 +415,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L27-L27'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L24-L24'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -380,7 +428,7 @@ StationXML response to SacPoleZero.</p>
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>
     </p>
   
   
@@ -430,8 +478,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L31-L31'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L29-L29'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -493,8 +541,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L33-L33'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L32-L32'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -506,7 +554,7 @@ StationXML response to SacPoleZero.</p>
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -556,8 +604,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L35-L35'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L35-L35'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -619,8 +667,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L37-L37'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L38-L38'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -682,8 +730,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L39-L39'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L41-L41'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -745,8 +793,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L45-L63'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L52-L81'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -793,6 +841,151 @@ StationXML response to SacPoleZero.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='sacpolezeroevalpolezeroinverse'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>evalPoleZeroInverse(freq)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L83-L105'>
+      <span>src/sacpolezero.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>evalPoleZeroInverse(freq: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): InstanceType&#x3C;any></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>freq</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>InstanceType&#x3C;any></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='sacpolezerotrimzeros'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>trimZeros(gamma)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L107-L132'>
+      <span>src/sacpolezero.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>trimZeros(gamma: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>gamma</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='sacpolezerototext'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -807,8 +1000,8 @@ StationXML response to SacPoleZero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/sacpolezero.js#L64-L76'>
-      <span>src/sacpolezero.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L134-L150'>
+      <span>src/sacpolezero.ts</span>
       </a>
     
   </div>
@@ -855,7 +1048,348 @@ StationXML response to SacPoleZero.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='sacpolezerocalcfordisplay'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>calcForDisplay(freqs)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L158-L165'>
+      <span>src/sacpolezero.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Caclulates the frequency response from the given poles and zeros.</p>
+
+    <div class='pre p1 fill-light mt0'>calcForDisplay(freqs: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>freqs</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>>)</code>
+	    frequencies to compute
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>></code>:
+        frequency response
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='geomspace'>
+      geomspace
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L250-L258'>
+      <span>src/sacpolezero.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>geomspace(start: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, stop: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, num: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>start</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>stop</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>num</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='logspace'>
+      logspace
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L259-L265'>
+      <span>src/sacpolezero.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>logspace(start: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, stop: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, num: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>start</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>stop</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>num</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='linspace'>
+      linspace
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/sacpolezero.ts#L266-L279'>
+      <span>src/sacpolezero.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>linspace(start: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, stop: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, num: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>start</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>stop</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>num</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
 
   
 

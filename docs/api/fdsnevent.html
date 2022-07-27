@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.fdsnevent 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.fdsnevent 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.fdsnevent</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -88,9 +88,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetspecversion'
+                        class='regular pre-open'>
+                        #getSpecVersion
+                      </a></li>
+                      
+                      <li><a
                         href='#eventqueryprotocol'
                         class='regular pre-open'>
                         #protocol
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetprotocol'
+                        class='regular pre-open'>
+                        #getProtocol
                       </a></li>
                       
                       <li><a
@@ -100,9 +112,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygethost'
+                        class='regular pre-open'>
+                        #getHost
+                      </a></li>
+                      
+                      <li><a
                         href='#eventqueryport'
                         class='regular pre-open'>
                         #port
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetport'
+                        class='regular pre-open'>
+                        #getPort
                       </a></li>
                       
                       <li><a
@@ -112,9 +136,33 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetnodata'
+                        class='regular pre-open'>
+                        #getNodata
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerytimeout'
+                        class='regular pre-open'>
+                        #timeout
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygettimeout'
+                        class='regular pre-open'>
+                        #getTimeout
+                      </a></li>
+                      
+                      <li><a
                         href='#eventqueryeventid'
                         class='regular pre-open'>
                         #eventId
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygeteventid'
+                        class='regular pre-open'>
+                        #getEventId
                       </a></li>
                       
                       <li><a
@@ -124,9 +172,27 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetstarttime'
+                        class='regular pre-open'>
+                        #getStartTime
+                      </a></li>
+                      
+                      <li><a
                         href='#eventqueryendtime'
                         class='regular pre-open'>
                         #endTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetendtime'
+                        class='regular pre-open'>
+                        #getEndTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerytimerange'
+                        class='regular pre-open'>
+                        #timeRange
                       </a></li>
                       
                       <li><a
@@ -142,9 +208,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetupdatedafter'
+                        class='regular pre-open'>
+                        #getUpdatedAfter
+                      </a></li>
+                      
+                      <li><a
                         href='#eventqueryminmag'
                         class='regular pre-open'>
                         #minMag
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetminmag'
+                        class='regular pre-open'>
+                        #getMinMag
                       </a></li>
                       
                       <li><a
@@ -154,9 +232,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetmaxmag'
+                        class='regular pre-open'>
+                        #getMaxMag
+                      </a></li>
+                      
+                      <li><a
                         href='#eventquerymagnitudetype'
                         class='regular pre-open'>
                         #magnitudeType
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetmagnitudetype'
+                        class='regular pre-open'>
+                        #getMagnitudeType
                       </a></li>
                       
                       <li><a
@@ -166,9 +256,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetmindepth'
+                        class='regular pre-open'>
+                        #getMinDepth
+                      </a></li>
+                      
+                      <li><a
                         href='#eventquerymaxdepth'
                         class='regular pre-open'>
                         #maxDepth
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetmaxdepth'
+                        class='regular pre-open'>
+                        #getMaxDepth
                       </a></li>
                       
                       <li><a
@@ -178,9 +280,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetminlat'
+                        class='regular pre-open'>
+                        #getMinLat
+                      </a></li>
+                      
+                      <li><a
                         href='#eventquerymaxlat'
                         class='regular pre-open'>
                         #maxLat
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetmaxlat'
+                        class='regular pre-open'>
+                        #getMaxLat
                       </a></li>
                       
                       <li><a
@@ -190,9 +304,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetminlon'
+                        class='regular pre-open'>
+                        #getMinLon
+                      </a></li>
+                      
+                      <li><a
                         href='#eventquerymaxlon'
                         class='regular pre-open'>
                         #maxLon
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetmaxlon'
+                        class='regular pre-open'>
+                        #getMaxLon
                       </a></li>
                       
                       <li><a
@@ -202,9 +328,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetlatitude'
+                        class='regular pre-open'>
+                        #getLatitude
+                      </a></li>
+                      
+                      <li><a
                         href='#eventquerylongitude'
                         class='regular pre-open'>
                         #longitude
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetlongitude'
+                        class='regular pre-open'>
+                        #getLongitude
                       </a></li>
                       
                       <li><a
@@ -214,9 +352,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetminradius'
+                        class='regular pre-open'>
+                        #getMinRadius
+                      </a></li>
+                      
+                      <li><a
                         href='#eventquerymaxradius'
                         class='regular pre-open'>
                         #maxRadius
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetmaxradius'
+                        class='regular pre-open'>
+                        #getMaxRadius
                       </a></li>
                       
                       <li><a
@@ -226,9 +376,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetincludearrivals'
+                        class='regular pre-open'>
+                        #getIncludeArrivals
+                      </a></li>
+                      
+                      <li><a
                         href='#eventqueryincludeallorigins'
                         class='regular pre-open'>
                         #includeAllOrigins
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetincludeallorigins'
+                        class='regular pre-open'>
+                        #getIncludeAllOrigins
                       </a></li>
                       
                       <li><a
@@ -238,9 +400,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetincludeallmagnitudes'
+                        class='regular pre-open'>
+                        #getIncludeAllMagnitudes
+                      </a></li>
+                      
+                      <li><a
                         href='#eventqueryformat'
                         class='regular pre-open'>
                         #format
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetformat'
+                        class='regular pre-open'>
+                        #getFormat
                       </a></li>
                       
                       <li><a
@@ -250,9 +424,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetlimit'
+                        class='regular pre-open'>
+                        #getLimit
+                      </a></li>
+                      
+                      <li><a
                         href='#eventqueryoffset'
                         class='regular pre-open'>
                         #offset
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetoffset'
+                        class='regular pre-open'>
+                        #getOffset
                       </a></li>
                       
                       <li><a
@@ -262,9 +448,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#eventquerygetorderby'
+                        class='regular pre-open'>
+                        #getOrderBy
+                      </a></li>
+                      
+                      <li><a
                         href='#eventquerycatalog'
                         class='regular pre-open'>
                         #catalog
+                      </a></li>
+                      
+                      <li><a
+                        href='#eventquerygetcatalog'
+                        class='regular pre-open'>
+                        #getCatalog
                       </a></li>
                       
                       <li><a
@@ -274,9 +472,9 @@
                       </a></li>
                       
                       <li><a
-                        href='#eventquerytimeout'
+                        href='#eventquerygetcontributor'
                         class='regular pre-open'>
-                        #timeout
+                        #getContributor
                       </a></li>
                       
                       <li><a
@@ -353,6 +551,46 @@
                 
                 </li>
               
+                
+                <li><a
+                  href='#earthquakesearch'
+                  class=" toggle-sibling">
+                  EarthquakeSearch
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#earthquakesearch_registerevent'
+                        class='regular pre-open'>
+                        #_registerEvent
+                      </a></li>
+                      
+                      <li><a
+                        href='#earthquakesearchdraw_element'
+                        class='regular pre-open'>
+                        #draw_element
+                      </a></li>
+                      
+                      <li><a
+                        href='#earthquakesearchpopulatequery'
+                        class='regular pre-open'>
+                        #populateQuery
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
             </ul>
           </div>
           <div class='mt1 h6 quiet'>
@@ -373,8 +611,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L9-L9'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L8-L8'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -426,8 +664,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L21-L21'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L32-L32'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -486,8 +724,8 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L26-L26'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L38-L38'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -541,8 +779,8 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L30-L30'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L40-L41'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -599,8 +837,8 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L39-L706'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L49-L1034'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -610,6 +848,13 @@ Currently is 1.</p>
 
     <div class='pre p1 fill-light mt0'>new EventQuery(host: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</div>
   
+  
+    <p>
+      Extends
+      
+        FDSNCommon
+      
+    </p>
   
 
   
@@ -673,8 +918,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L122-L131'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L144-L147'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -684,7 +929,7 @@ Currently is 1.</p>
 Setting this is probably a bad idea as the code may not be compatible with
 the web service.</p>
 
-    <div class='pre p1 fill-light mt0'>specVersion(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>specVersion(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -701,7 +946,7 @@ the web service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
 	    optional new value if setting
 
           </div>
@@ -716,10 +961,72 @@ the web service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetspecversion'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getSpecVersion()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L149-L151'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getSpecVersion(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
     
   
 
@@ -755,8 +1062,8 @@ the web service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L139-L141'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L160-L163'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -765,7 +1072,7 @@ the web service.</p>
   <p>Gets/Sets the protocol, http or https. This should match the protocol
 of the page loaded, but is autocalculated and generally need not be set.</p>
 
-    <div class='pre p1 fill-light mt0'>protocol(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>protocol(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -797,10 +1104,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetprotocol'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getProtocol()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L165-L167'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getProtocol(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -836,8 +1205,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L148-L150'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L175-L178'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -845,7 +1214,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
 
   <p>Gets/Sets the remote host to connect to.</p>
 
-    <div class='pre p1 fill-light mt0'>host(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>host(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -877,10 +1246,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygethost'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getHost()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L180-L182'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getHost(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
     
   
 
@@ -916,8 +1347,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L157-L159'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L190-L193'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -925,7 +1356,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
 
   <p>Gets/Sets the remote port to connect to.</p>
 
-    <div class='pre p1 fill-light mt0'>port(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>port(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -957,10 +1388,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetport'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getPort()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L195-L197'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getPort(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -996,8 +1489,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L167-L169'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L206-L209'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1006,7 +1499,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <p>Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
 the status code when no matching data is found by the service.</p>
 
-    <div class='pre p1 fill-light mt0'>nodata(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>nodata(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1038,10 +1531,214 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetnodata'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getNodata()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L211-L213'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getNodata(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerytimeout'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeout(value?)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L221-L224'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Get/Set the timeout in seconds for the request. Default is 30.</p>
+
+    <div class='pre p1 fill-light mt0'>timeout(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?)</code>
+	    optional new value if setting
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#eventquery">EventQuery</a></code>:
+        new value if getting, this if setting
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygettimeout'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getTimeout()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L226-L228'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getTimeout(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1077,8 +1774,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L176-L178'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L236-L239'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1086,7 +1783,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the eventid query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>eventId(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>eventId(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1118,10 +1815,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygeteventid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getEventId()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L241-L243'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getEventId(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1157,8 +1916,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L185-L187'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L251-L254'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1166,7 +1925,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the starttime query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>startTime(value: moment$Moment?): (moment$Moment | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>startTime(value: DateTime?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1183,7 +1942,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -1198,10 +1957,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetstarttime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStartTime()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L256-L258'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStartTime(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1237,8 +2058,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L194-L196'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L266-L269'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1246,7 +2067,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the endtime query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>endTime(value: moment$Moment?): (moment$Moment | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>endTime(value: DateTime?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1263,7 +2084,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -1278,8 +2099,150 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetendtime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getEndTime()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L271-L273'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getEndTime(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerytimerange'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeRange(se)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L281-L285'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Sets startTime and endTime using the given time window</p>
+
+    <div class='pre p1 fill-light mt0'>timeRange(se: Interval): <a href="#eventquery">EventQuery</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>se</span> <code class='quiet'>(Interval)</code>
+	    time window
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#eventquery">EventQuery</a></code>:
+        this
 
       
     
@@ -1317,20 +2280,20 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L203-L207'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L292-L294'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
   
 
-  <p>Sets startTime and endTime using the given time window</p>
-
-    <div class='pre p1 fill-light mt0'>timeWindow(se: StartEndDuration): <a href="#eventquery">EventQuery</a></div>
+  
+    <div class='pre p1 fill-light mt0'>timeWindow(se: Interval): <a href="#eventquery">EventQuery</a></div>
   
   
 
-  
+  <div>Deprecated: This is deprecated.
+</div>
   
   
   
@@ -1343,8 +2306,8 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>se</span> <code class='quiet'>(StartEndDuration)</code>
-	    time window
+            <span class='code bold'>se</span> <code class='quiet'>(Interval)</code>
+	    time interval
 
           </div>
           
@@ -1397,8 +2360,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L214-L216'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L302-L305'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1406,7 +2369,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the updatedafter query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>updatedAfter(value: moment$Moment?): (moment$Moment | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>updatedAfter(value: DateTime?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1423,7 +2386,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -1438,10 +2401,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetupdatedafter'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getUpdatedAfter()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L307-L309'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getUpdatedAfter(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1477,8 +2502,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L223-L225'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L317-L320'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1486,7 +2511,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minmag query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minMag(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minMag(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1518,10 +2543,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetminmag'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinMag()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L322-L324'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinMag(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1557,8 +2644,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L232-L234'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L332-L335'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1566,7 +2653,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxmag query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxMag(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxMag(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1598,10 +2685,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetmaxmag'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxMag()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L337-L339'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxMag(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1637,8 +2786,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L241-L243'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L347-L350'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1646,7 +2795,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the magnitudetype query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>magnitudeType(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>magnitudeType(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1678,10 +2827,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetmagnitudetype'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMagnitudeType()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L352-L354'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMagnitudeType(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1717,8 +2928,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L250-L252'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L362-L365'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1726,7 +2937,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the mindepth query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minDepth(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minDepth(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1758,10 +2969,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetmindepth'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinDepth()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L367-L369'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinDepth(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1797,8 +3070,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L259-L261'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L377-L380'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1806,7 +3079,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxdepth query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxDepth(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxDepth(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1838,10 +3111,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetmaxdepth'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxDepth()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L382-L384'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxDepth(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1877,8 +3212,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L268-L270'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L392-L395'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1886,7 +3221,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minlat query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1918,10 +3253,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetminlat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinLat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L397-L399'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinLat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1957,8 +3354,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L277-L279'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L407-L410'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -1966,7 +3363,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxlat query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -1998,10 +3395,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetmaxlat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxLat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L412-L414'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxLat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2037,8 +3496,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L286-L288'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L422-L425'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2046,7 +3505,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minlon query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2078,10 +3537,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetminlon'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinLon()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L427-L429'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinLon(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2117,8 +3638,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L295-L297'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L437-L440'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2126,7 +3647,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxlon query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2158,10 +3679,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetmaxlon'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxLon()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L442-L444'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxLon(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2197,8 +3780,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L304-L306'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L452-L455'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2206,7 +3789,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the latitude query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>latitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>latitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2238,10 +3821,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetlatitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLatitude()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L457-L459'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLatitude(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2277,8 +3922,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L313-L315'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L467-L470'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2286,7 +3931,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the longitude query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>longitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>longitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2318,10 +3963,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetlongitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLongitude()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L472-L474'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLongitude(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2357,8 +4064,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L322-L324'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L482-L485'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2366,7 +4073,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minradius query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2398,10 +4105,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetminradius'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinRadius()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L487-L489'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinRadius(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2437,8 +4206,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L331-L333'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L497-L500'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2446,7 +4215,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxradius query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2478,10 +4247,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetmaxradius'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxRadius()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L502-L504'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxRadius(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2517,8 +4348,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L340-L349'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L512-L515'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2526,7 +4357,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the includearrivals query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>includeArrivals(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>includeArrivals(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2558,10 +4389,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetincludearrivals'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getIncludeArrivals()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L517-L519'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getIncludeArrivals(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2597,8 +4490,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L356-L365'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L527-L530'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2606,7 +4499,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the includeallorigins query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>includeAllOrigins(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>includeAllOrigins(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2638,10 +4531,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetincludeallorigins'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getIncludeAllOrigins()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L532-L534'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getIncludeAllOrigins(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2677,8 +4632,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L372-L381'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L542-L545'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2686,7 +4641,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the includeallmagnitudes query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>includeAllMagnitudes(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>includeAllMagnitudes(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2718,10 +4673,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetincludeallmagnitudes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getIncludeAllMagnitudes()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L547-L549'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getIncludeAllMagnitudes(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2757,8 +4774,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L388-L390'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L557-L560'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2766,7 +4783,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the format query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>format(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>format(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2798,10 +4815,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetformat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getFormat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L562-L564'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getFormat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2837,8 +4916,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L397-L399'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L572-L575'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2846,7 +4925,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the limit query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>limit(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>limit(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2878,10 +4957,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetlimit'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLimit()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L577-L579'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLimit(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2917,8 +5058,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L406-L408'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L587-L590'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -2926,7 +5067,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the offset query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>offset(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>offset(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -2958,10 +5099,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetoffset'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getOffset()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L592-L594'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getOffset(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2997,8 +5200,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L415-L417'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L602-L605'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3006,7 +5209,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the orderby query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>orderBy(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>orderBy(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -3038,10 +5241,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetorderby'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getOrderBy()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L607-L609'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getOrderBy(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3077,8 +5342,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L424-L426'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L617-L620'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3086,7 +5351,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the catalog query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>catalog(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>catalog(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -3118,10 +5383,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='eventquerygetcatalog'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getCatalog()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L622-L624'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getCatalog(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3157,8 +5484,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L433-L435'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L632-L635'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3166,7 +5493,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the contributor query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>contributor(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>contributor(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#eventquery">EventQuery</a></div>
   
   
 
@@ -3198,7 +5525,7 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#eventquery">EventQuery</a>)</code>:
+      <code><a href="#eventquery">EventQuery</a></code>:
         new value if getting, this if setting
 
       
@@ -3223,11 +5550,11 @@ the status code when no matching data is found by the service.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='eventquerytimeout'>
+    <div class='border-bottom' id='eventquerygetcontributor'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>timeout(value?)</span>
+            <span class='code strong strong truncate'>getContributor()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -3237,16 +5564,15 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L442-L451'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L637-L639'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
   
 
-  <p>Get/Set the timeout in seconds for the request. Default is 30.</p>
-
-    <div class='pre p1 fill-light mt0'>timeout(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</div>
+  
+    <div class='pre p1 fill-light mt0'>getContributor(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
   
   
 
@@ -3257,20 +5583,6 @@ the status code when no matching data is found by the service.</p>
   
   
 
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?)</code>
-	    optional new value if setting
-
-          </div>
-          
-        </div>
-      
-    </div>
   
 
   
@@ -3278,10 +5590,7 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#eventquery">EventQuery</a>)</code>:
-        new value if getting, this if setting
-
-      
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3317,8 +5626,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L459-L479'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L649-L671'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3385,8 +5694,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L485-L489'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L678-L682'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3451,8 +5760,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L495-L512'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L689-L717'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3517,8 +5826,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L518-L529'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L724-L746'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3583,8 +5892,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L535-L537'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L753-L755'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3649,8 +5958,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L543-L575'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L762-L803'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3715,8 +6024,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L581-L583'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L810-L812'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3781,8 +6090,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L589-L618'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L819-L855'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3847,8 +6156,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L624-L626'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L862-L864'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3913,8 +6222,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L632-L643'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L871-L883'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -3979,8 +6288,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnevent.js#L649-L704'>
-      <span>src/fdsnevent.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L890-L1033'>
+      <span>src/fdsnevent.ts</span>
       </a>
     
   </div>
@@ -4010,6 +6319,295 @@ the client doesn't ask for EVERYTHING the server has.</p>
         url
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='earthquakesearch'>
+      EarthquakeSearch
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L1061-L1152'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new EarthquakeSearch()</div>
+  
+  
+    <p>
+      Extends
+      
+        <a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a>
+      
+    </p>
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='earthquakesearch_registerevent'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_registerEvent(wrapper, sel)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L1067-L1072'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_registerEvent(wrapper: <a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a>, sel: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>wrapper</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sel</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='earthquakesearchdraw_element'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>draw_element(shadow)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L1073-L1115'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>draw_element(shadow: ShadowRoot)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>shadow</span> <code class='quiet'>(ShadowRoot)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='earthquakesearchpopulatequery'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>populateQuery(query?)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnevent.ts#L1116-L1151'>
+      <span>src/fdsnevent.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>populateQuery(query: <a href="#eventquery">EventQuery</a>?): <a href="#eventquery">EventQuery</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>query</span> <code class='quiet'>(<a href="#eventquery">EventQuery</a>?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#eventquery">EventQuery</a></code>
     
   
 

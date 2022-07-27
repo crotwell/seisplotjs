@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.fdsnstation 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.fdsnstation 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.fdsnstation</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -26,6 +26,16 @@
             type='text' />
           <div id='toc'>
             <ul class='list-reset h5 py1-ul'>
+              
+                
+                <li><a
+                  href='#iris_host'
+                  class="">
+                  IRIS_HOST
+                  
+                </a>
+                
+                </li>
               
                 
                 <li><a
@@ -99,16 +109,6 @@
               
                 
                 <li><a
-                  href='#iris_host'
-                  class="">
-                  IRIS_HOST
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
                   href='#fake_empty_xml'
                   class="">
                   FAKE_EMPTY_XML
@@ -138,9 +138,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetspecversion'
+                        class='regular pre-open'>
+                        #getSpecVersion
+                      </a></li>
+                      
+                      <li><a
                         href='#stationqueryprotocol'
                         class='regular pre-open'>
                         #protocol
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetprotocol'
+                        class='regular pre-open'>
+                        #getProtocol
                       </a></li>
                       
                       <li><a
@@ -150,9 +162,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygethost'
+                        class='regular pre-open'>
+                        #getHost
+                      </a></li>
+                      
+                      <li><a
                         href='#stationqueryport'
                         class='regular pre-open'>
                         #port
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetport'
+                        class='regular pre-open'>
+                        #getPort
                       </a></li>
                       
                       <li><a
@@ -162,9 +186,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetnodata'
+                        class='regular pre-open'>
+                        #getNodata
+                      </a></li>
+                      
+                      <li><a
                         href='#stationquerynetworkcode'
                         class='regular pre-open'>
                         #networkCode
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetnetworkcode'
+                        class='regular pre-open'>
+                        #getNetworkCode
                       </a></li>
                       
                       <li><a
@@ -174,9 +210,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetstationcode'
+                        class='regular pre-open'>
+                        #getStationCode
+                      </a></li>
+                      
+                      <li><a
                         href='#stationquerylocationcode'
                         class='regular pre-open'>
                         #locationCode
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetlocationcode'
+                        class='regular pre-open'>
+                        #getLocationCode
                       </a></li>
                       
                       <li><a
@@ -186,15 +234,39 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetchannelcode'
+                        class='regular pre-open'>
+                        #getChannelCode
+                      </a></li>
+                      
+                      <li><a
                         href='#stationquerystarttime'
                         class='regular pre-open'>
                         #startTime
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetstarttime'
+                        class='regular pre-open'>
+                        #getStartTime
+                      </a></li>
+                      
+                      <li><a
                         href='#stationqueryendtime'
                         class='regular pre-open'>
                         #endTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetendtime'
+                        class='regular pre-open'>
+                        #getEndTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerytimerange'
+                        class='regular pre-open'>
+                        #timeRange
                       </a></li>
                       
                       <li><a
@@ -210,9 +282,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetstartbefore'
+                        class='regular pre-open'>
+                        #getStartBefore
+                      </a></li>
+                      
+                      <li><a
                         href='#stationqueryendbefore'
                         class='regular pre-open'>
                         #endBefore
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetendbefore'
+                        class='regular pre-open'>
+                        #getEndBefore
                       </a></li>
                       
                       <li><a
@@ -222,9 +306,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetstartafter'
+                        class='regular pre-open'>
+                        #getStartAfter
+                      </a></li>
+                      
+                      <li><a
                         href='#stationqueryendafter'
                         class='regular pre-open'>
                         #endAfter
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetendafter'
+                        class='regular pre-open'>
+                        #getEndAfter
                       </a></li>
                       
                       <li><a
@@ -234,9 +330,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetminlat'
+                        class='regular pre-open'>
+                        #getMinLat
+                      </a></li>
+                      
+                      <li><a
                         href='#stationquerymaxlat'
                         class='regular pre-open'>
                         #maxLat
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetmaxlat'
+                        class='regular pre-open'>
+                        #getMaxLat
                       </a></li>
                       
                       <li><a
@@ -246,9 +354,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetminlon'
+                        class='regular pre-open'>
+                        #getMinLon
+                      </a></li>
+                      
+                      <li><a
                         href='#stationquerymaxlon'
                         class='regular pre-open'>
                         #maxLon
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetmaxlon'
+                        class='regular pre-open'>
+                        #getMaxLon
                       </a></li>
                       
                       <li><a
@@ -258,9 +378,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetlatitude'
+                        class='regular pre-open'>
+                        #getLatitude
+                      </a></li>
+                      
+                      <li><a
                         href='#stationquerylongitude'
                         class='regular pre-open'>
                         #longitude
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetlongitude'
+                        class='regular pre-open'>
+                        #getLongitude
                       </a></li>
                       
                       <li><a
@@ -270,9 +402,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetminradius'
+                        class='regular pre-open'>
+                        #getMinRadius
+                      </a></li>
+                      
+                      <li><a
                         href='#stationquerymaxradius'
                         class='regular pre-open'>
                         #maxRadius
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetmaxradius'
+                        class='regular pre-open'>
+                        #getMaxRadius
                       </a></li>
                       
                       <li><a
@@ -282,9 +426,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetincluderestricted'
+                        class='regular pre-open'>
+                        #getIncludeRestricted
+                      </a></li>
+                      
+                      <li><a
                         href='#stationqueryincludeavailability'
                         class='regular pre-open'>
                         #includeAvailability
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetincludeavailability'
+                        class='regular pre-open'>
+                        #getIncludeAvailability
                       </a></li>
                       
                       <li><a
@@ -294,9 +450,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetformat'
+                        class='regular pre-open'>
+                        #getFormat
+                      </a></li>
+                      
+                      <li><a
                         href='#stationqueryupdatedafter'
                         class='regular pre-open'>
                         #updatedAfter
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygetupdatedafter'
+                        class='regular pre-open'>
+                        #getUpdatedAfter
                       </a></li>
                       
                       <li><a
@@ -306,9 +474,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#stationquerygetmatchtimeseries'
+                        class='regular pre-open'>
+                        #getMatchTimeseries
+                      </a></li>
+                      
+                      <li><a
                         href='#stationquerytimeout'
                         class='regular pre-open'>
                         #timeout
+                      </a></li>
+                      
+                      <li><a
+                        href='#stationquerygettimeout'
+                        class='regular pre-open'>
+                        #getTimeout
                       </a></li>
                       
                       <li><a
@@ -442,13 +622,66 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='iris_host'>
+      IRIS_HOST
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L6-L6'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>IRIS_HOST</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='level_network'>
       LEVEL_NETWORK
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L20-L20'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L27-L27'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -505,8 +738,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L21-L21'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L28-L28'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -563,8 +796,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L22-L22'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L29-L29'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -621,8 +854,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L23-L23'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L30-L30'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -679,8 +912,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L25-L25'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L31-L36'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -732,8 +965,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L31-L31'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L42-L42'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -792,8 +1025,8 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L36-L36'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L48-L48'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -842,71 +1075,13 @@ Currently is 1.</p>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='iris_host'>
-      IRIS_HOST
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L38-L38'>
-      <span>src/fdsnstation.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>IRIS_HOST</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
     <h3 class='fl m0' id='fake_empty_xml'>
       FAKE_EMPTY_XML
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L41-L41'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L51-L52'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -964,8 +1139,8 @@ Currently is 1.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L51-L754'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L63-L1135'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -975,6 +1150,13 @@ Currently is 1.</p>
 
     <div class='pre p1 fill-light mt0'>new StationQuery(host: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</div>
   
+  
+    <p>
+      Extends
+      
+        FDSNCommon
+      
+    </p>
   
 
   
@@ -1038,8 +1220,8 @@ Currently is 1.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L131-L140'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L151-L154'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1049,7 +1231,7 @@ Currently is 1.</p>
 Setting this is probably a bad idea as the code may not be compatible with
 the web service.</p>
 
-    <div class='pre p1 fill-light mt0'>specVersion(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>specVersion(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1066,7 +1248,7 @@ the web service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
 	    optional new value if setting
 
           </div>
@@ -1081,10 +1263,72 @@ the web service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetspecversion'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getSpecVersion()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L156-L158'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getSpecVersion(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
     
   
 
@@ -1120,8 +1364,8 @@ the web service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L147-L149'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L167-L170'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1130,7 +1374,7 @@ the web service.</p>
   <p>Gets/Sets the protocol, http or https. This should match the protocol
 of the page loaded, but is autocalculated and generally need not be set.</p>
 
-    <div class='pre p1 fill-light mt0'>protocol(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>protocol(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1162,10 +1406,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetprotocol'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getProtocol()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L172-L174'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getProtocol(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1201,8 +1507,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L155-L157'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L182-L185'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1210,7 +1516,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
 
   <p>Gets/Sets the remote host to connect to.</p>
 
-    <div class='pre p1 fill-light mt0'>host(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>host(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1242,10 +1548,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygethost'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getHost()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L187-L189'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getHost(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1281,8 +1649,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L163-L165'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L197-L200'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1290,7 +1658,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
 
   <p>Gets/Sets the remote port to connect to.</p>
 
-    <div class='pre p1 fill-light mt0'>port(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>port(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1322,10 +1690,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetport'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getPort()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L202-L204'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getPort(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1361,8 +1791,8 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L172-L174'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L213-L216'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1371,7 +1801,7 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <p>Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
 the status code when no matching data is found by the service.</p>
 
-    <div class='pre p1 fill-light mt0'>nodata(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>nodata(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1403,10 +1833,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetnodata'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getNodata()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L218-L220'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getNodata(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1442,8 +1934,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L180-L182'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L228-L231'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1451,7 +1943,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the network query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>networkCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>networkCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1483,10 +1975,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetnetworkcode'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getNetworkCode()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L233-L235'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getNetworkCode(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1522,8 +2076,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L188-L190'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L243-L246'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1531,7 +2085,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the station query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>stationCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>stationCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1563,10 +2117,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetstationcode'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStationCode()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L248-L250'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStationCode(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1602,8 +2218,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L196-L198'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L258-L261'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1611,7 +2227,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the location code query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>locationCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>locationCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1643,10 +2259,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetlocationcode'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLocationCode()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L263-L265'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLocationCode(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1682,8 +2360,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L204-L206'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L273-L276'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1691,7 +2369,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the channel query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>channelCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>channelCode(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1723,10 +2401,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetchannelcode'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getChannelCode()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L278-L280'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getChannelCode(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1762,8 +2502,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L212-L214'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L288-L291'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1771,7 +2511,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the starttime query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>startTime(value: moment$Moment?): (moment$Moment | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>startTime(value: DateTime?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1788,7 +2528,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -1803,10 +2543,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetstarttime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStartTime()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L293-L295'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStartTime(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1842,8 +2644,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L220-L222'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L303-L306'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -1851,7 +2653,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the endtime query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>endTime(value: moment$Moment?): (moment$Moment | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>endTime(value: DateTime?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -1868,7 +2670,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -1883,8 +2685,150 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetendtime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getEndTime()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L308-L310'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getEndTime(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerytimerange'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>timeRange(se)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L318-L322'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Sets startTime and endTime using the given time window</p>
+
+    <div class='pre p1 fill-light mt0'>timeRange(se: Interval): <a href="#stationquery">StationQuery</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>se</span> <code class='quiet'>(Interval)</code>
+	    time window
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#stationquery">StationQuery</a></code>:
+        this
 
       
     
@@ -1922,20 +2866,20 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L229-L233'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L329-L331'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
   
 
-  <p>Sets startTime and endTime using the given time window</p>
-
-    <div class='pre p1 fill-light mt0'>timeWindow(se: StartEndDuration): <a href="#stationquery">StationQuery</a></div>
+  
+    <div class='pre p1 fill-light mt0'>timeWindow(se: Interval): <a href="#stationquery">StationQuery</a></div>
   
   
 
-  
+  <div>Deprecated: This is deprecated.
+</div>
   
   
   
@@ -1948,8 +2892,8 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>se</span> <code class='quiet'>(StartEndDuration)</code>
-	    time window
+            <span class='code bold'>se</span> <code class='quiet'>(Interval)</code>
+	    time interval
 
           </div>
           
@@ -2002,8 +2946,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L239-L241'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L339-L342'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2011,7 +2955,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the startbefore query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>startBefore(value: moment$Moment?): (moment$Moment | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>startBefore(value: DateTime?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2028,7 +2972,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -2043,10 +2987,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetstartbefore'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStartBefore()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L344-L346'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStartBefore(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2082,8 +3088,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L247-L249'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L354-L357'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2091,7 +3097,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the endbefore query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>endBefore(value: moment$Moment?): (moment$Moment | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>endBefore(value: DateTime?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2108,7 +3114,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -2123,10 +3129,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetendbefore'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getEndBefore()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L359-L361'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getEndBefore(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2162,8 +3230,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L255-L257'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L369-L372'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2171,7 +3239,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the startafter query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>startAfter(value: moment$Moment?): (moment$Moment | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>startAfter(value: DateTime?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2188,7 +3256,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -2203,10 +3271,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetstartafter'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getStartAfter()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L374-L376'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getStartAfter(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2242,8 +3372,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L263-L265'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L384-L387'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2251,7 +3381,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the endafter query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>endAfter(value: moment$Moment?): (moment$Moment | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>endAfter(value: DateTime?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2268,7 +3398,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -2283,10 +3413,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetendafter'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getEndAfter()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L389-L391'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getEndAfter(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2322,8 +3514,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L271-L273'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L399-L402'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2331,7 +3523,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minlat query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2363,10 +3555,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetminlat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinLat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L404-L406'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinLat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2402,8 +3656,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L279-L281'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L414-L417'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2411,7 +3665,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxlon query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxLat(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2443,10 +3697,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetmaxlat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxLat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L419-L421'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxLat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2482,8 +3798,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L287-L289'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L429-L432'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2491,7 +3807,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minlon query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2523,10 +3839,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetminlon'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinLon()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L434-L436'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinLon(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2562,8 +3940,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L295-L297'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L444-L447'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2571,7 +3949,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxlon query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxLon(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2603,10 +3981,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetmaxlon'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxLon()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L449-L451'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxLon(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2642,8 +4082,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L303-L305'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L459-L462'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2651,7 +4091,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the latitude query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>latitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>latitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2683,10 +4123,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetlatitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLatitude()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L464-L466'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLatitude(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2722,8 +4224,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L311-L313'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L474-L477'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2731,7 +4233,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the longitude query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>longitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>longitude(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2763,10 +4265,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetlongitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getLongitude()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L479-L481'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getLongitude(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2802,8 +4366,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L319-L321'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L489-L492'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2811,7 +4375,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the minradius query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>minRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>minRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2843,10 +4407,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetminradius'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMinRadius()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L494-L496'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMinRadius(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2882,8 +4508,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L327-L329'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L504-L507'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2891,7 +4517,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the maxradius query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>maxRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>maxRadius(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -2923,10 +4549,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetmaxradius'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMaxRadius()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L509-L511'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMaxRadius(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -2962,8 +4650,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L335-L344'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L519-L522'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -2971,7 +4659,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the includerestricted query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>includeRestricted(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>includeRestricted(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -3003,10 +4691,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetincluderestricted'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getIncludeRestricted()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L524-L526'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getIncludeRestricted(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3042,8 +4792,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L350-L359'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L534-L537'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3051,7 +4801,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the includeavailability query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>includeAvailability(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>includeAvailability(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -3083,10 +4833,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetincludeavailability'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getIncludeAvailability()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L539-L541'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getIncludeAvailability(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3122,8 +4934,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L365-L367'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L549-L552'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3131,7 +4943,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the format query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>format(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>format(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -3163,10 +4975,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetformat'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getFormat()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L554-L556'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getFormat(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3202,8 +5076,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L373-L375'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L564-L567'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3211,7 +5085,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the updatedafter query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>updatedAfter(value: moment$Moment?): (moment$Moment | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>updatedAfter(value: DateTime?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -3228,7 +5102,7 @@ the status code when no matching data is found by the service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(DateTime?)</code>
 	    optional new value if setting
 
           </div>
@@ -3243,10 +5117,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(moment$Moment | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetupdatedafter'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getUpdatedAfter()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L569-L571'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getUpdatedAfter(): (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3282,8 +5218,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L381-L390'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L579-L582'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3291,7 +5227,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the matchtimeseries query parameter.</p>
 
-    <div class='pre p1 fill-light mt0'>matchTimeseries(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>matchTimeseries(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -3323,10 +5259,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygetmatchtimeseries'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getMatchTimeseries()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L584-L586'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getMatchTimeseries(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3362,8 +5360,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L396-L405'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L594-L597'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3371,7 +5369,7 @@ the status code when no matching data is found by the service.</p>
 
   <p>Get/Set the timeout in seconds for the request. Default is 30.</p>
 
-    <div class='pre p1 fill-light mt0'>timeout(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>timeout(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#stationquery">StationQuery</a></div>
   
   
 
@@ -3403,10 +5401,72 @@ the status code when no matching data is found by the service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#stationquery">StationQuery</a>)</code>:
+      <code><a href="#stationquery">StationQuery</a></code>:
         new value if getting, this if setting
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='stationquerygettimeout'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getTimeout()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L599-L601'>
+      <span>src/fdsnstation.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getTimeout(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -3442,8 +5502,8 @@ the status code when no matching data is found by the service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L413-L433'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L610-L632'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3510,8 +5570,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L440-L442'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L639-L641'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3576,8 +5636,8 @@ the client doesn't ask for EVERYTHING the server has.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L449-L451'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L649-L651'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3643,8 +5703,8 @@ are contained within their respective Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L458-L460'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L659-L661'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3710,8 +5770,8 @@ are contained within their respective Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L468-L470'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L670-L672'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3778,8 +5838,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L478-L483'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L680-L688'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3858,8 +5918,8 @@ which are in Stations which are in Networks.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L497-L501'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L701-L707'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -3941,8 +6001,8 @@ channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L515-L519'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L720-L726'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4024,8 +6084,8 @@ channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L532-L536'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L739-L745'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4107,8 +6167,8 @@ channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L549-L553'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L758-L764'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4190,8 +6250,8 @@ channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L567-L572'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L778-L786'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4282,8 +6342,8 @@ channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L580-L597'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L794-L815'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4362,8 +6422,8 @@ channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L612-L635'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L829-L863'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4454,8 +6514,8 @@ channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L649-L673'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L877-L963'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4547,8 +6607,8 @@ optional channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L680-L682'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L970-L972'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4613,8 +6673,8 @@ optional channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L690-L701'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L979-L991'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4679,8 +6739,8 @@ optional channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L707-L713'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L998-L1014'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>
@@ -4745,8 +6805,8 @@ optional channel lines of the form:</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsnstation.js#L720-L752'>
-      <span>src/fdsnstation.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsnstation.ts#L1022-L1134'>
+      <span>src/fdsnstation.ts</span>
       </a>
     
   </div>

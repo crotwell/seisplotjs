@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.util 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.util 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.util</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -26,16 +26,6 @@
             type='text' />
           <div id='toc'>
             <ul class='list-reset h5 py1-ul'>
-              
-                
-                <li><a
-                  href='#moment'
-                  class="">
-                  moment
-                  
-                </a>
-                
-                </li>
               
                 
                 <li><a
@@ -94,6 +84,44 @@
                   TEXT_MIME
                   
                 </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#binary_mime'
+                  class="">
+                  BINARY_MIME
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#utc_options'
+                  class=" toggle-sibling">
+                  UTC_OPTIONS
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#utc_optionszone'
+                        class='regular pre-open'>
+                        .zone
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                  
+                  
+                </div>
                 
                 </li>
               
@@ -169,9 +197,29 @@
               
                 
                 <li><a
+                  href='#rethrowwithmessage'
+                  class="">
+                  rethrowWithMessage
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#dostringgettersetter'
                   class="">
                   doStringGetterSetter
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#doboolgettersetter'
+                  class="">
+                  doBoolGetterSetter
                   
                 </a>
                 
@@ -229,9 +277,49 @@
               
                 
                 <li><a
+                  href='#iserror'
+                  class="">
+                  isError
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#toerror'
+                  class="">
+                  toError
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#warn'
+                  class="">
+                  warn
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#stringify'
                   class="">
                   stringify
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isotodatetime'
+                  class="">
+                  isoToDateTime
                   
                 </a>
                 
@@ -441,9 +529,39 @@
               
                 
                 <li><a
+                  href='#downloadblobasfile'
+                  class="">
+                  downloadBlobAsFile
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#meanofslice'
                   class="">
                   meanOfSlice
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#svg_ns'
+                  class="">
+                  SVG_NS
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#createsvgelement'
+                  class="">
+                  createSVGElement
                   
                 </a>
                 
@@ -464,66 +582,13 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='moment'>
-      moment
-    </h3>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L10-L10'>
-      <span>src/util.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>moment</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-          <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
     <h3 class='fl m0' id='rsvp'>
       RSVP
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L17-L17'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L8-L8'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -575,8 +640,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L27-L27'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L15-L15'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -633,8 +698,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L28-L28'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L16-L16'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -691,8 +756,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L29-L29'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L17-L17'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -749,8 +814,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L30-L30'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L18-L18'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -807,8 +872,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L31-L31'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L19-L19'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -860,13 +925,187 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='binary_mime'>
+      BINARY_MIME
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L20-L20'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>BINARY_MIME</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='utc_options'>
+      UTC_OPTIONS
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L22-L22'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>UTC_OPTIONS</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='utc_optionszone'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>zone</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L22-L22'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>zone</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='hasargs'>
       hasArgs
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L34-L36'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L24-L26'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -936,8 +1175,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L37-L39'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L27-L29'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -1007,15 +1246,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L40-L42'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L30-L35'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>isStringArg(value: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+    <div class='pre p1 fill-light mt0'>isStringArg(value: any): any</div>
   
   
 
@@ -1046,7 +1285,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+      <code>any</code>
     
   
 
@@ -1078,15 +1317,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L43-L45'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L36-L41'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>isNumArg(value: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+    <div class='pre p1 fill-light mt0'>isNumArg(value: any): any</div>
   
   
 
@@ -1117,7 +1356,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+      <code>any</code>
     
   
 
@@ -1149,15 +1388,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L46-L48'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L42-L44'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>isNonEmptyStringArg(value: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+    <div class='pre p1 fill-light mt0'>isNonEmptyStringArg(value: any): any</div>
   
   
 
@@ -1188,7 +1427,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+      <code>any</code>
     
   
 
@@ -1220,15 +1459,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L49-L51'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L45-L47'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>isObject(obj: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+    <div class='pre p1 fill-light mt0'>isObject(obj: any): any</div>
   
   
 
@@ -1259,7 +1498,7 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+      <code>any</code>
     
   
 
@@ -1291,15 +1530,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L52-L54'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L51-L53'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>isDef(v: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+    <div class='pre p1 fill-light mt0'>isDef(value: (Value | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a> | null)): any</div>
   
   
 
@@ -1316,7 +1555,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((Value | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a> | null))</code>
 	    
           </div>
           
@@ -1330,7 +1569,86 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+      <code>any</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='rethrowwithmessage'>
+      rethrowWithMessage
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L55-L66'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>rethrowWithMessage(err: any, message: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): never</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>err</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>message</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>never</code>
     
   
 
@@ -1362,15 +1680,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L56-L66'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L68-L87'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>doStringGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | any)</div>
+    <div class='pre p1 fill-light mt0'>doStringGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</div>
   
   
 
@@ -1415,9 +1733,91 @@
   
 
   
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='doboolgettersetter'>
+      doBoolGetterSetter
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L88-L107'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>doBoolGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>obj</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>field</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | any)</code>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | any)</code>
     
   
 
@@ -1449,15 +1849,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L68-L80'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L108-L129'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>doIntGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | any)</div>
+    <div class='pre p1 fill-light mt0'>doIntGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?)</div>
   
   
 
@@ -1501,11 +1901,6 @@
 
   
 
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | any)</code>
-    
   
 
   
@@ -1536,15 +1931,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L82-L94'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L130-L151'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>doFloatGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | any)</div>
+    <div class='pre p1 fill-light mt0'>doFloatGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?)</div>
   
   
 
@@ -1589,11 +1984,6 @@
   
 
   
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | any)</code>
-    
-  
 
   
 
@@ -1623,15 +2013,15 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L96-L108'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L152-L175'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>doMomentGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: moment$Moment?): (any | moment$Moment)</div>
+    <div class='pre p1 fill-light mt0'>doMomentGetterSetter(obj: any, field: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, value: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</div>
   
   
 
@@ -1664,7 +2054,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(moment$Moment?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)?)</code>
 	    
           </div>
           
@@ -1675,11 +2065,6 @@
 
   
 
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(any | moment$Moment)</code>
-    
   
 
   
@@ -1710,8 +2095,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L116-L122'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L183-L191'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -1786,8 +2171,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L131-L137'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L200-L214'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -1856,13 +2241,232 @@ p tag to a div#debug if it exists.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='iserror'>
+      isError
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L221-L227'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>typescript-y check if Error.</p>
+
+    <div class='pre p1 fill-light mt0'>isError(error: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>error</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='toerror'>
+      toError
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L234-L244'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>typescript-y convert errors.</p>
+
+    <div class='pre p1 fill-light mt0'>toError(maybeError: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>maybeError</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='warn'>
+      warn
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L253-L265'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Log a warning message to the console. Put here to limit lint console errors
+for the times we really do want to use console.log. Will also append a
+p tag to a div#debug if it exists.</p>
+
+    <div class='pre p1 fill-light mt0'>warn(msg: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    the message to log
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='stringify'>
       stringify
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L146-L173'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L274-L301'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -1933,22 +2537,20 @@ flow happier.</p>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='calcclockoffset'>
-      calcClockOffset
+    <h3 class='fl m0' id='isotodatetime'>
+      isoToDateTime
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L182-L184'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L303-L308'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
-  <p>Calculates offset of remote server versus local time. It is assumed that the
-argument was acquired as close in time to calling this as possible.</p>
-
-    <div class='pre p1 fill-light mt0'>calcClockOffset(serverTimeUTC: moment$Moment): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  
+    <div class='pre p1 fill-light mt0'>isoToDateTime(val: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): DateTime</div>
   
   
 
@@ -1965,7 +2567,80 @@ argument was acquired as close in time to calling this as possible.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>serverTimeUTC</span> <code class='quiet'>(moment$Moment)</code>
+            <span class='code bold'>val</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>DateTime</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='calcclockoffset'>
+      calcClockOffset
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L317-L319'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Calculates offset of remote server versus local time. It is assumed that the
+argument was acquired as close in time to calling this as possible.</p>
+
+    <div class='pre p1 fill-light mt0'>calcClockOffset(serverTimeUTC: DateTime): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>serverTimeUTC</span> <code class='quiet'>(DateTime)</code>
 	    now as reported by remote server
 
           </div>
@@ -2015,8 +2690,8 @@ argument was acquired as close in time to calling this as possible.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L186-L186'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L320-L320'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2027,7 +2702,7 @@ argument was acquired as close in time to calling this as possible.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2073,8 +2748,8 @@ argument was acquired as close in time to calling this as possible.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L197-L321'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L331-L521'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2082,13 +2757,13 @@ argument was acquired as close in time to calling this as possible.</p>
 
   <p>Any two of startTime, endTime and duration can be specified, or just duration which
 then assumes endTime is now.
-startTime and endTime are moment objects, duration is in seconds.
+startTime and endTime are DateTime objects, duration is in seconds.
 clockOffset is the seconds that should be subtracted from the computer time
 to get real world time, ie computerUTC - UTC
-or moment.utc().diff(serverTimeUTC, 'seconds', true).
+or DateTime.utc().diff(serverTimeUTC, 'seconds', true).
 default is zero.</p>
 
-    <div class='pre p1 fill-light mt0'>new StartEndDuration(startTime: (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null), endTime: (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null), duration: (moment$MomentDuration | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null), clockOffset: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null))</div>
+    <div class='pre p1 fill-light mt0'>new StartEndDuration(startTime: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null), endTime: (DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null), duration: (Duration | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null), clockOffset: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null))</div>
   
   
 
@@ -2105,7 +2780,7 @@ default is zero.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>startTime</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null))</code>
+            <span class='code bold'>startTime</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null))</code>
 	    
           </div>
           
@@ -2113,7 +2788,7 @@ default is zero.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>endTime</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null))</code>
+            <span class='code bold'>endTime</span> <code class='quiet'>((DateTime | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | null))</code>
 	    
           </div>
           
@@ -2121,7 +2796,7 @@ default is zero.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>duration</span> <code class='quiet'>((moment$MomentDuration | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null)
+            <span class='code bold'>duration</span> <code class='quiet'>((Duration | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | null)
             = <code>null</code>)</code>
 	    
           </div>
@@ -2170,8 +2845,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L198-L198'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L332-L332'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2182,7 +2857,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2232,8 +2907,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L199-L199'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L333-L333'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2244,7 +2919,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2294,8 +2969,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L200-L200'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L334-L334'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2306,7 +2981,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$MomentDuration
+      Duration
     </p>
   
   
@@ -2356,8 +3031,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L201-L201'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L335-L335'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2368,7 +3043,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$MomentDuration
+      Duration
     </p>
   
   
@@ -2418,8 +3093,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L247-L249'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L407-L409'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2430,7 +3105,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2449,7 +3124,7 @@ default is zero.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>
+      <code>DateTime</code>
     
   
 
@@ -2485,8 +3160,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L250-L252'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L411-L413'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2497,7 +3172,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2516,7 +3191,7 @@ default is zero.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>
+      <code>DateTime</code>
     
   
 
@@ -2552,8 +3227,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L253-L255'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L415-L417'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2564,7 +3239,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2583,7 +3258,7 @@ default is zero.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>
+      <code>DateTime</code>
     
   
 
@@ -2619,8 +3294,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L256-L258'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L419-L421'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2631,7 +3306,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2650,7 +3325,7 @@ default is zero.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>
+      <code>DateTime</code>
     
   
 
@@ -2686,8 +3361,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L259-L261'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L423-L425'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2698,7 +3373,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$MomentDuration
+      Duration
     </p>
   
   
@@ -2717,7 +3392,7 @@ default is zero.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$MomentDuration</code>
+      <code>Duration</code>
     
   
 
@@ -2753,8 +3428,8 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L262-L264'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L427-L429'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2765,7 +3440,7 @@ default is zero.</p>
   
     <p>
       Type:
-      moment$MomentDuration
+      Duration
     </p>
   
   
@@ -2784,7 +3459,7 @@ default is zero.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$MomentDuration</code>
+      <code>Duration</code>
     
   
 
@@ -2820,17 +3495,17 @@ default is zero.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L272-L284'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L438-L465'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
-  <p>Check if this time window contains the given moment. Equality to start
+  <p>Check if this time window contains the given DateTime. Equality to start
 or end is considered being contained in.</p>
 
-    <div class='pre p1 fill-light mt0'>contains(other: (moment$Moment | <a href="#startendduration">StartEndDuration</a>)): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+    <div class='pre p1 fill-light mt0'>contains(other: (DateTime | <a href="#startendduration">StartEndDuration</a>)): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
   
   
 
@@ -2847,8 +3522,8 @@ or end is considered being contained in.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>other</span> <code class='quiet'>((moment$Moment | <a href="#startendduration">StartEndDuration</a>))</code>
-	    moment to check
+            <span class='code bold'>other</span> <code class='quiet'>((DateTime | <a href="#startendduration">StartEndDuration</a>))</code>
+	    DateTime to check
 
           </div>
           
@@ -2863,7 +3538,7 @@ or end is considered being contained in.</p>
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>:
-        true if moment is inside this time range
+        true if DateTime is inside this time range
 
       
     
@@ -2901,8 +3576,8 @@ or end is considered being contained in.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L285-L291'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L467-L476'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -2976,8 +3651,8 @@ or end is considered being contained in.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L292-L306'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L478-L498'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3051,8 +3726,8 @@ or end is considered being contained in.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L307-L317'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L500-L514'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3126,8 +3801,8 @@ or end is considered being contained in.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L318-L320'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L516-L520'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3196,18 +3871,18 @@ or end is considered being contained in.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L331-L347'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L531-L549'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
   
 
-  <p>converts the input value is a moment, throws Error if not
-a string, Date or moment. Zero length string or "now" return
+  <p>converts the input value is a DateTime, throws Error if not
+a string, Date or DateTime. Zero length string or "now" return
 current time.</p>
 
-    <div class='pre p1 fill-light mt0'>checkStringOrDate(d: any): moment$Moment</div>
+    <div class='pre p1 fill-light mt0'>checkStringOrDate(d: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a> | DateTime)): DateTime</div>
   
   
 
@@ -3224,8 +3899,8 @@ current time.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>d</span> <code class='quiet'>(any)</code>
-	    'now', string time, Date, number of milliseconds since epoch, or moment
+            <span class='code bold'>d</span> <code class='quiet'>((<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date">Date</a> | DateTime))</code>
+	    'now', string time, Date, number of milliseconds since epoch, or DateTime
 
           </div>
           
@@ -3239,8 +3914,8 @@ current time.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>:
-        moment created from argument
+      <code>DateTime</code>:
+        DateTime created from argument
 
       
     
@@ -3274,8 +3949,8 @@ current time.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L357-L359'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L558-L560'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3359,8 +4034,8 @@ current time.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L369-L371'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L570-L572'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3445,8 +4120,8 @@ for including in POST body.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L380-L383'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L581-L587'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3455,7 +4130,7 @@ for including in POST body.</p>
   <p>converts to ISO8601 but removes the trailing Z as FDSN web services
 do not allow that.</p>
 
-    <div class='pre p1 fill-light mt0'>toIsoWoZ(date: moment$Moment): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+    <div class='pre p1 fill-light mt0'>toIsoWoZ(date: DateTime): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
   
   
 
@@ -3472,8 +4147,8 @@ do not allow that.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>date</span> <code class='quiet'>(moment$Moment)</code>
-	    moment to convert to string
+            <span class='code bold'>date</span> <code class='quiet'>(DateTime)</code>
+	    DateTime to convert to string
 
           </div>
           
@@ -3489,7 +4164,6 @@ do not allow that.</p>
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         ISO8601 without timezone Z
-*
 
       
     
@@ -3523,8 +4197,8 @@ do not allow that.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L388-L397'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L592-L606'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3551,7 +4225,6 @@ do not allow that.</p>
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>:
         the protocol, http or https for the document if possible.
-*
 
       
     
@@ -3585,8 +4258,8 @@ do not allow that.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L406-L418'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L615-L630'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3595,7 +4268,7 @@ do not allow that.</p>
   <p>Create default fetch init object with the given mimeType. Sets
 no-cache, follow redirects, cors mode, referrer as seisplotjs and mimetype as a header.</p>
 
-    <div class='pre p1 fill-light mt0'>defaultFetchInitObj(mimeType: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): {}</div>
+    <div class='pre p1 fill-light mt0'>defaultFetchInitObj(mimeType: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): Record&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, any></div>
   
   
 
@@ -3627,7 +4300,7 @@ no-cache, follow redirects, cors mode, referrer as seisplotjs and mimetype as a 
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>{}</code>:
+      <code>Record&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, any></code>:
         object with fetch configuration parameters
 
       
@@ -3662,8 +4335,8 @@ no-cache, follow redirects, cors mode, referrer as seisplotjs and mimetype as a 
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L429-L464'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L641-L690'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3671,7 +4344,7 @@ no-cache, follow redirects, cors mode, referrer as seisplotjs and mimetype as a 
 
   <p>Does a fetch, but times out if it takes too long.</p>
 
-    <div class='pre p1 fill-light mt0'>doFetchWithTimeout(url: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/API/URL/URL">URL</a>), fetchInit: {}?, timeoutSec: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/Guide/HTML/HTML5">Response</a>></div>
+    <div class='pre p1 fill-light mt0'>doFetchWithTimeout(url: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/API/URL/URL">URL</a>), fetchInit: Record&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, any>?, timeoutSec: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/Guide/HTML/HTML5">Response</a>></div>
   
   
 
@@ -3697,7 +4370,7 @@ no-cache, follow redirects, cors mode, referrer as seisplotjs and mimetype as a 
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>fetchInit</span> <code class='quiet'>({}?)</code>
+            <span class='code bold'>fetchInit</span> <code class='quiet'>(Record&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, any>?)</code>
 	    fetch configuration, initialization
 
           </div>
@@ -3759,13 +4432,101 @@ no-cache, follow redirects, cors mode, referrer as seisplotjs and mimetype as a 
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='downloadblobasfile'>
+      downloadBlobAsFile
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L699-L716'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Allows downloading of in memory data, as ArrayBuffer, to file as if
+the user clicked a download link.</p>
+
+    <div class='pre p1 fill-light mt0'>downloadBlobAsFile(data: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>, filename: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, mimeType: any)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>data</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">ArrayBuffer</a>)</code>
+	    ArrayBuffer to download
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>filename</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    default filename
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>mimeType</span> <code class='quiet'>(any
+            = <code>&#39;application/octet-stream&#39;</code>)</code>
+	    ='application/octet-stream'      mimeType
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='meanofslice'>
       meanOfSlice
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/util.js#L475-L484'>
-      <span>src/util.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L727-L743'>
+      <span>src/util.ts</span>
       </a>
     
   </div>
@@ -3819,6 +4580,135 @@ very long seismograms to equally weight each sample point without overflowing.</
         sum of slice data points divided by totalPts
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='svg_ns'>
+      SVG_NS
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L745-L745'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>SVG_NS</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='createsvgelement'>
+      createSVGElement
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/util.ts#L747-L749'>
+      <span>src/util.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>createSVGElement(name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/SVG/Element/animate">SVGElement</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/SVG/Element/animate">SVGElement</a></code>
     
   
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.fft 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.fft 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.fft</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -52,6 +52,16 @@
                   href='#inversedft'
                   class="">
                   inverseDFT
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#findpowertwo'
+                  class="">
+                  findPowerTwo
                   
                 </a>
                 
@@ -107,24 +117,6 @@
                       </a></li>
                       
                       <li><a
-                        href='#fftresultcomplex'
-                        class='regular pre-open'>
-                        #complex
-                      </a></li>
-                      
-                      <li><a
-                        href='#fftresultamp'
-                        class='regular pre-open'>
-                        #amp
-                      </a></li>
-                      
-                      <li><a
-                        href='#fftresultphase'
-                        class='regular pre-open'>
-                        #phase
-                      </a></li>
-                      
-                      <li><a
                         href='#fftresultnumpoints'
                         class='regular pre-open'>
                         #numPoints
@@ -134,6 +126,12 @@
                         href='#fftresultsamplerate'
                         class='regular pre-open'>
                         #sampleRate
+                      </a></li>
+                      
+                      <li><a
+                        href='#fftresultinputunits'
+                        class='regular pre-open'>
+                        #inputUnits
                       </a></li>
                       
                       <li><a
@@ -149,27 +147,57 @@
                       </a></li>
                       
                       <li><a
-                        href='#fftresultrecalcfrompackedfreq'
+                        href='#fftresultascomplex'
                         class='regular pre-open'>
-                        #recalcFromPackedFreq
+                        #asComplex
                       </a></li>
                       
                       <li><a
-                        href='#fftresultrecalcfromcomplex'
+                        href='#fftresultasampphase'
                         class='regular pre-open'>
-                        #recalcFromComplex
-                      </a></li>
-                      
-                      <li><a
-                        href='#fftresultrecalcfromampphase'
-                        class='regular pre-open'>
-                        #recalcFromAmpPhase
+                        #asAmpPhase
                       </a></li>
                       
                       <li><a
                         href='#fftresultfftinverse'
                         class='regular pre-open'>
                         #fftInverse
+                      </a></li>
+                      
+                      <li><a
+                        href='#fftresultfrequencies'
+                        class='regular pre-open'>
+                        #frequencies
+                      </a></li>
+                      
+                      <li><a
+                        href='#fftresultnumfrequencies'
+                        class='regular pre-open'>
+                        #numFrequencies
+                      </a></li>
+                      
+                      <li><a
+                        href='#fftresultminfrequency'
+                        class='regular pre-open'>
+                        #minFrequency
+                      </a></li>
+                      
+                      <li><a
+                        href='#fftresultmaxfrequency'
+                        class='regular pre-open'>
+                        #maxFrequency
+                      </a></li>
+                      
+                      <li><a
+                        href='#fftresultamplitudes'
+                        class='regular pre-open'>
+                        #amplitudes
+                      </a></li>
+                      
+                      <li><a
+                        href='#fftresultphases'
+                        class='regular pre-open'>
+                        #phases
                       </a></li>
                       
                       <li><a
@@ -206,8 +234,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L23-L43'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L19-L47'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -285,14 +313,15 @@ Inverse FFT is available as FFTResult.fftInverse().</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L51-L66'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L57-L77'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
   
 
   <p>Calculates the discrete fourier transform using the OregonDSP library.</p>
+<p>This is a lower level function, fftForward is better for most uses.</p>
 
     <div class='pre p1 fill-light mt0'>calcDFT(timeseries: (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Int32Array">Int32Array</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float64Array">Float64Array</a>)): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a></div>
   
@@ -361,14 +390,14 @@ Inverse FFT is available as FFTResult.fftInverse().</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L75-L89'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L86-L113'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
   
 
-  <p>Calculates the inverse discrete fourier transform using the OregonDSP library.</p>
+  <p>Calculates the inverse discrete fourier transform using the oregondsp library.</p>
 
     <div class='pre p1 fill-light mt0'>inverseDFT(packedFreq: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>, numPoints: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a></div>
   
@@ -441,19 +470,95 @@ Inverse FFT is available as FFTResult.fftInverse().</p>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='fftresult'>
-      FFTResult
+    <h3 class='fl m0' id='findpowertwo'>
+      findPowerTwo
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L95-L234'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L121-L130'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
   
 
-  <p>Results of FFT calculateion. Allows convertion of the packed real/imag array output from calcDFT into
+  <p>Finds smallest power of two >= input number.</p>
+
+    <div class='pre p1 fill-light mt0'>findPowerTwo(fftlength: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): [<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>]</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>fftlength</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    input number
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>[<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>]</code>:
+        tuple of N and log2N, like [16,4]
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='fftresult'>
+      FFTResult
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L136-L340'>
+      <span>src/fft.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Results of FFT calculation. Allows convertion of the packed real/imag array output from calcDFT into
 amplitude and phase.</p>
 
     <div class='pre p1 fill-light mt0'>new FFTResult(origLength: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, sampleRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
@@ -518,8 +623,8 @@ amplitude and phase.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L122-L127'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L171-L184'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -616,8 +721,8 @@ amplitude and phase.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L136-L141'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L194-L211'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -625,7 +730,7 @@ amplitude and phase.</p>
 
   <p>Factory method to create from array of complex numbers.</p>
 
-    <div class='pre p1 fill-light mt0'>createFromComplex(complexArray: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>, origLength: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, sampleRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="#fftresult">FFTResult</a></div>
+    <div class='pre p1 fill-light mt0'>createFromComplex(complexArray: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>, origLength: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, sampleRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="#fftresult">FFTResult</a></div>
   
   
 
@@ -642,7 +747,7 @@ amplitude and phase.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>complexArray</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>)</code>
+            <span class='code bold'>complexArray</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>>)</code>
 	    real and imag values as array of Complex objects.
 
           </div>
@@ -714,8 +819,8 @@ amplitude and phase.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L151-L158'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L222-L240'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -829,8 +934,8 @@ amplitude and phase.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L97-L97'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L138-L138'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -892,8 +997,8 @@ amplitude and phase.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L98-L98'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L139-L139'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -901,192 +1006,6 @@ amplitude and phase.</p>
 
   
     <div class='pre p1 fill-light mt0'>packedFreq</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='fftresultcomplex'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>complex</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L99-L99'>
-      <span>src/fft.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>complex</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;Complex>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='fftresultamp'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>amp</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L100-L100'>
-      <span>src/fft.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>amp</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='fftresultphase'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>phase</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L101-L101'>
-      <span>src/fft.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>phase</div>
   
     <p>
       Type:
@@ -1140,8 +1059,8 @@ amplitude and phase.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L103-L103'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L142-L142'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -1203,8 +1122,8 @@ amplitude and phase.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L105-L105'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L145-L145'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -1217,6 +1136,69 @@ amplitude and phase.</p>
     <p>
       Type:
       <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fftresultinputunits'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>inputUnits</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L148-L148'>
+      <span>src/fft.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>optional units of the original data for display purposes.</p>
+
+    <div class='pre p1 fill-light mt0'>inputUnits</div>
+  
+    <p>
+      Type:
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -1266,8 +1248,8 @@ amplitude and phase.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L109-L109'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L154-L154'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -1280,7 +1262,7 @@ Useful for creating title, etc.</p>
   
     <p>
       Type:
-      SeismogramDisplayData
+      (SeismogramDisplayData | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -1330,8 +1312,8 @@ Useful for creating title, etc.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L164-L170'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L247-L255'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -1387,11 +1369,11 @@ Useful for creating title, etc.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fftresultrecalcfrompackedfreq'>
+    <div class='border-bottom' id='fftresultascomplex'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>recalcFromPackedFreq()</span>
+            <span class='code strong strong truncate'>asComplex()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1401,15 +1383,15 @@ Useful for creating title, etc.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L171-L192'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L257-L267'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>recalcFromPackedFreq(): void</div>
+    <div class='pre p1 fill-light mt0'>asComplex(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>></div>
   
   
 
@@ -1427,7 +1409,7 @@ Useful for creating title, etc.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>void</code>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;InstanceType&#x3C;any>></code>
     
   
 
@@ -1449,11 +1431,11 @@ Useful for creating title, etc.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='fftresultrecalcfromcomplex'>
+    <div class='border-bottom' id='fftresultasampphase'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>recalcFromComplex()</span>
+            <span class='code strong strong truncate'>asAmpPhase()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1463,17 +1445,15 @@ Useful for creating title, etc.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L197-L208'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L269-L288'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
   
 
-  <p>recalculate the packedFreq array after modifications
-to the complex array.</p>
-
-    <div class='pre p1 fill-light mt0'>recalcFromComplex(): void</div>
+  
+    <div class='pre p1 fill-light mt0'>asAmpPhase(): [<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>]</div>
   
   
 
@@ -1491,67 +1471,8 @@ to the complex array.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>void</code>
+      <code>[<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a>]</code>
     
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='fftresultrecalcfromampphase'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>recalcFromAmpPhase()</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L213-L220'>
-      <span>src/fft.js</span>
-      </a>
-    
-  </div>
-  
-
-  <p>recalculate the packedFreq array after modifications
-to the amp and/or phase arrays.</p>
-
-    <div class='pre p1 fill-light mt0'>recalcFromAmpPhase()</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
   
 
   
@@ -1586,8 +1507,8 @@ to the amp and/or phase arrays.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L226-L228'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L295-L297'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>
@@ -1638,6 +1559,393 @@ to the amp and/or phase arrays.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='fftresultfrequencies'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>frequencies()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L299-L307'>
+      <span>src/fft.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>frequencies(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fftresultnumfrequencies'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>numFrequencies</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L309-L311'>
+      <span>src/fft.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>numFrequencies</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fftresultminfrequency'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>minFrequency</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L313-L315'>
+      <span>src/fft.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>minFrequency</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fftresultmaxfrequency'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>maxFrequency</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L317-L319'>
+      <span>src/fft.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>maxFrequency</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fftresultamplitudes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>amplitudes()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L321-L324'>
+      <span>src/fft.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>amplitudes(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='fftresultphases'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>phases()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L326-L329'>
+      <span>src/fft.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>phases(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Float32Array">Float32Array</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='fftresultclone'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -1652,8 +1960,8 @@ to the amp and/or phase arrays.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fft.js#L229-L233'>
-      <span>src/fft.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fft.ts#L331-L339'>
+      <span>src/fft.ts</span>
       </a>
     
   </div>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.fdsndatacenters 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.fdsndatacenters 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.fdsndatacenters</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -58,9 +58,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#datacentersquerygetspecversion'
+                        class='regular pre-open'>
+                        #getSpecVersion
+                      </a></li>
+                      
+                      <li><a
                         href='#datacentersqueryprotocol'
                         class='regular pre-open'>
                         #protocol
+                      </a></li>
+                      
+                      <li><a
+                        href='#datacentersquerygetprotocol'
+                        class='regular pre-open'>
+                        #getProtocol
                       </a></li>
                       
                       <li><a
@@ -70,9 +82,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#datacentersquerygethost'
+                        class='regular pre-open'>
+                        #getHost
+                      </a></li>
+                      
+                      <li><a
                         href='#datacentersqueryport'
                         class='regular pre-open'>
                         #port
+                      </a></li>
+                      
+                      <li><a
+                        href='#datacentersquerygetport'
+                        class='regular pre-open'>
+                        #getPort
                       </a></li>
                       
                       <li><a
@@ -82,9 +106,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#datacentersquerygetname'
+                        class='regular pre-open'>
+                        #getName
+                      </a></li>
+                      
+                      <li><a
                         href='#datacentersqueryservices'
                         class='regular pre-open'>
                         #services
+                      </a></li>
+                      
+                      <li><a
+                        href='#datacentersquerygetservices'
+                        class='regular pre-open'>
+                        #getServices
                       </a></li>
                       
                       <li><a
@@ -94,9 +130,21 @@
                       </a></li>
                       
                       <li><a
+                        href='#datacentersquerygetincludedatasets'
+                        class='regular pre-open'>
+                        #getIncludeDataSets
+                      </a></li>
+                      
+                      <li><a
                         href='#datacentersquerytimeout'
                         class='regular pre-open'>
                         #timeout
+                      </a></li>
+                      
+                      <li><a
+                        href='#datacentersquerygettimeout'
+                        class='regular pre-open'>
+                        #getTimeout
                       </a></li>
                       
                       <li><a
@@ -227,14 +275,14 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L22-L22'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L29-L29'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
   
 
-  <p>const for fdsn web service host, www.fdsn.org</p>
+  <p>const for fdsn web service host, <a href="http://www.fdsn.org">www.fdsn.org</a></p>
 
     <div class='pre p1 fill-light mt0'>FDSN_HOST</div>
   
@@ -286,8 +334,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L31-L359'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L37-L465'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -297,6 +345,13 @@
 
     <div class='pre p1 fill-light mt0'>new DataCentersQuery(host: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</div>
   
+  
+    <p>
+      Extends
+      
+        FDSNCommon
+      
+    </p>
   
 
   
@@ -360,8 +415,8 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L68-L77'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L64-L67'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -371,7 +426,7 @@
 Setting this is probably a bad idea as the code may not be compatible with
 the web service.</p>
 
-    <div class='pre p1 fill-light mt0'>specVersion(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#datacentersquery">DataCentersQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>specVersion(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#datacentersquery">DataCentersQuery</a></div>
   
   
 
@@ -388,7 +443,7 @@ the web service.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?)</code>
+            <span class='code bold'>value</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
 	    optional new value if setting
 
           </div>
@@ -403,10 +458,72 @@ the web service.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#datacentersquery">DataCentersQuery</a>)</code>:
+      <code><a href="#datacentersquery">DataCentersQuery</a></code>:
         the query when setting, the current value os services if no arguments
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datacentersquerygetspecversion'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getSpecVersion()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L69-L71'>
+      <span>src/fdsndatacenters.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getSpecVersion(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
     
   
 
@@ -442,8 +559,8 @@ the web service.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L84-L86'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L80-L83'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -452,7 +569,7 @@ the web service.</p>
   <p>Gets/Sets the protocol, http or https. This should match the protocol
 of the page loaded, but is autocalculated and generally need not be set.</p>
 
-    <div class='pre p1 fill-light mt0'>protocol(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#datacentersquery">DataCentersQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>protocol(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#datacentersquery">DataCentersQuery</a></div>
   
   
 
@@ -484,10 +601,72 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#datacentersquery">DataCentersQuery</a>)</code>:
+      <code><a href="#datacentersquery">DataCentersQuery</a></code>:
         the query when setting, the current value os services if no arguments
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datacentersquerygetprotocol'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getProtocol()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L85-L87'>
+      <span>src/fdsndatacenters.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getProtocol(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -523,17 +702,17 @@ of the page loaded, but is autocalculated and generally need not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L93-L95'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L96-L99'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
   
 
   <p>Gets/Sets the remote host to connect to. This defaults to
-www.fdsn.org and generally should not be set.</p>
+<a href="http://www.fdsn.org">www.fdsn.org</a> and generally should not be set.</p>
 
-    <div class='pre p1 fill-light mt0'>host(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#datacentersquery">DataCentersQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>host(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#datacentersquery">DataCentersQuery</a></div>
   
   
 
@@ -565,10 +744,72 @@ www.fdsn.org and generally should not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#datacentersquery">DataCentersQuery</a>)</code>:
+      <code><a href="#datacentersquery">DataCentersQuery</a></code>:
         the query when setting, the current value os services if no arguments
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datacentersquerygethost'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getHost()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L101-L103'>
+      <span>src/fdsndatacenters.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getHost(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
     
   
 
@@ -604,8 +845,8 @@ www.fdsn.org and generally should not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L102-L104'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L112-L115'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -614,7 +855,7 @@ www.fdsn.org and generally should not be set.</p>
   <p>Gets/Sets the remote port to connect to. This defaults to
 the standard port for the protocol and generally should not be set.</p>
 
-    <div class='pre p1 fill-light mt0'>port(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#datacentersquery">DataCentersQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>port(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#datacentersquery">DataCentersQuery</a></div>
   
   
 
@@ -646,10 +887,72 @@ the standard port for the protocol and generally should not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#datacentersquery">DataCentersQuery</a>)</code>:
+      <code><a href="#datacentersquery">DataCentersQuery</a></code>:
         the query when setting, the current value os services if no arguments
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datacentersquerygetport'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getPort()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L117-L119'>
+      <span>src/fdsndatacenters.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getPort(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -685,8 +988,8 @@ the standard port for the protocol and generally should not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L111-L113'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L127-L130'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -694,7 +997,7 @@ the standard port for the protocol and generally should not be set.</p>
 
   <p>limits results to the named data center, default is all data centers</p>
 
-    <div class='pre p1 fill-light mt0'>name(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#datacentersquery">DataCentersQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>name(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#datacentersquery">DataCentersQuery</a></div>
   
   
 
@@ -726,10 +1029,72 @@ the standard port for the protocol and generally should not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#datacentersquery">DataCentersQuery</a>)</code>:
+      <code><a href="#datacentersquery">DataCentersQuery</a></code>:
         the query when setting, the current value os services if no arguments
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datacentersquerygetname'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getName()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L132-L134'>
+      <span>src/fdsndatacenters.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getName(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -765,8 +1130,8 @@ the standard port for the protocol and generally should not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L120-L122'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L142-L145'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -774,7 +1139,7 @@ the standard port for the protocol and generally should not be set.</p>
 
   <p>limits results to services that match the glob style pattern</p>
 
-    <div class='pre p1 fill-light mt0'>services(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#datacentersquery">DataCentersQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>services(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="#datacentersquery">DataCentersQuery</a></div>
   
   
 
@@ -806,10 +1171,72 @@ the standard port for the protocol and generally should not be set.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="#datacentersquery">DataCentersQuery</a>)</code>:
+      <code><a href="#datacentersquery">DataCentersQuery</a></code>:
         the query when setting, the current value os services if no arguments
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datacentersquerygetservices'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getServices()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L147-L149'>
+      <span>src/fdsndatacenters.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getServices(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -845,8 +1272,8 @@ the standard port for the protocol and generally should not be set.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L130-L139'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L158-L161'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -855,7 +1282,7 @@ the standard port for the protocol and generally should not be set.</p>
   <p>whether the results include detailed information about
 the data sets offered by each center, default is false</p>
 
-    <div class='pre p1 fill-light mt0'>includeDataSets(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#datacentersquery">DataCentersQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>includeDataSets(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>?): <a href="#datacentersquery">DataCentersQuery</a></div>
   
   
 
@@ -887,10 +1314,72 @@ the data sets offered by each center, default is false</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="#datacentersquery">DataCentersQuery</a>)</code>:
+      <code><a href="#datacentersquery">DataCentersQuery</a></code>:
         the query when setting, the current value os services if no arguments
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datacentersquerygetincludedatasets'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getIncludeDataSets()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L163-L165'>
+      <span>src/fdsndatacenters.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getIncludeDataSets(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -926,8 +1415,8 @@ the data sets offered by each center, default is false</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L146-L155'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L173-L176'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -935,7 +1424,7 @@ the data sets offered by each center, default is false</p>
 
   <p>Get/Set the timeout in seconds for the request. Default is 30.</p>
 
-    <div class='pre p1 fill-light mt0'>timeout(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#datacentersquery">DataCentersQuery</a>)</div>
+    <div class='pre p1 fill-light mt0'>timeout(value: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?): <a href="#datacentersquery">DataCentersQuery</a></div>
   
   
 
@@ -967,10 +1456,72 @@ the data sets offered by each center, default is false</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="#datacentersquery">DataCentersQuery</a>)</code>:
+      <code><a href="#datacentersquery">DataCentersQuery</a></code>:
         the query when setting, the current value os services if no arguments
 
       
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datacentersquerygettimeout'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getTimeout()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L178-L180'>
+      <span>src/fdsndatacenters.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getTimeout(): (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)</code>
     
   
 
@@ -1006,8 +1557,8 @@ the data sets offered by each center, default is false</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L162-L174'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L187-L204'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1072,8 +1623,8 @@ the data sets offered by each center, default is false</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L185-L199'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L215-L241'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1163,8 +1714,8 @@ the repo name.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L210-L224'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L252-L278'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1254,8 +1805,8 @@ the repo name.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L235-L249'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L289-L315'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1345,8 +1896,8 @@ the repo name.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L260-L274'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L326-L352'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1436,8 +1987,8 @@ the repo name.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L285-L300'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L363-L385'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1535,8 +2086,8 @@ the given repository, from the json.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L307-L313'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L392-L408'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1601,8 +2152,8 @@ the given repository, from the json.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L320-L322'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L415-L417'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1667,8 +2218,8 @@ the given repository, from the json.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L328-L339'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L424-L436'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1733,8 +2284,8 @@ the given repository, from the json.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L347-L358'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L443-L464'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1807,8 +2358,8 @@ the given repository, from the json.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L512-L514'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L616-L618'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1866,8 +2417,8 @@ the given repository, from the json.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L525-L531'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L629-L635'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1875,6 +2426,11 @@ the given repository, from the json.</p>
 
   
     <div class='pre p1 fill-light mt0'>Repository</div>
+  
+    <p>
+      Type:
+      {name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, description: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, website: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, services: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#service">Service</a>>, datasets: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#dataset">Dataset</a>>?}
+    </p>
   
   
 
@@ -1954,8 +2510,8 @@ the given repository, from the json.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L532-L543'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L636-L647'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -1963,6 +2519,11 @@ the given repository, from the json.</p>
 
   
     <div class='pre p1 fill-light mt0'>Dataset</div>
+  
+    <p>
+      Type:
+      {network: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, station: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, location: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, channel: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, starttime: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, endtime: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, priority: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?, description: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, url: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, services: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#service">Service</a>>?}
+    </p>
   
   
 
@@ -2072,8 +2633,8 @@ the given repository, from the json.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/fdsndatacenters.js#L544-L549'>
-      <span>src/fdsndatacenters.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/fdsndatacenters.ts#L648-L653'>
+      <span>src/fdsndatacenters.ts</span>
       </a>
     
   </div>
@@ -2081,6 +2642,11 @@ the given repository, from the json.</p>
 
   
     <div class='pre p1 fill-light mt0'>Service</div>
+  
+    <p>
+      Type:
+      {name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, description: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, url: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?, compatibleWith: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?}
+    </p>
   
   
 

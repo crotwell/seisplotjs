@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.quakeml 2.1.0-alpha.0 | Documentation</title>
+  <title>seisplotjs.quakeml 3.0.0-alpha.0 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.quakeml</h3>
-          <div class='mb1'><code>2.1.0-alpha.0</code></div>
+          <div class='mb1'><code>3.0.0-alpha.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -99,6 +99,26 @@
               
                 
                 <li><a
+                  href='#unknown_public_id'
+                  class="">
+                  UNKNOWN_PUBLIC_ID
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#fake_origin_time'
+                  class="">
+                  FAKE_ORIGIN_TIME
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#quake'
                   class=" toggle-sibling">
                   Quake
@@ -141,39 +161,9 @@
                       </a></li>
                       
                       <li><a
-                        href='#quake_time'
-                        class='regular pre-open'>
-                        #_time
-                      </a></li>
-                      
-                      <li><a
-                        href='#quakelatitude'
-                        class='regular pre-open'>
-                        #latitude
-                      </a></li>
-                      
-                      <li><a
-                        href='#quakelongitude'
-                        class='regular pre-open'>
-                        #longitude
-                      </a></li>
-                      
-                      <li><a
-                        href='#quakedepth'
-                        class='regular pre-open'>
-                        #depth
-                      </a></li>
-                      
-                      <li><a
                         href='#quakedescription'
                         class='regular pre-open'>
                         #description
-                      </a></li>
-                      
-                      <li><a
-                        href='#quakemagnitude'
-                        class='regular pre-open'>
-                        #magnitude
                       </a></li>
                       
                       <li><a
@@ -201,9 +191,9 @@
                       </a></li>
                       
                       <li><a
-                        href='#quakepreferredorigin'
+                        href='#quake_preferredorigin'
                         class='regular pre-open'>
-                        #preferredOrigin
+                        #_preferredOrigin
                       </a></li>
                       
                       <li><a
@@ -213,21 +203,57 @@
                       </a></li>
                       
                       <li><a
+                        href='#quake_preferredmagnitude'
+                        class='regular pre-open'>
+                        #_preferredMagnitude
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakepreferredorigin'
+                        class='regular pre-open'>
+                        #preferredOrigin
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakeorigin'
+                        class='regular pre-open'>
+                        #origin
+                      </a></li>
+                      
+                      <li><a
                         href='#quakepreferredmagnitude'
                         class='regular pre-open'>
                         #preferredMagnitude
                       </a></li>
                       
                       <li><a
-                        href='#quaketime'
+                        href='#quakemagnitude'
                         class='regular pre-open'>
-                        #time
+                        #magnitude
                       </a></li>
                       
                       <li><a
                         href='#quaketime'
                         class='regular pre-open'>
                         #time
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakelatitude'
+                        class='regular pre-open'>
+                        #latitude
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakelongitude'
+                        class='regular pre-open'>
+                        #longitude
+                      </a></li>
+                      
+                      <li><a
+                        href='#quakedepth'
+                        class='regular pre-open'>
+                        #depth
                       </a></li>
                       
                       <li><a
@@ -512,6 +538,18 @@
                         #publicId
                       </a></li>
                       
+                      <li><a
+                        href='#pickisatstation'
+                        class='regular pre-open'>
+                        #isAtStation
+                      </a></li>
+                      
+                      <li><a
+                        href='#pickisonchannel'
+                        class='regular pre-open'>
+                        #isOnChannel
+                      </a></li>
+                      
                     </ul>
                   
                   
@@ -525,6 +563,16 @@
                   href='#parsequakeml'
                   class="">
                   parseQuakeML
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#createquakefromvalues'
+                  class="">
+                  createQuakeFromValues
                   
                 </a>
                 
@@ -580,6 +628,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#parseutil_requireattribute'
+                        class='regular pre-open'>
+                        ._requireAttribute
+                      </a></li>
+                    
+                      <li><a
                         href='#parseutil_grabattributens'
                         class='regular pre-open'>
                         ._grabAttributeNS
@@ -614,8 +668,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L14-L14'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L21-L21'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -672,8 +726,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L15-L15'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L22-L22'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -730,8 +784,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L16-L16'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L23-L23'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -788,8 +842,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L17-L17'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L24-L24'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -846,8 +900,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L18-L18'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L25-L25'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -904,8 +958,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L20-L20'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L26-L26'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -962,8 +1016,8 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L22-L22'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L27-L27'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1015,13 +1069,124 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='unknown_public_id'>
+      UNKNOWN_PUBLIC_ID
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L28-L28'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>UNKNOWN_PUBLIC_ID</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='fake_origin_time'>
+      FAKE_ORIGIN_TIME
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L29-L29'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>FAKE_ORIGIN_TIME</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='quake'>
       Quake
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L30-L179'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L37-L252'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1030,7 +1195,7 @@
   <p>Represent a QuakeML Event. Renamed to Quake as Event conflicts with
 other uses in javascript.</p>
 
-    <div class='pre p1 fill-light mt0'>new Quake()</div>
+    <div class='pre p1 fill-light mt0'>new Quake(publicId: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
   
   
 
@@ -1041,6 +1206,19 @@ other uses in javascript.</p>
   
   
 
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>publicId</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
   
 
   
@@ -1071,8 +1249,8 @@ other uses in javascript.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L58-L126'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L63-L132'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1162,8 +1340,8 @@ in order to parse the eventid, otherwise this can be left out</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L135-L156'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L142-L179'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1260,8 +1438,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L31-L31'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L38-L38'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1272,7 +1450,7 @@ incompatible (grumble grumble) formats.</p>
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -1322,8 +1500,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L32-L32'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L39-L39'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1335,254 +1513,6 @@ incompatible (grumble grumble) formats.</p>
     <p>
       Type:
       <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='quake_time'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>_time</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L33-L33'>
-      <span>src/quakeml.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>_time</div>
-  
-    <p>
-      Type:
-      moment$Moment
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='quakelatitude'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>latitude</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L34-L34'>
-      <span>src/quakeml.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>latitude</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='quakelongitude'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>longitude</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L35-L35'>
-      <span>src/quakeml.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>longitude</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='quakedepth'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>depth</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L36-L36'>
-      <span>src/quakeml.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>depth</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
     </p>
   
   
@@ -1632,8 +1562,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L37-L37'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L40-L40'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1641,73 +1571,6 @@ incompatible (grumble grumble) formats.</p>
 
   
     <div class='pre p1 fill-light mt0'>description</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
-    </p>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='quakemagnitude'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>magnitude</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L38-L38'>
-      <span>src/quakeml.js</span>
-      </a>
-    
-  </div>
-  
-
-  
-    <div class='pre p1 fill-light mt0'>magnitude</div>
-  
-    <p>
-      Type:
-      <a href="#magnitude">Magnitude</a>
-    </p>
   
   
 
@@ -1756,8 +1619,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L39-L39'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L41-L41'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1765,11 +1628,6 @@ incompatible (grumble grumble) formats.</p>
 
   
     <div class='pre p1 fill-light mt0'>magnitudeList</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#magnitude">Magnitude</a>>
-    </p>
   
   
 
@@ -1818,8 +1676,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L40-L40'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L42-L42'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1827,11 +1685,6 @@ incompatible (grumble grumble) formats.</p>
 
   
     <div class='pre p1 fill-light mt0'>originList</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#origin">Origin</a>>
-    </p>
   
   
 
@@ -1880,8 +1733,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L41-L41'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L43-L43'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1889,11 +1742,6 @@ incompatible (grumble grumble) formats.</p>
 
   
     <div class='pre p1 fill-light mt0'>pickList</div>
-  
-    <p>
-      Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#pick">Pick</a>>
-    </p>
   
   
 
@@ -1942,8 +1790,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L42-L42'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L44-L44'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -1954,7 +1802,7 @@ incompatible (grumble grumble) formats.</p>
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -1990,11 +1838,11 @@ incompatible (grumble grumble) formats.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='quakepreferredorigin'>
+    <div class='border-bottom' id='quake_preferredorigin'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>preferredOrigin</span>
+            <span class='code strong strong truncate'>_preferredOrigin</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2004,20 +1852,15 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L43-L43'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L45-L45'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>preferredOrigin</div>
-  
-    <p>
-      Type:
-      <a href="#origin">Origin</a>
-    </p>
+    <div class='pre p1 fill-light mt0'>_preferredOrigin</div>
   
   
 
@@ -2066,8 +1909,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L44-L44'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L46-L46'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2078,7 +1921,7 @@ incompatible (grumble grumble) formats.</p>
   
     <p>
       Type:
-      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?
+      (<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a> | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>)
     </p>
   
   
@@ -2094,6 +1937,197 @@ incompatible (grumble grumble) formats.</p>
 
   
 
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quake_preferredmagnitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_preferredMagnitude</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L47-L47'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_preferredMagnitude</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakepreferredorigin'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>preferredOrigin</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L181-L187'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>preferredOrigin</div>
+  
+    <p>
+      Type:
+      <a href="#origin">Origin</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#origin">Origin</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakeorigin'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>origin</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L188-L196'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>origin</div>
+  
+    <p>
+      Type:
+      <a href="#origin">Origin</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#origin">Origin</a></code>
+    
   
 
   
@@ -2128,8 +2162,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L45-L45'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L197-L203'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2157,6 +2191,11 @@ incompatible (grumble grumble) formats.</p>
   
 
   
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#magnitude">Magnitude</a></code>
+    
+  
 
   
 
@@ -2176,11 +2215,11 @@ incompatible (grumble grumble) formats.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='quaketime'>
+    <div class='border-bottom' id='quakemagnitude'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>time</span>
+            <span class='code strong strong truncate'>magnitude</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2190,19 +2229,19 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L157-L159'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L204-L212'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
   
 
   
-    <div class='pre p1 fill-light mt0'>time</div>
+    <div class='pre p1 fill-light mt0'>magnitude</div>
   
     <p>
       Type:
-      moment$Moment
+      <a href="#magnitude">Magnitude</a>
     </p>
   
   
@@ -2221,7 +2260,7 @@ incompatible (grumble grumble) formats.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>moment$Moment</code>
+      <code><a href="#magnitude">Magnitude</a></code>
     
   
 
@@ -2257,8 +2296,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L160-L162'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L213-L215'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2269,7 +2308,7 @@ incompatible (grumble grumble) formats.</p>
   
     <p>
       Type:
-      (moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)
+      DateTime
     </p>
   
   
@@ -2282,22 +2321,215 @@ incompatible (grumble grumble) formats.</p>
   
 
   
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>value</span> <code class='quiet'>((moment$Moment | <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>))</code>
-	    
-          </div>
-          
-        </div>
-      
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>DateTime</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
     </div>
   
+    <div class='border-bottom' id='quakelatitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>latitude</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L216-L218'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>latitude</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
 
   
 
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakelongitude'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>longitude</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L219-L221'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>longitude</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='quakedepth'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>depth</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L222-L224'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>depth</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
   
 
   
@@ -2332,8 +2564,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L163-L165'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L226-L228'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2399,8 +2631,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L166-L168'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L230-L232'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2466,8 +2698,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L169-L171'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L234-L236'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2533,8 +2765,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L172-L178'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L238-L251'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2603,8 +2835,8 @@ incompatible (grumble grumble) formats.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L181-L237'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L255-L345'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2653,8 +2885,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L200-L227'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L280-L328'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2750,8 +2982,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L182-L182'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L256-L256'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2762,7 +2994,7 @@ incompatible (grumble grumble) formats.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -2812,8 +3044,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L183-L183'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L257-L257'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2874,8 +3106,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L184-L184'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L258-L258'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2936,8 +3168,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L185-L185'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L259-L259'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -2998,8 +3230,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L186-L186'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L260-L260'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3060,8 +3292,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L187-L187'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L261-L261'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3122,8 +3354,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L228-L233'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L330-L340'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3184,8 +3416,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L234-L236'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L342-L344'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3259,8 +3491,8 @@ incompatible (grumble grumble) formats.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L240-L277'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L350-L405'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3330,8 +3562,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L255-L273'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L367-L400'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3418,8 +3650,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L241-L241'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L351-L351'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3480,8 +3712,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L242-L242'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L352-L352'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3542,8 +3774,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L243-L243'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L353-L353'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3604,8 +3836,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L274-L276'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L402-L404'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3674,8 +3906,8 @@ incompatible (grumble grumble) formats.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L281-L316'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L410-L466'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3745,8 +3977,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L297-L315'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L428-L465'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3842,8 +4074,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L282-L282'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L411-L411'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3904,8 +4136,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L283-L283'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L412-L412'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -3966,8 +4198,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L284-L284'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L413-L413'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4036,8 +4268,8 @@ incompatible (grumble grumble) formats.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L320-L369'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L471-L569'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4045,7 +4277,7 @@ incompatible (grumble grumble) formats.</p>
 
   <p>Represents a QuakeML Pick.</p>
 
-    <div class='pre p1 fill-light mt0'>new Pick(time: moment$Moment, networkCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, stationCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, locationCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, channelCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
+    <div class='pre p1 fill-light mt0'>new Pick(time: DateTime, networkCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, stationCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, locationCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, channelCode: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</div>
   
   
 
@@ -4062,7 +4294,7 @@ incompatible (grumble grumble) formats.</p>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>time</span> <code class='quiet'>(moment$Moment)</code>
+            <span class='code bold'>time</span> <code class='quiet'>(DateTime)</code>
 	    
           </div>
           
@@ -4131,8 +4363,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L344-L368'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L500-L552'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4219,8 +4451,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L321-L321'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L472-L472'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4231,7 +4463,7 @@ incompatible (grumble grumble) formats.</p>
   
     <p>
       Type:
-      moment$Moment
+      DateTime
     </p>
   
   
@@ -4281,8 +4513,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L322-L322'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L473-L473'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4343,8 +4575,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L323-L323'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L474-L474'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4405,8 +4637,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L324-L324'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L475-L475'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4467,8 +4699,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L325-L325'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L476-L476'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4529,8 +4761,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L326-L326'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L477-L477'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4577,6 +4809,156 @@ incompatible (grumble grumble) formats.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='pickisatstation'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>isAtStation(station)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L554-L559'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>isAtStation(station: Station): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>station</span> <code class='quiet'>(Station)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='pickisonchannel'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>isOnChannel(channel)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L561-L568'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>isOnChannel(channel: Channel): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>channel</span> <code class='quiet'>(Channel)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
 
   
@@ -4599,8 +4981,8 @@ incompatible (grumble grumble) formats.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L379-L390'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L578-L593'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4679,13 +5061,116 @@ incompatible (grumble grumble) formats.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='createquakefromvalues'>
+      createQuakeFromValues
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L595-L608'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>createQuakeFromValues(publicId: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, time: DateTime, latitude: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, longitude: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, depth: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="#quake">Quake</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>publicId</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>time</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>latitude</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>longitude</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>depth</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#quake">Quake</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='parseutil'>
       parseUtil
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L472-L480'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L747-L756'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4733,8 +5218,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L473-L473'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L748-L748'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4790,8 +5275,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L474-L474'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L749-L749'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4847,8 +5332,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L475-L475'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L750-L750'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4904,8 +5389,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L476-L476'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L751-L751'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -4961,8 +5446,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L477-L477'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L752-L752'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -5018,8 +5503,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L478-L478'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L753-L753'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
@@ -5027,6 +5512,63 @@ incompatible (grumble grumble) formats.</p>
 
   
     <div class='pre p1 fill-light mt0'>_grabAttribute</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='parseutil_requireattribute'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_requireAttribute</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L754-L754'>
+      <span>src/quakeml.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_requireAttribute</div>
   
   
 
@@ -5075,8 +5617,8 @@ incompatible (grumble grumble) formats.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/c1079d9afc0fb9bfdc4030943ca3dae178ee398b/src/quakeml.js#L479-L479'>
-      <span>src/quakeml.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/cd373ebbca58edef590e172e8ccae60627478e8a/src/quakeml.ts#L755-L755'>
+      <span>src/quakeml.ts</span>
       </a>
     
   </div>
