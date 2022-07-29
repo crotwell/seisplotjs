@@ -35,7 +35,6 @@ import {
   isNonEmptyStringArg,
   isNumArg,
 } from "./util";
-import RSVP from "rsvp";
 
 /**
  * Major version of the IRIS web service supported here.
@@ -68,8 +67,7 @@ export class FedCatalogDataCenter {
   postLines: Array<string>;
   stationQuery: StationQuery | null;
   dataSelectQuery: DataSelectQuery | null;
-  networkList: Promise<Array<Network>> | null;
-  sddList: Promise<Array<SeismogramDisplayData>> | null;
+  level: string;
 
   constructor() {
     this.dataCenter = "";
@@ -79,8 +77,56 @@ export class FedCatalogDataCenter {
     this.services = new Map();
     this.stationQuery = null;
     this.dataSelectQuery = null;
-    this.networkList = null;
-    this.sddList = null;
+    this.level = LEVEL_NETWORK;
+  }
+  /**
+   * Uses the response from the FedCat server to make the actual FDSNStation
+   * query that returns StationXML. If the original FedCat query did not return
+   * a Station service, or it was not asked for, then the array will be empty.
+   *
+   * @return [description]
+   */
+  queryNetworkList(): Promise<Array<Network>> {
+    if (this.stationQuery) {
+      return this.stationQuery.postQuery(
+        this.level,
+        this.postLines,
+      );
+    } else {
+      return Promise.all([] as Network[]);
+    }
+  }
+  queryStationRawXml(): Promise<Document> {
+      if (isDef(this.stationQuery)) {
+        return this.stationQuery.postQueryRawXml(
+          this.level,
+          this.postLines,
+        );
+      } else {
+        throw new Error("this.stationQuery does not exist.");
+      }
+  }
+  querySDDList(): Promise<Array<SeismogramDisplayData>> {
+    if (isDef(this.dataSelectQuery)) {
+      const sddList = this.postLines.map(line => {
+        const items = line.split(" ");
+        const start = isoToDateTime(items[4]);
+        const end = isoToDateTime(items[5]);
+        return SeismogramDisplayData.fromCodesAndTimes(
+          items[0],
+          items[1],
+          items[2],
+          items[3],
+          start,
+          end,
+        );
+      });
+
+      return this.dataSelectQuery.postQuerySeismograms(sddList);
+    } else {
+      // dataSelectQuery missing
+      return Promise.all([] as SeismogramDisplayData[]);
+    }
   }
 }
 
@@ -863,19 +909,8 @@ export class FedCatalogQuery extends FDSNCommon {
   queryFdsnStation(level: string): Promise<Array<Network>> {
     return this.setupQueryFdsnStation(level)
       .then(fedCatalogResult => {
-        return RSVP.all(
-          fedCatalogResult.queries.map(query => {
-            if (isDef(query.stationQuery)) {
-              query.networkList = query.stationQuery.postQuery(
-                level,
-                query.postLines,
-              );
-              return query.networkList;
-            } else {
-              // could return [];
-              throw new Error("stationQuery missing");
-            }
-          }),
+        return Promise.all(
+          fedCatalogResult.queries.map(query => query.queryNetworkList())
         );
       })
       .then(netArrayArray => {
@@ -993,30 +1028,8 @@ export class FedCatalogQuery extends FDSNCommon {
   postFdsnDataselectForFedCatResult(
     fedCatalogResult: FedCatalogResult,
   ): Promise<Array<SeismogramDisplayData>> {
-    return RSVP.all(
-      fedCatalogResult.queries.map(query => {
-        const sddList = query.postLines.map(line => {
-          const items = line.split(" ");
-          const start = isoToDateTime(items[4]);
-          const end = isoToDateTime(items[5]);
-          return SeismogramDisplayData.fromCodesAndTimes(
-            items[0],
-            items[1],
-            items[2],
-            items[3],
-            start,
-            end,
-          );
-        });
-
-        if (isDef(query.dataSelectQuery)) {
-          query.sddList = query.dataSelectQuery.postQuerySeismograms(sddList);
-          return query.sddList;
-        } else {
-          // could return [];
-          throw new Error("dataSelectQuery missing");
-        }
-      }),
+    return Promise.all(
+      fedCatalogResult.queries.map(query => query.querySDDList())
     ).then(sddArrayArray => {
       const out: Array<SeismogramDisplayData> = [];
       sddArrayArray.forEach(sddArray => {
@@ -1073,7 +1086,7 @@ export class FedCatalogQuery extends FDSNCommon {
   ): Promise<FedCatalogResult> {
     if (sddList.length === 0) {
       // return promise faking an empty response
-      return RSVP.hash(this.parseRequest(FAKE_EMPTY_TEXT));
+      return Promise.resolve(this.parseRequest(FAKE_EMPTY_TEXT));
     } else {
       const body =
         `targetservice=${targetService}\n` +
@@ -1162,6 +1175,10 @@ export class FedCatalogQuery extends FDSNCommon {
           if (query === null) {
             // first line of next response section
             query = new FedCatalogDataCenter();
+            if (this._level) {
+              // in case FDSNStation query
+              query.level = this._level;
+            }
             out.queries.push(query);
           }
 
