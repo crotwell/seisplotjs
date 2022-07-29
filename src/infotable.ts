@@ -4,10 +4,7 @@ import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
 
-// browser field in package.json for handlebars 4.7.7 is bad,
-// direct import from file works for now, but is fragile
-import Handlebars from "handlebars/dist/cjs/handlebars.js";
-//import Handlebars from "handlebars";
+import {Handlebars} from "./handlebarshelpers";
 
 export const INFO_ELEMENT = 'sp-station-event-table';
 export const QUAKE_INFO_ELEMENT = 'sp-event-table';

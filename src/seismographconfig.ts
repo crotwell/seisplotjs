@@ -10,11 +10,8 @@ import {isDef} from "./util";
 import { Duration, Interval} from "luxon";
 import * as d3 from "d3";
 import type {AxisDomain} from "d3-axis";
-
-// browser field in package.json for handlebars 4.7.7 is bad,
-// direct import from file works for now, but is fragile
-import Handlebars from "handlebars/dist/cjs/handlebars.js";
-//import Handlebars from "handlebars";
+import {Handlebars, registerHelpers} from "./handlebarshelpers";
+registerHelpers();
 
 export type MarginType = {
   top: number;

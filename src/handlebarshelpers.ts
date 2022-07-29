@@ -3,6 +3,9 @@
 // direct import from file works for now, but is fragile
 import Handlebars from "handlebars/dist/cjs/handlebars.js";
 //import Handlebars from "handlebars";
+// re-export
+export {Handlebars};
+
 import {SeismogramDisplayData} from './seismogram';
 import {DateTime, Duration, Interval} from "luxon";
 import {checkStringOrDate} from './util';
