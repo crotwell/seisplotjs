@@ -53,7 +53,6 @@ import * as util from "./util";
 import {version} from "./version";
 import * as vector from "./vector";
 import * as OregonDSP from "oregondsp";
-import RSVP from "rsvp";
 import * as d3 from "d3";
 import * as luxon from "luxon";
 import * as leaflet from "leaflet";
@@ -111,5 +110,4 @@ export {
   d3,
   leaflet,
   luxon,
-  RSVP,
 };

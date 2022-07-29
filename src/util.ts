@@ -5,13 +5,6 @@
  */
 
 import {DateTime, Duration, FixedOffsetZone} from "luxon";
-import RSVP from "rsvp";
-RSVP.on("error", function (reason: string) {
-  // eslint-disable-next-line no-console
-  console.assert(false, reason);
-});
-//reexport
-export {RSVP};
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";

@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
- import { DateTime, Duration, Interval} from "luxon";
+import { DateTime, Duration, Interval} from "luxon";
 import * as d3 from "d3";
 import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {

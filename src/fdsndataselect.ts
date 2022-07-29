@@ -4,7 +4,6 @@
  * http://www.seis.sc.edu
  */
 import {FDSNCommon, IRIS_HOST} from './fdsncommonalities';
-import RSVP from "rsvp";
 import * as util from "./util"; // for util.log
 import {DateTime, Interval} from 'luxon';
 import * as miniseed from "./miniseed";
@@ -535,7 +534,7 @@ export class DataSelectQuery extends FDSNCommon {
   postQueryRaw(sddList: Array<SeismogramDisplayData>): Promise<Response> {
     if (sddList.length === 0) {
       // return promise faking an not ok fetch response
-      return RSVP.hash(new Response(null, {
+      return Promise.resolve(new Response(null, {
         status: 204,
       }));
     } else {

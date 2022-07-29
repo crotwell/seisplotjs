@@ -6,7 +6,6 @@
 import {DateTime, Duration, Interval} from "luxon";
 import * as util from "./util";
 import * as miniseed from "./miniseed";
-import RSVP from "rsvp";
 import {SeismogramDisplayData} from "./seismogram";
 import {Channel} from "./stationxml";
 import {isDef} from "./util";
@@ -107,31 +106,40 @@ export class MSeedArchive {
   ): Promise<Array<SeismogramDisplayData>> {
     const promiseArray = channelTimeList.map(ct => {
       if (isDef(ct.channel)) {
-        return RSVP.hash({
-          request: ct,
-          dataRecords: this.loadDataForChannel(
+        const request =  ct;
+        const dataRecords = this.loadDataForChannel(
             ct.channel,
             ct.startTime,
             ct.endTime,
-          ),
+          );
+        // this fakes an RSVP.hash call
+        return Promise.all([request, dataRecords]).then((pArray) => {
+          return {
+            request: pArray[0],
+            dataRecords: pArray[1],
+          };
         });
       } else if (isDef(ct.channelCodesHolder)) {
-        return RSVP.hash({
-          request: ct,
-          dataRecords: this.loadData(
+        const request =  ct;
+        const dataRecords = this.loadData(
             ct.channelCodesHolder.networkCode,
             ct.channelCodesHolder.stationCode,
             ct.channelCodesHolder.locationCode,
             ct.channelCodesHolder.channelCode,
             ct.startTime,
             ct.endTime,
-          ),
+          );
+        return Promise.all([request, dataRecords]).then((pArray) => {
+          return {
+            request: pArray[0],
+            dataRecords: pArray[1],
+          };
         });
       } else {
         throw new Error("channel is missing in loadSeismograms ");
       }
     });
-    return RSVP.all(promiseArray).then(pArray => {
+    return Promise.all(promiseArray).then(pArray => {
       const out: Array<SeismogramDisplayData> = [];
       pArray.forEach(p => {
         const seisArray = miniseed.seismogramPerChannel(p.dataRecords);
@@ -310,7 +318,7 @@ export function loadDataRecords(
         return [];
       });
   });
-  return RSVP.all(promiseArray).then(pArray => {
+  return Promise.all(promiseArray).then(pArray => {
     let dataRecords: Array<miniseed.DataRecord> = [];
     pArray.forEach(p => {
       dataRecords = dataRecords.concat(p);

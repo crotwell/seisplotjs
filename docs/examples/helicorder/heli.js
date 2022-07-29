@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
 import {HOURS_PER_LINE, doPlot, queryEarthquakes, redrawHeli, getNowTime} from './doplot.js';
 
 const d3 = seisplotjs.d3;
@@ -395,7 +395,7 @@ const handleAmpChange = function(value) {
   if (heliHash) {
     // already have data
     heliHash.amp = state.amp;
-    seisplotjs.RSVP.hash(heliHash).then(h => redrawHeli(h));
+    Promise.all([heliHash, heliHash.amp]).then(hArr => redrawHeli(hArr[0]));
   } else {
     loadAndPlot(state);
   }

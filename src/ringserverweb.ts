@@ -130,7 +130,7 @@ export class RingserverConnection {
    * Pulls id result from ringserver /id parsed into an object with
    * 'ringserverVersion' and 'serverId' fields.
    *
-   * @returns Result as an RSVP Promise.
+   * @returns Result as a Promise.
    */
   pullId(): Promise<RingserverVersion> {
     return this.pullRaw(this.formIdURL()).then(raw => {
@@ -161,7 +161,7 @@ export class RingserverConnection {
    *
    * @param level 1-6
    * @param matchPattern regular expression to match
-   * @returns Result as an RSVP Promise.
+   * @returns Result as a Promise.
    */
   pullStreamIds(level: number, matchPattern: string): Promise<Array<string>> {
     let queryParams = "level=6";
@@ -184,7 +184,7 @@ export class RingserverConnection {
    * Pull streams, including start and end times, from the ringserver.
    * The optional matchPattern is a regular expression, so for example
    * '.+_JSC_00_HH.' would get all HH? channels from any station name JSC.
-   * Result returned is an RSVP Promise.
+   * Result returned is an Promise.
    *
    * @param matchPattern regular expression to match
    * @returns promise to object with 'accessTime' as a DateTime
@@ -228,7 +228,7 @@ export class RingserverConnection {
 
   /**
    * Utility method to pull raw result from ringserver url.
-   * Result returned is an RSVP Promise.
+   * Result returned is an Promise.
    *
    * @param url the url
    * @returns promise to string result

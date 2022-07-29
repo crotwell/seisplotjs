@@ -15,7 +15,6 @@ import {
   createMarkerForOriginTime,
 } from "./seismograph";
 import {isDef, isStringArg, stringify} from "./util";
-import RSVP from "rsvp";
 export class SeismogramLoader {
   stationQuery: StationQuery;
   withResponse: boolean;
@@ -221,7 +220,7 @@ export class SeismogramLoader {
     const allPhasesWithoutOrigin = allPhaseList
       .filter(p => p !== "origin")
       .join(",");
-    this.traveltimeList = RSVP.all([this._networkList, this._quakeList]).then(
+    this.traveltimeList = Promise.all([this._networkList, this._quakeList]).then(
       ([netList, quakeList]) => {
         const ttpromiseList: Array<Promise<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> = [];
 

@@ -61,7 +61,7 @@
     <script type="module">
       import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
       const start = seisplotjs.util.isoToDateTime('2019-07-06T03:19:53Z');
-      let times = new seisplotjs.luxon.Interval.after(start, seisplotjs.luxon.Duration.fromMillis(1000*1800));
+      let times = seisplotjs.luxon.Interval.after(start, seisplotjs.luxon.Duration.fromMillis(1000*1800));
       let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
 
       const seismograph = (document.querySelector('sp-seismograph'));

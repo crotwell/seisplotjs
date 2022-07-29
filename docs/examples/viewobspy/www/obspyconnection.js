@@ -29,7 +29,7 @@ class ObsPyConnection {
     if (this.isConnected()) {
       this.close();
     }
-    return new seisplotjs.RSVP.Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
       const webSocket = new WebSocket(that.url);
       webSocket.binaryType = 'arraybuffer';
       webSocket.onmessage = function(event) {

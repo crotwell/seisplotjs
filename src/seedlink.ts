@@ -6,7 +6,6 @@
 import * as util from "./util"; // for util.log
 import * as miniseed from "./miniseed";
 import {DataRecord} from "./miniseed";
-import RSVP from "rsvp";
 import {DateTime} from "luxon";
 import {dataViewToString, stringify, toError} from "./util";
 export const SEEDLINK_PROTOCOL = "SeedLink3.1";
@@ -210,7 +209,7 @@ export class SeedlinkConnection {
    */
   sendHello(): Promise<[string,string]> {
     const webSocket = this.webSocket;
-    const promise: Promise<[string,string]> = new RSVP.Promise(function (resolve, reject) {
+    const promise: Promise<[string,string]> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           const data: ArrayBuffer = event.data;
@@ -246,7 +245,7 @@ export class SeedlinkConnection {
       return accum.then(function (): Promise<string> {
         return that.createCmdPromise(next);
       });
-    }, RSVP.resolve("OK"));
+    }, Promise.resolve("OK"));
   }
 
   /**
@@ -257,7 +256,7 @@ export class SeedlinkConnection {
    */
   createCmdPromise(mycmd: string): Promise<string> {
     const webSocket = this.webSocket;
-    const promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
+    const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           const data: ArrayBuffer = event.data;

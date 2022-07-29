@@ -8,7 +8,6 @@ import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import {DataRecord} from "./miniseed";
 import {MSeed3Record} from "./mseed3";
-import RSVP from "rsvp";
 import {DateTime} from "luxon";
 import {version} from "./version";
 import {dataViewToString, isDef, stringify, toError} from "./util";
@@ -383,7 +382,7 @@ export class SeedlinkConnection {
    */
   sendHello(): Promise<Array<string>> {
     const webSocket = this.webSocket;
-    const promise: Promise<Array<string>> = new RSVP.Promise(function (resolve, reject) {
+    const promise: Promise<Array<string>> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           const data: ArrayBuffer = event.data;
@@ -419,7 +418,7 @@ export class SeedlinkConnection {
       return accum.then(function () {
         return that.createCmdPromise(next);
       });
-    }, RSVP.resolve("OK"));
+    }, Promise.resolve("OK"));
   }
 
   /**
@@ -430,7 +429,7 @@ export class SeedlinkConnection {
    */
   createCmdPromise(mycmd: string): Promise<string> {
     const webSocket = this.webSocket;
-    const promise: Promise<string> = new RSVP.Promise(function (resolve, reject) {
+    const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
           const data: ArrayBuffer = event.data;

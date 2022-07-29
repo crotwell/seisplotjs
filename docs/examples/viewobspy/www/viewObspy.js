@@ -258,7 +258,7 @@ class ViewObsPy {
     this.processedData.set('inventory', inventory);
     this.processedData.set('seisDataList', seisDataList);
 
-    let firstPromise = new seisplotjs.RSVP.all((seisDataList ? seisDataList.slice() : []))
+    let firstPromise = new Promise.all((seisDataList ? seisDataList.slice() : []))
     .then(tempSeis => {
       this.processedData.set('seisDataList', tempSeis);
       tempSeis.forEach(seisData => {
@@ -287,7 +287,7 @@ class ViewObsPy {
             return ts;
           });
         });
-        return seisplotjs.RSVP.all(tempSeis);
+        return Promise.all(tempSeis);
       }).then(tempSeis => {
         this.processChain.push(p);
         this.updateProcessDisplay(this.processChain);
@@ -318,7 +318,7 @@ class ViewObsPy {
         return Promise.resolve(seisData);
       }
     });
-    return await seisplotjs.RSVP.all(promiseArray)
+    return await Promise.all(promiseArray)
     .then(procSeisDataList => {
       this.processedData.set('seisDataList', procSeisDataList);
       this.replot();
@@ -445,7 +445,7 @@ class ViewObsPy {
         }));
       });
     });
-    return seisplotjs.RSVP.all(promiseArray);
+    return Promise.all(promiseArray);
   }
 
 

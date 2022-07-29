@@ -8,7 +8,6 @@ import * as util from "./util"; // for util.log
 import {dataViewToString, stringify, isDef, isNonEmptyStringArg, toError, UTC_OPTIONS} from "./util";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
-import RSVP from "rsvp";
 import {DateTime} from "luxon";
 
 /** const for datalink protocol for web sockets, DataLink1.0 */
@@ -128,7 +127,7 @@ export class DataLinkConnection {
       this.webSocket = null;
     }
     const that = this;
-    return new RSVP.Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       if (that.webSocket) {that.webSocket.close();}
       const webSocket = new WebSocket(that.url, DATALINK_PROTOCOL);
       that.webSocket = webSocket;
@@ -345,7 +344,7 @@ export class DataLinkConnection {
     data?: Uint8Array,
   ): Promise<DataLinkResponse| DataLinkPacket> {
     const that = this;
-    const promise = new RSVP.Promise(function (resolve: (a: DataLinkResponse|DataLinkPacket) => void, reject) {
+    const promise = new Promise(function (resolve: (a: DataLinkResponse|DataLinkPacket) => void, reject) {
       that._responseResolve = resolve;
       that._responseReject = reject;
       that.sendDLBinary(header, data);

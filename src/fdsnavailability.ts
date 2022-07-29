@@ -5,7 +5,6 @@
  */
 import {FDSNCommon, IRIS_HOST} from './fdsncommonalities';
 import {DateTime, Interval} from "luxon";
-import RSVP from "rsvp";
 import {SeismogramDisplayData} from "./seismogram";
 import {
   doStringGetterSetter,
@@ -486,7 +485,7 @@ export class AvailabilityQuery extends FDSNCommon {
           response.status === 204 ||
           (isDef(mythis._nodata) && response.status === mythis._nodata)
         ) {
-          return RSVP.hash(EMPTY_JSON);
+          return Promise.resolve(EMPTY_JSON);
         }
 
         const contentType = response.headers.get("content-type");
@@ -619,7 +618,7 @@ export class AvailabilityQuery extends FDSNCommon {
   ): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
-      return RSVP.hash(new Response(null, {
+      return Promise.resolve(new Response(null, {
         status: 204,
       }));
     } else {

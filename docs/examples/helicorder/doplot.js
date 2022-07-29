@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
 
 const d3 = seisplotjs.d3;
 const luxon = seisplotjs.luxon;
@@ -107,8 +107,9 @@ export function doPlot(config) {
         });
       });
     });
-    return seisplotjs.RSVP.hash(hash);
+    return hash;
   }).then(hash => {
+    let chantrList;
     if (hash.bandCode === 'H') {
       let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
         MINMAX_URL,
@@ -123,7 +124,7 @@ export function doPlot(config) {
         fake.sampleRate = 2;
         return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(fake, ct.timeRange);
       }).filter(sdd => !!sdd);
-      hash.chantrList = minMaxQ.loadSeismograms(minMaxChanTR);
+      chantrList = minMaxQ.loadSeismograms(minMaxChanTR);
     } else {
       let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
         MSEED_URL,
@@ -135,9 +136,12 @@ export function doPlot(config) {
         }
         return ct;
       }).filter(sdd => !!sdd);
-      hash.chantrList = mseedQ.loadSeismograms(beforeNowChanTR);
+      chantrList = mseedQ.loadSeismograms(beforeNowChanTR);
     }
-    return seisplotjs.RSVP.hash(hash);
+    return Promise.all([hash, chantrList]).then(hArr => {
+      hArr[0].chantrList = hArr[1];
+      return hArr[0];
+    });
   }).then(hash => {
     let gotData = hash.chantrList.reduce((acc, cur) => acc || !!cur.seismogram, false);
     if ( ! gotData) {
@@ -153,7 +157,10 @@ export function doPlot(config) {
         hash.query = null;
       }
     }
-    return seisplotjs.RSVP.hash(hash);
+    return Promise.all([hash, hash.chantrList ]).then(hArr =>{
+      hArr[0].chantrList = hArr[1];
+      return hArr[0];
+    });
   }).then(hash => {
     let minMaxSeismogram = null;
     hash.chantrList.forEach(ctr => {
@@ -173,7 +180,7 @@ export function doPlot(config) {
       let nowMarker = { markertype: 'predicted', name: "now", time: luxon.DateTime.utc() };
       hash.seisData.addMarkers(nowMarker);
       redrawHeli(hash);
-      return seisplotjs.RSVP.hash(queryEarthquakes(hash));
+      return queryEarthquakes(hash);
     }
     return hash;
   }).catch(err => {
@@ -183,7 +190,7 @@ export function doPlot(config) {
 };
 
 export function queryEarthquakes(hash) {
-  return seisplotjs.RSVP.hash(hash).then(hash => {
+  return Promise.resolve(hash).then(hash => {
     let quakeStart = hash.timeWindow.start.minus(QUAKE_START_OFFSET);
     let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     localQuakesQuery
@@ -194,8 +201,11 @@ export function queryEarthquakes(hash) {
       .maxLat(hash.config.localMaxLat)
       .minLon(hash.config.localMinLon)
       .maxLon(hash.config.localMaxLon);
-    hash.localQuakes = localQuakesQuery.query();
-    return seisplotjs.RSVP.hash(hash);
+    const localQuakes = localQuakesQuery.query();
+    return Promise.all([hash, localQuakes]).then(hArr => {
+      hArr[0].localQuakes = hArr[1];
+      return hArr[0];
+    });
   }).then(hash => {
     let quakeStart = hash.timeWindow.start.minus(QUAKE_START_OFFSET);
     let regionalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
@@ -206,8 +216,11 @@ export function queryEarthquakes(hash) {
       .longitude(-81)
       .maxRadius(hash.config.regionalMaxRadius)
       .minMag(hash.config.regionalMinMag);
-    hash.regionalQuakes = regionalQuakesQuery.query();
-    return seisplotjs.RSVP.hash(hash);
+    const regionalQuakes = regionalQuakesQuery.query();
+    return Promise.all([hash, regionalQuakes]).then(hArr => {
+      hArr[0].regionalQuakes = hArr[1];
+      return hArr[0];
+    });
   }).then(hash => {
     let quakeStart = hash.timeWindow.start.minus(QUAKE_START_OFFSET);
     let globalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
@@ -215,9 +228,11 @@ export function queryEarthquakes(hash) {
       .startTime(quakeStart)
       .endTime(hash.timeWindow.end)
       .minMag(hash.config.globalMinMag);
-    hash.globalQuakes = globalQuakesQuery.query();
-    return seisplotjs.RSVP.hash(hash);
-
+    const globalQuakes = globalQuakesQuery.query();
+    return Promise.all([hash, globalQuakes]).then(hArr => {
+      hArr[0].globalQuakes = hArr[1];
+      return hArr[0];
+    });
   }).catch(e => {
     let svgParent = seisplotjs.d3.select(`div.${divClass}`);
       svgParent.append("h3").text("Error Loading Earthquake Data").style("color", "red");
@@ -229,7 +244,7 @@ export function queryEarthquakes(hash) {
     if (hash.regionalQuakes.length > 0)hash.quakes = hash.quakes.concat(hash.regionalQuakes);
     if (hash.globalQuakes.length > 0)hash.quakes = hash.quakes.concat(hash.globalQuakes);
     hash.seisData.addQuake(hash.quakes);
-    return seisplotjs.RSVP.hash(hash);
+    return Promise.resolve(hash);
   }).then(hash => {
     let traveltimes = [];
     let mystation = hash.chanTR[0].channel.station;
@@ -261,8 +276,10 @@ export function queryEarthquakes(hash) {
         });
       traveltimes.push(ttresult);
     });
-    hash.traveltimes = seisplotjs.RSVP.all(traveltimes);
-    return seisplotjs.RSVP.hash(hash);
+    return Promise.all([hash, Promise.all(traveltimes)]).then(hArr => {
+      hArr[0].traveltimes = hArr[1];
+      return hArr[0];
+    });
   }).then(hash => {
     let mystation = hash.chanTR[0].channel.station;
     let markers = [];

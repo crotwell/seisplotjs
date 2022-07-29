@@ -4,7 +4,6 @@ import {isoToDateTime} from '../src/util.js';
 import {EventQuery} from '../src/fdsnevent.js';
 import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation.js';
 import { Duration, Interval} from 'luxon';
-import RSVP from 'rsvp';
 
 // eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
@@ -33,7 +32,7 @@ test( "load HODGE for local eq test", () => {
   seisLoad.markedPhaseList = "PcP";
   seisLoad.startOffset = Duration.fromMillis(-30*1000); // seconds
   seisLoad.endOffset = Duration.fromMillis(120*1000); // or as duration
-  return RSVP.all([
+  return Promise.all([
     seisLoad.loadSeismograms().then( sddList  => {
       expect(sddList).toHaveLength(3);
     }),
