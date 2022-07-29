@@ -1,6 +1,4 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-  preset: 'ts-jest',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   extensionsToTreatAsEsm: ['.ts'],
@@ -12,4 +10,7 @@ module.exports = {
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
+  "transform": {
+    "^.+\\.tsx?$": "esbuild-jest"
+  }
 };
