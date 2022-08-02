@@ -9,6 +9,17 @@ import {Handlebars} from "./handlebarshelpers";
 export const INFO_ELEMENT = 'sp-station-event-table';
 export const QUAKE_INFO_ELEMENT = 'sp-event-table';
 
+export enum QUAKE_COLUMN {
+    LAT = "Lat",
+    LON = "Lon",
+    TIME = "Time",
+    MAG = "Mag",
+    MAGTYPE = "MagType",
+    DEPTH = "Depth",
+    DESC = "Description",
+    EVENTID = "EventId",
+}
+
 export const DEFAULT_TEMPLATE = `
   <table>
   <thead>
@@ -152,7 +163,7 @@ export class QuakeStationTable extends SeisPlotElement {
           seisConfig: mythis.seismographConfig,
         },
         {
-          allowProtoPropertiesByDefault: true, // this might be a security issue???
+//          allowProtoPropertiesByDefault: true, // this might be a security issue???
         },
       );
   }
@@ -192,30 +203,33 @@ export const DEFAULT_QUAKE_TEMPLATE = `
 `;
 
 export class QuakeTable extends HTMLElement {
-  _template: string;
+  _columnLabels: Map<QUAKE_COLUMN, string>;
   _quakeList: Array<Quake>;
-  constructor(quakeList?: Array<Quake>) {
+  constructor(quakeList?: Array<Quake>, columnLabels?: Map<QUAKE_COLUMN, string>) {
     super();
     if ( ! quakeList) {
       quakeList = [];
     }
-    this._quakeList = quakeList
-    this._template = DEFAULT_QUAKE_TEMPLATE;
+    if ( ! columnLabels) {
+      columnLabels = new Map();
+      columnLabels.set(QUAKE_COLUMN.TIME, "Time");
+      columnLabels.set(QUAKE_COLUMN.LAT, "Lat");
+      columnLabels.set(QUAKE_COLUMN.LON,  "Lon");
+      columnLabels.set(QUAKE_COLUMN.MAG, "Mag");
+      columnLabels.set(QUAKE_COLUMN.MAGTYPE, "Type");
+      columnLabels.set(QUAKE_COLUMN.DEPTH, "Depth");
+      columnLabels.set(QUAKE_COLUMN.DESC, "Description");
+    }
+    this._quakeList = quakeList;
+    this._columnLabels = columnLabels;
 
     const shadow = this.attachShadow({mode: 'open'});
-    const wrapper = document.createElement('div');
-    wrapper.setAttribute("class", "wrapper");
+    const table = document.createElement('table');
+    table.setAttribute("class", "wrapper");
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = TABLE_CSS;
 
-    shadow.appendChild(wrapper);
-  }
-  get template(): string {
-    return this._template;
-  }
-  set template(t: string) {
-    this._template = t;
-    this.draw();
+    shadow.appendChild(table);
   }
   get quakeList(): Array<Quake> {
     return this._quakeList;
@@ -224,24 +238,83 @@ export class QuakeTable extends HTMLElement {
     this._quakeList = ql;
     this.draw();
   }
+  get columnLabels(): Map<QUAKE_COLUMN, string> {
+    return this._columnLabels;
+  }
+  set columnLabels(cols: Map<QUAKE_COLUMN, string>) {
+    this._columnLabels = cols;
+    this.draw();
+  }
   draw() {
     if ( ! this.isConnected) { return; }
-    const mythis = this;
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
-    while (wrapper.firstChild) {
-      // @ts-ignore
-      wrapper.removeChild(wrapper.lastChild);
+    const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
+    table.deleteTHead();
+    const theader = table.createTHead().insertRow();
+    this.headers().forEach(h => {
+      const cell = theader.insertCell(-1);
+      cell.textContent = h;
+    });
+    table.querySelectorAll("tbody")?.forEach( (tb: Node) => {
+      table.removeChild(tb);
+    });
+    const tbody = table.createTBody();
+    this.quakeList.forEach(q => {
+      const row = tbody.insertRow();
+      this.populateRow(q, row, -1);
+    });
+  }
+  headers(): Array<QUAKE_COLUMN> {
+    return Array.from(this._columnLabels.keys());
+  }
+  populateRow(q: Quake, row: HTMLTableRowElement, index: number) {
+    this.headers().forEach(h => {
+      console.log(`pop row: ${h} ${index}`)
+      const cell = row.insertCell(index);
+      cell.textContent = this.getQuakeValue(q, h);
+      if (index !== -1) { index++;}
+    });
+  }
+  getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
+    if (h === QUAKE_COLUMN.TIME) {
+      return q.time.toISO();
+    } else if (h === QUAKE_COLUMN.LAT) {
+      return latlonFormat.format(q.latitude);
+    } else if (h === QUAKE_COLUMN.LON) {
+      return latlonFormat.format(q.longitude);
+    } else if (h === QUAKE_COLUMN.MAG) {
+      return magFormat.format(q.magnitude.mag);
+    } else if (h === QUAKE_COLUMN.MAGTYPE) {
+      return q.magnitude.type;
+    } else if (h === QUAKE_COLUMN.DEPTH) {
+      return depthFormat.format(q.depthKm);
+    } else if (h === QUAKE_COLUMN.DESC) {
+      return q.description;
+    } else if (h === QUAKE_COLUMN.EVENTID) {
+      return !!q.eventId ? q.eventId  : "undef";
+    } else {
+      return `${h}???`;
     }
-    const handlebarsCompiled = Handlebars.compile(this.template);
-    wrapper.innerHTML = handlebarsCompiled(
-        {
-          quakeList: mythis.quakeList,
-        },
-        {
-          allowProtoPropertiesByDefault: true, // this might be a security issue???
-        },
-      );
   }
 }
 
 customElements.define(QUAKE_INFO_ELEMENT, QuakeTable);
+
+export const latlonFormat = new Intl.NumberFormat(navigator.languages[0], {
+  style: "unit",
+  unit: "degree",
+  unitDisplay: "narrow",
+  maximumFractionDigits: 2,
+});
+
+export const magFormat = new Intl.NumberFormat(navigator.languages[0], {
+  style: "decimal",
+  maximumFractionDigits: 2,
+});
+
+export const depthFormat = new Intl.NumberFormat(navigator.languages[0], {
+  style: "unit",
+  unit: "kilometer",
+  unitDisplay: "narrow",
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2,
+});
