@@ -6,6 +6,7 @@ import {SeismographConfig} from "./seismographconfig";
 
 import {Handlebars} from "./handlebarshelpers";
 
+
 export const INFO_ELEMENT = 'sp-station-event-table';
 export const QUAKE_INFO_ELEMENT = 'sp-event-table';
 
@@ -205,6 +206,9 @@ export const DEFAULT_QUAKE_TEMPLATE = `
 export class QuakeTable extends HTMLElement {
   _columnLabels: Map<QUAKE_COLUMN, string>;
   _quakeList: Array<Quake>;
+  _rowToQuake: Map<HTMLTableRowElement, Quake>;
+  lastSortAsc: boolean = true;
+  lastSortCol: QUAKE_COLUMN | undefined;
   constructor(quakeList?: Array<Quake>, columnLabels?: Map<QUAKE_COLUMN, string>) {
     super();
     if ( ! quakeList) {
@@ -222,6 +226,7 @@ export class QuakeTable extends HTMLElement {
     }
     this._quakeList = quakeList;
     this._columnLabels = columnLabels;
+    this._rowToQuake = new Map();
 
     const shadow = this.attachShadow({mode: 'open'});
     const table = document.createElement('table');
@@ -251,8 +256,9 @@ export class QuakeTable extends HTMLElement {
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach(h => {
-      const cell = theader.insertCell(-1);
+      const cell = theader.appendChild(document.createElement("th"));
       cell.textContent = h;
+      cell.addEventListener('click', () => {this.sort(h, cell);});
     });
     table.querySelectorAll("tbody")?.forEach( (tb: Node) => {
       table.removeChild(tb);
@@ -267,8 +273,8 @@ export class QuakeTable extends HTMLElement {
     return Array.from(this._columnLabels.keys());
   }
   populateRow(q: Quake, row: HTMLTableRowElement, index: number) {
+    this._rowToQuake.set(row, q);
     this.headers().forEach(h => {
-      console.log(`pop row: ${h} ${index}`)
       const cell = row.insertCell(index);
       cell.textContent = this.getQuakeValue(q, h);
       if (index !== -1) { index++;}
@@ -281,18 +287,73 @@ export class QuakeTable extends HTMLElement {
       return latlonFormat.format(q.latitude);
     } else if (h === QUAKE_COLUMN.LON) {
       return latlonFormat.format(q.longitude);
+    } else if (h === QUAKE_COLUMN.DEPTH) {
+      return depthFormat.format(q.depthKm);
     } else if (h === QUAKE_COLUMN.MAG) {
       return magFormat.format(q.magnitude.mag);
     } else if (h === QUAKE_COLUMN.MAGTYPE) {
       return q.magnitude.type;
-    } else if (h === QUAKE_COLUMN.DEPTH) {
-      return depthFormat.format(q.depthKm);
     } else if (h === QUAKE_COLUMN.DESC) {
       return q.description;
     } else if (h === QUAKE_COLUMN.EVENTID) {
-      return !!q.eventId ? q.eventId  : "undef";
+      return `${q.eventId}`;
     } else {
-      return `${h}???`;
+      return `unknown: ${h}`;
+    }
+  }
+  sort(h: QUAKE_COLUMN, headerCell: HTMLTableCellElement) {
+    const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
+    const tbody = table.querySelector("tbody");
+    if (tbody) {
+      const rows = Array.from(tbody.querySelectorAll("tr") as NodeListOf<HTMLTableRowElement>);
+      rows.sort((rowa,rowb) => {
+        let out = 0;
+        const qa = this._rowToQuake.get(rowa);
+        const qb = this._rowToQuake.get(rowb);
+        if (qa && qb) {
+          if (h === QUAKE_COLUMN.TIME) {
+            out = qa.time.toMillis()-qb.time.toMillis();
+          } else if (h === QUAKE_COLUMN.LAT) {
+            out =  qa.latitude - qb.latitude;
+          } else if (h === QUAKE_COLUMN.LON) {
+            out =  qa.longitude - qb.longitude;
+          } else if (h === QUAKE_COLUMN.MAG) {
+            out =  qa.magnitude.mag - qb.magnitude.mag;
+          } else if (h === QUAKE_COLUMN.DEPTH) {
+            out =  qa.depthKm - qb.depthKm;
+          } else {
+            // just use string
+            const ta = this.getQuakeValue(qa, h);
+            const tb = this.getQuakeValue(qb, h);
+            if (ta < tb) {
+              out =  -1;
+            } else if (ta > tb) {
+              out =  1;
+            } else {
+              out =  0;
+            }
+          }
+        } else {
+          // cant find one of the quakes, oh well
+          console.log(`can't find qa or qb: ${qa} ${qb}`)
+        }
+        return out;
+      });
+      if (this.lastSortCol === h) {
+        if (this.lastSortAsc) {
+          rows.reverse();
+        }
+        this.lastSortAsc = ! this.lastSortAsc;
+      } else {
+        this.lastSortAsc = true;
+      }
+      // this effectively remove and then appends the rows in new order
+      rows.forEach( v => {
+        tbody.appendChild(v);
+      });
+      this.lastSortCol = h;
+    } else {
+      console.log("no tbody for table sort")
     }
   }
 }
