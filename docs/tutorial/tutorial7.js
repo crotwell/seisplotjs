@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
 
 // snip start vars
 const matchPattern = `CO_JSC_00_HH./MSEED`;

@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.0_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
 
 import {parse_sis_xml} from './response_parse.js';
 
