@@ -17,17 +17,56 @@
   <span id="instruments"><label class="rbgroup">Instrument: </label></span>
   <span id="orientations"><label class="rbgroup">Orientation: </label></span>
 </div>
+<div id="minmax">
+  <label class="rbgroup" title="Load MinMax">Load: </label>
+  <span>
+    <input type="checkbox" id="minmax" class="shape" name="ampMode" value="0" checked="true"/>
+    <label for="minmax">Load Min Max Only </label>
+  </span>
+</div>
 <div id="amp">
   <label class="rbgroup" title="Amplitude Range">Amp Range: </label>
-  <span><input type="radio" id="maxAmp" class="shape" name="ampMode" value="0" checked="true"/>Max Value </span>
+  <span>
+    <input type="radio" id="maxAmp" class="shape" name="ampMode" value="0" checked="true"/>
+    <label for="fixedAmpText">Max Value </label>
+  </span>
   <span>
     <input type="radio" id="fixedAmp" class="shape" name="ampMode" value="1"/>
-    <label>Fixed: </label><input type="text" id="fixedAmpText" name="fixedAmp" pattern="[1-9][0-9]*" value="10000">
+    <label for="fixedAmpText">Fixed: </label>
+    <input class="smallnum" type="text" id="fixedAmpText" name="fixedAmp" pattern="[1-9][0-9]*" value="10000"/>
   </span>
   <span>
     <input type="radio" id="percentAmp" class="shape" name="ampMode" value="2">
-    <label>Percent: </label><input type="range" min="1" max="100" id="percentAmpSlider" value="100"><span id="percentValue">100</span>
+    <label for="percentAmpSlider">Percent: </label>
+    <input class="smallnum" type="range" min="1" max="100" id="percentAmpSlider" value="100"><span id="percentValue">100</span>
   </span>
+  <span>
+    <input type="checkbox" id="rmean" class="shape" name="rmean" value="0" checked="true"/>
+    <label for="rmean">Remove Mean </label>
+  </span>
+</div>
+<div id="filtering">
+  <label class="rbgroup" title="Filtering">Filtering: </label>
+  <span>
+    <input type="radio" id="allpass" name="filter" value="allpass" checked="true"></input>
+    <label for="allpass">None</label>
+  </span>
+  <span>
+    <input type="radio" id="lowpass" name="filter" value="lowpass" ></input>
+    <label for="lowpass">Lowpass</label>
+  </span>
+  <span>
+    <input type="radio" id="bandpass" name="filter" value="bandpass" ></input>
+    <label for="bandpass">Bandpass</label>
+  </span>
+  <span>
+    <input type="radio" id="highpass" name="filter" value="highpass" ></input>
+    <label for="highpass">Highpass</label>
+  </span>
+  <label for="lowcut">Low Cut: </label>
+  <input class="smallnum" type="text" id="lowcut" name="lowcut" value="1.0"></input>
+  <label for="highcut">High Cut: </label>
+  <input class="smallnum" type="text" id="highcut" name="highcut" value=10.0></input>
 </div>
 <div id="times">
   <label class="rbgroup">Time Range: </label>

@@ -22,23 +22,82 @@ let state = {
   altOrientationCode: "",
   endTime: "now",
   duration: 'P1D',
-  amp: "max"
+  dominmax: true,
+  amp: "max",
+  rmean: false,
+  filter: {
+    type: "allpass",
+    lowcut: '1.0',
+    highcut: '10.0',
+  },
 };
 
 let heliHash = null;
 
 let loadAndPlot = function(state) {
-  updateAmpRadioButtons(state);
+  updatePageForState(state);
   doPlot(state).then(hash => heliHash = hash);
 };
 
-let updateAmpRadioButtons = function(currentState) {
+function redraw() {
+  if (heliHash) {
+    // already have data
+    heliHash.amp = state.amp;
+    Promise.all([heliHash, heliHash.amp]).then(hArr => redrawHeli(hArr[0]));
+  } else {
+    loadAndPlot(state);
+  }
+
+}
+
+let updatePageForState = function(currentState) {
+  // minmax
+  document.querySelector("input#minmax").checked = currentState.dominmax;
+
+  // rmean
+  document.querySelector("input#rmean").checked = currentState.rmean;
+
+  // filtering
+  d3.select("#filtering")
+    .select("input#allpass").property("checked", "false");
+  d3.select("#filtering")
+    .select("input#lowpass").property("checked", "false");
+  d3.select("#filtering")
+    .select("input#bandpass").property("checked", "false");
+  d3.select("#filtering")
+    .select("input#highpass").property("checked", "false");
+  if (currentState && currentState.filter) {
+    if (currentState.filter.type === "lowpass") {
+      d3.select("#filtering")
+        .select("input#lowpass").property("checked", "true");
+    } else if (currentState.filter.type === "bandpass") {
+      d3.select("#filtering")
+        .select("input#bandpass").property("checked", "true");
+    } else if (currentState.filter.type === "highpass") {
+      d3.select("#filtering")
+        .select("input#highpass").property("checked", "true");
+    } else {
+      // all pass
+      d3.select("#filtering")
+        .select("input#allpass").property("checked", "true");
+    }
+    d3.select("#filtering")
+      .select("input#lowcut").property("value", currentState.filter.lowcut);
+    d3.select("#filtering")
+      .select("input#lowcut").text(currentState.filter.lowcut);
+    d3.select("#filtering")
+      .select("input#highcut").property("value", currentState.filter.highcut);
+    d3.select("#filtering")
+      .select("input#highcut").text(currentState.filter.highcut);
+  }
+
+  // amp
+  d3.select("#amp")
+    .select("input#percentAmp").property("checked", "true");
   d3.select("#amp")
     .select("input#maxAmp").property("checked", "false");
   d3.select("#amp")
     .select("input#fixedAmp").property("checked", "false");
-  d3.select("#amp")
-    .select("input#percentAmp").property("checked", "false");
   if (currentState) {
     if (typeof currentState.amp === 'string' && currentState.amp.endsWith('%')) {
       let percent = Number(currentState.amp.substring(0, currentState.amp.length-1));
@@ -137,7 +196,7 @@ const loadEarthquakeQueryParam = function(currentState, id) {
 let currentState = window.history.state;
 
 if (currentState) {
-  updateAmpRadioButtons(currentState);
+  updatePageForState(currentState);
   if (currentState.station) {
     console.log(`load existing state: ${JSON.stringify(currentState, null, 2)}`);
     state = currentState;
@@ -377,6 +436,14 @@ let orientButtonSpan = d3.select("#orientations")
           })
           .text(function(d) {return d;});
 
+function handleFilteringChange(type, lowcut, highcut) {
+  state.filter.type = type;
+  state.filter.lowcut = lowcut;
+  state.filter.highcut = highcut;
+
+  redraw(state);
+}
+
 const handleAmpChange = function(value) {
   console.log(`handleAmpChange ${value}`)
   if (value === "max") {
@@ -391,14 +458,8 @@ const handleAmpChange = function(value) {
     d3.select("#amp")
       .select("input#fixedAmpText").property("value", state.amp);
   }
-  updateAmpRadioButtons(state);
-  if (heliHash) {
-    // already have data
-    heliHash.amp = state.amp;
-    Promise.all([heliHash, heliHash.amp]).then(hArr => redrawHeli(hArr[0]));
-  } else {
-    loadAndPlot(state);
-  }
+  updatePageForState(state);
+  redraw(state);
 }
 d3.select("#amp")
   .select("input#maxAmp")
@@ -435,6 +496,42 @@ d3.select("#percentAmpSlider").on("input", function() {
   handleAmpChange(`${this.value}%`);
 });
 
+document.querySelector("input#minmax").addEventListener("change", () => {
+  state.dominmax = document.querySelector("input#minmax").checked;
+  loadAndPlot(state);
+});
+document.querySelector("input#rmean").addEventListener("change", () => {
+  state.rmean = document.querySelector("input#rmean").checked;
+  redraw(state);
+});
+
+document.querySelector("input#allpass").addEventListener("change", () => {
+  handleFilteringChange("allpass",
+    document.querySelector("input#lowcut").value,
+    document.querySelector("input#highcut").value,
+  );
+});
+
+document.querySelector("input#lowpass").addEventListener("change", () => {
+  handleFilteringChange("lowpass",
+    document.querySelector("input#lowcut").value,
+    document.querySelector("input#highcut").value,
+  );
+});
+
+document.querySelector("input#bandpass").addEventListener("change", () => {
+  handleFilteringChange("bandpass",
+    document.querySelector("input#lowcut").value,
+    document.querySelector("input#highcut").value,
+  );
+});
+
+document.querySelector("input#highpass").addEventListener("change", () => {
+  handleFilteringChange("highpass",
+    document.querySelector("input#lowcut").value,
+    document.querySelector("input#highcut").value,
+  );
+});
 
 d3.select("button#refreshEarthquakes").on("click", function(d) {
   loadAllEarthquakeQueryParams(state);

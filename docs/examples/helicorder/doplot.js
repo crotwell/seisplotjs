@@ -110,7 +110,8 @@ export function doPlot(config) {
     return hash;
   }).then(hash => {
     let chantrList;
-    if (hash.bandCode === 'H') {
+    console.log(`dominmax at loadtime: ${hash.config.dominmax}`)
+    if (hash.bandCode === 'H' && hash.config.dominmax) {
       let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
         MINMAX_URL,
         "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
@@ -176,9 +177,9 @@ export function doPlot(config) {
     if (! minMaxSeismogram) {
       svgParent.append("p").text("No Data Found DataSelect").style("color", "red");
     } else {
-      hash.seisData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
+      hash.origData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
       let nowMarker = { markertype: 'predicted', name: "now", time: luxon.DateTime.utc() };
-      hash.seisData.addMarkers(nowMarker);
+      hash.origData.addMarkers(nowMarker);
       redrawHeli(hash);
       return queryEarthquakes(hash);
     }
@@ -317,9 +318,59 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
   });
 }
 
+export function filterData(hash) {
+  const config = hash.config;
+  let inData = hash.origData;
+  console.log(`before filter  range: ${inData.min} ${inData.max}`)
+  if (config.rmean) {
+    let rmeanSeis = seisplotjs.filter.rMean(inData.seismogram);
+    inData = SeismogramDisplayData.fromSeismogram(rmeanSeis);
+  }
+  console.log(`after rmean   range: ${inData.min} ${inData.max}`)
+  if (config.filter.type === "allpass") {
+    console.log(`allpass`);
+  } else if (config.filter.type == "lowpass") {
+    let butterworth = seisplotjs.filter.createButterworth(
+                           2, // poles
+                           seisplotjs.filter.LOW_PASS,
+                           Number.parseFloat(config.filter.lowcut), // low corner not used
+                           Number.parseFloat(config.filter.highcut), // high corner
+                           1/inData.seismogram.sampleRate // delta (period)
+                  );
+    let filteredSeis = seisplotjs.filter.applyFilter(butterworth, inData.seismogram);
+    inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
+
+  } else if (config.filter.type === "bandpass") {
+    let butterworth = seisplotjs.filter.createButterworth(
+                           2, // poles
+                           seisplotjs.filter.BAND_PASS,
+                           Number.parseFloat(config.filter.lowcut), // low corner
+                           Number.parseFloat(config.filter.highcut), // high corner
+                           1/inData.seismogram.sampleRate // delta (period)
+                  );
+    let filteredSeis = seisplotjs.filter.applyFilter(butterworth, inData.seismogram);
+    inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
+
+  } else if (config.filter.type === "highpass") {
+    console.log(`highpass`)
+    let butterworth = seisplotjs.filter.createButterworth(
+                           2, // poles
+                           seisplotjs.filter.HIGH_PASS,
+                           Number.parseFloat(config.filter.lowcut), // low corner
+                           Number.parseFloat(config.filter.highcut), // high corner not used
+                           1/inData.seismogram.sampleRate // delta (period)
+                  );
+    let filteredSeis = seisplotjs.filter.applyFilter(butterworth, inData.seismogram);
+    inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
+    console.log(`filter highpass ${config.filter.lowcut}, after range: ${inData.min} ${inData.max}`)
+  }
+  hash.seisData = inData;
+}
 
 export function redrawHeli(hash) {
   console.log(`heli redraw... ${hash.amp}`)
+
+  filterData(hash);
 
   let svgParent = d3.select(`div.${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
