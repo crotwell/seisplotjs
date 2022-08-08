@@ -379,6 +379,9 @@ export function individualDisplay(
   sddList: Array<SeismogramDisplayData>,
   seisConfig?: SeismographConfig,
 ): Array<OrganizedDisplayItem> {
+  if ( ! seisConfig) {
+    seisConfig = new SeismographConfig();
+  }
   return sddList.map(sdd => {
     const odisp = new OrganizedDisplayItem([ sdd ], seisConfig);
     return odisp;
@@ -388,6 +391,9 @@ export function mapAndIndividualDisplay(
   sddList: Array<SeismogramDisplayData>,
   seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
+  if ( ! seisConfig) {
+    seisConfig = new SeismographConfig();
+  }
   const map = new OrganizedDisplayItem(sddList, seisConfig);
   map.plottype = MAP;
   const individual = individualDisplay(sddList);
@@ -400,6 +406,9 @@ export function overlayBySDDFunction(
   sddFun: (arg0: SeismogramDisplayData) => string | number | null,
   seisConfig?: SeismographConfig
 ): Array<OrganizedDisplayItem> {
+  if ( ! seisConfig) {
+    seisConfig = new SeismographConfig();
+  }
   const out: Array<OrganizedDisplayItem> = [];
   sddList.forEach(sdd => {
     let found = false;
