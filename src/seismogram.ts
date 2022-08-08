@@ -8,7 +8,7 @@ import {FDSNSourceId, NslcId} from "./fdsnsourceid";
 import {meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
 import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
-import {Station, Channel, InstrumentSensitivity} from "./stationxml";
+import {Network, Station, Channel, InstrumentSensitivity, findChannels} from "./stationxml";
 import {Quake} from "./quakeml";
 import {SeismogramSegment} from "./seismogramsegment";
 //export {SeismogramSegment} from "./seismogramsegment";
@@ -858,6 +858,20 @@ export class SeismogramDisplayData {
 
   get timeWindow(): Interval {
     return this.timeRange;
+  }
+
+  associateChannel(nets: Array<Network> ) {
+    const matchChans = findChannels(nets,
+                                    this.networkCode,
+                                    this.stationCode,
+                                    this.locationCode,
+                                    this.channelCode);
+    for( const c of matchChans) {
+      if (c.timeRange.overlaps(this.timeRange)) {
+        this.channel = c;
+        return;
+      }
+    }
   }
 
   alignStartTime() {
