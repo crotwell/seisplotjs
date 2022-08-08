@@ -105,8 +105,14 @@ export function addParticleMotion(
 }
 export function createParticleMotionConfig(
   timeRange?: Interval,
+  defaultSeisConfig?: SeismographConfig
 ): SeismographConfig {
-  const seisConfig = new SeismographConfig();
+  let seisConfig;
+  if (defaultSeisConfig) {
+    seisConfig = defaultSeisConfig.clone();
+  } else {
+    seisConfig = new SeismographConfig();
+  }
   seisConfig.title = DEFAULT_TITLE;
 
   if (isDef(timeRange)) {
