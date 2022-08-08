@@ -22,7 +22,49 @@ export function getNowTime() {
   return e;
 }
 
+export function createEmptySavedData(config) {
+const luxDur = luxon.Duration.fromISO(config.duration);
+
+// stringify end...
+let end = config.endTime;
+if (luxon.DateTime.isDateTime(end)) {
+  config.endTime = end.toISO();
+}
+let plotEnd;
+if (luxon.DateTime.isDateTime(end)) {
+  plotEnd = end;
+} else if( ! end || end.length === 0 || end === 'now') {
+  plotEnd = getNowTime();
+} else if( end === 'today') {
+  plotEnd = luxon.DateTime.utc().endOf('day').plus(ONE_MILLISECOND);
+} else {
+  plotEnd = luxon.DateTime.fromISO(config.endTime).toUTC();
+}
+let timeWindow = luxon.Interval.before(plotEnd, luxDur);
+  let hash = {
+    config: config,
+    timeWindow: timeWindow,
+    staCode: config.station,
+    chanOrient: config.orientationCode,
+    altChanOrient: config.altOrientationCode ? config.altOrientationCode : "",
+    bandCode: config.bandCode,
+    instCode: config.instCode,
+    minMaxInstCode: config.instCode === 'H' ? 'X' : 'Y',
+    amp: config.amp ? config.amp : "max"
+  };
+  return hash;
+}
 export function doPlot(config) {
+  if (window.getComputedStyle(document.querySelector('#heli')) === "none") {
+    let hash = createEmptySavedData(config);
+    drawSeismograph(hash.config, hash.chanTR[0].channel, hash.centerTime);
+    return hash;
+  } else {
+    return doPlotHeli(config);
+  }
+}
+
+export function doPlotHeli(config) {
   const ONE_MILLISECOND = luxon.Duration.fromMillis(1);
 
   let nowHour = seisplotjs.util.isoToDateTime("now").endOf('hour').plus({milliseconds: 1});
@@ -33,62 +75,33 @@ export function doPlot(config) {
   if ( ! config.duration) {
     config.duration = DEFAULT_DURATION;
   }
-  // stringify end...
-  let end = config.endTime;
-  if (luxon.DateTime.isDateTime(end)) {
-    config.endTime = end.toISO();
-  }
   history.pushState(config, "title");
 
-  let plotEnd;
-  if (luxon.DateTime.isDateTime(end)) {
-    plotEnd = end;
-  } else if( ! end || end.length === 0 || end === 'now') {
-    plotEnd = getNowTime();
-  } else if( end === 'today') {
-    plotEnd = luxon.DateTime.utc().endOf('day').plus(ONE_MILLISECOND);
-  } else {
-    plotEnd = luxon.DateTime.fromISO(config.endTime).toUTC();
-  }
   let svgParent = d3.select(`div.${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
 
   svgParent.append("p").text(`...loading ${config.netCode}.${config.station}.`);
-  const luxDur = luxon.Duration.fromISO(config.duration);
-  let timeWindow = luxon.Interval.before(plotEnd, luxDur);
+
+  let hash = createEmptySavedData(config);
 
   let netCodeQuery = config.netCode;
   let staCodeQuery = config.station;
   let locCodeQuery = config.locCode;
-  let chanCodeQuery = `${config.bandCode}${config.instCode}${config.orientationCode}`;
-  if (config.altOrientationCode && config.altOrientationCode.length !== 0) {
-    chanCodeQuery = `${chanCodeQuery},${config.bandCode}${config.instCode}${config.altOrientationCode}`;
-  }
+  let chanCodeQuery = `${config.bandCode}${config.instCode}?`; // get all orientations
   d3.selectAll("span.textNetCode").text(netCodeQuery);
   d3.selectAll("span.textStaCode").text(staCodeQuery);
   d3.selectAll("span.textLocCode").text(locCodeQuery);
   d3.selectAll("span.textChanCode").text(chanCodeQuery);
-  d3.selectAll("span.startTime").text(`${timeWindow.start.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`);
-  d3.selectAll("span.endTime").text(`${timeWindow.end.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`);
+  d3.selectAll("span.startTime").text(`${hash.timeWindow.start.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`);
+  d3.selectAll("span.endTime").text(`${hash.timeWindow.end.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`);
   let channelQuery = new seisplotjs.fdsnstation.StationQuery()
     .nodata(404)
     .networkCode(netCodeQuery)
     .stationCode(staCodeQuery)
     .locationCode(locCodeQuery)
     .channelCode(chanCodeQuery)
-    .startTime(timeWindow.start)
-    .endTime(timeWindow.end);
-  let hash = {
-    config: config,
-    timeWindow: timeWindow,
-    staCode: staCodeQuery,
-    chanOrient: config.orientationCode,
-    altChanOrient: config.altOrientationCode ? config.altOrientationCode : "",
-    bandCode: config.bandCode,
-    instCode: config.instCode,
-    minMaxInstCode: config.instCode === 'H' ? 'X' : 'Y',
-    amp: config.amp ? config.amp : "max"
-  };
+    .startTime(hash.timeWindow.start)
+    .endTime(hash.timeWindow.end);
   return channelQuery.queryChannels()
   .catch(e => {
       svgParent.append("h3").classed("error", true).text("Error Loading Data, retrying... ").style("color", "red");
@@ -99,14 +112,11 @@ export function doPlot(config) {
     let chanTR = [];
     hash.chanTR = chanTR;
     hash.netArray = netArray;
-    netArray.map( n => {
-      n.stations.map( s => {
-        s.channels.filter( c => c.channelCode.endsWith(hash.chanOrient) || c.channelCode.endsWith(hash.altChanOrient))
-        .map(c => {
-          chanTR.push(seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow));
-        });
-      });
-    });
+    for (let c of seisplotjs.stationxml.allChannels(netArray)) {
+      if (c.channelCode.endsWith(hash.chanOrient) || (hash.altChanOrient && c.channelCode.endsWith(hash.altChanOrient))) {
+        chanTR.push(seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, hash.timeWindow));
+      }
+    }
     return hash;
   }).then(hash => {
     let chantrList;
@@ -123,21 +133,13 @@ export function doPlot(config) {
         let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
         let fake = new seisplotjs.stationxml.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
         fake.sampleRate = 2;
+        hash.heliDataIsMinMax = true;
         return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(fake, ct.timeRange);
       }).filter(sdd => !!sdd);
       chantrList = minMaxQ.loadSeismograms(minMaxChanTR);
     } else {
-      let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
-        MSEED_URL,
-        "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
-      let beforeNowChanTR = hash.chanTR.map( ct => {
-        if (ct.startTime > luxon.DateTime.utc()) {
-          // seis in the future
-          return null;
-        }
-        return ct;
-      }).filter(sdd => !!sdd);
-      chantrList = mseedQ.loadSeismograms(beforeNowChanTR);
+      chantrList = loadDataReal(hash.chanTR);
+      hash.heliDataIsMinMax = false;
     }
     return Promise.all([hash, chantrList]).then(hArr => {
       hArr[0].chantrList = hArr[1];
@@ -164,6 +166,7 @@ export function doPlot(config) {
     });
   }).then(hash => {
     let minMaxSeismogram = null;
+    console.log(`chantrList length = ${hash.chantrList.length}`)
     hash.chantrList.forEach(ctr => {
       if (ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.chanOrient}` || ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.altChanOrient}`) {
         minMaxSeismogram = ctr.seismogram;
@@ -171,6 +174,7 @@ export function doPlot(config) {
         minMaxSeismogram = ctr.seismogram;
         d3.selectAll("span.textChanCode").text(ctr.channel.channelCode);
       } else {
+        console.log(`searched for ${ctr.channel.codes()} for ${hash.minMaxInstCode} ${hash.chanOrient} ${hash.altChanOrient}`)
         throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient} or ${hash.bandCode}${hash.instCode}${hash.chanOrient}`);
       }
     });
@@ -180,6 +184,7 @@ export function doPlot(config) {
       hash.origData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
       let nowMarker = { markertype: 'predicted', name: "now", time: luxon.DateTime.utc() };
       hash.origData.addMarkers(nowMarker);
+      hash.seisData = hash.origData;
       redrawHeli(hash);
       return queryEarthquakes(hash);
     }
@@ -244,7 +249,9 @@ export function queryEarthquakes(hash) {
     if (hash.localQuakes.length > 0)hash.quakes = hash.localQuakes;
     if (hash.regionalQuakes.length > 0)hash.quakes = hash.quakes.concat(hash.regionalQuakes);
     if (hash.globalQuakes.length > 0)hash.quakes = hash.quakes.concat(hash.globalQuakes);
-    hash.seisData.addQuake(hash.quakes);
+    if (hash.seisData) {
+      hash.seisData.addQuake(hash.quakes);
+    }
     return Promise.resolve(hash);
   }).then(hash => {
     let traveltimes = [];
@@ -312,15 +319,32 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
       markers.push({ markertype: 'predicted', name: tt.firstS.phase, time: tt.firstSTime });
     });
     markers.push({ markertype: 'predicted', name: "now", time: luxon.DateTime.utc() });
-    hash.seisData.addMarkers(markers);
-    hash.heli.draw();
+    if (hash.seisData) {
+      hash.seisData.addMarkers(markers);
+      hash.heli.draw();
+    } else {
+
+    }
     return hash;
   });
 }
 
-export function filterData(hash) {
-  const config = hash.config;
-  let inData = hash.origData;
+export function loadDataReal(sddList) {
+  let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
+    MSEED_URL,
+    "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
+  let beforeNowChanTR = sddList.map( ct => {
+    if (ct.startTime > luxon.DateTime.utc()) {
+      // seis in the future
+      return null;
+    }
+    return ct;
+  }).filter(sdd => !!sdd);
+  return mseedQ.loadSeismograms(beforeNowChanTR);
+}
+
+export function filterData(config, origData) {
+  let inData = origData;
   console.log(`before filter  range: ${inData.min} ${inData.max}`)
   if (config.rmean) {
     let rmeanSeis = seisplotjs.filter.rMean(inData.seismogram);
@@ -329,50 +353,38 @@ export function filterData(hash) {
   console.log(`after rmean   range: ${inData.min} ${inData.max}`)
   if (config.filter.type === "allpass") {
     console.log(`allpass`);
-  } else if (config.filter.type == "lowpass") {
-    let butterworth = seisplotjs.filter.createButterworth(
+  } else {
+    let butterworth;
+    let filterStyle;
+    if (config.filter.type == "lowpass") {
+      filterStyle = seisplotjs.filter.LOW_PASS;
+    } else if (config.filter.type === "bandpass") {
+      filterStyle = seisplotjs.filter.BAND_PASS;
+    } else if (config.filter.type === "highpass") {
+      filterStyle = seisplotjs.filter.HIGH_PASS;
+    }
+    console.log(`filter setup: ${filterStyle}  ${config.filter.lowcut}  ${config.filter.highcut}  ${inData.seismogram.sampleRate}`)
+    butterworth = seisplotjs.filter.createButterworth(
                            2, // poles
-                           seisplotjs.filter.LOW_PASS,
-                           Number.parseFloat(config.filter.lowcut), // low corner not used
-                           Number.parseFloat(config.filter.highcut), // high corner
-                           1/inData.seismogram.sampleRate // delta (period)
-                  );
-    let filteredSeis = seisplotjs.filter.applyFilter(butterworth, inData.seismogram);
-    inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
-
-  } else if (config.filter.type === "bandpass") {
-    let butterworth = seisplotjs.filter.createButterworth(
-                           2, // poles
-                           seisplotjs.filter.BAND_PASS,
-                           Number.parseFloat(config.filter.lowcut), // low corner
-                           Number.parseFloat(config.filter.highcut), // high corner
-                           1/inData.seismogram.sampleRate // delta (period)
-                  );
-    let filteredSeis = seisplotjs.filter.applyFilter(butterworth, inData.seismogram);
-    inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
-
-  } else if (config.filter.type === "highpass") {
-    console.log(`highpass`)
-    let butterworth = seisplotjs.filter.createButterworth(
-                           2, // poles
-                           seisplotjs.filter.HIGH_PASS,
+                           filterStyle,
                            Number.parseFloat(config.filter.lowcut), // low corner
                            Number.parseFloat(config.filter.highcut), // high corner not used
                            1/inData.seismogram.sampleRate // delta (period)
                   );
     let filteredSeis = seisplotjs.filter.applyFilter(butterworth, inData.seismogram);
     inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
-    console.log(`filter highpass ${config.filter.lowcut}, after range: ${inData.min} ${inData.max}`)
+    console.log(`filter ${config.filter.type} ${config.filter.lowcut}  ${config.filter.highcut}, after range: ${inData.min} ${inData.max}`)
   }
-  hash.seisData = inData;
+  return inData;
 }
 
 export function redrawHeli(hash) {
   console.log(`heli redraw... ${hash.amp}`)
+  if ( ! hash.heliDataIsMinMax) {
+    hash.seisData = filterData(hash.config, hash.origData);
+  }
 
-  filterData(hash);
-
-  let svgParent = d3.select(`div.${divClass}`);
+  let svgParent = d3.select(`div#${divClass}`);
   svgParent.selectAll("*").remove(); // remove old data
   if (hash.seisData) {
     let heliConfig = new HelicorderConfig(hash.timeWindow);
@@ -399,7 +411,11 @@ export function redrawHeli(hash) {
     svgParent.selectAll("h3").remove(); // remove old data
     hash.heli = new Helicorder(hash.seisData,
                                heliConfig);
-
+    hash.heli.addEventListener("heliclick", hEvent => {
+      console.log(`heli click: ${hEvent.detail.time}  on line ${hEvent.detail.lineNum}`);
+      drawSeismograph(hash.config, hash.chanTR[0].channel, hEvent.detail.time);
+      hash.centerTime = hEvent.detail.time;
+    });
     svgParent.node().appendChild(hash.heli);
     d3.select("span#minAmp").text(hash.seisData.min.toFixed(0));
     d3.select("span#maxAmp").text(hash.seisData.max.toFixed(0));
@@ -410,4 +426,23 @@ export function redrawHeli(hash) {
   }
   console.log("end redrawHeli")
   return hash;
+}
+
+export function drawSeismograph(config, channel, centerTime, halfWidth) {
+  if (! halfWidth) { halfWidth = seisplotjs.luxon.Duration.fromISO("PT5M"); }
+  document.querySelector("#heli").setAttribute("style", "display: none;");
+  const seismographDiv = document.querySelector("#seismograph");
+  seismographDiv.setAttribute("style", "display: block;");
+  const seismograph = seismographDiv.querySelector("sp-seismograph");
+  const interval = seisplotjs.luxon.Interval.fromDateTimes(centerTime.minus(halfWidth), centerTime.plus(halfWidth));
+  let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
+  seismograph.seisData = [sdd];
+  seismograph.seismographConfig.linkedTimeScale.recalculate();
+  console.log(`seismograph data: ${sdd}`)
+  return loadDataReal(seismograph.seisData).then((sddList) => {
+    sddList = sddList.map(sdd => filterData(config, sdd));
+    // looks dumb, but recalcs time and amp
+    seismograph.seisData = sddList;
+    return sddList;
+  });
 }

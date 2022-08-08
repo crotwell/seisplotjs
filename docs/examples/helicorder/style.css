@@ -1,6 +1,9 @@
 
-div.heli {
+#heli {
   height: 600px;
+}
+sp-seismograph {
+  height: 300px;
 }
 div form span {
   margin-right: 10px;
@@ -8,7 +11,7 @@ div form span {
 div span span {
   margin-right: 10px;
 }
-label.rbgroup {
+.sectionlabel {
   color: darkgrey;
   margin-right: 5px;
   margin-left: 10px;

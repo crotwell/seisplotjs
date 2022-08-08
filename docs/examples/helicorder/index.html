@@ -9,23 +9,23 @@
 
 <h3>Helicorder Plots for South Carolina Seismic Network Stations:</h3>
 <div id="scsnStations">
-  <form><label class="rbgroup" title="Stations within the South Carolina Seismic Network">Stations:</label>
+  <form><label class="sectionlabel" title="Stations within the South Carolina Seismic Network">Stations:</label>
   </form>
 </div>
 <div>
-  <span id="loccode"><label class="rbgroup">Loc Code: </label></span>
-  <span id="instruments"><label class="rbgroup">Instrument: </label></span>
-  <span id="orientations"><label class="rbgroup">Orientation: </label></span>
+  <span id="loccode"><label class="sectionlabel">Loc Code: </label></span>
+  <span id="instruments"><label class="sectionlabel">Instrument: </label></span>
+  <span id="orientations"><label class="sectionlabel">Orientation: </label></span>
 </div>
 <div id="minmax">
-  <label class="rbgroup" title="Load MinMax">Load: </label>
+  <label class="sectionlabel" title="Load MinMax">Load: </label>
   <span>
     <input type="checkbox" id="minmax" class="shape" name="ampMode" value="0" checked="true"/>
     <label for="minmax">Load Min Max Only </label>
   </span>
 </div>
 <div id="amp">
-  <label class="rbgroup" title="Amplitude Range">Amp Range: </label>
+  <label class="sectionlabel" title="Amplitude Range">Amp Range: </label>
   <span>
     <input type="radio" id="maxAmp" class="shape" name="ampMode" value="0" checked="true"/>
     <label for="fixedAmpText">Max Value </label>
@@ -46,7 +46,7 @@
   </span>
 </div>
 <div id="filtering">
-  <label class="rbgroup" title="Filtering">Filtering: </label>
+  <label class="sectionlabel" title="Filtering">Filtering: </label>
   <span>
     <input type="radio" id="allpass" name="filter" value="allpass" checked="true"></input>
     <label for="allpass">None</label>
@@ -69,43 +69,52 @@
   <input class="smallnum" type="text" id="highcut" name="highcut" value=10.0></input>
 </div>
 <div id="times">
-  <label class="rbgroup">Time Range: </label>
+  <label class="sectionlabel">Time Range: </label>
   <button id="loadToday">Today</button>
   <button id="loadNow">Now</button>
   <button id="loadPrev">Previous</button>
   <button id="loadNext">Next</button>
   <sp-datetime></sp-datetime>
 </div>
+<details>
+  <summary class="sectionlabel">Query Earthquakes</summary>
+  <div id="eqquery">
+    <div>
+      <button id="refreshEarthquakes">Refresh Earthquakes</button>
+    </div>
+    <div id="local">
+      <h5>Local Earthquakes:</h5>
+      <label>Min Lat: </label><input type="text" id="localMinLat" name="localMinLat" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="31.75"/>
+      <label>Max Lat: </label><input type="text" id="localMaxLat" name="localMaxLat" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="35.5"/>
+      <label>Min Lon: </label><input type="text" id="localMinLon" name="localMinLon" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="-84"/>
+      <label>Max Lon: </label><input type="text" id="localMaxLon" name="localMaxLon" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="-78"/>
+    </div>
+    <div id="regional">
+      <h5>Regional Earthquakes:</h5>
+      <label>Max Radius: </label><input type="text" id="regionalMaxRadius" name="regionalMaxRadius" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="10"/>
+      <label>Min Mag: </label><input type="text" id="regionalMinMag" name="regionalMinMag" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="4.5"/>
+
+    </div>
+    <div id="global">
+      <h5>Global Earthquakes:</h5>
+      <label>Min Mag: </label><input type="text" id="globalMinMag" name="globalMinMag" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="6"/>
+    </div>
+  </div>
+</details>
 
 <h3><span class="textNetCode"></span>.<span class="textStaCode"></span>.<span class="textLocCode">00</span>.<span class="textChanCode">H??</span> from <span class="startTime"></span> to <span class="endTime"></span>.</h3>
 
-<div class='heli' >
+<div id='heli' >
+  <sp-helicorder></sp-helicorder>
+</div>
+<div id='seismograph'>
+  <button id="goheli">Back</button>
+  <sp-seismograph></sp-seismograph>
 </div>
 
 <p>Note that data may be delayed up to 15 minutes due to buffering.</p>
 
-<div id="eqquery">
-  <div>
-    <button id="refreshEarthquakes">Refresh Earthquakes</button>
-  </div>
-  <div id="local">
-    <h5>Local Earthquakes:</h5>
-    <label>Min Lat: </label><input type="text" id="localMinLat" name="localMinLat" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="31.75"/>
-    <label>Max Lat: </label><input type="text" id="localMaxLat" name="localMaxLat" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="35.5"/>
-    <label>Min Lon: </label><input type="text" id="localMinLon" name="localMinLon" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="-84"/>
-    <label>Max Lon: </label><input type="text" id="localMaxLon" name="localMaxLon" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="-78"/>
-  </div>
-  <div id="regional">
-    <h5>Regional Earthquakes:</h5>
-    <label>Max Radius: </label><input type="text" id="regionalMaxRadius" name="regionalMaxRadius" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="10"/>
-    <label>Min Mag: </label><input type="text" id="regionalMinMag" name="regionalMinMag" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="4.5"/>
 
-  </div>
-  <div id="global">
-    <h5>Global Earthquakes:</h5>
-    <label>Min Mag: </label><input type="text" id="globalMinMag" name="globalMinMag" pattern="-?[1-9][0-9]*(\.[0-9]*)?" value="6"/>
-  </div>
-</div>
 
 <h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
 
@@ -113,7 +122,7 @@
 <script type="module" src="heli.js"></script>
 <script type="module">
   import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
-  seisplotjs.d3.select("#version").text(seisplotjs.version);
+  document.querySelector("#version").textContent = seisplotjs.version;
 </script>
 </body>
 </html>

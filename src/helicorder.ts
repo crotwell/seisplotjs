@@ -42,12 +42,59 @@ export class Helicorder extends SeisPlotElement {
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = helicorder_css;
     shadow.appendChild(wrapper);
+    // event listener to transform mouse click into time
+    this.addEventListener("click", evt => {
+      console.log(`wrapper heli click ${evt.clientY}  offset: ${evt.offsetY}  `);
+      const margin = this.heliConfig.margin;
+      const nl = this.heliConfig.numLines;
+      const maxHeight =
+        this.heliConfig.maxHeight !== null
+          ? this.heliConfig.maxHeight
+          : DEFAULT_MAX_HEIGHT;
+      const baseHeight =
+        (maxHeight - margin.top - margin.bottom) /
+        (nl - (nl - 1) * this.heliConfig.overlap);
+
+      let clickLine = 0;
+      if (evt.offsetY-margin.top < this.heliConfig.overlap) {
+        console.log(`first line in overlap`);
+        clickLine = 0;
+      } else {
+        clickLine = Math.round(((evt.offsetY-margin.top)-baseHeight*(0.5))/(baseHeight*(1-this.heliConfig.overlap)));
+      }
+      const timeRange = this.heliConfig.fixedTimeScale;
+      if ( timeRange ) {
+        const timeLineFraction = (evt.offsetX-margin.left)/(this.width-margin.left-margin.right);
+
+        const secondsPerLine =
+          timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
+        console.log(`secPerLine: ${secondsPerLine}  timeLineFrac: ${timeLineFraction}  start: ${timeRange.start}`)
+        const clickTime = timeRange.start.plus(Duration.fromMillis((clickLine+timeLineFraction)*secondsPerLine*1000));
+
+        console.log(`y=${evt.offsetY} line click ${Math.round(clickLine)}  ${clickLine}  ${clickTime}`);
+        const event = new CustomEvent("heliclick", { detail: { time: clickTime, lineNum: clickLine}});
+        this.dispatchEvent(event);
+      } else {
+        throw new Error("Helicorder must be fixedTimeScale");
+      }
+    });
+
   }
   get heliConfig(): HelicorderConfig {
     return this.seismographConfig as HelicorderConfig;
   }
   set heliConfig(config: HelicorderConfig) {
     this.seismographConfig = config;
+  }
+  get width(): number {
+    const wrapper = (this.shadowRoot?.querySelector('div.wrapper') as HTMLDivElement);
+    const rect = wrapper.getBoundingClientRect();
+    return rect.width;
+  }
+  get height(): number {
+    const wrapper = (this.shadowRoot?.querySelector('div.wrapper') as HTMLDivElement);
+    const rect = wrapper.getBoundingClientRect();
+    return rect.height;
   }
   /**
    * draws, or redraws, the helicorder.
