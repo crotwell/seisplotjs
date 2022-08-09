@@ -50,13 +50,24 @@ let timeWindow = luxon.Interval.before(plotEnd, luxDur);
     bandCode: config.bandCode,
     instCode: config.instCode,
     minMaxInstCode: config.instCode === 'H' ? 'X' : 'Y',
-    amp: config.amp ? config.amp : "max"
+    amp: config.amp ? config.amp : "max",
+    netArray: [],
+    chanTR: [],
+    origData: null,
+    seisData: null,
+    centerTime: null,
+
   };
   return hash;
 }
 export function doPlot(config) {
   if (window.getComputedStyle(document.querySelector('#heli')) === "none") {
+    document.querySelector("#heli").setAttribute("style", "display: none;");
+    document.querySelector("#seismograph").setAttribute("style", "display: block;");
     let hash = createEmptySavedData(config);
+    if (hash.chanTR.length === 0) {
+      console.log("no data")
+    }
     drawSeismograph(hash.config, hash.chanTR[0].channel, hash.centerTime);
     return hash;
   } else {
@@ -65,6 +76,8 @@ export function doPlot(config) {
 }
 
 export function doPlotHeli(config) {
+  document.querySelector("#heli").setAttribute("style", "display: block;");
+  document.querySelector("#seismograph").setAttribute("style", "display: none;");
   const ONE_MILLISECOND = luxon.Duration.fromMillis(1);
 
   let nowHour = seisplotjs.util.isoToDateTime("now").endOf('hour').plus({milliseconds: 1});
@@ -109,6 +122,11 @@ export function doPlotHeli(config) {
       return new Promise(resolve => setTimeout(resolve, 2000, channelQuery.queryChannels()));
   })
   .then(netArray => {
+    if (netArray.length === 0 ) {
+      svgParent.append("h3").classed("error", true).text("No channels found").style("color", "red");
+      hash.seisData = null;
+      hash.origData = null;
+    }
     let chanTR = [];
     hash.chanTR = chanTR;
     hash.netArray = netArray;
@@ -438,8 +456,12 @@ export function drawSeismograph(config, channel, centerTime, halfWidth) {
   let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
   seismograph.seisData = [sdd];
   seismograph.seismographConfig.linkedTimeScale.recalculate();
+  seismograph.seismographConfig.linkedAmplitudeScale.recalculate();
+  seismograph.seismographConfig.centeredAmp = true;
+  seismograph.draw();
   console.log(`seismograph data: ${sdd}`)
   return loadDataReal(seismograph.seisData).then((sddList) => {
+    console.log(`got seismogram for ${sddList[0]}`)
     sddList = sddList.map(sdd => filterData(config, sdd));
     // looks dumb, but recalcs time and amp
     seismograph.seisData = sddList;
