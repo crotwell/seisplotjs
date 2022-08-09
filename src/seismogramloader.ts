@@ -15,6 +15,16 @@ import {
   createMarkerForOriginTime,
 } from "./seismograph";
 import {isDef, isStringArg, stringify} from "./util";
+
+/**
+ * Loads seismograms based on queries to Station and Event web services.
+ * Uses the traveltime web service to create times for data query. Default
+ * is P-30 sec to S+60 sec.
+ *
+ * @param stationQuery     query to find channels
+ * @param eventQuery       query to find events
+ * @param dataselectQuery  optional additional parameters for seismogram query
+ */
 export class SeismogramLoader {
   stationQuery: StationQuery;
   withResponse: boolean;
@@ -146,6 +156,12 @@ export class SeismogramLoader {
     this._endOffset = Duration.fromMillis(val*1000); //seconds
   }
 
+  /**
+   * Additional phase arrival travel times to be marked, but do not effect
+   * the request time window.
+   * 
+   * @return array of phase names.
+   */
   get markedPhaseList(): Array<string> {
     return this._markedPhaseList;
   }
