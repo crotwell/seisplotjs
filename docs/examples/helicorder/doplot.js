@@ -400,21 +400,7 @@ export function redrawHeli(hash) {
     let heliConfig = new HelicorderConfig(hash.timeWindow);
     heliConfig.markerFlagpoleBase = 'center';
     heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
-    if (hash.config.amp === 'max') {
-      heliConfig.fixedAmplitudeScale = [0,0];
-      heliConfig.maxVariation = 0;
-    } else if (typeof hash.config.amp === 'string' && hash.config.amp.endsWith('%')) {
-      heliConfig.fixedAmplitudeScale = [0,0];
-      const percent = Number(hash.config.amp.substring(0, hash.config.amp.length-1))/100;
-      heliConfig.maxVariation = percent*(hash.seisData.max-hash.seisData.mean);
-    } else if (Number.isFinite(hash.config.amp)) {
-      heliConfig.fixedAmplitudeScale = [0,0];
-      heliConfig.maxVariation = hash.config.amp;
-    } else {
-      heliConfig.fixedAmplitudeScale = [0,0];
-      heliConfig.maxVariation = 0;
-    }
-    heliConfig.centeredAmp = true;
+    updateHeliAmpConfig(hash, heliConfig);
 
     svgParent.selectAll("div").remove(); // remove old data
     svgParent.selectAll("p").remove(); // remove old data
@@ -436,6 +422,24 @@ export function redrawHeli(hash) {
   return hash;
 }
 
+export function updateHeliAmpConfig(hash, heliConfig) {
+  if (hash.config.amp === 'max') {
+    heliConfig.fixedAmplitudeScale = [0,0];
+    heliConfig.maxVariation = 0;
+  } else if (typeof hash.config.amp === 'string' && hash.config.amp.endsWith('%')) {
+    heliConfig.fixedAmplitudeScale = [0,0];
+    const percent = Number(hash.config.amp.substring(0, hash.config.amp.length-1))/100;
+    heliConfig.maxVariation = percent*(hash.seisData.max-hash.seisData.mean);
+  } else if (Number.isFinite(hash.config.amp)) {
+    heliConfig.fixedAmplitudeScale = [0,0];
+    heliConfig.maxVariation = hash.config.amp;
+  } else {
+    heliConfig.fixedAmplitudeScale = [0,0];
+    heliConfig.maxVariation = 0;
+  }
+  heliConfig.centeredAmp = true;
+}
+
 export function drawSeismograph(hash) {
   let friendChannels = Array.from(seisplotjs.stationxml.findChannels(hash.netArray,
                                                                   hash.chanTR[0].networkCode,
@@ -455,10 +459,24 @@ export function drawSeismograph(hash) {
     return sdd;
   });
   seismographDisp.seisData = sddList;
-  seismographDisp.seismographConfig.linkedTimeScale.recalculate();
-  seismographDisp.seismographConfig.linkedAmplitudeScale.recalculate();
-  seismographDisp.seismographConfig.centeredAmp = true;
+  let seismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
+  seismographConfig.centeredAmp = true;
+  seismographConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
+
+  if (hash.config.amp === 'max') {
+  } else if (typeof hash.config.amp === 'string' && hash.config.amp.endsWith('%')) {
+    const percent = Number(hash.config.amp.substring(0, hash.config.amp.length-1))/100;
+    seismographConfig.linkedAmplitudeScale.halfWidth =
+      percent*seismographDisp.seismographConfig.linkedAmplitudeScale.halfWidth;
+  } else if (Number.isFinite(hash.config.amp)) {
+    seismographConfig.linkedAmplitudeScale.halfWidth = hash.config.amp;
+  } else {
+  }
+  seismographDisp.seismographConfig = seismographConfig;
+  //seismographConfig.linkedTimeScale.recalculate();
+  //seismographConfig.linkedAmplitudeScale.recalculate();
   seismographDisp.draw();
+
   return loadDataReal(seismographDisp.seisData).then((sddList) => {
     sddList = sddList.map(sdd => filterData(hash.config, sdd));
     // looks dumb, but recalcs time and amp
