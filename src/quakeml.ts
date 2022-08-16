@@ -566,6 +566,9 @@ export class Pick {
       this.channelCode === channel.channelCode
     );
   }
+  toString(): string {
+    return stringify(this.time) + ` ${this.networkCode}.${this.stationCode}.${this.locationCode}.${this.channelCode}`;
+  }
 }
 
 /**
