@@ -69,7 +69,7 @@ export function doPlot(config) {
       console.log("no data")
     }
     drawSeismograph(hash.config, hash.chanTR[0].channel, hash.centerTime);
-    return hash;
+    return Promise.resolve(hash);
   } else {
     return doPlotHeli(config);
   }
@@ -81,9 +81,10 @@ export function doPlotHeli(config) {
   const ONE_MILLISECOND = luxon.Duration.fromMillis(1);
 
   let nowHour = seisplotjs.util.isoToDateTime("now").endOf('hour').plus({milliseconds: 1});
+  let hash = createEmptySavedData(config);
 
   if ( ! config.station) {
-    return;
+    return Promise.resolve(hash);
   }
   if ( ! config.duration) {
     config.duration = DEFAULT_DURATION;
@@ -94,8 +95,6 @@ export function doPlotHeli(config) {
   svgParent.selectAll("*").remove(); // remove old data
 
   svgParent.append("p").text(`...loading ${config.netCode}.${config.station}.`);
-
-  let hash = createEmptySavedData(config);
 
   let netCodeQuery = config.netCode;
   let staCodeQuery = config.station;
@@ -138,7 +137,6 @@ export function doPlotHeli(config) {
     return hash;
   }).then(hash => {
     let chantrList;
-    console.log(`dominmax at loadtime: ${hash.config.dominmax}`)
     if (hash.bandCode === 'H' && hash.config.dominmax) {
       let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
         MINMAX_URL,
@@ -184,7 +182,6 @@ export function doPlotHeli(config) {
     });
   }).then(hash => {
     let minMaxSeismogram = null;
-    console.log(`chantrList length = ${hash.chantrList.length}`)
     hash.chantrList.forEach(ctr => {
       if (ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.chanOrient}` || ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.altChanOrient}`) {
         minMaxSeismogram = ctr.seismogram;
@@ -192,7 +189,6 @@ export function doPlotHeli(config) {
         minMaxSeismogram = ctr.seismogram;
         d3.selectAll("span.textChanCode").text(ctr.channel.channelCode);
       } else {
-        console.log(`searched for ${ctr.channel.codes()} for ${hash.minMaxInstCode} ${hash.chanOrient} ${hash.altChanOrient}`)
         throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient} or ${hash.bandCode}${hash.instCode}${hash.chanOrient}`);
       }
     });
@@ -363,14 +359,11 @@ export function loadDataReal(sddList) {
 
 export function filterData(config, origData) {
   let inData = origData;
-  console.log(`before filter  range: ${inData.min} ${inData.max}`)
   if (config.rmean) {
     let rmeanSeis = seisplotjs.filter.rMean(inData.seismogram);
     inData = SeismogramDisplayData.fromSeismogram(rmeanSeis);
   }
-  console.log(`after rmean   range: ${inData.min} ${inData.max}`)
   if (config.filter.type === "allpass") {
-    console.log(`allpass`);
   } else {
     let butterworth;
     let filterStyle;
@@ -381,7 +374,6 @@ export function filterData(config, origData) {
     } else if (config.filter.type === "highpass") {
       filterStyle = seisplotjs.filter.HIGH_PASS;
     }
-    console.log(`filter setup: ${filterStyle}  ${config.filter.lowcut}  ${config.filter.highcut}  ${inData.seismogram.sampleRate}`)
     butterworth = seisplotjs.filter.createButterworth(
                            2, // poles
                            filterStyle,
@@ -391,13 +383,11 @@ export function filterData(config, origData) {
                   );
     let filteredSeis = seisplotjs.filter.applyFilter(butterworth, inData.seismogram);
     inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
-    console.log(`filter ${config.filter.type} ${config.filter.lowcut}  ${config.filter.highcut}, after range: ${inData.min} ${inData.max}`)
   }
   return inData;
 }
 
 export function redrawHeli(hash) {
-  console.log(`heli redraw... ${hash.amp}`)
   if ( ! hash.heliDataIsMinMax) {
     hash.seisData = filterData(hash.config, hash.origData);
   }
@@ -408,18 +398,18 @@ export function redrawHeli(hash) {
     let heliConfig = new HelicorderConfig(hash.timeWindow);
     heliConfig.markerFlagpoleBase = 'center';
     heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
-    if (hash.amp === 'max') {
-      heliConfig.fixedYScale = null;
+    if (hash.config.amp === 'max') {
+      heliConfig.fixedAmplitudeScale = [0,0];
       heliConfig.maxVariation = 0;
-    } else if (typeof hash.amp === 'string' && hash.amp.endsWith('%')) {
-      heliConfig.fixedYScale = null;
-      const precent = Number(hash.amp.substring(0, hash.amp.length-1))/100;
-      heliConfig.maxVariation = precent*(hash.seisData.max-hash.seisData.mean);
-    } else if (Number.isFinite(hash.amp)) {
-      heliConfig.fixedYScale = null;
-      heliConfig.maxVariation = hash.amp;
+    } else if (typeof hash.config.amp === 'string' && hash.config.amp.endsWith('%')) {
+      heliConfig.fixedAmplitudeScale = [0,0];
+      const percent = Number(hash.config.amp.substring(0, hash.config.amp.length-1))/100;
+      heliConfig.maxVariation = percent*(hash.seisData.max-hash.seisData.mean);
+    } else if (Number.isFinite(hash.config.amp)) {
+      heliConfig.fixedAmplitudeScale = [0,0];
+      heliConfig.maxVariation = hash.config.amp;
     } else {
-      heliConfig.fixedYScale = null;
+      heliConfig.fixedAmplitudeScale = [0,0];
       heliConfig.maxVariation = 0;
     }
     heliConfig.centeredAmp = true;
@@ -430,7 +420,6 @@ export function redrawHeli(hash) {
     hash.heli = new Helicorder(hash.seisData,
                                heliConfig);
     hash.heli.addEventListener("heliclick", hEvent => {
-      console.log(`heli click: ${hEvent.detail.time}  on line ${hEvent.detail.lineNum}`);
       drawSeismograph(hash.config, hash.chanTR[0].channel, hEvent.detail.time);
       hash.centerTime = hEvent.detail.time;
     });
@@ -442,7 +431,6 @@ export function redrawHeli(hash) {
   } else {
     svgParent.append("p").text("No Data.")
   }
-  console.log("end redrawHeli")
   return hash;
 }
 
@@ -459,9 +447,7 @@ export function drawSeismograph(config, channel, centerTime, halfWidth) {
   seismograph.seismographConfig.linkedAmplitudeScale.recalculate();
   seismograph.seismographConfig.centeredAmp = true;
   seismograph.draw();
-  console.log(`seismograph data: ${sdd}`)
   return loadDataReal(seismograph.seisData).then((sddList) => {
-    console.log(`got seismogram for ${sddList[0]}`)
     sddList = sddList.map(sdd => filterData(config, sdd));
     // looks dumb, but recalcs time and amp
     seismograph.seisData = sddList;
