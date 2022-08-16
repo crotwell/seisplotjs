@@ -359,9 +359,10 @@ export function loadDataReal(sddList) {
 
 export function filterData(config, origData) {
   let inData = origData;
+  let outData = inData;
   if (config.rmean) {
-    let rmeanSeis = seisplotjs.filter.rMean(inData.seismogram);
-    inData = SeismogramDisplayData.fromSeismogram(rmeanSeis);
+    let rmeanSeis = seisplotjs.filter.rMean(outData.seismogram);
+    outData = outData.cloneWithNewSeismogram(rmeanSeis);
   }
   if (config.filter.type === "allpass") {
   } else {
@@ -379,14 +380,15 @@ export function filterData(config, origData) {
                            filterStyle,
                            Number.parseFloat(config.filter.lowcut), // low corner
                            Number.parseFloat(config.filter.highcut), // high corner not used
-                           1/inData.seismogram.sampleRate // delta (period)
+                           1/outData.seismogram.sampleRate // delta (period)
                   );
-    let filteredSeis = seisplotjs.filter.rMean(inData.seismogram);
+    let filteredSeis = seisplotjs.filter.rMean(outData.seismogram);
     filteredSeis = seisplotjs.taper.taper(filteredSeis);
     filteredSeis = seisplotjs.filter.applyFilter(butterworth, filteredSeis);
-    inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
+    outData = outData.cloneWithNewSeismogram(filteredSeis);
+    console.log(`copy markers via clone: ${inData.markerList.length} -> ${outData.markerList.length}`)
   }
-  return inData;
+  return outData;
 }
 
 export function redrawHeli(hash) {
@@ -456,6 +458,7 @@ export function drawSeismograph(hash) {
   const interval = seisplotjs.luxon.Interval.fromDateTimes(hash.centerTime.minus(halfWidth), hash.centerTime.plus(halfWidth));
   let sddList = friendChannels.map(channel => {
     let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
+    sdd.addMarkers(hash.seisData.markerList);
     return sdd;
   });
   seismographDisp.seisData = sddList;
@@ -478,9 +481,9 @@ export function drawSeismograph(hash) {
   seismographDisp.draw();
 
   return loadDataReal(seismographDisp.seisData).then((sddList) => {
-    sddList = sddList.map(sdd => filterData(hash.config, sdd));
+    let filtSddList = sddList.map(sdd => filterData(hash.config, sdd));
     // looks dumb, but recalcs time and amp
-    seismographDisp.seisData = sddList;
+    seismographDisp.seisData = filtSddList;
     return sddList;
   });
 }
