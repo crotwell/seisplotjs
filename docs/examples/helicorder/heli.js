@@ -48,7 +48,7 @@ function loadAndPlot(config) {
 function redraw() {
   if (savedData) {
     // already have data
-    if (window.getComputedStyle(document.querySelector('#heli')) === "none") {
+    if (window.getComputedStyle(document.querySelector('#heli')).display === "none") {
       drawSeismograph(savedData.config, savedData.chanTR[0].channel, savedData.centerTime);
     } else {
       redrawHeli(savedData);
@@ -56,7 +56,6 @@ function redraw() {
   } else {
     loadAndPlot(config);
   }
-
 }
 
 
