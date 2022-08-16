@@ -1,4 +1,5 @@
 import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
+import {getNowTime} from './doplot.js';
 
 const d3 = seisplotjs.d3;
 const luxon = seisplotjs.luxon;
@@ -8,6 +9,7 @@ const orientList = ['Z', 'N/1', 'E/2'];
 const bandInstCodeList = [ 'HN', 'HH', 'LH'];
 
 export function updateDateChooser(config) {
+  let dateChooser = document.querySelector("sp-datetime");
   if ( config.endTime && config.duration) {
     dateChooser.updateTime(seisplotjs.util.isoToDateTime(config.endTime).minus(luxon.Duration.fromISO(config.duration)));
   } else {
