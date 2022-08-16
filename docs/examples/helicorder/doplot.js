@@ -23,24 +23,24 @@ export function getNowTime() {
 }
 
 export function createEmptySavedData(config) {
-const luxDur = luxon.Duration.fromISO(config.duration);
+  const luxDur = luxon.Duration.fromISO(config.duration);
 
-// stringify end...
-let end = config.endTime;
-if (luxon.DateTime.isDateTime(end)) {
-  config.endTime = end.toISO();
-}
-let plotEnd;
-if (luxon.DateTime.isDateTime(end)) {
-  plotEnd = end;
-} else if( ! end || end.length === 0 || end === 'now') {
-  plotEnd = getNowTime();
-} else if( end === 'today') {
-  plotEnd = luxon.DateTime.utc().endOf('day').plus(ONE_MILLISECOND);
-} else {
-  plotEnd = luxon.DateTime.fromISO(config.endTime).toUTC();
-}
-let timeWindow = luxon.Interval.before(plotEnd, luxDur);
+  // stringify end...
+  let end = config.endTime;
+  if (luxon.DateTime.isDateTime(end)) {
+    config.endTime = end.toISO();
+  }
+  let plotEnd;
+  if (luxon.DateTime.isDateTime(end)) {
+    plotEnd = end;
+  } else if( ! end || end.length === 0 || end === 'now') {
+    plotEnd = getNowTime();
+  } else if( end === 'today') {
+    plotEnd = luxon.DateTime.utc().endOf('day').plus(ONE_MILLISECOND);
+  } else {
+    plotEnd = luxon.DateTime.fromISO(config.endTime).toUTC();
+  }
+  let timeWindow = luxon.Interval.before(plotEnd, luxDur);
   let hash = {
     config: config,
     timeWindow: timeWindow,
