@@ -381,7 +381,9 @@ export function filterData(config, origData) {
                            Number.parseFloat(config.filter.highcut), // high corner not used
                            1/inData.seismogram.sampleRate // delta (period)
                   );
-    let filteredSeis = seisplotjs.filter.applyFilter(butterworth, inData.seismogram);
+    let filteredSeis = seisplotjs.filter.rMean(inData.seismogram);
+    filteredSeis = seisplotjs.taper.taper(filteredSeis);
+    filteredSeis = seisplotjs.filter.applyFilter(butterworth, filteredSeis);
     inData = SeismogramDisplayData.fromSeismogram(filteredSeis);
   }
   return inData;
