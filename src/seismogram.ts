@@ -24,7 +24,7 @@ export type HighLowType = {
 export type MarkerType = {
   name: string;
   time: DateTime;
-  type: string;
+  markertype: string;
   description: string;
   link?: string;
 };

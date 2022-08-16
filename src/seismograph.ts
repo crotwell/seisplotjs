@@ -1144,7 +1144,7 @@ export class Seismograph extends SeisPlotElement {
       .each(function (mh: MarkerHolderType) {
         // @ts-ignore
         const drawG = d3.select(this);
-        drawG.classed(mh.marker.name, true).classed(mh.marker.type, true);
+        drawG.classed(mh.marker.name, true).classed(mh.marker.markertype, true);
         const innerTextG = drawG
           .append("g")
           .attr("class", "markertext")
@@ -1168,7 +1168,7 @@ export class Seismograph extends SeisPlotElement {
           if (mh.marker.description) {
             return mh.marker.description;
           } else {
-            return mh.marker.name + " " + mh.marker.time.toISO();
+            return mh.marker.markertype+" "+mh.marker.name + " " + mh.marker.time.toISO();
           }
         });
         const textSel = innerTextG.append("text");
@@ -1707,7 +1707,7 @@ export function createMarkersForTravelTimes(
 ): Array<MarkerType> {
   return ttime.arrivals.map(a => {
     return {
-      type: "predicted",
+      markertype: "predicted",
       name: a.phase,
       time: quake.time.plus(Duration.fromMillis(1000*a.time)),
       description: "",
@@ -1723,7 +1723,7 @@ export function createMarkersForTravelTimes(
  */
 export function createMarkerForOriginTime(quake: Quake): MarkerType {
   return {
-    type: "predicted",
+    markertype: "predicted",
     name: "origin",
     time: quake.time,
     description: "",
@@ -1741,7 +1741,7 @@ export function createFullMarkersForQuakeAtStation(
     quake.longitude,
   );
   markers.push({
-    type: "predicted",
+    markertype: "predicted",
     name: `M${quake.preferredMagnitude.mag} ${quake.time.toFormat("HH:mm")}`,
     time: quake.time,
     link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
@@ -1765,6 +1765,34 @@ export function createFullMarkersForQuakeAtChannel(
 }
 
 /**
+ * Creates a Marker for the picked arrival times in quake.pickList, for the given Quake.
+ *
+ * @param Quake quake the travel times are relative to
+ * @param channel channel picks made on
+ * @returns        Marker suitable for adding to a seismograph
+ */
+export function createMarkerForQuakePicks(
+  quake: Quake,
+  channel: Channel,
+): Array<MarkerType> {
+  const markers: Array<MarkerType> = [];
+
+  if (quake.pickList) {
+    quake.pickList.forEach(pick => {
+      if (pick && pick.isOnChannel(channel)) {
+        markers.push({
+          markertype: "pick",
+          name: "pick",
+          time: pick.time,
+          description: "",
+        });
+      }
+    });
+  }
+  return markers;
+}
+
+/**
  * Creates a Marker for the picked arrival times in quake.arrivals, for the given Quake.
  *
  * @param origin quake the travel times are relative to
@@ -1781,7 +1809,7 @@ export function createMarkerForPicks(
     origin.arrivals.forEach(arrival => {
       if (arrival && arrival.pick.isOnChannel(channel)) {
         markers.push({
-          type: "pick",
+          markertype: "pick",
           name: arrival.phase,
           time: arrival.pick.time,
           description: "",
@@ -1789,9 +1817,10 @@ export function createMarkerForPicks(
       }
     });
   }
-
   return markers;
 }
+
+
 /**
  * Creates a wrapper for d3 formatter for numbers for axis that keeps typescript happy.
  *
