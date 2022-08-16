@@ -68,7 +68,7 @@ export function doPlot(config) {
     if (hash.chanTR.length === 0) {
       console.log("no data")
     }
-    drawSeismograph(hash.config, hash.chanTR[0].channel, hash.centerTime);
+    drawSeismograph(hash);
     return Promise.resolve(hash);
   } else {
     return doPlotHeli(config);
@@ -422,8 +422,8 @@ export function redrawHeli(hash) {
     hash.heli = new Helicorder(hash.seisData,
                                heliConfig);
     hash.heli.addEventListener("heliclick", hEvent => {
-      drawSeismograph(hash.config, hash.chanTR[0].channel, hEvent.detail.time);
       hash.centerTime = hEvent.detail.time;
+      drawSeismograph(hash);
     });
     svgParent.node().appendChild(hash.heli);
     d3.select("span#minAmp").text(hash.seisData.min.toFixed(0));
@@ -436,23 +436,33 @@ export function redrawHeli(hash) {
   return hash;
 }
 
-export function drawSeismograph(config, channel, centerTime, halfWidth) {
+export function drawSeismograph(hash) {
+  let friendChannels = Array.from(seisplotjs.stationxml.findChannels(hash.netArray,
+                                                                  hash.chanTR[0].networkCode,
+                                                                  hash.chanTR[0].stationCode,
+                                                                  hash.chanTR[0].locationCode,
+                                                                  hash.chanTR[0].channelCode.slice(0,2)+".",
+                                                                ));
+  let halfWidth = hash.halfWidth;
   if (! halfWidth) { halfWidth = seisplotjs.luxon.Duration.fromISO("PT5M"); }
   document.querySelector("#heli").setAttribute("style", "display: none;");
   const seismographDiv = document.querySelector("#seismograph");
   seismographDiv.setAttribute("style", "display: block;");
-  const seismograph = seismographDiv.querySelector("sp-seismograph");
-  const interval = seisplotjs.luxon.Interval.fromDateTimes(centerTime.minus(halfWidth), centerTime.plus(halfWidth));
-  let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
-  seismograph.seisData = [sdd];
-  seismograph.seismographConfig.linkedTimeScale.recalculate();
-  seismograph.seismographConfig.linkedAmplitudeScale.recalculate();
-  seismograph.seismographConfig.centeredAmp = true;
-  seismograph.draw();
-  return loadDataReal(seismograph.seisData).then((sddList) => {
-    sddList = sddList.map(sdd => filterData(config, sdd));
+  const seismographDisp = seismographDiv.querySelector("sp-organized-display");
+  const interval = seisplotjs.luxon.Interval.fromDateTimes(hash.centerTime.minus(halfWidth), hash.centerTime.plus(halfWidth));
+  let sddList = friendChannels.map(channel => {
+    let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
+    return sdd;
+  });
+  seismographDisp.seisData = sddList;
+  seismographDisp.seismographConfig.linkedTimeScale.recalculate();
+  seismographDisp.seismographConfig.linkedAmplitudeScale.recalculate();
+  seismographDisp.seismographConfig.centeredAmp = true;
+  seismographDisp.draw();
+  return loadDataReal(seismographDisp.seisData).then((sddList) => {
+    sddList = sddList.map(sdd => filterData(hash.config, sdd));
     // looks dumb, but recalcs time and amp
-    seismograph.seisData = sddList;
+    seismographDisp.seisData = sddList;
     return sddList;
   });
 }
