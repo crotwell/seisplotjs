@@ -46,15 +46,15 @@ function loadAndPlot(config) {
 };
 
 function redraw() {
-  if (savedData && savedData.seisData && savedData.seisData.length > 0) {
-    // already have data
     if (window.getComputedStyle(document.querySelector('#heli')).display === "none") {
-      drawSeismograph(savedData.config, savedData.chanTR[0].channel, savedData.centerTime);
+      drawSeismograph(savedData);
     } else {
+      if (savedData && savedData.seisData ) {
+        // already have data
       redrawHeli(savedData);
+    } else {
+      loadAndPlot(state);
     }
-  } else {
-    loadAndPlot(config);
   }
 }
 
