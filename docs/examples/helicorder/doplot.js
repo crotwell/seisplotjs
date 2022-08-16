@@ -227,6 +227,29 @@ export function queryEarthquakes(hash) {
       return hArr[0];
     });
   }).then(hash => {
+    // replace each local quake from the big query with one queried by
+    // public id, this also gets analyst "picks"
+    const redoLocalQuakes = hash.localQuakes.map( q => {
+      let quakeQuery = new seisplotjs.fdsnevent.EventQuery();
+      quakeQuery.eventId(q.eventId);
+      return quakeQuery.query().then(qlist => {
+          if (qlist && qlist.length>0) {
+            // assume only one, use first
+            return qlist[0];
+          } else {
+            // server didn't find, oh well
+            return q;
+          }
+      });
+    });
+
+    return Promise.all([hash, Promise.all(redoLocalQuakes)]).then(hArr => {
+      hArr[0].localQuakes = hArr[1];
+      console.log(`reload local by eventid: ${hArr[1][0].origin.arrivals.length}`)
+      hArr[1][0].origin.arrivals.forEach(a => console.log(`arrival: ${a.phase} ${a.pick}`))
+      return hArr[0];
+    });
+  }).then(hash => {
     let quakeStart = hash.timeWindow.start.minus(QUAKE_START_OFFSET);
     let regionalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     regionalQuakesQuery
