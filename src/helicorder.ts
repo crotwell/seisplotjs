@@ -44,7 +44,6 @@ export class Helicorder extends SeisPlotElement {
     shadow.appendChild(wrapper);
     // event listener to transform mouse click into time
     this.addEventListener("click", evt => {
-      console.log(`wrapper heli click ${evt.clientY}  offset: ${evt.offsetY}  `);
       const margin = this.heliConfig.margin;
       const nl = this.heliConfig.numLines;
       const maxHeight =
@@ -57,7 +56,6 @@ export class Helicorder extends SeisPlotElement {
 
       let clickLine = 0;
       if (evt.offsetY-margin.top < this.heliConfig.overlap) {
-        console.log(`first line in overlap`);
         clickLine = 0;
       } else {
         clickLine = Math.round(((evt.offsetY-margin.top)-baseHeight*(0.5))/(baseHeight*(1-this.heliConfig.overlap)));
@@ -68,10 +66,8 @@ export class Helicorder extends SeisPlotElement {
 
         const secondsPerLine =
           timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
-        console.log(`secPerLine: ${secondsPerLine}  timeLineFrac: ${timeLineFraction}  start: ${timeRange.start}`)
         const clickTime = timeRange.start.plus(Duration.fromMillis((clickLine+timeLineFraction)*secondsPerLine*1000));
 
-        console.log(`y=${evt.offsetY} line click ${Math.round(clickLine)}  ${clickLine}  ${clickTime}`);
         const event = new CustomEvent("heliclick", { detail: { time: clickTime, lineNum: clickLine}});
         this.dispatchEvent(event);
       } else {
@@ -128,7 +124,9 @@ export class Helicorder extends SeisPlotElement {
     if (singleSeisData.seismogram) {
       const seis = singleSeisData.seismogram;
 
-      if (!this.heliConfig.fixedAmplitudeScale) {
+      if (!this.heliConfig.fixedAmplitudeScale || (
+        this.heliConfig.fixedAmplitudeScale[0] === 0 && this.heliConfig.fixedAmplitudeScale[1] === 0
+      )) {
         if (this.heliConfig.maxVariation === 0) {
           const cutSeis = seis.cut(timeRange);
 
@@ -201,12 +199,10 @@ export class Helicorder extends SeisPlotElement {
       ];
       let lineCutSeis = null;
       let lineSeisData;
-      let lineMiddle = 0;
 
       if (singleSeisData.seismogram) {
         lineCutSeis = singleSeisData.seismogram.cut(lineInterval);
         lineSeisData = singleSeisData.cloneWithNewSeismogram(lineCutSeis);
-        lineMiddle = lineSeisData.middle;
       } else {
         // no data in window, but keep seisData in case of markers, etc
         lineSeisData = singleSeisData.clone();
@@ -214,20 +210,15 @@ export class Helicorder extends SeisPlotElement {
 
       lineSeisData.timeRange = lineInterval;
 
-      if (this.heliConfig.fixedAmplitudeScale) {
+      if (this.heliConfig.fixedAmplitudeScale && (
+        this.heliConfig.fixedAmplitudeScale[0] !== 0 || this.heliConfig.fixedAmplitudeScale[1] !== 0
+      )) {
         lineSeisConfig.fixedAmplitudeScale = this.heliConfig.fixedAmplitudeScale;
       } else {
-        if (this.heliConfig.centeredAmp) {
-          lineSeisConfig.fixedAmplitudeScale = [
-            lineMiddle - maxVariation,
-            lineMiddle + maxVariation,
-          ];
-        } else {
-          lineSeisConfig.fixedAmplitudeScale = [
-            lineMiddle - maxVariation,
-            lineMiddle + maxVariation,
-          ];
-        }
+        lineSeisConfig.fixedAmplitudeScale = [
+          -1* maxVariation,
+          maxVariation,
+        ];
       }
 
       const seismograph = new Seismograph([lineSeisData], lineSeisConfig);
@@ -292,6 +283,8 @@ export const DEFAULT_MAX_HEIGHT = 600;
 /**
  * Configuration of the helicorder
  *
+ * Note that setting maxVariation=0 and fixedAmplitudeScale=[0,0] will scale the
+ * data to max
  * @param timeRange the time range covered by the helicorder, required
  */
 export class HelicorderConfig extends SeismographConfig {
