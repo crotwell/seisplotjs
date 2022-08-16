@@ -41,6 +41,14 @@
     seis.stationCode = "STA";
     seis.locationCode = "00";
     seis.channelCode = "BHZ";
+    seisB.networkCode = "XX";
+    seisB.stationCode = "STA";
+    seisB.locationCode = "00";
+    seisB.channelCode = "BHN";
+    seisC.networkCode = "XX";
+    seisC.stationCode = "STA";
+    seisC.locationCode = "00";
+    seisC.channelCode = "BHE";
     const sddA = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seis);
     const sddB = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisB);
     const sddC = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisC);
@@ -54,15 +62,16 @@
     seisConfig.doGain = false;
     seisConfig.centeredAmp = false;
     const seisConfig_rmean = new seisplotjs.seismographconfig.SeismographConfig();
+    const def_title = seisConfig.title;
     seisConfig.isRelativeTime = false;
     seisConfig.doGain = false;
     seisConfig.centeredAmp = false;
-    seisConfig.title = `Plain: ${seisConfig.title}`;
+    seisConfig.title = `Plain: ${def_title}`;
     seisConfig_gain.doGain = true;
     seisConfig_gain.centeredAmp = false;
-    seisConfig_gain.title = `Gain: ${seisConfig.title}`;
+    seisConfig_gain.title = `Gain: ${def_title}`;
     seisConfig_rmean.centeredAmp = true;
-    seisConfig_rmean.title = `RMean: ${seisConfig.title}`;
+    seisConfig_rmean.title = `RMean: ${def_title}`;
     console.log(`manual seisconfig: ${seisConfig.configId}`)
     document.querySelector('sp-seismograph#plain').seismographConfig = seisConfig;
   //  document.querySelector('sp-seismograph#plain').remove()
