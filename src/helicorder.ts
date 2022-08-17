@@ -44,35 +44,34 @@ export class Helicorder extends SeisPlotElement {
     shadow.appendChild(wrapper);
     // event listener to transform mouse click into time
     this.addEventListener("click", evt => {
-      const margin = this.heliConfig.margin;
-      const nl = this.heliConfig.numLines;
-      const maxHeight =
-        this.heliConfig.maxHeight !== null
-          ? this.heliConfig.maxHeight
-          : DEFAULT_MAX_HEIGHT;
-      const baseHeight =
-        (maxHeight - margin.top - margin.bottom) /
-        (nl - (nl - 1) * this.heliConfig.overlap);
-
-      let clickLine = 0;
-      if (evt.offsetY-margin.top < this.heliConfig.overlap) {
-        clickLine = 0;
-      } else {
-        clickLine = Math.round(((evt.offsetY-margin.top)-baseHeight*(0.5))/(baseHeight*(1-this.heliConfig.overlap)));
-      }
-      const timeRange = this.heliConfig.fixedTimeScale;
-      if ( timeRange ) {
-        const timeLineFraction = (evt.offsetX-margin.left)/(this.width-margin.left-margin.right);
-
-        const secondsPerLine =
-          timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
-        const clickTime = timeRange.start.plus(Duration.fromMillis((clickLine+timeLineFraction)*secondsPerLine*1000));
-
-        const event = new CustomEvent("heliclick", { detail: { time: clickTime, lineNum: clickLine}});
-        this.dispatchEvent(event);
-      } else {
-        throw new Error("Helicorder must be fixedTimeScale");
-      }
+      const detail = this.calcDetailForEvent(evt);
+      const event = new CustomEvent("heliclick", { detail: detail});
+      this.dispatchEvent(event);
+    });
+    this.addEventListener('mousemove', evt => {
+      const detail = this.calcDetailForEvent(evt);
+      const event = new CustomEvent("helimousemove", { detail: detail});
+      this.dispatchEvent(event);
+    });
+    this.addEventListener("helimousemove", hEvent => {
+      const detail = (hEvent as CustomEvent).detail as HeliMouseEventType;
+      wrapper.querySelectorAll(`sp-seismograph`).forEach( (seismograph, idx) => {
+        if (idx === detail.lineNum) {
+          let selectedStyle = seismograph.shadowRoot?.querySelector("style.selection");
+          if ( ! selectedStyle) {
+            selectedStyle = document.createElement('style');
+            seismograph.shadowRoot?.insertBefore(selectedStyle, seismograph.shadowRoot?.firstChild);
+            selectedStyle.setAttribute("class", "selection");
+            selectedStyle.textContent = `
+              svg g.yLabel text {
+                font-weight: bold;
+              }
+            `;
+          }
+        } else {
+          seismograph.shadowRoot?.querySelector("style.selection")?.remove();
+        }
+      });
     });
 
   }
@@ -235,18 +234,34 @@ export class Helicorder extends SeisPlotElement {
           font-size: x-small;
           fill: ${lineSeisConfig.lineColors[0]};
         }
+        .utclabels {
+          position: relative;
+          font-size: x-small;
+          width: 100%;
+        }
+        .utclabels div {
+          display: flex;
+          position: absolute;
+          left: 0px;
+          justify-content: space-between;
+          width: 100%;
+          z-index: -1;
+        }
         `;
       }
 
       wrapper.appendChild(seismograph);
       if (lineNumber === 0) {
-        // add UTC to top left
         const utcDiv = document.createElement('div');
-        utcDiv.setAttribute("style", "position: relative");
-        const textEl = utcDiv.appendChild(document.createElement('text'));
+        utcDiv.setAttribute("class", "utclabels");
+        const innerDiv = utcDiv.appendChild(document.createElement('div'));
+        innerDiv.setAttribute("style", `top: ${lineSeisConfig.margin.top}px;`);
+        const textEl = innerDiv.appendChild(document.createElement('text'));
         textEl.textContent = "UTC";
-        textEl.setAttribute("style", `font-size: x-small;position: absolute; left: 0px; top: ${lineSeisConfig.margin.top}px;`);
-        seismographWrapper.insertBefore(utcDiv, seismographWrapper.lastChild);
+        // and to top right
+        const rightTextEl = innerDiv.appendChild(document.createElement('text'));
+        rightTextEl.textContent = "UTC";
+        seismographWrapper.insertBefore(utcDiv, seismographWrapper.firstChild);
       }
 
       startTime = endTime;
@@ -276,6 +291,40 @@ export class Helicorder extends SeisPlotElement {
     }
 
     return out;
+  }
+  calcDetailForEvent(evt: MouseEvent): HeliMouseEventType {
+    const margin = this.heliConfig.margin;
+    const nl = this.heliConfig.numLines;
+    const maxHeight =
+      this.heliConfig.maxHeight !== null
+        ? this.heliConfig.maxHeight
+        : DEFAULT_MAX_HEIGHT;
+    const baseHeight =
+      (maxHeight - margin.top - margin.bottom) /
+      (nl - (nl - 1) * this.heliConfig.overlap);
+
+    let clickLine = 0;
+    if (evt.offsetY-margin.top < this.heliConfig.overlap) {
+      clickLine = 0;
+    } else {
+      clickLine = Math.round(((evt.offsetY-margin.top)-baseHeight*(0.5))/
+                              (baseHeight*(1-this.heliConfig.overlap)));
+    }
+    const timeRange = this.heliConfig.fixedTimeScale;
+    if ( timeRange ) {
+      const timeLineFraction = (evt.offsetX-margin.left)/(this.width-margin.left-margin.right);
+
+      const secondsPerLine =
+        timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
+      const clickTime = timeRange.start.plus(Duration.fromMillis((clickLine+timeLineFraction)*secondsPerLine*1000));
+      return {
+        mouseevent: evt,
+        time: clickTime,
+        lineNum: clickLine,
+      };
+    } else {
+      throw new Error("Helicorder must be fixedTimeScale");
+    }
   }
 }
 export const DEFAULT_MAX_HEIGHT = 600;
@@ -369,10 +418,15 @@ export const helicorder_css = `
   display: block;
   min-height: 200px;
   height: 100%;
+  cursor: crosshair;
 }
 `;
 
 export const HELICORDER_SELECTOR = "helicorder";
 export const HELI_COLOR_CSS_ID = "helicordercolors";
-
+export type HeliMouseEventType = {
+  mouseevent: MouseEvent,
+  time: DateTime,
+  lineNum: number,
+}
 customElements.define(HELICORDER_ELEMENT, Helicorder);
