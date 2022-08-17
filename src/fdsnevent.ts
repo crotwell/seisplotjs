@@ -1042,7 +1042,10 @@ import {TimeRangeChooser,} from './datechooser';
 
 const eqsearchHtml = `
 <div class="wrapper">
-  <div><label>Time Range </label><sp-timerange></sp-timerange><button id="now">Now</button></div>
+  <div>
+  <label>Time Range </label>
+  <sp-timerange duration="P7D"></sp-timerange>
+  <button id="now">Now</button></div>
   <div>
   <button id="today">Today</button>
   <button id="week">Week</button>
