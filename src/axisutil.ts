@@ -95,7 +95,12 @@ export function drawYLabel(
         .attr("transform", "rotate(-90, 0, 0)");
     } else {
       // horizontal
-      svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
+      if (side === "left") {
+        svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
+      } else {
+        svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
+        svgText.attr("x", seismographConfig.margin.right-1);
+      }
     }
 
     if (side === "left") {
@@ -123,6 +128,8 @@ export function drawYSublabel(
 ) {
   const svg = d3.select(svgEl);
   svg.selectAll("g.ySublabel").remove();
+
+  for (const side of ["left", "right"]) {
   const svgText = svg
     .append("g")
     .classed("ySublabel", true)
@@ -146,12 +153,18 @@ export function drawYSublabel(
       .attr("transform", "rotate(-90, 0, 0)");
   } else {
     // horizontal
-    svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
+    if (side === "left") {
+      svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
+    } else {
+      svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
+      svgText.attr("x", seismographConfig.margin.right-1);
+    }
   }
   const handlebarOut = seismographConfig.handlebarsYSublabel(handlebarsInput, {
     allowProtoPropertiesByDefault: true, // this might be a security issue???
   });
   svgText.html(handlebarOut);
+  }
 }
 export function drawTitle(
   svgEl: SVGElement,
