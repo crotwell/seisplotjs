@@ -4,6 +4,7 @@ Interval/*
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration, Interval} from "luxon";
+import {removeTrend, lineFit} from "./filter";
 import {SeismogramDisplayData} from "./seismogram";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
@@ -201,6 +202,13 @@ export class Helicorder extends SeisPlotElement {
 
       if (singleSeisData.seismogram) {
         lineCutSeis = singleSeisData.seismogram.cut(lineInterval);
+        if (lineCutSeis && this.heliConfig.detrendLines) {
+          const linfit_a = lineFit(lineCutSeis);
+          lineCutSeis = removeTrend(lineCutSeis);
+          const linfit_b = lineFit(lineCutSeis);
+          console.log(`rtrend: before ${linfit_a.slope}  ${linfit_a.intercept}  `)
+          console.log(`rtrend: after  ${linfit_b.slope}  ${linfit_b.intercept}  `)
+        }
         lineSeisData = singleSeisData.cloneWithNewSeismogram(lineCutSeis);
       } else {
         // no data in window, but keep seisData in case of markers, etc
@@ -341,6 +349,7 @@ export class HelicorderConfig extends SeismographConfig {
   overlap: number;
   numLines: number;
   maxVariation: number;
+  detrendLines: boolean = false;
 
   constructor(timeRange: Interval) {
     super();

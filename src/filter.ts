@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {Duration} from "luxon";
+import {Duration, DateTime} from "luxon";
 import {Seismogram} from "./seismogram";
 import {InstrumentSensitivity} from "./stationxml";
 import {
@@ -60,6 +60,122 @@ export function rMean(seis: Seismogram): Seismogram {
   }
 }
 
+export type LineFitType = {
+  slope: number,
+  intercept: number,
+  reference_time: DateTime,
+  sigma: number,
+  sigma_a: number,
+  sigma_b: number,
+  correlation: number,
+}
+
+/**
+ * Calculate best fit line to seismogram. Limited to contiguous data currently.
+ * Code derived from scm/lifite.c in SAC.
+ * Original version from Steve Taylor.
+ *
+ * @param  seis                        [description]
+ * @param  referenceTime               [description]
+ * @return               [description]
+ */
+export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType {
+  if (seis.segments.length === 0) {
+    throw new Error(`cannot lineFit a seismogram with no segments: ${seis.segments.length}`);
+  }
+  const seg = seis.segments[0];
+  /* - Initialize accumulators. */
+  let rn = seg.numPoints;
+  let df = rn - 2.;
+  let sumx = 0.;
+  let sumy = 0.;
+  let sumxy = 0.;
+  let sumx2 = 0.;
+  let sumy2 = 0.;
+
+  /* - Loop on each data point. */
+
+  referenceTime = referenceTime ? referenceTime : seis.start;
+  let x1 = referenceTime.toMillis()/1000; // seconds
+  seis.segments.forEach( seg => {
+    const seg_start_x = seg.start.toMillis()/1000-x1;
+    const dx = 1 / seg.sampleRate;  // seconds
+    const Y = seg.y;
+    for(let i = 0; i < rn; i++ ){
+      const yi = Y[i];
+      const xi = seg_start_x + (dx * i);
+      sumx = sumx + xi;
+      sumy = sumy + yi;
+      sumxy = sumxy + xi*yi;
+      sumx2 = sumx2 + xi*xi;
+      sumy2 = sumy2 + yi*yi;
+    }
+  });
+
+  /* - Calculate linear fit. */
+
+  const d = rn*sumx2 - sumx*sumx;
+  const b = (sumx2*sumy - sumx*sumxy)/d;
+  const a = (rn*sumxy - sumx*sumy)/d;
+
+  /* - Estimate standard deviation in data. */
+
+  let sig2 = (sumy2 + rn*b*b + a*a*sumx2 - 2.*b*sumy - 2.*a*sumxy +
+   2.*b*a*sumx)/df;
+  const sig = Math.sqrt( sig2 );
+
+  /* - Estimate errors in linear fit. */
+
+  const siga2 = rn*sig2/d;
+  const sigb2 = sig2*sumx2/d;
+  const siga = Math.sqrt( siga2 );
+  const sigb = Math.sqrt( sigb2 );
+
+  /* - Calculate correlation coefficient between data and model. */
+
+  let cc = (rn*sumxy - sumx*sumy)/Math.sqrt( d*(rn*sumy2 - sumy*sumy) );
+  cc = Math.abs( cc );
+
+  return {
+    slope: a,
+    intercept: b,
+    reference_time: referenceTime,
+    sigma: sig,
+    sigma_a: siga,
+    sigma_b: sigb,
+    correlation: cc,
+  };
+
+}
+
+/**
+ * Returns a new Seismogram with the trend removed by
+ * subtracting the trend line from each data point.
+ *
+ * @param   seis input seismogram
+ * @returns       seismogram with mean of zero and best fit line horizontal
+ */
+export function removeTrend(seis: Seismogram): Seismogram {
+  if (seis instanceof Seismogram) {
+    const linfit = lineFit(seis);
+    const ref_secs = linfit.reference_time.toMillis()/1000; // seconds
+    const rtr_segments = seis.segments.map(seg => {
+      const start_secs = seg.start.toMillis()/1000; // seconds
+      const start_offset = start_secs - ref_secs;
+      const dx = 1 / seg.sampleRate;  // seconds
+      const rtr_y = seg.y.map((y,idx) => {
+        const out = y-(start_offset+dx*idx)*linfit.slope-linfit.intercept;
+        return out;
+      });
+      const rtr_seg = seg.cloneWithNewData(rtr_y);
+      return rtr_seg;
+    });
+    return new Seismogram(rtr_segments);
+  } else {
+    throw new Error("removeTrend arg not a Seismogram");
+  }
+}
+
 /**
  * Apply the frequency independent overall gain to a seismogram. This does not
  * do a full transfer using poles and zero, this only applies the scalar conversion
@@ -98,11 +214,6 @@ export function gainCorrect(
     throw new Error(`Expected Seismogram but was ${typeof seis}`);
   }
 }
-export type MinMaxMean = {
-  min: number;
-  max: number;
-  mean: number;
-};
 
 export function getPassband(type: string): (typeof LOWPASS | typeof BANDPASS | typeof HIGHPASS) {
   if (type === LOW_PASS) {

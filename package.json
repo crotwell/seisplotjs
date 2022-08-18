@@ -107,6 +107,7 @@
     "esmify": "^2.1.1",
     "genversion": "^3.1.1",
     "jest": "^28.1.0",
+    "jest-27-expect-message": "^1.1.0",
     "jest-environment-jsdom": "^28.1.0",
     "jest-extended": "^2.0.0",
     "node-fetch": "^2.6.7",

@@ -440,7 +440,7 @@ export class Seismogram {
       return this._y;
     } else {
       throw new Error(
-        "Seismogram is not contiguous, acces each SeismogramSegment idividually.",
+        "Seismogram is not contiguous, access each SeismogramSegment idividually.",
       );
     }
   }

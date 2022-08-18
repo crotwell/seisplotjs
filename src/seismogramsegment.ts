@@ -273,7 +273,11 @@ export class SeismogramSegment {
   }
 
   yAtIndex(i: number): number {
-    return this.y[i];
+    if (i >=0 ) {
+      return this.y[i];
+    } else {
+      return this.y[this.numPoints+i];
+    }
   }
 
   /**
@@ -308,8 +312,20 @@ export class SeismogramSegment {
     return [minAmp, maxAmp];
   }
 
+  /**
+   * Time of the i-th sample, indexed from zero.
+   * If i is negative, counting from end, so
+   * timeOfSample(-1) is time of last data point;
+   *
+   * @param  i               [description]
+   * @return   [description]
+   */
   timeOfSample(i: number): DateTime {
-    return this.startTime.plus(Duration.fromMillis(1000*i / this.sampleRate));
+    if (i >= 0) {
+      return this.startTime.plus(Duration.fromMillis(1000*i / this.sampleRate));
+    } else {
+      return this.startTime.plus(Duration.fromMillis(1000*(this.numPoints+i) / this.sampleRate));
+    }
   }
 
   indexOfTime(t: DateTime): number {
