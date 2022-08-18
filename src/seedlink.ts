@@ -61,7 +61,7 @@ export class SeedlinkConnection {
 
   setTimeCommand(startTime: DateTime) {
     this.command =
-      "TIME " + startTime.toFormat("YYYY,MM,DD,HH,mm,ss");
+      "TIME " + startTime.toFormat("yyyy,LL,dd,HH,mm,ss");
   }
 
   setOnError(errorHandler: (error: Error) => void) {
