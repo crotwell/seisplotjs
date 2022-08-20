@@ -178,7 +178,7 @@ export class Seismograph extends SeisPlotElement {
   time_scalable: SeismographTimeScalable;
   amp_scalable: SeismographAmplitudeScalable;
 
-  constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
+  constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     this.outerWidth = -1;
     this.outerHeight = -1;
@@ -248,9 +248,7 @@ export class Seismograph extends SeisPlotElement {
 
     const alignmentTimeOffset = Duration.fromMillis(0);
     let maxDuration = Duration.fromMillis(0);
-    if (seisData) {
-      maxDuration = findMaxDuration(seisData);
-    }
+    maxDuration = findMaxDuration(this.seisData);
 
     this.time_scalable = new SeismographTimeScalable(this, alignmentTimeOffset, maxDuration);
 
@@ -282,7 +280,9 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .classed("allseismograms", true)
       .classed(AUTO_COLOR_SELECTOR, true);
-    this.enableZoom();
+    if ( ! this.seismographConfig.fixedTimeScale) {
+      this.enableZoom();
+    }
 
     // create marker g
     this.g
@@ -297,6 +297,18 @@ export class Seismograph extends SeisPlotElement {
         }
       },
     );
+
+    // event listener to transform mouse click into time
+    this.addEventListener("click", evt => {
+      const detail = mythis.calcDetailForEvent(evt, "click");
+      const event = new CustomEvent("seisclick", { detail: detail});
+      mythis.dispatchEvent(event);
+    });
+    this.addEventListener('mousemove', evt => {
+      const detail = mythis.calcDetailForEvent(evt, "mousemove");
+      const event = new CustomEvent("seismousemove", { detail: detail});
+      mythis.dispatchEvent(event);
+    });
   }
 
   get seisData() {
@@ -488,6 +500,24 @@ export class Seismograph extends SeisPlotElement {
     out += "this.margin " + this.seismographConfig.margin + "\n";
     util.log(out);
   }
+  calcDetailForEvent(evt: MouseEvent, type?: string): SeisMouseEventType {
+    const margin = this.seismographConfig.margin;
+    const mouseTimeVal = this.timeScaleForAxis().invert(evt.offsetX-margin.left);
+    const mouseAmp = this.ampScaleForAxis().invert(evt.offsetY-margin.top);
+    let out = {
+        mouseevent: evt,
+        time: null,
+        relative_time: null,
+        amplitude: mouseAmp,
+      } as SeisMouseEventType;
+    if (mouseTimeVal instanceof Date) {
+      out.time = DateTime.fromJSDate(mouseTimeVal);
+    } else {
+      // relative time in seconds
+      out.relative_time = Duration.fromMillis(mouseTimeVal*1000);
+    }
+    return out;
+  }
 
   drawSeismograms() {
     this.drawSeismogramsCanvas();
@@ -661,10 +691,9 @@ export class Seismograph extends SeisPlotElement {
       return ampScale;
   }
 
-  timeScaleForSeisDisplayData(sdd: SeismogramDisplayData): ScaleTime<number, number, never> {
-    let plotSed;
-    const sddXScale = d3.scaleUtc();
 
+  displayTimeRangeForSeisDisplayData(sdd: SeismogramDisplayData): Interval {
+    let plotInterval;
     if (this.seismographConfig.linkedTimeScale) {
       if (this.time_scalable.drawDuration.equals(ZERO_DURATION)) {
         this.seismographConfig.linkedTimeScale.recalculate();
@@ -672,14 +701,19 @@ export class Seismograph extends SeisPlotElement {
       // drawDuration should be set via recalculate now
       const startOffset = this.time_scalable.drawAlignmentTimeOffset;
       const duration = this.time_scalable.drawDuration;
-      plotSed = sdd.relativeTimeWindow(startOffset, duration);
+      plotInterval = sdd.relativeTimeWindow(startOffset, duration);
     } else if (this.seismographConfig.fixedTimeScale) {
-      plotSed = this.seismographConfig.fixedTimeScale;
+      plotInterval = this.seismographConfig.fixedTimeScale;
     } else {
       throw new Error("Must be either fixed or linked time scale");
     }
+    return plotInterval;
+  }
 
-    sddXScale.domain([plotSed.start.toJSDate(), plotSed.end.toJSDate()]);
+  timeScaleForSeisDisplayData(sdd: SeismogramDisplayData): ScaleTime<number, number, never> {
+    let plotInterval = this.displayTimeRangeForSeisDisplayData(sdd);
+    const sddXScale = d3.scaleUtc();
+    sddXScale.domain([plotInterval.start.toJSDate(), plotInterval.end.toJSDate()]);
     sddXScale.range([0, this.width]);
     return sddXScale;
   }
@@ -1854,4 +1888,12 @@ export function createDateFormatWrapper(formatter: (value: Date) => string): (nV
     }
   };
 }
+
+export type SeisMouseEventType = {
+  mouseevent: MouseEvent,
+  time: DateTime | null,
+  relative_time: Duration | null
+  amplitude: number,
+}
+
 customElements.define(SEISMOGRAPH_ELEMENT, Seismograph);
