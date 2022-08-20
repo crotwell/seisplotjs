@@ -80,13 +80,11 @@ export type LineFitType = {
  * @return               [description]
  */
 export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType {
-  if (seis.segments.length === 0) {
-    throw new Error(`cannot lineFit a seismogram with no segments: ${seis.segments.length}`);
+  if (seis.numPoints === 0) {
+    throw new Error(`cannot lineFit a seismogram with no points`);
   }
-  const seg = seis.segments[0];
   /* - Initialize accumulators. */
-  let rn = seg.numPoints;
-  let df = rn - 2.;
+  let rn = seis.numPoints;
   let sumx = 0.;
   let sumy = 0.;
   let sumxy = 0.;
@@ -101,7 +99,7 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
     const seg_start_x = seg.start.toMillis()/1000-x1;
     const dx = 1 / seg.sampleRate;  // seconds
     const Y = seg.y;
-    for(let i = 0; i < rn; i++ ){
+    for(let i = 0; i < Y.length; i++ ){
       const yi = Y[i];
       const xi = seg_start_x + (dx * i);
       sumx = sumx + xi;
@@ -115,13 +113,14 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
   /* - Calculate linear fit. */
 
   const d = rn*sumx2 - sumx*sumx;
-  const b = (sumx2*sumy - sumx*sumxy)/d;
-  const a = (rn*sumxy - sumx*sumy)/d;
+    // zero denominator would cause NaN, assume zero slope intercept
+  const b = d!===0 ? (sumx2*sumy - sumx*sumxy)/d : 0;
+  const a = d!===0 ? (rn*sumxy - sumx*sumy)/d : 0;
 
   /* - Estimate standard deviation in data. */
 
   let sig2 = (sumy2 + rn*b*b + a*a*sumx2 - 2.*b*sumy - 2.*a*sumxy +
-   2.*b*a*sumx)/df;
+   2.*b*a*sumx)/(seis.numPoints-1);
   const sig = Math.sqrt( sig2 );
 
   /* - Estimate errors in linear fit. */
@@ -155,9 +154,12 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
  * @param   seis input seismogram
  * @returns       seismogram with mean of zero and best fit line horizontal
  */
-export function removeTrend(seis: Seismogram): Seismogram {
+export function removeTrend(seis: Seismogram, fitLine?: LineFitType): Seismogram {
   if (seis instanceof Seismogram) {
-    const linfit = lineFit(seis);
+    const linfit = fitLine ? fitLine : lineFit(seis);
+    if (Number.isNaN(linfit.slope) || Number.isNaN(linfit.intercept)) {
+      throw new Error(`Can't remove trend with NaN, slope: ${linfit.slope} int: ${linfit.intercept}`);
+    }
     const ref_secs = linfit.reference_time.toMillis()/1000; // seconds
     const rtr_segments = seis.segments.map(seg => {
       const start_secs = seg.start.toMillis()/1000; // seconds
