@@ -209,6 +209,14 @@ export class HourMinChooser extends HTMLElement {
 console.log(`hourmin popup position: {left: ${left} px; top: ${top} px;}`);
     this.popupDiv.setAttribute("style", `{position: absolute; left: ${left} px; top: ${top} px; }`);
   }
+  /**
+   * Get hours and minutes as Duration instead of as a DateTime. Useful for
+   * relative times.
+   * @return hours, minutes as Duration
+   */
+  get asDuration(): Duration {
+    return Duration.fromObject({hours: this.time.hour, minutes: this.time.minute});
+  }
   get time(): DateTime {
     return this._time;
   }
@@ -255,7 +263,7 @@ export class DateTimeChooser extends HTMLElement {
     } else {
       this._time = DateTime.utc().set({second: 0, millisecond: 0});
     }
-    
+
     this.updateCallback = function(time: DateTime) {};
     const shadow = this.attachShadow({mode: 'open'});
 
