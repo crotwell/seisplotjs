@@ -104,7 +104,7 @@ export function addParticleMotion(
   return pmp;
 }
 export function createParticleMotionConfig(
-  timeRange?: Interval,
+  timeRange?: Interval | null,
   defaultSeisConfig?: SeismographConfig
 ): SeismographConfig {
   let seisConfig;
