@@ -114,8 +114,8 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
 
   const d = rn*sumx2 - sumx*sumx;
     // zero denominator would cause NaN, assume zero slope intercept
-  const b = d!===0 ? (sumx2*sumy - sumx*sumxy)/d : 0;
-  const a = d!===0 ? (rn*sumxy - sumx*sumy)/d : 0;
+  const b = d!==0 ? (sumx2*sumy - sumx*sumxy)/d : 0;
+  const a = d!==0 ? (rn*sumxy - sumx*sumy)/d : 0;
 
   /* - Estimate standard deviation in data. */
 
