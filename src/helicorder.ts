@@ -66,6 +66,7 @@ export class Helicorder extends SeisPlotElement {
             selectedStyle.textContent = `
               svg g.yLabel text {
                 font-weight: bold;
+                text-decoration: underline;
               }
             `;
           }
@@ -301,21 +302,22 @@ export class Helicorder extends SeisPlotElement {
     return out;
   }
   calcDetailForEvent(evt: MouseEvent): HeliMouseEventType {
-    const margin = this.heliConfig.margin;
+    const heliMargin = this.heliConfig.margin;
+    const margin = this.heliConfig.lineSeisConfig.margin;
     const nl = this.heliConfig.numLines;
     const maxHeight =
       this.heliConfig.maxHeight !== null
         ? this.heliConfig.maxHeight
         : DEFAULT_MAX_HEIGHT;
     const baseHeight =
-      (maxHeight - margin.top - margin.bottom) /
+      (maxHeight - (heliMargin.top+heliMargin.bottom )) /
       (nl - (nl - 1) * this.heliConfig.overlap);
 
     let clickLine = 0;
-    if (evt.offsetY-margin.top < this.heliConfig.overlap) {
+    if (evt.offsetY < heliMargin.top+baseHeight*(0.5)) {
       clickLine = 0;
     } else {
-      clickLine = Math.round(((evt.offsetY-margin.top)-baseHeight*(0.5))/
+      clickLine = Math.round(((evt.offsetY-heliMargin.top)-baseHeight*(0.5))/
                               (baseHeight*(1-this.heliConfig.overlap)));
     }
     const timeRange = this.heliConfig.fixedTimeScale;
@@ -371,8 +373,8 @@ export class HelicorderConfig extends SeismographConfig {
     this.isYAxis = false;
     this.overlap = 0.5;
     this.numLines = 12;
-    this.margin.left = 20;
-    this.margin.right = 20;
+    this.margin.left = 0;
+    this.margin.right = 0;
     this.margin.top = 40;
     this.lineColors = ["skyblue", "olivedrab", "goldenrod"];
     this.lineSeisConfig = new SeismographConfig();
