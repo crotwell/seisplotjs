@@ -89,6 +89,13 @@ export function doPlotHeli(config) {
   }
   history.pushState(config, "title");
 
+  hash.heli = document.querySelector("sp-helicorder");
+  if (hash.heli) {
+    // draw empty SDD so clear existing and fix labels
+    hash.heli.heliConfig.fixedTimeScale = hash.timeWindow;
+    hash.heli.seisData = [];
+    hash.heli.draw();
+  }
 
   showMessage(`...loading ${config.netCode}.${config.station}.`);
 
@@ -100,10 +107,10 @@ export function doPlotHeli(config) {
     config.instCodeList.forEach(ic => chanCodeQuery.push(`${bc}${ic}?`));
   });
   chanCodeQuery = chanCodeQuery.join();
-  d3.selectAll("span.textNetCode").text(netCodeQuery);
-  d3.selectAll("span.textStaCode").text(staCodeQuery);
-  d3.selectAll("span.textLocCode").text(locCodeQuery);
-  d3.selectAll("span.textChanCode").text(chanCodeQuery);
+  d3.selectAll("span.textNetCode").text("");
+  d3.selectAll("span.textStaCode").text("");
+  d3.selectAll("span.textLocCode").text("");
+  d3.selectAll("span.textChanCode").text("");
   d3.selectAll("span.startTime").text(`${hash.timeWindow.start.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`);
   d3.selectAll("span.endTime").text(`${hash.timeWindow.end.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`);
   let channelQuery = new seisplotjs.fdsnstation.StationQuery()
@@ -158,6 +165,18 @@ export function doPlotHeli(config) {
       if (c.channelCode.endsWith(config.orientationCode) || (config.altOrientationCode && c.channelCode.endsWith(config.altOrientationCode))) {
         chanTR.push(seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, hash.timeWindow));
       }
+    }
+    const firstChan = chanTR[0];
+    d3.selectAll("span.textNetCode").text(firstChan.networkCode);
+    d3.selectAll("span.textStaCode").text(firstChan.stationCode);
+    d3.selectAll("span.textLocCode").text(firstChan.locationCode);
+    d3.selectAll("span.textChanCode").text(firstChan.channelCode);
+    hash.heli = document.querySelector("sp-helicorder");
+    if (hash.heli) {
+      // draw empty SDD so clear existing and fix labels
+      hash.heli.heliConfig.fixedTimeScale = hash.timeWindow;
+      hash.heli.seisData = chanTR;
+      hash.heli.draw();
     }
     return hash;
   }).then(hash => {
