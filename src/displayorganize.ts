@@ -8,6 +8,7 @@ import {sort, SORT_NONE} from './sorting';
 import {SeisPlotElement} from "./spelement";
 import {SeismogramDisplayData } from "./seismogram";
 import {Seismograph} from "./seismograph";
+import type {SeisMouseEventType} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {isDef, isStringArg, stringify} from "./util";
 import * as querystringify from "querystringify";
@@ -42,6 +43,11 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     wrapper.setAttribute("class", "wrapper");
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = `
+    :host {
+      display: block;
+      min-height: 50px;
+      height: 100%;
+    }
     sp-station-event-map {
       height: 400px;
     }
@@ -80,10 +86,17 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     }
     return null;
   }
+  getContainedPlotElements(): Array<SeisPlotElement> {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    let dispItems = Array.from(wrapper.children);
+    dispItems = dispItems.filter(el => el instanceof SeisPlotElement);
+    return dispItems as Array<SeisPlotElement>;
+  }
 
   draw(): void {
-    if ( ! this.isConnected) { return; }
-
+    if ( ! this.isConnected) {
+      return;
+    }
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
 
     while (wrapper.firstChild) {
@@ -98,10 +111,23 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     } else {
       queryParams = {};
     }
+    const mythis = this;
 
     if (this.plottype.startsWith(SEISMOGRAPH)) {
       const seismograph = new Seismograph(this.seisData, this._seismographConfig);
       wrapper.appendChild(seismograph);
+      seismograph.addEventListener("seismousemove", sEvt => {
+        const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
+        // bubble the event, not sure why this is needed???
+        const event = new CustomEvent("seismousemove", { detail: seisDetail});
+        mythis.dispatchEvent(event);
+      });
+      seismograph.addEventListener("seisclick", sEvt => {
+        const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
+        // bubble the event, not sure why this is needed???
+        const event = new CustomEvent("seisclick", { detail: seisDetail});
+        mythis.dispatchEvent(event);
+      });
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
       const nonContigList = this.seisData.filter(
@@ -196,17 +222,23 @@ export const OVERLAY_ALL = "all";
 export const OVERLAY_FUNCTION = "function";
 
 export class OrganizedDisplay extends SeisPlotElement {
-  _items: Array<SeisPlotElement>;
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
-    this._items = [];
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = `
+    :host {
+      display: block;
+      min-height: 50px;
+      height: 100%;
+    }
     sp-station-event-map {
-      height: 400px;
+      height: var(--map-height, 400px);
+    }
+    sp-organized-display-item {
+      min-height: 200px;
     }
     sp-seismograph {
       height: 200px;
@@ -216,6 +248,13 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   static get observedAttributes() {
     return [ORG_TYPE, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY];
+  }
+
+  getDisplayItems(): Array<OrganizedDisplayItem> {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    let dispItems = Array.from(wrapper.children);
+    dispItems = dispItems.filter(el => el instanceof OrganizedDisplayItem);
+    return dispItems as Array<OrganizedDisplayItem>;
   }
 
 
@@ -269,7 +308,9 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
 
   draw() {
-    if ( ! this.isConnected) { return; }
+    if ( ! this.isConnected) {
+      return;
+    }
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
 
     while (wrapper.firstChild) {
@@ -280,32 +321,52 @@ export class OrganizedDisplay extends SeisPlotElement {
 
     const mythis = this;
     const sortedData = sort(mythis.seisData, this.sortby);
+    let allOrgDispItems = new Array<OrganizedDisplayItem>();
     this.drawMap();
     this.drawInfo();
     if (this.overlayby === OVERLAY_INDIVIDUAL) {
       sortedData.forEach(sdd => {
           const oi = new OrganizedDisplayItem([sdd], mythis.seismographConfig);
-          wrapper.appendChild(oi);
+          oi.plottype = SEISMOGRAPH;
+          allOrgDispItems.push(oi);
       });
     } else if (this.overlayby === OVERLAY_VECTOR) {
       const groupedSDD = groupComponentOfMotion(sortedData);
       groupedSDD.forEach(gsdd => {
           const oi = new OrganizedDisplayItem(gsdd, mythis.seismographConfig);
-          wrapper.appendChild(oi);
+          allOrgDispItems.push(oi);
       });
     } else if (this.overlayby === OVERLAY_COMPONENT) {
       const oitems = overlayByComponent(sortedData, mythis.seismographConfig);
-      oitems.forEach(oi => wrapper.appendChild(oi));
+      allOrgDispItems = allOrgDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION) {
       const oitems = overlayByStation(sortedData, mythis.seismographConfig);
-      oitems.forEach(oi => wrapper.appendChild(oi));
+      allOrgDispItems = allOrgDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_ALL) {
       const oi = new OrganizedDisplayItem(sortedData, mythis.seismographConfig);
-      wrapper.appendChild(oi);
+      allOrgDispItems.push(oi);
     } else if (this.overlayby === OVERLAY_NONE) {
     } else {
       throw new Error(`Unknown overlay: ${this.overlayby}`);
     }
+
+    allOrgDispItems.forEach(oi => {
+      wrapper.appendChild(oi);
+      oi.draw();
+      if (oi.plottype === SEISMOGRAPH) {
+        oi.addEventListener("seismousemove", sEvt => {
+          // bubble the event, not sure why this is needed???
+          const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
+          const event = new CustomEvent("seismousemove", { detail: seisDetail});
+          mythis.dispatchEvent(event);
+        });
+        oi.addEventListener("seisclick", sEvt => {
+          const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
+          const event = new CustomEvent("seisclick", { detail: seisDetail});
+          mythis.dispatchEvent(event);
+        });
+      }
+    });
     if (mythis.seismographConfig.linkedTimeScale) {
       mythis.seismographConfig.linkedTimeScale.notifyAll();
     }

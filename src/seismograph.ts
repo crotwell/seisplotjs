@@ -509,9 +509,10 @@ export class Seismograph extends SeisPlotElement {
         time: null,
         relative_time: null,
         amplitude: mouseAmp,
+        seismograph: this,
       } as SeisMouseEventType;
     if (mouseTimeVal instanceof Date) {
-      out.time = DateTime.fromJSDate(mouseTimeVal);
+      out.time = DateTime.fromJSDate(mouseTimeVal, {zone: "UTC"});
     } else {
       // relative time in seconds
       out.relative_time = Duration.fromMillis(mouseTimeVal*1000);
@@ -1894,6 +1895,7 @@ export type SeisMouseEventType = {
   time: DateTime | null,
   relative_time: Duration | null
   amplitude: number,
+  seismograph: Seismograph,
 }
 
 customElements.define(SEISMOGRAPH_ELEMENT, Seismograph);
