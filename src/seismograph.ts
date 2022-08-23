@@ -672,7 +672,9 @@ export class Seismograph extends SeisPlotElement {
         const halfWidth = this.amp_scalable.drawHalfWidth;
         let middle = this.amp_scalable.drawMiddle;
         if (this.seismographConfig.centeredAmp) {
-          middle = sdd.middle;
+          let sddInterval = this.displayTimeRangeForSeisDisplayData(sdd);
+          let minMax = findMinMaxOverTimeRange([sdd], sddInterval);
+          middle = (minMax[0]+minMax[1])/2;
         }
 
         let sensitivityVal = 1;
