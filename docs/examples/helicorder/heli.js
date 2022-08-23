@@ -11,8 +11,12 @@ const DEFAULT_FIXED_AMP = 10000;
 // state preserved for browser history
 // also see near bottom where we check if page history has state obj and use that
 let state = {
-  netCode: 'CO',
+  netCodeList: ['CO','N4'],
   stationList: staList,
+  bandCodeList: ['H'],
+  instCodeList: ['H', 'N'],
+  orientationCodeList: ['Z','N','E','1','2'],
+  netCode: 'CO',
   station: null,
   locCode: '00',
   bandCode: "H",

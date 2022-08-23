@@ -12,7 +12,6 @@ const MINMAX_URL = "http://eeyore.seis.sc.edu/minmax";
 const MSEED_URL = "http://eeyore.seis.sc.edu/mseed";
 
 const QUAKE_START_OFFSET = luxon.Duration.fromObject({hours: 1});
-const divClass = "heli";
 
 export const HOURS_PER_LINE = 2;
 
@@ -45,8 +44,6 @@ export function createEmptySavedData(config) {
     config: config,
     timeWindow: timeWindow,
     staCode: config.station,
-    chanOrient: config.orientationCode,
-    altChanOrient: config.altOrientationCode ? config.altOrientationCode : "",
     bandCode: config.bandCode,
     instCode: config.instCode,
     minMaxInstCode: config.instCode === 'H' ? 'X' : 'Y',
@@ -61,7 +58,8 @@ export function createEmptySavedData(config) {
   return hash;
 }
 export function doPlot(config) {
-  if (window.getComputedStyle(document.querySelector('#heli')) === "none") {
+  const heliDiv = document.querySelector('#heli');
+  if (! heliDiv || window.getComputedStyle(heliDiv) === "none") {
     document.querySelector("#heli").setAttribute("style", "display: none;");
     document.querySelector("#seismograph").setAttribute("style", "display: block;");
     let hash = createEmptySavedData(config);
@@ -91,15 +89,17 @@ export function doPlotHeli(config) {
   }
   history.pushState(config, "title");
 
-  let svgParent = d3.select(`div.${divClass}`);
-  svgParent.selectAll("*").remove(); // remove old data
 
-  svgParent.append("p").text(`...loading ${config.netCode}.${config.station}.`);
+  showMessage(`...loading ${config.netCode}.${config.station}.`);
 
-  let netCodeQuery = config.netCode;
-  let staCodeQuery = config.station;
+  let netCodeQuery = config.netCodeList.join();
+  let staCodeQuery = config.stationList.join();
   let locCodeQuery = config.locCode;
-  let chanCodeQuery = `${config.bandCode}${config.instCode}?`; // get all orientations
+  let chanCodeQuery = [];
+  config.bandCodeList.forEach(bc => {
+    config.instCodeList.forEach(ic => chanCodeQuery.push(`${bc}${ic}?`));
+  });
+  chanCodeQuery = chanCodeQuery.join();
   d3.selectAll("span.textNetCode").text(netCodeQuery);
   d3.selectAll("span.textStaCode").text(staCodeQuery);
   d3.selectAll("span.textLocCode").text(locCodeQuery);
@@ -114,59 +114,98 @@ export function doPlotHeli(config) {
     .channelCode(chanCodeQuery)
     .startTime(hash.timeWindow.start)
     .endTime(hash.timeWindow.end);
-  return channelQuery.queryChannels()
+  let channelPromise;
+  // channelPromise = channelQuery.queryChannels();
+  // temp load from local stationxml file
+  const fetchInitOptions = seisplotjs.util.defaultFetchInitObj(seisplotjs.util.XML_MIME);
+  const url = "metadata.staxml";
+  channelPromise = seisplotjs.util.doFetchWithTimeout(url, fetchInitOptions)
+  .then(function (response) {
+    if (response.status === 200 || response.status === 0) {
+      return response.text();
+    } else {
+      // no data
+      throw new Error("No data");
+    }
+  }).then(rawXmlText => {
+    const rawXml = new DOMParser().parseFromString(rawXmlText, "text/xml");
+    return seisplotjs.stationxml.parseStationXml(rawXml);
+  });
+
+  return channelPromise
   .catch(e => {
-      svgParent.append("h3").classed("error", true).text("Error Loading Data, retrying... ").style("color", "red");
-      svgParent.append("p").text(`e`);
+      showError(`Error Loading Data, retrying... ${e}`);
       return new Promise(resolve => setTimeout(resolve, 2000, channelQuery.queryChannels()));
   })
   .then(netArray => {
     if (netArray.length === 0 ) {
-      svgParent.append("h3").classed("error", true).text("No channels found").style("color", "red");
+      showError("No channels found");
       hash.seisData = null;
       hash.origData = null;
     }
     let chanTR = [];
     hash.chanTR = chanTR;
     hash.netArray = netArray;
-    for (let c of seisplotjs.stationxml.allChannels(netArray)) {
-      if (c.channelCode.endsWith(hash.chanOrient) || (hash.altChanOrient && c.channelCode.endsWith(hash.altChanOrient))) {
+    const matchChannels = seisplotjs.stationxml.findChannels(netArray,
+      '.*', config.station, config.locCode, `${config.bandCode}${config.instCode}[${config.orientationCode}${config.altOrientationCode}]`);
+    console.log(`search sta: ${config.station}`)
+    console.log(`search loc: ${config.locCode}`)
+    console.log(`search channels:  ${config.bandCode}${config.instCode}[${config.orientationCode}${config.altOrientationCode}]`)
+    if (matchChannels.length === 0) {
+      console.log(`WARN: found no channels`);
+    }
+    for (let c of matchChannels) {
+      if (c.channelCode.endsWith(config.orientationCode) || (config.altOrientationCode && c.channelCode.endsWith(config.altOrientationCode))) {
         chanTR.push(seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, hash.timeWindow));
       }
     }
     return hash;
   }).then(hash => {
     let chantrList;
-    if (hash.bandCode === 'H' && hash.config.dominmax) {
-      let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
-        MINMAX_URL,
-        "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
-      let minMaxChanTR = hash.chanTR.map( ct => {
-        if (ct.startTime > luxon.DateTime.utc()) {
-          // seis in the future
-          return null;
+    let minMaxSddList = [];
+    let rawDataList = [];
+    hash.chanTR
+      .filter(sdd => sdd.startTime < luxon.DateTime.utc())
+      .forEach(sdd => {
+        if (hash.config.dominmax && sdd.networkCode === 'CO' && sdd.sourceId.bandCode === 'H') {
+          minMaxSddList.push(sdd);
+        } else {
+          rawDataList.push(sdd);
         }
+    });
+    let minMaxPromise = Promise.resolve([]);
+    let rawDataPromise = Promise.resolve([]);
+    if (hash.config.dominmax && minMaxSddList.length > 0) {
+      let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
+        MINMAX_URL, "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
+      minMaxSddList = minMaxSddList.map( ct => {
         let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
         let fake = new seisplotjs.stationxml.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
         fake.sampleRate = 2;
         hash.heliDataIsMinMax = true;
         return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(fake, ct.timeRange);
       }).filter(sdd => !!sdd);
-      chantrList = minMaxQ.loadSeismograms(minMaxChanTR);
-    } else {
-      chantrList = loadDataReal(hash.chanTR);
+      minMaxPromise = minMaxQ.loadSeismograms(minMaxSddList);
+    } else if (rawDataList.length > 0) {
+      rawDataPromise = loadDataReal(rawDataList);
       hash.heliDataIsMinMax = false;
+    } else {
+      showError("No channels match selections");
     }
-    return Promise.all([hash, chantrList]).then(hArr => {
-      hArr[0].chantrList = hArr[1];
+    return Promise.all([hash, rawDataPromise, minMaxPromise]).then(hArr => {
+      hArr[0].minMaxSddList = hArr[2];
+      hArr[0].chantrList = hArr[1].concat(hArr[2]);
       return hArr[0];
     });
   }).then(hash => {
-    let gotData = hash.chantrList.reduce((acc, cur) => acc || !!cur.seismogram, false);
+    console.log(`concat hash ${hash.chantrList.length}`);
+    hash.chantrList.forEach(sdd => console.log(`  ${sdd}: ${!!sdd.seismogram }`))
+    let gotData = hash.minMaxSddList.reduce((acc, cur) => acc || !!cur.seismogram, false)
+      || hash.chantrList.reduce((acc, cur) => acc || !!cur.seismogram, false);
     if ( ! gotData) {
-      svgParent.append("p").text("No Data Found MSeedArchive").style("color", "red");
+      showError("No Data Found MSeedArchive");
       console.log("min max data from miniseedArchive found none");
-      if (hash.chanTR.length > 0) {
+      if (false && hash.chanTR.length > 0) {
         let dsQ = new seisplotjs.fdsndataselect.DataSelectQuery()
           .nodata(404);
         hash.chantrList = dsQ.postQuerySeismograms(hash.chanTR);
@@ -183,17 +222,17 @@ export function doPlotHeli(config) {
   }).then(hash => {
     let minMaxSeismogram = null;
     hash.chantrList.forEach(ctr => {
-      if (ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.chanOrient}` || ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.altChanOrient}`) {
+      if (ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.config.orientationCode}` || ctr.channel.channelCode === `L${hash.minMaxInstCode}${hash.config.altOrientationCode}`) {
         minMaxSeismogram = ctr.seismogram;
-      } else if (ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.chanOrient}` || ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.altChanOrient}`) {
+      } else if (ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.config.orientationCode}` || ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.config.altOrientationCode}`) {
         minMaxSeismogram = ctr.seismogram;
         d3.selectAll("span.textChanCode").text(ctr.channel.channelCode);
       } else {
-        throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.chanOrient} or L${hash.minMaxInstCode}${hash.altChanOrient} or ${hash.bandCode}${hash.instCode}${hash.chanOrient}`);
+        throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.config.orientationCode} or L${hash.minMaxInstCode}${hash.config.altOrientationCode} or ${hash.bandCode}${hash.instCode}${hash.config.orientationCode}`);
       }
     });
     if (! minMaxSeismogram) {
-      svgParent.append("p").text("No Data Found DataSelect").style("color", "red");
+      showError("No Data Found DataSelect");
     } else {
       hash.origData = SeismogramDisplayData.fromSeismogram(minMaxSeismogram);
       let nowMarker = { markertype: 'predicted', name: "now", time: luxon.DateTime.utc() };
@@ -245,8 +284,6 @@ export function queryEarthquakes(hash) {
 
     return Promise.all([hash, Promise.all(redoLocalQuakes)]).then(hArr => {
       hArr[0].localQuakes = hArr[1];
-      console.log(`reload local by eventid: ${hArr[1][0].origin.arrivals.length}`)
-      hArr[1][0].origin.arrivals.forEach(a => console.log(`arrival: ${a.phase} ${a.pick}`))
       return hArr[0];
     });
   }).then(hash => {
@@ -277,9 +314,7 @@ export function queryEarthquakes(hash) {
       return hArr[0];
     });
   }).catch(e => {
-    let svgParent = seisplotjs.d3.select(`div.${divClass}`);
-      svgParent.append("h3").text("Error Loading Earthquake Data").style("color", "red");
-      svgParent.append("p").text(`${e}`);
+      showError(`Error Loading Earthquake Data: ${e}`);
       throw e;
   }).then(hash => {
     hash.quakes = [];
@@ -377,7 +412,13 @@ export function loadDataReal(sddList) {
     }
     return ct;
   }).filter(sdd => !!sdd);
-  return mseedQ.loadSeismograms(beforeNowChanTR);
+  let CO_sddList = beforeNowChanTR.filter(sdd => sdd.networkCode === 'CO');
+  let other_sddList = beforeNowChanTR.filter(sdd => sdd.networkCode !== 'CO');
+  const dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+  return Promise.all([
+    mseedQ.loadSeismograms(beforeNowChanTR),
+    dsQuery.postQuerySeismograms(other_sddList),
+  ]).then(parr => parr[0].concat(parr[1]));
 }
 
 export function filterData(config, origData) {
@@ -405,44 +446,60 @@ export function filterData(config, origData) {
                            Number.parseFloat(config.filter.highcut), // high corner not used
                            1/outData.seismogram.sampleRate // delta (period)
                   );
-    let filteredSeis = seisplotjs.filter.rMean(outData.seismogram);
-    filteredSeis = seisplotjs.taper.taper(filteredSeis);
+    const fitLine = seisplotjs.filter.lineFit(outData.seismogram);
+    let filteredSeis = seisplotjs.filter.removeTrend(outData.seismogram, fitLine);
+    //filteredSeis = seisplotjs.taper.taper(filteredSeis);
     filteredSeis = seisplotjs.filter.applyFilter(butterworth, filteredSeis);
     outData = outData.cloneWithNewSeismogram(filteredSeis);
-    console.log(`copy markers via clone: ${inData.markerList.length} -> ${outData.markerList.length}`)
   }
   return outData;
 }
 
 export function redrawHeli(hash) {
+  if ( ! hash.heli ) {
+    hash.heli = document.querySelector("sp-helicorder");
+  }
   if ( ! hash.heliDataIsMinMax) {
     hash.seisData = filterData(hash.config, hash.origData);
   }
 
-  let svgParent = d3.select(`div#${divClass}`);
-  svgParent.selectAll("*").remove(); // remove old data
   if (hash.seisData) {
     let heliConfig = new HelicorderConfig(hash.timeWindow);
     heliConfig.markerFlagpoleBase = 'center';
+    heliConfig.detrendLines = true;
     heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
     updateHeliAmpConfig(hash, heliConfig);
-
-    svgParent.selectAll("div").remove(); // remove old data
-    svgParent.selectAll("p").remove(); // remove old data
-    svgParent.selectAll("h3").remove(); // remove old data
-    hash.heli = new Helicorder(hash.seisData,
-                               heliConfig);
+    clearMessages();
+    hash.heli.seisData = hash.seisData;
+    hash.heli.heliConfig = heliConfig;
+    hash.heli.addEventListener("helimousemove", hEvent => {
+      const mouseTimeSpan = document.querySelector("#mousetime")
+      if (mouseTimeSpan) {
+        mouseTimeSpan.textContent = `${hEvent.detail.time.toISO()}`;
+      }
+    });
     hash.heli.addEventListener("heliclick", hEvent => {
       hash.centerTime = hEvent.detail.time;
+      const hwValue = document.querySelector("#clickinterval").value;
+      let dur;
+      if ( ! Number.isNaN(Number.parseFloat(hwValue))) {
+        // assume seconds
+        dur = luxon.Duration.fromMillis(1000*Number.parseFloat(hwValue));
+      } else {
+        dur = luxon.Duration.fromISO(hwValue);
+      }
+      if (dur.toMillis() > 0 ) {
+        hash.halfWidth = luxon.Duration.fromMillis(dur.toMillis()/2);
+      }
+
       drawSeismograph(hash);
     });
-    svgParent.node().appendChild(hash.heli);
     d3.select("span#minAmp").text(hash.seisData.min.toFixed(0));
     d3.select("span#maxAmp").text(hash.seisData.max.toFixed(0));
     d3.select("span#meanAmp").text(hash.seisData.mean.toFixed(0));
     d3.select("span#varyAmp").text(hash.amp);
   } else {
-    svgParent.append("p").text("No Data.")
+    showMessage("No Data.")
   }
   return hash;
 }
@@ -466,20 +523,29 @@ export function updateHeliAmpConfig(hash, heliConfig) {
 }
 
 export function drawSeismograph(hash) {
-  let friendChannels = Array.from(seisplotjs.stationxml.findChannels(hash.netArray,
-                                                                  hash.chanTR[0].networkCode,
-                                                                  hash.chanTR[0].stationCode,
-                                                                  hash.chanTR[0].locationCode,
-                                                                  hash.chanTR[0].channelCode.slice(0,2)+".",
-                                                                ));
-  let halfWidth = hash.halfWidth;
-  if (! halfWidth) { halfWidth = seisplotjs.luxon.Duration.fromISO("PT5M"); }
   document.querySelector("#heli").setAttribute("style", "display: none;");
   const seismographDiv = document.querySelector("#seismograph");
   seismographDiv.setAttribute("style", "display: block;");
+
+  // let friendChannels = [];
+  // hash.stationList.forEach(sta => {
+  //   let staChans = Array.from(seisplotjs.stationxml.findChannels(hash.netArray,
+  //                                                 hash.chanTR[0].networkCode,
+  //                                                 sta,
+  //                                                 hash.chanTR[0].locationCode,
+  //                                                 hash.chanTR[0].channelCode.slice(0,2)+".",
+  //                                               ));
+  //   friendChannels = friendChannels.concat(staChans);
+  // });
+
+  let friendChannels = Array.from(seisplotjs.stationxml.allChannels(hash.netArray));
+  let halfWidth = hash.halfWidth;
+  if (! halfWidth) { halfWidth = seisplotjs.luxon.Duration.fromISO("PT5M"); }
   const seismographDisp = seismographDiv.querySelector("sp-organized-display");
   const interval = seisplotjs.luxon.Interval.fromDateTimes(hash.centerTime.minus(halfWidth), hash.centerTime.plus(halfWidth));
+  console.log(`num channels: ${friendChannels.length}`)
   let sddList = friendChannels.map(channel => {
+    console.log(`channel: ${channel.codes()}`)
     let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
     sdd.addMarkers(hash.seisData.markerList);
     return sdd;
@@ -487,7 +553,7 @@ export function drawSeismograph(hash) {
   seismographDisp.seisData = sddList;
   let seismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
   seismographConfig.centeredAmp = true;
-  seismographConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
+  seismographConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
 
   if (hash.config.amp === 'max') {
   } else if (typeof hash.config.amp === 'string' && hash.config.amp.endsWith('%')) {
@@ -503,10 +569,35 @@ export function drawSeismograph(hash) {
   //seismographConfig.linkedAmplitudeScale.recalculate();
   seismographDisp.draw();
 
+  seismographDisp.addEventListener("seismousemove", sEvt => {
+      const mouseTimeSpan = document.querySelector("#mousetime")
+      if (mouseTimeSpan) {
+        if (sEvt.detail.time) {
+          mouseTimeSpan.textContent = sEvt.detail.time.toISO();
+        } else {
+          mouseTimeSpan.textContent = sEvt.detail.relative_time.toISO();
+        }
+      }
+  });
+
   return loadDataReal(seismographDisp.seisData).then((sddList) => {
+    console.log(`data loaded, before filter: ${sddList.length}`)
     let filtSddList = sddList.map(sdd => filterData(hash.config, sdd));
     // looks dumb, but recalcs time and amp
     seismographDisp.seisData = filtSddList;
     return sddList;
   });
+}
+
+export function showError(msg) {
+  showMessage(msg);
+  document.querySelector("#messagesParent").setAttribute("open", true);
+}
+export function showMessage(msg) {
+  let msgText = document.querySelector("#messages").appendChild(document.createElement("h3"));
+  msgText.setAttribute("class","error");
+  msgText.textContent = msg;
+}
+export function clearMessages() {
+  document.querySelector("#messages").innerHtml = "";
 }

@@ -1,5 +1,5 @@
 import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
-import {getNowTime} from './doplot.js';
+import {getNowTime, loadDataReal} from './doplot.js';
 
 const d3 = seisplotjs.d3;
 const luxon = seisplotjs.luxon;
@@ -45,9 +45,38 @@ export function handleAmpChange(config, value, redrawFun) {
 }
 
 export function setupEventHandlers(config, loadAndPlotFun, redrawFun) {
+  if (! loadAndPlotFun) {
+    throw new Error("loadandPlotFun must be defined");
+  }
+    if (! redrawFun) {
+      throw new Error("redrawFun must be defined");
+    }
   document.querySelector("button#goheli").addEventListener("click", () => {
     document.querySelector("#heli").setAttribute("style", "display: block;");
     document.querySelector("#seismograph").setAttribute("style", "display: none;");
+  });
+  document.querySelector("button#reload").addEventListener("click", () => {
+    const orgDisp = document.querySelector("sp-organized-display");
+    const timeWindowsToReload = [];
+    const dispElements = orgDisp.getDisplayItems();
+    dispElements.forEach(orgDispItem => {
+      if (orgDispItem.plottype.startsWith(seisplotjs.displayorganize.SEISMOGRAPH)) {
+        const seismograph = orgDispItem.getContainedPlotElements()[0];// as seisplotjs.seismograph.Seismograph;
+        seismograph.seisData.forEach(sdd => {
+
+          const dispWindow = seismograph.displayTimeRangeForSeisDisplayData(sdd);
+
+          let start = sdd.start;
+          let end = sdd.end;
+          if (dispWindow.start < sdd.start) { start = dispWindow.start;}
+          if (dispWindow.end > sdd.end) { end = dispWindow.end;}
+          sdd.timeRange = luxon.Interval.fromDateTimes(start, end);
+        });
+      }
+    });
+    loadDataReal(orgDisp.seisData).then(sddList => {
+      orgDisp.draw();
+    });
   });
   let staButtonSpan = d3.select("#scsnStations")
     .select("form")

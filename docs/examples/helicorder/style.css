@@ -16,6 +16,9 @@ div span span {
   margin-right: 5px;
   margin-left: 10px;
 }
+#messages {
+  color: red;
+}
 
 input.smallnum {
   width: 6em;
