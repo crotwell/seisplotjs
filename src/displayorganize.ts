@@ -32,8 +32,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     if (this.plottype.startsWith(PARTICLE_MOTION)) {
-      console.log("maybe don't want to recreate config for parmo here???");
-      this._seismographConfig = createParticleMotionConfig();
+      this._seismographConfig = createParticleMotionConfig(null, seisConfig);
     }
 
     this.extras = new Map();
