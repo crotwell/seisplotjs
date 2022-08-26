@@ -207,8 +207,6 @@ export class Helicorder extends SeisPlotElement {
           const linfit_a = lineFit(lineCutSeis);
           lineCutSeis = removeTrend(lineCutSeis);
           const linfit_b = lineFit(lineCutSeis);
-          console.log(`rtrend: before ${linfit_a.slope}  ${linfit_a.intercept}  `)
-          console.log(`rtrend: after  ${linfit_b.slope}  ${linfit_b.intercept}  `)
         }
         lineSeisData = singleSeisData.cloneWithNewSeismogram(lineCutSeis);
       } else {
