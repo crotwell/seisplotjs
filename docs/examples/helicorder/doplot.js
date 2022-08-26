@@ -97,6 +97,7 @@ export function doPlotHeli(config) {
     hash.heli.draw();
   }
 
+  clearMessages();
   showMessage(`...loading ${config.netCode}.${config.station}.`);
 
   let netCodeQuery = config.netCodeList.join();
@@ -167,10 +168,12 @@ export function doPlotHeli(config) {
       }
     }
     const firstChan = chanTR[0];
-    d3.selectAll("span.textNetCode").text(firstChan.networkCode);
-    d3.selectAll("span.textStaCode").text(firstChan.stationCode);
-    d3.selectAll("span.textLocCode").text(firstChan.locationCode);
-    d3.selectAll("span.textChanCode").text(firstChan.channelCode);
+    if (firstChan) {
+      d3.selectAll("span.textNetCode").text(firstChan.networkCode);
+      d3.selectAll("span.textStaCode").text(firstChan.stationCode);
+      d3.selectAll("span.textLocCode").text(firstChan.locationCode);
+      d3.selectAll("span.textChanCode").text(firstChan.channelCode);
+    }
     hash.heli = document.querySelector("sp-helicorder");
     if (hash.heli) {
       // draw empty SDD so clear existing and fix labels
@@ -618,5 +621,6 @@ export function showMessage(msg) {
   msgText.textContent = msg;
 }
 export function clearMessages() {
-  document.querySelector("#messages").innerHtml = "";
+  document.querySelector("#messages").innerHTML = "";
+  document.querySelector("#messagesParent").setAttribute("open", false);
 }
