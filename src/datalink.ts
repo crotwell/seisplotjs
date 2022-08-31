@@ -737,7 +737,7 @@ export class DataLinkPacket {
    *
    * @returns miniseed DataRecord or null
    */
-  get miniseed(): miniseed.DataRecord | null {
+  asMiniseed(): miniseed.DataRecord | null {
     if (!isDef(this._miniseed)) {
       if (this.streamId.endsWith(MSEED_TYPE)) {
         this._miniseed = miniseed.parseSingleDataRecord(this.data);
@@ -763,10 +763,15 @@ export class DataLinkPacket {
    *
    * @returns miniseed3 DataRecord or null
    */
-  get miniseed3(): mseed3.MSeed3Record | null {
+  asMiniseed3(): mseed3.MSeed3Record | null {
     if (!isDef(this._mseed3)) {
       if (this.streamId.endsWith(MSEED3_TYPE)) {
         this._mseed3 = mseed3.MSeed3Record.parseSingleDataRecord(this.data);
+      } else if (this.streamId.endsWith(MSEED_TYPE)) {
+        const ms2 = this.asMiniseed();
+        if (ms2) {
+          this._mseed3 = mseed3.convertMS2Record(ms2);
+        }
       } else {
         this._mseed3 = null;
       }

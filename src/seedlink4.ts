@@ -120,7 +120,7 @@ export class SEPacket {
    *
    * @returns miniseed DataRecord or null
    */
-  get miniseed(): miniseed.DataRecord | null {
+  asMiniseed(): miniseed.DataRecord | null {
     if (!isDef(this._rawPayload)) {
       throw new Error(
         `payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`,
@@ -152,7 +152,7 @@ export class SEPacket {
    *
    * @returns miniseed3 DataRecord or null
    */
-  get miniseed3(): mseed3.MSeed3Record | null {
+  asMiniseed3(): mseed3.MSeed3Record | null {
     if (!isDef(this._rawPayload)) {
       throw new Error(
         `payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`,
@@ -164,6 +164,11 @@ export class SEPacket {
         this._mseed3 = mseed3.MSeed3Record.parseSingleDataRecord(
           this._rawPayload,
         );
+      } else if (this.isMiniseed()) {
+          const ms2 = this.asMiniseed();
+          if (ms2) {
+            this._mseed3 = mseed3.convertMS2Record(ms2);
+          }
       } else {
         this._mseed3 = null;
       }
