@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration, Interval} from "luxon";
-import {removeTrend, lineFit} from "./filter";
+import {removeTrend } from "./filter";
 import {SeismogramDisplayData} from "./seismogram";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
