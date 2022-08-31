@@ -10,13 +10,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "noEmit": true,
+    "noEmit": false,
     "noUnusedLocals": true,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "skipLibCheck": false,
     "declaration": true,
-    "declarationDir": "dist/dts"
+    "declarationDir": "dist/dts",
+    "outDir": "dist/dts",
   },
   "files": ["global.d.ts"],
   "include": ["src"]
