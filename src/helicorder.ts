@@ -1,4 +1,4 @@
-Interval/*
+/*
  * Philip Crotwell
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
@@ -204,9 +204,7 @@ export class Helicorder extends SeisPlotElement {
       if (singleSeisData.seismogram) {
         lineCutSeis = singleSeisData.seismogram.cut(lineInterval);
         if (lineCutSeis && this.heliConfig.detrendLines) {
-          const linfit_a = lineFit(lineCutSeis);
           lineCutSeis = removeTrend(lineCutSeis);
-          const linfit_b = lineFit(lineCutSeis);
         }
         lineSeisData = singleSeisData.cloneWithNewSeismogram(lineCutSeis);
       } else {
