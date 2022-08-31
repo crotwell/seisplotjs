@@ -26,7 +26,7 @@
     "rsvp": "^4.8.5"
   },
   "scripts": {
-    "esbuild": "npx esbuild src/index.ts --bundle --outfile=dist/seisplotjs_${npm_package_version}_standalone.mjs  --target=es2020 --format=esm",
+    "esbuild": "cp src/handlebarsimport.esbuild src/handlebarsimport.ts && npx esbuild src/index.ts --bundle --outfile=dist/seisplotjs_${npm_package_version}_standalone.mjs  --target=es2020 --format=esm",
     "esm": "npx esbuild src/*.ts --outdir=dist/module  --target=es2020 --format=esm",
     "srclint": "eslint 'src/*.js' ",
     "lint": "eslint src test --ext .js,.jsx,.ts,.tsx ",
@@ -36,7 +36,7 @@
     "rollup": "npm run version_to_src && rollup --config rollup.config.js",
     "build:clean": "rimraf dist",
     "apidoc:clean": "rimraf docs/api",
-    "compile": "npm run build:clean && npm run version_to_src && npm run esm && npm run standalone ",
+    "compile": "npm run build:clean && npm run version_to_src && npm run esm && npm run standalone && npm run tsc ",
     "browserify": "npm run rollup && browserify dist/module/index.js --ignore-missing --standalone seisplotjs -o dist/seisplotjs_${npm_package_version}_standalone.js -p [ esmify ] -t [ babelify ]",
     "tutorial_snippet": "python3 snippetToTutorial.py",
     "standalone": "npm run esbuild && cp dist/seisplotjs_${npm_package_version}_standalone.mjs docs/.",
@@ -52,7 +52,7 @@
     "doingdevelopment": "git update-index --skip-worktree docs/api/*.html",
     "prepublishOnly": "npm run lint && npm run test && npm outdated && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code",
     "servedocs": "npx http-server ./docs -c-1 --cors -a 127.0.0.1",
-    "tsc": "tsc --project tsconfig.json"
+    "tsc": "cp src/handlebarsimport.typescript src/handlebarsimport.ts && tsc --project tsconfig.json"
   },
   "repository": {
     "type": "git",
