@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset='utf-8'>
+    <title>Channel Search</title>
+
+    <!-- this stops flavicon loading -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <style>
+      sp-station-event-map {
+        height: 200px;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='message'>
+      <p></p>
+    </div>
+    <h3>Channel query: <span id="title">seismographs</span></h3>
+    <sp-channel-search></sp-channel-search>
+    <button id="query">Query</button>
+    <sp-station-event-map></sp-station-event-map>
+    <sp-channel-table></sp-channel-table>
+    <div id="messages">
+      <p></p>
+    </div>
+
+    <div id="myseismograph">
+    </div>
+
+    <h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
+
+    <script type="module" >
+      import {fdsnstation, stationxml, leafletutil, infotable} from '../seisplotjs_3.0.0-alpha.1_standalone.mjs';
+      const chSearchEl = document.querySelector('sp-channel-search');
+      chSearchEl.addEventListener("change", () => {
+        const chQuery = chSearchEl.populateQuery();
+        const queryURL = chQuery.formURL(fdsnstation.LEVEL_CHANNEL);
+        console.log(queryURL);
+        const mesgDiv = document.querySelector("#messages");
+        const pEl = mesgDiv.querySelector("p");
+        pEl.textContent = queryURL;
+      });
+      const queryBtn = document.querySelector('#query');
+      if ( ! queryBtn) {throw new Error("can't find button#query");}
+      queryBtn.addEventListener('click', event => {
+        const chQuery = chSearchEl.populateQuery();
+        const mesgDiv = document.querySelector("#messages");
+        const pEl = mesgDiv.querySelector("p");
+        pEl.textContent = chQuery.formURL(fdsnstation.LEVEL_CHANNEL);
+        chQuery.queryChannels().then(netList => {
+          const chanTable = document.querySelector("sp-channel-table");
+          chanTable.channelList = Array.from(stationxml.allChannels(netList));
+          const stationMap = document.querySelector("sp-station-event-map");
+          stationMap.addStation(Array.from(stationxml.allStations(netList)));
+          stationMap.draw();
+        }).catch(e => {
+          pEl.textContent = e;
+          console.assert(false, e);
+        });
+      });
+    </script>
+  </body>
+</html>

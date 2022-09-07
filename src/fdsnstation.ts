@@ -3,8 +3,9 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import {ChannelCodeInput} from './components';
 import {FDSNCommon, IRIS_HOST} from './fdsncommonalities';
-import {DateTime, Interval} from 'luxon';
+import {DateTime, Duration, Interval} from 'luxon';
 import {parseStationXml, Network} from "./stationxml";
 import {
   XML_MIME,
@@ -609,10 +610,10 @@ export class StationQuery extends FDSNCommon {
    */
   isSomeParameterSet(): boolean {
     return (
-      isDef(this._networkCode) ||
-      isDef(this._stationCode) ||
-      isDef(this._locationCode) ||
-      isDef(this._channelCode) ||
+      (isDef(this._networkCode) && this._networkCode.length>0) ||
+      (isDef(this._stationCode) && this._stationCode.length>0) ||
+      (isDef(this._locationCode) && this._locationCode.length>0) ||
+      (isDef(this._channelCode) && this._channelCode.length>0) ||
       isDef(this._startTime) ||
       isDef(this._endTime) ||
       isDef(this._startBefore) ||
@@ -787,11 +788,30 @@ export class StationQuery extends FDSNCommon {
 
   /**
    * Queries the remote web service at the given level for raw xml.
+   * Note that in the case of a nodata status code, xml that represents a
+   * valid stationxml but with zero &lt;Network&gt; elements will be returned
+   * as this simplifies parsing.
    *
    * @param level the level to query at, network, station, channel or response.
    * @returns a Promise to an xml Document.
    */
   queryRawXml(level: string): Promise<Document> {
+    return this.queryRawXmlText(level)
+      .then(function (rawXmlText) {
+        return new DOMParser().parseFromString(rawXmlText, "text/xml");
+      });
+  }
+
+  /**
+   * Queries the remote web service at the given level for unparsed xml as text.
+   * Note that in the case of a nodata status code, text that represents a
+   * valid stationxml but with zero &lt;Network&gt; elements will be returned
+   * as this simplifies parsing.
+   *
+   * @param level the level to query at, network, station, channel or response.
+   * @returns a Promise to string.
+   */
+   queryRawXmlText(level: string): Promise<string> {
     const mythis = this;
     const url = this.formURL(level);
     const fetchInit = defaultFetchInitObj(XML_MIME);
@@ -808,9 +828,6 @@ export class StationQuery extends FDSNCommon {
         } else {
           throw new Error(`Status not successful: ${response.status}`);
         }
-      })
-      .then(function (rawXmlText) {
-        return new DOMParser().parseFromString(rawXmlText, "text/xml");
       });
   }
 
@@ -1030,19 +1047,19 @@ export class StationQuery extends FDSNCommon {
 
     url = url + makeParam("level", level);
 
-    if (isStringArg(this._networkCode)) {
+    if (isStringArg(this._networkCode) && this._networkCode.length>0) {
       url = url + makeParam("net", this._networkCode);
     }
 
-    if (isStringArg(this._stationCode)) {
+    if (isStringArg(this._stationCode) && this._stationCode.length>0) {
       url = url + makeParam("sta", this._stationCode);
     }
 
-    if (isStringArg(this._locationCode)) {
+    if (isStringArg(this._locationCode) && this._locationCode.length>0) {
       url = url + makeParam("loc", this._locationCode);
     }
 
-    if (isStringArg(this._channelCode)) {
+    if (isStringArg(this._channelCode) && this._channelCode.length>0) {
       url = url + makeParam("cha", this._channelCode);
     }
 
@@ -1133,3 +1150,126 @@ export class StationQuery extends FDSNCommon {
     return url;
   }
 }
+
+//@ts-ignore
+import {
+  CHANNEL_CODE_ELEMENT,
+  LatLonChoice,
+  LatLonBox,
+  LatLonRadius,
+  LabeledMinMax} from './components';
+import {TimeRangeChooser,} from './datechooser';
+
+const channelsearchHtml = `
+<div class="wrapper">
+  <sp-channel-code-input></sp-channel-code-input>
+  <div>
+    <label>Time Range </label>
+    <sp-timerange duration="P7D"></sp-timerange>
+    <button id="now">Now</button></div>
+    <div>
+    <button id="today">Today</button>
+    <button id="week">Week</button>
+    <button id="month">Month</button>
+    <button id="year">Year</button>
+  </div>
+  <div>
+    <label>Geo:</label>
+    <sp-latlon-choice></sp-latlon-choice>
+  </div>
+</div>
+`;
+
+export class ChannelSearch extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({mode: 'open'});
+    this.draw_element(shadow);
+  }
+  _registerEvent(wrapper: HTMLElement, sel: string) {
+    const mythis = this;
+    const component = wrapper.querySelector(sel) as HTMLElement;
+    if ( ! component) {throw new Error(`can't find ${sel}`);}
+    component.addEventListener("change", () => mythis.dispatchEvent(new Event("change")));
+  }
+  draw_element(shadow: ShadowRoot) {
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute('class','wrapper');
+    wrapper.innerHTML = channelsearchHtml;
+    shadow.appendChild(wrapper);
+    this._registerEvent(wrapper, 'sp-timerange');
+    this._registerEvent(wrapper, 'sp-latlon-choice');
+
+    const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;
+    if ( ! trChooser) {throw new Error("can't find sp-timerange");}
+
+    const nowBtn = wrapper.querySelector('#now');
+    if ( ! nowBtn) {throw new Error("can't find button#now");}
+    nowBtn.addEventListener('click', event => {
+      trChooser.end = DateTime.utc();
+    });
+
+    const todayBtn = wrapper.querySelector('#today');
+    if ( ! todayBtn) {throw new Error("can't find button#today");}
+    todayBtn.addEventListener('click', event => {
+      trChooser.duration = Duration.fromISO('P1D');
+    });
+
+    const weekBtn = wrapper.querySelector('#week');
+    if ( ! weekBtn) {throw new Error("can't find button#week");}
+    weekBtn.addEventListener('click', event => {
+      trChooser.duration = Duration.fromISO('P7D');
+    });
+
+    const monthBtn = wrapper.querySelector('#month');
+    if ( ! monthBtn) {throw new Error("can't find button#month");}
+    monthBtn.addEventListener('click', event => {
+      trChooser.duration = Duration.fromISO('P1M');
+    });
+
+    const yearBtn = wrapper.querySelector('#year');
+    if ( ! yearBtn) {throw new Error("can't find button#year");}
+    yearBtn.addEventListener('click', event => {
+      trChooser.duration = Duration.fromISO('P1Y');
+    });
+  }
+  populateQuery(query?: StationQuery): StationQuery {
+    if ( ! query) {
+      query = new StationQuery();
+    }
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const codeChooser = wrapper.querySelector(CHANNEL_CODE_ELEMENT) as ChannelCodeInput;
+    query.networkCode(codeChooser.network);
+    query.stationCode(codeChooser.station);
+    query.locationCode(codeChooser.location);
+    query.channelCode(codeChooser.channel);
+
+    const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;
+    if ( ! trChooser) {throw new Error("can't find sp-timerange");}
+    query.startTime(trChooser.start);
+    query.endTime(trChooser.end);
+    const latlonchoice = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
+    const choosenLatLon = latlonchoice.choosen();
+    if (choosenLatLon instanceof LatLonBox) {
+      const latlonbox = choosenLatLon as LatLonBox;
+      if (latlonbox.south > -90) {query.minLat(latlonbox.south);}
+      if (latlonbox.north < 90) {query.maxLat(latlonbox.north);}
+      if (latlonbox.west > -180 && latlonbox.west+360 !==latlonbox.east) {query.minLon(latlonbox.west);}
+      if (latlonbox.east < 360 && latlonbox.west+360 !==latlonbox.east) {query.maxLon(latlonbox.east);}
+    } else if (choosenLatLon instanceof LatLonRadius) {
+      const latlonrad = choosenLatLon as LatLonRadius;
+      if (latlonrad.minRadius>0 || latlonrad.maxRadius<180) {
+        query.latitude(latlonrad.latitude);
+        query.longitude(latlonrad.longitude);
+        if (latlonrad.minRadius>0) {query.minRadius(latlonrad.minRadius);}
+        if (latlonrad.maxRadius<180) {query.maxRadius(latlonrad.maxRadius);}
+      }
+    } else {
+      console.log(`latlon choice is: ${choosenLatLon}`)
+    }
+    return query;
+  }
+}
+
+export const CHANNEL_SEARCH_ELEMENT = 'sp-channel-search';
+customElements.define(CHANNEL_SEARCH_ELEMENT, ChannelSearch);
