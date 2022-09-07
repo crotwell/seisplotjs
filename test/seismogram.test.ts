@@ -213,14 +213,24 @@ test("clone sdd test", () => {
   const yValues = new Int32Array(len);
   const sampleRate = 20.0;
   const startTime = isoToDateTime("2013-02-08T09:30:26");
+  const marker = {
+    name: "P",
+    time: startTime.plus(Duration.fromISO("PT1M")),
+    description: "dummy",
+  };
+
   const seis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
   const q = createQuakeFromValues(UNKNOWN_PUBLIC_ID, startTime,-10, 12, 0);
   const sdd = SeismogramDisplayData.fromSeismogram(seis);
   sdd.addQuake(q);
+  sdd.addMarkers(marker);
+  expect(sdd.markerList).toHaveLength(1);
+
   const processedSeis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
   const cloneSdd = sdd.cloneWithNewSeismogram(processedSeis);
   expect(cloneSdd.quakeList).toHaveLength(sdd.quakeList.length);
   expect(cloneSdd.quakeList[0]).toBe(sdd.quakeList[0]);
+  expect(cloneSdd.markerList).toHaveLength(sdd.markerList.length);
 });
 
 test("cut clone sdd test", () => {
