@@ -361,6 +361,7 @@ export const DURATION_CHANGED = "duration";
 
 /**
  * Combination of two DateTimeChoosers to specify a start and end time.
+ * A "change" event is fired when the times are modified.
  *
  * @param div selected div to append chooser to
  * @param updateCallback optional callback function when time is selected/changed
