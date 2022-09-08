@@ -1,6 +1,6 @@
 
 import {Quake} from './quakeml';
-import {Channel, Station} from './stationxml';
+import {Channel} from './stationxml';
 import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";

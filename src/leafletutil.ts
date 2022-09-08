@@ -1,8 +1,10 @@
+import {kmPerDeg} from './distaz';
 import {Quake} from "./quakeml";
 import {Station} from "./stationxml";
 import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
 import { SeismographConfig} from "./seismographconfig";
+import {LatLonBox, LatLonRadius} from './fdsncommonalities';
 
 import * as L from "leaflet";
 import {LatLngTuple} from "leaflet";
@@ -750,6 +752,7 @@ export const DEFAULT_MAG_SCALE = 5.0;
 export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
   stationList: Array<Station> = [];
+  geoRegionList: Array<LatLonBox | LatLonRadius> = [];
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
 
@@ -818,6 +821,7 @@ export class QuakeStationMap extends SeisPlotElement {
   set magScale(val: number) {
     this.setAttribute(MAG_SCALE, `${val}`);
   }
+
   draw() {
     if ( ! this.isConnected) { return; }
 
@@ -866,9 +870,46 @@ export class QuakeStationMap extends SeisPlotElement {
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
     });
+    const regionBounds = this.drawGeoRegions(mymap);
+    regionBounds.forEach(b => mapItems.push(b));
     if (mapItems.length > 1) {
       mymap.fitBounds(mapItems);
     }
+  }
+  drawGeoRegions(map: L.Map): Array<[number, number]> {
+    let outLatLon: Array<[number, number]> = [];
+    this.geoRegionList.forEach(gr => {
+      if (gr instanceof LatLonBox) {
+        const llbox = gr as LatLonBox;
+        const bounds = llbox.asLeafletBounds();
+        const rect = L.rectangle(bounds, {color: "red", weight: 1});
+        rect.addTo(map);
+        outLatLon.push(bounds[0]);
+        outLatLon.push(bounds[1]);
+      } else if (gr instanceof LatLonRadius) {
+        const llrad = gr as LatLonRadius;
+        outLatLon.push([llrad.latitude, llrad.longitude]);
+        if (llrad.minRadius > 0) {
+          L.circle([llrad.latitude, llrad.longitude], {radius: llrad.minRadius*1000*kmPerDeg}).addTo(map);
+          outLatLon.push([llrad.latitude+llrad.minRadius, llrad.longitude]);
+          outLatLon.push([llrad.latitude-llrad.minRadius, llrad.longitude]);
+          outLatLon.push([llrad.latitude, llrad.longitude+llrad.minRadius]);
+          outLatLon.push([llrad.latitude, llrad.longitude-llrad.minRadius]);
+        }
+        if (llrad.maxRadius < 180) {
+          L.circle([llrad.latitude, llrad.longitude], {radius: llrad.maxRadius*1000*kmPerDeg}).addTo(map);
+          outLatLon.push([llrad.latitude+llrad.maxRadius, llrad.longitude]);
+          outLatLon.push([llrad.latitude-llrad.maxRadius, llrad.longitude]);
+          outLatLon.push([llrad.latitude, llrad.longitude+llrad.maxRadius]);
+          outLatLon.push([llrad.latitude, llrad.longitude-llrad.maxRadius]);
+        }
+        console.log(`bounds: ${outLatLon}`)
+      } else {
+        // unknown region type?
+        console.assert(false, "unknown regino type");
+      }
+    });
+    return outLatLon;
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     this.draw();

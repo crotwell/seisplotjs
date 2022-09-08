@@ -1,4 +1,5 @@
 import {Channel} from './stationxml';
+import {LatLonBox, LatLonRadius} from './fdsncommonalities';
 
 export const CHANNEL_LIST_ELEMENT = 'sp-channellist';
 export const CHANNEL_CODE_ELEMENT = 'sp-channel-code-input';
@@ -385,7 +386,7 @@ export function validateLongitude(value: number): number {
   return value;
 }
 
-export class LatLonRadius extends HTMLElement {
+export class LatLonRadiusEl extends HTMLElement {
   constructor() {
     super();
     this.draw();
@@ -501,6 +502,9 @@ export class LatLonRadius extends HTMLElement {
       throw new Error(`cant find ${MINMAX_ELEMENT}`);
     }
   }
+  asLatLonRadius(): LatLonRadius {
+    return new LatLonRadius(this.latitude, this.longitude, this.minRadius, this.maxRadius);
+  }
   toString(): string {
     return `LatLon Radius: ${this.latitude}/${this.longitude} ${this.minRadius}/${this.maxRadius}`;
   }
@@ -511,7 +515,7 @@ export class LatLonRadius extends HTMLElement {
   }
 }
 
-customElements.define(LATLONRADIUS_ELEMENT, LatLonRadius);
+customElements.define(LATLONRADIUS_ELEMENT, LatLonRadiusEl);
 
 const latlonbox_html = `
 <style>
@@ -560,7 +564,7 @@ fieldset.latlon {
 </fieldset>
 `;
 
-export class LatLonBox extends HTMLElement {
+export class LatLonBoxEl extends HTMLElement {
   constructor() {
     super();
     this.draw();
@@ -670,6 +674,9 @@ export class LatLonBox extends HTMLElement {
     this.validate("east");
     this.dispatchEvent(new Event("change"));
   }
+  asLatLonBox(): LatLonBox {
+    return new LatLonBox(this.west, this.east, this.south, this.north);
+  }
   validate(lastChanged: string) {
     console.log(`validate ${lastChanged}  lat: ${this.south},${this.north}  lon:${this.west},${this.east}`)
     if (this.south > this.north) {
@@ -702,7 +709,7 @@ export class LatLonBox extends HTMLElement {
 
 }
 
-customElements.define(LATLONBOX_ELEMENT, LatLonBox);
+customElements.define(LATLONBOX_ELEMENT, LatLonBoxEl);
 
 const latlonchoice_html = `
 <style>
@@ -758,12 +765,12 @@ export class LatLonChoice extends HTMLElement {
       this.dispatchEvent(new Event("change"));
     });
   }
-  choosen(): null | LatLonBox | LatLonRadius {
+  choosen(): null | LatLonBoxEl | LatLonRadiusEl {
     let radio = this.shadowRoot?.querySelector('input[type=radio]:checked') as HTMLInputElement;
     if (radio.value === 'box') {
-      return this.shadowRoot?.querySelector('sp-latlon-box') as LatLonBox;
+      return this.shadowRoot?.querySelector('sp-latlon-box') as LatLonBoxEl;
     } else if (radio.value === 'radius') {
-      return this.shadowRoot?.querySelector('sp-latlon-radius') as LatLonRadius;
+      return this.shadowRoot?.querySelector('sp-latlon-radius') as LatLonRadiusEl;
     } else {
       return null; // means all
     }

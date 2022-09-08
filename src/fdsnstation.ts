@@ -1153,11 +1153,11 @@ export class StationQuery extends FDSNCommon {
 
 //@ts-ignore
 import {
-  CHANNEL_CODE_ELEMENT,
-  LatLonChoice,
-  LatLonBox,
-  LatLonRadius,
-  LabeledMinMax} from './components';
+    CHANNEL_CODE_ELEMENT,
+    LatLonChoice,
+    LatLonBoxEl,
+    LatLonRadiusEl,
+  } from './components';
 import {TimeRangeChooser,} from './datechooser';
 
 const channelsearchHtml = `
@@ -1250,14 +1250,14 @@ export class ChannelSearch extends HTMLElement {
     query.endTime(trChooser.end);
     const latlonchoice = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
     const choosenLatLon = latlonchoice.choosen();
-    if (choosenLatLon instanceof LatLonBox) {
-      const latlonbox = choosenLatLon as LatLonBox;
+    if (choosenLatLon instanceof LatLonBoxEl) {
+      const latlonbox = choosenLatLon.asLatLonBox();
       if (latlonbox.south > -90) {query.minLat(latlonbox.south);}
       if (latlonbox.north < 90) {query.maxLat(latlonbox.north);}
       if (latlonbox.west > -180 && latlonbox.west+360 !==latlonbox.east) {query.minLon(latlonbox.west);}
       if (latlonbox.east < 360 && latlonbox.west+360 !==latlonbox.east) {query.maxLon(latlonbox.east);}
-    } else if (choosenLatLon instanceof LatLonRadius) {
-      const latlonrad = choosenLatLon as LatLonRadius;
+    } else if (choosenLatLon instanceof LatLonRadiusEl) {
+      const latlonrad = choosenLatLon as LatLonRadiusEl;
       if (latlonrad.minRadius>0 || latlonrad.maxRadius<180) {
         query.latitude(latlonrad.latitude);
         query.longitude(latlonrad.longitude);
@@ -1265,9 +1265,14 @@ export class ChannelSearch extends HTMLElement {
         if (latlonrad.maxRadius<180) {query.maxRadius(latlonrad.maxRadius);}
       }
     } else {
-      console.log(`latlon choice is: ${choosenLatLon}`)
+      console.assert(false, `unknown latlon choice: ${choosenLatLon}`)
     }
     return query;
+  }
+  getGeoChoiceElement(): LatLonChoice {
+    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const latlonchoice = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
+    return latlonchoice;
   }
 }
 

@@ -40,3 +40,39 @@ export class FDSNCommon {
   }
 
 }
+
+export class LatLonRegion {
+
+}
+export class LatLonBox extends LatLonRegion {
+  west: number;
+  east: number;
+  south: number;
+  north: number;
+  constructor(west: number, east: number, south: number, north: number) {
+    super();
+    this.west = west;
+    this.east = east;
+    this.south = south;
+    this.north = north;
+  }
+  asLeafletBounds(): [[number, number],[number, number]] {
+    return [
+      [this.south, this.west],
+      [this.north,this.east]
+    ];
+  }
+}
+export class LatLonRadius extends LatLonRegion{
+  latitude: number;
+  longitude: number;
+  minRadius: number;
+  maxRadius: number;
+  constructor(latitude: number, longitude: number, minRadius: number, maxRadius: number) {
+    super();
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.minRadius = minRadius;
+    this.maxRadius = maxRadius;
+  }
+}

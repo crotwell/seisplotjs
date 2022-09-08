@@ -1035,8 +1035,8 @@ export class EventQuery extends FDSNCommon {
 
 //@ts-ignore
 import {LatLonChoice,
-  LatLonBox,
-  LatLonRadius,
+  LatLonBoxEl,
+  LatLonRadiusEl,
   LabeledMinMax} from './components';
 import {TimeRangeChooser,} from './datechooser';
 
@@ -1127,14 +1127,14 @@ export class EarthquakeSearch extends HTMLElement {
     query.endTime(trChooser.end);
     const latlonchoice = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
     const choosenLatLon = latlonchoice.choosen();
-    if (choosenLatLon instanceof LatLonBox) {
-      const latlonbox = choosenLatLon as LatLonBox;
+    if (choosenLatLon instanceof LatLonBoxEl) {
+      const latlonbox = choosenLatLon;
       if (latlonbox.south > -90) {query.minLat(latlonbox.south);}
       if (latlonbox.north < 90) {query.maxLat(latlonbox.north);}
       if (latlonbox.west > -180 && latlonbox.west+360 !==latlonbox.east) {query.minLon(latlonbox.west);}
       if (latlonbox.east < 360 && latlonbox.west+360 !==latlonbox.east) {query.maxLon(latlonbox.east);}
-    } else if (choosenLatLon instanceof LatLonRadius) {
-      const latlonrad = choosenLatLon as LatLonRadius;
+    } else if (choosenLatLon instanceof LatLonRadiusEl) {
+      const latlonrad = choosenLatLon;
       if (latlonrad.minRadius>0 || latlonrad.maxRadius<180) {
         query.latitude(latlonrad.latitude);
         query.longitude(latlonrad.longitude);
