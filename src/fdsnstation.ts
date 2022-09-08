@@ -1092,7 +1092,7 @@ export class StationQuery extends FDSNCommon {
     }
 
     if (isNumArg(this._maxLat)) {
-      url = url + makeParam("maxlat", this.maxLat);
+      url = url + makeParam("maxlat", this._maxLat);
     }
 
     if (isNumArg(this._minLon)) {
