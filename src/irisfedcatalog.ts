@@ -1101,7 +1101,7 @@ export class FedCatalogQuery extends FDSNCommon {
     fetchInit.method = "POST";
     fetchInit.body = body;
     return doFetchWithTimeout(
-      this.formURL(),
+      this.formPostURL(),
       fetchInit,
       this._timeoutSec * 1000,
     )
@@ -1251,6 +1251,16 @@ export class FedCatalogQuery extends FDSNCommon {
       "/irisws/fedcatalog/" +
       this._specVersion
     );
+  }
+
+  /**
+   * Form URL to post the remote web service. No parameters are added
+   * to the URL as those will be in the body of the post.
+   *
+   * @return the URL for posting
+   */
+  formPostURL(): string {
+    return this.formBaseURL() + "/query";
   }
 
   /**

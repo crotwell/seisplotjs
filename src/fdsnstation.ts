@@ -856,7 +856,7 @@ export class StationQuery extends FDSNCommon {
       fetchInit.method = "POST";
       fetchInit.body = this.createPostBody(level, postLines);
       return doFetchWithTimeout(
-        this.formURL(level),
+        this.formPostURL(level),
         fetchInit,
         this._timeoutSec * 1000,
       )
@@ -1028,6 +1028,10 @@ export class StationQuery extends FDSNCommon {
       "/fdsnws/station/" +
       this._specVersion
     );
+  }
+
+  formPostURL(): string {
+    return this.formBaseURL() + "/query";
   }
 
   /**

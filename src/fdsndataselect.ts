@@ -547,7 +547,7 @@ export class DataSelectQuery extends FDSNCommon {
     fetchInit.method = "POST";
     fetchInit.body = body;
     return doFetchWithTimeout(
-      this.formURL(),
+      this.formPostURL(),
       fetchInit,
       this._timeoutSec * 1000,
     );
@@ -606,6 +606,10 @@ export class DataSelectQuery extends FDSNCommon {
         }
       },
     );
+  }
+
+  formPostURL(): string {
+    return this.formBaseURL() + "/query";
   }
 
   formURL(): string {
