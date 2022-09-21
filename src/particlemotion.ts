@@ -169,20 +169,18 @@ export class ParticleMotion extends SeisPlotElement {
     const seisData = xSeisData.concat(ySeisData);
     if ( ! seisConfig) {seisConfig = createParticleMotionConfig();}
     super(seisData, seisConfig);
+
     this._xSeisData = xSeisData;
     this._ySeisData = ySeisData;
 
-    const shadow = this.attachShadow({mode: 'open'});
+    this.addStyle(particleMotion_css);
+    const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
+    this.addStyle(lineColorsCSS, COLOR_CSS_ID);
+
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = particleMotion_css;
-    const lineColorsStyle = shadow.appendChild(document.createElement('style'));
-    const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
-    lineColorsStyle.setAttribute("id", COLOR_CSS_ID);
-    lineColorsStyle.textContent = lineColorsCSS;
     const svgWrapped = wrapper.appendChild(document.createElementNS(SVG_NS, 'svg'));
-    shadow.appendChild(wrapper);
+    this.shadowRoot?.appendChild(wrapper);
 
     this.svg = d3.select(svgWrapped);
 

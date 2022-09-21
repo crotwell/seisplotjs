@@ -1,7 +1,7 @@
 
 import {Quake} from './quakeml';
 import {Channel} from './stationxml';
-import {SeisPlotElement} from "./spelement";
+import {SeisPlotElement, addStyleToElement} from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
 
@@ -151,13 +151,11 @@ export class QuakeStationTable extends SeisPlotElement {
     super(seisData, seisConfig);
     this._template = DEFAULT_TEMPLATE;
 
-    const shadow = this.attachShadow({mode: 'open'});
+    this.addStyle(TABLE_CSS);
+
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = TABLE_CSS;
-
-    shadow.appendChild(wrapper);
+    this.shadowRoot?.appendChild(wrapper);
   }
   get template(): string {
     return this._template;
@@ -221,8 +219,7 @@ export class QuakeTable extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
     const table = document.createElement('table');
     table.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = TABLE_CSS;
+    addStyleToElement(this, TABLE_CSS);
 
     shadow.appendChild(table);
   }
@@ -382,8 +379,7 @@ export class ChannelTable extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
     const table = document.createElement('table');
     table.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = TABLE_CSS;
+    addStyleToElement(this, TABLE_CSS);
 
     shadow.appendChild(table);
   }

@@ -194,16 +194,12 @@ export class Seismograph extends SeisPlotElement {
     this.height = 100;
 
 
-    const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = seismograph_css;
-    const lineColorsStyle = shadow.appendChild(document.createElement('style'));
+    this.addStyle(seismograph_css);
     const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
-    lineColorsStyle.setAttribute("id", COLOR_CSS_ID);
-    lineColorsStyle.textContent = lineColorsCSS;
-    shadow.appendChild(wrapper);
+    this.addStyle(lineColorsCSS, COLOR_CSS_ID);
+    this.shadowRoot?.appendChild(wrapper);
 
     this.canvas = null;
     this.svg = d3.select(wrapper).append("svg").style("z-index", 100);

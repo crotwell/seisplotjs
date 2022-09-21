@@ -4,8 +4,10 @@
  * http://www.seis.sc.edu
  */
 import {FFTResult} from "./fft";
+import {COLOR_CSS_ID} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {SeismogramDisplayData} from "./seismogram";
+import {addStyleToElement} from './spelement';
 import {Complex} from "./oregondsputil";
 import * as d3 from "d3";
 import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
@@ -148,16 +150,13 @@ export class SpectraPlot extends HTMLElement {
       this._fftResults = [];
     }
 
-    const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = spectra_plot_css;
-    const lineColorsStyle = shadow.appendChild(document.createElement('style'));
+    addStyleToElement(this, spectra_plot_css);
     const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
-    lineColorsStyle.textContent = lineColorsCSS;
+    addStyleToElement(this, lineColorsCSS, COLOR_CSS_ID);
 
-    shadow.appendChild(wrapper);
+    this.shadowRoot?.appendChild(wrapper);
   }
   get fftResults() {
     return this._fftResults;

@@ -37,12 +37,10 @@ export class Helicorder extends SeisPlotElement {
       throw new Error(`Helicorder seisData must be length 1, but was ${seisData.length}`);
     }
 
-    const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = helicorder_css;
-    shadow.appendChild(wrapper);
+    this.addStyle(helicorder_css);
+    this.shadowRoot?.appendChild(wrapper);
     // event listener to transform mouse click into time
     this.addEventListener("click", evt => {
       const detail = this.calcDetailForEvent(evt);

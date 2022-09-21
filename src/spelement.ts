@@ -29,6 +29,7 @@ export class SeisPlotElement extends HTMLElement {
     } else {
       this._seismographConfig = new SeismographConfig();
     }
+    this.attachShadow({mode: 'open'});
   }
   get seisData() {
     return this._seisDataList;
@@ -50,6 +51,9 @@ export class SeisPlotElement extends HTMLElement {
     this._seismographConfig = seismographConfig;
     this.seisDataUpdated();
   }
+  addStyle(css: string, id?: string): HTMLStyleElement {
+    return addStyleToElement(this, css, id);
+  }
   /**
    * Notification to the element that something about the current seismogram
    * data has changed. This could be that the actual waveform data has been updated
@@ -66,4 +70,19 @@ export class SeisPlotElement extends HTMLElement {
     if ( ! this.isConnected) { return; }
   }
 
+}
+
+export function addStyleToElement(element: HTMLElement,
+                                  css: string,
+                                  id?: string): HTMLStyleElement {
+  if ( ! element.shadowRoot) {
+    element.attachShadow({mode: 'open'});
+  }
+  const styleEl = document.createElement("style")
+  styleEl.textContent = css;
+  if (id) {
+    styleEl.setAttribute("id", id);
+  }
+  element.shadowRoot?.insertBefore(styleEl, element.shadowRoot?.firstChild);
+  return styleEl;
 }

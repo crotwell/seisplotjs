@@ -37,11 +37,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
 
     this.extras = new Map();
 
-    const shadow = this.attachShadow({mode: 'open'});
-    const wrapper = document.createElement('div');
-    wrapper.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = `
+    this.addStyle(`
     :host {
       display: block;
       min-height: 50px;
@@ -53,8 +49,10 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     sp-seismograph {
       height: 200px;
     }
-    `;
-    shadow.appendChild(wrapper);
+    `);
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute("class", "wrapper");
+    this.shadowRoot?.appendChild(wrapper);
   }
   get plottype(): string {
     let k = this.hasAttribute(PLOT_TYPE) ? this.getAttribute(PLOT_TYPE) : SEISMOGRAPH;

@@ -770,18 +770,17 @@ export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
   stationList: Array<Station> = [];
   geoRegionList: Array<LatLonBox | LatLonRadius> = [];
+  map: L.Map | null;
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
+    this.map = null;
 
-    const shadow = this.attachShadow({mode: 'open'});
+    this.addStyle(leaflet_css);
+    this.addStyle(stationMarker_css);
+
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = leaflet_css;
-    const markerStyle = shadow.appendChild(document.createElement('style'));
-    markerStyle.textContent = stationMarker_css;
-
-    shadow.appendChild(wrapper);
+    this.shadowRoot?.appendChild(wrapper);
   }
 
   addQuake(quake: Quake | Array<Quake>) {
@@ -848,10 +847,9 @@ export class QuakeStationMap extends SeisPlotElement {
       // @ts-ignore
       wrapper.removeChild(wrapper.lastChild);
     }
-    const mapid = "map";
     const divElement = wrapper.appendChild(document.createElement("div"));
-    divElement.setAttribute("id", mapid);
     const mymap = L.map(divElement).setView([this.centerLat, this.centerLon], this.zoomLevel);
+    this.map = mymap;
     if (this.seismographConfig.wheelZoom) {
       mymap.scrollWheelZoom.enable();
     } else {
