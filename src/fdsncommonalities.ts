@@ -63,7 +63,7 @@ export class LatLonBox extends LatLonRegion {
     ];
   }
 }
-export class LatLonRadius extends LatLonRegion{
+export class LatLonRadius extends LatLonRegion {
   latitude: number;
   longitude: number;
   minRadius: number;

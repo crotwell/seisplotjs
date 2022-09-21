@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {FDSNCommon} from './fdsncommonalities';
+import {FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius} from './fdsncommonalities';
 import {DateTime, Duration, Interval} from 'luxon';
 import {Quake, USGS_HOST, parseQuakeML} from "./quakeml";
 import {
@@ -638,6 +638,44 @@ export class EventQuery extends FDSNCommon {
     return this._contributor;
   }
 
+  latLonRegion(value: LatLonRegion | null): EventQuery {
+    if (value instanceof LatLonBox) {
+      this._minLat = value.south;
+      this._maxLat = value.north;
+      this._minLon = value.west;
+      this._maxLon = value.east;
+      // unset
+      this._latitude = undefined;
+      this._longitude = undefined;
+      this._minRadius = undefined;
+      this._maxRadius = undefined;
+    } else if (value instanceof LatLonRadius) {
+      this._latitude = value.latitude;
+      this._longitude = value.longitude;
+      this._minRadius = value.minRadius;
+      this._maxRadius = value.maxRadius;
+      // unset
+      this._minLat = undefined;
+      this._maxLat = undefined;
+      this._minLon = undefined;
+      this._maxLon = undefined;
+    } else if ( ! isDef(value)) {
+      // unset
+      this._latitude = undefined;
+      this._longitude = undefined;
+      this._minRadius = undefined;
+      this._maxRadius = undefined;
+      this._minLat = undefined;
+      this._maxLat = undefined;
+      this._minLon = undefined;
+      this._maxLon = undefined;
+    } else {
+      throw new Error(
+        `value argument is optional or LatLonRegion, but was type ${typeof value}, '${value}' `,
+      );
+    }
+    return this;
+  }
 
   /**
    * Checks to see if any parameter that would limit the data
