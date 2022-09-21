@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {FDSNCommon} from './fdsncommonalities';
+import {FDSNCommon} from './fdsncommon';
 import {
   doStringGetterSetter,
   doBoolGetterSetter,

@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {FDSNCommon, IRIS_HOST} from './fdsncommonalities';
+import {FDSNCommon, IRIS_HOST} from './fdsncommon';
 import * as util from "./util"; // for util.log
 import {DateTime, Interval} from 'luxon';
 import * as miniseed from "./miniseed";

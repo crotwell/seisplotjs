@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 
- import {FDSNCommon} from './fdsncommonalities';
+ import {FDSNCommon} from './fdsncommon';
  import {
   doStringGetterSetter,
   doBoolGetterSetter,

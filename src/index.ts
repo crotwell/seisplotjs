@@ -15,7 +15,7 @@ import * as displayorganize from "./displayorganize";
 import * as distaz from "./distaz";
 import * as infotable from "./infotable";
 import * as fdsnavailability from "./fdsnavailability";
-import * as fdsncommon from "./fdsncommonalities";
+import * as fdsncommon from "./fdsncommon";
 import * as fdsndatacenters from "./fdsndatacenters";
 import * as fdsnevent from "./fdsnevent";
 import * as fdsnstation from "./fdsnstation";

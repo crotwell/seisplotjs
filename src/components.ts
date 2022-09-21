@@ -1,5 +1,5 @@
 import {Channel} from './stationxml';
-import {LatLonBox, LatLonRadius} from './fdsncommonalities';
+import {LatLonBox, LatLonRadius} from './fdsncommon';
 
 export const CHANNEL_LIST_ELEMENT = 'sp-channellist';
 export const CHANNEL_CODE_ELEMENT = 'sp-channel-code-input';

@@ -4,7 +4,7 @@ import {Station} from "./stationxml";
 import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
 import { SeismographConfig} from "./seismographconfig";
-import {LatLonBox, LatLonRadius} from './fdsncommonalities';
+import {LatLonBox, LatLonRadius} from './fdsncommon';
 
 import * as L from "leaflet";
 import {LatLngTuple} from "leaflet";

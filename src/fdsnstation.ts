@@ -6,7 +6,7 @@
 import {ChannelCodeInput} from './components';
 import {
   FDSNCommon, IRIS_HOST, LatLonRegion, LatLonBox, LatLonRadius,
-} from './fdsncommonalities';
+} from './fdsncommon';
 import {DateTime, Duration, Interval} from 'luxon';
 import {parseStationXml, Network} from "./stationxml";
 import {

@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius} from './fdsncommonalities';
+import {FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius} from './fdsncommon';
 import {DateTime, Duration, Interval} from 'luxon';
 import {Quake, USGS_HOST, parseQuakeML} from "./quakeml";
 import {

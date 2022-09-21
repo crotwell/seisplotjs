@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {FDSNCommon, IRIS_HOST} from './fdsncommonalities';
+import {FDSNCommon, IRIS_HOST} from './fdsncommon';
 import {DateTime, Interval} from "luxon";
 import {SeismogramDisplayData} from "./seismogram";
 import {

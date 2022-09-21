@@ -3,7 +3,7 @@
  * University of South Carolina, 2020
  * http://www.seis.sc.edu
  */
-import {FDSNCommon} from './fdsncommonalities';
+import {FDSNCommon} from './fdsncommon';
 import {DateTime, Interval} from 'luxon';
 import {Network} from "./stationxml";
 import {
