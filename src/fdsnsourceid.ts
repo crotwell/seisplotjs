@@ -36,10 +36,11 @@ export class FDSNSourceId {
       throw new Error(`sourceid must start with ${FDSN_PREFIX}: ${id}`);
     }
     const items = id.slice(FDSN_PREFIX.length).split(SEP);
-    if (items.length !== 6) {
-      throw new Error(`channel sourceid must have 6 items separated by '${SEP}': ${id}`);
+    if (items.length === 6) {
+      return new FDSNSourceId(items[0],items[1],items[2],items[3],items[4],items[5]);
+    } else {
+      throw new Error(`FDSN sourceid must have 6 items for channel; separated by '${SEP}': ${id}`);
     }
-    return new FDSNSourceId(items[0],items[1],items[2],items[3],items[4],items[5]);
   }
   static fromNslc(net: string, sta: string, loc: string, channelCode: string): FDSNSourceId {
     let band;
@@ -101,6 +102,19 @@ export class NetworkSourceId {
   constructor(networkCode: string) {
     this.networkCode = networkCode;
   }
+  static parse(id: string): NetworkSourceId {
+    if (! id.startsWith(FDSN_PREFIX)) {
+      throw new Error(`sourceid must start with ${FDSN_PREFIX}: ${id}`);
+    }
+    const items = id.slice(FDSN_PREFIX.length).split(SEP);
+    if (items.length === 1) {
+      return new NetworkSourceId(items[0])
+    } else {
+      throw new Error(`FDSN network sourceid must have 1 items; separated by '${SEP}': ${id}`);
+    }
+    return new NetworkSourceId(items[0]);
+  }
+
   toString(): string {
     return `${FDSN_PREFIX}${this.networkCode}`;
   }
@@ -115,6 +129,18 @@ export class StationSourceId {
   constructor(networkCode: string, stationCode: string) {
     this.networkCode = networkCode;
     this.stationCode = stationCode;
+  }
+  static parse(id: string): StationSourceId {
+    if (! id.startsWith(FDSN_PREFIX)) {
+      throw new Error(`station sourceid must start with ${FDSN_PREFIX}: ${id}`);
+    }
+    const items = id.slice(FDSN_PREFIX.length).split(SEP);
+    if (items.length === 2) {
+      return new StationSourceId(items[0], items[1])
+    } else  {
+      throw new Error(`FDSN station sourceid must have 2 items; separated by '${SEP}': ${id}`);
+    }
+    return new StationSourceId(items[0],items[1]);
   }
   toString(): string {
     return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}`;
@@ -207,4 +233,19 @@ export class NslcId {
     this.locationCode = loc;
     this.channelCode = chan;
   }
+}
+
+export function parseSourceId(id: string): FDSNSourceId | NetworkSourceId | StationSourceId {
+  if (! id.startsWith(FDSN_PREFIX)) {
+    throw new Error(`sourceid must start with ${FDSN_PREFIX}: ${id}`);
+  }
+  const items = id.slice(FDSN_PREFIX.length).split(SEP);
+  if (items.length === 1) {
+    return new NetworkSourceId(items[0])
+  } else if (items.length === 2) {
+    return new StationSourceId(items[0], items[1])
+  } else if (items.length !== 6) {
+    throw new Error(`FDSN sourceid must have 6 items for channel, 2 for station or 1 for network; separated by '${SEP}': ${id}`);
+  }
+  return new FDSNSourceId(items[0],items[1],items[2],items[3],items[4],items[5]);
 }
