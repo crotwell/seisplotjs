@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 
-import {DateTime, Duration, FixedOffsetZone} from "luxon";
+import {DateTime, FixedOffsetZone} from "luxon";
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";
@@ -246,7 +246,7 @@ export function toError(maybeError: unknown): Error {
 export function warn(msg: string): void {
   // eslint-disable-next-line no-console
   if (console) {
-    console.log(`${stringify(msg)}`);
+    console.assert(false, `${stringify(msg)}`);
   }
 
   if (typeof document !== "undefined" && document !== null) {
@@ -311,207 +311,6 @@ export function calcClockOffset(serverTimeUTC: DateTime): number {
   return DateTime.utc().diff(serverTimeUTC).toMillis()*1000.0;
 }
 export const WAY_FUTURE: DateTime = DateTime.fromISO("2500-01-01T00:00:00Z");
-
-/**
- * Any two of startTime, endTime and duration can be specified, or just duration which
- * then assumes endTime is now.
- * startTime and endTime are DateTime objects, duration is in seconds.
- * clockOffset is the seconds that should be subtracted from the computer time
- * to get real world time, ie computerUTC - UTC
- * or DateTime.utc().diff(serverTimeUTC, 'seconds', true).
- * default is zero.
- */
-export class StartEndDuration {
-  _startTime: DateTime;
-  _endTime: DateTime;
-  _duration: Duration;
-  _clockOffset: Duration;
-
-  constructor(
-    startTime: DateTime | string | null,
-    endTime: DateTime | string | null,
-    duration: Duration | string | number | null = null,
-    clockOffset: number | null = 0,
-  ) {
-    if (isDef(startTime) && isDef(endTime) && isDef(duration)) {
-      throw new Error("Only two of three parameters should be used");
-    }
-    this._clockOffset = Duration.fromMillis(0);
-    let theDuration = null;
-    if (isDef(duration)) {
-      if (typeof duration === "string") {
-        if (duration.charAt(0) === "P") {
-          theDuration = Duration.fromISO(duration);
-        } else {
-          theDuration = Duration.fromMillis(
-            Number.parseFloat(duration)*1000 // seconds
-          );
-        }
-      } else if (typeof duration === "number") {
-        theDuration = Duration.fromMillis(duration*1000); // seconds
-      } else if (Duration.isDuration(duration)) {
-        theDuration = duration;
-      } else {
-        throw new Error(
-          // @ts-ignore
-          `Unknown type for duration: ${typeof duration} ${duration.constructor.name}  ${JSON.stringify(duration)}`,
-        );
-      }
-    }
-
-    if (isDef(startTime) && isDef(endTime)) {
-      this._startTime = checkStringOrDate(startTime);
-      this._endTime = checkStringOrDate(endTime);
-      this._duration = this.endTime.diff(this.startTime);
-    } else if (isDef(startTime) && isDef(theDuration)) {
-      this._duration = theDuration;
-      this._startTime = checkStringOrDate(startTime);
-      this._endTime = this.startTime.plus(this.duration);
-    } else if (isDef(endTime) && isDef(theDuration)) {
-      this._duration = theDuration;
-      this._endTime = checkStringOrDate(endTime);
-      this._startTime = this.endTime.minus(this.duration);
-    } else if (isDef(theDuration)) {
-      this._duration = theDuration;
-      if (!isDef(clockOffset)) {
-        this._clockOffset = Duration.fromMillis(0);
-      } else if (typeof clockOffset === "number") {
-        this._clockOffset = Duration.fromMillis(clockOffset*1000); // seconds
-      } else {
-        this._clockOffset = clockOffset;
-      }
-
-      this._endTime = DateTime.utc().minus(this._clockOffset);
-      this._startTime = this._endTime.minus(this._duration);
-    } else if (isDef(startTime)) {
-      // only a start time, maybe like a Channel that is active currently
-      this._startTime = checkStringOrDate(startTime);
-      this._endTime = WAY_FUTURE;
-      this._duration = this._endTime.diff(this.startTime);
-    } else {
-      throw new Error(
-        `need some combination of startTime, endTime and duration: ${stringify(
-          startTime,
-        )} ${stringify(endTime)} ${stringify(duration)}`,
-      );
-    }
-  }
-
-  get start(): DateTime {
-    return this._startTime;
-  }
-
-  get startTime(): DateTime {
-    return this._startTime;
-  }
-
-  get end(): DateTime {
-    return this._endTime;
-  }
-
-  get endTime(): DateTime {
-    return this._endTime;
-  }
-
-  get duration(): Duration {
-    return this._duration;
-  }
-
-  get clockOffset(): Duration {
-    return this._clockOffset;
-  }
-
-  /**
-   * Check if this time window contains the given DateTime. Equality to start
-   * or end is considered being contained in.
-   *
-   * @param   other DateTime to check
-   * @returns        true if DateTime is inside this time range
-   */
-  contains(other: DateTime | StartEndDuration): boolean {
-    if (DateTime.isDateTime(other)) {
-      const dateTimeOther = (other as any) as DateTime;
-
-      if (
-        this.startTime > dateTimeOther ||
-        this.endTime < dateTimeOther
-      ) {
-        return false;
-      }
-
-      return true;
-    } else if (other instanceof StartEndDuration) {
-      return this.contains(other.startTime) && this.contains(other.endTime);
-    } else {
-      let otherType = "?";
-
-      // @ts-ignore
-      if (isDef(other) && isDef(other.constructor)) {
-        // @ts-ignore
-        otherType = other.constructor.name;
-      }
-
-      throw new Error(
-        `expect DateTime or StartEndDuration: "${stringify(other)}" ${otherType}`,
-      );
-    }
-  }
-
-  overlaps(other: StartEndDuration): boolean {
-    if (
-      this.startTime > other.endTime ||
-      this.endTime < other.startTime
-    ) {
-      return false;
-    }
-
-    return true;
-  }
-
-  intersect(other: StartEndDuration): StartEndDuration | null {
-    let out = null;
-
-    if (this.overlaps(other)) {
-      let tb = this.startTime;
-
-      if (tb < other.startTime) {
-        tb = other.startTime;
-      }
-
-      let te = this.endTime;
-
-      if (te > other.endTime) {
-        te = other.endTime;
-      }
-
-      out = new StartEndDuration(tb, te);
-    }
-
-    return out;
-  }
-
-  union(other: StartEndDuration): StartEndDuration {
-    let tb = this.startTime;
-
-    if (tb > other.startTime) {
-      tb = other.startTime;
-    }
-
-    let te = this.endTime;
-
-    if (te < other.endTime) {
-      te = other.endTime;
-    }
-
-    return new StartEndDuration(tb, te);
-  }
-
-  toString(): string {
-    return `StartEndDuration: ${toIsoWoZ(this.startTime)} to ${toIsoWoZ(
-      this.endTime,
-    )} ${this.duration.toISO()}`;
-  }
-}
 
 /**
  * converts the input value is a DateTime, throws Error if not
