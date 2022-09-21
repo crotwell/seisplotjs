@@ -1612,6 +1612,16 @@ export class Seismograph extends SeisPlotElement {
    */
   appendSeisData(seismogram: Array<Seismogram> | Array<SeismogramDisplayData> | Seismogram | SeismogramDisplayData) {
     this._internalAppend(seismogram);
+    this.seisDataUpdated();
+  }
+
+  /**
+   * Notification to the element that something about the current seismogram
+   * data has changed. This could be that the actual waveform data has been updated
+   * or that auxillary data like quake or channel has been added. This should
+   * trigger a redraw.
+   */
+  seisDataUpdated() {
     this.calcTimeScaleDomain();
     this.recheckAmpScaleDomain();
     if (!this.beforeFirstDraw) {
@@ -1620,7 +1630,6 @@ export class Seismograph extends SeisPlotElement {
       //this.drawSeismograms();
       this.redraw();
     }
-
   }
 
   /**

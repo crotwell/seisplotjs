@@ -41,13 +41,22 @@ export class SeisPlotElement extends HTMLElement {
     } else {
       throw new Error(`Unknown type for seisData: ${seisData}`);
     }
-    this.draw();
+    this.seisDataUpdated();
   }
   get seismographConfig() {
     return this._seismographConfig;
   }
   set seismographConfig(seismographConfig: SeismographConfig) {
     this._seismographConfig = seismographConfig;
+    this.seisDataUpdated();
+  }
+  /**
+   * Notification to the element that something about the current seismogram
+   * data has changed. This could be that the actual waveform data has been updated
+   * or that auxillary data like quake or channel has been added or that the
+   * configuration has changed. This should trigger a redraw.
+   */
+  seisDataUpdated() {
     this.draw();
   }
   connectedCallback() {
