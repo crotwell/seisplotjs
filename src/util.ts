@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 
-import {DateTime, FixedOffsetZone} from "luxon";
+import {DateTime, Duration, Interval, FixedOffsetZone} from "luxon";
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";
@@ -298,6 +298,64 @@ export function isoToDateTime(val: string): DateTime {
     return DateTime.utc();
   }
   return DateTime.fromISO(val, UTC_OPTIONS);
+}
+
+/**
+ * Create a luxon Interval from a start and end.
+ *
+ * @param  start         start of the interval as iso string or DateTime
+ * @param  end         end of the interval as string or DateTime
+ * @return          the interval
+ */
+export function startEnd(start: string | DateTime,
+                              end: string | DateTime ): Interval {
+  if (isStringArg(start)) {
+    start = isoToDateTime(start);
+  }
+  if (isStringArg(end)) {
+    end = isoToDateTime(end);
+  }
+  return Interval.fromDateTimes(start, end);
+}
+
+/**
+ * Create a luxon Interval from a start and a duration.
+ *
+ * @param  start         start of the interval as iso string or DateTime
+ * @param  duration      duration of the interval as iso string, number of seconds, or Duration
+ * @return          the interval
+ */
+export function startDuration(start: string | DateTime,
+                              duration: string | Duration | number): Interval {
+  if (isStringArg(start)) {
+    start = isoToDateTime(start);
+  }
+  if (isStringArg(duration)) {
+    duration = Duration.fromISO(duration);
+  } else if (isNumArg(duration)) {
+    duration = Duration.fromMillis(1000*duration);
+  }
+  return Interval.after(start, duration);
+}
+
+/**
+ * Create a luxon Interval from a duration and a end.
+ *
+ * @param  duration      duration of the interval as iso string, number of seconds, or Duration
+ * @param  end         end of the interval as string or DateTime
+ * @return          the interval
+ */
+export function durationEnd(duration: string | Duration | number,
+                              end: string | DateTime): Interval {
+  if (isStringArg(end)) {
+    end = isoToDateTime(end);
+  }
+  if (isStringArg(duration)) {
+    duration = Duration.fromISO(duration);
+  } else if (isNumArg(duration)) {
+    duration = Duration.fromMillis(1000*duration);
+  }
+  return Interval.before(end, duration);
 }
 
 /**
