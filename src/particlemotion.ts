@@ -24,7 +24,7 @@ export const DEFAULT_XLABEL =
 export const DEFAULT_YLABEL =
 "{{#each seisYData}}<tspan>{{this.channelCode}}</tspan> {{else}}No Data{{/each}}";
 
-export const PARTICLE_MOTION_ELEMENT = 'sp-particlemotion';
+export const PARTICLE_MOTION_ELEMENT = 'sp-particle-motion';
 
 
 export const particleMotion_css = `
