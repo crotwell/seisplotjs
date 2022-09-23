@@ -209,6 +209,15 @@ export class SpectraPlot extends HTMLElement {
     if (this.kind === PHASE) {
       extentFFTData.push(-Math.PI);
       extentFFTData.push(Math.PI);
+      if (this.seismographConfig.ySublabelIsUnits) {
+        this.seismographConfig.ySublabelIsUnits = false;
+        this.seismographConfig.ySublabel = "Radian";
+      }
+    } else {
+      if (this.seismographConfig.ySublabelIsUnits) {
+        this.seismographConfig.ySublabelIsUnits = false;
+        this.seismographConfig.ySublabel = "";
+      }
     }
 
     for (const fftA of this.fftResults) {
@@ -352,7 +361,7 @@ export class SpectraPlot extends HTMLElement {
       .call(xAxis);
     const yAxis = d3.axisLeft(yScale);
     g.append("g").call(yAxis);
-    this.seismographConfig.yLabel = "Amp";
+    this.seismographConfig.yLabel = "Amplitude";
 
     if (this.kind === PHASE) {
       this.seismographConfig.yLabel = "Phase";
