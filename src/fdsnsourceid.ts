@@ -233,6 +233,16 @@ export class NslcId {
     this.locationCode = loc;
     this.channelCode = chan;
   }
+  static parse(nslc: string, sep:string = '.'): NslcId {
+    const items = nslc.split(SEP);
+    if (items.length !== 4) {
+      throw new Error(`NSLC id must have 4 items; separated by '${sep}': ${nslc}`);
+    }
+    return new NslcId(items[0],items[1],items[2],items[3]);
+  }
+  toString(): string {
+    return `${this.networkCode}_${this.stationCode}_${this.locationCode}_${this.channelCode}`
+  }
 }
 
 export function parseSourceId(id: string): FDSNSourceId | NetworkSourceId | StationSourceId {

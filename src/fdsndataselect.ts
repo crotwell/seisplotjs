@@ -4,6 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {FDSNCommon, IRIS_HOST} from './fdsncommon';
+import {NslcId} from './fdsnsourceid';
 import * as util from "./util"; // for util.log
 import {DateTime, Interval} from 'luxon';
 import * as miniseed from "./miniseed";
@@ -231,6 +232,14 @@ export class DataSelectQuery extends FDSNCommon {
 
   getChannelCode(): string | undefined {
     return this._channelCode;
+  }
+
+  nslcCodes(channelId: NslcId): DataSelectQuery {
+    this.networkCode(channelId.networkCode);
+    this.stationCode(channelId.stationCode);
+    this.locationCode(channelId.locationCode);
+    this.channelCode(channelId.channelCode);
+    return this;
   }
 
   /**

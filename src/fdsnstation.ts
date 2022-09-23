@@ -5,8 +5,13 @@
  */
 import {ChannelCodeInput} from './components';
 import {
-  FDSNCommon, IRIS_HOST, LatLonRegion, LatLonBox, LatLonRadius,
+  FDSNCommon,
+  IRIS_HOST,
+  LatLonRegion,
+  LatLonBox,
+  LatLonRadius,
 } from './fdsncommon';
+import {NslcId} from './fdsnsourceid';
 import {DateTime, Duration, Interval} from 'luxon';
 import {parseStationXml, Network} from "./stationxml";
 import {
@@ -624,6 +629,14 @@ export class StationQuery extends FDSNCommon {
         `value argument is optional or LatLonRegion, but was type ${typeof value}, '${value}' `,
       );
     }
+    return this;
+  }
+
+  nslcCodes(channelId: NslcId): StationQuery {
+    this.networkCode(channelId.networkCode);
+    this.stationCode(channelId.stationCode);
+    this.locationCode(channelId.locationCode);
+    this.channelCode(channelId.channelCode);
     return this;
   }
 

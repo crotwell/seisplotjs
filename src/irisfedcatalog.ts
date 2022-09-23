@@ -14,6 +14,7 @@ import {
   LEVEL_RESPONSE,
   StationQuery,
 } from "./fdsnstation";
+import {NslcId} from './fdsnsourceid';
 import {DataSelectQuery} from "./fdsndataselect";
 import {SeismogramDisplayData} from "./seismogram";
 import {
@@ -507,6 +508,14 @@ export class FedCatalogQuery extends FDSNCommon {
 
   getChannelCode(): string | undefined {
     return this._channelCode;
+  }
+
+  nslcCodes(channelId: NslcId): FedCatalogQuery {
+    this.networkCode(channelId.networkCode);
+    this.stationCode(channelId.stationCode);
+    this.locationCode(channelId.locationCode);
+    this.channelCode(channelId.channelCode);
+    return this;
   }
 
   /**
