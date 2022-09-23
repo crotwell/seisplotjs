@@ -6,7 +6,7 @@
 import {DateTime, Duration, Interval} from "luxon";
 import {checkStringOrDate, isDef} from "./util";
 import * as seedcodec from "./seedcodec";
-import {FDSNSourceId} from "./fdsnsourceid";
+import {FDSNSourceId, NslcId} from "./fdsnsourceid";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
   xScaleDomain: Array<Date>;
@@ -356,6 +356,15 @@ export class SeismogramSegment {
    */
   get nslc(): string {
     return this.codes();
+  }
+
+  get nslcId(): NslcId {
+    return new NslcId(
+      this.networkCode ? this.networkCode : "",
+      this.stationCode ? this.stationCode : "",
+      (this.locationCode && this.locationCode !== "--") ? this.locationCode : "",
+      this.channelCode ? this.channelCode : ""
+    );
   }
 
   /**

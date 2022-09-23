@@ -260,6 +260,9 @@ export class Seismogram {
   get nslc(): string {
     return this.codes();
   }
+  get nslcId(): NslcId {
+    return this._segmentArray[0].nslcId;
+  }
 
   codes(): string {
     return this._segmentArray[0].codes();
@@ -610,12 +613,12 @@ export class SeismogramDisplayData {
     const out = new SeismogramDisplayData(
       Interval.fromDateTimes(startTime, endTime),
     );
-    out.channelCodesHolder = {
-      networkCode: networkCode,
-      stationCode: stationCode,
-      locationCode: locationCode,
-      channelCode: channelCode,
-    };
+    out.channelCodesHolder = new NslcId(
+      networkCode,
+      stationCode,
+      locationCode,
+      channelCode
+    );
     return out;
   }
 
@@ -815,6 +818,19 @@ export class SeismogramDisplayData {
    */
   get nslc(): string {
     return this.codes();
+  }
+
+  get nslcId(): NslcId {
+    if (this.channel !== null) {
+      return this.channel.nslcId;
+    } else {
+      return new NslcId(
+        this.networkCode ? this.networkCode : "",
+        this.stationCode ? this.stationCode : "",
+        (this.locationCode && this.locationCode !== "--") ? this.locationCode : "",
+        this.channelCode ? this.channelCode : ""
+      );
+    }
   }
 
   /**

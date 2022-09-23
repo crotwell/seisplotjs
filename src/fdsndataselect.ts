@@ -526,14 +526,19 @@ export class DataSelectQuery extends FDSNCommon {
 
     return seismogramPromise.then(seisArray => {
       for (const sdd of sddList) {
-        const codes = sdd.codes();
+        let found = false;
+        const sddNslc = sdd.nslcId;
         const segList = seisArray.filter(
-          s => s.codes() === codes && s.timeRange.overlaps(sdd.timeRange),
+          s => s.nslcId.equals(sddNslc) && s.timeRange.overlaps(sdd.timeRange),
         );
         if (segList.length > 0) {
+          found = true;
           // do coarse trim in case multiple overlapping requests
           const seis = new Seismogram(segList).trim(sdd.timeRange);
           sdd.seismogram = seis;
+        }
+        if (!found) {
+          console.log(`did not find: ${sddNslc}`)
         }
       }
 

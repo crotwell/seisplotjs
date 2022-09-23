@@ -15,7 +15,7 @@ import {
   WAY_FUTURE,
 } from "./util";
 import {Complex} from "./oregondsputil";
-import {FDSNSourceId, NetworkSourceId, StationSourceId} from "./fdsnsourceid";
+import {FDSNSourceId, NetworkSourceId, StationSourceId, NslcId} from "./fdsnsourceid";
 import {DateTime, Interval} from "luxon";
 
 /** xml namespace for stationxml */
@@ -237,6 +237,15 @@ export class Channel {
                                  this.stationCode,
                                  this.locationCode,
                                  this.channelCode);
+  }
+
+  get nslcId(): NslcId {
+    return new NslcId(
+      this.networkCode ? this.networkCode : "",
+      this.stationCode ? this.stationCode : "",
+      (this.locationCode && this.locationCode !== "--") ? this.locationCode : "",
+      this.channelCode ? this.channelCode : ""
+    );
   }
 
   get startDate(): DateTime {
