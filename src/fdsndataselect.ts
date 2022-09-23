@@ -16,6 +16,7 @@ import {
   doFloatGetterSetter,
   doMomentGetterSetter,
   isDef,
+  isStringArg,
   toIsoWoZ,
   isNonEmptyStringArg,
   TEXT_MIME,
@@ -615,19 +616,19 @@ export class DataSelectQuery extends FDSNCommon {
   formURL(): string {
     let url = this.formBaseURL() + "/query?";
 
-    if (this._networkCode) {
+    if (isStringArg(this._networkCode) && this._networkCode.length>0 && this._networkCode!=='*') {
       url = url + makeParam("net", this._networkCode);
     }
 
-    if (this._stationCode) {
+    if (isStringArg(this._stationCode) && this._stationCode.length>0 && this._stationCode!=='*') {
       url = url + makeParam("sta", this._stationCode);
     }
 
-    if (this._locationCode) {
+    if (isStringArg(this._locationCode) && this._locationCode.length>0 && this._locationCode!=='*') {
       url = url + makeParam("loc", this._locationCode);
     }
 
-    if (this._channelCode) {
+    if (isStringArg(this._channelCode) && this._channelCode.length>0 && this._channelCode!=='*') {
       url = url + makeParam("cha", this._channelCode);
     }
 

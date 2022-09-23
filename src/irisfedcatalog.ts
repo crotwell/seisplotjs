@@ -838,10 +838,10 @@ export class FedCatalogQuery extends FDSNCommon {
    */
   isSomeParameterSet(): boolean {
     return (
-      isDef(this._networkCode) ||
-      isDef(this._stationCode) ||
-      isDef(this._locationCode) ||
-      isDef(this._channelCode) ||
+      (isDef(this._networkCode) && this._networkCode.length >0 && this._networkCode!=='*') ||
+      (isDef(this._stationCode) && this._stationCode.length >0 && this._stationCode!=='*') ||
+      (isDef(this._locationCode) && this._locationCode.length >0 && this._locationCode!=='*') ||
+      (isDef(this._channelCode) && this._channelCode.length >0 && this._channelCode!=='*') ||
       isDef(this._startTime) ||
       isDef(this._endTime) ||
       isDef(this._startBefore) ||
@@ -1120,6 +1120,12 @@ export class FedCatalogQuery extends FDSNCommon {
    */
   queryRaw(): Promise<FedCatalogResult> {
     const mythis = this;
+    if (!this.isSomeParameterSet()) {
+      throw new Error(
+        "Must set some parameter to avoid asking for everything.",
+      );
+    }
+
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     this.fedCatResult = doFetchWithTimeout(
@@ -1279,7 +1285,7 @@ export class FedCatalogQuery extends FDSNCommon {
       url = url + makeParam("targetservice", this._targetService);
     }
 
-    if (isStringArg(this._networkCode)) {
+    if (isStringArg(this._networkCode) && this._networkCode.length >0 && this._networkCode!=='*') {
       url = url + makeParam("net", this._networkCode);
     } else {
       // this is dumb, just to workaround a bug with IRIS fedcat server requiring one
@@ -1287,15 +1293,15 @@ export class FedCatalogQuery extends FDSNCommon {
       url = url + makeParam("net", "*");
     }
 
-    if (isStringArg(this._stationCode)) {
+    if (isStringArg(this._stationCode) && this._stationCode.length >0 && this._stationCode!=='*') {
       url = url + makeParam("sta", this._stationCode);
     }
 
-    if (isStringArg(this._locationCode)) {
+    if (isStringArg(this._locationCode) && this._locationCode.length >0 && this._locationCode!=='*') {
       url = url + makeParam("loc", this._locationCode);
     }
 
-    if (isStringArg(this._channelCode)) {
+    if (isStringArg(this._channelCode) && this._channelCode.length >0 && this._channelCode!=='*') {
       url = url + makeParam("cha", this._channelCode);
     }
 
