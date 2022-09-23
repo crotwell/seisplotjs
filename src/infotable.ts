@@ -134,6 +134,11 @@ tbody tr:nth-child(odd)
 {
   background: var(--odd-row-background);
 }
+table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+}
 `;
 
 /**
