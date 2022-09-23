@@ -29,6 +29,22 @@
     <sp-station-event-table ></sp-station-event-table>
   </div>
 
+
+  <h3>Channel Table:</h3>
+  <div>
+    <sp-channel-table ></sp-channel-table>
+  </div>
+
+  <h3>Station Table:</h3>
+  <div>
+    <sp-station-table ></sp-station-table>
+  </div>
+
+  <h3>Seismogram Table:</h3>
+  <div>
+    <sp-seismogram-table ></sp-seismogram-table>
+  </div>
+
   <script type="module">
 
     import * as seisplotjs from '../seisplotjs_3.0.0-alpha.1_standalone.mjs';
@@ -42,6 +58,21 @@
     }).then((ds) => {
         document.querySelectorAll('sp-event-table').forEach( graph => {
           graph.quakeList = seisplotjs.seismogram.uniqueQuakes(ds.waveforms);
+        });
+        return ds;
+    }).then((ds) => {
+        document.querySelectorAll('sp-channel-table').forEach( graph => {
+          graph.channelList = seisplotjs.seismogram.uniqueChannels(ds.waveforms);
+        });
+        return ds;
+    }).then((ds) => {
+        document.querySelectorAll('sp-station-table').forEach( graph => {
+          graph.stationList = seisplotjs.seismogram.uniqueStations(ds.waveforms);
+        });
+        return ds;
+    }).then((ds) => {
+        document.querySelectorAll('sp-seismogram-table').forEach( graph => {
+          graph.seisData = ds.waveforms;
         });
         return ds;
     });

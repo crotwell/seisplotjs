@@ -876,6 +876,13 @@ export class SeismogramDisplayData {
     return this.timeRange;
   }
 
+  get numPoints(): number {
+    if (this._seismogram) {
+      return this._seismogram.numPoints;
+    }
+    return 0;
+  }
+
   associateChannel(nets: Array<Network> ) {
     const matchChans = findChannels(nets,
                                     this.networkCode,
@@ -1125,6 +1132,7 @@ export class SeismogramDisplayData {
     return `${this.sourceId} ${this.timeRange}`;
   }
 }
+
 export class SeismogramDisplayStats {
   min: number;
   max: number;
@@ -1361,6 +1369,17 @@ export function uniqueStations(
   seisData.forEach(sdd => {
     if (sdd.channel) {
       out.add(sdd.channel.station);
+    }
+  });
+  return Array.from(out.values());
+}
+export function uniqueChannels(
+  seisData: Array<SeismogramDisplayData>,
+): Array<Channel> {
+  const out = new Set<Channel>();
+  seisData.forEach(sdd => {
+    if (sdd.channel) {
+      out.add(sdd.channel);
     }
   });
   return Array.from(out.values());

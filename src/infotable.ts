@@ -1,6 +1,6 @@
 
 import {Quake} from './quakeml';
-import {Channel} from './stationxml';
+import {Channel, Station} from './stationxml';
 import {SeisPlotElement, addStyleToElement} from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
@@ -31,12 +31,42 @@ export enum CHANNEL_COLUMN {
     END = "End",
     ELEVATION = "Elev",
     DEPTH = "Depth",
+    SOURCEID = "SourceId",
     CODE = "Code",
     NETWORK_CODE = "NetworkCode",
     STATION_CODE = "StationCode",
     LOCATION_CODE = "LocationCode",
     CHANNEL_CODE = "ChannelCode",
 }
+
+
+export enum STATION_COLUMN {
+    LAT = "Lat",
+    LON = "Lon",
+    START = "Start",
+    END = "End",
+    ELEVATION = "Elev",
+    SOURCEID = "SourceId",
+    CODE = "Code",
+    NETWORK_CODE = "NetworkCode",
+    STATION_CODE = "StationCode",
+}
+
+
+export enum SEISMOGRAM_COLUMN {
+    START = "Start",
+    DURATION = "Duration",
+    END = "End",
+    NUM_POINTS = "Num Pts",
+    SAMPLE_RATE = "Sample Rate",
+    SAMPLE_PERIOD = "Sample Period",
+    SEGMENTS = "Segments",
+    SOURCEID = "SourceId",
+    CODE = "Codes",
+    NETWORK_CODE = "NetworkCode",
+    STATION_CODE = "StationCode",
+}
+
 
 export const DEFAULT_TEMPLATE = `
   <table>
@@ -184,7 +214,7 @@ export class QuakeStationTable extends SeisPlotElement {
           seisConfig: mythis.seismographConfig,
         },
         {
-//          allowProtoPropertiesByDefault: true, // this might be a security issue???
+          allowProtoPropertiesByDefault: true, // this might be a security issue???
         },
       );
   }
@@ -268,11 +298,11 @@ export class QuakeTable extends HTMLElement {
     this._rowToQuake.set(row, q);
     this.headers().forEach(h => {
       const cell = row.insertCell(index);
-      cell.textContent = this.getQuakeValue(q, h);
+      cell.textContent = QuakeTable.getQuakeValue(q, h);
       if (index !== -1) { index++;}
     });
   }
-  getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
+  static getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
     if (h === QUAKE_COLUMN.TIME) {
       return q.time.toISO();
     } else if (h === QUAKE_COLUMN.LAT) {
@@ -315,8 +345,8 @@ export class QuakeTable extends HTMLElement {
             out =  qa.depthKm - qb.depthKm;
           } else {
             // just use string
-            const ta = this.getQuakeValue(qa, h);
-            const tb = this.getQuakeValue(qb, h);
+            const ta = QuakeTable.getQuakeValue(qa, h);
+            const tb = QuakeTable.getQuakeValue(qb, h);
             if (ta < tb) {
               out =  -1;
             } else if (ta > tb) {
@@ -367,6 +397,7 @@ export class ChannelTable extends HTMLElement {
     }
     if ( ! columnLabels) {
       columnLabels = new Map();
+      columnLabels.set(CHANNEL_COLUMN.CODE, "Code");
       columnLabels.set(CHANNEL_COLUMN.START, "Start");
       columnLabels.set(CHANNEL_COLUMN.END, "End");
       columnLabels.set(CHANNEL_COLUMN.LAT, "Lat");
@@ -375,7 +406,7 @@ export class ChannelTable extends HTMLElement {
       columnLabels.set(CHANNEL_COLUMN.DIP, "Dip");
       columnLabels.set(CHANNEL_COLUMN.DEPTH, "Depth");
       columnLabels.set(CHANNEL_COLUMN.ELEVATION, "Evel");
-      columnLabels.set(CHANNEL_COLUMN.CODE, "Code");
+      columnLabels.set(CHANNEL_COLUMN.SOURCEID, "SourceId");
     }
     this._channelList = channelList;
     this._columnLabels = columnLabels;
@@ -428,11 +459,11 @@ export class ChannelTable extends HTMLElement {
     this._rowToChannel.set(row, q);
     this.headers().forEach(h => {
       const cell = row.insertCell(index);
-      cell.textContent = this.getChannelValue(q, h);
+      cell.textContent = ChannelTable.getChannelValue(q, h);
       if (index !== -1) { index++;}
     });
   }
-  getChannelValue(q: Channel, h: CHANNEL_COLUMN): string {
+  static getChannelValue(q: Channel, h: CHANNEL_COLUMN): string {
     if (h === CHANNEL_COLUMN.START) {
       return q.startDate.toISO();
     } else if (h === CHANNEL_COLUMN.END) {
@@ -449,6 +480,8 @@ export class ChannelTable extends HTMLElement {
       return latlonFormat.format(q.azimuth);
     } else if (h === CHANNEL_COLUMN.DIP) {
       return latlonFormat.format(q.dip);
+    } else if (h === CHANNEL_COLUMN.SOURCEID) {
+      return `${q.sourceId}`;
     } else if (h === CHANNEL_COLUMN.CODE) {
       return `${q.codes()}`;
     } else if (h === CHANNEL_COLUMN.NETWORK_CODE) {
@@ -497,8 +530,8 @@ export class ChannelTable extends HTMLElement {
             out =  qa.elevation - qb.elevation;
           } else {
             // just use string
-            const ta = this.getChannelValue(qa, h);
-            const tb = this.getChannelValue(qb, h);
+            const ta = ChannelTable.getChannelValue(qa, h);
+            const tb = ChannelTable.getChannelValue(qb, h);
             if (ta < tb) {
               out =  -1;
             } else if (ta > tb) {
@@ -534,6 +567,350 @@ export class ChannelTable extends HTMLElement {
 
 export const CHANNEL_INFO_ELEMENT = 'sp-channel-table';
 customElements.define(CHANNEL_INFO_ELEMENT, ChannelTable);
+
+
+export class StationTable extends HTMLElement {
+  _columnLabels: Map<STATION_COLUMN, string>;
+  _stationList: Array<Station>;
+  _rowToStation: Map<HTMLTableRowElement, Station>;
+  lastSortAsc: boolean = true;
+  lastSortCol: STATION_COLUMN | undefined;
+  constructor(stationList?: Array<Station>, columnLabels?: Map<STATION_COLUMN, string>) {
+    super();
+    if ( ! stationList) {
+      stationList = [];
+    }
+    if ( ! columnLabels) {
+      columnLabels = new Map();
+      columnLabels.set(STATION_COLUMN.CODE, "Code");
+      columnLabels.set(STATION_COLUMN.START, "Start");
+      columnLabels.set(STATION_COLUMN.END, "End");
+      columnLabels.set(STATION_COLUMN.LAT, "Lat");
+      columnLabels.set(STATION_COLUMN.LON,  "Lon");
+      columnLabels.set(STATION_COLUMN.ELEVATION, "Evel");
+      columnLabels.set(STATION_COLUMN.SOURCEID, "SourceId");
+    }
+    this._stationList = stationList;
+    this._columnLabels = columnLabels;
+    this._rowToStation = new Map();
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const table = document.createElement('table');
+    table.setAttribute("class", "wrapper");
+    addStyleToElement(this, TABLE_CSS);
+
+    shadow.appendChild(table);
+  }
+  get stationList(): Array<Station> {
+    return this._stationList;
+  }
+  set stationList(ql: Array<Station>) {
+    this._stationList = ql;
+    this.draw();
+  }
+  get columnLabels(): Map<STATION_COLUMN, string> {
+    return this._columnLabels;
+  }
+  set columnLabels(cols: Map<STATION_COLUMN, string>) {
+    this._columnLabels = cols;
+    this.draw();
+  }
+  draw() {
+    if ( ! this.isConnected) { return; }
+    const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
+    table.deleteTHead();
+    const theader = table.createTHead().insertRow();
+    this.headers().forEach(h => {
+      const cell = theader.appendChild(document.createElement("th"));
+      cell.textContent = h;
+      cell.addEventListener('click', () => {this.sort(h, cell);});
+    });
+    table.querySelectorAll("tbody")?.forEach( (tb: Node) => {
+      table.removeChild(tb);
+    });
+    const tbody = table.createTBody();
+    this.stationList.forEach(q => {
+      const row = tbody.insertRow();
+      this.populateRow(q, row, -1);
+    });
+  }
+  headers(): Array<STATION_COLUMN> {
+    return Array.from(this._columnLabels.keys());
+  }
+  populateRow(q: Station, row: HTMLTableRowElement, index: number) {
+    this._rowToStation.set(row, q);
+    this.headers().forEach(h => {
+      const cell = row.insertCell(index);
+      cell.textContent = StationTable.getStationValue(q, h);
+      if (index !== -1) { index++;}
+    });
+  }
+  static getStationValue(q: Station, h: STATION_COLUMN): string {
+    if (h === STATION_COLUMN.START) {
+      return q.startDate.toISO();
+    } else if (h === STATION_COLUMN.END) {
+      return q.endDate ? q.endDate.toISO() : "";
+    } else if (h === STATION_COLUMN.LAT) {
+      return latlonFormat.format(q.latitude);
+    } else if (h === STATION_COLUMN.LON) {
+      return latlonFormat.format(q.longitude);
+    } else if (h === STATION_COLUMN.ELEVATION) {
+      return depthMeterFormat.format(q.elevation);
+    } else if (h === STATION_COLUMN.SOURCEID) {
+      return `${q.sourceId}`;
+    } else if (h === STATION_COLUMN.CODE) {
+      return `${q.codes()}`;
+    } else if (h === STATION_COLUMN.NETWORK_CODE) {
+      return `${q.networkCode}`;
+    } else if (h === STATION_COLUMN.STATION_CODE) {
+      return `${q.stationCode}`;
+    } else {
+      return `unknown: ${h}`;
+    }
+  }
+  sort(h: STATION_COLUMN, headerCell: HTMLTableCellElement) {
+    const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
+    const tbody = table.querySelector("tbody");
+    if (tbody) {
+      const rows = Array.from(tbody.querySelectorAll("tr") as NodeListOf<HTMLTableRowElement>);
+      rows.sort((rowa,rowb) => {
+        let out = 0;
+        const qa = this._rowToStation.get(rowa);
+        const qb = this._rowToStation.get(rowb);
+        if (qa && qb) {
+          if (h === STATION_COLUMN.START) {
+            out = qa.startDate.toMillis()-qb.startDate.toMillis();
+          } else if (h === STATION_COLUMN.END) {
+            if (qa.endDate && qb.endDate ) {
+              out = qa.endDate.toMillis()-qb.endDate.toMillis();
+            } else if (qb.endDate) {
+              return 1;
+            } else {
+              return -1;
+            }
+          } else if (h === STATION_COLUMN.LAT) {
+            out =  qa.latitude - qb.latitude;
+          } else if (h === STATION_COLUMN.LON) {
+            out =  qa.longitude - qb.longitude;
+          } else if (h === STATION_COLUMN.ELEVATION) {
+            out =  qa.elevation - qb.elevation;
+          } else {
+            // just use string
+            const ta = StationTable.getStationValue(qa, h);
+            const tb = StationTable.getStationValue(qb, h);
+            if (ta < tb) {
+              out =  -1;
+            } else if (ta > tb) {
+              out =  1;
+            } else {
+              out =  0;
+            }
+          }
+        } else {
+          // cant find one of the Stations, oh well
+          console.log(`can't find qa or qb: ${qa} ${qb}`)
+        }
+        return out;
+      });
+      if (this.lastSortCol === h) {
+        if (this.lastSortAsc) {
+          rows.reverse();
+        }
+        this.lastSortAsc = ! this.lastSortAsc;
+      } else {
+        this.lastSortAsc = true;
+      }
+      // this effectively remove and then appends the rows in new order
+      rows.forEach( v => {
+        tbody.appendChild(v);
+      });
+      this.lastSortCol = h;
+    } else {
+      console.log("no tbody for table sort")
+    }
+  }
+}
+
+export const STATION_INFO_ELEMENT = 'sp-station-table';
+customElements.define(STATION_INFO_ELEMENT, StationTable);
+
+
+
+
+
+export class SeismogramTable extends HTMLElement {
+  _columnLabels: Map<SEISMOGRAM_COLUMN, string>;
+  _sddList: Array<SeismogramDisplayData>;
+  _rowToSDD: Map<HTMLTableRowElement, SeismogramDisplayData>;
+  lastSortAsc: boolean = true;
+  lastSortCol: SEISMOGRAM_COLUMN | undefined;
+  constructor(sddList?: Array<SeismogramDisplayData>, columnLabels?: Map<SEISMOGRAM_COLUMN, string>) {
+    super();
+    if ( ! sddList) {
+      sddList = [];
+    }
+    if ( ! columnLabels) {
+      columnLabels = new Map();
+      columnLabels.set(SEISMOGRAM_COLUMN.CODE, "Code");
+      columnLabels.set(SEISMOGRAM_COLUMN.START, "Start");
+      columnLabels.set(SEISMOGRAM_COLUMN.END, "End");
+      columnLabels.set(SEISMOGRAM_COLUMN.DURATION, "Dur");
+      columnLabels.set(SEISMOGRAM_COLUMN.SAMPLE_RATE, "Sample Rate");
+      columnLabels.set(SEISMOGRAM_COLUMN.SAMPLE_PERIOD, "Sample Period");
+      columnLabels.set(SEISMOGRAM_COLUMN.NUM_POINTS,  "Npts");
+      columnLabels.set(SEISMOGRAM_COLUMN.SEGMENTS, "Segments");
+      columnLabels.set(SEISMOGRAM_COLUMN.SOURCEID, "SourceId");
+    }
+    this._sddList = sddList;
+    this._columnLabels = columnLabels;
+    this._rowToSDD = new Map();
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const table = document.createElement('table');
+    table.setAttribute("class", "wrapper");
+    addStyleToElement(this, TABLE_CSS);
+
+    shadow.appendChild(table);
+  }
+  get seisData(): Array<SeismogramDisplayData> {
+    return this._sddList;
+  }
+  set seisData(ql: Array<SeismogramDisplayData>) {
+    this._sddList = ql;
+    this.draw();
+  }
+  get columnLabels(): Map<SEISMOGRAM_COLUMN, string> {
+    return this._columnLabels;
+  }
+  set columnLabels(cols: Map<SEISMOGRAM_COLUMN, string>) {
+    this._columnLabels = cols;
+    this.draw();
+  }
+  draw() {
+    if ( ! this.isConnected) { return; }
+    const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
+    table.deleteTHead();
+    const theader = table.createTHead().insertRow();
+    this.headers().forEach(h => {
+      const cell = theader.appendChild(document.createElement("th"));
+      cell.textContent = h;
+      cell.addEventListener('click', () => {this.sort(h, cell);});
+    });
+    table.querySelectorAll("tbody")?.forEach( (tb: Node) => {
+      table.removeChild(tb);
+    });
+    const tbody = table.createTBody();
+    this._sddList.forEach(q => {
+      const row = tbody.insertRow();
+      this.populateRow(q, row, -1);
+    });
+  }
+  headers(): Array<SEISMOGRAM_COLUMN> {
+    return Array.from(this._columnLabels.keys());
+  }
+  populateRow(q: SeismogramDisplayData, row: HTMLTableRowElement, index: number) {
+    this._rowToSDD.set(row, q);
+    this.headers().forEach(h => {
+      const cell = row.insertCell(index);
+      cell.textContent = SeismogramTable.getSeismogramValue(q, h);
+      if (index !== -1) { index++;}
+    });
+  }
+  static getSeismogramValue(q: SeismogramDisplayData, h: SEISMOGRAM_COLUMN): string {
+    if (h === SEISMOGRAM_COLUMN.START) {
+      return q.start.toISO();
+    } else if (h === SEISMOGRAM_COLUMN.END) {
+      return q.end.toISO();
+    } else if (h === SEISMOGRAM_COLUMN.DURATION) {
+      return q.timeRange.toDuration().toISO();
+    } else if (h === SEISMOGRAM_COLUMN.NUM_POINTS) {
+      return `${q.numPoints}`;
+    } else if (h === SEISMOGRAM_COLUMN.SAMPLE_RATE) {
+      return q._seismogram ? `${q._seismogram.sampleRate}` : "";
+    } else if (h === SEISMOGRAM_COLUMN.SAMPLE_PERIOD) {
+      return q._seismogram ? `${q._seismogram.samplePeriod}` : "";
+    } else if (h === SEISMOGRAM_COLUMN.SEGMENTS) {
+      return q._seismogram ? `${q._seismogram.segments.length}` : "";
+    } else if (h === SEISMOGRAM_COLUMN.SOURCEID) {
+      return `${q.sourceId}`;
+    } else if (h === SEISMOGRAM_COLUMN.CODE) {
+      return `${q.codes()}`;
+    } else if (h === SEISMOGRAM_COLUMN.NETWORK_CODE) {
+      return `${q.networkCode}`;
+    } else if (h === SEISMOGRAM_COLUMN.STATION_CODE) {
+      return `${q.stationCode}`;
+    } else {
+      return `unknown: ${h}`;
+    }
+  }
+  sort(h: SEISMOGRAM_COLUMN, headerCell: HTMLTableCellElement) {
+    const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
+    const tbody = table.querySelector("tbody");
+    if (tbody) {
+      const rows = Array.from(tbody.querySelectorAll("tr") as NodeListOf<HTMLTableRowElement>);
+      rows.sort((rowa,rowb) => {
+        let out = 0;
+        const qa = this._rowToSDD.get(rowa);
+        const qb = this._rowToSDD.get(rowb);
+        if (qa && qb) {
+          if (h === SEISMOGRAM_COLUMN.START) {
+            out = qa.start.toMillis()-qb.start.toMillis();
+          } else if (h === SEISMOGRAM_COLUMN.END) {
+            out = qa.end.toMillis()-qb.end.toMillis();
+          } else if (h === SEISMOGRAM_COLUMN.DURATION) {
+            out =  (qa.timeRange.toDuration().toMillis() - qb.timeRange.toDuration().toMillis());
+          } else if (h === SEISMOGRAM_COLUMN.NUM_POINTS) {
+            out =  qa.numPoints - qb.numPoints;
+          } else if (h === SEISMOGRAM_COLUMN.SAMPLE_RATE) {
+            out =  (qa._seismogram ? qa._seismogram.sampleRate : 0)
+              - (qb._seismogram ? qb._seismogram.sampleRate : 0) ;
+          } else if (h === SEISMOGRAM_COLUMN.SAMPLE_PERIOD) {
+            out =  (qa._seismogram ? qa._seismogram.samplePeriod : 0)
+              - (qb._seismogram ? qb._seismogram.samplePeriod : 0) ;
+          } else if (h === SEISMOGRAM_COLUMN.SEGMENTS) {
+            out = (qa._seismogram ? qa._seismogram.segments.length : 0)
+              - (qb._seismogram ? qb._seismogram.segments.length : 0);
+          } else {
+            // just use string
+            const ta = SeismogramTable.getSeismogramValue(qa, h);
+            const tb = SeismogramTable.getSeismogramValue(qb, h);
+            if (ta < tb) {
+              out =  -1;
+            } else if (ta > tb) {
+              out =  1;
+            } else {
+              out =  0;
+            }
+          }
+        } else {
+          // cant find one of the items, oh well
+          console.log(`can't find qa or qb: ${qa} ${qb}`)
+        }
+        return out;
+      });
+      if (this.lastSortCol === h) {
+        if (this.lastSortAsc) {
+          rows.reverse();
+        }
+        this.lastSortAsc = ! this.lastSortAsc;
+      } else {
+        this.lastSortAsc = true;
+      }
+      // this effectively remove and then appends the rows in new order
+      rows.forEach( v => {
+        tbody.appendChild(v);
+      });
+      this.lastSortCol = h;
+    } else {
+      console.log("no tbody for table sort")
+    }
+  }
+}
+
+export const SDD_INFO_ELEMENT = 'sp-seismogram-table';
+customElements.define(SDD_INFO_ELEMENT, SeismogramTable);
+
+
 
 
 
