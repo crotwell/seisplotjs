@@ -746,7 +746,7 @@ export class AvailabilityQuery extends FDSNCommon {
           ct.channel.locationCode
         } ${
           ct.channel.channelCode
-        } ${ct.startTime.toISO()} ${ct.endTime.toISO()}`;
+        } ${toIsoWoZ(ct.startTime)} ${toIsoWoZ(ct.endTime)}`;
         out += "\n";
       } else {
         throw new Error("Channel in missing in createPostBody");

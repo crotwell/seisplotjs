@@ -560,7 +560,7 @@ export class DataSelectQuery extends FDSNCommon {
       const locCode = sdd.locationCode.trim() === "" ? "--" : sdd.locationCode;
       out += `${sdd.networkCode} ${sdd.stationCode} ${locCode} ${
         sdd.channelCode
-      } ${sdd.startTime.toISO()} ${sdd.endTime.toISO()}`;
+      } ${toIsoWoZ(sdd.startTime)} ${toIsoWoZ(sdd.endTime)}`;
       out += "\n";
     }
 
