@@ -112,14 +112,20 @@ export class SeismogramLoader {
     if (Duration.isDuration(val)) {
       this._startOffset = val;
     } else if (typeof val === "number") {
-      this.startOffsetOfSeconds(val);
+      this.startOffsetSeconds(val);
     } else {
       throw new Error("startOffset must be luxon Duration or number of seconds: " + stringify(val));
     }
   }
 
-  startOffsetOfSeconds(val: number) {
+  /**
+   * Sets the startOffset Duration to be val seconds.
+   * @param  val  number of seconds, negative for before, positive for after
+   * @return     this
+   */
+  startOffsetSeconds(val: number): SeismogramLoader {
     this._startOffset = Duration.fromMillis(val*1000); // seconds
+    return this;
   }
 
   get endPhaseList(): Array<string> {
@@ -146,20 +152,26 @@ export class SeismogramLoader {
     if (Duration.isDuration(val)) {
       this._endOffset = val;
     } else if (typeof val === "number") {
-      this.endOffsetOfSeconds(val);
+      this.endOffsetSeconds(val);
     } else {
       throw new Error("startOffset must be luxon Duration or number of seconds: " + stringify(val));
     }
   }
 
-  endOffsetOfSeconds(val: number) {
+  /**
+   * Sets the endOffset Duration to be val seconds.
+   * @param  val  number of seconds, negative for before, positive for after
+   * @return     this
+   */
+  endOffsetSeconds(val: number): SeismogramLoader {
     this._endOffset = Duration.fromMillis(val*1000); //seconds
+    return this;
   }
 
   /**
    * Additional phase arrival travel times to be marked, but do not effect
    * the request time window.
-   * 
+   *
    * @return array of phase names.
    */
   get markedPhaseList(): Array<string> {
