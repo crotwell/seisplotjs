@@ -221,11 +221,9 @@ export const OVERLAY_FUNCTION = "function";
 export class OrganizedDisplay extends SeisPlotElement {
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
-    const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    const style = shadow.appendChild(document.createElement('style'));
-    style.textContent = `
+    this.addStyle(`
     :host {
       display: block;
       min-height: 50px;
@@ -240,8 +238,8 @@ export class OrganizedDisplay extends SeisPlotElement {
     sp-seismograph {
       height: 200px;
     }
-    `;
-    shadow.appendChild(wrapper);
+    `);
+    this.shadowRoot?.appendChild(wrapper);
   }
   static get observedAttributes() {
     return [ORG_TYPE, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY];
