@@ -27,6 +27,7 @@ import {isDef, isStringArg, stringify} from "./util";
  */
 export class SeismogramLoader {
   stationQuery: StationQuery;
+  withFedCatalog: boolean;
   withResponse: boolean;
   markOrigin: boolean;
   eventQuery: EventQuery;
@@ -67,6 +68,7 @@ export class SeismogramLoader {
       );
     }
 
+    this.withFedCatalog = true;
     this.stationQuery = stationQuery;
     this.withResponse = false;
     this.eventQuery = eventQuery;
@@ -213,7 +215,12 @@ export class SeismogramLoader {
   }
 
   load(): Promise<[Array<Network>, Array<Quake>, Array<SeismogramDisplayData>]> {
-    const fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
+    let fedcat;
+    if (this.withFedCatalog) {
+      fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
+    } else {
+      fedcat = this.stationQuery;
+    }
 
     if (!this.stationQuery.isSomeParameterSet()) {
       throw new Error(
@@ -357,10 +364,15 @@ export class SeismogramLoader {
         sddListPromise = this.dataselectQuery.postQuerySeismograms(
           seismogramDataList,
         );
-      } else {
+      } else if (this.withFedCatalog) {
         // use IrisFedCat
         const fedcatDS = new FedCatalogQuery();
         sddListPromise = fedcatDS.postQuerySeismograms(seismogramDataList);
+      } else {
+        // use default dataselect
+        sddListPromise = new DataSelectQuery().postQuerySeismograms(
+          seismogramDataList,
+        );
       }
 
       return sddListPromise;
