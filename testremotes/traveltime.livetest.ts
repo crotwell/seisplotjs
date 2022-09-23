@@ -30,3 +30,15 @@ test("formURL", () => {
    });
 
 });
+
+
+test("test multiple distances", () => {
+  let query = new traveltime.TraveltimeQuery();
+  query.format(traveltime.JSON_FORMAT);
+  query.distdeg([ 10, 30, 60]);
+  query.phases("P");
+  return query.query().then( tt => {
+    console.log(`got something: ${tt.arrivals.length}`);
+    expect(tt.arrivals.length).toEqual(3);
+  });
+});
