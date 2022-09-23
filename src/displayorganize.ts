@@ -488,7 +488,7 @@ export function overlayBySDDFunction(
       out.push(org);
     }
   });
-  return sortByKey(out, key);
+  return out;
 }
 export function overlayByComponent(
   sddList: Array<SeismogramDisplayData>,
