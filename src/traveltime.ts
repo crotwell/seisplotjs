@@ -96,7 +96,7 @@ export class TraveltimeQuery extends FDSNCommon {
   _evdepth: number;
 
   /** @private */
-  _distdeg: number | undefined;
+  _distdeg: Array<number> | undefined;
 
   /** @private */
   _model: string | undefined;
@@ -209,12 +209,16 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._evdepth;
   }
 
-  distdeg(value?: number): TraveltimeQuery {
-    doFloatGetterSetter(this, "distdeg", value);
+  distdeg(value?: number | Array<number>): TraveltimeQuery {
+    if (typeof value === 'number') {
+      this._distdeg = [value];
+    } else {
+      this._distdeg = value;
+    }
     return this;
   }
 
-  getDistdeg(): number | undefined {
+  getDistdeg(): Array<number> | undefined {
     return this._distdeg;
   }
 
@@ -481,7 +485,7 @@ export class TraveltimeQuery extends FDSNCommon {
     }
 
     if (isDef(this._distdeg)) {
-      url = url + makeParam("distdeg", this._distdeg);
+      url = url + makeParam("distdeg", this._distdeg.join(','));
     }
 
     if (isDef(this._model)) {
