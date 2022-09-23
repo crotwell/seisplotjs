@@ -222,6 +222,8 @@ export function bandCodeForRate(sampRate?: number, resp_lb?: number): string {
   }
 }
 
+export const EMPTY_LOC_CODE = "--";
+
 export class NslcId {
   networkCode: string;
   stationCode: string;
@@ -242,6 +244,15 @@ export class NslcId {
   }
   toString(): string {
     return `${this.networkCode}_${this.stationCode}_${this.locationCode}_${this.channelCode}`
+  }
+  equals(other: NslcId): boolean {
+    if (this.networkCode !== other.networkCode) { return false;}
+    if (this.stationCode !== other.stationCode) { return false;}
+    let myLoc = this.locationCode === EMPTY_LOC_CODE ? "" : this.locationCode;
+    let otherLoc = other.locationCode === EMPTY_LOC_CODE ? "" : other.locationCode;
+    if (myLoc !== otherLoc) { return false;}
+    if (this.channelCode !== other.channelCode) { return false;}
+    return true;
   }
 }
 
