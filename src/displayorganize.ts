@@ -334,14 +334,18 @@ export class OrganizedDisplayTools extends SeisPlotElement {
         console.log(`set info to ${this.organizedDisplay.info}`)
       }
     });
-    shadow?.querySelectorAll('fieldset.overlay input').forEach(i => i.addEventListener('change', e => {
-      console.log(`onchange: ${i.value}`)
-      this.organizedDisplay.setAttribute('overlay', i.value);
-    }));
-    shadow?.querySelectorAll('fieldset.sort input').forEach(i => i.addEventListener('change', e => {
-      console.log(`onchange: ${i.value}`)
-      this.organizedDisplay.setAttribute('sort', i.value);
-    }));
+    shadow?.querySelectorAll('fieldset.overlay input').forEach(i => {
+      const inEl = (i as HTMLInputElement);
+      inEl.addEventListener('change', e => {
+        this.organizedDisplay?.setAttribute('overlay', inEl.value);
+      })
+    });
+    shadow?.querySelectorAll('fieldset.sort input').forEach(i => {
+      const inEl = i as HTMLInputElement;
+      inEl.addEventListener('change', e => {
+        this.organizedDisplay?.setAttribute('sort', inEl.value);
+      });
+    });
   }
 }
 export const ORG_DISP_TOOLS_ELEMENT = 'sp-orgdisp-tools';
