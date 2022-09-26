@@ -298,14 +298,42 @@ export const TOOLS_HTML = `
 `;
 
 export class OrganizedDisplayTools extends SeisPlotElement {
-  organizedDisplay: OrganizedDisplay | null;
+  _organizedDisplay: OrganizedDisplay | null;
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
     wrapper.innerHTML = TOOLS_HTML;
     this.shadowRoot?.appendChild(wrapper);
-    this.organizedDisplay = null;
+    this._organizedDisplay = null;
+  }
+  get organizedDisplay() {
+    return this._organizedDisplay;
+  }
+  set organizedDisplay(orgdisp: OrganizedDisplay | null) {
+    this._organizedDisplay = orgdisp;
+    this.initCheckboxes(orgdisp);
+  }
+  initCheckboxes(orgdisp: OrganizedDisplay|null) {
+    if (orgdisp) {
+      const shadow = this.shadowRoot;
+      const doMapCB = shadow?.querySelector("input#with_map") as HTMLInputElement;
+      if (doMapCB) {
+        doMapCB.checked = orgdisp.map === 'true';
+      }
+      const doInfoCB = shadow?.querySelector("input#with_info") as HTMLInputElement;
+      if (doInfoCB) {
+        doInfoCB.checked = orgdisp.info === 'true';
+      }
+      shadow?.querySelectorAll('fieldset.overlay input').forEach(i => {
+        const inEl = (i as HTMLInputElement);
+        inEl.checked = orgdisp.overlayby === inEl.value;
+      });
+      shadow?.querySelectorAll('fieldset.sort input').forEach(i => {
+        const inEl = (i as HTMLInputElement);
+        inEl.checked = orgdisp.sortby === inEl.value;
+      });
+    }
   }
   draw() {
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
@@ -320,32 +348,37 @@ export class OrganizedDisplayTools extends SeisPlotElement {
       console.log("no ccheckbox found");
     }
     doMapCB?.addEventListener('change', () => {
-      if (this.organizedDisplay) {
-        this.organizedDisplay.map = doMapCB.checked ? 'true' : 'false';
-        console.log(`set map to ${this.organizedDisplay.map}`)
+      if (this._organizedDisplay) {
+        this._organizedDisplay.map = doMapCB.checked ? 'true' : 'false';
+        console.log(`set map to ${this._organizedDisplay.map}`)
       } else {
         console.log("no org display set")
       }
     });
     const doInfoCB = shadow?.querySelector("input#with_info") as HTMLInputElement;
     doInfoCB?.addEventListener('change', () => {
-      if (this.organizedDisplay) {
-        this.organizedDisplay.info = `${doInfoCB.checked}`;
-        console.log(`set info to ${this.organizedDisplay.info}`)
+      if (this._organizedDisplay) {
+        this._organizedDisplay.info = `${doInfoCB.checked}`;
+        console.log(`set info to ${this._organizedDisplay.info}`)
       }
     });
     shadow?.querySelectorAll('fieldset.overlay input').forEach(i => {
       const inEl = (i as HTMLInputElement);
       inEl.addEventListener('change', e => {
-        this.organizedDisplay?.setAttribute('overlay', inEl.value);
+        if (this._organizedDisplay) {
+          this._organizedDisplay?.setAttribute('overlay', inEl.value);
+        }
       })
     });
     shadow?.querySelectorAll('fieldset.sort input').forEach(i => {
       const inEl = i as HTMLInputElement;
       inEl.addEventListener('change', e => {
-        this.organizedDisplay?.setAttribute('sort', inEl.value);
+        if (this._organizedDisplay) {
+          this._organizedDisplay?.setAttribute('sort', inEl.value);
+        }
       });
     });
+    this.initCheckboxes(this._organizedDisplay);
   }
 }
 export const ORG_DISP_TOOLS_ELEMENT = 'sp-orgdisp-tools';
@@ -456,9 +489,9 @@ export class OrganizedDisplay extends SeisPlotElement {
     const mythis = this;
     const sortedData = sort(mythis.seisData, this.sortby);
     let allOrgDispItems = new Array<OrganizedDisplayItem>();
-    this.drawTools();
-    this.drawMap();
-    this.drawInfo();
+    this.drawTools(sortedData);
+    this.drawMap(sortedData);
+    this.drawInfo(sortedData);
     if (this.overlayby === OVERLAY_INDIVIDUAL) {
       sortedData.forEach(sdd => {
           const oi = new OrganizedDisplayItem([sdd], mythis.seismographConfig);
@@ -509,7 +542,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       mythis.seismographConfig.linkedAmplitudeScale.notifyAll();
     }
   }
-  drawTools() {
+  drawTools(sortedData: Array<SeismogramDisplayData>) {
     console.log(`drawTools: ${this.tools}`)
     if ( ! this.isConnected) { return; }
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
@@ -524,14 +557,13 @@ export class OrganizedDisplay extends SeisPlotElement {
       wrapper.insertBefore(toolsdisp, wrapper.firstElementChild);
     }
   }
-  drawMap() {
+  drawMap(sortedData: Array<SeismogramDisplayData>) {
     if ( ! this.isConnected) { return; }
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
-    const mapElement = wrapper.querySelector(MAP_ELEMENT);
+    const mapElement = wrapper.querySelector(MAP_ELEMENT) as QuakeStationMap;
     if (this.map !== 'true' && mapElement) {
       wrapper.removeChild(mapElement);
     } else if (this.map === 'true' && ! isDef(mapElement)) {
-      const sortedData = sort(this.seisData, this.sortby);
       const mapdisp = new QuakeStationMap(sortedData, this.seismographConfig);
       // map is first
       const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);
@@ -545,13 +577,14 @@ export class OrganizedDisplay extends SeisPlotElement {
       } else {
         wrapper.insertBefore(mapdisp, wrapper.firstElementChild);
       }
-
+    } else if (this.map === 'true' && isDef(mapElement)) {
+      mapElement.seisData = sortedData;
     }
   }
-  drawInfo() {
+  drawInfo(sortedData: Array<SeismogramDisplayData>) {
     if ( ! this.isConnected) { return; }
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
-    const infoElement = wrapper.querySelector(INFO_ELEMENT);
+    const infoElement = wrapper.querySelector(INFO_ELEMENT) as QuakeStationTable;
     if (this.info !== 'true' && infoElement) {
       wrapper.removeChild(infoElement);
     } else if (this.info === 'true' && ! isDef(infoElement)) {
@@ -576,13 +609,17 @@ export class OrganizedDisplay extends SeisPlotElement {
       } else {
         wrapper.insertBefore(infoDisp, wrapper.firstElementChild);
       }
+    } else if (this.info === 'true' && isDef(infoElement)) {
+      infoElement.seisData = sortedData;
     }
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === WITH_MAP) {
-      this.drawMap();
+      const sortedData = sort(this.seisData, this.sortby);
+      this.drawMap(sortedData);
     } else if (name === WITH_INFO) {
-      this.drawInfo();
+      const sortedData = sort(this.seisData, this.sortby);
+      this.drawInfo(sortedData);
     } else {
       this.draw();
     }
