@@ -47,7 +47,7 @@ function load_fdsn() {
   let chan_chooser = document.querySelector("sp-channel-code-input");
   let sta = chan_chooser.station;
   // here grab a channel response from IRIS DMC and plot stages
-  let queryTimeWindow = new seisplotjs.util.StartEndDuration('now', 'now');
+  let queryTimeWindow = new seisplotjs.util.startEnd('now', 'now');
   let stationQuery = new seisplotjs.fdsnstation.StationQuery()
     .networkCode(chan_chooser.network)
     .stationCode(chan_chooser.station)
