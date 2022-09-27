@@ -1782,9 +1782,11 @@ export function createFullMarkersForQuakeAtStation(
     quake.latitude,
     quake.longitude,
   );
+  let mag = quake.preferredMagnitude ? quake.preferredMagnitude.mag : "";
+  let magStr = quake.preferredMagnitude ? quake.preferredMagnitude.toString() : "";
   markers.push({
     markertype: "predicted",
-    name: `M${quake.preferredMagnitude.mag} ${quake.time.toFormat("HH:mm")}`,
+    name: `M${mag} ${quake.time.toFormat("HH:mm")}`,
     time: quake.time,
     link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
     description: `${quake.time.toISO()}
@@ -1792,7 +1794,7 @@ ${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(
       quake.depth / 1000
     ).toFixed(2)} km
 ${quake.description}
-${quake.preferredMagnitude.toString()}
+${magStr}
 ${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
 `,
   });
