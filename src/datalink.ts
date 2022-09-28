@@ -577,7 +577,7 @@ export class DataLinkConnection {
           this._mode = MODE.Query;
         } else if (dlResponse.type === "ERROR") {
           this.handleError(
-            new Error(`value=${dlResponse.value} ${dlResponse.message}`),
+            new Error(`value=${dlResponse.value} ${dlResponse.message}`, {cause: dlResponse}),
           );
         } else {
           if (this._responseResolve) {
