@@ -27,7 +27,9 @@
         // or plot other quakes
         map.addQuake(ds.catalog);
         // or plot other stations
-        map.addStation(Array.from(seisplotjs.stationxml.allStations(ds.inventory)));
+        map.addStation(Array.from(seisplotjs.stationxml.allStations(ds.inventory)), "customcolor");
+        //map.colorClass("customcolor", "green");
+        map.colorClass("CO_BIRD", "orange");
         map.draw();
       });
       console.log(`${ds.catalog.length}  ${Array.from(seisplotjs.stationxml.allStations(ds.inventory)).length}`);

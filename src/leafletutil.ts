@@ -65,11 +65,18 @@ div.wrapper {
 `;
 export function createStationMarker(
   station: Station,
+  classList?: Array<string>,
   isactive = true,
 ) {
-  const i = isactive ? stationIcon : inactiveStationIcon;
+  let allClassList = classList ? classList.slice() : [];
+  allClassList.push(isactive ? StationMarkerClassName : InactiveStationMarkerClassName);
+  allClassList.push(station.codes("_"));
+  const icon = L.divIcon({
+    className: allClassList.join(" "),
+  });
+
   const m = L.marker([station.latitude, station.longitude], {
-    icon: i,
+    icon: icon,
   });
   m.bindTooltip(station.codes());
   return m;
@@ -766,14 +773,20 @@ export const DEFAULT_ZOOM_LEVEL = 1;
 export const MAG_SCALE = "magScale";
 export const DEFAULT_MAG_SCALE = 5.0;
 
+export const STATION_MARKER_STYLE_EL = "staMarkerStyle";
+
 export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
   stationList: Array<Station> = [];
   geoRegionList: Array<LatLonBox | LatLonRadius> = [];
   map: L.Map | null;
+  classToColor: Map<string, string>;
+  stationClassMap: Map<string, Array<string>>;
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     this.map = null;
+    this.classToColor = new Map<string, string>();
+    this.stationClassMap = new Map<string, Array<string>>();
 
     this.addStyle(leaflet_css);
     this.addStyle(stationMarker_css);
@@ -790,12 +803,39 @@ export class QuakeStationMap extends SeisPlotElement {
       this.quakeList.push(quake);
     }
   }
-  addStation(station: Station | Array<Station>) {
+  addStation(station: Station | Array<Station>, classname?: string) {
+    const re = /\W+/;
+    let classList: Array<string> = [];
+    if (classname && classname.length > 0) {
+      classList = classname.split(re);
+    }
     if (Array.isArray(station)) {
       station.forEach(s => this.stationList.push(s));
+      classList.forEach(cn => {
+        station.forEach(s => this.stationAddClass(s, cn));
+      });
     } else {
       this.stationList.push(station);
+      classList.forEach(cn =>  this.stationAddClass(station, cn));
     }
+  }
+  stationAddClass(station: Station, classname: string) {
+    const classList = this.stationClassMap.get(station.codes());
+    if (classList) {
+      classList.push(classname);
+    } else {
+      this.stationClassMap.set(station.codes(), [classname]);
+    }
+  }
+  stationRemoveClass(station: Station, classname: string) {
+    let classList = this.stationClassMap.get(station.codes());
+    if (classList) {
+      classList = classList.filter(v => v !== classname);
+      this.stationClassMap.set(station.codes(), classList);
+    }
+  }
+  colorClass(classname: string, color: string) {
+    this.classToColor.set(classname, color);
   }
   get centerLat(): number {
     const ks = this.hasAttribute(CENTER_LAT) ? this.getAttribute(CENTER_LAT) : null;
@@ -840,6 +880,10 @@ export class QuakeStationMap extends SeisPlotElement {
 
   draw() {
     if ( ! this.isConnected) { return; }
+    const staMarkerStyle = this.createStationMarkerColorStyle();
+    const staMarkerStyleEl = this.shadowRoot?.querySelector(`style#${STATION_MARKER_STYLE_EL}`);
+    if (staMarkerStyleEl) {this.shadowRoot?.removeChild(staMarkerStyleEl);}
+    this.addStyle(staMarkerStyle, STATION_MARKER_STYLE_EL);
 
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
 
@@ -881,7 +925,7 @@ export class QuakeStationMap extends SeisPlotElement {
       mapItems.push([q.latitude, q.longitude]);
     });
     this.stationList.concat(uniqueStations(this.seisData)).forEach(s => {
-      const m = createStationMarker(s);
+      const m = createStationMarker(s, this.stationClassMap.get(s.codes()));
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
     });
@@ -918,13 +962,23 @@ export class QuakeStationMap extends SeisPlotElement {
           outLatLon.push([llrad.latitude, llrad.longitude+llrad.maxRadius]);
           outLatLon.push([llrad.latitude, llrad.longitude-llrad.maxRadius]);
         }
-        console.log(`bounds: ${outLatLon}`)
       } else {
         // unknown region type?
         console.assert(false, "unknown regino type");
       }
     });
     return outLatLon;
+  }
+  createStationMarkerColorStyle() {
+    let style = "";
+    this.classToColor.forEach((color, classname) => {
+        style = `${style}
+div.leaflet-marker-icon.${classname} {
+  color: ${color};
+}
+`;
+    });
+    return style;
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     this.draw();
