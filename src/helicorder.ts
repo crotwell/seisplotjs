@@ -5,7 +5,8 @@
  */
 import {DateTime, Duration, Interval} from "luxon";
 import {removeTrend } from "./filter";
-import {SeismogramDisplayData} from "./seismogram";
+import {Seismogram, SeismogramDisplayData} from "./seismogram";
+import {SeismogramSegment} from "./seismogramsegment";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {SeisPlotElement} from "./spelement";
@@ -90,6 +91,52 @@ export class Helicorder extends SeisPlotElement {
     const wrapper = (this.shadowRoot?.querySelector('div.wrapper') as HTMLDivElement);
     const rect = wrapper.getBoundingClientRect();
     return rect.height;
+  }
+
+  appendSegment(segment: SeismogramSegment) {
+    let segMinMax = segment.findMinMax();
+    let origMinMax = this.heliConfig.fixedAmplitudeScale;
+    const heliTimeRange = this.heliConfig.fixedTimeScale;
+    if (!heliTimeRange) { throw new Error("Heli is not fixedTimeScale");}
+    if (heliTimeRange.end < segment.timeRange.end) {
+      const lineDuration = Duration.fromMillis(
+        heliTimeRange.toDuration().toMillis() / this.heliConfig.numLines);
+
+      this.heliConfig.fixedTimeScale =
+        Interval.fromDateTimes(
+          heliTimeRange.start.plus(lineDuration),
+          heliTimeRange.end.plus(lineDuration)
+        );
+        this.draw();
+    }
+    if (this.seisData && this.seisData.length > 0) {
+      let singleSeisData = this.seisData[0];
+      singleSeisData.append(segment);
+      if (heliTimeRange.end < segment.timeRange.end ||
+        (origMinMax &&
+         (segMinMax[0] < origMinMax[0] ||
+          origMinMax[1] < segMinMax[1]))) {
+        this.draw(); //redraw because amp changed
+      } else {
+        // only redraw overlaping graphs
+
+        let seismographList = (this.shadowRoot ? Array.from(this.shadowRoot.querySelectorAll('sp-seismograph')) : []) as Array<Seismograph>;
+        seismographList.forEach(seisGraph => {
+          const lineInterval = seisGraph.displayTimeRangeForSeisDisplayData(singleSeisData);
+          if (segment.timeRange.intersection(lineInterval)) {
+            // overlaps
+            let lineSeisData = this.cutForLine(singleSeisData, lineInterval);
+
+            seisGraph.seisData = [lineSeisData];
+          }
+        });
+      }
+    } else {
+      // heli is empty
+      const sdd = SeismogramDisplayData.fromSeismogram(new Seismogram(segment));
+      this.seisData = [sdd];
+    }
+
   }
   /**
    * draws, or redraws, the helicorder.
@@ -196,21 +243,7 @@ export class Helicorder extends SeisPlotElement {
           lineNumber % this.heliConfig.lineColors.length
         ],
       ];
-      let lineCutSeis = null;
-      let lineSeisData;
-
-      if (singleSeisData.seismogram) {
-        lineCutSeis = singleSeisData.seismogram.cut(lineInterval);
-        if (lineCutSeis && this.heliConfig.detrendLines) {
-          lineCutSeis = removeTrend(lineCutSeis);
-        }
-        lineSeisData = singleSeisData.cloneWithNewSeismogram(lineCutSeis);
-      } else {
-        // no data in window, but keep seisData in case of markers, etc
-        lineSeisData = singleSeisData.clone();
-      }
-
-      lineSeisData.timeRange = lineInterval;
+      let lineSeisData = this.cutForLine(singleSeisData, lineInterval);
 
       if (this.heliConfig.fixedAmplitudeScale && (
         this.heliConfig.fixedAmplitudeScale[0] !== 0 || this.heliConfig.fixedAmplitudeScale[1] !== 0
@@ -271,6 +304,24 @@ export class Helicorder extends SeisPlotElement {
     }
   }
 
+  cutForLine(singleSeisData: SeismogramDisplayData, lineInterval: Interval): SeismogramDisplayData {
+    let lineCutSeis = null;
+    let lineSeisData;
+
+    if (singleSeisData.seismogram) {
+      lineCutSeis = singleSeisData.seismogram.cut(lineInterval);
+      if (lineCutSeis && this.heliConfig.detrendLines) {
+        lineCutSeis = removeTrend(lineCutSeis);
+      }
+      lineSeisData = singleSeisData.cloneWithNewSeismogram(lineCutSeis);
+    } else {
+      // no data in window, but keep seisData in case of markers, etc
+      lineSeisData = singleSeisData.clone();
+    }
+
+    lineSeisData.timeRange = lineInterval;
+    return lineSeisData;
+  }
   /**
    * Calculates the time range covered by each line of the display
    *

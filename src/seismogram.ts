@@ -673,6 +673,18 @@ export class SeismogramDisplayData {
     return isDef(this._seismogram);
   }
 
+  append(seismogram: SeismogramSegment | Seismogram) {
+    if (isDef(this._seismogram)) {
+      this._seismogram.append(seismogram);
+    } else {
+      if (seismogram instanceof SeismogramSegment) {
+        this.seismogram = new Seismogram(seismogram);
+      } else {
+        this.seismogram = seismogram;
+      }
+    }
+  }
+
   hasChannel(): this is {channel: Channel} {
     return isDef(this.channel);
   }
