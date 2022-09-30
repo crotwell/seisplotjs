@@ -4,6 +4,8 @@
 npm run compile && ./copyToDocs.sh
 
 # recompile on file change within 1 seconds, except version.ts
-fswatch -o -l 1 --exclude version.ts src | while read stuff; do
+fswatch -o -l 1 --exclude version.ts --exclude handlebarsimport.ts src | while read stuff; do
+  echo $stuff
   npm run compile && npm run tsc
+  echo "OK"
 done
