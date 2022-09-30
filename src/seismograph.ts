@@ -631,8 +631,6 @@ export class Seismograph extends SeisPlotElement {
             context.stroke();
           }
         });
-      } else {
-        util.log(`seisdata has no seismogram ${util.stringify(ti)}`);
       }
 
       if (this.seismographConfig.connectSegments) {
