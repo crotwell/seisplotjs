@@ -190,7 +190,7 @@ export class QuakeStationTable extends SeisPlotElement {
 
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    this.shadowRoot?.appendChild(wrapper);
+    this.getShadowRoot().appendChild(wrapper);
   }
   get template(): string {
     return this._template;
@@ -202,7 +202,7 @@ export class QuakeStationTable extends SeisPlotElement {
   draw() {
     if ( ! this.isConnected) { return; }
     const mythis = this;
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     while (wrapper.firstChild) {
       // @ts-ignore
       wrapper.removeChild(wrapper.lastChild);

@@ -52,7 +52,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     `);
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    this.shadowRoot?.appendChild(wrapper);
+    this.getShadowRoot().appendChild(wrapper);
   }
   get plottype(): string {
     let k = this.hasAttribute(PLOT_TYPE) ? this.getAttribute(PLOT_TYPE) : SEISMOGRAPH;
@@ -84,7 +84,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     return null;
   }
   getContainedPlotElements(): Array<SeisPlotElement> {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     let dispItems = Array.from(wrapper.children);
     dispItems = dispItems.filter(el => el instanceof SeisPlotElement);
     return dispItems as Array<SeisPlotElement>;
@@ -94,7 +94,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     if ( ! this.isConnected) {
       return;
     }
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
 
     while (wrapper.firstChild) {
       // @ts-ignore
@@ -304,7 +304,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
     wrapper.innerHTML = TOOLS_HTML;
-    this.shadowRoot?.appendChild(wrapper);
+    this.getShadowRoot().appendChild(wrapper);
     this._organizedDisplay = null;
   }
   get organizedDisplay() {
@@ -336,7 +336,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     }
   }
   draw() {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
 
     wrapper.innerHTML = TOOLS_HTML;
     this.wireComponents();
@@ -406,14 +406,14 @@ export class OrganizedDisplay extends SeisPlotElement {
       height: 200px;
     }
     `);
-    this.shadowRoot?.appendChild(wrapper);
+    this.getShadowRoot().appendChild(wrapper);
   }
   static get observedAttributes() {
     return [ORG_TYPE, WITH_TOOLS, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY];
   }
 
   getDisplayItems(): Array<OrganizedDisplayItem> {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     let dispItems = Array.from(wrapper.children);
     dispItems = dispItems.filter(el => el instanceof OrganizedDisplayItem);
     return dispItems as Array<OrganizedDisplayItem>;
@@ -483,7 +483,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     if ( ! this.isConnected) {
       return;
     }
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     wrapper.querySelectorAll(ORG_DISP_ITEM).forEach(item => wrapper.removeChild(item));
 
     const mythis = this;
@@ -545,7 +545,7 @@ export class OrganizedDisplay extends SeisPlotElement {
   drawTools(sortedData: Array<SeismogramDisplayData>) {
     console.log(`drawTools: ${this.tools}`)
     if ( ! this.isConnected) { return; }
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);
     if (this.tools !== 'true' && toolsElement) {
       wrapper.removeChild(toolsElement);
@@ -559,7 +559,7 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   drawMap(sortedData: Array<SeismogramDisplayData>) {
     if ( ! this.isConnected) { return; }
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const mapElement = wrapper.querySelector(MAP_ELEMENT) as QuakeStationMap;
     if (this.map !== 'true' && mapElement) {
       wrapper.removeChild(mapElement);
@@ -583,7 +583,7 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   drawInfo(sortedData: Array<SeismogramDisplayData>) {
     if ( ! this.isConnected) { return; }
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const infoElement = wrapper.querySelector(INFO_ELEMENT) as QuakeStationTable;
     if (this.info !== 'true' && infoElement) {
       wrapper.removeChild(infoElement);

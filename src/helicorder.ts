@@ -41,7 +41,7 @@ export class Helicorder extends SeisPlotElement {
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
     this.addStyle(helicorder_css);
-    this.shadowRoot?.appendChild(wrapper);
+    this.getShadowRoot().appendChild(wrapper);
     // event listener to transform mouse click into time
     this.addEventListener("click", evt => {
       const detail = this.calcDetailForEvent(evt);
@@ -83,12 +83,12 @@ export class Helicorder extends SeisPlotElement {
     this.seismographConfig = config;
   }
   get width(): number {
-    const wrapper = (this.shadowRoot?.querySelector('div.wrapper') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div.wrapper') as HTMLDivElement);
     const rect = wrapper.getBoundingClientRect();
     return rect.width;
   }
   get height(): number {
-    const wrapper = (this.shadowRoot?.querySelector('div.wrapper') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div.wrapper') as HTMLDivElement);
     const rect = wrapper.getBoundingClientRect();
     return rect.height;
   }
@@ -153,7 +153,7 @@ export class Helicorder extends SeisPlotElement {
    */
   drawSeismograms(): void {
     if ( ! this.isConnected) { return; }
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const timeRange = this.heliConfig.fixedTimeScale;
 
     if (!isDef(timeRange)) {

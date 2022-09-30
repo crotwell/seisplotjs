@@ -199,7 +199,7 @@ export class Seismograph extends SeisPlotElement {
     this.addStyle(seismograph_css);
     const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
     this.addStyle(lineColorsCSS, COLOR_CSS_ID);
-    this.shadowRoot?.appendChild(wrapper);
+    this.getShadowRoot().appendChild(wrapper);
 
     this.canvas = null;
     this.svg = d3.select(wrapper).append("svg").style("z-index", 100);
@@ -351,7 +351,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   checkResize(): boolean {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     const rect = svgEl.getBoundingClientRect();
 
@@ -386,7 +386,7 @@ export class Seismograph extends SeisPlotElement {
   }
   draw(): void {
     if ( ! this.isConnected) { return; }
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     const rect = svgEl.getBoundingClientRect();
 
@@ -473,7 +473,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   printSizes(): void {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     let out = "";
     const rect = svgEl.getBoundingClientRect();
@@ -1334,7 +1334,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   drawTitle() {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     axisutil.drawTitle(
       svgEl,
@@ -1346,7 +1346,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   drawXLabel() {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     axisutil.drawXLabel(
       svgEl,
@@ -1358,7 +1358,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   drawXSublabel() {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     axisutil.drawXSublabel(
       svgEl,
@@ -1370,7 +1370,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   drawYLabel() {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     axisutil.drawYLabel(
       svgEl,
@@ -1382,7 +1382,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   drawYSublabel() {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     axisutil.drawYSublabel(
       svgEl,

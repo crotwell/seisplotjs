@@ -800,7 +800,7 @@ export class QuakeStationMap extends SeisPlotElement {
 
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
-    this.shadowRoot?.appendChild(wrapper);
+    this.getShadowRoot().appendChild(wrapper);
   }
 
   addQuake(quake: Quake | Array<Quake>, classname?: string) {
@@ -982,7 +982,7 @@ export class QuakeStationMap extends SeisPlotElement {
     if ( ! this.isConnected) { return; }
     this.updateQuakeMarkerStyle();
     this.updateStationMarkerStyle();
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
 
     while (wrapper.firstChild) {
       // @ts-ignore
@@ -1034,7 +1034,7 @@ export class QuakeStationMap extends SeisPlotElement {
   }
   updateQuakeMarkerStyle() {
     const quakeMarkerStyle = this.createQuakeMarkerColorStyle();
-    const quakeMarkerStyleEl = this.shadowRoot?.querySelector(`style#${QUAKE_MARKER_STYLE_EL}`);
+    const quakeMarkerStyleEl = this.getShadowRoot().querySelector(`style#${QUAKE_MARKER_STYLE_EL}`);
     if (quakeMarkerStyleEl) {
       quakeMarkerStyleEl.textContent = quakeMarkerStyle;
     } else {
@@ -1044,7 +1044,7 @@ export class QuakeStationMap extends SeisPlotElement {
   }
   updateStationMarkerStyle() {
     const staMarkerStyle = this.createStationMarkerColorStyle();
-    const staMarkerStyleEl = this.shadowRoot?.querySelector(`style#${STATION_MARKER_STYLE_EL}`);
+    const staMarkerStyleEl = this.getShadowRoot().querySelector(`style#${STATION_MARKER_STYLE_EL}`);
     if (staMarkerStyleEl) {
       staMarkerStyleEl.textContent = staMarkerStyle;
     } else {

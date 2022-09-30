@@ -180,7 +180,7 @@ export class ParticleMotion extends SeisPlotElement {
     const wrapper = document.createElement('div');
     wrapper.setAttribute("class", "wrapper");
     const svgWrapped = wrapper.appendChild(document.createElementNS(SVG_NS, 'svg'));
-    this.shadowRoot?.appendChild(wrapper);
+    this.getShadowRoot().appendChild(wrapper);
 
     this.svg = d3.select(svgWrapped);
 
@@ -281,7 +281,7 @@ export class ParticleMotion extends SeisPlotElement {
   draw() {
 
     if ( ! this.isConnected) { return; }
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     if (! svgEl) {
       console.log(`svgEl is not def in particlemotion draw()`)
@@ -322,7 +322,7 @@ export class ParticleMotion extends SeisPlotElement {
   }
 
   checkResize(): boolean {
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     const rect = svgEl.getBoundingClientRect();
 
