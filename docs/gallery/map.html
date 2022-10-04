@@ -13,25 +13,42 @@
 <body>
 
   <h3>Map:</h3>
+  <button id="changecolor">Change colors</button>
   <div>
     <sp-station-event-map centerLat="34" centerLon="-80" zoomLevel="9"></sp-station-event-map>
   </div>
   <script type="module">
     import * as seisplotjs from '../seisplotjs_3.0.0-alpha.1_standalone.mjs';
+    let allStations = [];
     seisplotjs.dataset.load('dataset.zip')
     .then((ds) => {
       const mapList = document.querySelectorAll('sp-station-event-map');
       mapList.forEach( map => {
         // plot quakes and station from seismograms
-        map.seisData = ds.waveforms;
+        //map.seisData = ds.waveforms;
         // or plot other quakes
-        map.addQuake(ds.catalog);
+        map.addQuake(ds.catalog, "quakecolor");
+        const quakesWithPicks = ds.catalog.filter(q => q.picks.length !== 0);
+        map.addQuake(quakesWithPicks, "withpicks");
         // or plot other stations
-        map.addStation(Array.from(seisplotjs.stationxml.allStations(ds.inventory)), "customcolor");
-        //map.colorClass("customcolor", "green");
+        allStations = Array.from(seisplotjs.stationxml.allStations(ds.inventory));
+        map.addStation(allStations, "customcolor");
         map.colorClass("CO_BIRD", "orange");
+        map.colorClass("customcolor", "green");
+        //map.colorClass("quakecolor", "blue");
+        map.colorClass("withpicks", "red");
+        map.colorClass("CO_JSC", "rebeccapurple");
         map.draw();
       });
+      document.querySelector("#changecolor").addEventListener("click", () => {
+        const mapList = document.querySelectorAll('sp-station-event-map');
+        mapList.forEach( map => {
+          map.removeColorClass("customcolor");
+          map.colorClass("quakecolor", "yellow");
+
+          //map.stationRemoveClass(allStations[0], "customcolor");
+        });
+      })
       console.log(`${ds.catalog.length}  ${Array.from(seisplotjs.stationxml.allStations(ds.inventory)).length}`);
       return ds;
     });
