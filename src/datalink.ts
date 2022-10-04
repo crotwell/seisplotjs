@@ -5,9 +5,10 @@
  */
 import * as util from "./util"; // for util.log
 
-import {dataViewToString, stringify, isDef, isNonEmptyStringArg, toError, UTC_OPTIONS} from "./util";
+import {isoToDateTime, dataViewToString, stringify, isDef, isNonEmptyStringArg, toError, UTC_OPTIONS} from "./util";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
+import {parseUtil} from "./stationxml";
 import {DateTime} from "luxon";
 
 /** const for datalink protocol for web sockets, DataLink1.0 */
@@ -38,6 +39,13 @@ export const DEFAULT_ARCH = "javascript";
 
 /** const for error response, ERROR */
 export const ERROR = "ERROR";
+/** const for ok response, OK */
+export const OK = "OK";
+/** const for info response, INFO */
+export const INFO = "INFO";
+/** const for id response, ID */
+export const ID = "ID";
+
 export const PACKET = "PACKET";
 export const STREAM = "STREAM";
 export const ENDSTREAM = "ENDSTREAM";
@@ -92,7 +100,7 @@ export class DataLinkConnection {
     errorHandler: (error: Error) => void,
   ) {
     this.webSocket = null;
-    this.url = url;
+    this.url = url ? url : IRIS_RINGSERVER_URL;
     this._mode = MODE.Query;
     this.packetHandler = packetHandler;
     this.errorHandler = errorHandler;
@@ -468,6 +476,27 @@ export class DataLinkConnection {
     );
   }
 
+  infoStatus(): Promise<StatusResponse> {
+    return this.info("STATUS").then((daResp: DataLinkResponse) => {
+      //parse xml and return as a useful object
+        return StatusResponse.fromDatalinkResponse(daResp);
+    });
+  }
+
+  infoStreams(): Promise<StreamsResponse> {
+    return this.info("STREAMS").then((daResp: DataLinkResponse) => {
+      //parse xml and return as a useful object
+      return StreamsResponse.fromDatalinkResponse(daResp);
+    });
+  }
+
+  infoConnections(): Promise<ConnectionsResponse> {
+    return this.info("STREAMS").then((daResp: DataLinkResponse) => {
+      //parse xml and return as a useful object
+      return new ConnectionsResponse();
+    });
+  }
+
   /**
    * Send position after command.
    *
@@ -575,10 +604,6 @@ export class DataLinkConnection {
 
         if (dlResponse.type === "ENDSTREAM") {
           this._mode = MODE.Query;
-        } else if (dlResponse.type === "ERROR") {
-          this.handleError(
-            new Error(`value=${dlResponse.value} ${dlResponse.message}`, {cause: dlResponse}),
-          );
         } else {
           if (this._responseResolve) {
             this._responseResolve(dlResponse);
@@ -635,13 +660,13 @@ export class DataLinkResponse {
     const type = s[0];
     let message = "";
 
-    if (type === "ID") {
+    if (type === ID) {
       message = "" + header.substring(3);
     } else if (
-      type === "ENDSTREAM" ||
-      type === "INFO" ||
-      type === "OK" ||
-      type === "ERROR"
+      type === ENDSTREAM ||
+      type === INFO ||
+      type === OK ||
+      type === ERROR
     ) {
       value = s[1];
 
@@ -701,7 +726,7 @@ export class DataLinkPacket {
    * @returns start time
    */
   get packetStart(): DateTime {
-    return hpTimeToMoment(parseInt(this.hppacketstart));
+    return hpTimeToDateTime(parseInt(this.hppacketstart));
   }
 
   /**
@@ -710,7 +735,7 @@ export class DataLinkPacket {
    * @returns end time
    */
   get packetEnd(): DateTime {
-    return hpTimeToMoment(parseInt(this.hppacketend));
+    return hpTimeToDateTime(parseInt(this.hppacketend));
   }
 
   /**
@@ -719,7 +744,7 @@ export class DataLinkPacket {
    * @returns packet time
    */
   get packetTime(): DateTime {
-    return hpTimeToMoment(parseInt(this.hppackettime));
+    return hpTimeToDateTime(parseInt(this.hppackettime));
   }
 
   /**
@@ -781,6 +806,345 @@ export class DataLinkPacket {
   }
 }
 
+/*
+<DataLink
+  Version="2018.078"
+  ServerID="South Carolina Seismic Network"
+  Capabilities="DLPROTO:1.0 PACKETSIZE:512 WRITE">
+  <Status
+    StartTime="2022-09-21 12:13:29"
+    RingVersion="1"
+    RingSize="1073741824"
+    PacketSize="512"
+    MaximumPacketID="16777215"
+    MaximumPackets="1698952"
+    MemoryMappedRing="TRUE"
+    VolatileRing="FALSE"
+    TotalConnections="8"
+    TotalStreams="90"
+    TXPacketRate="43.0"
+    TXByteRate="22002.8"
+    RXPacketRate="15.0"
+    RXByteRate="7675.4"
+    EarliestPacketID="11772758"
+    EarliestPacketCreationTime="2022-10-03 13:05:01.602383"
+    EarliestPacketDataStartTime="2022-10-03 13:04:56.400000"
+    EarliestPacketDataEndTime="2022-10-03 13:04:59.325000"
+    LatestPacketID="13471709"
+    LatestPacketCreationTime="2022-10-04 15:19:37.382032"
+    LatestPacketDataStartTime="2022-10-04 15:19:33.535000"
+    LatestPacketDataEndTime="2022-10-04 15:19:36.690000" />
+    <ServerThreads TotalServerThreads="3">
+      <Thread Flags=" ACTIVE" Type="DataLink SeedLink HTTP" Port="6382" />
+      <Thread Flags=" ACTIVE" Type="DataLink" Port="15001" />
+      <Thread Flags=" ACTIVE" Type="SeedLink" Port="7381" />
+    </ServerThreads>
+  </DataLink>
+ */
+export class DataLinkStats {
+  startTime: DateTime;
+  ringVersion: string;
+  ringSize: number;
+  packetSize: number;
+  maximumPacketID: number;
+  maximumPackets: number;
+  memoryMappedRing: boolean;
+  volatileRing: boolean;
+  totalConnections: number;
+  totalStreams: number;
+  txPacketRate: number;
+  txByteRate: number;
+  rxPacketRate: number;
+  rxByteRate: number;
+  earliestPacketID: number;
+  earliestPacketCreationTime: DateTime;
+  earliestPacketDataStartTime: DateTime;
+  earliestPacketDataEndTime: DateTime;
+  latestPacketID: number;
+  latestPacketCreationTime: DateTime;
+  latestPacketDataStartTime: DateTime;
+  latestPacketDataEndTime: DateTime;
+
+  constructor(
+    startTime: DateTime,
+    ringVersion: string,
+    ringSize: number,
+    packetSize: number,
+    maximumPacketID: number,
+    maximumPackets: number,
+    memoryMappedRing: boolean,
+    volatileRing: boolean,
+    totalConnections: number,
+    totalStreams: number,
+    txPacketRate: number,
+    txByteRate: number,
+    rxPacketRate: number,
+    rxByteRate: number,
+    earliestPacketID: number,
+    earliestPacketCreationTime: DateTime,
+    earliestPacketDataStartTime: DateTime,
+    earliestPacketDataEndTime: DateTime,
+    latestPacketID: number,
+    latestPacketCreationTime: DateTime,
+    latestPacketDataStartTime: DateTime,
+    latestPacketDataEndTime: DateTime,
+  ) {
+    this.startTime = startTime;
+    this.ringVersion = ringVersion;
+    this.ringSize = ringSize;
+    this.packetSize = packetSize;
+    this.maximumPacketID = maximumPacketID;
+    this.maximumPackets = maximumPackets;
+    this.memoryMappedRing = memoryMappedRing;
+    this.volatileRing = volatileRing;
+    this.totalConnections = totalConnections;
+    this.totalStreams = totalStreams;
+    this.txPacketRate = txPacketRate;
+    this.txByteRate = txByteRate;
+    this.rxPacketRate = rxPacketRate;
+    this.rxByteRate = rxByteRate;
+    this.earliestPacketID = earliestPacketID;
+    this.earliestPacketCreationTime = earliestPacketCreationTime;
+    this.earliestPacketDataStartTime = earliestPacketDataStartTime;
+    this.earliestPacketDataEndTime = earliestPacketDataEndTime;
+    this.latestPacketID = latestPacketID;
+    this.latestPacketCreationTime = latestPacketCreationTime;
+    this.latestPacketDataStartTime = latestPacketDataStartTime;
+    this.latestPacketDataEndTime = latestPacketDataEndTime;
+  }
+  static parseXMLAttributes(statusEl: Element): DataLinkStats {
+    const dlStats = new DataLinkStats(
+      daliDateTime(parseUtil._requireAttribute(statusEl, "StartTime")),
+      parseUtil._requireAttribute(statusEl, "RingVersion"),
+      parseInt(parseUtil._requireAttribute(statusEl, "RingSize")),
+      parseInt(parseUtil._requireAttribute(statusEl, "PacketSize")),
+      parseInt(parseUtil._requireAttribute(statusEl, "MaximumPacketID")),
+      parseInt(parseUtil._requireAttribute(statusEl, "MaximumPackets")),
+      parseUtil._requireAttribute(statusEl, "MemoryMappedRing")==="TRUE",
+      parseUtil._requireAttribute(statusEl, "VolatileRing")==="TRUE",
+      parseInt(parseUtil._requireAttribute(statusEl, "TotalConnections")),
+      parseInt(parseUtil._requireAttribute(statusEl, "TotalStreams")),
+      parseFloat(parseUtil._requireAttribute(statusEl, "TXPacketRate")),
+      parseFloat(parseUtil._requireAttribute(statusEl, "TXByteRate")),
+      parseFloat(parseUtil._requireAttribute(statusEl, "RXPacketRate")),
+      parseFloat(parseUtil._requireAttribute(statusEl, "RXByteRate")),
+      parseInt(parseUtil._requireAttribute(statusEl, "EarliestPacketID")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "EarliestPacketCreationTime")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime")),
+      parseInt(parseUtil._requireAttribute(statusEl, "LatestPacketID")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "LatestPacketCreationTime")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "LatestPacketDataStartTime")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "LatestPacketDataEndTime")),
+    );
+
+//    dlStats.startTime = statusEl.getAttribute("StartTime");
+    return dlStats;
+  }
+  toString(): string {
+    return `
+Status:
+StartTime="${this.startTime.toISO()}"
+RingVersion="${this.ringVersion}"
+RingSize="${this.ringSize}"
+PacketSize="${this.packetSize}"
+MaximumPacketID="${this.maximumPacketID}"
+MaximumPackets="${this.maximumPackets}"
+MemoryMappedRing="${this.memoryMappedRing}"
+VolatileRing="${this.volatileRing}"
+TotalConnections="${this.totalConnections}"
+TotalStreams="${this.totalStreams}"
+TXPacketRate="${this.txPacketRate}"
+TXByteRate="${this.txByteRate}"
+RXPacketRate="${this.rxPacketRate}"
+RXByteRate="${this.rxByteRate}"
+EarliestPacketID="${this.earliestPacketID}"
+EarliestPacketCreationTime="${this.earliestPacketCreationTime.toISO()}"
+EarliestPacketDataStartTime="${this.earliestPacketDataStartTime.toISO()}"
+EarliestPacketDataEndTime="${this.earliestPacketDataEndTime.toISO()}"
+LatestPacketID="${this.latestPacketID}"
+LatestPacketCreationTime="${this.latestPacketCreationTime.toISO()}"
+LatestPacketDataStartTime="${this.latestPacketDataStartTime.toISO()}"
+LatestPacketDataEndTime="${this.latestPacketDataEndTime.toISO()}"
+    `;
+  }
+}
+
+export class StatusResponse {
+  datalinkStats: DataLinkStats;
+  rawXml: string = "";
+  constructor(datalinkStats: DataLinkStats) {
+    this.datalinkStats = datalinkStats;
+  }
+  static fromDatalinkResponse(daliResp: DataLinkResponse): StatusResponse {
+    if (daliResp.type === INFO) {
+      const daliXml = new DOMParser().parseFromString(daliResp.message, "text/xml");
+      const sResp = StatusResponse.fromXML(daliXml.documentElement);
+      sResp.rawXml = daliResp.message;
+      return sResp;
+    } else {
+      throw new Error("Datalink Response not OK", {cause: daliResp});
+    }
+  }
+  static fromXML(daliXML: Element): StatusResponse {
+    const dlStats = DataLinkStats.parseXMLAttributes(daliXML.getElementsByTagName("Status")[0]);
+    return new StatusResponse(dlStats);
+  }
+  toString(): string {
+    return `${this.datalinkStats}`;
+  }
+
+}
+
+/*
+<Stream
+  Name="CO_JSC_00_HHE/MSEED"
+  EarliestPacketID="11763363"
+  EarliestPacketDataStartTime="2022-10-03 12:56:37.178392"
+  EarliestPacketDataEndTime="2022-10-03 12:56:40.808392"
+  LatestPacketID="13462285"
+  LatestPacketDataStartTime="2022-10-04 15:11:15.808392"
+  LatestPacketDataEndTime="2022-10-04 15:11:18.788392"
+  DataLatency="6.0" />
+ */
+export class StreamStat {
+  name: string;
+  earliestPacketID: number;
+  earliestPacketDataStartTime: DateTime;
+  earliestPacketDataEndTime: DateTime;
+  latestPacketID: number;
+  latestPacketDataStartTime: DateTime;
+  latestPacketDataEndTime: DateTime;
+  dataLatency: number;
+  constructor(
+      name: string,
+      earliestPacketID: number,
+      earliestPacketDataStartTime: DateTime,
+      earliestPacketDataEndTime: DateTime,
+      latestPacketID: number,
+      latestPacketDataStartTime: DateTime,
+      latestPacketDataEndTime: DateTime,
+      dataLatency: number,
+  ) {
+    this.name = name;
+    this.earliestPacketID = earliestPacketID;
+    this.earliestPacketDataStartTime = earliestPacketDataStartTime;
+    this.earliestPacketDataEndTime = earliestPacketDataEndTime;
+    this.latestPacketID = latestPacketID;
+    this.latestPacketDataStartTime = latestPacketDataStartTime;
+    this.latestPacketDataEndTime = latestPacketDataEndTime;
+    this.dataLatency = dataLatency;
+  }
+  static parseXMLAttributes(statusEl: Element): StreamStat {
+    const sStat = new StreamStat(
+      parseUtil._requireAttribute(statusEl, "Name"),
+      parseInt(parseUtil._requireAttribute(statusEl, "EarliestPacketID")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime")),
+      parseInt(parseUtil._requireAttribute(statusEl, "LatestPacketID")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "LatestPacketDataStartTime")),
+      daliDateTime(parseUtil._requireAttribute(statusEl, "LatestPacketDataEndTime")),
+      parseFloat(parseUtil._requireAttribute(statusEl, "DataLatency")),
+    );
+    return sStat;
+  }
+  toString(): string {
+    return `
+    Name: ${this.name}
+    EarliestPacketID="${this.earliestPacketID}"
+    EarliestPacketDataStartTime="${this.earliestPacketDataStartTime.toISO()}"
+    EarliestPacketDataEndTime="${this.earliestPacketDataEndTime.toISO()}"
+    LatestPacketID="${this.latestPacketID}"
+    LatestPacketDataStartTime="${this.latestPacketDataStartTime.toISO()}"
+    LatestPacketDataEndTime="${this.latestPacketDataEndTime.toISO()}"
+    DataLatency=${this.dataLatency}
+    `;
+  }
+}
+
+export class StreamsResponse {
+  datalinkStats: DataLinkStats;
+  streams: Array<StreamStat>;
+  constructor(datalinkStats: DataLinkStats,
+              streams: Array<StreamStat>) {
+    this.datalinkStats = datalinkStats;
+    this.streams = streams;
+  }
+  static fromDatalinkResponse(daliResp: DataLinkResponse): StreamsResponse {
+    if (daliResp.type === INFO) {
+      const daliXml = new DOMParser().parseFromString(daliResp.message, "text/xml");
+      return StreamsResponse.fromXML(daliXml.documentElement);
+    } else {
+      throw new Error("Datalink Response not OK", {cause: daliResp});
+    }
+  }
+  /*
+<DataLink Version="2018.078"
+ServerID="South Carolina Seismic Network"
+Capabilities="DLPROTO:1.0 PACKETSIZE:512 WRITE">
+<Status
+  StartTime="2022-09-21 12:13:29"
+  RingVersion="1"
+  RingSize="1073741824"
+  PacketSize="512"
+  MaximumPacketID="16777215"
+  MaximumPackets="1698952"
+  MemoryMappedRing="TRUE"
+  VolatileRing="FALSE"
+  TotalConnections="9"
+  TotalStreams="90"
+  TXPacketRate="57.0"
+  TXByteRate="29167.9"
+  RXPacketRate="18.0"
+  RXByteRate="9210.9"
+  EarliestPacketID="11763348"
+  EarliestPacketCreationTime="2022-10-03 12:56:43.520738"
+  EarliestPacketDataStartTime="2022-10-03 12:56:40.860000"
+  EarliestPacketDataEndTime="2022-10-03 12:56:42.875000"
+  LatestPacketID="13462299"
+  LatestPacketCreationTime="2022-10-04 15:11:24.786990"
+  LatestPacketDataStartTime="2022-10-04 15:11:19.580000"
+  LatestPacketDataEndTime="2022-10-04 15:11:22.785000" />
+  <StreamList TotalStreams="90" SelectedStreams="3">
+    <Stream Name="CO_JSC_00_HHE/MSEED" EarliestPacketID="11763363" EarliestPacketDataStartTime="2022-10-03 12:56:37.178392" EarliestPacketDataEndTime="2022-10-03 12:56:40.808392" LatestPacketID="13462285" LatestPacketDataStartTime="2022-10-04 15:11:15.808392" LatestPacketDataEndTime="2022-10-04 15:11:18.788392" DataLatency="6.0" />
+    <Stream Name="CO_JSC_00_HHN/MSEED" EarliestPacketID="11763389" EarliestPacketDataStartTime="2022-10-03 12:56:38.108392" EarliestPacketDataEndTime="2022-10-03 12:56:41.398392" LatestPacketID="13462284" LatestPacketDataStartTime="2022-10-04 15:11:15.668392" LatestPacketDataEndTime="2022-10-04 15:11:18.408392" DataLatency="6.4" />
+    <Stream Name="CO_JSC_00_HHZ/MSEED" EarliestPacketID="11763402" EarliestPacketDataStartTime="2022-10-03 12:56:38.908392" EarliestPacketDataEndTime="2022-10-03 12:56:42.688392" LatestPacketID="13462252" LatestPacketDataStartTime="2022-10-04 15:11:14.428392" LatestPacketDataEndTime="2022-10-04 15:11:17.858392" DataLatency="6.9" />
+  </StreamList>
+</DataLink>
+   */
+  static fromXML(daliXML: Element): StreamsResponse {
+    const statusEl = daliXML.getElementsByTagName("Status")[0];
+    const dlStats = DataLinkStats.parseXMLAttributes(statusEl);
+    const streamListEl = daliXML.getElementsByTagName("StreamList")[0];
+    const streamElList = streamListEl.getElementsByTagName("Stream");
+    const streams = Array.from(streamElList).map(streamEl => StreamStat.parseXMLAttributes(streamEl));
+    const streamResp = new StreamsResponse(dlStats, streams);
+    return streamResp;
+  }
+  toString(): string {
+    return `${this.datalinkStats}
+    ${this.streams.map(s=> s.toString()).join("\n")}
+    `;
+  }
+}
+
+export class ConnectionsResponse {
+  constructor() {
+
+  }
+}
+
+/**
+ * Convert DataLink style dates, like "2022-10-04 15:11:24.786990"
+ * to ISO form for DateTime
+ * @param  m               [description]
+ * @return   [description]
+ */
+export function daliDateTime(dalitime: string): DateTime {
+  const iso = dalitime.replace(' ', 'T');
+  return isoToDateTime(iso);
+}
+
 /**
  * Convert DateTime to a HPTime number.
  *
@@ -797,7 +1161,7 @@ export function dateTimeToHPTime(m: DateTime ): number {
  * @param   hptime hptime to convert
  * @returns  DateTime in utc for the hptime
  */
-export function hpTimeToMoment(hptime: number): DateTime  {
+export function hpTimeToDateTime(hptime: number): DateTime  {
   return DateTime.fromMillis(hptime / 1000, UTC_OPTIONS);
 }
 
