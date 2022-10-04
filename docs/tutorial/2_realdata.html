@@ -28,7 +28,11 @@
          API JS Docs
         </a>
        </li>
-       <li><a href="../gallery/index.html" class="">Gallery</a></li>
+       <li>
+        <a class="" href="../gallery/index.html">
+         Gallery
+        </a>
+       </li>
        <li>
         <a class="" href="../examples/index.html">
          Examples
@@ -133,7 +137,7 @@
 import {
   fdsndataselect,
   seismogram, seismograph,
-  seismographconfig, util, luxon} from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
+  seismographconfig, util, luxon} from './seisplotjs_3.0.0-alpha.2_standalone.mjs';
 
 let timeWindow = luxon.Interval.after(util.isoToDateTime('2019-07-06T03:19:53Z'), luxon.Duration.fromMillis(1000*1800));
 let dsQuery = new fdsndataselect.DataSelectQuery();

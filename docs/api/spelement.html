@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.spelement 3.0.0-alpha.0 | Documentation</title>
+  <title>seisplotjs 3.0.0-alpha.2 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -14,8 +14,8 @@
     <div class='flex'>
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
-          <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.spelement</h3>
-          <div class='mb1'><code>3.0.0-alpha.0</code></div>
+          <h3 class='mb0 no-anchor'>seisplotjs</h3>
+          <div class='mb1'><code>3.0.0-alpha.2</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -78,6 +78,18 @@
                       </a></li>
                       
                       <li><a
+                        href='#seisplotelementaddstyle'
+                        class='regular pre-open'>
+                        #addStyle
+                      </a></li>
+                      
+                      <li><a
+                        href='#seisplotelementseisdataupdated'
+                        class='regular pre-open'>
+                        #seisDataUpdated
+                      </a></li>
+                      
+                      <li><a
                         href='#seisplotelementconnectedcallback'
                         class='regular pre-open'>
                         #connectedCallback
@@ -89,11 +101,27 @@
                         #draw
                       </a></li>
                       
+                      <li><a
+                        href='#seisplotelementgetshadowroot'
+                        class='regular pre-open'>
+                        #getShadowRoot
+                      </a></li>
+                      
                     </ul>
                   
                   
                   
                 </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#addstyletoelement'
+                  class="">
+                  addStyleToElement
+                  
+                </a>
                 
                 </li>
               
@@ -117,7 +145,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L6-L60'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L6-L84'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -196,7 +224,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L7-L7'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L7-L7'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -258,7 +286,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L8-L8'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L8-L8'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -320,7 +348,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L33-L35'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L34-L36'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -377,7 +405,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L36-L45'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L37-L46'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -452,7 +480,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L46-L48'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L47-L49'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -509,7 +537,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L49-L52'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L50-L53'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -570,6 +598,150 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='seisplotelementaddstyle'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>addStyle(css, id?)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L54-L56'>
+      <span>src/spelement.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>addStyle(css: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="https://developer.mozilla.org/docs/Web/API/HTMLStyleElement">HTMLStyleElement</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>css</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/API/HTMLStyleElement">HTMLStyleElement</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='seisplotelementseisdataupdated'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>seisDataUpdated()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L63-L65'>
+      <span>src/spelement.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Notification to the element that something about the current seismogram
+data has changed. This could be that the actual waveform data has been updated
+or that auxillary data like quake or channel has been added or that the
+configuration has changed. This should trigger a redraw.</p>
+
+    <div class='pre p1 fill-light mt0'>seisDataUpdated()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='seisplotelementconnectedcallback'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -584,7 +756,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L53-L55'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L66-L68'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -641,7 +813,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/spelement.ts#L56-L58'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L69-L71'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -684,7 +856,170 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='seisplotelementgetshadowroot'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getShadowRoot(autoAdd)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L72-L83'>
+      <span>src/spelement.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>getShadowRoot(autoAdd: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>): ShadowRoot</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>autoAdd</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+            = <code>true</code>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>ShadowRoot</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='addstyletoelement'>
+      addStyleToElement
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/spelement.ts#L86-L99'>
+      <span>src/spelement.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>addStyleToElement(element: <a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a>, css: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, id: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?): <a href="https://developer.mozilla.org/docs/Web/API/HTMLStyleElement">HTMLStyleElement</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>element</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/HTML/Element">HTMLElement</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>css</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>id</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>?)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/API/HTMLStyleElement">HTMLStyleElement</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
 
   
 

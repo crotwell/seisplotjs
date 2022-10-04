@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.datalink 3.0.0-alpha.0 | Documentation</title>
+  <title>seisplotjs 3.0.0-alpha.2 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -14,8 +14,8 @@
     <div class='flex'>
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
-          <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.datalink</h3>
-          <div class='mb1'><code>3.0.0-alpha.0</code></div>
+          <h3 class='mb0 no-anchor'>seisplotjs</h3>
+          <div class='mb1'><code>3.0.0-alpha.2</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -112,6 +112,36 @@
                   href='#error'
                   class="">
                   ERROR
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#ok'
+                  class="">
+                  OK
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#info'
+                  class="">
+                  INFO
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#id'
+                  class="">
+                  ID
                   
                 </a>
                 
@@ -365,6 +395,24 @@
                       </a></li>
                       
                       <li><a
+                        href='#datalinkconnectioninfostatus'
+                        class='regular pre-open'>
+                        #infoStatus
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkconnectioninfostreams'
+                        class='regular pre-open'>
+                        #infoStreams
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkconnectioninfoconnections'
+                        class='regular pre-open'>
+                        #infoConnections
+                      </a></li>
+                      
+                      <li><a
                         href='#datalinkconnectionpositionafter'
                         class='regular pre-open'>
                         #positionAfter
@@ -443,6 +491,12 @@
                         href='#datalinkresponsemessage'
                         class='regular pre-open'>
                         #message
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkresponseiserror'
+                        class='regular pre-open'>
+                        #isError
                       </a></li>
                       
                       <li><a
@@ -558,9 +612,9 @@
                       </a></li>
                       
                       <li><a
-                        href='#datalinkpacketminiseed'
+                        href='#datalinkpacketasminiseed'
                         class='regular pre-open'>
-                        #miniseed
+                        #asMiniseed
                       </a></li>
                       
                       <li><a
@@ -570,9 +624,9 @@
                       </a></li>
                       
                       <li><a
-                        href='#datalinkpacketminiseed3'
+                        href='#datalinkpacketasminiseed3'
                         class='regular pre-open'>
-                        #miniseed3
+                        #asMiniseed3
                       </a></li>
                       
                     </ul>
@@ -580,6 +634,524 @@
                   
                   
                 </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#datalinkidstats'
+                  class=" toggle-sibling">
+                  DataLinkIdStats
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#datalinkidstatsparsexmlattributes'
+                        class='regular pre-open'>
+                        .parseXMLAttributes
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#datalinkidstatsversion'
+                        class='regular pre-open'>
+                        #version
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkidstatsserverid'
+                        class='regular pre-open'>
+                        #serverId
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkidstatscapabilities'
+                        class='regular pre-open'>
+                        #capabilities
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkidstatstostring'
+                        class='regular pre-open'>
+                        #toString
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#datalinkstats'
+                  class=" toggle-sibling">
+                  DataLinkStats
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#datalinkstatsparsexmlattributes'
+                        class='regular pre-open'>
+                        .parseXMLAttributes
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#datalinkstatsstarttime'
+                        class='regular pre-open'>
+                        #startTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsringversion'
+                        class='regular pre-open'>
+                        #ringVersion
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsringsize'
+                        class='regular pre-open'>
+                        #ringSize
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatspacketsize'
+                        class='regular pre-open'>
+                        #packetSize
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsmaximumpacketid'
+                        class='regular pre-open'>
+                        #maximumPacketID
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsmaximumpackets'
+                        class='regular pre-open'>
+                        #maximumPackets
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsmemorymappedring'
+                        class='regular pre-open'>
+                        #memoryMappedRing
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsvolatilering'
+                        class='regular pre-open'>
+                        #volatileRing
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatstotalconnections'
+                        class='regular pre-open'>
+                        #totalConnections
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatstotalstreams'
+                        class='regular pre-open'>
+                        #totalStreams
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatstxpacketrate'
+                        class='regular pre-open'>
+                        #txPacketRate
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatstxbyterate'
+                        class='regular pre-open'>
+                        #txByteRate
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsrxpacketrate'
+                        class='regular pre-open'>
+                        #rxPacketRate
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsrxbyterate'
+                        class='regular pre-open'>
+                        #rxByteRate
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsearliestpacketid'
+                        class='regular pre-open'>
+                        #earliestPacketID
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsearliestpacketcreationtime'
+                        class='regular pre-open'>
+                        #earliestPacketCreationTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsearliestpacketdatastarttime'
+                        class='regular pre-open'>
+                        #earliestPacketDataStartTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatsearliestpacketdataendtime'
+                        class='regular pre-open'>
+                        #earliestPacketDataEndTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatslatestpacketid'
+                        class='regular pre-open'>
+                        #latestPacketID
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatslatestpacketcreationtime'
+                        class='regular pre-open'>
+                        #latestPacketCreationTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatslatestpacketdatastarttime'
+                        class='regular pre-open'>
+                        #latestPacketDataStartTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatslatestpacketdataendtime'
+                        class='regular pre-open'>
+                        #latestPacketDataEndTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#datalinkstatstostring'
+                        class='regular pre-open'>
+                        #toString
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#threadstat'
+                  class=" toggle-sibling">
+                  ThreadStat
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#threadstatparsexmlattributes'
+                        class='regular pre-open'>
+                        .parseXMLAttributes
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#threadstatflags'
+                        class='regular pre-open'>
+                        #flags
+                      </a></li>
+                      
+                      <li><a
+                        href='#threadstattype'
+                        class='regular pre-open'>
+                        #type
+                      </a></li>
+                      
+                      <li><a
+                        href='#threadstatport'
+                        class='regular pre-open'>
+                        #port
+                      </a></li>
+                      
+                      <li><a
+                        href='#threadstattostring'
+                        class='regular pre-open'>
+                        #toString
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#statusresponse'
+                  class=" toggle-sibling">
+                  StatusResponse
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#statusresponsefromdatalinkresponse'
+                        class='regular pre-open'>
+                        .fromDatalinkResponse
+                      </a></li>
+                    
+                      <li><a
+                        href='#statusresponsefromxml'
+                        class='regular pre-open'>
+                        .fromXML
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#statusresponseidstats'
+                        class='regular pre-open'>
+                        #idStats
+                      </a></li>
+                      
+                      <li><a
+                        href='#statusresponsedatalinkstats'
+                        class='regular pre-open'>
+                        #datalinkStats
+                      </a></li>
+                      
+                      <li><a
+                        href='#statusresponsethreadstats'
+                        class='regular pre-open'>
+                        #threadStats
+                      </a></li>
+                      
+                      <li><a
+                        href='#statusresponserawxml'
+                        class='regular pre-open'>
+                        #rawXml
+                      </a></li>
+                      
+                      <li><a
+                        href='#statusresponsetostring'
+                        class='regular pre-open'>
+                        #toString
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#streamstat'
+                  class=" toggle-sibling">
+                  StreamStat
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#streamstatparsexmlattributes'
+                        class='regular pre-open'>
+                        .parseXMLAttributes
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#streamstatname'
+                        class='regular pre-open'>
+                        #name
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamstatearliestpacketid'
+                        class='regular pre-open'>
+                        #earliestPacketID
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamstatearliestpacketdatastarttime'
+                        class='regular pre-open'>
+                        #earliestPacketDataStartTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamstatearliestpacketdataendtime'
+                        class='regular pre-open'>
+                        #earliestPacketDataEndTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamstatlatestpacketid'
+                        class='regular pre-open'>
+                        #latestPacketID
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamstatlatestpacketdatastarttime'
+                        class='regular pre-open'>
+                        #latestPacketDataStartTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamstatlatestpacketdataendtime'
+                        class='regular pre-open'>
+                        #latestPacketDataEndTime
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamstatdatalatency'
+                        class='regular pre-open'>
+                        #dataLatency
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamstattostring'
+                        class='regular pre-open'>
+                        #toString
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#streamsresponse'
+                  class=" toggle-sibling">
+                  StreamsResponse
+                  <span class='icon'>▸</span>
+                </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#streamsresponsefromdatalinkresponse'
+                        class='regular pre-open'>
+                        .fromDatalinkResponse
+                      </a></li>
+                    
+                      <li><a
+                        href='#streamsresponsefromxml'
+                        class='regular pre-open'>
+                        .fromXML
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                    <ul class='list-reset py1-ul pl1'>
+                      <li class='h5'><span>Instance members</span></li>
+                      
+                      <li><a
+                        href='#streamsresponsedatalinkstats'
+                        class='regular pre-open'>
+                        #datalinkStats
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamsresponsestreams'
+                        class='regular pre-open'>
+                        #streams
+                      </a></li>
+                      
+                      <li><a
+                        href='#streamsresponsetostring'
+                        class='regular pre-open'>
+                        #toString
+                      </a></li>
+                      
+                    </ul>
+                  
+                  
+                  
+                </div>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#connectionsresponse'
+                  class="">
+                  ConnectionsResponse
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#dalidatetime'
+                  class="">
+                  daliDateTime
+                  
+                </a>
                 
                 </li>
               
@@ -595,9 +1167,9 @@
               
                 
                 <li><a
-                  href='#hptimetomoment'
+                  href='#hptimetodatetime'
                   class="">
-                  hpTimeToMoment
+                  hpTimeToDateTime
                   
                 </a>
                 
@@ -633,7 +1205,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L15-L15'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L15-L15'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -692,7 +1264,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L18-L21'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L18-L21'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -746,7 +1318,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L23-L23'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L23-L23'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -800,7 +1372,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L26-L26'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L26-L26'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -854,7 +1426,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L29-L29'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L29-L29'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -908,7 +1480,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L32-L32'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L32-L32'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -967,7 +1539,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L35-L35'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L35-L35'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1026,7 +1598,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L38-L38'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L38-L38'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1085,7 +1657,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L41-L41'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L41-L41'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1139,12 +1711,189 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='ok'>
+      OK
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L43-L43'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>const for ok response, OK</p>
+
+    <div class='pre p1 fill-light mt0'>OK</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='info'>
+      INFO
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L45-L45'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>const for info response, INFO</p>
+
+    <div class='pre p1 fill-light mt0'>INFO</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='id'>
+      ID
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L47-L47'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>const for id response, ID</p>
+
+    <div class='pre p1 fill-light mt0'>ID</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='packet'>
       PACKET
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L42-L42'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L49-L49'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1202,7 +1951,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L43-L43'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L50-L50'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1260,7 +2009,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L44-L44'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L51-L51'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1318,7 +2067,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L45-L45'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L52-L52'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1376,7 +2125,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L46-L46'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L53-L53'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1434,7 +2183,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L47-L47'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L54-L54'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1492,7 +2241,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L71-L613'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L78-L634'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1582,7 +2331,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L409-L417'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L413-L421'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1670,7 +2419,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L426-L434'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L430-L438'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1766,7 +2515,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L72-L72'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L79-L79'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1828,7 +2577,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L76-L76'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L83-L83'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1890,7 +2639,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L77-L77'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L84-L84'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -1952,7 +2701,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L78-L78'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L85-L85'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2014,7 +2763,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L79-L79'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L86-L86'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2076,7 +2825,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L80-L80'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L87-L87'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2138,7 +2887,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L81-L81'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L88-L88'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2200,7 +2949,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L82-L82'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L89-L89'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2262,7 +3011,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L83-L83'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L90-L90'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2324,7 +3073,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L88-L88'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L95-L95'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2386,7 +3135,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L116-L118'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L123-L125'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2458,7 +3207,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L125-L167'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L132-L174'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2524,7 +3273,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L172-L174'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L179-L181'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2589,7 +3338,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L179-L181'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L186-L188'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2659,7 +3408,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L186-L193'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L193-L197'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2668,7 +3417,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
 
   <p>Switches to streaming mode to receive data packets from the ringserver.</p>
 
-    <div class='pre p1 fill-light mt0'>stream(): void</div>
+    <div class='pre p1 fill-light mt0'>stream(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#datalinkresponse">DataLinkResponse</a>></div>
   
   
 
@@ -2686,7 +3435,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>void</code>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#datalinkresponse">DataLinkResponse</a>></code>
     
   
 
@@ -2722,7 +3471,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L198-L209'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L202-L213'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2785,7 +3534,7 @@ tools to proxy the websocket to a TCP datalink socket.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L215-L226'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L219-L230'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2849,7 +3598,7 @@ is possible until connect() is called again.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L233-L250'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L237-L254'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -2915,7 +3664,7 @@ is possible until connect() is called again.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L261-L304'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L265-L308'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3006,7 +3755,7 @@ to the header if present.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L314-L322'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L318-L326'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3094,7 +3843,7 @@ to the header before sending if present.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L332-L334'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L336-L338'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3182,7 +3931,7 @@ to the header before sending.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L343-L364'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L347-L368'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3271,7 +4020,7 @@ to the header before sending.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L374-L379'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L378-L383'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3361,7 +4110,7 @@ Returns a Promise that resolves with the webSocket MessageEvent.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L390-L400'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L394-L404'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3468,7 +4217,7 @@ Returns a Promise that resolves with the webSocket MessageEvent.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L447-L457'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L451-L461'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3577,7 +4326,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L465-L470'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L469-L474'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3643,6 +4392,192 @@ on the server side.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='datalinkconnectioninfostatus'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>infoStatus()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L476-L481'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>infoStatus(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#statusresponse">StatusResponse</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#statusresponse">StatusResponse</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkconnectioninfostreams'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>infoStreams()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L483-L488'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>infoStreams(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#streamsresponse">StreamsResponse</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#streamsresponse">StreamsResponse</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkconnectioninfoconnections'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>infoConnections()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L490-L495'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>infoConnections(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#connectionsresponse">ConnectionsResponse</a>></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>&#x3C;<a href="#connectionsresponse">ConnectionsResponse</a>></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='datalinkconnectionpositionafter'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -3657,7 +4592,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L478-L482'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L503-L507'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3737,7 +4672,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L490-L495'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L515-L520'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3817,7 +4752,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L503-L508'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L528-L533'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3897,7 +4832,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L516-L521'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L541-L546'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -3977,7 +4912,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L529-L534'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L554-L559'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4065,7 +5000,7 @@ on the server side.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L618-L661'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L639-L684'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4144,7 +5079,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L633-L660'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L656-L683'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4235,7 +5170,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L619-L619'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L640-L640'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4297,7 +5232,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L620-L620'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L641-L641'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4359,7 +5294,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L621-L621'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L642-L642'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4407,6 +5342,68 @@ on the server side.</p>
       </div>
     </div>
   
+    <div class='border-bottom' id='datalinkresponseiserror'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>isError()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L649-L651'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>isError(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='datalinkresponsetostring'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -4421,7 +5418,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L629-L631'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L652-L654'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4491,7 +5488,7 @@ on the server side.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L667-L778'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L690-L806'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4564,7 +5561,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L668-L668'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L691-L691'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4626,7 +5623,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L669-L669'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L692-L692'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4688,7 +5685,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L670-L670'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L693-L693'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4750,7 +5747,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L671-L671'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L694-L694'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4812,7 +5809,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L672-L672'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L695-L695'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4874,7 +5871,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L673-L673'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L696-L696'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4936,7 +5933,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L674-L674'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L697-L697'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -4998,7 +5995,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L675-L675'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L698-L698'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5060,7 +6057,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L676-L676'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L699-L699'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5122,7 +6119,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L677-L677'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L700-L700'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5184,7 +6181,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L704-L706'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L727-L729'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5255,7 +6252,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L713-L715'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L736-L738'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5326,7 +6323,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L722-L724'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L745-L747'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5397,7 +6394,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L731-L733'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L754-L756'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5449,11 +6446,11 @@ on the server side.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='datalinkpacketminiseed'>
+    <div class='border-bottom' id='datalinkpacketasminiseed'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>miniseed</span>
+            <span class='code strong strong truncate'>asMiniseed()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -5463,7 +6460,7 @@ on the server side.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L741-L751'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L764-L774'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5473,12 +6470,7 @@ on the server side.</p>
   <p>Parsed payload as a miniseed data record, if the streamid
 ends with '/MSEED', null otherwise.</p>
 
-    <div class='pre p1 fill-light mt0'>miniseed</div>
-  
-    <p>
-      Type:
-      (miniseed.DataRecord | null)
-    </p>
+    <div class='pre p1 fill-light mt0'>asMiniseed(): (miniseed.DataRecord | null)</div>
   
   
 
@@ -5535,7 +6527,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L758-L760'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L781-L783'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5587,11 +6579,11 @@ ends with '/MSEED', null otherwise.</p>
       </div>
     </div>
   
-    <div class='border-bottom' id='datalinkpacketminiseed3'>
+    <div class='border-bottom' id='datalinkpacketasminiseed3'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>miniseed3</span>
+            <span class='code strong strong truncate'>asMiniseed3()</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -5601,7 +6593,7 @@ ends with '/MSEED', null otherwise.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L767-L777'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L790-L805'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5610,12 +6602,7 @@ ends with '/MSEED', null otherwise.</p>
 
   <p>Parsed payload as a miniseed3 data record, if the data format is 3, null otherwise.</p>
 
-    <div class='pre p1 fill-light mt0'>miniseed3</div>
-  
-    <p>
-      Type:
-      (mseed3.MSeed3Record | null)
-    </p>
+    <div class='pre p1 fill-light mt0'>asMiniseed3(): (mseed3.MSeed3Record | null)</div>
   
   
 
@@ -5675,12 +6662,4486 @@ ends with '/MSEED', null otherwise.</p>
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='datalinkidstats'>
+      DataLinkIdStats
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L811-L843'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new DataLinkIdStats(version: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, serverId: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, capabilities: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>version</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>serverId</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>capabilities</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='datalinkidstatsparsexmlattributes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>parseXMLAttributes(statusEl)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L829-L835'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Parses the attributes of a  xml element.</p>
+
+    <div class='pre p1 fill-light mt0'>parseXMLAttributes(statusEl: <a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>): <a href="#datalinkidstats">DataLinkIdStats</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>statusEl</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>)</code>
+	    DataLink XML element
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#datalinkidstats">DataLinkIdStats</a></code>:
+        the id stats
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='datalinkidstatsversion'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>version</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L812-L812'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>version</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkidstatsserverid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>serverId</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L813-L813'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>serverId</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkidstatscapabilities'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>capabilities</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L814-L814'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>capabilities</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkidstatstostring'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toString()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L836-L842'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>toString(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='datalinkstats'>
+      DataLinkStats
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L879-L1012'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new DataLinkStats(startTime: DateTime, ringVersion: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, ringSize: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, packetSize: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, maximumPacketID: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, maximumPackets: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, memoryMappedRing: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, volatileRing: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>, totalConnections: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, totalStreams: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, txPacketRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, txByteRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, rxPacketRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, rxByteRate: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, earliestPacketID: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, earliestPacketCreationTime: DateTime, earliestPacketDataStartTime: DateTime, earliestPacketDataEndTime: DateTime, latestPacketID: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, latestPacketCreationTime: DateTime, latestPacketDataStartTime: DateTime, latestPacketDataEndTime: DateTime)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>startTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>ringVersion</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>ringSize</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>packetSize</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>maximumPacketID</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>maximumPackets</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>memoryMappedRing</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>volatileRing</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalConnections</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalStreams</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>txPacketRate</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>txByteRate</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>rxPacketRate</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>rxByteRate</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>earliestPacketID</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>earliestPacketCreationTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>earliestPacketDataStartTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>earliestPacketDataEndTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>latestPacketID</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>latestPacketCreationTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>latestPacketDataStartTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>latestPacketDataEndTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='datalinkstatsparsexmlattributes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>parseXMLAttributes(statusEl)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L956-L984'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Parses the attributes of a  xml element.</p>
+
+    <div class='pre p1 fill-light mt0'>parseXMLAttributes(statusEl: <a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>): <a href="#datalinkstats">DataLinkStats</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>statusEl</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>)</code>
+	    DataLink 
+ XML element
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#datalinkstats">DataLinkStats</a></code>:
+        the stats
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='datalinkstatsstarttime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>startTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L880-L880'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>startTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsringversion'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>ringVersion</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L881-L881'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>ringVersion</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsringsize'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>ringSize</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L882-L882'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>ringSize</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatspacketsize'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>packetSize</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L883-L883'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>packetSize</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsmaximumpacketid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>maximumPacketID</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L884-L884'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>maximumPacketID</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsmaximumpackets'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>maximumPackets</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L885-L885'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>maximumPackets</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsmemorymappedring'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>memoryMappedRing</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L886-L886'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>memoryMappedRing</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsvolatilering'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>volatileRing</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L887-L887'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>volatileRing</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean">boolean</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatstotalconnections'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>totalConnections</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L888-L888'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>totalConnections</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatstotalstreams'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>totalStreams</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L889-L889'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>totalStreams</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatstxpacketrate'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>txPacketRate</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L890-L890'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>txPacketRate</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatstxbyterate'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>txByteRate</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L891-L891'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>txByteRate</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsrxpacketrate'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>rxPacketRate</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L892-L892'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>rxPacketRate</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsrxbyterate'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>rxByteRate</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L893-L893'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>rxByteRate</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsearliestpacketid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>earliestPacketID</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L894-L894'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>earliestPacketID</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsearliestpacketcreationtime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>earliestPacketCreationTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L895-L895'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>earliestPacketCreationTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsearliestpacketdatastarttime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>earliestPacketDataStartTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L896-L896'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>earliestPacketDataStartTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatsearliestpacketdataendtime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>earliestPacketDataEndTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L897-L897'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>earliestPacketDataEndTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatslatestpacketid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>latestPacketID</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L898-L898'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>latestPacketID</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatslatestpacketcreationtime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>latestPacketCreationTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L899-L899'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>latestPacketCreationTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatslatestpacketdatastarttime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>latestPacketDataStartTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L900-L900'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>latestPacketDataStartTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatslatestpacketdataendtime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>latestPacketDataEndTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L901-L901'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>latestPacketDataEndTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='datalinkstatstostring'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toString()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L985-L1011'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>toString(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='threadstat'>
+      ThreadStat
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1019-L1046'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new ThreadStat(flags: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>, type: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>, port: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>flags</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>type</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>port</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='threadstatparsexmlattributes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>parseXMLAttributes(statusEl)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1036-L1042'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Parses the attributes of a  xml element.</p>
+
+    <div class='pre p1 fill-light mt0'>parseXMLAttributes(statusEl: <a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>): <a href="#threadstat">ThreadStat</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>statusEl</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>)</code>
+	    DataLink 
+ XML element
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#threadstat">ThreadStat</a></code>:
+        the stats
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='threadstatflags'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>flags</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1020-L1020'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>flags</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='threadstattype'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>type</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1021-L1021'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>type</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='threadstatport'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>port</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1022-L1022'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>port</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='threadstattostring'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toString()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1043-L1045'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>toString(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='statusresponse'>
+      StatusResponse
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1048-L1085'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new StatusResponse(idStats: <a href="#datalinkidstats">DataLinkIdStats</a>, datalinkStats: <a href="#datalinkstats">DataLinkStats</a>, threadStats: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#threadstat">ThreadStat</a>>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>idStats</span> <code class='quiet'>(<a href="#datalinkidstats">DataLinkIdStats</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>datalinkStats</span> <code class='quiet'>(<a href="#datalinkstats">DataLinkStats</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>threadStats</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#threadstat">ThreadStat</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='statusresponsefromdatalinkresponse'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>fromDatalinkResponse(daliResp)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1060-L1069'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>fromDatalinkResponse(daliResp: <a href="#datalinkresponse">DataLinkResponse</a>): <a href="#statusresponse">StatusResponse</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>daliResp</span> <code class='quiet'>(<a href="#datalinkresponse">DataLinkResponse</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#statusresponse">StatusResponse</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='statusresponsefromxml'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>fromXML(daliXML)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1070-L1077'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>fromXML(daliXML: <a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>): <a href="#statusresponse">StatusResponse</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>daliXML</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#statusresponse">StatusResponse</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='statusresponseidstats'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>idStats</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1049-L1049'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>idStats</div>
+  
+    <p>
+      Type:
+      <a href="#datalinkidstats">DataLinkIdStats</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='statusresponsedatalinkstats'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>datalinkStats</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1050-L1050'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>datalinkStats</div>
+  
+    <p>
+      Type:
+      <a href="#datalinkstats">DataLinkStats</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='statusresponsethreadstats'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>threadStats</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1051-L1051'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>threadStats</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#threadstat">ThreadStat</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='statusresponserawxml'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>rawXml</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1052-L1052'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>rawXml</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='statusresponsetostring'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toString()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1078-L1083'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>toString(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='streamstat'>
+      StreamStat
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1098-L1151'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new StreamStat(name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, earliestPacketID: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, earliestPacketDataStartTime: DateTime, earliestPacketDataEndTime: DateTime, latestPacketID: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, latestPacketDataStartTime: DateTime, latestPacketDataEndTime: DateTime, dataLatency: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>earliestPacketID</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>earliestPacketDataStartTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>earliestPacketDataEndTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>latestPacketID</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>latestPacketDataStartTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>latestPacketDataEndTime</span> <code class='quiet'>(DateTime)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>dataLatency</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='streamstatparsexmlattributes'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>parseXMLAttributes(statusEl)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1126-L1138'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>parseXMLAttributes(statusEl: <a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>): <a href="#streamstat">StreamStat</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>statusEl</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#streamstat">StreamStat</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='streamstatname'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>name</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1099-L1099'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>name</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamstatearliestpacketid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>earliestPacketID</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1100-L1100'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>earliestPacketID</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamstatearliestpacketdatastarttime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>earliestPacketDataStartTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1101-L1101'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>earliestPacketDataStartTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamstatearliestpacketdataendtime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>earliestPacketDataEndTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1102-L1102'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>earliestPacketDataEndTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamstatlatestpacketid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>latestPacketID</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1103-L1103'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>latestPacketID</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamstatlatestpacketdatastarttime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>latestPacketDataStartTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1104-L1104'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>latestPacketDataStartTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamstatlatestpacketdataendtime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>latestPacketDataEndTime</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1105-L1105'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>latestPacketDataEndTime</div>
+  
+    <p>
+      Type:
+      DateTime
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamstatdatalatency'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>dataLatency</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1106-L1106'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>dataLatency</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamstattostring'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toString()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1139-L1150'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>toString(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='streamsresponse'>
+      StreamsResponse
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1153-L1217'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new StreamsResponse(datalinkStats: <a href="#datalinkstats">DataLinkStats</a>, streams: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#streamstat">StreamStat</a>>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>datalinkStats</span> <code class='quiet'>(<a href="#datalinkstats">DataLinkStats</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>streams</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#streamstat">StreamStat</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='streamsresponsefromdatalinkresponse'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>fromDatalinkResponse(daliResp)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1161-L1168'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>fromDatalinkResponse(daliResp: <a href="#datalinkresponse">DataLinkResponse</a>): <a href="#streamsresponse">StreamsResponse</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>daliResp</span> <code class='quiet'>(<a href="#datalinkresponse">DataLinkResponse</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#streamsresponse">StreamsResponse</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamsresponsefromxml'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>fromXML(daliXML)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1203-L1211'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>fromXML(daliXML: <a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>): <a href="#streamsresponse">StreamsResponse</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>daliXML</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/Element">Element</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#streamsresponse">StreamsResponse</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Instance Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='streamsresponsedatalinkstats'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>datalinkStats</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1154-L1154'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>datalinkStats</div>
+  
+    <p>
+      Type:
+      <a href="#datalinkstats">DataLinkStats</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamsresponsestreams'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>streams</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1155-L1155'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>streams</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="#streamstat">StreamStat</a>>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='streamsresponsetostring'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toString()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1212-L1216'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>toString(): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='connectionsresponse'>
+      ConnectionsResponse
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1219-L1223'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>new ConnectionsResponse()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='dalidatetime'>
+      daliDateTime
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1231-L1234'>
+      <span>src/datalink.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Convert DataLink style dates, like "2022-10-04 15:11:24.786990"
+to ISO form for DateTime</p>
+
+    <div class='pre p1 fill-light mt0'>daliDateTime(dalitime: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, m: any): DateTime</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>dalitime</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>m</span> <code class='quiet'>(any)</code>
+	    [description]
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>DateTime</code>:
+        [description]
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='datetimetohptime'>
       dateTimeToHPTime
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L786-L788'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1242-L1244'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5751,12 +11212,12 @@ ends with '/MSEED', null otherwise.</p>
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='hptimetomoment'>
-      hpTimeToMoment
+    <h3 class='fl m0' id='hptimetodatetime'>
+      hpTimeToDateTime
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L796-L798'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1252-L1254'>
       <span>src/datalink.ts</span>
       </a>
     
@@ -5765,7 +11226,7 @@ ends with '/MSEED', null otherwise.</p>
 
   <p>Convert hptime number to a DateTime.</p>
 
-    <div class='pre p1 fill-light mt0'>hpTimeToMoment(hptime: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): DateTime</div>
+    <div class='pre p1 fill-light mt0'>hpTimeToDateTime(hptime: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): DateTime</div>
   
   
 
@@ -5832,7 +11293,7 @@ ends with '/MSEED', null otherwise.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/datalink.ts#L806-L820'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/datalink.ts#L1262-L1276'>
       <span>src/datalink.ts</span>
       </a>
     

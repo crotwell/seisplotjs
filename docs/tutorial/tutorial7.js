@@ -1,10 +1,10 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.2_standalone.mjs';
 
 // snip start vars
 const matchPattern = `CO_JSC_00_HH./MSEED`;
 seisplotjs.d3.select('span#channel').text(matchPattern);
 const duration = seisplotjs.luxon.Duration.fromISO('PT5M');
-const timeWindow = new seisplotjs.luxon.Interval.before(seisplotjs.luxon.DateTime.utc(), duration);
+const timeWindow = new seisplotjs.util.durationEnd(duration, seisplotjs.luxon.DateTime.utc());
 const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
 seisPlotConfig.isYAxisNice = false;
@@ -35,7 +35,7 @@ const packetHandler = function(packet) {
   if (packet.isMiniseed()) {
     numPackets++;
     seisplotjs.d3.select("span#numPackets").text(numPackets);
-    let seisSegment = seisplotjs.miniseed.createSeismogramSegment(packet.miniseed);
+    let seisSegment = seisplotjs.miniseed.createSeismogramSegment(packet.asMiniseed());
     const codes = seisSegment.codes();
     let seisPlot = graphList.get(codes);
     if ( ! seisPlot) {
@@ -105,6 +105,14 @@ seisplotjs.d3.select("button#disconnect").on("click", function(d) {
   toggleConnect();
 });
 
+function addToDebug(message) {
+  const debugDiv = document.querySelector("div#debug");
+  if (!debugDiv) { return; }
+  const pre = debugDiv.appendChild(document.createElement("pre"));
+  const code = pre.appendChild(document.createElement("code"));
+  code.textContent = message;
+}
+
 let toggleConnect = function() {
   stopped = ! stopped;
   if (stopped) {
@@ -117,16 +125,33 @@ let toggleConnect = function() {
     if (datalink) {
       datalink.connect()
       .then(serverId => {
-        console.log(`id response: ${serverId}`);
+        addToDebug(`id response: ${serverId}`);
         return datalink.match(matchPattern);
       }).then(response => {
-        console.log(`match response: ${response}`)
-        return datalink.positionAfter(timeWindow.start);
+        addToDebug(`match response: ${response}`)
+        if (response.isError()) {
+          addToDebug(`response is not OK, ignore... ${response}`);
+        }
+        return datalink.infoStatus();
       }).then(response => {
-        console.log(`positionAfter response: ${response}`)
+        addToDebug(`info status response: ${response}`)
+        return datalink.infoStreams();
+      }).then(response => {
+        addToDebug(`info streams response: ${response}`)
+        let hhzStream = response.streams.find(s=> s.name === "CO_JSC_00_HHZ/MSEED");
+        return datalink.positionAfter(hhzStream.latestPacketDataEndTime.plus({second: 10}));
+      }).then(response => {
+        if (response.isError()) {
+          addToDebug(`Oops, positionAfter response is not OK, ignore... ${response}`);
+          // bail, ignore, or do something about it...
+        }
         return datalink.stream();
       }).catch( function(error) {
-        seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+        let errMsg = `${error}`;
+        if (error.cause && error.cause instanceof seisplotjs.datalink.DataLinkResponse) {
+          errMsg = `${error}, ${errMsg.cause}`;
+        }
+        addToDebug("Error: " +errMsg);
         console.assert(false, error);
       });
     }

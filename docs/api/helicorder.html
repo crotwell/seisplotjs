@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs.helicorder 3.0.0-alpha.0 | Documentation</title>
+  <title>seisplotjs 3.0.0-alpha.2 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -14,8 +14,8 @@
     <div class='flex'>
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
-          <h3 class='mb0 no-anchor'><a href="index.html">seisplotjs</a>.helicorder</h3>
-          <div class='mb1'><code>3.0.0-alpha.0</code></div>
+          <h3 class='mb0 no-anchor'>seisplotjs</h3>
+          <div class='mb1'><code>3.0.0-alpha.2</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -64,15 +64,45 @@
                       </a></li>
                       
                       <li><a
+                        href='#helicorderwidth'
+                        class='regular pre-open'>
+                        #width
+                      </a></li>
+                      
+                      <li><a
+                        href='#helicorderheight'
+                        class='regular pre-open'>
+                        #height
+                      </a></li>
+                      
+                      <li><a
+                        href='#helicorderappendsegment'
+                        class='regular pre-open'>
+                        #appendSegment
+                      </a></li>
+                      
+                      <li><a
                         href='#helicorderdraw'
                         class='regular pre-open'>
                         #draw
                       </a></li>
                       
                       <li><a
+                        href='#helicordercutforline'
+                        class='regular pre-open'>
+                        #cutForLine
+                      </a></li>
+                      
+                      <li><a
                         href='#helicordercalctimesforlines'
                         class='regular pre-open'>
                         #calcTimesForLines
+                      </a></li>
+                      
+                      <li><a
+                        href='#helicordercalcdetailforevent'
+                        class='regular pre-open'>
+                        #calcDetailForEvent
                       </a></li>
                       
                     </ul>
@@ -140,6 +170,12 @@
                         href='#helicorderconfigmaxvariation'
                         class='regular pre-open'>
                         #maxVariation
+                      </a></li>
+                      
+                      <li><a
+                        href='#helicorderconfigdetrendlines'
+                        class='regular pre-open'>
+                        #detrendLines
                       </a></li>
                       
                     </ul>
@@ -214,6 +250,16 @@
                 
                 </li>
               
+                
+                <li><a
+                  href='#helimouseeventtype'
+                  class="">
+                  HeliMouseEventType
+                  
+                </a>
+                
+                </li>
+              
             </ul>
           </div>
           <div class='mt1 h6 quiet'>
@@ -234,7 +280,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L13-L13'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L15-L15'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -292,7 +338,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L22-L242'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L24-L384'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -391,7 +437,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L46-L48'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L79-L81'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -458,7 +504,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L49-L51'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L82-L84'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -519,6 +565,210 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='helicorderwidth'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>width</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L85-L89'>
+      <span>src/helicorder.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>width</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='helicorderheight'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>height</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L90-L94'>
+      <span>src/helicorder.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>height</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='helicorderappendsegment'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>appendSegment(segment)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L96-L140'>
+      <span>src/helicorder.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>appendSegment(segment: SeismogramSegment)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>segment</span> <code class='quiet'>(SeismogramSegment)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='helicorderdraw'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -533,7 +783,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L55-L58'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L144-L147'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -577,6 +827,89 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='helicordercutforline'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>cutForLine(singleSeisData, lineInterval)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L307-L324'>
+      <span>src/helicorder.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>cutForLine(singleSeisData: SeismogramDisplayData, lineInterval: Interval): SeismogramDisplayData</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>singleSeisData</span> <code class='quiet'>(SeismogramDisplayData)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>lineInterval</span> <code class='quiet'>(Interval)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>SeismogramDisplayData</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='helicordercalctimesforlines'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -591,7 +924,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L226-L241'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L333-L348'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -675,6 +1008,81 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='helicordercalcdetailforevent'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>calcDetailForEvent(evt)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L349-L383'>
+      <span>src/helicorder.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>calcDetailForEvent(evt: <a href="https://developer.mozilla.org/docs/Web/API/MouseEvent">MouseEvent</a>): <a href="#helimouseeventtype">HeliMouseEventType</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>evt</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/MouseEvent">MouseEvent</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="#helimouseeventtype">HeliMouseEventType</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
 </div>
 
   
@@ -697,7 +1105,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L243-L243'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L385-L385'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -755,7 +1163,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L250-L306'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L394-L451'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -763,6 +1171,8 @@
   
 
   <p>Configuration of the helicorder</p>
+<p>Note that setting maxVariation=0 and fixedAmplitudeScale=[0,0] will scale the
+data to max</p>
 
     <div class='pre p1 fill-light mt0'>new HelicorderConfig(timeRange: Interval)</div>
   
@@ -826,7 +1236,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L297-L305'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L442-L450'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -909,7 +1319,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L251-L251'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L395-L395'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -971,7 +1381,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L252-L252'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L396-L396'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1033,7 +1443,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L253-L253'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L397-L397'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1095,7 +1505,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L254-L254'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L398-L398'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1109,6 +1519,63 @@
       Type:
       <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
     </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='helicorderconfigdetrendlines'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>detrendLines</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L399-L399'>
+      <span>src/helicorder.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>detrendLines</div>
   
   
 
@@ -1165,7 +1632,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L312-L324'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L457-L469'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1247,7 +1714,7 @@ to add the line number</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L313-L313'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L458-L458'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1309,7 +1776,7 @@ to add the line number</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L314-L314'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L459-L459'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1379,7 +1846,7 @@ to add the line number</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L327-L333'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L472-L479'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1433,7 +1900,7 @@ to add the line number</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L335-L335'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L481-L481'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1491,7 +1958,7 @@ to add the line number</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/f7c1b8ded75108c8614b5fd896adef53bef3d2b9/src/helicorder.ts#L336-L336'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L482-L482'>
       <span>src/helicorder.ts</span>
       </a>
     
@@ -1517,6 +1984,87 @@ to add the line number</p>
 
   
 
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='helimouseeventtype'>
+      HeliMouseEventType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/ca2f077749e61a40a05be2a78bb296ed92edc72a/src/helicorder.ts#L483-L487'>
+      <span>src/helicorder.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>HeliMouseEventType</div>
+  
+    <p>
+      Type:
+      {mouseevent: <a href="https://developer.mozilla.org/docs/Web/API/MouseEvent">MouseEvent</a>, time: DateTime, lineNum: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>}
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Properties</div>
+    <div>
+      
+        <div class='space-bottom0'>
+          <span class='code bold'>mouseevent</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/MouseEvent">MouseEvent</a>)</code>
+          
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <span class='code bold'>time</span> <code class='quiet'>(DateTime)</code>
+          
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <span class='code bold'>lineNum</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+          
+          
+        </div>
+      
+    </div>
   
 
   
