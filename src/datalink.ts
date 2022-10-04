@@ -53,8 +53,8 @@ export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
-const defaultHandleResponse = function (message: string) {
-  util.log("Unhandled datalink response: " + message);
+const defaultHandleResponse = function (dlResponse: DataLinkResponse) {
+  util.log(`Unhandled datalink response: ${dlResponse}`);
 };
 
 /**
@@ -190,13 +190,10 @@ export class DataLinkConnection {
   /**
    * Switches to streaming mode to receive data packets from the ringserver.
    */
-  stream(): void {
-    if (this._mode === MODE.Stream) {
-      return;
-    }
-
+  stream(): Promise<DataLinkResponse> {
     this._mode = MODE.Stream;
-    this.sendDLCommand(STREAM, "");
+    return this.awaitDLCommand(STREAM, "")
+      .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse));
   }
 
   /**
@@ -608,7 +605,7 @@ export class DataLinkConnection {
           if (this._responseResolve) {
             this._responseResolve(dlResponse);
           } else {
-            defaultHandleResponse(header);
+            defaultHandleResponse(dlResponse);
           }
         }
       }
@@ -649,7 +646,9 @@ export class DataLinkResponse {
     this.value = value;
     this.message = message;
   }
-
+  isError(): boolean {
+    return this.type === ERROR;
+  }
   toString(): string {
     return `${this.type} ${this.value} | ${this.message}`;
   }
@@ -807,6 +806,42 @@ export class DataLinkPacket {
 }
 
 /*
+  Holds top level items from INFO requests
+*/
+export class DataLinkIdStats {
+  version: string;
+  serverId: string;
+  capabilities: Array<string>;
+  constructor(
+      version: string,
+      serverId: string,
+      capabilities: Array<string>) {
+    this.version = version;
+    this.serverId = serverId;
+    this.capabilities = capabilities;
+  }
+  /**
+   * Parses the attributes of a <DataLink> xml element.
+   *
+   * @param  statusEl               DataLink XML element
+   * @return  the id stats
+   */
+  static parseXMLAttributes(statusEl: Element): DataLinkIdStats {
+    const dlIdStats = new DataLinkIdStats(
+      parseUtil._requireAttribute(statusEl, "Version"),
+      parseUtil._requireAttribute(statusEl, "ServerID"),
+      parseUtil._requireAttribute(statusEl, "Capabilities").split(" "));
+    return dlIdStats;
+  }
+  toString(): string {
+    return `
+DataLink:
+Version="${this.version}"
+Id="${this.serverId}"
+Capabilities="${this.capabilities.join(' ')}"`;
+  }
+}
+/*
 <DataLink
   Version="2018.078"
   ServerID="South Carolina Seismic Network"
@@ -912,6 +947,12 @@ export class DataLinkStats {
     this.latestPacketDataStartTime = latestPacketDataStartTime;
     this.latestPacketDataEndTime = latestPacketDataEndTime;
   }
+  /**
+   * Parses the attributes of a <Status> xml element.
+   *
+   * @param  statusEl   DataLink <Status> XML element
+   * @return  the stats
+   */
   static parseXMLAttributes(statusEl: Element): DataLinkStats {
     const dlStats = new DataLinkStats(
       daliDateTime(parseUtil._requireAttribute(statusEl, "StartTime")),
@@ -969,12 +1010,52 @@ LatestPacketDataEndTime="${this.latestPacketDataEndTime.toISO()}"
     `;
   }
 }
+/*
+<Thread Flags=" ACTIVE" Type="DataLink SeedLink HTTP" Port="6382" />
+<Thread Flags=" ACTIVE" Type="DataLink" Port="15001" />
+<Thread Flags=" ACTIVE" Type="SeedLink" Port="7381" />
+
+ */
+export class ThreadStat {
+  flags: Array<string>;
+  type: Array<string>;
+  port: number;
+  constructor(flags: Array<string>,
+              type: Array<string>,
+              port: number) {
+    this.flags = flags;
+    this.type = type;
+    this.port = port;
+  }
+  /**
+   * Parses the attributes of a <Status> xml element.
+   *
+   * @param  statusEl   DataLink <Status> XML element
+   * @return  the stats
+   */
+  static parseXMLAttributes(statusEl: Element): ThreadStat {
+    const threadStats = new ThreadStat(
+      parseUtil._requireAttribute(statusEl, "Flags").split(' '),
+      parseUtil._requireAttribute(statusEl, "Type").split(' '),
+      parseInt(parseUtil._requireAttribute(statusEl, "Port")));
+    return threadStats;
+  }
+  toString(): string {
+    return `Thread  Port: ${this.port} Flags: ${this.flags.join(" ")} Type: ${this.type.join(" ")}`;
+  }
+}
 
 export class StatusResponse {
+  idStats: DataLinkIdStats;
   datalinkStats: DataLinkStats;
+  threadStats: Array<ThreadStat>;
   rawXml: string = "";
-  constructor(datalinkStats: DataLinkStats) {
+  constructor(idStats: DataLinkIdStats,
+              datalinkStats: DataLinkStats,
+              threadStats: Array<ThreadStat>) {
+    this.idStats = idStats;
     this.datalinkStats = datalinkStats;
+    this.threadStats = threadStats;
   }
   static fromDatalinkResponse(daliResp: DataLinkResponse): StatusResponse {
     if (daliResp.type === INFO) {
@@ -987,11 +1068,18 @@ export class StatusResponse {
     }
   }
   static fromXML(daliXML: Element): StatusResponse {
+    const idStats = DataLinkIdStats.parseXMLAttributes(daliXML);
     const dlStats = DataLinkStats.parseXMLAttributes(daliXML.getElementsByTagName("Status")[0]);
-    return new StatusResponse(dlStats);
+    const threadListEl = daliXML.getElementsByTagName("ServerThreads")[0];
+    const threadElList = threadListEl.getElementsByTagName("Thread");
+    const threads = Array.from(threadElList).map(threadEl => ThreadStat.parseXMLAttributes(threadEl));
+    return new StatusResponse(idStats, dlStats, threads);
   }
   toString(): string {
-    return `${this.datalinkStats}`;
+    return `
+${this.idStats}
+${this.datalinkStats}
+${this.threadStats.join("\n")}`;
   }
 
 }
