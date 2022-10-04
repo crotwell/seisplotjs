@@ -512,9 +512,41 @@ export class MSeed3Header {
     } else if (this.encoding === 10) {
       encode_name = "STEIM-1 integer compression";
     }
-
+    let bitFlagStr = '';
+    if (this.flags & 0x01) {
+      bitFlagStr = `${bitFlagStr}
+                         [Bit 0] Calibration signals present`;
+    }
+    if (this.flags & 0x02) {
+      bitFlagStr = `${bitFlagStr}
+                         [Bit 1] Time tag is questionable`;
+    }
+    if (this.flags & 0x04) {
+      bitFlagStr = `${bitFlagStr}
+                         [Bit 2] Clock locked`;
+    }
+    if (this.flags & 0x08) {
+      bitFlagStr = `${bitFlagStr}
+                         [Bit 3] Undefined bit set`;
+    }
+    if (this.flags & 0x10) {
+      bitFlagStr = `${bitFlagStr}
+                         [Bit 4] Undefined bit set`;
+    }
+    if (this.flags & 0x20) {
+      bitFlagStr = `${bitFlagStr}
+                         [Bit 5] Undefined bit set`;
+    }
+    if (this.flags & 0x40) {
+      bitFlagStr = `${bitFlagStr}
+                         [Bit 6] Undefined bit set`;
+    }
+    if (this.flags & 0x80) {
+      bitFlagStr = `${bitFlagStr}
+                         [Bit 7] Undefined bit set`;
+    }
     return (
-      `  ${this.identifier}, version ${this.publicationVersion}, ${
+      `${this.identifier}, version ${this.publicationVersion}, ${
         this.getSize() + this.dataLength
       } bytes (format: ${this.formatVersion})\n` +
       `             start time: ${this.getStartFieldsAsISO()}\n` +
@@ -522,7 +554,7 @@ export class MSeed3Header {
       `       sample rate (Hz): ${this.sampleRate}\n` +
       `                  flags: [${(this.flags >>> 0)
         .toString(2)
-        .padStart(8, "0")}] 8 bits\n` +
+        .padStart(8, "0")}] 8 bits${bitFlagStr}\n` +
       `                    CRC: ${crcToHexString(this.crc)}\n` +
       `    extra header length: ${this.extraHeadersLength} bytes\n` +
       `    data payload length: ${this.dataLength} bytes\n` +

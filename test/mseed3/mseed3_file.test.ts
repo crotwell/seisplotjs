@@ -1,41 +1,43 @@
-// @flow
+// reference data is included in mseed3 repo:
+// git clone https://github.com/iris-edu/miniSEED3.git
+// cp -r miniSEED3/reference-data test/mseed3/.
 
-// $FlowFixMe
 // eslint-disable-next-line no-undef
 let TextDecoder = require('util').TextDecoder;
 // eslint-disable-next-line no-undef
 global.TextDecoder = TextDecoder;
 
-import { isDef } from '../../src/util.js';
+import { isDef, isoToDateTime } from '../../src/util.js';
 import * as mseed3 from '../../src/mseed3.js';
 import * as miniseed from '../../src/miniseed.js';
 import fs from 'fs';
 
 let fileList = [
-  'test/mseed3/reference-data/reference-ascii.xseed',
-  'test/mseed3/reference-data/reference-detectiononly.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-FDSN-All.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-FDSN-Other.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-TQ-TC-ED.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-float32.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-float64.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-int16.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-int32.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-steim1.xseed',
-  'test/mseed3/reference-data/reference-sinusoid-steim2.xseed'];
+  'test/mseed3/reference-data/reference-detectiononly.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-FDSN-All.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-FDSN-Other.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-TQ-TC-ED.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-float32.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-float64.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-int16.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-int32.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-steim1.mseed3',
+  'test/mseed3/reference-data/reference-sinusoid-steim2.mseed3',
+  'test/mseed3/reference-data/reference-text.mseed3',
+];
 
 let fileSizeMap = new Map();
-fileSizeMap.set('test/mseed3/reference-data/reference-ascii.xseed',295);
-fileSizeMap.set('test/mseed3/reference-data/reference-detectiononly.xseed',331);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-All.xseed',3787);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-Other.xseed',1149);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-TQ-TC-ED.xseed',1318);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-float32.xseed',2060);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-float64.xseed',4060);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int16.xseed',1060);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int32.xseed',2060);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1.xseed',956);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim2.xseed',956);
+fileSizeMap.set('test/mseed3/reference-data/reference-detectiononly.mseed3',328);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-All.mseed3',3792);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-Other.mseed3',1148);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-TQ-TC-ED.mseed3',1317);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-float32.mseed3',2059);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-float64.mseed3',4059);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int16.mseed3',859);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int32.mseed3',2059);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1.mseed3',955);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim2.mseed3',955);
+fileSizeMap.set('test/mseed3/reference-data/reference-text.mseed3',294);
 
 //  fileList = fileList.slice(2,3);
 
@@ -73,10 +75,11 @@ for (let filename of fileList) {
     // due to / being same as \/, also 1e-6 and .000001
     //expect(xr.getSize()).toEqual(fileSizeMap.get(filename));
 
-    let jsonFilename = filename.slice(0, -5)+'json';
+    let jsonFilename = filename.slice(0, -6)+'json';
 
     expect(fs.existsSync(jsonFilename)).toEqual(true);
-    let jsonData = JSON.parse(fs.readFileSync(jsonFilename, 'utf8'));
+    let jsonAll = JSON.parse(fs.readFileSync(jsonFilename, 'utf8'));
+    let jsonData = jsonAll[0];
     expect(xh.identifier).toEqual(jsonData.SID);
 
     // doesn't work as json is not identical after round trip
@@ -84,12 +87,12 @@ for (let filename of fileList) {
     //expect(xr.getSize()).toEqual(jsonData.RecordLength);
     expect(xh.formatVersion).toEqual(jsonData.FormatVersion);
     //expect(xh.flags).toEqual(jsonData.Flags.ClockLocked);
-    const regex = /(\d\d\d\d),(\d\d\d),(\d\d:\d\d:\d\dZ)/gi;
-    jsonData.StartTime = jsonData.StartTime.replace(regex, '$1-$2T$3');
-    // json only has sec accuracy now, just compare yyyy-dddTHH:MM:ss => 17 chars
-    expect(xh.getStartFieldsAsISO().slice(0,17)).toEqual(jsonData.StartTime.slice(0,17));
+    // millsec accuracy in javascript, just compare yyyy-mm-ddTHH:MM:ss.SSS => 23 chars
+    let jsonStart = isoToDateTime(jsonData.StartTime.slice(0,23)).toFormat("yyyy-ooo'T'HH:mm:ss.SSS");
+    expect(xh.getStartFieldsAsISO().slice(0,21)).toEqual(jsonStart);
+    //expect(xh.getStartFieldsAsISO().slice(0,21)).toEqual(jsonData.StartTime.slice(0,21));
     expect(xh.encoding).toEqual(jsonData.EncodingFormat);
-    expect(xh.sampleRatePeriod).toEqual(jsonData.SampleRate);
+    expect(xh.sampleRate).toEqual(jsonData.SampleRate);
     expect(xh.numSamples).toEqual(jsonData.SampleCount);
     expect(mseed3.crcToHexString(xh.crc)).toEqual(jsonData.CRC);
     // doesn't work as json is not identical after round trip
@@ -149,17 +152,18 @@ test("crc-32c of a string", () => {
 
 test("text output vs mseed2text", function() {
   let ctext = [
-"  XFDSN:XX_TEST__L_H_Z, version 1, 956 bytes (format: 3)",
-"             start time: 2012-001T00:00:00.000000000Z",
+"FDSN:XX_TEST__M_H_Z, version 1, 955 bytes (format: 3)",
+"             start time: 2022,156,20:32:38.123456",
 "      number of samples: 500",
-"       sample rate (Hz): 1",
-"                  flags: [00000100] 8 bits",
-"                    CRC: 0x5CFF0548",
+"       sample rate (Hz): 5",
+"                  flags: [00100000] 8 bits",
+"                         [Bit 2] Clock locked",
+"                    CRC: 0xC282132F",
 "    extra header length: 0 bytes",
 "    data payload length: 896 bytes",
-"       payload encoding: STEIM-2 integer compression (val: 11)"
+"       payload encoding: STEIM-2 integer compression (val: 11)",
   ];
-  const filename = 'test/mseed3/reference-data/reference-sinusoid-steim2.xseed';
+  const filename = 'test/mseed3/reference-data/reference-sinusoid-steim2.mseed3';
   expect(fs.existsSync(filename)).toEqual(true);
   let xData = fs.readFileSync(filename);
 
@@ -173,8 +177,8 @@ test("text output vs mseed2text", function() {
   expect(parsed.length).toEqual(1);
   let xr = parsed[0];
   let xh = xr.header;
-  expect(mseed3.crcToHexString(readCRC)).toEqual("0x5CFF0548");
-  expect(readCRC).toEqual(0x5CFF0548);
+  expect(mseed3.crcToHexString(readCRC)).toEqual("0xC282132F");
+  expect(readCRC).toEqual(0xC282132F);
   expect(readCRC).toEqual(xr.header.crc);
   let xhStr = xh.toString().split('\n');
   expect(xhStr.length).toEqual(ctext.length);
