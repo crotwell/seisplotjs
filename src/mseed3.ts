@@ -101,9 +101,9 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): 
     header.setStart(seg.startTime);
     header.encoding = encoding;
     if (seg.sampleRate > 0.001) {
-      header.sampleRatePeriod = seg.sampleRate;
+      header.sampleRateOrPeriod = seg.sampleRate;
     } else {
-      header.sampleRatePeriod = -1*seg.samplePeriod;
+      header.sampleRateOrPeriod = -1*seg.samplePeriod;
     }
     header.numSamples = seg.numPoints;
     header.publicationVersion = UNKNOWN_DATA_VERSION;
@@ -368,7 +368,7 @@ export class MSeed3Header {
   minute: number;
   second: number;
   encoding: number;
-  sampleRatePeriod: number;
+  sampleRateOrPeriod: number;
   numSamples: number;
   crc: number;
   publicationVersion: number;
@@ -391,7 +391,7 @@ export class MSeed3Header {
     this.second = 0;
     this.encoding = 3; // 32 bit ints
 
-    this.sampleRatePeriod = 1;
+    this.sampleRateOrPeriod = 1;
     this.numSamples = 0;
     this.crc = 0;
     this.publicationVersion = UNKNOWN_DATA_VERSION;
@@ -439,7 +439,7 @@ export class MSeed3Header {
     header.minute = dataView.getUint8(13);
     header.second = dataView.getUint8(14);
     header.encoding = dataView.getUint8(15);
-    header.sampleRatePeriod = dataView.getFloat64(16, headerLittleEndian);
+    header.sampleRateOrPeriod = dataView.getFloat64(16, headerLittleEndian);
 
     header.numSamples = dataView.getUint32(24, headerLittleEndian);
     header.crc = dataView.getUint32(28, headerLittleEndian);
@@ -458,10 +458,17 @@ export class MSeed3Header {
     return this.timeOfSample(this.numSamples - 1);
   }
   get sampleRate() {
-    if (this.sampleRatePeriod < 0) {
-      return 1 / this.sampleRatePeriod;
+    if (this.sampleRateOrPeriod < 0) {
+      return -1 / this.sampleRateOrPeriod;
     } else {
-      return this.sampleRatePeriod;
+      return this.sampleRateOrPeriod;
+    }
+  }
+  get samplePeriod() {
+    if (this.sampleRateOrPeriod <= 0) {
+      return -1 * this.sampleRateOrPeriod;
+    } else {
+      return 1 / this.sampleRateOrPeriod;
     }
   }
   /**
@@ -605,7 +612,7 @@ export class MSeed3Header {
     offset++;
     dataView.setUint8(offset, this.encoding);
     offset++;
-    dataView.setFloat64(offset, this.sampleRatePeriod, true);
+    dataView.setFloat64(offset, this.sampleRateOrPeriod, true);
     offset += 8;
     dataView.setUint32(offset, this.numSamples, true);
     offset += 4;
@@ -928,7 +935,7 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   xHeader.second = ms2H.startBTime.sec;
   xHeader.nanosecond =
     ms2H.startBTime.tenthMilli * 100000 + ms2H.startBTime.microsecond * 1000;
-  xHeader.sampleRatePeriod =
+  xHeader.sampleRateOrPeriod =
     ms2H.sampleRate >= 1 ? ms2H.sampleRate : -1.0 / ms2H.sampleRate;
   xHeader.encoding = ms2record.header.encoding;
   xHeader.publicationVersion = UNKNOWN_DATA_VERSION;
