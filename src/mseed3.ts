@@ -549,7 +549,7 @@ export class MSeed3Header {
       `${this.identifier}, version ${this.publicationVersion}, ${
         this.getSize() + this.dataLength
       } bytes (format: ${this.formatVersion})\n` +
-      `             start time: ${this.getStartFieldsAsISO()}\n` +
+      `             start time: ${this.startFieldsInUtilFormat()}\n` +
       `      number of samples: ${this.numSamples}\n` +
       `       sample rate (Hz): ${this.sampleRate}\n` +
       `                  flags: [${(this.flags >>> 0)
@@ -561,7 +561,15 @@ export class MSeed3Header {
       `       payload encoding: ${encode_name} (val: ${this.encoding})`
     );
   }
-
+  /**
+   * Start time in the format output by mseed3-utils from IRIS. Format is
+   * yyyy,ooo,HH:mm:ss.SSSSSS
+   * @return start time
+   */
+  startFieldsInUtilFormat(): string {
+    return `${this.year},${padZeros(this.dayOfYear, 3)},`+
+    `${padZeros(this.hour, 2)}:${padZeros(this.minute, 2)}:${padZeros(this.second, 2)}.${padZeros(Math.floor(this.nanosecond/1000), 6)}`;
+  }
   /**
    * Converts start time header fields to ISO8641 time string.
    *

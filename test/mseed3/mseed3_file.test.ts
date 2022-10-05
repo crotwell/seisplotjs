@@ -156,7 +156,7 @@ test("text output vs mseed2text", function() {
 "             start time: 2022,156,20:32:38.123456",
 "      number of samples: 500",
 "       sample rate (Hz): 5",
-"                  flags: [00100000] 8 bits",
+"                  flags: [00000100] 8 bits",
 "                         [Bit 2] Clock locked",
 "                    CRC: 0xC282132F",
 "    extra header length: 0 bytes",
