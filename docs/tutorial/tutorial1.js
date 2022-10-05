@@ -1,7 +1,12 @@
 // snip start createseis
 
 
-import {seismogram, seismograph, seismographconfig, util} from './seisplotjs_3.0.0-alpha.2_standalone.mjs';
+import {
+  seismogram, 
+  seismograph,
+  seismographconfig,
+  util
+} from '../seisplotjs_3.0.0-alpha.2_standalone.mjs';
 
 let dataArray = new Float32Array(1000).map(function(d, i) {
   return Math.sin(2*Math.PI*i/100) * 100;

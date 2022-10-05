@@ -11,7 +11,7 @@ import {
   seismographconfig,
   sorting,
   stationxml,
-  util, luxon} from './seisplotjs_3.0.0-alpha.2_standalone.mjs';
+  util, luxon} from '../seisplotjs_3.0.0-alpha.2_standalone.mjs';
 const mymap = document.querySelector('sp-station-event-map');
 //mymap.scrollWheelZoom.disable();
 

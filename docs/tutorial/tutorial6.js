@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.2_standalone.mjs';
+import * as seisplotjs from '../seisplotjs_3.0.0-alpha.2_standalone.mjs';
 
 // snip start window
 const plotEnd = seisplotjs.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
