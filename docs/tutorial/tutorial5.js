@@ -1,4 +1,4 @@
-import * as seisplotjs from '../seisplotjs_3.0.0-alpha.2_standalone.mjs';
+import * as seisplotjs from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
 
 // snip start eventandstation
 let queryTimeWindow = seisplotjs.luxon.Interval.fromDateTimes(

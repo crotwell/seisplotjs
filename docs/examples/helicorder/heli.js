@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.3_standalone.mjs';
 import {HOURS_PER_LINE, doPlot, queryEarthquakes, redrawHeli, getNowTime, drawSeismograph} from './doplot.js';
 import {updatePageForConfig, setupEventHandlers, enableFiltering} from './controls.js';
 

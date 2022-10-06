@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.3_standalone.mjs';
 
 const d3 = seisplotjs.d3;
 const hostUrl = "http://eeyore.seis.sc.edu/ringserver";

@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.1_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.3_standalone.mjs';
 import {getNowTime, loadDataReal} from './doplot.js';
 
 const d3 = seisplotjs.d3;

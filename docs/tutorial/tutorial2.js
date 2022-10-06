@@ -3,7 +3,7 @@ import {
   fdsndataselect,
   seismogram, seismograph,
   seismographconfig, util, luxon
-} from '../seisplotjs_3.0.0-alpha.2_standalone.mjs';
+} from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
 
 let timeWindow = luxon.Interval.after(util.isoToDateTime('2019-07-06T03:19:53Z'), luxon.Duration.fromMillis(1000*1800));
 let dsQuery = new fdsndataselect.DataSelectQuery();

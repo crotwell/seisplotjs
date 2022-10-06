@@ -1,4 +1,4 @@
-/*global seisplotjs */
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.3_standalone.mjs';
 
 class ViewObsPy {
   constructor(baseUrl, cssSelector="#myseismograph") {
