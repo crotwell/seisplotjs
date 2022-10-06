@@ -130,23 +130,72 @@
        <code class="language-javascript">
         then()
        </code>
-       call
-            after we get the quake and station but before we ask for the
-            seismograms. This allows us to use the predicted travel times to
-            pick the time window starting 30 seconds prior to the first P
-            arrival.
+       call after we get the quake and station but before we ask for the
+            seismograms that will put the travel times into text near the bottom
+            of the page.
       </p>
       <pre><code class="language-javascript" snippet="traveltime">
+let stationsPromise = stationQuery.queryChannels();
+let quakePromise = eventQuery.query();
+const allPhases = 'P,S';
+const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
+.then( ( [ quakeList, networkList ] ) =&gt; {
+  let quakeTTimes = quakeList.map(q =&gt; {
+    const allDistDeg = [];
+    for (const s of stationxml.allStations(networkList)) {
+      if (s.timeRange.contains(q.time)) {
+        const daz = distaz.distaz(
+          s.latitude,
+          s.longitude,
+          q.latitude,
+          q.longitude,
+        );
+        allDistDeg.push(daz.distanceDeg);
+      }
+    }
+    const taupQuery = new traveltime.TraveltimeQuery();
+    taupQuery.distdeg(allDistDeg);
+    taupQuery.evdepthInMeter(q.depth);
+    taupQuery.phases(allPhases);
+//    return taupQuery.queryJson();
+    return taupQuery.queryText();
+  });
+  return Promise.all( [ quakePromise, stationsPromise, Promise.all( quakeTTimes ) ] );
+}).then( ( [ quakeList, networkList, quakeTTimes ] ) =&gt; {
+  const ttdiv = document.querySelector("#traveltimes");
+  quakeTTimes.forEach(qtt =&gt; {
+    const preEl = ttdiv.appendChild(document.createElement("pre"));
+    preEl.textContent = qtt;
+//    preEl.textContent = JSON.stringify(qtt, null, 2);
+  });
+});
+</code></pre>
+      <p>
+       This would allow us to use the predicted travel times to
+            pick the time window based on the predicted arrival times and request
+            data. However, because this is a common need, we have a tool,
+       <code class="language-javascript">
+        SeismogramLoader
+       </code>
+       , that
+            wraps all of this in a single call, handling a lot of the bookkeeping
+            and details. The default starting phase is the first of p,P,Pdiff,PKP
+            and ending phase is the first of s,S,Sdiff,SKS. Here we get 300
+            seconds before P to 1200 seconds after S. Also, we can get traveltimes
+            for other phases that we may wish to mark on the plot. The
+            loader handles figuring out the travel times for each quake-station,
+            associating the request with a SeismogramDisplayData and retrieving
+            the waveform. Should you need to raw traveltimes, they are
+      </p>
+      <pre><code class="language-javascript" snippet="seismogramload">
 const loader = new seismogramloader.SeismogramLoader(stationQuery, eventQuery);
 loader.startOffset = -300;
 loader.endOffset = 1200;
 loader.markedPhaseList = "PcP,SS";
-loadPromise = loader.load();
-dataset.Dataset.fromSeismogramLoader(loader).then(dataset =&gt; dataset.saveToZipFile());
-} else {
-  loadPromise = dataset.load('tutorial4_dataset.zip').then(ds =&gt; [ ds.inventory, ds.catalog, ds.waveforms]);
-}
-loadPromise.then(([ networkList, quakeList, seismogramDataList]) =&gt; {
+const loadPromise = loader.loadSeismograms();
+//dataset.Dataset.fromSeismogramLoader(loader).then(dataset =&gt; dataset.saveToZipFile());
+
+loadPromise.then(seismogramDataList =&gt; {
   seismogramDataList = sorting.reorderXYZ(seismogramDataList);
   mymap.seisData = seismogramDataList;
 
@@ -194,18 +243,17 @@ loadPromise.then(([ networkList, quakeList, seismogramDataList]) =&gt; {
             window, channel, and quake.
       </p>
       <pre><code class="language-javascript" snippet="seismogramload">
-let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
-let eventQuery = new fdsnevent.EventQuery()
-  .timeWindow(queryTimeWindow)
-  .minMag(7)
-  .latitude(35).longitude(-118)
-  .maxRadius(3);
-let stationQuery = new fdsnstation.StationQuery()
-  .networkCode('CO')
-  .stationCode('HODGE')
-  .locationCode('00')
-  .channelCode('LH?')
-  .timeWindow(queryTimeWindow);
+const loader = new seismogramloader.SeismogramLoader(stationQuery, eventQuery);
+loader.startOffset = -300;
+loader.endOffset = 1200;
+loader.markedPhaseList = "PcP,SS";
+const loadPromise = loader.loadSeismograms();
+//dataset.Dataset.fromSeismogramLoader(loader).then(dataset =&gt; dataset.saveToZipFile());
+
+loadPromise.then(seismogramDataList =&gt; {
+  seismogramDataList = sorting.reorderXYZ(seismogramDataList);
+  mymap.seisData = seismogramDataList;
+
 </code></pre>
       <p>
        Now that we have travel times and seismograms, we can plot both.
@@ -228,7 +276,7 @@ let stationQuery = new fdsnstation.StationQuery()
     graphList.push(graph);
     div.appendChild(graph);
   }
-  return Promise.all([ quakeList, networkList, seismogramDataList, graphList ]);
+  return Promise.all([ seismogramDataList, graphList ]);
 </code></pre>
       <p>
        For a little extra, we also can plot the particle motion around the
@@ -254,12 +302,13 @@ let stationQuery = new fdsnstation.StationQuery()
         to show the time range plotted.
       </p>
       <pre><code class="language-javascript" snippet="particlemotion">
-}).then( ( [ quakeList, networkList, seismogramDataList, graphList ] ) =&gt; {
+}).then( ( [ seismogramDataList, graphList ] ) =&gt; {
   let pmdiv = document.querySelector("div#myparticlemotion");
+  console.log(`pmdiv: ${pmdiv}`)
   let firstS = seismogramDataList[0].traveltimeList.find(a =&gt; a.phase.startsWith("S"));
   let windowDuration = 60;
   let firstSTimeWindow = luxon.Interval.after(
-    quakeList[0].time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4}),
+    seismogramDataList[0].quake.time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4}),
     luxon.Duration.fromMillis(1000*windowDuration));
   seismogramDataList.forEach(sdd =&gt; sdd.addMarkers({
     name: "pm start",
@@ -293,7 +342,7 @@ let stationQuery = new fdsnstation.StationQuery()
   pmdiv.appendChild(pmpC);
   //pmpC.draw();
 
-  return Promise.all([ quakeList, networkList, seismogramDataList, graphList ]);
+  return Promise.all([ seismogramDataList, graphList ]);
 }).catch( function(error) {
     const div = document.querySelector('div#myseismograph');
     div.innerHTML = `

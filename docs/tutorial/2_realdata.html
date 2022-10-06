@@ -177,7 +177,7 @@ dsQuery.networkCode('CO')
       </p>
       <pre><code class="language-javascript" snippet="queryseis">
 dsQuery.querySeismograms().then(seisArray =&gt; {
-    // only plot the first seismogram
+    // only plot the first 3 seismograms
     const div = document.querySelector('div#myseismograph');
     let seisConfig = new seismographconfig.SeismographConfig();
     let seisData = [];
