@@ -1,6 +1,7 @@
 // snip start map
 import {
   d3,
+  distaz,
   dataset,
   fdsndataselect, fdsnevent, fdsnstation,
   particlemotion,
@@ -11,14 +12,12 @@ import {
   seismographconfig,
   sorting,
   stationxml,
+  traveltime,
   util, luxon} from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
 const mymap = document.querySelector('sp-station-event-map');
-//mymap.scrollWheelZoom.disable();
 
-let loadPromise;
-const loadFrom = "iris"; // iris or dataset
-if (loadFrom === "iris") {
-// snip start seismogramload
+
+// snip start setup
 let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
 let eventQuery = new fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
@@ -32,16 +31,49 @@ let stationQuery = new fdsnstation.StationQuery()
   .channelCode('LH?')
   .timeWindow(queryTimeWindow);
 // snip start traveltime
+let stationsPromise = stationQuery.queryChannels();
+let quakePromise = eventQuery.query();
+const allPhases = 'P,S';
+const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
+.then( ( [ quakeList, networkList ] ) => {
+  let quakeTTimes = quakeList.map(q => {
+    const allDistDeg = [];
+    for (const s of stationxml.allStations(networkList)) {
+      if (s.timeRange.contains(q.time)) {
+        const daz = distaz.distaz(
+          s.latitude,
+          s.longitude,
+          q.latitude,
+          q.longitude,
+        );
+        allDistDeg.push(daz.distanceDeg);
+      }
+    }
+    const taupQuery = new traveltime.TraveltimeQuery();
+    taupQuery.distdeg(allDistDeg);
+    taupQuery.evdepthInMeter(q.depth);
+    taupQuery.phases(allPhases);
+//    return taupQuery.queryJson();
+    return taupQuery.queryText();
+  });
+  return Promise.all( [ quakePromise, stationsPromise, Promise.all( quakeTTimes ) ] );
+}).then( ( [ quakeList, networkList, quakeTTimes ] ) => {
+  const ttdiv = document.querySelector("#traveltimes");
+  quakeTTimes.forEach(qtt => {
+    const preEl = ttdiv.appendChild(document.createElement("pre"));
+    preEl.textContent = qtt;
+//    preEl.textContent = JSON.stringify(qtt, null, 2);
+  });
+});
+// snip start seismogramload
 const loader = new seismogramloader.SeismogramLoader(stationQuery, eventQuery);
 loader.startOffset = -300;
 loader.endOffset = 1200;
 loader.markedPhaseList = "PcP,SS";
-loadPromise = loader.load();
-dataset.Dataset.fromSeismogramLoader(loader).then(dataset => dataset.saveToZipFile());
-} else {
-  loadPromise = dataset.load('tutorial4_dataset.zip').then(ds => [ ds.inventory, ds.catalog, ds.waveforms]);
-}
-loadPromise.then(([ networkList, quakeList, seismogramDataList]) => {
+const loadPromise = loader.loadSeismograms();
+//dataset.Dataset.fromSeismogramLoader(loader).then(dataset => dataset.saveToZipFile());
+
+loadPromise.then(seismogramDataList => {
   seismogramDataList = sorting.reorderXYZ(seismogramDataList);
   mymap.seisData = seismogramDataList;
 
@@ -60,15 +92,15 @@ loadPromise.then(([ networkList, quakeList, seismogramDataList]) => {
     graphList.push(graph);
     div.appendChild(graph);
   }
-  return Promise.all([ quakeList, networkList, seismogramDataList, graphList ]);
+  return Promise.all([ seismogramDataList, graphList ]);
 // snip start particlemotion
-}).then( ( [ quakeList, networkList, seismogramDataList, graphList ] ) => {
+}).then( ( [ seismogramDataList, graphList ] ) => {
   let pmdiv = document.querySelector("div#myparticlemotion");
   console.log(`pmdiv: ${pmdiv}`)
   let firstS = seismogramDataList[0].traveltimeList.find(a => a.phase.startsWith("S"));
   let windowDuration = 60;
   let firstSTimeWindow = luxon.Interval.after(
-    quakeList[0].time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4}),
+    seismogramDataList[0].quake.time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4}),
     luxon.Duration.fromMillis(1000*windowDuration));
   seismogramDataList.forEach(sdd => sdd.addMarkers({
     name: "pm start",
@@ -102,7 +134,7 @@ loadPromise.then(([ networkList, quakeList, seismogramDataList]) => {
   pmdiv.appendChild(pmpC);
   //pmpC.draw();
 
-  return Promise.all([ quakeList, networkList, seismogramDataList, graphList ]);
+  return Promise.all([ seismogramDataList, graphList ]);
 }).catch( function(error) {
     const div = document.querySelector('div#myseismograph');
     div.innerHTML = `

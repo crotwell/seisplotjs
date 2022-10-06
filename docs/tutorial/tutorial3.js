@@ -7,8 +7,18 @@ import {
   util, luxon} from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
 
 const mymap = document.querySelector('sp-station-event-map');
-//mymap.scrollWheelZoom.disable();
 
+// snip start mapcss
+mymap.addStyle(`
+  div.stationMapMarker {
+    color: rebeccapurple;
+  }
+  path.quakeMapMarker {
+    fill: orange;
+    stroke: yellow;
+    fill-opacity: 0.25;
+  }
+`);
 
 // snip start quakechan
 let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));

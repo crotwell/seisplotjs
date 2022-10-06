@@ -16,7 +16,7 @@ dsQuery.networkCode('CO')
   .timeWindow(timeWindow);
 // snip start queryseis
 dsQuery.querySeismograms().then(seisArray => {
-    // only plot the first seismogram
+    // only plot the first 3 seismograms
     const div = document.querySelector('div#myseismograph');
     let seisConfig = new seismographconfig.SeismographConfig();
     let seisData = [];
