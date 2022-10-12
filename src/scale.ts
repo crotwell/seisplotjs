@@ -2,6 +2,13 @@
 import {isDef} from "./util";
 import {Duration} from "luxon";
 
+/** enum for amplitude modes, RAW, MINMAX, MEAN */
+export enum AMPLITUDE_MODE {
+  Raw = "RAW",
+  MinMax = "MINMAX",
+  Mean = "MEAN",
+}
+
 let _lastId = 0;
 
 export class AmplitudeScalable {
@@ -11,10 +18,6 @@ export class AmplitudeScalable {
   constructor(middle: number, halfWidth: number) {
     this.middle = middle;
     this.halfWidth = halfWidth;
-  }
-
-  getAmplitudeRange(): Array<number> {
-    return [-1, 1]; // default
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -118,31 +121,35 @@ export class LinkedAmplitudeScale {
   /**
    * Recalculate the best amplitude scale for all Seismographs. Causes a redraw.
    */
-  recalculate() {
-    if (this._recalcTimeoutID) {
-      clearTimeout(this._recalcTimeoutID);
-    }
+  recalculate(): Array<Promise<AmplitudeScalable>> {
     const mythis = this;
-    this._recalcTimeoutID = setTimeout(() => {
 
-      const maxHalfRange = mythis.graphList.reduce((acc, cur) => {
-        return acc > cur.halfWidth ? acc : cur.halfWidth;
-      }, 0);
-      if (mythis.halfWidth !== maxHalfRange) {
-        mythis.halfWidth = maxHalfRange;
-        mythis.graphList.forEach(g => {
-          g.notifyAmplitudeChange(g.middle, maxHalfRange);
-        });
-      }
-    }, 100);
+    const maxHalfRange = mythis.graphList.reduce((acc, cur) => {
+      return acc > cur.halfWidth ? acc : cur.halfWidth;
+    }, 0);
+    let promiseList;
+    if (mythis.halfWidth !== maxHalfRange) {
+      mythis.halfWidth = maxHalfRange;
+      promiseList = mythis._internalNotifyAll();
+    } else {
+      // no change
+      promiseList = mythis.graphList.map(g => Promise.resolve(g));
+    }
+    return promiseList;
   }
-  notifyAll() {
+  _internalNotifyAll(): Array<Promise<AmplitudeScalable>> {
     const hw = this.halfWidth;
-    this.graphList.forEach(g => {
-      setTimeout(() => {
-        g.notifyAmplitudeChange(g.middle, hw);
-      }, 10);
+    return this.graphList.map(g => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          g.notifyAmplitudeChange(g.middle, hw);
+          resolve(g);
+        }, 10);
+      });
     });
+  }
+  notifyAll(): Array<Promise<AmplitudeScalable>> {
+    return this._internalNotifyAll();
   }
   get graphList() {
     return Array.from(this._graphSet.values());
@@ -153,17 +160,19 @@ export class IndividualAmplitudeScale extends LinkedAmplitudeScale {
   constructor(graphList?: Array<AmplitudeScalable>) {
     super(graphList);
   }
-  recalculate() {
-    const graphList = Array.from(this._graphSet.values());
-    graphList.forEach(g => {
-      if (g) {
-        g.notifyAmplitudeChange(g.middle, g.halfWidth);
-      }
-    });
+  recalculate(): Array<Promise<AmplitudeScalable>> {
+    // no-op, just notify
+    return this.notifyAll();
   }
-  notifyAll() {
-    // just to override super
-    this.recalculate();
+  notifyAll(): Array<Promise<AmplitudeScalable>> {
+    return this.graphList.map(g => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          g.notifyAmplitudeChange(g.middle, g.halfWidth);
+          resolve(g);
+        }, 10);
+      });
+    });
   }
 }
 

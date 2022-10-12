@@ -9,11 +9,19 @@ import { Duration} from 'luxon';
 
 test("amp scalable test", () => {
   const hwA = 5;
-  const ampA = new AmplitudeScalable(0, hwA);
-  const ampB = new AmplitudeScalable(1, 2);
+  const midA = 0;
+  const hwB = 2;
+  const midB = 0;
+  const ampA = new AmplitudeScalable(midA, hwA);
+  expect(ampA.middle).toEqual(midA);
+  expect(ampA.halfWidth).toEqual(hwA);
+  const ampB = new AmplitudeScalable(midB, hwB);
+  expect(ampB.middle).toEqual(midB);
+  expect(ampB.halfWidth).toEqual(hwB);
   const linkAmpScale = new LinkedAmplitudeScale([ampA, ampB]);
-  linkAmpScale.recalculate();
-  expect(linkAmpScale.halfWidth).toEqual(hwA);
+  return Promise.all(linkAmpScale.recalculate()).then( () => {
+    expect(linkAmpScale.halfWidth).toEqual(hwA);
+  });
 })
 
 
@@ -39,9 +47,10 @@ test("gain scale test", () => {
   const seisConfig = new SeismographConfig();
   seisConfig.linkedAmplitudeScale = linkAmpScale;
   const graph = new Seismograph([sddA, sddB], seisConfig);
-  linkAmpScale.recalculate();
-  expect(linkAmpScale.halfWidth).toEqual(maxB/sensB.sensitivity);
-  expect(graph.amp_scalable.halfWidth).toEqual(maxB/sensB.sensitivity);
+  return Promise.all(linkAmpScale.recalculate()).then(() => {
+    expect(linkAmpScale.halfWidth).toEqual(maxB/sensB.sensitivity);
+    expect(graph.amp_scalable.halfWidth).toEqual(maxB/sensB.sensitivity);
+  });
 });
 
 test("time scalable test", () => {
