@@ -11,6 +11,11 @@ module.exports = {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
   "transform": {
-    "^.+\\.tsx?$": "esbuild-jest"
+    "^.+\\.tsx?$": [
+      "esbuild-jest",
+      {
+        sourcemap: true
+      }
+    ]
   }
 };
