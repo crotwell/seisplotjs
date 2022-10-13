@@ -437,7 +437,8 @@ export function toIsoWoZ(date: DateTime): string {
 }
 
 /**
- * @returns the protocol, http or https for the document if possible.
+ * @returns the protocol, http: or https: for the document if possible.
+ * Note this includes the colon.
  */
 export function checkProtocol(): string {
   let _protocol = "http:";
@@ -457,7 +458,12 @@ export function checkProtocol(): string {
 
 /**
  * Create default fetch init object with the given mimeType. Sets
- * no-cache, follow redirects, cors mode, referrer as seisplotjs and mimetype as a header.
+ * no-cache, follow redirects, cors mode, referrer as seisplotjs and
+ * mimetype as a header. Note that redirect with POST may fail due to
+ * POST being changed to GET on a 301. Fetching with POST may wish
+ * to use redirect: "manual" to handle the 301 correctly by POSTing to
+ * the new URL.
+ *
  *
  * @param   mimeType requested mime type
  * @returns           object with fetch configuration parameters
@@ -472,11 +478,26 @@ export function defaultFetchInitObj(mimeType?: string): Record<string, any> {
   return {
     cache: "no-cache",
     redirect: "follow",
-    // manual, *follow, error
     mode: "cors",
     referrer: "seisplotjs",
     headers: headers,
   };
+}
+export function cloneFetchInitObj(fetchInit: Record<string, any>): Record<string, any> {
+  let out = {};
+  if (fetchInit) {
+    for (const [key, value] of Object.entries(fetchInit)) {
+      // @ts-ignore
+      if (Array.isArray(value)) {
+        // @ts-ignore
+        out[key] = value.slice();
+      } else {
+        // @ts-ignore
+        out[key] = value;
+      }
+    }
+  }
+  return out;
 }
 
 /**
@@ -496,32 +517,42 @@ export function doFetchWithTimeout(
   const controller = new AbortController();
   const signal = controller.signal;
 
-  if (!isDef(fetchInit)) {
-    fetchInit = defaultFetchInitObj();
+  let internalFetchInit = isDef(fetchInit) ? fetchInit : defaultFetchInitObj();
+  internalFetchInit = cloneFetchInitObj(internalFetchInit);
+  console.log(`fethc init clone method: ${internalFetchInit.method}  ${internalFetchInit.redirect}  ${internalFetchInit.headers}`)
+  if (internalFetchInit.redirect === "follow" && internalFetchInit.method === "POST") {
+    // follow on POST is dangerous if the server returns 301, handle it ourselves
+    // note this is assuming that the redirect is a simple http -> https.
+    internalFetchInit.redirect = "manual";
   }
+
 
   if (!isDef(timeoutSec)) {
     timeoutSec = 30;
   }
 
   setTimeout(() => controller.abort(), timeoutSec * 1000);
-  fetchInit.signal = signal;
+  internalFetchInit.signal = signal;
   let absoluteUrl: URL;
 
   if (url instanceof URL) {
     absoluteUrl = url;
   } else if (isStringArg(url)) {
-    absoluteUrl = new URL(url, document.URL);
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      absoluteUrl = new URL(url);
+    } else {
+      absoluteUrl = new URL(url, document.URL);
+    }
   } else {
     throw new Error(`url must be string or URL, ${stringify(url)}`);
   }
 
   log(
-    `attempt to fetch ${fetchInit.method ? fetchInit.method : ""} ${stringify(
+    `attempt to fetch ${internalFetchInit.method ? internalFetchInit.method : ""} ${stringify(
       absoluteUrl,
     )}`,
   );
-  return fetch(absoluteUrl.href, fetchInit)
+  return fetch(absoluteUrl.href, internalFetchInit)
     .catch(err => {
       log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
       throw err;
@@ -529,6 +560,24 @@ export function doFetchWithTimeout(
     .then(function (response) {
       if (response.ok || response.status === 404) {
         return response;
+      } else if (response.status >= 300 &&  response.status <= 399) {
+        if (checkProtocol() === 'http:' && absoluteUrl.href.startsWith("http://")) {
+          // maybe try https just in case
+          const httpsUrl = new URL(`https://${absoluteUrl.href.slice(7)}`);
+          const method = internalFetchInit.method ? internalFetchInit.method : "";
+          log(`attempt fetch redirect ${response.status} ${method} to ${stringify(httpsUrl)}`);
+          return fetch(httpsUrl.href, internalFetchInit).then( httpsResponse => {
+            if (httpsResponse.ok || httpsResponse.status === 404) {
+              return httpsResponse;
+            } else {
+              return response.text().then(text => {
+                throw new Error(
+                  `fetch response was redirect for http and failed for https. ${response.ok} ${response.status}, ${httpsResponse.ok} ${httpsResponse.status} \n${text}`,
+                );
+              });
+            }
+          });
+        }
       }
 
       return response.text().then(text => {

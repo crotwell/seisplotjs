@@ -37,6 +37,7 @@ test("live parse result", () => {
   });
 });
 
+jest.setTimeout(10*1000);
 test("run BK networks", () => {
     let fedCatQuery = new FedCatalogQuery();
     const NET = 'BK';

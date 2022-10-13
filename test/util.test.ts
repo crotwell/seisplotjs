@@ -30,3 +30,16 @@ test("isStringArg isNumArg", () => {
   expect(util.isNumArg(null)).toBeFalse();
   expect(util.isNumArg(o)).toBeFalse();
 });
+
+test("clone fetch init", () => {
+  let fetchInit = util.defaultFetchInitObj();
+  let cloned = util.cloneFetchInitObj(fetchInit);
+  expect(cloned.cache).toEqual(fetchInit.cache);
+  expect(cloned.redirect).toEqual(fetchInit.redirect);
+  expect(cloned.mode).toEqual(fetchInit.mode);
+  expect(cloned.referrer).toEqual(fetchInit.referrer);
+  for (const [key, value] of Object.entries(fetchInit.headers)) {
+    expect(cloned.headers[key]).toEqual(fetchInit.headers[key]);
+    expect(cloned.headers[key]).toEqual(value);
+  }
+});
