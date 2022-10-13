@@ -49,7 +49,7 @@ test("do seedlink test", done => {
 
 });
 
-test("do datalink test", done => {
+test("do datalink test", () => {
   // def is IRIS
   const ring = new RingserverConnection();
   expect(ring.getDataLinkURL()).toEqual("ws://rtserve.iris.washington.edu/datalink");
@@ -57,11 +57,10 @@ test("do datalink test", done => {
     console.log(`got packet`);
     expect(packet).toBeDefined();
     expect(packet.isMiniseed()).toBeTrue();
-    done();
+    dlConn.close();
   }
   const dlerrorFun = function(e) {
     dlConn.close();
-    done(e);
   }
   let start = DateTime.utc().minus(Duration.fromISO('PT10M'));
   dlConn = new DataLinkConnection(ring.getDataLinkURL(), dlpacketFun, dlerrorFun);
@@ -71,13 +70,24 @@ test("do datalink test", done => {
     return dlConn.id("seisplotjs", "anonymous", "0", "js");
   }).then(servId => {
     //expect(servId).toContain("DataLink");
-    return dlConn.match("CO_JSC_00_HHZ/MSEED");
+    return dlConn.match("CO_.*_00_HHZ/MSEED");
   }).then(response => {
     console.log(`match response: ${response}`)
+    expect(response.type).toContain("OK");
     return dlConn.positionAfter(start);
   }).then(response => {
     console.log(`positionAfter response: ${response}`)
-    return dlConn.stream();
+    expect(response.type).toContain("OK");
+    return dlConn.infoStreams();
+  }).then(response => {
+    expect(response.streams.length).toBeGreaterThan(0);
+    expect(response.streams[0].name).toContain("CO_");
+    expect(response.streams[0].dataLatency).toBeGreaterThan(0);
+    return response;
+  }).then(response => {
+    return dlConn.close();
+  }).then(response => {
+    expect(dlConn.isConnected()).toBeFalse();
   });
 });
 
