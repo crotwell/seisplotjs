@@ -9,6 +9,8 @@ import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
 import {
   AmplitudeScalable,
   TimeScalable,
+  AMPLITUDE_MODE,
+  MinMaxable
 } from "./scale";
 import {
   SeismographConfig,
@@ -665,10 +667,14 @@ export class Seismograph extends SeisPlotElement {
       if (this.seismographConfig.linkedAmplitudeScale) {
         const halfWidth = this.amp_scalable.drawHalfWidth;
         let middle = this.amp_scalable.drawMiddle;
-        if (this.seismographConfig.centeredAmp) {
+
+        if (this.seismographConfig.amplitudeMode !== AMPLITUDE_MODE.Raw) {
           let sddInterval = this.displayTimeRangeForSeisDisplayData(sdd);
-          let minMax = findMinMaxOverTimeRange([sdd], sddInterval);
-          middle = (minMax[0]+minMax[1])/2;
+          let minMax = findMinMaxOverTimeRange([sdd],
+                                              sddInterval,
+                                              false,
+                                              this.seismographConfig.amplitudeMode);
+          middle = minMax.middle;
         }
 
         let sensitivityVal = 1;
@@ -856,6 +862,13 @@ export class Seismograph extends SeisPlotElement {
     } else if (this.seismographConfig.linkedAmplitudeScale) {
       let middle = this.amp_scalable.drawMiddle;
       if (this.seismographConfig.centeredAmp) {
+        middle = 0;
+      }
+      if (this.seismographConfig.amplitudeMode === AMPLITUDE_MODE.Raw) {
+        middle = this.amp_scalable.drawMiddle;
+      } else if (this.seismographConfig.amplitudeMode === AMPLITUDE_MODE.MinMax) {
+        middle = this.amp_scalable.drawMiddle;
+      } else if (this.seismographConfig.amplitudeMode === AMPLITUDE_MODE.Mean) {
         middle = 0;
       }
       ampAxisScale.domain([ middle - this.amp_scalable.drawHalfWidth,
@@ -1417,11 +1430,11 @@ export class Seismograph extends SeisPlotElement {
     }
   }
 
-  calcAmpScaleDomain(): [number, number] {
+  calcAmpScaleDomain(): MinMaxable {
 
     let minMax;
     if (this.seismographConfig.fixedAmplitudeScale) {
-      minMax = this.seismographConfig.fixedAmplitudeScale;
+      minMax = MinMaxable.fromArray(this.seismographConfig.fixedAmplitudeScale);
     } else {
       if (this.seismographConfig.windowAmp) {
         if (isDef(this.seismographConfig.linkedTimeScale)) {
@@ -1430,13 +1443,13 @@ export class Seismograph extends SeisPlotElement {
             this.seismographConfig.linkedTimeScale.offset,
             this.seismographConfig.linkedTimeScale.duration,
             this.seismographConfig.doGain,
-            this.seismographConfig.centeredAmp
+            this.seismographConfig.amplitudeMode
           );
         } else if (isDef(this.seismographConfig.fixedTimeScale)) {
           minMax = findMinMaxOverTimeRange(this._seisDataList,
             this.seismographConfig.fixedTimeScale,
             this.seismographConfig.doGain,
-            this.seismographConfig.centeredAmp);
+            this.seismographConfig.amplitudeMode);
         } else {
           throw new Error("neither fixed nor linked time scale");
         }
@@ -1444,34 +1457,31 @@ export class Seismograph extends SeisPlotElement {
 
         minMax = findMinMax(this._seisDataList,
           this.seismographConfig.doGain,
-          this.seismographConfig.centeredAmp);
+          this.seismographConfig.amplitudeMode);
       }
 
-      if (minMax[0] === minMax[1]) {
+      if (minMax.halfWidth === 0) {
         // flatlined data, use -1, +1
         //minMax = [minMax[0] - 1, minMax[1] + 1];
       }
       if (this.seismographConfig.isYAxisNice) {
         // use d3 scale's nice function
         let scale = d3.scaleLinear();
-        scale.domain(minMax);
+        scale.domain(minMax.asArray());
         scale = scale.nice();
-        minMax = scale.domain();
+        minMax = MinMaxable.fromArray(scale.domain());
       }
 
 
     }
-    const middle = (minMax[1]+minMax[0])/2;
-    const halfWidth = (minMax[1]-minMax[0])/2;
-    return [middle, halfWidth];
+    return minMax;
   }
 
   recheckAmpScaleDomain(): void {
     const calcMidHW = this.calcAmpScaleDomain();
     const oldMiddle = this.amp_scalable.middle;
     const oldHalfWidth = this.amp_scalable.halfWidth;
-    this.amp_scalable.middle = calcMidHW[0];
-    this.amp_scalable.halfWidth = calcMidHW[1];
+    this.amp_scalable.minMax = calcMidHW;
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       if (this.amp_scalable.middle !== oldMiddle || this.amp_scalable.halfWidth !== oldHalfWidth) {
@@ -1680,7 +1690,7 @@ export class SeismographAmplitudeScalable extends AmplitudeScalable {
   drawMiddle: number;
   constructor(graph: Seismograph) {
     const calcMidHW = graph.calcAmpScaleDomain();
-    super(calcMidHW[0], calcMidHW[1]);
+    super(calcMidHW);
     this.graph = graph;
     this.drawHalfWidth = super.halfWidth;
     this.drawMiddle = super.middle;
@@ -1727,6 +1737,7 @@ export class SeismographTimeScalable extends TimeScalable {
         this.graph.redrawWithXScale();
       }
     }
+
   }
 }
 // static ID for seismogram

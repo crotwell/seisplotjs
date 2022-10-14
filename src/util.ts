@@ -519,7 +519,6 @@ export function doFetchWithTimeout(
 
   let internalFetchInit = isDef(fetchInit) ? fetchInit : defaultFetchInitObj();
   internalFetchInit = cloneFetchInitObj(internalFetchInit);
-  console.log(`fethc init clone method: ${internalFetchInit.method}  ${internalFetchInit.redirect}  ${internalFetchInit.headers}`)
   if (internalFetchInit.redirect === "follow" && internalFetchInit.method === "POST") {
     // follow on POST is dangerous if the server returns 301, handle it ourselves
     // note this is assuming that the redirect is a simple http -> https.

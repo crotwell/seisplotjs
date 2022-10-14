@@ -11,21 +11,90 @@ export enum AMPLITUDE_MODE {
 
 let _lastId = 0;
 
-export class AmplitudeScalable {
-  middle: number;
-  halfWidth: number;
 
-  constructor(middle: number, halfWidth: number) {
-    this.middle = middle;
-    this.halfWidth = halfWidth;
+export class MinMaxable {
+  min: number;
+  max: number;
+  constructor(min: number, max: number) {
+    this.min = min;
+    this.max = max;
+  }
+  get middle(): number {
+    return (this.min+this.max)/2;
+  }
+  get halfWidth(): number {
+    return (this.fullWidth)/2;
+  }
+  get fullWidth(): number {
+    return (this.max-this.min);
+  }
+  union(omm?: MinMaxable): MinMaxable {
+    if (omm) {
+      return new MinMaxable(Math.min(this.min, omm.min), Math.max(this.max, omm.max));
+    } else {
+      return this;
+    }
+  }
+  expandPercentage(percent: number): MinMaxable {
+    return MinMaxable.fromMiddleHalfWidth(this.middle, this.halfWidth*percent);
+  }
+  /**
+   * This as a d3 style 2 element array.
+   *
+   * @return length 2 array of min then max
+   */
+  asArray(): [number, number] {
+    return [this.min, this.max];
+  }
+  toString(): string {
+    return `${this.min} to ${this.max}, mid: ${this.middle} hw: ${this.halfWidth}`;
+  }
+  /**
+   * Create MinMaxable from a d3 style two element array.
+   *
+   * @param  minmax  array of min then max
+   * @return       new MinMaxable
+   */
+  static fromArray(minmax: number[]): MinMaxable {
+    if (minmax.length < 2) {
+      throw new Error(`array must have lenght 2, ${minmax.length}`);
+    }
+    return new MinMaxable(minmax[0], minmax[1]);
+  }
+  static fromMiddleHalfWidth(mid: number, halfWidth: number): MinMaxable {
+    return new MinMaxable(mid-halfWidth, mid+halfWidth);
+  }
+}
+
+export class AmplitudeScalable {
+  minMax: MinMaxable;
+
+  constructor(minMax: MinMaxable) {
+    this.minMax = minMax;
   }
 
   // eslint-disable-next-line no-unused-vars
   notifyAmplitudeChange(middle: number, halfWidth: number) {
     // no-op
   }
+  get middle(): number {
+    return this.minMax.middle;
+  }
+  get halfWidth(): number {
+    return this.minMax.halfWidth;
+  }
+  get fullWidth(): number {
+    return this.minMax.fullWidth;
+  }
+  get min(): number {
+    return this.minMax.min;
+  }
+  get max(): number {
+    return this.minMax.max;
+  }
+
   toString(): string {
-    return `mid: ${this.middle} hw: ${this.halfWidth}`;
+    return this.minMax.toString();
   }
 }
 export class TimeScalable {

@@ -5,6 +5,7 @@
  */
 import {DateTime, Duration, Interval} from "luxon";
 import {checkStringOrDate, isDef} from "./util";
+import {MinMaxable} from './scale';
 import * as seedcodec from "./seedcodec";
 import {FDSNSourceId, NslcId} from "./fdsnsourceid";
 export const COUNT_UNIT = "count";
@@ -288,13 +289,13 @@ export class SeismogramSegment {
    * of two numbers, min and max
    * @returns min, max as arry of length two
    */
-  findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
+  findMinMax(minMaxAccumulator?: MinMaxable): MinMaxable {
     let minAmp = Number.MAX_SAFE_INTEGER;
     let maxAmp = -1 * minAmp;
 
     if (minMaxAccumulator) {
-      minAmp = minMaxAccumulator[0];
-      maxAmp = minMaxAccumulator[1];
+      minAmp = minMaxAccumulator.min;
+      maxAmp = minMaxAccumulator.max;
     }
 
     const yData = this.y;
@@ -309,7 +310,7 @@ export class SeismogramSegment {
       }
     }
 
-    return [minAmp, maxAmp];
+    return new MinMaxable(minAmp, maxAmp);
   }
 
   /**

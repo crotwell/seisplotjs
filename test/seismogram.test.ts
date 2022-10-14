@@ -1,7 +1,8 @@
 // @flow
 
 import { createQuakeFromValues, UNKNOWN_PUBLIC_ID} from '../src/quakeml.js';
-import {Seismogram, SeismogramDisplayData} from '../src/seismogram';
+import {AMPLITUDE_MODE } from '../src/scale.js';
+import {Seismogram, SeismogramDisplayData, findMinMaxOverTimeRange} from '../src/seismogram';
 import {SeismogramSegment} from '../src/seismogramsegment';
 import  {isDef, isoToDateTime} from '../src/util';
 import {DateTime, Duration, Interval} from 'luxon';
@@ -266,4 +267,21 @@ test("cut clone sdd test", () => {
     expect(cutSdd_seis).not.toEqual(seis);
     expect(cutSdd?.quakeList).toHaveLength(sdd.quakeList.length);
   }
+});
+
+test("find minmax test", () => {
+    const yValues = new Int32Array([3, 0, 3]);
+    const seisAMean = yValues.reduce((acc, cur) => acc+cur, 0)/yValues.length;
+    const sampleRate = 20.0;
+    const startTime = isoToDateTime("2013-02-08T09:30:26");
+
+    const seisA = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+    const sddA = SeismogramDisplayData.fromSeismogram(seisA);
+    const ampMode = AMPLITUDE_MODE.Mean;
+    let minMax = findMinMaxOverTimeRange([sddA],
+                                        sddA.timeRange,
+                                        false,
+                                        ampMode);
+    expect(minMax[0]).toEqual(seisAMean); // seisMean to zero
+    expect(minMax[1]).toEqual(seisAMean*2);
 });

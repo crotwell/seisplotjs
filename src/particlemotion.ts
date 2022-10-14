@@ -6,6 +6,7 @@
 import * as d3 from "d3";
 import {Interval} from "luxon";
 import {SeisPlotElement} from "./spelement";
+import {MinMaxable} from './scale';
 import {SeismographConfig, numberFormatWrapper } from "./seismographconfig";
 import {
   Seismogram,
@@ -445,26 +446,26 @@ export class ParticleMotion extends SeisPlotElement {
       this.xScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
       this.yScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
     } else {
-      let xMinMax = [-1, 1];
+      let xMinMax = new MinMaxable(-1, 1);
       if (this.xSeisData ) {
         xMinMax = findMinMaxOfSDD(this.xSeisData);
       }
-      let yMinMax = [-1, 1];
+      let yMinMax = new MinMaxable(-1, 1);
       if (this.ySeisData) {
         yMinMax = findMinMaxOfSDD(this.ySeisData);
       }
-      halfDomainDelta = (xMinMax[1] - xMinMax[0]) / 2;
+      halfDomainDelta = xMinMax.halfWidth;
 
-      if (yMinMax[1] - yMinMax[0] > xMinMax[1] - xMinMax[0]) {
-        halfDomainDelta = (yMinMax[1] - yMinMax[0]) / 2;
+      if (yMinMax.halfWidth > halfDomainDelta) {
+        halfDomainDelta = yMinMax.halfWidth;
       }
 
-      const xMid = (xMinMax[1] + xMinMax[0]) / 2;
-      const yMid = (yMinMax[1] + yMinMax[0]) / 2;
-      xMinMax = [xMid - halfDomainDelta, xMid + halfDomainDelta];
-      yMinMax = [yMid - halfDomainDelta, yMid + halfDomainDelta];
-      this.xScale.domain(xMinMax).nice();
-      this.yScale.domain(yMinMax).nice();
+      const xMid = xMinMax.middle;
+      const yMid = yMinMax.middle;
+      const xMinMaxArr = [xMid - halfDomainDelta, xMid + halfDomainDelta];
+      const yMinMaxArr = [yMid - halfDomainDelta, yMid + halfDomainDelta];
+      this.xScale.domain(xMinMaxArr).nice();
+      this.yScale.domain(yMinMaxArr).nice();
     }
 
     const xNiceMinMax = this.xScale.domain();

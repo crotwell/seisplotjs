@@ -5,7 +5,7 @@
  */
 import {DateTime, Duration, Interval} from "luxon";
 import {removeTrend } from "./filter";
-import {Seismogram, SeismogramDisplayData} from "./seismogram";
+import {Seismogram, SeismogramDisplayData, findMinMaxOverTimeRange} from "./seismogram";
 import {SeismogramSegment} from "./seismogramsegment";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
@@ -114,8 +114,8 @@ export class Helicorder extends SeisPlotElement {
       singleSeisData.append(segment);
       if (heliTimeRange.end < segment.timeRange.end ||
         (origMinMax &&
-         (segMinMax[0] < origMinMax[0] ||
-          origMinMax[1] < segMinMax[1]))) {
+         (segMinMax.min < origMinMax[0] ||
+          origMinMax[1] < segMinMax.max))) {
         this.draw(); //redraw because amp changed
       } else {
         // only redraw overlaping graphs
@@ -168,21 +168,19 @@ export class Helicorder extends SeisPlotElement {
       singleSeisData = new SeismogramDisplayData(timeRange);
     }
     if (singleSeisData.seismogram) {
-      const seis = singleSeisData.seismogram;
 
+      const mul_percent = 1.01;
       if (!this.heliConfig.fixedAmplitudeScale || (
         this.heliConfig.fixedAmplitudeScale[0] === 0 && this.heliConfig.fixedAmplitudeScale[1] === 0
       )) {
         if (this.heliConfig.maxVariation === 0) {
-          const cutSeis = seis.cut(timeRange);
 
-          if (cutSeis) {
-            const [min, max] = cutSeis.findMinMax();
-            const mean = cutSeis.mean();
-            const posOffset = max - mean;
-            const negOffset = mean - min;
-            const mul_percent = 1.01;
-            maxVariation = Math.max(mul_percent*posOffset, mul_percent*negOffset);
+          if (singleSeisData.seismogram.timeRange.overlaps(timeRange)) {
+            const minMax = findMinMaxOverTimeRange([singleSeisData],
+                                                  timeRange,
+                                                  false,
+                                                  this.heliConfig.amplitudeMode);
+            maxVariation = minMax.expandPercentage(mul_percent).fullWidth;
           }
         } else {
           maxVariation = this.heliConfig.maxVariation;

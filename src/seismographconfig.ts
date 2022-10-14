@@ -4,7 +4,12 @@
  * http://www.seis.sc.edu
  */
 import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
-import {IndividualAmplitudeScale, LinkedAmplitudeScale, LinkedTimeScale} from "./scale";
+import {IndividualAmplitudeScale,
+  LinkedAmplitudeScale,
+  LinkedTimeScale,
+  AMPLITUDE_MODE
+} from "./scale";
+
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
 import {isDef} from "./util";
 import { Duration, Interval} from "luxon";
@@ -102,6 +107,7 @@ export class SeismographConfig {
   lineWidth: number;
   wheelZoom: boolean;
   centeredAmp: boolean;
+  amplitudeMode: AMPLITUDE_MODE;
   doGain: boolean;
   windowAmp: boolean;
   /** @private */
@@ -147,6 +153,7 @@ export class SeismographConfig {
     this.ySublabelTrans = 15;
     this.ySublabelIsUnits = true;
     this.centeredAmp = true;
+    this.amplitudeMode = AMPLITUDE_MODE.Raw;
     this.doGain = true;
     this.windowAmp = true;
     this._fixedAmplitudeScale = null;
@@ -258,6 +265,15 @@ export class SeismographConfig {
     }
     this._linkedAmplitudeScale = ts;
     this._fixedAmplitudeScale = null;
+  }
+
+  /**
+   * Enable linked amplitude scales across seismographs.
+   *
+   */
+  enableLinkedAmplitude() {
+    // setter handles details...
+    this.linkedAmplitudeScale = new LinkedAmplitudeScale();
   }
 
   get fixedTimeScale(): null | Interval {

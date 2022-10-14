@@ -10,6 +10,7 @@ import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
 import {Network, Station, Channel, InstrumentSensitivity, findChannels} from "./stationxml";
 import {Quake} from "./quakeml";
+import {AMPLITUDE_MODE, MinMaxable} from "./scale";
 import {SeismogramSegment} from "./seismogramsegment";
 //export {SeismogramSegment} from "./seismogramsegment";
 import type {TraveltimeJsonType, TraveltimeArrivalType} from "./traveltime";
@@ -130,7 +131,7 @@ export class Seismogram {
     return [startTime, endTime];
   }
 
-  findMinMax(minMaxAccumulator?: Array<number>): Array<number> {
+  findMinMax(minMaxAccumulator?: MinMaxable): MinMaxable {
     if (this._segmentArray.length === 0) {
       throw new Error("No data");
     }
@@ -1034,8 +1035,8 @@ export class SeismogramDisplayData {
 
     if (this.seismogram) {
       const minMax = this.seismogram.findMinMax();
-      stats.min = minMax[0];
-      stats.max = minMax[1];
+      stats.min = minMax.min;
+      stats.max = minMax.max;
       stats.mean = this.seismogram.mean();
     }
 
@@ -1182,6 +1183,15 @@ export function findMaxDuration(
 ): Duration {
   return findMaxDurationOfType("start", sddList);
 }
+
+/**
+ * Finds max duration of from one of starttime of sdd, origin time
+ * of earthquake, or alignmentTime.
+ *
+ * @param  type                  [description]
+ * @param  sddList               [description]
+ * @return         [description]
+ */
 export function findMaxDurationOfType(
   type: string,
   sddList: Array<SeismogramDisplayData>,
@@ -1207,52 +1217,51 @@ export function findMaxDurationOfType(
     }
   }, Duration.fromMillis(0));
 }
+
+/**
+ * Finds the min and max amplitude over the seismogram list, considering gain
+ * and how to center the seismograms, either Rw, MinMax or Mean.
+ *
+ * @param  sddList                    [description]
+ * @param  doGain=false               [description]
+ * @param  ampCentering               [description]
+ * @return              [description]
+ */
 export function findMinMax(
   sddList: Array<SeismogramDisplayData>,
   doGain = false,
-  centeredAmp = false,
-): Array<number> {
-  const min = sddList
+  ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
+): MinMaxable {
+  return sddList
     .map(sdd => {
       let sens = 1.0;
       if (doGain && sdd.sensitivity) {
         sens = sdd.sensitivity.sensitivity;
       }
       let middle = 0;
-      if (centeredAmp) {
+      if (ampCentering === AMPLITUDE_MODE.MinMax) {
         middle = sdd.middle;
+      } else if (ampCentering === AMPLITUDE_MODE.Mean) {
+        middle = sdd.mean;
       }
-      return (sdd.min-middle)/sens;
+      const halfWidth = Math.max((middle-sdd.min)/sens, (sdd.max-middle)/sens);
+      return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
     })
     .reduce(function (p, v) {
-      return p < v ? p : v;
+      return p ? p.union(v) : v;
     });
-  const max = sddList
-    .map(sdd => {
-      let sens = 1.0;
-      if (doGain && sdd.sensitivity) {
-        sens = sdd.sensitivity.sensitivity;
-      }
-      let middle = 0;
-      if (centeredAmp) {
-        middle = sdd.middle;
-      }
-      return (sdd.max-middle)/sens;
-    })
-    .reduce(function (p, v) {
-      return p > v ? p : v;
-    });
-  return [min, max];
 }
+
 const initial_minAmp = Number.MAX_SAFE_INTEGER;
 const initial_maxAmp = -1 * initial_minAmp;
+
 export function findMinMaxOverTimeRange(
   sddList: Array<SeismogramDisplayData>,
   timeRange: Interval,
   doGain = false,
-  centeredAmp = false,
-): Array<number> {
-  if (sddList.length === 0) { return [-1, 1]; }
+  ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
+): MinMaxable {
+  if (sddList.length === 0) { return new MinMaxable(-1, 1); }
   const minMaxArr = sddList.map(sdd => {
     if (sdd.seismogram) {
       const cutSeis = sdd.seismogram.cut(timeRange);
@@ -1264,61 +1273,48 @@ export function findMinMaxOverTimeRange(
           sens = sdd.sensitivity.sensitivity;
         }
         let middle = 0;
-        if (centeredAmp) {
-          middle = (countMinMax[1] + countMinMax[0])/2;
+        let halfWidth = 0;
+        if (ampCentering === AMPLITUDE_MODE.Mean) {
+          middle = cutSeis.mean();
+          halfWidth = Math.max((middle-countMinMax.min), (countMinMax.max-middle));
+          console.log(`findMinMaxOverTimeRange Mean mid: ${middle}  hw: ${halfWidth}`)
+        } else {
+          // Raw or MinMax
+          middle = countMinMax.middle;
+          halfWidth = countMinMax.halfWidth;
         }
-        return [(countMinMax[0]-middle)/sens, (countMinMax[1]-middle)/sens];
+        return new MinMaxable((middle-halfWidth)/sens, (middle+halfWidth)/sens);
       }
     }
 
-    return [initial_minAmp, initial_maxAmp];
+    return new MinMaxable(initial_minAmp, initial_maxAmp);
   });
-  const min = minMaxArr
-    .map(mm => {
-      return mm[0];
-    })
+  return minMaxArr
     .reduce(function (p, v) {
-      return p < v ? p : v;
+      return p ? p.union(v) : v;
     });
-  const max = minMaxArr
-    .map(mm => {
-      return mm[1];
-    })
-    .reduce(function (p, v) {
-      return p > v ? p : v;
-    });
-  return [min, max];
 }
+
 export function findMinMaxOverRelativeTimeRange(
   sddList: Array<SeismogramDisplayData>,
   startOffset: Duration,
   duration: Duration,
   doGain = false,
-  centeredAmp = false,
-): Array<number> {
+  ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
+): MinMaxable {
   if (sddList.length === 0) {
-    return [0,0];
+    return new MinMaxable(0,0);
   }
   const minMaxArr = sddList.map(sdd => {
     const timeRange = sdd.relativeTimeWindow(startOffset, duration);
-    return findMinMaxOverTimeRange([sdd], timeRange, doGain, centeredAmp);
+    return findMinMaxOverTimeRange([sdd], timeRange, doGain, ampCentering);
   });
-  const min = minMaxArr
-    .map(mm => {
-      return mm[0];
-    })
+  return minMaxArr
     .reduce(function (p, v) {
-      return p < v ? p : v;
+      return p ? p.union(v) : v;
     });
-  const max = minMaxArr
-    .map(mm => {
-      return mm[1];
-    })
-    .reduce(function (p, v) {
-      return p > v ? p : v;
-    });
-  return [min, max];
 }
+
 export function findStartEndOfSeismograms(
   data: Array<Seismogram>,
   accumulator?: Interval,
@@ -1354,8 +1350,8 @@ export function findStartEndOfSeismograms(
 }
 export function findMinMaxOfSeismograms(
   data: Array<Seismogram>,
-  minMaxAccumulator?: Array<number>,
-): Array<number> {
+  minMaxAccumulator?: MinMaxable,
+): MinMaxable {
   for (const s of data) {
     minMaxAccumulator = s.findMinMax(minMaxAccumulator);
   }
@@ -1363,17 +1359,19 @@ export function findMinMaxOfSeismograms(
   if (minMaxAccumulator) {
     return minMaxAccumulator;
   } else {
-    return [-1, 1];
+    return new MinMaxable(-1, 1);
   }
 }
+
 export function findMinMaxOfSDD(
   data: Array<SeismogramDisplayData>,
-  minMaxAccumulator?: Array<number>,
-): Array<number> {
+  minMaxAccumulator?: MinMaxable,
+): MinMaxable {
   const seisData: Array<Seismogram> = [];
   data.forEach(sdd => {if (!!sdd && !! sdd.seismogram) {seisData.push(sdd.seismogram);}});
   return findMinMaxOfSeismograms(seisData, minMaxAccumulator);
 }
+
 export function uniqueStations(
   seisData: Array<SeismogramDisplayData>,
 ): Array<Station> {
