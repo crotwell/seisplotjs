@@ -216,6 +216,7 @@ test("clone sdd test", () => {
   const startTime = isoToDateTime("2013-02-08T09:30:26");
   const marker = {
     name: "P",
+    markertype: "predicted",
     time: startTime.plus(Duration.fromISO("PT1M")),
     description: "dummy",
   };
@@ -282,6 +283,6 @@ test("find minmax test", () => {
                                         sddA.timeRange,
                                         false,
                                         ampMode);
-    expect(minMax[0]).toEqual(seisAMean); // seisMean to zero
-    expect(minMax[1]).toEqual(seisAMean*2);
+    expect(minMax.min).toEqual(seisAMean); // seisMean to zero
+    expect(minMax.max).toEqual(seisAMean*2);
 });

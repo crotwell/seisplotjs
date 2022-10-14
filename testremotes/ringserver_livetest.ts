@@ -1,9 +1,8 @@
 
 import {RingserverConnection} from '../src/ringserverweb';
-import {DataLinkConnection} from '../src/datalink';
-import {SeedlinkConnection} from '../src/seedlink';
-import { SeismogramDisplayData} from '../src/seismogram';
-import { DateTime, Duration, Interval} from 'luxon';
+import {DataLinkConnection, DataLinkPacket} from '../src/datalink';
+import {SeedlinkConnection, SequencedDataRecord} from '../src/seedlink';
+import { DateTime, Duration} from 'luxon';
 
 // eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
@@ -22,8 +21,8 @@ test("do id test", () => {
 
 });
 
-let slConn;
-let dlConn;
+let slConn: SeedlinkConnection;
+let dlConn: DataLinkConnection;
 
 test("do seedlink test", done => {
   // def is IRIS
@@ -31,13 +30,13 @@ test("do seedlink test", done => {
   expect(ring.getSeedLinkURL()).toEqual("ws://rtserve.iris.washington.edu/seedlink");
   const config = ['STATION JSC CO',
                   'SELECT 00HHZ.D' ];
-  function packetFun(mseedPacket) {
+  function packetFun(mseedPacket: SequencedDataRecord) {
     console.log(`got mseed`);
     expect(mseedPacket).toBeDefined();
     slConn.close();
     done();
   }
-  function errorFun(e) {
+  function errorFun(e: any) {
     slConn.close();
     done(e);
   }
@@ -53,13 +52,13 @@ test("do datalink test", () => {
   // def is IRIS
   const ring = new RingserverConnection();
   expect(ring.getDataLinkURL()).toEqual("ws://rtserve.iris.washington.edu/datalink");
-  const dlpacketFun = function(packet) {
+  const dlpacketFun = function(packet: DataLinkPacket) {
     console.log(`got packet`);
     expect(packet).toBeDefined();
     expect(packet.isMiniseed()).toBeTrue();
     dlConn.close();
   }
-  const dlerrorFun = function(e) {
+  const dlerrorFun = function(e: any) {
     dlConn.close();
   }
   let start = DateTime.utc().minus(Duration.fromISO('PT10M'));
@@ -92,6 +91,6 @@ test("do datalink test", () => {
 });
 
 afterEach(() => {
-  if (slConn) { slConn.close();slConn = null;}
-  if (dlConn) { dlConn.close();dlConn = null;}
+  if (slConn) { slConn.close();}
+  if (dlConn) { dlConn.close();}
 })

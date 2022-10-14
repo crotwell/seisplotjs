@@ -1,7 +1,6 @@
 
 import * as util from '../src/util.js';
 import {isoToDateTime, toIsoWoZ} from '../src/util.js';
-import {Duration} from 'luxon';
 
 test( "_toIsoWoZ test", () => {
   const s = "2018-01-01T12:34:45.000";

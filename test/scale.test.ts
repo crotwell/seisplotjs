@@ -1,5 +1,12 @@
 
-import {LinkedAmplitudeScale, LinkedTimeScale, AmplitudeScalable, TimeScalable} from "../src/scale";
+import {
+  LinkedAmplitudeScale,
+  LinkedTimeScale,
+  AmplitudeScalable,
+  AMPLITUDE_MODE,
+  TimeScalable,
+  MinMaxable
+} from "../src/scale";
 import { Seismogram, SeismogramDisplayData} from '../src/seismogram';
 import {Seismograph} from '../src/seismograph';
 import {SeismographConfig} from '../src/seismographconfig';
@@ -10,12 +17,14 @@ import { Duration} from 'luxon';
 test("amp scalable test", () => {
   const hwA = 5;
   const midA = 0;
+  const minMaxA = MinMaxable.fromMiddleHalfWidth(midA, hwA);
   const hwB = 2;
   const midB = 0;
-  const ampA = new AmplitudeScalable(midA, hwA);
+  const minMaxB = MinMaxable.fromMiddleHalfWidth(midB, hwB);
+  const ampA = new AmplitudeScalable(minMaxA);
   expect(ampA.middle).toEqual(midA);
   expect(ampA.halfWidth).toEqual(hwA);
-  const ampB = new AmplitudeScalable(midB, hwB);
+  const ampB = new AmplitudeScalable(minMaxB);
   expect(ampB.middle).toEqual(midB);
   expect(ampB.halfWidth).toEqual(hwB);
   const linkAmpScale = new LinkedAmplitudeScale([ampA, ampB]);
@@ -50,6 +59,35 @@ test("gain scale test", () => {
   return Promise.all(linkAmpScale.recalculate()).then(() => {
     expect(linkAmpScale.halfWidth).toEqual(maxB/sensB.sensitivity);
     expect(graph.amp_scalable.halfWidth).toEqual(maxB/sensB.sensitivity);
+    expect(graph.amp_scalable.middle).toEqual(0/sensB.sensitivity);
+  });
+});
+
+test("zero mean scale test", () => {
+  const yValues = new Int32Array([3, 0, 3]);
+  const seisAMean = yValues.reduce((acc, cur) => acc+cur, 0)/yValues.length;
+  const sampleRate = 20.0;
+  const startTime = isoToDateTime("2013-02-08T09:30:26");
+
+  const seisA = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+  const sddA = SeismogramDisplayData.fromSeismogram(seisA);
+
+  const maxB = 10;
+  const yValuesB = new Int32Array([maxB, 0, maxB]);
+  const seisBMean = yValuesB.reduce((acc, cur) => acc+cur, 0)/yValuesB.length;
+  const seisB = Seismogram.createFromContiguousData(yValuesB, sampleRate, startTime);
+  const sddB = SeismogramDisplayData.fromSeismogram(seisB);
+
+  const seisConfig = new SeismographConfig();
+  seisConfig.amplitudeMode = AMPLITUDE_MODE.Mean;
+  const graph = new Seismograph([sddA, sddB], seisConfig);
+  const linkAmp = seisConfig.linkedAmplitudeScale;
+  if (!linkAmp) { throw new Error("linked amp is undef");}
+  return Promise.all(linkAmp.recalculate()).then(() => {
+    expect(graph.amp_scalable.middle).toEqual(seisAMean);
+    expect(graph.amp_scalable.middle).toEqual(seisBMean);
+    expect(graph.amp_scalable.halfWidth).toEqual(maxB/2);
+    expect(seisConfig.linkedAmplitudeScale?.halfWidth).toEqual(seisBMean); // 0 to mean is larger
   });
 });
 

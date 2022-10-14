@@ -1,8 +1,6 @@
 
 import * as filter from '../../src/filter';
-import * as taper from '../../src/taper';
-import {Seismogram, ensureIsSeismogram } from '../../src/seismogram';
-import {readSac} from './sacfile';
+import {Seismogram } from '../../src/seismogram';
 import {DateTime} from 'luxon';
 
 test("lineFit", () => {
@@ -22,7 +20,8 @@ test("constant", () => {
   const origseis = Seismogram.createFromContiguousData(orig, 1, DateTime.utc());
   let bagrtr = filter.removeTrend(origseis);
   for (let i=0; i<dataLen; i++) {
-    expect(bagrtr.y[i], `index ${i}`).toBeCloseTo(0);
+//    expect(bagrtr.y[i], `index ${i}`).toBeCloseTo(0);
+    expect(bagrtr.y[i]).toBeCloseTo(0);
   }
 });
 
@@ -38,6 +37,7 @@ test("linear", () => {
   expect(lf.slope).toBeCloseTo(slope);
   expect(lf.intercept).toBeCloseTo(dataVal);
   for (let i=0; i<dataLen; i++) {
-    expect(bagrtr.y[i], `index ${i}`).toBeCloseTo(0);
+//    expect(bagrtr.y[i], `index ${i}`).toBeCloseTo(0);
+    expect(bagrtr.y[i]).toBeCloseTo(0);
   }
 });
