@@ -1,5 +1,5 @@
 module.exports = {
-  testRegex: "/testremotes/.*livetest\\.[jt]sx?$",
+  testMatch: ['<rootDir>/testremotes/**/*_livetest.ts'],
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts', "jest-27-expect-message"],
   extensionsToTreatAsEsm: ['.ts'],

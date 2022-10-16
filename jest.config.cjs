@@ -1,4 +1,5 @@
 module.exports = {
+  testMatch: ['<rootDir>/test/**/*.test.ts'],
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts', "jest-27-expect-message"],
   extensionsToTreatAsEsm: ['.ts'],
