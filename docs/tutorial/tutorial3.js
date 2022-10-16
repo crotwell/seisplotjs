@@ -1,14 +1,15 @@
 // snip start map
 import {
   fdsndataselect, fdsnevent, fdsnstation,
+  filter,
   seismogram, seismograph,
   seismographconfig,
   stationxml,
   util, luxon} from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
 
+// snip start mapcss
 const mymap = document.querySelector('sp-station-event-map');
 
-// snip start mapcss
 mymap.addStyle(`
   div.stationMapMarker {
     color: rebeccapurple;
@@ -21,7 +22,7 @@ mymap.addStyle(`
 `);
 
 // snip start quakechan
-let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
+let queryTimeWindow = util.startEnd('2019-07-01', '2019-07-31');
 let eventQuery = new fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
@@ -39,9 +40,11 @@ let quakePromise = eventQuery.query();
 // snip start seismogramload
 Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) => {
+  document.querySelector("span#stationCode").textContent = networkList[0].stations[0].codes();
+  document.querySelector("span#earthquakeDescription").textContent = quakeList[0].description;
   let seismogramDataList = [];
   for (const q of quakeList) {
-    let timeWindow = luxon.Interval.after(q.time, luxon.Duration.fromMillis(1000*2400));
+    let timeWindow = util.startDuration(q.time, 2400);
     for (const c of stationxml.allChannels(networkList)) {
       let sdd = seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
       sdd.addQuake(q);
@@ -49,27 +52,22 @@ Promise.all( [ quakePromise, stationsPromise ] )
     }
   }
   mymap.seisData = seismogramDataList;
-  mymap.seisData.forEach(sdd => {
-    console.log(`${sdd.quakeList.length}  ${sdd.quake}`);
-  })
   let dsQuery = new fdsndataselect.DataSelectQuery();
-  let sddPromise = dsQuery.postQuerySeismograms(seismogramDataList);
-  return Promise.all( [ quakePromise, stationsPromise, sddPromise ] );
+  return dsQuery.postQuerySeismograms(seismogramDataList);
 // snip start seismogramplot
-}).then( ( [ quakeList, networkList, seismogramDataList ] ) => {
-    let div = document.querySelector('div#myseismograph');
-    let seisConfig = new seismographconfig.SeismographConfig();
-    seisConfig.doGain = false;
-    seisConfig.centeredAmp = true;
-    let graphCount = new seismograph.Seismograph(seismogramDataList, seisConfig);
-    div.appendChild(graphCount);
+}).then( seismogramDataList => {
+  seismogramDataList.forEach(sdd => {
+    sdd.processSeismogram(s => filter.rMean(s));
+  });
+  let graph = document.querySelector('sp-seismograph');
 
-    let seisConfigGain = new seismographconfig.SeismographConfig();
-    seisConfigGain.doGain = true;
-    seisConfigGain.centeredAmp = true;
-    let graphGain = new seismograph.Seismograph(seismogramDataList, seisConfigGain);
-    div.appendChild(graphGain);
-    return seismogramDataList;
+  let seisConfigGain = new seismographconfig.SeismographConfig();
+  seisConfigGain.doGain = true;
+  seisConfigGain.amplitudeMode = "Mean";
+  seisConfigGain.linkedAmplitudeScale.offset
+  //graph.amp_scalable.middle = 0;
+  graph.seismographConfig = seisConfigGain;
+  graph.seisData = seismogramDataList
 }).catch( function(error) {
   const div = document.querySelector('div#myseismograph');
   div.innerHTML = `

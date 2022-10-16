@@ -110,13 +110,14 @@
         FDSNWS dataselect
        </a>
        web service to grab some actual seismic data.
-        StartEndDuration makes it easy to get start and end times from
+        Seisplotjs.util has some helper functions to create luxon Intervals from
         any combination of start, end and duration. The parameters
         for the DataSelectQuery match those listed in the
        <a href="http://www.fdsn.org/webservices/">
         fdsnws-dataselect
        </a>
-       specification. This example only uses the simple
+       specification, along with some functions that can set multiple parameters
+       at once, such a timeWindow. This example only uses the simple
        <code class="language-html">
         GET
        </code>
@@ -140,14 +141,12 @@ import {
   seismographconfig, util, luxon
 } from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
 
-let timeWindow = luxon.Interval.after(util.isoToDateTime('2019-07-06T03:19:53Z'), luxon.Duration.fromMillis(1000*1800));
+let timeWindow = util.startDuration('2019-07-06T03:19:53Z', 1800);
 let dsQuery = new fdsndataselect.DataSelectQuery();
-console.log(`miniseed3: ${fdsndataselect.FORMAT_MINISEED_THREE}`);
 dsQuery.networkCode('CO')
   .stationCode('HODGE')
   .locationCode('00')
   .channelCode('LH?')
-  .format(fdsndataselect.FORMAT_MINISEED_THREE)
   .timeWindow(timeWindow);
 </code></pre>
       <p>
@@ -167,13 +166,13 @@ dsQuery.networkCode('CO')
         then()
        </code>
        method of the
-            promise is executed
+            promise, effectively a callback, is executed
        <em>
         after
        </em>
-       the request returns. We expect
-            there to only be one seismogram returned from this, so we only try
-            to display the first one.
+       the request returns. Since we know these seismograms are from the same
+       station and earthquake, we can plot them all overlayed in a single
+       seismograph.
       </p>
       <pre><code class="language-javascript" snippet="queryseis">
 dsQuery.querySeismograms().then(seisArray =&gt; {
@@ -181,11 +180,10 @@ dsQuery.querySeismograms().then(seisArray =&gt; {
     const div = document.querySelector('div#myseismograph');
     let seisConfig = new seismographconfig.SeismographConfig();
     let seisData = [];
-    seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]));
-    seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[1]));
-    seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(seisArray[2]));
+    for (let s of seisArray) {
+      seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(s));
+    }
     let graph = new seismograph.Seismograph(seisData, seisConfig);
-
     div.appendChild(graph);
   }).catch( function(error) {
     const div = document.querySelector('div#myseismograph');

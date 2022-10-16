@@ -146,7 +146,7 @@
           &lt;/style&gt;
         </code></pre>
       <p>
-       First, we will create the map, centering it on 34/-100 and at
+       First, we will create the map in the html, centering it on 34/-100 and at
        zoom level 5. The
        <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">
         World Ocean Base
@@ -162,12 +162,11 @@
       <pre><code class="language-javascript" snippet="map">
 import {
   fdsndataselect, fdsnevent, fdsnstation,
+  filter,
   seismogram, seismograph,
   seismographconfig,
   stationxml,
   util, luxon} from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
-
-const mymap = document.querySelector('sp-station-event-map');
 
 </code></pre>
       <p>
@@ -200,6 +199,8 @@ const mymap = document.querySelector('sp-station-event-map');
         from an svg path element and so we use stoke and fill instead of color.
       </p>
       <pre><code class="language-javascript" snippet="mapcss">
+const mymap = document.querySelector('sp-station-event-map');
+
 mymap.addStyle(`
   div.stationMapMarker {
     color: rebeccapurple;
@@ -224,10 +225,12 @@ mymap.addStyle(`
        <code class="language-javascript">
         StationQuery
        </code>
-       objects.
+       objects. The time window on the event query means the earthquake happened
+       within the window, but for the station query it means the station was
+       active (or at least existed) during some part of the window, i.e. it overlaps.
       </p>
       <pre><code class="language-javascript" snippet="quakechan">
-let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
+let queryTimeWindow = util.startEnd('2019-07-01', '2019-07-31');
 let eventQuery = new fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
@@ -251,12 +254,6 @@ let stationQuery = new fdsnstation.StationQuery()
        The station will be plotted as
        a generic triangle as the map marker, but the quake is
        plotted as a circle with the radius scaled by the magnitude.
-       We also added a couple of
-       <code class="language-html">
-        &lt;span&gt;
-       </code>
-       elements to hold the station codes and earthquake description.
-        We set the these elements assuming we will only get one of each.
       </p>
       <pre><code class="language-javascript" snippet="promise">
 let stationsPromise = stationQuery.queryChannels();
@@ -272,31 +269,57 @@ let quakePromise = eventQuery.query();
        <code class="language-javascript">
         Promise.all()
        </code>
-       to ensure both have successfully completed.
-       We then will use the more powerful POST method of the
+       to ensure both have successfully completed. We also set the content of
+       a couple of
+       <code class="language-html">
+        &lt;span&gt;
+       </code>
+       elements to hold the station codes and earthquake description,
+       assuming we will only get one of each.
+       The easiest way to use the more powerful POST method of the
        <a href="http://service.iris.edu/fdsnws/dataselect/1/">
         FDSNWS dataselect
        </a>
        web
-       service to get the seismograms.
-       The array of
+       service to get the seismograms is to first create an
+       array of
        <code class="language-javascript">
         SeismogramDisplayData
        </code>
-       objects works just like the
+       objects, which start out as just having a channel and a time window.
+      The time window starts at the origin time of the
+      earthquake and has a duration of 2400 seconds. Then
+       we manually attach the earthquake. The map knows to look for station and
+       earthquake locations within
        <code class="language-javascript">
-        StartEndDuration
+        SeismogramDisplayData
        </code>
-       we saw previously but also holds the channel and the quake and will also contain
-          the resulting seismogram. We ask for data starting at the origin time of the
-          earthquake and with a duration of 2400 seconds.
+       objects, so we can plot both on the map by setting the
+       <code class="language-javascript">
+        seisData
+       </code>
+       field on the map.
+       Passing the array of
+       <code class="language-javascript">
+        SeismogramDisplayData
+       </code>
+       objects to the
+       <code class="language-javascript">
+        postQuerySeismograms()
+       </code>
+       function will query the remote DataSelect service and insert the
+       actual seismograms into each SeismogramDisplayData
+       when the DataSelect query returns. Of course this function will return
+       a Promise.
       </p>
       <pre><code class="language-javascript" snippet="seismogramload">
 Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) =&gt; {
+  document.querySelector("span#stationCode").textContent = networkList[0].stations[0].codes();
+  document.querySelector("span#earthquakeDescription").textContent = quakeList[0].description;
   let seismogramDataList = [];
   for (const q of quakeList) {
-    let timeWindow = luxon.Interval.after(q.time, luxon.Duration.fromMillis(1000*2400));
+    let timeWindow = util.startDuration(q.time, 2400);
     for (const c of stationxml.allChannels(networkList)) {
       let sdd = seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
       sdd.addQuake(q);
@@ -304,16 +327,12 @@ Promise.all( [ quakePromise, stationsPromise ] )
     }
   }
   mymap.seisData = seismogramDataList;
-  mymap.seisData.forEach(sdd =&gt; {
-    console.log(`${sdd.quakeList.length}  ${sdd.quake}`);
-  })
   let dsQuery = new fdsndataselect.DataSelectQuery();
-  let sddPromise = dsQuery.postQuerySeismograms(seismogramDataList);
-  return Promise.all( [ quakePromise, stationsPromise, sddPromise ] );
+  return dsQuery.postQuerySeismograms(seismogramDataList);
 </code></pre>
       <p>
-       Once these are loaded we will plot them
-        just like we did before. Because we have the
+       Once the Promise returns, we will plot the seismograms
+        using the already existing sp-seismograph element. Because we have the
         channel, we can also plot the seismograms corrected for overall
         gain and in units of m/s.
         The default text coloring colors the seismograms and the corresponding
@@ -321,20 +340,19 @@ Promise.all( [ quakePromise, stationsPromise ] )
         identify. Note the units on the left hand side are now m/s.
       </p>
       <pre><code class="language-javascript" snippet="seismogramplot">
-}).then( ( [ quakeList, networkList, seismogramDataList ] ) =&gt; {
-    let div = document.querySelector('div#myseismograph');
-    let seisConfig = new seismographconfig.SeismographConfig();
-    seisConfig.doGain = false;
-    seisConfig.centeredAmp = true;
-    let graphCount = new seismograph.Seismograph(seismogramDataList, seisConfig);
-    div.appendChild(graphCount);
+}).then( seismogramDataList =&gt; {
+  seismogramDataList.forEach(sdd =&gt; {
+    sdd.processSeismogram(s =&gt; filter.rMean(s));
+  });
+  let graph = document.querySelector('sp-seismograph');
 
-    let seisConfigGain = new seismographconfig.SeismographConfig();
-    seisConfigGain.doGain = true;
-    seisConfigGain.centeredAmp = true;
-    let graphGain = new seismograph.Seismograph(seismogramDataList, seisConfigGain);
-    div.appendChild(graphGain);
-    return seismogramDataList;
+  let seisConfigGain = new seismographconfig.SeismographConfig();
+  seisConfigGain.doGain = true;
+  seisConfigGain.amplitudeMode = "Mean";
+  seisConfigGain.linkedAmplitudeScale.offset
+  //graph.amp_scalable.middle = 0;
+  graph.seismographConfig = seisConfigGain;
+  graph.seisData = seismogramDataList
 }).catch( function(error) {
   const div = document.querySelector('div#myseismograph');
   div.innerHTML = `

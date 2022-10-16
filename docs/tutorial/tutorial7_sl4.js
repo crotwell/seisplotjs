@@ -1,13 +1,13 @@
 // snip start vars
+import * as seisplotjs from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
+
 const stationPattern = `CO JSC`;
 const selectPattern = `00.HH?`;
 seisplotjs.d3.select('span#channel').text(`${stationPattern} ${selectPattern}`);
-const duration = seisplotjs.moment.duration(5, 'minutes');
-const timeWindow = new seisplotjs.util.StartEndDuration(null, null, duration);
+const timeWindow = new seisplotjs.util.durationEnd(5*60, 'now');
 const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
-seisPlotConfig.linkedTimeScale.offset = seisplotjs.moment.duration(-1*duration.asMilliseconds(), 'milliseconds');
-seisPlotConfig.linkedTimeScale.duration = duration;
+seisPlotConfig.linkedTimeScale.duration = timeWindow.toDuration();
 let graphList = new Map();
 let numPackets = 0;
 let paused = false;
@@ -15,7 +15,7 @@ let stopped = true;
 let redrawInProgress = false;
 let realtimeDiv = seisplotjs.d3.select("div#realtime");
 let rect = realtimeDiv.node().getBoundingClientRect();
-let timerInterval = duration.asMilliseconds()/
+let timerInterval = timeWindow.toDuration().toMillis()/
                     (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
 console.log("start time with interval "+timerInterval);
 while (timerInterval < 100) { timerInterval *= 2;}
@@ -69,7 +69,7 @@ let timer = seisplotjs.d3.interval(function(elapsed) {
   redrawInProgress = true;
   window.requestAnimationFrame(timestamp => {
     try {
-      const now = seisplotjs.moment.utc();
+      const now = seisplotjs.util.isoToDateTime('now');
       graphList.forEach(function(graph, key) {
         graph.seisDataList.forEach(sdd => {
           sdd.alignmentTime = now;
@@ -109,7 +109,6 @@ let toggleConnect = function() {
   stopped = ! stopped;
   if (stopped) {
     if (seedlink) {
-      seedlink.endStream();
       seedlink.close();
     }
     seisplotjs.d3.select("button#disconnect").text("Reconnect");
@@ -128,8 +127,7 @@ let toggleConnect = function() {
           throw new Exception(`${SEEDLINK4_PROTOCOL} not found in HELLO response`);
         }
       }).catch( function(error) {
-        seisplotjs.d3.select("div#debug").append('p').text("Error: " +error);
-        console.log(error);
+        seisplotjs.d3.select("div#debug").append('p').text(`Error: ${error.name} - ${error.message}`);
         console.assert(false, error);
       });
     }

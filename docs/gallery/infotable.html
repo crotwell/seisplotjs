@@ -74,6 +74,11 @@
           graph.seisData = ds.waveforms;
         });
         return ds;
+    }).catch( er => {
+        console.assert(false, `Problem in load data: ${er}`);
+        const errInfo = document.createElement("p");
+        errInfo.textContent = `Problem in load data: ${er}`;
+        document.querySelector('body').appendChild(errInfo);
     });
   </script>
 </body>

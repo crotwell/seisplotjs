@@ -8,16 +8,8 @@
         height: 300px;
         width: 90%;
       }
-      div.seismograph {
+      sp-seismograph {
         height: 300px;
-      }
-      div.stationMapMarker {
-        color: rebeccapurple;
-      }
-      path.quakeMapMarker {
-        fill: orange;
-        stroke: yellow;
-        fill-opacity: 0.25;
       }
     </style>
   </head>
@@ -31,7 +23,8 @@
       </sp-station-event-map>
     </div>
     <h3>A Seismograph recorded at <span id="stationCode"></span> for the <span id="earthquakeDescription"></span>!</h3>
-    <div class="seismograph" id="myseismograph">
+    <div id="myseismograph">
+      <sp-seismograph></sp-seismograph>
     </div>
 
     <script type="module" src="tutorial3.js">
