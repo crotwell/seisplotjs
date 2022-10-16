@@ -191,8 +191,17 @@ export function gainCorrect(
   seis: Seismogram,
   instrumentSensitivity: InstrumentSensitivity,
 ): Seismogram {
+  const gain = instrumentSensitivity.sensitivity;
+  const out = mul(seis, 1/gain);
+  out.segments.forEach(s => s.yUnit = instrumentSensitivity.inputUnits);
+  return out;
+}
+
+export function mul(
+  seis: Seismogram,
+  factor: number,
+): Seismogram {
   if (seis instanceof Seismogram) {
-    const gain = instrumentSensitivity.sensitivity;
     const gainSeismogram = new Seismogram(
       seis.segments.map(s => {
         let gainY;
@@ -204,10 +213,37 @@ export function gainCorrect(
         }
 
         gainY = gainY.map(function (d) {
-          return d / gain;
+          return d * factor;
         });
         const outS = s.cloneWithNewData(gainY);
-        outS.yUnit = instrumentSensitivity.inputUnits;
+        return outS;
+      }),
+    );
+    return gainSeismogram;
+  } else {
+    throw new Error(`Expected Seismogram but was ${typeof seis}`);
+  }
+}
+
+export function add(
+  seis: Seismogram,
+  factor: number,
+): Seismogram {
+  if (seis instanceof Seismogram) {
+    const gainSeismogram = new Seismogram(
+      seis.segments.map(s => {
+        let gainY;
+
+        if (s.y instanceof Int32Array || s.y instanceof Float32Array) {
+          gainY = Float32Array.from(s.y);
+        } else {
+          gainY = Float64Array.from(s.y);
+        }
+
+        gainY = gainY.map(function (d) {
+          return d + factor;
+        });
+        const outS = s.cloneWithNewData(gainY);
         return outS;
       }),
     );
