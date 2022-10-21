@@ -12,7 +12,7 @@
   "files": [
     "./dist/index.js",
     "./dist/index.esm.js",
-    "./dist/index.d.js",
+    "./dist/index.d.ts",
     "src"
   ],
   "dependencies": {
