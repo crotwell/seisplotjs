@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "browser": "./dist/index.esm.js",
-  "types": "./dist/dts/index.d.js",
+  "types": "./dist/dts/index.d.ts",
   "sideEffects": false,
   "type": "module",
   "files": [
