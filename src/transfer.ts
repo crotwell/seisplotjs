@@ -108,7 +108,8 @@ export function calcResponse(
   unit: string,
 ): FFTResult {
   const sacPoleZero = convertToSacPoleZero(response);
-  const unitQty = convert(1).getUnit(unit as AllMeasuresUnits);
+  let siUnit = unit.replaceAll('**', '');
+  const unitQty = convert(1).getUnit(siUnit as AllMeasuresUnits);
   let gamma = 0;
 
   if (unitQty === null) {
@@ -397,9 +398,16 @@ export function convertToSacPoleZero(response: Response): SacPoleZero {
   }
 
   let unit = response.instrumentSensitivity.inputUnits;
+  unit = unit.replaceAll('**', ''); // change m/s**2 to m/s2
 
+  if (unit === "M") {
+    unit = "m";
+  }
   if (unit === "M/S" || unit === "M/SEC") {
     unit = "m/s";
+  }
+  if (unit === "M/S2" || unit === "M/SEC2") {
+    unit = "m/s2";
   }
 
   let gamma = calcGamma(unit);
