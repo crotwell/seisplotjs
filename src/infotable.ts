@@ -224,7 +224,7 @@ export class QuakeStationTable extends SeisPlotElement {
 customElements.define(INFO_ELEMENT, QuakeStationTable);
 
 
-
+export const QUAKE_CLICK_EVENT = "quakeclick";
 
 export class QuakeTable extends HTMLElement {
   _columnLabels: Map<QUAKE_COLUMN, string>;
@@ -272,6 +272,16 @@ export class QuakeTable extends HTMLElement {
     this._columnLabels = cols;
     this.draw();
   }
+  addStyle(css: string, id?: string): HTMLStyleElement {
+    return addStyleToElement(this, css, id);
+  }
+  findRowForQuake(q: Quake): HTMLTableRowElement | null {
+    let quakeRow = null;
+    this._rowToQuake.forEach( (v,k) => {
+      if (v === q) {quakeRow = k;}
+    });
+    return quakeRow;
+  }
   draw() {
     if ( ! this.isConnected) { return; }
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
@@ -289,6 +299,15 @@ export class QuakeTable extends HTMLElement {
     this.quakeList.forEach(q => {
       const row = tbody.insertRow();
       this.populateRow(q, row, -1);
+      row.addEventListener('click', evt => {
+        const detail = {
+          mouseevent: evt,
+          quake: q,
+        };
+        const event = new CustomEvent(QUAKE_CLICK_EVENT, { detail: detail});
+        this.dispatchEvent(event);
+      });
+
     });
   }
   headers(): Array<QUAKE_COLUMN> {
@@ -383,7 +402,6 @@ export class QuakeTable extends HTMLElement {
 customElements.define(QUAKE_INFO_ELEMENT, QuakeTable);
 
 
-
 export class ChannelTable extends HTMLElement {
   _columnLabels: Map<CHANNEL_COLUMN, string>;
   _channelList: Array<Channel>;
@@ -432,6 +450,9 @@ export class ChannelTable extends HTMLElement {
   set columnLabels(cols: Map<CHANNEL_COLUMN, string>) {
     this._columnLabels = cols;
     this.draw();
+  }
+  addStyle(css: string, id?: string): HTMLStyleElement {
+    return addStyleToElement(this, css, id);
   }
   draw() {
     if ( ! this.isConnected) { return; }
@@ -615,6 +636,9 @@ export class StationTable extends HTMLElement {
     this._columnLabels = cols;
     this.draw();
   }
+  addStyle(css: string, id?: string): HTMLStyleElement {
+    return addStyleToElement(this, css, id);
+  }
   draw() {
     if ( ! this.isConnected) { return; }
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
@@ -785,6 +809,9 @@ export class SeismogramTable extends HTMLElement {
   set columnLabels(cols: Map<SEISMOGRAM_COLUMN, string>) {
     this._columnLabels = cols;
     this.draw();
+  }
+  addStyle(css: string, id?: string): HTMLStyleElement {
+    return addStyleToElement(this, css, id);
   }
   draw() {
     if ( ! this.isConnected) { return; }

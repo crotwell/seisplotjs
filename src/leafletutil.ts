@@ -474,5 +474,5 @@ export function cssClassForQuake(q: Quake): string {
   } else {
     out = `${q.origin.time.toISO()}_${q.magnitude}`;
   }
-  return out.replaceAll(badCSSChars, '_')
+  return "qid_"+out.replaceAll(badCSSChars, '_')
 }
