@@ -28,6 +28,25 @@ export const UNKNOWN_MAG_TYPE = "unknown";
 export const UNKNOWN_PUBLIC_ID = "unknownId";
 export const FAKE_ORIGIN_TIME = DateTime.fromISO("1900-01-01T00:00:00Z");
 
+
+export const QUAKE_CLICK_EVENT = "quakeclick";
+
+/**
+ * Utility function to create CustomEvent for clicking on a Quake, for example
+ * in a map or table.
+ *
+ * @param  q          Quake clicked on
+ * @param  mouseclick original mouse click Event
+ * @return            CustomEvent populated with quake field in detail.
+ */
+export function createQuakeClickEvent(q: Quake, mouseclick: Event): CustomEvent {
+  const detail = {
+    mouseevent: mouseclick,
+    quake: q,
+  };
+  return new CustomEvent(QUAKE_CLICK_EVENT, { detail: detail});
+}
+
 // QuakeML classes
 
 /**

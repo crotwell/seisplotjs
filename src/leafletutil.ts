@@ -1,7 +1,7 @@
 import {kmPerDeg} from './distaz';
-import {Quake} from "./quakeml";
+import {Quake, createQuakeClickEvent} from './quakeml';
 import * as import_leaflet_css from "./leaflet_css";
-import {Station} from "./stationxml";
+import {Station, createStationClickEvent} from "./stationxml";
 import {SeisPlotElement} from "./spelement";
 import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
 import { SeismographConfig} from "./seismographconfig";
@@ -192,7 +192,6 @@ export class QuakeStationMap extends SeisPlotElement {
       classList = classList.filter(v => v !== classname);
       this.quakeClassMap.set(cssClassForQuake(quake), classList);
     }
-    console.log(`search for div.${classname}.${quakeIdStr}`)
     let circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
     circleList.forEach(triangle => {
       let classList = triangle.getAttribute("class");
@@ -204,6 +203,14 @@ export class QuakeStationMap extends SeisPlotElement {
     if(circleList.length === 0) {
       console.log("didn't find quake to remove clsas")
     }
+  }
+  /**
+   * Removes a css class from all earthquake circles.
+   *
+   * @param  classname   class to remove
+   */
+  quakeRemoveAllClass(classname: string) {
+    this.quakeList.forEach(q => this.quakeRemoveClass(q, classname));
   }
 
   addStation(station: Station | Array<Station>, classname?: string) {
@@ -249,7 +256,6 @@ export class QuakeStationMap extends SeisPlotElement {
       classList = classList.filter(v => v !== classname);
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), classList);
     }
-    console.log(`search for div.${classname}.${station.codes(STATION_CODE_SEP)}`)
     let triangleList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
     triangleList.forEach(triangle => {
       let classList = triangle.getAttribute("class");
@@ -358,15 +364,24 @@ export class QuakeStationMap extends SeisPlotElement {
     L.tileLayer(tileUrl, tileOptions).addTo(mymap);
     const magScale = this.magScale;
     const mapItems: Array<LatLngTuple> = [];
+    const mythis = this;
     this.quakeList.concat(uniqueQuakes(this.seisData)).forEach(q => {
       const circle = createQuakeMarker(q, magScale, this.quakeClassMap.get(cssClassForQuake(q)));
       circle.addTo(mymap);
       mapItems.push([q.latitude, q.longitude]);
+      circle.addEventListener('click', evt => {
+        let ce = createQuakeClickEvent(q, evt.originalEvent);
+        mythis.dispatchEvent(ce);
+      });
     });
     this.stationList.concat(uniqueStations(this.seisData)).forEach(s => {
       const m = createStationMarker(s, this.stationClassMap.get(s.codes(STATION_CODE_SEP)));
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
+      m.addEventListener('click', evt => {
+        let ce = createStationClickEvent(s, evt.originalEvent);
+        mythis.dispatchEvent(ce);
+      });
     });
     const regionBounds = this.drawGeoRegions(mymap);
     regionBounds.forEach(b => mapItems.push(b));
@@ -422,7 +437,7 @@ export class QuakeStationMap extends SeisPlotElement {
         }
       } else {
         // unknown region type?
-        console.assert(false, "unknown regino type");
+        console.assert(false, "unknown region type");
       }
     });
     return outLatLon;

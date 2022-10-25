@@ -24,7 +24,46 @@ export const COUNT_UNIT_NAME = "count";
 export const FIX_INVALID_STAXML = true;
 export const INVALID_NUMBER = -99999;
 export const FAKE_START_DATE = DateTime.fromISO("1900-01-01T00:00:00Z");
+
+
+export const CHANNEL_CLICK_EVENT = "channelclick";
+export const STATION_CLICK_EVENT = "stationclick";
+
+/**
+ * Utility function to create CustomEvent for clicking on a Channel, for example
+ * in a map or table.
+ *
+ * @param  sta          Channel clicked on
+ * @param  mouseclick original mouse click Event
+ * @return            CustomEvent populated with channel field in detail.
+ */
+export function createChannelClickEvent(sta: Channel, mouseclick: Event): CustomEvent {
+  const detail = {
+    mouseevent: mouseclick,
+    channel: sta,
+  };
+  return new CustomEvent(CHANNEL_CLICK_EVENT, { detail: detail});
+}
+
+/**
+ * Utility function to create CustomEvent for clicking on a Station, for example
+ * in a map or table.
+ *
+ * @param  sta          Station clicked on
+ * @param  mouseclick original mouse click Event
+ * @return            CustomEvent populated with station field in detail.
+ */
+export function createStationClickEvent(sta: Station, mouseclick: Event): CustomEvent {
+  const detail = {
+    mouseevent: mouseclick,
+    station: sta,
+  };
+  return new CustomEvent(STATION_CLICK_EVENT, { detail: detail});
+}
+
+
 // StationXML classes
+
 export class Network {
   networkCode: string;
   _startDate: DateTime;

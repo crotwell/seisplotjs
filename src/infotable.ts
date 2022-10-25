@@ -1,6 +1,6 @@
 
-import {Quake} from './quakeml';
-import {Channel, Station} from './stationxml';
+import {Quake, createQuakeClickEvent} from './quakeml';
+import {Channel, Station, createStationClickEvent, createChannelClickEvent} from './stationxml';
 import {SeisPlotElement, addStyleToElement} from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
@@ -9,6 +9,7 @@ import {Handlebars} from "./handlebarshelpers";
 
 
 export const INFO_ELEMENT = 'sp-station-event-table';
+export const QUAKE_INFO_ELEMENT_B = 'sp-quake-table';
 export const QUAKE_INFO_ELEMENT = 'sp-event-table';
 
 export enum QUAKE_COLUMN {
@@ -224,7 +225,6 @@ export class QuakeStationTable extends SeisPlotElement {
 customElements.define(INFO_ELEMENT, QuakeStationTable);
 
 
-export const QUAKE_CLICK_EVENT = "quakeclick";
 
 export class QuakeTable extends HTMLElement {
   _columnLabels: Map<QUAKE_COLUMN, string>;
@@ -300,12 +300,7 @@ export class QuakeTable extends HTMLElement {
       const row = tbody.insertRow();
       this.populateRow(q, row, -1);
       row.addEventListener('click', evt => {
-        const detail = {
-          mouseevent: evt,
-          quake: q,
-        };
-        const event = new CustomEvent(QUAKE_CLICK_EVENT, { detail: detail});
-        this.dispatchEvent(event);
+        this.dispatchEvent(createQuakeClickEvent(q, evt));
       });
 
     });
@@ -468,9 +463,12 @@ export class ChannelTable extends HTMLElement {
       table.removeChild(tb);
     });
     const tbody = table.createTBody();
-    this.channelList.forEach(q => {
+    this.channelList.forEach(c => {
       const row = tbody.insertRow();
-      this.populateRow(q, row, -1);
+      this.populateRow(c, row, -1);
+      row.addEventListener('click', evt => {
+        this.dispatchEvent(createChannelClickEvent(c, evt));
+      });
     });
   }
   headers(): Array<CHANNEL_COLUMN> {
@@ -653,9 +651,12 @@ export class StationTable extends HTMLElement {
       table.removeChild(tb);
     });
     const tbody = table.createTBody();
-    this.stationList.forEach(q => {
+    this.stationList.forEach(s => {
       const row = tbody.insertRow();
-      this.populateRow(q, row, -1);
+      this.populateRow(s, row, -1);
+      row.addEventListener('click', evt => {
+        this.dispatchEvent(createStationClickEvent(s, evt));
+      });
     });
   }
   headers(): Array<STATION_COLUMN> {
