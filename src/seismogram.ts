@@ -279,7 +279,7 @@ export class Seismogram {
     } else {
       this.checkSimilar(this._segmentArray[0], seismogram);
       this._startTime =
-        this.startTime<seismogram.startTime ? this.startTime : seismogram.startTime;
+        this.startTime < seismogram.startTime ? this.startTime : seismogram.startTime;
       this._endTime =
         this.endTime > seismogram.endTime ? this.endTime : seismogram.endTime;
 
@@ -677,6 +677,13 @@ export class SeismogramDisplayData {
   append(seismogram: SeismogramSegment | Seismogram) {
     if (isDef(this._seismogram)) {
       this._seismogram.append(seismogram);
+      if (this.startTime > seismogram.startTime || this.endTime < seismogram.endTime) {
+        let startTime =
+          this.startTime < seismogram.startTime ? this.startTime : seismogram.startTime;
+        let endTime =
+          this.endTime > seismogram.endTime ? this.endTime : seismogram.endTime;
+        this.timeRange = Interval.fromDateTimes(startTime, endTime);
+      }
     } else {
       if (seismogram instanceof SeismogramSegment) {
         this.seismogram = new Seismogram(seismogram);
