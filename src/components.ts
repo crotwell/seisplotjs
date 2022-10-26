@@ -8,7 +8,7 @@ export const LATLONRADIUS_ELEMENT = 'sp-latlon-radius';
 export const LATLONBOX_ELEMENT = 'sp-latlon-box';
 export const LATLON_CHOICE_ELEMENT = 'sp-latlon-choice';
 
-export function numberOrNaN(a: any): number {
+export function numberOrNaN(a: string | number | null): number {
   return Number.parseFloat(`${a}`);
 }
 
