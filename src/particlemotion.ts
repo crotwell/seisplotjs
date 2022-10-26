@@ -65,45 +65,6 @@ svg path.seispath {
 }
 `;
 
-export function addDivForParticleMotion(
-  svgParent: any,
-  xSeisData: SeismogramDisplayData,
-  ySeisData: SeismogramDisplayData,
-  timeRange?: Interval,
-): ParticleMotion {
-  const svgDiv = svgParent.append("div");
-
-  if (!isDef(xSeisData)) {
-    throw new Error("xSeisData cannot be null");
-  }
-
-  if (!isDef(ySeisData)) {
-    throw new Error("ySeisData cannot be null");
-  }
-
-  svgDiv.classed(xSeisData.channelCode, true);
-  svgDiv.classed(ySeisData.channelCode, true);
-  svgDiv.classed("particleMotionContainer", true);
-  return addParticleMotion(svgDiv, xSeisData, ySeisData, timeRange);
-}
-export function addParticleMotion(
-  svgParent: any,
-  xSeisData: SeismogramDisplayData,
-  ySeisData: SeismogramDisplayData,
-  timeRange?: Interval,
-): ParticleMotion {
-  if (!isDef(xSeisData.seismogram) || !isDef(ySeisData.seismogram)) {
-    throw new Error(
-      `Seismogram has no data: ${xSeisData.seismogram} ${ySeisData.seismogram}`,
-    );
-  }
-
-  const seisConfig = createParticleMotionConfig(timeRange);
-  const pmp = new ParticleMotion([xSeisData], [ySeisData], seisConfig);
-  svgParent.append(pmp);
-  pmp.draw();
-  return pmp;
-}
 export function createParticleMotionConfig(
   timeRange?: Interval | null,
   defaultSeisConfig?: SeismographConfig
