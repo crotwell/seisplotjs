@@ -1,7 +1,39 @@
 import {SeismographConfig} from "./seismographconfig";
 import {createSVGElement} from "./util";
 import * as d3 from "d3";
+import type {
+  //ScaleLinear,
+  ScaleTime} from "d3-scale";
+import {DateTime, Interval} from "luxon";
 
+export class LuxonTimeScale {
+  interval: Interval;
+  range: [number, number];
+  _d3scale: undefined | ScaleTime<number, number, never>;
+  constructor(interval: Interval, range: [number, number]) {
+    this.interval = interval;
+    this.range = range.slice() as [number, number];
+  }
+  for(d: DateTime): number {
+    return this.d3scale(d.toJSDate());
+  }
+  invert(v: number): DateTime {
+    return DateTime.fromJSDate(this.d3scale.invert(v));
+  }
+  domain(): Interval {
+    return this.interval;
+  }
+  get d3scale(): ScaleTime<number, number, never> {
+    if (this._d3scale) {
+      return this._d3scale;
+    } else {
+      const d3TimeScale = d3.scaleUtc();
+      d3TimeScale.domain([this.interval.start.toJSDate(), this.interval.end.toJSDate()]);
+      d3TimeScale.range(this.range);
+      return d3TimeScale;
+    }
+  }
+}
 export function drawXLabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,

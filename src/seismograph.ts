@@ -509,8 +509,8 @@ export class Seismograph extends SeisPlotElement {
         amplitude: mouseAmp,
         seismograph: this,
       } as SeisMouseEventType;
-    if (mouseTimeVal instanceof Date) {
-      out.time = DateTime.fromJSDate(mouseTimeVal, {zone: "UTC"});
+    if (mouseTimeVal instanceof DateTime) {
+      out.time = mouseTimeVal;
     } else {
       // relative time in seconds
       out.relative_time = Duration.fromMillis(mouseTimeVal*1000);
@@ -559,13 +559,13 @@ export class Seismograph extends SeisPlotElement {
     const sddList = this._seisDataList.concat(this._debugAlignmentSeisData);
     sddList.forEach((sdd, sddIndex) => {
       const ti = sddIndex;
-      const xscaleForSDD: d3.ScaleTime<number, number, never> = this.timeScaleForSeisDisplayData(sdd);
+      const xscaleForSDD = this.timeScaleForSeisDisplayData(sdd);
       const yscaleForSDD = this.ampScaleForSeisDisplayData(sdd);
       const secondsPerPixel =
-        (xscaleForSDD.domain()[1].valueOf() -
-          xscaleForSDD.domain()[0].valueOf()) /
+        (xscaleForSDD.domain().end.valueOf() -
+          xscaleForSDD.domain().start.valueOf()) /
         1000 /
-        (xscaleForSDD.range()[1] - xscaleForSDD.range()[0]);
+        (xscaleForSDD.range[1] - xscaleForSDD.range[0]);
       let color: string;
 
       if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
@@ -577,10 +577,10 @@ export class Seismograph extends SeisPlotElement {
       let firstTime = true;
 
       if (sdd.seismogram) {
-        sdd.seismogram.segments.forEach(s => {
+        sdd.seismogram.segments.forEach((s, segIdx) => {
           if (
-            xscaleForSDD(s.startTime) > xscaleForSDD.range()[1] ||
-            xscaleForSDD(s.endTime) < xscaleForSDD.range()[0]
+            xscaleForSDD.for(s.startTime) > xscaleForSDD.range[1] ||
+            xscaleForSDD.for(s.endTime) < xscaleForSDD.range[0]
           ) {
             // segment either totally off to left or right of visible
             return;
@@ -588,8 +588,8 @@ export class Seismograph extends SeisPlotElement {
 
           const samplesPerPixel = 1.0 * s.sampleRate * secondsPerPixel;
           const pixelsPerSample = 1.0 / samplesPerPixel;
-          const startPixel = xscaleForSDD(s.startTime.toJSDate());
-          const endPixel = xscaleForSDD(s.endTime.toJSDate());
+          const startPixel = xscaleForSDD.for(s.startTime);
+          const endPixel = xscaleForSDD.for(s.endTime);
           let leftVisibleSample = 0;
           let rightVisibleSample = s.y.length;
           let leftVisiblePixel = startPixel;
@@ -600,7 +600,7 @@ export class Seismograph extends SeisPlotElement {
             leftVisiblePixel = 0;
           }
 
-          if (endPixel > xscaleForSDD.range()[1] + 1) {
+          if (endPixel > xscaleForSDD.range[1] + 1) {
             rightVisibleSample =
               leftVisibleSample +
               Math.ceil((this.width + 1) * samplesPerPixel) +
@@ -618,15 +618,33 @@ export class Seismograph extends SeisPlotElement {
             firstTime = false;
           }
 
-          for (
+          if (samplesPerPixel > 2) {
+            // only draw min-max
             let i = leftVisibleSample;
-            i < rightVisibleSample + 2 && i < s.y.length;
-            i++
-          ) {
-            context.lineTo(
-              startPixel + i * pixelsPerSample,
-              yscaleForSDD(s.y[i]),
-            );
+            while (i < rightVisibleSample + 2 && i < s.y.length) {
+              let curPixel = Math.floor(startPixel + i * pixelsPerSample);
+              let min = s.y[i];
+              let max = s.y[i];
+              while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
+                if (min > s.y[i]) { min = s.y[i];}
+                if (max < s.y[i]) { max = s.y[i];}
+                i++;
+              }
+              context.lineTo(curPixel, yscaleForSDD(min));
+              context.lineTo(curPixel, yscaleForSDD(max));
+            }
+          } else {
+            // draw all samples
+            for (
+              let i = leftVisibleSample;
+              i < rightVisibleSample + 2 && i < s.y.length;
+              i++
+            ) {
+              context.lineTo(
+                startPixel + i * pixelsPerSample,
+                yscaleForSDD(s.y[i]),
+              );
+            }
           }
 
           if (!this.seismographConfig.connectSegments) {
@@ -639,6 +657,7 @@ export class Seismograph extends SeisPlotElement {
         context.stroke();
       }
     });
+
     context.restore();
   }
 
@@ -713,12 +732,25 @@ export class Seismograph extends SeisPlotElement {
     return plotInterval;
   }
 
-  timeScaleForSeisDisplayData(sdd: SeismogramDisplayData): ScaleTime<number, number, never> {
-    let plotInterval = this.displayTimeRangeForSeisDisplayData(sdd);
-    const sddXScale = d3.scaleUtc();
-    sddXScale.domain([plotInterval.start.toJSDate(), plotInterval.end.toJSDate()]);
-    sddXScale.range([0, this.width]);
-    return sddXScale;
+  timeScaleForSeisDisplayData(sdd?: SeismogramDisplayData | Interval): axisutil.LuxonTimeScale {
+    let plotInterval;
+    if (sdd) {
+      if (sdd instanceof SeismogramDisplayData) {
+        plotInterval = this.displayTimeRangeForSeisDisplayData(sdd);
+      } else {
+        plotInterval = sdd;
+      }
+    } else {
+      if (this.seismographConfig.linkedTimeScale) {
+        plotInterval = Interval.before(DateTime.utc(), this.seismographConfig.linkedTimeScale.duration);
+      } else if (this.seismographConfig.fixedTimeScale) {
+        plotInterval = this.seismographConfig.fixedTimeScale;
+      } else {
+        // ??? should not happen, just use now and 1 sec?
+        plotInterval = util.durationEnd(1, DateTime.utc() );
+      }
+    }
+    return new axisutil.LuxonTimeScale(plotInterval, [0, this.width]);
   }
 
   drawSeismogramsSvg() {
@@ -879,7 +911,7 @@ export class Seismograph extends SeisPlotElement {
     return ampAxisScale;
   }
 
-  timeScaleForAxis(): ScaleLinear<number, number, never> | ScaleTime<number, number, never> {
+  timeScaleForAxis(): ScaleLinear<number, number, never> | axisutil.LuxonTimeScale {
     let xScaleToDraw;
     if (this.seismographConfig.isRelativeTime) {
       xScaleToDraw = d3.scaleLinear();
@@ -899,16 +931,11 @@ export class Seismograph extends SeisPlotElement {
         if (this.seisData.length > 0) {
           xScaleToDraw = this.timeScaleForSeisDisplayData(this.seisData[0]);
         } else {
-          const psed = Interval.before(DateTime.utc(), this.seismographConfig.linkedTimeScale.duration);
-          xScaleToDraw = d3.scaleUtc();
-          xScaleToDraw.range([0, this.width]);
-          xScaleToDraw.domain([psed.start.toJSDate(), psed.end.toJSDate()]);
+          xScaleToDraw = this.timeScaleForSeisDisplayData();// empty uses duration and now
         }
       } else if (this.seismographConfig.fixedTimeScale) {
         const psed = this.seismographConfig.fixedTimeScale;
-        xScaleToDraw = d3.scaleUtc();
-        xScaleToDraw.range([0, this.width]);
-        xScaleToDraw.domain([psed.start.toJSDate(), psed.end.toJSDate()]);
+        xScaleToDraw = this.timeScaleForSeisDisplayData(psed);
       } else {
         throw new Error("neither fixed nor linked time scale");
       }
@@ -922,10 +949,11 @@ export class Seismograph extends SeisPlotElement {
   drawTopBottomAxis(): void {
     this.g.selectAll("g.axis--x").remove();
     this.g.selectAll("g.axis--x-top").remove();
-    let xScaleToDraw;
+    let xScaleToDraw = this.timeScaleForAxis();
 
     if (this.seismographConfig.isRelativeTime) {
-      xScaleToDraw = this.timeScaleForAxis();
+      // eg xScaleToDraw is ScaleLinear
+      xScaleToDraw = xScaleToDraw as ScaleLinear<number, number, never>;
       if (this.seismographConfig.isXAxis) {
         const xAxis = d3.axisBottom(xScaleToDraw);
         xAxis.tickFormat(createNumberFormatWrapper(this.seismographConfig.relativeTimeFormat));
@@ -941,9 +969,9 @@ export class Seismograph extends SeisPlotElement {
       }
 
     } else {
-      xScaleToDraw = this.timeScaleForAxis();
+      xScaleToDraw = xScaleToDraw as axisutil.LuxonTimeScale;
       if (this.seismographConfig.isXAxis) {
-        const xAxis = d3.axisBottom(xScaleToDraw);
+        const xAxis = d3.axisBottom(xScaleToDraw.d3scale);
         xAxis.tickFormat(createDateFormatWrapper(this.seismographConfig.timeFormat));
         this.g.append("g")
           .attr("class", "axis axis--x")
@@ -951,7 +979,7 @@ export class Seismograph extends SeisPlotElement {
           .call(xAxis);
       }
       if (this.seismographConfig.isXAxisTop) {
-        const xAxisTop = d3.axisTop(xScaleToDraw);
+        const xAxisTop = d3.axisTop(xScaleToDraw.d3scale);
         xAxisTop.tickFormat(createDateFormatWrapper(this.seismographConfig.timeFormat));
         this.g.append("g").attr("class", "axis axis--x-top").call(xAxisTop);
       }
@@ -1737,7 +1765,6 @@ export class SeismographTimeScalable extends TimeScalable {
         this.graph.redrawWithXScale();
       }
     }
-
   }
 }
 // static ID for seismogram
