@@ -832,7 +832,7 @@ export class Seismograph extends SeisPlotElement {
 
       return lineFunc(
         Array.from(seg.y, function (d, i) {
-          return [seg.timeOfSample(i).toJSDate().valueOf(),d];
+          return [seg.timeOfSample(i).valueOf(),d];
         }),
       );
     } else {
@@ -1124,7 +1124,7 @@ export class Seismograph extends SeisPlotElement {
         .selectAll("g.marker")
         .attr("transform", function (mh: MarkerHolderType) {
           mh.xscale = mythis.timeScaleForSeisDisplayData(mh.sdd);
-          const textx = mh.xscale(mh.marker.time.toJSDate());
+          const textx = mh.xscale.for(mh.marker.time);
           return "translate(" + textx + "," + 0 + ")";
         });
       this.g
@@ -1161,8 +1161,8 @@ export class Seismograph extends SeisPlotElement {
           return acc;
         }, new Array<MarkerHolderType>(0))
         .filter(mh => {
-          const xpixel = mh.xscale(mh.marker.time.toJSDate());
-          return xpixel >= mh.xscale.range()[0] && xpixel <= mh.xscale.range()[1];
+          const xpixel = mh.xscale.for(mh.marker.time);
+          return xpixel >= mh.xscale.range[0] && xpixel <= mh.xscale.range[1];
         });
 
       if (undrawnMarkers.length !== 0) {
@@ -1189,8 +1189,8 @@ export class Seismograph extends SeisPlotElement {
         return acc;
       }, [])
       .filter(mh => {
-        const xpixel = mh.xscale(mh.marker.time.toJSDate());
-        return xpixel >= mh.xscale.range()[0] && xpixel <= mh.xscale.range()[1];
+        const xpixel = mh.xscale.for(mh.marker.time);
+        return xpixel >= mh.xscale.range[0] && xpixel <= mh.xscale.range[1];
       });
     // marker overlay
     const mythis = this;
@@ -1210,7 +1210,7 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .classed("marker", true) // translate so marker time is zero
       .attr("transform", function (mh: MarkerHolderType) {
-        const textx = mh.xscale(mh.marker.time.toJSDate());
+        const textx = mh.xscale.for(mh.marker.time);
         return "translate(" + textx + "," + 0 + ")";
       })
       .each(function (mh: MarkerHolderType) {
