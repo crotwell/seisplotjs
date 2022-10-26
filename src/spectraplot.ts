@@ -288,8 +288,7 @@ export class SpectraPlot extends HTMLElement {
 
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
 
-    while (wrapper.firstChild) {
-      // @ts-ignore
+    while (wrapper.lastChild) {
       wrapper.removeChild(wrapper.lastChild);
     }
 

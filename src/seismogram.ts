@@ -1096,12 +1096,11 @@ export class SeismogramDisplayData {
 
   cloneWithNewSeismogram(seis: Seismogram | null): SeismogramDisplayData {
     const out = new SeismogramDisplayData(this.timeRange);
+    const handled = ["_seismogram", "_statsCache", "channelCodesHolder", "_sourceId"];
     Object.getOwnPropertyNames(this).forEach(name => {
-      if (name === "_seismogram") {
-        out._seismogram = seis; // @ts-ignore
-      } else if (DateTime.isDateTime(this[name])) {
+      if (handled.find(n => name === n)) {
+        // handled below
         // @ts-ignore
-        out[name] = this[name]; // @ts-ignore
       } else if (Array.isArray(this[name])) {
         // @ts-ignore
         out[name] = this[name].slice();
@@ -1284,7 +1283,6 @@ export function findMinMaxOverTimeRange(
         if (ampCentering === AMPLITUDE_MODE.Mean) {
           middle = cutSeis.mean();
           halfWidth = Math.max((middle-countMinMax.min), (countMinMax.max-middle));
-          console.log(`findMinMaxOverTimeRange Mean mid: ${middle}  hw: ${halfWidth}`)
         } else {
           // Raw or MinMax
           middle = countMinMax.middle;

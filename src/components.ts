@@ -114,8 +114,7 @@ export class ChannelListChooser extends HTMLElement {
     if (shadow === null) {
       shadow = this.attachShadow({mode: 'open'});
     }
-    while (shadow.firstChild) {
-      // @ts-ignore
+    while (shadow.lastChild) {
       shadow.removeChild(shadow.lastChild);
     }
     const wrapper = document.createElement('div');
@@ -396,8 +395,7 @@ export class LatLonRadiusEl extends HTMLElement {
     if (shadow === null) {
       shadow = this.attachShadow({mode: 'open'});
     }
-    while (shadow.firstChild) {
-      // @ts-ignore
+    while (shadow.lastChild) {
       shadow.removeChild(shadow.lastChild);
     }
     const style = shadow.appendChild(document.createElement('style'));
