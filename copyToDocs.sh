@@ -3,13 +3,13 @@
 # exit on first fail exit code
 set -e
 
-npm_package_version="3.0.0-alpha.1"
+npm_package_version="3.0.0-alpha.4"
 
 if [ ! -e docs ]; then
   mkdir docs
 fi
 
-rm -f docs/seisplotjs_*_standalone.mjs 
+rm -f docs/seisplotjs_*_standalone.mjs
 cp dist/seisplotjs_${npm_package_version}_standalone.mjs docs/.
 
 cd docs

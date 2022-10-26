@@ -5,7 +5,7 @@ import {
   seismogram, seismograph,
   seismographconfig,
   stationxml,
-  util, luxon} from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
+  util, luxon} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 // snip start mapcss
 const mymap = document.querySelector('sp-station-event-map');

@@ -13,7 +13,7 @@ import {
   sorting,
   stationxml,
   traveltime,
-  util, luxon} from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
+  util, luxon} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 const mymap = document.querySelector('sp-station-event-map');
 
 

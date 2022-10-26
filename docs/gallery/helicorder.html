@@ -21,9 +21,9 @@
 
   <script type="module">
 
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
     let dataArray = new Float32Array(1000).map(function(d, i) {
       return Math.sin(2*Math.PI*i/100) * 100;
+    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
     });
     let sampleRate = .1;
     let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');

@@ -3,7 +3,7 @@ import {
   fdsndataselect,
   seismogram, seismograph,
   seismographconfig, util, luxon
-} from '../seisplotjs_3.0.0-alpha.3_standalone.mjs';
+} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 let timeWindow = util.startDuration('2019-07-06T03:19:53Z', 1800);
 let dsQuery = new fdsndataselect.DataSelectQuery();
