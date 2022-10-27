@@ -13,7 +13,7 @@ const DEFAULT_FIXED_AMP = 10000;
 let state = {
   netCodeList: ['CO','N4'],
   stationList: staList,
-  bandCodeList: ['H'],
+  bandCodeList: ['H', 'L'],
   instCodeList: ['H', 'N'],
   orientationCodeList: ['Z','N','E','1','2'],
   netCode: 'CO',
