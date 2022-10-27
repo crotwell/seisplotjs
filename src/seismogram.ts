@@ -493,7 +493,6 @@ export class SeismogramDisplayData {
   markerList: Array<MarkerType>;
   traveltimeList: Array<TraveltimeArrivalType>;
   channel: Channel | null;
-  channelCodesHolder: NslcId | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
   timeRange: Interval;
@@ -513,7 +512,6 @@ export class SeismogramDisplayData {
     this.markerList = [];
     this.traveltimeList = [];
     this.channel = null;
-    this.channelCodesHolder = null;
     this._instrumentSensitivity = null;
     this.quakeList = [];
     this.timeRange = timeRange;
@@ -700,14 +698,7 @@ export class SeismogramDisplayData {
    * @returns network code
    */
   get networkCode(): string {
-    let out: string|null = null;
-    if (isDef(this.channel)) {
-      out = this.channel.networkCode;
-    } else if (isDef(this._seismogram)) {
-      out = this._seismogram.networkCode;
-    } else if (isDef(this.channelCodesHolder)) {
-      out = this.channelCodesHolder.networkCode;
-    }
+    let out = this.sourceId.networkCode;
     if ( ! isDef(out)) {
       out = "unknown";
     }
@@ -721,14 +712,7 @@ export class SeismogramDisplayData {
    * @returns station code
    */
   get stationCode(): string {
-    let out: string|null = null;
-    if (isDef(this.channel)) {
-      out = this.channel.stationCode;
-    } else if (isDef(this._seismogram)) {
-      out = this._seismogram.stationCode;
-    } else if (isDef(this.channelCodesHolder)) {
-      out = this.channelCodesHolder.stationCode;
-    }
+    let out = this.sourceId.stationCode;
     if ( ! isDef(out)) {
       out = "unknown";
     }
@@ -742,14 +726,7 @@ export class SeismogramDisplayData {
    * @returns location code
    */
   get locationCode(): string {
-    let out: string|null = null;
-    if (isDef(this.channel)) {
-      out = this.channel.locationCode;
-    } else if (isDef(this._seismogram)) {
-      out = this._seismogram.locationCode;
-    } else if (isDef(this.channelCodesHolder)) {
-      out = this.channelCodesHolder.locationCode;
-    }
+    let out = this.sourceId.locationCode;
     if ( ! isDef(out)) {
       out = "unknown";
     }
@@ -763,14 +740,7 @@ export class SeismogramDisplayData {
    * @returns channel code
    */
   get channelCode(): string {
-    let out: string|null = null;
-    if (isDef(this.channel)) {
-      out = this.channel.channelCode;
-    } else if (isDef(this._seismogram)) {
-      out = this._seismogram.channelCode;
-    } else if (isDef(this.channelCodesHolder)) {
-      out = this.channelCodesHolder.channelCode;
-    }
+    let out = this.sourceId.formChannelCode();
     if ( ! isDef(out)) {
       out = "unknown";
     }
@@ -783,21 +753,17 @@ export class SeismogramDisplayData {
    *
    * @returns FDSN source id
    */
-  get sourceId(): FDSNSourceId | null {
+  get sourceId(): FDSNSourceId {
     if (isDef(this.channel)) {
       return this.channel.sourceId;
     } else if (isDef(this._seismogram)) {
       return this._seismogram.sourceId;
     } else if (isDef(this._sourceId)) {
       return this._sourceId;
-    } else if(isDef(this.channelCodesHolder)) {
-      return FDSNSourceId.fromNslc(this.networkCode,
-        this.stationCode,
-        this.locationCode,
-        this.channelCode);
     } else {
-      return null;
-      //throw new Error("unable to create Id, neither channel, channelCodesHolder nor seismogram");
+      // should not happen
+      return FDSNSourceId.createUnknown();
+      //throw new Error("unable to create Id, neither channel, _sourceId nor seismogram");
     }
   }
 
@@ -1067,7 +1033,7 @@ export class SeismogramDisplayData {
 
   cloneWithNewSeismogram(seis: Seismogram | null): SeismogramDisplayData {
     const out = new SeismogramDisplayData(this.timeRange);
-    const handled = ["_seismogram", "_statsCache", "channelCodesHolder", "_sourceId"];
+    const handled = ["_seismogram", "_statsCache", "_sourceId"];
     Object.getOwnPropertyNames(this).forEach(name => {
       if (handled.find(n => name === n)) {
         // handled below
@@ -1082,14 +1048,10 @@ export class SeismogramDisplayData {
     });
     out.seismogram = seis;
     out._statsCache = null;
-    out.channelCodesHolder = this.channelCodesHolder;
     if (!isDef(out._seismogram) && !isDef(out.channel)) {
       // so we con't forget our channel
       if (this.sourceId) {
         out._sourceId = this.sourceId.clone();
-      }
-      if (this._seismogram && this._seismogram.sourceId) {
-        out.channelCodesHolder = this._seismogram.sourceId.asNslc();
       }
     }
     return out;

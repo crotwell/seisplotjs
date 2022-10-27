@@ -119,13 +119,13 @@ export class MSeedArchive {
             dataRecords: pArray[1],
           };
         });
-      } else if (isDef(ct.channelCodesHolder)) {
+      } else if (isDef(ct.sourceId)) {
         const request =  ct;
         const dataRecords = this.loadData(
-            ct.channelCodesHolder.networkCode,
-            ct.channelCodesHolder.stationCode,
-            ct.channelCodesHolder.locationCode,
-            ct.channelCodesHolder.channelCode,
+            ct.sourceId.networkCode,
+            ct.sourceId.stationCode,
+            ct.sourceId.locationCode,
+            ct.sourceId.formChannelCode(),
             ct.startTime,
             ct.endTime,
           );
