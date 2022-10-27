@@ -252,6 +252,7 @@ export class Seismogram {
         this.endTime > seismogram.endTime ? this.endTime : seismogram.endTime;
 
       this._segmentArray.push(seismogram);
+      this._statsCache = null;
     }
   }
 
@@ -660,6 +661,7 @@ export class SeismogramDisplayData {
         this.seismogram = seismogram;
       }
     }
+    this._statsCache = null;
   }
 
   hasChannel(): this is {channel: Channel} {
@@ -1286,6 +1288,8 @@ export function calcMinMax(
         const maxwz = Math.max(0, sdd.max);
         middle = (minwz+maxwz)/2.0;
         halfWidth = (maxwz-minwz)/2.0/sens;
+      } else {
+        throw new Error(`Unknown ampCentering: ${ampCentering}. Must be one of raw, zero, minmax, mean`)
       }
       return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
     }

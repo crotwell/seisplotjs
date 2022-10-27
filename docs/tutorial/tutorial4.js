@@ -118,12 +118,10 @@ loadPromise.then(seismogramDataList => {
   let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
 
   const doGain = true;
-  const centeredAmp = true;
-  let minMax = seismogram.findMinMax([ xSeisData, ySeisData, zSeisData], doGain, centeredAmp);
+  let minMax = seismogram.findMinMax([ xSeisData, ySeisData, zSeisData], doGain);
   let pmSeisConfig = new particlemotion.createParticleMotionConfig(firstSTimeWindow);
   pmSeisConfig.fixedYScale = minMax;
   pmSeisConfig.doGain = doGain;
-  pmSeisConfig.centeredAmp = centeredAmp;
   let pmpA = new particlemotion.ParticleMotion(xSeisData, ySeisData, pmSeisConfig);
   pmdiv.appendChild(pmpA);
   //pmpA.draw();

@@ -33,21 +33,16 @@
     });
     let sampleRate = 20;
     let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
-    const seis = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
-    const seisB = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start);
-    const seisC = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start);
-    seis.seismogram.networkCode = "XX";
-    seis.seismogram.stationCode = "STA";
-    seis.seismogram.locationCode = "00";
-    seis.seismogram.channelCode = "BHZ";
-    seisB.seismogram.networkCode = "XX";
-    seisB.seismogram.stationCode = "STA";
-    seisB.seismogram.locationCode = "00";
-    seisB.seismogram.channelCode = "BHN";
-    seisC.seismogram.networkCode = "XX";
-    seisC.seismogram.stationCode = "STA";
-    seisC.seismogram.locationCode = "00";
-    seisC.seismogram.channelCode = "BHE";
+
+    let sidStr = "FDSN:XX_ABCD_00_B_H_Z";
+    let sid = seisplotjs.fdsnsourceid.FDSNSourceId.parse(sidStr);
+    let esidStr = "FDSN:XX_ABCD_00_B_H_E";
+    let esid = seisplotjs.fdsnsourceid.FDSNSourceId.parse(esidStr);
+    let nsidStr = "FDSN:XX_ABCD_00_B_H_N";
+    let nsid = seisplotjs.fdsnsourceid.FDSNSourceId.parse(nsidStr);
+    const seis = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start, sid);
+    const seisB = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, nsid);
+    const seisC = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start, esid);
     const seisConfig = seisplotjs.particlemotion.createParticleMotionConfig();
     seisConfig.centeredAmp = false;
     console.log(`manual seisconfig: ${seisConfig.configId}`)

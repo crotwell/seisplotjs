@@ -12,7 +12,6 @@ seisPlotConfig.linkedTimeScale.offset = seisplotjs.luxon.Duration.fromMillis(-1*
 seisPlotConfig.linkedTimeScale.duration = duration;
 seisPlotConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
 seisPlotConfig.doGain = true;
-seisPlotConfig.centeredAmp = false;
 let graphList = new Map();
 let numPackets = 0;
 let paused = false;
@@ -47,7 +46,7 @@ const packetHandler = function(packet) {
         graphList.set(codes, seisPlot);
         console.log(`new plot: ${codes}`)
       } else {
-        seisPlot.seisData[0].seismogram.append(seisSegment);
+        seisPlot.seisData[0].append(seisSegment);
         seisPlot.recheckAmpScaleDomain();
       }
       seisPlot.draw();
@@ -138,8 +137,7 @@ let toggleConnect = function() {
         return datalink.infoStreams();
       }).then(response => {
         addToDebug(`info streams response: ${response}`)
-        let hhzStream = response.streams.find(s=> s.name === "CO_JSC_00_HHZ/MSEED");
-        return datalink.positionAfter(hhzStream.latestPacketDataEndTime.plus({second: 10}));
+        return datalink.positionAfter(timeWindow.start);
       }).then(response => {
         if (response.isError()) {
           addToDebug(`Oops, positionAfter response is not OK, ignore... ${response}`);

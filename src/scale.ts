@@ -4,10 +4,10 @@ import {Duration} from "luxon";
 
 /** enum for amplitude modes, RAW, ZERO, MINMAX, MEAN */
 export enum AMPLITUDE_MODE {
-  Raw = "RAW",       // raw values, no centering
-  Zero = "ZERO",     // same as Raw, but also includes zero
-  MinMax = "MINMAX", // centered on midpoint of min-max
-  Mean = "MEAN",     // centered on mean
+  Raw = "raw",       // raw values, no centering
+  Zero = "zero",     // same as Raw, but also includes zero
+  MinMax = "minmax", // centered on midpoint of min-max
+  Mean = "mean",     // centered on mean
 }
 
 let _lastId = 0;

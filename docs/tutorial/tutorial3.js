@@ -57,15 +57,13 @@ Promise.all( [ quakePromise, stationsPromise ] )
 // snip start seismogramplot
 }).then( seismogramDataList => {
   seismogramDataList.forEach(sdd => {
-    sdd.processSeismogram(s => filter.rMean(s));
+    sdd.seismogram = filter.rMean(sdd.seismogram);
   });
   let graph = document.querySelector('sp-seismograph');
 
   let seisConfigGain = new seismographconfig.SeismographConfig();
   seisConfigGain.doGain = true;
-  seisConfigGain.amplitudeMode = "Mean";
-  seisConfigGain.linkedAmplitudeScale.offset
-  //graph.amp_scalable.middle = 0;
+  seisConfigGain.amplitudeMode = "mean";
   graph.seismographConfig = seisConfigGain;
   graph.seisData = seismogramDataList
 }).catch( function(error) {
