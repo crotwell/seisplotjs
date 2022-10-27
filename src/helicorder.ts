@@ -142,7 +142,7 @@ export class Helicorder extends SeisPlotElement {
    * draws, or redraws, the helicorder.
    */
   draw() {
-    this.heliConfig.lineSeisConfig.centeredAmp = this.heliConfig.centeredAmp;
+    this.heliConfig.lineSeisConfig.amplitudeMode = this.heliConfig.amplitudeMode;
     this.drawSeismograms();
   }
 
@@ -435,7 +435,6 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.margin.left = 37;
     this.lineSeisConfig.margin.right = 37;
     this.lineSeisConfig.wheelZoom = false;
-    this.lineSeisConfig.centeredAmp = true;
   }
   static fromSeismographConfig(seisConfig: SeismographConfig): HelicorderConfig {
     if (! seisConfig.fixedTimeScale) {

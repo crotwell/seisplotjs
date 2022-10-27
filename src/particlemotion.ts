@@ -162,7 +162,7 @@ export class ParticleMotion extends SeisPlotElement {
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.yScaleRmean = d3.scaleLinear();
 
-    if (this.seismographConfig.centeredAmp) {
+    if (this.seismographConfig.isCenteredAmp()) {
       this.xAxis = d3
         .axisBottom(this.xScaleRmean)
         .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
@@ -431,14 +431,14 @@ export class ParticleMotion extends SeisPlotElement {
 
     const xNiceMinMax = this.xScale.domain();
     const xHalfNice = (xNiceMinMax[1] - xNiceMinMax[0]) / 2;
-    if (this.seismographConfig.centeredAmp) {
+    if (this.seismographConfig.isCenteredAmp()) {
       this.xScaleRmean.domain([-1 * xHalfNice, xHalfNice]);
     } else {
       this.xScaleRmean.domain(this.xScale.domain());
     }
     const yNiceMinMax = this.yScale.domain();
     const yHalfNice = (yNiceMinMax[1] - yNiceMinMax[0]) / 2;
-    if (this.seismographConfig.centeredAmp) {
+    if (this.seismographConfig.isCenteredAmp()) {
       this.yScaleRmean.domain([-1 * yHalfNice, yHalfNice]);
     } else {
       this.yScaleRmean.domain(this.yScale.domain());

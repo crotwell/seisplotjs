@@ -1238,66 +1238,41 @@ export function findMinMax(
   doGain = false,
   ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
 ): MinMaxable {
-  return sddList
-    .map(sdd => {
-      let sens = 1.0;
-      if (doGain && sdd.sensitivity) {
-        sens = sdd.sensitivity.sensitivity;
-      }
-      let middle = 0;
-      if (ampCentering === AMPLITUDE_MODE.MinMax) {
-        middle = sdd.middle;
-      } else if (ampCentering === AMPLITUDE_MODE.Mean) {
-        middle = sdd.mean;
-      }
-      const halfWidth = Math.max((middle-sdd.min)/sens, (sdd.max-middle)/sens);
-      return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
-    })
-    .reduce(function (p, v) {
-      return p ? p.union(v) : v;
-    });
+  return findMinMaxOverTimeRange(sddList, null, doGain, ampCentering);
 }
-
-const initial_minAmp = Number.MAX_SAFE_INTEGER;
-const initial_maxAmp = -1 * initial_minAmp;
 
 export function findMinMaxOverTimeRange(
   sddList: Array<SeismogramDisplayData>,
-  timeRange: Interval,
+  timeRange: Interval | null = null,
   doGain = false,
   ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
 ): MinMaxable {
   if (sddList.length === 0) { return new MinMaxable(-1, 1); }
   const minMaxArr = sddList.map(sdd => {
-    if (sdd.seismogram) {
-      const cutSeis = sdd.seismogram.cut(timeRange);
-
-      if (cutSeis) {
-        const countMinMax = cutSeis.findMinMax();
-        let sens = 1.0;
-        if (doGain && sdd.sensitivity) {
-          sens = sdd.sensitivity.sensitivity;
-        }
-        let middle = 0;
-        let halfWidth = 0;
-        if (ampCentering === AMPLITUDE_MODE.Mean) {
-          middle = cutSeis.mean();
-          halfWidth = Math.max((middle-countMinMax.min), (countMinMax.max-middle));
-        } else {
-          // Raw or MinMax
-          middle = countMinMax.middle;
-          halfWidth = countMinMax.halfWidth;
-        }
-        return new MinMaxable((middle-halfWidth)/sens, (middle+halfWidth)/sens);
-      }
-    }
-
-    return new MinMaxable(initial_minAmp, initial_maxAmp);
-  });
-  return minMaxArr
+    return calcMinMax(sdd, timeRange, doGain, ampCentering);
+  }).filter(x => x) // remove nulls
     .reduce(function (p, v) {
-      return p ? p.union(v) : v;
-    });
+      if (ampCentering === AMPLITUDE_MODE.Raw || ampCentering === AMPLITUDE_MODE.Zero) {
+        return p ? (v ? p.union(v): p) : v;
+      } else {
+        // non-Raw mode assumes only halfwidth matters, middle will be zeroed
+        let hw=0;
+        if (p && v) {
+          hw = Math.max(p.halfWidth, v.halfWidth);
+        } else if (p) {
+          hw = p.halfWidth;
+        } else if (v) {
+          hw = v.halfWidth;
+        } else {
+          hw = 0;
+        }
+        return MinMaxable.fromMiddleHalfWidth(0, hw);
+      }
+    }, null);
+  if (minMaxArr) {
+    return minMaxArr;
+  }
+  return new MinMaxable(-1, 1); // no data, just return something.
 }
 
 export function findMinMaxOverRelativeTimeRange(
@@ -1312,12 +1287,71 @@ export function findMinMaxOverRelativeTimeRange(
   }
   const minMaxArr = sddList.map(sdd => {
     const timeRange = sdd.relativeTimeWindow(startOffset, duration);
-    return findMinMaxOverTimeRange([sdd], timeRange, doGain, ampCentering);
-  });
-  return minMaxArr
+    return calcMinMax(sdd, timeRange, doGain, ampCentering);
+  }).filter(x => x) // remove nulls
     .reduce(function (p, v) {
-      return p ? p.union(v) : v;
-    });
+      // Raw and Zero are actual values, no centering
+      if (ampCentering === AMPLITUDE_MODE.Raw || ampCentering === AMPLITUDE_MODE.Zero) {
+        return p ? (v ? p.union(v): p) : v;
+      } else {
+        // non-Raw mode assumes only halfwidth matters, middle will be zeroed
+        let hw=0;
+        if (p && v) {
+          hw = Math.max(p.halfWidth, v.halfWidth);
+        } else if (p) {
+          hw = p.halfWidth;
+        } else if (v) {
+          hw = v.halfWidth;
+        } else {
+          hw = 0;
+        }
+        return MinMaxable.fromMiddleHalfWidth(0, hw);
+      }
+    }, null);
+  if (minMaxArr) {
+    return minMaxArr;
+  }
+  return new MinMaxable(-1, 1); // no data, just return something.
+}
+
+export function calcMinMax(
+      sdd: SeismogramDisplayData,
+      timeRange: Interval | null = null,
+      doGain = false,
+      ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
+  ): MinMaxable | null {
+  if (sdd.seismogram) {
+    let cutSeis;
+    if (timeRange) {
+      cutSeis = sdd.seismogram.cut(timeRange);
+    } else {
+      cutSeis = sdd.seismogram;
+    }
+
+    if (cutSeis) {
+      let sens = 1.0;
+      if (doGain && sdd.sensitivity) {
+        sens = sdd.sensitivity.sensitivity;
+      }
+      let middle = 0;
+      let halfWidth = 0;
+      if (ampCentering === AMPLITUDE_MODE.MinMax || ampCentering === AMPLITUDE_MODE.Raw) {
+        middle = sdd.middle;
+        halfWidth = Math.max((middle-sdd.min)/sens, (sdd.max-middle)/sens);
+      } else if (ampCentering === AMPLITUDE_MODE.Mean) {
+        middle = sdd.mean;
+        halfWidth = Math.max((middle-sdd.min)/sens, (sdd.max-middle)/sens);
+      } else if (ampCentering === AMPLITUDE_MODE.Zero) {
+        const minwz = Math.min(0, sdd.min);
+        const maxwz = Math.max(0, sdd.max);
+        middle = (minwz+maxwz)/2.0;
+        halfWidth = (maxwz-minwz)/2.0/sens;
+      }
+      return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
+    }
+  }
+  // otherwise
+  return null;
 }
 
 export function findStartEndOfSeismograms(

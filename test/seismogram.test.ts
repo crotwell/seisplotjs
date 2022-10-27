@@ -271,7 +271,7 @@ test("cut clone sdd test", () => {
 });
 
 test("find minmax test", () => {
-    const yValues = new Int32Array([3, 0, 3]);
+    const yValues = new Float32Array([3, 0, 3]);
     const seisAMean = yValues.reduce((acc, cur) => acc+cur, 0)/yValues.length;
     const sampleRate = 20.0;
     const startTime = isoToDateTime("2013-02-08T09:30:26");
@@ -283,6 +283,8 @@ test("find minmax test", () => {
                                         sddA.timeRange,
                                         false,
                                         ampMode);
-    expect(minMax.min).toEqual(seisAMean); // seisMean to zero
-    expect(minMax.max).toEqual(seisAMean*2);
+    console.log(`find minmax test: minMax: ${minMax}`)
+    expect(minMax.min).toEqual(-1*seisAMean); // seisMean to zero
+    expect(minMax.max).toEqual(   seisAMean);
+    expect(minMax.middle).toEqual(0);
 });

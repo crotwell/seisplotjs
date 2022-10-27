@@ -106,7 +106,6 @@ export class SeismographConfig {
   lineColors: Array<string>;
   lineWidth: number;
   wheelZoom: boolean;
-  centeredAmp: boolean;
   amplitudeMode: AMPLITUDE_MODE;
   doGain: boolean;
   windowAmp: boolean;
@@ -152,8 +151,7 @@ export class SeismographConfig {
     this._ySublabelHandlebarsCompiled = null;
     this.ySublabelTrans = 15;
     this.ySublabelIsUnits = true;
-    this.centeredAmp = true;
-    this.amplitudeMode = AMPLITUDE_MODE.Raw;
+    this.amplitudeMode = AMPLITUDE_MODE.MinMax;
     this.doGain = true;
     this.windowAmp = true;
     this._fixedAmplitudeScale = null;
@@ -274,6 +272,28 @@ export class SeismographConfig {
   enableLinkedAmplitude() {
     // setter handles details...
     this.linkedAmplitudeScale = new LinkedAmplitudeScale();
+  }
+  amplitudeRaw() {
+    this.amplitudeMode = AMPLITUDE_MODE.Raw;
+  }
+  amplitudeMinMax() {
+    this.amplitudeMode = AMPLITUDE_MODE.MinMax;
+  }
+  amplitudeMean() {
+    this.amplitudeMode = AMPLITUDE_MODE.Mean;
+  }
+  amplitudeWithZero() {
+    this.amplitudeMode = AMPLITUDE_MODE.Zero;
+  }
+  /**
+   * True if the amplitude is "centered".
+   *
+   * Both MinMax and Mean center the amplitude, Raw and Zero do not.
+   * @return [description]
+   */
+  isCenteredAmp() {
+    return this.amplitudeMode === AMPLITUDE_MODE.MinMax
+            || this.amplitudeMode === AMPLITUDE_MODE.Mean;
   }
 
   get fixedTimeScale(): null | Interval {

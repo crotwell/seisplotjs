@@ -64,7 +64,7 @@ test("gain scale test", () => {
 });
 
 test("zero mean scale test", () => {
-  const yValues = new Int32Array([3, 0, 3]);
+  const yValues = new Float32Array([3, 0, 3]);
   const seisAMean = yValues.reduce((acc, cur) => acc+cur, 0)/yValues.length;
   const sampleRate = 20.0;
   const startTime = isoToDateTime("2013-02-08T09:30:26");
@@ -72,22 +72,23 @@ test("zero mean scale test", () => {
   const seisA = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
   const sddA = SeismogramDisplayData.fromSeismogram(seisA);
 
-  const maxB = 10;
-  const yValuesB = new Int32Array([maxB, 0, maxB]);
+  const maxB = 30;
+  const yValuesB = new Float32Array([maxB, 0, maxB]);
   const seisBMean = yValuesB.reduce((acc, cur) => acc+cur, 0)/yValuesB.length;
   const seisB = Seismogram.createFromContiguousData(yValuesB, sampleRate, startTime);
   const sddB = SeismogramDisplayData.fromSeismogram(seisB);
+  const maxMeanVal = Math.max(seisAMean, seisBMean);
 
   const seisConfig = new SeismographConfig();
+  seisConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
   seisConfig.amplitudeMode = AMPLITUDE_MODE.Mean;
   const graph = new Seismograph([sddA, sddB], seisConfig);
   const linkAmp = seisConfig.linkedAmplitudeScale;
   if (!linkAmp) { throw new Error("linked amp is undef");}
   return Promise.all(linkAmp.recalculate()).then(() => {
-    expect(graph.amp_scalable.middle).toEqual(seisAMean);
-    expect(graph.amp_scalable.middle).toEqual(seisBMean);
-    expect(graph.amp_scalable.halfWidth).toEqual(maxB/2);
-    expect(seisConfig.linkedAmplitudeScale?.halfWidth).toEqual(seisBMean); // 0 to mean is larger
+    // Mean centers, so middle is zero
+    expect(graph.amp_scalable.halfWidth).toEqual(maxMeanVal); // nice rounds
+    expect(linkAmp.halfWidth).toEqual(maxMeanVal); // 0 to mean is larger
   });
 });
 

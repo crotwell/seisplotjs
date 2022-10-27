@@ -20,7 +20,6 @@ test("simple seismographconfig clone", () => {
   seisConfig.ySublabel = "Boo hoo";
   seisConfig.ySublabelTrans = 17;
   seisConfig.ySublabelIsUnits = false;
-  seisConfig.centeredAmp = false;
   seisConfig.doGain = false;
   seisConfig.fixedAmplitudeScale = [1,2];
   seisConfig.markerTextOffset = .80;

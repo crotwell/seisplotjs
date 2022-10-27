@@ -2,11 +2,12 @@
 import {isDef} from "./util";
 import {Duration} from "luxon";
 
-/** enum for amplitude modes, RAW, MINMAX, MEAN */
+/** enum for amplitude modes, RAW, ZERO, MINMAX, MEAN */
 export enum AMPLITUDE_MODE {
-  Raw = "RAW",
-  MinMax = "MINMAX",
-  Mean = "MEAN",
+  Raw = "RAW",       // raw values, no centering
+  Zero = "ZERO",     // same as Raw, but also includes zero
+  MinMax = "MINMAX", // centered on midpoint of min-max
+  Mean = "MEAN",     // centered on mean
 }
 
 let _lastId = 0;
@@ -69,8 +70,12 @@ export class MinMaxable {
 export class AmplitudeScalable {
   minMax: MinMaxable;
 
-  constructor(minMax: MinMaxable) {
-    this.minMax = minMax;
+  constructor(minMax?: MinMaxable) {
+    if (minMax) {
+      this.minMax = minMax;
+    } else {
+      this.minMax = new MinMaxable(0,0);
+    }
   }
 
   // eslint-disable-next-line no-unused-vars
