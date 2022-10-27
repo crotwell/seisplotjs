@@ -5,6 +5,7 @@
  */
 
 import {DateTime, Duration} from "luxon";
+import { FDSNSourceId} from "./fdsnsourceid";
 import {SeismogramSegment} from "./seismogramsegment";
 import {Seismogram} from "./seismogram";
 import {EncodedDataSegment} from "./seedcodec";
@@ -565,11 +566,11 @@ export function createSeismogramSegment(
     contigData,
     contig[0].header.sampleRate,
     contig[0].header.startTime,
+    FDSNSourceId.fromNslc(contig[0].header.netCode,
+                          contig[0].header.staCode,
+                          contig[0].header.locCode,
+                          contig[0].header.chanCode)
   );
-  out.networkCode = contig[0].header.netCode;
-  out.stationCode = contig[0].header.staCode;
-  out.locationCode = contig[0].header.locCode;
-  out.channelCode = contig[0].header.chanCode;
   return out;
 }
 

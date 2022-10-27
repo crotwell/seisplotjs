@@ -151,9 +151,11 @@ function rotateSeismogramSegment(
 
   const outSeisRad = seisA.cloneWithNewData(y);
   const outSeisTan = seisA.cloneWithNewData(x);
-  if (seisA.chanCode) {
-    outSeisRad.channelCode = seisA.chanCode.slice(0, 2) + "R";
-    outSeisTan.channelCode = seisA.chanCode.slice(0, 2) + "T";
+  if (seisA.sourceId) {
+    outSeisRad.sourceId = seisA.sourceId.clone();
+    outSeisRad.sourceId.subsourceCode = "R";
+    outSeisTan.sourceId = seisA.sourceId.clone()
+    outSeisTan.sourceId.subsourceCode = "T";
   }
   const out = {
     radial: outSeisRad,
@@ -263,8 +265,7 @@ function vectorMagnitudeSegment(
   if (!isDef(orientCode)) {
     orientCode = "M";
   }
-  if (seisA.chanCode) {
-    outSeis.channelCode = seisA.chanCode.slice(0, 2) + orientCode;
-  }
+  outSeis.sourceId = seisA.sourceId.clone();
+  outSeis.sourceId.subsourceCode = orientCode;
   return outSeis;
 }

@@ -814,12 +814,8 @@ export function createSeismogramSegment(
     contigData,
     contig[0].header.sampleRate,
     contig[0].header.start,
+    FDSNSourceId.parse(contig[0].header.identifier)
   );
-  const codes = contig[0].header.identifier.slice(5).split("_");
-  out.networkCode = codes[0];
-  out.stationCode = codes[1];
-  out.locationCode = codes[2];
-  out.channelCode = codes[3] + codes[4] + codes[5];
   return out;
 }
 

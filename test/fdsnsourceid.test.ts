@@ -17,6 +17,12 @@ test("simple FDSN sourceId", () => {
   expect(sid.subsourceCode).toBe(subsourceCode);
 });
 
+test("test equals", () => {
+  let sidA = FDSNSourceId.createUnknown(20);
+  let sidB = FDSNSourceId.createUnknown(20);
+  expect(sidA).toEqual(sidB);
+  expect(sidA.equals(sidB)).toBeTrue();
+})
 
 test("simple FDSN station sourceId", () => {
   let netCode = "XX";

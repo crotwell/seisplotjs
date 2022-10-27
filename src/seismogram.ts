@@ -83,28 +83,8 @@ export class Seismogram {
   }
 
   checkSimilar(f: SeismogramSegment, s: SeismogramSegment) {
-    if (s.networkCode !== f.networkCode) {
-      throw new Error(
-        "NetworkCode not same: " + s.networkCode + " !== " + f.networkCode,
-      );
-    }
-
-    if (s.stationCode !== f.stationCode) {
-      throw new Error(
-        "StationCode not same: " + s.stationCode + " !== " + f.stationCode,
-      );
-    }
-
-    if (s.locationCode !== f.locationCode) {
-      throw new Error(
-        "LocationCode not same: " + s.locationCode + " !== " + f.locationCode,
-      );
-    }
-
-    if (s.channelCode !== f.channelCode) {
-      throw new Error(
-        "ChannelCode not same: " + s.channelCode + " !== " + f.channelCode,
-      );
+    if ( ! s.sourceId.equals(f.sourceId)) {
+      throw new Error(`SourceId not same: ${s.sourceId} !== ${f.sourceId}`);
     }
 
     if (s.yUnit !== f.yUnit) {
@@ -189,35 +169,19 @@ export class Seismogram {
   }
 
   get networkCode(): string|null {
-    return this._segmentArray[0].networkCode;
-  }
-
-  set networkCode(value: string|null) {
-    this._segmentArray.forEach(s => (s.networkCode = value));
+    return this.sourceId.networkCode;
   }
 
   get stationCode(): string|null {
-    return this._segmentArray[0].stationCode;
-  }
-
-  set stationCode(value: string|null) {
-    this._segmentArray.forEach(s => (s.stationCode = value));
+    return this.sourceId.stationCode;
   }
 
   get locationCode(): string|null {
-    return this._segmentArray[0].locationCode;
-  }
-
-  set locationCode(value: string|null) {
-    this._segmentArray.forEach(s => (s.locationCode = value));
+    return this.sourceId.locationCode;
   }
 
   get channelCode(): string|null {
-    return this._segmentArray[0].channelCode;
-  }
-
-  set channelCode(value: string|null) {
-    this._segmentArray.forEach(s => (s.channelCode = value));
+    return this.sourceId.formChannelCode();
   }
 
   /**
@@ -225,8 +189,12 @@ export class Seismogram {
    *
    * @returns FDSN source id
    */
-  get sourceId(): FDSNSourceId | null {
+  get sourceId(): FDSNSourceId {
     return this._segmentArray[0].sourceId;
+  }
+
+  set sourceId(sid: FDSNSourceId) {
+    this._segmentArray.forEach(s => (s.sourceId = sid));
   }
 
   get sampleRate(): number {
@@ -487,8 +455,9 @@ export class Seismogram {
       | Float64Array,
     sampleRate: number,
     startTime: DateTime,
+    sourceId?: FDSNSourceId,
   ): Seismogram {
-    const seg = new SeismogramSegment(yArray, sampleRate, startTime);
+    const seg = new SeismogramSegment(yArray, sampleRate, startTime, sourceId);
     return new Seismogram([seg]);
   }
 }
@@ -574,9 +543,11 @@ export class SeismogramDisplayData {
         | Float32Array
         | Float64Array,
       sampleRate: number,
-      startTime: DateTime,): SeismogramDisplayData {
+      startTime: DateTime,
+      sourceId?: FDSNSourceId,
+    ): SeismogramDisplayData {
     return SeismogramDisplayData.fromSeismogram(
-      Seismogram.createFromContiguousData(yArray, sampleRate, startTime));
+      Seismogram.createFromContiguousData(yArray, sampleRate, startTime, sourceId));
   }
   static fromChannelAndTimeWindow(
     channel: Channel,
@@ -614,7 +585,7 @@ export class SeismogramDisplayData {
     const out = new SeismogramDisplayData(
       Interval.fromDateTimes(startTime, endTime),
     );
-    out.channelCodesHolder = new NslcId(
+    out._sourceId = FDSNSourceId.fromNslc(
       networkCode,
       stationCode,
       locationCode,
@@ -1114,7 +1085,9 @@ export class SeismogramDisplayData {
     out.channelCodesHolder = this.channelCodesHolder;
     if (!isDef(out._seismogram) && !isDef(out.channel)) {
       // so we con't forget our channel
-      out._sourceId = this.sourceId;
+      if (this.sourceId) {
+        out._sourceId = this.sourceId.clone();
+      }
       if (this._seismogram && this._seismogram.sourceId) {
         out.channelCodesHolder = this._seismogram.sourceId.asNslc();
       }
@@ -1210,6 +1183,11 @@ export function findMaxDurationOfType(
     } else if (type === "origin" && sdd.hasQuake()) {
       timeRange = Interval.fromDateTimes(
         sdd.quakeList[0].time,
+        sdd.timeRange.end,
+      );
+    } else if (type === "align" && sdd.alignmentTime) {
+      timeRange = Interval.fromDateTimes(
+        sdd.alignmentTime,
         sdd.timeRange.end,
       );
     } else {

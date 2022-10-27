@@ -28,8 +28,10 @@ export class FDSNSourceId {
     this.sourceCode = sourceCode;
     this.subsourceCode = subsourceCode;
   }
-  static createUnknown(sampRate?: number): FDSNSourceId {
-    return FDSNSourceId.fromNslc("XX", "ABC", "", bandCodeForRate(sampRate)+"YX");
+  static createUnknown(sampRate?: number, source?: string, subsource?: string): FDSNSourceId {
+    let s = source ? source : "Y"
+    let ss = subsource ? subsource : "X"
+    return new FDSNSourceId("XX", "ABC", "", bandCodeForRate(sampRate), s, ss);
   }
   static parse(id: string): FDSNSourceId {
     if (! id.startsWith(FDSN_PREFIX)) {
@@ -63,6 +65,9 @@ export class FDSNSourceId {
     }
     return new FDSNSourceId(net, sta, loc,band,source,subsource);
   }
+  static fromNslcId(nslcId: NslcId): FDSNSourceId {
+    return FDSNSourceId.fromNslc(nslcId.networkCode, nslcId.stationCode, nslcId.locationCode, nslcId.channelCode);
+  }
   static parseNslc(nslc: string, sep = '.'): FDSNSourceId {
     const items = nslc.split(sep);
     if (items.length < 4) {
@@ -85,6 +90,14 @@ export class FDSNSourceId {
     }
     return new NslcId(this.networkCode, this.stationCode, this.locationCode, chanCode);
   }
+  /**
+   * returns a channel code. If this is an old style NSLC, it will be 3 chars,
+   * but if either source or subsouce is more than one char, it will be
+   * delimited by underscores.
+   */
+  formChannelCode(): string {
+    return this.asNslc().channelCode;
+  }
   toString(): string {
     return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
   }
@@ -94,6 +107,10 @@ export class FDSNSourceId {
       return false;
     }
     return this.toString() === other.toString();
+  }
+  clone(): FDSNSourceId {
+    return new FDSNSourceId(this.networkCode, this.stationCode, this.locationCode,
+                            this.bandCode, this.sourceCode, this.subsourceCode);
   }
 }
 

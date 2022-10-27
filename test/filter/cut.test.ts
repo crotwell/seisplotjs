@@ -1,5 +1,6 @@
 // @flow
 
+import {FDSNSourceId} from '../../src/fdsnsourceid';
 import {Seismogram} from '../../src/seismogram';
 import {SeismogramSegment} from '../../src/seismogramsegment';
 import  {isoToDateTime} from '../../src/util';
@@ -11,15 +12,8 @@ test("simple seismogram cut", () => {
   let sampleRate = 1.0;
   let startTime = isoToDateTime('2019-01-01T10:00:00Z');
   let startTimeB = startTime.plus(Duration.fromMillis(1000*yValues.length));
-  let netCode = "XX";
-  let staCode = "ABCD";
-  let locCode = "00";
-  let chanCode = "BHZ";
-  let seg = new SeismogramSegment(yValues, sampleRate, startTime);
-  seg.networkCode = netCode;
-  seg.stationCode = staCode;
-  seg.locationCode = locCode;
-  seg.channelCode = chanCode;
+  let sid = FDSNSourceId.createUnknown(sampleRate, "H", "Z");
+  let seg = new SeismogramSegment(yValues, sampleRate, startTime, sid);
   let segB = seg.cloneWithNewData(yValuesB, startTimeB);
   let cutSeconds = 10;
   let cutBeginWindow = Interval.after(startTime, Duration.fromMillis(1000*cutSeconds));
@@ -34,10 +28,7 @@ test("simple seismogram cut", () => {
   expect(cutSeg.yAtIndex(0)).toEqual(seg.yAtIndex(0));
   expect(cutSeg.sampleRate).toEqual(sampleRate);
   expect(cutSeg.startTime).toEqual(startTime);
-  expect(cutSeg.netCode).toEqual(netCode);
-  expect(cutSeg.staCode).toEqual(staCode);
-  expect(cutSeg.locCode).toEqual(locCode);
-  expect(cutSeg.chanCode).toEqual(chanCode);
+  expect(cutSeg.sourceId).toEqual(sid);
   expect(cutSeg.numPoints).toEqual(cutSeconds+1);
   expect(cutSeg.timeOfSample(0).toISO()).toEqual(startTime.toISO());
   expect(seg.y.length).toEqual(yValues.length);

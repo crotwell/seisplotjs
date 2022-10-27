@@ -40,11 +40,7 @@ export class SeismogramSegment {
   _startTime: DateTime;
   _endTime_cache: null | DateTime;
   _endTime_cache_numPoints: number;
-  _sourceId: FDSNSourceId | null = null;
-  networkCode: string|null = null;
-  stationCode: string|null = null;
-  locationCode: string|null = null;
-  channelCode: string|null = null;
+  _sourceId: FDSNSourceId;
   yUnit: string;
   _highlow: HighLowType|undefined;
 
@@ -56,6 +52,7 @@ export class SeismogramSegment {
       | Float64Array,
     sampleRate: number,
     startTime: DateTime,
+    sourceId?: FDSNSourceId,
   ) {
     if (
       yArray instanceof Int32Array ||
@@ -88,6 +85,7 @@ export class SeismogramSegment {
     this._sampleRate = sampleRate;
     this._startTime = checkStringOrDate(startTime);
     this.yUnit = COUNT_UNIT;
+    this._sourceId = sourceId ? sourceId : FDSNSourceId.createUnknown(sampleRate);
     // to avoid recalc of end time as it is kind of expensive
     this._endTime_cache = null;
     this._endTime_cache_numPoints = 0;
@@ -224,24 +222,20 @@ export class SeismogramSegment {
     return out;
   }
 
-  get netCode(): string|null {
-    return this.networkCode;
+  get networkCode(): string {
+    return this._sourceId.networkCode;
   }
 
-  get staCode(): string|null {
-    return this.stationCode;
+  get stationCode(): string|null {
+    return this._sourceId.stationCode;
   }
 
-  get locId(): string|null {
-    return this.locationCode;
+  get locationCode(): string|null {
+    return this._sourceId.locationCode;
   }
 
-  get locCode(): string|null {
-    return this.locationCode;
-  }
-
-  get chanCode(): string|null {
-    return this.channelCode;
+  get channelCode(): string|null {
+    return this._sourceId.formChannelCode();
   }
 
   /**
@@ -341,12 +335,7 @@ export class SeismogramSegment {
   }
 
   hasCodes(): boolean {
-    return (
-      isDef(this.networkCode) ||
-      isDef(this.stationCode) ||
-      isDef(this.locationCode) ||
-      isDef(this.channelCode)
-    );
+    return isDef(this._sourceId);
   }
 
   /**
@@ -360,12 +349,7 @@ export class SeismogramSegment {
   }
 
   get nslcId(): NslcId {
-    return new NslcId(
-      this.networkCode ? this.networkCode : "",
-      this.stationCode ? this.stationCode : "",
-      (this.locationCode && this.locationCode !== "--") ? this.locationCode : "",
-      this.channelCode ? this.channelCode : ""
-    );
+    return this._sourceId.asNslc();
   }
 
   /**
@@ -388,7 +372,7 @@ export class SeismogramSegment {
 
   seisId(): string {
     return (
-      this.codes() +
+      this.sourceId +
       "_" +
       this.startTime.toISO() +
       "_" +
@@ -403,20 +387,12 @@ export class SeismogramSegment {
    *
    * @returns FDSN source id
    */
-  get sourceId(): FDSNSourceId | null {
-    if (isDef(this._sourceId)) {
-      return this._sourceId;
-    } else {
-      if (!this.channelCode || this.channelCode.length === 0) {
-        // need 3 chars,
-        return null;
-      }
-      return FDSNSourceId.fromNslc(
-        (this.networkCode ? this.networkCode : ""),
-        (this.stationCode ? this.stationCode : ""),
-        (this.locationCode ? this.locationCode : ""),
-        this.channelCode);
-    }
+  get sourceId(): FDSNSourceId  {
+    return this._sourceId;
+  }
+
+  set sourceId(sid: FDSNSourceId) {
+    this._sourceId = sid;
   }
 
 
@@ -445,11 +421,8 @@ export class SeismogramSegment {
       clonedData,
       this.sampleRate,
       clonedStartTime,
+      this._sourceId.clone()
     );
-    out.networkCode = this.networkCode;
-    out.stationCode = this.stationCode;
-    out.locationCode = this.locationCode;
-    out.channelCode = this.channelCode;
     out.yUnit = this.yUnit;
     return out;
   }
