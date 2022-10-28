@@ -128,7 +128,6 @@ svg.seismograph text.title {
   font-weight: bold;
   fill: black;
   color: black;
-  dominant-baseline: hanging;
 }
 
 svg.realtimePlot g.allseismograms path.seispath {

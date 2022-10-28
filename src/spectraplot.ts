@@ -102,7 +102,6 @@ svg.spectra_plot text.title {
   font-weight: bold;
   fill: black;
   color: black;
-  dominant-baseline: hanging;
 }
 
 svg.spectra_plot text.sublabel {

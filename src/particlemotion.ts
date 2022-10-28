@@ -55,7 +55,6 @@ svg text.title {
   font-weight: bold;
   fill: black;
   color: black;
-  dominant-baseline: hanging;
 }
 
 svg path.seispath {

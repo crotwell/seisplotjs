@@ -234,7 +234,7 @@ export function drawTitle(
   }
   textEl.setAttribute("class", "title label");
   textEl.setAttribute("x", "0");
-  textEl.setAttribute("y", "2"); // give little extra space at top, css style as hanging doesn't quite do it
+  textEl.setAttribute("dy", "0.85em");
   textEl.setAttribute("text-anchor", "middle");
   if (!handlebarsInput.seisConfig) {
     handlebarsInput.seisConfig = seismographConfig;
