@@ -252,7 +252,6 @@ export class Seismogram {
         this.endTime > seismogram.endTime ? this.endTime : seismogram.endTime;
 
       this._segmentArray.push(seismogram);
-      this._statsCache = null;
     }
   }
 
