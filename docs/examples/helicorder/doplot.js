@@ -541,7 +541,6 @@ export function updateHeliAmpConfig(hash, heliConfig) {
     heliConfig.fixedAmplitudeScale = [0,0];
     heliConfig.maxVariation = 0;
   }
-  heliConfig.centeredAmp = true;
 }
 
 export function drawSeismograph(hash) {
@@ -574,7 +573,6 @@ export function drawSeismograph(hash) {
   });
   seismographDisp.seisData = sddList;
   let seismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
-  seismographConfig.centeredAmp = true;
   seismographConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
 
   if (hash.config.amp === 'max') {

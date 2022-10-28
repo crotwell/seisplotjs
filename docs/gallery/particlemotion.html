@@ -44,7 +44,6 @@
     const seisB = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, nsid);
     const seisC = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start, esid);
     const seisConfig = seisplotjs.particlemotion.createParticleMotionConfig();
-    seisConfig.centeredAmp = false;
     console.log(`manual seisconfig: ${seisConfig.configId}`)
     const seismographList = (document.querySelectorAll(seisplotjs.particlemotion.PARTICLE_MOTION_ELEMENT));
     seismographList[0].xSeisData = seisB;

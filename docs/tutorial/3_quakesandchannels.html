@@ -342,8 +342,7 @@ Promise.all( [ quakePromise, stationsPromise ] )
       <pre><code class="language-javascript" snippet="seismogramplot">
 }).then( seismogramDataList =&gt; {
   seismogramDataList.forEach(sdd =&gt; {
-    //sdd.seismogram = filter.rMean(sdd.seismogram);
-    console.log(`sdd min: ${sdd.min}  ${sdd.max}`)
+    sdd.seismogram = filter.rMean(sdd.seismogram);
   });
   let graph = document.querySelector('sp-seismograph');
 

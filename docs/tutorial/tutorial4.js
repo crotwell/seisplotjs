@@ -85,7 +85,6 @@ loadPromise.then(seismogramDataList => {
   commonSeisConfig.linkedTimeScale = new scale.LinkedTimeScale();
   commonSeisConfig.wheelZoom = false;
   commonSeisConfig.doGain = true;
-  commonSeisConfig.centeredAmp = false;
   for( let sdd of seismogramDataList) {
     let seisConfig = commonSeisConfig.clone();
     let graph = new seismograph.Seismograph([ sdd ], seisConfig);

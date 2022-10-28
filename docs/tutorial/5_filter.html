@@ -247,7 +247,6 @@ loaderSDDPromise.then((seismogramDataList) =&gt; {
       </p>
       <pre><code class="language-javascript" snippet="gain">
     seisConfig.doGain = false;
-    seisConfig.centeredAmp = false;
     for( let sdd of seismogramDataList) {
       let graph = new seisplotjs.seismograph.Seismograph([sdd],
                                                          seisConfig);

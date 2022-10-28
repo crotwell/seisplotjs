@@ -65,7 +65,6 @@ loaderSDDPromise.then((seismogramDataList) => {
     seisConfig.wheelZoom = false;
 // snip start gain
     seisConfig.doGain = false;
-    seisConfig.centeredAmp = false;
     for( let sdd of seismogramDataList) {
       let graph = new seisplotjs.seismograph.Seismograph([sdd],
                                                          seisConfig);

@@ -55,22 +55,17 @@
     const seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
     seisConfig.isRelativeTime = false;
     seisConfig.doGain = false;
-    seisConfig.centeredAmp = false;
     console.log("PLAIN!!!!")
     const seisConfig_gain = new seisplotjs.seismographconfig.SeismographConfig();
     seisConfig.isRelativeTime = false;
     seisConfig.doGain = false;
-    seisConfig.centeredAmp = false;
     const seisConfig_rmean = new seisplotjs.seismographconfig.SeismographConfig();
     const def_title = seisConfig.title;
     seisConfig.isRelativeTime = false;
     seisConfig.doGain = false;
-    seisConfig.centeredAmp = false;
     seisConfig.title = `Plain: ${def_title}`;
     seisConfig_gain.doGain = true;
-    seisConfig_gain.centeredAmp = false;
     seisConfig_gain.title = `Gain: ${def_title}`;
-    seisConfig_rmean.centeredAmp = true;
     seisConfig_rmean.title = `RMean: ${def_title}`;
     console.log(`manual seisconfig: ${seisConfig.configId}`)
     document.querySelector('sp-seismograph#plain').seismographConfig = seisConfig;
