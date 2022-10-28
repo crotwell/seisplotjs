@@ -117,13 +117,6 @@ export function createEditor(
   );
   createBooleanOptionByKey(
     yLabelDivB.append("span"),
-    "From Mid",
-    "centeredAmp",
-    config,
-    onChange,
-  );
-  createBooleanOptionByKey(
-    yLabelDivB.append("span"),
     "Window",
     "windowAmp",
     config,
