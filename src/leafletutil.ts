@@ -172,12 +172,17 @@ export class QuakeStationMap extends SeisPlotElement {
    * @param  classname  css class name
    */
   quakeAddClass(quake: Quake, classname: string) {
-    const classList = this.quakeClassMap.get(cssClassForQuake(quake));
+    const quakeIdStr = cssClassForQuake(quake);
+    const classList = this.quakeClassMap.get(quakeIdStr);
     if (classList) {
       classList.push(classname);
     } else {
       this.quakeClassMap.set(cssClassForQuake(quake), [classname]);
     }
+    let circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
+    circleList.forEach(c => {
+      c.classList.add(classname);
+    });
   }
   /**
    * Removes a css class from the earthquake circle.
@@ -193,12 +198,8 @@ export class QuakeStationMap extends SeisPlotElement {
       this.quakeClassMap.set(cssClassForQuake(quake), classList);
     }
     let circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
-    circleList.forEach(triangle => {
-      let classList = triangle.getAttribute("class");
-      if (classList) {
-        classList = classList.split(/\s+/).filter(s => s !== classname).join(" ");
-        triangle.setAttribute("class", classList);
-      }
+    circleList.forEach(c => {
+      c.remove(classname);
     });
     if(circleList.length === 0) {
       console.log("didn't find quake to remove clsas")
@@ -244,6 +245,10 @@ export class QuakeStationMap extends SeisPlotElement {
     } else {
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), [classname]);
     }
+    let markerList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
+    markerList.forEach(c => {
+      c.classList.add(classname);
+    });
   }
   /**
    * Removes a css class from the station triangle
@@ -256,13 +261,9 @@ export class QuakeStationMap extends SeisPlotElement {
       classList = classList.filter(v => v !== classname);
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), classList);
     }
-    let triangleList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
-    triangleList.forEach(triangle => {
-      let classList = triangle.getAttribute("class");
-      if (classList) {
-        classList = classList.split(/\s+/).filter(s => s !== classname).join(" ");
-        triangle.setAttribute("class", classList);
-      }
+    let markerList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
+    markerList.forEach(c => {
+      c.classList.remove(classname);
     });
     if(triangleList.length === 0) {
       console.log("didn't find station to remove clsas")
