@@ -15,7 +15,7 @@ import {
   WAY_FUTURE,
 } from "./util";
 import {Complex} from "./oregondsputil";
-import {FDSNSourceId, NetworkSourceId, StationSourceId, NslcId} from "./fdsnsourceid";
+import {FDSNSourceId, NetworkSourceId, StationSourceId, NslcId, SourceIdSorter} from "./fdsnsourceid";
 import {DateTime, Interval} from "luxon";
 
 /** xml namespace for stationxml */
@@ -1243,6 +1243,16 @@ export function* findChannels(
       }
     }
   }
+}
+
+export function uniqueSourceIds(channelList: Iterable<Channel>): Array<FDSNSourceId> {
+  const out = new Map<string, FDSNSourceId>();
+  for(let c of channelList) {
+    if (c) {
+      out.set(c.sourceId.toString(), c.sourceId);
+    }
+  }
+  return Array.from(out.values()).sort(SourceIdSorter);
 }
 
 export function uniqueStations(

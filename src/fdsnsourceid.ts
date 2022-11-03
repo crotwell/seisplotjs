@@ -93,13 +93,16 @@ export class FDSNSourceId {
   /**
    * returns a channel code. If this is an old style NSLC, it will be 3 chars,
    * but if either source or subsouce is more than one char, it will be
-   * delimited by underscores.
+   * three fields delimited by underscores.
    */
   formChannelCode(): string {
     return this.asNslc().channelCode;
   }
   toString(): string {
     return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
+  }
+  toStringNoPrefix(): string {
+    return `${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
   }
   equals(other: FDSNSourceId | null): boolean {
     if (! other) {
@@ -286,4 +289,23 @@ export function parseSourceId(id: string): FDSNSourceId | NetworkSourceId | Stat
     throw new Error(`FDSN sourceid must have 6 items for channel, 2 for station or 1 for network; separated by '${SEP}': ${id}`);
   }
   return new FDSNSourceId(items[0],items[1],items[2],items[3],items[4],items[5]);
+}
+
+export function SourceIdSorter(aSid: FDSNSourceId, bSid: FDSNSourceId): number {
+  if (aSid.networkCode !== bSid.networkCode) {
+    return aSid.networkCode.localeCompare(bSid.networkCode);
+  }
+  if (aSid.stationCode !== bSid.stationCode) {
+    return aSid.stationCode.localeCompare(bSid.stationCode);
+  }
+  if (aSid.locationCode !== bSid.locationCode) {
+    return aSid.locationCode.localeCompare(bSid.locationCode);
+  }
+  if (aSid.bandCode !== bSid.bandCode) {
+    return aSid.bandCode.localeCompare(bSid.bandCode);
+  }
+  if (aSid.sourceCode !== bSid.sourceCode) {
+    return aSid.sourceCode.localeCompare(bSid.sourceCode);
+  }
+  return aSid.subsourceCode.localeCompare(bSid.subsourceCode);
 }

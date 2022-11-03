@@ -556,6 +556,19 @@ export class SeismogramDisplayData {
     return out;
   }
 
+  static fromSourceIdAndTimes(
+    sourceId: FDSNSourceId,
+    startTime: DateTime,
+    endTime: DateTime,
+  ): SeismogramDisplayData {
+    const out = new SeismogramDisplayData(
+      Interval.fromDateTimes(startTime, endTime),
+    );
+    out._sourceId = sourceId;
+    return out;
+  }
+
+
   static fromCodesAndTimes(
     networkCode: string,
     stationCode: string,

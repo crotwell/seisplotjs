@@ -1,7 +1,9 @@
 import {Channel} from './stationxml';
 import {LatLonBox, LatLonRadius} from './fdsncommon';
+import {FDSNSourceId} from './fdsnsourceid';
 
-export const CHANNEL_LIST_ELEMENT = 'sp-channellist';
+export const SOURCEID_LIST_ELEMENT = 'sp-sourceid-list';
+export const CHANNEL_LIST_ELEMENT = 'sp-channel-list';
 export const CHANNEL_CODE_ELEMENT = 'sp-channel-code-input';
 export const MINMAX_ELEMENT = 'sp-minmax';
 export const LATLONRADIUS_ELEMENT = 'sp-latlon-radius';
@@ -182,6 +184,88 @@ export class ChannelListChooser extends HTMLElement {
 }
 
 customElements.define(CHANNEL_LIST_ELEMENT, ChannelListChooser);
+
+export class SourceIdListChooser extends HTMLElement {
+  sourceIdList: Array<FDSNSourceId>;
+  selected_sourceIds: Set<FDSNSourceId> = new Set();
+  constructor() {
+    super();
+    this.sourceIdList = [];
+    this.draw_element();
+  }
+  draw_element() {
+    let shadow = this.shadowRoot;
+    if (shadow === null) {
+      shadow = this.attachShadow({mode: 'open'});
+    }
+    while (shadow.lastChild) {
+      shadow.removeChild(shadow.lastChild);
+    }
+    const wrapper = document.createElement('div');
+    wrapper.setAttribute('class','wrapper');
+    const label = wrapper.appendChild(document.createElement('label'));
+    label.textContent = "Channels:";
+    this.sourceIdList.forEach(c => {
+      const sourceId = c;
+      const div = wrapper.appendChild(document.createElement('div'));
+      const cb = div.appendChild(document.createElement('input'));
+      cb.setAttribute('type',this.type);
+      cb.setAttribute('name','radiogroup');
+      cb.addEventListener('change', event => {
+        if (this.type === "radio") {
+          // radio, only one selected, notify only on select not unselect
+          this.selected_sourceIds.clear();
+          this.selected_sourceIds.add(sourceId)
+        } else {
+          // checkbox
+          if (cb.checked) {
+            this.selected_sourceIds.add(sourceId);
+          } else {
+            this.selected_sourceIds.delete(sourceId);
+          }
+        }
+        this.dispatchEvent(new Event("change"));
+      });
+      const nlabel = div.appendChild(document.createElement('label'));
+      nlabel.textContent = `${c.toStringNoPrefix()}`;
+    });
+    shadow.appendChild(wrapper);
+  }
+  setSourceIds(sourceIdList: Array<FDSNSourceId>) {
+    this.sourceIdList = sourceIdList;
+    this.draw_element();
+    this.dispatchEvent(new Event("change"))
+  }
+  appendSourceIds(sourceIdList: Array<FDSNSourceId>) {
+    this.sourceIdList = this.sourceIdList.concat(sourceIdList);
+    this.draw_element();
+    this.dispatchEvent(new Event("change"))
+  }
+  get type(): string {
+    const t = this.getAttribute("type");
+    if (t) {
+      return t;
+    } else {
+      return "checkbox";
+    }
+  }
+  set type(s: string) {
+    if (s === "checkbox" || s === "radio") {
+      this.setAttribute("type", s);
+    } else {
+      throw new Error("must be one of checkbox or radio");
+    }
+  }
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    this.draw_element();
+  }
+  selectedSourceIds(): Array<FDSNSourceId> {
+    console.log(`selectedSourceIds(): ${this.selected_sourceIds.size}`)
+    return Array.from(this.selected_sourceIds.values());
+  }
+}
+
+customElements.define(SOURCEID_LIST_ELEMENT, SourceIdListChooser);
 
 export class LabeledMinMax extends HTMLElement {
   default_min = 0.0;
