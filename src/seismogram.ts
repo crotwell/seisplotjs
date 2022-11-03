@@ -40,8 +40,7 @@ export type MarkerType = {
  */
 export class Seismogram {
   _segmentArray: Array<SeismogramSegment>;
-  _startTime: DateTime;
-  _endTime: DateTime;
+  _interval: Interval;
   _y: null | Int32Array | Float32Array | Float64Array;
 
   constructor(segmentArray: SeismogramSegment | Array<SeismogramSegment>) {
@@ -63,7 +62,7 @@ export class Seismogram {
     }
 
     this.checkAllSimilar();
-    [this._startTime, this._endTime] = this.findStartEnd();
+    this._interval = this.findStartEnd();
   }
 
   checkAllSimilar() {
@@ -92,23 +91,12 @@ export class Seismogram {
     }
   }
 
-  findStartEnd(): [DateTime, DateTime] {
-    const allStart = this._segmentArray.map(seis => {
-      return seis.startTime;
-    });
-
-    const startTime = allStart.reduce((acc, cur)=> {
-      return acc<cur ? acc : cur;
-    } );
-
-    const allEnd = this._segmentArray.map(seis => {
-      return seis.endTime;
-    });
-
-    const endTime = allEnd.reduce((acc, cur)=> {
-      return acc>cur ? acc : cur;
-    } );
-    return [startTime, endTime];
+  findStartEnd(): Interval {
+    if (this._segmentArray.length === 0) {
+      throw new Error("Seismogram is empty");
+    }
+    return this._segmentArray.reduce((acc, cur) => acc.union(cur.timeRange),
+      this._segmentArray[0].timeRange);
   }
 
   findMinMax(minMaxAccumulator?: MinMaxable): MinMaxable {
@@ -149,7 +137,7 @@ export class Seismogram {
   }
 
   get startTime(): DateTime {
-    return this._startTime;
+    return this._interval.start;
   }
 
   get end(): DateTime {
@@ -157,11 +145,11 @@ export class Seismogram {
   }
 
   get endTime(): DateTime {
-    return this._endTime;
+    return this._interval.end;
   }
 
   get timeRange(): Interval {
-    return Interval.fromDateTimes(this.startTime, this.endTime);
+    return this._interval;
   }
 
   get timeWindow(): Interval {
@@ -246,11 +234,7 @@ export class Seismogram {
       seismogram._segmentArray.forEach(s => this.append(s));
     } else {
       this.checkSimilar(this._segmentArray[0], seismogram);
-      this._startTime =
-        this.startTime < seismogram.startTime ? this.startTime : seismogram.startTime;
-      this._endTime =
-        this.endTime > seismogram.endTime ? this.endTime : seismogram.endTime;
-
+      this._interval = this._interval.union(seismogram.timeRange);
       this._segmentArray.push(seismogram);
     }
   }
@@ -1111,14 +1095,8 @@ export function findStartEnd(
     // just use the default???
     return Interval.before(DateTime.utc(), 300);
   }
-  const startTime = sddList.reduce((acc, sdd) => {
-    return acc < sdd.timeRange.start ? acc : sdd.timeRange.start;
-  }, sddList[0].timeRange.start);
-
-  const endTime = sddList.reduce((acc, sdd) => {
-    return acc > sdd.timeRange.end ? acc : sdd.timeRange.end;
-  }, sddList[0].timeRange.end);
-  return Interval.fromDateTimes(startTime, endTime);
+  return sddList.reduce((acc, sdd) => acc.union(sdd.timeRange),
+                        sddList[0].timeRange);
 }
 export function findMaxDuration(
   sddList: Array<SeismogramDisplayData>,
@@ -1315,15 +1293,8 @@ export function findStartEndOfSeismograms(
   }
 
   if (Array.isArray(data)) {
-    for (const s of data) {
-      if (s.startTime <= out.start) {
-        out = Interval.fromDateTimes(s.startTime, out.end);
-      }
-
-      if (out.end <= s.endTime) {
-        out = Interval.fromDateTimes(out.start, s.endTime);
-      }
-    }
+    return data.reduce((acc, cur) => acc.union(cur.timeRange),
+        data[0].timeRange);
   } else {
     throw new Error(`Expected Array as first arg but was: ${typeof data}`);
   }
