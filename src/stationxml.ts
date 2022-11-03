@@ -1245,6 +1245,31 @@ export function* findChannels(
   }
 }
 
+export function uniqueStations(
+  channelList: Iterable<Channel>,
+): Array<Station> {
+  const out = new Set<Station>();
+  for(let c of channelList) {
+    if (c) {
+      out.add(c.station);
+    }
+  }
+  return Array.from(out.values());
+}
+
+export function uniqueNetworks(
+  channelList: Iterable<Channel>,
+): Array<Network> {
+  const out = new Set<Network>();
+  for(let c of channelList) {
+    if (c) {
+      out.add(c.station.network);
+    }
+  }
+  return Array.from(out.values());
+}
+
+
 // these are similar methods as in seisplotjs.quakeml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 const _grabFirstEl = function (
