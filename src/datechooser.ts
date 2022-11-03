@@ -465,6 +465,18 @@ export class TimeRangeChooser extends HTMLElement {
   getTimeRange(): Interval {
     return this.toInterval();
   }
+
+  /**
+   * Updates the times without triggering the callback function.
+   *
+   * @param  timeRange new time interval
+   */
+  updateTimeRange(timeRange: Interval) {
+    this.startChooser.updateTime(timeRange.start);
+    this.endChooser.updateTime(timeRange.end);
+    this._updateDuration(timeRange.toDuration());
+  }
+
   get startLabel(): string {
     const l = this.getAttribute(START_LABEL);
     if (isDef(l)) { return l; } else { return DEFAULT_START_LABEL; }
