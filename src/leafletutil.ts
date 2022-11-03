@@ -199,7 +199,7 @@ export class QuakeStationMap extends SeisPlotElement {
     }
     let circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
     circleList.forEach(c => {
-      c.remove(classname);
+      c.classList.remove(classname);
     });
     if(circleList.length === 0) {
       console.log("didn't find quake to remove clsas")
@@ -265,7 +265,7 @@ export class QuakeStationMap extends SeisPlotElement {
     markerList.forEach(c => {
       c.classList.remove(classname);
     });
-    if(triangleList.length === 0) {
+    if(markerList.length === 0) {
       console.log("didn't find station to remove clsas")
     }
   }
