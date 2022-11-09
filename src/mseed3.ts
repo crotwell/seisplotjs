@@ -507,8 +507,10 @@ export class MSeed3Header {
       */
     let encode_name = "unknown";
 
-    if (this.encoding === 11) {
-      encode_name = "STEIM-2 integer compression";
+    if (this.encoding === 0) {
+      encode_name = "Text";
+    } else if (this.encoding === 11) {
+        encode_name = "STEIM-2 integer compression";
     } else if (this.encoding === 10) {
       encode_name = "STEIM-1 integer compression";
     }
