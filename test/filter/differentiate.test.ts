@@ -12,7 +12,7 @@ test("constant", () => {
   let dataLen = 100;
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
-  const origseis = Seismogram.createFromContiguousData(orig, sampleRate, startTime);
+  const origseis = Seismogram.fromContiguousData(orig, sampleRate, startTime);
   let diffseis = filter.differentiate(origseis);
   let expected = Array(dataLen-1).fill(0);
   // $FlowFixMe
@@ -31,7 +31,7 @@ test("linear", () => {
   let orig = Array(dataLen).fill(dataVal);
   const slopePerSec = 5.5;
   orig = orig.map((d,i)=> d+i*slopePerSec/sampleRate);
-  const origseis = Seismogram.createFromContiguousData(orig, sampleRate, startTime);
+  const origseis = Seismogram.fromContiguousData(orig, sampleRate, startTime);
   let diffseis = filter.differentiate(origseis);
   expect(diffseis.y[0]).toEqual(slopePerSec);
   let expected = Array(dataLen-1).fill(slopePerSec);

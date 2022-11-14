@@ -431,7 +431,7 @@ export class Seismogram {
    * @param startTime time of first sample
    * @returns seismogram initialized with the data
    */
-  static createFromContiguousData(
+  static fromContiguousData(
     yArray:
       | Array<seedcodec.EncodedDataSegment>
       | Int32Array
@@ -529,7 +529,7 @@ export class SeismogramDisplayData {
       sourceId?: FDSNSourceId,
     ): SeismogramDisplayData {
     return SeismogramDisplayData.fromSeismogram(
-      Seismogram.createFromContiguousData(yArray, sampleRate, startTime, sourceId));
+      Seismogram.fromContiguousData(yArray, sampleRate, startTime, sourceId));
   }
   static fromChannelAndTimeWindow(
     channel: Channel,

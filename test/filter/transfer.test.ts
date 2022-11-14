@@ -461,7 +461,7 @@ test("impulse one zero", () => {
       let sactfr = result[1];
       let pz = result[2];
       //let sacAm = result[3];
-      const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
+      const seis = Seismogram.fromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
       let bagtfr = transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
@@ -501,7 +501,7 @@ test("impulse", () => {
       let orig = result[0];
       let sactfr = result[1];
       let pz = result[2];
-      const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
+      const seis = Seismogram.fromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
       let bagtfr = transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
@@ -553,7 +553,7 @@ test("HRV test", () => {
       let rmean = result[2];
       let taperSeis = result[3];
       let transferSeis = result[4];
-      const seis = Seismogram.createFromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
+      const seis = Seismogram.fromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
       const bag_rmean = filter.rMean(seis);
       const rmean_data = bag_rmean.y;
       let sacdata = rmean.y;

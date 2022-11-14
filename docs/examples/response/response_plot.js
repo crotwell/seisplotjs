@@ -309,7 +309,7 @@ function plot_impulse(div, stage, idx, coeff) {
   if (stage.decimation) {
     sampleRate = stage.decimation.inputSampleRate;
   }
-  let impulseSeis = seisplotjs.seismogram.Seismogram.createFromContiguousData(coeff.reverse(), sampleRate, start);
+  let impulseSeis = seisplotjs.seismogram.Seismogram.fromContiguousData(coeff.reverse(), sampleRate, start);
   // snip start draw
   let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
   seisConfig.title = "Impulse Response";

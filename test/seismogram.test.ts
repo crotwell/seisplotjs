@@ -191,14 +191,14 @@ test("clone sdd test", () => {
     description: "dummy",
   };
 
-  const seis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+  const seis = Seismogram.fromContiguousData(yValues, sampleRate, startTime);
   const q = createQuakeFromValues(UNKNOWN_PUBLIC_ID, startTime,-10, 12, 0);
   const sdd = SeismogramDisplayData.fromSeismogram(seis);
   sdd.addQuake(q);
   sdd.addMarkers(marker);
   expect(sdd.markerList).toHaveLength(1);
 
-  const processedSeis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+  const processedSeis = Seismogram.fromContiguousData(yValues, sampleRate, startTime);
   const cloneSdd = sdd.cloneWithNewSeismogram(processedSeis);
   expect(cloneSdd.quakeList).toHaveLength(sdd.quakeList.length);
   expect(cloneSdd.quakeList[0]).toBe(sdd.quakeList[0]);
@@ -210,7 +210,7 @@ test("cut clone sdd test", () => {
   const yValues = new Int32Array(len);
   const sampleRate = 20.0;
   const startTime = isoToDateTime("2013-02-08T09:30:26");
-  const seis = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+  const seis = Seismogram.fromContiguousData(yValues, sampleRate, startTime);
   const q = createQuakeFromValues(UNKNOWN_PUBLIC_ID, startTime,-10, 12, 0);
   const sdd = SeismogramDisplayData.fromSeismogram(seis);
   sdd.addQuake(q);
@@ -246,7 +246,7 @@ test("find minmax test", () => {
     const sampleRate = 20.0;
     const startTime = isoToDateTime("2013-02-08T09:30:26");
 
-    const seisA = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
+    const seisA = Seismogram.fromContiguousData(yValues, sampleRate, startTime);
     const sddA = SeismogramDisplayData.fromSeismogram(seisA);
     const ampMode = AMPLITUDE_MODE.Mean;
     let minMax = findMinMaxOverTimeRange([sddA],

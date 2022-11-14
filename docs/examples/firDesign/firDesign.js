@@ -58,7 +58,7 @@ let createFIR = function() {
 
   let sampleRate = 1;
   let start = seisplotjs.util.isoToDateTime('2000-01-01T00:00:00Z');
-  let impulseSeis = seisplotjs.seismogram.Seismogram.createFromContiguousData(longCoeff, sampleRate, start);
+  let impulseSeis = seisplotjs.seismogram.Seismogram.fromContiguousData(longCoeff, sampleRate, start);
   // snip start draw
   const impluseresp_div = document.querySelector('div.impulse');
   let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();

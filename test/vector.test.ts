@@ -19,7 +19,7 @@ test( "vector magnitude test", () => {
     let esid = FDSNSourceId.parse(esidStr);
     let nsidStr = "FDSN:XX_ABCD_00_B_H_N";
     let nsid = FDSNSourceId.parse(nsidStr);
-    let seisA = Seismogram.createFromContiguousData(yValues, sampleRate, startTime, sid);
+    let seisA = Seismogram.fromContiguousData(yValues, sampleRate, startTime, sid);
     let seisB = seisA.clone();
     seisB.sourceId = nsid;
     let seisC = seisA.clone();
@@ -45,8 +45,8 @@ test("trace rotation", () => {
   let esid = FDSNSourceId.parse(esidStr);
   let nsidStr = "FDSN:XX_ABCD_00_B_H_N";
   let nsid = FDSNSourceId.parse(nsidStr);
-  let seisA = Seismogram.createFromContiguousData(a, 1.0, now, esid);
-  let seisB = Seismogram.createFromContiguousData(b, 1.0, now, nsid);
+  let seisA = Seismogram.fromContiguousData(a, 1.0, now, esid);
+  let seisB = Seismogram.fromContiguousData(b, 1.0, now, nsid);
   let outSeismogram = vector.rotate(seisA, az, seisB, az+90, az+rotAzInc);
   expect(outSeismogram.radial.segments.length).toBe(1);
   expect(outSeismogram.transverse.segments.length).toBe(1);
@@ -62,8 +62,8 @@ test("simple rotation", () => {
   let esid = FDSNSourceId.parse(esidStr);
   let nsidStr = "FDSN:XX_ABCD_00_B_H_N";
   let nsid = FDSNSourceId.parse(nsidStr);
-  let seisA = Seismogram.createFromContiguousData(a, 1.0, now, esid);
-  let seisB = Seismogram.createFromContiguousData(b, 1.0, now, nsid);
+  let seisA = Seismogram.fromContiguousData(a, 1.0, now, esid);
+  let seisB = Seismogram.fromContiguousData(b, 1.0, now, nsid);
 
   let out = vector.rotate(seisA, az, seisB, az+90, rotToAz);
   expect(out.radial.y.length).toBe(3);

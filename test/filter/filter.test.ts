@@ -34,7 +34,7 @@ test("simple butterworth", () => {
 });
 
 test("bad delta butterworth", () => {
-  const origseis = Seismogram.createFromContiguousData(new Float32Array(10), 0.1, checkStringOrDate("now"));
+  const origseis = Seismogram.fromContiguousData(new Float32Array(10), 0.1, checkStringOrDate("now"));
   let n= 2;
   let type = filter.LOW_PASS;
   let lowCut = 1;

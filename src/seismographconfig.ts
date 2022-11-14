@@ -612,7 +612,7 @@ export class SeismographConfig {
     ]);
     const fakeSampleRate =
       1 / (1000*timeRange.toDuration().toMillis() / (fakeData.length - 1));
-    const fakeSeis = Seismogram.createFromContiguousData(
+    const fakeSeis = Seismogram.fromContiguousData(
       fakeData,
       fakeSampleRate,
       timeRange.start,

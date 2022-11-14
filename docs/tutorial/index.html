@@ -166,7 +166,7 @@
 
 
 import {
-  seismogram, 
+  seismogram,
   seismograph,
   seismographconfig,
   util
@@ -177,7 +177,7 @@ let dataArray = new Float32Array(1000).map(function(d, i) {
 });
 let sampleRate = 20;
 let start = util.isoToDateTime('2019-07-04T05:46:23');
-let myseismogram = seismogram.Seismogram.createFromContiguousData(dataArray, sampleRate, start);
+let myseismogram = seismogram.Seismogram.fromContiguousData(dataArray, sampleRate, start);
 let seisData = seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
 // or in one step
 seisData = seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);

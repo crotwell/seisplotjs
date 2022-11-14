@@ -42,7 +42,7 @@ export function readSac(filename: string): Promise<sacType> {
 }
 
 export function asSeismogram(sac: sacType): Seismogram {
-  return Seismogram.createFromContiguousData(sac.y, 1/sac.delta, sac.start);
+  return Seismogram.fromContiguousData(sac.y, 1/sac.delta, sac.start);
 }
 
 export function readSeismogram(filename: string): Promise<Seismogram> {

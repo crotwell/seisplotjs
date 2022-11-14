@@ -39,16 +39,14 @@ test("gain scale test", () => {
   const sampleRate = 20.0;
   const startTime = isoToDateTime("2013-02-08T09:30:26");
 
-  const seisA = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
   const sensA = new InstrumentSensitivity(.02, 1, "m/s", "count");
-  const sddA = SeismogramDisplayData.fromSeismogram(seisA);
+  const sddA = SeismogramDisplayData.fromContiguousData(yValues, sampleRate, startTime);
   sddA.sensitivity = sensA;
 
   const maxB = 10;
   const yValuesB = new Int32Array([-1*maxB, 0, maxB]);
-  const seisB = Seismogram.createFromContiguousData(yValuesB, sampleRate, startTime);
   const sensB = new InstrumentSensitivity(.05, 1, "m/s", "count");
-  const sddB = SeismogramDisplayData.fromSeismogram(seisB);
+  const sddB = SeismogramDisplayData.fromContiguousData(yValuesB, sampleRate, startTime);
   sddB.sensitivity = sensB;
 
   const linkAmpScale = new LinkedAmplitudeScale();
@@ -69,14 +67,12 @@ test("zero mean scale test", () => {
   const sampleRate = 20.0;
   const startTime = isoToDateTime("2013-02-08T09:30:26");
 
-  const seisA = Seismogram.createFromContiguousData(yValues, sampleRate, startTime);
-  const sddA = SeismogramDisplayData.fromSeismogram(seisA);
+  const sddA = SeismogramDisplayData.fromContiguousData(yValues, sampleRate, startTime);
 
   const maxB = 30;
   const yValuesB = new Float32Array([maxB, 0, maxB]);
   const seisBMean = yValuesB.reduce((acc, cur) => acc+cur, 0)/yValuesB.length;
-  const seisB = Seismogram.createFromContiguousData(yValuesB, sampleRate, startTime);
-  const sddB = SeismogramDisplayData.fromSeismogram(seisB);
+  const sddB = SeismogramDisplayData.fromContiguousData(yValuesB, sampleRate, startTime);
   const maxMeanVal = Math.max(seisAMean, seisBMean);
 
   const seisConfig = new SeismographConfig();

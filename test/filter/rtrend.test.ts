@@ -7,7 +7,7 @@ test("lineFit", () => {
   let dataLen = 10;
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
-  const origseis = Seismogram.createFromContiguousData(orig, 1, DateTime.utc());
+  const origseis = Seismogram.fromContiguousData(orig, 1, DateTime.utc());
   const lf = filter.lineFit(origseis);
   expect(lf.slope).toBeCloseTo(0);
   expect(lf.intercept).toBeCloseTo(dataVal);
@@ -17,7 +17,7 @@ test("constant", () => {
   let dataLen = 10;
   const dataVal = 100;
   let orig = Array(dataLen).fill(dataVal);
-  const origseis = Seismogram.createFromContiguousData(orig, 1, DateTime.utc());
+  const origseis = Seismogram.fromContiguousData(orig, 1, DateTime.utc());
   let bagrtr = filter.removeTrend(origseis);
   for (let i=0; i<dataLen; i++) {
 //    expect(bagrtr.y[i], `index ${i}`).toBeCloseTo(0);
@@ -31,7 +31,7 @@ test("linear", () => {
   const dataVal = 100;
   const slope = 3;
   let orig = Array(dataLen).fill(dataVal).map((d,idx) => d+idx*slope);
-  const origseis = Seismogram.createFromContiguousData(orig, 1, DateTime.utc());
+  const origseis = Seismogram.fromContiguousData(orig, 1, DateTime.utc());
   let bagrtr = filter.removeTrend(origseis);
   const lf = filter.lineFit(origseis);
   expect(lf.slope).toBeCloseTo(slope);

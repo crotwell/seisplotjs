@@ -39,7 +39,7 @@ test("Round Trip FFT, Spike", () => {
   }
   let sampleRate = 1;
   let start = DateTime.utc();
-  let seis = Seismogram.createFromContiguousData(data, sampleRate, start);
+  let seis = Seismogram.fromContiguousData(data, sampleRate, start);
   const fftresult = fft.fftForward(seis);
   for(let i=0; i<fftresult.packedFreq.length; i++) {
       expect(fftresult.packedFreq[i]).toBeCloseTo(fftout[i], 5);
@@ -160,7 +160,7 @@ test("fftForward", () => {
   rawData[500] = 1;
   const sampleRate = 1;
   const start = DateTime.utc();
-  const origseis = Seismogram.createFromContiguousData(rawData, sampleRate, start);
+  const origseis = Seismogram.fromContiguousData(rawData, sampleRate, start);
   const freqData = fft.fftForward(origseis);
   expect(freqData.origLength).toEqual(dataLen);
   expect(freqData.numPoints).toEqual(nextPowerTwo);
