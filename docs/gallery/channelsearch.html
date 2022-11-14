@@ -7,7 +7,7 @@
     <!-- this stops flavicon loading -->
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
     <style>
-      sp-station-event-map {
+      sp-station-quake-map {
         height: 200px;
         width: 100%;
       }
@@ -20,7 +20,7 @@
     <h3>Channel query: <span id="title">seismographs</span></h3>
     <sp-channel-search></sp-channel-search>
     <button id="query">Query</button>
-    <sp-station-event-map></sp-station-event-map>
+    <sp-station-quake-map></sp-station-quake-map>
     <sp-channel-table></sp-channel-table>
     <div id="messages">
       <p></p>
@@ -52,7 +52,7 @@
         chQuery.queryChannels().then(netList => {
           const chanTable = document.querySelector("sp-channel-table");
           chanTable.channelList = Array.from(stationxml.allChannels(netList));
-          const stationMap = document.querySelector("sp-station-event-map");
+          const stationMap = document.querySelector("sp-station-quake-map");
           stationMap.addStation(Array.from(stationxml.allStations(netList)));
           stationMap.draw();
         }).catch(e => {

@@ -14,7 +14,7 @@ import {
   stationxml,
   traveltime,
   util, luxon} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
-const mymap = document.querySelector('sp-station-event-map');
+const mymap = document.querySelector('sp-station-quake-map');
 
 
 // snip start setup

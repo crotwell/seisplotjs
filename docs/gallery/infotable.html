@@ -5,12 +5,12 @@
   <link rel="stylesheet" href="style.css">
   <title>Info Table</title>
   <style>
-    sp-station-event-table {
+    sp-station-quake-table {
       height: 400px;
 
     }
 
-    sp-station-event-table
+    sp-station-quake-table
     {
       --even-row-background: aliceblue;
       --odd-row-background: White;
@@ -21,7 +21,7 @@
 
   <h3>Earthquake Table:</h3>
   <div>
-    <sp-event-table ></sp-event-table>
+    <sp-quake-table ></sp-quake-table>
   </div>
 
   <h3>Station Table:</h3>
@@ -41,7 +41,7 @@
 
   <h3>Station-Event Table:</h3>
   <div>
-    <sp-station-event-table ></sp-station-event-table>
+    <sp-station-quake-table ></sp-station-quake-table>
   </div>
 
   <script type="module">
@@ -49,13 +49,13 @@
     import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
     seisplotjs.dataset.load('dataset.zip')
     .then((ds) => {
-      document.querySelectorAll('sp-station-event-table').forEach( graph => {
+      document.querySelectorAll('sp-station-quake-table').forEach( graph => {
         graph.seisData = ds.waveforms;
         graph.draw();
       });
       return ds;
     }).then((ds) => {
-        document.querySelectorAll('sp-event-table').forEach( graph => {
+        document.querySelectorAll('sp-quake-table').forEach( graph => {
           graph.quakeList = seisplotjs.seismogram.uniqueQuakes(ds.waveforms);
         });
         return ds;

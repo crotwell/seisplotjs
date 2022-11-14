@@ -43,7 +43,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       min-height: 50px;
       height: 100%;
     }
-    sp-station-event-map {
+    sp-station-quake-map {
       height: 400px;
     }
     sp-seismograph {
@@ -396,7 +396,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       min-height: 50px;
       height: 100%;
     }
-    sp-station-event-map {
+    sp-station-quake-map {
       height: var(--map-height, 400px);
     }
     sp-organized-display-item {

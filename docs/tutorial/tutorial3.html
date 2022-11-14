@@ -4,7 +4,7 @@
     <meta charset='utf-8'>
     <title>Tutorial 3: Quakes and Channels</title>
     <style>
-      sp-station-event-map {
+      sp-station-quake-map {
         height: 300px;
         width: 90%;
       }
@@ -17,10 +17,10 @@
     <h3>Tutorial 3: Quakes and Channels</h3>
     <h3>Map</h3>
     <div>
-      <sp-station-event-map centerLat="34" centerLon="-100" zoomLevel="5"
+      <sp-station-quake-map centerLat="34" centerLon="-100" zoomLevel="5"
         tileUrl="http://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
         tileAttribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri">
-      </sp-station-event-map>
+      </sp-station-quake-map>
     </div>
     <h3>A Seismograph recorded at <span id="stationCode"></span> for the <span id="earthquakeDescription"></span>!</h3>
     <div id="myseismograph">

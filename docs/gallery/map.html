@@ -5,7 +5,7 @@
   <link rel="stylesheet" href="style.css">
   <title>Map</title>
   <style>
-    sp-station-event-map {
+    sp-station-quake-map {
       height: 400px;
     }
   </style>
@@ -15,14 +15,15 @@
   <h3>Map:</h3>
   <button id="changecolor">Change colors</button>
   <div>
-    <sp-station-event-map centerLat="34" centerLon="-80" zoomLevel="9"></sp-station-event-map>
+    <sp-station-quake-map centerLat="34" centerLon="-80" zoomLevel="9"></sp-station-quake-map>
+    <sp-quake-table></sp-quake-table>
   </div>
   <script type="module">
     import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
     let allStations = [];
     seisplotjs.dataset.load('dataset.zip')
     .then((ds) => {
-      const mapList = document.querySelectorAll('sp-station-event-map');
+      const mapList = document.querySelectorAll('sp-station-quake-map');
       mapList.forEach( map => {
         // plot quakes and station from seismograms
         //map.seisData = ds.waveforms;
@@ -35,20 +36,51 @@
         map.addStation(allStations, "customcolor");
         map.colorClass("CO_BIRD", "orange");
         map.colorClass("customcolor", "green");
+        map.colorClass("myquake", "green");
         //map.colorClass("quakecolor", "blue");
         map.colorClass("withpicks", "red");
         map.colorClass("CO_JSC", "rebeccapurple");
         map.draw();
       });
       document.querySelector("#changecolor").addEventListener("click", () => {
-        const mapList = document.querySelectorAll('sp-station-event-map');
+        const mapList = document.querySelectorAll('sp-station-quake-map');
         mapList.forEach( map => {
           map.removeColorClass("customcolor");
           map.colorClass("quakecolor", "yellow");
 
           //map.stationRemoveClass(allStations[0], "customcolor");
         });
-      })
+      });
+
+      const SELECTED_ROW = "selectedRow";
+      const infoList = document.querySelectorAll('sp-quake-table');
+      infoList.forEach( it => {
+        it.quakeList = ds.catalog;
+        it.addStyle(`
+            table tbody tr.${SELECTED_ROW} td {
+              background-color: green;
+              color: white;
+            }
+          `)
+        it.addEventListener("quakeclick", ce => {
+          mapList.forEach( map => {
+            map.quakeList.forEach(q => {
+              map.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(q));
+            });
+            map.colorClass(seisplotjs.leafletutil.cssClassForQuake(ce.detail.quake), "green");
+            let quakeRow = it.findRowForQuake(ce.detail.quake);
+            let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
+            console.log(`num rows: ${Array.from(allRows).length}`)
+            allRows.forEach(r => {
+              console.log(`${r.classList.contains(SELECTED_ROW)}`)
+              r.classList.remove(SELECTED_ROW);
+            });
+            quakeRow.classList.add(SELECTED_ROW);
+            //ce.detail.mouseevent.currentTarget.setAttribute("style", "background-color: green");
+          });
+
+        });
+      });
       console.log(`${ds.catalog.length}  ${Array.from(seisplotjs.stationxml.allStations(ds.inventory)).length}`);
       return ds;
     });

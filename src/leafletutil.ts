@@ -10,7 +10,7 @@ import {LatLonBox, LatLonRadius} from './fdsncommon';
 import * as L from "leaflet";
 import {LatLngTuple} from "leaflet";
 
-export const MAP_ELEMENT = 'sp-station-event-map';
+export const MAP_ELEMENT = 'sp-station-quake-map';
 export const triangle = "\u25B2";
 export const StationMarkerClassName = "stationMapMarker";
 export const InactiveStationMarkerClassName = "inactiveStationMapMarker";

@@ -8,7 +8,7 @@ import {
   util, luxon} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 // snip start mapcss
-const mymap = document.querySelector('sp-station-event-map');
+const mymap = document.querySelector('sp-station-quake-map');
 
 mymap.addStyle(`
   div.stationMapMarker {

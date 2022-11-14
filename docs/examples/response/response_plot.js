@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.3_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 import {parse_sis_xml} from './response_parse.js';
 
@@ -28,7 +28,7 @@ document.querySelector("#showphase").addEventListener('change', event => {
 
 function clear_all() {
   clear_plots();
-  const chanChooser = document.querySelector("sp-channellist");
+  const chanChooser = document.querySelector("sp-channel-list");
   chanChooser.setChannels([]);
 }
 function clear_plots() {
@@ -66,7 +66,7 @@ function load_fdsn() {
       console.log(`No response: ${firstChan.channelCode}`);
       seisplotjs.d3.select("div.stageplot").append("p").text(`No response: ${firstChan.channelCode}`);
     }
-    const chanChooser = document.querySelector("sp-channellist");
+    const chanChooser = document.querySelector("sp-channel-list");
     chanChooser.addEventListener("change", () => {
       chanChooser.selectedChannels().forEach(c => process_stages(c.response.stages));
     });

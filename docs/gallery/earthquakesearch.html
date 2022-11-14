@@ -14,7 +14,7 @@
     <h3>Earthquake query: <span id="title">seismographs</span></h3>
     <sp-earthquake-search></sp-earthquake-search>
     <button id="query">Query</button>
-    <sp-event-table></sp-event-table>
+    <sp-quake-table></sp-quake-table>
     <div id="messages">
       <p></p>
     </div>
@@ -42,7 +42,7 @@
         const pEl = mesgDiv.querySelector("p");
         pEl.textContent = eqQuery.formURL();
         eqQuery.query().then(quakeList => {
-          const quakeTable = document.querySelector("sp-event-table");
+          const quakeTable = document.querySelector("sp-quake-table");
           quakeTable.quakeList = quakeList;
         }).catch(e => {
           pEl.textContent = e;

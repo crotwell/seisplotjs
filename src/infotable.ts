@@ -8,9 +8,8 @@ import {SeismographConfig} from "./seismographconfig";
 import {Handlebars} from "./handlebarshelpers";
 
 
-export const INFO_ELEMENT = 'sp-station-event-table';
-export const QUAKE_INFO_ELEMENT_B = 'sp-quake-table';
-export const QUAKE_INFO_ELEMENT = 'sp-event-table';
+export const INFO_ELEMENT = 'sp-station-quake-table';
+export const QUAKE_INFO_ELEMENT = 'sp-quake-table';
 
 export enum QUAKE_COLUMN {
     LAT = "Lat",
