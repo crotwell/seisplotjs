@@ -218,10 +218,10 @@ export function bandCodeForRate(sampRate?: number, resp_lb?: number): string {
       return 'B';
     }
     return 'S';
-  } else if (sampRate > 1 && sampRate < 10) {
+  } else if (sampRate > 1.05 && sampRate < 10) {
     return 'M';
-  } else if (sampRate > 0.5 && sampRate < 1.5) {
-    // spec not clear about how far from 1 is L
+  } else if (sampRate >= 0.95 && sampRate <= 1.05) {
+    // spec not clear about how far from 1 is L, guess 5%
     return 'L';
   } else if (sampRate >= 0.1 && sampRate < 1) {
     return 'V';
