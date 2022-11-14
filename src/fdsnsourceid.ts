@@ -192,6 +192,15 @@ export class LocationSourceId {
   }
 }
 
+/**
+ * Generates the best band code for a channel based on the sample rate and
+ * optionally the response lower bound period, which is mostly useful for
+ * separating broadband from short period seismometers.
+ *
+ * @param  sampRate  sample rate in samples per second
+ * @param  resp_lb   response long period bound in seconds
+ * @return           single character band code
+ */
 export function bandCodeForRate(sampRate?: number, resp_lb?: number): string {
   if ( ! sampRate) {
     return 'I';
