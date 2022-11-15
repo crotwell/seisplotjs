@@ -455,6 +455,27 @@ export class TimeRangeChooser extends HTMLElement {
     });
     this.startChooser.updateTime(startTime);
     this.endChooser.updateTime(endTime);
+    const pastBtn = wrapper.insertBefore(document.createElement("button"), startLabel);
+    pastBtn.setAttribute("id", "pastButton");
+    pastBtn.textContent = "<";
+    pastBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.startChooser.time = this.startChooser.time.minus(extractDuration(durationInput.value)); // causes event dispatch
+    });
+    const futureBtn = wrapper.appendChild(document.createElement("button"));
+    futureBtn.setAttribute("id", "futureButton");
+    futureBtn.textContent = ">";
+    futureBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.endChooser.time = this.endChooser.time.plus(extractDuration(durationInput.value)); // causes event dispatch
+    });
+    const nowBtn = wrapper.appendChild(document.createElement("button"));
+    nowBtn.setAttribute("id", "nowButton");
+    nowBtn.textContent = "Now";
+    nowBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.endChooser.time = DateTime.utc(); // causes event dispatch
+    });
 
     shadow.appendChild(wrapper);
   }
