@@ -7,7 +7,7 @@ import {
   TimeScalable,
   MinMaxable
 } from "../src/scale";
-import { Seismogram, SeismogramDisplayData} from '../src/seismogram';
+import { SeismogramDisplayData} from '../src/seismogram';
 import {Seismograph} from '../src/seismograph';
 import {SeismographConfig} from '../src/seismographconfig';
 import {InstrumentSensitivity} from '../src/stationxml';

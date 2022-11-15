@@ -11,7 +11,6 @@ import * as cssutil from "./cssutil";
 import * as datalink from "./datalink";
 import * as dataset from "./dataset";
 import * as datechooser from "./datechooser";
-import * as displayorganize from "./displayorganize";
 import * as distaz from "./distaz";
 import * as infotable from "./infotable";
 import * as fdsnavailability from "./fdsnavailability";
@@ -31,6 +30,7 @@ import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import * as mseedarchive from "./mseedarchive";
 import * as oregondsputil from "./oregondsputil";
+import * as organizeddisplay from "./organizeddisplay";
 import * as particlemotion from "./particlemotion";
 import * as quakeml from "./quakeml";
 import * as ringserverweb from "./ringserverweb";
@@ -66,7 +66,6 @@ export {
   datalink,
   dataset,
   datechooser,
-  displayorganize,
   distaz,
   infotable,
   fdsnavailability,
@@ -85,6 +84,7 @@ export {
   mseed3,
   mseedarchive,
   oregondsputil,
+  organizeddisplay,
   particlemotion,
   quakeml,
   ringserverweb,
