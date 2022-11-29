@@ -1792,20 +1792,25 @@ export function createFullMarkersForQuakeAtStation(
   station: Station,
 ): Array<MarkerType> {
   const markers: Array<MarkerType> = [];
-  const daz = distaz.distaz(
-    station.latitude,
-    station.longitude,
-    quake.latitude,
-    quake.longitude,
-  );
-  let mag = quake.preferredMagnitude ? quake.preferredMagnitude.mag : "";
-  let magStr = quake.preferredMagnitude ? quake.preferredMagnitude.toString() : "";
-  markers.push({
-    markertype: "predicted",
-    name: `M${mag} ${quake.time.toFormat("HH:mm")}`,
-    time: quake.time,
-    link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
-    description: `${quake.time.toISO()}
+  if (quake.hasOrigin()) {
+    const daz = distaz.distaz(
+      station.latitude,
+      station.longitude,
+      quake.latitude,
+      quake.longitude,
+    );
+    let mag = "";
+    let magStr = ""
+    if (quake.hasPreferredMagnitude()) {
+      mag = quake.preferredMagnitude ? quake.preferredMagnitude.mag : "";
+      magStr = quake.preferredMagnitude ? quake.preferredMagnitude.toString() : "";
+    }
+    markers.push({
+      markertype: "predicted",
+      name: `M${mag} ${quake.time.toFormat("HH:mm")}`,
+      time: quake.time,
+      link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
+      description: `${quake.time.toISO()}
 ${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(
       quake.depth / 1000
     ).toFixed(2)} km
@@ -1813,7 +1818,8 @@ ${quake.description}
 ${magStr}
 ${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
 `,
-  });
+    });
+  }
   return markers;
 }
 export function createFullMarkersForQuakeAtChannel(

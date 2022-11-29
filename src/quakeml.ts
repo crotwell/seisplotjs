@@ -197,12 +197,18 @@ export class Quake {
     return UNKNOWN_PUBLIC_ID;
   }
 
+  hasPreferredOrigin() {
+    return isDef(this._preferredOrigin);
+  }
   get preferredOrigin(): Origin {
     if (isDef(this._preferredOrigin)) {
       return this._preferredOrigin;
     } else {
       throw new Error("No preferred origin");
     }
+  }
+  hasOrigin() {
+    return isDef(this._preferredOrigin) || this.originList.length > 1;
   }
   get origin(): Origin {
     if (isDef(this._preferredOrigin)) {
@@ -213,12 +219,18 @@ export class Quake {
       throw new Error("No origins in quake");
     }
   }
+  hasPreferredMagnitude() {
+    return isDef(this._preferredMagnitude);
+  }
   get preferredMagnitude(): Magnitude {
     if (isDef(this._preferredMagnitude)) {
       return this._preferredMagnitude;
     } else {
       throw new Error("No preferred Magnitude");
     }
+  }
+  hasMagnitude() {
+    return isDef(this._preferredMagnitude) || this.magnitudeList.length > 1;
   }
   get magnitude(): Magnitude {
     if (isDef(this._preferredMagnitude)) {
@@ -255,18 +267,23 @@ export class Quake {
   }
 
   toString(): string {
-    return (
-      stringify(this.time) +
-      " " +
-      stringify(this.latitude) +
-      "/" +
-      stringify(this.longitude) +
-      " " +
-      stringify(this.depth / 1000) +
-      " km" +
-      " " +
-      this.magnitude.toString()
-    );
+    if (this.hasOrigin()) {
+      let magStr = this.hasMagnitude() ? this.magnitude.toString() : "";
+      return (
+        stringify(this.time) +
+        " " +
+        stringify(this.latitude) +
+        "/" +
+        stringify(this.longitude) +
+        " " +
+        stringify(this.depth / 1000) +
+        " km" +
+        " " +
+        magStr
+      );
+    } else {
+      return `Event: ${this.eventId}`
+    }
   }
 }
 

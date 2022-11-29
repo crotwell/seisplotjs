@@ -113,7 +113,7 @@ export class Dataset {
       // only try to set quake if don't already have one
       if ( ! w.hasQuake()) {
         this.catalog.forEach((q:Quake)=> {
-          if (isDef(q.preferredOrigin)) {
+          if (q.hasPreferredOrigin()) {
             const window = Interval.after(q.preferredOrigin.time, 1000*timeOverlapSecs);
             if (window.overlaps(w.timeRange)) {
               w.addQuake(q);
