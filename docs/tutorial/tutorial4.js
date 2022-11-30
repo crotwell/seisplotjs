@@ -1,25 +1,10 @@
 // snip start map
 import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
-import {
-  d3,
-  distaz,
-  dataset,
-  fdsndataselect, fdsnevent, fdsnstation,
-  particlemotion,
-  scale,
-  seismogram,
-  seismogramloader,
-  seismograph,
-  seismographconfig,
-  sorting,
-  stationxml,
-  traveltime,
-  util, luxon} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 const mymap = document.querySelector('sp-station-quake-map');
 
 
 // snip start setup
-let queryTimeWindow = sp.luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
+let queryTimeWindow = sp.util.startEnd('2019-07-01', '2019-07-31');
 let eventQuery = new sp.fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
@@ -66,24 +51,24 @@ const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
   });
 });
 // snip start seismogramload
-const loader = new seismogramloader.SeismogramLoader(stationQuery, eventQuery);
+const loader = new sp.seismogramloader.SeismogramLoader(stationQuery, eventQuery);
 loader.startOffset = -300;
 loader.endOffset = 1200;
 loader.markedPhaseList = "PcP,SS";
 
 loader.load().then(dataset => {
-  let seismogramDataList = sorting.reorderXYZ(dataset.waveforms);
+  let seismogramDataList = sp.sorting.reorderXYZ(dataset.waveforms);
   mymap.seisData = seismogramDataList;
 
 // snip start seismograph
   let div = document.querySelector('div#myseismograph');
   let graphList = [];
-  let commonSeisConfig = new seismographconfig.SeismographConfig();
-  commonSeisConfig.linkedAmpScale = new scale.LinkedAmplitudeScale();
-  commonSeisConfig.linkedTimeScale = new scale.LinkedTimeScale();
+  let commonSeisConfig = new sp.seismographconfig.SeismographConfig();
+  commonSeisConfig.linkedAmpScale = new sp.scale.LinkedAmplitudeScale();
+  commonSeisConfig.linkedTimeScale = new sp.scale.LinkedTimeScale();
   commonSeisConfig.doGain = true;
   for( let sdd of seismogramDataList) {
-    let graph = new seismograph.Seismograph([ sdd ], commonSeisConfig);
+    let graph = new sp.seismograph.Seismograph([ sdd ], commonSeisConfig);
     graphList.push(graph);
     div.appendChild(graph);
   }
@@ -94,9 +79,8 @@ loader.load().then(dataset => {
   console.log(`pmdiv: ${pmdiv}`)
   let firstS = seismogramDataList[0].traveltimeList.find(a => a.phase.startsWith("S"));
   let windowDuration = 60;
-  let firstSTimeWindow = luxon.Interval.after(
-    seismogramDataList[0].quake.time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4}),
-    luxon.Duration.fromMillis(1000*windowDuration));
+  let windowStart = seismogramDataList[0].quake.time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4});
+  let firstSTimeWindow = sp.util.startDuration(windowStart, windowDuration);
   seismogramDataList.forEach(sdd => sdd.addMarkers({
     name: "pm start",
     time: firstSTimeWindow.start,
@@ -113,15 +97,15 @@ loader.load().then(dataset => {
   let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
 
   const doGain = true;
-  let minMax = seismogram.findMinMax([ xSeisData, ySeisData, zSeisData], doGain);
-  let pmSeisConfig = new particlemotion.createParticleMotionConfig(firstSTimeWindow);
+  let minMax = sp.seismogram.findMinMax([ xSeisData, ySeisData, zSeisData], doGain);
+  let pmSeisConfig = new sp.particlemotion.createParticleMotionConfig(firstSTimeWindow);
   pmSeisConfig.fixedYScale = minMax;
   pmSeisConfig.doGain = doGain;
-  let pmpA = new particlemotion.ParticleMotion(xSeisData, ySeisData, pmSeisConfig);
+  let pmpA = new sp.particlemotion.ParticleMotion(xSeisData, ySeisData, pmSeisConfig);
   pmdiv.appendChild(pmpA);
-  let pmpB = new particlemotion.ParticleMotion(xSeisData, zSeisData, pmSeisConfig);
+  let pmpB = new sp.particlemotion.ParticleMotion(xSeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpB);
-  let pmpC = new particlemotion.ParticleMotion(ySeisData, zSeisData, pmSeisConfig);
+  let pmpC = new sp.particlemotion.ParticleMotion(ySeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpC);
 
   return Promise.all([ seismogramDataList, graphList, dataset ]);
