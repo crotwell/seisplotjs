@@ -6,7 +6,7 @@ const mymap = document.querySelector('sp-station-quake-map');
 // snip start setup
 let queryTimeWindow = sp.util.startEnd('2019-07-01', '2019-07-31');
 let eventQuery = new sp.fdsnevent.EventQuery()
-  .timeWindow(queryTimeWindow)
+  .timeRange(queryTimeWindow)
   .minMag(7)
   .latitude(35).longitude(-118)
   .maxRadius(3);
@@ -15,7 +15,7 @@ let stationQuery = new sp.fdsnstation.StationQuery()
   .stationCode('HODGE')
   .locationCode('00')
   .channelCode('LH?')
-  .timeWindow(queryTimeWindow);
+  .timeRange(queryTimeWindow);
 // snip start traveltime
 let stationsPromise = stationQuery.queryChannels();
 let quakePromise = eventQuery.query();

@@ -5,7 +5,7 @@ let queryTimeWindow = sp.luxon.Interval.fromDateTimes(
   sp.util.isoToDateTime('2019-07-01'),
   sp.util.isoToDateTime('2019-07-31'));
 let eventQuery = new sp.fdsnevent.EventQuery()
-  .timeWindow(queryTimeWindow)
+  .timeRange(queryTimeWindow)
   .minMag(7)
   .latitude(35).longitude(-118)
   .maxRadius(3);
@@ -14,7 +14,7 @@ let stationQuery = new sp.fdsnstation.StationQuery()
   .stationCode('HODGE')
   .locationCode('00')
   .channelCode('HH?')
-  .timeWindow(queryTimeWindow);
+  .timeRange(queryTimeWindow);
 // snip start loaderinit
 let loader = new sp.seismogramloader.SeismogramLoader(stationQuery, eventQuery);
 loader.startOffset = -30;

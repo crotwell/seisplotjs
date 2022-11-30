@@ -18,7 +18,7 @@ new sp.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
       .stationCode('JSC')
       .locationCode('00')
       .channelCode('LHZ')
-      .timeWindow(timeWindow)
+      .timeRange(timeWindow)
       .querySeismograms();
 // snip start heli
   }).then(seisArray => {
