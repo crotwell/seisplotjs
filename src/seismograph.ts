@@ -624,13 +624,24 @@ export class Seismograph extends SeisPlotElement {
               let curPixel = Math.floor(startPixel + i * pixelsPerSample);
               let min = s.y[i];
               let max = s.y[i];
+              let minIdx = i;
+              let maxIdx = i;
               while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
-                if (min > s.y[i]) { min = s.y[i];}
-                if (max < s.y[i]) { max = s.y[i];}
+                if (min > s.y[i]) { min = s.y[i]; minIdx = i}
+                if (max < s.y[i]) { max = s.y[i]; maxIdx = i}
                 i++;
               }
-              context.lineTo(curPixel, yscaleForSDD(min));
-              context.lineTo(curPixel, yscaleForSDD(max));
+              // drawing min to max vs max to min depending on order
+              // helps a lot with avoiding fuzziness due to antialiasing
+              if (minIdx < maxIdx) {
+                // min occurs before max
+                context.lineTo(curPixel, Math.floor(yscaleForSDD(min)));
+                context.lineTo(curPixel, Math.ceil(yscaleForSDD(max)));
+              } else {
+                // max occurs before min
+                context.lineTo(curPixel, Math.ceil(yscaleForSDD(max)));
+                context.lineTo(curPixel, Math.floor(yscaleForSDD(min)));
+              }
             }
           } else {
             // draw all samples
@@ -641,7 +652,7 @@ export class Seismograph extends SeisPlotElement {
             ) {
               context.lineTo(
                 startPixel + i * pixelsPerSample,
-                yscaleForSDD(s.y[i]),
+                Math.round(yscaleForSDD(s.y[i])),
               );
             }
           }
