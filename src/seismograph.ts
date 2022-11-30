@@ -1799,15 +1799,15 @@ export function createFullMarkersForQuakeAtStation(
       quake.latitude,
       quake.longitude,
     );
-    let mag = "";
+    let magVal = "";
     let magStr = ""
     if (quake.hasPreferredMagnitude()) {
-      mag = quake.preferredMagnitude ? quake.preferredMagnitude.mag : "";
+      magVal = quake.preferredMagnitude ? `${quake.preferredMagnitude.mag}` : "";
       magStr = quake.preferredMagnitude ? quake.preferredMagnitude.toString() : "";
     }
     markers.push({
       markertype: "predicted",
-      name: `M${mag} ${quake.time.toFormat("HH:mm")}`,
+      name: `M${magVal} ${quake.time.toFormat("HH:mm")}`,
       time: quake.time,
       link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
       description: `${quake.time.toISO()}
