@@ -1,14 +1,14 @@
 
 import { Duration, Interval} from 'luxon';
 import type {TraveltimeJsonType} from "./traveltime";
-import {distaz, DistAzOutput} from "./distaz";
+import {distaz} from "./distaz";
 import {TraveltimeQuery, createOriginArrival} from "./traveltime";
 import {DataSelectQuery} from "./fdsndataselect";
 import {EventQuery} from "./fdsnevent";
 import {StationQuery} from "./fdsnstation";
 import {FedCatalogQuery} from "./irisfedcatalog";
 import {Quake} from "./quakeml";
-import {allStations, Network, Station} from "./stationxml";
+import {allStations, Network} from "./stationxml";
 import {SeismogramDisplayData} from "./seismogram";
 import {
   createMarkersForTravelTimes,
@@ -16,6 +16,24 @@ import {
 } from "./seismograph";
 import {isDef, isStringArg, stringify} from "./util";
 
+export class SeismogramLoadResult {
+  withFedCatalog: boolean = true;
+  withResponse: boolean = false;
+  markOrigin: boolean = true;
+  startPhaseList: Array<string> = [];
+  endPhaseList: Array<string> = [];
+  markedPhaseList: Array<string> = [];
+  startOffset: Duration;
+  endOffset: Duration;
+  networkList: Array<Network> = [];
+  quakeList: Array<Quake> = [];
+  traveltimeList: Array<[Quake, TraveltimeJsonType]> = [];
+  sddList: Array<SeismogramDisplayData> = [];
+  constructor() {
+    this.startOffset = Duration.fromMillis(0);// seconds;
+    this.endOffset = Duration.fromMillis(0); //seconds
+  }
+}
 /**
  * Loads seismograms based on queries to Station and Event web services.
  * Uses the traveltime web service to create times for data query. Default
@@ -37,10 +55,6 @@ export class SeismogramLoader {
   _markedPhaseList: Array<string>;
   _startOffset: Duration;
   _endOffset: Duration;
-  _networkList: Promise<Array<Network>> | null;
-  _quakeList: Promise<Array<Quake>> | null;
-  traveltimeList: Promise<Array<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> | null;
-  _sddList: Promise<Array<SeismogramDisplayData>> | null;
 
   constructor(
     stationQuery: StationQuery,
@@ -84,10 +98,6 @@ export class SeismogramLoader {
     this._markedPhaseList = [];
     this._startOffset = Duration.fromMillis(-30*1000);// seconds;
     this._endOffset = Duration.fromMillis(60*1000); //seconds
-    this._networkList = null;
-    this._quakeList = null;
-    this.traveltimeList = null;
-    this._sddList = null;
   }
 
   get startPhaseList(): Array<string> {
@@ -191,30 +201,12 @@ export class SeismogramLoader {
       );
     }
   }
-  get networkList(): Promise<Array<Network>> {
-    if (this._networkList === null) {
-      return this.load().then(([ netList, quakeList, sddList]) => netList);
-    }
-    return this._networkList;
-  }
-  get quakeList(): Promise<Array<Quake>> {
-    if (this._quakeList === null) {
-      return this.load().then(([ netList, quakeList, sddList]) => quakeList);
-    }
-    return this._quakeList;
-  }
-  get sddList(): Promise<Array<SeismogramDisplayData>> {
-    if (this._sddList === null) {
-      return this.load().then(([ netList, quakeList, sddList]) => sddList);
-    }
-    return this._sddList;
-  }
 
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
-    return this.load().then(([netList, quakeList, sddList]) => sddList);
+    return this.load().then(res => res.sddList);
   }
 
-  load(): Promise<[Array<Network>, Array<Quake>, Array<SeismogramDisplayData>]> {
+  load(): Promise<SeismogramLoadResult> {
     let fedcat;
     if (this.withFedCatalog) {
       fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
@@ -234,13 +226,14 @@ export class SeismogramLoader {
       );
     }
 
+    let networkListPromise;
     if (this.withResponse) {
-      this._networkList = fedcat.queryResponses();
+      networkListPromise = fedcat.queryResponses();
     } else {
-      this._networkList = fedcat.queryChannels();
+      networkListPromise = fedcat.queryChannels();
     }
 
-    this._quakeList = this.eventQuery.query();
+    let quakeListPromise = this.eventQuery.query();
     let allPhaseList: Array<string> = [];
     allPhaseList = allPhaseList.concat(
       this.startPhaseList,
@@ -255,105 +248,117 @@ export class SeismogramLoader {
     const allPhasesWithoutOrigin = allPhaseList
       .filter(p => p !== "origin")
       .join(",");
-    this.traveltimeList = Promise.all([this._networkList, this._quakeList]).then(
+    return Promise.all([networkListPromise, quakeListPromise]).then(
       ([netList, quakeList]) => {
-        const ttpromiseList: Array<Promise<[Station, Quake, TraveltimeJsonType, DistAzOutput]>> = [];
+        const ttpromiseList: Array<Promise<[Quake, TraveltimeJsonType]>> = [];
 
         for (const q of quakeList) {
+          // separate call per quake as depth might be different
+          const allDistDeg = [];
           for (const s of allStations(netList)) {
             if (s.timeRange.contains(q.time)) {
-              const taupQuery = new TraveltimeQuery();
               const daz = distaz(
                 s.latitude,
                 s.longitude,
                 q.latitude,
                 q.longitude,
               );
-              taupQuery.distdeg(daz.distanceDeg);
-              taupQuery.phases(allPhasesWithoutOrigin);
-              // save quake and station along with result from traveltime
-              ttpromiseList.push(
-                Promise.all([s, q, taupQuery.queryJson(), daz]),
-              );
+              allDistDeg.push(daz.distanceDeg);
             }
           }
+          const taupQuery = new TraveltimeQuery();
+          taupQuery.distdeg(allDistDeg);
+          taupQuery.phases(allPhasesWithoutOrigin);
+          // save quake along with result from traveltime
+          ttpromiseList.push(
+            Promise.all([q, taupQuery.queryJson()]),
+          );
+
         }
 
-        return Promise.all(ttpromiseList);
+        return Promise.all([Promise.all(ttpromiseList), netList, quakeList]);
       },
-    );
-    this._sddList = this.traveltimeList.then(ttpromiseList => {
+    ).then(([ttList, netList, quakeList]) => {
       const seismogramDataList = [];
 
-      for (const ttarr of ttpromiseList) {
-        const station = ttarr[0];
-        const quake = ttarr[1];
-        const ttjson = ttarr[2];
-        const distaz = ttarr[3];
-        // find earliest start and end arrival
-        let startArrival = null;
-        let endArrival = null;
+      for (const ttarr of ttList) {
+        const quake = ttarr[0];
+        const ttjson = ttarr[1];
+        for (const station of allStations(netList)) {
+          if ( ! station.timeRange.contains(quake.time)) {
+            // skip stations not active during quake
+            break;
+          }
+          const daz = distaz(
+            station.latitude,
+            station.longitude,
+            quake.latitude,
+            quake.longitude,
+          );
 
-        for (const pname of this.startPhaseList) {
-          if (
-            pname === "origin" &&
-            (startArrival === null || startArrival.time > 0)
-          ) {
-            startArrival = createOriginArrival(distaz.distanceDeg);
-          } else {
-            for (const a of ttjson.arrivals) {
-              if (
-                a.phase === pname &&
-                (startArrival===null || startArrival.time > a.time)
-              ) {
-                startArrival = a;
+          // find earliest start and end arrival
+          let startArrival = null;
+          let endArrival = null;
+
+          for (const pname of this.startPhaseList) {
+            if (pname === "origin" &&
+                (startArrival === null || startArrival.time > 0)) {
+              startArrival = createOriginArrival(daz.distanceDeg);
+            } else {
+              for (const a of ttjson.arrivals) {
+                // look for station with same distance
+                if ((Math.abs((a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6 ||
+                     Math.abs(360-(a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6  ) &&
+                    a.phase === pname &&
+                    (startArrival===null || startArrival.time > a.time) ) {
+                  startArrival = a;
+                }
               }
             }
           }
-        }
 
-        for (const pname of this.endPhaseList) {
-          // weird, but might as well allow origin to be the end phase
-          if (
-            pname === "origin" &&
-            (endArrival===null || endArrival.time < 0)
-          ) {
-            endArrival = createOriginArrival(distaz.distanceDeg);
-          } else {
-            for (const a of ttjson.arrivals) {
-              if (
-                a.phase === pname &&
-                (endArrival===null || endArrival.time < a.time)
-              ) {
-                endArrival = a;
+          for (const pname of this.endPhaseList) {
+            // weird, but might as well allow origin to be the end phase
+            if (pname === "origin" &&
+                (endArrival===null || endArrival.time < 0)) {
+              endArrival = createOriginArrival(daz.distanceDeg);
+            } else {
+              for (const a of ttjson.arrivals) {
+                if ((Math.abs((a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6 ||
+                     Math.abs(360-(a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6  ) &&
+                  a.phase === pname &&
+                  (endArrival===null || endArrival.time < a.time)
+                ) {
+                  endArrival = a;
+                }
               }
             }
           }
-        }
 
-        if (isDef(startArrival) && isDef(endArrival)) {
-          const startTime = quake.time
-            .plus(Duration.fromMillis(1000*startArrival.time)) // seconds
-            .plus(this.startOffset);
-          const endTime = quake.time
-            .plus(Duration.fromMillis(1000*endArrival.time)) // seconds
-            .plus(this.endOffset);
-          const timeRange = Interval.fromDateTimes(startTime, endTime);
-          const phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
+          if (isDef(startArrival) && isDef(endArrival)) {
+            const startTime = quake.time
+              .plus(Duration.fromMillis(1000*startArrival.time)) // seconds
+              .plus(this.startOffset);
+            const endTime = quake.time
+              .plus(Duration.fromMillis(1000*endArrival.time)) // seconds
+              .plus(this.endOffset);
+            const timeRange = Interval.fromDateTimes(startTime, endTime);
+            const phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
 
-          if (this.markOrigin) {
-            phaseMarkers.push(createMarkerForOriginTime(quake));
-          }
+            if (this.markOrigin) {
+              phaseMarkers.push(createMarkerForOriginTime(quake));
+            }
 
-          for (const chan of station.channels) {
-            const sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
-              chan,
-              timeRange,
-            );
-            sdd.addQuake(quake);
-            sdd.addTravelTimes(ttjson);
-            sdd.addMarkers(phaseMarkers);
-            seismogramDataList.push(sdd);
+            for (const chan of station.channels) {
+              const sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
+                chan,
+                timeRange,
+              );
+              sdd.addQuake(quake);
+              sdd.addTravelTimes(ttjson);
+              sdd.addMarkers(phaseMarkers);
+              seismogramDataList.push(sdd);
+            }
           }
         }
       }
@@ -375,8 +380,22 @@ export class SeismogramLoader {
         );
       }
 
-      return sddListPromise;
+      return Promise.all([sddListPromise, ttList, netList, quakeList]);
+    }).then(([sddList, ttList, netList, quakeList]) => {
+      const out = new SeismogramLoadResult();
+      out.withFedCatalog = this.withFedCatalog;
+      out.withResponse = this.withResponse;
+      out.markOrigin = this.markOrigin;
+      out.startPhaseList = this.startPhaseList;
+      out.endPhaseList = this.endPhaseList;
+      out.markedPhaseList = this.markedPhaseList;
+      out.startOffset = this.startOffset;
+      out.endOffset = this.endOffset;
+      out.networkList = netList;
+      out.quakeList = quakeList;
+      out.traveltimeList = ttList;
+      out.sddList = sddList;
+      return out;
     });
-    return Promise.all([this._networkList, this._quakeList, this._sddList]);
   }
 }

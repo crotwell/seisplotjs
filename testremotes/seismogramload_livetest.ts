@@ -32,16 +32,10 @@ test( "load HODGE for local eq test", () => {
   seisLoad.markedPhaseList = "PcP";
   seisLoad.startOffset = Duration.fromMillis(-30*1000); // seconds
   seisLoad.endOffset = Duration.fromMillis(120*1000); // or as duration
-  return Promise.all([
-    seisLoad.loadSeismograms().then( sddList  => {
-      expect(sddList).toHaveLength(3);
-    }),
-    seisLoad.networkList.then(networkList => {
-      expect(networkList).toHaveLength(1);
-    }),
-    seisLoad.quakeList.then(quakeList => {
-      expect(quakeList).toHaveLength(1);
-    })
-  ] );
+  return seisLoad.load().then( loadResult  => {
+      expect(loadResult.sddList).toHaveLength(3);
+      expect(loadResult.networkList).toHaveLength(1);
+      expect(loadResult.quakeList).toHaveLength(1);
+    });
 
 });

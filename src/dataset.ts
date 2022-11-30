@@ -30,15 +30,11 @@ export class Dataset {
   }
   static fromSeismogramLoader(loader: SeismogramLoader): Promise<Dataset> {
     return loader.load()
-    .then( ([networkList, quakeList, sddList]) => {
+    .then( loadResult => {
       const dataset = new Dataset();
-      dataset.waveforms = sddList;
-      if (quakeList !== null ) {
-        dataset.catalog = quakeList;
-      }
-      if (networkList !== null) {
-        dataset.inventory = networkList;
-      }
+      dataset.waveforms = loadResult.sddList;
+      dataset.catalog = loadResult.quakeList;
+      dataset.inventory = loadResult.networkList;
       return dataset;
     });
   }
