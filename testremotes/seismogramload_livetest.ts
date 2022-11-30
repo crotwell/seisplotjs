@@ -33,9 +33,9 @@ test( "load HODGE for local eq test", () => {
   seisLoad.startOffset = Duration.fromMillis(-30*1000); // seconds
   seisLoad.endOffset = Duration.fromMillis(120*1000); // or as duration
   return seisLoad.load().then( loadResult  => {
-      expect(loadResult.sddList).toHaveLength(3);
-      expect(loadResult.networkList).toHaveLength(1);
-      expect(loadResult.quakeList).toHaveLength(1);
+      expect(loadResult.waveforms).toHaveLength(3);
+      expect(loadResult.inventory).toHaveLength(1);
+      expect(loadResult.catalog).toHaveLength(1);
     });
 
 });

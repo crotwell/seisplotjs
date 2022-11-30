@@ -1,4 +1,5 @@
 
+import {Dataset} from "./dataset";
 import { Duration, Interval} from 'luxon';
 import type {TraveltimeJsonType} from "./traveltime";
 import {distaz} from "./distaz";
@@ -16,24 +17,6 @@ import {
 } from "./seismograph";
 import {isDef, isStringArg, stringify} from "./util";
 
-export class SeismogramLoadResult {
-  withFedCatalog: boolean = true;
-  withResponse: boolean = false;
-  markOrigin: boolean = true;
-  startPhaseList: Array<string> = [];
-  endPhaseList: Array<string> = [];
-  markedPhaseList: Array<string> = [];
-  startOffset: Duration;
-  endOffset: Duration;
-  networkList: Array<Network> = [];
-  quakeList: Array<Quake> = [];
-  traveltimeList: Array<[Quake, TraveltimeJsonType]> = [];
-  sddList: Array<SeismogramDisplayData> = [];
-  constructor() {
-    this.startOffset = Duration.fromMillis(0);// seconds;
-    this.endOffset = Duration.fromMillis(0); //seconds
-  }
-}
 /**
  * Loads seismograms based on queries to Station and Event web services.
  * Uses the traveltime web service to create times for data query. Default
@@ -200,10 +183,10 @@ export class SeismogramLoader {
   }
 
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
-    return this.load().then(res => res.sddList);
+    return this.load().then(res => res.waveforms);
   }
 
-  load(): Promise<SeismogramLoadResult> {
+  load(): Promise<Dataset> {
 
     let networkListPromise;
     if (this.stationQuery instanceof StationQuery) {
@@ -282,13 +265,16 @@ export class SeismogramLoader {
         }
 
         return Promise.all([Promise.all(ttpromiseList), netList, quakeList]);
-      },
-    ).then(([ttList, netList, quakeList]) => {
+    }).then(([ttList, netList, quakeList]) => {
+      const ttMap = new Map<Quake, any>();
+      for (const [q, tt] of ttList) {
+        ttMap.set(q, tt);
+      }
+      return Promise.all([ttMap, netList, quakeList]);
+    }).then(([ttMap, netList, quakeList]) => {
       const seismogramDataList = [];
 
-      for (const ttarr of ttList) {
-        const quake = ttarr[0];
-        const ttjson = ttarr[1];
+      for (const [quake, ttjson] of ttMap) {
         for (const station of allStations(netList)) {
           if ( ! station.timeRange.contains(quake.time)) {
             // skip stations not active during quake
@@ -385,22 +371,14 @@ export class SeismogramLoader {
         );
       }
 
-      return Promise.all([sddListPromise, ttList, netList, quakeList]);
-    }).then(([sddList, ttList, netList, quakeList]) => {
-      const out = new SeismogramLoadResult();
-      out.withFedCatalog = this.withFedCatalog;
-      out.withResponse = this.withResponse;
-      out.markOrigin = this.markOrigin;
-      out.startPhaseList = this.startPhaseList;
-      out.endPhaseList = this.endPhaseList;
-      out.markedPhaseList = this.markedPhaseList;
-      out.startOffset = this.startOffset;
-      out.endOffset = this.endOffset;
-      out.networkList = netList;
-      out.quakeList = quakeList;
-      out.traveltimeList = ttList;
-      out.sddList = sddList;
-      return out;
+      return Promise.all([sddListPromise, ttMap, netList, quakeList]);
+    }).then(([sddList, ttMap, networkList, quakeList]) => {
+      const dataset = new Dataset();
+      dataset.waveforms = sddList;
+      dataset.catalog = quakeList;
+      dataset.inventory = networkList;
+      dataset.extra.set("traveltimes", ttMap);
+      return dataset;
     });
   }
 }

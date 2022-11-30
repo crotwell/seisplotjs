@@ -5,7 +5,6 @@ import * as mseed3 from "./mseed3";
 import {Quake, parseQuakeML} from "./quakeml";
 import {Network, parseStationXml, allChannels} from "./stationxml";
 import {SeismogramDisplayData} from "./seismogram";
-import {SeismogramLoader} from "./seismogramloader";
 import {doFetchWithTimeout, defaultFetchInitObj,
   isDef, XML_MIME, BINARY_MIME, isoToDateTime} from "./util";
 import JSZip from "jszip";
@@ -18,25 +17,18 @@ export const CATALOG_FILE = "catalog.quakeml";
 export const INVENTORY_FILE = "inventory.staxml";
 
 export class Dataset {
+  name: String = "dataset";
   catalog: Array<Quake>;
   inventory: Array<Network>;
   waveforms: Array<SeismogramDisplayData>;
   processedWaveforms: Array<SeismogramDisplayData>;
+  extra: Map<String, any>;
   constructor() {
     this.catalog = new Array<Quake>(0);
     this.inventory = new Array<Network>(0);
     this.waveforms = new Array<SeismogramDisplayData>(0);
     this.processedWaveforms = new Array<SeismogramDisplayData>(0);
-  }
-  static fromSeismogramLoader(loader: SeismogramLoader): Promise<Dataset> {
-    return loader.load()
-    .then( loadResult => {
-      const dataset = new Dataset();
-      dataset.waveforms = loadResult.sddList;
-      dataset.catalog = loadResult.quakeList;
-      dataset.inventory = loadResult.networkList;
-      return dataset;
-    });
+    this.extra = new Map();
   }
   saveToZipFile(filename: string = ZIP_FILENAME) {
     let dirname = DATASET_DIR;
