@@ -186,6 +186,14 @@ export class SeismogramLoader {
     return this.load().then(res => res.waveforms);
   }
 
+  /**
+   * Loads a Dataset based on the input station and event queries.
+   *
+   * The raw traveltimes are included in the extras of the dataset with
+   * key "traveltimes", which is a Map with the quake as the key.
+   *
+   * @return a Dataset
+   */
   load(): Promise<Dataset> {
 
     let networkListPromise;
