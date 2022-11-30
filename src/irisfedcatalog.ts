@@ -559,14 +559,6 @@ export class FedCatalogQuery extends FDSNCommon {
     this.endTime(se.end);
     return this;
   }
-  /**
-   * @deprecated
-   * @param  se               [description]
-   * @returns    [description]
-   */
-  timeWindow(se: Interval): FedCatalogQuery {
-    return this.timeRange(se);
-  }
 
   /**
    * Get/Set the startbefore query parameter.

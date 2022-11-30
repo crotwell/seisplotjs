@@ -183,13 +183,6 @@ export class SeismogramSegment {
     return this._endTime_cache;
   }
 
-  /**
-   * @deprecated
-   */
-  get timeWindow(): Interval {
-    return this.timeRange;
-  }
-
   get timeRange(): Interval {
     return Interval.fromDateTimes(this.startTime, this.endTime);
   }

@@ -285,15 +285,6 @@ export class DataSelectQuery extends FDSNCommon {
   }
 
   /**
-   * @deprecated
-   * @param  se               time range
-   * @returns    this
-   */
-  timeWindow(se: Interval): DataSelectQuery {
-    return this.timeRange(se);
-  }
-
-  /**
    * Get/Set the quality query parameter.
    *
    * @param value optional new value if setting

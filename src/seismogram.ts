@@ -152,10 +152,6 @@ export class Seismogram {
     return this._interval;
   }
 
-  get timeWindow(): Interval {
-    return this.timeRange;
-  }
-
   get networkCode(): string|null {
     return this.sourceId.networkCode;
   }
@@ -825,10 +821,6 @@ export class SeismogramDisplayData {
 
   get end(): DateTime {
     return this.timeRange.end;
-  }
-
-  get timeWindow(): Interval {
-    return this.timeRange;
   }
 
   get numPoints(): number {

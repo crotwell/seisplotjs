@@ -141,7 +141,7 @@ export function parseMSeed3Records(
       );
     }
 
-    const dr = MSeed3Record.createFromDataView(dataView);
+    const dr = MSeed3Record.parseSingleDataRecord(dataView);
     dataRecords.push(dr);
     offset += dr.getSize();
   }
@@ -189,17 +189,6 @@ export class MSeed3Record {
     );
     const xr = new MSeed3Record(header, extraHeaders, rawData);
     return xr;
-  }
-
-  /**
-   * [createFromDataView description]
-   *
-   * @deprecated
-   * @param   dataView record bytes
-   * @returns record
-   */
-  static createFromDataView(dataView: DataView): MSeed3Record {
-    return MSeed3Record.parseSingleDataRecord(dataView);
   }
 
   /**

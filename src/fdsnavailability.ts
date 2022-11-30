@@ -309,14 +309,6 @@ export class AvailabilityQuery extends FDSNCommon {
     this.endTime(se.end);
     return this;
   }
-  /**
-   * @deprecated
-   * @param  se               time interval
-   * @returns    this
-   */
-  timeWindow(se: Interval): AvailabilityQuery {
-    return this.timeRange(se);
-  }
 
   /**
    * Gets/Sets the quality parameter for the query.

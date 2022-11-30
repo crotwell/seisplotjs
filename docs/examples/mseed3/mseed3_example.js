@@ -8,7 +8,7 @@ dsQuery.networkCode('CO')
   .locationCode('00')
   .channelCode('LHZ')
   .format(seisplotjs.fdsndataselect.FORMAT_MINISEED_THREE)
-  .timeWindow(timeWindow);
+  .timeRange(timeWindow);
 // snip start queryseis
 // this is better way to get seismograms
 //dsQuery.querySeismograms().then(seisArray => {

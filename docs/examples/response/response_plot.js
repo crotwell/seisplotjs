@@ -53,7 +53,7 @@ function load_fdsn() {
     .stationCode(chan_chooser.station)
     .locationCode(chan_chooser.location)
     .channelCode(chan_chooser.channel);
-//    .timeWindow(queryTimeWindow);
+//    .timeRange(queryTimeWindow);
   let url = stationQuery.formURL("response");
   seisplotjs.d3.select(".response_url").text(url);
   stationQuery.queryResponses().then(networkList => {

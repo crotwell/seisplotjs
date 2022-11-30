@@ -330,15 +330,6 @@ export class StationQuery extends FDSNCommon {
   }
 
   /**
-   *@deprecated
-   * @param  se   time interval
-   * @returns    this
-   */
-  timeWindow(se: Interval): StationQuery {
-    return this.timeRange(se);
-  }
-
-  /**
    * Get/Set the startbefore query parameter.
    *
    * @param value optional new value if setting

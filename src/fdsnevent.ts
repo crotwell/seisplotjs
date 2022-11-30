@@ -285,15 +285,6 @@ export class EventQuery extends FDSNCommon {
   }
 
   /**
-   *@deprecated
-   * @param  se   time interval
-   * @returns    this
-   */
-  timeWindow(se: Interval): EventQuery {
-    return this.timeRange(se);
-  }
-
-  /**
    * Get/Set the updatedafter query parameter.
    *
    * @param value optional new value if setting
