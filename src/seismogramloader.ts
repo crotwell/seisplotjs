@@ -44,11 +44,11 @@ export class SeismogramLoadResult {
  * @param dataselectQuery  optional additional parameters for seismogram query
  */
 export class SeismogramLoader {
-  stationQuery: StationQuery;
+  stationQuery: StationQuery | Promise<Array<Network>>;
   withFedCatalog: boolean;
   withResponse: boolean;
   markOrigin: boolean;
-  eventQuery: EventQuery;
+  eventQuery: EventQuery | Promise<Array<Quake>>;
   dataselectQuery: null | DataSelectQuery;
   _startPhaseList: Array<string>;
   _endPhaseList: Array<string>;
@@ -57,35 +57,32 @@ export class SeismogramLoader {
   _endOffset: Duration;
 
   constructor(
-    stationQuery: StationQuery,
-    eventQuery: EventQuery,
+    stationQuery: StationQuery | Array<Network>,
+    eventQuery: EventQuery | Array<Quake>,
     dataselectQuery?: DataSelectQuery,
   ) {
-    if (!isDef(stationQuery)) {
-      throw new Error("stationQuery must not be null");
-    }
 
-    if (!(stationQuery instanceof StationQuery)) {
+    if (stationQuery instanceof StationQuery) {
+      this.stationQuery = stationQuery;
+    } else if ( Array.isArray(stationQuery)) {
+      this.stationQuery = Promise.resolve(stationQuery);
+    } else {
       throw new Error(
-        "1st arg must be a StationQuery: " +
+        "1st arg must be a StationQuery or array of Networks: " +
           stringify(stationQuery),
       );
     }
 
-    if (!isDef(eventQuery)) {
-      throw new Error("eventQuery must not be null");
-    }
-
-    if (!(eventQuery instanceof EventQuery)) {
-      throw new Error(
-        "2nd arg must be a EventQuery: " + stringify(eventQuery),
-      );
+    if (eventQuery instanceof EventQuery) {
+    this.eventQuery = eventQuery;
+    } else if ( Array.isArray(eventQuery)) {
+      this.eventQuery = Promise.resolve(eventQuery);
+    } else {
+      throw new Error("2nd arg must be EventQuery or array of Quake: "+stringify(eventQuery));
     }
 
     this.withFedCatalog = true;
-    this.stationQuery = stationQuery;
     this.withResponse = false;
-    this.eventQuery = eventQuery;
     this.markOrigin = true;
     this.dataselectQuery = null;
 
@@ -207,33 +204,41 @@ export class SeismogramLoader {
   }
 
   load(): Promise<SeismogramLoadResult> {
-    let fedcat;
-    if (this.withFedCatalog) {
-      fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
-    } else {
-      fedcat = this.stationQuery;
-    }
-
-    if (!this.stationQuery.isSomeParameterSet()) {
-      throw new Error(
-        "Must set some station parameter to avoid asking for everything.",
-      );
-    }
-
-    if (!this.eventQuery.isSomeParameterSet()) {
-      throw new Error(
-        "Must set some event parameter to avoid asking for everything.",
-      );
-    }
 
     let networkListPromise;
-    if (this.withResponse) {
-      networkListPromise = fedcat.queryResponses();
+    if (this.stationQuery instanceof StationQuery) {
+      if ( !this.stationQuery.isSomeParameterSet()) {
+        throw new Error(
+          "Must set some station parameter to avoid asking for everything.",
+        );
+      }
+      let fedcat;
+      if (this.withFedCatalog) {
+        fedcat = FedCatalogQuery.fromStationQuery(this.stationQuery);
+      } else {
+        fedcat = this.stationQuery;
+      }
+      if (this.withResponse) {
+        networkListPromise = fedcat.queryResponses();
+      } else {
+        networkListPromise = fedcat.queryChannels();
+      }
     } else {
-      networkListPromise = fedcat.queryChannels();
+      networkListPromise = this.stationQuery;
     }
 
-    let quakeListPromise = this.eventQuery.query();
+    let quakeListPromise;
+    if (this.eventQuery instanceof EventQuery) {
+      if (!this.eventQuery.isSomeParameterSet()) {
+        throw new Error(
+          "Must set some event parameter to avoid asking for everything.",
+        );
+      }
+      quakeListPromise = this.eventQuery.query();
+    } else {
+      quakeListPromise = this.eventQuery;
+    }
+
     let allPhaseList: Array<string> = [];
     allPhaseList = allPhaseList.concat(
       this.startPhaseList,
