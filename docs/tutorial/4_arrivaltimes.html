@@ -131,8 +131,17 @@
         then()
        </code>
        call after we get the quake and station but before we ask for the
-            seismograms that will put the travel times into text near the bottom
-            of the page.
+        seismograms that will put the travel times into text near the bottom
+        of the page. Note that if you wish to actually process the travel
+        times instead of just display, then using the setting the
+       <code>
+        queryJson()
+       </code>
+       instead of
+       <code>
+        queryText()
+       </code>
+       is more useful to avoid parsing the text.
       </p>
       <pre><code class="language-javascript" snippet="traveltime">
 let stationsPromise = stationQuery.queryChannels();
@@ -142,9 +151,9 @@ const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) =&gt; {
   let quakeTTimes = quakeList.map(q =&gt; {
     const allDistDeg = [];
-    for (const s of stationxml.allStations(networkList)) {
+    for (const s of sp.stationxml.allStations(networkList)) {
       if (s.timeRange.contains(q.time)) {
-        const daz = distaz.distaz(
+        const daz = sp.distaz.distaz(
           s.latitude,
           s.longitude,
           q.latitude,
@@ -153,20 +162,19 @@ const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
         allDistDeg.push(daz.distanceDeg);
       }
     }
-    const taupQuery = new traveltime.TraveltimeQuery();
+    const taupQuery = new sp.traveltime.TraveltimeQuery();
     taupQuery.distdeg(allDistDeg);
     taupQuery.evdepthInMeter(q.depth);
     taupQuery.phases(allPhases);
 //    return taupQuery.queryJson();
     return taupQuery.queryText();
   });
-  return Promise.all( [ quakePromise, stationsPromise, Promise.all( quakeTTimes ) ] );
+  return Promise.all( [ quakeList, networkList, Promise.all( quakeTTimes ) ] );
 }).then( ( [ quakeList, networkList, quakeTTimes ] ) =&gt; {
   const ttdiv = document.querySelector("#traveltimes");
   quakeTTimes.forEach(qtt =&gt; {
     const preEl = ttdiv.appendChild(document.createElement("pre"));
     preEl.textContent = qtt;
-//    preEl.textContent = JSON.stringify(qtt, null, 2);
   });
 });
 </code></pre>
@@ -185,73 +193,16 @@ const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
             for other phases that we may wish to mark on the plot. The
             loader handles figuring out the travel times for each quake-station,
             associating the request with a SeismogramDisplayData and retrieving
-            the waveform. Should you need to raw traveltimes, they are
+            the waveform.
       </p>
       <pre><code class="language-javascript" snippet="seismogramload">
 const loader = new seismogramloader.SeismogramLoader(stationQuery, eventQuery);
 loader.startOffset = -300;
 loader.endOffset = 1200;
 loader.markedPhaseList = "PcP,SS";
-const loadPromise = loader.loadSeismograms();
-//dataset.Dataset.fromSeismogramLoader(loader).then(dataset =&gt; dataset.saveToZipFile());
 
-loadPromise.then(seismogramDataList =&gt; {
-  seismogramDataList = sorting.reorderXYZ(seismogramDataList);
-  mymap.seisData = seismogramDataList;
-
-</code></pre>
-      <p>
-       Now in the next
-       <code>
-        then
-       </code>
-       , we can use add the travel time to the
-            origin time to get a start for our request.
-            The little flags for phase arrivals are
-       <code>
-        Marker
-       </code>
-       objects
-            and we put them and the quake into our
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       objects.
-            One important thing
-            to keep in mind with time is that the moment objects from the
-       <a href="https://momentjs.com/docs/">
-        momentjs
-       </a>
-       library that we
-            use are mutible, and so you should always create a copy before
-            modifying like
-       <code class="language-javascript">
-        seisplotjs.moment.utc(quakeList[0].time)
-       </code>
-       as
-            otherwise you will change the origin time of the quake. The
-       <code class="language-javascript">
-        postQuerySeismograms()
-       </code>
-       will parse the miniseed in the response and then create seismograms
-            within each
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       object,
-            making it easy to associate the new waveform with the request time
-            window, channel, and quake.
-      </p>
-      <pre><code class="language-javascript" snippet="seismogramload">
-const loader = new seismogramloader.SeismogramLoader(stationQuery, eventQuery);
-loader.startOffset = -300;
-loader.endOffset = 1200;
-loader.markedPhaseList = "PcP,SS";
-const loadPromise = loader.loadSeismograms();
-//dataset.Dataset.fromSeismogramLoader(loader).then(dataset =&gt; dataset.saveToZipFile());
-
-loadPromise.then(seismogramDataList =&gt; {
-  seismogramDataList = sorting.reorderXYZ(seismogramDataList);
+loader.load().then(dataset =&gt; {
+  let seismogramDataList = sorting.reorderXYZ(dataset.waveforms);
   mymap.seisData = seismogramDataList;
 
 </code></pre>
@@ -267,19 +218,17 @@ loadPromise.then(seismogramDataList =&gt; {
   let commonSeisConfig = new seismographconfig.SeismographConfig();
   commonSeisConfig.linkedAmpScale = new scale.LinkedAmplitudeScale();
   commonSeisConfig.linkedTimeScale = new scale.LinkedTimeScale();
-  commonSeisConfig.wheelZoom = false;
   commonSeisConfig.doGain = true;
   for( let sdd of seismogramDataList) {
-    let seisConfig = commonSeisConfig.clone();
-    let graph = new seismograph.Seismograph([ sdd ], seisConfig);
+    let graph = new seismograph.Seismograph([ sdd ], commonSeisConfig);
     graphList.push(graph);
     div.appendChild(graph);
   }
-  return Promise.all([ seismogramDataList, graphList ]);
+  return Promise.all([ seismogramDataList, graphList, dataset ]);
 </code></pre>
       <p>
-       For a little extra, we also can plot the particle motion around the
-            P wave for these seismograms. First we need to add a div to to the html.
+       For something a little extra, we also can plot the particle motion around the
+            S wave for these seismograms. First we need to add a div to to the html.
       </p>
       <pre><code class="language-html">
             &lt;div  id="myparticlemotion"&gt;
@@ -289,10 +238,10 @@ loadPromise.then(seismogramDataList =&gt; {
        And some styling in the &lt;style&gt; at the top.
       </p>
       <pre><code class="language-css">
-          div.particlemotionContainer  {
+          sp-particle-motion  {
             float:left;
-            height: 300px;
-            width: 320px;
+            width: 32vw;
+            height: 32vw;
           }
           </code></pre>
       <p>
@@ -301,7 +250,7 @@ loadPromise.then(seismogramDataList =&gt; {
         to show the time range plotted.
       </p>
       <pre><code class="language-javascript" snippet="particlemotion">
-}).then( ( [ seismogramDataList, graphList ] ) =&gt; {
+}).then( ( [ seismogramDataList, graphList, dataset ] ) =&gt; {
   let pmdiv = document.querySelector("div#myparticlemotion");
   console.log(`pmdiv: ${pmdiv}`)
   let firstS = seismogramDataList[0].traveltimeList.find(a =&gt; a.phase.startsWith("S"));
@@ -331,20 +280,15 @@ loadPromise.then(seismogramDataList =&gt; {
   pmSeisConfig.doGain = doGain;
   let pmpA = new particlemotion.ParticleMotion(xSeisData, ySeisData, pmSeisConfig);
   pmdiv.appendChild(pmpA);
-  //pmpA.draw();
   let pmpB = new particlemotion.ParticleMotion(xSeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpB);
-  //pmpB.draw();
   let pmpC = new particlemotion.ParticleMotion(ySeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpC);
-  //pmpC.draw();
 
-  return Promise.all([ seismogramDataList, graphList ]);
+  return Promise.all([ seismogramDataList, graphList, dataset ]);
 }).catch( function(error) {
-    const div = document.querySelector('div#myseismograph');
-    div.innerHTML = `
-      &lt;p&gt;Error loading data. ${error}&lt;/p&gt;
-    `;
+  const div = document.querySelector('div#myseismograph');
+  div.innerHTML = `&lt;p&gt;Error loading data. ${error}&lt;/p&gt;`;
   console.assert(false, error);
 });
 </code></pre>

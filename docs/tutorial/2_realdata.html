@@ -110,14 +110,22 @@
         FDSNWS dataselect
        </a>
        web service to grab some actual seismic data.
-        Seisplotjs.util has some helper functions to create luxon Intervals from
+        Seisplotjs's util module has some helper functions to create
+       <a href="https://github.com/moment/luxon#readme">
+        Luxon
+       </a>
+       Intervals from
         any combination of start, end and duration. The parameters
-        for the DataSelectQuery match those listed in the
+        for the
+       <a href="../api/fdsndataselect.html#dataselectquery">
+        DataSelectQuery
+       </a>
+       match those listed in the
        <a href="http://www.fdsn.org/webservices/">
         fdsnws-dataselect
        </a>
        specification, along with some functions that can set multiple parameters
-       at once, such a timeWindow. This example only uses the simple
+       at once, such a timeRange. This example only uses the simple
        <code class="language-html">
         GET
        </code>
@@ -135,19 +143,15 @@
             that allows many channel-time range pairs to be requested at once.
       </p>
       <pre><code class="language-javascript" snippet="querystation">
-import {
-  fdsndataselect,
-  seismogram, seismograph,
-  seismographconfig, util, luxon
-} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
-let timeWindow = util.startDuration('2019-07-06T03:19:53Z', 1800);
-let dsQuery = new fdsndataselect.DataSelectQuery();
+let timeWindow = sp.util.startDuration('2019-07-06T03:19:53Z', 1800);
+let dsQuery = new sp.fdsndataselect.DataSelectQuery();
 dsQuery.networkCode('CO')
   .stationCode('HODGE')
   .locationCode('00')
   .channelCode('LH?')
-  .timeWindow(timeWindow);
+  .timeRange(timeWindow);
 </code></pre>
       <p>
        One important difference here is that, unlike the previous example,
@@ -176,14 +180,13 @@ dsQuery.networkCode('CO')
       </p>
       <pre><code class="language-javascript" snippet="queryseis">
 dsQuery.querySeismograms().then(seisArray =&gt; {
-    // only plot the first 3 seismograms
     const div = document.querySelector('div#myseismograph');
-    let seisConfig = new seismographconfig.SeismographConfig();
+    let seisConfig = new sp.seismographconfig.SeismographConfig();
     let seisData = [];
     for (let s of seisArray) {
-      seisData.push(seismogram.SeismogramDisplayData.fromSeismogram(s));
+      seisData.push(sp.seismogram.SeismogramDisplayData.fromSeismogram(s));
     }
-    let graph = new seismograph.Seismograph(seisData, seisConfig);
+    let graph = new sp.seismograph.Seismograph(seisData, seisConfig);
     div.appendChild(graph);
   }).catch( function(error) {
     const div = document.querySelector('div#myseismograph');

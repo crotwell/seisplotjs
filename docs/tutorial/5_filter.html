@@ -109,47 +109,24 @@
             apply the full instrument response to correct to displacement.
             First, lets switch from the LH? channels, recorded
             at one sample per second, to the HH? channels, recorded at 100 sps
-            to give us a wider frequency band to play with. Since we will need
-            the response information as well, we will need to change from
-            using
-       <code class="language-javascript">
-        queryChannels()
-       </code>
-       to
-       <code class="language-javascript">
-        queryResponses()
-       </code>
-       in the
-       <code class="language-javascript">
-        stationQuery
-       </code>
-       . This will return stationXML with the full response filled in for each
-        channel. We can also the time window used in our dataselect query
-        to use offsets from the predicted arrivals, windowing in on just the
-        range we need around the P wave.
-        This is all possible by modifying the functionality
-        shown in the previous tutorial. However, because getting seismograms
-        for an earthquake at a channel based on predicted arrival times is
-        such a common activity, there is a tool,
-       <code class="language-javascript">
-        SeismogramLoader
-       </code>
-       that does this for us.
+            to give us a wider frequency band to play with.
+        We will need the stationXML with the full response filled in for each
+        channel.
       </p>
       <p>
        The first steps will look a lot like the previous tutorial, where we
         set up the stationQuery and eventQuery with our search parameters.
       </p>
       <pre><code class="language-javascript" snippet="eventandstation">
-let queryTimeWindow = seisplotjs.luxon.Interval.fromDateTimes(
-  seisplotjs.util.isoToDateTime('2019-07-01'),
-  seisplotjs.util.isoToDateTime('2019-07-31'));
-let eventQuery = new seisplotjs.fdsnevent.EventQuery()
+let queryTimeWindow = sp.luxon.Interval.fromDateTimes(
+  sp.util.isoToDateTime('2019-07-01'),
+  sp.util.isoToDateTime('2019-07-31'));
+let eventQuery = new sp.fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
   .latitude(35).longitude(-118)
   .maxRadius(3);
-let stationQuery = new seisplotjs.fdsnstation.StationQuery()
+let stationQuery = new sp.fdsnstation.StationQuery()
   .networkCode('CO')
   .stationCode('HODGE')
   .locationCode('00')
@@ -162,97 +139,88 @@ let stationQuery = new seisplotjs.fdsnstation.StationQuery()
             arrival is, say 300 seconds instead of 1800.
       </p>
       <pre><code class="language-javascript" snippet="loaderinit">
-let loader = new seisplotjs.seismogramloader.SeismogramLoader(stationQuery, eventQuery);
+let loader = new sp.seismogramloader.SeismogramLoader(stationQuery, eventQuery);
 loader.startOffset = -30;
 loader.endOffset = 270;
 loader.markedPhaseList = "origin,PP,pP";
 loader.withResponse = true;
-let loaderSDDPromise = loader.loadSeismograms();
+loader.load().then(dataset =&gt; {
+
 
 </code></pre>
       <p>
-       We are not displaying maps here, but if we were then we can add a then
-        function on loader.stationList and loader.quakeList, which are both
-        Promises set up by the loadSeismograms method. These are useful when
-        we need direct access to intermediate values as SeismogramLoader
-        works across the various remote call. We can set the text in the
+       We can set the text in the
         span elements here just as an example. Note that the quake and channel
-        are saved within the list of SeismogramDisplayData objects
-        we will get at the end, so they are not lost even if we do not make
-        use of these extra then methods.
+        are also saved within the list of SeismogramDisplayData objects
+        so they are not lost even if we do not make
+        use of these extra dataset fields.
       </p>
       <pre><code class="language-javascript" snippet="map">
-let stationsPromise = loader.networkList.then(networkList =&gt; {
   let staText = "";
-  for (let s of seisplotjs.stationxml.allStations(networkList)) {
+  for (let s of sp.stationxml.allStations(dataset.inventory)) {
     staText += s.codes();
   }
-  seisplotjs.d3.select('span#stationCode').text(staText);
-});
-let quakePromise = loader.quakeList.then( quakeList =&gt; {
+  document.querySelector('span#stationCode').textContent=staText;
+
   let quakeText="";
-  for (const q of quakeList) {
-    quakeText+=quakeList[0].description+" ";
+  for (const q of dataset.catalog) {
+    quakeText+=q.description+" ";
   }
-  seisplotjs.d3.select('span#earthquakeDescription').text(quakeText);
-});
+  document.querySelector('span#earthquakeDescription').textContent =quakeText;
+
 </code></pre>
       <p>
        Now we insert the filtering code after the seismograms have arrived
-        but before we plot them. We will insert another
-       <code class="language-javascript">
-        then()
-       </code>
-       call on the actual loader Promise. We create a butterworth
+        but before we plot them.  We create a butterworth
         filter using the sampling rate of the seismogram, with a passband
         of 0.5 to 10 Hz. Removing the mean is usually a good idea, then
         we apply the filter. Tapering is important before a deconvolution
         and then we
        <code class="language-javascript">
-        transfer
+        transfer()
        </code>
-       the instrument response for the channel.
+       the instrument response for the channel. These are saved as the
+       <code>
+        processedWaveforms
+       </code>
+       of the dataset.
       </p>
       <pre><code class="language-javascript" snippet="filter">
-loaderSDDPromise.then((seismogramDataList) =&gt; {
-    seismogramDataList.forEach(sdd =&gt; {
-      let butterworth = seisplotjs.filter.createButterworth(
-                             2, // poles
-                             seisplotjs.filter.BAND_PASS,
-                             .5, // low corner
-                             10, // high corner
-                             1/sdd.seismogram.sampleRate // delta (period)
-                    );
-      let rmeanSeis = seisplotjs.filter.rMean(sdd.seismogram);
-      let filteredSeis = seisplotjs.filter.applyFilter(butterworth, rmeanSeis);
-      let taperSeis = seisplotjs.taper.taper(filteredSeis);
-      let correctedSeis = seisplotjs.transfer.transfer(taperSeis,
-          sdd.channel.response, .001, .02, 250, 500);
-      sdd.seismogram = correctedSeis;
-    });
-    return seismogramDataList ;
+  dataset.processedWaveforms = dataset.waveforms.map(sdd =&gt; {
+    let butterworth = sp.filter.createButterworth(
+                           2, // poles
+                           sp.filter.BAND_PASS,
+                           .5, // low corner
+                           10, // high corner
+                           1/sdd.seismogram.sampleRate // delta (period)
+                  );
+    let rmeanSeis = sp.filter.rMean(sdd.seismogram);
+    let filteredSeis = sp.filter.applyFilter(butterworth, rmeanSeis);
+    let taperSeis = sp.taper.taper(filteredSeis);
+    let correctedSeis = sp.transfer.transfer(taperSeis,
+        sdd.channel.response, .001, .02, 250, 500);
+    sdd.seismogram = correctedSeis;
+    return sdd;
+  });
 </code></pre>
       Configure the display so that the amplitude and time axis are linked.
       <pre><code class="language-javascript" snippet="seisconfig">
-  }).then( seismogramDataList  =&gt; {
-    let div = document.querySelector('div#myseismograph');
-    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    seisConfig.linkedTimeScale = new seisplotjs.scale.LinkedTimeScale();
-    seisConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
-    seisConfig.wheelZoom = false;
+  let div = document.querySelector('div#myseismograph');
+  let seisConfig = new sp.seismographconfig.SeismographConfig();
+  seisConfig.linkedTimeScale = new sp.scale.LinkedTimeScale();
+  seisConfig.linkedAmplitudeScale = new sp.scale.LinkedAmplitudeScale();
+  seisConfig.wheelZoom = false;
 </code></pre>
       <p>
        Then, just to make sure we don"t correct the data twice, we
             disable the gain correction and create the plots.
       </p>
       <pre><code class="language-javascript" snippet="gain">
-    seisConfig.doGain = false;
-    for( let sdd of seismogramDataList) {
-      let graph = new seisplotjs.seismograph.Seismograph([sdd],
-                                                         seisConfig);
-      div.appendChild(graph);
-    }
-    return seismogramDataList;
+  seisConfig.doGain = false;
+  for( let sdd of dataset.processedWaveforms) {
+    let graph = new sp.seismograph.Seismograph([sdd], seisConfig);
+    div.appendChild(graph);
+  }
 </code></pre>
       <p>
        We can also plot the amplitude spectra for the
@@ -274,31 +242,22 @@ loaderSDDPromise.then((seismogramDataList) =&gt; {
        Then we calculate the fft and plot it.
       </p>
       <pre><code class="language-javascript" snippet="fft">
-  }).then(seismogramDataList =&gt; {
-    let div = seisplotjs.d3.select('div#fftplot');
-    let fftList = seismogramDataList.map(sdd =&gt; {
-      if (sdd.seismogram.isContiguous()) {
-        return seisplotjs.fft.fftForward(sdd.seismogram)
-      } else {
-        return null; // can't do fft for non-contiguouus
-      }
-    }).filter(x =&gt; x); // to remove nulls
-    let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    let fftPlot = new seisplotjs.spectraplot.SpectraPlot(fftList, seisConfig);
-    document.querySelector('div#fftplot').appendChild(fftPlot);
-    return seismogramDataList;
-  });
-
-</code></pre>
-      <p>
-       Then just a little bit of cleanup to make sure everything finished correctly.
-      </p>
-      <pre><code class="language-javascript" snippet="cleanup">
-Promise.all( [ quakePromise, stationsPromise, loaderSDDPromise ] )
-.catch( function(error) {
-    seisplotjs.d3.select("div#myseismograph").append('p').html("Error loading data." +error);
-    console.assert(false, error);
-  });
+  let fftList = dataset.processedWaveforms.map(sdd =&gt; {
+    if (sdd.seismogram.isContiguous()) {
+      return sp.fft.fftForward(sdd.seismogram)
+    } else {
+      return null; // can't do fft for non-contiguouus
+    }
+  }).filter(x =&gt; x); // to remove nulls
+  let fftSeisConfig = new sp.seismographconfig.SeismographConfig();
+  let fftPlot = new sp.spectraplot.SpectraPlot(fftList, fftSeisConfig);
+  document.querySelector('div#fftplot').appendChild(fftPlot);
+  return dataset;
+}).catch( function(error) {
+  const div = document.querySelector('div#myseismograph');
+  div.innerHTML = `&lt;p&gt;Error loading data. ${error}&lt;/p&gt;`;
+  console.assert(false, error);
+});
 </code></pre>
       <h3>
        See it live in

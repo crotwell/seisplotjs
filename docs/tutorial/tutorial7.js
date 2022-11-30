@@ -1,16 +1,16 @@
-import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 // snip start vars
 const matchPattern = `CO_JSC_00_HH./MSEED`;
-seisplotjs.d3.select('span#channel').text(matchPattern);
-const duration = seisplotjs.luxon.Duration.fromISO('PT5M');
-const timeWindow = new seisplotjs.util.durationEnd(duration, seisplotjs.luxon.DateTime.utc());
-const seisPlotConfig = new seisplotjs.seismographconfig.SeismographConfig();
+sp.d3.select('span#channel').text(matchPattern);
+const duration = sp.luxon.Duration.fromISO('PT5M');
+const timeWindow = new sp.util.durationEnd(duration, sp.luxon.DateTime.utc());
+const seisPlotConfig = new sp.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
 seisPlotConfig.isYAxisNice = false;
-seisPlotConfig.linkedTimeScale.offset = seisplotjs.luxon.Duration.fromMillis(-1*duration.toMillis());
+seisPlotConfig.linkedTimeScale.offset = sp.luxon.Duration.fromMillis(-1*duration.toMillis());
 seisPlotConfig.linkedTimeScale.duration = duration;
-seisPlotConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
+seisPlotConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
 seisPlotConfig.doGain = true;
 let graphList = new Map();
 let numPackets = 0;
@@ -26,22 +26,22 @@ while (timerInterval < 100) { timerInterval *= 2;}
 const errorFn = function(error) {
   console.assert(false, error);
   if (datalink) {datalink.close();}
-  seisplotjs.d3.select("p#error").text("Error: "+error);
+  document.querySelector("p#error").textContent = "Error: "+error;
 };
 
 // snip start handle
 const packetHandler = function(packet) {
   if (packet.isMiniseed()) {
     numPackets++;
-    seisplotjs.d3.select("span#numPackets").text(numPackets);
-    let seisSegment = seisplotjs.miniseed.createSeismogramSegment(packet.asMiniseed());
+    document.querySelector("span#numPackets").textContent = numPackets;
+    let seisSegment = sp.miniseed.createSeismogramSegment(packet.asMiniseed());
     const codes = seisSegment.codes();
     let seisPlot = graphList.get(codes);
     if ( ! seisPlot) {
-        let seismogram = new seisplotjs.seismogram.Seismogram( [ seisSegment ]);
-        let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-        seisData.alignmentTime = seisplotjs.luxon.DateTime.utc();
-        seisPlot = new seisplotjs.seismograph.Seismograph([seisData], seisPlotConfig);
+        let seismogram = new sp.seismogram.Seismogram( [ seisSegment ]);
+        let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
+        seisData.alignmentTime = sp.luxon.DateTime.utc();
+        seisPlot = new sp.seismograph.Seismograph([seisData], seisPlotConfig);
         realtimeDiv.appendChild(seisPlot);
         graphList.set(codes, seisPlot);
         console.log(`new plot: ${codes}`)
@@ -55,20 +55,20 @@ const packetHandler = function(packet) {
   }
 };
 // snip start datalink
-const datalink = new seisplotjs.datalink.DataLinkConnection(
+const datalink = new sp.datalink.DataLinkConnection(
     "ws://thecloud.seis.sc.edu/ringserver/datalink",
     packetHandler,
     errorFn);
 
 // snip start timer
-let timer = seisplotjs.d3.interval(function(elapsed) {
+let timer = sp.d3.interval(function(elapsed) {
   if ( paused || redrawInProgress) {
     return;
   }
   redrawInProgress = true;
   window.requestAnimationFrame(timestamp => {
     try {
-      const now = seisplotjs.luxon.DateTime.utc();
+      const now = sp.luxon.DateTime.utc();
       graphList.forEach(function(graph, key) {
         graph.seisData.forEach(sdd => {
           sdd.alignmentTime = now;
@@ -86,21 +86,21 @@ let timer = seisplotjs.d3.interval(function(elapsed) {
   }, timerInterval);
 
 // snip start pause
-seisplotjs.d3.select("button#pause").on("click", function(d) {
+document.querySelector("button#pause").addEventListener("click", function(evt) {
   togglePause( );
 });
 
 let togglePause = function() {
   paused = ! paused;
   if (paused) {
-    seisplotjs.d3.select("button#pause").text("Play");
+    document.querySelector("button#pause").textContent = "Play";
   } else {
-    seisplotjs.d3.select("button#pause").text("Pause");
+    document.querySelector("button#pause").textContent = "Pause";
   }
 }
 
 // snip start disconnet
-seisplotjs.d3.select("button#disconnect").on("click", function(d) {
+document.querySelector("button#disconnect").addEventListener("click", function(evt) {
   toggleConnect();
 });
 
@@ -119,7 +119,7 @@ let toggleConnect = function() {
       datalink.endStream();
       datalink.close();
     }
-    seisplotjs.d3.select("button#disconnect").text("Reconnect");
+    document.querySelector("button#disconnect").textContent = "Reconnect";
   } else {
     if (datalink) {
       datalink.connect()
@@ -146,14 +146,14 @@ let toggleConnect = function() {
         return datalink.stream();
       }).catch( function(error) {
         let errMsg = `${error}`;
-        if (error.cause && error.cause instanceof seisplotjs.datalink.DataLinkResponse) {
+        if (error.cause && error.cause instanceof sp.datalink.DataLinkResponse) {
           errMsg = `${error}, ${errMsg.cause}`;
         }
         addToDebug("Error: " +errMsg);
         console.assert(false, error);
       });
     }
-    seisplotjs.d3.select("button#disconnect").text("Disconnect");
+    document.querySelector("button#disconnect").textContent = "Disconnect";
   }
 }
 // snip start go

@@ -1,11 +1,5 @@
 // snip start map
-import {
-  fdsndataselect, fdsnevent, fdsnstation,
-  filter,
-  seismogram, seismograph,
-  seismographconfig,
-  stationxml,
-  util, luxon} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 // snip start mapcss
 const mymap = document.querySelector('sp-station-quake-map');
@@ -22,18 +16,18 @@ mymap.addStyle(`
 `);
 
 // snip start quakechan
-let queryTimeWindow = util.startEnd('2019-07-01', '2019-07-31');
-let eventQuery = new fdsnevent.EventQuery()
-  .timeWindow(queryTimeWindow)
+let queryTimeWindow = sp.util.startEnd('2019-07-01', '2019-07-31');
+let eventQuery = new sp.fdsnevent.EventQuery()
+  .timeRange(queryTimeWindow)
   .minMag(7)
   .latitude(35).longitude(-118)
   .maxRadius(3);
-let stationQuery = new fdsnstation.StationQuery()
+let stationQuery = new sp.fdsnstation.StationQuery()
   .networkCode('CO')
   .stationCode('HODGE')
   .locationCode('00')
   .channelCode('LH?')
-  .timeWindow(queryTimeWindow);
+  .timeRange(queryTimeWindow);
 // snip start promise
 let stationsPromise = stationQuery.queryChannels();
 let quakePromise = eventQuery.query();
@@ -44,24 +38,24 @@ Promise.all( [ quakePromise, stationsPromise ] )
   document.querySelector("span#earthquakeDescription").textContent = quakeList[0].description;
   let seismogramDataList = [];
   for (const q of quakeList) {
-    let timeWindow = util.startDuration(q.time, 2400);
-    for (const c of stationxml.allChannels(networkList)) {
-      let sdd = seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
+    const timeWindow = sp.util.startDuration(q.time, 2400);
+    for (const c of sp.stationxml.allChannels(networkList)) {
+      let sdd = sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
       sdd.addQuake(q);
       seismogramDataList.push(sdd);
     }
   }
   mymap.seisData = seismogramDataList;
-  let dsQuery = new fdsndataselect.DataSelectQuery();
+  let dsQuery = new sp.fdsndataselect.DataSelectQuery();
   return dsQuery.postQuerySeismograms(seismogramDataList);
 // snip start seismogramplot
 }).then( seismogramDataList => {
   seismogramDataList.forEach(sdd => {
-    sdd.seismogram = filter.rMean(sdd.seismogram);
+    sdd.seismogram = sp.filter.rMean(sdd.seismogram);
   });
   let graph = document.querySelector('sp-seismograph');
 
-  let seisConfigGain = new seismographconfig.SeismographConfig();
+  let seisConfigGain = new sp.seismographconfig.SeismographConfig();
   seisConfigGain.doGain = true;
   seisConfigGain.amplitudeMode = "mean";
   graph.seismographConfig = seisConfigGain;

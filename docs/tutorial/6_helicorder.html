@@ -141,17 +141,17 @@
             returns a Promise.
       </p>
       <pre><code class="language-javascript" snippet="window">
-const plotEnd = seisplotjs.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
+const plotEnd = sp.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
 if (plotEnd.hour % 2 === 1) {plotEnd.plus({hours: 1});}
-const oneDay = seisplotjs.luxon.Duration.fromISO('P1D');
-const timeWindow = seisplotjs.luxon.Interval.before(plotEnd, oneDay);
+const oneDay = sp.luxon.Duration.fromISO('P1D');
+const timeWindow = sp.luxon.Interval.before(plotEnd, oneDay);
 const luxOpts = {
   suppressMilliseconds: true,
   suppressSeconds: true,
 };
 document.querySelector("span#starttime").textContent = timeWindow.start.toISO(luxOpts);
 document.querySelector("span#endtime").textContent = timeWindow.end.toISO(luxOpts);
-new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
+new sp.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
 </code></pre>
       <p>
        In the then method of the Promise from findFdsnDataSelect, we construct our dataselect
@@ -179,7 +179,7 @@ new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
         then
        </code>
        method, we populate out text
-            spans using d3 and then configure our helicorder. One extra bit we
+            spans and then configure our helicorder. One extra bit we
             add is a marker for the current time. Since each line is 2 hours,
             without this marker it is hard to know if the station is way behind
             or if we are just in the middle of a two hour section, so adding
@@ -194,12 +194,12 @@ new seisplotjs.fdsndatacenters.DataCentersQuery().findFdsnDataSelect("IRISDMC")
       <pre><code class="language-javascript" snippet="heli">
   }).then(seisArray =&gt; {
     document.querySelector("span#channel").textContent = seisArray[0].codes();
-    let heliConfig = new seisplotjs.helicorder.HelicorderConfig(timeWindow);
+    let heliConfig = new sp.helicorder.HelicorderConfig(timeWindow);
 
     heliConfig.title = `Helicorder for ${seisArray[0].codes()}`;
-    let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
-    seisData.addMarkers([ { markertype: 'predicted', name: "now", time: seisplotjs.luxon.DateTime.utc() } ]);
-    let helicorder = new seisplotjs.helicorder.Helicorder(seisData, heliConfig);
+    let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(seisArray[0]);
+    seisData.addMarkers([ { markertype: 'predicted', name: "now", time: sp.luxon.DateTime.utc() } ]);
+    let helicorder = new sp.helicorder.Helicorder(seisData, heliConfig);
     document.querySelector("div#helicorder").append(helicorder);
     helicorder.draw();
   }).catch( function(error) {

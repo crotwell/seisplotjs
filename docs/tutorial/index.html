@@ -12,7 +12,7 @@
   <link href="../prism.css" rel="stylesheet"/>
   <link href="style.css" rel="stylesheet"/>
   <style>
-   div.seismograph {
+   div.sssseismograph {
         height: 450px;
       }
   </style>
@@ -142,7 +142,7 @@
        and put it in the same directory as our html file.
               The
        <code class="language-javascript">
-        import * as seisplotjs from "...";
+        import * as sp from "...";
        </code>
        code will also need to be changed to just the local link.
       </p>
@@ -164,23 +164,17 @@
       </p>
       <pre><code class="language-javascript" snippet="createseis">
 
-
-import {
-  seismogram,
-  seismograph,
-  seismographconfig,
-  util
-} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 let dataArray = new Float32Array(1000).map(function(d, i) {
   return Math.sin(2*Math.PI*i/100) * 100;
 });
 let sampleRate = 20;
-let start = util.isoToDateTime('2019-07-04T05:46:23');
-let myseismogram = seismogram.Seismogram.fromContiguousData(dataArray, sampleRate, start);
-let seisData = seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
+let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
+let myseismogram = sp.seismogram.Seismogram.fromContiguousData(dataArray, sampleRate, start);
+let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
 // or in one step
-seisData = seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
+seisData = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
 </code></pre>
       <p>
        Now we have created a contiguous (no gaps) seismogram that represents
@@ -245,10 +239,10 @@ graph.seisData = [ seisData ];
         easier to create a new element as needed.
        <pre><code class="language-javascript" snippet="divdraw">
 const div = document.querySelector('div#sinewave');
-const seisConfig = new seismographconfig.SeismographConfig();
+const seisConfig = new sp.seismographconfig.SeismographConfig();
 seisConfig.title = "Another sine wave!";
 seisConfig.margin.top = 25;
-const div_graph = new seismograph.Seismograph([seisData], seisConfig);
+const div_graph = new sp.seismograph.Seismograph([seisData], seisConfig);
 div.appendChild(div_graph);
 </code></pre>
       </p>
@@ -258,7 +252,7 @@ div.appendChild(div_graph);
        <code>
         &lt;head&gt;
        </code>
-       near the top we will add a
+       near the top of the html we will add a
        <code>
         &lt;style&gt;
        </code>

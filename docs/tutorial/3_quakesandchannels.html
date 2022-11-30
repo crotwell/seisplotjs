@@ -139,9 +139,12 @@
       </p>
       <pre><code class="language-css">
           &lt;style&gt;
-            div#mapid {
+            sp-station-quake-map {
               height: 300px;
-              width: 100%;
+              width: 90%;
+            }
+            sp-seismograph {
+              height: 300px;
             }
           &lt;/style&gt;
         </code></pre>
@@ -159,16 +162,6 @@
         tileAttribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri" &gt;
       &lt;/sp-station-quake-map&gt;
       </code></pre>
-      <pre><code class="language-javascript" snippet="map">
-import {
-  fdsndataselect, fdsnevent, fdsnstation,
-  filter,
-  seismogram, seismograph,
-  seismographconfig,
-  stationxml,
-  util, luxon} from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
-
-</code></pre>
       <p>
        The markers on the map can also be styled with css, using the
        <code class="language-javascript">
@@ -225,23 +218,23 @@ mymap.addStyle(`
        <code class="language-javascript">
         StationQuery
        </code>
-       objects. The time window on the event query means the earthquake happened
+       objects. The time range on the event query means the earthquake happened
        within the window, but for the station query it means the station was
        active (or at least existed) during some part of the window, i.e. it overlaps.
       </p>
       <pre><code class="language-javascript" snippet="quakechan">
-let queryTimeWindow = util.startEnd('2019-07-01', '2019-07-31');
-let eventQuery = new fdsnevent.EventQuery()
-  .timeWindow(queryTimeWindow)
+let queryTimeWindow = sp.util.startEnd('2019-07-01', '2019-07-31');
+let eventQuery = new sp.fdsnevent.EventQuery()
+  .timeRange(queryTimeWindow)
   .minMag(7)
   .latitude(35).longitude(-118)
   .maxRadius(3);
-let stationQuery = new fdsnstation.StationQuery()
+let stationQuery = new sp.fdsnstation.StationQuery()
   .networkCode('CO')
   .stationCode('HODGE')
   .locationCode('00')
   .channelCode('LH?')
-  .timeWindow(queryTimeWindow);
+  .timeRange(queryTimeWindow);
 </code></pre>
       <p>
        Next we call the
@@ -286,8 +279,8 @@ let quakePromise = eventQuery.query();
        <code class="language-javascript">
         SeismogramDisplayData
        </code>
-       objects, which start out as just having a channel and a time window.
-      The time window starts at the origin time of the
+       objects, which start out as just having a channel and a time range.
+      The time range starts at the origin time of the
       earthquake and has a duration of 2400 seconds. Then
        we manually attach the earthquake. The map knows to look for station and
        earthquake locations within
@@ -319,15 +312,15 @@ Promise.all( [ quakePromise, stationsPromise ] )
   document.querySelector("span#earthquakeDescription").textContent = quakeList[0].description;
   let seismogramDataList = [];
   for (const q of quakeList) {
-    let timeWindow = util.startDuration(q.time, 2400);
-    for (const c of stationxml.allChannels(networkList)) {
-      let sdd = seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
+    const timeWindow = sp.util.startDuration(q.time, 2400);
+    for (const c of sp.stationxml.allChannels(networkList)) {
+      let sdd = sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
       sdd.addQuake(q);
       seismogramDataList.push(sdd);
     }
   }
   mymap.seisData = seismogramDataList;
-  let dsQuery = new fdsndataselect.DataSelectQuery();
+  let dsQuery = new sp.fdsndataselect.DataSelectQuery();
   return dsQuery.postQuerySeismograms(seismogramDataList);
 </code></pre>
       <p>
@@ -342,11 +335,11 @@ Promise.all( [ quakePromise, stationsPromise ] )
       <pre><code class="language-javascript" snippet="seismogramplot">
 }).then( seismogramDataList =&gt; {
   seismogramDataList.forEach(sdd =&gt; {
-    sdd.seismogram = filter.rMean(sdd.seismogram);
+    sdd.seismogram = sp.filter.rMean(sdd.seismogram);
   });
   let graph = document.querySelector('sp-seismograph');
 
-  let seisConfigGain = new seismographconfig.SeismographConfig();
+  let seisConfigGain = new sp.seismographconfig.SeismographConfig();
   seisConfigGain.doGain = true;
   seisConfigGain.amplitudeMode = "mean";
   graph.seismographConfig = seisConfigGain;

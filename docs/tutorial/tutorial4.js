@@ -1,4 +1,5 @@
 // snip start map
+import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 import {
   d3,
   distaz,
@@ -18,13 +19,13 @@ const mymap = document.querySelector('sp-station-quake-map');
 
 
 // snip start setup
-let queryTimeWindow = luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
-let eventQuery = new fdsnevent.EventQuery()
+let queryTimeWindow = sp.luxon.Interval.fromDateTimes(util.isoToDateTime('2019-07-01'), util.isoToDateTime('2019-07-31'));
+let eventQuery = new sp.fdsnevent.EventQuery()
   .timeWindow(queryTimeWindow)
   .minMag(7)
   .latitude(35).longitude(-118)
   .maxRadius(3);
-let stationQuery = new fdsnstation.StationQuery()
+let stationQuery = new sp.fdsnstation.StationQuery()
   .networkCode('CO')
   .stationCode('HODGE')
   .locationCode('00')
@@ -38,9 +39,9 @@ const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) => {
   let quakeTTimes = quakeList.map(q => {
     const allDistDeg = [];
-    for (const s of stationxml.allStations(networkList)) {
+    for (const s of sp.stationxml.allStations(networkList)) {
       if (s.timeRange.contains(q.time)) {
-        const daz = distaz.distaz(
+        const daz = sp.distaz.distaz(
           s.latitude,
           s.longitude,
           q.latitude,
@@ -49,20 +50,19 @@ const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
         allDistDeg.push(daz.distanceDeg);
       }
     }
-    const taupQuery = new traveltime.TraveltimeQuery();
+    const taupQuery = new sp.traveltime.TraveltimeQuery();
     taupQuery.distdeg(allDistDeg);
     taupQuery.evdepthInMeter(q.depth);
     taupQuery.phases(allPhases);
 //    return taupQuery.queryJson();
     return taupQuery.queryText();
   });
-  return Promise.all( [ quakePromise, stationsPromise, Promise.all( quakeTTimes ) ] );
+  return Promise.all( [ quakeList, networkList, Promise.all( quakeTTimes ) ] );
 }).then( ( [ quakeList, networkList, quakeTTimes ] ) => {
   const ttdiv = document.querySelector("#traveltimes");
   quakeTTimes.forEach(qtt => {
     const preEl = ttdiv.appendChild(document.createElement("pre"));
     preEl.textContent = qtt;
-//    preEl.textContent = JSON.stringify(qtt, null, 2);
   });
 });
 // snip start seismogramload
@@ -70,11 +70,9 @@ const loader = new seismogramloader.SeismogramLoader(stationQuery, eventQuery);
 loader.startOffset = -300;
 loader.endOffset = 1200;
 loader.markedPhaseList = "PcP,SS";
-const loadPromise = loader.loadSeismograms();
-//dataset.Dataset.fromSeismogramLoader(loader).then(dataset => dataset.saveToZipFile());
 
-loadPromise.then(seismogramDataList => {
-  seismogramDataList = sorting.reorderXYZ(seismogramDataList);
+loader.load().then(dataset => {
+  let seismogramDataList = sorting.reorderXYZ(dataset.waveforms);
   mymap.seisData = seismogramDataList;
 
 // snip start seismograph
@@ -83,17 +81,15 @@ loadPromise.then(seismogramDataList => {
   let commonSeisConfig = new seismographconfig.SeismographConfig();
   commonSeisConfig.linkedAmpScale = new scale.LinkedAmplitudeScale();
   commonSeisConfig.linkedTimeScale = new scale.LinkedTimeScale();
-  commonSeisConfig.wheelZoom = false;
   commonSeisConfig.doGain = true;
   for( let sdd of seismogramDataList) {
-    let seisConfig = commonSeisConfig.clone();
-    let graph = new seismograph.Seismograph([ sdd ], seisConfig);
+    let graph = new seismograph.Seismograph([ sdd ], commonSeisConfig);
     graphList.push(graph);
     div.appendChild(graph);
   }
-  return Promise.all([ seismogramDataList, graphList ]);
+  return Promise.all([ seismogramDataList, graphList, dataset ]);
 // snip start particlemotion
-}).then( ( [ seismogramDataList, graphList ] ) => {
+}).then( ( [ seismogramDataList, graphList, dataset ] ) => {
   let pmdiv = document.querySelector("div#myparticlemotion");
   console.log(`pmdiv: ${pmdiv}`)
   let firstS = seismogramDataList[0].traveltimeList.find(a => a.phase.startsWith("S"));
@@ -123,19 +119,14 @@ loadPromise.then(seismogramDataList => {
   pmSeisConfig.doGain = doGain;
   let pmpA = new particlemotion.ParticleMotion(xSeisData, ySeisData, pmSeisConfig);
   pmdiv.appendChild(pmpA);
-  //pmpA.draw();
   let pmpB = new particlemotion.ParticleMotion(xSeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpB);
-  //pmpB.draw();
   let pmpC = new particlemotion.ParticleMotion(ySeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpC);
-  //pmpC.draw();
 
-  return Promise.all([ seismogramDataList, graphList ]);
+  return Promise.all([ seismogramDataList, graphList, dataset ]);
 }).catch( function(error) {
-    const div = document.querySelector('div#myseismograph');
-    div.innerHTML = `
-      <p>Error loading data. ${error}</p>
-    `;
+  const div = document.querySelector('div#myseismograph');
+  div.innerHTML = `<p>Error loading data. ${error}</p>`;
   console.assert(false, error);
 });
