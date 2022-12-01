@@ -14,7 +14,7 @@ global.fetch = fetch;
 test( "load HODGE for local eq test", () => {
   let localQueryTimeWindow = Interval.fromDateTimes(isoToDateTime('2020-08-21'), isoToDateTime('2020-08-22'));
   let localEventQuery = new EventQuery()
-    .timeWindow(localQueryTimeWindow)
+    .timeRange(localQueryTimeWindow)
     .latitude(33.72).longitude(-81)
     .maxRadius(2);
   let stationQuery = new StationQuery()
@@ -22,7 +22,7 @@ test( "load HODGE for local eq test", () => {
     .stationCode('HODGE')
     .locationCode('00')
     .channelCode('LH?')
-    .timeWindow(localQueryTimeWindow);
+    .timeRange(localQueryTimeWindow);
   let staUrl = stationQuery.formURL(LEVEL_CHANNEL);
   expect(staUrl).toContain('cha=');
 //  expect(localEventQuery instanceof StationQuery).toBeTrue();
