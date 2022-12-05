@@ -27,6 +27,7 @@ import {
   doFloatGetterSetter,
   doMomentGetterSetter,
   toIsoWoZ,
+  isoToDateTime,
   isDef,
   isObject,
   isStringArg,
@@ -1220,8 +1221,7 @@ const channelsearchHtml = `
   <sp-channel-code-input></sp-channel-code-input>
   <div>
     <label>Time Range </label>
-    <sp-timerange duration="P7D"></sp-timerange>
-    <button id="now">Now</button></div>
+    <sp-timerange duration="P1Y" prev-next=true ></sp-timerange>
     <div>
     <button id="today">Today</button>
     <button id="week">Week</button>
@@ -1254,15 +1254,41 @@ export class ChannelSearch extends HTMLElement {
     shadow.appendChild(wrapper);
     this._registerEvent(wrapper, 'sp-timerange');
     this._registerEvent(wrapper, 'sp-latlon-choice');
-
+    const chanCodeEl = shadow.querySelector('sp-channel-code-input') as ChannelCodeInput;
+    if (chanCodeEl) { //typescript
+      if (this.hasAttribute("Network")) {
+        chanCodeEl.network = ""+this.getAttribute("Network");
+      }
+      if (this.hasAttribute("Station")) {
+        chanCodeEl.station = ""+this.getAttribute("Station");
+      }
+      if (this.hasAttribute("Location")) {
+        chanCodeEl.location = ""+this.getAttribute("Location");
+      }
+      if (this.hasAttribute("Channel")) {
+        chanCodeEl.channel = ""+this.getAttribute("Channel");
+      }
+    }
     const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;
     if ( ! trChooser) {throw new Error("can't find sp-timerange");}
-
-    const nowBtn = wrapper.querySelector('#now');
-    if ( ! nowBtn) {throw new Error("can't find button#now");}
-    nowBtn.addEventListener('click', event => {
-      trChooser.end = DateTime.utc();
-    });
+    if (this.hasAttribute("start")) {
+      const s = this.getAttribute("start");
+      if (s !== null) {
+        trChooser.start = isoToDateTime(s);
+      }
+    }
+    if (this.hasAttribute("end")) {
+      const e = this.getAttribute("end");
+      if (e !== null) {
+        trChooser.end = isoToDateTime(e);
+      }
+    }
+    if (this.hasAttribute("duration")) {
+      const d = this.getAttribute("duration");
+      if (d !== null) {
+        trChooser.duration = Duration.fromISO(""+d);
+      }
+    }
 
     const todayBtn = wrapper.querySelector('#today');
     if ( ! todayBtn) {throw new Error("can't find button#today");}
@@ -1287,6 +1313,32 @@ export class ChannelSearch extends HTMLElement {
     yearBtn.addEventListener('click', event => {
       trChooser.duration = Duration.fromISO('P1Y');
     });
+    const latlonchoice = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
+    if (this.hasAttribute("north")) {
+      const n = this.getAttribute("north");
+      if (n !== null) {
+        latlonchoice.latLonBox.north = parseFloat(n);
+      }
+    }
+    if (this.hasAttribute("south")) {
+      const n = this.getAttribute("south");
+      if (n !== null) {
+        latlonchoice.latLonBox.south = parseFloat(n);
+      }
+    }
+    if (this.hasAttribute("west")) {
+      const n = this.getAttribute("west");
+      if (n !== null) {
+        latlonchoice.latLonBox.west = parseFloat(n);
+      }
+    }
+    if (this.hasAttribute("east")) {
+      const n = this.getAttribute("east");
+      if (n !== null) {
+        latlonchoice.latLonBox.east = parseFloat(n);
+      }
+    }
+
   }
   populateQuery(query?: StationQuery): StationQuery {
     if ( ! query) {

@@ -18,6 +18,7 @@ import {
   doFloatGetterSetter,
   doMomentGetterSetter,
   toIsoWoZ,
+  isoToDateTime,
   isDef,
   isObject,
   isStringArg,
@@ -1114,6 +1115,34 @@ export class EarthquakeSearch extends HTMLElement {
 
     const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;
     if ( ! trChooser) {throw new Error("can't find sp-timerange");}
+    if (this.hasAttribute("start")) {
+      const s = this.getAttribute("start");
+      if (s !== null) {
+        trChooser.start = isoToDateTime(s);
+      }
+    }
+    if (this.hasAttribute("end")) {
+      const e = this.getAttribute("end");
+      if (e !== null) {
+        trChooser.end = isoToDateTime(e);
+      }
+    }
+    if (this.hasAttribute("duration")) {
+      const d = this.getAttribute("duration");
+      if (d !== null) {
+        trChooser.duration = Duration.fromISO(""+d);
+      }
+    }
+
+    const magChooser = wrapper.querySelector('sp-minmax#magnitude') as LabeledMinMax;
+    if ( ! magChooser) {throw new Error("can't find sp-minmax#magnitude");}
+    if (this.hasAttribute("mag-min")) {
+      const m = this.getAttribute("mag-min");
+      if (m !== null) {
+        magChooser.min = parseFloat(m);
+      }
+    }
+
 
     const nowBtn = wrapper.querySelector('#now');
     if ( ! nowBtn) {throw new Error("can't find button#now");}

@@ -8,11 +8,13 @@
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   </head>
   <body>
+    <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+
     <div id='message'>
       <p></p>
     </div>
-    <h3>Earthquake query: <span id="title">seismographs</span></h3>
-    <sp-earthquake-search></sp-earthquake-search>
+    <h3>Earthquake query: <span id="title"></span></h3>
+    <sp-earthquake-search start="2021-12-30" duration="P10D" north="35" south="32" west="-82" east="-79"></sp-earthquake-search>
     <button id="query">Query</button>
     <sp-quake-table></sp-quake-table>
     <div id="messages">

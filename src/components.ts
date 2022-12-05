@@ -55,14 +55,17 @@ export class ChannelCodeInput extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
     wrapper.setAttribute('class','wrapper');
-    const default_vals = { "Network": "CO", "Station": "CASEE", "Location":"00","Channel":"HHZ"};
-    let netIn = wrapper.appendChild(labeledTextInput("Network", default_vals.Network));
+    const net = this.hasAttribute("Network") ? ""+this.getAttribute("Network") : "XX"
+    let netIn = wrapper.appendChild(labeledTextInput("Network", net));
     netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    let staIn = wrapper.appendChild(labeledTextInput("Station", default_vals.Station));
+    const sta = this.hasAttribute("Station") ? ""+this.getAttribute("Station") : ""
+    let staIn = wrapper.appendChild(labeledTextInput("Station", sta));
     staIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    let locIn = wrapper.appendChild(labeledTextInput("Location", default_vals.Location));
+    const loc = this.hasAttribute("Location") ? ""+this.getAttribute("Location") : ""
+    let locIn = wrapper.appendChild(labeledTextInput("Location", loc));
     locIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    let chanIn = wrapper.appendChild(labeledTextInput("Channel", default_vals.Channel));
+    const chan = this.hasAttribute("Channel") ? ""+this.getAttribute("Channel") : ""
+    let chanIn = wrapper.appendChild(labeledTextInput("Channel", chan));
     chanIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
 
 
@@ -81,22 +84,42 @@ export class ChannelCodeInput extends HTMLElement {
     shadow.appendChild(wrapper);
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === "Network" || name === "Station" || name === "Location" || name === "Channel") {
+      this._setInputValue(name, newValue);
+    }
   }
   static get observedAttributes() { return ATTR_LIST; }
   get network(): string {
     return this._getInputValue('Network');
   }
+  set network(n: string) {
+    this._setInputValue("Network", n);
+  }
   get station(): string {
     return this._getInputValue('Station');
+  }
+  set station(n: string) {
+    this._setInputValue("Station", n);
   }
   get location(): string {
     return this._getInputValue('Location');
   }
+  set location(n: string) {
+    this._setInputValue("Location", n);
+  }
   get channel(): string {
     return this._getInputValue('Channel');
   }
+  set channel(n: string) {
+    this._setInputValue("Channel", n);
+  }
   _getInputValue(name: string): string {
     return (this.shadowRoot?.querySelector('input.'+name) as HTMLInputElement)?.value ?? "";
+  }
+  _setInputValue(name: string, val: string) {
+    if (this.shadowRoot) {
+      (this.shadowRoot.querySelector('input.'+name) as HTMLInputElement).value = val;
+    }
   }
 
 }
@@ -856,6 +879,12 @@ export class LatLonChoice extends HTMLElement {
     } else {
       return null; // means all
     }
+  }
+  get latLonBox(): LatLonBoxEl {
+    return this.shadowRoot?.querySelector('sp-latlon-box') as LatLonBoxEl;
+  }
+  get latLonRadius(): LatLonRadiusEl {
+    return this.shadowRoot?.querySelector('sp-latlon-radius') as LatLonRadiusEl;
   }
 }
 customElements.define(LATLON_CHOICE_ELEMENT, LatLonChoice);
