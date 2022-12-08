@@ -60,7 +60,7 @@ export function setupEventHandlers(config, loadAndPlotFun, redrawFun) {
     const timeWindowsToReload = [];
     const dispElements = orgDisp.getDisplayItems();
     dispElements.forEach(orgDispItem => {
-      if (orgDispItem.plottype.startsWith(seisplotjs.displayorganize.SEISMOGRAPH)) {
+      if (orgDispItem.plottype.startsWith(seisplotjs.organizeddisplay.SEISMOGRAPH)) {
         const seismograph = orgDispItem.getContainedPlotElements()[0];// as seisplotjs.seismograph.Seismograph;
         seismograph.seisData.forEach(sdd => {
 

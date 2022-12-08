@@ -60,7 +60,7 @@ export class EQView {
     this.plottype = this.getCheckedOption("plottype", "seismograph");
     this.defaultSeismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
     this.defaultSeismographConfig.title = seisplotjs.seismographconfig.DEFAULT_TITLE;
-    this.infoTemplate = seisplotjs.displayorganize.defaultInfoTemplate;
+    this.infoTemplate = seisplotjs.infotable.DEFAULT_TEMPLATE;
   }
 
   getCheckedOption(name, defaultValue) {
@@ -283,13 +283,13 @@ console.log(`filtered ${filteredSeis.length}`)
       // particle motion is special due to pairwise plots
       organizedData = this.organizeParticleMotion(seisDataList);
     } else if (! organizetype || organizetype === "individual") {
-      organizedData = seisplotjs.displayorganize.individualDisplay(seisDataList);
+      organizedData = seisplotjs.organizeddisplay.individualDisplay(seisDataList);
     } else if (organizetype === "bystation") {
-      organizedData = seisplotjs.displayorganize.overlayByStation(seisDataList);
+      organizedData = seisplotjs.organizeddisplay.overlayByStation(seisDataList);
     } else if (organizetype === "bycomponent") {
-      organizedData = seisplotjs.displayorganize.overlayByComponent(seisDataList);
+      organizedData = seisplotjs.organizeddisplay.overlayByComponent(seisDataList);
     } else if (organizetype === "all") {
-      organizedData = seisplotjs.displayorganize.overlayAll(seisDataList);
+      organizedData = seisplotjs.organizeddisplay.overlayAll(seisDataList);
     } else if (typeof organizetype === 'function') {
       organizedData = organizetype(seisDataList);
     } else {
@@ -304,7 +304,7 @@ console.log(`filtered ${filteredSeis.length}`)
     if (seisplotjs.d3.select("input#linky").property("checked")) {
       seisConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
     }
-    if (plottype === seisplotjs.displayorganize.PARTICLE_MOTION) {
+    if (plottype === seisplotjs.organizeddisplay.PARTICLE_MOTION) {
       let pmpSeisConfig = seisConfig.clone();
       pmpSeisConfig.margin.left = 40;
       pmpSeisConfig.margin.right = 40;
@@ -323,7 +323,7 @@ console.log(`filtered ${filteredSeis.length}`)
 
     organizeParticleMotion(seisDataList) {
       let organized = [];
-      let byFriends = seisplotjs.displayorganize.groupComponentOfMotion(seisDataList);
+      let byFriends = seisplotjs.organizeddisplay.groupComponentOfMotion(seisDataList);
       let pairs = [];
       byFriends.forEach(friendList => {
         if (friendList.length > 1) {
@@ -342,7 +342,7 @@ console.log(`filtered ${filteredSeis.length}`)
           pair[0] = pair[1];
           pair[1] = tmp;
         }
-        let org = new seisplotjs.displayorganize.OrganizedDisplay(pair, seisplotjs.displayorganize.PARTICLE_MOTION);
+        let org = new seisplotjs.organizeddisplay.OrganizedDisplay(pair, seisplotjs.organizeddisplay.PARTICLE_MOTION);
 
         organized.push(org);
       });

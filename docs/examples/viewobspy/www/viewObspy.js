@@ -17,7 +17,7 @@ class ViewObsPy {
     this.plottype = this.getCheckedOption("plottype", "seismograph");
     this.defaultSeismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
     this.defaultSeismographConfig.title = seisplotjs.seismographconfig.DEFAULT_TITLE;
-    this.infoTemplate = seisplotjs.displayorganize.defaultInfoTemplate;
+    this.infoTemplate = seisplotjs.infotable.DEFAULT_TEMPLATE;
   }
 
   getCheckedOption(name, defaultValue) {
@@ -163,7 +163,7 @@ class ViewObsPy {
     let organizedSeis = this.organizePlotting(this.organizetype, this.plottype, dataset, catalog, inventory, filteredSeis);
     organizedSeis = this.sortForPlotting(this.sorttype, organizedSeis);
     this.plotDiv.selectAll('*').remove();
-    seisplotjs.displayorganize.createPlots(organizedSeis, this.plotDiv);
+    seisplotjs.organizeddisplay.createPlots(organizedSeis, this.plotDiv);
     for(let os of organizedSeis) {
       if (seisplotjs.util.isDef(os.seismograph)) {
         const graph = os.seismograph;
@@ -344,13 +344,13 @@ class ViewObsPy {
       // particle motion is special due to pairwise plots
       organizedData = this.organizeParticleMotion(seisDataList);
     } else if (! organizetype || organizetype === "individual") {
-      organizedData = seisplotjs.displayorganize.individualDisplay(seisDataList);
+      organizedData = seisplotjs.organizeddisplay.individualDisplay(seisDataList);
     } else if (organizetype === "bystation") {
-      organizedData = seisplotjs.displayorganize.overlayByStation(seisDataList);
+      organizedData = seisplotjs.organizeddisplay.overlayByStation(seisDataList);
     } else if (organizetype === "bycomponent") {
-      organizedData = seisplotjs.displayorganize.overlayByComponent(seisDataList);
+      organizedData = seisplotjs.organizeddisplay.overlayByComponent(seisDataList);
     } else if (organizetype === "all") {
-      organizedData = seisplotjs.displayorganize.overlayAll(seisDataList);
+      organizedData = seisplotjs.organizeddisplay.overlayAll(seisDataList);
     } else if (typeof organizetype === 'function') {
       organizedData = organizetype(seisDataList);
     } else {
@@ -365,7 +365,7 @@ class ViewObsPy {
     if (seisplotjs.d3.select("input#linky").property("checked")) {
       seisConfig.linkedAmplitudeScale = new seisplotjs.seismographconfig.LinkedAmpScale();
     }
-    if (plottype === seisplotjs.displayorganize.PARTICLE_MOTION) {
+    if (plottype === seisplotjs.organizeddisplay.PARTICLE_MOTION) {
       let pmpSeisConfig = seisConfig.clone();
       pmpSeisConfig.margin.left = 40;
       pmpSeisConfig.margin.right = 40;
@@ -384,7 +384,7 @@ class ViewObsPy {
 
     organizeParticleMotion(seisDataList) {
       let organized = [];
-      let byFriends = seisplotjs.displayorganize.groupComponentOfMotion(seisDataList);
+      let byFriends = seisplotjs.organizeddisplay.groupComponentOfMotion(seisDataList);
       let pairs = [];
       byFriends.forEach(friendList => {
         if (friendList.length > 1) {
@@ -403,7 +403,7 @@ class ViewObsPy {
           pair[0] = pair[1];
           pair[1] = tmp;
         }
-        let org = new seisplotjs.displayorganize.OrganizedDisplay(pair, seisplotjs.displayorganize.PARTICLE_MOTION);
+        let org = new seisplotjs.organizeddisplay.OrganizedDisplay(pair, seisplotjs.organizeddisplay.PARTICLE_MOTION);
 
         organized.push(org);
       });
@@ -411,8 +411,8 @@ class ViewObsPy {
     }
 
   addTravelTimes(seisDataList, phaseList) {
-    const stationList = seisplotjs.displayorganize.uniqueStations(seisDataList);
-    const quakeList = seisplotjs.displayorganize.uniqueQuakes(seisDataList);
+    const stationList = seisplotjs.organizeddisplay.uniqueStations(seisDataList);
+    const quakeList = seisplotjs.organizeddisplay.uniqueQuakes(seisDataList);
     let promiseArray = [];
     stationList.forEach(s => {
       let stationSDDList = seisDataList.filter(sdd => sdd.channel && sdd.channel.station === s);
