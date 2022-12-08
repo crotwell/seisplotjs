@@ -70,7 +70,7 @@
         .stationCode('HODGE')
         .locationCode('00')
         .channelCode('LHZ')
-        .timeWindow(times);
+        .timeRange(times);
       dsQuery.querySeismograms().then(seisArray => {
         seismograph.seisData = seisArray;
       }).catch( function(error) {
