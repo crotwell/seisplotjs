@@ -632,15 +632,16 @@ export class Seismograph extends SeisPlotElement {
                 i++;
               }
               // drawing min to max vs max to min depending on order
+              // and offseting by half a pixel
               // helps a lot with avoiding fuzziness due to antialiasing
               if (minIdx < maxIdx) {
                 // min occurs before max
-                context.lineTo(curPixel, Math.floor(yscaleForSDD(min)));
-                context.lineTo(curPixel, Math.ceil(yscaleForSDD(max)));
+                context.lineTo(curPixel-0.5, Math.floor(yscaleForSDD(min))+0.5);
+                context.lineTo(curPixel+0.5, Math.ceil(yscaleForSDD(max))-0.5);
               } else {
                 // max occurs before min
-                context.lineTo(curPixel, Math.ceil(yscaleForSDD(max)));
-                context.lineTo(curPixel, Math.floor(yscaleForSDD(min)));
+                context.lineTo(curPixel-0.5, Math.ceil(yscaleForSDD(max))-0.5);
+                context.lineTo(curPixel+0.5, Math.floor(yscaleForSDD(min))+0.5);
               }
             }
           } else {
