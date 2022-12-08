@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.3_standalone.mjs';
+import * as seisplotjs from './seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 const d3 = seisplotjs.d3;
 d3.select("button#load").on("click", function(d) { createFIR(); });
