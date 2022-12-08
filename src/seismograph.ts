@@ -5,7 +5,7 @@
  */
 import { DateTime, Duration, Interval} from "luxon";
 import * as d3 from "d3";
-import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
+import { AUTO_COLOR_SELECTOR } from "./cssutil";
 import {
   AmplitudeScalable,
   TimeScalable,
@@ -13,12 +13,11 @@ import {
 } from "./scale";
 import {
   SeismographConfig,
-  DRAW_BOTH_ALIGN,
   numberFormatWrapper,
 } from "./seismographconfig";
 import type {MarkerType} from "./seismogram";
 import type {TraveltimeJsonType} from "./traveltime";
-import type {ScaleLinear, ScaleTime} from "d3-scale";
+import type {ScaleLinear} from "d3-scale";
 import {
   SeismogramDisplayData,
   calcMinMax,
@@ -29,7 +28,6 @@ import {
   Seismogram,
   COUNT_UNIT,
 } from "./seismogram";
-import {SeismogramSegment} from "./seismogramsegment";
 import {SeisPlotElement} from "./spelement";
 import {Quake, Origin} from "./quakeml";
 import {Station, Channel} from "./stationxml";
@@ -519,7 +517,6 @@ export class Seismograph extends SeisPlotElement {
 
   drawSeismograms() {
     this.drawSeismogramsCanvas();
-    //this.drawSeismogramsSvg();
   }
 
   isVisible(): boolean {
@@ -552,9 +549,6 @@ export class Seismograph extends SeisPlotElement {
     context.clearRect(0, 0, canvasNode.width, canvasNode.height);
     context.lineWidth = this.seismographConfig.lineWidth;
 
-    if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
-      context.lineWidth = this.seismographConfig.lineWidth * 2;
-    }
     const sddList = this._seisDataList.concat(this._debugAlignmentSeisData);
     sddList.forEach((sdd, sddIndex) => {
       const ti = sddIndex;
@@ -565,13 +559,7 @@ export class Seismograph extends SeisPlotElement {
           xscaleForSDD.domain().start.valueOf()) /
         1000 /
         (xscaleForSDD.range[1] - xscaleForSDD.range[0]);
-      let color: string;
-
-      if (this.seismographConfig.drawingType === DRAW_BOTH_ALIGN) {
-        color = mythis.seismographConfig.getColorForIndex(ti + sddList.length);
-      } else {
-        color = mythis.seismographConfig.getColorForIndex(ti);
-      }
+      let color = mythis.seismographConfig.getColorForIndex(ti);
 
       let firstTime = true;
 
@@ -766,131 +754,6 @@ export class Seismograph extends SeisPlotElement {
       }
     }
     return new axisutil.LuxonTimeScale(plotInterval, [0, this.width]);
-  }
-
-  drawSeismogramsSvg() {
-    const sddList = this._seisDataList.concat(this._debugAlignmentSeisData);
-    const mythis = this;
-    const allSegG = this.g.select("g.allseismograms");
-    const traceJoin = allSegG
-      .selectAll("g.seismogram")
-      .data(sddList)
-      .enter()
-      .append("g")
-      .attr("label", (s: SeismogramDisplayData) => (s ? s.label : "none"))
-      .attr("codes", (s: SeismogramDisplayData) =>
-        s.seismogram && s.seismogram.hasCodes() ? s.seismogram.codes() : "none",
-      )
-      .classed("seismogram", true);
-    traceJoin.exit().remove();
-    const subtraceJoin = traceJoin.selectAll("path").data((sdd: SeismogramDisplayData) => {
-      const sddTimeScale = this.timeScaleForSeisDisplayData(sdd);
-      const sddAmpScale = this.ampScaleForSeisDisplayData(sdd);
-      const segArr = sdd.seismogram ? sdd.seismogram.segments : [];
-      return segArr.map(seg => {
-        return {
-          segment: seg,
-          timeScale: sddTimeScale,
-          ampScale: sddAmpScale
-        };
-      });
-    });
-    subtraceJoin
-      .enter()
-      .append("path")
-      .classed(G_DATA_SELECTOR, true)
-      .classed(
-        DRAW_BOTH_ALIGN,
-        this.seismographConfig.drawingType === DRAW_BOTH_ALIGN,
-      )
-      .attr("style", "clip-path: url(#" + CLIP_PREFIX + mythis.plotId + ")")
-      .attr("shape-rendering", "crispEdges")
-      .attr("d", function (segHolder: {segment: SeismogramSegment, timeScale: ScaleTime<number, number>, ampScale: ScaleLinear<number, number>}) {
-        return mythis.segmentDrawLine(segHolder.segment, segHolder.timeScale, segHolder.ampScale);
-      });
-    subtraceJoin.exit().remove();
-  }
-
-  calcSecondsPerPixel(xScale: d3.ScaleTime<number, number, never>): number {
-    const domain = xScale.domain(); // rel time and absolute both milliseconds
-
-    const range = xScale.range(); // pixels
-
-    return (
-      (domain[1].getTime() - domain[0].getTime()) / 1000 / (range[1] - range[0])
-    );
-  }
-
-  segmentDrawLine(seg: SeismogramSegment, timeScale: ScaleTime<number,number>, ampScale: ScaleLinear<number, number>): string|null {
-    const secondsPerPixel = this.calcSecondsPerPixel(timeScale);
-    const samplesPerPixel = seg.sampleRate * secondsPerPixel;
-    const lineFunc = d3
-      .line()
-      .curve(d3.curveLinear)
-      .x(function (d) {
-        return timeScale(d[0]);
-      })
-      .y(function (d) {
-        return ampScale(d[1]);
-      });
-
-    if (samplesPerPixel < this.seismographConfig.segmentDrawCompressedCutoff) {
-      if (!seg.y) {
-        util.log(
-          "canvasSeis seg.y not defined: " +
-            typeof seg +
-            " " +
-            (seg instanceof Seismogram),
-        );
-        return null;
-      }
-
-      return lineFunc(
-        Array.from(seg.y, function (d, i) {
-          return [seg.timeOfSample(i).valueOf(),d];
-        }),
-      );
-    } else {
-      // lots of points per pixel so use high/low lines
-      if (
-        !seg._highlow ||
-        seg._highlow.secondsPerPixel !== secondsPerPixel ||
-        seg._highlow.xScaleDomain[1] !== timeScale.domain()[1]
-      ) {
-        const highlow = [];
-        const y = seg.y;
-        const numHL = 2 * Math.ceil(y.length / samplesPerPixel);
-
-        for (let i = 0; i < numHL; i++) {
-          const startidx = i * samplesPerPixel;
-          let min = y[startidx];
-          let max = y[startidx];
-          for (let j=startidx; j<startidx+ samplesPerPixel&& j<y.length;j++) {
-            min = Math.min(min, y[j]);
-            max = Math.max(max, y[j]);
-          }
-          highlow[2 * i] = min;
-          highlow[2 * i + 1] = max;
-        }
-
-        seg._highlow = {
-          xScaleDomain: [timeScale.domain()[0], timeScale.domain()[1]],
-          xScaleRange: timeScale.range(),
-          secondsPerPixel: secondsPerPixel,
-          samplesPerPixel: samplesPerPixel,
-          highlowArray: highlow,
-        };
-      }
-
-      return lineFunc(
-        seg._highlow.highlowArray.map(function (d: number, i: number) {
-          return [
-              seg.startTime.valueOf() +
-                1000 * ((Math.floor(i / 2) + 0.5) * secondsPerPixel),
-              d ];
-        }),
-      );
-    }
   }
 
   /**

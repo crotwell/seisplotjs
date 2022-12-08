@@ -26,18 +26,6 @@ export type MarginType = {
   toString?: () => string;
 };
 
-/** Constant for drawing seismogram using svg. */
-export const DRAW_SVG = "svg";
-
-/** Constant for drawing seismogram using canvas, axies are still svg. */
-export const DRAW_CANVAS = "canvas";
-
-/** Constant for drawing seismogram using both canvas and svg, for testing. */
-export const DRAW_BOTH = "both"; // for testing
-
-/** Constant for drawing seismogram using both canvas and svg plus alignment markers, for testing. */
-export const DRAW_BOTH_ALIGN = "alignment"; // for testing
-
 export const DEFAULT_TITLE =
   "{{#each seisDataList}}<tspan>{{onlyChangesChannel ../seisDataList @index}}</tspan> {{else}}No Data{{/each}}";
 
@@ -48,7 +36,6 @@ export const DEFAULT_TITLE =
 export class SeismographConfig {
   static _lastID: number;
   configId: number;
-  drawingType: string; // canvas or svg
 
   timeFormat: (date: Date) => string;
   relativeTimeFormat: (value: number) => string;
@@ -124,7 +111,6 @@ export class SeismographConfig {
 
   constructor() {
     this.configId = ++SeismographConfig._lastID;
-    this.drawingType = DRAW_CANVAS;
     this.isXAxis = true;
     this.isXAxisTop = false;
     this.isYAxisNice = true;

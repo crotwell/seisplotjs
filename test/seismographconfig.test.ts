@@ -1,11 +1,10 @@
 // @flow
 
-import {SeismographConfig, DRAW_BOTH} from '../src/seismographconfig.js';
+import {SeismographConfig} from '../src/seismographconfig.js';
 
 test("simple seismographconfig clone", () => {
   let seisConfig = new SeismographConfig();
 
-  seisConfig.drawingType = DRAW_BOTH;
   seisConfig.isXAxis = false;
   seisConfig.isYAxis = false;
   seisConfig.timeFormat = function (date: Date): string { return date.toISOString();};
@@ -45,7 +44,6 @@ test("simple seismographconfig clone", () => {
   // $FlowExpectedError[cannot-write]
   delete cloned.margin.toString;
   expect(seisConfig).toEqual(cloned);
-  seisConfig.drawingType = DRAW_BOTH;
   seisConfig.yLabel = "Changed";
   expect(cloned.yLabel).not.toEqual(seisConfig.yLabel);
 });
