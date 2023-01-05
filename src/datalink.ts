@@ -488,9 +488,9 @@ export class DataLinkConnection {
   }
 
   infoConnections(): Promise<ConnectionsResponse> {
-    return this.info("STREAMS").then((daResp: DataLinkResponse) => {
+    return this.info("CONNECTIONS").then((daResp: DataLinkResponse) => {
       //parse xml and return as a useful object
-      return new ConnectionsResponse();
+      return ConnectionsResponse.fromDatalinkResponse(daResp);
     });
   }
 
@@ -1216,9 +1216,30 @@ Capabilities="DLPROTO:1.0 PACKETSIZE:512 WRITE">
   }
 }
 
+/**
+ * Non implementation, just stores xml as a string. Unlikely
+ * to be useful remotely as ringserver doesn't allow.
+ *
+ * @param daliXML  raw xml form server
+ */
 export class ConnectionsResponse {
-  constructor() {
-
+  daliXML: string;
+  constructor(daliXML: string) {
+    this.daliXML = daliXML;
+  }
+  static fromDatalinkResponse(daliResp: DataLinkResponse): ConnectionsResponse {
+    if (daliResp.type === INFO) {
+      // dumb implementation, just save as string
+      return new ConnectionsResponse(daliResp.message);
+    } else {
+      throw new Error("Datalink Response not OK", {cause: daliResp});
+    }
+  }
+  static fromXML(daliXML: Element): ConnectionsResponse {
+    return new ConnectionsResponse(`${daliXML}`);
+  }
+  toString(): string {
+    return `${this.daliXML}`;
   }
 }
 
