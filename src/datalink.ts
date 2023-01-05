@@ -1071,8 +1071,11 @@ export class StatusResponse {
     const idStats = DataLinkIdStats.parseXMLAttributes(daliXML);
     const dlStats = DataLinkStats.parseXMLAttributes(daliXML.getElementsByTagName("Status")[0]);
     const threadListEl = daliXML.getElementsByTagName("ServerThreads")[0];
-    const threadElList = threadListEl.getElementsByTagName("Thread");
-    const threads = Array.from(threadElList).map(threadEl => ThreadStat.parseXMLAttributes(threadEl));
+    let threads: Array<ThreadStat> = [];
+    if (threadListEl) {
+      threads = Array.from(threadListEl.getElementsByTagName("Thread"))
+                     .map(threadEl => ThreadStat.parseXMLAttributes(threadEl));
+    }
     return new StatusResponse(idStats, dlStats, threads);
   }
   toString(): string {
