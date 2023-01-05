@@ -2,7 +2,7 @@ import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 // snip start vars
 const matchPattern = `CO_JSC_00_HH./MSEED`;
-sp.d3.select('span#channel').text(matchPattern);
+document.querySelector('span#channel').textContent = matchPattern;
 const duration = sp.luxon.Duration.fromISO('PT5M');
 const timeWindow = new sp.util.durationEnd(duration, sp.luxon.DateTime.utc());
 const seisPlotConfig = new sp.seismographconfig.SeismographConfig();
