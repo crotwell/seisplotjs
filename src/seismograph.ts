@@ -574,6 +574,7 @@ export class Seismograph extends SeisPlotElement {
           }
 
           const samplesPerPixel = 1.0 * s.sampleRate * secondsPerPixel;
+
           const pixelsPerSample = 1.0 / samplesPerPixel;
           const startPixel = xscaleForSDD.for(s.startTime);
           const endPixel = xscaleForSDD.for(s.endTime);
@@ -597,16 +598,16 @@ export class Seismograph extends SeisPlotElement {
           if (firstTime || !this.seismographConfig.connectSegments) {
             context.beginPath();
             context.strokeStyle = color;
-            //context.lineWidth = 5;
+            context.lineWidth = this.seismographConfig.lineWidth;
             context.moveTo(
               leftVisiblePixel,
               yscaleForSDD(s.y[leftVisibleSample]),
             );
             firstTime = false;
           }
-
-          if (samplesPerPixel > 2) {
+          if (samplesPerPixel > 10) {
             // only draw min-max
+
             let i = leftVisibleSample;
             while (i < rightVisibleSample + 2 && i < s.y.length) {
               let curPixel = Math.floor(startPixel + i * pixelsPerSample);
@@ -619,17 +620,26 @@ export class Seismograph extends SeisPlotElement {
                 if (max < s.y[i]) { max = s.y[i]; maxIdx = i}
                 i++;
               }
-              // drawing min to max vs max to min depending on order
-              // and offseting by half a pixel
-              // helps a lot with avoiding fuzziness due to antialiasing
-              if (minIdx < maxIdx) {
-                // min occurs before max
-                context.lineTo(curPixel-0.5, Math.floor(yscaleForSDD(min))+0.5);
-                context.lineTo(curPixel+0.5, Math.ceil(yscaleForSDD(max))-0.5);
+              const topPixelFlt = yscaleForSDD(max); // note pixel coord flipped
+              const botPixelFlt = yscaleForSDD(min); // so minValue=>maxPixel, maxValue=>minPixel
+              const botPixel = Math.floor(botPixelFlt);
+              const topPixel = Math.ceil(topPixelFlt);
+              if (botPixelFlt-topPixelFlt < 1.25) {
+                // very horizontal, just draw single
+                context.lineTo(curPixel+0.5, topPixelFlt);
               } else {
-                // max occurs before min
-                context.lineTo(curPixel-0.5, Math.ceil(yscaleForSDD(max))-0.5);
-                context.lineTo(curPixel+0.5, Math.floor(yscaleForSDD(min))+0.5);
+                // drawing min to max vs max to min depending on order
+                // and offseting by half a pixel
+                // helps a lot with avoiding fuzziness due to antialiasing
+                if (minIdx < maxIdx) {
+                  // min/bot occurs before max/top
+                  context.lineTo(curPixel-0.5, botPixel-0.5);
+                  context.lineTo(curPixel+0.5, topPixel+0.5);
+                } else {
+                  // max/top occurs before min/bot
+                  context.lineTo(curPixel-0.5, topPixel+0.5);
+                  context.lineTo(curPixel+0.5, botPixel-0.5);
+                }
               }
             }
           } else {
@@ -640,8 +650,8 @@ export class Seismograph extends SeisPlotElement {
               i++
             ) {
               context.lineTo(
-                startPixel + i * pixelsPerSample,
-                Math.round(yscaleForSDD(s.y[i])),
+                startPixel + i * pixelsPerSample+0.5,
+                Math.round(yscaleForSDD(s.y[i]))+0.5,
               );
             }
           }
