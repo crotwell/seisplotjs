@@ -363,8 +363,16 @@ export const DURATION_CHANGED = "duration";
  * Combination of two DateTimeChoosers to specify a start and end time.
  * A "change" event is fired when the times are modified.
  *
- * @param div selected div to append chooser to
- * @param updateCallback optional callback function when time is selected/changed
+ * Initial values can be set via the start, end and duration attributes.
+ * Start and end are ISO8601 dates, duration may either be a number of
+ * seconds or an ISO8601 duration string.
+ * Also, if the prev-next attribute is true, then previous, next and now
+ * buttons are added to shift the time range earlier, later or so that
+ * the end is the current time.
+ *
+ * The component remembers the last changed, so if you modify duration
+ * and then modify start, the end is adjusted to keep duration the same.
+ *
  */
 export class TimeRangeChooser extends HTMLElement {
   updateCallback: (timerange: Interval) => void;
@@ -432,7 +440,6 @@ export class TimeRangeChooser extends HTMLElement {
     durationLabel.textContent = this.durationLabel;
     const durationInput = wrapper.appendChild(document.createElement('input'));
     durationInput.value = `${this.duration}`;
-    //durationInput.setAttribute("type", "number");
     durationInput.setAttribute("class", "duration");
 
     const endLabel = wrapper.appendChild(document.createElement('label'));
@@ -455,27 +462,29 @@ export class TimeRangeChooser extends HTMLElement {
     });
     this.startChooser.updateTime(startTime);
     this.endChooser.updateTime(endTime);
-    const pastBtn = wrapper.insertBefore(document.createElement("button"), startLabel);
-    pastBtn.setAttribute("id", "pastButton");
-    pastBtn.textContent = "<";
-    pastBtn.addEventListener("click", () => {
-      this._mostRecentChanged = DURATION_CHANGED;
-      this.startChooser.time = this.startChooser.time.minus(extractDuration(durationInput.value)); // causes event dispatch
-    });
-    const futureBtn = wrapper.appendChild(document.createElement("button"));
-    futureBtn.setAttribute("id", "futureButton");
-    futureBtn.textContent = ">";
-    futureBtn.addEventListener("click", () => {
-      this._mostRecentChanged = DURATION_CHANGED;
-      this.endChooser.time = this.endChooser.time.plus(extractDuration(durationInput.value)); // causes event dispatch
-    });
-    const nowBtn = wrapper.appendChild(document.createElement("button"));
-    nowBtn.setAttribute("id", "nowButton");
-    nowBtn.textContent = "Now";
-    nowBtn.addEventListener("click", () => {
-      this._mostRecentChanged = DURATION_CHANGED;
-      this.endChooser.time = DateTime.utc(); // causes event dispatch
-    });
+    if (this.getAttribute("prev-next")) {
+      const pastBtn = wrapper.insertBefore(document.createElement("button"), startLabel);
+      pastBtn.setAttribute("id", "pastButton");
+      pastBtn.textContent = "<";
+      pastBtn.addEventListener("click", () => {
+        this._mostRecentChanged = DURATION_CHANGED;
+        this.startChooser.time = this.startChooser.time.minus(extractDuration(durationInput.value)); // causes event dispatch
+      });
+      const futureBtn = wrapper.appendChild(document.createElement("button"));
+      futureBtn.setAttribute("id", "futureButton");
+      futureBtn.textContent = ">";
+      futureBtn.addEventListener("click", () => {
+        this._mostRecentChanged = DURATION_CHANGED;
+        this.endChooser.time = this.endChooser.time.plus(extractDuration(durationInput.value)); // causes event dispatch
+      });
+      const nowBtn = wrapper.appendChild(document.createElement("button"));
+      nowBtn.setAttribute("id", "nowButton");
+      nowBtn.textContent = "Now";
+      nowBtn.addEventListener("click", () => {
+        this._mostRecentChanged = DURATION_CHANGED;
+        this.endChooser.time = DateTime.utc(); // causes event dispatch
+      });
+    }
 
     shadow.appendChild(wrapper);
   }
