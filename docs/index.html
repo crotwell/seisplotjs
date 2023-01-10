@@ -49,10 +49,15 @@
             <p>Full source at
               <a href="https://github.com/crotwell/seisplotjs">Github</a>.
             </p>
-            <p>A standalone js file with all dependencies included as available
+            <p>A standalone js file with all dependencies included is available
               at <a href="http://www.seis.sc.edu/downloads/seisplotjs/">
                 http://www.seis.sc.edu/downloads/seisplotjs/</a>. This is used
                 by the tutorial and examples.
+            </p>
+            <p>Documentation for previous versions is archived at
+              <a href="http://www.seis.sc.edu/software/seisplotjs">
+                http://www.seis.sc.edu/software/seisplotjs
+              </a>
             </p>
           </div>
         </section>
@@ -66,7 +71,10 @@
       let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
 
       const seismograph = (document.querySelector('sp-seismograph'));
-      seismograph.seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+      seismograph.seismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
+      //seismograph.seismographConfig.lineColors = [ "black"];
+      //seismograph.seismographConfig.lineWidth = 0.5;
+      seismograph.seismographConfig.title = "";
       dsQuery.networkCode('CO')
         .stationCode('HODGE')
         .locationCode('00')
