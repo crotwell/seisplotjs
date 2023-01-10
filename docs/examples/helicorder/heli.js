@@ -177,10 +177,10 @@ let timer = d3.interval(function(elapsed) {
   }
   nowHour = getNowTime();
   const luxDur = luxon.Duration.fromISO(duration);
-  timeWindow = luxon.Interval.before(nowHour, luxDur);
-  console.log("reset time window for "+timeWindow.start+" "+timeWindow.end );
+  timeRange = luxon.Interval.before(nowHour, luxDur);
+  console.log("reset time window for "+timeRange.start+" "+timeRange.end );
 
-  heli.config.fixedTimeScale = timeWindow;
+  heli.config.fixedTimeScale = timeRange;
   heli.draw();
 }, timerInterval);
 

@@ -39,10 +39,10 @@ export function createEmptySavedData(config) {
   } else {
     plotEnd = luxon.DateTime.fromISO(config.endTime).toUTC();
   }
-  let timeWindow = luxon.Interval.before(plotEnd, luxDur);
+  let timeRange = luxon.Interval.before(plotEnd, luxDur);
   let hash = {
     config: config,
-    timeWindow: timeWindow,
+    timeRange: timeRange,
     staCode: config.station,
     bandCode: config.bandCode,
     instCode: config.instCode,
@@ -59,7 +59,7 @@ export function createEmptySavedData(config) {
 }
 export function doPlot(config) {
   const heliDiv = document.querySelector('#heli');
-  if (! heliDiv || window.getComputedStyle(heliDiv) === "none") {
+  if (config.station && (! heliDiv || window.getComputedStyle(heliDiv) === "none")) {
     document.querySelector("#heli").setAttribute("style", "display: none;");
     document.querySelector("#seismograph").setAttribute("style", "display: block;");
     let hash = createEmptySavedData(config);
@@ -92,7 +92,7 @@ export function doPlotHeli(config) {
   hash.heli = document.querySelector("sp-helicorder");
   if (hash.heli) {
     // draw empty SDD so clear existing and fix labels
-    hash.heli.heliConfig.fixedTimeScale = hash.timeWindow;
+    hash.heli.heliConfig.fixedTimeScale = hash.timeRange;
     hash.heli.seisData = [];
     hash.heli.draw();
   }
@@ -112,16 +112,17 @@ export function doPlotHeli(config) {
   d3.selectAll("span.textStaCode").text("");
   d3.selectAll("span.textLocCode").text("");
   d3.selectAll("span.textChanCode").text("");
-  d3.selectAll("span.startTime").text(`${hash.timeWindow.start.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`);
-  d3.selectAll("span.endTime").text(`${hash.timeWindow.end.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`);
+  d3.selectAll("span.startTime").text(`${hash.timeRange.start.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`);
+  d3.selectAll("span.endTime").text(`${hash.timeRange.end.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`);
   let channelQuery = new seisplotjs.fdsnstation.StationQuery()
     .nodata(404)
     .networkCode(netCodeQuery)
     .stationCode(staCodeQuery)
     .locationCode(locCodeQuery)
     .channelCode(chanCodeQuery)
-    .startTime(hash.timeWindow.start)
-    .endTime(hash.timeWindow.end);
+    .startTime(hash.timeRange.start)
+    .endTime(hash.timeRange.start.plus(seisplotjs.luxon.Duration.fromMillis(3600*1000)));
+//    .endTime(hash.timeRange.end);
   let channelPromise;
   // channelPromise = channelQuery.queryChannels();
   // temp load from local stationxml file
@@ -164,7 +165,7 @@ export function doPlotHeli(config) {
     }
     for (let c of matchChannels) {
       if (c.channelCode.endsWith(config.orientationCode) || (config.altOrientationCode && c.channelCode.endsWith(config.altOrientationCode))) {
-        chanTR.push(seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, hash.timeWindow));
+        chanTR.push(seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, hash.timeRange));
       }
     }
     const firstChan = chanTR[0];
@@ -177,7 +178,7 @@ export function doPlotHeli(config) {
     hash.heli = document.querySelector("sp-helicorder");
     if (hash.heli) {
       // draw empty SDD so clear existing and fix labels
-      hash.heli.heliConfig.fixedTimeScale = hash.timeWindow;
+      hash.heli.heliConfig.fixedTimeScale = hash.timeRange;
       hash.heli.seisData = chanTR;
       hash.heli.draw();
     }
@@ -272,12 +273,12 @@ export function doPlotHeli(config) {
 
 export function queryEarthquakes(hash) {
   return Promise.resolve(hash).then(hash => {
-    let quakeStart = hash.timeWindow.start.minus(QUAKE_START_OFFSET);
+    let quakeStart = hash.timeRange.start.minus(QUAKE_START_OFFSET);
     let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     localQuakesQuery
       .minMag(0)
       .startTime(quakeStart)
-      .endTime(hash.timeWindow.end)
+      .endTime(hash.timeRange.end)
       .minLat(hash.config.localMinLat)
       .maxLat(hash.config.localMaxLat)
       .minLon(hash.config.localMinLon)
@@ -309,11 +310,11 @@ export function queryEarthquakes(hash) {
       return hArr[0];
     });
   }).then(hash => {
-    let quakeStart = hash.timeWindow.start.minus(QUAKE_START_OFFSET);
+    let quakeStart = hash.timeRange.start.minus(QUAKE_START_OFFSET);
     let regionalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     regionalQuakesQuery
       .startTime(quakeStart)
-      .endTime(hash.timeWindow.end)
+      .endTime(hash.timeRange.end)
       .latitude(33)
       .longitude(-81)
       .maxRadius(hash.config.regionalMaxRadius)
@@ -324,11 +325,11 @@ export function queryEarthquakes(hash) {
       return hArr[0];
     });
   }).then(hash => {
-    let quakeStart = hash.timeWindow.start.minus(QUAKE_START_OFFSET);
+    let quakeStart = hash.timeRange.start.minus(QUAKE_START_OFFSET);
     let globalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
     globalQuakesQuery
       .startTime(quakeStart)
-      .endTime(hash.timeWindow.end)
+      .endTime(hash.timeRange.end)
       .minMag(hash.config.globalMinMag);
     const globalQuakes = globalQuakesQuery.query();
     return Promise.all([hash, globalQuakes]).then(hArr => {
@@ -355,7 +356,7 @@ export function queryEarthquakes(hash) {
         .evdepth( quake.depth > 0 ? quake.depth/1000 : 0)
         .evlat(quake.latitude).evlon(quake.longitude)
         .stalat(mystation.latitude).stalon(mystation.longitude)
-        .phases('p,P,PKP,PKIKP,Pdiff,s,S,Sdiff,PKP,SKS,SKIKS')
+        .phases('p,P,PKP,PKIKP,Pdiff,s,S,Sdiff,PKP,SKS,SKIKS,PP,SS')
         .query()
         .then(function(ttimes) {
           let firstP = null;
@@ -369,6 +370,7 @@ export function queryEarthquakes(hash) {
             }
           }
           return {
+            quake: quake,
             firstP: firstP,
             firstPTime: quake.time.plus({seconds: firstP.time}),
             firstS: firstS,
@@ -424,6 +426,7 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
 }
 
 export function loadDataReal(sddList) {
+  console.log(`loading real data...`)
   let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
     MSEED_URL,
     "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
@@ -440,7 +443,8 @@ export function loadDataReal(sddList) {
   return Promise.all([
     mseedQ.loadSeismograms(beforeNowChanTR),
     dsQuery.postQuerySeismograms(other_sddList),
-  ]).then(parr => parr[0].concat(parr[1]));
+  ]).then(parr => parr[0].concat(parr[1]))
+  .then( sddList => {console.log(`real dta : ${sddList.length}`); return sddList;})
 }
 
 export function filterData(config, origData) {
@@ -486,7 +490,8 @@ export function redrawHeli(hash) {
   }
 
   if (hash.seisData) {
-    let heliConfig = new HelicorderConfig(hash.timeWindow);
+    hash.station = hash.seisData.stationCode;
+    let heliConfig = new HelicorderConfig(hash.timeRange);
     heliConfig.markerFlagpoleBase = 'center';
     heliConfig.detrendLines = true;
     heliConfig.lineSeisConfig.markerFlagpoleBase = 'center';
@@ -513,8 +518,11 @@ export function redrawHeli(hash) {
       if (dur.toMillis() > 0 ) {
         hash.halfWidth = luxon.Duration.fromMillis(dur.toMillis()/2);
       }
-
-      drawSeismograph(hash);
+      if (hash.station) {
+        drawSeismograph(hash);
+      } else {
+        console.log(`no station in hash: ${hash.station}`)
+      }
     });
     d3.select("span#minAmp").text(hash.seisData.min.toFixed(0));
     d3.select("span#maxAmp").text(hash.seisData.max.toFixed(0));
@@ -548,6 +556,10 @@ export function drawSeismograph(hash) {
   const seismographDiv = document.querySelector("#seismograph");
   seismographDiv.setAttribute("style", "display: block;");
 
+  // let friendChannels = Array.from(seisplotjs.stationxml.allChannels(hash.netArray));
+  let friendChannels = Array.from(seisplotjs.stationxml.allChannels(hash.netArray));
+  friendChannels = friendChannels.filter(ch => ch.station.stationCode === hash.station);
+
   // let friendChannels = [];
   // hash.stationList.forEach(sta => {
   //   let staChans = Array.from(seisplotjs.stationxml.findChannels(hash.netArray,
@@ -559,34 +571,26 @@ export function drawSeismograph(hash) {
   //   friendChannels = friendChannels.concat(staChans);
   // });
 
-  let friendChannels = Array.from(seisplotjs.stationxml.allChannels(hash.netArray));
   let halfWidth = hash.halfWidth;
   if (! halfWidth) { halfWidth = seisplotjs.luxon.Duration.fromISO("PT5M"); }
   const seismographDisp = seismographDiv.querySelector("sp-organized-display");
   const interval = seisplotjs.luxon.Interval.fromDateTimes(hash.centerTime.minus(halfWidth), hash.centerTime.plus(halfWidth));
-  console.log(`num channels: ${friendChannels.length}`)
+  const overlapQuakes = hash.traveltimes.filter(tt => {
+    const lastArrival = tt.ttimes.arrivals.reduce((acc, cur) => acc.time > cur.time ? acc : cur);
+    const quakeInterval = seisplotjs.luxon.Interval.after(tt.quake.time, { seconds: lastArrival.time});
+    return interval.overlaps(quakeInterval);
+  }).map(tt => tt.quake);
   let sddList = friendChannels.map(channel => {
-    console.log(`channel: ${channel.codes()}`)
     let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
     sdd.addMarkers(hash.seisData.markerList);
+    sdd.quakeList = overlapQuakes;
     return sdd;
   });
-  seismographDisp.seisData = sddList;
   let seismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
   seismographConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
 
-  if (hash.config.amp === 'max') {
-  } else if (typeof hash.config.amp === 'string' && hash.config.amp.endsWith('%')) {
-    const percent = Number(hash.config.amp.substring(0, hash.config.amp.length-1))/100;
-    seismographConfig.linkedAmplitudeScale.halfWidth =
-      percent*seismographDisp.seismographConfig.linkedAmplitudeScale.halfWidth;
-  } else if (Number.isFinite(hash.config.amp)) {
-    seismographConfig.linkedAmplitudeScale.halfWidth = hash.config.amp;
-  } else {
-  }
   seismographDisp.seismographConfig = seismographConfig;
-  //seismographConfig.linkedTimeScale.recalculate();
-  //seismographConfig.linkedAmplitudeScale.recalculate();
+  seismographDisp.seisData = sddList;
   seismographDisp.draw();
 
   seismographDisp.addEventListener("seismousemove", sEvt => {

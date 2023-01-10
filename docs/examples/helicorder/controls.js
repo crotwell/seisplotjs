@@ -57,7 +57,7 @@ export function setupEventHandlers(config, loadAndPlotFun, redrawFun) {
   });
   document.querySelector("button#reload").addEventListener("click", () => {
     const orgDisp = document.querySelector("sp-organized-display");
-    const timeWindowsToReload = [];
+    const timeRangesToReload = [];
     const dispElements = orgDisp.getDisplayItems();
     dispElements.forEach(orgDispItem => {
       if (orgDispItem.plottype.startsWith(seisplotjs.organizeddisplay.SEISMOGRAPH)) {
