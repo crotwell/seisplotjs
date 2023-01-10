@@ -21,7 +21,7 @@ let realtimeDiv = document.querySelector("div#realtime");
 let rect = realtimeDiv.getBoundingClientRect();
 let timerInterval = duration.toMillis()/
                     (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
-while (timerInterval < 100) { timerInterval *= 2;}
+while (timerInterval < 50) { timerInterval *= 2;}
 
 const errorFn = function(error) {
   console.assert(false, error);
@@ -55,8 +55,10 @@ const packetHandler = function(packet) {
   }
 };
 // snip start datalink
+// wss://thecloud.seis.sc.edu/ringserver/datalink
+// wss://rtserve.iris.washington.edu/datalink
 const datalink = new sp.datalink.DataLinkConnection(
-    "ws://thecloud.seis.sc.edu/ringserver/datalink",
+    "wss://rtserve.iris.washington.edu/datalink",
     packetHandler,
     errorFn);
 
@@ -133,7 +135,7 @@ let toggleConnect = function() {
         }
         return datalink.infoStatus();
       }).then(response => {
-        addToDebug(`info status response: ${response}`)
+        addToDebug(`info status response: ${response}`);
         return datalink.infoStreams();
       }).then(response => {
         addToDebug(`info streams response: ${response}`)
