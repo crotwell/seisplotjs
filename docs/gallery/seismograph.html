@@ -16,12 +16,9 @@
 
   <h3>Seismograph:</h3>
   <div>
-    <h5>plain</h5>
-    <sp-seismograph id="plain"></sp-seismograph>
-    <h5>gain</h5>
-    <sp-seismograph id="gain"></sp-seismograph>
-    <h5>rmean</h5>
-    <sp-seismograph id="rmean"></sp-seismograph>
+    <sp-seismograph id="raw"></sp-seismograph>
+    <sp-seismograph id="middle"></sp-seismograph>
+    <sp-seismograph id="mean"></sp-seismograph>
   </div>
 
   <script type="module">
@@ -30,45 +27,34 @@
     let dataArray = new Float32Array(1000).map(function(d, i) {
       return 200+Math.sin(2*Math.PI*i/100) * 100;
     });
-    let dataArrayB = dataArray.map((d,i) => d*10+(i%200)*5);
-    let dataArrayC = new Float32Array(1000).map(function(d, i) {
+    let dataArrayB = new Float32Array(1000).map(function(d, i) {
       return Math.sin(-3*Math.PI*i/200) * 100;
     });
+    dataArrayB[50] = -300; // make a spike so middle is not mean
     let sampleRate = 20;
     let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
     let sidA = seisplotjs.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "Z")
     const sddA = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start, sidA);
     let sidB = seisplotjs.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "N")
     const sddB = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, sidB);
-    let sidC = seisplotjs.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "E")
-    const sddC = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start, sidC);
     const seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    seisConfig.isRelativeTime = false;
-    seisConfig.doGain = false;
-    console.log("PLAIN!!!!")
-    const seisConfig_gain = new seisplotjs.seismographconfig.SeismographConfig();
-    seisConfig.isRelativeTime = false;
-    seisConfig.doGain = false;
-    const seisConfig_rmean = new seisplotjs.seismographconfig.SeismographConfig();
+    const seisConfig_middle = new seisplotjs.seismographconfig.SeismographConfig();
+    const seisConfig_mean = new seisplotjs.seismographconfig.SeismographConfig();
     const def_title = seisConfig.title;
-    seisConfig.isRelativeTime = false;
-    seisConfig.doGain = false;
-    seisConfig.title = `Plain: ${def_title}`;
-    seisConfig_gain.doGain = true;
-    seisConfig_gain.title = `Gain: ${def_title}`;
-    seisConfig_rmean.title = `RMean: ${def_title}`;
-    console.log(`manual seisconfig: ${seisConfig.configId}`)
-    document.querySelector('sp-seismograph#plain').seismographConfig = seisConfig;
-  //  document.querySelector('sp-seismograph#plain').remove()
-    document.querySelector('sp-seismograph#gain').seismographConfig = seisConfig_gain;
-  //document.querySelector('sp-seismograph#rmean').remove()
-    document.querySelector('sp-seismograph#rmean').seismographConfig = seisConfig_rmean;
+    seisConfig.title = `Raw: ${def_title}`;
+    seisConfig.amplitudeRaw();
+    //seisConfig.amplitudeWithZero();
+    seisConfig_middle.title = `Centered Middle: ${def_title}`;
+    seisConfig_middle.amplitudeMinMax();
+    seisConfig_mean.title = `Centered Mean: ${def_title}`;
+    seisConfig_mean.amplitudeMean();
+    document.querySelector('sp-seismograph#raw').seismographConfig = seisConfig;
+    document.querySelector('sp-seismograph#middle').seismographConfig = seisConfig_middle;
+    document.querySelector('sp-seismograph#mean').seismographConfig = seisConfig_mean;
     const seismographList = (document.querySelectorAll('sp-seismograph'));
-    console.log(`before set data`)
     seismographList.forEach( graph => {
-      graph.appendSeisData([sddA, sddC]);
+      graph.appendSeisData([sddA, sddB]);
       graph.draw();
-      console.log(`scale ${graph.seismographConfig.title.slice(0,5)}  ${graph.amp_scalable}`)
     });
   </script>
 </body>
