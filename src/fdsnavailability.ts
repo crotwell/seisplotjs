@@ -39,7 +39,7 @@ export const FORMAT_GEOCSV = "geocsv";
 /** const for request format, request */
 export const FORMAT_REQUEST = "request";
 
-/** const of completely empty json, {} */
+/** const of completely empty json, \{\} */
 export const EMPTY_JSON: RootType = {
   version: {},
   datasources: [],
