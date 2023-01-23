@@ -22,14 +22,14 @@ export function numberFromInput(root: ShadowRoot|Element|null, query: string): n
   } else {throw new Error("element is not HTMLInputElement");}
 }
 
-export function labeledTextInput(label: string, defaultVal: string): HTMLElement {
+export function labeledTextInput(label: string, defaultVal: string, classname: string|null=null): HTMLElement {
   const ndiv = document.createElement('span');
   const nlabel = ndiv.appendChild(document.createElement('label'));
   nlabel.textContent = label;
   const ntext = ndiv.appendChild(document.createElement('input'));
   ntext.setAttribute('type','text');
   ntext.setAttribute('name',label);
-  ntext.setAttribute('class',label);
+  ntext.setAttribute('class',classname?classname:label);
   ntext.value = defaultVal;
   return ndiv;
 }
@@ -47,7 +47,11 @@ export function labeledNumberInput(label: string, defaultVal: string): HTMLEleme
 }
 
 
-const ATTR_LIST = ["Network", "Station", "Location", "Channel"];
+const ATTR_NET = "network";
+const ATTR_STA = "station";
+const ATTR_LOC = "location";
+const ATTR_CHAN = "channel";
+const ATTR_LIST = [ATTR_NET, ATTR_STA, ATTR_LOC, ATTR_CHAN];
 
 export class ChannelCodeInput extends HTMLElement {
   constructor() {
@@ -55,17 +59,17 @@ export class ChannelCodeInput extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
     wrapper.setAttribute('class','wrapper');
-    const net = this.hasAttribute("Network") ? ""+this.getAttribute("Network") : "XX"
-    let netIn = wrapper.appendChild(labeledTextInput("Network", net));
+    const net = this.hasAttribute(ATTR_NET) ? ""+this.getAttribute(ATTR_NET) : "XX"
+    let netIn = wrapper.appendChild(labeledTextInput("Network:", net, ATTR_NET));
     netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const sta = this.hasAttribute("Station") ? ""+this.getAttribute("Station") : ""
-    let staIn = wrapper.appendChild(labeledTextInput("Station", sta));
+    const sta = this.hasAttribute(ATTR_STA) ? ""+this.getAttribute(ATTR_STA) : ""
+    let staIn = wrapper.appendChild(labeledTextInput("Station:", sta, ATTR_STA));
     staIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const loc = this.hasAttribute("Location") ? ""+this.getAttribute("Location") : ""
-    let locIn = wrapper.appendChild(labeledTextInput("Location", loc));
+    const loc = this.hasAttribute(ATTR_LOC) ? ""+this.getAttribute(ATTR_LOC) : ""
+    let locIn = wrapper.appendChild(labeledTextInput("Location:", loc, ATTR_LOC));
     locIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const chan = this.hasAttribute("Channel") ? ""+this.getAttribute("Channel") : ""
-    let chanIn = wrapper.appendChild(labeledTextInput("Channel", chan));
+    const chan = this.hasAttribute(ATTR_CHAN) ? ""+this.getAttribute(ATTR_CHAN) : ""
+    let chanIn = wrapper.appendChild(labeledTextInput("Channel:", chan, ATTR_CHAN));
     chanIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
 
 
@@ -84,34 +88,34 @@ export class ChannelCodeInput extends HTMLElement {
     shadow.appendChild(wrapper);
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === "Network" || name === "Station" || name === "Location" || name === "Channel") {
+    if (name === ATTR_NET || name === ATTR_STA || name === ATTR_LOC || name === ATTR_CHAN) {
       this._setInputValue(name, newValue);
     }
   }
   static get observedAttributes() { return ATTR_LIST; }
   get network(): string {
-    return this._getInputValue('Network');
+    return this._getInputValue(ATTR_NET);
   }
   set network(n: string) {
-    this._setInputValue("Network", n);
+    this._setInputValue(ATTR_NET, n);
   }
   get station(): string {
-    return this._getInputValue('Station');
+    return this._getInputValue(ATTR_STA);
   }
   set station(n: string) {
-    this._setInputValue("Station", n);
+    this._setInputValue(ATTR_STA, n);
   }
   get location(): string {
-    return this._getInputValue('Location');
+    return this._getInputValue(ATTR_LOC);
   }
   set location(n: string) {
-    this._setInputValue("Location", n);
+    this._setInputValue(ATTR_LOC, n);
   }
   get channel(): string {
-    return this._getInputValue('Channel');
+    return this._getInputValue(ATTR_CHAN);
   }
   set channel(n: string) {
-    this._setInputValue("Channel", n);
+    this._setInputValue(ATTR_CHAN, n);
   }
   _getInputValue(name: string): string {
     return (this.shadowRoot?.querySelector('input.'+name) as HTMLInputElement)?.value ?? "";

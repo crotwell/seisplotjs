@@ -19,8 +19,10 @@
       <p></p>
     </div>
     <h3>Channel query: <span id="title"></span></h3>
-    <sp-channel-search Network="II" Channel="BHZ"
-      north="35" south="32" west="-82" east="-79"></sp-channel-search>
+    <h5 id="sp-channel-search">&lt;sp-channel-search&gt;</h5>
+    <sp-channel-search network="CO" channel="HHZ"
+      north="35" south="32" west="-82" east="-79"
+      geochoice="box"></sp-channel-search>
     <button id="query">Query</button>
     <sp-station-quake-map></sp-station-quake-map>
     <sp-channel-table></sp-channel-table>

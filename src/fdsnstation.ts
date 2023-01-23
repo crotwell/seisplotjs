@@ -3,7 +3,14 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {ChannelCodeInput} from './components';
+import {
+    CHANNEL_CODE_ELEMENT,
+    ChannelCodeInput,
+    LatLonChoice,
+    LatLonBoxEl,
+    LatLonRadiusEl,
+  } from './components';
+import {TimeRangeChooser,} from './datechooser';
 import {
   FDSNCommon,
   IRIS_HOST,
@@ -1207,15 +1214,6 @@ export class StationQuery extends FDSNCommon {
   }
 }
 
-//@ts-ignore
-import {
-    CHANNEL_CODE_ELEMENT,
-    LatLonChoice,
-    LatLonBoxEl,
-    LatLonRadiusEl,
-  } from './components';
-import {TimeRangeChooser,} from './datechooser';
-
 const channelsearchHtml = `
 <div class="wrapper">
   <sp-channel-code-input></sp-channel-code-input>
@@ -1254,19 +1252,20 @@ export class ChannelSearch extends HTMLElement {
     shadow.appendChild(wrapper);
     this._registerEvent(wrapper, 'sp-timerange');
     this._registerEvent(wrapper, 'sp-latlon-choice');
+
     const chanCodeEl = shadow.querySelector('sp-channel-code-input') as ChannelCodeInput;
     if (chanCodeEl) { //typescript
-      if (this.hasAttribute("Network")) {
-        chanCodeEl.network = ""+this.getAttribute("Network");
+      if (this.hasAttribute("network")) {
+        chanCodeEl.network = ""+this.getAttribute("network");
       }
-      if (this.hasAttribute("Station")) {
-        chanCodeEl.station = ""+this.getAttribute("Station");
+      if (this.hasAttribute("station")) {
+        chanCodeEl.station = ""+this.getAttribute("station");
       }
-      if (this.hasAttribute("Location")) {
-        chanCodeEl.location = ""+this.getAttribute("Location");
+      if (this.hasAttribute("location")) {
+        chanCodeEl.location = ""+this.getAttribute("location");
       }
-      if (this.hasAttribute("Channel")) {
-        chanCodeEl.channel = ""+this.getAttribute("Channel");
+      if (this.hasAttribute("channel")) {
+        chanCodeEl.channel = ""+this.getAttribute("channel");
       }
     }
     const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;
@@ -1313,32 +1312,15 @@ export class ChannelSearch extends HTMLElement {
     yearBtn.addEventListener('click', event => {
       trChooser.duration = Duration.fromISO('P1Y');
     });
-    const latlonchoice = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
-    if (this.hasAttribute("north")) {
-      const n = this.getAttribute("north");
-      if (n !== null) {
-        latlonchoice.latLonBox.north = parseFloat(n);
+    const latlonChooser = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
+    if ( ! latlonChooser) {throw new Error("can't find sp-latlon-choice");}
+    LatLonChoice.observedAttributes.forEach(attr => {
+      if (this.hasAttribute(attr)) {
+        // typescript
+        const attrVal = this.getAttribute(attr);
+        if (attrVal) {latlonChooser.setAttribute(attr, attrVal);}
       }
-    }
-    if (this.hasAttribute("south")) {
-      const n = this.getAttribute("south");
-      if (n !== null) {
-        latlonchoice.latLonBox.south = parseFloat(n);
-      }
-    }
-    if (this.hasAttribute("west")) {
-      const n = this.getAttribute("west");
-      if (n !== null) {
-        latlonchoice.latLonBox.west = parseFloat(n);
-      }
-    }
-    if (this.hasAttribute("east")) {
-      const n = this.getAttribute("east");
-      if (n !== null) {
-        latlonchoice.latLonBox.east = parseFloat(n);
-      }
-    }
-
+    });
   }
   populateQuery(query?: StationQuery): StationQuery {
     if ( ! query) {
