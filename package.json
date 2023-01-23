@@ -9,6 +9,12 @@
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.esm.js"
+    }
+  },
   "files": [
     "./dist/index.js",
     "./dist/index.esm.js",
