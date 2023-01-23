@@ -11,7 +11,7 @@
   <link href="../split.css" rel="stylesheet"/>
   <link href="../prism.css" rel="stylesheet"/>
   <link href="style.css" rel="stylesheet"/>
-  <link rel="icon" type="image/png" href="../flavicon.png" />
+  <link href="../flavicon.png" rel="icon" type="image/png"/>
  </head>
  <body>
   <div class="flex">
@@ -135,7 +135,7 @@
       </p>
       <pre><code class="language-javascript" snippet="vars">
 const matchPattern = `CO_JSC_00_HH./MSEED`;
-sp.d3.select('span#channel').text(matchPattern);
+document.querySelector('span#channel').textContent = matchPattern;
 const duration = sp.luxon.Duration.fromISO('PT5M');
 const timeWindow = new sp.util.durationEnd(duration, sp.luxon.DateTime.utc());
 const seisPlotConfig = new sp.seismographconfig.SeismographConfig();
@@ -154,7 +154,7 @@ let realtimeDiv = document.querySelector("div#realtime");
 let rect = realtimeDiv.getBoundingClientRect();
 let timerInterval = duration.toMillis()/
                     (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
-while (timerInterval &lt; 100) { timerInterval *= 2;}
+while (timerInterval &lt; 50) { timerInterval *= 2;}
 
 const errorFn = function(error) {
   console.assert(false, error);
@@ -203,8 +203,10 @@ const packetHandler = function(packet) {
        .
       </p>
       <pre><code class="language-javascript" snippet="datalink">
+// wss://thecloud.seis.sc.edu/ringserver/datalink
+// wss://rtserve.iris.washington.edu/datalink
 const datalink = new sp.datalink.DataLinkConnection(
-    "ws://thecloud.seis.sc.edu/ringserver/datalink",
+    "wss://rtserve.iris.washington.edu/datalink",
     packetHandler,
     errorFn);
 
@@ -293,7 +295,7 @@ let toggleConnect = function() {
         }
         return datalink.infoStatus();
       }).then(response =&gt; {
-        addToDebug(`info status response: ${response}`)
+        addToDebug(`info status response: ${response}`);
         return datalink.infoStreams();
       }).then(response =&gt; {
         addToDebug(`info streams response: ${response}`)

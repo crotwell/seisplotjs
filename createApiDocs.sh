@@ -92,6 +92,7 @@ cat > docs/api/index.html <<EOF
     <meta name='viewport' content='width=device-width,initial-scale=1'>
     <link href='../api/assets/bass.css' rel='stylesheet'>
     <link href='../api/assets/split.css' rel='stylesheet'>
+    <link rel="icon" type="image/png" href="../../flavicon.png" />
   </head>
   <body>
     <div class='flex'>
