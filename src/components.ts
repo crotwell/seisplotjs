@@ -555,6 +555,11 @@ export class LatLonRadiusEl extends HTMLElement {
     radius_minmax.addEventListener("change", () => this.dispatchEvent(new Event("change")));
     shadow.appendChild(wrapper);
   }
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    this.innerHTML='';
+    this.draw();
+  }
+  static get observedAttributes() { return ["latitude", "longitude", "minradius", "maxradius"]; }
   get latitude() {
     const inEl = this.shadowRoot?.querySelector("input.Lat") as HTMLInputElement;
     return Number.parseFloat(inEl.value);
@@ -851,6 +856,58 @@ export class LatLonChoice extends HTMLElement {
   constructor() {
     super();
     this.draw();
+  }
+  static get observedAttributes() {
+    return LatLonBoxEl.observedAttributes
+      .concat(LatLonRadiusEl.observedAttributes)
+      .concat(["geochoice"]);
+  }
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === "north") {
+      this.latLonBox.north = parseFloat(newValue);
+    } else if (name === "south") {
+      this.latLonBox.south = parseFloat(newValue);
+    } else if (name === "east") {
+      this.latLonBox.east = parseFloat(newValue);
+    } else if (name === "west") {
+      this.latLonBox.west = parseFloat(newValue);
+    } else if (name === "latitude") {
+      this.latLonRadius.latitude = parseFloat(newValue);
+    } else if (name === "longitude") {
+      this.latLonRadius.longitude = parseFloat(newValue);
+    } else if (name === "minradius") {
+      this.latLonRadius.minRadius = parseFloat(newValue);
+    } else if (name === "maxradius") {
+      this.latLonRadius.maxRadius = parseFloat(newValue);
+    } else if (name === "geochoice") {
+      const shadow = this.shadowRoot;
+      if (shadow === null) {
+        // typescript check should not happen
+        throw new Error("shadowRoot is null");
+      }
+      const all: HTMLInputElement | null = shadow.querySelector('#latlonall');
+      const box: HTMLInputElement | null = shadow.querySelector('#latlonbox');
+      const radius: HTMLInputElement | null = shadow.querySelector('#latlonradius');
+      if (all === null || box === null || radius === null) {
+        // typescript check should not happen
+        throw new Error("element is null");
+      }
+      if (newValue === "all") {
+        all.checked = true;
+        radius.checked = false;
+        box.checked = false;
+      } else if (newValue === "box") {
+        all.checked = false;
+        radius.checked = false;
+        box.checked = true;
+      } else if (newValue === "radius") {
+        all.checked = false;
+        radius.checked = true;
+        box.checked = false;
+      }
+    } else {
+      // unknown attr
+    }
   }
   draw() {
     let shadow = this.shadowRoot;

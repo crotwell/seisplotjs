@@ -1142,7 +1142,37 @@ export class EarthquakeSearch extends HTMLElement {
         magChooser.min = parseFloat(m);
       }
     }
+    if (this.hasAttribute("mag-max")) {
+      const m = this.getAttribute("mag-max");
+      if (m !== null) {
+        magChooser.max = parseFloat(m);
+      }
+    }
 
+    const depthChooser = wrapper.querySelector('sp-minmax#depth') as LabeledMinMax;
+    if ( ! depthChooser) {throw new Error("can't find sp-minmax#depth");}
+    if (this.hasAttribute("depth-min")) {
+      const m = this.getAttribute("depth-min");
+      if (m !== null) {
+        depthChooser.min = parseFloat(m);
+      }
+    }
+    if (this.hasAttribute("depth-max")) {
+      const m = this.getAttribute("depth-max");
+      if (m !== null) {
+        depthChooser.max = parseFloat(m);
+      }
+    }
+
+    const latlonChooser = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
+    if ( ! latlonChooser) {throw new Error("can't find sp-latlon-choice");}
+    LatLonChoice.observedAttributes.forEach(attr => {
+      if (this.hasAttribute(attr)) {
+        // typescript
+        const attrVal = this.getAttribute(attr);
+        if (attrVal) {latlonChooser.setAttribute(attr, attrVal);}
+      }
+    });
 
     const nowBtn = wrapper.querySelector('#now');
     if ( ! nowBtn) {throw new Error("can't find button#now");}
