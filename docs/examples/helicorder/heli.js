@@ -1,9 +1,9 @@
-import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 import {HOURS_PER_LINE, doPlot, queryEarthquakes, redrawHeli, getNowTime, drawSeismograph} from './doplot.js';
 import {updatePageForConfig, setupEventHandlers, enableFiltering} from './controls.js';
 
-const d3 = seisplotjs.d3;
-const luxon = seisplotjs.luxon;
+const d3 = sp.d3;
+const luxon = sp.luxon;
 
 const staList = ['BARN', 'BIRD', 'C1SC', 'CASEE', 'CSB', 'HAW', 'HODGE', 'JKYD', 'JSC', 'PAULI', 'SUMMV', 'TEEBA'];
 const DEFAULT_FIXED_AMP = 10000;
@@ -98,7 +98,7 @@ if ( state.endTime) {
   if (state.endTime === "now") {
     chooserEnd = getNowTime();
   } else {
-    chooserEnd = seisplotjs.util.isoToDateTime(state.endTime);
+    chooserEnd = sp.util.isoToDateTime(state.endTime);
   }
 } else {
   state.endTime = "now";

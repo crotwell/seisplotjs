@@ -1,12 +1,12 @@
-import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
-const d3 = seisplotjs.d3;
-const luxon = seisplotjs.luxon;
+const d3 = sp.d3;
+const luxon = sp.luxon;
 
 const DEFAULT_DURATION = "P1D";
-const SeismogramDisplayData = seisplotjs.seismogram.SeismogramDisplayData;
-const HelicorderConfig = seisplotjs.helicorder.HelicorderConfig;
-const Helicorder = seisplotjs.helicorder.Helicorder;
+const SeismogramDisplayData = sp.seismogram.SeismogramDisplayData;
+const HelicorderConfig = sp.helicorder.HelicorderConfig;
+const Helicorder = sp.helicorder.Helicorder;
 
 const MINMAX_URL = "http://eeyore.seis.sc.edu/minmax";
 const MSEED_URL = "http://eeyore.seis.sc.edu/mseed";
@@ -78,7 +78,7 @@ export function doPlotHeli(config) {
   document.querySelector("#seismograph").setAttribute("style", "display: none;");
   const ONE_MILLISECOND = luxon.Duration.fromMillis(1);
 
-  let nowHour = seisplotjs.util.isoToDateTime("now").endOf('hour').plus({milliseconds: 1});
+  let nowHour = sp.util.isoToDateTime("now").endOf('hour').plus({milliseconds: 1});
   let hash = createEmptySavedData(config);
 
   if ( ! config.station) {
@@ -114,21 +114,21 @@ export function doPlotHeli(config) {
   d3.selectAll("span.textChanCode").text("");
   d3.selectAll("span.startTime").text(`${hash.timeRange.start.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`);
   d3.selectAll("span.endTime").text(`${hash.timeRange.end.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`);
-  let channelQuery = new seisplotjs.fdsnstation.StationQuery()
+  let channelQuery = new sp.fdsnstation.StationQuery()
     .nodata(404)
     .networkCode(netCodeQuery)
     .stationCode(staCodeQuery)
     .locationCode(locCodeQuery)
     .channelCode(chanCodeQuery)
     .startTime(hash.timeRange.start)
-    .endTime(hash.timeRange.start.plus(seisplotjs.luxon.Duration.fromMillis(3600*1000)));
+    .endTime(hash.timeRange.start.plus(sp.luxon.Duration.fromMillis(3600*1000)));
 //    .endTime(hash.timeRange.end);
   let channelPromise;
   // channelPromise = channelQuery.queryChannels();
   // temp load from local stationxml file
-  const fetchInitOptions = seisplotjs.util.defaultFetchInitObj(seisplotjs.util.XML_MIME);
+  const fetchInitOptions = sp.util.defaultFetchInitObj(sp.util.XML_MIME);
   const url = "metadata.staxml";
-  channelPromise = seisplotjs.util.doFetchWithTimeout(url, fetchInitOptions)
+  channelPromise = sp.util.doFetchWithTimeout(url, fetchInitOptions)
   .then(function (response) {
     if (response.status === 200 || response.status === 0) {
       return response.text();
@@ -138,7 +138,7 @@ export function doPlotHeli(config) {
     }
   }).then(rawXmlText => {
     const rawXml = new DOMParser().parseFromString(rawXmlText, "text/xml");
-    return seisplotjs.stationxml.parseStationXml(rawXml);
+    return sp.stationxml.parseStationXml(rawXml);
   });
 
   return channelPromise
@@ -155,7 +155,7 @@ export function doPlotHeli(config) {
     let chanTR = [];
     hash.chanTR = chanTR;
     hash.netArray = netArray;
-    const matchChannels = seisplotjs.stationxml.findChannels(netArray,
+    const matchChannels = sp.stationxml.findChannels(netArray,
       '.*', config.station, config.locCode, `${config.bandCode}${config.instCode}[${config.orientationCode}${config.altOrientationCode}]`);
     console.log(`search sta: ${config.station}`)
     console.log(`search loc: ${config.locCode}`)
@@ -165,7 +165,7 @@ export function doPlotHeli(config) {
     }
     for (let c of matchChannels) {
       if (c.channelCode.endsWith(config.orientationCode) || (config.altOrientationCode && c.channelCode.endsWith(config.altOrientationCode))) {
-        chanTR.push(seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, hash.timeRange));
+        chanTR.push(sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, hash.timeRange));
       }
     }
     const firstChan = chanTR[0];
@@ -199,14 +199,14 @@ export function doPlotHeli(config) {
     let minMaxPromise = Promise.resolve([]);
     let rawDataPromise = Promise.resolve([]);
     if (hash.config.dominmax && minMaxSddList.length > 0) {
-      let minMaxQ = new seisplotjs.mseedarchive.MSeedArchive(
+      let minMaxQ = new sp.mseedarchive.MSeedArchive(
         MINMAX_URL, "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
       minMaxSddList = minMaxSddList.map( ct => {
         let chanCode = "L"+hash.minMaxInstCode+ct.channel.channelCode.charAt(2);
-        let fake = new seisplotjs.stationxml.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
+        let fake = new sp.stationxml.Channel(ct.channel.station, chanCode, ct.channel.locationCode);
         fake.sampleRate = 2;
         hash.heliDataIsMinMax = true;
-        return seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(fake, ct.timeRange);
+        return sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(fake, ct.timeRange);
       }).filter(sdd => !!sdd);
       minMaxPromise = minMaxQ.loadSeismograms(minMaxSddList);
     } else if (rawDataList.length > 0) {
@@ -229,7 +229,7 @@ export function doPlotHeli(config) {
       showError("No Data Found MSeedArchive");
       console.log("min max data from miniseedArchive found none");
       if (false && hash.chanTR.length > 0) {
-        let dsQ = new seisplotjs.fdsndataselect.DataSelectQuery()
+        let dsQ = new sp.fdsndataselect.DataSelectQuery()
           .nodata(404);
         hash.chantrList = dsQ.postQuerySeismograms(hash.chanTR);
         hash.query = dsQ;
@@ -274,7 +274,7 @@ export function doPlotHeli(config) {
 export function queryEarthquakes(hash) {
   return Promise.resolve(hash).then(hash => {
     let quakeStart = hash.timeRange.start.minus(QUAKE_START_OFFSET);
-    let localQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
+    let localQuakesQuery = new sp.fdsnevent.EventQuery();
     localQuakesQuery
       .minMag(0)
       .startTime(quakeStart)
@@ -292,7 +292,7 @@ export function queryEarthquakes(hash) {
     // replace each local quake from the big query with one queried by
     // public id, this also gets analyst "picks"
     const redoLocalQuakes = hash.localQuakes.map( q => {
-      let quakeQuery = new seisplotjs.fdsnevent.EventQuery();
+      let quakeQuery = new sp.fdsnevent.EventQuery();
       quakeQuery.eventId(q.eventId);
       return quakeQuery.query().then(qlist => {
           if (qlist && qlist.length>0) {
@@ -311,7 +311,7 @@ export function queryEarthquakes(hash) {
     });
   }).then(hash => {
     let quakeStart = hash.timeRange.start.minus(QUAKE_START_OFFSET);
-    let regionalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
+    let regionalQuakesQuery = new sp.fdsnevent.EventQuery();
     regionalQuakesQuery
       .startTime(quakeStart)
       .endTime(hash.timeRange.end)
@@ -326,7 +326,7 @@ export function queryEarthquakes(hash) {
     });
   }).then(hash => {
     let quakeStart = hash.timeRange.start.minus(QUAKE_START_OFFSET);
-    let globalQuakesQuery = new seisplotjs.fdsnevent.EventQuery();
+    let globalQuakesQuery = new sp.fdsnevent.EventQuery();
     globalQuakesQuery
       .startTime(quakeStart)
       .endTime(hash.timeRange.end)
@@ -352,7 +352,7 @@ export function queryEarthquakes(hash) {
     let traveltimes = [];
     let mystation = hash.chanTR[0].channel.station;
     hash.quakes.forEach(quake => {
-      let ttresult = new seisplotjs.traveltime.TraveltimeQuery()
+      let ttresult = new sp.traveltime.TraveltimeQuery()
         .evdepth( quake.depth > 0 ? quake.depth/1000 : 0)
         .evlat(quake.latitude).evlon(quake.longitude)
         .stalat(mystation.latitude).stalon(mystation.longitude)
@@ -388,7 +388,7 @@ export function queryEarthquakes(hash) {
     let mystation = hash.chanTR[0].channel.station;
     let markers = [];
     hash.quakes.forEach(quake => {
-      let distaz = seisplotjs.distaz.distaz(mystation.latitude, mystation.longitude, quake.latitude, quake.longitude);
+      let distaz = sp.distaz.distaz(mystation.latitude, mystation.longitude, quake.latitude, quake.longitude);
       markers.push({ markertype: 'predicted',
                      name: `M${quake.magnitude.mag} ${quake.time.toFormat('HH:mm')}`,
                      time: quake.time,
@@ -427,7 +427,7 @@ ${distaz.delta.toFixed(2)} deg to ${mystation.stationCode}
 
 export function loadDataReal(sddList) {
   console.log(`loading real data...`)
-  let mseedQ = new seisplotjs.mseedarchive.MSeedArchive(
+  let mseedQ = new sp.mseedarchive.MSeedArchive(
     MSEED_URL,
     "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H");
   let beforeNowChanTR = sddList.map( ct => {
@@ -439,7 +439,7 @@ export function loadDataReal(sddList) {
   }).filter(sdd => !!sdd);
   let CO_sddList = beforeNowChanTR.filter(sdd => sdd.networkCode === 'CO');
   let other_sddList = beforeNowChanTR.filter(sdd => sdd.networkCode !== 'CO');
-  const dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
+  const dsQuery = new sp.fdsndataselect.DataSelectQuery();
   return Promise.all([
     mseedQ.loadSeismograms(beforeNowChanTR),
     dsQuery.postQuerySeismograms(other_sddList),
@@ -451,7 +451,7 @@ export function filterData(config, origData) {
   let inData = origData;
   let outData = inData;
   if (config.rmean) {
-    let rmeanSeis = seisplotjs.filter.rMean(outData.seismogram);
+    let rmeanSeis = sp.filter.rMean(outData.seismogram);
     outData = outData.cloneWithNewSeismogram(rmeanSeis);
   }
   if (config.filter.type === "allpass") {
@@ -459,23 +459,23 @@ export function filterData(config, origData) {
     let butterworth;
     let filterStyle;
     if (config.filter.type == "lowpass") {
-      filterStyle = seisplotjs.filter.LOW_PASS;
+      filterStyle = sp.filter.LOW_PASS;
     } else if (config.filter.type === "bandpass") {
-      filterStyle = seisplotjs.filter.BAND_PASS;
+      filterStyle = sp.filter.BAND_PASS;
     } else if (config.filter.type === "highpass") {
-      filterStyle = seisplotjs.filter.HIGH_PASS;
+      filterStyle = sp.filter.HIGH_PASS;
     }
-    butterworth = seisplotjs.filter.createButterworth(
+    butterworth = sp.filter.createButterworth(
                            2, // poles
                            filterStyle,
                            Number.parseFloat(config.filter.lowcut), // low corner
                            Number.parseFloat(config.filter.highcut), // high corner not used
                            1/outData.seismogram.sampleRate // delta (period)
                   );
-    const fitLine = seisplotjs.filter.lineFit(outData.seismogram);
-    let filteredSeis = seisplotjs.filter.removeTrend(outData.seismogram, fitLine);
-    //filteredSeis = seisplotjs.taper.taper(filteredSeis);
-    filteredSeis = seisplotjs.filter.applyFilter(butterworth, filteredSeis);
+    const fitLine = sp.filter.lineFit(outData.seismogram);
+    let filteredSeis = sp.filter.removeTrend(outData.seismogram, fitLine);
+    //filteredSeis = sp.taper.taper(filteredSeis);
+    filteredSeis = sp.filter.applyFilter(butterworth, filteredSeis);
     outData = outData.cloneWithNewSeismogram(filteredSeis);
   }
   return outData;
@@ -556,13 +556,13 @@ export function drawSeismograph(hash) {
   const seismographDiv = document.querySelector("#seismograph");
   seismographDiv.setAttribute("style", "display: block;");
 
-  // let friendChannels = Array.from(seisplotjs.stationxml.allChannels(hash.netArray));
-  let friendChannels = Array.from(seisplotjs.stationxml.allChannels(hash.netArray));
+  // let friendChannels = Array.from(sp.stationxml.allChannels(hash.netArray));
+  let friendChannels = Array.from(sp.stationxml.allChannels(hash.netArray));
   friendChannels = friendChannels.filter(ch => ch.station.stationCode === hash.station);
 
   // let friendChannels = [];
   // hash.stationList.forEach(sta => {
-  //   let staChans = Array.from(seisplotjs.stationxml.findChannels(hash.netArray,
+  //   let staChans = Array.from(sp.stationxml.findChannels(hash.netArray,
   //                                                 hash.chanTR[0].networkCode,
   //                                                 sta,
   //                                                 hash.chanTR[0].locationCode,
@@ -572,22 +572,22 @@ export function drawSeismograph(hash) {
   // });
 
   let halfWidth = hash.halfWidth;
-  if (! halfWidth) { halfWidth = seisplotjs.luxon.Duration.fromISO("PT5M"); }
+  if (! halfWidth) { halfWidth = sp.luxon.Duration.fromISO("PT5M"); }
   const seismographDisp = seismographDiv.querySelector("sp-organized-display");
-  const interval = seisplotjs.luxon.Interval.fromDateTimes(hash.centerTime.minus(halfWidth), hash.centerTime.plus(halfWidth));
+  const interval = sp.luxon.Interval.fromDateTimes(hash.centerTime.minus(halfWidth), hash.centerTime.plus(halfWidth));
   const overlapQuakes = hash.traveltimes.filter(tt => {
     const lastArrival = tt.ttimes.arrivals.reduce((acc, cur) => acc.time > cur.time ? acc : cur);
-    const quakeInterval = seisplotjs.luxon.Interval.after(tt.quake.time, { seconds: lastArrival.time});
+    const quakeInterval = sp.luxon.Interval.after(tt.quake.time, { seconds: lastArrival.time});
     return interval.overlaps(quakeInterval);
   }).map(tt => tt.quake);
   let sddList = friendChannels.map(channel => {
-    let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
+    let sdd = sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(channel, interval);
     sdd.addMarkers(hash.seisData.markerList);
     sdd.quakeList = overlapQuakes;
     return sdd;
   });
-  let seismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
-  seismographConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
+  let seismographConfig = new sp.seismographconfig.SeismographConfig();
+  seismographConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
 
   seismographDisp.seismographConfig = seismographConfig;
   seismographDisp.seisData = sddList;

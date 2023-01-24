@@ -22,9 +22,9 @@
     <sp-quake-table></sp-quake-table>
   </div>
   <script type="module">
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+    import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
     let allStations = [];
-    seisplotjs.dataset.load('dataset.zip')
+    sp.dataset.load('dataset.zip')
     .then((ds) => {
       const mapList = document.querySelectorAll('sp-station-quake-map');
       mapList.forEach( map => {
@@ -35,7 +35,7 @@
         const quakesWithPicks = ds.catalog.filter(q => q.picks.length !== 0);
         map.addQuake(quakesWithPicks, "withpicks");
         // or plot other stations
-        allStations = Array.from(seisplotjs.stationxml.allStations(ds.inventory));
+        allStations = Array.from(sp.stationxml.allStations(ds.inventory));
         map.addStation(allStations, "customcolor");
         map.colorClass("CO_BIRD", "orange");
         map.colorClass("customcolor", "green");
@@ -68,9 +68,9 @@
         it.addEventListener("quakeclick", ce => {
           mapList.forEach( map => {
             map.quakeList.forEach(q => {
-              map.removeColorClass(seisplotjs.leafletutil.cssClassForQuake(q));
+              map.removeColorClass(sp.leafletutil.cssClassForQuake(q));
             });
-            map.colorClass(seisplotjs.leafletutil.cssClassForQuake(ce.detail.quake), "green");
+            map.colorClass(sp.leafletutil.cssClassForQuake(ce.detail.quake), "green");
             let quakeRow = it.findRowForQuake(ce.detail.quake);
             let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
             console.log(`num rows: ${Array.from(allRows).length}`)
@@ -84,7 +84,7 @@
 
         });
       });
-      console.log(`${ds.catalog.length}  ${Array.from(seisplotjs.stationxml.allStations(ds.inventory)).length}`);
+      console.log(`${ds.catalog.length}  ${Array.from(sp.stationxml.allStations(ds.inventory)).length}`);
       return ds;
     });
   </script>

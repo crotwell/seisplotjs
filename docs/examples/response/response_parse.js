@@ -1,8 +1,11 @@
-import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 export const SIS_NS = "http://anss-sis.scsn.org/xml/ext-stationxml/3.0";
-export const STAML_NS = seisplotjs.stationxml.STAML_NS;
+export const STAML_NS = sp.stationxml.STAML_NS;
 
+/* SIS uses a different style of metadata, based on StationXML, but with
+ * additions. So a separate parsing is needed to find the response.
+ */
 export function parse_sis_xml(sisxml) {
   const parser = new DOMParser();
   const dom = parser.parseFromString(sisxml, "application/xml");
@@ -26,7 +29,7 @@ export function parse_sis_xml(sisxml) {
       gfreq.append(sisxml.createTextNode("0.0"));
       gain.append(gfreq);
       resp_el.append(gain);
-      let stage = seisplotjs.stationxml.convertToStage(rdict);
+      let stage = sp.stationxml.convertToStage(rdict);
       resp_dict.set(name, stage.filter);
     } else if (resp_el.localName === 'FilterSequence') {
       let s_array = Array.from(resp_el.getElementsByTagNameNS(SIS_NS, "FilterStage"));
@@ -39,16 +42,16 @@ export function parse_sis_xml(sisxml) {
         let decimationXml = fs.getElementsByTagNameNS(SIS_NS, 'Decimation');
         let decimation = null;
         if (decimationXml.length > 0) {
-          decimation = seisplotjs.stationxml.convertToDecimation(decimationXml[0]);
+          decimation = sp.stationxml.convertToDecimation(decimationXml[0]);
         }
         let gainXml = fs.getElementsByTagNameNS(SIS_NS, 'Gain');
         let gain = null;
         if (gainXml.length > 0) {
-          gain = seisplotjs.stationxml.convertToGain(gainXml[0]);
+          gain = sp.stationxml.convertToGain(gainXml[0]);
         } else {
           throw new Error("Did not find Gain in stage number "+seqNum+" "+fname);
         }
-        stages.push(new seisplotjs.stationxml.Stage(sis_filter, decimation, gain));
+        stages.push(new sp.stationxml.Stage(sis_filter, decimation, gain));
       });
     }
   });

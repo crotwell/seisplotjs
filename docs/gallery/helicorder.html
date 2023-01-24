@@ -23,19 +23,19 @@
   </div>
 
   <script type="module">
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+    import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
     let dataArray = new Float32Array(1000).map(function(d, i) {
       return Math.sin(2*Math.PI*i/100) * 100;
     });
     let sampleRate = .1;
-    let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
-    const seis = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start,
-      seisplotjs.fdsnsourceid.FDSNSourceId.fromNslc("XX","STA","00","BHZ"));
-    const heli = (document.querySelector(seisplotjs.helicorder.HELICORDER_ELEMENT));
+    let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
+    const seis = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start,
+      sp.fdsnsourceid.FDSNSourceId.fromNslc("XX","STA","00","BHZ"));
+    const heli = (document.querySelector(sp.helicorder.HELICORDER_ELEMENT));
     heli.seisData = [seis];
-    heli.heliConfig.fixedTimeScale = seisplotjs.luxon.Interval.after(start.startOf("day"),
-        seisplotjs.luxon.Duration.fromObject({hours: 24}));
+    heli.heliConfig.fixedTimeScale = sp.luxon.Interval.after(start.startOf("day"),
+        sp.luxon.Duration.fromObject({hours: 24}));
     heli.draw();
   </script>
 </body>

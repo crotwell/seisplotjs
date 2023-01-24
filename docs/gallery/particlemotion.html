@@ -26,7 +26,7 @@
 
   <script type="module">
 
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+    import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
     let dataArray = new Float32Array(1000).map(function(d, i) {
       return Math.sin(2*Math.PI*i/100) * 100;
     });
@@ -35,20 +35,20 @@
       return 1000+Math.sin(-3*Math.PI*i/200) * 800;
     });
     let sampleRate = 20;
-    let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
+    let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
 
     let sidStr = "FDSN:XX_ABCD_00_B_H_Z";
-    let sid = seisplotjs.fdsnsourceid.FDSNSourceId.parse(sidStr);
+    let sid = sp.fdsnsourceid.FDSNSourceId.parse(sidStr);
     let esidStr = "FDSN:XX_ABCD_00_B_H_E";
-    let esid = seisplotjs.fdsnsourceid.FDSNSourceId.parse(esidStr);
+    let esid = sp.fdsnsourceid.FDSNSourceId.parse(esidStr);
     let nsidStr = "FDSN:XX_ABCD_00_B_H_N";
-    let nsid = seisplotjs.fdsnsourceid.FDSNSourceId.parse(nsidStr);
-    const seis = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start, sid);
-    const seisB = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, nsid);
-    const seisC = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start, esid);
-    const seisConfig = seisplotjs.particlemotion.createParticleMotionConfig();
+    let nsid = sp.fdsnsourceid.FDSNSourceId.parse(nsidStr);
+    const seis = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start, sid);
+    const seisB = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, nsid);
+    const seisC = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start, esid);
+    const seisConfig = sp.particlemotion.createParticleMotionConfig();
     console.log(`manual seisconfig: ${seisConfig.configId}`)
-    const seismographList = (document.querySelectorAll(seisplotjs.particlemotion.PARTICLE_MOTION_ELEMENT));
+    const seismographList = (document.querySelectorAll(sp.particlemotion.PARTICLE_MOTION_ELEMENT));
     seismographList[0].xSeisData = seisB;
     seismographList[0].ySeisData = seis;
     seismographList[1].xSeisData = seisC;

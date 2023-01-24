@@ -27,20 +27,20 @@
   </div>
 
   <script type="module">
-  import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+  import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
     const MSEED_URL = "http://eeyore.seis.sc.edu/mseed";
     const eeyorePattern = "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H";
 
 
-    let archive = new seisplotjs.mseedarchive.MSeedArchive(MSEED_URL, eeyorePattern);
-    let timeWindow = seisplotjs.util.startDuration("2022-06-29T23:03:01Z", 60);
+    let archive = new sp.mseedarchive.MSeedArchive(MSEED_URL, eeyorePattern);
+    let timeWindow = sp.util.startDuration("2022-06-29T23:03:01Z", 60);
 
     let sampleRate = 200;
     let chanCodes = ['HNN', 'HNE', 'HNZ'];
     let velChanCodes = ['HHE', 'HHN', 'HHZ'];
     let staCodes = [ 'JSC']
-    let stationQuery = new seisplotjs.fdsnstation.StationQuery();
+    let stationQuery = new sp.fdsnstation.StationQuery();
     stationQuery.networkCode('CO')
     .stationCode(staCodes.join(','))
     .locationCode('00')
@@ -48,33 +48,33 @@
     .timeRange(timeWindow);
     stationQuery.queryResponses().then(networkList => {
       let sddList = [];
-      for (const c of seisplotjs.stationxml.allChannels(networkList)) {
-        let sdd = seisplotjs.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
+      for (const c of sp.stationxml.allChannels(networkList)) {
+        let sdd = sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
         sddList.push(sdd);
       }
 
-      const seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+      const seisConfig = new sp.seismographconfig.SeismographConfig();
       seisConfig.isRelativeTime = false;
       seisConfig.doGain = false;
       seisConfig.enableLinkedAmplitude();
 
       return archive.loadSeismograms(sddList).then(sddList => {
         sddList.forEach(sdd => {
-          let butterworth = seisplotjs.filter.createButterworth(
+          let butterworth = sp.filter.createButterworth(
                                  2, // poles
-                                 seisplotjs.filter.BAND_PASS,
+                                 sp.filter.BAND_PASS,
                                  1, // low corner
                                  10, // high corner
                                  1/sdd.seismogram.sampleRate // delta (period)
                         );
           if (sdd.channelCode.charAt(1) === 'N') {
-            sdd.seismogram = seisplotjs.filter.mul(sdd.seismogram, 1/2);
+            sdd.seismogram = sp.filter.mul(sdd.seismogram, 1/2);
           }
-          sdd.seismogram = seisplotjs.filter.rMean(sdd.seismogram);
-          sdd.seismogram = seisplotjs.filter.removeTrend(sdd.seismogram);
-          sdd.seismogram = seisplotjs.filter.applyFilter(butterworth, sdd.seismogram);
-          sdd.seismogram = seisplotjs.taper.taper(sdd.seismogram);
-          sdd.seismogram = seisplotjs.transfer.transfer(sdd.seismogram,
+          sdd.seismogram = sp.filter.rMean(sdd.seismogram);
+          sdd.seismogram = sp.filter.removeTrend(sdd.seismogram);
+          sdd.seismogram = sp.filter.applyFilter(butterworth, sdd.seismogram);
+          sdd.seismogram = sp.taper.taper(sdd.seismogram);
+          sdd.seismogram = sp.transfer.transfer(sdd.seismogram,
               sdd.channel.response, .1, .2, 250, 500);
         });
         document.querySelector('sp-organized-display').seismographConfig = seisConfig;

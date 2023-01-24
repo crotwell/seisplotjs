@@ -53,8 +53,8 @@
 
   <script type="module">
 
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
-    seisplotjs.dataset.load('dataset.zip')
+    import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+    sp.dataset.load('dataset.zip')
     .then((ds) => {
       document.querySelectorAll('sp-station-quake-table').forEach( graph => {
         graph.seisData = ds.waveforms;
@@ -63,17 +63,17 @@
       return ds;
     }).then((ds) => {
         document.querySelectorAll('sp-quake-table').forEach( graph => {
-          graph.quakeList = seisplotjs.seismogram.uniqueQuakes(ds.waveforms);
+          graph.quakeList = sp.seismogram.uniqueQuakes(ds.waveforms);
         });
         return ds;
     }).then((ds) => {
         document.querySelectorAll('sp-channel-table').forEach( graph => {
-          graph.channelList = seisplotjs.seismogram.uniqueChannels(ds.waveforms);
+          graph.channelList = sp.seismogram.uniqueChannels(ds.waveforms);
         });
         return ds;
     }).then((ds) => {
         document.querySelectorAll('sp-station-table').forEach( graph => {
-          graph.stationList = seisplotjs.seismogram.uniqueStations(ds.waveforms);
+          graph.stationList = sp.seismogram.uniqueStations(ds.waveforms);
         });
         return ds;
     }).then((ds) => {

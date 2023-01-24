@@ -1,8 +1,8 @@
-import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 import {getNowTime, loadDataReal} from './doplot.js';
 
-const d3 = seisplotjs.d3;
-const luxon = seisplotjs.luxon;
+const d3 = sp.d3;
+const luxon = sp.luxon;
 
 const locCodeList = ['00', '01'];
 const orientList = ['Z', 'N/1', 'E/2'];
@@ -11,7 +11,7 @@ const bandInstCodeList = [ 'HN', 'HH', 'LH'];
 export function updateDateChooser(config) {
   let dateChooser = document.querySelector("sp-datetime");
   if ( config.endTime && config.duration) {
-    dateChooser.updateTime(seisplotjs.util.isoToDateTime(config.endTime).minus(luxon.Duration.fromISO(config.duration)));
+    dateChooser.updateTime(sp.util.isoToDateTime(config.endTime).minus(luxon.Duration.fromISO(config.duration)));
   } else {
     throw new Error(`missing end/duration: ${config.endTime} ${config.duration}`);
   }
@@ -60,8 +60,8 @@ export function setupEventHandlers(config, loadAndPlotFun, redrawFun) {
     const timeRangesToReload = [];
     const dispElements = orgDisp.getDisplayItems();
     dispElements.forEach(orgDispItem => {
-      if (orgDispItem.plottype.startsWith(seisplotjs.organizeddisplay.SEISMOGRAPH)) {
-        const seismograph = orgDispItem.getContainedPlotElements()[0];// as seisplotjs.seismograph.Seismograph;
+      if (orgDispItem.plottype.startsWith(sp.organizeddisplay.SEISMOGRAPH)) {
+        const seismograph = orgDispItem.getContainedPlotElements()[0];// as sp.seismograph.Seismograph;
         seismograph.seisData.forEach(sdd => {
 
           const dispWindow = seismograph.displayTimeRangeForSeisDisplayData(sdd);

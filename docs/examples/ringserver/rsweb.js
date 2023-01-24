@@ -1,8 +1,8 @@
-import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
-const d3 = seisplotjs.d3;
+const d3 = sp.d3;
 const hostUrl = "https://eeyore.seis.sc.edu/ringserver";
-const rs = new seisplotjs.ringserverweb.RingserverConnection(hostUrl);
+const rs = new sp.ringserverweb.RingserverConnection(hostUrl);
 let numPackets = 0;
 d3.select("div.results").select("pre").text(hostUrl+'\n'+rs.getDataLinkURL());
 
@@ -41,7 +41,7 @@ d3.select("button#streams").on("click", function() {
 const errorFn = function(error) {
   console.assert(false, error);
   if (datalink) {datalink.close();}
-  seisplotjs.d3.select("pre").text("Error: "+error);
+  sp.d3.select("pre").text("Error: "+error);
 };
 const packetHandler = function(packet) {
   if (packet.isMiniseed()) {
@@ -56,7 +56,7 @@ const packetHandler = function(packet) {
   lastPackets.forEach(p => packetText+=`${p.streamId} ${p.pktid} ${p.packetStart.toISO()} to ${p.packetEnd.toISO()}\n`);
   document.querySelector("pre").textContent=packetText;
 };
-const datalink = new seisplotjs.datalink.DataLinkConnection(
+const datalink = new sp.datalink.DataLinkConnection(
     rs.getDataLinkURL(),
     packetHandler,
     errorFn);
@@ -68,21 +68,21 @@ function display_realtime(streamstat) {
   d3.select("div.results").select("pre").text(`realtime: ${streamstat.key}\n`);
   datalink.connect()
   .then(serverId => {
-    seisplotjs.d3.select("button#disconnect").text("Disconnect");
+    sp.d3.select("button#disconnect").text("Disconnect");
     return datalink.match(streamstat.key);
   }).then(response => {
     stopped = false;
     console.log(`match response: ${response}`);
     return datalink.stream();
   }).catch( function(error) {
-    seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+    sp.d3.select("div#debug").append('p').html("Error: " +error);
     console.assert(false, error);
   });
 }
 
 let stopped = true;
 
-seisplotjs.d3.select("button#disconnect").on("click", function(d) {
+sp.d3.select("button#disconnect").on("click", function(d) {
   toggleConnect();
 });
 
@@ -93,7 +93,7 @@ let toggleConnect = function(streamstat) {
       datalink.endStream();
       datalink.close();
     }
-    seisplotjs.d3.select("button#disconnect").text("Reconnect");
+    sp.d3.select("button#disconnect").text("Reconnect");
   } else {
     let matchPattern = streamstat.key;
     if (datalink) {
@@ -105,11 +105,11 @@ let toggleConnect = function(streamstat) {
         console.log(`match response: ${response}`);
         return datalink.stream();
       }).catch( function(error) {
-        seisplotjs.d3.select("div#debug").append('p').html("Error: " +error);
+        sp.d3.select("div#debug").append('p').html("Error: " +error);
         console.assert(false, error);
       });
     }
-    seisplotjs.d3.select("button#disconnect").text("Disconnect");
+    sp.d3.select("button#disconnect").text("Disconnect");
   }
 };
 

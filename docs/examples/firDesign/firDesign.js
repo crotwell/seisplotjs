@@ -1,6 +1,6 @@
-import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
-const d3 = seisplotjs.d3;
+const d3 = sp.d3;
 d3.select("button#load").on("click", function(d) { createFIR(); });
 
 let createFIR = function() {
@@ -15,7 +15,7 @@ let createFIR = function() {
   // Weight given to stopband ripple?
   let Ws=parseFloat(document.getElementsByName('Ws')[0].value);
   const doLogLog = d3.select("input[name=loglog]").property('checked');
-  let firLp = new seisplotjs.oregondsputil.EquirippleLowpass(N, OmegaP, Wp, OmegaS, Ws);
+  let firLp = new sp.oregondsputil.EquirippleLowpass(N, OmegaP, Wp, OmegaS, Ws);
 
   d3.select("div.message").selectAll("*").remove();
   d3.select("h3.coefficients").selectAll("*").remove();
@@ -42,32 +42,32 @@ let createFIR = function() {
   for(let i=0; i<firLp.getCoefficients().length; i++) {
     longCoeff[i] = firLp.getCoefficients()[i];
   }
-  const plotConfig = new seisplotjs.seismographconfig.SeismographConfig();
+  const plotConfig = new sp.seismographconfig.SeismographConfig();
   plotConfig.title = "FIR Filter"
   let impulseResponse = fftForwardArray(longCoeff);
   const fftfir_div = document.querySelector('div.fftfir');
-  const firPlot = fftfir_div.appendChild(new seisplotjs.spectraplot.SpectraPlot([impulseResponse], plotConfig));
+  const firPlot = fftfir_div.appendChild(new sp.spectraplot.SpectraPlot([impulseResponse], plotConfig));
 
   firPlot.logfreq = doLogLog;
   firPlot.draw();
-  const firPhasePlot = fftfir_div.appendChild(new seisplotjs.spectraplot.SpectraPlot([impulseResponse], plotConfig));
+  const firPhasePlot = fftfir_div.appendChild(new sp.spectraplot.SpectraPlot([impulseResponse], plotConfig));
   firPhasePlot.logfreq = doLogLog;
   firPhasePlot.kind = "phase";
   firPhasePlot.draw();
   d3.select("div.message").append('p').text(`Zero Freq Gain: ${impulseResponse.amplitudes()[0]}`);
 
   let sampleRate = 1;
-  let start = seisplotjs.util.isoToDateTime('2000-01-01T00:00:00Z');
-  let impulseSeis = seisplotjs.seismogram.Seismogram.fromContiguousData(longCoeff, sampleRate, start);
+  let start = sp.util.isoToDateTime('2000-01-01T00:00:00Z');
+  let impulseSeis = sp.seismogram.Seismogram.fromContiguousData(longCoeff, sampleRate, start);
   // snip start draw
   const impluseresp_div = document.querySelector('div.impulse');
-  let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
+  let seisConfig = new sp.seismographconfig.SeismographConfig();
   seisConfig.title = "Impulse Response";
   seisConfig.margin.top = 25;
   seisConfig.doRMean = false;
   seisConfig.wheelZoom = false;
-  let seisData = seisplotjs.seismogram.SeismogramDisplayData.fromSeismogram(impulseSeis);
-  let graph = new seisplotjs.seismograph.Seismograph([seisData], seisConfig);
+  let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(impulseSeis);
+  let graph = new sp.seismograph.Seismograph([seisData], seisConfig);
   graph.seismographConfig.isRelativeTime = true;
   graph.seismographConfig.linkedTimeScale.duration = seisData.timeRange.toDuration();
   graph.calcTimeScaleDomain();
@@ -79,7 +79,7 @@ let createFIR = function() {
 
 
 function fftForwardArray(dataArray, sampRate=1) {
-  let packetFreq = seisplotjs.fft.calcDFT(dataArray);
-  let tryFFT = seisplotjs.fft.FFTResult.createFromPackedFreq(packetFreq, dataArray.length, sampRate);
+  let packetFreq = sp.fft.calcDFT(dataArray);
+  let tryFFT = sp.fft.FFTResult.createFromPackedFreq(packetFreq, dataArray.length, sampRate);
   return tryFFT;
 }

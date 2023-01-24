@@ -22,8 +22,8 @@
   <sp-seismograph></sp-seismograph>
 
   <script type="module">
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
-    const div = seisplotjs.d3.select("div");
+    import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+    const div = sp.d3.select("div");
     const seismograph = document.querySelector("sp-seismograph");
     let dataArray = new Float32Array(1000).map(function(d, i) {
       return Math.sin(2*Math.PI*i/100) * 100;
@@ -33,13 +33,13 @@
       return Math.sin(-3*Math.PI*i/200) * 800;
     });
     let sampleRate = 20;
-    let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
-    const seis = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
-    const seisB = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start);
-    const seisC = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start);
+    let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
+    const seis = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
+    const seisB = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start);
+    const seisC = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start);
     seismograph.seisData = [seis, seisB, seisC];
     let seisConfig = seismograph.seismographConfig;
-    seisplotjs.seismographconfigeditor.createEditor(div, seisConfig, () => {
+    sp.seismographconfigeditor.createEditor(div, seisConfig, () => {
       seismograph.seismographConfig = seisConfig;
     });
   </script>

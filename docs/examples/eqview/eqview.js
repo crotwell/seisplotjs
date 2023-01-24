@@ -1,8 +1,8 @@
-import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 
 export function loadTestDatasetEmpty() { //: Promise<Dataset>
-  return Promise.resolve(new seisplotjs.dataset.Dataset());
+  return Promise.resolve(new sp.dataset.Dataset());
 }
 export function loadTestDataset() { //: Promise<Dataset>
   let dataset;
@@ -17,39 +17,39 @@ export function loadTestDataset() { //: Promise<Dataset>
   return dataset;
 }
 export function loadTestDatasetFile() { //: Promise<Dataset>
-  return seisplotjs.dataset.load('dataset.zip')
+  return sp.dataset.load('dataset.zip')
   .then((ds) => {
     return ds;
   });
 
 }
 function loadTestDatasetIRIS() { //: Promise<Dataset>
-  const START = seisplotjs.util.isoToDateTime("2021-12-27");
-  const END = seisplotjs.util.isoToDateTime("2021-12-28");
+  const START = sp.util.isoToDateTime("2021-12-27");
+  const END = sp.util.isoToDateTime("2021-12-28");
   const NET = 'CO';
   const STA = 'BIRD,JSC';
   const CHAN = 'HH?,HN?';
-  let eventQuery = new seisplotjs.fdsnevent.EventQuery()
+  let eventQuery = new sp.fdsnevent.EventQuery()
   .startTime(START)
   .endTime(END)
   .minLat(33).maxLat(35).minLon(-81).maxLon(-79);
 
-  let stationQuery = new seisplotjs.fdsnstation.StationQuery()
+  let stationQuery = new sp.fdsnstation.StationQuery()
   .networkCode(NET)
   .startTime(START).endTime(END)
   .stationCode(STA)
   .channelCode(CHAN);
 
-  const loader = new seisplotjs.seismogramloader.SeismogramLoader(stationQuery, eventQuery);
-  return seisplotjs.dataset.Dataset.fromSeismogramLoader(loader);
+  const loader = new sp.seismogramloader.SeismogramLoader(stationQuery, eventQuery);
+  return sp.dataset.Dataset.fromSeismogramLoader(loader);
 }
 
 export class EQView {
   constructor(dataset, cssSelector="#myseismograph") {
-    this.dataset = dataset ? dataset : new seisplotjs.dataset.DataSet();
+    this.dataset = dataset ? dataset : new sp.dataset.DataSet();
     this.processedData = dataset.waveforms;
     this.processChain = [];
-    this.plotDiv = seisplotjs.d3.select(cssSelector);
+    this.plotDiv = sp.d3.select(cssSelector);
     if (this.plotDiv.empty()) {
       throw new Error(`Can't find element for css selector '${cssSelector}'`);
     }
@@ -58,61 +58,61 @@ export class EQView {
     this.organizetype = this.getCheckedOption("organizetype", "individual");
     this.sorttype = this.getCheckedOption("sorttype", "none");
     this.plottype = this.getCheckedOption("plottype", "seismograph");
-    this.defaultSeismographConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    this.defaultSeismographConfig.title = seisplotjs.seismographconfig.DEFAULT_TITLE;
-    this.infoTemplate = seisplotjs.infotable.DEFAULT_TEMPLATE;
+    this.defaultSeismographConfig = new sp.seismographconfig.SeismographConfig();
+    this.defaultSeismographConfig.title = sp.seismographconfig.DEFAULT_TITLE;
+    this.infoTemplate = sp.infotable.DEFAULT_TEMPLATE;
   }
 
   getCheckedOption(name, defaultValue) {
-    let s = seisplotjs.d3.select(`input[name="${name}"]:checked`);
+    let s = sp.d3.select(`input[name="${name}"]:checked`);
     if (s && ! s.empty()) {
       return s.property("value");
     } else {
-      s = seisplotjs.d3.select(`input[name="${name}"][value="${defaultValue}"]`);
+      s = sp.d3.select(`input[name="${name}"][value="${defaultValue}"]`);
       s.attr("checked", true);
       return defaultValue;
     }
   }
 
   configureDisplayFromJSON(jsonObj) {
-    seisplotjs.d3.select("div.seisConfig").selectAll('*').remove();
+    sp.d3.select("div.seisConfig").selectAll('*').remove();
     this.defaultSeismographConfig =
-      seisplotjs.seismographconfig.SeismographConfig.fromJSON(jsonObj.display);
+      sp.seismographconfig.SeismographConfig.fromJSON(jsonObj.display);
     this.organizetype = jsonObj.arrange.organize;
     if (this.organizetype === 'individual') {
-      seisplotjs.d3.select("input#radio_organize_individual").property("checked", true);
+      sp.d3.select("input#radio_organize_individual").property("checked", true);
     } else if (this.organizetype === 'bystation') {
-      seisplotjs.d3.select("input#radio_organize_overlay_bystation").property("checked", true);
+      sp.d3.select("input#radio_organize_overlay_bystation").property("checked", true);
     } else if (this.organizetype === 'bycomponent') {
-      seisplotjs.d3.select("input#radio_organize_overlay_bycomponent").property("checked", true);
+      sp.d3.select("input#radio_organize_overlay_bycomponent").property("checked", true);
     } else if (this.organizetype === 'all') {
-      seisplotjs.d3.select("input#radio_organize_overlay_all").property("checked", true);
+      sp.d3.select("input#radio_organize_overlay_all").property("checked", true);
     }
     this.sorttype = jsonObj.arrange.sort;
     if (this.sorttype === 'none') {
-      seisplotjs.d3.select("input#radio_sort_none").property("checked", true);
+      sp.d3.select("input#radio_sort_none").property("checked", true);
     } else if (this.sorttype === 'alphabetical') {
-      seisplotjs.d3.select("input#radio_sort_alphabetical").property("checked", true);
+      sp.d3.select("input#radio_sort_alphabetical").property("checked", true);
     } else if (this.sorttype === 'bydistance') {
-      seisplotjs.d3.select("input#radio_sort_bydistance").property("checked", true);
+      sp.d3.select("input#radio_sort_bydistance").property("checked", true);
     } else if (this.sorttype === 'bybackazimuth') {
-      seisplotjs.d3.select("input#radio_sort_bybackazimuth").property("checked", true);
+      sp.d3.select("input#radio_sort_bybackazimuth").property("checked", true);
     } else if (this.sorttype === 'byazimuth') {
-      seisplotjs.d3.select("input#radio_sort_byazimuth").property("checked", true);
+      sp.d3.select("input#radio_sort_byazimuth").property("checked", true);
     }
     this.plottype = jsonObj.arrange.plot;
     if (this.plottype === 'info') {
-      seisplotjs.d3.select("input#radio_info").property("checked", true);
+      sp.d3.select("input#radio_info").property("checked", true);
     } else if (this.plottype === 'map') {
-      seisplotjs.d3.select("input#radio_map").property("checked", true);
+      sp.d3.select("input#radio_map").property("checked", true);
     } else if (this.plottype === 'seismograph') {
-      seisplotjs.d3.select("input#radio_seismograph").property("checked", true);
+      sp.d3.select("input#radio_seismograph").property("checked", true);
     } else if (this.plottype === 'particlemotion') {
-      seisplotjs.d3.select("input#radio_particlemotion").property("checked", true);
+      sp.d3.select("input#radio_particlemotion").property("checked", true);
     } else if (this.plottype === 'amp_spectra?loglog=true') {
-      seisplotjs.d3.select("input#radio_spectra_log").property("checked", true);
+      sp.d3.select("input#radio_spectra_log").property("checked", true);
     } else if (this.plottype === 'amp_spectra?loglog=false') {
-      seisplotjs.d3.select("input#radio_spectra_lin").property("checked", true);
+      sp.d3.select("input#radio_spectra_lin").property("checked", true);
     }
     if (jsonObj.infoTemplate) {
       this.infoTemplate = jsonObj.infoTemplate;
@@ -148,7 +148,7 @@ export class EQView {
 
   clearAll() {
     this.processedData = this.dataset.waveforms;
-    seisplotjs.d3.select("#messages").selectAll("p").remove();
+    sp.d3.select("#messages").selectAll("p").remove();
     this.seisChanQuakeFilter = this.defaultPlotFilter;
     this.processChain.length = 0;//clears the array
     this.updateProcessDisplay(this.processChain);
@@ -161,10 +161,10 @@ export class EQView {
   loadFromZipFile(fileList) {
     let promiseList = [];
     for (let f of fileList) {
-      promiseList.push(seisplotjs.dataset.loadFromFile(f));
+      promiseList.push(sp.dataset.loadFromFile(f));
     }
     return Promise.all(promiseList).then(dsList => {
-      let indataset = new seisplotjs.dataset.Dataset();
+      let indataset = new sp.dataset.Dataset();
       dsList.forEach(ds => {
         indataset = indataset.merge(ds);
       });
@@ -202,7 +202,7 @@ console.log(`filtered ${filteredSeis.length}`)
       // rarely useful to have individual maps per seismogram
       organizetype = "all";
     }
-    let sortedSeis = seisplotjs.sorting.sort(filteredSeis, this.sorttype);
+    let sortedSeis = sp.sorting.sort(filteredSeis, this.sorttype);
     let organizedSeis = this.organizePlotting(organizetype, this.plottype, this.dataset, sortedSeis);
 
     this.plotDiv.selectAll('*').remove();
@@ -210,39 +210,39 @@ console.log(`filtered ${filteredSeis.length}`)
       this.plotDiv.node().appendChild(org);
     });
     for(let os of organizedSeis) {
-      if (seisplotjs.util.isDef(os.seismograph)) {
+      if (sp.util.isDef(os.seismograph)) {
         const graph = os.seismograph;
         const canvasNode = graph.svg.select('foreignObject canvas').node();
         canvasNode.addEventListener('mousemove', evt => {
           let xAxisScale = graph.timeScaleForAxis();
           let clickTime = xAxisScale.invert(evt.offsetX);
           console.log(`clickTime: ${clickTime}  ${typeof clickTime}`);
-          clickTime = seisplotjs.luxon.DateTime.fromJSDate(clickTime, seisplotjs.util.UTC_OPTIONS);
-          seisplotjs.d3.select('input#mousex').property('value', clickTime.toISO());
+          clickTime = sp.luxon.DateTime.fromJSDate(clickTime, sp.util.UTC_OPTIONS);
+          sp.d3.select('input#mousex').property('value', clickTime.toISO());
           let ampAxisScale = graph.ampScaleForAxis();
           let clickAmp = ampAxisScale.invert(evt.offsetY);
-          seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
+          sp.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
         });
       }
-      if (seisplotjs.util.isDef(os.fftPlot)) {
+      if (sp.util.isDef(os.fftPlot)) {
         os.fftPlot.svg.on('mousemove', evt => {
           const fftPlot = os.fftPlot;
           const margin = fftPlot.seismographConfig.margin;
           let clickFreq = fftPlot.xAxis.scale().invert(evt.offsetX-margin.left);
-          seisplotjs.d3.select('input#mousex').property('value', formatExp(clickFreq));
+          sp.d3.select('input#mousex').property('value', formatExp(clickFreq));
           let clickAmp = fftPlot.yAxis.scale().invert(evt.offsetY-margin.top);
-          seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
+          sp.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
         });
       }
 
-      if (seisplotjs.util.isDef(os.particleMotionPlot)) {
+      if (sp.util.isDef(os.particleMotionPlot)) {
         const particleMotionPlot = os.particleMotionPlot;
         particleMotionPlot.svg.on('mousemove', evt => {
           const margin = particleMotionPlot.seismographConfig.margin;
           let clickYAmp = particleMotionPlot.xAxis.scale().invert(evt.offsetX-margin.left);
-          seisplotjs.d3.select('input#mousex').property('value', formatCountOrAmp(clickYAmp));
+          sp.d3.select('input#mousex').property('value', formatCountOrAmp(clickYAmp));
           let clickXAmp = particleMotionPlot.yAxis.scale().invert(evt.offsetY-margin.top);
-          seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickXAmp));
+          sp.d3.select('input#mousey').property('value', formatCountOrAmp(clickXAmp));
         });
       }
     }
@@ -283,13 +283,13 @@ console.log(`filtered ${filteredSeis.length}`)
       // particle motion is special due to pairwise plots
       organizedData = this.organizeParticleMotion(seisDataList);
     } else if (! organizetype || organizetype === "individual") {
-      organizedData = seisplotjs.organizeddisplay.individualDisplay(seisDataList);
+      organizedData = sp.organizeddisplay.individualDisplay(seisDataList);
     } else if (organizetype === "bystation") {
-      organizedData = seisplotjs.organizeddisplay.overlayByStation(seisDataList);
+      organizedData = sp.organizeddisplay.overlayByStation(seisDataList);
     } else if (organizetype === "bycomponent") {
-      organizedData = seisplotjs.organizeddisplay.overlayByComponent(seisDataList);
+      organizedData = sp.organizeddisplay.overlayByComponent(seisDataList);
     } else if (organizetype === "all") {
-      organizedData = seisplotjs.organizeddisplay.overlayAll(seisDataList);
+      organizedData = sp.organizeddisplay.overlayAll(seisDataList);
     } else if (typeof organizetype === 'function') {
       organizedData = organizetype(seisDataList);
     } else {
@@ -297,14 +297,14 @@ console.log(`filtered ${filteredSeis.length}`)
     }
 
     let seisConfig = this.defaultSeismographConfig.clone();
-    seisConfig.doGain = seisplotjs.d3.select("input#doGain").property("checked");
-    if (seisplotjs.d3.select("input#linkx").property("checked")) {
-      seisConfig.linkedTimeScale = new seisplotjs.scale.LinkedTimeScale();
+    seisConfig.doGain = sp.d3.select("input#doGain").property("checked");
+    if (sp.d3.select("input#linkx").property("checked")) {
+      seisConfig.linkedTimeScale = new sp.scale.LinkedTimeScale();
     }
-    if (seisplotjs.d3.select("input#linky").property("checked")) {
-      seisConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
+    if (sp.d3.select("input#linky").property("checked")) {
+      seisConfig.linkedAmplitudeScale = new sp.scale.LinkedAmplitudeScale();
     }
-    if (plottype === seisplotjs.organizeddisplay.PARTICLE_MOTION) {
+    if (plottype === sp.organizeddisplay.PARTICLE_MOTION) {
       let pmpSeisConfig = seisConfig.clone();
       pmpSeisConfig.margin.left = 40;
       pmpSeisConfig.margin.right = 40;
@@ -323,7 +323,7 @@ console.log(`filtered ${filteredSeis.length}`)
 
     organizeParticleMotion(seisDataList) {
       let organized = [];
-      let byFriends = seisplotjs.organizeddisplay.groupComponentOfMotion(seisDataList);
+      let byFriends = sp.organizeddisplay.groupComponentOfMotion(seisDataList);
       let pairs = [];
       byFriends.forEach(friendList => {
         if (friendList.length > 1) {
@@ -342,7 +342,7 @@ console.log(`filtered ${filteredSeis.length}`)
           pair[0] = pair[1];
           pair[1] = tmp;
         }
-        let org = new seisplotjs.organizeddisplay.OrganizedDisplay(pair, seisplotjs.organizeddisplay.PARTICLE_MOTION);
+        let org = new sp.organizeddisplay.OrganizedDisplay(pair, sp.organizeddisplay.PARTICLE_MOTION);
 
         organized.push(org);
       });
@@ -350,7 +350,7 @@ console.log(`filtered ${filteredSeis.length}`)
     }
 
   updateProcessDisplay(processChain) {
-    let pc = seisplotjs.d3.select("div#processChain ul").selectAll("li")
+    let pc = sp.d3.select("div#processChain ul").selectAll("li")
       .data(processChain);
     pc.enter()
       .append('li').text(d => d.desc);
@@ -386,7 +386,7 @@ console.log(`filtered ${filteredSeis.length}`)
 
   createQuakeCheckboxes(waveforms, catalog) {
     let idPrefix = "quake";
-    seisplotjs.d3.select(`div#${idPrefix}_checkbox`).selectAll("div")
+    sp.d3.select(`div#${idPrefix}_checkbox`).selectAll("div")
       .data(catalog, s => s)
       .join(enter => {
         let span = enter.append("div").attr('quake', s=>s);
@@ -408,7 +408,7 @@ console.log(`filtered ${filteredSeis.length}`)
     let outPromise = [];
     if (inventory) {
       // get from inventory if we have it
-      let chanList = seisplotjs.stationxml.allChannels(inventory);
+      let chanList = sp.stationxml.allChannels(inventory);
       for(let c of chanList) {
         outPromise.push(chanKeyFun(c));
       }
@@ -422,7 +422,7 @@ console.log(`filtered ${filteredSeis.length}`)
       return Array.from(staCodeSet).sort();
     }).then(staList => {
       staList.sort();
-      seisplotjs.d3.select(`div#${idPrefix}_checkbox`).selectAll("span")
+      sp.d3.select(`div#${idPrefix}_checkbox`).selectAll("span")
         .data(staList, s => s)
         .join(enter => {
           let span = enter.append("span").attr('sta', s=>s);
@@ -467,8 +467,8 @@ console.log(`filtered ${filteredSeis.length}`)
 
   inputIdFilter(inputId) {
       let out = true; // plot by default
-      if ( ! seisplotjs.d3.select(inputId).empty()) {
-        out = seisplotjs.d3.select(inputId).property("checked");
+      if ( ! sp.d3.select(inputId).empty()) {
+        out = sp.d3.select(inputId).property("checked");
       }
       return out;
   }
@@ -495,15 +495,15 @@ console.log(`filtered ${filteredSeis.length}`)
 
 
   showErrorMessage(error) {
-    seisplotjs.d3.select("#messages").append("p").classed("errormsg", true).text(error);
+    sp.d3.select("#messages").append("p").classed("errormsg", true).text(error);
   }
 
 }
 
 
 
-const formatCount = seisplotjs.d3.format('.4~s');
-const formatExp = seisplotjs.d3.format('.4e');
+const formatCount = sp.d3.format('.4~s');
+const formatExp = sp.d3.format('.4e');
 const formatCountOrAmp = function(v) {
   return -1<v && v<1 && v !== 0 ? formatExp(v) : formatCount(v);
 };

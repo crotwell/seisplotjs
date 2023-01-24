@@ -24,7 +24,7 @@
 
   <script type="module">
 
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+    import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
     let dataArray = new Float32Array(1000).map(function(d, i) {
       return 200+Math.sin(2*Math.PI*i/100) * 100;
     });
@@ -33,14 +33,14 @@
     });
     dataArrayB[50] = -300; // make a spike so middle is not mean
     let sampleRate = 20;
-    let start = seisplotjs.util.isoToDateTime('2019-07-04T05:46:23');
-    let sidA = seisplotjs.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "Z")
-    const sddA = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start, sidA);
-    let sidB = seisplotjs.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "N")
-    const sddB = seisplotjs.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, sidB);
-    const seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-    const seisConfig_middle = new seisplotjs.seismographconfig.SeismographConfig();
-    const seisConfig_mean = new seisplotjs.seismographconfig.SeismographConfig();
+    let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
+    let sidA = sp.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "Z")
+    const sddA = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start, sidA);
+    let sidB = sp.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "N")
+    const sddB = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, sidB);
+    const seisConfig = new sp.seismographconfig.SeismographConfig();
+    const seisConfig_middle = new sp.seismographconfig.SeismographConfig();
+    const seisConfig_mean = new sp.seismographconfig.SeismographConfig();
     const def_title = seisConfig.title;
     seisConfig.title = `Raw: ${def_title}`;
     seisConfig.amplitudeRaw();

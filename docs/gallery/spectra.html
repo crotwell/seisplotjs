@@ -24,13 +24,13 @@
   <sp-spectra kind="phase" logfreq="true"></sp-spectra>
 
   <script type="module">
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+    import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
     const ranData = [];
     for( let i=0; i<1024; i++) {ranData.push((Math.random()-0.5)*1000);}
     const fData = Float32Array.from(ranData);
-    const now = seisplotjs.luxon.DateTime.utc();
-    const seis = seisplotjs.seismogram.Seismogram.fromContiguousData(fData, 1, now);
-    const ampPhase = seisplotjs.fft.fftForward(seis);
+    const now = sp.luxon.DateTime.utc();
+    const seis = sp.seismogram.Seismogram.fromContiguousData(fData, 1, now);
+    const ampPhase = sp.fft.fftForward(seis);
     const spectraList = (document.querySelectorAll('sp-spectra'));
     spectraList.forEach( spectra => {
       spectra.fftResults = [ ampPhase ];

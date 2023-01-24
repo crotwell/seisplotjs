@@ -25,13 +25,12 @@
   </div>
   <script type="module">
 
-    import * as seisplotjs from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
-    //seisplotjs.dataset.load('dataset_onlyZ.zip')
-    seisplotjs.dataset.load('dataset.zip')
+    import * as sp from '../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+    sp.dataset.load('dataset.zip')
       .then((ds) => {
-        let seisConfig = new seisplotjs.seismographconfig.SeismographConfig();
-        //seisConfig.linkedAmplitudeScale = new seisplotjs.scale.LinkedAmplitudeScale();
-        seisConfig.linkedAmplitudeScale = new seisplotjs.scale.IndividualAmplitudeScale();
+        let seisConfig = new sp.seismographconfig.SeismographConfig();
+        //seisConfig.linkedAmplitudeScale = new sp.scale.LinkedAmplitudeScale();
+        seisConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
         seisConfig.doGain = true;
         seisConfig.doRmean = true;
         seisConfig.isRelativeTime = false;
