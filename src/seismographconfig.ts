@@ -46,33 +46,33 @@ export class SeismographConfig {
   _title: Array<string>;
 
   /** @private */
-  _titleHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
+  _titleHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
   isXAxis: boolean;
   isXAxisTop: boolean;
   _xLabel: string;
 
   /** @private */
-  _xLabelHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
+  _xLabelHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
   xLabelOrientation: string;
   _xSublabel: string;
   xSublabelIsUnits: boolean;
   /** @private */
-  _xSublabelHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
+  _xSublabelHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
   isYAxis: boolean;
   isYAxisRight: boolean;
   isYAxisNice: boolean;
   _yLabel: string;
 
   /** @private */
-  _yLabelHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
+  _yLabelHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
   _yLabelRight: string;
 
   /** @private */
-  _yLabelRightHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
+  _yLabelRightHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
   yLabelOrientation: string;
   _ySublabel: string;
   /** @private */
-  _ySublabelHandlebarsCompiled: null | ((arg0: {}, arg1: {}) => string);
+  _ySublabelHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
   ySublabelTrans: number;
   ySublabelIsUnits: boolean;
   doMarkers: boolean;
@@ -160,16 +160,7 @@ export class SeismographConfig {
       bottom: 42,
       left: 85,
       toString: function () {
-        return (
-          "t:" +
-          this.top +
-          " l:" +
-          this.left +
-          " b:" +
-          this.bottom +
-          " r:" +
-          this.right
-        );
+        return `t: ${this.top} l: ${this.left} b: ${this.bottom} r: ${this.right}`;
       },
     };
     this.segmentDrawCompressedCutoff = 10; //below this draw all points, above draw minmax
@@ -275,7 +266,8 @@ export class SeismographConfig {
    * True if the amplitude is "centered".
    *
    * Both MinMax and Mean center the amplitude, Raw and Zero do not.
-   * @return [description]
+   *
+   * @returns if centered
    */
   isCenteredAmp() {
     return this.amplitudeMode === AMPLITUDE_MODE.MinMax
@@ -333,7 +325,7 @@ export class SeismographConfig {
     this._titleHandlebarsCompiled = null;
   }
 
-  handlebarsTitle(context: {}, runtimeOptions: {}): string {
+  handlebarsTitle(context: object, runtimeOptions: object): string {
     if (!isDef(this._titleHandlebarsCompiled)) {
       if (
         !isDef(this._title) ||
@@ -407,7 +399,7 @@ export class SeismographConfig {
     this._xSublabelHandlebarsCompiled = null;
   }
 
-  handlebarsXLabel(context: {}, runtimeOptions: {}): string {
+  handlebarsXLabel(context: object, runtimeOptions: object): string {
     if (!isDef(this._xLabelHandlebarsCompiled)) {
       if (!isDef(this._xLabel) || this._xLabel.length === 0) {
         // empty label
@@ -425,7 +417,7 @@ export class SeismographConfig {
   }
 
 
-  handlebarsXSublabel(context: {}, runtimeOptions: {}): string {
+  handlebarsXSublabel(context: object, runtimeOptions: object): string {
     if (!isDef(this._xSublabelHandlebarsCompiled)) {
       if (!isDef(this._xSublabel) || this._xSublabel.length === 0) {
         // empty label
@@ -491,7 +483,7 @@ export class SeismographConfig {
     this._ySublabelHandlebarsCompiled = null;
   }
 
-  handlebarsYLabel(context: {}, runtimeOptions: {}): string {
+  handlebarsYLabel(context: object, runtimeOptions: object): string {
     if (!isDef(this._yLabelHandlebarsCompiled)) {
       if (!isDef(this._yLabel) || this._yLabel.length === 0) {
         // empty label
@@ -508,7 +500,7 @@ export class SeismographConfig {
     return this._yLabelHandlebarsCompiled(context, runtimeOptions);
   }
 
-  handlebarsYSublabel(context: {}, runtimeOptions: {}): string {
+  handlebarsYSublabel(context: object, runtimeOptions: object): string {
     if (!isDef(this._ySublabelHandlebarsCompiled)) {
       if (!isDef(this._ySublabel) || this._ySublabel.length === 0) {
         // empty label
@@ -550,7 +542,7 @@ export class SeismographConfig {
     this._yLabelRightHandlebarsCompiled = null;
   }
 
-  handlebarsYLabelRight(context: {}, runtimeOptions: {}): string {
+  handlebarsYLabelRight(context: object, runtimeOptions: object): string {
     if (!isDef(this._yLabelRightHandlebarsCompiled)) {
       if (!isDef(this._yLabelRight) || this._yLabelRight.length === 0) {
         // empty label

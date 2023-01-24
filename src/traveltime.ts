@@ -336,7 +336,7 @@ export class TraveltimeQuery extends FDSNCommon {
           // no data, create empty
           return (
             FAKE_EMPTY_TEXT_MODEL +
-            (isDef(mythis._model) ? mythis.model() : "") +
+            (isDef(mythis._model) ? mythis.getModel() : "") +
             FAKE_EMPTY_TEXT_HEADERS
           );
         } else {
@@ -415,10 +415,7 @@ export class TraveltimeQuery extends FDSNCommon {
           );
       } else {
         throw new Error(
-          "Fetching over network was not ok: " +
-            response.status +
-            " " +
-            response.statusText,
+          `Fetching over network was not ok: ${response.status} ${response.statusText}`
         );
       }
     });

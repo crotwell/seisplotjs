@@ -512,7 +512,8 @@ export class SeismogramDisplayData {
   }
   /**
    * Useful for creating fake data from an array, sample rate and start time
-   * @return [description]
+   *
+   * @returns seismogramdisplaydata
    */
   static fromContiguousData(
       yArray:
@@ -1113,9 +1114,9 @@ export function findMaxDuration(
  * Finds max duration of from one of starttime of sdd, origin time
  * of earthquake, or alignmentTime.
  *
- * @param  type                  [description]
- * @param  sddList               [description]
- * @return         [description]
+ * @param  type
+ * @param  sddList
+ * @returns        max duration
  */
 export function findMaxDurationOfType(
   type: string,
@@ -1152,10 +1153,10 @@ export function findMaxDurationOfType(
  * Finds the min and max amplitude over the seismogram list, considering gain
  * and how to center the seismograms, either Rw, MinMax or Mean.
  *
- * @param  sddList                    [description]
- * @param  doGain=false               [description]
- * @param  ampCentering               [description]
- * @return              [description]
+ * @param  sddList
+ * @param  doGain=false
+ * @param  ampCentering
+ * @returns    min max
  */
 export function findMinMax(
   sddList: Array<SeismogramDisplayData>,

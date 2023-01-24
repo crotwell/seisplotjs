@@ -42,7 +42,7 @@ export class MinMaxable {
   /**
    * This as a d3 style 2 element array.
    *
-   * @return length 2 array of min then max
+   * @returns length 2 array of min then max
    */
   asArray(): [number, number] {
     return [this.min, this.max];
@@ -54,7 +54,7 @@ export class MinMaxable {
    * Create MinMaxable from a d3 style two element array.
    *
    * @param  minmax  array of min then max
-   * @return       new MinMaxable
+   * @returns       new MinMaxable
    */
   static fromArray(minmax: number[]): MinMaxable {
     if (minmax.length < 2) {

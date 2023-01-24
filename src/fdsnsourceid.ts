@@ -29,8 +29,8 @@ export class FDSNSourceId {
     this.subsourceCode = subsourceCode;
   }
   static createUnknown(sampRate?: number, source?: string, subsource?: string): FDSNSourceId {
-    let s = source ? source : "Y"
-    let ss = subsource ? subsource : "X"
+    const s = source ? source : "Y";
+    const ss = subsource ? subsource : "X";
     return new FDSNSourceId("XX", "ABC", "", bandCodeForRate(sampRate), s, ss);
   }
   static parse(id: string): FDSNSourceId {
@@ -128,7 +128,7 @@ export class NetworkSourceId {
     }
     const items = id.slice(FDSN_PREFIX.length).split(SEP);
     if (items.length === 1) {
-      return new NetworkSourceId(items[0])
+      return new NetworkSourceId(items[0]);
     } else {
       throw new Error(`FDSN network sourceid must have 1 items; separated by '${SEP}': ${id}`);
     }
@@ -156,7 +156,7 @@ export class StationSourceId {
     }
     const items = id.slice(FDSN_PREFIX.length).split(SEP);
     if (items.length === 2) {
-      return new StationSourceId(items[0], items[1])
+      return new StationSourceId(items[0], items[1]);
     } else  {
       throw new Error(`FDSN station sourceid must have 2 items; separated by '${SEP}': ${id}`);
     }
@@ -199,7 +199,7 @@ export class LocationSourceId {
  *
  * @param  sampRate  sample rate in samples per second
  * @param  resp_lb   response long period bound in seconds
- * @return           single character band code
+ * @returns          single character band code
  */
 export function bandCodeForRate(sampRate?: number, resp_lb?: number): string {
   if ( ! sampRate) {
@@ -264,7 +264,7 @@ export class NslcId {
     this.locationCode = loc;
     this.channelCode = chan;
   }
-  static parse(nslc: string, sep:string = '.'): NslcId {
+  static parse(nslc: string, sep = '.'): NslcId {
     const items = nslc.split(SEP);
     if (items.length !== 4) {
       throw new Error(`NSLC id must have 4 items; separated by '${sep}': ${nslc}`);
@@ -272,13 +272,13 @@ export class NslcId {
     return new NslcId(items[0],items[1],items[2],items[3]);
   }
   toString(): string {
-    return `${this.networkCode}_${this.stationCode}_${this.locationCode}_${this.channelCode}`
+    return `${this.networkCode}_${this.stationCode}_${this.locationCode}_${this.channelCode}`;
   }
   equals(other: NslcId): boolean {
     if (this.networkCode !== other.networkCode) { return false;}
     if (this.stationCode !== other.stationCode) { return false;}
-    let myLoc = this.locationCode === EMPTY_LOC_CODE ? "" : this.locationCode;
-    let otherLoc = other.locationCode === EMPTY_LOC_CODE ? "" : other.locationCode;
+    const myLoc = this.locationCode === EMPTY_LOC_CODE ? "" : this.locationCode;
+    const otherLoc = other.locationCode === EMPTY_LOC_CODE ? "" : other.locationCode;
     if (myLoc !== otherLoc) { return false;}
     if (this.channelCode !== other.channelCode) { return false;}
     return true;
@@ -291,9 +291,9 @@ export function parseSourceId(id: string): FDSNSourceId | NetworkSourceId | Stat
   }
   const items = id.slice(FDSN_PREFIX.length).split(SEP);
   if (items.length === 1) {
-    return new NetworkSourceId(items[0])
+    return new NetworkSourceId(items[0]);
   } else if (items.length === 2) {
-    return new StationSourceId(items[0], items[1])
+    return new StationSourceId(items[0], items[1]);
   } else if (items.length !== 6) {
     throw new Error(`FDSN sourceid must have 6 items for channel, 2 for station or 1 for network; separated by '${SEP}': ${id}`);
   }

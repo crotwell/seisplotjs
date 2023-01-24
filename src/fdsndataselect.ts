@@ -529,7 +529,7 @@ export class DataSelectQuery extends FDSNCommon {
           sdd.seismogram = seis;
         }
         if (!found) {
-          console.log(`did not find: ${sddNslc}`)
+          console.log(`did not find: ${sddNslc}`);
         }
       }
 

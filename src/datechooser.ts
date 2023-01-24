@@ -206,13 +206,12 @@ export class HourMinChooser extends HTMLElement {
     if (top + height > viewportHeight + scrollTop) {
       top = top - height - hourMinField.offsetHeight;
     }
-console.log(`hourmin popup position: {left: ${left} px; top: ${top} px;}`);
     this.popupDiv.setAttribute("style", `{position: absolute; left: ${left} px; top: ${top} px; }`);
   }
   /**
    * Get hours and minutes as Duration instead of as a DateTime. Useful for
    * relative times.
-   * @return hours, minutes as Duration
+   * @returns hours, minutes as Duration
    */
   get asDuration(): Duration {
     return Duration.fromObject({hours: this.time.hour, minutes: this.time.minute});
@@ -223,7 +222,6 @@ console.log(`hourmin popup position: {left: ${left} px; top: ${top} px;}`);
   set time(dt: DateTime) {
     this._internalSetTime(dt);
     this.updateCallback(this.time);
-    console.log(`dispatch change from HourMinChooser ${dt.toISO()}`)
     this.dispatchEvent(new Event("change"));
   }
   _internalSetTime(dt: DateTime) {
@@ -591,7 +589,7 @@ customElements.define(TIMERANGE_ELEMENT, TimeRangeChooser);
 /**
  * extracts duration from either string as ISO or number as seconds.
  * @param  value               ISO string or number
- * @return       duration
+ * @returns       duration
  */
 export function extractDuration(value: string): Duration {
   let dur;

@@ -122,7 +122,7 @@ function xyzCompareFun(a: SeismogramDisplayData, b: SeismogramDisplayData): numb
  * from 2, then the returned order would be 2,1,Z.
  *
  * @param  sdd               array representing compoment of motion
- * @return     sorted array in x,y,z order
+ * @returns     sorted array in x,y,z order
  */
 export function reorderXYZ(sddList: Array<SeismogramDisplayData>): Array<SeismogramDisplayData> {
   return sddList.slice().sort(xyzCompareFun);

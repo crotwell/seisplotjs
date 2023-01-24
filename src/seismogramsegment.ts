@@ -305,8 +305,8 @@ export class SeismogramSegment {
    * If i is negative, counting from end, so
    * timeOfSample(-1) is time of last data point;
    *
-   * @param  i               [description]
-   * @return   [description]
+   * @param  i               sample index
+   * @returns   time
    */
   timeOfSample(i: number): DateTime {
     if (i >= 0) {
@@ -364,14 +364,8 @@ export class SeismogramSegment {
   }
 
   seisId(): string {
-    return (
-      this.sourceId +
-      "_" +
-      this.startTime.toISO() +
-      "_" +
-      this.endTime.toISO()
-    )
-      .replace(/\./g, "_")
+    const out = `${this.sourceId}_${this.startTime.toISO()}_${this.endTime.toISO()}`;
+    return out.replace(/\./g, "_")
       .replace(/:/g, "");
   }
 

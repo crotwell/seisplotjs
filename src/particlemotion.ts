@@ -245,7 +245,7 @@ export class ParticleMotion extends SeisPlotElement {
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     if (! svgEl) {
-      console.log(`svgEl is not def in particlemotion draw()`)
+      console.log(`svgEl is not def in particlemotion draw()`);
       return;
     }
     const rect = svgEl.getBoundingClientRect();

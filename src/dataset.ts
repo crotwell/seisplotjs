@@ -17,12 +17,12 @@ export const CATALOG_FILE = "catalog.quakeml";
 export const INVENTORY_FILE = "inventory.staxml";
 
 export class Dataset {
-  name: String = "dataset";
+  name = "dataset";
   catalog: Array<Quake>;
   inventory: Array<Network>;
   waveforms: Array<SeismogramDisplayData>;
   processedWaveforms: Array<SeismogramDisplayData>;
-  extra: Map<String, any>;
+  extra: Map<string, any>;
   constructor() {
     this.catalog = new Array<Quake>(0);
     this.inventory = new Array<Network>(0);
@@ -177,7 +177,7 @@ export function loadFromZip(zip: JSZip): Promise<Dataset> {
       const catalogFile = datasetDir.file(CATALOG_FILE);
       const qml = catalogFile ? catalogFile.async("string").then(function (rawXmlText) {
         if (rawXmlText.length < 10) {
-          console.warn(`qml text is really short: ${rawXmlText}`);
+          //console.warn(`qml text is really short: ${rawXmlText}`);
           return [];
         } else {
           const rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
@@ -214,7 +214,7 @@ export function sddFromMSeed3(ms3records: Array<mseed3.MSeed3Record>, ds?: Datas
     const sdd = SeismogramDisplayData.fromSeismogram(seis);
     ms3segments.forEach(msr => {
       insertExtraHeaders(msr.extraHeaders, sdd, "spjs", ds);
-    })
+    });
     out.push(sdd);
   });
   return out;
@@ -248,7 +248,7 @@ export function insertExtraHeaders(eh: Record<string, any>, sdd: SeismogramDispl
         m.time = isoToDateTime(m.time);
         sdd.markerList.push(m);
       }
-    })
+    });
   }
 }
 

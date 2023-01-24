@@ -77,14 +77,14 @@ export type LineFitType = {
  *
  * @param  seis                        [description]
  * @param  referenceTime               [description]
- * @return               [description]
+ * @returns               best fit line
  */
 export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType {
   if (seis.numPoints === 0) {
     throw new Error(`cannot lineFit a seismogram with no points`);
   }
   /* - Initialize accumulators. */
-  let rn = seis.numPoints;
+  const rn = seis.numPoints;
   let sumx = 0.;
   let sumy = 0.;
   let sumxy = 0.;
@@ -94,7 +94,7 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
   /* - Loop on each data point. */
 
   referenceTime = referenceTime ? referenceTime : seis.start;
-  let x1 = referenceTime.toMillis()/1000; // seconds
+  const x1 = referenceTime.toMillis()/1000; // seconds
   seis.segments.forEach( seg => {
     const seg_start_x = seg.start.toMillis()/1000-x1;
     const dx = 1 / seg.sampleRate;  // seconds
@@ -119,7 +119,7 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
 
   /* - Estimate standard deviation in data. */
 
-  let sig2 = (sumy2 + rn*b*b + a*a*sumx2 - 2.*b*sumy - 2.*a*sumxy +
+  const sig2 = (sumy2 + rn*b*b + a*a*sumx2 - 2.*b*sumy - 2.*a*sumxy +
    2.*b*a*sumx)/(seis.numPoints-1);
   const sig = Math.sqrt( sig2 );
 
@@ -152,6 +152,7 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
  * subtracting the trend line from each data point.
  *
  * @param   seis input seismogram
+ * @param fitLine optional fit type
  * @returns       seismogram with mean of zero and best fit line horizontal
  */
 export function removeTrend(seis: Seismogram, fitLine?: LineFitType): Seismogram {

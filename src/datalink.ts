@@ -824,7 +824,7 @@ export class DataLinkIdStats {
    * Parses the attributes of a <DataLink> xml element.
    *
    * @param  statusEl               DataLink XML element
-   * @return  the id stats
+   * @returns  the id stats
    */
   static parseXMLAttributes(statusEl: Element): DataLinkIdStats {
     const dlIdStats = new DataLinkIdStats(
@@ -951,7 +951,7 @@ export class DataLinkStats {
    * Parses the attributes of a <Status> xml element.
    *
    * @param  statusEl   DataLink <Status> XML element
-   * @return  the stats
+   * @returns  the stats
    */
   static parseXMLAttributes(statusEl: Element): DataLinkStats {
     const dlStats = new DataLinkStats(
@@ -1031,7 +1031,7 @@ export class ThreadStat {
    * Parses the attributes of a <Status> xml element.
    *
    * @param  statusEl   DataLink <Status> XML element
-   * @return  the stats
+   * @returns  the stats
    */
   static parseXMLAttributes(statusEl: Element): ThreadStat {
     const threadStats = new ThreadStat(
@@ -1049,7 +1049,7 @@ export class StatusResponse {
   idStats: DataLinkIdStats;
   datalinkStats: DataLinkStats;
   threadStats: Array<ThreadStat>;
-  rawXml: string = "";
+  rawXml = "";
   constructor(idStats: DataLinkIdStats,
               datalinkStats: DataLinkStats,
               threadStats: Array<ThreadStat>) {
@@ -1249,8 +1249,9 @@ export class ConnectionsResponse {
 /**
  * Convert DataLink style dates, like "2022-10-04 15:11:24.786990"
  * to ISO form for DateTime
- * @param  m               [description]
- * @return   [description]
+ *
+ * @param  m       datalink time
+ * @returns   DateTime
  */
 export function daliDateTime(dalitime: string): DateTime {
   const iso = dalitime.replace(' ', 'T');

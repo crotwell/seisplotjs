@@ -108,17 +108,17 @@ export function calcResponse(
   unit: string,
 ): FFTResult {
   const sacPoleZero = convertToSacPoleZero(response);
-  let siUnit = unit.replaceAll('**', '');
+  const siUnit = unit.replaceAll('**', '');
   const unitQty = convert(1).getUnit(siUnit as AllMeasuresUnits);
   let gamma = 0;
 
   if (unitQty === null) {
     throw new Error("unknown response unit: " + unit);
-  } else if (unitQty.measure == 'length') {
+  } else if (unitQty.measure === 'length') {
     gamma = 0;
-  } else if (unitQty.measure == 'speed') {
+  } else if (unitQty.measure === 'speed') {
     gamma = 1;
-  } else if (unitQty.measure == 'acceleration') {
+  } else if (unitQty.measure === 'acceleration') {
     gamma = 2;
   } else {
     throw new Error(
@@ -341,11 +341,11 @@ export function calcGamma(unit: string): number {
   const unitQty = convert(1).getUnit(unit as AllMeasuresUnits);
   if (unitQty === null) {
     throw new Error("unknown response unit: " + unit);
-  } else if (unitQty.measure == 'length') {
+  } else if (unitQty.measure === 'length') {
     gamma = 0;
-  } else if (unitQty.measure == 'speed') {
+  } else if (unitQty.measure === 'speed') {
     gamma = 1;
-  } else if (unitQty.measure == 'acceleration') {
+  } else if (unitQty.measure === 'acceleration') {
     gamma = 2;
   } else {
     throw new Error(
@@ -360,11 +360,11 @@ export function calcScaleUnit(unit: string): number {
   const unitQty = convert(1).getUnit(unit as AllMeasuresUnits);
   if (unitQty === null) {
     throw new Error("unknown response unit: " + unit);
-  } else if (unitQty.measure == 'length') {
+  } else if (unitQty.measure === 'length') {
     scale = convert(1).from(unit as AllMeasuresUnits).to('m');
-  } else if (unitQty.measure == 'speed') {
+  } else if (unitQty.measure === 'speed') {
     scale = convert(1).from(unit as AllMeasuresUnits).to('m/s');
-  } else if (unitQty.measure == 'acceleration') {
+  } else if (unitQty.measure === 'acceleration') {
     scale = convert(1).from(unit as AllMeasuresUnits).to('m/s2');
   } else {
     throw new Error(
@@ -410,8 +410,8 @@ export function convertToSacPoleZero(response: Response): SacPoleZero {
     unit = "m/s2";
   }
 
-  let gamma = calcGamma(unit);
-  let scaleUnit = calcScaleUnit(unit);
+  const gamma = calcGamma(unit);
+  const scaleUnit = calcScaleUnit(unit);
 
   const scale_sensitivity =
     scaleUnit * response.instrumentSensitivity.sensitivity;
@@ -492,9 +492,7 @@ export function calc_A0(
 ): number {
   let numer = new Complex(1, 0);
   let denom = new Complex(1, 0);
-  let f0;
-  let a0;
-  f0 = new Complex(0, 2 * Math.PI * ref_freq);
+  const f0 = new Complex(0, 2 * Math.PI * ref_freq);
 
   for (let i = 0; i < zeros.length; i++) {
     denom = denom.timesComplex(f0.minusComplex(zeros[i]));
@@ -504,6 +502,6 @@ export function calc_A0(
     numer = numer.timesComplex(f0.minusComplex(poles[i]));
   }
 
-  a0 = numer.overComplex(denom).abs();
+  const a0 = numer.overComplex(denom).abs();
   return a0;
 }

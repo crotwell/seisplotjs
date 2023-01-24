@@ -155,7 +155,7 @@ export function createEditor(
   const colorDiv = div.append("div");
   colorDiv.append("label").text("Color:");
   let colorLineNum = 0;
-  let perLine = 5;
+  const perLine = 5;
   while (colorLineNum*perLine < config.lineColors.length) {
     const subDiv = colorDiv.append("div");
     config.lineColors.slice(colorLineNum*perLine, colorLineNum*perLine+perLine).forEach((color, index) => {

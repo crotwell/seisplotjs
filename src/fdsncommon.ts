@@ -1,7 +1,7 @@
 
 /**
  * commonalities with all types of FDSN Web Services
-*/
+ */
 
 import { isNonEmptyStringArg, checkProtocol,} from './util';
 

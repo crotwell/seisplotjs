@@ -370,7 +370,7 @@ export class QuakeTable extends HTMLElement {
           }
         } else {
           // cant find one of the quakes, oh well
-          console.log(`can't find qa or qb: ${qa} ${qb}`)
+          console.log(`can't find qa or qb: ${qa} ${qb}`);
         }
         return out;
       });
@@ -388,7 +388,7 @@ export class QuakeTable extends HTMLElement {
       });
       this.lastSortCol = h;
     } else {
-      console.log("no tbody for table sort")
+      console.log("no tbody for table sort");
     }
   }
 }
@@ -560,7 +560,7 @@ export class ChannelTable extends HTMLElement {
           }
         } else {
           // cant find one of the Channels, oh well
-          console.log(`can't find qa or qb: ${qa} ${qb}`)
+          console.log(`can't find qa or qb: ${qa} ${qb}`);
         }
         return out;
       });
@@ -578,7 +578,7 @@ export class ChannelTable extends HTMLElement {
       });
       this.lastSortCol = h;
     } else {
-      console.log("no tbody for table sort")
+      console.log("no tbody for table sort");
     }
   }
 }
@@ -591,7 +591,7 @@ export class StationTable extends HTMLElement {
   _columnLabels: Map<STATION_COLUMN, string>;
   _stationList: Array<Station>;
   _rowToStation: Map<HTMLTableRowElement, Station>;
-  lastSortAsc: boolean = true;
+  lastSortAsc = true;
   lastSortCol: STATION_COLUMN | undefined;
   constructor(stationList?: Array<Station>, columnLabels?: Map<STATION_COLUMN, string>) {
     super();
@@ -732,7 +732,7 @@ export class StationTable extends HTMLElement {
           }
         } else {
           // cant find one of the Stations, oh well
-          console.log(`can't find qa or qb: ${qa} ${qb}`)
+          console.log(`can't find qa or qb: ${qa} ${qb}`);
         }
         return out;
       });
@@ -750,7 +750,7 @@ export class StationTable extends HTMLElement {
       });
       this.lastSortCol = h;
     } else {
-      console.log("no tbody for table sort")
+      console.log("no tbody for table sort");
     }
   }
 }
@@ -766,7 +766,7 @@ export class SeismogramTable extends HTMLElement {
   _columnLabels: Map<SEISMOGRAM_COLUMN, string>;
   _sddList: Array<SeismogramDisplayData>;
   _rowToSDD: Map<HTMLTableRowElement, SeismogramDisplayData>;
-  lastSortAsc: boolean = true;
+  lastSortAsc = true;
   lastSortCol: SEISMOGRAM_COLUMN | undefined;
   constructor(sddList?: Array<SeismogramDisplayData>, columnLabels?: Map<SEISMOGRAM_COLUMN, string>) {
     super();
@@ -911,7 +911,7 @@ export class SeismogramTable extends HTMLElement {
           }
         } else {
           // cant find one of the items, oh well
-          console.log(`can't find qa or qb: ${qa} ${qb}`)
+          console.log(`can't find qa or qb: ${qa} ${qb}`);
         }
         return out;
       });
@@ -929,7 +929,7 @@ export class SeismogramTable extends HTMLElement {
       });
       this.lastSortCol = h;
     } else {
-      console.log("no tbody for table sort")
+      console.log("no tbody for table sort");
     }
   }
 }

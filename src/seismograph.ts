@@ -499,7 +499,7 @@ export class Seismograph extends SeisPlotElement {
     const margin = this.seismographConfig.margin;
     const mouseTimeVal = this.timeScaleForAxis().invert(evt.offsetX-margin.left);
     const mouseAmp = this.ampScaleForAxis().invert(evt.offsetY-margin.top);
-    let out = {
+    const out = {
         mouseevent: evt,
         time: null,
         relative_time: null,
@@ -559,7 +559,7 @@ export class Seismograph extends SeisPlotElement {
           xscaleForSDD.domain().start.valueOf()) /
         1000 /
         (xscaleForSDD.range[1] - xscaleForSDD.range[0]);
-      let color = mythis.seismographConfig.getColorForIndex(ti);
+      const color = mythis.seismographConfig.getColorForIndex(ti);
 
       let firstTime = true;
 
@@ -610,14 +610,14 @@ export class Seismograph extends SeisPlotElement {
 
             let i = leftVisibleSample;
             while (i < rightVisibleSample + 2 && i < s.y.length) {
-              let curPixel = Math.floor(startPixel + i * pixelsPerSample);
+              const curPixel = Math.floor(startPixel + i * pixelsPerSample);
               let min = s.y[i];
               let max = s.y[i];
               let minIdx = i;
               let maxIdx = i;
               while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
-                if (min > s.y[i]) { min = s.y[i]; minIdx = i}
-                if (max < s.y[i]) { max = s.y[i]; maxIdx = i}
+                if (min > s.y[i]) { min = s.y[i]; minIdx = i; }
+                if (max < s.y[i]) { max = s.y[i]; maxIdx = i; }
                 i++;
               }
               const topPixelFlt = yscaleForSDD(max); // note pixel coord flipped
@@ -702,8 +702,8 @@ export class Seismograph extends SeisPlotElement {
           return ampScale.domain([(this.amp_scalable.drawMiddle - drawHalfWidth)*sensitivityVal,
                                   (this.amp_scalable.drawMiddle + drawHalfWidth)*sensitivityVal]);
         }
-        let sddInterval = this.displayTimeRangeForSeisDisplayData(sdd);
-        let minMax = calcMinMax(sdd,
+        const sddInterval = this.displayTimeRangeForSeisDisplayData(sdd);
+        const minMax = calcMinMax(sdd,
                                             sddInterval,
                                             false,
                                             this.seismographConfig.amplitudeMode,
@@ -1421,7 +1421,7 @@ export class Seismograph extends SeisPlotElement {
           sdd.sensitivity &&
           firstSensitivity.inputUnits === sdd.sensitivity.inputUnits
       );
-      let unitList = this._seisDataList.map(sdd => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
+      const unitList = this._seisDataList.map(sdd => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
       if (!allSameUnits) {
         console.log(`not all same sensitivity units: ${this._seisDataList.length}`);
         this._seisDataList.forEach(sdd => {
@@ -1685,7 +1685,7 @@ export function createFullMarkersForQuakeAtStation(
       quake.longitude,
     );
     let magVal = "";
-    let magStr = ""
+    let magStr = "";
     if (quake.hasPreferredMagnitude()) {
       magVal = quake.preferredMagnitude ? `${quake.preferredMagnitude.mag}` : "";
       magStr = quake.preferredMagnitude ? quake.preferredMagnitude.toString() : "";

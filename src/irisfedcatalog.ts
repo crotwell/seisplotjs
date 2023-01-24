@@ -85,7 +85,7 @@ export class FedCatalogDataCenter {
    * query that returns StationXML. If the original FedCat query did not return
    * a Station service, or it was not asked for, then the array will be empty.
    *
-   * @return [description]
+   * @returns promise to networks
    */
   queryNetworkList(): Promise<Array<Network>> {
     if (this.stationQuery) {
@@ -1264,7 +1264,7 @@ export class FedCatalogQuery extends FDSNCommon {
    * Form URL to post the remote web service. No parameters are added
    * to the URL as those will be in the body of the post.
    *
-   * @return the URL for posting
+   * @returns the URL for posting
    */
   formPostURL(): string {
     return this.formBaseURL() + "/query";

@@ -210,6 +210,7 @@ export function log(msg: string): void {
  * typescript-y check if Error.
  *
  * @param error
+ * @returns true if Error object
  */
 export function isError(error: unknown): error is Error {
   return (
@@ -223,6 +224,7 @@ export function isError(error: unknown): error is Error {
  * typescript-y convert errors.
  *
  * @param maybeError
+ * @returns an Error object
  */
 export function toError(maybeError: unknown): Error {
   if (isError(maybeError)) return maybeError;
@@ -305,7 +307,7 @@ export function isoToDateTime(val: string): DateTime {
  *
  * @param  start         start of the interval as iso string or DateTime
  * @param  end         end of the interval as string or DateTime
- * @return          the interval
+ * @returns          the interval
  */
 export function startEnd(start: string | DateTime,
                               end: string | DateTime ): Interval {
@@ -323,7 +325,7 @@ export function startEnd(start: string | DateTime,
  *
  * @param  start         start of the interval as iso string or DateTime
  * @param  duration      duration of the interval as iso string, number of seconds, or Duration
- * @return          the interval
+ * @returns          the interval
  */
 export function startDuration(start: string | DateTime,
                               duration: string | Duration | number): Interval {
@@ -343,7 +345,7 @@ export function startDuration(start: string | DateTime,
  *
  * @param  duration      duration of the interval as iso string, number of seconds, or Duration
  * @param  end         end of the interval as string or DateTime
- * @return          the interval
+ * @returns          the interval
  */
 export function durationEnd(duration: string | Duration | number,
                               end: string | DateTime): Interval {
@@ -484,7 +486,7 @@ export function defaultFetchInitObj(mimeType?: string): Record<string, any> {
   };
 }
 export function cloneFetchInitObj(fetchInit: Record<string, any>): Record<string, any> {
-  let out = {};
+  const out = {};
   if (fetchInit) {
     for (const [key, value] of Object.entries(fetchInit)) {
       // @ts-ignore
@@ -590,9 +592,10 @@ export function doFetchWithTimeout(
 /**
  * Allows downloading of in memory data, as ArrayBuffer, to file as if
  * the user clicked a download link.
+ *
  * @param  data               ArrayBuffer to download
  * @param  filename          default filename
- * @param  mimeType='application/octet-stream'      mimeType
+ * @param  mimeType      mimeType, default application/octet-stream
  */
 export function downloadBlobAsFile(data: ArrayBuffer, filename: string, mimeType = 'application/octet-stream') {
   if(!data) {

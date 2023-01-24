@@ -59,17 +59,17 @@ export class ChannelCodeInput extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
     wrapper.setAttribute('class','wrapper');
-    const net = this.hasAttribute(ATTR_NET) ? ""+this.getAttribute(ATTR_NET) : "XX"
-    let netIn = wrapper.appendChild(labeledTextInput("Network:", net, ATTR_NET));
+    const net = this.hasAttribute(ATTR_NET) ? ""+this.getAttribute(ATTR_NET) : "XX";
+    const netIn = wrapper.appendChild(labeledTextInput("Network:", net, ATTR_NET));
     netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const sta = this.hasAttribute(ATTR_STA) ? ""+this.getAttribute(ATTR_STA) : ""
-    let staIn = wrapper.appendChild(labeledTextInput("Station:", sta, ATTR_STA));
+    const sta = this.hasAttribute(ATTR_STA) ? ""+this.getAttribute(ATTR_STA) : "";
+    const staIn = wrapper.appendChild(labeledTextInput("Station:", sta, ATTR_STA));
     staIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const loc = this.hasAttribute(ATTR_LOC) ? ""+this.getAttribute(ATTR_LOC) : ""
-    let locIn = wrapper.appendChild(labeledTextInput("Location:", loc, ATTR_LOC));
+    const loc = this.hasAttribute(ATTR_LOC) ? ""+this.getAttribute(ATTR_LOC) : "";
+    const locIn = wrapper.appendChild(labeledTextInput("Location:", loc, ATTR_LOC));
     locIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const chan = this.hasAttribute(ATTR_CHAN) ? ""+this.getAttribute(ATTR_CHAN) : ""
-    let chanIn = wrapper.appendChild(labeledTextInput("Channel:", chan, ATTR_CHAN));
+    const chan = this.hasAttribute(ATTR_CHAN) ? ""+this.getAttribute(ATTR_CHAN) : "";
+    const chanIn = wrapper.appendChild(labeledTextInput("Channel:", chan, ATTR_CHAN));
     chanIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
 
 
@@ -160,7 +160,7 @@ export class ChannelListChooser extends HTMLElement {
         if (this.type === "radio") {
           // radio, only one selected, notify only on select not unselect
           this.selected_channels.clear();
-          this.selected_channels.add(channel)
+          this.selected_channels.add(channel);
         } else {
           // checkbox
           if (cb.checked) {
@@ -179,7 +179,7 @@ export class ChannelListChooser extends HTMLElement {
   setChannels(channels: Array<Channel>) {
     this.channels = channels;
     this.draw_element();
-    this.dispatchEvent(new Event("change"))
+    this.dispatchEvent(new Event("change"));
   }
   appendChannels(channels: Array<Channel>) {
     this.channels = this.channels.concat(channels);
@@ -205,7 +205,7 @@ export class ChannelListChooser extends HTMLElement {
     this.draw_element();
   }
   selectedChannels(): Array<Channel> {
-    console.log(`selectedChannels(): ${this.selected_channels.size}`)
+    console.log(`selectedChannels(): ${this.selected_channels.size}`);
     return Array.from(this.selected_channels.values());
   }
 }
@@ -242,7 +242,7 @@ export class SourceIdListChooser extends HTMLElement {
         if (this.type === "radio") {
           // radio, only one selected, notify only on select not unselect
           this.selected_sourceIds.clear();
-          this.selected_sourceIds.add(sourceId)
+          this.selected_sourceIds.add(sourceId);
         } else {
           // checkbox
           if (cb.checked) {
@@ -261,12 +261,12 @@ export class SourceIdListChooser extends HTMLElement {
   setSourceIds(sourceIdList: Array<FDSNSourceId>) {
     this.sourceIdList = sourceIdList;
     this.draw_element();
-    this.dispatchEvent(new Event("change"))
+    this.dispatchEvent(new Event("change"));
   }
   appendSourceIds(sourceIdList: Array<FDSNSourceId>) {
     this.sourceIdList = this.sourceIdList.concat(sourceIdList);
     this.draw_element();
-    this.dispatchEvent(new Event("change"))
+    this.dispatchEvent(new Event("change"));
   }
   get type(): string {
     const t = this.getAttribute("type");
@@ -287,7 +287,7 @@ export class SourceIdListChooser extends HTMLElement {
     this.draw_element();
   }
   selectedSourceIds(): Array<FDSNSourceId> {
-    console.log(`selectedSourceIds(): ${this.selected_sourceIds.size}`)
+    console.log(`selectedSourceIds(): ${this.selected_sourceIds.size}`);
     return Array.from(this.selected_sourceIds.values());
   }
 }
@@ -383,9 +383,9 @@ export class LabeledMinMax extends HTMLElement {
   }
   validate(lastChanged?: string) {
     // will be NaN if not an attr
-    let lowerbound = numberOrNaN(this.getAttribute("lowerbound"));
-    let upperbound = numberOrNaN(this.getAttribute("upperbound"));
-    console.log(`validate minmax: ${lowerbound}  ${upperbound}`)
+    const lowerbound = numberOrNaN(this.getAttribute("lowerbound"));
+    const upperbound = numberOrNaN(this.getAttribute("upperbound"));
+    console.log(`validate minmax: ${lowerbound}  ${upperbound}`);
     if (! Number.isNaN(lowerbound)) {
       if (this.min < lowerbound) {
         this.min = lowerbound;
@@ -427,7 +427,7 @@ export class LabeledMinMax extends HTMLElement {
     if (input) {
       return Number.parseFloat(input.value);
     } else {
-      throw new Error('cant find input.min')
+      throw new Error('cant find input.min');
     }
   }
   set min(v: number) {
@@ -435,7 +435,7 @@ export class LabeledMinMax extends HTMLElement {
     if (input) {
       input.value = v.toString();
     } else {
-      throw new Error('cant find input.min')
+      throw new Error('cant find input.min');
     }
   }
   get max(): number {
@@ -443,7 +443,7 @@ export class LabeledMinMax extends HTMLElement {
     if (input) {
       return Number.parseFloat(input.value);
     } else {
-      throw new Error('cant find input.max')
+      throw new Error('cant find input.max');
     }
   }
   set max(v: number) {
@@ -451,7 +451,7 @@ export class LabeledMinMax extends HTMLElement {
     if (input) {
       input.value = v.toString();
     } else {
-      throw new Error('cant find input.max')
+      throw new Error('cant find input.max');
     }
   }
   updateMinMax() {
@@ -474,8 +474,9 @@ customElements.define(MINMAX_ELEMENT, LabeledMinMax);
 
 /**
  * ensures input number is -90 <= value <= 90
+ *
  * @param  value              input latitude
- * @return       output latitude in range, zero if NaN
+ * @returns       output latitude in range, zero if NaN
  */
 export function validateLatitude(value: number): number {
   if (Number.isNaN(value)) { return 0;}
@@ -486,8 +487,9 @@ export function validateLatitude(value: number): number {
 
 /**
  * ensures input number is -180 <= value <= 360
+ * 
  * @param  value              input longitude
- * @return       output longitude in range, zero if NaN
+ * @returns       output longitude in range, zero if NaN
  */
 export function validateLongitude(value: number): number {
   if (Number.isNaN(value)) { return 0;}
@@ -748,7 +750,6 @@ export class LatLonBoxEl extends HTMLElement {
     return numberFromInput(this.shadowRoot, 'input#south');
   }
   set south(value: number) {
-    console.log(`set south ${value}`)
     const inputEl = this.shadowRoot?.querySelector('input#south') as HTMLInputElement;
     if (!inputEl) {throw new Error("can't find input");}
     inputEl.value = `${validateLatitude(value)}`;
@@ -759,7 +760,6 @@ export class LatLonBoxEl extends HTMLElement {
     return numberFromInput(this.shadowRoot, 'input#north');
   }
   set north(value: number) {
-    console.log(`set north ${value}`)
     const inputEl = this.shadowRoot?.querySelector('input#north') as HTMLInputElement;
     if (!inputEl) {throw new Error("can't find input");}
     inputEl.value = `${validateLatitude(value)}`;
@@ -770,7 +770,6 @@ export class LatLonBoxEl extends HTMLElement {
     return numberFromInput(this.shadowRoot, 'input#west');
   }
   set west(value: number) {
-    console.log(`set west ${value}`)
     const inputEl = this.shadowRoot?.querySelector('input#west') as HTMLInputElement;
     if (!inputEl) {throw new Error("can't find input");}
     inputEl.value = `${validateLongitude(value)}`;
@@ -781,7 +780,6 @@ export class LatLonBoxEl extends HTMLElement {
     return numberFromInput(this.shadowRoot, 'input#east');
   }
   set east(value: number) {
-    console.log(`set east ${value}`)
     const inputEl = this.shadowRoot?.querySelector('input#east') as HTMLInputElement;
     if (!inputEl) {throw new Error("can't find input");}
     inputEl.value = `${validateLongitude(value)}`;
@@ -792,7 +790,6 @@ export class LatLonBoxEl extends HTMLElement {
     return new LatLonBox(this.west, this.east, this.south, this.north);
   }
   validate(lastChanged: string) {
-    console.log(`validate ${lastChanged}  lat: ${this.south},${this.north}  lon:${this.west},${this.east}`)
     if (this.south > this.north) {
       if (lastChanged === "south") {
         this.north = this.south;
@@ -801,7 +798,6 @@ export class LatLonBoxEl extends HTMLElement {
       }
     }
     if (this.west > this.east) {
-      console.log(`west ${this.west} > ${this.east} east`)
       if (lastChanged === "east") {
         if (this.west > 180 && this.west-360 < this.east) {
           this.west = this.west-360;

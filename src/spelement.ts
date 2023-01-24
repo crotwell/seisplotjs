@@ -69,7 +69,7 @@ export class SeisPlotElement extends HTMLElement {
   draw() {
     if ( ! this.isConnected) { return; }
   }
-  getShadowRoot(autoAdd: boolean = true): ShadowRoot {
+  getShadowRoot(autoAdd = true): ShadowRoot {
     if ( ! this.shadowRoot) {
       if (autoAdd) {
         this.attachShadow({mode: 'open'});
@@ -89,7 +89,7 @@ export function addStyleToElement(element: HTMLElement,
   if ( ! element.shadowRoot) {
     element.attachShadow({mode: 'open'});
   }
-  const styleEl = document.createElement("style")
+  const styleEl = document.createElement("style");
   styleEl.textContent = css;
   if (id) {
     styleEl.setAttribute("id", id);

@@ -159,7 +159,7 @@ export class QuakeStationMap extends SeisPlotElement {
     } else {
       this.quakeList.push(quake);
       classList.forEach(cn => {
-        this.quakeAddClass(quake, cn)
+        this.quakeAddClass(quake, cn);
       });
     }
   }
@@ -202,7 +202,7 @@ export class QuakeStationMap extends SeisPlotElement {
       c.classList.remove(classname);
     });
     if(circleList.length === 0) {
-      console.log("didn't find quake to remove clsas")
+      console.log("didn't find quake to remove clsas");
     }
   }
   /**
@@ -266,7 +266,7 @@ export class QuakeStationMap extends SeisPlotElement {
       c.classList.remove(classname);
     });
     if(markerList.length === 0) {
-      console.log("didn't find station to remove clsas")
+      console.log("didn't find station to remove clsas");
     }
   }
   /**
@@ -371,7 +371,7 @@ export class QuakeStationMap extends SeisPlotElement {
       circle.addTo(mymap);
       mapItems.push([q.latitude, q.longitude]);
       circle.addEventListener('click', evt => {
-        let ce = createQuakeClickEvent(q, evt.originalEvent);
+        const ce = createQuakeClickEvent(q, evt.originalEvent);
         mythis.dispatchEvent(ce);
       });
     });
@@ -380,7 +380,7 @@ export class QuakeStationMap extends SeisPlotElement {
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
       m.addEventListener('click', evt => {
-        let ce = createStationClickEvent(s, evt.originalEvent);
+        const ce = createStationClickEvent(s, evt.originalEvent);
         mythis.dispatchEvent(ce);
       });
     });
@@ -410,7 +410,7 @@ export class QuakeStationMap extends SeisPlotElement {
     }
   }
   drawGeoRegions(map: L.Map): Array<[number, number]> {
-    let outLatLon: Array<[number, number]> = [];
+    const outLatLon: Array<[number, number]> = [];
     this.geoRegionList.forEach(gr => {
       if (gr instanceof LatLonBox) {
         const llbox = gr as LatLonBox;
@@ -490,5 +490,5 @@ export function cssClassForQuake(q: Quake): string {
   } else {
     out = `${q.origin.time.toISO()}_${q.magnitude}`;
   }
-  return "qid_"+out.replaceAll(badCSSChars, '_')
+  return "qid_"+out.replaceAll(badCSSChars, '_');
 }

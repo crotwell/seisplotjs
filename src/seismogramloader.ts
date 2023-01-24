@@ -113,7 +113,7 @@ export class SeismogramLoader {
   /**
    * Sets the startOffset Duration to be val seconds.
    * @param  val  number of seconds, negative for before, positive for after
-   * @return     this
+   * @returns     this
    */
   startOffsetSeconds(val: number): SeismogramLoader {
     this._startOffset = Duration.fromMillis(val*1000); // seconds
@@ -153,7 +153,7 @@ export class SeismogramLoader {
   /**
    * Sets the endOffset Duration to be val seconds.
    * @param  val  number of seconds, negative for before, positive for after
-   * @return     this
+   * @returns     this
    */
   endOffsetSeconds(val: number): SeismogramLoader {
     this._endOffset = Duration.fromMillis(val*1000); //seconds
@@ -164,7 +164,7 @@ export class SeismogramLoader {
    * Additional phase arrival travel times to be marked, but do not effect
    * the request time window.
    *
-   * @return array of phase names.
+   * @returns array of phase names.
    */
   get markedPhaseList(): Array<string> {
     return this._markedPhaseList;
@@ -192,7 +192,7 @@ export class SeismogramLoader {
    * The raw traveltimes are included in the extras of the dataset with
    * key "traveltimes", which is a Map with the quake as the key.
    *
-   * @return a Dataset
+   * @returns a Dataset
    */
   load(): Promise<Dataset> {
 

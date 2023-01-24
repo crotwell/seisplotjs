@@ -154,7 +154,7 @@ function rotateSeismogramSegment(
   if (seisA.sourceId) {
     outSeisRad.sourceId = seisA.sourceId.clone();
     outSeisRad.sourceId.subsourceCode = "R";
-    outSeisTan.sourceId = seisA.sourceId.clone()
+    outSeisTan.sourceId = seisA.sourceId.clone();
     outSeisTan.sourceId.subsourceCode = "T";
   }
   const out = {

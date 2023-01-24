@@ -163,11 +163,7 @@ export function drawYSublabel(
     .attr("x", 0)
     .attr(
       "transform",
-      "translate( " +
-        seismographConfig.ySublabelTrans +
-        " , " +
-        (seismographConfig.margin.top + height / 2) +
-        ")",
+      `translate( ${seismographConfig.ySublabelTrans}, ${seismographConfig.margin.top + height / 2} )`,
     )
     .append("text")
     .classed("y label sublabel", true);
@@ -220,7 +216,7 @@ export function drawTitle(
   );
   let textEl: SVGTextElement;
   // fighting with typescript null
-  let queryTextEl = titleG.querySelector("text");
+  const queryTextEl = titleG.querySelector("text");
   if ( ! queryTextEl) {
     textEl = createSVGElement("text") as SVGTextElement;
     titleG.appendChild(textEl);

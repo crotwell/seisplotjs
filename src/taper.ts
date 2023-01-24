@@ -19,7 +19,7 @@ export function taper(
   taperType: string = HANNING,
 ): Seismogram {
   if (width > 0.5) {
-    throw new Error("Taper width cannot be larger than 0.5, width=" + width);
+    throw new Error(`Taper width cannot be larger than 0.5, width=${width}`);
   }
 
   if (seis.isContiguous()) {

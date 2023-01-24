@@ -37,7 +37,7 @@ export const QUAKE_CLICK_EVENT = "quakeclick";
  *
  * @param  q          Quake clicked on
  * @param  mouseclick original mouse click Event
- * @return            CustomEvent populated with quake field in detail.
+ * @returns           CustomEvent populated with quake field in detail.
  */
 export function createQuakeClickEvent(q: Quake, mouseclick: Event): CustomEvent {
   const detail = {
@@ -268,7 +268,7 @@ export class Quake {
 
   toString(): string {
     if (this.hasOrigin()) {
-      let magStr = this.hasMagnitude() ? this.magnitude.toString() : "";
+      const magStr = this.hasMagnitude() ? this.magnitude.toString() : "";
       return (
         stringify(this.time) +
         " " +
@@ -282,7 +282,7 @@ export class Quake {
         magStr
       );
     } else {
-      return `Event: ${this.eventId}`
+      return `Event: ${this.eventId}`;
     }
   }
 }

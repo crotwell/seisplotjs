@@ -35,7 +35,7 @@ export const STATION_CLICK_EVENT = "stationclick";
  *
  * @param  sta          Channel clicked on
  * @param  mouseclick original mouse click Event
- * @return            CustomEvent populated with channel field in detail.
+ * @returns            CustomEvent populated with channel field in detail.
  */
 export function createChannelClickEvent(sta: Channel, mouseclick: Event): CustomEvent {
   const detail = {
@@ -51,7 +51,7 @@ export function createChannelClickEvent(sta: Channel, mouseclick: Event): Custom
  *
  * @param  sta          Station clicked on
  * @param  mouseclick original mouse click Event
- * @return            CustomEvent populated with station field in detail.
+ * @returns            CustomEvent populated with station field in detail.
  */
 export function createStationClickEvent(sta: Station, mouseclick: Event): CustomEvent {
   const detail = {
@@ -489,8 +489,8 @@ export class PolesZeros extends AbstractFilterType {
     this.pzTransferFunctionType = "";
     this.normalizationFactor = 1;
     this.normalizationFrequency = 0;
-    this.zeros = new Array(0);
-    this.poles = new Array(0);
+    this.zeros = new Array<InstanceType<typeof Complex>>(0);
+    this.poles = new Array<InstanceType<typeof Complex>>(0);
   }
 }
 export class FIR extends AbstractFilterType {
@@ -512,7 +512,7 @@ export class CoefficientsFilter extends AbstractFilterType {
     super(inputUnits, outputUnits);
     this.cfTransferFunction = "";
     this.numerator = [ 1 ];
-    this.denominator = new Array(0);
+    this.denominator = new Array<number>(0);
   }
 }
 export class Decimation {
@@ -1247,7 +1247,7 @@ export function* findChannels(
 
 export function uniqueSourceIds(channelList: Iterable<Channel>): Array<FDSNSourceId> {
   const out = new Map<string, FDSNSourceId>();
-  for(let c of channelList) {
+  for(const c of channelList) {
     if (c) {
       out.set(c.sourceId.toString(), c.sourceId);
     }
@@ -1259,7 +1259,7 @@ export function uniqueStations(
   channelList: Iterable<Channel>,
 ): Array<Station> {
   const out = new Set<Station>();
-  for(let c of channelList) {
+  for(const c of channelList) {
     if (c) {
       out.add(c.station);
     }
@@ -1271,7 +1271,7 @@ export function uniqueNetworks(
   channelList: Iterable<Channel>,
 ): Array<Network> {
   const out = new Set<Network>();
-  for(let c of channelList) {
+  for(const c of channelList) {
     if (c) {
       out.add(c.station.network);
     }

@@ -26,7 +26,7 @@ export class Helicorder extends SeisPlotElement {
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     let heliConfig;
     if ( ! seisConfig) {
-      let timeWindow = Interval.before(DateTime.utc(), Duration.fromObject({hours: 24}));
+      const timeWindow = Interval.before(DateTime.utc(), Duration.fromObject({hours: 24}));
       heliConfig = new HelicorderConfig(timeWindow);
     } else if (seisConfig instanceof HelicorderConfig) {
       heliConfig = seisConfig;
@@ -94,8 +94,8 @@ export class Helicorder extends SeisPlotElement {
   }
 
   appendSegment(segment: SeismogramSegment) {
-    let segMinMax = segment.findMinMax();
-    let origMinMax = this.heliConfig.fixedAmplitudeScale;
+    const segMinMax = segment.findMinMax();
+    const origMinMax = this.heliConfig.fixedAmplitudeScale;
     const heliTimeRange = this.heliConfig.fixedTimeScale;
     if (!heliTimeRange) { throw new Error("Heli is not fixedTimeScale");}
     if (heliTimeRange.end < segment.timeRange.end) {
@@ -110,7 +110,7 @@ export class Helicorder extends SeisPlotElement {
         this.draw();
     }
     if (this.seisData && this.seisData.length > 0) {
-      let singleSeisData = this.seisData[0];
+      const singleSeisData = this.seisData[0];
       singleSeisData.append(segment);
       if (heliTimeRange.end < segment.timeRange.end ||
         (origMinMax &&
@@ -120,12 +120,12 @@ export class Helicorder extends SeisPlotElement {
       } else {
         // only redraw overlaping graphs
 
-        let seismographList = (this.shadowRoot ? Array.from(this.shadowRoot.querySelectorAll('sp-seismograph')) : []) as Array<Seismograph>;
+        const seismographList = (this.shadowRoot ? Array.from(this.shadowRoot.querySelectorAll('sp-seismograph')) : []) as Array<Seismograph>;
         seismographList.forEach(seisGraph => {
           const lineInterval = seisGraph.displayTimeRangeForSeisDisplayData(singleSeisData);
           if (segment.timeRange.intersection(lineInterval)) {
             // overlaps
-            let lineSeisData = this.cutForLine(singleSeisData, lineInterval);
+            const lineSeisData = this.cutForLine(singleSeisData, lineInterval);
 
             seisGraph.seisData = [lineSeisData];
           }
@@ -241,7 +241,7 @@ export class Helicorder extends SeisPlotElement {
           lineNumber % this.heliConfig.lineColors.length
         ],
       ];
-      let lineSeisData = this.cutForLine(singleSeisData, lineInterval);
+      const lineSeisData = this.cutForLine(singleSeisData, lineInterval);
 
       if (this.heliConfig.fixedAmplitudeScale && (
         this.heliConfig.fixedAmplitudeScale[0] !== 0 || this.heliConfig.fixedAmplitudeScale[1] !== 0
@@ -335,7 +335,7 @@ export class Helicorder extends SeisPlotElement {
   ): Array<HeliTimeRange> {
     const out = [];
     let s = startTime;
-    let durationPerLine = Duration.fromMillis(secondsPerLine*1000);
+    const durationPerLine = Duration.fromMillis(secondsPerLine*1000);
     for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
       const startEnd = new HeliTimeRange(s, durationPerLine, lineNum);
       out.push(startEnd);
@@ -387,6 +387,7 @@ export const DEFAULT_MAX_HEIGHT = 600;
  *
  * Note that setting maxVariation=0 and fixedAmplitudeScale=[0,0] will scale the
  * data to max
+ *
  * @param timeRange the time range covered by the helicorder, required
  */
 export class HelicorderConfig extends SeismographConfig {
@@ -394,7 +395,7 @@ export class HelicorderConfig extends SeismographConfig {
   overlap: number;
   numLines: number;
   maxVariation: number;
-  detrendLines: boolean = false;
+  detrendLines = false;
 
   constructor(timeRange: Interval) {
     super();
