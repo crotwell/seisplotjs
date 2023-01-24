@@ -1,5 +1,5 @@
 // snip start querystation
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 let timeWindow = new seisplotjs.util.startDuration('2019-07-06T03:19:53Z', 1800);
 let dsQuery = new seisplotjs.fdsndataselect.DataSelectQuery();
 console.log(`miniseed3: ${seisplotjs.fdsndataselect.FORMAT_MINISEED_THREE}`);

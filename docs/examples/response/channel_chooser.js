@@ -82,7 +82,7 @@ class ChannelListChooser extends HTMLElement {
         }
       });
       const nlabel = div.appendChild(document.createElement('label'));
-      nlabel.textContent = `${c.codes()} ${c.startDate.toISOString()}`;
+      nlabel.textContent = `${c.codes()} ${c.startDate.toISO()}`;
     });
     shadow.appendChild(wrapper);
   }

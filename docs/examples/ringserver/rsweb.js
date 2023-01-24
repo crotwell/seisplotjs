@@ -1,7 +1,7 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 const d3 = seisplotjs.d3;
-const hostUrl = "http://eeyore.seis.sc.edu/ringserver";
+const hostUrl = "https://eeyore.seis.sc.edu/ringserver";
 const rs = new seisplotjs.ringserverweb.RingserverConnection(hostUrl);
 let numPackets = 0;
 d3.select("div.results").select("pre").text(hostUrl+'\n'+rs.getDataLinkURL());
@@ -53,7 +53,7 @@ const packetHandler = function(packet) {
   }
   lastPackets.push(packet);
   let packetText = "";
-  lastPackets.forEach(p => packetText+=`${p.streamId} ${p.pktid} ${p.packetStart.toISOString()} to ${p.packetEnd.toISOString()}\n`);
+  lastPackets.forEach(p => packetText+=`${p.streamId} ${p.pktid} ${p.packetStart.toISO()} to ${p.packetEnd.toISO()}\n`);
   document.querySelector("pre").textContent=packetText;
 };
 const datalink = new seisplotjs.datalink.DataLinkConnection(

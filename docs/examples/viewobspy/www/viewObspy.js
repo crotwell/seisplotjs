@@ -171,7 +171,7 @@ class ViewObsPy {
         canvasNode.addEventListener('mousemove', evt => {
           let clickTime = graph.xAxis.scale().invert(evt.offsetX);
           clickTime = seisplotjs.moment.utc(clickTime);
-          seisplotjs.d3.select('input#mousex').property('value', clickTime.toISOString());
+          seisplotjs.d3.select('input#mousex').property('value', clickTime.toISO());
           let clickAmp = graph.yAxis.scale().invert(evt.offsetY);
           seisplotjs.d3.select('input#mousey').property('value', formatCountOrAmp(clickAmp));
         });

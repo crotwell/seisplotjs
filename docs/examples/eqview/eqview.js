@@ -1,4 +1,4 @@
-import * as seisplotjs from './seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as seisplotjs from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
 
 
 export function loadTestDatasetEmpty() { //: Promise<Dataset>
