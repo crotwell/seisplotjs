@@ -151,7 +151,10 @@
        Now we need a seismogram to plot. In seisplotjs, we refer to the
             machine that recorded the data as a seismometer, the actual data
             as a seismogram, and the plot as a seismograph. The last one is not
-            as common, but it helps to have names for things. We will create a
+            as common, but it helps to have names for things. Also, seisplotjs
+            uses a container object, SeismogramDisplayData, to allow connecting
+            other data, like the station metadata or the earthquake to a
+            seismogram. We will create a
             fake seismogram with a sine wave. You either put your javascript
             in a separate file and load it via the
        <code>
@@ -173,9 +176,6 @@ let dataArray = new Float32Array(1000).map(function(d, i) {
 let sampleRate = 20;
 let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
 let myseismogram = sp.seismogram.Seismogram.fromContiguousData(dataArray, sampleRate, start);
-let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
-// or in one step
-seisData = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
 </code></pre>
       <p>
        Now we have created a contiguous (no gaps) seismogram that represents
@@ -223,6 +223,7 @@ seisData = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sam
             at the top for the title to be without overlapping the seismograph.
       </p>
       <pre><code class="language-javascript" snippet="draw">
+let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
 const graph = document.querySelector('sp-seismograph');
 graph.seismographConfig.title = "A sine wave!";
 graph.seismographConfig.margin.top = 25;

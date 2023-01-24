@@ -8,10 +8,8 @@ let dataArray = new Float32Array(1000).map(function(d, i) {
 let sampleRate = 20;
 let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
 let myseismogram = sp.seismogram.Seismogram.fromContiguousData(dataArray, sampleRate, start);
-let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
-// or in one step
-seisData = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start);
 // snip start draw
+let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
 const graph = document.querySelector('sp-seismograph');
 graph.seismographConfig.title = "A sine wave!";
 graph.seismographConfig.margin.top = 25;
