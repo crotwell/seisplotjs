@@ -585,9 +585,9 @@ export class MSeed3Header {
     );
   }
   /**
-   * sets start time headers from Moment.
+   * sets start time headers.
    *
-   * @param starttime
+   * @param starttime start as DateTime
    */
   setStart(starttime: DateTime) {
     this.nanosecond = starttime.millisecond*1000;

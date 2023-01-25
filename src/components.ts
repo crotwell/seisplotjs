@@ -328,16 +328,16 @@ export class LabeledMinMax extends HTMLElement {
       shadow = this.attachShadow({mode: 'open'});
     }
     const minAttr = this.getAttribute("min");
-    if (!!minAttr) {this.default_min = Number.parseFloat(minAttr);}
+    if (isDef(minAttr)) {this.default_min = Number.parseFloat(minAttr);}
     const maxAttr = this.getAttribute("max");
-    if (!!maxAttr) {this.default_max = Number.parseFloat(maxAttr);}
+    if (isDef(maxAttr)) {this.default_max = Number.parseFloat(maxAttr);}
 
     let lowerbound = Number.NaN;
     let upperbound = Number.NaN;
     const lbAttr = this.getAttribute("lowerbound");
-    if (!!lbAttr) {lowerbound = Number.parseFloat(lbAttr);}
+    if (isDef(lbAttr)) {lowerbound = Number.parseFloat(lbAttr);}
     const upAttr = this.getAttribute("upperbound");
-    if (!!upAttr) {upperbound = Number.parseFloat(upAttr);}
+    if (isDef(upAttr)) {upperbound = Number.parseFloat(upAttr);}
 
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = `
@@ -487,7 +487,7 @@ export function validateLatitude(value: number): number {
 
 /**
  * ensures input number is -180 <= value <= 360
- * 
+ *
  * @param  value              input longitude
  * @returns       output longitude in range, zero if NaN
  */

@@ -425,6 +425,7 @@ export class Seismogram {
    * @param yArray array of encoded data or typed array
    * @param sampleRate sample rate, samples per second of the data
    * @param startTime time of first sample
+   * @param sourceId optional source id
    * @returns seismogram initialized with the data
    */
   static fromContiguousData(
@@ -513,6 +514,10 @@ export class SeismogramDisplayData {
   /**
    * Useful for creating fake data from an array, sample rate and start time
    *
+   * @param yArray fake data
+   * @param sampleRate samples per second
+   * @param startTime  start of data, time of first point
+   * @param sourceId  optional source id
    * @returns seismogramdisplaydata
    */
   static fromContiguousData(
@@ -1114,8 +1119,8 @@ export function findMaxDuration(
  * Finds max duration of from one of starttime of sdd, origin time
  * of earthquake, or alignmentTime.
  *
- * @param  type
- * @param  sddList
+ * @param  type  one of start, origin or align
+ * @param  sddList list of seis data
  * @returns        max duration
  */
 export function findMaxDurationOfType(

@@ -121,7 +121,7 @@ function xyzCompareFun(a: SeismogramDisplayData, b: SeismogramDisplayData): numb
  * E,N,Z. If the grouping was Z,1,2 where the azimuth of 1 is 90 degrees ccw
  * from 2, then the returned order would be 2,1,Z.
  *
- * @param  sdd               array representing compoment of motion
+ * @param  sddList  array representing compoment of motion
  * @returns     sorted array in x,y,z order
  */
 export function reorderXYZ(sddList: Array<SeismogramDisplayData>): Array<SeismogramDisplayData> {

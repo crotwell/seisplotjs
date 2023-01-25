@@ -1252,7 +1252,7 @@ export class ConnectionsResponse {
  * Convert DataLink style dates, like "2022-10-04 15:11:24.786990"
  * to ISO form for DateTime
  *
- * @param  m       datalink time
+ * @param  dalitime       datalink time
  * @returns   DateTime
  */
 export function daliDateTime(dalitime: string): DateTime {

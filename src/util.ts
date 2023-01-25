@@ -211,7 +211,7 @@ export function log(msg: string): void {
 /**
  * typescript-y check if Error.
  *
- * @param error
+ * @param error object that might be an Error
  * @returns true if Error object
  */
 export function isError(error: unknown): error is Error {
@@ -225,7 +225,7 @@ export function isError(error: unknown): error is Error {
 /**
  * typescript-y convert errors.
  *
- * @param maybeError
+ * @param maybeError obejct that might be an Error object
  * @returns an Error object
  */
 export function toError(maybeError: unknown): Error {

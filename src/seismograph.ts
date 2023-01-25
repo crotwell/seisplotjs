@@ -1713,7 +1713,7 @@ export function createFullMarkersForQuakeAtChannel(
 /**
  * Creates a Marker for the picked arrival times in quake.pickList, for the given Quake.
  *
- * @param Quake quake the travel times are relative to
+ * @param quake quake the travel times are relative to
  * @param channel channel picks made on
  * @returns        Marker suitable for adding to a seismograph
  */
