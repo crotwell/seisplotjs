@@ -215,7 +215,7 @@ const datalink = new sp.datalink.DataLinkConnection(
        Here is the timer that will periodically refresh the displays.
       </p>
       <pre><code class="language-javascript" snippet="timer">
-let timer = sp.d3.interval(function(elapsed) {
+let timer = window.setInterval(function(elapsed) {
   if ( paused || redrawInProgress) {
     return;
   }
