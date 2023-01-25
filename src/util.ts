@@ -45,17 +45,19 @@ export function isDef<Value>(value: Value | undefined | null): value is Value {
   return value !== null && value !== undefined;
 }
 
-export function rethrowWithMessage(err: any, message: string): never {
+export function reErrorWithMessage(err: any, message: string): Error {
+  let out;
   if ( ! isDef(err)) {
-    throw new Error(`${message}`);
+    out = new Error(`${message}`);
   } else if (typeof err === "string") {
-    throw new Error(`${message} ${err}`);
+    out = new Error(`${message} ${err}`);
   } else {
     if (err instanceof Error) {
       err.message = `${message} ${err.message}`;
     }
-    throw err;
+    out = err;
   }
+  return out;
 }
 
 export function doStringGetterSetter(

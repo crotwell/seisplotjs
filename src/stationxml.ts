@@ -11,7 +11,7 @@ import {
   isNumArg,
   checkStringOrDate,
   stringify,
-  rethrowWithMessage,
+  reErrorWithMessage,
   WAY_FUTURE,
 } from "./util";
 import {Complex} from "./oregondsputil";
@@ -605,7 +605,7 @@ export function convertToNetwork(xml: Element): Network {
     out.stations = stations;
     return out;
   } catch (err) {
-    rethrowWithMessage(err, netCode);
+    throw reErrorWithMessage(err, netCode);
   }
 }
 
@@ -675,7 +675,7 @@ export function convertToStation(network: Network, xml: Element): Station {
     out.channels = channels;
     return out;
   } catch (err) {
-    rethrowWithMessage(err, staCode);
+    throw reErrorWithMessage(err, staCode);
   }
 }
 
@@ -797,7 +797,7 @@ export function convertToChannel(station: Station, xml: Element): Channel {
 
     return out;
   } catch (err) {
-    rethrowWithMessage(err, `${locCode}.${chanCode}`);
+    throw reErrorWithMessage(err, `${locCode}.${chanCode}`);
   }
 }
 export function convertToEquipment(xml: Element): Equipment {
