@@ -30,7 +30,7 @@ module.exports = {
     "semi": ["error", "always"],
     "no-var": ["error"],
     "no-console": [ "error"],
-    "no-unused-vars": [ "error"],
+    "@typescript-eslint/no-unused-vars": [ "error"],
     "eqeqeq": ["error", "always"],
     "jsdoc/require-param-type": ["off"],
     "jsdoc/require-returns-type": ["off"],
