@@ -205,7 +205,6 @@ export class ChannelListChooser extends HTMLElement {
     this.draw_element();
   }
   selectedChannels(): Array<Channel> {
-    console.log(`selectedChannels(): ${this.selected_channels.size}`);
     return Array.from(this.selected_channels.values());
   }
 }
@@ -287,7 +286,6 @@ export class SourceIdListChooser extends HTMLElement {
     this.draw_element();
   }
   selectedSourceIds(): Array<FDSNSourceId> {
-    console.log(`selectedSourceIds(): ${this.selected_sourceIds.size}`);
     return Array.from(this.selected_sourceIds.values());
   }
 }
@@ -385,7 +383,6 @@ export class LabeledMinMax extends HTMLElement {
     // will be NaN if not an attr
     const lowerbound = numberOrNaN(this.getAttribute("lowerbound"));
     const upperbound = numberOrNaN(this.getAttribute("upperbound"));
-    console.log(`validate minmax: ${lowerbound}  ${upperbound}`);
     if (! Number.isNaN(lowerbound)) {
       if (this.min < lowerbound) {
         this.min = lowerbound;
@@ -625,8 +622,6 @@ export class LatLonRadiusEl extends HTMLElement {
     return `LatLon Radius: ${this.latitude}/${this.longitude} ${this.minRadius}/${this.maxRadius}`;
   }
   _doUpdateCallback() {
-    console.log(`update lat/lon: ${this.latitude}/${this.longitude}  rad: ${this.minRadius} to ${this.maxRadius}`);
-
     this.dispatchEvent(new Event("change"));
   }
 }
@@ -927,6 +922,12 @@ export class LatLonChoice extends HTMLElement {
       this.dispatchEvent(new Event("change"));
     });
   }
+  /**
+   * returns choosen sub element, either LatLonBox or LatLonRadius or
+   * null if choosen is "all"
+   *
+   * @returns choosen element
+   */
   choosen(): null | LatLonBoxEl | LatLonRadiusEl {
     const radio = this.shadowRoot?.querySelector('input[type=radio]:checked') as HTMLInputElement;
     if (radio.value === 'box') {

@@ -167,7 +167,7 @@ export class LinkedAmplitudeScale {
         } else if ("amp_scalable" in graph) {
           this._graphSet.add(graph.amp_scalable);
         } else {
-          console.warn(`graph does not have notifyAmplitudeChange method or amp_scalable field, skipping: ${graph}`);
+          // graph does not have notifyAmplitudeChange method or amp_scalable field, skipping
         }
     });
     this.recalculate();
@@ -327,7 +327,7 @@ export class LinkedTimeScale {
         } else if ("time_scalable" in graph) {
           this._graphSet.add(graph.time_scalable);
         } else {
-          console.warn(`graph does not have notifyTimeRangeChange method or time_scalable field, skipping: ${graph}`);
+          //graph does not have notifyTimeRangeChange method or time_scalable field, skipping
         }
     });
     this.recalculate();

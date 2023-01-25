@@ -1418,10 +1418,6 @@ export class Seismograph extends SeisPlotElement {
       );
       const unitList = this._seisDataList.map(sdd => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
       if (!allSameUnits) {
-        console.log(`not all same sensitivity units: ${this._seisDataList.length}`);
-        this._seisDataList.forEach(sdd => {
-          console.log(` ${sdd.sensitivity?.sensitivity} ${sdd.sensitivity?.inputUnits} ${sdd.sensitivity?.outputUnits}`);
-        });
         this.seismographConfig.ySublabel = unitList;
       }
 

@@ -176,9 +176,11 @@ export function loadFromZip(zip: JSZip): Promise<Dataset> {
 
       const catalogFile = datasetDir.file(CATALOG_FILE);
       const qml = catalogFile ? catalogFile.async("string").then(function (rawXmlText) {
-        if (rawXmlText.length < 10) {
-          //console.warn(`qml text is really short: ${rawXmlText}`);
+        if (rawXmlText.length === 0) {
+          // empty
           return [];
+        } else if (rawXmlText.length < 10) {
+          throw new Error(`qml text is really short: ${rawXmlText}`);
         } else {
           const rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
           return parseQuakeML(rawXml);
@@ -186,9 +188,11 @@ export function loadFromZip(zip: JSZip): Promise<Dataset> {
       }) : [];
       const inventoryFile = datasetDir.file(INVENTORY_FILE);
       const staml = inventoryFile ? inventoryFile.async("string").then(function (rawXmlText) {
-        if (rawXmlText.length < 10) {
-          console.log(`staxml text is really short: ${rawXmlText}`);
+        if (rawXmlText.length === 0) {
+          // empty
           return [];
+        } else if (rawXmlText.length < 10) {
+          throw new Error(`staxml text is really short: ${rawXmlText}`);
         } else {
           const rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
           return parseStationXml(rawXml);

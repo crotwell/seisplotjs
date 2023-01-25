@@ -370,7 +370,6 @@ export class QuakeTable extends HTMLElement {
           }
         } else {
           // cant find one of the quakes, oh well
-          console.log(`can't find qa or qb: ${qa} ${qb}`);
         }
         return out;
       });
@@ -388,7 +387,7 @@ export class QuakeTable extends HTMLElement {
       });
       this.lastSortCol = h;
     } else {
-      console.log("no tbody for table sort");
+      // no tbody for table sort???
     }
   }
 }
@@ -560,7 +559,6 @@ export class ChannelTable extends HTMLElement {
           }
         } else {
           // cant find one of the Channels, oh well
-          console.log(`can't find qa or qb: ${qa} ${qb}`);
         }
         return out;
       });
@@ -578,7 +576,7 @@ export class ChannelTable extends HTMLElement {
       });
       this.lastSortCol = h;
     } else {
-      console.log("no tbody for table sort");
+      // no tbody for table sort??
     }
   }
 }
@@ -732,7 +730,6 @@ export class StationTable extends HTMLElement {
           }
         } else {
           // cant find one of the Stations, oh well
-          console.log(`can't find qa or qb: ${qa} ${qb}`);
         }
         return out;
       });
@@ -750,7 +747,7 @@ export class StationTable extends HTMLElement {
       });
       this.lastSortCol = h;
     } else {
-      console.log("no tbody for table sort");
+      // no tbody for table sort???
     }
   }
 }
@@ -911,7 +908,6 @@ export class SeismogramTable extends HTMLElement {
           }
         } else {
           // cant find one of the items, oh well
-          console.log(`can't find qa or qb: ${qa} ${qb}`);
         }
         return out;
       });
@@ -929,7 +925,7 @@ export class SeismogramTable extends HTMLElement {
       });
       this.lastSortCol = h;
     } else {
-      console.log("no tbody for table sort");
+      // no tbody for table sort???
     }
   }
 }

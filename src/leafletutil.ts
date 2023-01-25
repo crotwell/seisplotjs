@@ -201,9 +201,6 @@ export class QuakeStationMap extends SeisPlotElement {
     circleList.forEach(c => {
       c.classList.remove(classname);
     });
-    if(circleList.length === 0) {
-      console.log("didn't find quake to remove clsas");
-    }
   }
   /**
    * Removes a css class from all earthquake circles.
@@ -266,9 +263,6 @@ export class QuakeStationMap extends SeisPlotElement {
     markerList.forEach(c => {
       c.classList.remove(classname);
     });
-    if(markerList.length === 0) {
-      console.log("didn't find station to remove clsas");
-    }
   }
   /**
    * Set a color in css for the classname. This is a simple alternative
@@ -437,9 +431,11 @@ export class QuakeStationMap extends SeisPlotElement {
           outLatLon.push([llrad.latitude, llrad.longitude+llrad.maxRadius]);
           outLatLon.push([llrad.latitude, llrad.longitude-llrad.maxRadius]);
         }
+      } else if (gr === null) {
+        // null means whole world
       } else {
         // unknown region type?
-        console.assert(false, "unknown region type");
+        throw new Error(`unknown region type: ${gr}`);
       }
     });
     return outLatLon;

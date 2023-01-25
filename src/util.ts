@@ -195,6 +195,7 @@ export function dataViewToString(dataView: DataView): string {
 export function log(msg: string): void {
   // eslint-disable-next-line no-console
   if (console) {
+    // eslint-disable-next-line no-console
     console.log(`${stringify(msg)}`);
   }
 
@@ -250,6 +251,7 @@ export function toError(maybeError: unknown): Error {
 export function warn(msg: string): void {
   // eslint-disable-next-line no-console
   if (console) {
+    // eslint-disable-next-line no-console
     console.assert(false, `${stringify(msg)}`);
   }
 
@@ -601,8 +603,7 @@ export function doFetchWithTimeout(
  */
 export function downloadBlobAsFile(data: ArrayBuffer, filename: string, mimeType = 'application/octet-stream') {
   if(!data) {
-      console.error(' No data');
-      return;
+      throw new Error("data is empty");
   }
 
   if(!filename) filename = 'filetodownload.txt';

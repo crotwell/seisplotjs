@@ -1230,7 +1230,7 @@ export class EarthquakeSearch extends HTMLElement {
         if (latlonrad.maxRadius<180) {query.maxRadius(latlonrad.maxRadius);}
       }
     } else {
-      console.log(`latlon choice is: ${choosenLatLon}`);
+      // null means all, whole world
     }
     const mag = wrapper.querySelector('sp-minmax#magnitude') as LabeledMinMax;
     if (mag.min > 0) {query.minMag(mag.min);}

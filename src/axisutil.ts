@@ -197,7 +197,7 @@ export function drawTitle(
   handlebarsInput: any = {},
 ) {
   if (!svgEl) {
-    console.log("warn, drawTitle, but no svg element");
+    // drawTitle, but no svg element
     return;
   }
   let titleG = svgEl.querySelector("g.title");
@@ -244,11 +244,11 @@ export function drawAxisLabels(
   handlebarsInput: any = {},
 ) {
   if (!svgEl) {
-    console.log(`warn, axisutil.drawAxisLabels, but no svg element: ${svgEl}`);
+    // axisutil.drawAxisLabels, but no svg element
     return;
   }
   if (!(svgEl instanceof SVGElement)) {
-    console.log(`warn, axisutil.drawAxisLabels, but not SVGElement: ${svgEl}`);
+    // axisutil.drawAxisLabels, but not SVGElement
     return;
   }
   drawTitle(svgEl, seismographConfig, height, width, handlebarsInput);

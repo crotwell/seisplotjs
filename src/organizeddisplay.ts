@@ -344,22 +344,15 @@ export class OrganizedDisplayTools extends SeisPlotElement {
   wireComponents() {
     const shadow = this.shadowRoot;
     const doMapCB = shadow?.querySelector("input#with_map") as HTMLInputElement;
-    if ( ! doMapCB) {
-      console.log("no ccheckbox found");
-    }
     doMapCB?.addEventListener('change', () => {
       if (this._organizedDisplay) {
         this._organizedDisplay.map = doMapCB.checked ? 'true' : 'false';
-        console.log(`set map to ${this._organizedDisplay.map}`);
-      } else {
-        console.log("no org display set");
       }
     });
     const doInfoCB = shadow?.querySelector("input#with_info") as HTMLInputElement;
     doInfoCB?.addEventListener('change', () => {
       if (this._organizedDisplay) {
         this._organizedDisplay.info = `${doInfoCB.checked}`;
-        console.log(`set info to ${this._organizedDisplay.info}`);
       }
     });
     shadow?.querySelectorAll('fieldset.overlay input').forEach(i => {
@@ -544,7 +537,6 @@ export class OrganizedDisplay extends SeisPlotElement {
     }
   }
   drawTools(sortedData: Array<SeismogramDisplayData>) {
-    console.log(`drawTools: ${this.tools}`);
     if ( ! this.isConnected) { return; }
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);

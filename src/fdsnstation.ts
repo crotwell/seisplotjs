@@ -1354,7 +1354,7 @@ export class ChannelSearch extends HTMLElement {
         if (latlonrad.maxRadius<180) {query.maxRadius(latlonrad.maxRadius);}
       }
     } else {
-      console.assert(false, `unknown latlon choice: ${choosenLatLon}`);
+      // null means all, whole world
     }
     return query;
   }
