@@ -328,16 +328,16 @@ export class LabeledMinMax extends HTMLElement {
       shadow = this.attachShadow({mode: 'open'});
     }
     const minAttr = this.getAttribute("min");
-    if (isDef(minAttr)) {this.default_min = Number.parseFloat(minAttr);}
+    if (minAttr !== null) {this.default_min = Number.parseFloat(minAttr);}
     const maxAttr = this.getAttribute("max");
-    if (isDef(maxAttr)) {this.default_max = Number.parseFloat(maxAttr);}
+    if (maxAttr !== null) {this.default_max = Number.parseFloat(maxAttr);}
 
     let lowerbound = Number.NaN;
     let upperbound = Number.NaN;
     const lbAttr = this.getAttribute("lowerbound");
-    if (isDef(lbAttr)) {lowerbound = Number.parseFloat(lbAttr);}
+    if (lbAttr !== null) {lowerbound = Number.parseFloat(lbAttr);}
     const upAttr = this.getAttribute("upperbound");
-    if (isDef(upAttr)) {upperbound = Number.parseFloat(upAttr);}
+    if (upAttr !== null) {upperbound = Number.parseFloat(upAttr);}
 
     const style = shadow.appendChild(document.createElement('style'));
     style.textContent = `
