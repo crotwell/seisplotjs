@@ -189,6 +189,8 @@ export class DataLinkConnection {
 
   /**
    * Switches to streaming mode to receive data packets from the ringserver.
+   *
+   * @returns promise to the response
    */
   stream(): Promise<DataLinkResponse> {
     this._mode = MODE.Stream;

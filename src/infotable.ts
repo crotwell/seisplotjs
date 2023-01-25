@@ -340,7 +340,7 @@ export class QuakeTable extends HTMLElement {
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     const tbody = table.querySelector("tbody");
     if (tbody) {
-      const rows = Array.from(tbody.querySelectorAll("tr") as NodeListOf<HTMLTableRowElement>);
+      const rows = Array.from(tbody.querySelectorAll("tr") );
       rows.sort((rowa,rowb) => {
         let out = 0;
         const qa = this._rowToQuake.get(rowa);
@@ -518,7 +518,7 @@ export class ChannelTable extends HTMLElement {
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     const tbody = table.querySelector("tbody");
     if (tbody) {
-      const rows = Array.from(tbody.querySelectorAll("tr") as NodeListOf<HTMLTableRowElement>);
+      const rows = Array.from(tbody.querySelectorAll("tr") );
       rows.sort((rowa,rowb) => {
         let out = 0;
         const qa = this._rowToChannel.get(rowa);
@@ -696,7 +696,7 @@ export class StationTable extends HTMLElement {
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     const tbody = table.querySelector("tbody");
     if (tbody) {
-      const rows = Array.from(tbody.querySelectorAll("tr") as NodeListOf<HTMLTableRowElement>);
+      const rows = Array.from(tbody.querySelectorAll("tr") );
       rows.sort((rowa,rowb) => {
         let out = 0;
         const qa = this._rowToStation.get(rowa);
@@ -874,7 +874,7 @@ export class SeismogramTable extends HTMLElement {
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     const tbody = table.querySelector("tbody");
     if (tbody) {
-      const rows = Array.from(tbody.querySelectorAll("tr") as NodeListOf<HTMLTableRowElement>);
+      const rows = Array.from(tbody.querySelectorAll("tr") );
       rows.sort((rowa,rowb) => {
         let out = 0;
         const qa = this._rowToSDD.get(rowa);

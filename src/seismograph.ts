@@ -1334,7 +1334,7 @@ export class Seismograph extends SeisPlotElement {
    * Calculate the amplitude range over the current time range, depending
    * on amplitude style.
    *
-   * @return min max over the time range
+   * @returns min max over the time range
    */
   calcAmpScaleDomain(): MinMaxable {
 

@@ -194,6 +194,8 @@ export class LinkedAmplitudeScale {
 
   /**
    * Recalculate the best amplitude scale for all Seismographs. Causes a redraw.
+   *
+   * @returns array of promise of best amp scales
    */
   recalculate(): Array<Promise<AmplitudeScalable>> {
     const mythis = this;

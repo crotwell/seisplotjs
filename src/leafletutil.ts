@@ -414,14 +414,14 @@ export class QuakeStationMap extends SeisPlotElement {
     const outLatLon: Array<[number, number]> = [];
     this.geoRegionList.forEach(gr => {
       if (gr instanceof LatLonBox) {
-        const llbox = gr as LatLonBox;
+        const llbox = gr ;
         const bounds = llbox.asLeafletBounds();
         const rect = L.rectangle(bounds, {color: "red", weight: 1});
         rect.addTo(map);
         outLatLon.push(bounds[0]);
         outLatLon.push(bounds[1]);
       } else if (gr instanceof LatLonRadius) {
-        const llrad = gr as LatLonRadius;
+        const llrad = gr ;
         outLatLon.push([llrad.latitude, llrad.longitude]);
         if (llrad.minRadius > 0) {
           L.circle([llrad.latitude, llrad.longitude], {radius: llrad.minRadius*1000*kmPerDeg}).addTo(map);

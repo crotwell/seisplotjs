@@ -94,6 +94,8 @@ export class FDSNSourceId {
    * returns a channel code. If this is an old style NSLC, it will be 3 chars,
    * but if either source or subsouce is more than one char, it will be
    * three fields delimited by underscores.
+   *
+   * @returns the channel code part of the id
    */
   formChannelCode(): string {
     return this.asNslc().channelCode;

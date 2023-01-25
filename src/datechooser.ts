@@ -37,7 +37,9 @@ export class HourMinChooser extends HTMLElement {
       this._time = isoToDateTime(attr_date_time);
       this._time.set({second: 0, millisecond: 0}); // only hour and min?
     }
-    this.updateCallback = function(time: DateTime) {};
+    this.updateCallback = function(time: DateTime) {
+      // default do nothing
+    };
     const shadow = this.attachShadow({mode: 'open'});
 
     // style
@@ -263,7 +265,9 @@ export class DateTimeChooser extends HTMLElement {
       this._time = DateTime.utc().set({second: 0, millisecond: 0});
     }
 
-    this.updateCallback = function(time: DateTime) {};
+    this.updateCallback = function(time: DateTime) {
+      // default do nothing
+    };
     const shadow = this.attachShadow({mode: 'open'});
 
     const wrapper = document.createElement('span');
@@ -383,7 +387,9 @@ export class TimeRangeChooser extends HTMLElement {
   constructor() {
     super();
     this._mostRecentChanged = "end";
-    this.updateCallback = (timerange: Interval) => {};
+    this.updateCallback = (timerange: Interval) => {
+      // default do nothing
+    };
     const endAttr = this.getAttribute("end");
     let endTime: DateTime;
     if (endAttr) {
@@ -430,7 +436,7 @@ export class TimeRangeChooser extends HTMLElement {
     const startLabel = wrapper.appendChild(document.createElement('label'));
     startLabel.textContent = this.startLabel;
     const startChooser = wrapper.appendChild(new DateTimeChooser());
-    this.startChooser = startChooser as DateTimeChooser;
+    this.startChooser = startChooser ;
     startChooser.setAttribute("class", "start");
 
     const durationDiv = wrapper.appendChild(document.createElement('span'));
@@ -444,7 +450,7 @@ export class TimeRangeChooser extends HTMLElement {
     const endLabel = wrapper.appendChild(document.createElement('label'));
     endLabel.textContent = this.endLabel;
     const endChooser = wrapper.appendChild(new DateTimeChooser());
-    this.endChooser = endChooser as DateTimeChooser;
+    this.endChooser = endChooser ;
     endChooser.setAttribute("class", "end");
 
     startChooser.addEventListener("change", () => {

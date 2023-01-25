@@ -1346,7 +1346,7 @@ export class ChannelSearch extends HTMLElement {
       if (latlonbox.west > -180 && latlonbox.west+360 !==latlonbox.east) {query.minLon(latlonbox.west);}
       if (latlonbox.east < 360 && latlonbox.west+360 !==latlonbox.east) {query.maxLon(latlonbox.east);}
     } else if (choosenLatLon instanceof LatLonRadiusEl) {
-      const latlonrad = choosenLatLon as LatLonRadiusEl;
+      const latlonrad = choosenLatLon ;
       if (latlonrad.minRadius>0 || latlonrad.maxRadius<180) {
         query.latitude(latlonrad.latitude);
         query.longitude(latlonrad.longitude);

@@ -17,7 +17,9 @@ export function createEditor(
     throw new Error("div is Required");
   }
   if (!isDef(onChange)) {
-    onChange = () => {};
+    onChange = () => {
+      // default do nothing
+    };
   }
 
   const titleDiv = div.append("div");
