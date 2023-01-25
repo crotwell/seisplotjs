@@ -1,6 +1,8 @@
 import {SeismographConfig} from "./seismographconfig";
 import {createSVGElement} from "./util";
-import * as d3 from "d3";
+//import * as d3 from "d3";
+import {scaleUtc as d3scaleUtc } from "d3-scale";
+import {select as d3select} from "d3-selection";
 import type {
   //ScaleLinear,
   ScaleTime} from "d3-scale";
@@ -23,7 +25,7 @@ export class LuxonTimeScale {
     return this.interval;
   }
   get d3scale(): ScaleTime<number, number, never> {
-    const d3TimeScale = d3.scaleUtc();
+    const d3TimeScale = d3scaleUtc();
     d3TimeScale.domain([this.interval.start.toJSDate(), this.interval.end.toJSDate()]);
     d3TimeScale.range(this.range);
     return d3TimeScale;
@@ -36,7 +38,7 @@ export function drawXLabel(
   width: number,
   handlebarsInput: any = {},
 ) {
-  const svg = d3.select(svgEl);
+  const svg = d3select(svgEl);
   svg.selectAll("g.xLabel").remove();
 
   if (seismographConfig.xLabel && seismographConfig.xLabel.length > 0) {
@@ -68,7 +70,7 @@ export function drawXSublabel(
   width: number, // eslint-disable-next-line no-unused-vars
   handlebarsInput: any = {},
 ) {
-  const svg = d3.select(svgEl);
+  const svg = d3select(svgEl);
   svg.selectAll("g.xSublabel").remove();
   const svgText = svg
     .append("g")
@@ -94,7 +96,7 @@ export function drawYLabel(
   width: number,
   handlebarsInput: any = {},
 ) {
-  const svg = d3.select(svgEl);
+  const svg = d3select(svgEl);
   svg.selectAll("g.yLabel").remove();
 
   for (const side of ["left", "right"]) {
@@ -153,7 +155,7 @@ export function drawYSublabel(
   width: number, // eslint-disable-next-line no-unused-vars
   handlebarsInput: any = {},
 ) {
-  const svg = d3.select(svgEl);
+  const svg = d3select(svgEl);
   svg.selectAll("g.ySublabel").remove();
 
   for (const side of ["left", "right"]) {

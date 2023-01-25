@@ -4,7 +4,17 @@
  * http://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval} from "luxon";
-import * as d3 from "d3";
+//import * as d3 from "d3";
+import {select as d3select} from "d3-selection";
+import {scaleLinear as d3scaleLinear } from "d3-scale";
+import {
+  axisLeft as d3axisLeft ,
+  axisBottom as d3axisBottom,
+  axisTop as d3axisTop,
+  axisRight as d3axisRight
+} from "d3-axis";
+
+import {zoom as d3zoom } from "d3-zoom";
 import { AUTO_COLOR_SELECTOR } from "./cssutil";
 import {
   AmplitudeScalable,
@@ -201,7 +211,7 @@ export class Seismograph extends SeisPlotElement {
     this.getShadowRoot().appendChild(wrapper);
 
     this.canvas = null;
-    this.svg = d3.select(wrapper).append("svg").style("z-index", 100);
+    this.svg = d3select(wrapper).append("svg").style("z-index", 100);
     wrapper.appendChild(this.svg.node());
 
     if (
@@ -284,7 +294,7 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .attr("class", "allmarkers")
       .attr("style", "clip-path: url(#" + CLIP_PREFIX + this.plotId + ")");
-    d3.select(window).on(
+    d3select(window).on(
       "resize.canvasseismograph" + mythis.plotId,
       function () {
         if (!mythis.beforeFirstDraw && mythis.checkResize()) {
@@ -363,7 +373,7 @@ export class Seismograph extends SeisPlotElement {
   enableZoom(): void {
     const mythis = this;
     const z = this.svg.call(
-      d3.zoom().on("zoom", function (e) {
+      d3zoom().on("zoom", function (e) {
         mythis.zoomed(e);
       }),
     );
@@ -435,7 +445,7 @@ export class Seismograph extends SeisPlotElement {
       this.canvasHolder.attr("y", this.seismographConfig.margin.top);
       this.canvas.attr("width", this.width).attr("height", this.height);
     } else {
-      const svg = d3.select(svgEl);
+      const svg = d3select(svgEl);
       this.canvasHolder = svg
         .insert("foreignObject", ":first-child")
         .classed("seismograph", true)
@@ -690,7 +700,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   ampScaleForSeisDisplayData(sdd: SeismogramDisplayData): ScaleLinear<number, number, never> {
-      const ampScale = d3.scaleLinear();
+      const ampScale = d3scaleLinear();
       ampScale.range([this.height, 0]);
       if (this.seismographConfig.linkedAmplitudeScale) {
         const drawHalfWidth = this.amp_scalable.drawHalfWidth;
@@ -775,7 +785,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   ampScaleForAxis(): ScaleLinear<number, number, never> {
-    const ampAxisScale = d3.scaleLinear();
+    const ampAxisScale = d3scaleLinear();
     ampAxisScale.range([this.height, 0]);
     if (this.seismographConfig.fixedAmplitudeScale) {
       ampAxisScale.domain(this.seismographConfig.fixedAmplitudeScale);
@@ -797,7 +807,7 @@ export class Seismograph extends SeisPlotElement {
   timeScaleForAxis(): ScaleLinear<number, number, never> | axisutil.LuxonTimeScale {
     let xScaleToDraw;
     if (this.seismographConfig.isRelativeTime) {
-      xScaleToDraw = d3.scaleLinear();
+      xScaleToDraw = d3scaleLinear();
       xScaleToDraw.range([0, this.width]);
       if (this.seismographConfig.linkedTimeScale) {
         const startOffset = this.time_scalable.drawAlignmentTimeOffset.toMillis()/1000;
@@ -838,7 +848,7 @@ export class Seismograph extends SeisPlotElement {
       // eg xScaleToDraw is ScaleLinear
       xScaleToDraw = xScaleToDraw as ScaleLinear<number, number, never>;
       if (this.seismographConfig.isXAxis) {
-        const xAxis = d3.axisBottom(xScaleToDraw);
+        const xAxis = d3axisBottom(xScaleToDraw);
         xAxis.tickFormat(createNumberFormatWrapper(this.seismographConfig.relativeTimeFormat));
         this.g.append("g")
           .attr("class", "axis axis--x")
@@ -846,7 +856,7 @@ export class Seismograph extends SeisPlotElement {
           .call(xAxis);
       }
       if (this.seismographConfig.isXAxisTop) {
-        const xAxisTop = d3.axisTop(xScaleToDraw);
+        const xAxisTop = d3axisTop(xScaleToDraw);
         xAxisTop.tickFormat(createNumberFormatWrapper(this.seismographConfig.relativeTimeFormat));
         this.g.append("g").attr("class", "axis axis--x-top").call(xAxisTop);
       }
@@ -854,7 +864,7 @@ export class Seismograph extends SeisPlotElement {
     } else {
       xScaleToDraw = xScaleToDraw as axisutil.LuxonTimeScale;
       if (this.seismographConfig.isXAxis) {
-        const xAxis = d3.axisBottom(xScaleToDraw.d3scale);
+        const xAxis = d3axisBottom(xScaleToDraw.d3scale);
         xAxis.tickFormat(createDateFormatWrapper(this.seismographConfig.timeFormat));
         this.g.append("g")
           .attr("class", "axis axis--x")
@@ -862,7 +872,7 @@ export class Seismograph extends SeisPlotElement {
           .call(xAxis);
       }
       if (this.seismographConfig.isXAxisTop) {
-        const xAxisTop = d3.axisTop(xScaleToDraw.d3scale);
+        const xAxisTop = d3axisTop(xScaleToDraw.d3scale);
         xAxisTop.tickFormat(createDateFormatWrapper(this.seismographConfig.timeFormat));
         this.g.append("g").attr("class", "axis axis--x-top").call(xAxisTop);
       }
@@ -893,8 +903,7 @@ export class Seismograph extends SeisPlotElement {
     let yAxisRight = null;
     const axisScale = this.ampScaleForAxis();
     if (this.seismographConfig.isYAxis) {
-      yAxis = d3
-        .axisLeft(axisScale)
+      yAxis = d3axisLeft(axisScale)
         .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
       yAxis.scale(axisScale);
       yAxis.ticks(8, this.seismographConfig.amplitudeFormat);
@@ -902,8 +911,7 @@ export class Seismograph extends SeisPlotElement {
     }
 
     if (this.seismographConfig.isYAxisRight) {
-      yAxisRight = d3
-        .axisRight(axisScale)
+      yAxisRight = d3axisRight(axisScale)
         .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
       yAxisRight.scale(axisScale);
       yAxisRight.ticks(8, this.seismographConfig.amplitudeFormat);
@@ -976,7 +984,7 @@ export class Seismograph extends SeisPlotElement {
 
       const origOffset = linkedTS.origOffset.toMillis()/1000;
       const origDuration = linkedTS.origDuration.toMillis()/1000;
-      const origXScale = d3.scaleLinear();
+      const origXScale = d3scaleLinear();
       origXScale.range([0, this.width]);
       origXScale.domain([origOffset, origOffset+origDuration]);
       const xt = t.rescaleX(origXScale);
@@ -1098,7 +1106,7 @@ export class Seismograph extends SeisPlotElement {
       })
       .each(function (mh: MarkerHolderType) {
         // @ts-ignore
-        const drawG = d3.select(this);
+        const drawG = d3select(this);
         drawG.classed(mh.marker.name, true).classed(mh.marker.markertype, true);
         const innerTextG = drawG
           .append("g")
@@ -1374,7 +1382,7 @@ export class Seismograph extends SeisPlotElement {
       }
       if (this.seismographConfig.isYAxisNice) {
         // use d3 scale's nice function
-        let scale = d3.scaleLinear();
+        let scale = d3scaleLinear();
         scale.domain(minMax.asArray());
         scale = scale.nice();
         minMax = MinMaxable.fromArray(scale.domain());

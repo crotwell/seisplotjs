@@ -1,7 +1,6 @@
-import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0_standalone.mjs';
 import {getNowTime, loadDataReal} from './doplot.js';
 
-const d3 = sp.d3;
 const luxon = sp.luxon;
 
 const locCodeList = ['00', '01'];
@@ -37,8 +36,8 @@ export function handleAmpChange(config, value, redrawFun) {
     // assume empty/bad value in text box
     console.log(`bad value in amp: ${value}`);
     config.amp = 10000;
-    d3.select("#amp")
-      .select("input#fixedAmpText").property("value", config.amp);
+    document.querySelector("#amp")
+      .querySelector("input#fixedAmpText").value = config.amp;
   }
   updatePageForConfig(config);
   redrawFun(config);
@@ -78,138 +77,116 @@ export function setupEventHandlers(config, loadAndPlotFun, redrawFun) {
       orgDisp.draw();
     });
   });
-  let staButtonSpan = d3.select("#scsnStations")
-    .select("form")
-    .selectAll("span")
-    .data(config.stationList)
-    .enter()
-    .append("span");
-  staButtonSpan
-    .append("label")
-    .text(function(d) {return d;});
-  staButtonSpan.insert("input", ":first-child")
-    .attr("type", "radio")
-    .attr("class", "shape")
-    .attr("name", "station")
-    .attr("value", function(d, i) {return i;})
-    .property("checked", function(d, i) {return d===config.station;})
-    .on("click", function(d) {
-      config.station = d3.select(this).text();
+  const staDiv = document.querySelector("#scsnStations");
+  config.stationList.forEach( sta => {
+    const span = staDiv.appendChild(document.createElement("span"));
+    const button = span.appendChild(document.createElement("input"));
+    const label = span.appendChild(document.createElement("label"));
+    label.textContent = sta;
+    button.setAttribute("type", "radio");
+    button.setAttribute("class", "shape");
+    button.setAttribute("name", "station");
+    button.textContent = sta;
+    button.value = sta;
+    button.checked = sta===config.station;
+    button.addEventListener('click', event => {
+      config.station = sta;
       loadAndPlotFun(config);
-    })
-    .text(function(d) {return d;});
-  d3.select("#scsnStations").selectAll("input").on("change", function(){
-      console.log(this.value)
-  });
-  let orientButtonSpan = d3.select("#orientations")
-    .selectAll("span")
-    .data(orientList)
-    .enter()
-    .append("span");
-    orientButtonSpan
-      .append("label")
-      .text(function(d) {return d;});
-    orientButtonSpan.insert("input", ":first-child")
-      .attr("type", "radio")
-      .attr("class", "shape")
-      .attr("name", "orientation")
-      .attr("value", function(d, i) {return i;})
-      .property("checked", function(d, i) {
-        return d.charAt(0)===config.orientationCode;
-      })
-      .on("click", function(d) {
-        let newOrientationCode = d3.select(this).text();
-        if (newOrientationCode.length > 1) {
-          config.altOrientationCode = newOrientationCode.slice(-1);
-          config.orientationCode = newOrientationCode.charAt(0);
-        } else {
-          config.orientationCode = newOrientationCode;
-          config.altOrientationCode = "";
-        }
-        console.log(`click ${config.orientationCode} ${config.altOrientationCode}`);
-        loadAndPlotFun(config);
-      })
-      .text(function(d) {return d;});
-    d3.select("div.orientations").selectAll("input").on("change", function(){
-        console.log(this.value)
     });
+  });
 
 
-  let instButtonSpan = d3.select("#instruments")
-    .selectAll("span")
-    .data(bandInstCodeList)
-    .enter()
-    .append("span");
-    instButtonSpan
-      .append("label")
-      .text(function(d) {
-        if (d === 'HN') {
-          return "Strong Motion";
-        } else if (d === 'HH') {
-          return "Seismometer";
-        } else if (d === 'LH') {
-          return "Long Period";
-        } else {
-          return "UNKNOWN???";
-        }
-      });
-    instButtonSpan.insert("input", ":first-child")
-      .attr("type", "radio")
-      .attr("class", "shape")
-      .attr("name", "instrument")
-      .attr("value", function(d, i) {return i;})
-      .property("checked", function(d, i) {
-        return d.charAt(0)===config.bandCode && d.charAt(1)===config.instCode;
-      })
-      .on("click", function(d) {
-        let bandInst = d3.select(this).text();
-        config.bandCode = bandInst.charAt(0);
-        config.instCode = bandInst.charAt(1);
+  const orientDiv = document.querySelector("#orientations");
+  orientList.forEach( orient => {
+    const span = orientDiv.appendChild(document.createElement("span"));
+    const button = span.appendChild(document.createElement("input"));
+    const label = span.appendChild(document.createElement("label"));
+    label.textContent = orient;
+    button.setAttribute("type", "radio");
+    button.setAttribute("class", "shape");
+    button.setAttribute("name", "orientation");
+    button.textContent = orient;
+    button.value = orient;
+    button.checked = orient===config.orientationCode;
+    button.addEventListener('click', event => {
+      let newOrientationCode = orient;
+      if (newOrientationCode.length > 1) {
+        config.altOrientationCode = newOrientationCode.slice(-1);
+        config.orientationCode = newOrientationCode.charAt(0);
+      } else {
+        config.orientationCode = newOrientationCode;
+        config.altOrientationCode = "";
+      }
+      console.log(`click ${config.orientationCode} ${config.altOrientationCode}`);
+      loadAndPlotFun(config);
+    });
+  });
+
+
+    const instDiv = document.querySelector("#instruments");
+    bandInstCodeList.forEach( bandinst => {
+      const span = instDiv.appendChild(document.createElement("span"));
+      const button = span.appendChild(document.createElement("input"));
+      const label = span.appendChild(document.createElement("label"));
+      button.setAttribute("type", "radio");
+      button.setAttribute("class", "shape");
+      button.setAttribute("name", "instrument");
+      let labelName;
+      if (bandinst === 'HN') {
+        labelName = "Strong Motion";
+      } else if (bandinst === 'HH') {
+        labelName =  "Seismometer";
+      } else if (bandinst === 'LH') {
+        labelName =  "Long Period";
+      } else {
+        labelName =  "UNKNOWN???";
+      }
+      label.textContent = labelName;
+      button.textContent = bandinst;
+      button.value = bandinst;
+      button.checked = bandinst.charAt(0)===config.bandCode && bandinst.charAt(1)===config.instCode;
+      button.addEventListener('click', event => {
+        config.bandCode = bandinst.charAt(0);
+        config.instCode = bandinst.charAt(1);
         console.log(`click ${config.bandCode}${config.instCode}`);
         loadAndPlotFun(config);
-      })
-      .text(function(d) {return d;});
+      });
+    });
 
-
-  let loccodeButtonSpan = d3.select("#loccode")
-    .selectAll("span")
-    .data(locCodeList)
-    .enter()
-    .append("span");
-    loccodeButtonSpan
-      .append("label")
-      .text(d => {return d;});
-    loccodeButtonSpan.insert("input", ":first-child")
-      .attr("type", "radio")
-      .attr("class", "shape")
-      .attr("name", "loccode")
-      .attr("value", function(d, i) {return i;})
-      .property("checked", function(d, i) {
-        return d===config.locCode;
-      })
-      .on("click", function(d) {
-        let locCode = d3.select(this).text();
+    const locDiv = document.querySelector("#loccode");
+    locCodeList.forEach( loc => {
+      const span = locDiv.appendChild(document.createElement("span"));
+      const button = span.appendChild(document.createElement("input"));
+      const label = span.appendChild(document.createElement("label"));
+      label.textContent = loc;
+      button.setAttribute("type", "radio");
+      button.setAttribute("class", "shape");
+      button.setAttribute("name", "loccode");
+      button.textContent = loc;
+      button.value = loc;
+      button.checked = loc===config.locCode;
+      button.addEventListener('click', event => {
         config.locCode = locCode;
         console.log(`click ${config.locCode} ${config.bandCode}${config.instCode}`);
         loadAndPlotFun(config);
-      })
-      .text(function(d) {return d;});
+      });
+    });
 
-  d3.select("button#loadNow").on("click", function(d) {
+  document.querySelector("button#loadNow").addEventListener("click",  function(d) {
     config.endTime = getNowTime().toISO();
     console.log(`now ${config.endTime}`);
     updateDateChooser(config);
     loadAndPlotFun(config);
   });
 
-  d3.select("button#loadToday").on("click", function(d) {
+  document.querySelector("button#loadToday").addEventListener("click",  function(d) {
     config.endTime = luxon.DateTime.utc().endOf('day').plus({millisecond: 1}).toISO();
     console.log(`today ${config.endTime}`);
     updateDateChooser(config);
     loadAndPlotFun(config);
   });
 
-  d3.select("button#loadPrev").on("click", function(d) {
+  document.querySelector("button#loadPrev").addEventListener("click",  function(d) {
     let e = config.endTime;
     if (  !e || e === 'now' ) {
       e = getNowTime();
@@ -222,7 +199,7 @@ export function setupEventHandlers(config, loadAndPlotFun, redrawFun) {
     loadAndPlotFun(config);
   });
 
-  d3.select("button#loadNext").on("click", function(d) {
+  document.querySelector("button#loadNext").addEventListener("click",  function(d) {
     let e = config.endTime;
     if ( !e || e === 'now' ) {
       e = getNowTime();
@@ -235,39 +212,33 @@ export function setupEventHandlers(config, loadAndPlotFun, redrawFun) {
     loadAndPlotFun(config);
   });
 
-  d3.select("#amp")
-    .select("input#maxAmp")
-    .on("click", d => {
+  document.querySelector("input#maxAmp").addEventListener("click",  function(d) {
       handleAmpChange(config, "max", redrawFun);
     });
 
-  d3.select("#amp")
-    .select("input#fixedAmp")
-    .on("click", d => {
-      let value = Number(d3.select("input#fixedAmpText").property("value"));
+  document.querySelector("input#fixedAmp").addEventListener("click",  function(d) {
+      let value = Number(document.querySelector("input#fixedAmpText").value);
       handleAmpChange(config, value, redrawFun);
     });
-  d3.select("#amp")
-    .select("input#fixedAmpText")
-    .on("keypress", function(e) {
+  document.querySelector("input#fixedAmpText").addEventListener("keypress",  function(e) {
       if(e.keyCode === 13) {
         // return  is 13
-        let value = Number(d3.select("input#fixedAmpText").property("value"));
+        let value = Number(document.querySelector("input#fixedAmpText").value);
         handleAmpChange(config, value, redrawFun);
       }
-  }).on("change", () => {
-    let value = Number(d3.select("input#fixedAmpText").property("value"));
+  });
+  document.querySelector("input#fixedAmpText").addEventListener("change",  function(e) {
+    let value = Number(document.querySelector("input#fixedAmpText").value);
     handleAmpChange(config, value, redrawFun);
   });
 
-  d3.select("#amp")
-    .select("input#percentAmp")
-    .on("click", d => {
-      let value = d3.select("input#percentAmpSlider").property("value");
+  document.querySelector("input#percentAmp").addEventListener("click",  function(d) {
+      let value = document.querySelector("input#percentAmpSlider").value;
       handleAmpChange(config, `${value}%`, redrawFun);
     });
-  d3.select("#percentAmpSlider").on("input", function() {
-    handleAmpChange(config, `${this.value}%`, redrawFun);
+  document.querySelector("#percentAmpSlider").addEventListener("input",  function(d) {
+    let value = Number(document.querySelector("#percentAmpSlider").value);
+    handleAmpChange(config, `${value}%`, redrawFun);
   });
 
   document.querySelector("input#minmax").addEventListener("change", () => {
@@ -348,40 +319,30 @@ export function updatePageForConfig(currentConfig) {
   }
 
   // amp
-  d3.select("#amp")
-    .select("input#percentAmp").property("checked", "true");
-  d3.select("#amp")
-    .select("input#maxAmp").property("checked", "false");
-  d3.select("#amp")
-    .select("input#fixedAmp").property("checked", "false");
+  document.querySelector("#percentAmp").checked = true;
+  document.querySelector("#maxAmp").checked = false;
+  document.querySelector("#fixedAmp").checked = false;
   if (currentConfig) {
     if (typeof currentConfig.amp === 'string' && currentConfig.amp.endsWith('%')) {
       let percent = Number(currentConfig.amp.substring(0, currentConfig.amp.length-1));
-      d3.select("input#percentAmpSlider").property("value", percent);
-      d3.select("#amp")
-        .select("input#percentAmp").property("checked", "true");
+      document.querySelector("input#percentAmpSlider").value = percent;
+      document.querySelector("#percentAmp").checked = true;
     } else if (currentConfig.amp === "max") {
-      d3.select("#amp")
-        .select("input#maxAmp").property("checked", "true");
+      document.querySelector("#maxAmp").checked = true;
       currentConfig.amp = "max";
     } else if ( Number.isFinite(Number(currentConfig.amp))) {
-      d3.select("#amp")
-        .select("input#fixedAmp").property("checked", "true");
-      d3.select("#amp")
-        .select("input#fixedAmpText").property("value", currentConfig.amp);
-      d3.select("#amp")
-        .select("input#fixedAmpText").text(currentConfig.amp);
+      document.querySelector("#fixedAmp").checked = true;
+      document.querySelector("input#fixedAmpText").value = currentConfig.amp;
+      document.querySelector("input#fixedAmpText").textContent = currentConfig.amp;
     } else {
       // default to max?
-        d3.select("#amp")
-          .select("input#maxAmp").property("checked", "true");
-        currentConfig.amp = "max";
+      document.querySelector("#maxAmp").checked = true;
+      currentConfig.amp = "max";
     }
 
   } else {
     // default to max?
-      d3.select("#amp")
-        .select("input#maxAmp").property("checked", "true");
+    document.querySelector("#maxAmp").checked = true;
       currentConfig.amp = "max";
   }
 
@@ -413,8 +374,8 @@ function updateEarthquakeQueryParam(currentConfig, id, defaultValue) {
   if (typeof currentConfig[id] !== 'number') {
     currentConfig[id] = parseFloat(currentConfig[id]);
   }
-  d3.select("div#"+region)
-    .select("input#"+id).property("value", currentConfig[id]);
+  document.querySelector("div#"+region)
+    .querySelector("input#"+id).value = currentConfig[id];
 };
 
 function loadAllEarthquakeQueryParams(currentConfig) {
@@ -438,8 +399,8 @@ function loadEarthquakeQueryParam(currentConfig, id) {
   } else {
     throw new Error(`Unknown region for ${id}`);
   }
-  let inputVal = d3.select("div#"+region)
-    .select("input#"+id).property("value");
+  let inputVal = document.querySelector("div#"+region)
+    .querySelector("input#"+id).value;
   if ( Number.isFinite(Number(inputVal))) {
     currentConfig[id] = parseFloat(inputVal);
   } else {
@@ -450,12 +411,12 @@ function loadEarthquakeQueryParam(currentConfig, id) {
 export function enableFiltering(heliDataIsMinMax) {
   if (heliDataIsMinMax) {
   }
-  d3.select("#filtering")
-    .select("input#allpass").property("disabled", `${heliDataIsMinMax}`);
-  d3.select("#filtering")
-    .select("input#lowpass").property("disabled", `${heliDataIsMinMax}`);
-  d3.select("#filtering")
-    .select("input#bandpass").property("disabled", `${heliDataIsMinMax}`);
-  d3.select("#filtering")
-    .select("input#highpass").property("disabled", `${heliDataIsMinMax}`);
+  document.querySelector("#filtering")
+    .querySelector("input#allpass").disabled = heliDataIsMinMax;
+  document.querySelector("#filtering")
+    .querySelector("input#lowpass").disabled = heliDataIsMinMax;
+  document.querySelector("#filtering")
+    .querySelector("input#bandpass").disabled = heliDataIsMinMax;
+  document.querySelector("#filtering")
+    .querySelector("input#highpass").disabled = heliDataIsMinMax;
 }

@@ -6,7 +6,7 @@
 import {insertCSS,} from "./cssutil";
 import {SeismographConfig} from "./seismographconfig";
 import {isDef} from "./util";
-import * as d3 from "d3";
+import { select as d3select} from "d3-selection";
 
 export function createEditor(
   div: any,
@@ -173,7 +173,7 @@ export function createEditor(
         .property("value", color)
         .on("change", function () {
           // @ts-ignore
-          const val = d3.select(this).property("value");
+          const val = d3select(this).property("value");
           config.lineColors[cindex] = val;
           colorspan.style("color", val);
           colorspan.select("input").style("color", val);
@@ -245,7 +245,7 @@ function createBooleanOptionByKey(
     .property("checked", config[key])
     .on("change", function () {
       // @ts-ignore
-      config[key] = d3.select(this).property("checked");
+      config[key] = d3select(this).property("checked");
       onChange();
     });
   myspan.append("label").text(`${label}:`);
@@ -270,7 +270,7 @@ function createTextOption(
     .property("value", config[key])
     .on("change", function () {
       // @ts-ignore
-      config[key] = d3.select(this).property("value");
+      config[key] = d3select(this).property("value");
       onChange();
     });
   return myspan;
@@ -294,7 +294,7 @@ function createNumberOption(
     .property("value", config[key])
     .on("change", function () {
       // @ts-ignore
-      config[key] = Number.parseInt(d3.select(this).property("value"));
+      config[key] = Number.parseInt(d3select(this).property("value"));
       onChange();
     });
   return myspan;

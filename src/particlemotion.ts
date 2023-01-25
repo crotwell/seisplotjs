@@ -3,7 +3,17 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import * as d3 from "d3";
+//import * as d3 from "d3";
+import {select as d3select} from "d3-selection";
+import {scaleLinear as d3scaleLinear } from "d3-scale";
+import {
+  line as d3line,
+  curveLinear as d3curveLinear
+} from "d3-shape";
+import {
+  axisLeft as d3axisLeft ,
+  axisBottom as d3axisBottom,
+} from "d3-axis";
 import {Interval} from "luxon";
 import {SeisPlotElement} from "./spelement";
 import {MinMaxable} from './scale';
@@ -143,7 +153,7 @@ export class ParticleMotion extends SeisPlotElement {
     const svgWrapped = wrapper.appendChild(document.createElementNS(SVG_NS, 'svg'));
     this.getShadowRoot().appendChild(wrapper);
 
-    this.svg = d3.select(svgWrapped);
+    this.svg = d3select(svgWrapped);
 
     this.plotId = ++ParticleMotion._lastID;
 
@@ -154,26 +164,22 @@ export class ParticleMotion extends SeisPlotElement {
     this.svg.attr("version", "1.1");
     this.svg.classed("particleMotion", true);
     this.svg.attr("plotId", this.plotId);
-    this.xScale = d3.scaleLinear();
+    this.xScale = d3scaleLinear();
     // yScale for axis (not drawing) that puts mean at 0 in center
-    this.xScaleRmean = d3.scaleLinear();
-    this.yScale = d3.scaleLinear();
+    this.xScaleRmean = d3scaleLinear();
+    this.yScale = d3scaleLinear();
     // yScale for axis (not drawing) that puts mean at 0 in center
-    this.yScaleRmean = d3.scaleLinear();
+    this.yScaleRmean = d3scaleLinear();
 
     if (this.seismographConfig.isCenteredAmp()) {
-      this.xAxis = d3
-        .axisBottom(this.xScaleRmean)
+      this.xAxis = d3axisBottom(this.xScaleRmean)
         .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
-      this.yAxis = d3
-        .axisLeft(this.yScaleRmean)
+      this.yAxis = d3axisLeft(this.yScaleRmean)
         .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
     } else {
-      this.xAxis = d3
-        .axisBottom(this.xScale)
+      this.xAxis = d3axisBottom(this.xScale)
         .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
-      this.yAxis = d3
-        .axisLeft(this.yScale)
+      this.yAxis = d3axisLeft(this.yScale)
         .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
     }
 
@@ -206,7 +212,7 @@ export class ParticleMotion extends SeisPlotElement {
           ")",
       );
     this.calcScaleDomain();
-    d3.select(window).on("resize.particleMotion" + this.plotId, function () {
+    d3select(window).on("resize.particleMotion" + this.plotId, function () {
       if (mythis.checkResize()) {
         mythis.draw();
       }
@@ -362,9 +368,8 @@ export class ParticleMotion extends SeisPlotElement {
       .attr("marker-end", "url(#arrow)")
       .attr(
         "d",
-        d3
-          .line()
-          .curve(d3.curveLinear)
+        d3line()
+          .curve(d3curveLinear)
           .x(d => mythis.xScale(d))
           .y((d, i) => mythis.yScale(segB.yAtIndex(idxB + i))),
       );

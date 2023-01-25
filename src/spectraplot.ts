@@ -9,7 +9,19 @@ import {SeismographConfig} from "./seismographconfig";
 import {SeismogramDisplayData} from "./seismogram";
 import {addStyleToElement} from './spelement';
 import {Complex} from "./oregondsputil";
-import * as d3 from "d3";
+//import * as d3 from "d3";
+import {extent as d3extent} from "d3-array";
+import {select as d3select} from "d3-selection";
+import {
+  scaleLinear as d3scaleLinear,
+  ScaleContinuousNumeric as d3ScaleContinuousNumeric,
+  scaleLog as d3scaleLog,
+ } from "d3-scale";
+import {line as d3line } from "d3-shape";
+import {
+  axisLeft as d3axisLeft ,
+  axisBottom as d3axisBottom,
+} from "d3-axis";
 import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
 import {drawAxisLabels} from "./axisutil";
 
@@ -257,7 +269,7 @@ export class SpectraPlot extends HTMLElement {
         ampSlice = ampSlice.slice(1);
       }
 
-      const currExtent = d3.extent(ampSlice);
+      const currExtent = d3extent(ampSlice);
 
       if (this.kind === AMPLITUDE && currExtent[0] === 0) {
         // replace zero with smallest non-zero / 10 for log amp plot
@@ -293,7 +305,7 @@ export class SpectraPlot extends HTMLElement {
 
     const svg_element = document.createElementNS("http://www.w3.org/2000/svg","svg");
     wrapper.appendChild(svg_element);
-    const svg = d3.select(svg_element);
+    const svg = d3select(svg_element);
     svg.classed("spectra_plot", true).classed(AUTO_COLOR_SELECTOR, true);
     const rect = svg_element.getBoundingClientRect();
     const width =
@@ -314,11 +326,11 @@ export class SpectraPlot extends HTMLElement {
           this.seismographConfig.margin.top +
           ")",
       );
-    let xScale: d3.ScaleContinuousNumeric<number, number, never>;
+    let xScale: d3ScaleContinuousNumeric<number, number, never>;
     if (this.logfreq) {
-      xScale = d3.scaleLog().rangeRound([0, width]);
+      xScale = d3scaleLog().rangeRound([0, width]);
     } else {
-      xScale = d3.scaleLinear().rangeRound([0, width]);
+      xScale = d3scaleLinear().rangeRound([0, width]);
     }
     const freqMin = freqMinMax.reduce((acc, cur) => Math.min(acc, cur));
     const freqMax = freqMinMax.reduce((acc, cur) => Math.max(acc, cur));
@@ -331,9 +343,9 @@ export class SpectraPlot extends HTMLElement {
       fftMin = fftMin*0.1;
       fftMax = fftMax*2;
     }
-    let yScale: d3.ScaleContinuousNumeric<number, number, never>;
+    let yScale: d3ScaleContinuousNumeric<number, number, never>;
     if (this.kind === AMPLITUDE) {
-      yScale = d3.scaleLog().rangeRound([height, 0]);
+      yScale = d3scaleLog().rangeRound([height, 0]);
       yScale.domain([fftMin, fftMax]);
 
       if (yScale.domain()[0] === yScale.domain()[1]) {
@@ -343,7 +355,7 @@ export class SpectraPlot extends HTMLElement {
         ]);
       }
     } else {
-      yScale = d3.scaleLinear().rangeRound([height, 0]);
+      yScale = d3scaleLinear().rangeRound([height, 0]);
       yScale.domain([fftMin, fftMax]);
 
       if (yScale.domain()[0] === yScale.domain()[1]) {
@@ -353,11 +365,11 @@ export class SpectraPlot extends HTMLElement {
         ]);
       }
     }
-    const xAxis = d3.axisBottom(xScale);
+    const xAxis = d3axisBottom(xScale);
     g.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
-    const yAxis = d3.axisLeft(yScale);
+    const yAxis = d3axisLeft(yScale);
     g.append("g").call(yAxis);
     this.seismographConfig.yLabel = "Amplitude";
 
@@ -399,7 +411,7 @@ export class SpectraPlot extends HTMLElement {
         ampSlice = ampSlice.slice(1);
       }
 
-      const line = d3.line<number>();
+      const line = d3line<number>();
       line.x(function (d: number, i: number) {
         return xScale(freqSlice[i]);
       });

@@ -1,4 +1,4 @@
-import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0_standalone.mjs';
 
 const d3 = sp.d3;
 const luxon = sp.luxon;
@@ -108,39 +108,43 @@ export function doPlotHeli(config) {
     config.instCodeList.forEach(ic => chanCodeQuery.push(`${bc}${ic}?`));
   });
   chanCodeQuery = chanCodeQuery.join();
-  d3.selectAll("span.textNetCode").text("");
-  d3.selectAll("span.textStaCode").text("");
-  d3.selectAll("span.textLocCode").text("");
-  d3.selectAll("span.textChanCode").text("");
-  d3.selectAll("span.startTime").text(`${hash.timeRange.start.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`);
-  d3.selectAll("span.endTime").text(`${hash.timeRange.end.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`);
-  let channelQuery = new sp.fdsnstation.StationQuery()
-    .nodata(404)
-    .networkCode(netCodeQuery)
-    .stationCode(staCodeQuery)
-    .locationCode(locCodeQuery)
-    .channelCode(chanCodeQuery)
-    .startTime(hash.timeRange.start)
-    .endTime(hash.timeRange.start.plus(sp.luxon.Duration.fromMillis(3600*1000)));
-//    .endTime(hash.timeRange.end);
+  document.querySelector("span.textNetCode").textContent = "";
+  document.querySelector("span.textStaCode").textContent = "";
+  document.querySelector("span.textLocCode").textContent = "";
+  document.querySelector("span.textChanCode").textContent = "";
+  document.querySelector("span.startTime").textContent =
+    `${hash.timeRange.start.toFormat('(ooo), MMM d, yyyy HH:mm')}  [GMT]`;
+  document.querySelector("span.endTime").textContent =
+    `${hash.timeRange.end.toFormat('(ooo), MMM d, yyyy HH:mm')} [GMT]`;
   let channelPromise;
-  // channelPromise = channelQuery.queryChannels();
-  // temp load from local stationxml file
-  const fetchInitOptions = sp.util.defaultFetchInitObj(sp.util.XML_MIME);
-  const url = "metadata.staxml";
-  channelPromise = sp.util.doFetchWithTimeout(url, fetchInitOptions)
-  .then(function (response) {
-    if (response.status === 200 || response.status === 0) {
-      return response.text();
-    } else {
-      // no data
-      throw new Error("No data");
-    }
-  }).then(rawXmlText => {
-    const rawXml = new DOMParser().parseFromString(rawXmlText, "text/xml");
-    return sp.stationxml.parseStationXml(rawXml);
-  });
-
+  if (true) {
+    // default load from fdsnws
+    let channelQuery = new sp.fdsnstation.StationQuery()
+      .nodata(404)
+      .networkCode(netCodeQuery)
+      .stationCode(staCodeQuery)
+      .locationCode(locCodeQuery)
+      .channelCode(chanCodeQuery)
+      .startTime(hash.timeRange.start)
+      .endTime(hash.timeRange.start.plus(sp.luxon.Duration.fromMillis(3600*1000)));
+    channelPromise = channelQuery.queryChannels();
+  } else {
+    // or load from local stationxml file
+    const fetchInitOptions = sp.util.defaultFetchInitObj(sp.util.XML_MIME);
+    const url = "metadata.staxml";
+    channelPromise = sp.util.doFetchWithTimeout(url, fetchInitOptions)
+      .then(function (response) {
+        if (response.status === 200 || response.status === 0) {
+          return response.text();
+        } else {
+          // no data
+          throw new Error("No data");
+        }
+      }).then(rawXmlText => {
+        const rawXml = new DOMParser().parseFromString(rawXmlText, "text/xml");
+        return sp.stationxml.parseStationXml(rawXml);
+      });
+  }
   return channelPromise
   .catch(e => {
       showError(`Error Loading Data, retrying... ${e}`);
@@ -170,10 +174,10 @@ export function doPlotHeli(config) {
     }
     const firstChan = chanTR[0];
     if (firstChan) {
-      d3.selectAll("span.textNetCode").text(firstChan.networkCode);
-      d3.selectAll("span.textStaCode").text(firstChan.stationCode);
-      d3.selectAll("span.textLocCode").text(firstChan.locationCode);
-      d3.selectAll("span.textChanCode").text(firstChan.channelCode);
+      document.querySelector("span.textNetCode").textContent = firstChan.networkCode;
+      document.querySelector("span.textStaCode").textContent = firstChan.stationCode;
+      document.querySelector("span.textLocCode").textContent = firstChan.locationCode;
+      document.querySelector("span.textChanCode").textContent = firstChan.channelCode;
     }
     hash.heli = document.querySelector("sp-helicorder");
     if (hash.heli) {
@@ -249,7 +253,7 @@ export function doPlotHeli(config) {
         minMaxSeismogram = ctr.seismogram;
       } else if (ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.config.orientationCode}` || ctr.channel.channelCode === `${hash.bandCode}${hash.instCode}${hash.config.altOrientationCode}`) {
         minMaxSeismogram = ctr.seismogram;
-        d3.selectAll("span.textChanCode").text(ctr.channel.channelCode);
+        document.querySelector("span.textChanCode").textContent = ctr.channel.channelCode;
       } else {
         throw new Error(`Cannot find trace ends with L${hash.minMaxInstCode}${hash.config.orientationCode} or L${hash.minMaxInstCode}${hash.config.altOrientationCode} or ${hash.bandCode}${hash.instCode}${hash.config.orientationCode}`);
       }
@@ -524,10 +528,6 @@ export function redrawHeli(hash) {
         console.log(`no station in hash: ${hash.station}`)
       }
     });
-    d3.select("span#minAmp").text(hash.seisData.min.toFixed(0));
-    d3.select("span#maxAmp").text(hash.seisData.max.toFixed(0));
-    d3.select("span#meanAmp").text(hash.seisData.mean.toFixed(0));
-    d3.select("span#varyAmp").text(hash.amp);
   } else {
     showMessage("No Data.")
   }
@@ -552,6 +552,7 @@ export function updateHeliAmpConfig(hash, heliConfig) {
 }
 
 export function drawSeismograph(hash) {
+  console.log(`draw seis for ${hash.station}`);
   document.querySelector("#heli").setAttribute("style", "display: none;");
   const seismographDiv = document.querySelector("#seismograph");
   seismographDiv.setAttribute("style", "display: block;");

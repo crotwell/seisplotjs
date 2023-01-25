@@ -63,7 +63,7 @@ const datalink = new sp.datalink.DataLinkConnection(
     errorFn);
 
 // snip start timer
-let timer = sp.d3.interval(function(elapsed) {
+let timer = window.setInterval(function(elapsed) {
   if ( paused || redrawInProgress) {
     return;
   }

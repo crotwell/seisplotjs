@@ -1,4 +1,4 @@
-import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0_standalone.mjs';
 import {HOURS_PER_LINE, doPlot, queryEarthquakes, redrawHeli, getNowTime, drawSeismograph} from './doplot.js';
 import {updatePageForConfig, setupEventHandlers, enableFiltering} from './controls.js';
 
@@ -126,65 +126,7 @@ dateChooser.updateCallback = time => {
 setupEventHandlers(state, loadAndPlot, redraw);
 
 
-
-d3.select("button#refreshEarthquakes").on("click", function(d) {
+document.querySelector("button#refreshEarthquakes").addEventListener("click", () => {
   loadAllEarthquakeQueryParams(state);
   loadAndPlot(state);
 });
-
-
-d3.select("button#pause").on("click", function(d) {
-  doPause( ! paused);
-});
-
-d3.select("button#disconnect").on("click", function(d) {
-  doDisconnect( ! stopped);
-});
-
-let doPause = function(value) {
-  console.log("Pause..."+paused+" -> "+value);
-  paused = value;
-  if (paused) {
-    d3.select("button#pause").text("Play");
-  } else {
-    d3.select("button#pause").text("Pause");
-  }
-}
-
-let doDisconnect = function(value) {
-  console.log("disconnect..."+stopped+" -> "+value);
-  stopped = value;
-  if (stopped) {
-    if (slConn) {slConn.close();}
-    d3.select("button#disconnect").text("Reconnect");
-  } else {
-    if (slConn) {slConn.connect();}
-    d3.select("button#disconnect").text("Disconnect");
-  }
-}
-
-console.log(' ##### DISABLE autoupdate ####')
-paused=true;
-let timerInterval = 300*1000;
-// testing
-timerInterval = 10000;
-if (timerInterval < 10000) { timerInterval = 10000;}
-console.log("start time with interval "+timerInterval);
-let timer = d3.interval(function(elapsed) {
-  if ( ! heli) {return;}
-  if ( paused) {
-    return;
-  }
-  nowHour = getNowTime();
-  const luxDur = luxon.Duration.fromISO(duration);
-  timeRange = luxon.Interval.before(nowHour, luxDur);
-  console.log("reset time window for "+timeRange.start+" "+timeRange.end );
-
-  heli.config.fixedTimeScale = timeRange;
-  heli.draw();
-}, timerInterval);
-
-let errorFn = function(error) {
-  console.log("error: "+error);
-  svgParent.select("p").text("Error: "+error);
-};

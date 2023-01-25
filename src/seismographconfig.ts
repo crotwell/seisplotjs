@@ -13,7 +13,17 @@ import {IndividualAmplitudeScale,
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
 import {isDef} from "./util";
 import { Duration, Interval} from "luxon";
-import * as d3 from "d3";
+import {format as d3format} from "d3-format";
+import { utcFormat as d3utcFormat} from "d3-time-format";
+import {
+  utcSecond as d3utcSecond,
+  utcMinute as d3utcMinute ,
+  utcHour as d3utcHour ,
+  utcDay as d3utcDay ,
+  utcMonth as d3utcMonth ,
+  utcYear as d3utcYear ,
+} from "d3-time";
+
 import type {AxisDomain} from "d3-axis";
 import {Handlebars, registerHelpers} from "./handlebarshelpers";
 registerHelpers();
@@ -706,30 +716,30 @@ export function numberFormatWrapper( formater: (arg0: number) => string): ((doma
     }
   };
 }
-export const formatCount: (arg0: number) => string = d3.format("~s");
-export const formatExp: (arg0: number) => string = d3.format(".2e");
+export const formatCount: (arg0: number) => string = d3format("~s");
+export const formatExp: (arg0: number) => string = d3format(".2e");
 export const formatCountOrAmp = function (v: number): string {
   return -1 < v && v < 1 && v !== 0 ? formatExp(v) : formatCount(v);
 };
-export const formatMillisecond: (arg0: Date) => string = d3.utcFormat(".%L");
-export const formatSecond: (arg0: Date) => string = d3.utcFormat(":%S");
-export const formatMinute: (arg0: Date) => string = d3.utcFormat("%H:%M");
-export const formatHour: (arg0: Date) => string = d3.utcFormat("%H:%M");
-export const formatDay: (arg0: Date) => string = d3.utcFormat("%m/%d");
-export const formatMonth: (arg0: Date) => string = d3.utcFormat("%Y/%m");
-export const formatYear: (arg0: Date) => string = d3.utcFormat("%Y");
+export const formatMillisecond: (arg0: Date) => string = d3utcFormat(".%L");
+export const formatSecond: (arg0: Date) => string = d3utcFormat(":%S");
+export const formatMinute: (arg0: Date) => string = d3utcFormat("%H:%M");
+export const formatHour: (arg0: Date) => string = d3utcFormat("%H:%M");
+export const formatDay: (arg0: Date) => string = d3utcFormat("%m/%d");
+export const formatMonth: (arg0: Date) => string = d3utcFormat("%Y/%m");
+export const formatYear: (arg0: Date) => string = d3utcFormat("%Y");
 export const multiFormatHour = function (date: Date): string {
-  return (d3.utcSecond(date) < date
+  return (d3utcSecond(date) < date
     ? formatMillisecond
-    : d3.utcMinute(date) < date
+    : d3utcMinute(date) < date
     ? formatSecond
-    : d3.utcHour(date) < date
+    : d3utcHour(date) < date
     ? formatMinute
-    : d3.utcDay(date) < date
+    : d3utcDay(date) < date
     ? formatHour
-    : d3.utcMonth(date) < date
+    : d3utcMonth(date) < date
     ? formatDay
-    : d3.utcYear(date) < date
+    : d3utcYear(date) < date
     ? formatMonth
     : formatYear)(date);
 };

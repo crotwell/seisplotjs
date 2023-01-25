@@ -3,34 +3,37 @@ import * as sp from '../seisplotjs_3.0.0_standalone.mjs';
 
 const stationPattern = `CO JSC`;
 const selectPattern = `00.HH?`;
-sp.d3.select('span#channel').text(`${stationPattern} ${selectPattern}`);
-const timeWindow = new sp.util.durationEnd(5*60, 'now');
+document.querySelector('span#channel').textContent = `${stationPattern} ${selectPattern}`;
+const duration = sp.luxon.Duration.fromISO('PT5M');
+const timeWindow = new sp.util.durationEnd(duration, sp.luxon.DateTime.utc());
 const seisPlotConfig = new sp.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
-seisPlotConfig.linkedTimeScale.duration = timeWindow.toDuration();
+seisPlotConfig.isYAxisNice = false;
+seisPlotConfig.linkedTimeScale.offset = sp.luxon.Duration.fromMillis(-1*duration.toMillis());
+seisPlotConfig.linkedTimeScale.duration = duration;
+seisPlotConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
+seisPlotConfig.doGain = true;
 let graphList = new Map();
 let numPackets = 0;
 let paused = false;
 let stopped = true;
 let redrawInProgress = false;
-let realtimeDiv = sp.d3.select("div#realtime");
-let rect = realtimeDiv.node().getBoundingClientRect();
-let timerInterval = timeWindow.toDuration().toMillis()/
+let realtimeDiv = document.querySelector("div#realtime");
+let rect = realtimeDiv.getBoundingClientRect();
+let timerInterval = duration.toMillis()/
                     (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
-console.log("start time with interval "+timerInterval);
-while (timerInterval < 100) { timerInterval *= 2;}
-
+while (timerInterval < 50) { timerInterval *= 2;}
 const errorFn = function(error) {
   console.assert(false, error);
   if (datalink) {datalink.close();}
-  sp.d3.select("p#error").text("Error: "+error);
+  document.querySelector("p#error").textContent = "Error: "+error;
 };
 
 // snip start handle
 const packetHandler = function(packet) {
   if (packet.isMiniseed()) {
     numPackets++;
-    sp.d3.select("span#numPackets").text(numPackets);
+    document.querySelector("span#numPackets").textContent = numPackets;
     let seisSegment = sp.miniseed.createSeismogramSegment(packet.miniseed);
     const codes = seisSegment.codes();
     let seisPlot = graphList.get(codes);
@@ -62,7 +65,7 @@ const seedlink = new sp.seedlink4.SeedlinkConnection(
     errorFn);
 
 // snip start timer
-let timer = sp.d3.interval(function(elapsed) {
+let timer = window.setInterval(function(elapsed) {
   if ( paused || redrawInProgress) {
     return;
   }
@@ -87,23 +90,33 @@ let timer = sp.d3.interval(function(elapsed) {
   }, timerInterval);
 
 // snip start pause
-sp.d3.select("button#pause").on("click", function(d) {
+
+// snip start pause
+document.querySelector("button#pause").addEventListener("click", function(evt) {
   togglePause( );
 });
 
 let togglePause = function() {
   paused = ! paused;
   if (paused) {
-    sp.d3.select("button#pause").text("Play");
+    document.querySelector("button#pause").textContent = "Play";
   } else {
-    sp.d3.select("button#pause").text("Pause");
+    document.querySelector("button#pause").textContent = "Pause";
   }
 }
 
 // snip start disconnet
-sp.d3.select("button#disconnect").on("click", function(d) {
+document.querySelector("button#disconnect").addEventListener("click", function(evt) {
   toggleConnect();
 });
+
+function addToDebug(message) {
+  const debugDiv = document.querySelector("div#debug");
+  if (!debugDiv) { return; }
+  const pre = debugDiv.appendChild(document.createElement("pre"));
+  const code = pre.appendChild(document.createElement("code"));
+  code.textContent = message;
+}
 
 let toggleConnect = function() {
   stopped = ! stopped;
@@ -111,7 +124,7 @@ let toggleConnect = function() {
     if (seedlink) {
       seedlink.close();
     }
-    sp.d3.select("button#disconnect").text("Reconnect");
+    document.querySelector("button#disconnect").textContent = "Reconnect";
   } else {
     if (seedlink) {
       seedlink.interactiveConnect().then(() => {
@@ -119,19 +132,19 @@ let toggleConnect = function() {
       }).then(function(lines) {
         console.log(`got lines: ${lines[0]}`)
         if (this.checkProto(lines)) {
-          sp.d3.select("div#debug").append('p').text("HELLO: ");
-          sp.d3.select("div#debug").append('p').text(" "+lines[0]);
-          sp.d3.select("div#debug").append('p').text(" "+lines[1]);
+          addToDebug("HELLO: ");
+          addToDebug(" "+lines[0]);
+          addToDebug(" "+lines[1]);
           return true;
         } else {
           throw new Exception(`${SEEDLINK4_PROTOCOL} not found in HELLO response`);
         }
       }).catch( function(error) {
-        sp.d3.select("div#debug").append('p').text(`Error: ${error.name} - ${error.message}`);
+        addToDebug(`Error: ${error.name} - ${error.message}`);
         console.assert(false, error);
       });
     }
-    sp.d3.select("button#disconnect").text("Disconnect");
+    document.querySelector("button#disconnect").textContent = "Disconnect";
   }
 }
 // snip start go

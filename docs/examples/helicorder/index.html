@@ -11,8 +11,7 @@
 
 <h3>Helicorder Plots for South Carolina Seismic Network Stations:</h3>
 <div id="scsnStations">
-  <form><label class="sectionlabel" title="Stations within the South Carolina Seismic Network">Stations:</label>
-  </form>
+  <label class="sectionlabel" title="Stations within the South Carolina Seismic Network">Stations:</label>
 </div>
 <div>
   <span id="loccode"><label class="sectionlabel">Loc Code: </label></span>
@@ -134,7 +133,7 @@
 
 <script type="module" src="heli.js"></script>
 <script type="module">
-  import * as sp from './seisplotjs_3.0.0_standalone.mjs';
+  import * as sp from '../../seisplotjs_3.0.0_standalone.mjs';
   document.querySelector("#version").textContent = sp.version;
 </script>
 </body>

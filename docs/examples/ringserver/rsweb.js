@@ -1,39 +1,38 @@
-import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0_standalone.mjs';
 
-const d3 = sp.d3;
 const hostUrl = "https://eeyore.seis.sc.edu/ringserver";
 const rs = new sp.ringserverweb.RingserverConnection(hostUrl);
 let numPackets = 0;
-d3.select("div.results").select("pre").text(hostUrl+'\n'+rs.getDataLinkURL());
+document.querySelector("div.results pre").textContent = hostUrl+'\n'+rs.getDataLinkURL();
 
-d3.select("button#id").on("click", function() {
+document.querySelector("button#id").addEventListener("click", function(evt) {
   clear_plots();
-  d3.select("div.results").select("pre").text("...loading");
+  document.querySelector("div.results pre").textContent = "...loading";
   rs.pullId().then(o => {
-    d3.select("div.results").select("pre").text(o.ringserverVersion+"\n"+o.serverId);
+    document.querySelector("div.results pre").textContent = o.ringserverVersion+"\n"+o.serverId;
   });
 });
-d3.select("button#streamids").on("click", function() {
+document.querySelector("button#streamids").addEventListener("click", function(evt) {
   clear_plots();
-  d3.select("div.results").select("pre").text("...loading");
-  let level = Number(d3.select("input#level").property("value"));
-  let match = d3.select("input#match").property("value").trim();
+  document.querySelector("div.results pre").textContent = "...loading";
+  let level = Number(document.querySelector("input#level").value);
+  let match = document.querySelector("input#match").value.trim();
   rs.pullStreamIds(level, match).then(o => {
 
-    d3.select("div.results").select("pre").text(o.join("\n"));
+    document.querySelector("div.results pre").textContent = o.join("\n");
   });
 });
-d3.select("button#streams").on("click", function() {
+document.querySelector("button#streams").addEventListener("click", function(evt) {
   clear_plots();
-  d3.select("div.results").select("pre").text("...loading");
-  let match = d3.select("input#streammatch").property("value").trim();
+  document.querySelector("div.results pre").textContent = "...loading";
+  let match = document.querySelector("input#streammatch").value.trim();
   rs.pullStreams(match).then(o => {
     const streamChooser = document.querySelector("stream-list-chooser");
     streamChooser.setCallback(c => display_realtime(c));
     streamChooser.setStreamStats(o.streams);
     let text = "";
     o.streams.forEach( sstat => text+=`${sstat.key} ${sstat.start.toISO()} ${sstat.end.toISO()} (${sstat.calcLatency(o.accessTime).toHuman()})\n`);
-    d3.select("div.results").select("pre").text(text);
+    document.querySelector("div.results pre").textContent = text;
   });
 });
 
@@ -41,7 +40,7 @@ d3.select("button#streams").on("click", function() {
 const errorFn = function(error) {
   console.assert(false, error);
   if (datalink) {datalink.close();}
-  sp.d3.select("pre").text("Error: "+error);
+  document.querySelector("div.results pre").textContent = "Error: "+error;
 };
 const packetHandler = function(packet) {
   if (packet.isMiniseed()) {
@@ -65,24 +64,32 @@ let lastPackets = [];
 function display_realtime(streamstat) {
   datalink.endStream();
   lastPackets = [];
-  d3.select("div.results").select("pre").text(`realtime: ${streamstat.key}\n`);
+  document.querySelector("div.results pre").textContent = `realtime: ${streamstat.key}\n`;
   datalink.connect()
   .then(serverId => {
-    sp.d3.select("button#disconnect").text("Disconnect");
+    document.querySelector("button#disconnect").textContent = "Disconnect";
     return datalink.match(streamstat.key);
   }).then(response => {
     stopped = false;
     console.log(`match response: ${response}`);
     return datalink.stream();
   }).catch( function(error) {
-    sp.d3.select("div#debug").append('p').html("Error: " +error);
+    addToDebug("Error: " +error);
     console.assert(false, error);
   });
 }
 
+function addToDebug(message) {
+  const debugDiv = document.querySelector("div#debug");
+  if (!debugDiv) { return; }
+  const pre = debugDiv.appendChild(document.createElement("pre"));
+  const code = pre.appendChild(document.createElement("code"));
+  code.textContent = message;
+}
+
 let stopped = true;
 
-sp.d3.select("button#disconnect").on("click", function(d) {
+document.querySelector("button#disconnect").addEventListener("click", function(evt) {
   toggleConnect();
 });
 
@@ -93,7 +100,7 @@ let toggleConnect = function(streamstat) {
       datalink.endStream();
       datalink.close();
     }
-    sp.d3.select("button#disconnect").text("Reconnect");
+    document.querySelector("button#disconnect").textContent = "Reconnect";
   } else {
     let matchPattern = streamstat.key;
     if (datalink) {
@@ -105,11 +112,11 @@ let toggleConnect = function(streamstat) {
         console.log(`match response: ${response}`);
         return datalink.stream();
       }).catch( function(error) {
-        sp.d3.select("div#debug").append('p').html("Error: " +error);
+        addToDebug("Error: " +error);
         console.assert(false, error);
       });
     }
-    sp.d3.select("button#disconnect").text("Disconnect");
+    document.querySelector("button#disconnect").textContent = "Disconnect";
   }
 };
 
