@@ -1,7 +1,6 @@
-import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0_standalone.mjs';
 
-const d3 = sp.d3;
-d3.select("button#load").on("click", function(d) { createFIR(); });
+document.querySelector("button#load").addEventListener("click", function(d) { createFIR(); });
 
 let createFIR = function() {
   // order N => 2N+1 coeff
@@ -14,15 +13,15 @@ let createFIR = function() {
   let OmegaS=parseFloat(document.getElementsByName('OmegaS')[0].value);
   // Weight given to stopband ripple?
   let Ws=parseFloat(document.getElementsByName('Ws')[0].value);
-  const doLogLog = d3.select("input[name=loglog]").property('checked');
+  const doLogLog = document.querySelector("input[name=loglog]").checked;
   let firLp = new sp.oregondsputil.EquirippleLowpass(N, OmegaP, Wp, OmegaS, Ws);
 
-  d3.select("div.message").selectAll("*").remove();
-  d3.select("h3.coefficients").selectAll("*").remove();
-  d3.select("div.fftfir").selectAll("*").remove();
-  d3.select("div.impulse").selectAll("*").remove();
+  document.querySelector("div.message").innerHTML = "";
+  document.querySelector("h3.coefficients").innerHTML = "";
+  document.querySelector("div.fftfir").innerHTML = "";
+  document.querySelector("div.impulse").innerHTML = "";
 
-  d3.select("h3.coefficients").text(`FIR Coefficients: N: ${N} => ${2*N+1}  OmegaP: ${OmegaP} Wp: ${Wp}  OmegsS: ${OmegaS} Ws: ${Ws}`);
+  document.querySelector("h3.coefficients").textContent = `FIR Coefficients: N: ${N} => ${2*N+1}  OmegaP: ${OmegaP} Wp: ${Wp}  OmegsS: ${OmegaS} Ws: ${Ws}`;
 
   let coeffDispFun = function(d, i, a) {
     let pre = "    ";
@@ -33,7 +32,8 @@ let createFIR = function() {
   };
   let asText = "";
   firLp.getCoefficients().forEach((d,i,a) =>{ asText+= coeffDispFun(d,i,a);});
-  d3.select("div.coefficients").select("code").text(asText);
+  const coefDiv = document.querySelector("div.coefficients");
+  coefDiv.querySelector("code").textContent = asText;
 
 
   const NumPoints = parseInt(document.getElementsByName('NumPoints')[0].value);
@@ -54,7 +54,8 @@ let createFIR = function() {
   firPhasePlot.logfreq = doLogLog;
   firPhasePlot.kind = "phase";
   firPhasePlot.draw();
-  d3.select("div.message").append('p').text(`Zero Freq Gain: ${impulseResponse.amplitudes()[0]}`);
+  const msgP = document.querySelector("div.message").appendChild(document.createElement("p"));
+  msgP.textContent = `Zero Freq Gain: ${impulseResponse.amplitudes()[0]}`;
 
   let sampleRate = 1;
   let start = sp.util.isoToDateTime('2000-01-01T00:00:00Z');

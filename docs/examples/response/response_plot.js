@@ -1,4 +1,4 @@
-import * as sp from '../../seisplotjs_3.0.0-alpha.4_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0_standalone.mjs';
 
 import {parse_sis_xml} from './response_parse.js';
 
@@ -55,16 +55,16 @@ function load_fdsn() {
     .channelCode(chan_chooser.channel);
 //    .timeRange(queryTimeWindow);
   let url = stationQuery.formURL("response");
-  sp.d3.select(".response_url").text(url);
+  document.querySelector(".response_url").textContent = url;
   stationQuery.queryResponses().then(networkList => {
     let gen = sp.stationxml.allChannels(networkList);
     let firstChan = gen.next().value;
     if ( ! firstChan) {
-      sp.d3.select("div.stageplot").append("p").text(`No channels found`);
+      document.querySelector("div.stageplot").innerHTML = `<p>No channels found</p>`;
     }
     if ( ! firstChan.response) {
       console.log(`No response: ${firstChan.channelCode}`);
-      sp.d3.select("div.stageplot").append("p").text(`No response: ${firstChan.channelCode}`);
+      document.querySelector("div.stageplot").innerHTML = `<p>No response: ${firstChan.channelCode}</p>`;
     }
     const chanChooser = document.querySelector("sp-channel-list");
     chanChooser.addEventListener("change", () => {
@@ -73,8 +73,8 @@ function load_fdsn() {
     chanChooser.setChannels(Array.from(sp.stationxml.allChannels(networkList)));
     chanChooser.setAttribute('channel',"a");
   }).catch(e => {
-    let div = sp.d3.select("div.stageplot");
-    div.append("p").text(`Error: ${e}`);
+    let div = document.querySelector("div.stageplot");
+    div.innerHTML = `<p>Error: ${e}</p>`;
     console.warn(e);
   });
 }
@@ -91,8 +91,18 @@ function load_ext(input_selector) {
   // IRIS NRL has bug with xml mime, so also include text
   const mime_types = sp.util.XML_MIME+","+sp.util.TEXT_MIME;
   const fetchInit = sp.util.defaultFetchInitObj(mime_types);
-  let url = document.querySelector(input_selector).value;
-  sp.d3.select(".response_url").text(url);
+  let url;
+  if (input_selector) {
+    url = document.querySelector(input_selector).value;
+    document.querySelector(".response_url").textContent = url;
+  } else {
+    // empty, so reuse previous url, if possible
+    url = document.querySelector(".response_url").textContent;
+    if (! url) {
+      // oh well,
+      return;
+    }
+  }
   const timeoutSec = 10;
   sp.util.doFetchWithTimeout(url, fetchInit, timeoutSec * 1000 )
     .then(response => {
@@ -127,12 +137,12 @@ function load_ext(input_selector) {
         document.querySelector("channel-list-chooser")[0].channels = Array.from(sp.stationxml.allChannels(networkList));
         process_stages(firstChan.response.stages);
       } else {
-        let div = sp.d3.select("div.stageplot");
-        div.append("p").text("Unknown file type...");
+        let div = document.querySelector("div.stageplot");
+        div.textContent = "<p>Unknown file type...</p>";
       }
     }).catch(e => {
-      let div = sp.d3.select("div.stageplot");
-      div.append("p").text(`Error: ${e}`);
+      let div = document.querySelector("div.stageplot");
+      div.textContent = "<p>Error: ${e}</p>";
       console.warn(e);
     })
 }
@@ -151,16 +161,23 @@ function process_stages(stages) {
     }
   });
   stages.forEach((stage,idx) => {
-    let div = sp.d3.select("div.stageplot").append("div");
-    let details = div.append("details")
-    details.append("summary").text(`Stage: ${idx+1}`);
-    details.append("textarea").attr("rows", 10).attr("cols", 80).text(stage_details(stage, idx));
+    let div = document.querySelector("div.stageplot").appendChild(document.createElement("div"));
+    let details = div.appendChild(document.createElement("details"))
+    details.appendChild(document.createElement("summary")).textContent = `Stage: ${idx+1}`;
+    const textArea = details.appendChild(document.createElement("textarea"));
+    textArea.setAttribute("rows", 10);
+    textArea.setAttribute("cols", 80);
+    textArea.textContent = stage_details(stage, idx);
 
     if (stage.gain) {
-      div.append("div").append("span").text(`Gain: ${stage.gain.value} at ${stage.gain.frequency} Hz`);
+      const inDiv = div.appendChild(document.createElement("div"));
+      const inSpan = inDiv.appendChild(document.createElement("span"));
+      inSpan.textContent = `Gain: ${stage.gain.value} at ${stage.gain.frequency} Hz`;
     }
     if (stage.decimation) {
-      div.append("div").append("span").text(`Decimation: from ${stage.decimation.inputSampleRate} sps by factor ${stage.decimation.factor} to ${stage.decimation.inputSampleRate/stage.decimation.factor} sps`);
+      const inDiv = div.appendChild(document.createElement("div"));
+      const inSpan = inDiv.appendChild(document.createElement("span"));
+      inSpan.textContent = `Decimation: from ${stage.decimation.inputSampleRate} sps by factor ${stage.decimation.factor} to ${stage.decimation.inputSampleRate/stage.decimation.factor} sps`;
     }
     if (stage.filter && (
         (stage.filter instanceof sp.stationxml.CoefficientsFilter &&
@@ -172,8 +189,8 @@ function process_stages(stages) {
           stage.filter.numerator.length > 0) ) {
       let coeff = calc_stage_coeff(stage);
       let impulseResponse = sp.fft.FFTResult.createFromPackedFreq(sp.fft.calcDFT(coeff.reverse()), coeff.length, stage.decimation.inputSampleRate);
-      plot_from_packed_freq(div.node(), stage, idx, impulseResponse);
-      plot_impulse(div.node(), stage, idx, coeff);
+      plot_from_packed_freq(div, stage, idx, impulseResponse);
+      plot_impulse(div, stage, idx, coeff);
       all_resp.push(impulseResponse);
     } else if (stage.filter && stage.filter instanceof sp.stationxml.PolesZeros &&
       stage.filter.pzTransferFunctionType === "LAPLACE (RADIANS/SECOND)") {
@@ -188,23 +205,27 @@ function process_stages(stages) {
 
       //let impulseResponse = sp.transfer.calcResponseFromSacPoleZero(sacPoleZero, numPoints, 2*first_sps);
 
-      plot_from_packed_freq(div.node(), stage, idx, freqAmp);
+      plot_from_packed_freq(div, stage, idx, freqAmp);
       all_resp.push(freqAmp);
     } else {
-      let div = sp.d3.select("div.stageplot").append("div");
+      let div = document.querySelector("div.stageplot").appendChild(document.createElement("div"));
       let filter_class = stage.filter ? stage.filter.__proto__.constructor.name : "missing";
       let len_msg = "";
       if (! stage.filter ) {
-        div.append("div").append("span").text(`Stage ${idx+1} filter is missing`);
+        const d = div.appendChild(document.createElement("div"));
+        d.innerHTML = `<span>Stage ${idx+1} filter is missing</span>`;
       } else if (stage.filter instanceof sp.stationxml.CoefficientsFilter ) {
         if (stage.filter.numerator.length == 0 && stage.filter.numerator.length === 0) {
-          div.append("div").append("span").text(`Stage ${idx+1} filter is length zero Coefficients`);
+          const d = div.appendChild(document.createElement("div"));
+          d.innerHTML = `<span>Stage ${idx+1} filter is length zero Coefficients</span>`;
         } else {
           len_msg = `num: ${stage.filter.numerator.length}, denom: ${stage.filter.denominator.length}`;
-          div.append("div").append("span").text(`Stage ${idx+1} filter is Coeff with denom: ${filter_class} ${len_msg}`);
+          const d = div.appendChild(document.createElement("div"));
+          d.innerHTML = `<span>Stage ${idx+1} filter is Coeff with denom: ${filter_class} ${len_msg}</span>`;
         }
       } else {
-        div.append("div").append("span").text(`Stage ${idx+1} filter is not plottable: ${filter_class} ${len_msg}`);
+        const d = div.appendChild(document.createElement("div"));
+        d.innerHTML = `<span>Stage ${idx+1} filter is not plottable: ${filter_class} ${len_msg}</span>`;
       }
     }
   });
@@ -287,7 +308,7 @@ function plot_from_packed_freq(div, stage, idx, impulseResponseList) {
   fftAmpPlot.logfreq = doLogLog;
   ampdiv.appendChild(fftAmpPlot);
   let phaseCB = document.querySelector("#showphase");
-  if (phaseCB.value) {
+  if (phaseCB.checked) {
 
     let phasediv = div.appendChild(document.createElement("div"));
     phasediv.setAttribute("class", "stage");
