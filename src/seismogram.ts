@@ -1246,14 +1246,14 @@ export function calcMinMax(
       ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
   ): MinMaxable | null {
   if (sdd.seismogram) {
-    let cutSeis;
+    let cutSDD;
     if (timeRange) {
-      cutSeis = sdd.seismogram.cut(timeRange);
+      cutSDD = sdd.cut(timeRange);
     } else {
-      cutSeis = sdd.seismogram;
+      cutSDD = sdd;
     }
 
-    if (cutSeis) {
+    if (cutSDD) {
       let sens = 1.0;
       if (doGain && sdd.sensitivity) {
         sens = sdd.sensitivity.sensitivity;
@@ -1261,14 +1261,14 @@ export function calcMinMax(
       let middle = 0;
       let halfWidth = 0;
       if (ampCentering === AMPLITUDE_MODE.MinMax || ampCentering === AMPLITUDE_MODE.Raw) {
-        middle = sdd.middle;
-        halfWidth = Math.max((middle-sdd.min)/sens, (sdd.max-middle)/sens);
+        middle = cutSDD.middle;
+        halfWidth = Math.max((middle-cutSDD.min)/sens, (cutSDD.max-middle)/sens);
       } else if (ampCentering === AMPLITUDE_MODE.Mean) {
         middle = sdd.mean;
-        halfWidth = Math.max((middle-sdd.min)/sens, (sdd.max-middle)/sens);
+        halfWidth = Math.max((middle-cutSDD.min)/sens, (cutSDD.max-middle)/sens);
       } else if (ampCentering === AMPLITUDE_MODE.Zero) {
-        const minwz = Math.min(0, sdd.min);
-        const maxwz = Math.max(0, sdd.max);
+        const minwz = Math.min(0, cutSDD.min);
+        const maxwz = Math.max(0, cutSDD.max);
         middle = (minwz+maxwz)/2.0;
         halfWidth = (maxwz-minwz)/2.0/sens;
       } else {
