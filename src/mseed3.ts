@@ -540,11 +540,10 @@ export class MSeed3Header {
       `${this.identifier}, version ${this.publicationVersion}, ${
         this.getSize() + this.dataLength
       } bytes (format: ${this.formatVersion})\n` +
-      `             start time: ${this.startFieldsInUtilFormat()}\n` +
+      `             start time: ${this.getStartFieldsAsISO()}\n` +
       `      number of samples: ${this.numSamples}\n` +
       `       sample rate (Hz): ${this.sampleRate}\n` +
-      `                  flags: [${(this.flags >>> 0)
-        .toString(2)
+      `                  flags: [${(this.flags >>> 0).toString(2)
         .padStart(8, "0")}] 8 bits${bitFlagStr}\n` +
       `                    CRC: ${crcToHexString(this.crc)}\n` +
       `    extra header length: ${this.extraHeadersLength} bytes\n` +
@@ -563,7 +562,7 @@ export class MSeed3Header {
     `${padZeros(this.hour, 2)}:${padZeros(this.minute, 2)}:${padZeros(this.second, 2)}.${padZeros(Math.floor(this.nanosecond/1000), 6)}`;
   }
   /**
-   * Converts start time header fields to ISO8641 time string.
+   * Converts start time header fields to ISO8601 time string.
    *
    * @returns iso start time
    */
