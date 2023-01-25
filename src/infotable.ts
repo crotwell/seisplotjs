@@ -229,7 +229,7 @@ export class QuakeTable extends HTMLElement {
   _columnLabels: Map<QUAKE_COLUMN, string>;
   _quakeList: Array<Quake>;
   _rowToQuake: Map<HTMLTableRowElement, Quake>;
-  lastSortAsc: boolean = true;
+  lastSortAsc = true;
   lastSortCol: QUAKE_COLUMN | undefined;
   constructor(quakeList?: Array<Quake>, columnLabels?: Map<QUAKE_COLUMN, string>) {
     super();
@@ -400,7 +400,7 @@ export class ChannelTable extends HTMLElement {
   _columnLabels: Map<CHANNEL_COLUMN, string>;
   _channelList: Array<Channel>;
   _rowToChannel: Map<HTMLTableRowElement, Channel>;
-  lastSortAsc: boolean = true;
+  lastSortAsc = true;
   lastSortCol: CHANNEL_COLUMN | undefined;
   constructor(channelList?: Array<Channel>, columnLabels?: Map<CHANNEL_COLUMN, string>) {
     super();

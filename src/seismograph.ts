@@ -1194,7 +1194,7 @@ export class Seismograph extends SeisPlotElement {
         } else {
           markerPoleY = axisScale.range()[0];
         }
-        let markerPole = `M0,0l0,${markerPoleY}`;
+        const markerPole = `M0,0l0,${markerPoleY}`;
         drawG
           .append("path")
           .classed("markerpath", true)
@@ -1317,30 +1317,25 @@ export class Seismograph extends SeisPlotElement {
     );
   }
 
+  /**
+   * Update the duration if not already set. This only matters for
+   * linedTimeScale currently.
+   */
   calcTimeScaleDomain(): void {
-    if (this.seismographConfig.isRelativeTime) {
-
-      if (isDef(this.seismographConfig.linkedTimeScale)) {
-        if (this._seisDataList.length !== 0 && this.seismographConfig.linkedTimeScale.duration.toMillis()===0) {
-          this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
-        }
-      } else if (this.seismographConfig.fixedTimeScale) {
-      } else {
+    if (isDef(this.seismographConfig.linkedTimeScale)) {
+      const linkedTimeScale = this.seismographConfig.linkedTimeScale;
+      if (this._seisDataList.length !== 0 && linkedTimeScale.duration.toMillis()===0) {
+        this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
       }
-    } else {
-
-      if (isDef(this.seismographConfig.linkedTimeScale)) {
-        const linkedTimeScale = this.seismographConfig.linkedTimeScale;
-        if (this._seisDataList.length !== 0 && linkedTimeScale.duration.toMillis()===0) {
-          this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
-        }
-      } else if (this.seismographConfig.fixedTimeScale) {
-      } else {
-      }
-
     }
   }
 
+  /**
+   * Calculate the amplitude range over the current time range, depending
+   * on amplitude style.
+   *
+   * @return min max over the time range
+   */
   calcAmpScaleDomain(): MinMaxable {
 
     let minMax;

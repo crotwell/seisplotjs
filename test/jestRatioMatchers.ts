@@ -39,7 +39,7 @@ expect.extend({
          pass: false,
        };
      }
-     if (received.length != argument.length) {
+     if (received.length !== argument.length) {
        return {
          message: () => 'expect arrays to be equal length: '+received.length+ "!=" +argument.length,
          pass: false,
@@ -68,7 +68,7 @@ expect.extend({
          pass: false,
        };
      }
-     if (received.length != argument.length) {
+     if (received.length !== argument.length) {
        return {
          message: () => 'expect arrays to be equal length: '+received.length+ "!=" +argument.length,
          pass: false,

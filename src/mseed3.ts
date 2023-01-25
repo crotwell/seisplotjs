@@ -555,6 +555,7 @@ export class MSeed3Header {
   /**
    * Start time in the format output by mseed3-utils from IRIS. Format is
    * yyyy,ooo,HH:mm:ss.SSSSSS
+   *
    * @returns start time
    */
   startFieldsInUtilFormat(): string {

@@ -211,6 +211,7 @@ export class HourMinChooser extends HTMLElement {
   /**
    * Get hours and minutes as Duration instead of as a DateTime. Useful for
    * relative times.
+   *
    * @returns hours, minutes as Duration
    */
   get asDuration(): Duration {
@@ -588,6 +589,7 @@ customElements.define(TIMERANGE_ELEMENT, TimeRangeChooser);
 
 /**
  * extracts duration from either string as ISO or number as seconds.
+ *
  * @param  value               ISO string or number
  * @returns       duration
  */
@@ -599,5 +601,5 @@ export function extractDuration(value: string): Duration {
     const nDur = +Number.parseInt(value);
     dur = Duration.fromMillis(nDur*1000);
   }
-  return dur
+  return dur;
 }

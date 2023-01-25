@@ -350,16 +350,16 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     doMapCB?.addEventListener('change', () => {
       if (this._organizedDisplay) {
         this._organizedDisplay.map = doMapCB.checked ? 'true' : 'false';
-        console.log(`set map to ${this._organizedDisplay.map}`)
+        console.log(`set map to ${this._organizedDisplay.map}`);
       } else {
-        console.log("no org display set")
+        console.log("no org display set");
       }
     });
     const doInfoCB = shadow?.querySelector("input#with_info") as HTMLInputElement;
     doInfoCB?.addEventListener('change', () => {
       if (this._organizedDisplay) {
         this._organizedDisplay.info = `${doInfoCB.checked}`;
-        console.log(`set info to ${this._organizedDisplay.info}`)
+        console.log(`set info to ${this._organizedDisplay.info}`);
       }
     });
     shadow?.querySelectorAll('fieldset.overlay input').forEach(i => {
@@ -368,7 +368,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
         if (this._organizedDisplay) {
           this._organizedDisplay?.setAttribute('overlay', inEl.value);
         }
-      })
+      });
     });
     shadow?.querySelectorAll('fieldset.sort input').forEach(i => {
       const inEl = i as HTMLInputElement;
@@ -514,6 +514,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       const oi = new OrganizedDisplayItem(sortedData, mythis.seismographConfig);
       allOrgDispItems.push(oi);
     } else if (this.overlayby === OVERLAY_NONE) {
+      // nothing to do here
     } else {
       throw new Error(`Unknown overlay: ${this.overlayby}`);
     }
@@ -543,7 +544,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     }
   }
   drawTools(sortedData: Array<SeismogramDisplayData>) {
-    console.log(`drawTools: ${this.tools}`)
+    console.log(`drawTools: ${this.tools}`);
     if ( ! this.isConnected) { return; }
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);

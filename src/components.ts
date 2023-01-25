@@ -184,7 +184,7 @@ export class ChannelListChooser extends HTMLElement {
   appendChannels(channels: Array<Channel>) {
     this.channels = this.channels.concat(channels);
     this.draw_element();
-    this.dispatchEvent(new Event("change"))
+    this.dispatchEvent(new Event("change"));
   }
   get type(): string {
     const t = this.getAttribute("type");
@@ -928,7 +928,7 @@ export class LatLonChoice extends HTMLElement {
     });
   }
   choosen(): null | LatLonBoxEl | LatLonRadiusEl {
-    let radio = this.shadowRoot?.querySelector('input[type=radio]:checked') as HTMLInputElement;
+    const radio = this.shadowRoot?.querySelector('input[type=radio]:checked') as HTMLInputElement;
     if (radio.value === 'box') {
       return this.shadowRoot?.querySelector('sp-latlon-box') as LatLonBoxEl;
     } else if (radio.value === 'radius') {

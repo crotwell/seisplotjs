@@ -641,9 +641,9 @@ export class SeismogramDisplayData {
     if (isDef(this._seismogram)) {
       this._seismogram.append(seismogram);
       if (this.startTime > seismogram.startTime || this.endTime < seismogram.endTime) {
-        let startTime =
+        const startTime =
           this.startTime < seismogram.startTime ? this.startTime : seismogram.startTime;
-        let endTime =
+        const endTime =
           this.endTime > seismogram.endTime ? this.endTime : seismogram.endTime;
         this.timeRange = Interval.fromDateTimes(startTime, endTime);
       }
@@ -1153,9 +1153,9 @@ export function findMaxDurationOfType(
  * Finds the min and max amplitude over the seismogram list, considering gain
  * and how to center the seismograms, either Rw, MinMax or Mean.
  *
- * @param  sddList
- * @param  doGain=false
- * @param  ampCentering
+ * @param  sddList  list of seismogramdisplaydata
+ * @param  doGain  should gain be used
+ * @param  ampCentering centering style
  * @returns    min max
  */
 export function findMinMax(
@@ -1272,7 +1272,7 @@ export function calcMinMax(
         middle = (minwz+maxwz)/2.0;
         halfWidth = (maxwz-minwz)/2.0/sens;
       } else {
-        throw new Error(`Unknown ampCentering: ${ampCentering}. Must be one of raw, zero, minmax, mean`)
+        throw new Error(`Unknown ampCentering: ${ampCentering}. Must be one of raw, zero, minmax, mean`);
       }
       return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
     }

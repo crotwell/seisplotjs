@@ -112,6 +112,7 @@ export class SeismogramLoader {
 
   /**
    * Sets the startOffset Duration to be val seconds.
+   *
    * @param  val  number of seconds, negative for before, positive for after
    * @returns     this
    */
@@ -152,6 +153,7 @@ export class SeismogramLoader {
 
   /**
    * Sets the endOffset Duration to be val seconds.
+   *
    * @param  val  number of seconds, negative for before, positive for after
    * @returns     this
    */

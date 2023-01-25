@@ -69,7 +69,7 @@ export function createStationMarker(
   classList?: Array<string>,
   isactive = true,
 ) {
-  let allClassList = classList ? classList.slice() : [];
+  const allClassList = classList ? classList.slice() : [];
   allClassList.push(isactive ? StationMarkerClassName : InactiveStationMarkerClassName);
   allClassList.push(station.codes(STATION_CODE_SEP));
   const icon = L.divIcon({
@@ -83,7 +83,7 @@ export function createStationMarker(
   return m;
 }
 export function createQuakeMarker(quake: Quake, magScaleFactor = 5, classList?: Array<string>) {
-  let allClassList = classList ? classList.slice() : [];
+  const allClassList = classList ? classList.slice() : [];
   allClassList.push(QuakeMarkerClassName);
   allClassList.push(cssClassForQuake(quake));
   const circle = L.circleMarker([quake.latitude, quake.longitude], {
@@ -179,7 +179,7 @@ export class QuakeStationMap extends SeisPlotElement {
     } else {
       this.quakeClassMap.set(cssClassForQuake(quake), [classname]);
     }
-    let circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
+    const circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
     circleList.forEach(c => {
       c.classList.add(classname);
     });
@@ -197,7 +197,7 @@ export class QuakeStationMap extends SeisPlotElement {
       classList = classList.filter(v => v !== classname);
       this.quakeClassMap.set(cssClassForQuake(quake), classList);
     }
-    let circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
+    const circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
     circleList.forEach(c => {
       c.classList.remove(classname);
     });
@@ -245,13 +245,14 @@ export class QuakeStationMap extends SeisPlotElement {
     } else {
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), [classname]);
     }
-    let markerList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
+    const markerList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
     markerList.forEach(c => {
       c.classList.add(classname);
     });
   }
   /**
    * Removes a css class from the station triangle
+   *
    * @param  station   the station
    * @param  classname  css class name
    */
@@ -261,7 +262,7 @@ export class QuakeStationMap extends SeisPlotElement {
       classList = classList.filter(v => v !== classname);
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), classList);
     }
-    let markerList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
+    const markerList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
     markerList.forEach(c => {
       c.classList.remove(classname);
     });
