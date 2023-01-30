@@ -7,7 +7,7 @@ let TextDecoder = require('util').TextDecoder;
 // eslint-disable-next-line no-undef
 global.TextDecoder = TextDecoder;
 
-import { isDef, isoToDateTime } from '../../src/util.js';
+import { isDef } from '../../src/util.js';
 import * as mseed3 from '../../src/mseed3.js';
 import * as miniseed from '../../src/miniseed.js';
 import fs from 'fs';
