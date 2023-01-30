@@ -87,9 +87,7 @@ for (let filename of fileList) {
     //expect(xr.getSize()).toEqual(jsonData.RecordLength);
     expect(xh.formatVersion).toEqual(jsonData.FormatVersion);
     //expect(xh.flags).toEqual(jsonData.Flags.ClockLocked);
-    // millsec accuracy in javascript, just compare yyyy-mm-ddTHH:MM:ss.SSS => 23 chars
-    let jsonStart = isoToDateTime(jsonData.StartTime.slice(0,23)).toFormat("yyyy-ooo'T'HH:mm:ss.SSS");
-    expect(xh.getStartFieldsAsISO().slice(0,21)).toEqual(jsonStart);
+    expect(xh.getStartFieldsAsISO()).toEqual(jsonData.StartTime);
     //expect(xh.getStartFieldsAsISO().slice(0,21)).toEqual(jsonData.StartTime.slice(0,21));
     expect(xh.encoding).toEqual(jsonData.EncodingFormat);
     expect(xh.sampleRate).toEqual(jsonData.SampleRate);
@@ -153,7 +151,7 @@ test("crc-32c of a string", () => {
 test("text output vs mseed2text", function() {
   let ctext = [
 "FDSN:XX_TEST__M_H_Z, version 1, 955 bytes (format: 3)",
-"             start time: 2022,156,20:32:38.123456",
+"             start time: 2022-06-05T20:32:38.123456789Z (156)",
 "      number of samples: 500",
 "       sample rate (Hz): 5",
 "                  flags: [00000100] 8 bits",

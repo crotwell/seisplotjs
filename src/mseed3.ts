@@ -441,7 +441,7 @@ export class MSeed3Header {
   }
 
   get start() {
-    return this._startToMoment();
+    return this.startAsDateTime();
   }
   get end() {
     return this.timeOfSample(this.numSamples - 1);
@@ -479,7 +479,7 @@ export class MSeed3Header {
   toString(): string {
     /*
     FDSN:CO_HODGE_00_L_H_Z, version 4, 477 bytes (format: 3)
-             start time: 2019,187,03:19:53.000000
+             start time: 2019-07-06T03:19:53.000000Z (187)
       number of samples: 255
        sample rate (Hz): 1
                   flags: [00000000] 8 bits
@@ -540,7 +540,7 @@ export class MSeed3Header {
       `${this.identifier}, version ${this.publicationVersion}, ${
         this.getSize() + this.dataLength
       } bytes (format: ${this.formatVersion})\n` +
-      `             start time: ${this.getStartFieldsAsISO()}\n` +
+      `             start time: ${this.getStartFieldsAsISO()} (${padZeros(this.dayOfYear, 3)})\n` +
       `      number of samples: ${this.numSamples}\n` +
       `       sample rate (Hz): ${this.sampleRate}\n` +
       `                  flags: [${(this.flags >>> 0).toString(2)
@@ -562,26 +562,16 @@ export class MSeed3Header {
     `${padZeros(this.hour, 2)}:${padZeros(this.minute, 2)}:${padZeros(this.second, 2)}.${padZeros(Math.floor(this.nanosecond/1000), 6)}`;
   }
   /**
-   * Converts start time header fields to ISO8601 time string.
+   * Converts start time header fields to ISO8601 time string. This will include
+   * factional seconds to nanosecond precision.
    *
    * @returns iso start time
    */
   getStartFieldsAsISO(): string {
-    return (
-      "" +
-      this.year +
-      "-" +
-      padZeros(this.dayOfYear, 3) +
-      "T" +
-      padZeros(this.hour, 2) +
-      ":" +
-      padZeros(this.minute, 2) +
-      ":" +
-      padZeros(this.second, 2) +
-      "." +
-      padZeros(this.nanosecond, 9) +
-      "Z"
-    );
+    const d = this.startAsDateTime().set({ millisecond: 0 })
+      .toISO({includeOffset: false, suppressMilliseconds: true});
+    const nano = padZeros(this.nanosecond, 9);
+    return `${d}.${nano}Z`;
   }
   /**
    * sets start time headers.
@@ -678,7 +668,7 @@ export class MSeed3Header {
    *
    * @returns         start time as DateTime
    */
-  _startToMoment(): DateTime {
+  startAsDateTime(): DateTime {
     return DateTime.fromObject({
       year: this.year,
       ordinal: this.dayOfYear,
