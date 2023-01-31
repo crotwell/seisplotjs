@@ -87,8 +87,7 @@ for (let filename of fileList) {
     //expect(xr.getSize()).toEqual(jsonData.RecordLength);
     expect(xh.formatVersion).toEqual(jsonData.FormatVersion);
     //expect(xh.flags).toEqual(jsonData.Flags.ClockLocked);
-    expect(xh.getStartFieldsAsISO()).toEqual(jsonData.StartTime);
-    //expect(xh.getStartFieldsAsISO().slice(0,21)).toEqual(jsonData.StartTime.slice(0,21));
+    expect(xh.getStartFieldsAsISO(false)).toEqual(jsonData.StartTime);
     expect(xh.encoding).toEqual(jsonData.EncodingFormat);
     expect(xh.sampleRate).toEqual(jsonData.SampleRate);
     expect(xh.numSamples).toEqual(jsonData.SampleCount);
@@ -187,6 +186,17 @@ test("text output vs mseed2text", function() {
 
 
 test("decomp HODGE", function() {
+  let ctext = [
+"FDSN:CO_HODGE_00_L_H_Z, version 4, 285 bytes (format: 3)",
+"             start time: 2019-07-06T03:19:53.000000Z (187)",
+"      number of samples: 64",
+"       sample rate (Hz): 1",
+"                  flags: [00000000] 8 bits",
+"                    CRC: 0x6E04EAB",
+"    extra header length: 31 bytes",
+"    data payload length: 192 bytes",
+"       payload encoding: STEIM-2 integer compression (val: 11)",
+  ];
   const ms3filename = 'test/mseed3/one_record_HODGE_HHZ.ms3';
   const ms2filename = 'test/mseed3/one_record_HODGE_HHZ.ms2';
   expect(fs.existsSync(ms3filename)).toEqual(true);
@@ -217,4 +227,12 @@ test("decomp HODGE", function() {
   for (let i=0; i<ms2Data.length; i++) {
     expect(data[i]).toEqual(ms2Data[i]);
   }
+
+  let xh = xr.header;
+  let xhStr = xh.toString().split('\n');
+  expect(xhStr.length).toEqual(ctext.length);
+  for (let i=0; i< ctext.length; i++) {
+    expect(xhStr[i]).toEqual(ctext[i]);
+  }
+
 });

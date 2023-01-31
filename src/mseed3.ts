@@ -538,7 +538,7 @@ export class MSeed3Header {
     }
     return (
       `${this.identifier}, version ${this.publicationVersion}, ${
-        this.getSize() + this.dataLength
+        this.getSize() + this.dataLength + this.extraHeadersLength
       } bytes (format: ${this.formatVersion})\n` +
       `             start time: ${this.getStartFieldsAsISO()} (${padZeros(this.dayOfYear, 3)})\n` +
       `      number of samples: ${this.numSamples}\n` +
@@ -567,11 +567,17 @@ export class MSeed3Header {
    *
    * @returns iso start time
    */
-  getStartFieldsAsISO(): string {
+  getStartFieldsAsISO(trimMicroNano = true): string {
     const d = this.startAsDateTime().set({ millisecond: 0 })
       .toISO({includeOffset: false, suppressMilliseconds: true});
-    const nano = padZeros(this.nanosecond, 9);
-    return `${d}.${nano}Z`;
+    let fracSec = "";
+    if (trimMicroNano && this.nanosecond % 1000 === 0) {
+      // nanos end in 000 so just use micros
+      fracSec = padZeros(this.nanosecond/1000, 6);
+    } else {
+      fracSec = padZeros(this.nanosecond, 9);
+    }
+    return `${d}.${fracSec}Z`;
   }
   /**
    * sets start time headers.
