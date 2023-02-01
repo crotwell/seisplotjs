@@ -567,6 +567,7 @@ export class MSeed3Header {
    * Converts start time header fields to ISO8601 time string. This will include
    * factional seconds to nanosecond precision.
    *
+   * @param trimMicroNano trim to microsecond precision if nanos are 000
    * @returns iso start time
    */
   getStartFieldsAsISO(trimMicroNano = true): string {

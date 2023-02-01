@@ -48,7 +48,7 @@ test("convert to sac polezero", () => {
   expect(channels).not.toBeNull();
   const response = channels[0].response;
   expect(response).not.toBeNull();
-  if (!!response) {
+  if (response) {
     const pz = convertToSacPoleZero(response);
     expect(pz).toBeDefined();
     expect(pz.zeros).toHaveLength(6);

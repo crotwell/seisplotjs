@@ -26,7 +26,7 @@ function ensureFloat32Array(a: any): Float32Array {
     return a as Float32Array;
   }
   throw new Error(`arg is not Float32Array: ${a}`);
-};
+}
 
 test("freq Taper", () => {
     expect(transfer.calcFreqTaper(0, 1, 2, 10, 20)).toBeCloseTo(0, 5);

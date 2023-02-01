@@ -28,8 +28,7 @@ export function readDataView(filename: string): Promise<DataView> {
   return fs.open(filename, 'r')
   .then((fh: fs.FileHandle) => {
     const out = fh.readFile();
-    fh.close();
-    return out;
+    return fh.close().then( () => out);
   })
   .then((b: Buffer) => b.buffer)
   .then((data: ArrayBuffer) => new DataView(data));
@@ -99,8 +98,7 @@ export function readSacPoleZero(filename: string): Promise<SacPoleZero> {
   return fs.open(filename, 'r')
   .then((fh: fs.FileHandle) => {
     const out = fh.readFile("utf8");
-    fh.close();
-    return out;
+    return fh.close().then( () => out);
   })
   .then((data: string) =>  SacPoleZero.parse(data));
 }
