@@ -7,7 +7,7 @@ import {isoToDateTime} from '../../src/util';
 
 test( "station parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_STATION, "text/xml");
-  let networks = stationxml.parseStationXml(xml);
+  const networks = stationxml.parseStationXml(xml);
   expect(networks.length).toBe(2);
   expect(networks[0].stations.length).toBe(1);
   expect(networks[0].stations[0].channels.length).toBe(0);
@@ -15,7 +15,7 @@ test( "station parse test", () => {
 
 test( "channel parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_CHANNEL, "text/xml");
-  let networks = stationxml.parseStationXml(xml);
+  const networks = stationxml.parseStationXml(xml);
   expect(networks.length).toBe(1);
   expect(networks[0].stations.length).toBe(1);
   expect(networks[0].stations[0].channels.length).toBe(1);
@@ -28,7 +28,7 @@ test("form url test", () => {
   const CHAN = 'HHZ';
   const START = isoToDateTime("1990-01-01");
   const END = isoToDateTime("2018-01-01");
-  let stationQuery = new fdsnstation.StationQuery();
+  const stationQuery = new fdsnstation.StationQuery();
   expect(stationQuery.networkCode(NET)).toBe(stationQuery);
   expect(stationQuery.getNetworkCode()).toBe(NET);
   expect(stationQuery.stationCode(STA)).toBe(stationQuery);
@@ -96,10 +96,10 @@ test("form url test", () => {
 
 
 test("post body test", () => {
-  let postLines = `CO HAW * * 2010-03-11T00:00:00 2599-12-31T23:59:59
+  const postLines = `CO HAW * * 2010-03-11T00:00:00 2599-12-31T23:59:59
 CO JSC * * 2009-04-13T00:00:00 2599-12-31T23:59:59`.split('\n');
 
-  let stationQuery = new fdsnstation.StationQuery();
+  const stationQuery = new fdsnstation.StationQuery();
   const level = 'station';
   expect(stationQuery.matchTimeseries(true)).toBe(stationQuery);
   expect(stationQuery.getMatchTimeseries()).toEqual(true);
@@ -111,7 +111,7 @@ CO JSC * * 2009-04-13T00:00:00 2599-12-31T23:59:59`.split('\n');
   expect(stationQuery.getFormat()).toEqual('xml');
   expect(stationQuery.nodata(404)).toBe(stationQuery);
   expect(stationQuery.getNodata()).toEqual(404);
-  let postBody = stationQuery.createPostBody(level , postLines);
+  const postBody = stationQuery.createPostBody(level , postLines);
   expect(postBody).toMatch(/level=station\n/);
   expect(postBody).toMatch(/includerestricted=true\n/);
   expect(postBody).toEqual(expect.stringContaining(postLines[0]+'\n'));

@@ -42,21 +42,21 @@ test("freq Taper", () => {
 });
 
 test("applyFreqTaper to FFTResult", () => {
-  let numPoints = 512;
-  let inDataAmp = new Float32Array(numPoints/2+1).fill(1);
-  let inDataPhase = new Float32Array(numPoints/2+1).fill(0);
-  let sampRate = 100;
-  let inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase, numPoints, sampRate);
+  const numPoints = 512;
+  const inDataAmp = new Float32Array(numPoints/2+1).fill(1);
+  const inDataPhase = new Float32Array(numPoints/2+1).fill(0);
+  const sampRate = 100;
+  const inFFT = fft.FFTResult.createFromAmpPhase(inDataAmp, inDataPhase, numPoints, sampRate);
 
-  let lowCut = .2;
-  let lowPass = .4;
-  let highPass = 20;
-  let highCut = 40;
-  let ftaper = transfer.applyFreqTaper(inFFT, sampRate, lowCut, lowPass, highPass, highCut);
+  const lowCut = .2;
+  const lowPass = .4;
+  const highPass = 20;
+  const highCut = 40;
+  const ftaper = transfer.applyFreqTaper(inFFT, sampRate, lowCut, lowPass, highPass, highCut);
   const deltaF = ftaper.fundamentalFrequency;
   expect(deltaF).toBeCloseTo(sampRate/numPoints);
 
-  let amp = ftaper.amplitudes();
+  const amp = ftaper.amplitudes();
   expect(amp[0]).toEqual(0);
   // outside cut, close to zero
   amp.filter((v: number,i: number) => deltaF*i < lowCut || deltaF*i > highCut)
@@ -71,7 +71,7 @@ test("applyFreqTaper to FFTResult", () => {
 });
 
 test("TaperVsSac", () => {
-    let sacout = [ [ 0, 0.000610352, 0 ],
+    const sacout = [ [ 0, 0.000610352, 0 ],
                           [ 0.000610352, 0.000610352, 0 ],
                           [ 0.0012207, 0.000610352, 0 ],
                           [ 0.00183105, 0.000610352, 0 ],
@@ -91,7 +91,7 @@ test("TaperVsSac", () => {
                           [ 0.010376, 0.000610352, 0.000610352 ],
                           [ 0.0109863, 0.000610352, 0.000610352 ],
                           [ 0.0115967, 0.000610352, 0.000610352 ] ];
-    for(let row of sacout) {
+    for(const row of sacout) {
         expect(row[1]*transfer.calcFreqTaper(row[0], .005, .01, 1e5, 1e6)).toBeCloseTo(row[2], 5);
 
     }
@@ -155,10 +155,10 @@ test("testEvalPoleZero", () => {
     const poles =  [createComplex(-0.0139, 0.0100),
                     createComplex(-0.0139, -0.0100),
                     createComplex(-31.4160, 0.0000) ];
-    let sacPoleZero = new SacPoleZero(poles, zeros, 2.94283674E10);
+    const sacPoleZero = new SacPoleZero(poles, zeros, 2.94283674E10);
 
     // separate test for zero freq due to polezero gives 0 here
-    let dhi = transfer.evalPoleZeroInverse(sacPoleZero, sacout[0][0]);
+    const dhi = transfer.evalPoleZeroInverse(sacPoleZero, sacout[0][0]);
     expect(dhi.real()).toBeCloseTo(sacout[0][1], 4);
     expect(dhi.imag()).toBeCloseTo(sacout[0][2], 4);
     for(let i = 1; i < sacout.length; i++) {
@@ -190,7 +190,7 @@ test("ReadPoleZero", () => {
     const poles =  [createComplex(-0.0139, 0.0100),
       createComplex(-0.0139, -0.0100),
       createComplex(-31.4160, 0.0000) ];
-    let sacPoleZero = {
+    const sacPoleZero = {
     poles: poles,
     zeros: zeros,
     constant: 2.94283674E10
@@ -213,14 +213,14 @@ test("PoleZeroTaper", () => {
     return Promise.all([readSac("./test/filter/data/IU.HRV.__.BHE.SAC"),
                         readSacPoleZero("./test/filter/data/hrv.bhe.sacpz")])
     .then( result => {
-      let sac = result[0];
-      let poleZero = result[1];
-      let data = sac.y;
-      let samprate = 1 / sac.delta;
+      const sac = result[0];
+      const poleZero = result[1];
+      const data = sac.y;
+      const samprate = 1 / sac.delta;
       for(let i = 0; i < data.length; i++) {
           data[i] /= samprate;
       }
-      let out = fft.calcDFT(data);
+      const out = fft.calcDFT(data);
       const sacout = [ [0, 0, 0],
                        [0.000610352, -0, 0],
                        [0.0012207, -0, 0],
@@ -249,11 +249,11 @@ test("PoleZeroTaper", () => {
       let freq;
       let respAtS;
       // put into form for arrayToBeCloseTo matcher
-      let sacFreqArray = [];
-      let sacRealArray = [];
-      let sacImagArray = [];
-      let calcRealArray = [];
-      let calcImagArray = [];
+      const sacFreqArray = [];
+      const sacRealArray = [];
+      const sacImagArray = [];
+      const calcRealArray = [];
+      const calcImagArray = [];
       for(let i = 0; i < sacout.length; i++) {
           freq = i * deltaF;
           expect(freq).toBeCloseToRatio(sacout[i][0], 5);
@@ -307,10 +307,10 @@ test("Combine", () => {
   return Promise.all([readSac("./test/filter/data/IU.HRV.__.BHE.SAC"),
                       readSacPoleZero("./test/filter/data/hrv.bhe.sacpz")])
   .then ( result => {
-      let sac = result[0];
-      let pz = result[1];
+      const sac = result[0];
+      const pz = result[1];
       const samprate = 1/ sac.delta;
-      let data = sac.y;
+      const data = sac.y;
       for(let i = 0; i < data.length; i++) {
           data[i] /= samprate;
       }
@@ -375,16 +375,16 @@ test("impulse one zero combina amp", () => {
                       readSacPoleZero("./test/filter/data/onezero.sacpz"),
                       readSac("./test/filter/data/impulse_onezero_fftam.sac.am")])
   .then ( result => {
-      let orig = result[0];
-      let sactfr = result[1];
-      let pz = result[2];
-      let sacAmp = result[3];
+      const orig = result[0];
+      const sactfr = result[1];
+      const pz = result[2];
+      const sacAmp = result[3];
 
       expect(orig.y.length).toBe(1024);
       expect(orig.delta).toBe(1);
       expect(sacAmp.y.length).toBe(1024/2+1);
       const samprate = 1/ orig.delta;
-      let data = orig.y;
+      const data = orig.y;
       // for(let i = 0; i < data.length; i++) {
       //     data[i] /= samprate;
       // }
@@ -397,7 +397,7 @@ test("impulse one zero combina amp", () => {
       const out = transfer.combine(outfft.slice(), samprate, pz, 0.005, 0.01, 1e5, 1e6);
       expect(out.length).toBe(1024);
       // sac and oregondsp differ by const len in fft
-      let outMulLength = out.map(d => d * out.length);
+      const outMulLength = out.map(d => d * out.length);
       const bagAmPh = fft.FFTResult.createFromPackedFreq(outMulLength, data.length, samprate);
       const [ bagAmp, bagPhase ] = bagAmPh.asAmpPhase();
 
@@ -405,7 +405,7 @@ test("impulse one zero combina amp", () => {
       if (WRITE_TEST_DATA) {
         // for debugging, save data as sac file
         saveDataPromise = readDataView("./test/filter/data/impulse_onezero_fftam.sac.am").then(dataView => {
-            let inSac = parseSac(dataView);
+            const inSac = parseSac(dataView);
             if (bagAmp.length !== inSac.npts) {throw new Error(`length not equal, not writting: ${bagAmp.length} ${inSac.npts}`);}
             return writeSac(replaceYData(dataView, bagAmp), "./test/filter/data/impulse_onezero_fftam.bag.am");
           });
@@ -425,8 +425,8 @@ test("impulse one zero combina amp", () => {
         //let orig = result[0];
         //let sactfr = result[1];
         //let pz = result[2];
-        let sacAmp = result[3];
-        let bagAmp= result[4];
+        const sacAmp = result[3];
+        const bagAmp= result[4];
         //let bagPhase = result[5];
         //let out = result[6];
       // freq below lowcut should be zero, but sac has very small non-zero value,
@@ -457,12 +457,12 @@ test("impulse one zero", () => {
                       readSacPoleZero("./test/filter/data/onezero.sacpz"),
                       readSacPoleZero("./test/filter/data/impulse_onezero_fftam.sac.am")])
   .then ( result => {
-      let orig = result[0];
-      let sactfr = result[1];
-      let pz = result[2];
+      const orig = result[0];
+      const sactfr = result[1];
+      const pz = result[2];
       //let sacAm = result[3];
       const seis = Seismogram.fromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
-      let bagtfr = transfer.transferSacPZ(seis,
+      const bagtfr = transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
                                       0.01,
@@ -498,11 +498,11 @@ test("impulse", () => {
                       readSac("./test/filter/data/impulse_corrected.sac"),
                       readSacPoleZero("./test/filter/data/hrv.bhe.sacpz")])
   .then ( result => {
-      let orig = result[0];
-      let sactfr = result[1];
-      let pz = result[2];
+      const orig = result[0];
+      const sactfr = result[1];
+      const pz = result[2];
       const seis = Seismogram.fromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
-      let bagtfr = transfer.transferSacPZ(seis,
+      const bagtfr = transfer.transferSacPZ(seis,
                                       pz,
                                       .005,
                                       0.01,
@@ -548,11 +548,11 @@ test("HRV test", () => {
                       readSac("./test/filter/data/3_transfer.sac"),
                     ])
   .then ( result => {
-      let orig = result[0];
-      let pz = result[1];
-      let rmean = result[2];
-      let taperSeis = result[3];
-      let transferSeis = result[4];
+      const orig = result[0];
+      const pz = result[1];
+      const rmean = result[2];
+      const taperSeis = result[3];
+      const transferSeis = result[4];
       const seis = Seismogram.fromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
       const bag_rmean = filter.rMean(seis);
       const rmean_data = bag_rmean.y;
@@ -567,7 +567,7 @@ test("HRV test", () => {
       // $FlowFixMe
       expect(taper_data).arrayToBeCloseToRatio(sacdata, 5);
 
-      let bagtfr = transfer.transferSacPZ(bag_taper,
+      const bagtfr = transfer.transferSacPZ(bag_taper,
                                       pz,
                                       .005,
                                       0.01,

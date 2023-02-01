@@ -10,8 +10,8 @@ import { createComplex} from '../../src/oregondsputil.js';
 let networks: Array<Network> = [];
 
 beforeAll(() => {
-  let filename = "./test/stationxml/data/co_jsc.staxml";
-  let rawData = fs.readFileSync(filename, 'utf8');
+  const filename = "./test/stationxml/data/co_jsc.staxml";
+  const rawData = fs.readFileSync(filename, 'utf8');
   const xml = new DOMParser().parseFromString(rawData, "text/xml");
   networks = stationxml.parseStationXml(xml);
 });
@@ -42,9 +42,9 @@ test( "stationxml parse test", () => {
 
 test("convert to sac polezero", () => {
   expect(networks).not.toBeNull();
-  let stations = networks[0].stations;
+  const stations = networks[0].stations;
   expect(stations).not.toBeNull();
-  let channels = stations[0].channels;
+  const channels = stations[0].channels;
   expect(channels).not.toBeNull();
   const response = channels[0].response;
   expect(response).not.toBeNull();
@@ -65,13 +65,13 @@ test("convert to sac polezero", () => {
 });
 
 test("findChannels", () => {
-  let chanList = stationxml.findChannels(
+  const chanList = stationxml.findChannels(
     networks,
     'CO',
     'JSC',
     '00',
     'HHZ');
-  for (let c of chanList) {
+  for (const c of chanList) {
     expect(c.channelCode).toEqual('HHZ');
     expect(c.locationCode).toEqual('00');
     expect(c.stationCode).toEqual('JSC');

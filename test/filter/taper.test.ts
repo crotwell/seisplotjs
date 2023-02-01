@@ -7,24 +7,24 @@ import {readSac} from './sacfile';
 import {DateTime} from 'luxon';
 
 test("simple value taper", () => {
-  let taperLen = 10;
-  let coeff = taper.getCoefficients(taper.HANNING, taperLen);
+  const taperLen = 10;
+  const coeff = taper.getCoefficients(taper.HANNING, taperLen);
   expect(coeff[0]).toBeCloseTo(Math.PI / taperLen, 9);
   expect(coeff[1]).toBeCloseTo(.5, 9);
   expect(coeff[2]).toBeCloseTo(.5, 9);
 });
 
 test("constant", () => {
-  let dataLen = 100;
-  let taperWidth = 0.05;
+  const dataLen = 100;
+  const taperWidth = 0.05;
   const dataVal = 100;
-  let orig = Array(dataLen).fill(dataVal);
+  const orig = Array(dataLen).fill(dataVal);
   const origseis = Seismogram.fromContiguousData(orig, 1, DateTime.utc());
-  let bagtaper = taper.taper(origseis, taperWidth);
+  const bagtaper = taper.taper(origseis, taperWidth);
   const omega = Math.PI / (dataLen * taperWidth);
   const f0 = .5;
   const f1 = .5;
-  let expected = Array(dataLen).fill(dataVal);
+  const expected = Array(dataLen).fill(dataVal);
   for (let i=0; i<dataLen*taperWidth; i++) {
     expected[i] = orig[i] * (f0 - f1 * Math.cos(omega * i));
     expected[dataLen-i-1] = orig[i] * (f0 - f1 * Math.cos(omega * i));
@@ -38,10 +38,10 @@ test("const100 taper", () => {
  return Promise.all([readSac("./test/filter/data/const100.sac"),
                      readSac("./test/filter/data/taper100.sac")])
  .then ( result => {
-     let orig = result[0];
-     let sactaper = result[1];
+     const orig = result[0];
+     const sactaper = result[1];
      const origseis = Seismogram.fromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
-     let bagtaper = taper.taper(origseis);
+     const bagtaper = taper.taper(origseis);
      const sacdata = sactaper.y;
      const bagdata = bagtaper.y;
      // index 5 not effected by taper
@@ -81,10 +81,10 @@ test("HRV taper", () => {
   return Promise.all([readSac("./test/filter/data/2_taper.sac"),
                       readSac("./test/filter/data/IU.HRV.__.BHE.SAC")])
   .then ( result => {
-      let sactaper = result[0];
-      let orig = result[1];
+      const sactaper = result[0];
+      const orig = result[1];
       const origseis = Seismogram.fromContiguousData(orig.y, 1/orig.delta, DateTime.utc());
-      let bagtaper = taper.taper(filter.rMean(ensureIsSeismogram(origseis)));
+      const bagtaper = taper.taper(filter.rMean(ensureIsSeismogram(origseis)));
       const sacdata = sactaper.y;
       const bagdata = bagtaper.y;
       // $FlowFixMe

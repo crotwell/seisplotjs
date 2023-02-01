@@ -4,13 +4,13 @@ import * as stationxml from '../../src/stationxml.js';
 
 test( "_grabFirstEl test", () => {
   const LATITUDE = "Latitude";
-  let xml = new DOMParser().parseFromString(rawXML, "text/xml")
+  const xml = new DOMParser().parseFromString(rawXML, "text/xml")
     .documentElement;
-  let net = stationxml.parseUtil._grabFirstEl(xml, "Network");
+  const net = stationxml.parseUtil._grabFirstEl(xml, "Network");
   expect(net).toBeDefined();
-  let sta = stationxml.parseUtil._grabFirstEl(net, "Station");
+  const sta = stationxml.parseUtil._grabFirstEl(net, "Station");
   expect(sta).toBeDefined();
-  let lat = stationxml.parseUtil._grabFirstEl(sta, LATITUDE);
+  const lat = stationxml.parseUtil._grabFirstEl(sta, LATITUDE);
   expect(lat).toBeDefined();
   expect(lat).not.toBeNull();
   if (!!lat) {

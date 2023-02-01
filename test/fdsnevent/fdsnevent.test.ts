@@ -6,7 +6,7 @@ import * as util from '../../src/util.js';
 import {isoToDateTime} from '../../src/util';
 
 test( "query setter test", () => {
-  let eventQuery = new fdsnevent.EventQuery();
+  const eventQuery = new fdsnevent.EventQuery();
   const MINMAG = 5.5;
   eventQuery.minMag(MINMAG);
   expect(eventQuery.getMinMag()).toBe(MINMAG);
@@ -14,7 +14,7 @@ test( "query setter test", () => {
 
 
 test( "form url test", () => {
-  let query = new fdsnevent.EventQuery();
+  const query = new fdsnevent.EventQuery();
   const NO_DATA = 404;
   const MINMAG = 5.5;
   const MIN_DEPTH = 100;
@@ -109,23 +109,23 @@ test( "form url test", () => {
 test( "qml util test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_QML, "text/xml");
   expect(util.isObject(xml)).toBeTrue();
-  let eventArray = Array.from(xml.getElementsByTagName("event"));
-  for (let eventEl of eventArray) {
+  const eventArray = Array.from(xml.getElementsByTagName("event"));
+  for (const eventEl of eventArray) {
     expect(util.isObject(eventEl)).toBeTrue();
 
-    let allMagEls = Array.from(eventEl.getElementsByTagNameNS(quakeml.BED_NS, "magnitude"));
-    for (let magEl of allMagEls) {
+    const allMagEls = Array.from(eventEl.getElementsByTagNameNS(quakeml.BED_NS, "magnitude"));
+    for (const magEl of allMagEls) {
       expect(util.isObject(magEl)).toBeTrue();
-      let mag = quakeml.parseUtil._grabFirstElNS(magEl, quakeml.BED_NS, 'mag');
+      const mag = quakeml.parseUtil._grabFirstElNS(magEl, quakeml.BED_NS, 'mag');
       expect(util.isObject(mag)).toBeTrue();
       expect(quakeml.parseUtil._grabFirstEl(mag, 'value')).toBeObject();
       expect(quakeml.parseUtil._grabFirstElNS(mag, quakeml.BED_NS, 'value')).toBeObject();
       expect(quakeml.parseUtil._grabFirstElText(mag, 'value')).toBeString();
       expect(quakeml.parseUtil._grabFirstElFloat(mag, 'value')).toBeDefined();
-      let magVal = quakeml.parseUtil._grabFirstElFloat(mag, 'value');
+      const magVal = quakeml.parseUtil._grabFirstElFloat(mag, 'value');
       expect(magVal).toBeFinite();
       expect(magVal).toBeWithin(0, 10);
-      let type = quakeml.parseUtil._grabFirstElText(magEl, 'type');
+      const type = quakeml.parseUtil._grabFirstElText(magEl, 'type');
       expect(type).toBeString();
     }
   }
@@ -133,7 +133,7 @@ test( "qml util test", () => {
 
 test( "qml parse test", () => {
   const xml = new DOMParser().parseFromString(RAW_XML_QML, "text/xml");
-  let quakes = quakeml.parseQuakeML(xml);
+  const quakes = quakeml.parseQuakeML(xml);
   expect(quakes.length).toBe(7);
   expect(quakes[0].time.toISO()).toEqual("2018-06-04T01:50:48.520Z");
   expect(quakes[0].latitude).toEqual(19.4053333);

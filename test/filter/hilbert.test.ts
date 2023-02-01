@@ -6,21 +6,21 @@ const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 
 test("init hilbert filter", () => {
   const seisLen = 1024;
-  let seisY = new Float32Array(seisLen);
+  const seisY = new Float32Array(seisLen);
   for(let i=0; i<seisLen; i++) {
     seisY[i] = Math.sin(47*i)+Math.sin(173*i);
   }
-  let n = 10;
-  let lowEdge = .05;
-  let highEdge = .95;
-  let hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
+  const n = 10;
+  const lowEdge = .05;
+  const highEdge = .95;
+  const hilbert = new OregonDSP.filter.fir.equiripple.CenteredHilbertTransform(n, lowEdge, highEdge);
 
-  let coeff = hilbert.getCoefficients();
+  const coeff = hilbert.getCoefficients();
 
   coeff.forEach( (c: number) => {
     expect(c).toBeFinite();
   });
-  let hilbertY = hilbert.filter(seisY);
+  const hilbertY = hilbert.filter(seisY);
 
   hilbertY.forEach( (c: number) => {
     expect(c).toBeFinite();
@@ -31,7 +31,7 @@ test("simple hilbert", () => {
     return readSeismogram("./test/filter/data/IU.HRV.__.BHE.SAC")
       .then( origseis => {
         expect(origseis.y).toHaveLength(31450);
-        let hilbertSeismogram = filter.hilbert(origseis);
+        const hilbertSeismogram = filter.hilbert(origseis);
         // check first for NaN before array length
         expect(hilbertSeismogram.y[0]).toBeFinite();
         expect(hilbertSeismogram.y).toHaveLength(origseis.y.length+20);
@@ -44,7 +44,7 @@ test("simple envelope", () => {
     .then( origseis => {
         expect(origseis.y).toHaveLength(31450);
 
-        let envelopeSeis = filter.envelope(origseis);
+        const envelopeSeis = filter.envelope(origseis);
         expect(envelopeSeis.y.length).toBe(origseis.y.length);
         for(let i=0; i<envelopeSeis.y.length; i++) {
           expect(envelopeSeis.y[i]).toBeGreaterThanOrEqual(0);

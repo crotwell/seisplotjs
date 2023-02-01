@@ -5,7 +5,7 @@ import * as util from '../../src/util.js';
 import {Duration, Interval} from 'luxon';
 
 test( "query setter test", () => {
-  let dsQuery = new fdsndataselect.DataSelectQuery();
+  const dsQuery = new fdsndataselect.DataSelectQuery();
   const NET = 'CO';
   const STA = 'JSC';
   const LOC = '00';

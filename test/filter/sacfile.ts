@@ -51,24 +51,24 @@ export function readSeismogram(filename: string): Promise<Seismogram> {
 
 export function parseSac(dataView: DataView): sacType {
   let littleEndian = false;
-  let sacVer = dataView.getUint32(NVHDR_OFFSET, true);
+  const sacVer = dataView.getUint32(NVHDR_OFFSET, true);
   if (sacVer === 6) {
     littleEndian = true;
   }
   const delta = dataView.getFloat32(0, littleEndian);
   const npts = dataView.getUint32(NPTS_OFFSET, littleEndian);
-  let start = DateTime.fromObject({ year: dataView.getUint32(YEAR_OFFSET),
+  const start = DateTime.fromObject({ year: dataView.getUint32(YEAR_OFFSET),
                           ordinal: dataView.getUint32(DAY_OF_YEAR_OFFSET),
                           hour: dataView.getUint32(HOUR_OFFSET),
                           minute: dataView.getUint32(MIN_OFFSET),
                           second: dataView.getUint32(SEC_OFFSET),
                           millisecond: dataView.getUint32(MSEC_OFFSET)}, UTC_OPTIONS);
-  let y = new Float32Array(npts);
+  const y = new Float32Array(npts);
   let j=0;
   for(let i=DATA_OFFSET; i < dataView.byteLength; i+=4, j++) {
     y[j] = dataView.getFloat32(i, littleEndian);
   }
-  let out: sacType = {
+  const out: sacType = {
     littleEndian: littleEndian,
     delta: delta,
     npts: npts,
@@ -80,7 +80,7 @@ export function parseSac(dataView: DataView): sacType {
 
 export function replaceYData(dataView: DataView, yData: Float32Array): DataView {
   let littleEndian = false;
-  let sacVer = dataView.getUint32(NVHDR_OFFSET, true);
+  const sacVer = dataView.getUint32(NVHDR_OFFSET, true);
   if (sacVer === 6) {
     littleEndian = true;
   }

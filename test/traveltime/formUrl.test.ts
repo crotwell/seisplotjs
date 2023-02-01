@@ -3,14 +3,14 @@
 import * as traveltime from '../../src/traveltime';
 
 test("formURL", () => {
-  let query = new traveltime.TraveltimeQuery();
+  const query = new traveltime.TraveltimeQuery();
   expect(query.evdepth(50)).toBe(query);
   expect(query.stalat(34)).toBe(query);
   expect(query.stalon(-81)).toBe(query);
   expect(query.evlat(35)).toBe(query);
   expect(query.evlon(-101)).toBe(query);
   expect(query.phases("P,S,PcP,PKiKP,PKPPKP")).toBe(query);
-  let url = query.formURL();
+  const url = query.formURL();
   expect(url).toBeDefined();
   // evdepth is first, so no &
   expect(url).toContain('?evdepth=');

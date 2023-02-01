@@ -7,8 +7,8 @@ import {isoToDateTime} from '../../src/util';
 
 test("viewobspy quake", () => {
 
-  let filename = "./test/quakeml/data/obspy_catalog.xml";
-  let rawData = fs.readFileSync(filename, 'utf8');
+  const filename = "./test/quakeml/data/obspy_catalog.xml";
+  const rawData = fs.readFileSync(filename, 'utf8');
   const xml = new DOMParser().parseFromString(rawData, "text/xml");
   const quakes = quakeml.parseQuakeML(xml);
   expect(quakes).toHaveLength(2);

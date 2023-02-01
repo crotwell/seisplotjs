@@ -10,33 +10,33 @@ const fs = require('fs');
 
 test("load miniseed file", () => {
 
-    let mseedData = fs.readFileSync('test/miniseed/CO_JSC.mseed');
-    let ab = mseedData.buffer.slice(mseedData.byteOffset, mseedData.byteOffset + mseedData.byteLength);
+    const mseedData = fs.readFileSync('test/miniseed/CO_JSC.mseed');
+    const ab = mseedData.buffer.slice(mseedData.byteOffset, mseedData.byteOffset + mseedData.byteLength);
     expect(mseedData.length).toEqual(7168);
-    let parsed = miniseed.parseDataRecords(ab);
+    const parsed = miniseed.parseDataRecords(ab);
     expect(parsed.length).toEqual(14);
-    let dr = parsed[0];
+    const dr = parsed[0];
     expect(dr.header.staCode).toEqual("JSC");
     expect(dr.header.netCode).toEqual("CO");
     expect(dr.header.locCode).toEqual("00");
     expect(dr.header.chanCode).toEqual("HHZ");
-    let btime = dr.header.startBTime;
+    const btime = dr.header.startBTime;
     expect(btime.year).toEqual(2016);
     expect(btime.jday).toEqual(265);
     expect(btime.hour).toEqual(13);
     expect(btime.min).toEqual(48);
     expect(btime.sec).toEqual(0);
     expect(btime.tenthMilli).toEqual(84);
-    let startMoment = DateTime.fromObject({year: 2016, month: 9, day:21, hour:13, minute: 48, second: 0, millisecond: 8}, UTC_OPTIONS);
+    const startMoment = DateTime.fromObject({year: 2016, month: 9, day:21, hour:13, minute: 48, second: 0, millisecond: 8}, UTC_OPTIONS);
     //startMoment.dayOfYear(265); day 265 = Sept 21, months zero based in moment
     expect(dr.header.startTime.toISO()).toEqual(startMoment.toISO());
     expect(dr.header.numSamples).toEqual(99);
     expect(dr.header.encoding).toEqual(seedcodec.STEIM2);
-    let decomp = parsed[0].decompress();
+    const decomp = parsed[0].decompress();
     expect(decomp).toBeInstanceOf(Int32Array);
     expect(decomp).toBeDefined();
     // msi -n 1 -pp -D  CO_JSC.mseed
-    let firstRecordData = [       -42,         411,         382,         106,          84,         488,
+    const firstRecordData = [       -42,         411,         382,         106,          84,         488,
        251,         -74,         378,         459,         -56,         211,
        540,         -93,         264,         537,        -155,         354,
        507,         -13,         312,         312,          99,         295,
@@ -61,11 +61,11 @@ test("load miniseed file", () => {
 });
 
 test("contiguous miniseed file", () => {
-    let mseedData = fs.readFileSync('test/miniseed/CO_JSC.mseed');
+    const mseedData = fs.readFileSync('test/miniseed/CO_JSC.mseed');
     expect(mseedData.length).toEqual(7168);
-    let parsed = miniseed.parseDataRecords(mseedData.buffer);
+    const parsed = miniseed.parseDataRecords(mseedData.buffer);
     expect(parsed.length).toEqual(14);
-    let drFirst = parsed[0];
-    let drSecond = parsed[1];
+    const drFirst = parsed[0];
+    const drSecond = parsed[1];
     expect(miniseed.areContiguous(drFirst, drSecond)).toBe(true);
 });

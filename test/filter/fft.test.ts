@@ -37,9 +37,9 @@ test("Round Trip FFT, Spike", () => {
   for(let i=0; i<out.length; i++) {
     expect(out[i]/data[i]).toBeCloseTo(1, 5);
   }
-  let sampleRate = 1;
-  let start = DateTime.utc();
-  let seis = Seismogram.fromContiguousData(data, sampleRate, start);
+  const sampleRate = 1;
+  const start = DateTime.utc();
+  const seis = Seismogram.fromContiguousData(data, sampleRate, start);
   const fftresult = fft.fftForward(seis);
   for(let i=0; i<fftresult.packedFreq.length; i++) {
       expect(fftresult.packedFreq[i]).toBeCloseTo(fftout[i], 5);
@@ -69,11 +69,11 @@ test("FFT", () => {
                       readSac("./test/filter/data/IU.HRV.__.BHE_fft.sac.am"),
                       readSac("./test/filter/data/IU.HRV.__.BHE_fft.sac.ph")])
   .then ( result => {
-      let sac = asSeismogram(result[0]);
-      let sacAmp = asSeismogram(result[1]);
-      let sacPhase = asSeismogram(result[2]);
+      const sac = asSeismogram(result[0]);
+      const sacAmp = asSeismogram(result[1]);
+      const sacPhase = asSeismogram(result[2]);
       const samprate = sac.sampleRate;
-      let data = sac.y;
+      const data = sac.y;
       /* sac premultiplies the data by the sample period before doing the fft. Later it
        * seems to be cancled out by premultiplying the pole zeros by a similar factor.
        * I don't understand why they do this, but am reporducing it in order to be
@@ -88,7 +88,7 @@ test("FFT", () => {
       let saveDataPromise: Promise<void| [void,void] | null> = Promise.resolve(null);
       if (OVERWRITE_OUTPUT) {
         saveDataPromise = readDataView("./test/filter/data/IU.HRV.__.BHE_fft.sac.am").then(dataView => {
-          let inSac = parseSac(dataView);
+          const inSac = parseSac(dataView);
           if (amp.length !== inSac.npts) {
             throw new Error(`npts not same: ${amp.length}  ${inSac.npts}, not writing.`);
           }
@@ -109,11 +109,11 @@ test("FFT", () => {
       ]);
     }).then(result => {
         //let sac = result[0];
-        let sacAmp = result[1];
-        let sacPhase = result[2];
-        let bagAmp= result[3];
-        let bagPhase = result[4];
-        let fftRes: fft.FFTResult = result[5];
+        const sacAmp = result[1];
+        const sacPhase = result[2];
+        const bagAmp= result[3];
+        const bagPhase = result[4];
+        const fftRes: fft.FFTResult = result[5];
       const sacout =  [ [695917, 0],
                         [-34640.4, 7593.43],
                         [-28626.7, -34529.8],
@@ -156,7 +156,7 @@ test("FFT", () => {
 test("fftForward", () => {
   const dataLen = 1000;
   const nextPowerTwo = 1024;
-  let rawData = new Float32Array(dataLen);
+  const rawData = new Float32Array(dataLen);
   rawData[500] = 1;
   const sampleRate = 1;
   const start = DateTime.utc();
