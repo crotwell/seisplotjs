@@ -339,7 +339,9 @@ export class MSeed3Record {
   }
 
   toString(): string {
-    return `${this.header.toString()}\n          extra headers: ${JSON.stringify(this.extraHeaders,null,2)}`;
+    const ehLines = JSON.stringify(this.extraHeaders,null,2).split('\n');
+    const indentLines = ehLines.join('\n          ');
+    return `${this.header.toString()}\n          extra headers: ${indentLines}`;
   }
 }
 
