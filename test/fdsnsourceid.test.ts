@@ -22,7 +22,7 @@ test("sid equals", () => {
   const sidB = FDSNSourceId.createUnknown(20);
   expect(sidA).toEqual(sidB);
   expect(sidA.equals(sidB)).toBeTrue();
-})
+});
 
 test("simple FDSN station sourceId", () => {
   const netCode = "XX";

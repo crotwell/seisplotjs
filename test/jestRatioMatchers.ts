@@ -1,5 +1,5 @@
 
-import { expect} from '@jest/globals'
+import { expect} from '@jest/globals';
 
 const ratioTest = function(received: number, argument: number, digits: number, closeZero: number, closeZeroDigits: number) {
     if (argument === 0 || Math.abs(argument) < closeZero) {
@@ -21,11 +21,11 @@ const ratioTest = function(received: number, argument: number, digits: number, c
         pass: true,
       };
     }
-}
+};
 
 expect.extend({
    toBeCloseToRatio(received: number, argument: number, digits: number, closeZero=1e-10, closeZeroDigits=7) {
-     return ratioTest(received, argument, digits, closeZero, closeZeroDigits)
+     return ratioTest(received, argument, digits, closeZero, closeZeroDigits);
    },
    arrayToBeCloseToRatio(received: Array<number> | Int32Array | Float32Array | Float64Array,
       argument: Array<number> | Int32Array | Float32Array | Float64Array,

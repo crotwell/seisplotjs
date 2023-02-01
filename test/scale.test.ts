@@ -31,7 +31,7 @@ test("amp scalable test", () => {
   return Promise.all(linkAmpScale.recalculate()).then( () => {
     expect(linkAmpScale.halfWidth).toEqual(hwA);
   });
-})
+});
 
 
 test("gain scale test", () => {
@@ -94,4 +94,4 @@ test("time scalable test", () => {
   const timeB = new TimeScalable(Duration.fromMillis(0), oneSec);
   const linkTimeScale = new LinkedTimeScale([timeA, timeB]);
   expect(linkTimeScale.duration).toEqual(oneSec);
-})
+});

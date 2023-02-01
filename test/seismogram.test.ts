@@ -217,7 +217,7 @@ test("cut clone sdd test", () => {
   const cutWindow = Interval.after( startTime, Duration.fromMillis(1000*10));
   const cutSeis = seis.cut(cutWindow);
   expect(cutSeis).toBeDefined();
-  if (!!cutSeis){
+  if (cutSeis){
     expect(cutSeis.endTime).toEqual(cutWindow.end);
     const cutSeisSdd = sdd.cloneWithNewSeismogram(cutSeis);
     cutSeisSdd.timeRange = cutWindow; // clone keeps the old time window
