@@ -17,7 +17,7 @@ test("simple FDSN sourceId", () => {
   expect(sid.subsourceCode).toBe(subsourceCode);
 });
 
-test("test equals", () => {
+test("sid equals", () => {
   const sidA = FDSNSourceId.createUnknown(20);
   const sidB = FDSNSourceId.createUnknown(20);
   expect(sidA).toEqual(sidB);

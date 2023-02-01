@@ -12,18 +12,18 @@ global.fetch = fetch;
 
 
 test( "load HODGE for local eq test", () => {
-  let localQueryTimeWindow = Interval.fromDateTimes(isoToDateTime('2020-08-21'), isoToDateTime('2020-08-22'));
-  let localEventQuery = new EventQuery()
+  const localQueryTimeWindow = Interval.fromDateTimes(isoToDateTime('2020-08-21'), isoToDateTime('2020-08-22'));
+  const localEventQuery = new EventQuery()
     .timeRange(localQueryTimeWindow)
     .latitude(33.72).longitude(-81)
     .maxRadius(2);
-  let stationQuery = new StationQuery()
+  const stationQuery = new StationQuery()
     .networkCode('CO')
     .stationCode('HODGE')
     .locationCode('00')
     .channelCode('LH?')
     .timeRange(localQueryTimeWindow);
-  let staUrl = stationQuery.formURL(LEVEL_CHANNEL);
+  const staUrl = stationQuery.formURL(LEVEL_CHANNEL);
   expect(staUrl).toContain('cha=');
 //  expect(localEventQuery instanceof StationQuery).toBeTrue();
   const seisLoad = new SeismogramLoader(stationQuery, localEventQuery );

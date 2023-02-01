@@ -14,7 +14,7 @@ global.fetch = fetch;
 
 test("station queries test", () => {
 
-    let fedCatQuery = new FedCatalogQuery();
+    const fedCatQuery = new FedCatalogQuery();
     const NET = 'CO';
     expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
     expect(fedCatQuery.getNetworkCode()).toBe(NET);
@@ -25,7 +25,7 @@ test("station queries test", () => {
 });
 
 test("live parse result", () => {
-  let fedCatQuery = new FedCatalogQuery();
+  const fedCatQuery = new FedCatalogQuery();
   const NET = 'CO';
   const LEVEL = 'station';
   expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
@@ -39,7 +39,7 @@ test("live parse result", () => {
 
 jest.setTimeout(10*1000);
 test("run BK networks", () => {
-    let fedCatQuery = new FedCatalogQuery();
+    const fedCatQuery = new FedCatalogQuery();
     const NET = 'BK';
     expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
     expect(fedCatQuery.getNetworkCode()).toBe(NET);
@@ -53,7 +53,7 @@ test("run BK networks", () => {
 });
 
 test("run CO active stations", () => {
-    let fedCatQuery = new FedCatalogQuery();
+    const fedCatQuery = new FedCatalogQuery();
     const NET = 'CO';
     expect(fedCatQuery.networkCode(NET)).toBe(fedCatQuery);
     expect(fedCatQuery.getNetworkCode()).toBe(NET);
@@ -67,7 +67,7 @@ test("run CO active stations", () => {
 });
 
 test("channels for CO", () => {
-  let fedCatQuery = new FedCatalogQuery();
+  const fedCatQuery = new FedCatalogQuery();
   const NET = 'CO';
   const STA = 'BIRD';
   const CHAN = 'HHZ';
@@ -89,7 +89,7 @@ test("channels for CO", () => {
 
 
 test( "run dataselect test", () => {
-  let fedCatQuery = new FedCatalogQuery();
+  const fedCatQuery = new FedCatalogQuery();
   const NET = 'CO';
   const STA = 'JSC';
   const LOC = '00';
@@ -116,7 +116,7 @@ test( "run dataselect test", () => {
 
 
 test("seismograms for CO.BIRD for timewindow", () => {
-  let fedCatQuery = new FedCatalogQuery();
+  const fedCatQuery = new FedCatalogQuery();
   const NET = 'CO';
   const STA = 'BIRD';
   const CHAN = 'HHZ';
@@ -144,7 +144,7 @@ test("seismograms for CO.BIRD for timewindow", () => {
 });
 
 test("sddlist seismograms for CO.BIRD for timewindow", () => {
-  let fedCatQuery = new FedCatalogQuery();
+  const fedCatQuery = new FedCatalogQuery();
   const NET = 'CO';
   const STA = 'BIRD';
   const CHAN = 'HHZ';
@@ -158,8 +158,8 @@ test("sddlist seismograms for CO.BIRD for timewindow", () => {
   fedCatQuery.startTime(START);
   fedCatQuery.endTime(END);
   return fedCatQuery.queryChannels().then(netList => {
-    let sddList = [];
-    for(let c of allChannels(netList)) {
+    const sddList = [];
+    for(const c of allChannels(netList)) {
       sddList.push(SeismogramDisplayData.fromChannelAndTimeWindow(c, sed));
     }
     expect(sddList).toHaveLength(1);

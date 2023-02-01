@@ -8,10 +8,10 @@ global.fetch = fetch;
 
 
 test("do post test", () => {
-  let postLines = `CO HAW * * 2010-03-11T00:00:00 2599-12-31T23:59:59
+  const postLines = `CO HAW * * 2010-03-11T00:00:00 2599-12-31T23:59:59
 CO JSC * * 2009-04-13T00:00:00 2599-12-31T23:59:59`.split('\n');
 
-  let stationQuery = new fdsnstation.StationQuery();
+  const stationQuery = new fdsnstation.StationQuery();
   const level = 'station';
   expect(stationQuery.matchTimeseries(true)).toBe(stationQuery);
   expect(stationQuery.getMatchTimeseries()).toEqual(true);

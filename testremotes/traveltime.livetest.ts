@@ -7,7 +7,7 @@ global.fetch = fetch;
 import * as traveltime from '../src/traveltime';
 
 test("formURL", () => {
-  let query = new traveltime.TraveltimeQuery();
+  const query = new traveltime.TraveltimeQuery();
   query.format(traveltime.JSON_FORMAT);
   expect(query.evdepth(50)).toBe(query);
   expect(query.stalat(34)).toBe(query);
@@ -15,7 +15,7 @@ test("formURL", () => {
   expect(query.evlat(35)).toBe(query);
   expect(query.evlon(-101)).toBe(query);
   expect(query.phases("P,S,PcP,PKiKP,PKPPKP")).toBe(query);
-  let url = query.formURL();
+  const url = query.formURL();
   expect(url).toBeDefined();
   // evdepth is first, so no &
   expect(url).toContain('?evdepth=');
@@ -25,20 +25,18 @@ test("formURL", () => {
    }
    expect(url).toContain("http://"+traveltime.IRIS_HOST+"/irisws/traveltime/1/query?");
    return query.query().then( tt => {
-     console.log(`got something: ${tt.arrivals.length}`);
      expect(tt.arrivals.length).toEqual(11);
    });
 
 });
 
 
-test("test multiple distances", () => {
-  let query = new traveltime.TraveltimeQuery();
+test("multiple distances", () => {
+  const query = new traveltime.TraveltimeQuery();
   query.format(traveltime.JSON_FORMAT);
   query.distdeg([ 10, 30, 60]);
   query.phases("P");
   return query.query().then( tt => {
-    console.log(`got something: ${tt.arrivals.length}`);
     expect(tt.arrivals.length).toEqual(3);
   });
 });

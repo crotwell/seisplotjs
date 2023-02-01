@@ -253,7 +253,6 @@ test("find minmax test", () => {
                                         sddA.timeRange,
                                         false,
                                         ampMode);
-    console.log(`find minmax test: minMax: ${minMax}`)
     expect(minMax.min).toEqual(-1*seisAMean); // seisMean to zero
     expect(minMax.max).toEqual(   seisAMean);
     expect(minMax.middle).toEqual(0);

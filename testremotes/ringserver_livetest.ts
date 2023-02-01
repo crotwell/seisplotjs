@@ -15,7 +15,6 @@ test("do id test", () => {
   // def is IRIS
   const ring = new RingserverConnection();
   return ring.pullId().then(id => {
-    console.log(`id: ${id}`);
     expect(id.serverId).toContain("IRIS");
   });
 
@@ -31,7 +30,6 @@ test("do seedlink test", done => {
   const config = ['STATION JSC CO',
                   'SELECT 00HHZ.D' ];
   function packetFun(mseedPacket: SequencedDataRecord) {
-    console.log(`got mseed`);
     expect(mseedPacket).toBeDefined();
     slConn.close();
     done();
@@ -40,7 +38,7 @@ test("do seedlink test", done => {
     slConn.close();
     done(e);
   }
-  let start = DateTime.utc().minus(Duration.fromISO('PT3M'));
+  const start = DateTime.utc().minus(Duration.fromISO('PT3M'));
   slConn = new SeedlinkConnection(ring.getSeedLinkURL(), config, packetFun, errorFun);
   slConn.setTimeCommand(start);
   slConn.connect();
@@ -53,15 +51,14 @@ test("do datalink test", () => {
   const ring = new RingserverConnection();
   expect(ring.getDataLinkURL()).toEqual("ws://rtserve.iris.washington.edu/datalink");
   const dlpacketFun = function(packet: DataLinkPacket) {
-    console.log(`got packet`);
     expect(packet).toBeDefined();
     expect(packet.isMiniseed()).toBeTrue();
     dlConn.close();
-  }
+  };
   const dlerrorFun = function(e: any) {
     dlConn.close();
-  }
-  let start = DateTime.utc().minus(Duration.fromISO('PT10M'));
+  };
+  const start = DateTime.utc().minus(Duration.fromISO('PT10M'));
   dlConn = new DataLinkConnection(ring.getDataLinkURL(), dlpacketFun, dlerrorFun);
   return dlConn.connect().then(servId => {
     expect(servId).toContain("DataLink");
@@ -71,11 +68,9 @@ test("do datalink test", () => {
     //expect(servId).toContain("DataLink");
     return dlConn.match("CO_.*_00_HHZ/MSEED");
   }).then(response => {
-    console.log(`match response: ${response}`)
     expect(response.type).toContain("OK");
     return dlConn.positionAfter(start);
   }).then(response => {
-    console.log(`positionAfter response: ${response}`)
     expect(response.type).toContain("OK");
     return dlConn.infoStreams();
   }).then(response => {
@@ -93,4 +88,4 @@ test("do datalink test", () => {
 afterEach(() => {
   if (slConn) { slConn.close();}
   if (dlConn) { dlConn.close();}
-})
+});
