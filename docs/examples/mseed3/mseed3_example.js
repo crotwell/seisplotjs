@@ -1,4 +1,4 @@
-import * as sp from '../../seisplotjs_3.0.0_standalone.mjs';
+import * as sp from '../../seisplotjs_3.0.0-rc1_standalone.mjs';
 let timeWindow = new sp.util.startDuration('2019-07-06T03:19:53Z', 1800);
 let dsQuery = new sp.fdsndataselect.DataSelectQuery();
 console.log(`miniseed3: ${sp.fdsndataselect.FORMAT_MINISEED_THREE}`);

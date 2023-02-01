@@ -1,6 +1,6 @@
 // snip start createseis
 
-import * as sp from '../seisplotjs_3.0.0_standalone.mjs';
+import * as sp from '../seisplotjs_3.0.0-rc1_standalone.mjs';
 
 let dataArray = new Float32Array(1000).map(function(d, i) {
   return Math.sin(2*Math.PI*i/100) * 100;
