@@ -31,8 +31,8 @@ test("isStringArg isNumArg", () => {
 });
 
 test("clone fetch init", () => {
-  let fetchInit = util.defaultFetchInitObj();
-  let cloned = util.cloneFetchInitObj(fetchInit);
+  const fetchInit = util.defaultFetchInitObj();
+  const cloned = util.cloneFetchInitObj(fetchInit);
   expect(cloned.cache).toEqual(fetchInit.cache);
   expect(cloned.redirect).toEqual(fetchInit.redirect);
   expect(cloned.mode).toEqual(fetchInit.mode);

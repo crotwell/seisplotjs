@@ -4,7 +4,7 @@ import * as fdsndatacenters from '../src/fdsndatacenters.js';
 
 
 test( "form url test", () => {
-  let query = new fdsndatacenters.DataCentersQuery();
+  const query = new fdsndatacenters.DataCentersQuery();
   const NAME = "IRISDMC";
   const SERVICES = "fdsnws-dataselect-1";
   const INCLUDE_DATASETS = true;

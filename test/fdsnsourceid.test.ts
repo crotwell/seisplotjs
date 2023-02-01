@@ -2,13 +2,13 @@
 import {FDSNSourceId, NetworkSourceId, StationSourceId} from '../src/fdsnsourceid';
 
 test("simple FDSN sourceId", () => {
-  let netCode = "XX";
-  let staCode = "ABCD";
-  let locCode = "00";
-  let bandCode = "B";
-  let sourceCode = "H";
-  let subsourceCode = "Z";
-  let sid = FDSNSourceId.parse(`FDSN:${netCode}_${staCode}_${locCode}_${bandCode}_${sourceCode}_${subsourceCode}`);
+  const netCode = "XX";
+  const staCode = "ABCD";
+  const locCode = "00";
+  const bandCode = "B";
+  const sourceCode = "H";
+  const subsourceCode = "Z";
+  const sid = FDSNSourceId.parse(`FDSN:${netCode}_${staCode}_${locCode}_${bandCode}_${sourceCode}_${subsourceCode}`);
   expect(sid.networkCode).toBe(netCode);
   expect(sid.stationCode).toBe(staCode);
   expect(sid.locationCode).toBe(locCode);
@@ -18,23 +18,23 @@ test("simple FDSN sourceId", () => {
 });
 
 test("test equals", () => {
-  let sidA = FDSNSourceId.createUnknown(20);
-  let sidB = FDSNSourceId.createUnknown(20);
+  const sidA = FDSNSourceId.createUnknown(20);
+  const sidB = FDSNSourceId.createUnknown(20);
   expect(sidA).toEqual(sidB);
   expect(sidA.equals(sidB)).toBeTrue();
 })
 
 test("simple FDSN station sourceId", () => {
-  let netCode = "XX";
-  let staCode = "ABCD";
-  let sid = StationSourceId.parse(`FDSN:${netCode}_${staCode}`);
+  const netCode = "XX";
+  const staCode = "ABCD";
+  const sid = StationSourceId.parse(`FDSN:${netCode}_${staCode}`);
   expect(sid.networkCode).toBe(netCode);
   expect(sid.stationCode).toBe(staCode);
 });
 
 
 test("simple FDSN network sourceId", () => {
-  let netCode = "XX";
-  let sid = NetworkSourceId.parse(`FDSN:${netCode}`);
+  const netCode = "XX";
+  const sid = NetworkSourceId.parse(`FDSN:${netCode}`);
   expect(sid.networkCode).toBe(netCode);
 });

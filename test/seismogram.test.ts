@@ -8,12 +8,12 @@ import  {isDef, isoToDateTime} from '../src/util';
 import {DateTime, Duration, Interval} from 'luxon';
 
 test("simple seismogram seg creation", () => {
-  let yValues = Int32Array.from([0, 1, 2]);
-  let sampleRate = 20.0;
-  let startTime = DateTime.utc();
-  let sidStr = "FDSN:XX_ABCD_00_B_H_Z";
-  let sid = FDSNSourceId.parse(sidStr);
-  let seis = new SeismogramSegment(yValues, sampleRate, startTime, sid);
+  const yValues = Int32Array.from([0, 1, 2]);
+  const sampleRate = 20.0;
+  const startTime = DateTime.utc();
+  const sidStr = "FDSN:XX_ABCD_00_B_H_Z";
+  const sid = FDSNSourceId.parse(sidStr);
+  const seis = new SeismogramSegment(yValues, sampleRate, startTime, sid);
   expect(seis.y.length).toBe(3);
   expect(seis.yAtIndex(0)).toBe(0);
   expect(seis.yAtIndex(1)).toBe(1);
@@ -27,13 +27,13 @@ test("simple seismogram seg creation", () => {
 });
 
 test("seismogram seg clone", () => {
-  let yValues = Int32Array.from([0, 1, 2]);
-  let sampleRate = 20.0;
-  let startTime = DateTime.utc();
-  let sid = FDSNSourceId.parse("FDSN:XX_ABCD_00_B_H_Z");
-  let seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, startTime, sid);
+  const yValues = Int32Array.from([0, 1, 2]);
+  const sampleRate = 20.0;
+  const startTime = DateTime.utc();
+  const sid = FDSNSourceId.parse("FDSN:XX_ABCD_00_B_H_Z");
+  const seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, startTime, sid);
   seisSeg.sourceId = sid;
-  let cloneSeg = seisSeg.clone();
+  const cloneSeg = seisSeg.clone();
   expect(cloneSeg.y.length).toBe(seisSeg.y.length);
   expect(cloneSeg.yAtIndex(0)).toBe(yValues[0]);
   expect(cloneSeg.yAtIndex(1)).toBe(yValues[1]);
@@ -50,7 +50,7 @@ test("seismogram seg clone", () => {
   expect(cloneSeg.codes()).toEqual(seisSeg.codes());
   expect(cloneSeg.endTime.toISO()).toEqual(seisSeg.endTime.toISO());
   // test after replace data Array
-  let x = new Int32Array(seisSeg.y.length);
+  const x = new Int32Array(seisSeg.y.length);
   x[0] = 4;
   x[1] = 5;
   x[2] = 6;
@@ -66,13 +66,13 @@ test("seismogram seg clone", () => {
 
 
 test("simple Seismogram creation", () => {
-  let yValues = Int32Array.from([0, 1, 2]);
-  let sampleRate = 20.0;
-  let startTime = DateTime.utc();
-  let sidStr = "FDSN:XX_ABCD_00_B_H_Z";
-  let sid = FDSNSourceId.parse(sidStr);
-  let seis = new SeismogramSegment(yValues.slice(), sampleRate, startTime, sid);
-  let trace = new Seismogram(seis);
+  const yValues = Int32Array.from([0, 1, 2]);
+  const sampleRate = 20.0;
+  const startTime = DateTime.utc();
+  const sidStr = "FDSN:XX_ABCD_00_B_H_Z";
+  const sid = FDSNSourceId.parse(sidStr);
+  const seis = new SeismogramSegment(yValues.slice(), sampleRate, startTime, sid);
+  const trace = new Seismogram(seis);
   expect(trace.networkCode).toEqual(sid.networkCode);
   expect(trace.stationCode).toEqual(sid.stationCode);
   expect(trace.locationCode).toEqual(sid.locationCode);
@@ -82,35 +82,35 @@ test("simple Seismogram creation", () => {
 });
 
 test("seismogram isContiguous", () =>{
-  let yValues = new Int32Array(10);
-  let sampleRate = 20.0;
-  let startTime = isoToDateTime("2013-02-08T09:30:26");
-  let secondStart = startTime.plus(Duration.fromMillis(1000*yValues.length/sampleRate));
-  let laterStart = secondStart.plus(Duration.fromMillis(10*1000*yValues.length/sampleRate));
+  const yValues = new Int32Array(10);
+  const sampleRate = 20.0;
+  const startTime = isoToDateTime("2013-02-08T09:30:26");
+  const secondStart = startTime.plus(Duration.fromMillis(1000*yValues.length/sampleRate));
+  const laterStart = secondStart.plus(Duration.fromMillis(10*1000*yValues.length/sampleRate));
 
-  let first = new SeismogramSegment(yValues, sampleRate, startTime);
-  let second = new SeismogramSegment(yValues, sampleRate, secondStart);
-  let seis = new Seismogram([first, second]);
+  const first = new SeismogramSegment(yValues, sampleRate, startTime);
+  const second = new SeismogramSegment(yValues, sampleRate, secondStart);
+  const seis = new Seismogram([first, second]);
   expect(seis.isContiguous()).toBe(true);
 
-  let later = new SeismogramSegment(yValues, sampleRate, laterStart);
-  let nonContigSeis = new Seismogram([first, second, later]);
+  const later = new SeismogramSegment(yValues, sampleRate, laterStart);
+  const nonContigSeis = new Seismogram([first, second, later]);
 
   expect(nonContigSeis.isContiguous()).toBe(false);
 });
 
 
 test("seismogram clone", () => {
-  let yValues = Int32Array.from([0, 1, 2]);
+  const yValues = Int32Array.from([0, 1, 2]);
   expect(yValues[0]).toEqual(0);
-  let sampleRate = 20.0;
-  let startTime = DateTime.utc();
-  let sidStr = "FDSN:XX_ABCD_00_B_H_Z";
-  let sid = FDSNSourceId.parse(sidStr);
-  let seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, startTime, sid);
-  let seis = new Seismogram([ seisSeg]);
+  const sampleRate = 20.0;
+  const startTime = DateTime.utc();
+  const sidStr = "FDSN:XX_ABCD_00_B_H_Z";
+  const sid = FDSNSourceId.parse(sidStr);
+  const seisSeg = new SeismogramSegment(yValues.slice(), sampleRate, startTime, sid);
+  const seis = new Seismogram([ seisSeg]);
 
-  let cloneSeis = seis.clone();
+  const cloneSeis = seis.clone();
   expect(cloneSeis.segments[0].isEncoded()).toBe(seisSeg.isEncoded());
   expect(cloneSeis.isContiguous()).toBe(seis.isContiguous());
   expect(cloneSeis.y.length).toBe(seis.y.length);
@@ -132,14 +132,14 @@ test("seismogram clone", () => {
   expect(cloneSeis.codes()).toEqual(seis.codes());
   expect(cloneSeis.endTime.toISO()).toEqual(seis.endTime.toISO());
   // test after replace data Array
-  let x = new Int32Array(seis.y.length+1);
+  const x = new Int32Array(seis.y.length+1);
   x[0] = 4;
   x[1] = 5;
   x[2] = 6;
   x[3] = 7;
   x[4] = 8;
 
-  let cloneWithY = seis.cloneWithNewData(x);
+  const cloneWithY = seis.cloneWithNewData(x);
   expect(cloneWithY.numPoints).toBe(x.length);
   expect(cloneWithY.y).toHaveLength(x.length);
   expect(cloneWithY.y[0]).toBe(x[0]);
@@ -150,15 +150,15 @@ test("seismogram clone", () => {
 
 
 test("seismogram merge", () => {
-  let yValues = Int32Array.from([0, 1, 2]);
+  const yValues = Int32Array.from([0, 1, 2]);
   expect(yValues).toHaveLength(3);
-  let sampleRate = 20.0;
-  let startTimeA = DateTime.utc().minus(Duration.fromMillis(1000*yValues.length/sampleRate));
-  let startTimeB = startTimeA.plus(Duration.fromMillis(1000*yValues.length/sampleRate));
+  const sampleRate = 20.0;
+  const startTimeA = DateTime.utc().minus(Duration.fromMillis(1000*yValues.length/sampleRate));
+  const startTimeB = startTimeA.plus(Duration.fromMillis(1000*yValues.length/sampleRate));
 
-  let seisSegA = new SeismogramSegment(yValues.slice(), sampleRate, startTimeA);
-  let seisSegB = new SeismogramSegment(yValues.slice(), sampleRate, startTimeB);
-  let seis = new Seismogram([ seisSegA, seisSegB]);
+  const seisSegA = new SeismogramSegment(yValues.slice(), sampleRate, startTimeA);
+  const seisSegB = new SeismogramSegment(yValues.slice(), sampleRate, startTimeB);
+  const seis = new Seismogram([ seisSegA, seisSegB]);
   expect(seis.merge().length).toEqual(yValues.length*2);
 });
 
@@ -249,7 +249,7 @@ test("find minmax test", () => {
     const seisA = Seismogram.fromContiguousData(yValues, sampleRate, startTime);
     const sddA = SeismogramDisplayData.fromSeismogram(seisA);
     const ampMode = AMPLITUDE_MODE.Mean;
-    let minMax = findMinMaxOverTimeRange([sddA],
+    const minMax = findMinMaxOverTimeRange([sddA],
                                         sddA.timeRange,
                                         false,
                                         ampMode);

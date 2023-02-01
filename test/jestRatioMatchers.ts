@@ -1,7 +1,7 @@
 
 import { expect} from '@jest/globals'
 
-let ratioTest = function(received: number, argument: number, digits: number, closeZero: number, closeZeroDigits: number) {
+const ratioTest = function(received: number, argument: number, digits: number, closeZero: number, closeZeroDigits: number) {
     if (argument === 0 || Math.abs(argument) < closeZero) {
       expect(received).toBeCloseTo(argument, closeZeroDigits);
       return {
@@ -9,7 +9,7 @@ let ratioTest = function(received: number, argument: number, digits: number, clo
         pass: true
       };
     } else {
-      let ratioError = (argument - received)/ argument;
+      const ratioError = (argument - received)/ argument;
       if ( Math.abs(ratioError) > Math.pow(10, -1*digits) ) {
         return {
           message: () => `expect ratio error of  (a-b)/a `+argument+' to '+received+` < 10e-`+digits+' but was '+ratioError,
@@ -46,7 +46,7 @@ expect.extend({
        };
      }
      for(let i=0; i< received.length; i++) {
-       let m = ratioTest(received[i], argument[i], digits, closeZero, closeZeroDigits);
+       const m = ratioTest(received[i], argument[i], digits, closeZero, closeZeroDigits);
        if ( ! m.pass) {
          return {
            message: () => '(index: '+i+'/'+received.length+') '+m.message(),
@@ -75,7 +75,7 @@ expect.extend({
        };
      }
      for(let i=0; i< received.length; i++) {
-       let diff = (argument[i] - received[i]);
+       const diff = (argument[i] - received[i]);
        if ( Math.abs(diff) > Math.pow(10, -1*digits) ) {
          return {
            message: () => 'at index '+i+'/'+received.length+' expect '+argument[i]+' to be '+received[i]+` within 10e-`+digits+' but was '+diff,

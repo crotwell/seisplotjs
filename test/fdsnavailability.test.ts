@@ -4,7 +4,7 @@ import * as util from '../src/util';
 import {Duration, Interval} from 'luxon';
 
 test( "query setter test", () => {
-  let dsQuery = new fdsnavailability.AvailabilityQuery();
+  const dsQuery = new fdsnavailability.AvailabilityQuery();
   const NET = 'CO';
   const STA = 'JSC';
   const LOC = '00';

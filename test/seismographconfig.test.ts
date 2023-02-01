@@ -3,7 +3,7 @@
 import {SeismographConfig} from '../src/seismographconfig.js';
 
 test("simple seismographconfig clone", () => {
-  let seisConfig = new SeismographConfig();
+  const seisConfig = new SeismographConfig();
 
   seisConfig.isXAxis = false;
   seisConfig.isYAxis = false;

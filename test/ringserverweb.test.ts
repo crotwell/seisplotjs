@@ -4,7 +4,7 @@ import * as ringserverweb from '../src/ringserverweb.js';
 
 
 test( "query setter test", () => {
-  let dsQuery = new ringserverweb.RingserverConnection();
+  const dsQuery = new ringserverweb.RingserverConnection();
 
   expect(dsQuery.port(80)).toBe(dsQuery);
   expect(dsQuery.getPort()).toEqual(80);
