@@ -113,25 +113,5 @@
     "prismjs": "^1.26.0",
     "replace-in-file": "^6.3.2",
     "typescript": "^4.9.5"
-  },
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "targets": {
-            "browsers": [
-              "> 1% in US",
-              "not ie 11",
-              "not dead"
-            ],
-            "node": "current"
-          }
-        }
-      ]
-    ],
-    "plugins": [
-      "@babel/plugin-transform-runtime"
-    ]
   }
 }
