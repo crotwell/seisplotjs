@@ -38,4 +38,4 @@ test( "load HODGE for local eq test", () => {
       expect(loadResult.catalog).toHaveLength(1);
     });
 
-});
+}, 20000);
