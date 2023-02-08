@@ -41,5 +41,5 @@ module.exports = {
   "transformIgnorePatterns": [
       `node_modules/(?!${esModules})`
     ],
-
+  "testTimeout": 15000,
 };
