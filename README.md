@@ -68,3 +68,6 @@ Seisplotjs 3 now uses typescript,
 [luxon](https://moment.github.io/luxon/#/) instead of moment,
 html components instead of inserting into a div,
 and tries to have a more vanillajs style.
+
+Documentation for previous versions is archived at
+[http://www.seis.sc.edu/software/seisplotjs](http://www.seis.sc.edu/software/seisplotjs)
