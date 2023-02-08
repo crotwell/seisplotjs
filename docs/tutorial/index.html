@@ -137,8 +137,8 @@
       <p>
        If this is to be hosted locally, then we need to download the standalone version of seisplotjs,
             from here
-       <a href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.0.0-rc1_standalone.mjs">
-        http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs/seisplotjs_3.0.0-rc1_standalone.mjs
+       <a href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.0.0_standalone.mjs">
+        http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs/seisplotjs_3.0.0-rc2_standalone.mjs
        </a>
        and put it in the same directory as our html file.
               The
@@ -168,7 +168,7 @@
       </p>
       <pre><code class="language-javascript" snippet="createseis">
 
-import * as sp from '../seisplotjs_3.0.0-rc1_standalone.mjs';
+import * as sp from '../seisplotjs_3.0.0_standalone.mjs';
 
 let dataArray = new Float32Array(1000).map(function(d, i) {
   return Math.sin(2*Math.PI*i/100) * 100;
