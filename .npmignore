@@ -5,3 +5,5 @@ example/
 .git/
 seisplotjs_*_standalone.js
 example/**/seisplotjs_*_standalone.js
+src/handlebarsimport.esbuild
+src/handlebarsimport.typescript
