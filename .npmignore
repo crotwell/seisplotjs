@@ -1,9 +1,6 @@
-src/
-flow-typed/
 example/
 .DS_Store
 .git/
 seisplotjs_*_standalone.js
-example/**/seisplotjs_*_standalone.js
 src/handlebarsimport.esbuild
 src/handlebarsimport.typescript
