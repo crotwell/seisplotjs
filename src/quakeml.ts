@@ -169,7 +169,7 @@ export class Quake {
 
     if (isNonEmptyStringArg(eventId)) {
       if (host === USGS_HOST && isNonEmptyStringArg(catalogEventSource)) {
-        // USGS, NCEDC and SCEDC use concat of eventsource and eventId as eventid, sigh...
+        // USGS, NCEDC and SCEDC use concat of eventsource and eventId as eventit, sigh...
         return catalogEventSource + eventId;
       } else {
         return eventId;
@@ -213,7 +213,7 @@ export class Quake {
   get origin(): Origin {
     if (isDef(this._preferredOrigin)) {
       return this._preferredOrigin;
-    } else if (this.originList.length > 0) {
+    } else if (this.originList.length > 1) {
       return this.originList[0];
     } else {
       throw new Error("No origins in quake");
@@ -235,7 +235,7 @@ export class Quake {
   get magnitude(): Magnitude {
     if (isDef(this._preferredMagnitude)) {
       return this._preferredMagnitude;
-    } else if (this.magnitudeList.length > 0) {
+    } else if (this.magnitudeList.length > 1) {
       return this.magnitudeList[0];
     } else {
       throw new Error("No magnitudes in quake");
