@@ -1,5 +1,5 @@
 // snip start querystation
-import * as sp from '../seisplotjs_3.0.1-alpha_standalone.mjs';
+import * as sp from '../seisplotjs_3.0.0_standalone.mjs';
 
 let timeWindow = sp.util.startDuration('2019-07-06T03:19:53Z', 1800);
 let dsQuery = new sp.fdsndataselect.DataSelectQuery();
