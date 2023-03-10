@@ -8,8 +8,8 @@ const SeismogramDisplayData = sp.seismogram.SeismogramDisplayData;
 const HelicorderConfig = sp.helicorder.HelicorderConfig;
 const Helicorder = sp.helicorder.Helicorder;
 
-const MINMAX_URL = "http://eeyore.seis.sc.edu/minmax";
-const MSEED_URL = "http://eeyore.seis.sc.edu/mseed";
+const MINMAX_URL = "https://eeyore.seis.sc.edu/minmax";
+const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
 
 const QUAKE_START_OFFSET = luxon.Duration.fromObject({hours: 1});
 
