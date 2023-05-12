@@ -446,6 +446,17 @@ export class Magnitude {
 export class Arrival {
   phase: string;
   pick: Pick;
+  timeCorrection?: number;
+  azimuth?: number;
+  distance?: number;
+  takeoffAngle?: RealQuantity;
+  timeResidual?: number;
+  horizontalSlownessResidual?: number;
+  backazimuthResidual?: number;
+  timeWeight?: number;
+  horizontalSlownessWeight?: number;
+  backazimuthWeight?: number;
+  creationInfo?: CreationInfo;
   publicId: string;
 
   constructor(phase: string, pick: Pick) {
@@ -472,6 +483,28 @@ export class Arrival {
 
     const phase = _grabFirstElText(arrivalQML, "phase");
 
+    const timeCorrection = _grabFirstElFloat(arrivalQML, "timeCorrection");
+
+    const azimuth = _grabFirstElFloat(arrivalQML, "azimuth");
+
+    const distance = _grabFirstElFloat(arrivalQML, "distance");
+
+    const takeoffAngle = _grabFirstElRealQuantity(arrivalQML, "takeoffAngle");
+
+    const timeResidual = _grabFirstElFloat(arrivalQML, "timeResidual");
+
+    const horizontalSlownessResidual = _grabFirstElFloat(arrivalQML, "horizontalSlownessResidual");
+
+    const backazimuthResidual = _grabFirstElFloat(arrivalQML, "backazimuthResidual");
+
+    const timeWeight = _grabFirstElFloat(arrivalQML, "timeWeight");
+
+    const horizontalSlownessWeight = _grabFirstElFloat(arrivalQML, "horizontalSlownessWeight");
+
+    const backazimuthWeight = _grabFirstElFloat(arrivalQML, "backazimuthWeight");
+
+    const creationInfo = _grabFirstElCreationInfo(arrivalQML, "creationInfo");
+
     if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
       const myPick = allPicks.find(function (p: Pick) {
         return p.publicId === pickId;
@@ -482,6 +515,18 @@ export class Arrival {
       }
 
       const out = new Arrival(phase, myPick);
+
+      out.timeCorrection = timeCorrection;
+      out.azimuth = azimuth;
+      out.distance = distance;
+      out.takeoffAngle = takeoffAngle;
+      out.timeResidual = timeResidual;
+      out.horizontalSlownessResidual = horizontalSlownessResidual;
+      out.backazimuthResidual = backazimuthResidual;
+      out.timeWeight = timeWeight;
+      out.horizontalSlownessWeight = horizontalSlownessWeight;
+      out.backazimuthWeight = backazimuthWeight;
+      out.creationInfo = creationInfo;
 
       const pid = _grabAttribute(arrivalQML, "publicID");
 
@@ -604,6 +649,89 @@ export class Pick {
   }
   toString(): string {
     return stringify(this.time) + ` ${this.networkCode}.${this.stationCode}.${this.locationCode}.${this.channelCode}`;
+  }
+}
+
+export class RealQuantity {
+  value: number;
+  uncertainty?: number;
+  lowerUncertainty?: number;
+  upperUncertainty?: number;
+  confidenceLevel?: number;
+
+  constructor(value: number) {
+    this.value = value;
+  }
+
+  /**
+   * Parses a QuakeML real quantity xml element into a RealQuantity object.
+   *
+   * @param realQuantityQML the real quantity xml Element
+   * @returns RealQuantity instance
+   */
+  static createFromXml(realQuantityQML: Element): RealQuantity {
+    const value = _grabFirstElFloat(realQuantityQML, "value");
+
+    const uncertainty = _grabFirstElFloat(realQuantityQML, "uncertainty");
+
+    const lowerUncertainty = _grabFirstElFloat(realQuantityQML, "lowerUncertainty");
+
+    const upperUncertainty = _grabFirstElFloat(realQuantityQML, "upperUncertainty");
+
+    const confidenceLevel = _grabFirstElFloat(realQuantityQML, "confidenceLevel");
+
+    if (value === undefined) {
+      throw new Error("missing value");
+    }
+
+    const out = new RealQuantity(value);
+
+    out.uncertainty = uncertainty;
+    out.lowerUncertainty = lowerUncertainty;
+    out.upperUncertainty = upperUncertainty;
+    out.confidenceLevel = confidenceLevel;
+
+    return out;
+  }
+}
+
+export class CreationInfo {
+  agencyID?: string;
+  agencyURI?: string;
+  author?: string;
+  authorURI?: string;
+  creationTime?: DateTime;
+  version?: string;
+
+  /**
+   * Parses a QuakeML creation info xml element into a CreationInfo object.
+   *
+   * @param creationInfoQML the creation info xml Element
+   * @returns CreationInfo instance
+   */
+  static createFromXml(creationInfoQML: Element): CreationInfo {
+    const agencyID = _grabFirstElText(creationInfoQML, "agencyID");
+
+    const agencyURI = _grabFirstElText(creationInfoQML, "agencyURI");
+
+    const author = _grabFirstElText(creationInfoQML, "author");
+
+    const authorURI = _grabFirstElText(creationInfoQML, "authorURI");
+
+    const creationTime = _grabFirstElDateTime(creationInfoQML, "creationTime");
+
+    const version = _grabFirstElText(creationInfoQML, "version");
+
+    const out = new CreationInfo();
+
+    out.agencyID = agencyID;
+    out.agencyURI = agencyURI;
+    out.author = author;
+    out.authorURI = authorURI;
+    out.creationTime = creationTime;
+    out.version = version;
+
+    return out;
   }
 }
 
@@ -736,6 +864,42 @@ const _grabFirstElFloat = function (
 
   return out;
 };
+
+const _grabFirstElDateTime = function (
+  xml: Element | null | void,
+  tagName: string,
+): DateTime | undefined {
+  let out = undefined;
+
+  const el = _grabFirstElText(xml, tagName);
+
+  if (isStringArg(el)) {
+    out = isoToDateTime(el);
+  }
+
+  return out;
+};
+
+const _grabFirstElType = function<T>(createFromXml: (el: Element) => T) {
+  return function(
+    xml: Element | null | void,
+    tagName: string,
+  ): T | undefined {
+    let out = undefined;
+
+    const el = _grabFirstEl(xml, tagName);
+
+    if (isObject(el)) {
+      out = createFromXml(el);
+    }
+
+    return out;
+  };
+};
+
+const _grabFirstElRealQuantity = _grabFirstElType(RealQuantity.createFromXml.bind(RealQuantity));
+
+const _grabFirstElCreationInfo = _grabFirstElType(CreationInfo.createFromXml.bind(CreationInfo));
 
 const _grabAttribute = function (
   xml: Element | null | void,
