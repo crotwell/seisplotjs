@@ -11,7 +11,6 @@ import {
   isNonEmptyStringArg,
   isNumArg,
   isoToDateTime,
-  checkStringOrDate,
   stringify,
 } from "./util";
 import * as util from "./util"; // for util.log
@@ -444,6 +443,7 @@ export class Magnitude {
   Represents a QuakeML Arrival, a combination of a Pick with a phase name.
  */
 export class Arrival {
+  comments: Comment[] = [];
   phase: string;
   pick: Pick;
   timeCorrection?: number;
@@ -478,6 +478,8 @@ export class Arrival {
         `Cannot extract, not a QuakeML Arrival: ${arrivalQML.localName}`,
       );
     }
+
+    const comments = _grabAllElComment(arrivalQML, "comment");
 
     const pickId = _grabFirstElText(arrivalQML, "pickID");
 
@@ -516,6 +518,7 @@ export class Arrival {
 
       const out = new Arrival(phase, myPick);
 
+      out.comments = comments;
       out.timeCorrection = timeCorrection;
       out.azimuth = azimuth;
       out.distance = distance;
@@ -550,21 +553,30 @@ export class Arrival {
   Represents a QuakeML Pick.
  */
 export class Pick {
-  time: DateTime;
+  comments: Comment[] = [];
+  time: TimeQuantity;
   networkCode: string;
   stationCode: string;
   locationCode: string;
   channelCode: string;
+  horizontalSlowness?: RealQuantity;
+  backazimuth?: RealQuantity;
+  onset?: string;
+  phaseHint?: string;
+  polarity?: string;
+  evaluationMode?: string;
+  evaluationStatus?: string;
+  creationInfo?: CreationInfo;
   publicId: string;
 
   constructor(
-    time: DateTime,
+    time: TimeQuantity,
     networkCode: string,
     stationCode: string,
     locationCode: string,
     channelCode: string,
   ) {
-    this.time = checkStringOrDate(time);
+    this.time = time;
     this.networkCode = networkCode;
     this.stationCode = stationCode;
     this.locationCode = locationCode;
@@ -585,9 +597,10 @@ export class Pick {
       );
     }
 
-    const otimeStr = _grabFirstElText(_grabFirstEl(pickQML, "time"), "value");
-    if (! isDef(otimeStr)) {throw new Error("Missing time");}
-    const time = checkStringOrDate(otimeStr);
+    const comments = _grabAllElComment(pickQML, "comment");
+
+    const time = _grabFirstElTimeQuantity(pickQML, "time");
+    if (! isDef(time)) {throw new Error("Missing time");}
 
     const waveformIdEl = _grabFirstEl(pickQML, "waveformID");
 
@@ -598,6 +611,22 @@ export class Pick {
     let locationCode = _grabAttribute(waveformIdEl, "locationCode");
 
     const channelCode = _grabAttribute(waveformIdEl, "channelCode");
+
+    const horizontalSlowness = _grabFirstElRealQuantity(pickQML, "horizontalSlowness");
+
+    const backazimuth = _grabFirstElRealQuantity(pickQML, "backazimuth");
+
+    const onset = _grabFirstElText(pickQML, "onset");
+
+    const phaseHint = _grabFirstElText(pickQML, "phaseHint");
+
+    const polarity = _grabFirstElText(pickQML, "polarity");
+
+    const evaluationMode = _grabFirstElText(pickQML, "evaluationMode");
+
+    const evaluationStatus = _grabFirstElText(pickQML, "evaluationStatus");
+
+    const creationInfo = _grabFirstElCreationInfo(pickQML, "creationInfo");
 
     // handle empty loc code, it can be missing
     if (!isNonEmptyStringArg(locationCode)) {
@@ -629,6 +658,16 @@ export class Pick {
       out.publicId = pid;
     }
 
+    out.comments = comments;
+    out.horizontalSlowness = horizontalSlowness;
+    out.backazimuth = backazimuth;
+    out.onset = onset;
+    out.phaseHint = phaseHint;
+    out.polarity = polarity;
+    out.evaluationMode = evaluationMode;
+    out.evaluationStatus = evaluationStatus;
+    out.creationInfo = creationInfo;
+
     return out;
   }
 
@@ -652,15 +691,47 @@ export class Pick {
   }
 }
 
-export class RealQuantity {
-  value: number;
+class Quantity<T> {
+  value: T;
   uncertainty?: number;
   lowerUncertainty?: number;
   upperUncertainty?: number;
   confidenceLevel?: number;
 
-  constructor(value: number) {
+  constructor(value: T) {
     this.value = value;
+  }
+
+  /**
+   * Parses a QuakeML quantity xml element into a RealQuantity object.
+   *
+   * @param quantityQML the quantity xml Element
+   * @param grab a callback to obtain the value
+   * @returns RealQuantity instance
+   */
+  static _createFromXml<T>(quantityQML: Element, grab: (xml: Element | null | void, tagName: string) => T | undefined): Quantity<T> {
+    const value = grab(quantityQML, "value");
+
+    const uncertainty = _grabFirstElFloat(quantityQML, "uncertainty");
+
+    const lowerUncertainty = _grabFirstElFloat(quantityQML, "lowerUncertainty");
+
+    const upperUncertainty = _grabFirstElFloat(quantityQML, "upperUncertainty");
+
+    const confidenceLevel = _grabFirstElFloat(quantityQML, "confidenceLevel");
+
+    if (value === undefined) {
+      throw new Error("missing value");
+    }
+
+    const out = new Quantity<T>(value);
+
+    out.uncertainty = uncertainty;
+    out.lowerUncertainty = lowerUncertainty;
+    out.upperUncertainty = upperUncertainty;
+    out.confidenceLevel = confidenceLevel;
+
+    return out;
   }
 
   /**
@@ -669,27 +740,53 @@ export class RealQuantity {
    * @param realQuantityQML the real quantity xml Element
    * @returns RealQuantity instance
    */
-  static createFromXml(realQuantityQML: Element): RealQuantity {
-    const value = _grabFirstElFloat(realQuantityQML, "value");
+  static createRealQuantityFromXml(realQuantityQML: Element): RealQuantity {
+    return Quantity._createFromXml(realQuantityQML, _grabFirstElFloat);
+  }
 
-    const uncertainty = _grabFirstElFloat(realQuantityQML, "uncertainty");
+  /**
+   * Parses a QuakeML real quantity xml element into a RealQuantity object.
+   *
+   * @param timeQuantityQML the time quantity xml Element
+   * @returns TimeQuantity instance
+   */
+  static createTimeQuantityFromXml(timeQuantityQML: Element): TimeQuantity {
+    return Quantity._createFromXml(timeQuantityQML, _grabFirstElDateTime);
+  }
+}
 
-    const lowerUncertainty = _grabFirstElFloat(realQuantityQML, "lowerUncertainty");
+export type RealQuantity = Quantity<number>;
+export type TimeQuantity = Quantity<DateTime>;
 
-    const upperUncertainty = _grabFirstElFloat(realQuantityQML, "upperUncertainty");
+/**
+  Represents a QuakeML comment.
+ */
+export class Comment {
+  text: string;
+  creationInfo?: CreationInfo;
 
-    const confidenceLevel = _grabFirstElFloat(realQuantityQML, "confidenceLevel");
+  constructor(text: string) {
+    this.text = text;
+  }
 
-    if (value === undefined) {
+  /**
+   * Parses a QuakeML comment xml element into a Comment object.
+   *
+   * @param commentQML the comment xml Element
+   * @returns Comment instance
+   */
+  static createFromXml(commentQML: Element): Comment {
+    const text = _grabFirstElText(commentQML, "text");
+
+    const creationInfo = _grabFirstElCreationInfo(commentQML, "creationInfo");
+
+    if (text === undefined) {
       throw new Error("missing value");
     }
 
-    const out = new RealQuantity(value);
+    const out = new Comment(text);
 
-    out.uncertainty = uncertainty;
-    out.lowerUncertainty = lowerUncertainty;
-    out.upperUncertainty = upperUncertainty;
-    out.confidenceLevel = confidenceLevel;
+    out.creationInfo = creationInfo;
 
     return out;
   }
@@ -776,6 +873,29 @@ export function createQuakeFromValues(publicId: string,
 
 // these are similar methods as in seisplotjs.stationxml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
+
+const _grabAllElComment = function (
+  xml: Element | null | void,
+  tagName: string,
+): Comment[] {
+
+  const out = [];
+
+  if (isObject(xml)) {
+    const elList = xml.getElementsByTagName(tagName);
+    if (isObject(elList) && elList.length > 0) {
+      for (let i = 0; i < elList.length; ++i) {
+        const el = elList.item(i);
+        if (isObject(el)) {
+          out.push(Comment.createFromXml(el));
+        }
+      }
+    }
+  }
+
+  return out;
+};
+
 const _grabFirstElNS = function (
   xml: Element | null | void,
   namespace: string,
@@ -897,7 +1017,8 @@ const _grabFirstElType = function<T>(createFromXml: (el: Element) => T) {
   };
 };
 
-const _grabFirstElRealQuantity = _grabFirstElType(RealQuantity.createFromXml.bind(RealQuantity));
+const _grabFirstElRealQuantity = _grabFirstElType(Quantity.createRealQuantityFromXml.bind(Quantity));
+const _grabFirstElTimeQuantity = _grabFirstElType(Quantity.createTimeQuantityFromXml.bind(Quantity));
 
 const _grabFirstElCreationInfo = _grabFirstElType(CreationInfo.createFromXml.bind(CreationInfo));
 
