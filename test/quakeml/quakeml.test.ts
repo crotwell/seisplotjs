@@ -23,6 +23,24 @@ test("USGS quake", () => {
   const quakes = quakeml.parseQuakeML(xml);
   expect(quakes).toHaveLength(1);
   expect(quakes[0].time).toEqual(isoToDateTime(("2023-05-10T16:02:00.451000Z")));
+  expect(quakes[0].magnitudeList).toHaveLength(2);
+  expect(quakes[0].magnitudeList[0]).toMatchObject({
+    mag: {
+      value: 7.6,
+      uncertainty: 0.055,
+      confidenceLevel: 90,
+    },
+    type: 'Mww',
+    stationCount: 32,
+    evaluationMode: "manual",
+    evaluationStatus: "preliminary",
+    creationInfo: {
+      agencyID: 'us',
+      agencyURI: "smi:anss.org/metadata/agencyid/us",
+      creationTime: isoToDateTime("2023-05-10T16:14:55.000000Z"),
+    },
+    publicId: "quakeml:us.anss.org/magnitude/6000kawn/mww",
+  });
   expect(quakes[0].hasOrigin()).toBeTrue();
   expect(quakes[0].origin.arrivalList).toHaveLength(117);
   expect(quakes[0].origin.arrivalList[0]).toMatchObject({

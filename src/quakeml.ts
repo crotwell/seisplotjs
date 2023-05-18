@@ -48,6 +48,23 @@ export function createQuakeClickEvent(q: Quake, mouseclick: Event): CustomEvent 
 
 // QuakeML classes
 
+class BaseElement {
+  publicId: string = UNKNOWN_PUBLIC_ID;
+  comments: Comment[] = [];
+  creationInfo?: CreationInfo;
+
+  protected populate(qml: Element): void {
+    const pid = _grabAttribute(qml, "publicID");
+    if (!isNonEmptyStringArg(pid)) {
+      throw new Error("missing publicID");
+    }
+
+    this.publicId = pid;
+    this.comments = _grabAllElComment(qml, "comment");
+    this.creationInfo = _grabFirstElCreationInfo(qml, "creationInfo");
+  }
+}
+
 /**
  * Represent a QuakeML Event. Renamed to Quake as Event conflicts with
  * other uses in javascript.
@@ -382,15 +399,17 @@ export class Origin {
 /**
   Represents a QuakeML Magnitude.
  */
-export class Magnitude {
-  mag: number;
-  type: string;
-  publicId: string;
+export class Magnitude extends BaseElement {
+  mag: RealQuantity;
+  type?: string;
+  stationCount?: number;
+  azimuthalGap?: number;
+  evaluationMode?: string;
+  evaluationStatus?: string;
 
-  constructor(mag: number, type: string) {
+  constructor(mag: RealQuantity) {
+    super();
     this.mag = mag;
-    this.type = type;
-    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -406,32 +425,31 @@ export class Magnitude {
       );
     }
 
-    const mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, "mag"), "value");
-
-    let type = _grabFirstElText(qml, "type");
-
-    if (isNumArg(mag)) {
-      // allow type to be undef, but mag needs to be a number
-      if (!isNonEmptyStringArg(type)) {
-        type = UNKNOWN_MAG_TYPE;
-      }
-
-      const out = new Magnitude(mag, type);
-
-      const pid = _grabAttribute(qml, "publicID");
-
-      if (isNonEmptyStringArg(pid)) {
-        out.publicId = pid;
-      }
-
-      return out;
-    } else {
-      throw new Error(
-        `Did not find mag and type in Element: ${stringify(mag)} ${stringify(
-          type,
-        )}`,
-      );
+    const mag = _grabFirstElRealQuantity(qml, "mag");
+    if (!mag) {
+      throw new Error("magnitude missing mag");
     }
+
+    const type = _grabFirstElText(qml, "type");
+
+    const stationCount = _grabFirstElInt(qml, "stationCount");
+
+    const azimuthalGap = _grabFirstElFloat(qml, "azimuthalGap");
+
+    const evaluationMode = _grabFirstElText(qml, "evaluationMode");
+
+    const evaluationStatus = _grabFirstElText(qml, "evaluationStatus");
+
+    const out = new Magnitude(mag);
+
+    out.populate(qml);
+    out.type = type;
+    out.stationCount = stationCount;
+    out.azimuthalGap = azimuthalGap;
+    out.evaluationMode = evaluationMode;
+    out.evaluationStatus = evaluationStatus;
+
+    return out;
   }
 
   toString(): string {
@@ -442,8 +460,7 @@ export class Magnitude {
 /**
   Represents a QuakeML Arrival, a combination of a Pick with a phase name.
  */
-export class Arrival {
-  comments: Comment[] = [];
+export class Arrival extends BaseElement {
   phase: string;
   pick: Pick;
   timeCorrection?: number;
@@ -456,13 +473,11 @@ export class Arrival {
   timeWeight?: number;
   horizontalSlownessWeight?: number;
   backazimuthWeight?: number;
-  creationInfo?: CreationInfo;
-  publicId: string;
 
   constructor(phase: string, pick: Pick) {
+    super();
     this.phase = phase;
     this.pick = pick;
-    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -478,8 +493,6 @@ export class Arrival {
         `Cannot extract, not a QuakeML Arrival: ${arrivalQML.localName}`,
       );
     }
-
-    const comments = _grabAllElComment(arrivalQML, "comment");
 
     const pickId = _grabFirstElText(arrivalQML, "pickID");
 
@@ -505,8 +518,6 @@ export class Arrival {
 
     const backazimuthWeight = _grabFirstElFloat(arrivalQML, "backazimuthWeight");
 
-    const creationInfo = _grabFirstElCreationInfo(arrivalQML, "creationInfo");
-
     if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
       const myPick = allPicks.find(function (p: Pick) {
         return p.publicId === pickId;
@@ -518,7 +529,7 @@ export class Arrival {
 
       const out = new Arrival(phase, myPick);
 
-      out.comments = comments;
+      out.populate(arrivalQML);
       out.timeCorrection = timeCorrection;
       out.azimuth = azimuth;
       out.distance = distance;
@@ -529,13 +540,6 @@ export class Arrival {
       out.timeWeight = timeWeight;
       out.horizontalSlownessWeight = horizontalSlownessWeight;
       out.backazimuthWeight = backazimuthWeight;
-      out.creationInfo = creationInfo;
-
-      const pid = _grabAttribute(arrivalQML, "publicID");
-
-      if (isNonEmptyStringArg(pid)) {
-        out.publicId = pid;
-      }
 
       return out;
     } else {
@@ -552,8 +556,7 @@ export class Arrival {
 /**
   Represents a QuakeML Pick.
  */
-export class Pick {
-  comments: Comment[] = [];
+export class Pick extends BaseElement {
   time: TimeQuantity;
   networkCode: string;
   stationCode: string;
@@ -566,8 +569,6 @@ export class Pick {
   polarity?: string;
   evaluationMode?: string;
   evaluationStatus?: string;
-  creationInfo?: CreationInfo;
-  publicId: string;
 
   constructor(
     time: TimeQuantity,
@@ -576,12 +577,12 @@ export class Pick {
     locationCode: string,
     channelCode: string,
   ) {
+    super();
     this.time = time;
     this.networkCode = networkCode;
     this.stationCode = stationCode;
     this.locationCode = locationCode;
     this.channelCode = channelCode;
-    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -596,8 +597,6 @@ export class Pick {
         `Cannot extract, not a QuakeML Pick: ${pickQML.localName}`,
       );
     }
-
-    const comments = _grabAllElComment(pickQML, "comment");
 
     const time = _grabFirstElTimeQuantity(pickQML, "time");
     if (! isDef(time)) {throw new Error("Missing time");}
@@ -626,8 +625,6 @@ export class Pick {
 
     const evaluationStatus = _grabFirstElText(pickQML, "evaluationStatus");
 
-    const creationInfo = _grabFirstElCreationInfo(pickQML, "creationInfo");
-
     // handle empty loc code, it can be missing
     if (!isNonEmptyStringArg(locationCode)) {
       locationCode = "";
@@ -652,13 +649,7 @@ export class Pick {
 
     const out = new Pick(time, netCode, stationCode, locationCode, channelCode);
 
-    const pid = _grabAttribute(pickQML, "publicID");
-
-    if (isNonEmptyStringArg(pid)) {
-      out.publicId = pid;
-    }
-
-    out.comments = comments;
+    out.populate(pickQML);
     out.horizontalSlowness = horizontalSlowness;
     out.backazimuth = backazimuth;
     out.onset = onset;
@@ -666,7 +657,6 @@ export class Pick {
     out.polarity = polarity;
     out.evaluationMode = evaluationMode;
     out.evaluationStatus = evaluationStatus;
-    out.creationInfo = creationInfo;
 
     return out;
   }
