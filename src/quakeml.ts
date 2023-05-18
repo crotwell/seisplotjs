@@ -11,7 +11,6 @@ import {
   isNonEmptyStringArg,
   isNumArg,
   isoToDateTime,
-  checkStringOrDate,
   stringify,
 } from "./util";
 import * as util from "./util"; // for util.log
@@ -48,6 +47,23 @@ export function createQuakeClickEvent(q: Quake, mouseclick: Event): CustomEvent 
 }
 
 // QuakeML classes
+
+class BaseElement {
+  publicId: string = UNKNOWN_PUBLIC_ID;
+  comments: Comment[] = [];
+  creationInfo?: CreationInfo;
+
+  protected populate(qml: Element): void {
+    const pid = _grabAttribute(qml, "publicID");
+    if (!isNonEmptyStringArg(pid)) {
+      throw new Error("missing publicID");
+    }
+
+    this.publicId = pid;
+    this.comments = _grabAllElComment(qml, "comment");
+    this.creationInfo = _grabFirstElCreationInfo(qml, "creationInfo");
+  }
+}
 
 /**
  * Represent a QuakeML Event. Renamed to Quake as Event conflicts with
@@ -383,15 +399,17 @@ export class Origin {
 /**
   Represents a QuakeML Magnitude.
  */
-export class Magnitude {
-  mag: number;
-  type: string;
-  publicId: string;
+export class Magnitude extends BaseElement {
+  mag: RealQuantity;
+  type?: string;
+  stationCount?: number;
+  azimuthalGap?: number;
+  evaluationMode?: string;
+  evaluationStatus?: string;
 
-  constructor(mag: number, type: string) {
+  constructor(mag: RealQuantity) {
+    super();
     this.mag = mag;
-    this.type = type;
-    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -407,32 +425,31 @@ export class Magnitude {
       );
     }
 
-    const mag = _grabFirstElFloat(_grabFirstElNS(qml, BED_NS, "mag"), "value");
-
-    let type = _grabFirstElText(qml, "type");
-
-    if (isNumArg(mag)) {
-      // allow type to be undef, but mag needs to be a number
-      if (!isNonEmptyStringArg(type)) {
-        type = UNKNOWN_MAG_TYPE;
-      }
-
-      const out = new Magnitude(mag, type);
-
-      const pid = _grabAttribute(qml, "publicID");
-
-      if (isNonEmptyStringArg(pid)) {
-        out.publicId = pid;
-      }
-
-      return out;
-    } else {
-      throw new Error(
-        `Did not find mag and type in Element: ${stringify(mag)} ${stringify(
-          type,
-        )}`,
-      );
+    const mag = _grabFirstElRealQuantity(qml, "mag");
+    if (!mag) {
+      throw new Error("magnitude missing mag");
     }
+
+    const type = _grabFirstElText(qml, "type");
+
+    const stationCount = _grabFirstElInt(qml, "stationCount");
+
+    const azimuthalGap = _grabFirstElFloat(qml, "azimuthalGap");
+
+    const evaluationMode = _grabFirstElText(qml, "evaluationMode");
+
+    const evaluationStatus = _grabFirstElText(qml, "evaluationStatus");
+
+    const out = new Magnitude(mag);
+
+    out.populate(qml);
+    out.type = type;
+    out.stationCount = stationCount;
+    out.azimuthalGap = azimuthalGap;
+    out.evaluationMode = evaluationMode;
+    out.evaluationStatus = evaluationStatus;
+
+    return out;
   }
 
   toString(): string {
@@ -443,7 +460,7 @@ export class Magnitude {
 /**
   Represents a QuakeML Arrival, a combination of a Pick with a phase name.
  */
-export class Arrival {
+export class Arrival extends BaseElement {
   phase: string;
   pick: Pick;
   timeCorrection?: number;
@@ -456,13 +473,11 @@ export class Arrival {
   timeWeight?: number;
   horizontalSlownessWeight?: number;
   backazimuthWeight?: number;
-  creationInfo?: CreationInfo;
-  publicId: string;
 
   constructor(phase: string, pick: Pick) {
+    super();
     this.phase = phase;
     this.pick = pick;
-    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -503,8 +518,6 @@ export class Arrival {
 
     const backazimuthWeight = _grabFirstElFloat(arrivalQML, "backazimuthWeight");
 
-    const creationInfo = _grabFirstElCreationInfo(arrivalQML, "creationInfo");
-
     if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
       const myPick = allPicks.find(function (p: Pick) {
         return p.publicId === pickId;
@@ -516,6 +529,7 @@ export class Arrival {
 
       const out = new Arrival(phase, myPick);
 
+      out.populate(arrivalQML);
       out.timeCorrection = timeCorrection;
       out.azimuth = azimuth;
       out.distance = distance;
@@ -526,13 +540,6 @@ export class Arrival {
       out.timeWeight = timeWeight;
       out.horizontalSlownessWeight = horizontalSlownessWeight;
       out.backazimuthWeight = backazimuthWeight;
-      out.creationInfo = creationInfo;
-
-      const pid = _grabAttribute(arrivalQML, "publicID");
-
-      if (isNonEmptyStringArg(pid)) {
-        out.publicId = pid;
-      }
 
       return out;
     } else {
@@ -549,27 +556,33 @@ export class Arrival {
 /**
   Represents a QuakeML Pick.
  */
-export class Pick {
-  time: DateTime;
+export class Pick extends BaseElement {
+  time: TimeQuantity;
   networkCode: string;
   stationCode: string;
   locationCode: string;
   channelCode: string;
-  publicId: string;
+  horizontalSlowness?: RealQuantity;
+  backazimuth?: RealQuantity;
+  onset?: string;
+  phaseHint?: string;
+  polarity?: string;
+  evaluationMode?: string;
+  evaluationStatus?: string;
 
   constructor(
-    time: DateTime,
+    time: TimeQuantity,
     networkCode: string,
     stationCode: string,
     locationCode: string,
     channelCode: string,
   ) {
-    this.time = checkStringOrDate(time);
+    super();
+    this.time = time;
     this.networkCode = networkCode;
     this.stationCode = stationCode;
     this.locationCode = locationCode;
     this.channelCode = channelCode;
-    this.publicId = UNKNOWN_PUBLIC_ID;
   }
 
   /**
@@ -585,9 +598,8 @@ export class Pick {
       );
     }
 
-    const otimeStr = _grabFirstElText(_grabFirstEl(pickQML, "time"), "value");
-    if (! isDef(otimeStr)) {throw new Error("Missing time");}
-    const time = checkStringOrDate(otimeStr);
+    const time = _grabFirstElTimeQuantity(pickQML, "time");
+    if (! isDef(time)) {throw new Error("Missing time");}
 
     const waveformIdEl = _grabFirstEl(pickQML, "waveformID");
 
@@ -598,6 +610,20 @@ export class Pick {
     let locationCode = _grabAttribute(waveformIdEl, "locationCode");
 
     const channelCode = _grabAttribute(waveformIdEl, "channelCode");
+
+    const horizontalSlowness = _grabFirstElRealQuantity(pickQML, "horizontalSlowness");
+
+    const backazimuth = _grabFirstElRealQuantity(pickQML, "backazimuth");
+
+    const onset = _grabFirstElText(pickQML, "onset");
+
+    const phaseHint = _grabFirstElText(pickQML, "phaseHint");
+
+    const polarity = _grabFirstElText(pickQML, "polarity");
+
+    const evaluationMode = _grabFirstElText(pickQML, "evaluationMode");
+
+    const evaluationStatus = _grabFirstElText(pickQML, "evaluationStatus");
 
     // handle empty loc code, it can be missing
     if (!isNonEmptyStringArg(locationCode)) {
@@ -623,11 +649,14 @@ export class Pick {
 
     const out = new Pick(time, netCode, stationCode, locationCode, channelCode);
 
-    const pid = _grabAttribute(pickQML, "publicID");
-
-    if (isNonEmptyStringArg(pid)) {
-      out.publicId = pid;
-    }
+    out.populate(pickQML);
+    out.horizontalSlowness = horizontalSlowness;
+    out.backazimuth = backazimuth;
+    out.onset = onset;
+    out.phaseHint = phaseHint;
+    out.polarity = polarity;
+    out.evaluationMode = evaluationMode;
+    out.evaluationStatus = evaluationStatus;
 
     return out;
   }
@@ -652,15 +681,47 @@ export class Pick {
   }
 }
 
-export class RealQuantity {
-  value: number;
+class Quantity<T> {
+  value: T;
   uncertainty?: number;
   lowerUncertainty?: number;
   upperUncertainty?: number;
   confidenceLevel?: number;
 
-  constructor(value: number) {
+  constructor(value: T) {
     this.value = value;
+  }
+
+  /**
+   * Parses a QuakeML quantity xml element into a RealQuantity object.
+   *
+   * @param quantityQML the quantity xml Element
+   * @param grab a callback to obtain the value
+   * @returns RealQuantity instance
+   */
+  static _createFromXml<T>(quantityQML: Element, grab: (xml: Element | null | void, tagName: string) => T | undefined): Quantity<T> {
+    const value = grab(quantityQML, "value");
+
+    const uncertainty = _grabFirstElFloat(quantityQML, "uncertainty");
+
+    const lowerUncertainty = _grabFirstElFloat(quantityQML, "lowerUncertainty");
+
+    const upperUncertainty = _grabFirstElFloat(quantityQML, "upperUncertainty");
+
+    const confidenceLevel = _grabFirstElFloat(quantityQML, "confidenceLevel");
+
+    if (value === undefined) {
+      throw new Error("missing value");
+    }
+
+    const out = new Quantity<T>(value);
+
+    out.uncertainty = uncertainty;
+    out.lowerUncertainty = lowerUncertainty;
+    out.upperUncertainty = upperUncertainty;
+    out.confidenceLevel = confidenceLevel;
+
+    return out;
   }
 
   /**
@@ -669,27 +730,53 @@ export class RealQuantity {
    * @param realQuantityQML the real quantity xml Element
    * @returns RealQuantity instance
    */
-  static createFromXml(realQuantityQML: Element): RealQuantity {
-    const value = _grabFirstElFloat(realQuantityQML, "value");
+  static createRealQuantityFromXml(realQuantityQML: Element): RealQuantity {
+    return Quantity._createFromXml(realQuantityQML, _grabFirstElFloat);
+  }
 
-    const uncertainty = _grabFirstElFloat(realQuantityQML, "uncertainty");
+  /**
+   * Parses a QuakeML real quantity xml element into a RealQuantity object.
+   *
+   * @param timeQuantityQML the time quantity xml Element
+   * @returns TimeQuantity instance
+   */
+  static createTimeQuantityFromXml(timeQuantityQML: Element): TimeQuantity {
+    return Quantity._createFromXml(timeQuantityQML, _grabFirstElDateTime);
+  }
+}
 
-    const lowerUncertainty = _grabFirstElFloat(realQuantityQML, "lowerUncertainty");
+export type RealQuantity = Quantity<number>;
+export type TimeQuantity = Quantity<DateTime>;
 
-    const upperUncertainty = _grabFirstElFloat(realQuantityQML, "upperUncertainty");
+/**
+  Represents a QuakeML comment.
+ */
+export class Comment {
+  text: string;
+  creationInfo?: CreationInfo;
 
-    const confidenceLevel = _grabFirstElFloat(realQuantityQML, "confidenceLevel");
+  constructor(text: string) {
+    this.text = text;
+  }
 
-    if (value === undefined) {
+  /**
+   * Parses a QuakeML comment xml element into a Comment object.
+   *
+   * @param commentQML the comment xml Element
+   * @returns Comment instance
+   */
+  static createFromXml(commentQML: Element): Comment {
+    const text = _grabFirstElText(commentQML, "text");
+
+    const creationInfo = _grabFirstElCreationInfo(commentQML, "creationInfo");
+
+    if (text === undefined) {
       throw new Error("missing value");
     }
 
-    const out = new RealQuantity(value);
+    const out = new Comment(text);
 
-    out.uncertainty = uncertainty;
-    out.lowerUncertainty = lowerUncertainty;
-    out.upperUncertainty = upperUncertainty;
-    out.confidenceLevel = confidenceLevel;
+    out.creationInfo = creationInfo;
 
     return out;
   }
@@ -776,6 +863,29 @@ export function createQuakeFromValues(publicId: string,
 
 // these are similar methods as in seisplotjs.stationxml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
+
+const _grabAllElComment = function (
+  xml: Element | null | void,
+  tagName: string,
+): Comment[] {
+
+  const out = [];
+
+  if (isObject(xml)) {
+    const elList = xml.getElementsByTagName(tagName);
+    if (isObject(elList) && elList.length > 0) {
+      for (let i = 0; i < elList.length; ++i) {
+        const el = elList.item(i);
+        if (isObject(el)) {
+          out.push(Comment.createFromXml(el));
+        }
+      }
+    }
+  }
+
+  return out;
+};
+
 const _grabFirstElNS = function (
   xml: Element | null | void,
   namespace: string,
@@ -897,7 +1007,8 @@ const _grabFirstElType = function<T>(createFromXml: (el: Element) => T) {
   };
 };
 
-const _grabFirstElRealQuantity = _grabFirstElType(RealQuantity.createFromXml.bind(RealQuantity));
+const _grabFirstElRealQuantity = _grabFirstElType(Quantity.createRealQuantityFromXml.bind(Quantity));
+const _grabFirstElTimeQuantity = _grabFirstElType(Quantity.createTimeQuantityFromXml.bind(Quantity));
 
 const _grabFirstElCreationInfo = _grabFirstElType(CreationInfo.createFromXml.bind(CreationInfo));
 
