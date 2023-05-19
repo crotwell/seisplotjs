@@ -31,6 +31,9 @@ test("USGS quake", () => {
       confidenceLevel: 90,
     },
     type: 'Mww',
+    origin: {
+      publicId: "quakeml:us.anss.org/origin/6000kawn/mww_trigger",
+    },
     stationCount: 32,
     evaluationMode: "manual",
     evaluationStatus: "preliminary",
@@ -42,6 +45,61 @@ test("USGS quake", () => {
     publicId: "quakeml:us.anss.org/magnitude/6000kawn/mww",
   });
   expect(quakes[0].hasOrigin()).toBeTrue();
+  expect(quakes[0].origin).toMatchObject({
+    originUncertainty: {
+      horizontalUncertainty: 7680,
+      minHorizontalUncertainty: 9657,
+      maxHorizontalUncertainty: 10382,
+      azimuthMaxHorizontalUncertainty: 184,
+      confidenceEllipsoid: {
+        semiMajorAxisLength: 12174,
+        semiMinorAxisLength: 223,
+        semiIntermediateAxisLength: 11268,
+        majorAxisPlunge: 6,
+        majorAxisAzimuth: 184,
+        majorAxisRotation: 87,
+      },
+      preferredDescription: 'confidence ellipsoid',
+      confidenceLevel: 90,
+    },
+    time: {
+      value: isoToDateTime("2023-05-10T16:02:00.451Z"),
+      uncertainty: 1.65,
+      confidenceLevel: 90,
+    },
+    latitude: {
+      value: -15.6002,
+      uncertainty: .0715,
+      confidenceLevel: 90,
+    },
+    longitude: {
+      value: -174.6077,
+      uncertainty: .0692,
+      confidenceLevel: 90,
+    },
+    depth: {
+      value: 210097,
+      uncertainty: 986,
+      confidenceLevel: 90,
+    },
+    depthType: "from location",
+    methodID: "smi:us.anss.org/metadata/methodid/origin/Java_Locator/",
+    earthModelID: "smi:us.anss.org/metadata/methodid/earthModel/ak135/1.0",
+    quality: {
+      associatedPhaseCount: 908,
+      usedPhaseCount: 111,
+      associatedStationCount: 908,
+      usedStationCount: 111,
+      standardError: 0.81,
+      azimuthalGap: 17,
+      secondaryAzimuthalGap: 31,
+      minimumDistance: 3.631,
+    },
+    type: "hypocenter",
+    evaluationMode: "manual",
+    evaluationStatus: "preliminary",
+    publicId: "quakeml:us.anss.org/origin/6000kawn",
+  });
   expect(quakes[0].origin.arrivalList).toHaveLength(117);
   expect(quakes[0].origin.arrivalList[0]).toMatchObject({
     phase: "Pn",

@@ -9,7 +9,6 @@ import {
   isObject,
   isStringArg,
   isNonEmptyStringArg,
-  isNumArg,
   isoToDateTime,
   stringify,
 } from "./util";
@@ -129,7 +128,7 @@ export class Quake {
     const allMags = [];
 
     for (const magEl of allMagEls) {
-      allMags.push(Magnitude.createFromXml(magEl));
+      allMags.push(Magnitude.createFromXml(magEl, allOrigins));
     }
 
     out.originList = allOrigins;
@@ -258,16 +257,16 @@ export class Quake {
     }
   }
   get time(): DateTime {
-    return this.origin.time;
+    return this.origin.time.value;
   }
   get latitude(): number {
-    return this.origin.latitude;
+    return this.origin.latitude.value;
   }
   get longitude(): number {
-    return this.origin.longitude;
+    return this.origin.longitude.value;
   }
   get depth(): number {
-    return this.origin.depth;
+    return this.origin.depth?.value ?? NaN;
   }
 
   get depthKm(): number {
@@ -304,22 +303,33 @@ export class Quake {
 }
 
 /** Represents a QuakeML Origin. */
-export class Origin {
-  time: DateTime;
-  latitude: number;
-  longitude: number;
-  depth: number;
+export class Origin extends BaseElement {
+  compositeTimes: Array<CompositeTime>;
+  originUncertainty?: OriginUncertainty;
   arrivalList: Array<Arrival>;
-  publicId: string;
+  time: TimeQuantity;
+  latitude: RealQuantity;
+  longitude: RealQuantity;
+  depth?: RealQuantity;
+  depthType?: string;
+  timeFixed?: boolean;
+  epicenterFixed?: boolean;
+  referenceSystemID?: string;
+  methodID?: string;
+  earthModelID?: string;
+  quality?: OriginQuality;
+  type?: string;
+  region?: string;
+  evaluationMode?: string;
+  evaluationStatus?: string;
 
-  constructor() {
-    // what is essential???
-    this.time = FAKE_ORIGIN_TIME;
-    this.latitude = Number.NaN;
-    this.longitude = Number.NaN;
-    this.depth = 0;
+  constructor(time: TimeQuantity, latitude: RealQuantity, longitude: RealQuantity) {
+    super();
+    this.compositeTimes = [];
     this.arrivalList = [];
-    this.publicId = UNKNOWN_PUBLIC_ID;
+    this.time = time;
+    this.latitude = latitude;
+    this.longitude = longitude;
   }
 
   /**
@@ -334,39 +344,46 @@ export class Origin {
       throw new Error(`Cannot extract, not a QuakeML Origin: ${qml.localName}`);
     }
 
-    const out = new Origin();
+    const uncertainty = _grabFirstElType(OriginUncertainty.createFromXml.bind(OriginUncertainty))(qml, "originUncertainty");
 
-    const otimeStr = _grabFirstElText(_grabFirstEl(qml, "time"), "value");
-
-    if (isNonEmptyStringArg(otimeStr)) {
-      out.time = isoToDateTime(otimeStr);
-    } else {
-      util.log("origintime is missing...");
+    const time = _grabFirstElTimeQuantity(qml, "time");
+    if (!isObject(time)) {
+      throw new Error("origin missing time");
     }
 
-    const lat = _grabFirstElFloat(_grabFirstEl(qml, "latitude"), "value");
-
-    if (isNumArg(lat)) {
-      out.latitude = lat;
+    const lat = _grabFirstElRealQuantity(qml, "latitude");
+    if (!isObject(lat)) {
+      throw new Error("origin missing latitude");
     }
 
-    const lon = _grabFirstElFloat(_grabFirstEl(qml, "longitude"), "value");
-
-    if (isNumArg(lon)) {
-      out.longitude = lon;
+    const lon = _grabFirstElRealQuantity(qml, "longitude");
+    if (!isObject(lon)) {
+      throw new Error("origin missing longitude");
     }
 
-    const depth = _grabFirstElFloat(_grabFirstEl(qml, "depth"), "value");
+    const depth = _grabFirstElRealQuantity(qml, "depth");
 
-    if (isNumArg(depth)) {
-      out.depth = depth;
-    }
+    const depthType = _grabFirstElText(qml, "depthType");
 
-    const pid = _grabAttribute(qml, "publicID");
+    const timeFixed = _grabFirstElBool(qml, "timeFixed");
 
-    if (isNonEmptyStringArg(pid)) {
-      out.publicId = pid;
-    }
+    const epicenterFixed = _grabFirstElBool(qml, "epicenterFixed");
+
+    const referenceSystemID = _grabFirstElText(qml, "referenceSystemID");
+
+    const methodID = _grabFirstElText(qml, "methodID");
+
+    const earthModelID = _grabFirstElText(qml, "earthModelID");
+
+    const quality = _grabFirstElType(OriginQuality.createFromXml.bind(OriginQuality))(qml, "quality");
+
+    const type = _grabFirstElText(qml, "type");
+
+    const region = _grabFirstElText(qml, "region");
+
+    const evaluationMode = _grabFirstElText(qml, "evaluationMode");
+
+    const evaluationStatus = _grabFirstElText(qml, "evaluationStatus");
 
     const allArrivalEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "arrival"));
     const allArrivals = [];
@@ -375,7 +392,24 @@ export class Origin {
       allArrivals.push(Arrival.createFromXml(arrivalEl, allPicks));
     }
 
+    const out = new Origin(time, lat, lon);
+
+    out.populate(qml);
+    out.originUncertainty = uncertainty;
     out.arrivalList = allArrivals;
+    out.depth = depth;
+    out.depthType = depthType;
+    out.timeFixed = timeFixed;
+    out.epicenterFixed = epicenterFixed;
+    out.referenceSystemID = referenceSystemID;
+    out.methodID = methodID;
+    out.earthModelID = earthModelID;
+    out.quality = quality;
+    out.type = type;
+    out.region = region;
+    out.evaluationMode = evaluationMode;
+    out.evaluationStatus = evaluationStatus;
+
     return out;
   }
 
@@ -396,12 +430,248 @@ export class Origin {
   }
 }
 
+/** Represents a QuakeML CompositeTime. */
+export class CompositeTime {
+  year?: IntegerQuantity;
+  month?: IntegerQuantity;
+  day?: IntegerQuantity;
+  hour?: IntegerQuantity;
+  minute?: IntegerQuantity;
+  second?: RealQuantity;
+
+  /**
+   * Parses a QuakeML composite time xml element into an CompositeTime object.
+   *
+   * @param qml the composite time xml Element
+   * @returns CompositeTime instance
+   */
+  static createFromXml(qml: Element): CompositeTime {
+    if (qml.localName !== "compositeTime") {
+      throw new Error(`Cannot extract, not a QuakeML Composite Time: ${qml.localName}`);
+    }
+
+    const year = _grabFirstElIntegerQuantity(qml, "year");
+    const month = _grabFirstElIntegerQuantity(qml, "month");
+    const day = _grabFirstElIntegerQuantity(qml, "day");
+    const hour = _grabFirstElIntegerQuantity(qml, "hour");
+    const minute = _grabFirstElIntegerQuantity(qml, "minute");
+    const second = _grabFirstElIntegerQuantity(qml, "second");
+
+    const out = new CompositeTime();
+
+    out.year = year;
+    out.month = month;
+    out.day = day;
+    out.hour = hour;
+    out.minute = minute;
+    out.second = second;
+
+    return out;
+  }
+}
+
+/** Represents a QuakeML OriginUncertainty. */
+export class OriginUncertainty {
+  horizontalUncertainty?: number;
+  minHorizontalUncertainty?: number;
+  maxHorizontalUncertainty?: number;
+  azimuthMaxHorizontalUncertainty?: number;
+  confidenceEllipsoid?: ConfidenceEllipsoid;
+  preferredDescription?: string;
+  confidenceLevel?: number;
+
+  /**
+   * Parses a QuakeML origin uncertainty xml element into an OriginUncertainty object.
+   *
+   * @param qml the origin uncertainty xml Element
+   * @returns OriginUncertainty instance
+   */
+  static createFromXml(qml: Element): OriginUncertainty {
+    if (qml.localName !== "originUncertainty") {
+      throw new Error(`Cannot extract, not a QuakeML Origin Uncertainty: ${qml.localName}`);
+    }
+
+    const horizontalUncertainty = _grabFirstElFloat(qml, "horizontalUncertainty");
+
+    const minHorizontalUncertainty = _grabFirstElFloat(qml, "minHorizontalUncertainty");
+
+    const maxHorizontalUncertainty = _grabFirstElFloat(qml, "maxHorizontalUncertainty");
+
+    const azimuthMaxHorizontalUncertainty = _grabFirstElFloat(qml, "azimuthMaxHorizontalUncertainty");
+
+    const confidenceEllipsoid = _grabFirstElType(ConfidenceEllipsoid.createFromXml.bind(ConfidenceEllipsoid))(qml, "confidenceEllipsoid");
+
+    const preferredDescription = _grabFirstElText(qml, "preferredDescription");
+
+    const confidenceLevel = _grabFirstElFloat(qml, "confidenceLevel");
+
+    const out = new OriginUncertainty();
+
+    out.horizontalUncertainty = horizontalUncertainty;
+    out.minHorizontalUncertainty = minHorizontalUncertainty;
+    out.maxHorizontalUncertainty = maxHorizontalUncertainty;
+    out.azimuthMaxHorizontalUncertainty = azimuthMaxHorizontalUncertainty;
+    out.confidenceEllipsoid = confidenceEllipsoid;
+    out.preferredDescription = preferredDescription;
+    out.confidenceLevel = confidenceLevel;
+
+    return out;
+  }
+}
+
+/** Represents a QuakeML ConfidenceEllipsoid. */
+export class ConfidenceEllipsoid {
+  semiMajorAxisLength: number;
+  semiMinorAxisLength: number;
+  semiIntermediateAxisLength: number;
+  majorAxisPlunge: number;
+  majorAxisAzimuth: number;
+  majorAxisRotation: number;
+
+  constructor(
+    semiMajorAxisLength: number,
+    semiMinorAxisLength: number,
+    semiIntermediateAxisLength: number,
+    majorAxisPlunge: number,
+    majorAxisAzimuth: number,
+    majorAxisRotation: number,
+  ) {
+    this.semiMajorAxisLength = semiMajorAxisLength;
+    this.semiMinorAxisLength = semiMinorAxisLength;
+    this.semiIntermediateAxisLength = semiIntermediateAxisLength;
+    this.majorAxisPlunge = majorAxisPlunge;
+    this.majorAxisAzimuth = majorAxisAzimuth;
+    this.majorAxisRotation = majorAxisRotation;
+  }
+
+  /**
+   * Parses a QuakeML confidence ellipsoid xml element into an ConfidenceEllipsoid object.
+   *
+   * @param qml the confidence ellipsoid xml Element
+   * @returns ConfidenceEllipsoid instance
+   */
+  static createFromXml(qml: Element): ConfidenceEllipsoid {
+    if (qml.localName !== "confidenceEllipsoid") {
+      throw new Error(`Cannot extract, not a QuakeML Confidence Ellipsoid: ${qml.localName}`);
+    }
+
+    const semiMajorAxisLength = _grabFirstElFloat(qml, "semiMajorAxisLength");
+    if (semiMajorAxisLength === undefined) {
+      throw new Error("confidenceEllipsoid missing semiMajorAxisLength");
+    }
+
+    const semiMinorAxisLength = _grabFirstElFloat(qml, "semiMinorAxisLength");
+    if (semiMinorAxisLength === undefined) {
+      throw new Error("confidenceEllipsoid missing semiMinorAxisLength");
+    }
+
+    const semiIntermediateAxisLength = _grabFirstElFloat(qml, "semiIntermediateAxisLength");
+    if (semiIntermediateAxisLength === undefined) {
+      throw new Error("confidenceEllipsoid missing semiIntermediateAxisLength");
+    }
+
+    const majorAxisPlunge = _grabFirstElFloat(qml, "majorAxisPlunge");
+    if (majorAxisPlunge === undefined) {
+      throw new Error("confidenceEllipsoid missing majorAxisPlunge");
+    }
+
+    const majorAxisAzimuth = _grabFirstElFloat(qml, "majorAxisAzimuth");
+    if (majorAxisAzimuth === undefined) {
+      throw new Error("confidenceEllipsoid missing majorAxisAzimuth");
+    }
+
+    const majorAxisRotation = _grabFirstElFloat(qml, "majorAxisRotation");
+    if (majorAxisRotation === undefined) {
+      throw new Error("confidenceEllipsoid missing majorAxisRotation");
+    }
+
+    const out = new ConfidenceEllipsoid(
+      semiMajorAxisLength,
+      semiMinorAxisLength,
+      semiIntermediateAxisLength,
+      majorAxisPlunge,
+      majorAxisAzimuth,
+      majorAxisRotation,
+    );
+
+    return out;
+  }
+}
+
+/** Represents a QuakeML OriginQuality. */
+export class OriginQuality {
+  associatedPhaseCount?: number;
+  usedPhaseCount?: number;
+  associatedStationCount?: number;
+  usedStationCount?: number;
+  depthPhaseCount?: number;
+  standardError?: number;
+  azimuthalGap?: number;
+  secondaryAzimuthalGap?: number;
+  groundTruthLevel?: string;
+  maximumDistance?: number;
+  minimumDistance?: number;
+  medianDistance?: number;
+
+  /**
+   * Parses a QuakeML origin quality xml element into an OriginQuality object.
+   *
+   * @param qml the origin quality xml Element
+   * @returns OriginQuality instance
+   */
+  static createFromXml(qml: Element): OriginQuality {
+    if (qml.localName !== "quality") {
+      throw new Error(`Cannot extract, not a QuakeML Origin Quality: ${qml.localName}`);
+    }
+
+    const associatedPhaseCount = _grabFirstElInt(qml, "associatedPhaseCount");
+
+    const usedPhaseCount = _grabFirstElInt(qml, "usedPhaseCount");
+
+    const associatedStationCount = _grabFirstElInt(qml, "associatedStationCount");
+
+    const usedStationCount = _grabFirstElInt(qml, "usedStationCount");
+
+    const standardError = _grabFirstElFloat(qml, "standardError");
+
+    const azimuthalGap = _grabFirstElFloat(qml, "azimuthalGap");
+
+    const secondaryAzimuthalGap = _grabFirstElFloat(qml, "secondaryAzimuthalGap");
+
+    const groundTruthLevel = _grabFirstElText(qml, "groundTruthLevel");
+
+    const maximumDistance = _grabFirstElFloat(qml, "maximumDistance");
+
+    const minimumDistance = _grabFirstElFloat(qml, "minimumDistance");
+
+    const medianDistance = _grabFirstElFloat(qml, "medianDistance");
+
+    const out = new OriginQuality();
+
+    out.associatedPhaseCount = associatedPhaseCount;
+    out.usedPhaseCount = usedPhaseCount;
+    out.associatedStationCount = associatedStationCount;
+    out.usedStationCount = usedStationCount;
+    out.standardError = standardError;
+    out.azimuthalGap = azimuthalGap;
+    out.secondaryAzimuthalGap = secondaryAzimuthalGap;
+    out.groundTruthLevel = groundTruthLevel;
+    out.maximumDistance = maximumDistance;
+    out.minimumDistance = minimumDistance;
+    out.medianDistance = medianDistance;
+
+    return out;
+  }
+}
+
 /**
   Represents a QuakeML Magnitude.
  */
 export class Magnitude extends BaseElement {
   mag: RealQuantity;
   type?: string;
+  origin?: Origin;
+  methodID?: string;
   stationCount?: number;
   azimuthalGap?: number;
   evaluationMode?: string;
@@ -416,9 +686,10 @@ export class Magnitude extends BaseElement {
    * Parses a QuakeML magnitude xml element into a Magnitude object.
    *
    * @param qml the magnitude xml Element
+   * @param allOrigins origins already extracted from the xml for linking magnitudes with origins
    * @returns Magnitude instance
    */
-  static createFromXml(qml: Element): Magnitude {
+  static createFromXml(qml: Element, allOrigins: Origin[]): Magnitude {
     if (qml.localName !== "magnitude") {
       throw new Error(
         `Cannot extract, not a QuakeML Magnitude: ${qml.localName}`,
@@ -432,6 +703,14 @@ export class Magnitude extends BaseElement {
 
     const type = _grabFirstElText(qml, "type");
 
+    const originID = _grabFirstElText(qml, "originID");
+    const origin = allOrigins.find(o => o.publicId === originID);
+    if (originID && !origin) {
+      throw new Error("No origin with ID " + originID);
+    }
+
+    const methodID = _grabFirstElText(qml, "methodID");
+
     const stationCount = _grabFirstElInt(qml, "stationCount");
 
     const azimuthalGap = _grabFirstElFloat(qml, "azimuthalGap");
@@ -444,6 +723,8 @@ export class Magnitude extends BaseElement {
 
     out.populate(qml);
     out.type = type;
+    out.origin = origin;
+    out.methodID = methodID;
     out.stationCount = stationCount;
     out.azimuthalGap = azimuthalGap;
     out.evaluationMode = evaluationMode;
@@ -473,6 +754,7 @@ export class Arrival extends BaseElement {
   timeWeight?: number;
   horizontalSlownessWeight?: number;
   backazimuthWeight?: number;
+  earthModelID?: string;
 
   constructor(phase: string, pick: Pick) {
     super();
@@ -518,6 +800,8 @@ export class Arrival extends BaseElement {
 
     const backazimuthWeight = _grabFirstElFloat(arrivalQML, "backazimuthWeight");
 
+    const earthModelID = _grabFirstElText(arrivalQML, "earthModelID");
+
     if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
       const myPick = allPicks.find(function (p: Pick) {
         return p.publicId === pickId;
@@ -540,6 +824,7 @@ export class Arrival extends BaseElement {
       out.timeWeight = timeWeight;
       out.horizontalSlownessWeight = horizontalSlownessWeight;
       out.backazimuthWeight = backazimuthWeight;
+      out.earthModelID = earthModelID;
 
       return out;
     } else {
@@ -562,8 +847,11 @@ export class Pick extends BaseElement {
   stationCode: string;
   locationCode: string;
   channelCode: string;
+  filterID?: string;
+  methodID?: string;
   horizontalSlowness?: RealQuantity;
   backazimuth?: RealQuantity;
+  slownessMethodID?: string;
   onset?: string;
   phaseHint?: string;
   polarity?: string;
@@ -611,9 +899,15 @@ export class Pick extends BaseElement {
 
     const channelCode = _grabAttribute(waveformIdEl, "channelCode");
 
+    const filterID = _grabFirstElText(pickQML, "filterID");
+
+    const methodID = _grabFirstElText(pickQML, "methodID");
+
     const horizontalSlowness = _grabFirstElRealQuantity(pickQML, "horizontalSlowness");
 
     const backazimuth = _grabFirstElRealQuantity(pickQML, "backazimuth");
+
+    const slownessMethodID = _grabFirstElText(pickQML, "slownessMethodID");
 
     const onset = _grabFirstElText(pickQML, "onset");
 
@@ -650,8 +944,11 @@ export class Pick extends BaseElement {
     const out = new Pick(time, netCode, stationCode, locationCode, channelCode);
 
     out.populate(pickQML);
+    out.filterID = filterID;
+    out.methodID = methodID;
     out.horizontalSlowness = horizontalSlowness;
     out.backazimuth = backazimuth;
+    out.slownessMethodID = slownessMethodID;
     out.onset = onset;
     out.phaseHint = phaseHint;
     out.polarity = polarity;
@@ -693,20 +990,25 @@ class Quantity<T> {
   }
 
   /**
-   * Parses a QuakeML quantity xml element into a RealQuantity object.
+   * Parses a QuakeML quantity xml element into a Quantity object.
    *
    * @param quantityQML the quantity xml Element
    * @param grab a callback to obtain the value
-   * @returns RealQuantity instance
+   * @param grabUncertainty a callback to obtain the uncertainties
+   * @returns Quantity instance
    */
-  static _createFromXml<T>(quantityQML: Element, grab: (xml: Element | null | void, tagName: string) => T | undefined): Quantity<T> {
+  static _createFromXml<T>(
+    quantityQML: Element,
+    grab: (xml: Element | null | void, tagName: string) => T | undefined,
+    grabUncertainty: (xml: Element | null | void, tagName: string) => number | undefined,
+  ): Quantity<T> {
     const value = grab(quantityQML, "value");
 
-    const uncertainty = _grabFirstElFloat(quantityQML, "uncertainty");
+    const uncertainty = grabUncertainty(quantityQML, "uncertainty");
 
-    const lowerUncertainty = _grabFirstElFloat(quantityQML, "lowerUncertainty");
+    const lowerUncertainty = grabUncertainty(quantityQML, "lowerUncertainty");
 
-    const upperUncertainty = _grabFirstElFloat(quantityQML, "upperUncertainty");
+    const upperUncertainty = grabUncertainty(quantityQML, "upperUncertainty");
 
     const confidenceLevel = _grabFirstElFloat(quantityQML, "confidenceLevel");
 
@@ -731,20 +1033,31 @@ class Quantity<T> {
    * @returns RealQuantity instance
    */
   static createRealQuantityFromXml(realQuantityQML: Element): RealQuantity {
-    return Quantity._createFromXml(realQuantityQML, _grabFirstElFloat);
+    return Quantity._createFromXml(realQuantityQML, _grabFirstElFloat, _grabFirstElFloat);
   }
 
   /**
-   * Parses a QuakeML real quantity xml element into a RealQuantity object.
+   * Parses a QuakeML integer quantity xml element into a RealQuantity object.
+   *
+   * @param integerQuantityQML the integer quantity xml Element
+   * @returns IntegerQuantity instance
+   */
+  static createIntegerQuantityFromXml(integerQuantityQML: Element): RealQuantity {
+    return Quantity._createFromXml(integerQuantityQML, _grabFirstElFloat, _grabFirstElInt);
+  }
+
+  /**
+   * Parses a QuakeML time quantity xml element into a TimeQuantity object.
    *
    * @param timeQuantityQML the time quantity xml Element
    * @returns TimeQuantity instance
    */
   static createTimeQuantityFromXml(timeQuantityQML: Element): TimeQuantity {
-    return Quantity._createFromXml(timeQuantityQML, _grabFirstElDateTime);
+    return Quantity._createFromXml(timeQuantityQML, _grabFirstElDateTime, _grabFirstElFloat);
   }
 }
 
+export type IntegerQuantity = Quantity<number>;
 export type RealQuantity = Quantity<number>;
 export type TimeQuantity = Quantity<DateTime>;
 
@@ -851,11 +1164,12 @@ export function createQuakeFromValues(publicId: string,
   latitude: number,
   longitude: number,
   depth: number): Quake {
-    const origin = new Origin();
-    origin.time = time;
-    origin.latitude =  latitude;
-    origin.longitude = longitude;
-    origin.depth = depth;
+    const origin = new Origin(
+      new Quantity(time),
+      new Quantity(latitude),
+      new Quantity(longitude)
+    );
+    origin.depth = new Quantity(depth);
     const quake = new Quake(publicId);
     quake.originList.push(origin);
     return quake;
@@ -945,6 +1259,28 @@ const _grabFirstElText = function (
   return out;
 };
 
+const _grabFirstElBool = function (
+  xml: Element | null | void,
+  tagName: string,
+): boolean | undefined {
+
+  const el = _grabFirstElText(xml, tagName);
+
+  if (!isStringArg(el)) {
+    return undefined;
+  }
+
+  switch (el) {
+    case "true":
+    case "1":
+      return true;
+    case "false":
+    case "0":
+      return false;
+  }
+  throw new Error("Invalid boolean: " + el);
+};
+
 const _grabFirstElInt = function (
   xml: Element | null | void,
   tagName: string,
@@ -1008,6 +1344,7 @@ const _grabFirstElType = function<T>(createFromXml: (el: Element) => T) {
 };
 
 const _grabFirstElRealQuantity = _grabFirstElType(Quantity.createRealQuantityFromXml.bind(Quantity));
+const _grabFirstElIntegerQuantity = _grabFirstElType(Quantity.createIntegerQuantityFromXml.bind(Quantity));
 const _grabFirstElTimeQuantity = _grabFirstElType(Quantity.createTimeQuantityFromXml.bind(Quantity));
 
 const _grabFirstElCreationInfo = _grabFirstElType(CreationInfo.createFromXml.bind(CreationInfo));
