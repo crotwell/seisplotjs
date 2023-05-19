@@ -23,6 +23,48 @@ test("USGS quake", () => {
   const quakes = quakeml.parseQuakeML(xml);
   expect(quakes).toHaveLength(1);
   expect(quakes[0].time).toEqual(isoToDateTime(("2023-05-10T16:02:00.451000Z")));
+  expect(quakes[0].amplitudeList).toHaveLength(587);
+  expect(quakes[0].amplitudeList[0]).toMatchObject({
+    genericAmplitude: {
+      value: 1.77555e-06,
+    },
+    type: 'AMB',
+    unit: 'm',
+    period: {
+      value: 1.7,
+    },
+    timeWindow: {
+      begin: 0,
+      end: 191.37,
+      reference: isoToDateTime("2023-05-10T16:13:01.660Z"),
+    },
+    waveformID: {
+      networkCode: "AE",
+      stationCode: "113A",
+      locationCode: "--",
+      channelCode: "HHZ",
+    },
+    scalingTime: {
+      value: isoToDateTime("2023-05-10T16:13:27.160Z")
+    },
+    magnitudeHint: "mb",
+    evaluationMode: "automatic",
+    publicId: "quakeml:us.anss.org/amp/ae_113a_hhz_--/mb",
+  });
+  expect(quakes[0].stationMagnitudeList).toHaveLength(587);
+  expect(quakes[0].stationMagnitudeList[0]).toMatchObject({
+    origin: {
+      publicId: "quakeml:us.anss.org/origin/6000kawn",
+    },
+    mag: {
+     value: 6.52,
+    },
+    type: 'mb',
+    amplitude: {
+      publicId: "quakeml:us.anss.org/amp/ae_113a_hhz_--/mb",
+    },
+    publicId: "quakeml:us.anss.org/stationmagnitude/ae_113a_hhz_--/mb",
+  });
   expect(quakes[0].magnitudeList).toHaveLength(2);
   expect(quakes[0].magnitudeList[0]).toMatchObject({
     mag: {
@@ -43,6 +85,13 @@ test("USGS quake", () => {
       creationTime: isoToDateTime("2023-05-10T16:14:55.000000Z"),
     },
     publicId: "quakeml:us.anss.org/magnitude/6000kawn/mww",
+  });
+  expect(quakes[0].magnitudeList[1].stationMagnitudeContributions).toHaveLength(587);
+  expect(quakes[0].magnitudeList[1].stationMagnitudeContributions[0]).toMatchObject({
+    stationMagnitude: {
+      publicId: "quakeml:us.anss.org/stationmagnitude/ae_113a_hhz_--/mb",
+    },
+    weight: 1,
   });
   expect(quakes[0].hasOrigin()).toBeTrue();
   expect(quakes[0].origin).toMatchObject({

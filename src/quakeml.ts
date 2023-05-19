@@ -72,6 +72,8 @@ export class Quake {
   eventId: string|undefined;
   publicId: string;
   description = "";
+  amplitudeList: Array<Amplitude> = [];
+  stationMagnitudeList: Array<StationMagnitude> = [];
   magnitudeList: Array<Magnitude> = [];
   originList: Array<Origin> = [];
   pickList: Array<Pick> = [];
@@ -117,6 +119,13 @@ export class Quake {
       allPicks.push(Pick.createFromXml(pickEl));
     }
 
+    const allAmplitudeEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "amplitude"));
+    const allAmplitudes = [];
+
+    for (const amplitudeEl of allAmplitudeEls) {
+      allAmplitudes.push(Amplitude.createFromXml(amplitudeEl, allPicks));
+    }
+
     const allOriginEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "origin"));
     const allOrigins = [];
 
@@ -124,16 +133,25 @@ export class Quake {
       allOrigins.push(Origin.createFromXml(originEl, allPicks));
     }
 
+    const allStationMagEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "stationMagnitude"));
+    const allStationMags = [];
+
+    for (const stationMagEl of allStationMagEls) {
+      allStationMags.push(StationMagnitude.createFromXml(stationMagEl, allOrigins, allAmplitudes));
+    }
+
     const allMagEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "magnitude"));
     const allMags = [];
 
     for (const magEl of allMagEls) {
-      allMags.push(Magnitude.createFromXml(magEl, allOrigins));
+      allMags.push(Magnitude.createFromXml(magEl, allOrigins, allStationMags));
     }
 
     out.originList = allOrigins;
     out.magnitudeList = allMags;
     out.pickList = allPicks;
+    out.amplitudeList = allAmplitudes;
+    out.stationMagnitudeList = allStationMags;
     out.eventId = Quake.extractEventId(qml, host);
     out.preferredOriginId = _grabFirstElText(qml, "preferredOriginID");
     out.preferredMagnitudeId = _grabFirstElText(qml, "preferredMagnitudeID");
@@ -299,6 +317,210 @@ export class Quake {
     } else {
       return `Event: ${this.eventId}`;
     }
+  }
+}
+
+/** Represents a QuakeML Amplitude. */
+export class Amplitude extends BaseElement {
+  genericAmplitude: RealQuantity;
+  type?: string;
+  category?: string;
+  unit?: string;
+  methodID?: string;
+  period?: RealQuantity;
+  snr?: number;
+  timeWindow?: TimeWindow;
+  pick?: Pick;
+  waveformID?: WaveformID;
+  filterID?: string;
+  scalingTime?: TimeQuantity;
+  magnitudeHint?: string;
+  evaluationMode?: string;
+  evaluationStatus?: string;
+
+  constructor(genericAmplitude: RealQuantity) {
+    super();
+    this.genericAmplitude = genericAmplitude;
+  }
+
+  /**
+   * Parses a QuakeML amplitude xml element into an Amplitude object.
+   *
+   * @param amplitudeQML the amplitude xml Element
+   * @param allPicks picks already extracted from the xml for linking arrivals with picks
+   * @returns Amplitude instance
+   */
+  static createFromXml(amplitudeQML: Element, allPicks: Pick[]): Amplitude {
+    if (amplitudeQML.localName !== "amplitude") {
+      throw new Error(`Cannot extract, not a QuakeML amplitude: ${amplitudeQML.localName}`);
+    }
+
+    const genericAmplitude = _grabFirstElRealQuantity(amplitudeQML, "genericAmplitude");
+    if (!isDef(genericAmplitude)) {
+      throw new Error("amplitude missing genericAmplitude");
+    }
+
+    const type = _grabFirstElText(amplitudeQML, "type");
+
+    const category = _grabFirstElText(amplitudeQML, "category");
+
+    const unit = _grabFirstElText(amplitudeQML, "unit");
+
+    const methodID = _grabFirstElText(amplitudeQML, "methodID");
+
+    const period = _grabFirstElRealQuantity(amplitudeQML, "period");
+
+    const snr = _grabFirstElFloat(amplitudeQML, "snr");
+
+    const timeWindow = _grabFirstElType(TimeWindow.createFromXml.bind(TimeWindow))(amplitudeQML, "timeWindow");
+
+    const pickID = _grabFirstElText(amplitudeQML, "pickID");
+    const pick = allPicks.find(p => p.publicId === pickID);
+    if (pickID && !pick) {
+      throw new Error("No pick with ID " + pickID);
+    }
+
+    const waveformID = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(amplitudeQML, "waveformID");
+
+    const filterID = _grabFirstElText(amplitudeQML, "filterID");
+
+    const scalingTime = _grabFirstElTimeQuantity(amplitudeQML, "scalingTime");
+
+    const magnitudeHint = _grabFirstElText(amplitudeQML, "magnitudeHint");
+
+    const evaluationMode = _grabFirstElText(amplitudeQML, "evaluationMode");
+
+    const evaluationStatus = _grabFirstElText(amplitudeQML, "evaluationStatus");
+
+    const out = new Amplitude(genericAmplitude);
+
+    out.populate(amplitudeQML);
+    out.type = type;
+    out.category = category;
+    out.unit = unit;
+    out.methodID = methodID;
+    out.period = period;
+    out.snr = snr;
+    out.timeWindow = timeWindow;
+    out.pick = pick;
+    out.waveformID = waveformID;
+    out.filterID = filterID;
+    out.scalingTime = scalingTime;
+    out.magnitudeHint = magnitudeHint;
+    out.evaluationMode = evaluationMode;
+    out.evaluationStatus = evaluationStatus;
+
+    return out;
+  }
+}
+
+/** Represents a QuakeML StationMagnitude. */
+export class StationMagnitude extends BaseElement {
+  origin: Origin;
+  mag: RealQuantity;
+  type?: string;
+  amplitude?: Amplitude;
+  methodID?: string;
+  waveformID?: WaveformID;
+
+  constructor(origin: Origin, mag: RealQuantity) {
+    super();
+    this.origin = origin;
+    this.mag = mag;
+  }
+
+  /**
+   * Parses a QuakeML station magnitude xml element into a StationMagnitude object.
+   *
+   * @param stationMagnitudeQML the station magnitude xml Element
+   * @param allOrigins origins already extracted from the xml for linking station magnitudes with origins
+   * @param allAmplitudes amplitudes already extracted from the xml for linking station magnitudes with amplitudes
+   * @returns StationMagnitude instance
+   */ 
+  static createFromXml(stationMagnitudeQML: Element, allOrigins: Origin[], allAmplitudes: Amplitude[]): StationMagnitude {
+    if (stationMagnitudeQML.localName !== "stationMagnitude") {
+      throw new Error(`Cannot extract, not a QuakeML station magnitude: ${stationMagnitudeQML.localName}`);
+    }
+
+    const originID = _grabFirstElText(stationMagnitudeQML, "originID");
+    if (!isNonEmptyStringArg(originID)) {
+      throw new Error("stationMagnitude missing origin ID");
+    }
+    const origin = allOrigins.find(o => o.publicId === originID);
+    if (!isDef(origin)) {
+      throw new Error("No origin with ID " + originID);
+    }
+
+    const mag = _grabFirstElRealQuantity(stationMagnitudeQML, "mag");
+    if (!isDef(mag)) {
+      throw new Error("stationMagnitude missing mag");
+    }
+
+    const type = _grabFirstElText(stationMagnitudeQML, "type");
+
+    const amplitudeID = _grabFirstElText(stationMagnitudeQML, "amplitudeID");
+    const amplitude = allAmplitudes.find(a => a.publicId === amplitudeID);
+    if (amplitudeID && !amplitude) {
+      throw new Error("No amplitude with ID " + amplitudeID);
+    }
+
+    const methodID = _grabFirstElText(stationMagnitudeQML, "methodID");
+
+    const waveformID = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(stationMagnitudeQML, "waveformID");
+
+    const out = new StationMagnitude(origin, mag);
+
+    out.populate(stationMagnitudeQML);
+    out.type = type;
+    out.amplitude = amplitude;
+    out.methodID = methodID;
+    out.waveformID = waveformID;
+
+    return out;
+  }
+}
+
+/** Represents a QuakeML TimeWindow. */
+export class TimeWindow {
+  begin: number;
+  end: number;
+  reference: DateTime;
+
+  constructor(begin: number, end: number, reference: DateTime) {
+    this.begin = begin;
+    this.end = end;
+    this.reference = reference;
+  }
+
+  /**
+   * Parses a QuakeML time window xml element into a TimeWindow object.
+   *
+   * @param timeWindowQML the time window xml Element
+   * @returns TimeWindow instance
+   */
+  static createFromXml(timeWindowQML: Element): TimeWindow {
+    if (timeWindowQML.localName !== "timeWindow") {
+      throw new Error(`Cannot extract, not a QuakeML time window: ${timeWindowQML.localName}`);
+    }
+
+    const begin = _grabFirstElFloat(timeWindowQML, "begin");
+    if (!isDef(begin)) {
+      throw new Error("timeWindow missing begin");
+    }
+
+    const end = _grabFirstElFloat(timeWindowQML, "end");
+    if (!isDef(end)) {
+      throw new Error("timeWindow missing end");
+    }
+
+    const reference = _grabFirstElDateTime(timeWindowQML, "reference");
+    if (!isDef(reference)) {
+      throw new Error("timeWindow missing reference");
+    }
+
+    const out = new TimeWindow(begin, end, reference);
+
+    return out;
   }
 }
 
@@ -668,6 +890,7 @@ export class OriginQuality {
   Represents a QuakeML Magnitude.
  */
 export class Magnitude extends BaseElement {
+  stationMagnitudeContributions: StationMagnitudeContribution[] = [];
   mag: RealQuantity;
   type?: string;
   origin?: Origin;
@@ -687,14 +910,18 @@ export class Magnitude extends BaseElement {
    *
    * @param qml the magnitude xml Element
    * @param allOrigins origins already extracted from the xml for linking magnitudes with origins
+   * @param allStationMagnitudes station magnitudes already extracted from the xml
    * @returns Magnitude instance
    */
-  static createFromXml(qml: Element, allOrigins: Origin[]): Magnitude {
+  static createFromXml(qml: Element, allOrigins: Origin[], allStationMagnitudes: StationMagnitude[]): Magnitude {
     if (qml.localName !== "magnitude") {
       throw new Error(
         `Cannot extract, not a QuakeML Magnitude: ${qml.localName}`,
       );
     }
+
+    const stationMagnitudeContributionEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "stationMagnitudeContribution"));
+    const stationMagnitudeContributions = stationMagnitudeContributionEls.map(smc => StationMagnitudeContribution.createFromXml(smc, allStationMagnitudes));
 
     const mag = _grabFirstElRealQuantity(qml, "mag");
     if (!mag) {
@@ -722,6 +949,7 @@ export class Magnitude extends BaseElement {
     const out = new Magnitude(mag);
 
     out.populate(qml);
+    out.stationMagnitudeContributions = stationMagnitudeContributions;
     out.type = type;
     out.origin = origin;
     out.methodID = methodID;
@@ -735,6 +963,52 @@ export class Magnitude extends BaseElement {
 
   toString(): string {
     return stringify(this.mag) + " " + stringify(this.type);
+  }
+}
+
+/**
+  Represents a QuakeML StationMagnitudeContribution.
+ */
+export class StationMagnitudeContribution {
+  stationMagnitude: StationMagnitude;
+  residual?: number;
+  weight?: number;
+
+  constructor(stationMagnitude: StationMagnitude) {
+    this.stationMagnitude = stationMagnitude;
+  }
+
+  /**
+   * Parses a QuakeML station magnitude contribution xml element into a StationMagnitudeContribution object.
+   *
+   * @param qml the station magnitude contribution xml Element
+   * @param allStationMagnitudes station magnitudes already extracted from the xml for linking station magnitudes with station magnitude contributions
+   * @returns StationMagnitudeContribution instance
+   */
+  static createFromXml(qml: Element, allStationMagnitudes: Array<StationMagnitude>): StationMagnitudeContribution {
+    if (qml.localName !== "stationMagnitudeContribution") {
+      throw new Error(`Cannot extract, not a QuakeML StationMagnitudeContribution: ${qml.localName}`);
+    }
+
+    const stationMagnitudeID = _grabFirstElText(qml, "stationMagnitudeID");
+    if (!isNonEmptyStringArg(stationMagnitudeID)) {
+      throw new Error("stationMagnitudeContribution missing stationMagnitude");
+    }
+    const stationMagnitude = allStationMagnitudes.find(sm => sm.publicId === stationMagnitudeID);
+    if (!isDef(stationMagnitude)) {
+      throw new Error("No stationMagnitude with ID " + stationMagnitudeID);
+    }
+
+    const residual = _grabFirstElFloat(qml, "residual");
+
+    const weight = _grabFirstElFloat(qml, "weight");
+
+    const out = new StationMagnitudeContribution(stationMagnitude);
+
+    out.residual = residual;
+    out.weight = weight;
+
+    return out;
   }
 }
 
@@ -843,10 +1117,7 @@ export class Arrival extends BaseElement {
  */
 export class Pick extends BaseElement {
   time: TimeQuantity;
-  networkCode: string;
-  stationCode: string;
-  locationCode: string;
-  channelCode: string;
+  waveformID: WaveformID;
   filterID?: string;
   methodID?: string;
   horizontalSlowness?: RealQuantity;
@@ -858,19 +1129,10 @@ export class Pick extends BaseElement {
   evaluationMode?: string;
   evaluationStatus?: string;
 
-  constructor(
-    time: TimeQuantity,
-    networkCode: string,
-    stationCode: string,
-    locationCode: string,
-    channelCode: string,
-  ) {
+  constructor(time: TimeQuantity, waveformID: WaveformID) {
     super();
     this.time = time;
-    this.networkCode = networkCode;
-    this.stationCode = stationCode;
-    this.locationCode = locationCode;
-    this.channelCode = channelCode;
+    this.waveformID = waveformID;
   }
 
   /**
@@ -889,15 +1151,10 @@ export class Pick extends BaseElement {
     const time = _grabFirstElTimeQuantity(pickQML, "time");
     if (! isDef(time)) {throw new Error("Missing time");}
 
-    const waveformIdEl = _grabFirstEl(pickQML, "waveformID");
-
-    const netCode = _grabAttribute(waveformIdEl, "networkCode");
-
-    const stationCode = _grabAttribute(waveformIdEl, "stationCode");
-
-    let locationCode = _grabAttribute(waveformIdEl, "locationCode");
-
-    const channelCode = _grabAttribute(waveformIdEl, "channelCode");
+    const waveformId = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(pickQML, "waveformID");
+    if (!isObject(waveformId)) {
+      throw new Error("pick missing waveformID");
+    }
 
     const filterID = _grabFirstElText(pickQML, "filterID");
 
@@ -919,29 +1176,7 @@ export class Pick extends BaseElement {
 
     const evaluationStatus = _grabFirstElText(pickQML, "evaluationStatus");
 
-    // handle empty loc code, it can be missing
-    if (!isNonEmptyStringArg(locationCode)) {
-      locationCode = "";
-    }
-
-    if (
-      !isNonEmptyStringArg(netCode) ||
-      !isNonEmptyStringArg(stationCode) ||
-      !isNonEmptyStringArg(channelCode)
-    ) {
-      throw new Error(
-        "missing codes: " +
-          stringify(netCode) +
-          "." +
-          stringify(stationCode) +
-          "." +
-          stringify(locationCode) +
-          "." +
-          stringify(channelCode),
-      );
-    }
-
-    const out = new Pick(time, netCode, stationCode, locationCode, channelCode);
+    const out = new Pick(time, waveformId);
 
     out.populate(pickQML);
     out.filterID = filterID;
@@ -956,6 +1191,22 @@ export class Pick extends BaseElement {
     out.evaluationStatus = evaluationStatus;
 
     return out;
+  }
+
+  get networkCode(): string {
+    return this.waveformID.networkCode;
+  }
+
+  get stationCode(): string {
+    return this.waveformID.stationCode;
+  }
+
+  get locationCode(): string {
+    return this.waveformID.locationCode || '--';
+  }
+
+  get channelCode(): string {
+    return this.waveformID.channelCode || '---';
   }
 
   isAtStation(station: Station): boolean {
@@ -975,6 +1226,57 @@ export class Pick extends BaseElement {
   }
   toString(): string {
     return stringify(this.time) + ` ${this.networkCode}.${this.stationCode}.${this.locationCode}.${this.channelCode}`;
+  }
+}
+
+/**
+  Represents a QuakeML WaveformID.
+ */
+export class WaveformID {
+  networkCode: string;
+  stationCode: string;
+  channelCode?: string;
+  locationCode?: string;
+
+  constructor(networkCode: string, stationCode: string) {
+    this.networkCode = networkCode;
+    this.stationCode = stationCode;
+  }
+
+  /**
+   * Parses a QuakeML waveform ID xml element into a WaveformID object.
+   *
+   * @param waveformQML the waveform ID xml Element
+   * @returns WaveformID instance
+   */
+  static createFromXml(waveformQML: Element): WaveformID {
+    if (waveformQML.localName !== "waveformID") {
+      throw new Error(`Cannot extract, not a QuakeML waveform ID: ${waveformQML.localName}`);
+    }
+
+    const networkCode = _grabAttribute(waveformQML, "networkCode");
+    if (!isNonEmptyStringArg(networkCode)) {
+      throw new Error("waveformID missing networkCode");
+    }
+
+    const stationCode = _grabAttribute(waveformQML, "stationCode");
+    if (!isNonEmptyStringArg(stationCode)) {
+      throw new Error("waveformID missing stationCode");
+    }
+
+    const channelCode = _grabAttribute(waveformQML, "channelCode");
+
+    const locationCode = _grabAttribute(waveformQML, "locationCode");
+
+    const out = new WaveformID(networkCode, stationCode);
+    out.channelCode = channelCode;
+    out.locationCode = locationCode;
+
+    return out;
+  }
+
+  toString(): string {
+    return `${this.networkCode}.${this.stationCode}.${this.locationCode || '--'}.${this.channelCode || '---'}`;
   }
 }
 
