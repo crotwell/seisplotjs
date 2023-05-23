@@ -184,4 +184,53 @@ test("USGS quake", () => {
     },
     publicId: "quakeml:us.anss.org/pick/6000kawn/us_a7814_bpid-6003473869",
   });
+  expect(quakes[0].focalMechanismList).toHaveLength(1);
+  expect(quakes[0].focalMechanismList[0].waveformIDList).toHaveLength(32);
+  expect(quakes[0].focalMechanismList[0].waveformIDList[0]).toMatchObject({
+    networkCode: "NZ",
+    stationCode: "BFZ",
+    channelCode: "HHE",
+    locationCode: "10",
+  });
+  expect(quakes[0].focalMechanismList[0]).toMatchObject({
+    triggeringOrigin: {
+      publicId: "quakeml:us.anss.org/origin/6000kawn/mww_trigger",
+    },
+    nodalPlanes: {
+      nodalPlane1: {
+        strike: { value: 245.58 },
+        dip: { value: 43.28 },
+        rake: { value: -61.73 }
+      },
+      nodalPlane2: {
+        strike: { value: 29.12 },
+        dip: { value: 52.86 },
+        rake: { value: -114.04 }
+      },
+    },
+    principalAxes: {
+      tAxis: {
+        azimuth: { value: 136 },
+        plunge: { value: 5 },
+        length: { value: 2.62605e+20 },
+      },
+      pAxis: {
+        azimuth: { value: 240 },
+        plunge: { value: 70 },
+        length: { value: -2.73235e+20 },
+      },
+      nAxis: {
+        azimuth: { value: 44 },
+        plunge: { value: 19 },
+        length: { value: 1.06295e+19 },
+      },
+    },
+    evaluationMode: "manual",
+    evaluationStatus: "preliminary",
+    creationInfo: {
+      agencyID: 'us',
+      agencyURI: "smi:anss.org/metadata/agencyid/us",
+      creationTime: isoToDateTime("2023-05-10T16:14:55.000000Z"),
+    },
+  });
 });

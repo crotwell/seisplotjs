@@ -77,6 +77,7 @@ export class Quake {
   magnitudeList: Array<Magnitude> = [];
   originList: Array<Origin> = [];
   pickList: Array<Pick> = [];
+  focalMechanismList: Array<FocalMechanism> = [];
   preferredOriginId: string | undefined;
   _preferredOrigin: Origin | null = null;
   preferredMagnitudeId: string | undefined;
@@ -147,11 +148,19 @@ export class Quake {
       allMags.push(Magnitude.createFromXml(magEl, allOrigins, allStationMags));
     }
 
+    const allFocalMechEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "focalMechanism"));
+    const allFocalMechs = [];
+
+    for (const focalMechEl of allFocalMechEls) {
+      allFocalMechs.push(FocalMechanism.createFromXml(focalMechEl, allOrigins));
+    }
+
     out.originList = allOrigins;
     out.magnitudeList = allMags;
     out.pickList = allPicks;
     out.amplitudeList = allAmplitudes;
     out.stationMagnitudeList = allStationMags;
+    out.focalMechanismList = allFocalMechs;
     out.eventId = Quake.extractEventId(qml, host);
     out.preferredOriginId = _grabFirstElText(qml, "preferredOriginID");
     out.preferredMagnitudeId = _grabFirstElText(qml, "preferredMagnitudeID");
@@ -1226,6 +1235,244 @@ export class Pick extends BaseElement {
   }
   toString(): string {
     return stringify(this.time) + ` ${this.networkCode}.${this.stationCode}.${this.locationCode}.${this.channelCode}`;
+  }
+}
+
+/**
+  Represents a QuakeML Focal Mechanism.
+ */
+export class FocalMechanism extends BaseElement {
+  waveformIDList: WaveformID[] = [];
+  triggeringOrigin?: Origin;
+  nodalPlanes?: NodalPlanes;
+  principalAxes?: PrincipalAxes;
+  azimuthalGap?: number;
+  stationPolarityCount?: number;
+  misfit?: number;
+  stationDistributionRatio?: number;
+  methodID?: string;
+  evaluationMode?: string;
+  evaluationStatus?: string;
+
+
+  /**
+   * Parses a QuakeML focal mechanism xml element into a FocalMechanism object.
+   *
+   * @param focalMechQML the focal mechanism xml Element
+   * @param allOrigins origins already extracted from the xml for linking focal mechanisms with origins
+   * @returns FocalMechanism instance
+   */
+  static createFromXml(focalMechQML: Element, allOrigins: Origin[]): FocalMechanism {
+    if (focalMechQML.localName !== "focalMechanism") {
+      throw new Error(`Cannot extract, not a QuakeML focalMechanism: ${focalMechQML.localName}`);
+    }
+
+    const waveformIDEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "waveformID"));
+    const waveformIDs = waveformIDEls.map(wid => WaveformID.createFromXml(wid));
+
+    const triggeringOriginID = _grabFirstElText(focalMechQML, "triggeringOriginID");
+    if (!isNonEmptyStringArg(triggeringOriginID)) {
+      throw new Error("stationMagnitude missing triggering origin ID");
+    }
+    const triggeringOrigin = allOrigins.find(o => o.publicId === triggeringOriginID);
+    if (!isDef(triggeringOrigin)) {
+      throw new Error("No origin with ID " + triggeringOriginID);
+    }
+
+    const nodalPlanes = _grabFirstElType(NodalPlanes.createFromXml.bind(NodalPlanes))(focalMechQML, "nodalPlanes");
+
+    const principalAxes = _grabFirstElType(PrincipalAxes.createFromXml.bind(PrincipalAxes))(focalMechQML, "principalAxes");
+
+    const azimuthalGap = _grabFirstElFloat(focalMechQML, "azimuthalGap");
+
+    const stationPolarityCount = _grabFirstElInt(focalMechQML, "stationPolarityCount");
+
+    const misfit = _grabFirstElFloat(focalMechQML, "misfit");
+    
+    const stationDistributionRatio = _grabFirstElFloat(focalMechQML, "stationDistributionRatio");
+
+    const methodID = _grabFirstElText(focalMechQML, "methodID");
+
+    const evaluationMode = _grabFirstElText(focalMechQML, "evaluationMode");
+
+    const evaluationStatus = _grabFirstElText(focalMechQML, "evaluationStatus");
+
+    const out = new FocalMechanism();
+
+    out.populate(focalMechQML);
+    out.waveformIDList = waveformIDs;
+    out.triggeringOrigin = triggeringOrigin;
+    out.nodalPlanes = nodalPlanes;
+    out.principalAxes = principalAxes;
+    out.azimuthalGap = azimuthalGap;
+    out.stationPolarityCount = stationPolarityCount;
+    out.misfit = misfit;
+    out.stationDistributionRatio = stationDistributionRatio;
+    out.methodID = methodID;
+    out.evaluationMode = evaluationMode;
+    out.evaluationStatus = evaluationStatus;
+
+    return out;
+  }
+}
+
+/**
+  Represents a QuakeML NodalPlanes.
+ */
+export class NodalPlanes {
+  nodalPlane1?: NodalPlane;
+  nodalPlane2?: NodalPlane;
+  preferredPlane?: number;
+
+  /**
+   * Parses a QuakeML nodal planes xml element into a NodalPlanes object.
+   *
+   * @param nodalPlanesQML the nodal planes xml Element
+   * @returns NodalPlanes instance
+   */
+  static createFromXml(nodalPlanesQML: Element): NodalPlanes {
+    const nodalPlane1 = _grabFirstElType(NodalPlane.createFromXml.bind(NodalPlane))(nodalPlanesQML, "nodalPlane1");
+
+    const nodalPlane2 = _grabFirstElType(NodalPlane.createFromXml.bind(NodalPlane))(nodalPlanesQML, "nodalPlane2");
+
+    const preferredPlaneString = _grabAttribute(nodalPlanesQML, "preferredPlane");
+    const preferredPlane = isNonEmptyStringArg(preferredPlaneString) ? parseInt(preferredPlaneString) : undefined;
+
+    const out = new NodalPlanes();
+
+    out.nodalPlane1 = nodalPlane1;
+    out.nodalPlane2 = nodalPlane2;
+    out.preferredPlane = preferredPlane;
+
+    return out;
+  }
+}
+
+/**
+  Represents a QuakeML NodalPlane.
+ */
+export class NodalPlane {
+  strike: RealQuantity;
+  dip: RealQuantity;
+  rake: RealQuantity;
+
+  constructor(strike: RealQuantity, dip: RealQuantity, rake: RealQuantity) {
+    this.strike = strike;
+    this.dip = dip;
+    this.rake = rake;
+  }
+
+  /**
+   * Parses a QuakeML nodal plane xml element into a NodalPlane object.
+   *
+   * @param nodalPlaneQML the nodal plane xml Element
+   * @returns NodalPlane instance
+   */
+  static createFromXml(nodalPlaneQML: Element): NodalPlane {
+    const strike = _grabFirstElRealQuantity(nodalPlaneQML, "strike");
+    if (!isObject(strike)) {
+      throw new Error("nodal plane missing strike");
+    }
+
+    const dip = _grabFirstElRealQuantity(nodalPlaneQML, "dip");
+    if (!isObject(dip)) {
+      throw new Error("nodal plane missing dip");
+    }
+
+    const rake = _grabFirstElRealQuantity(nodalPlaneQML, "rake");
+    if (!isObject(rake)) {
+      throw new Error("nodal plane missing rake");
+    }
+
+    const out = new NodalPlane(strike, dip, rake);
+
+    return out;
+  }
+}
+
+/**
+  Represents a QuakeML PrincipalAxes.
+ */
+export class PrincipalAxes {
+  tAxis: Axis;
+  pAxis: Axis;
+  nAxis?: Axis;
+
+  constructor(tAxis: Axis, pAxis: Axis) {
+    this.tAxis = tAxis;
+    this.pAxis = pAxis;
+  }
+
+  /**
+   * Parses a QuakeML princpalAxes element into a PrincipalAxes object.
+   *
+   * @param princpalAxesQML the princpalAxes xml Element
+   * @returns PrincipalAxes instance
+   */
+  static createFromXml(princpalAxesQML: Element): PrincipalAxes {
+    if (princpalAxesQML.localName !== "principalAxes") {
+      throw new Error(`Cannot extract, not a QuakeML princpalAxes: ${princpalAxesQML.localName}`);
+    }
+
+    const tAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(princpalAxesQML, "tAxis");
+    if (!isObject(tAxis)) {
+      throw new Error("nodal plane missing tAxis");
+    }
+
+    const pAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(princpalAxesQML, "pAxis");
+    if (!isObject(pAxis)) {
+      throw new Error("nodal plane missing pAxis");
+    }
+
+    const nAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(princpalAxesQML, "nAxis");
+
+    const out = new PrincipalAxes(tAxis, pAxis);
+
+    out.nAxis = nAxis;
+
+    return out;
+  }
+}
+
+/**
+  Represents a QuakeML Axis.
+ */
+export class Axis {
+  azimuth: RealQuantity;
+  plunge: RealQuantity;
+  length: RealQuantity;
+
+  constructor(azimuth: RealQuantity, plunge: RealQuantity, length: RealQuantity) {
+    this.azimuth = azimuth;
+    this.plunge = plunge;
+    this.length = length;
+  }
+
+  /**
+   * Parses a QuakeML axis xml element into a Axis object.
+   *
+   * @param axisQML the axis plane xml Element
+   * @returns Axis instance
+   */
+  static createFromXml(axisQML: Element): Axis {
+    const azimuth = _grabFirstElRealQuantity(axisQML, "azimuth");
+    if (!isObject(azimuth)) {
+      throw new Error("nodal plane missing azimuth");
+    }
+
+    const plunge = _grabFirstElRealQuantity(axisQML, "plunge");
+    if (!isObject(plunge)) {
+      throw new Error("nodal plane missing plunge");
+    }
+
+    const length = _grabFirstElRealQuantity(axisQML, "length");
+    if (!isObject(length)) {
+      throw new Error("nodal plane missing length");
+    }
+
+    const out = new Axis(azimuth, plunge, length);
+
+    return out;
   }
 }
 
