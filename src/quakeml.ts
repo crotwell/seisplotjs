@@ -971,7 +971,7 @@ export class Magnitude extends BaseElement {
   }
 
   toString(): string {
-    return stringify(this.mag) + " " + stringify(this.type);
+    return stringify(this.mag.value) + " " + stringify(this.type);
   }
 }
 
