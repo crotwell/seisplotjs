@@ -192,6 +192,29 @@ test("USGS quake", () => {
     channelCode: "HHE",
     locationCode: "10",
   });
+  expect(quakes[0].focalMechanismList[0].momentTensorList).toHaveLength(1);
+  expect(quakes[0].focalMechanismList[0].momentTensorList[0]).toMatchObject({
+    derivedOrigin: { publicId: "quakeml:us.anss.org/origin/6000kawn/mww" },
+    momentMagnitude: { publicId: "quakeml:us.anss.org/magnitude/6000kawn/mww" },
+    scalarMoment: { value: 2.68e+20 },
+    tensor: {
+      Mrr: { value: -2.3917e+20 },
+      Mtt: { value: 1.3179e+20 },
+      Mpp: { value: 1.0738e+20 },
+      Mrt: { value: 2.884e+19 },
+      Mrp: { value: -9.337e+19 },
+      Mtp: { value: 1.388e+20 },
+    },
+    doubleCouple: 0.9222,
+    clvd: 0.0778,
+    sourceTimeFunction: {
+      type: "triangle",
+      duration: 29.76,
+      riseTime: 14.88,
+      decayTime: 14.88,
+    },
+    publicId: "quakeml:us.anss.org/momenttensor/6000kawn/mww",
+  });
   expect(quakes[0].focalMechanismList[0]).toMatchObject({
     triggeringOrigin: {
       publicId: "quakeml:us.anss.org/origin/6000kawn/mww_trigger",
