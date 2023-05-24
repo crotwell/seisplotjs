@@ -183,7 +183,7 @@ export function loadFromZip(zip: JSZip): Promise<Dataset> {
           throw new Error(`qml text is really short: ${rawXmlText}`);
         } else {
           const rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
-          return parseQuakeML(rawXml);
+          return parseQuakeML(rawXml).eventList;
         }
       }) : [];
       const inventoryFile = datasetDir.file(INVENTORY_FILE);
