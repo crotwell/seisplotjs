@@ -152,7 +152,7 @@ export class Quake {
     const allFocalMechs = [];
 
     for (const focalMechEl of allFocalMechEls) {
-      allFocalMechs.push(FocalMechanism.createFromXml(focalMechEl, allOrigins));
+      allFocalMechs.push(FocalMechanism.createFromXml(focalMechEl, allOrigins, allMags));
     }
 
     out.originList = allOrigins;
@@ -1243,6 +1243,7 @@ export class Pick extends BaseElement {
  */
 export class FocalMechanism extends BaseElement {
   waveformIDList: WaveformID[] = [];
+  momentTensorList: MomentTensor[] = [];
   triggeringOrigin?: Origin;
   nodalPlanes?: NodalPlanes;
   principalAxes?: PrincipalAxes;
@@ -1260,15 +1261,19 @@ export class FocalMechanism extends BaseElement {
    *
    * @param focalMechQML the focal mechanism xml Element
    * @param allOrigins origins already extracted from the xml for linking focal mechanisms with origins
+   * @param allMagnitudes magnitudes already extracted from the xml for linking moment tensors with magnitudes
    * @returns FocalMechanism instance
    */
-  static createFromXml(focalMechQML: Element, allOrigins: Origin[]): FocalMechanism {
+  static createFromXml(focalMechQML: Element, allOrigins: Origin[], allMagnitudes: Magnitude[]): FocalMechanism {
     if (focalMechQML.localName !== "focalMechanism") {
       throw new Error(`Cannot extract, not a QuakeML focalMechanism: ${focalMechQML.localName}`);
     }
 
     const waveformIDEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "waveformID"));
     const waveformIDs = waveformIDEls.map(wid => WaveformID.createFromXml(wid));
+
+    const momentTensorEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "momentTensor"));
+    const momentTensors = momentTensorEls.map(wid => MomentTensor.createFromXml(wid, allOrigins, allMagnitudes));
 
     const triggeringOriginID = _grabFirstElText(focalMechQML, "triggeringOriginID");
     if (!isNonEmptyStringArg(triggeringOriginID)) {
@@ -1301,6 +1306,7 @@ export class FocalMechanism extends BaseElement {
 
     out.populate(focalMechQML);
     out.waveformIDList = waveformIDs;
+    out.momentTensorList = momentTensors;
     out.triggeringOrigin = triggeringOrigin;
     out.nodalPlanes = nodalPlanes;
     out.principalAxes = principalAxes;
@@ -1451,7 +1457,7 @@ export class Axis {
   /**
    * Parses a QuakeML axis xml element into a Axis object.
    *
-   * @param axisQML the axis plane xml Element
+   * @param axisQML the axis xml Element
    * @returns Axis instance
    */
   static createFromXml(axisQML: Element): Axis {
@@ -1471,6 +1477,283 @@ export class Axis {
     }
 
     const out = new Axis(azimuth, plunge, length);
+
+    return out;
+  }
+}
+
+/**
+  Represents a QuakeML MomentTensor.
+ */
+export class MomentTensor extends BaseElement {
+  dataUsedList: DataUsed[] = [];
+  derivedOrigin: Origin;
+  momentMagnitude?: Magnitude;
+  scalarMoment?: RealQuantity;
+  tensor?: Tensor;
+  variance?: number;
+  varianceReduction?: number;
+  doubleCouple?: number;
+  clvd?: number;
+  iso?: number;
+  greensFunctionID?: string;
+  filterID?: string;
+  sourceTimeFunction?: SourceTimeFunction;
+  methodID?: string;
+  category?: string;
+  inversionType?: string;
+
+  constructor(derivedOrigin: Origin) {
+    super();
+    this.derivedOrigin = derivedOrigin;
+  }
+
+  /**
+   * Parses a QuakeML momentTensor xml element into a MomentTensor object.
+   *
+   * @param momentTensorQML the momentTensor xml Element
+   * @param allOrigins origins already extracted from the xml for linking moment tensors with origins
+   * @param allMagnitudes magnitudes already extracted from the xml for linking moment tensors with magnitudes
+   * @returns MomentTensor instance
+   */
+  static createFromXml(momentTensorQML: Element, allOrigins: Origin[], allMagnitudes: Magnitude[]): MomentTensor {
+    if (momentTensorQML.localName !== "momentTensor") {
+      throw new Error(`Cannot extract, not a QuakeML momentTensor: ${momentTensorQML.localName}`);
+    }
+
+    const dataUsedEls = Array.from(momentTensorQML.getElementsByTagNameNS(BED_NS, "dataUsed"));
+    const dataUsed = dataUsedEls.map(DataUsed.createFromXml.bind(DataUsed));
+
+    const derivedOriginID = _grabFirstElText(momentTensorQML, "derivedOriginID");
+    if (!isNonEmptyStringArg(derivedOriginID)) {
+      throw new Error("momentTensor missing derivedOriginID");
+    }
+    const derivedOrigin = allOrigins.find(o => o.publicId === derivedOriginID);
+    if (!isDef(derivedOrigin)) {
+      throw new Error("No origin with ID " + derivedOriginID);
+    }
+
+    const momentMagnitudeID = _grabFirstElText(momentTensorQML, "momentMagnitudeID");
+    const momentMagnitude = allMagnitudes.find(o => o.publicId === momentMagnitudeID);
+    if (momentMagnitudeID && !momentMagnitude) {
+      throw new Error("No magnitude with ID " + momentMagnitudeID);
+    }
+
+    const scalarMoment = _grabFirstElRealQuantity(momentTensorQML, "scalarMoment");
+
+    const tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(momentTensorQML, "tensor");
+
+    const variance = _grabFirstElFloat(momentTensorQML, "variance");
+
+    const varianceReduction = _grabFirstElFloat(momentTensorQML, "varianceReduction");
+
+    const doubleCouple = _grabFirstElFloat(momentTensorQML, "doubleCouple");
+
+    const clvd = _grabFirstElFloat(momentTensorQML, "clvd");
+
+    const iso = _grabFirstElFloat(momentTensorQML, "iso");
+
+    const greensFunctionID = _grabFirstElText(momentTensorQML, "greensFunctionID");
+
+    const filterID = _grabFirstElText(momentTensorQML, "filterID");
+
+    const sourceTimeFunction = _grabFirstElType(SourceTimeFunction.createFromXml.bind(SourceTimeFunction))(momentTensorQML, "sourceTimeFunction");
+
+    const methodID = _grabFirstElText(momentTensorQML, "methodID");
+
+    const category = _grabFirstElText(momentTensorQML, "category");
+
+    const inversionType = _grabFirstElText(momentTensorQML, "inversionType");
+
+    const out = new MomentTensor(derivedOrigin);
+
+    out.populate(momentTensorQML);
+    out.dataUsedList = dataUsed;
+    out.momentMagnitude = momentMagnitude;
+    out.scalarMoment = scalarMoment;
+    out.tensor = tensor;
+    out.variance = variance;
+    out.varianceReduction = varianceReduction;
+    out.doubleCouple = doubleCouple;
+    out.clvd = clvd;
+    out.iso = iso;
+    out.greensFunctionID = greensFunctionID;
+    out.filterID = filterID;
+    out.sourceTimeFunction = sourceTimeFunction;
+    out.methodID = methodID;
+    out.category = category;
+    out.inversionType = inversionType;
+
+    return out;
+  }
+}
+
+/**
+  Represents a QuakeML Tensor.
+ */
+export class Tensor {
+  Mrr: RealQuantity;
+  Mtt: RealQuantity;
+  Mpp: RealQuantity;
+  Mrt: RealQuantity;
+  Mrp: RealQuantity;
+  Mtp: RealQuantity;
+  
+  constructor(
+    Mrr: RealQuantity,
+    Mtt: RealQuantity,
+    Mpp: RealQuantity,
+    Mrt: RealQuantity,
+    Mrp: RealQuantity,
+    Mtp: RealQuantity
+  ) {
+    this.Mrr = Mrr;
+    this.Mtt = Mtt;
+    this.Mpp = Mpp;
+    this.Mrt = Mrt;
+    this.Mrp = Mrp;
+    this.Mtp = Mtp;
+  }
+
+  /**
+   * Parses a QuakeML tensor xml element into a Tensor object.
+   *
+   * @param tensorQML the tensor xml Element
+   * @returns Tensor instance
+   */
+  static createFromXml(tensorQML: Element): Tensor {
+    if (tensorQML.localName !== "tensor") {
+      throw new Error(`Cannot extract, not a QuakeML tensor: ${tensorQML.localName}`);
+    }
+
+    const Mrr = _grabFirstElRealQuantity(tensorQML, "Mrr");
+    if (!isObject(Mrr)) {
+      throw new Error("tensor missing Mrr");
+    }
+
+    const Mtt = _grabFirstElRealQuantity(tensorQML, "Mtt");
+    if (!isObject(Mtt)) {
+      throw new Error("tensor missing Mtt");
+    }
+
+    const Mpp = _grabFirstElRealQuantity(tensorQML, "Mpp");
+    if (!isObject(Mpp)) {
+      throw new Error("tensor missing Mpp");
+    }
+
+    const Mrt = _grabFirstElRealQuantity(tensorQML, "Mrt");
+    if (!isObject(Mrt)) {
+      throw new Error("tensor missing Mrt");
+    }
+
+    const Mrp = _grabFirstElRealQuantity(tensorQML, "Mrp");
+    if (!isObject(Mrp)) {
+      throw new Error("tensor missing Mrp");
+    }
+
+    const Mtp = _grabFirstElRealQuantity(tensorQML, "Mtp");
+    if (!isObject(Mtp)) {
+      throw new Error("tensor missing Mtp");
+    }
+
+    const out = new Tensor(Mrr, Mtt, Mpp, Mrt, Mrp, Mtp);
+
+    return out;
+  }
+}
+
+/**
+  Represents a QuakeML SourceTimeFunction.
+ */
+export class SourceTimeFunction {
+  type: string;
+  duration: number;
+  riseTime?: number;
+  decayTime?: number;
+
+  constructor(type: string, duration: number) {
+    this.type = type;
+    this.duration = duration;
+  }
+
+  /**
+   * Parses a QuakeML sourceTimeFunction xml element into a SourceTimeFunction object.
+   *
+   * @param sourceTimeFunctionQML the sourceTimeFunction xml Element
+   * @returns SourceTimeFunction instance
+   */
+  static createFromXml(sourceTimeFunctionQML: Element): SourceTimeFunction {
+    if (sourceTimeFunctionQML.localName !== "sourceTimeFunction") {
+      throw new Error(`Cannot extract, not a QuakeML sourceTimeFunction: ${sourceTimeFunctionQML.localName}`);
+    }
+
+    const type = _grabFirstElText(sourceTimeFunctionQML, "type");
+    if (!isNonEmptyStringArg(type)) {
+      throw new Error("sourceTimeFunction missing type");
+    }
+
+    const duration = _grabFirstElFloat(sourceTimeFunctionQML, "duration");
+    if (!isDef(duration)) {
+      throw new Error("sourceTimeFunction missing duration");
+    }
+
+    const riseTime = _grabFirstElFloat(sourceTimeFunctionQML, "riseTime");
+
+    const decayTime = _grabFirstElFloat(sourceTimeFunctionQML, "decayTime");
+
+    const out = new SourceTimeFunction(type, duration);
+
+    out.riseTime = riseTime;
+    out.decayTime = decayTime;
+
+    return out;
+  }
+}
+
+/**
+  Represents a QuakeML DataUsed.
+ */
+export class DataUsed {
+  waveType: string;
+  stationCount?: number;
+  componentCount?: number;
+  shortestPeriod?: number;
+  longestPeriod?: number;
+
+  constructor(waveType: string) {
+    this.waveType = waveType;
+  }
+
+  /**
+   * Parses a QuakeML dataUsed xml element into a DataUsed object.
+   *
+   * @param dataUsedQML the dataUsed xml Element
+   * @returns SourceTimeFunction instance
+   */
+  static createFromXml(dataUsedQML: Element): DataUsed {
+    if (dataUsedQML.localName !== "dataUsed") {
+      throw new Error(`Cannot extract, not a QuakeML dataUsed: ${dataUsedQML.localName}`);
+    }
+
+    const waveType = _grabFirstElText(dataUsedQML, "waveType");
+    if (!isNonEmptyStringArg(waveType)) {
+      throw new Error("dataUsed missing waveType");
+    }
+
+    const stationCount = _grabFirstElInt(dataUsedQML, "stationCount");
+
+    const componentCount = _grabFirstElInt(dataUsedQML, "componentCount");
+
+    const shortestPeriod = _grabFirstElFloat(dataUsedQML, "shortestPeriod");
+
+    const longestPeriod = _grabFirstElFloat(dataUsedQML, "longestPeriod");
+
+    const out = new DataUsed(waveType);
+
+    out.stationCount = stationCount;
+    out.componentCount = componentCount;
+    out.shortestPeriod = shortestPeriod;
+    out.longestPeriod = longestPeriod;
 
     return out;
   }
