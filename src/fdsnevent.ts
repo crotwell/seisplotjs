@@ -707,7 +707,7 @@ export class EventQuery extends FDSNCommon {
    */
   query(): Promise<Array<Quake>> {
     return this.queryRawXml().then(rawXml => {
-      return parseQuakeML(rawXml, this._host);
+      return parseQuakeML(rawXml, this._host).eventList;
     });
   }
 

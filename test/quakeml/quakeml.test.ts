@@ -10,7 +10,7 @@ test("viewobspy quake", () => {
   const filename = "./test/quakeml/data/obspy_catalog.xml";
   const rawData = fs.readFileSync(filename, 'utf8');
   const xml = new DOMParser().parseFromString(rawData, "text/xml");
-  const quakes = quakeml.parseQuakeML(xml);
+  const quakes = quakeml.parseQuakeML(xml).eventList;
   expect(quakes).toHaveLength(2);
   expect(quakes[0].time).toEqual(isoToDateTime(("2019-10-31T01:20:58.661000Z")));
 });
@@ -20,9 +20,43 @@ test("USGS quake", () => {
   const filename = "./test/quakeml/data/usgs.xml";
   const rawData = fs.readFileSync(filename, 'utf8');
   const xml = new DOMParser().parseFromString(rawData, "text/xml");
-  const quakes = quakeml.parseQuakeML(xml);
+  const qml = quakeml.parseQuakeML(xml);
+  expect(qml).toMatchObject({
+    publicId: "quakeml:us.anss.org/eventparameters/6000kawn/1683735567",
+    comments: [
+      { text: "HYDRA - us" },
+    ],
+    creationInfo: {
+      agencyID: 'us',
+      agencyURI: "smi:anss.org/metadata/agencyid/us",
+      creationTime: isoToDateTime("2023-05-10T16:19:23.040000Z"),
+    },
+  });
+  const quakes = qml.eventList;
   expect(quakes).toHaveLength(1);
-  expect(quakes[0].time).toEqual(isoToDateTime(("2023-05-10T16:02:00.451000Z")));
+  expect(quakes[0].description).toMatchObject([
+    {
+      text: "Tonga",
+      type: "Flinn-Engdahl region",
+    },
+    {
+      text: "84.6 km (52.6 miles) WNW of Hihifo, Niuas, Tonga (pop. 815)\n" +
+"356.0 km (221.2 miles) WSW of Apia, Tuamasaga, Samoa (pop. 40407)\n" +
+"436.1 km (271.0 miles) WSW of Pago Pago, Eastern District, American Samoa (pop. 11500)\n" +
+"614.0 km (381.5 miles) N of Nuku`alofa, Tongatapu, Tonga (pop. 22400)\n" +
+"661.5 km (411.0 miles) E of Labasa, Northern, Fiji (pop. 27949)\n",
+      type: "nearest cities",
+    },
+  ]);
+  expect(quakes[0].preferredOrigin?.publicId).toBe("quakeml:us.anss.org/origin/6000kawn");
+  expect(quakes[0].preferredMagnitude?.publicId).toBe("quakeml:us.anss.org/magnitude/6000kawn/mww");
+  expect(quakes[0].type).toBe("earthquake");
+  expect(quakes[0].publicId).toEqual("quakeml:us.anss.org/event/6000kawn");
+  expect(quakes[0].creationInfo).toMatchObject({
+    agencyID: 'us',
+    agencyURI: "smi:anss.org/metadata/agencyid/us",
+    creationTime: isoToDateTime("2023-05-10T16:19:08.000000Z"),
+  });
   expect(quakes[0].amplitudeList).toHaveLength(587);
   expect(quakes[0].amplitudeList[0]).toMatchObject({
     genericAmplitude: {

@@ -12,7 +12,6 @@ import {
   isoToDateTime,
   stringify,
 } from "./util";
-import * as util from "./util"; // for util.log
 
 import {DateTime} from "luxon";
 
@@ -65,28 +64,57 @@ class BaseElement {
 }
 
 /**
+ * Represent a QuakeML EventParameters.
+ */
+export class EventParameters extends BaseElement {
+  eventList: Quake[] = [];
+  description?: string;
+
+  /**
+   * Parses a QuakeML event parameters xml element into an EventParameters object.
+   *
+   * @param eventParametersQML the event parameters xml Element
+   * @param host optional source of the xml, helpful for parsing the eventid
+   * @returns EventParameters instance
+   */
+  static createFromXml(eventParametersQML: Element, host?: string): EventParameters {
+    if (eventParametersQML.localName !== "eventParameters") {
+      throw new Error(`Cannot extract, not a QuakeML event parameters: ${eventParametersQML.localName}`);
+    }
+
+    const eventEls = Array.from(eventParametersQML.getElementsByTagNameNS(BED_NS, "event"));
+    const events = eventEls.map(e => Quake.createFromXml(e, host));
+
+    const description = _grabFirstElText(eventParametersQML, "description");
+
+    const out = new EventParameters();
+
+    out.populate(eventParametersQML);
+    out.eventList = events;
+    out.description = description;
+
+    return out;
+  }
+}
+
+/**
  * Represent a QuakeML Event. Renamed to Quake as Event conflicts with
  * other uses in javascript.
  */
-export class Quake {
+export class Quake extends BaseElement {
   eventId: string|undefined;
-  publicId: string;
-  description = "";
+  description: EventDescription[] = [];
   amplitudeList: Array<Amplitude> = [];
   stationMagnitudeList: Array<StationMagnitude> = [];
   magnitudeList: Array<Magnitude> = [];
   originList: Array<Origin> = [];
   pickList: Array<Pick> = [];
   focalMechanismList: Array<FocalMechanism> = [];
-  preferredOriginId: string | undefined;
-  _preferredOrigin: Origin | null = null;
-  preferredMagnitudeId: string | undefined;
-  _preferredMagnitude: Magnitude | null = null;
-
-  constructor(publicId: string) {
-    // what is essential???
-    this.publicId = publicId;
-  }
+  preferredOrigin?: Origin;
+  preferredMagnitude?: Magnitude;
+  preferredFocalMechanism?: FocalMechanism;
+  type?: string;
+  typeCertainty?: string;
 
   /**
    * Parses a QuakeML event xml element into a Quake object. Pass in
@@ -103,14 +131,11 @@ export class Quake {
     }
 
 
-    const publicId = _requireAttribute(qml, "publicID");
-    const out = new Quake(publicId);
+    const out = new Quake();
+    out.populate(qml);
 
-    const desc = _grabFirstElText(_grabFirstEl(qml, "description"), "text");
-
-    if (isStringArg(desc)) {
-      out.description = desc;
-    }
+    const descriptionEls = Array.from(qml.children).filter(e => e.tagName === "description");
+    out.description = descriptionEls.map(d => EventDescription.createFromXml(d));
 
     //need picks before can do origins
     const allPickEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "pick"));
@@ -162,32 +187,35 @@ export class Quake {
     out.stationMagnitudeList = allStationMags;
     out.focalMechanismList = allFocalMechs;
     out.eventId = Quake.extractEventId(qml, host);
-    out.preferredOriginId = _grabFirstElText(qml, "preferredOriginID");
-    out.preferredMagnitudeId = _grabFirstElText(qml, "preferredMagnitudeID");
+    const preferredOriginId = _grabFirstElText(qml, "preferredOriginID");
+    const preferredMagnitudeId = _grabFirstElText(qml, "preferredMagnitudeID");
+    const preferredFocalMechId = _grabFirstElText(qml, "preferredFocalMechanismID");
 
-    if (isNonEmptyStringArg(out.preferredOriginId)) {
-      for (const o of allOrigins) {
-        if (o.publicId === out.preferredOriginId) {
-          out._preferredOrigin = o;
-        } else {
-          util.log(
-            `no preferredOriginId match: ${o.publicId} ${out.preferredOriginId}`,
-          );
-          out._preferredOrigin = null;
-        }
+    if (isNonEmptyStringArg(preferredOriginId)) {
+      out.preferredOrigin = allOrigins.find(o => o.publicId === preferredOriginId);
+      if (!out.preferredOrigin) {
+        throw new Error(
+          `no preferredOriginId match: ${preferredOriginId}`,
+        );
       }
     }
 
-    if (isNonEmptyStringArg(out.preferredMagnitudeId)) {
-      for (const m of allMags) {
-        if (m.publicId === out.preferredMagnitudeId) {
-          out._preferredMagnitude = m;
-        } else {
-          util.log(`no match: ${m.publicId} ${out.preferredMagnitudeId}`);
-          out._preferredMagnitude = null;
-        }
+    if (isNonEmptyStringArg(preferredMagnitudeId)) {
+      out.preferredMagnitude = allMags.find(m => m.publicId === preferredMagnitudeId);
+      if (!out.preferredMagnitude) {
+        throw new Error(`no match: ${preferredMagnitudeId}`);
       }
     }
+
+    if (isNonEmptyStringArg(preferredFocalMechId)) {
+      out.preferredFocalMechanism = allFocalMechs.find(m => m.publicId === preferredFocalMechId);
+      if (!out.preferredFocalMechanism) {
+        throw new Error(`no match: ${preferredFocalMechId}`);
+      }
+    }
+
+    out.type  =_grabFirstElText(qml, "type");
+    out.typeCertainty  =_grabFirstElText(qml, "typeCertainty");
 
     return out;
   }
@@ -240,21 +268,14 @@ export class Quake {
   }
 
   hasPreferredOrigin() {
-    return isDef(this._preferredOrigin);
-  }
-  get preferredOrigin(): Origin {
-    if (isDef(this._preferredOrigin)) {
-      return this._preferredOrigin;
-    } else {
-      throw new Error("No preferred origin");
-    }
+    return isDef(this.preferredOrigin);
   }
   hasOrigin() {
-    return isDef(this._preferredOrigin) || this.originList.length > 1;
+    return isDef(this.preferredOrigin) || this.originList.length > 1;
   }
   get origin(): Origin {
-    if (isDef(this._preferredOrigin)) {
-      return this._preferredOrigin;
+    if (isDef(this.preferredOrigin)) {
+      return this.preferredOrigin;
     } else if (this.originList.length > 0) {
       return this.originList[0];
     } else {
@@ -262,21 +283,14 @@ export class Quake {
     }
   }
   hasPreferredMagnitude() {
-    return isDef(this._preferredMagnitude);
-  }
-  get preferredMagnitude(): Magnitude {
-    if (isDef(this._preferredMagnitude)) {
-      return this._preferredMagnitude;
-    } else {
-      throw new Error("No preferred Magnitude");
-    }
+    return isDef(this.preferredMagnitude);
   }
   hasMagnitude() {
-    return isDef(this._preferredMagnitude) || this.magnitudeList.length > 1;
+    return isDef(this.preferredMagnitude) || this.magnitudeList.length > 1;
   }
   get magnitude(): Magnitude {
-    if (isDef(this._preferredMagnitude)) {
-      return this._preferredMagnitude;
+    if (isDef(this.preferredMagnitude)) {
+      return this.preferredMagnitude;
     } else if (this.magnitudeList.length > 0) {
       return this.magnitudeList[0];
     } else {
@@ -301,7 +315,7 @@ export class Quake {
   }
 
   get arrivals(): Array<Arrival> {
-    return this.preferredOrigin.arrivalList;
+    return this.origin.arrivalList;
   }
 
   get picks(): Array<Pick> {
@@ -326,6 +340,42 @@ export class Quake {
     } else {
       return `Event: ${this.eventId}`;
     }
+  }
+}
+
+/**
+  Represents a QuakeML EventDescription.
+ */
+export class EventDescription {
+  text: string;
+  type?: string;
+
+  constructor(text: string) {
+    this.text = text;
+  }
+
+  /**
+   * Parses a QuakeML description xml element into a EventDescription object.
+   *
+   * @param descriptionQML the description xml Element
+   * @returns EventDescription instance
+   */
+  static createFromXml(descriptionQML: Element): EventDescription {
+    if (descriptionQML.localName !== "description") {
+      throw new Error(`Cannot extract, not a QuakeML description ID: ${descriptionQML.localName}`);
+    }
+
+    const text = _grabFirstElText(descriptionQML, "text");
+    if (!isNonEmptyStringArg(text)) {
+      throw new Error("description missing text");
+    }
+
+    const type = _grabFirstElText(descriptionQML, "type");
+
+    const out = new EventDescription(text);
+    out.type = type;
+
+    return out;
   }
 }
 
@@ -1874,7 +1924,7 @@ class Quantity<T> {
    * @param integerQuantityQML the integer quantity xml Element
    * @returns IntegerQuantity instance
    */
-  static createIntegerQuantityFromXml(integerQuantityQML: Element): RealQuantity {
+  static createIntegerQuantityFromXml(integerQuantityQML: Element): IntegerQuantity {
     return Quantity._createFromXml(integerQuantityQML, _grabFirstElFloat, _grabFirstElInt);
   }
 
@@ -1972,23 +2022,21 @@ export class CreationInfo {
  *
  *  @param rawXml the xml Document to parse
  *  @param host optional source of the xml, helpful for parsing the eventid
- *  @returns array of Quake objects
+ *  @returns EventParameters object
  */
-export function parseQuakeML(rawXml: Document, host?: string): Array<Quake> {
+export function parseQuakeML(rawXml: Document, host?: string): EventParameters {
   const top = rawXml.documentElement;
 
   if (!top) {
     throw new Error("Can't get documentElement");
   }
 
-  const eventArray = Array.from(top.getElementsByTagName("event"));
-  const out = [];
-
-  for (const eventEl of eventArray) {
-    out.push(Quake.createFromXml(eventEl, host));
+  const eventParametersArray = Array.from(top.getElementsByTagName("eventParameters"));
+  if (eventParametersArray.length !== 1) {
+    throw new Error(`Document has ${eventParametersArray.length} eventParameters elements`);
   }
 
-  return out;
+  return EventParameters.createFromXml(eventParametersArray[0], host);
 }
 
 export function createQuakeFromValues(publicId: string,
@@ -2002,7 +2050,8 @@ export function createQuakeFromValues(publicId: string,
       new Quantity(longitude)
     );
     origin.depth = new Quantity(depth);
-    const quake = new Quake(publicId);
+    const quake = new Quake();
+    quake.publicId = publicId;
     quake.originList.push(origin);
     return quake;
 }
@@ -2018,13 +2067,10 @@ const _grabAllElComment = function (
   const out = [];
 
   if (isObject(xml)) {
-    const elList = xml.getElementsByTagName(tagName);
-    if (isObject(elList) && elList.length > 0) {
-      for (let i = 0; i < elList.length; ++i) {
-        const el = elList.item(i);
-        if (isObject(el)) {
-          out.push(Comment.createFromXml(el));
-        }
+    const elList = Array.from(xml.children).filter(e => e.tagName === tagName);
+    for (const el of elList) {
+      if (isObject(el)) {
+        out.push(Comment.createFromXml(el));
       }
     }
   }
@@ -2058,21 +2104,19 @@ const _grabFirstEl = function (
   xml: Element | null | void,
   tagName: string,
 ): Element | undefined {
-  let out = undefined;
-
   if (isObject(xml)) {
-    const elList = xml.getElementsByTagName(tagName);
+    const elList = Array.from(xml.children).filter(e => e.tagName === tagName);
 
-    if (isObject(elList) && elList.length > 0) {
-      const e = elList.item(0);
+    if (elList.length > 0) {
+      const e = elList[0];
 
       if (e) {
-        out = e;
+        return e;
       }
     }
   }
 
-  return out;
+  return undefined;
 };
 
 const _grabFirstElText = function (
