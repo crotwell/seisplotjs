@@ -370,10 +370,9 @@ export class EventDescription {
       throw new Error("description missing text");
     }
 
-    const type = _grabFirstElText(descriptionQML, "type");
-
     const out = new EventDescription(text);
-    out.type = type;
+
+    out.type = _grabFirstElText(descriptionQML, "type");
 
     return out;
   }
@@ -419,55 +418,41 @@ export class Amplitude extends BaseElement {
       throw new Error("amplitude missing genericAmplitude");
     }
 
-    const type = _grabFirstElText(amplitudeQML, "type");
-
-    const category = _grabFirstElText(amplitudeQML, "category");
-
-    const unit = _grabFirstElText(amplitudeQML, "unit");
-
-    const methodID = _grabFirstElText(amplitudeQML, "methodID");
-
-    const period = _grabFirstElRealQuantity(amplitudeQML, "period");
-
-    const snr = _grabFirstElFloat(amplitudeQML, "snr");
-
-    const timeWindow = _grabFirstElType(TimeWindow.createFromXml.bind(TimeWindow))(amplitudeQML, "timeWindow");
-
-    const pickID = _grabFirstElText(amplitudeQML, "pickID");
-    const pick = allPicks.find(p => p.publicId === pickID);
-    if (pickID && !pick) {
-      throw new Error("No pick with ID " + pickID);
-    }
-
-    const waveformID = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(amplitudeQML, "waveformID");
-
-    const filterID = _grabFirstElText(amplitudeQML, "filterID");
-
-    const scalingTime = _grabFirstElTimeQuantity(amplitudeQML, "scalingTime");
-
-    const magnitudeHint = _grabFirstElText(amplitudeQML, "magnitudeHint");
-
-    const evaluationMode = _grabFirstElText(amplitudeQML, "evaluationMode");
-
-    const evaluationStatus = _grabFirstElText(amplitudeQML, "evaluationStatus");
-
     const out = new Amplitude(genericAmplitude);
 
     out.populate(amplitudeQML);
-    out.type = type;
-    out.category = category;
-    out.unit = unit;
-    out.methodID = methodID;
-    out.period = period;
-    out.snr = snr;
-    out.timeWindow = timeWindow;
-    out.pick = pick;
-    out.waveformID = waveformID;
-    out.filterID = filterID;
-    out.scalingTime = scalingTime;
-    out.magnitudeHint = magnitudeHint;
-    out.evaluationMode = evaluationMode;
-    out.evaluationStatus = evaluationStatus;
+
+    out.type = _grabFirstElText(amplitudeQML, "type");
+
+    out.category = _grabFirstElText(amplitudeQML, "category");
+
+    out.unit = _grabFirstElText(amplitudeQML, "unit");
+
+    out.methodID = _grabFirstElText(amplitudeQML, "methodID");
+
+    out.period = _grabFirstElRealQuantity(amplitudeQML, "period");
+
+    out.snr = _grabFirstElFloat(amplitudeQML, "snr");
+
+    out.timeWindow = _grabFirstElType(TimeWindow.createFromXml.bind(TimeWindow))(amplitudeQML, "timeWindow");
+
+    const pickID = _grabFirstElText(amplitudeQML, "pickID");
+    out.pick = allPicks.find(p => p.publicId === pickID);
+    if (pickID && !out.pick) {
+      throw new Error("No pick with ID " + pickID);
+    }
+
+    out.waveformID = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(amplitudeQML, "waveformID");
+
+    out.filterID = _grabFirstElText(amplitudeQML, "filterID");
+
+    out.scalingTime = _grabFirstElTimeQuantity(amplitudeQML, "scalingTime");
+
+    out.magnitudeHint = _grabFirstElText(amplitudeQML, "magnitudeHint");
+
+    out.evaluationMode = _grabFirstElText(amplitudeQML, "evaluationMode");
+
+    out.evaluationStatus = _grabFirstElText(amplitudeQML, "evaluationStatus");
 
     return out;
   }
@@ -515,25 +500,21 @@ export class StationMagnitude extends BaseElement {
       throw new Error("stationMagnitude missing mag");
     }
 
-    const type = _grabFirstElText(stationMagnitudeQML, "type");
-
-    const amplitudeID = _grabFirstElText(stationMagnitudeQML, "amplitudeID");
-    const amplitude = allAmplitudes.find(a => a.publicId === amplitudeID);
-    if (amplitudeID && !amplitude) {
-      throw new Error("No amplitude with ID " + amplitudeID);
-    }
-
-    const methodID = _grabFirstElText(stationMagnitudeQML, "methodID");
-
-    const waveformID = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(stationMagnitudeQML, "waveformID");
-
     const out = new StationMagnitude(origin, mag);
 
     out.populate(stationMagnitudeQML);
-    out.type = type;
-    out.amplitude = amplitude;
-    out.methodID = methodID;
-    out.waveformID = waveformID;
+
+    out.type = _grabFirstElText(stationMagnitudeQML, "type");
+
+    const amplitudeID = _grabFirstElText(stationMagnitudeQML, "amplitudeID");
+    out.amplitude = allAmplitudes.find(a => a.publicId === amplitudeID);
+    if (amplitudeID && !out.amplitude) {
+      throw new Error("No amplitude with ID " + amplitudeID);
+    }
+
+    out.methodID = _grabFirstElText(stationMagnitudeQML, "methodID");
+
+    out.waveformID = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(stationMagnitudeQML, "waveformID");
 
     return out;
   }
@@ -625,8 +606,6 @@ export class Origin extends BaseElement {
       throw new Error(`Cannot extract, not a QuakeML Origin: ${qml.localName}`);
     }
 
-    const uncertainty = _grabFirstElType(OriginUncertainty.createFromXml.bind(OriginUncertainty))(qml, "originUncertainty");
-
     const time = _grabFirstElTimeQuantity(qml, "time");
     if (!isObject(time)) {
       throw new Error("origin missing time");
@@ -642,54 +621,38 @@ export class Origin extends BaseElement {
       throw new Error("origin missing longitude");
     }
 
-    const depth = _grabFirstElRealQuantity(qml, "depth");
-
-    const depthType = _grabFirstElText(qml, "depthType");
-
-    const timeFixed = _grabFirstElBool(qml, "timeFixed");
-
-    const epicenterFixed = _grabFirstElBool(qml, "epicenterFixed");
-
-    const referenceSystemID = _grabFirstElText(qml, "referenceSystemID");
-
-    const methodID = _grabFirstElText(qml, "methodID");
-
-    const earthModelID = _grabFirstElText(qml, "earthModelID");
-
-    const quality = _grabFirstElType(OriginQuality.createFromXml.bind(OriginQuality))(qml, "quality");
-
-    const type = _grabFirstElText(qml, "type");
-
-    const region = _grabFirstElText(qml, "region");
-
-    const evaluationMode = _grabFirstElText(qml, "evaluationMode");
-
-    const evaluationStatus = _grabFirstElText(qml, "evaluationStatus");
-
-    const allArrivalEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "arrival"));
-    const allArrivals = [];
-
-    for (const arrivalEl of allArrivalEls) {
-      allArrivals.push(Arrival.createFromXml(arrivalEl, allPicks));
-    }
-
     const out = new Origin(time, lat, lon);
 
     out.populate(qml);
-    out.originUncertainty = uncertainty;
-    out.arrivalList = allArrivals;
-    out.depth = depth;
-    out.depthType = depthType;
-    out.timeFixed = timeFixed;
-    out.epicenterFixed = epicenterFixed;
-    out.referenceSystemID = referenceSystemID;
-    out.methodID = methodID;
-    out.earthModelID = earthModelID;
-    out.quality = quality;
-    out.type = type;
-    out.region = region;
-    out.evaluationMode = evaluationMode;
-    out.evaluationStatus = evaluationStatus;
+    
+    out.originUncertainty = _grabFirstElType(OriginUncertainty.createFromXml.bind(OriginUncertainty))(qml, "originUncertainty");
+
+    const allArrivalEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "arrival"));
+    out.arrivalList = allArrivalEls.map(arrivalEl => Arrival.createFromXml(arrivalEl, allPicks));
+
+    out.depth = _grabFirstElRealQuantity(qml, "depth");
+
+    out.depthType = _grabFirstElText(qml, "depthType");
+
+    out.timeFixed = _grabFirstElBool(qml, "timeFixed");
+
+    out.epicenterFixed = _grabFirstElBool(qml, "epicenterFixed");
+
+    out.referenceSystemID = _grabFirstElText(qml, "referenceSystemID");
+
+    out.methodID = _grabFirstElText(qml, "methodID");
+
+    out.earthModelID = _grabFirstElText(qml, "earthModelID");
+
+    out.quality = _grabFirstElType(OriginQuality.createFromXml.bind(OriginQuality))(qml, "quality");
+
+    out.type = _grabFirstElText(qml, "type");
+
+    out.region = _grabFirstElText(qml, "region");
+
+    out.evaluationMode = _grabFirstElText(qml, "evaluationMode");
+
+    out.evaluationStatus = _grabFirstElText(qml, "evaluationStatus");
 
     return out;
   }
@@ -731,21 +694,19 @@ export class CompositeTime {
       throw new Error(`Cannot extract, not a QuakeML Composite Time: ${qml.localName}`);
     }
 
-    const year = _grabFirstElIntegerQuantity(qml, "year");
-    const month = _grabFirstElIntegerQuantity(qml, "month");
-    const day = _grabFirstElIntegerQuantity(qml, "day");
-    const hour = _grabFirstElIntegerQuantity(qml, "hour");
-    const minute = _grabFirstElIntegerQuantity(qml, "minute");
-    const second = _grabFirstElIntegerQuantity(qml, "second");
-
     const out = new CompositeTime();
 
-    out.year = year;
-    out.month = month;
-    out.day = day;
-    out.hour = hour;
-    out.minute = minute;
-    out.second = second;
+    out.year = _grabFirstElIntegerQuantity(qml, "year");
+
+    out.month = _grabFirstElIntegerQuantity(qml, "month");
+
+    out.day = _grabFirstElIntegerQuantity(qml, "day");
+
+    out.hour = _grabFirstElIntegerQuantity(qml, "hour");
+
+    out.minute = _grabFirstElIntegerQuantity(qml, "minute");
+
+    out.second = _grabFirstElIntegerQuantity(qml, "second");
 
     return out;
   }
@@ -772,29 +733,21 @@ export class OriginUncertainty {
       throw new Error(`Cannot extract, not a QuakeML Origin Uncertainty: ${qml.localName}`);
     }
 
-    const horizontalUncertainty = _grabFirstElFloat(qml, "horizontalUncertainty");
-
-    const minHorizontalUncertainty = _grabFirstElFloat(qml, "minHorizontalUncertainty");
-
-    const maxHorizontalUncertainty = _grabFirstElFloat(qml, "maxHorizontalUncertainty");
-
-    const azimuthMaxHorizontalUncertainty = _grabFirstElFloat(qml, "azimuthMaxHorizontalUncertainty");
-
-    const confidenceEllipsoid = _grabFirstElType(ConfidenceEllipsoid.createFromXml.bind(ConfidenceEllipsoid))(qml, "confidenceEllipsoid");
-
-    const preferredDescription = _grabFirstElText(qml, "preferredDescription");
-
-    const confidenceLevel = _grabFirstElFloat(qml, "confidenceLevel");
-
     const out = new OriginUncertainty();
 
-    out.horizontalUncertainty = horizontalUncertainty;
-    out.minHorizontalUncertainty = minHorizontalUncertainty;
-    out.maxHorizontalUncertainty = maxHorizontalUncertainty;
-    out.azimuthMaxHorizontalUncertainty = azimuthMaxHorizontalUncertainty;
-    out.confidenceEllipsoid = confidenceEllipsoid;
-    out.preferredDescription = preferredDescription;
-    out.confidenceLevel = confidenceLevel;
+    out.horizontalUncertainty = _grabFirstElFloat(qml, "horizontalUncertainty");
+
+    out.minHorizontalUncertainty = _grabFirstElFloat(qml, "minHorizontalUncertainty");
+
+    out.maxHorizontalUncertainty = _grabFirstElFloat(qml, "maxHorizontalUncertainty");
+
+    out.azimuthMaxHorizontalUncertainty = _grabFirstElFloat(qml, "azimuthMaxHorizontalUncertainty");
+
+    out.confidenceEllipsoid = _grabFirstElType(ConfidenceEllipsoid.createFromXml.bind(ConfidenceEllipsoid))(qml, "confidenceEllipsoid");
+
+    out.preferredDescription = _grabFirstElText(qml, "preferredDescription");
+
+    out.confidenceLevel = _grabFirstElFloat(qml, "confidenceLevel");
 
     return out;
   }
@@ -905,41 +858,29 @@ export class OriginQuality {
       throw new Error(`Cannot extract, not a QuakeML Origin Quality: ${qml.localName}`);
     }
 
-    const associatedPhaseCount = _grabFirstElInt(qml, "associatedPhaseCount");
-
-    const usedPhaseCount = _grabFirstElInt(qml, "usedPhaseCount");
-
-    const associatedStationCount = _grabFirstElInt(qml, "associatedStationCount");
-
-    const usedStationCount = _grabFirstElInt(qml, "usedStationCount");
-
-    const standardError = _grabFirstElFloat(qml, "standardError");
-
-    const azimuthalGap = _grabFirstElFloat(qml, "azimuthalGap");
-
-    const secondaryAzimuthalGap = _grabFirstElFloat(qml, "secondaryAzimuthalGap");
-
-    const groundTruthLevel = _grabFirstElText(qml, "groundTruthLevel");
-
-    const maximumDistance = _grabFirstElFloat(qml, "maximumDistance");
-
-    const minimumDistance = _grabFirstElFloat(qml, "minimumDistance");
-
-    const medianDistance = _grabFirstElFloat(qml, "medianDistance");
-
     const out = new OriginQuality();
 
-    out.associatedPhaseCount = associatedPhaseCount;
-    out.usedPhaseCount = usedPhaseCount;
-    out.associatedStationCount = associatedStationCount;
-    out.usedStationCount = usedStationCount;
-    out.standardError = standardError;
-    out.azimuthalGap = azimuthalGap;
-    out.secondaryAzimuthalGap = secondaryAzimuthalGap;
-    out.groundTruthLevel = groundTruthLevel;
-    out.maximumDistance = maximumDistance;
-    out.minimumDistance = minimumDistance;
-    out.medianDistance = medianDistance;
+    out.associatedPhaseCount = _grabFirstElInt(qml, "associatedPhaseCount");
+
+    out.usedPhaseCount = _grabFirstElInt(qml, "usedPhaseCount");
+
+    out.associatedStationCount = _grabFirstElInt(qml, "associatedStationCount");
+
+    out.usedStationCount = _grabFirstElInt(qml, "usedStationCount");
+
+    out.standardError = _grabFirstElFloat(qml, "standardError");
+
+    out.azimuthalGap = _grabFirstElFloat(qml, "azimuthalGap");
+
+    out.secondaryAzimuthalGap = _grabFirstElFloat(qml, "secondaryAzimuthalGap");
+
+    out.groundTruthLevel = _grabFirstElText(qml, "groundTruthLevel");
+
+    out.maximumDistance = _grabFirstElFloat(qml, "maximumDistance");
+
+    out.minimumDistance = _grabFirstElFloat(qml, "minimumDistance");
+
+    out.medianDistance = _grabFirstElFloat(qml, "medianDistance");
 
     return out;
   }
@@ -979,43 +920,35 @@ export class Magnitude extends BaseElement {
       );
     }
 
-    const stationMagnitudeContributionEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "stationMagnitudeContribution"));
-    const stationMagnitudeContributions = stationMagnitudeContributionEls.map(smc => StationMagnitudeContribution.createFromXml(smc, allStationMagnitudes));
-
     const mag = _grabFirstElRealQuantity(qml, "mag");
     if (!mag) {
       throw new Error("magnitude missing mag");
     }
 
-    const type = _grabFirstElText(qml, "type");
-
-    const originID = _grabFirstElText(qml, "originID");
-    const origin = allOrigins.find(o => o.publicId === originID);
-    if (originID && !origin) {
-      throw new Error("No origin with ID " + originID);
-    }
-
-    const methodID = _grabFirstElText(qml, "methodID");
-
-    const stationCount = _grabFirstElInt(qml, "stationCount");
-
-    const azimuthalGap = _grabFirstElFloat(qml, "azimuthalGap");
-
-    const evaluationMode = _grabFirstElText(qml, "evaluationMode");
-
-    const evaluationStatus = _grabFirstElText(qml, "evaluationStatus");
-
     const out = new Magnitude(mag);
 
     out.populate(qml);
-    out.stationMagnitudeContributions = stationMagnitudeContributions;
-    out.type = type;
-    out.origin = origin;
-    out.methodID = methodID;
-    out.stationCount = stationCount;
-    out.azimuthalGap = azimuthalGap;
-    out.evaluationMode = evaluationMode;
-    out.evaluationStatus = evaluationStatus;
+
+    const stationMagnitudeContributionEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "stationMagnitudeContribution"));
+    out.stationMagnitudeContributions = stationMagnitudeContributionEls.map(smc => StationMagnitudeContribution.createFromXml(smc, allStationMagnitudes));
+
+    out.type = _grabFirstElText(qml, "type");
+
+    const originID = _grabFirstElText(qml, "originID");
+    out.origin = allOrigins.find(o => o.publicId === originID);
+    if (originID && !out.origin) {
+      throw new Error("No origin with ID " + originID);
+    }
+
+    out.methodID = _grabFirstElText(qml, "methodID");
+
+    out.stationCount = _grabFirstElInt(qml, "stationCount");
+
+    out.azimuthalGap = _grabFirstElFloat(qml, "azimuthalGap");
+
+    out.evaluationMode = _grabFirstElText(qml, "evaluationMode");
+
+    out.evaluationStatus = _grabFirstElText(qml, "evaluationStatus");
 
     return out;
   }
@@ -1058,14 +991,11 @@ export class StationMagnitudeContribution {
       throw new Error("No stationMagnitude with ID " + stationMagnitudeID);
     }
 
-    const residual = _grabFirstElFloat(qml, "residual");
-
-    const weight = _grabFirstElFloat(qml, "weight");
-
     const out = new StationMagnitudeContribution(stationMagnitude);
 
-    out.residual = residual;
-    out.weight = weight;
+    out.residual = _grabFirstElFloat(qml, "residual");
+
+    out.weight = _grabFirstElFloat(qml, "weight");
 
     return out;
   }
@@ -1113,28 +1043,6 @@ export class Arrival extends BaseElement {
 
     const phase = _grabFirstElText(arrivalQML, "phase");
 
-    const timeCorrection = _grabFirstElFloat(arrivalQML, "timeCorrection");
-
-    const azimuth = _grabFirstElFloat(arrivalQML, "azimuth");
-
-    const distance = _grabFirstElFloat(arrivalQML, "distance");
-
-    const takeoffAngle = _grabFirstElRealQuantity(arrivalQML, "takeoffAngle");
-
-    const timeResidual = _grabFirstElFloat(arrivalQML, "timeResidual");
-
-    const horizontalSlownessResidual = _grabFirstElFloat(arrivalQML, "horizontalSlownessResidual");
-
-    const backazimuthResidual = _grabFirstElFloat(arrivalQML, "backazimuthResidual");
-
-    const timeWeight = _grabFirstElFloat(arrivalQML, "timeWeight");
-
-    const horizontalSlownessWeight = _grabFirstElFloat(arrivalQML, "horizontalSlownessWeight");
-
-    const backazimuthWeight = _grabFirstElFloat(arrivalQML, "backazimuthWeight");
-
-    const earthModelID = _grabFirstElText(arrivalQML, "earthModelID");
-
     if (isNonEmptyStringArg(phase) && isNonEmptyStringArg(pickId)) {
       const myPick = allPicks.find(function (p: Pick) {
         return p.publicId === pickId;
@@ -1147,17 +1055,28 @@ export class Arrival extends BaseElement {
       const out = new Arrival(phase, myPick);
 
       out.populate(arrivalQML);
-      out.timeCorrection = timeCorrection;
-      out.azimuth = azimuth;
-      out.distance = distance;
-      out.takeoffAngle = takeoffAngle;
-      out.timeResidual = timeResidual;
-      out.horizontalSlownessResidual = horizontalSlownessResidual;
-      out.backazimuthResidual = backazimuthResidual;
-      out.timeWeight = timeWeight;
-      out.horizontalSlownessWeight = horizontalSlownessWeight;
-      out.backazimuthWeight = backazimuthWeight;
-      out.earthModelID = earthModelID;
+
+      out.timeCorrection = _grabFirstElFloat(arrivalQML, "timeCorrection");
+
+      out.azimuth = _grabFirstElFloat(arrivalQML, "azimuth");
+
+      out.distance = _grabFirstElFloat(arrivalQML, "distance");
+
+      out.takeoffAngle = _grabFirstElRealQuantity(arrivalQML, "takeoffAngle");
+
+      out.timeResidual = _grabFirstElFloat(arrivalQML, "timeResidual");
+
+      out.horizontalSlownessResidual = _grabFirstElFloat(arrivalQML, "horizontalSlownessResidual");
+
+      out.backazimuthResidual = _grabFirstElFloat(arrivalQML, "backazimuthResidual");
+
+      out.timeWeight = _grabFirstElFloat(arrivalQML, "timeWeight");
+
+      out.horizontalSlownessWeight = _grabFirstElFloat(arrivalQML, "horizontalSlownessWeight");
+
+      out.backazimuthWeight = _grabFirstElFloat(arrivalQML, "backazimuthWeight");
+
+      out.earthModelID = _grabFirstElText(arrivalQML, "earthModelID");
 
       return out;
     } else {
@@ -1215,39 +1134,29 @@ export class Pick extends BaseElement {
       throw new Error("pick missing waveformID");
     }
 
-    const filterID = _grabFirstElText(pickQML, "filterID");
-
-    const methodID = _grabFirstElText(pickQML, "methodID");
-
-    const horizontalSlowness = _grabFirstElRealQuantity(pickQML, "horizontalSlowness");
-
-    const backazimuth = _grabFirstElRealQuantity(pickQML, "backazimuth");
-
-    const slownessMethodID = _grabFirstElText(pickQML, "slownessMethodID");
-
-    const onset = _grabFirstElText(pickQML, "onset");
-
-    const phaseHint = _grabFirstElText(pickQML, "phaseHint");
-
-    const polarity = _grabFirstElText(pickQML, "polarity");
-
-    const evaluationMode = _grabFirstElText(pickQML, "evaluationMode");
-
-    const evaluationStatus = _grabFirstElText(pickQML, "evaluationStatus");
-
     const out = new Pick(time, waveformId);
 
     out.populate(pickQML);
-    out.filterID = filterID;
-    out.methodID = methodID;
-    out.horizontalSlowness = horizontalSlowness;
-    out.backazimuth = backazimuth;
-    out.slownessMethodID = slownessMethodID;
-    out.onset = onset;
-    out.phaseHint = phaseHint;
-    out.polarity = polarity;
-    out.evaluationMode = evaluationMode;
-    out.evaluationStatus = evaluationStatus;
+
+    out.filterID = _grabFirstElText(pickQML, "filterID");
+
+    out.methodID = _grabFirstElText(pickQML, "methodID");
+
+    out.horizontalSlowness = _grabFirstElRealQuantity(pickQML, "horizontalSlowness");
+
+    out.backazimuth = _grabFirstElRealQuantity(pickQML, "backazimuth");
+
+    out.slownessMethodID = _grabFirstElText(pickQML, "slownessMethodID");
+
+    out.onset = _grabFirstElText(pickQML, "onset");
+
+    out.phaseHint = _grabFirstElText(pickQML, "phaseHint");
+
+    out.polarity = _grabFirstElText(pickQML, "polarity");
+
+    out.evaluationMode = _grabFirstElText(pickQML, "evaluationMode");
+
+    out.evaluationStatus = _grabFirstElText(pickQML, "evaluationStatus");
 
     return out;
   }
@@ -1319,54 +1228,39 @@ export class FocalMechanism extends BaseElement {
       throw new Error(`Cannot extract, not a QuakeML focalMechanism: ${focalMechQML.localName}`);
     }
 
-    const waveformIDEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "waveformID"));
-    const waveformIDs = waveformIDEls.map(wid => WaveformID.createFromXml(wid));
-
-    const momentTensorEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "momentTensor"));
-    const momentTensors = momentTensorEls.map(wid => MomentTensor.createFromXml(wid, allOrigins, allMagnitudes));
-
-    const triggeringOriginID = _grabFirstElText(focalMechQML, "triggeringOriginID");
-    if (!isNonEmptyStringArg(triggeringOriginID)) {
-      throw new Error("stationMagnitude missing triggering origin ID");
-    }
-    const triggeringOrigin = allOrigins.find(o => o.publicId === triggeringOriginID);
-    if (!isDef(triggeringOrigin)) {
-      throw new Error("No origin with ID " + triggeringOriginID);
-    }
-
-    const nodalPlanes = _grabFirstElType(NodalPlanes.createFromXml.bind(NodalPlanes))(focalMechQML, "nodalPlanes");
-
-    const principalAxes = _grabFirstElType(PrincipalAxes.createFromXml.bind(PrincipalAxes))(focalMechQML, "principalAxes");
-
-    const azimuthalGap = _grabFirstElFloat(focalMechQML, "azimuthalGap");
-
-    const stationPolarityCount = _grabFirstElInt(focalMechQML, "stationPolarityCount");
-
-    const misfit = _grabFirstElFloat(focalMechQML, "misfit");
-    
-    const stationDistributionRatio = _grabFirstElFloat(focalMechQML, "stationDistributionRatio");
-
-    const methodID = _grabFirstElText(focalMechQML, "methodID");
-
-    const evaluationMode = _grabFirstElText(focalMechQML, "evaluationMode");
-
-    const evaluationStatus = _grabFirstElText(focalMechQML, "evaluationStatus");
-
     const out = new FocalMechanism();
 
     out.populate(focalMechQML);
-    out.waveformIDList = waveformIDs;
-    out.momentTensorList = momentTensors;
-    out.triggeringOrigin = triggeringOrigin;
-    out.nodalPlanes = nodalPlanes;
-    out.principalAxes = principalAxes;
-    out.azimuthalGap = azimuthalGap;
-    out.stationPolarityCount = stationPolarityCount;
-    out.misfit = misfit;
-    out.stationDistributionRatio = stationDistributionRatio;
-    out.methodID = methodID;
-    out.evaluationMode = evaluationMode;
-    out.evaluationStatus = evaluationStatus;
+
+    const waveformIDEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "waveformID"));
+    out.waveformIDList = waveformIDEls.map(wid => WaveformID.createFromXml(wid));
+
+    const momentTensorEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "momentTensor"));
+    out.momentTensorList = momentTensorEls.map(mt => MomentTensor.createFromXml(mt, allOrigins, allMagnitudes));
+
+    const triggeringOriginID = _grabFirstElText(focalMechQML, "triggeringOriginID");
+    out.triggeringOrigin = allOrigins.find(o => o.publicId === triggeringOriginID);
+    if (triggeringOriginID && !out.triggeringOrigin) {
+      throw new Error("No origin with ID " + triggeringOriginID);
+    }
+
+    out.nodalPlanes = _grabFirstElType(NodalPlanes.createFromXml.bind(NodalPlanes))(focalMechQML, "nodalPlanes");
+
+    out.principalAxes = _grabFirstElType(PrincipalAxes.createFromXml.bind(PrincipalAxes))(focalMechQML, "principalAxes");
+
+    out.azimuthalGap = _grabFirstElFloat(focalMechQML, "azimuthalGap");
+
+    out.stationPolarityCount = _grabFirstElInt(focalMechQML, "stationPolarityCount");
+
+    out.misfit = _grabFirstElFloat(focalMechQML, "misfit");
+
+    out.stationDistributionRatio = _grabFirstElFloat(focalMechQML, "stationDistributionRatio");
+
+    out.methodID = _grabFirstElText(focalMechQML, "methodID");
+
+    out.evaluationMode = _grabFirstElText(focalMechQML, "evaluationMode");
+
+    out.evaluationStatus = _grabFirstElText(focalMechQML, "evaluationStatus");
 
     return out;
   }
@@ -1387,18 +1281,14 @@ export class NodalPlanes {
    * @returns NodalPlanes instance
    */
   static createFromXml(nodalPlanesQML: Element): NodalPlanes {
-    const nodalPlane1 = _grabFirstElType(NodalPlane.createFromXml.bind(NodalPlane))(nodalPlanesQML, "nodalPlane1");
-
-    const nodalPlane2 = _grabFirstElType(NodalPlane.createFromXml.bind(NodalPlane))(nodalPlanesQML, "nodalPlane2");
-
-    const preferredPlaneString = _grabAttribute(nodalPlanesQML, "preferredPlane");
-    const preferredPlane = isNonEmptyStringArg(preferredPlaneString) ? parseInt(preferredPlaneString) : undefined;
-
     const out = new NodalPlanes();
 
-    out.nodalPlane1 = nodalPlane1;
-    out.nodalPlane2 = nodalPlane2;
-    out.preferredPlane = preferredPlane;
+    out.nodalPlane1 = _grabFirstElType(NodalPlane.createFromXml.bind(NodalPlane))(nodalPlanesQML, "nodalPlane1");
+
+    out.nodalPlane2 = _grabFirstElType(NodalPlane.createFromXml.bind(NodalPlane))(nodalPlanesQML, "nodalPlane2");
+
+    const preferredPlaneString = _grabAttribute(nodalPlanesQML, "preferredPlane");
+    out.preferredPlane = isNonEmptyStringArg(preferredPlaneString) ? parseInt(preferredPlaneString) : undefined;
 
     return out;
   }
@@ -1480,11 +1370,9 @@ export class PrincipalAxes {
       throw new Error("nodal plane missing pAxis");
     }
 
-    const nAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(princpalAxesQML, "nAxis");
-
     const out = new PrincipalAxes(tAxis, pAxis);
 
-    out.nAxis = nAxis;
+    out.nAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(princpalAxesQML, "nAxis");
 
     return out;
   }
@@ -1571,9 +1459,6 @@ export class MomentTensor extends BaseElement {
       throw new Error(`Cannot extract, not a QuakeML momentTensor: ${momentTensorQML.localName}`);
     }
 
-    const dataUsedEls = Array.from(momentTensorQML.getElementsByTagNameNS(BED_NS, "dataUsed"));
-    const dataUsed = dataUsedEls.map(DataUsed.createFromXml.bind(DataUsed));
-
     const derivedOriginID = _grabFirstElText(momentTensorQML, "derivedOriginID");
     if (!isNonEmptyStringArg(derivedOriginID)) {
       throw new Error("momentTensor missing derivedOriginID");
@@ -1583,56 +1468,44 @@ export class MomentTensor extends BaseElement {
       throw new Error("No origin with ID " + derivedOriginID);
     }
 
-    const momentMagnitudeID = _grabFirstElText(momentTensorQML, "momentMagnitudeID");
-    const momentMagnitude = allMagnitudes.find(o => o.publicId === momentMagnitudeID);
-    if (momentMagnitudeID && !momentMagnitude) {
-      throw new Error("No magnitude with ID " + momentMagnitudeID);
-    }
-
-    const scalarMoment = _grabFirstElRealQuantity(momentTensorQML, "scalarMoment");
-
-    const tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(momentTensorQML, "tensor");
-
-    const variance = _grabFirstElFloat(momentTensorQML, "variance");
-
-    const varianceReduction = _grabFirstElFloat(momentTensorQML, "varianceReduction");
-
-    const doubleCouple = _grabFirstElFloat(momentTensorQML, "doubleCouple");
-
-    const clvd = _grabFirstElFloat(momentTensorQML, "clvd");
-
-    const iso = _grabFirstElFloat(momentTensorQML, "iso");
-
-    const greensFunctionID = _grabFirstElText(momentTensorQML, "greensFunctionID");
-
-    const filterID = _grabFirstElText(momentTensorQML, "filterID");
-
-    const sourceTimeFunction = _grabFirstElType(SourceTimeFunction.createFromXml.bind(SourceTimeFunction))(momentTensorQML, "sourceTimeFunction");
-
-    const methodID = _grabFirstElText(momentTensorQML, "methodID");
-
-    const category = _grabFirstElText(momentTensorQML, "category");
-
-    const inversionType = _grabFirstElText(momentTensorQML, "inversionType");
-
     const out = new MomentTensor(derivedOrigin);
 
     out.populate(momentTensorQML);
-    out.dataUsedList = dataUsed;
-    out.momentMagnitude = momentMagnitude;
-    out.scalarMoment = scalarMoment;
-    out.tensor = tensor;
-    out.variance = variance;
-    out.varianceReduction = varianceReduction;
-    out.doubleCouple = doubleCouple;
-    out.clvd = clvd;
-    out.iso = iso;
-    out.greensFunctionID = greensFunctionID;
-    out.filterID = filterID;
-    out.sourceTimeFunction = sourceTimeFunction;
-    out.methodID = methodID;
-    out.category = category;
-    out.inversionType = inversionType;
+
+    const dataUsedEls = Array.from(momentTensorQML.getElementsByTagNameNS(BED_NS, "dataUsed"));
+    out.dataUsedList = dataUsedEls.map(DataUsed.createFromXml.bind(DataUsed));
+
+    const momentMagnitudeID = _grabFirstElText(momentTensorQML, "momentMagnitudeID");
+    out.momentMagnitude = allMagnitudes.find(o => o.publicId === momentMagnitudeID);
+    if (momentMagnitudeID && !out.momentMagnitude) {
+      throw new Error("No magnitude with ID " + momentMagnitudeID);
+    }
+
+    out.scalarMoment = _grabFirstElRealQuantity(momentTensorQML, "scalarMoment");
+
+    out.tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(momentTensorQML, "tensor");
+
+    out.variance = _grabFirstElFloat(momentTensorQML, "variance");
+
+    out.varianceReduction = _grabFirstElFloat(momentTensorQML, "varianceReduction");
+
+    out.doubleCouple = _grabFirstElFloat(momentTensorQML, "doubleCouple");
+
+    out.clvd = _grabFirstElFloat(momentTensorQML, "clvd");
+
+    out.iso = _grabFirstElFloat(momentTensorQML, "iso");
+
+    out.greensFunctionID = _grabFirstElText(momentTensorQML, "greensFunctionID");
+
+    out.filterID = _grabFirstElText(momentTensorQML, "filterID");
+
+    out.sourceTimeFunction = _grabFirstElType(SourceTimeFunction.createFromXml.bind(SourceTimeFunction))(momentTensorQML, "sourceTimeFunction");
+
+    out.methodID = _grabFirstElText(momentTensorQML, "methodID");
+
+    out.category = _grabFirstElText(momentTensorQML, "category");
+
+    out.inversionType = _grabFirstElText(momentTensorQML, "inversionType");
 
     return out;
   }
@@ -1747,14 +1620,11 @@ export class SourceTimeFunction {
       throw new Error("sourceTimeFunction missing duration");
     }
 
-    const riseTime = _grabFirstElFloat(sourceTimeFunctionQML, "riseTime");
-
-    const decayTime = _grabFirstElFloat(sourceTimeFunctionQML, "decayTime");
-
     const out = new SourceTimeFunction(type, duration);
 
-    out.riseTime = riseTime;
-    out.decayTime = decayTime;
+    out.riseTime = _grabFirstElFloat(sourceTimeFunctionQML, "riseTime");
+    
+    out.decayTime = _grabFirstElFloat(sourceTimeFunctionQML, "decayTime");
 
     return out;
   }
@@ -1790,20 +1660,15 @@ export class DataUsed {
       throw new Error("dataUsed missing waveType");
     }
 
-    const stationCount = _grabFirstElInt(dataUsedQML, "stationCount");
-
-    const componentCount = _grabFirstElInt(dataUsedQML, "componentCount");
-
-    const shortestPeriod = _grabFirstElFloat(dataUsedQML, "shortestPeriod");
-
-    const longestPeriod = _grabFirstElFloat(dataUsedQML, "longestPeriod");
-
     const out = new DataUsed(waveType);
 
-    out.stationCount = stationCount;
-    out.componentCount = componentCount;
-    out.shortestPeriod = shortestPeriod;
-    out.longestPeriod = longestPeriod;
+    out.stationCount = _grabFirstElInt(dataUsedQML, "stationCount");
+
+    out.componentCount = _grabFirstElInt(dataUsedQML, "componentCount");
+
+    out.shortestPeriod = _grabFirstElFloat(dataUsedQML, "shortestPeriod");
+
+    out.longestPeriod = _grabFirstElFloat(dataUsedQML, "longestPeriod");
 
     return out;
   }
@@ -1844,13 +1709,11 @@ export class WaveformID {
       throw new Error("waveformID missing stationCode");
     }
 
-    const channelCode = _grabAttribute(waveformQML, "channelCode");
-
-    const locationCode = _grabAttribute(waveformQML, "locationCode");
-
     const out = new WaveformID(networkCode, stationCode);
-    out.channelCode = channelCode;
-    out.locationCode = locationCode;
+
+    out.channelCode = _grabAttribute(waveformQML, "channelCode");
+
+    out.locationCode = _grabAttribute(waveformQML, "locationCode");
 
     return out;
   }
@@ -1885,25 +1748,19 @@ class Quantity<T> {
     grabUncertainty: (xml: Element | null | void, tagName: string) => number | undefined,
   ): Quantity<T> {
     const value = grab(quantityQML, "value");
-
-    const uncertainty = grabUncertainty(quantityQML, "uncertainty");
-
-    const lowerUncertainty = grabUncertainty(quantityQML, "lowerUncertainty");
-
-    const upperUncertainty = grabUncertainty(quantityQML, "upperUncertainty");
-
-    const confidenceLevel = _grabFirstElFloat(quantityQML, "confidenceLevel");
-
     if (value === undefined) {
       throw new Error("missing value");
     }
 
     const out = new Quantity<T>(value);
 
-    out.uncertainty = uncertainty;
-    out.lowerUncertainty = lowerUncertainty;
-    out.upperUncertainty = upperUncertainty;
-    out.confidenceLevel = confidenceLevel;
+    out.uncertainty = grabUncertainty(quantityQML, "uncertainty");
+
+    out.lowerUncertainty = grabUncertainty(quantityQML, "lowerUncertainty");
+
+    out.upperUncertainty = grabUncertainty(quantityQML, "upperUncertainty");
+
+    out.confidenceLevel = _grabFirstElFloat(quantityQML, "confidenceLevel");
 
     return out;
   }
@@ -1962,16 +1819,13 @@ export class Comment {
    */
   static createFromXml(commentQML: Element): Comment {
     const text = _grabFirstElText(commentQML, "text");
-
-    const creationInfo = _grabFirstElCreationInfo(commentQML, "creationInfo");
-
     if (text === undefined) {
       throw new Error("missing value");
     }
 
     const out = new Comment(text);
 
-    out.creationInfo = creationInfo;
+    out.creationInfo = _grabFirstElCreationInfo(commentQML, "creationInfo");
 
     return out;
   }
@@ -1992,26 +1846,19 @@ export class CreationInfo {
    * @returns CreationInfo instance
    */
   static createFromXml(creationInfoQML: Element): CreationInfo {
-    const agencyID = _grabFirstElText(creationInfoQML, "agencyID");
-
-    const agencyURI = _grabFirstElText(creationInfoQML, "agencyURI");
-
-    const author = _grabFirstElText(creationInfoQML, "author");
-
-    const authorURI = _grabFirstElText(creationInfoQML, "authorURI");
-
-    const creationTime = _grabFirstElDateTime(creationInfoQML, "creationTime");
-
-    const version = _grabFirstElText(creationInfoQML, "version");
-
     const out = new CreationInfo();
 
-    out.agencyID = agencyID;
-    out.agencyURI = agencyURI;
-    out.author = author;
-    out.authorURI = authorURI;
-    out.creationTime = creationTime;
-    out.version = version;
+    out.agencyID = _grabFirstElText(creationInfoQML, "agencyID");
+
+    out.agencyURI = _grabFirstElText(creationInfoQML, "agencyURI");
+
+    out.author = _grabFirstElText(creationInfoQML, "author");
+
+    out.authorURI = _grabFirstElText(creationInfoQML, "authorURI");
+
+    out.creationTime = _grabFirstElDateTime(creationInfoQML, "creationTime");
+
+    out.version = _grabFirstElText(creationInfoQML, "version");
 
     return out;
   }
