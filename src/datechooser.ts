@@ -63,7 +63,7 @@ export class HourMinChooser extends HTMLElement {
         position: relative;
       }
       input.hourMin {
-        width: 3em;
+        width: 4em;
       }
     `;
     shadow.appendChild(style);
