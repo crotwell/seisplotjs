@@ -376,6 +376,9 @@ export class EventDescription {
 
     return out;
   }
+  toString(): string {
+    return this.text;
+  }
 }
 
 /** Represents a QuakeML Amplitude. */
