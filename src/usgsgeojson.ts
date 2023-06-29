@@ -1,7 +1,7 @@
 import {
   Quake,
   Origin,
-  Magnitude
+  Magnitude,
 } from './quakeml';
 import {
   JSON_MIME,
@@ -28,7 +28,7 @@ export function loadUSGSSummary(url: string): Promise<Array<Quake>> {
         return response.json();
       }
     })
-    .then(function (geojson) {
+    .then(function (geojson: string) {
       return parseGeoJSON(geojson);
     });
 }
@@ -72,7 +72,7 @@ export function loadUSGSSummary(url: string): Promise<Array<Quake>> {
   }
  */
 
-export function parseGeoJSON(geojson): Array<Quake> {
+export function parseGeoJSON(geojson: any): Array<Quake> {
     const quakeList = [];
     for (const f of geojson.features) {
       const quake = parseFeatureAsQuake(f);
@@ -82,18 +82,19 @@ export function parseGeoJSON(geojson): Array<Quake> {
 }
 
 export function parseFeatureAsQuake(feature: any): Quake {
-  const quake = new Quake(feature.geometry.id);
+  const quake = new Quake();
+  quake.publicId = feature.geometry.id;
   const p = feature.properties;
   quake.description = p.title;
-  const origin = new Origin();
-  origin.time = DateTime.fromMillis(p.time);
-  origin.longitude = feature.geometry.coordinates[0];
-  origin.latitude = feature.geometry.coordinates[1];
+  const origin = new Origin(DateTime.fromMillis(p.time),
+                            feature.geometry.coordinates[1],
+                            feature.geometry.coordinates[0]);
   origin.depth = feature.geometry.coordinates[2]*1000;
   quake.originList.push(origin);
-  const mag = new Magnitude(p.mag, p.magType);
+  const mag = new Magnitude(p.mag);
+  mag.type = p.magType;
   quake.magnitudeList.push(mag);
-  quake._preferredOrigin = origin;
-  quake._preferredMagnitude = mag;
+  quake.preferredOrigin = origin;
+  quake.preferredMagnitude = mag;
   return quake;
 }
