@@ -139,7 +139,7 @@ test( "qml parse test", () => {
   expect(quakes[0].latitude).toEqual(19.4053333);
   expect(quakes[0].longitude).toEqual(-155.2843333);
   expect(quakes[0].depth).toEqual(-1140);
-  expect(quakes[0].magnitude.mag.value).toEqual(5.5);
+  expect(quakes[0].magnitude.mag).toEqual(5.5);
   expect(quakes[0].magnitude.type).toEqual("mw");
   expect(quakes[0].toString()).toEqual("2018-06-04T01:50:48.520Z 19.4053333/-155.2843333 -1.14 km 5.5 mw");
 });

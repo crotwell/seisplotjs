@@ -298,16 +298,16 @@ export class Quake extends BaseElement {
     }
   }
   get time(): DateTime {
-    return this.origin.time.value;
+    return this.origin.time;
   }
   get latitude(): number {
-    return this.origin.latitude.value;
+    return this.origin.latitude;
   }
   get longitude(): number {
-    return this.origin.longitude.value;
+    return this.origin.longitude;
   }
   get depth(): number {
-    return this.origin.depth?.value ?? NaN;
+    return this.origin.depth;
   }
 
   get depthKm(): number {
@@ -480,7 +480,7 @@ export class StationMagnitude extends BaseElement {
    * @param allOrigins origins already extracted from the xml for linking station magnitudes with origins
    * @param allAmplitudes amplitudes already extracted from the xml for linking station magnitudes with amplitudes
    * @returns StationMagnitude instance
-   */ 
+   */
   static createFromXml(stationMagnitudeQML: Element, allOrigins: Origin[], allAmplitudes: Amplitude[]): StationMagnitude {
     if (stationMagnitudeQML.localName !== "stationMagnitude") {
       throw new Error(`Cannot extract, not a QuakeML station magnitude: ${stationMagnitudeQML.localName}`);
@@ -569,10 +569,10 @@ export class Origin extends BaseElement {
   compositeTimes: Array<CompositeTime>;
   originUncertainty?: OriginUncertainty;
   arrivalList: Array<Arrival>;
-  time: TimeQuantity;
-  latitude: RealQuantity;
-  longitude: RealQuantity;
-  depth?: RealQuantity;
+  timeQuantity: TimeQuantity;
+  latitudeQuantity: RealQuantity;
+  longitudeQuantity: RealQuantity;
+  depthQuantity?: RealQuantity;
   depthType?: string;
   timeFixed?: boolean;
   epicenterFixed?: boolean;
@@ -585,13 +585,28 @@ export class Origin extends BaseElement {
   evaluationMode?: string;
   evaluationStatus?: string;
 
-  constructor(time: TimeQuantity, latitude: RealQuantity, longitude: RealQuantity) {
+  constructor(time: TimeQuantity | DateTime,
+              latitude: RealQuantity | number,
+              longitude: RealQuantity | number) {
     super();
     this.compositeTimes = [];
     this.arrivalList = [];
-    this.time = time;
-    this.latitude = latitude;
-    this.longitude = longitude;
+
+    if (time instanceof DateTime) {
+      this.timeQuantity = new Quantity(time);
+    } else {
+      this.timeQuantity = time;
+    }
+    if (typeof latitude == "number") {
+      this.latitudeQuantity = new Quantity(latitude);
+    } else {
+      this.latitudeQuantity = latitude;
+    }
+    if (typeof longitude == "number") {
+      this.longitudeQuantity = new Quantity(longitude);
+    } else {
+      this.longitudeQuantity = longitude;
+    }
   }
 
   /**
@@ -624,13 +639,13 @@ export class Origin extends BaseElement {
     const out = new Origin(time, lat, lon);
 
     out.populate(qml);
-    
+
     out.originUncertainty = _grabFirstElType(OriginUncertainty.createFromXml.bind(OriginUncertainty))(qml, "originUncertainty");
 
     const allArrivalEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "arrival"));
     out.arrivalList = allArrivalEls.map(arrivalEl => Arrival.createFromXml(arrivalEl, allPicks));
 
-    out.depth = _grabFirstElRealQuantity(qml, "depth");
+    out.depthQuantity = _grabFirstElRealQuantity(qml, "depth");
 
     out.depthType = _grabFirstElText(qml, "depthType");
 
@@ -668,6 +683,55 @@ export class Origin extends BaseElement {
       stringify(this.depth)
     );
   }
+
+  get time(): DateTime {
+    return this.timeQuantity.value;
+  }
+  set time(t: TimeQuantity | DateTime) {
+    if (t instanceof DateTime) {
+      this.timeQuantity.value = t;
+    } else {
+      this.timeQuantity = t;
+    }
+  }
+
+  get latitude(): number {
+    return this.latitudeQuantity.value;
+  }
+  set latitude(lat: RealQuantity | number) {
+    if (typeof lat == "number") {
+      this.latitudeQuantity.value = lat;
+    } else {
+      this.latitudeQuantity = lat;
+    }
+  }
+
+  get longitude(): number {
+    return this.longitudeQuantity.value;
+  }
+  set longitude(lon: RealQuantity | number) {
+    if (typeof lon == "number") {
+      this.longitudeQuantity.value = lon;
+    } else {
+      this.longitudeQuantity = lon;
+    }
+  }
+
+  get depth(): number {
+    return this.depthQuantity?.value ?? NaN;
+  }
+  set depth(depth: RealQuantity | number) {
+    if (typeof depth == "number") {
+      if ( ! this.depthQuantity) {
+        this.depthQuantity = new Quantity(depth);
+      } else {
+        this.depthQuantity.value = depth;
+      }
+    } else {
+      this.depthQuantity = depth;
+    }
+  }
+
 
   get arrivals(): Array<Arrival> {
     return this.arrivalList;
@@ -891,7 +955,7 @@ export class OriginQuality {
  */
 export class Magnitude extends BaseElement {
   stationMagnitudeContributions: StationMagnitudeContribution[] = [];
-  mag: RealQuantity;
+  magQuantity: RealQuantity;
   type?: string;
   origin?: Origin;
   methodID?: string;
@@ -900,9 +964,13 @@ export class Magnitude extends BaseElement {
   evaluationMode?: string;
   evaluationStatus?: string;
 
-  constructor(mag: RealQuantity) {
+  constructor(mag: RealQuantity | number) {
     super();
-    this.mag = mag;
+    if (typeof mag === "number" ) {
+      this.magQuantity = new Quantity(mag);
+    } else {
+      this.magQuantity = mag;
+    }
   }
 
   /**
@@ -954,7 +1022,17 @@ export class Magnitude extends BaseElement {
   }
 
   toString(): string {
-    return stringify(this.mag.value) + " " + stringify(this.type);
+    return stringify(this.mag) + " " + stringify(this.type);
+  }
+  get mag(): number {
+    return this.magQuantity.value;
+  }
+  set mag(value: RealQuantity | number) {
+    if (typeof value === "number" ) {
+      this.magQuantity.value = value;
+    } else {
+      this.magQuantity = value;
+    }
   }
 }
 
@@ -1094,7 +1172,7 @@ export class Arrival extends BaseElement {
   Represents a QuakeML Pick.
  */
 export class Pick extends BaseElement {
-  time: TimeQuantity;
+  timeQuantity: TimeQuantity;
   waveformID: WaveformID;
   filterID?: string;
   methodID?: string;
@@ -1107,10 +1185,24 @@ export class Pick extends BaseElement {
   evaluationMode?: string;
   evaluationStatus?: string;
 
-  constructor(time: TimeQuantity, waveformID: WaveformID) {
+  constructor(time: TimeQuantity | DateTime, waveformID: WaveformID) {
     super();
-    this.time = time;
+    if (time instanceof DateTime) {
+      this.timeQuantity = new Quantity(time);
+    } else {
+      this.timeQuantity = time;
+    }
     this.waveformID = waveformID;
+  }
+  get time(): DateTime {
+    return this.timeQuantity.value;
+  }
+  set time(t: Quantity<DateTime> | DateTime) {
+    if (t instanceof DateTime) {
+      this.timeQuantity.value = t;
+    } else {
+      this.timeQuantity = t;
+    }
   }
 
   /**
@@ -1521,7 +1613,7 @@ export class Tensor {
   Mrt: RealQuantity;
   Mrp: RealQuantity;
   Mtp: RealQuantity;
-  
+
   constructor(
     Mrr: RealQuantity,
     Mtt: RealQuantity,
@@ -1623,7 +1715,7 @@ export class SourceTimeFunction {
     const out = new SourceTimeFunction(type, duration);
 
     out.riseTime = _grabFirstElFloat(sourceTimeFunctionQML, "riseTime");
-    
+
     out.decayTime = _grabFirstElFloat(sourceTimeFunctionQML, "decayTime");
 
     return out;
@@ -1723,7 +1815,7 @@ export class WaveformID {
   }
 }
 
-class Quantity<T> {
+export class Quantity<T> {
   value: T;
   uncertainty?: number;
   lowerUncertainty?: number;

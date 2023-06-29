@@ -5,6 +5,40 @@ import fs from 'fs';
 import * as quakeml from '../../src/quakeml.js';
 import {isoToDateTime} from '../../src/util';
 
+test("time getset", () => {
+  const t = isoToDateTime("2019-10-31T01:20:58.661000Z");
+  const wid = new quakeml.WaveformID("XX","FAKE");
+  const p = new quakeml.Pick(t, wid)
+  expect(p.time).toBe(t);
+  expect(p.timeQuantity.value).toBe(t);
+  const othert = isoToDateTime("2019-10-31T02:22:22.222000Z");
+  p.time = othert;
+  expect(p.time).toBe(othert);
+  expect(p.timeQuantity.value).toBe(othert);
+  const lat = 34.1;
+  const lon = -80;
+  const depth = 5.2;
+  const o = new quakeml.Origin(t, lat, lon);
+  expect(o.time).toBe(t);
+  expect(o.timeQuantity.value).toBe(t);
+  expect(o.latitude).toBe(lat);
+  expect(o.latitudeQuantity.value).toBe(lat);
+  expect(o.longitude).toBe(lon);
+  expect(o.longitudeQuantity.value).toBe(lon);
+  // depth unset
+  expect(o.depth).toBeNaN();
+  expect(o.depthQuantity).not.toBeDefined();
+  // now depth is set
+  o.depth = depth;
+  expect(o.depth).toBe(depth);
+  expect(o.depthQuantity.value).toBe(depth);
+  const mag = 3.2;
+  const m = new quakeml.Magnitude(mag);
+  expect(m.mag).toBe(mag);
+  expect(m.magQuantity.value).toBe(mag);
+
+});
+
 test("viewobspy quake", () => {
 
   const filename = "./test/quakeml/data/obspy_catalog.xml";
@@ -101,7 +135,7 @@ test("USGS quake", () => {
   });
   expect(quakes[0].magnitudeList).toHaveLength(2);
   expect(quakes[0].magnitudeList[0]).toMatchObject({
-    mag: {
+    magQuantity: {
       value: 7.6,
       uncertainty: 0.055,
       confidenceLevel: 90,
@@ -145,22 +179,22 @@ test("USGS quake", () => {
       preferredDescription: 'confidence ellipsoid',
       confidenceLevel: 90,
     },
-    time: {
+    timeQuantity: {
       value: isoToDateTime("2023-05-10T16:02:00.451Z"),
       uncertainty: 1.65,
       confidenceLevel: 90,
     },
-    latitude: {
+    latitudeQuantity: {
       value: -15.6002,
       uncertainty: .0715,
       confidenceLevel: 90,
     },
-    longitude: {
+    longitudeQuantity: {
       value: -174.6077,
       uncertainty: .0692,
       confidenceLevel: 90,
     },
-    depth: {
+    depthQuantity: {
       value: 210097,
       uncertainty: 986,
       confidenceLevel: 90,
@@ -203,7 +237,7 @@ test("USGS quake", () => {
   });
   expect(quakes[0].picks).toHaveLength(117);
   expect(quakes[0].picks[0]).toMatchObject({
-    time: {
+    timeQuantity: {
       value: isoToDateTime("2023-05-10T16:03:00.280000Z"),
     },
     networkCode: "G",
