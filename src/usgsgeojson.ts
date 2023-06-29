@@ -75,13 +75,13 @@ export function loadUSGSSummary(url: string): Promise<Array<Quake>> {
 export function parseGeoJSON(geojson): Array<Quake> {
     const quakeList = [];
     for (const f of geojson.features) {
-      const quake = parseFeature(f);
+      const quake = parseFeatureAsQuake(f);
       quakeList.push(quake);
     }
     return quakeList;
 }
 
-export function parseFeature(feature: any): Quake {
+export function parseFeatureAsQuake(feature: any): Quake {
   const quake = new Quake(feature.geometry.id);
   const p = feature.properties;
   quake.description = p.title;
