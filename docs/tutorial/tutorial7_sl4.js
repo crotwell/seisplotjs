@@ -1,5 +1,5 @@
 // snip start vars
-import * as sp from '../seisplotjs_3.0.1-alpha_standalone.mjs';
+import * as sp from '../seisplotjs_3.1.0-alpha_standalone.mjs';
 
 const stationPattern = `CO JSC`;
 const selectPattern = `00.HH?`;
