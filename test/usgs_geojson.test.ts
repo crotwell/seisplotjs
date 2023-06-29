@@ -1,4 +1,4 @@
-import { parseGeoJSON, parseFeature }  from '../src/usgsgeojson';
+import { parseGeoJSON }  from '../src/usgsgeojson';
 import { DateTime } from 'luxon';
 
 test( "hour magnitude test", () => {
