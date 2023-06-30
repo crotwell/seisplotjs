@@ -1710,8 +1710,11 @@ export function createFullMarkersForQuakeAtChannel(
   quake: Quake,
   channel: Channel,
 ): Array<MarkerType> {
-  const markers = createFullMarkersForQuakeAtStation(quake, channel.station);
-  return markers.concat(createMarkerForPicks(quake.preferredOrigin, channel));
+  let markers = createFullMarkersForQuakeAtStation(quake, channel.station);
+  if (quake.preferredOrigin) {
+    markers = markers.concat(createMarkerForPicks(quake.preferredOrigin, channel));
+  }
+  return markers;
 }
 
 /**
