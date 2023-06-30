@@ -2,6 +2,7 @@ import {
   Quake,
   Origin,
   Magnitude,
+  EventDescription,
 } from './quakeml';
 import {
   JSON_MIME,
@@ -85,7 +86,7 @@ export function parseFeatureAsQuake(feature: any): Quake {
   const quake = new Quake();
   quake.publicId = feature.geometry.id;
   const p = feature.properties;
-  quake.description = p.title;
+  quake.descriptionList.push(new EventDescription(p.title));
   const origin = new Origin(DateTime.fromMillis(p.time),
                             feature.geometry.coordinates[1],
                             feature.geometry.coordinates[0]);

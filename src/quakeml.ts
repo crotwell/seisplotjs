@@ -103,7 +103,7 @@ export class EventParameters extends BaseElement {
  */
 export class Quake extends BaseElement {
   eventId: string|undefined;
-  description: EventDescription[] = [];
+  descriptionList: EventDescription[] = [];
   amplitudeList: Array<Amplitude> = [];
   stationMagnitudeList: Array<StationMagnitude> = [];
   magnitudeList: Array<Magnitude> = [];
@@ -135,7 +135,7 @@ export class Quake extends BaseElement {
     out.populate(qml);
 
     const descriptionEls = Array.from(qml.children).filter(e => e.tagName === "description");
-    out.description = descriptionEls.map(d => EventDescription.createFromXml(d));
+    out.descriptionList = descriptionEls.map(d => EventDescription.createFromXml(d));
 
     //need picks before can do origins
     const allPickEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "pick"));
@@ -312,6 +312,10 @@ export class Quake extends BaseElement {
 
   get depthKm(): number {
     return this.depth / 1000;
+  }
+
+  get description(): string {
+    return this.descriptionList.length > 0 ? this.descriptionList[0].text : "";
   }
 
   get arrivals(): Array<Arrival> {
