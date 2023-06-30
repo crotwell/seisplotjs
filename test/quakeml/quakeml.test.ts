@@ -31,7 +31,7 @@ test("time getset", () => {
   // now depth is set
   o.depth = depth;
   expect(o.depth).toBe(depth);
-  expect(o.depthQuantity.value).toBe(depth);
+  expect(o.depthQuantity?.value).toBe(depth);
   const mag = 3.2;
   const m = new quakeml.Magnitude(mag);
   expect(m.mag).toBe(mag);
