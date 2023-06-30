@@ -102,9 +102,11 @@ export class Dataset {
       if ( ! w.hasQuake()) {
         this.catalog.forEach((q:Quake)=> {
           if (q.hasPreferredOrigin()) {
-            const window = Interval.after(q.preferredOrigin.time, 1000*timeOverlapSecs);
-            if (window.overlaps(w.timeRange)) {
-              w.addQuake(q);
+            if (q.preferredOrigin?.time) {
+              const twindow = Interval.after(q.preferredOrigin?.time, 1000*timeOverlapSecs);
+              if (twindow.overlaps(w.timeRange)) {
+                w.addQuake(q);
+              }
             }
           }
         });

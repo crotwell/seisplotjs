@@ -26,9 +26,9 @@ export class LuxonTimeScale {
   }
   get d3scale(): ScaleTime<number, number, never> {
     const d3TimeScale = d3scaleUtc();
-    d3TimeScale.domain([this.interval.start.toJSDate(), this.interval.end.toJSDate()]);
+    d3TimeScale.domain([this.interval.start?.toJSDate(), this.interval.end?.toJSDate()]);
     d3TimeScale.range(this.range);
-    return d3TimeScale;
+  return d3TimeScale;
   }
 }
 export function drawXLabel(

@@ -327,7 +327,7 @@ export class QuakeTable extends HTMLElement {
     } else if (h === QUAKE_COLUMN.MAG) {
       return magFormat.format(q.magnitude.mag);
     } else if (h === QUAKE_COLUMN.MAGTYPE) {
-      return q.magnitude.type;
+      return q.magnitude.type ? q.magnitude.type : "";
     } else if (h === QUAKE_COLUMN.DESC) {
       return q.description;
     } else if (h === QUAKE_COLUMN.EVENTID) {
