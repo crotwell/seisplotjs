@@ -68,7 +68,7 @@ test("USGS quake", () => {
   });
   const quakes = qml.eventList;
   expect(quakes).toHaveLength(1);
-  expect(quakes[0].description).toMatchObject([
+  expect(quakes[0].descriptionList).toMatchObject([
     {
       text: "Tonga",
       type: "Flinn-Engdahl region",
