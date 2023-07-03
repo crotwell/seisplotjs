@@ -2,6 +2,7 @@
 
 import * as fdsndataselect from '../../src/fdsndataselect.js';
 import * as util from '../../src/util.js';
+import {validStartTime, validEndTime} from '../../src/util';
 import {Duration, Interval} from 'luxon';
 
 test( "query setter test", () => {
@@ -24,9 +25,9 @@ test( "query setter test", () => {
   expect(dsQuery.getLocationCode()).toBe(LOC);
   expect(dsQuery.channelCode(CHAN)).toBe(dsQuery);
   expect(dsQuery.getChannelCode()).toBe(CHAN);
-  expect(dsQuery.startTime(timeWindow.start)).toBe(dsQuery);
+  expect(dsQuery.startTime(validStartTime(timeWindow))).toBe(dsQuery);
   expect(dsQuery.getStartTime()).toBe(timeWindow.start);
-  expect(dsQuery.endTime(timeWindow.end)).toBe(dsQuery);
+  expect(dsQuery.endTime(validEndTime(timeWindow))).toBe(dsQuery);
   expect(dsQuery.getEndTime()).toBe(timeWindow.end);
   expect(dsQuery.minimumLength(MIN_LENGTH)).toBe(dsQuery);
   expect(dsQuery.getMinimumLength()).toBe(MIN_LENGTH);
