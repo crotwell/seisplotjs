@@ -39,6 +39,8 @@ import {
   isObject,
   isStringArg,
   isNumArg,
+  validStartTime,
+  validEndTime,
 } from "./util";
 export const LEVEL_NETWORK = "network";
 export const LEVEL_STATION = "station";
@@ -332,8 +334,8 @@ export class StationQuery extends FDSNCommon {
    * @returns     this
    */
   timeRange(se: Interval): StationQuery {
-    this.startTime(se.start);
-    this.endTime(se.end);
+    this.startTime(validStartTime(se));
+    this.endTime(validEndTime(se));
     return this;
   }
 

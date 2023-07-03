@@ -24,6 +24,8 @@ import {
   isStringArg,
   isNonEmptyStringArg,
   isNumArg,
+  validStartTime,
+  validEndTime,
 } from "./util";
 
 /**
@@ -280,8 +282,8 @@ export class EventQuery extends FDSNCommon {
    * @returns     this
    */
   timeRange(se: Interval): EventQuery {
-    this.startTime(se.start);
-    this.endTime(se.end);
+    this.startTime(validStartTime(se));
+    this.endTime(validEndTime(se));
     return this;
   }
 

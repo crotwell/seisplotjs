@@ -285,7 +285,9 @@ export function stringify(value: unknown): string {
     if (value) {
       if (DateTime.isDateTime(value)) {
         const dateTimeValue = (value as any) as DateTime;
-        return dateTimeValue.toISO();
+        // typescript null check
+        const s = dateTimeValue.toISO();
+        return (dateTimeValue.isValid && s) ? s : `Invalid DateTime: ${dateTimeValue.invalidReason}: ${dateTimeValue.invalidExplanation}`;
       } else {
         return value.constructor.name + " " + value.toString();
       }
@@ -435,11 +437,78 @@ export function makePostParam(name: string, val: unknown): string {
  * @returns ISO8601 without timezone Z
  */
 export function toIsoWoZ(date: DateTime): string {
-  let out = date.toISO();
-  if (out.endsWith('Z')) {
-    out = out.substring(0, out.length - 1);
+  if (date.isValid) {
+    let out = date.toISO();
+    if (out == null) { throw new Error(`Bad date: ${date}`);}
+    if (out.endsWith('Z')) {
+      out = out.substring(0, out.length - 1);
+    }
+    return out;
+  } else {
+    throw new Error(`${date.invalidReason}: ${date.invalidExplanation}`);
   }
-  return out;
+}
+
+/**
+ * Extracts a valid starting DateTime from interval.
+ * Throws Error if interval is not valid.
+ * @param  interval              luxon Interval
+ * @return          start DateTime
+ */
+export function validStartTime(interval: Interval): DateTime {
+  const d = interval.start;
+  if (d == null) {throw new Error(`Bad interval: ${interval}`);}
+  return d;
+}
+
+/**
+ * Extracts a valid ending DateTime from interval.
+ * Throws Error if interval is not valid.
+ * @param  interval              luxon Interval
+ * @return          end DateTime
+ */
+export function validEndTime(interval: Interval): DateTime {
+  const d = interval.end;
+  if (d == null) {throw new Error(`Bad interval: ${interval}`);}
+  return d;
+}
+
+/**
+ * Converts a luxon DateTime to a Javascript Date, checking for null,
+ * undefined and isValid first. Throws Error in that case.
+ *
+ * @param  d  luxon DateTime
+ * @return   Javascript Date
+ */
+export function toJSDate(d: DateTime|null|undefined) {
+  if (! d) {
+    throw new Error(`Null/undef DateTime: ${d}`);
+  }
+  if (! d.isValid) {
+    throw new Error(`${d.invalidReason}: ${d.invalidExplanation}`);
+  }
+  return d.toJSDate();
+}
+
+/**
+ * Check a Luxon DateTime, Interval or Duration for valid.
+ * Throws Error if not. THis is to avoid globally setting
+ * luxon's Settings.throwOnInvalid = true;
+ * but still throw/catch on invalid dates.
+ * @param  d                 luxon object
+ * @param  msg               optional message to add to error
+ * @return  passed in object if valid
+ */
+export function checkLuxonValid(d: DateTime|Interval|Duration, msg?: string) {
+  if ( d == null) {
+    const m = msg ? msg : "";
+    throw new Error(`Null luxon value: ${d} ${m}`);
+  }
+  if (! d.isValid) {
+    const m = msg ? msg : "";
+    throw new Error(`Invalid Luxon: ${typeof d} ${d.constructor.name} ${d.invalidReason}: ${d.invalidExplanation} ${m}`);
+  }
+  return d;
 }
 
 /**

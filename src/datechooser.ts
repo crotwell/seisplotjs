@@ -4,7 +4,9 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration, Interval} from "luxon";
-import {isoToDateTime, isDef} from "./util";
+import {isoToDateTime, isDef,
+  checkLuxonValid,validStartTime, validEndTime, stringify
+} from "./util";
 
 export const HOURMIN_ELEMENT = 'sp-hourmin';
 export const DATETIME_ELEMENT = 'sp-datetime';
@@ -257,7 +259,7 @@ export class DateTimeChooser extends HTMLElement {
     const attr_date_time = this.getAttribute("date-time");
     if (time) {
       this._time = time;
-      this.setAttribute("date-time", time.toISO());
+      this.setAttribute("date-time", stringify(time.toISO()));
     } else if (attr_date_time) {
       this._time = isoToDateTime(attr_date_time);
       this._time.set({second: 0, millisecond: 0}); // only hour and min?
@@ -276,7 +278,7 @@ export class DateTimeChooser extends HTMLElement {
     dateField.setAttribute('type','date');
     dateField.setAttribute('name','date');
     dateField.setAttribute('class','date');
-    dateField.value = this._time.toISODate();
+    dateField.value = stringify(this._time.toISODate());
 
     const hourMin = wrapper.appendChild(new HourMinChooser());
     hourMin._time = mythis.time;
@@ -348,7 +350,7 @@ export class DateTimeChooser extends HTMLElement {
   _internalSetTime(newTime: DateTime): void {
     this._time = newTime;
     const ntext = (this.shadowRoot?.querySelector('input.date') as HTMLInputElement);
-    ntext.value = this.time.toISODate();
+    ntext.value = stringify(this.time.toISODate());
     this.hourMin._internalSetTime(newTime);
   }
 
@@ -507,8 +509,8 @@ export class TimeRangeChooser extends HTMLElement {
    * @param  timeRange new time interval
    */
   updateTimeRange(timeRange: Interval) {
-    this.startChooser.updateTime(timeRange.start);
-    this.endChooser.updateTime(timeRange.end);
+    this.startChooser.updateTime(validStartTime(timeRange));
+    this.endChooser.updateTime(validEndTime(timeRange));
     this._updateDuration(timeRange.toDuration());
   }
 
@@ -528,16 +530,18 @@ export class TimeRangeChooser extends HTMLElement {
     return this.startChooser.time;
   }
   set start(time: DateTime) {
+    checkLuxonValid(time);
     this.startChooser.updateTime(time);
-    this.setAttribute('start', time.toISO());
+    this.setAttribute('start', stringify(time.toISO()));
     this.resyncValues(START_CHANGED);
   }
   get end(): DateTime {
     return this.endChooser.time;
   }
   set end(time: DateTime) {
+    checkLuxonValid(time);
     this.endChooser.updateTime(time);
-    this.setAttribute('end', time.toISO());
+    this.setAttribute('end', stringify(time.toISO()));
     this.resyncValues(END_CHANGED);
   }
   set duration(duration: Duration) {
@@ -548,11 +552,12 @@ export class TimeRangeChooser extends HTMLElement {
     return this._duration;
   }
   _updateDuration(duration: Duration) {
+    checkLuxonValid(duration);
     this._duration = duration;
-    this.setAttribute('duration', duration.toISO());
+    this.setAttribute('duration', stringify(duration.toISO()));
     const dur_input = this.shadowRoot?.querySelector('input.duration') as HTMLInputElement;
     if ( ! dur_input) {throw new Error("can't find input.duration in sp-timerange");}
-    dur_input.value = this._duration.toISO();
+    dur_input.value = stringify(this._duration.toISO());
   }
   resyncValues(curChanged: string) {
     if (curChanged === START_CHANGED) {

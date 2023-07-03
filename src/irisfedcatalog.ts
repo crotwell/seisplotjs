@@ -35,6 +35,8 @@ import {
   isStringArg,
   isNonEmptyStringArg,
   isNumArg,
+  validStartTime,
+  validEndTime,
 } from "./util";
 
 /**
@@ -555,8 +557,8 @@ export class FedCatalogQuery extends FDSNCommon {
    * @returns     this
    */
   timeRange(se: Interval): FedCatalogQuery {
-    this.startTime(se.start);
-    this.endTime(se.end);
+    this.startTime(validStartTime(se));
+    this.endTime(validEndTime(se));
     return this;
   }
 

@@ -45,7 +45,7 @@ import * as distaz from "./distaz";
 import * as axisutil from "./axisutil";
 import * as util from "./util"; // for util.log to replace console.log
 
-import {isDef, isNumArg} from "./util";
+import {isDef, isNumArg, validStartTime, validEndTime} from "./util";
 import {registerHelpers} from "./handlebarshelpers";
 registerHelpers();
 
@@ -564,9 +564,13 @@ export class Seismograph extends SeisPlotElement {
       const ti = sddIndex;
       const xscaleForSDD = this.timeScaleForSeisDisplayData(sdd);
       const yscaleForSDD = this.ampScaleForSeisDisplayData(sdd);
+      const s = xscaleForSDD.domain().start?.valueOf();
+      const e = xscaleForSDD.domain().end?.valueOf();
+      if (s == null || e == null) {
+        throw new Error(`Bad xscale domain: ${xscaleForSDD.domain()}`);
+      }
       const secondsPerPixel =
-        (xscaleForSDD.domain().end.valueOf() -
-          xscaleForSDD.domain().start.valueOf()) /
+        (e - s) /
         1000 /
         (xscaleForSDD.range[1] - xscaleForSDD.range[0]);
       const color = mythis.seismographConfig.getColorForIndex(ti);
@@ -815,7 +819,9 @@ export class Seismograph extends SeisPlotElement {
         xScaleToDraw.domain([startOffset, startOffset+duration]);
       } else if (this.seismographConfig.fixedTimeScale) {
         const psed = this.seismographConfig.fixedTimeScale;
-        xScaleToDraw.domain([psed.start.toMillis()/1000, psed.end.toMillis()/1000]);
+        const s = validStartTime(psed);
+        const e = validEndTime(psed);
+        xScaleToDraw.domain([s.toMillis()/1000, e.toMillis()/1000]);
       } else {
         throw new Error("neither fixed nor linked time scale");
       }

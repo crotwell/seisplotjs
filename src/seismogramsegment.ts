@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 import {DateTime, Duration, Interval} from "luxon";
-import {checkStringOrDate, isDef} from "./util";
+import {checkStringOrDate, isDef, checkLuxonValid} from "./util";
 import {MinMaxable} from './scale';
 import * as seedcodec from "./seedcodec";
 import {FDSNSourceId, NslcId} from "./fdsnsourceid";
@@ -415,7 +415,9 @@ export class SeismogramSegment {
   }
 
   cut(timeRange: Interval): SeismogramSegment | null {
-    if (
+    checkLuxonValid(timeRange);
+    if ( 
+      timeRange.start == null || timeRange.end == null ||
       timeRange.end < this._startTime ||
       timeRange.start > this.endTime
     ) {

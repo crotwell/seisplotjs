@@ -4,6 +4,7 @@ import {Channel, Station, createStationClickEvent, createChannelClickEvent} from
 import {SeisPlotElement, addStyleToElement} from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import {SeismographConfig} from "./seismographconfig";
+import {stringify} from "./util";
 
 import {Handlebars} from "./handlebarshelpers";
 
@@ -317,7 +318,7 @@ export class QuakeTable extends HTMLElement {
   }
   static getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
     if (h === QUAKE_COLUMN.TIME) {
-      return q.time.toISO();
+      return stringify(q.time.toISO());
     } else if (h === QUAKE_COLUMN.LAT) {
       return latlonFormat.format(q.latitude);
     } else if (h === QUAKE_COLUMN.LON) {
@@ -482,9 +483,9 @@ export class ChannelTable extends HTMLElement {
   }
   static getChannelValue(q: Channel, h: CHANNEL_COLUMN): string {
     if (h === CHANNEL_COLUMN.START) {
-      return q.startDate.toISO();
+      return stringify(q.startDate.toISO());
     } else if (h === CHANNEL_COLUMN.END) {
-      return q.endDate ? q.endDate.toISO() : "";
+      return q.endDate ? stringify(q.endDate.toISO()) : "";
     } else if (h === CHANNEL_COLUMN.LAT) {
       return latlonFormat.format(q.latitude);
     } else if (h === CHANNEL_COLUMN.LON) {
@@ -669,9 +670,9 @@ export class StationTable extends HTMLElement {
   }
   static getStationValue(q: Station, h: STATION_COLUMN): string {
     if (h === STATION_COLUMN.START) {
-      return q.startDate.toISO();
+      return stringify(q.startDate.toISO());
     } else if (h === STATION_COLUMN.END) {
-      return q.endDate ? q.endDate.toISO() : "";
+      return q.endDate ? stringify(q.endDate.toISO()) : "";
     } else if (h === STATION_COLUMN.LAT) {
       return latlonFormat.format(q.latitude);
     } else if (h === STATION_COLUMN.LON) {
@@ -842,11 +843,11 @@ export class SeismogramTable extends HTMLElement {
   }
   static getSeismogramValue(q: SeismogramDisplayData, h: SEISMOGRAM_COLUMN): string {
     if (h === SEISMOGRAM_COLUMN.START) {
-      return q.start.toISO();
+      return stringify(q.start.toISO());
     } else if (h === SEISMOGRAM_COLUMN.END) {
-      return q.end.toISO();
+      return stringify(q.end.toISO());
     } else if (h === SEISMOGRAM_COLUMN.DURATION) {
-      return q.timeRange.toDuration().toISO();
+      return stringify(q.timeRange.toDuration().toISO());
     } else if (h === SEISMOGRAM_COLUMN.NUM_POINTS) {
       return `${q.numPoints}`;
     } else if (h === SEISMOGRAM_COLUMN.SAMPLE_RATE) {

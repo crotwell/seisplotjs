@@ -41,7 +41,12 @@ export function readSac(filename: string): Promise<sacType> {
 }
 
 export function asSeismogram(sac: sacType): Seismogram {
-  return Seismogram.fromContiguousData(sac.y, 1/sac.delta, sac.start);
+  let s = sac.start;
+  // sac files can have invalid/unset start, just use year 2000 to avoid error
+  if ( ! s.isValid) {
+    s = DateTime.fromISO("2000-01-01");
+  }
+  return Seismogram.fromContiguousData(sac.y, 1/sac.delta, s);
 }
 
 export function readSeismogram(filename: string): Promise<Seismogram> {

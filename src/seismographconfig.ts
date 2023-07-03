@@ -11,7 +11,7 @@ import {IndividualAmplitudeScale,
 } from "./scale";
 
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
-import {isDef} from "./util";
+import {isDef, validStartTime} from "./util";
 import { Duration, Interval} from "luxon";
 import {format as d3format} from "d3-format";
 import { utcFormat as d3utcFormat} from "d3-time-format";
@@ -603,7 +603,7 @@ export class SeismographConfig {
     const fakeSeis = Seismogram.fromContiguousData(
       fakeData,
       fakeSampleRate,
-      timeRange.start,
+      validStartTime(timeRange),
     );
     const fakeSDD = SeismogramDisplayData.fromSeismogram(fakeSeis);
     return fakeSDD;

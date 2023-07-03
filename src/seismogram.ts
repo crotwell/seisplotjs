@@ -5,7 +5,10 @@
  */
 import {DateTime, Duration, Interval} from "luxon";
 import {FDSNSourceId, NslcId} from "./fdsnsourceid";
-import {meanOfSlice, isDef, stringify, isoToDateTime,} from "./util";
+import {
+  meanOfSlice, isDef, stringify, isoToDateTime,
+  checkLuxonValid, validStartTime, validEndTime
+} from "./util";
 import * as seedcodec from "./seedcodec";
 import {distaz, DistAzOutput} from "./distaz";
 import {Network, Station, Channel, InstrumentSensitivity, findChannels} from "./stationxml";
@@ -63,6 +66,7 @@ export class Seismogram {
 
     this.checkAllSimilar();
     this._interval = this.findStartEnd();
+    checkLuxonValid(this._interval, "seis const");
   }
 
   checkAllSimilar() {
@@ -137,7 +141,7 @@ export class Seismogram {
   }
 
   get startTime(): DateTime {
-    return this._interval.start;
+    return validStartTime(this._interval);
   }
 
   get end(): DateTime {
@@ -145,7 +149,7 @@ export class Seismogram {
   }
 
   get endTime(): DateTime {
-    return this._interval.end;
+    return validEndTime(this._interval);
   }
 
   get timeRange(): Interval {
@@ -276,14 +280,17 @@ export class Seismogram {
    */
   trim(timeRange: Interval): null | Seismogram {
     let out = null;
+    checkLuxonValid(timeRange);
+    const timeRange_start = validStartTime(timeRange);
+    const timeRange_end = validEndTime(timeRange);
 
     if (this._segmentArray) {
       const trimSeisArray = this._segmentArray
         .filter(function (d) {
-          return d.endTime >= timeRange.start;
+          return d.endTime >= timeRange_start;
         })
         .filter(function (d) {
-          return d.startTime <= timeRange.end;
+          return d.startTime <= timeRange_end;
         });
 
       if (trimSeisArray.length > 0) {
@@ -485,6 +492,7 @@ export class SeismogramDisplayData {
     if (!timeRange) {
       throw new Error("timeRange must not be missing.");
     }
+    checkLuxonValid(timeRange);
 
     this._id = null;
     this._sourceId = null;
@@ -496,7 +504,7 @@ export class SeismogramDisplayData {
     this._instrumentSensitivity = null;
     this.quakeList = [];
     this.timeRange = timeRange;
-    this.alignmentTime = timeRange.start;
+    this.alignmentTime = validStartTime(timeRange);
     this.doShow = true;
     this._statsCache = null;
   }
@@ -814,19 +822,19 @@ export class SeismogramDisplayData {
   }
 
   get startTime(): DateTime {
-    return this.timeRange.start;
+    return validStartTime(this.timeRange);
   }
 
   get start(): DateTime {
-    return this.timeRange.start;
+    return this.startTime;
   }
 
   get endTime(): DateTime {
-    return this.timeRange.end;
+    return validEndTime(this.timeRange);
   }
 
   get end(): DateTime {
-    return this.timeRange.end;
+    return this.endTime;
   }
 
   get numPoints(): number {
@@ -1135,12 +1143,12 @@ export function findMaxDurationOfType(
     } else if (type === "origin" && sdd.hasQuake()) {
       timeRange = Interval.fromDateTimes(
         sdd.quakeList[0].time,
-        sdd.timeRange.end,
+        validEndTime(sdd.timeRange),
       );
     } else if (type === "align" && sdd.alignmentTime) {
       timeRange = Interval.fromDateTimes(
         sdd.alignmentTime,
-        sdd.timeRange.end,
+        validEndTime(sdd.timeRange),
       );
     } else {
       timeRange = sdd.timeRange;

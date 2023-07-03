@@ -24,6 +24,8 @@ import {
   makeParam,
   doFetchWithTimeout,
   defaultFetchInitObj,
+  validStartTime,
+  validEndTime,
 } from "./util";
 import {Network, Station, Channel} from "./stationxml";
 
@@ -305,8 +307,8 @@ export class AvailabilityQuery extends FDSNCommon {
    * @returns    the query
    */
   timeRange(se: Interval): AvailabilityQuery {
-    this.startTime(se.start);
-    this.endTime(se.end);
+    this.startTime(validStartTime(se));
+    this.endTime(validEndTime(se));
     return this;
   }
 

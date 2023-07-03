@@ -10,7 +10,7 @@ import {SeismogramSegment} from "./seismogramsegment";
 import {Seismograph} from "./seismograph";
 import {SeismographConfig} from "./seismographconfig";
 import {SeisPlotElement} from "./spelement";
-import { isDef} from "./util";
+import { isDef, validStartTime, validEndTime} from "./util";
 
 export const HELICORDER_ELEMENT = 'sp-helicorder';
 
@@ -98,21 +98,21 @@ export class Helicorder extends SeisPlotElement {
     const origMinMax = this.heliConfig.fixedAmplitudeScale;
     const heliTimeRange = this.heliConfig.fixedTimeScale;
     if (!heliTimeRange) { throw new Error("Heli is not fixedTimeScale");}
-    if (heliTimeRange.end < segment.timeRange.end) {
+    if (validEndTime(heliTimeRange) < validEndTime(segment.timeRange)) {
       const lineDuration = Duration.fromMillis(
         heliTimeRange.toDuration().toMillis() / this.heliConfig.numLines);
 
       this.heliConfig.fixedTimeScale =
         Interval.fromDateTimes(
-          heliTimeRange.start.plus(lineDuration),
-          heliTimeRange.end.plus(lineDuration)
+          validStartTime(heliTimeRange).plus(lineDuration),
+          validEndTime(heliTimeRange).plus(lineDuration)
         );
         this.draw();
     }
     if (this.seisData && this.seisData.length > 0) {
       const singleSeisData = this.seisData[0];
       singleSeisData.append(segment);
-      if (heliTimeRange.end < segment.timeRange.end ||
+      if (validEndTime(heliTimeRange) < validEndTime(segment.timeRange) ||
         (origMinMax &&
          (segMinMax.min < origMinMax[0] ||
           origMinMax[1] < segMinMax.max))) {
@@ -188,7 +188,7 @@ export class Helicorder extends SeisPlotElement {
       }
     }
 
-    const startTime = timeRange.start;
+    const startTime = validStartTime(timeRange);
     const secondsPerLine =
       timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
     wrapper.querySelectorAll("sp-seismograph").forEach(e => e.remove());
@@ -234,8 +234,8 @@ export class Helicorder extends SeisPlotElement {
       }
 
       lineSeisConfig.fixedTimeScale = lineInterval;
-      lineSeisConfig.yLabel = `${startTime.toFormat("HH:mm")}`;
-      lineSeisConfig.yLabelRight = `${endTime.toFormat("HH:mm")}`;
+      lineSeisConfig.yLabel = `${startTime?.toFormat("HH:mm")}`;
+      lineSeisConfig.yLabelRight = `${endTime?.toFormat("HH:mm")}`;
       lineSeisConfig.lineColors = [
         this.heliConfig.lineColors[
           lineNumber % this.heliConfig.lineColors.length
@@ -339,7 +339,7 @@ export class Helicorder extends SeisPlotElement {
     for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
       const startEnd = new HeliTimeRange(s, durationPerLine, lineNum);
       out.push(startEnd);
-      s = startEnd.interval.end;
+      s = validEndTime(startEnd.interval);
     }
 
     return out;
@@ -369,7 +369,7 @@ export class Helicorder extends SeisPlotElement {
 
       const secondsPerLine =
         timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
-      const clickTime = timeRange.start.plus(Duration.fromMillis((clickLine+timeLineFraction)*secondsPerLine*1000));
+      const clickTime = validStartTime(timeRange).plus(Duration.fromMillis((clickLine+timeLineFraction)*secondsPerLine*1000));
       return {
         mouseevent: evt,
         time: clickTime,

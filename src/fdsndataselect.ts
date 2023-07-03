@@ -24,6 +24,8 @@ import {
   makeParam,
   doFetchWithTimeout,
   defaultFetchInitObj,
+  validStartTime,
+  validEndTime,
 } from "./util";
 
 /** const for miniseed format, mseed */
@@ -279,8 +281,8 @@ export class DataSelectQuery extends FDSNCommon {
    * @returns     this
    */
   timeRange(se: Interval): DataSelectQuery {
-    this.startTime(se.start);
-    this.endTime(se.end);
+    this.startTime(validStartTime(se));
+    this.endTime(validEndTime(se));
     return this;
   }
 

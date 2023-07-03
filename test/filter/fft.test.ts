@@ -70,6 +70,9 @@ test("FFT", () => {
                       readSac("./test/filter/data/IU.HRV.__.BHE_fft.sac.ph")])
   .then ( result => {
       const sac = asSeismogram(result[0]);
+      // amp and ph have invalid start
+      result[1].start = sac.start;
+      result[2].start = sac.start;
       const sacAmp = asSeismogram(result[1]);
       const sacPhase = asSeismogram(result[2]);
       const samprate = sac.sampleRate;

@@ -1,5 +1,5 @@
 import {SeismographConfig} from "./seismographconfig";
-import {createSVGElement} from "./util";
+import {createSVGElement, checkLuxonValid, toJSDate} from "./util";
 //import * as d3 from "d3";
 import {scaleUtc as d3scaleUtc } from "d3-scale";
 import {select as d3select} from "d3-selection";
@@ -12,11 +12,12 @@ export class LuxonTimeScale {
   interval: Interval;
   range: [number, number];
   constructor(interval: Interval, range: [number, number]) {
+    checkLuxonValid(interval);
     this.interval = interval;
     this.range = range.slice() as [number, number];
   }
   for(d: DateTime): number {
-    return this.d3scale(d.toJSDate());
+    return this.d3scale(toJSDate(d));
   }
   invert(v: number): DateTime {
     return DateTime.fromJSDate(this.d3scale.invert(v));
@@ -25,8 +26,11 @@ export class LuxonTimeScale {
     return this.interval;
   }
   get d3scale(): ScaleTime<number, number, never> {
+    checkLuxonValid(this.interval);
     const d3TimeScale = d3scaleUtc();
-    d3TimeScale.domain([this.interval.start?.toJSDate(), this.interval.end?.toJSDate()]);
+    const s = toJSDate(this.interval.start);
+    const e = toJSDate(this.interval.end);
+    d3TimeScale.domain([s, e]);
     d3TimeScale.range(this.range);
   return d3TimeScale;
   }
