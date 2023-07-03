@@ -242,48 +242,47 @@ export class SeedlinkConnection {
   }
 
   connect() {
-    const that = this;
     this.interactiveConnect()
       .then(() => {
-        return that.sendHello();
+        return this.sendHello();
       })
-      .then(function (lines) {
-        if (that.checkProto(lines)) {
+      .then((lines) => {
+        if (this.checkProto(lines)) {
           return true;
         } else {
           throw new Error(`${SEEDLINK4_PROTOCOL} not found in HELLO response`);
         }
       })
-      .then(function () {
-        return that.sendCmdArray([
-          `USERAGENT ${that.agent}/${that.agentVersion} (seisplotjs/${version})`,
+      .then(() => {
+        return this.sendCmdArray([
+          `USERAGENT ${this.agent}/${this.agentVersion} (seisplotjs/${version})`,
         ]);
       })
-      .then(function () {
-        return that.sendCmdArray(that.requestConfig);
+      .then(() => {
+        return this.sendCmdArray(this.requestConfig);
       })
-      .then(function () {
-        return that.sendCmdArray([that.command]);
+      .then(() => {
+        return this.sendCmdArray([this.command]);
       })
-      .then(function (val) {
-        if (that.webSocket === null) {
+      .then((val) => {
+        if (this.webSocket === null) {
           throw new Error("websocket is null");
         }
-        that.webSocket.onmessage = function (event) {
-          that.handle(event);
+        this.webSocket.onmessage = (event) => {
+          this.handle(event);
         };
 
-        that.webSocket.send("END\r");
+        this.webSocket.send("END\r");
         return val;
       })
       .catch(err => {
-        if (that.errorHandler) {
-          that.errorHandler(err);
+        if (this.errorHandler) {
+          this.errorHandler(err);
         } else {
           throw err;
         }
 
-        that.close();
+        this.close();
       });
   }
 
@@ -293,34 +292,33 @@ export class SeedlinkConnection {
       this.webSocket = null;
     }
 
-    const that = this;
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       try {
-        const webSocket = new WebSocket(that.url, SEEDLINK4_PROTOCOL);
-        that.webSocket = webSocket;
+        const webSocket = new WebSocket(this.url, SEEDLINK4_PROTOCOL);
+        this.webSocket = webSocket;
         webSocket.binaryType = "arraybuffer";
 
-        webSocket.onopen = function () {
-          resolve(that);
+        webSocket.onopen = () => {
+          resolve(this);
         };
 
-        webSocket.onerror = function (event: Event) {
-          that.handleError(new Error("" + stringify(event)));
+        webSocket.onerror = (event: Event) => {
+          this.handleError(new Error("" + stringify(event)));
           reject(event);
         };
 
-        webSocket.onclose = function (closeEvent) {
-          if (that.closeFn) {
-            that.closeFn(closeEvent);
+        webSocket.onclose = (closeEvent) => {
+          if (this.closeFn) {
+            this.closeFn(closeEvent);
           }
 
-          if (that.webSocket) {
-            that.webSocket = null;
+          if (this.webSocket) {
+            this.webSocket = null;
           }
         };
       } catch (err) {
-        if (that.errorHandler) {
-          that.errorHandler(toError(err));
+        if (this.errorHandler) {
+          this.errorHandler(toError(err));
         }
 
         reject(err);
@@ -418,10 +416,9 @@ export class SeedlinkConnection {
    *   command if successful, or rejects on the first failure.
    */
   sendCmdArray(cmd: Array<string>): Promise<string> {
-    const that = this;
-    return cmd.reduce(function (accum: Promise<string>, next: string) {
-      return accum.then(function () {
-        return that.createCmdPromise(next);
+    return cmd.reduce((accum: Promise<string>, next: string) => {
+      return accum.then(() => {
+        return this.createCmdPromise(next);
       });
     }, Promise.resolve("OK"));
   }

@@ -385,15 +385,14 @@ export class DataSelectQuery extends FDSNCommon {
    * @returns Promise to Array of miniseed.DataRecords
    */
   queryDataRecords(): Promise<Array<miniseed.DataRecord>> {
-    const mythis = this;
     this.format(FORMAT_MINISEED);
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then(function (response) {
+      .then( (response) => {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.getNodata())
+          (isDef(this._nodata) && response.status === this.getNodata())
         ) {
           // no data
           return new ArrayBuffer(0);
@@ -414,15 +413,14 @@ export class DataSelectQuery extends FDSNCommon {
    * @returns Promise to Array of miniseed.DataRecords
    */
   queryMS3Records(): Promise<Array<mseed3.MSeed3Record>> {
-    const mythis = this;
     this.format(FORMAT_MINISEED_THREE);
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then(function (response) {
+      .then( (response) => {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis.getNodata())
+          (isDef(this._nodata) && response.status === this.getNodata())
         ) {
           // no data
           return new ArrayBuffer(0);

@@ -324,19 +324,18 @@ export class TraveltimeQuery extends FDSNCommon {
 
   queryText(): Promise<string> {
     this.format(TEXT_FORMAT);
-    const mythis = this;
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      function (response) {
+      (response) => {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis._nodata)
+          (isDef(this._nodata) && response.status === this._nodata)
         ) {
           // no data, create empty
           return (
             FAKE_EMPTY_TEXT_MODEL +
-            (isDef(mythis._model) ? mythis.getModel() : "") +
+            (isDef(this._model) ? this.getModel() : "") +
             FAKE_EMPTY_TEXT_HEADERS
           );
         } else {
@@ -348,21 +347,20 @@ export class TraveltimeQuery extends FDSNCommon {
 
   queryJson(): Promise<TraveltimeJsonType> {
     this.format(JSON_FORMAT);
-    const mythis = this;
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(JSON_MIME);
-    return doFetchWithTimeout(url, fetchInit, mythis._timeoutSec * 1000).then(
-      function (response) {
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
+      (response) => {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis._nodata)
+          (isDef(this._nodata) && response.status === this._nodata)
         ) {
           // no data, create empty
           return {
-            model: isDef(mythis._model) ? mythis._model : "",
-            sourcedepth: isDef(mythis._evdepth) ? mythis._evdepth : 0,
+            model: isDef(this._model) ? this._model : "",
+            sourcedepth: isDef(this._evdepth) ? this._evdepth : 0,
             receiverdepth: 0,
-            phases: isDef(mythis._phases) ? mythis._phases.split(",") : [],
+            phases: isDef(this._phases) ? this._phases.split(",") : [],
             arrivals: [],
           };
         } else {
@@ -374,16 +372,15 @@ export class TraveltimeQuery extends FDSNCommon {
 
   querySvg(): Promise<Element> {
     this.format(SVG_FORMAT);
-    const mythis = this;
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(SVG_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then(function (response) {
+      .then((response) => {
         if (response.status === 200) {
           return response.text();
         } else if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis._nodata)
+          (isDef(this._nodata) && response.status === this._nodata)
         ) {
           // 204 is nodata, so successful but empty
           return FAKE_EMPTY_SVG;

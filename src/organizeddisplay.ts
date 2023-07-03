@@ -479,32 +479,31 @@ export class OrganizedDisplay extends SeisPlotElement {
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     wrapper.querySelectorAll(ORG_DISP_ITEM).forEach(item => wrapper.removeChild(item));
 
-    const mythis = this;
-    const sortedData = sort(mythis.seisData, this.sortby);
+    const sortedData = sort(this.seisData, this.sortby);
     let allOrgDispItems = new Array<OrganizedDisplayItem>();
     this.drawTools(sortedData);
     this.drawMap(sortedData);
     this.drawInfo(sortedData);
     if (this.overlayby === OVERLAY_INDIVIDUAL) {
       sortedData.forEach(sdd => {
-          const oi = new OrganizedDisplayItem([sdd], mythis.seismographConfig);
+          const oi = new OrganizedDisplayItem([sdd], this.seismographConfig);
           oi.plottype = SEISMOGRAPH;
           allOrgDispItems.push(oi);
       });
     } else if (this.overlayby === OVERLAY_VECTOR) {
       const groupedSDD = groupComponentOfMotion(sortedData);
       groupedSDD.forEach(gsdd => {
-          const oi = new OrganizedDisplayItem(gsdd, mythis.seismographConfig);
+          const oi = new OrganizedDisplayItem(gsdd, this.seismographConfig);
           allOrgDispItems.push(oi);
       });
     } else if (this.overlayby === OVERLAY_COMPONENT) {
-      const oitems = overlayByComponent(sortedData, mythis.seismographConfig);
+      const oitems = overlayByComponent(sortedData, this.seismographConfig);
       allOrgDispItems = allOrgDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION) {
-      const oitems = overlayByStation(sortedData, mythis.seismographConfig);
+      const oitems = overlayByStation(sortedData, this.seismographConfig);
       allOrgDispItems = allOrgDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_ALL) {
-      const oi = new OrganizedDisplayItem(sortedData, mythis.seismographConfig);
+      const oi = new OrganizedDisplayItem(sortedData, this.seismographConfig);
       allOrgDispItems.push(oi);
     } else if (this.overlayby === OVERLAY_NONE) {
       // nothing to do here
@@ -520,20 +519,20 @@ export class OrganizedDisplay extends SeisPlotElement {
           // bubble the event, not sure why this is needed???
           const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
           const event = new CustomEvent("seismousemove", { detail: seisDetail});
-          mythis.dispatchEvent(event);
+          this.dispatchEvent(event);
         });
         oi.addEventListener("seisclick", sEvt => {
           const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
           const event = new CustomEvent("seisclick", { detail: seisDetail});
-          mythis.dispatchEvent(event);
+          this.dispatchEvent(event);
         });
       }
     });
-    if (mythis.seismographConfig.linkedTimeScale) {
-      mythis.seismographConfig.linkedTimeScale.notifyAll();
+    if (this.seismographConfig.linkedTimeScale) {
+      this.seismographConfig.linkedTimeScale.notifyAll();
     }
-    if (mythis.seismographConfig.linkedAmplitudeScale) {
-      mythis.seismographConfig.linkedAmplitudeScale.notifyAll();
+    if (this.seismographConfig.linkedAmplitudeScale) {
+      this.seismographConfig.linkedAmplitudeScale.notifyAll();
     }
   }
   drawTools(sortedData: Array<SeismogramDisplayData>) {

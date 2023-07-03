@@ -457,9 +457,8 @@ export class AvailabilityQuery extends FDSNCommon {
    * a channel-time window
    */
   query(): Promise<Array<SeismogramDisplayData>> {
-    const mythis = this;
-    return this.queryJson().then(function (json: RootType) {
-      return mythis.extractFromJson(json);
+    return this.queryJson().then( (json: RootType) => {
+      return this.extractFromJson(json);
     });
   }
 
@@ -469,15 +468,14 @@ export class AvailabilityQuery extends FDSNCommon {
    * @returns promise to the result as json
    */
   queryJson(): Promise<RootType> {
-    const mythis = this;
     this.format(FORMAT_JSON);
     const url = this.formURL("query");
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      function (response) {
+       (response) => {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis._nodata)
+          (isDef(this._nodata) && response.status === this._nodata)
         ) {
           return Promise.resolve(EMPTY_JSON);
         }
@@ -505,9 +503,8 @@ export class AvailabilityQuery extends FDSNCommon {
    * a channel-time window
    */
   extent(): Promise<Array<SeismogramDisplayData>> {
-    const mythis = this;
-    return this.extentJson().then(function (json: RootType) {
-      return mythis.extractFromJson(json);
+    return this.extentJson().then( (json: RootType) => {
+      return this.extractFromJson(json);
     });
   }
 
@@ -517,15 +514,14 @@ export class AvailabilityQuery extends FDSNCommon {
    * @returns promise to the result as json
    */
   extentJson(): Promise<RootType> {
-    const mythis = this;
     this.format(FORMAT_JSON);
     const url = this.formURL("extent");
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      function (response) {
+       (response) => {
         if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis._nodata)
+          (isDef(this._nodata) && response.status === this._nodata)
         ) {
           return EMPTY_JSON;
         }
@@ -586,12 +582,11 @@ export class AvailabilityQuery extends FDSNCommon {
     channelTimeList: Array<SeismogramDisplayData>,
     method: string,
   ): Promise<RootType> {
-    const mythis = this;
     this.format(FORMAT_JSON);
-    return this.postRaw(channelTimeList, method).then(function (response) {
+    return this.postRaw(channelTimeList, method).then( (response) => {
       if (
         response.status === 204 ||
-        (isDef(mythis._nodata) && response.status === mythis._nodata)
+        (isDef(this._nodata) && response.status === this._nodata)
       ) {
         return EMPTY_JSON;
       }

@@ -21,7 +21,7 @@ export function inArea(bounds: Array<Location>, point: Location): boolean {
         }
         inside += check;
     }
-    return (inside != 0);
+    return (inside !== 0);
 }
 
 export function polygonPointCheck(lonA: number,

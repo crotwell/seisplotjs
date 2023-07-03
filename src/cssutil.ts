@@ -64,7 +64,7 @@ export function isCSSInserted(id: string): boolean {
 
   return false;
 }
-export function isIdStyleElement(c: any, id: string): boolean {
+export function isIdStyleElement(c: Element, id: string): boolean {
   return (
     c.localName === "style" && c.id === id && c.classList.contains(AUTO_CLASSED)
   );

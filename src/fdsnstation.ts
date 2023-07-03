@@ -867,7 +867,6 @@ export class StationQuery extends FDSNCommon {
    * @returns a Promise to string.
    */
    queryRawXmlText(level: string): Promise<string> {
-    const mythis = this;
     if (!this.isSomeParameterSet()) {
       throw new Error(
         "Must set some parameter to avoid asking for everything.",
@@ -882,7 +881,7 @@ export class StationQuery extends FDSNCommon {
           return response.text();
         } else if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis._nodata)
+          (isDef(this._nodata) && response.status === this._nodata)
         ) {
           // 204 is nodata, so successful but empty
           return FAKE_EMPTY_XML;
@@ -912,7 +911,6 @@ export class StationQuery extends FDSNCommon {
         return new DOMParser().parseFromString(rawXmlText, "text/xml");
       });
     } else {
-      const mythis = this;
       const fetchInit = defaultFetchInitObj(XML_MIME);
       fetchInit.method = "POST";
       fetchInit.body = this.createPostBody(level, postLines);
@@ -926,7 +924,7 @@ export class StationQuery extends FDSNCommon {
             return response.text();
           } else if (
             response.status === 204 ||
-            (isDef(mythis._nodata) && response.status === mythis._nodata)
+            (isDef(this._nodata) && response.status === this._nodata)
           ) {
             // 204 is nodata, so successful but empty
             return FAKE_EMPTY_XML;
@@ -1242,10 +1240,9 @@ export class ChannelSearch extends HTMLElement {
     this.draw_element(shadow);
   }
   _registerEvent(wrapper: HTMLElement, sel: string) {
-    const mythis = this;
     const component = wrapper.querySelector(sel) as HTMLElement;
     if ( ! component) {throw new Error(`can't find ${sel}`);}
-    component.addEventListener("change", () => mythis.dispatchEvent(new Event("change")));
+    component.addEventListener("change", () => this.dispatchEvent(new Event("change")));
   }
   draw_element(shadow: ShadowRoot) {
     const wrapper = document.createElement('div');

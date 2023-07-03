@@ -185,7 +185,6 @@ export class ParticleMotion extends SeisPlotElement {
 
     this.width = 100;
     this.height = 100;
-    const mythis = this;
     // for line ends to show direction of particle motion
     const arrow = this.svg.append("defs").append("marker");
     arrow
@@ -212,9 +211,9 @@ export class ParticleMotion extends SeisPlotElement {
           ")",
       );
     this.calcScaleDomain();
-    d3select(window).on("resize.particleMotion" + this.plotId, function () {
-      if (mythis.checkResize()) {
-        mythis.draw();
+    d3select(window).on("resize.particleMotion" + this.plotId, () => {
+      if (this.checkResize()) {
+        this.draw();
       }
     });
   }
@@ -340,7 +339,6 @@ export class ParticleMotion extends SeisPlotElement {
     segA: SeismogramSegment,
     segB: SeismogramSegment,
   ) {
-    const mythis = this;
     const timeRange = segA.timeRange.intersection(segB.timeRange);
 
     if (!isDef(timeRange)) {
@@ -372,8 +370,8 @@ export class ParticleMotion extends SeisPlotElement {
         "d",
         d3line()
           .curve(d3curveLinear)
-          .x(d => mythis.xScale(d))
-          .y((d, i) => mythis.yScale(segB.yAtIndex(idxB + i))),
+          .x(d => this.xScale(d))
+          .y((d, i) => this.yScale(segB.yAtIndex(idxB + i))),
       );
   }
 

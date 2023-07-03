@@ -453,7 +453,7 @@ export function toIsoWoZ(date: DateTime): string {
  * Extracts a valid starting DateTime from interval.
  * Throws Error if interval is not valid.
  * @param  interval              luxon Interval
- * @return          start DateTime
+ * @returns          start DateTime
  */
 export function validStartTime(interval: Interval): DateTime {
   const d = interval.start;
@@ -465,7 +465,7 @@ export function validStartTime(interval: Interval): DateTime {
  * Extracts a valid ending DateTime from interval.
  * Throws Error if interval is not valid.
  * @param  interval              luxon Interval
- * @return          end DateTime
+ * @returns          end DateTime
  */
 export function validEndTime(interval: Interval): DateTime {
   const d = interval.end;
@@ -478,7 +478,7 @@ export function validEndTime(interval: Interval): DateTime {
  * undefined and isValid first. Throws Error in that case.
  *
  * @param  d  luxon DateTime
- * @return   Javascript Date
+ * @returns   Javascript Date
  */
 export function toJSDate(d: DateTime|null|undefined) {
   if (! d) {
@@ -497,7 +497,7 @@ export function toJSDate(d: DateTime|null|undefined) {
  * but still throw/catch on invalid dates.
  * @param  d                 luxon object
  * @param  msg               optional message to add to error
- * @return  passed in object if valid
+ * @returns  passed in object if valid
  */
 export function checkLuxonValid(d: DateTime|Interval|Duration, msg?: string) {
   if ( d == null) {

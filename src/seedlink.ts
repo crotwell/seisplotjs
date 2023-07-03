@@ -82,48 +82,46 @@ export class SeedlinkConnection {
       const webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
       this.webSocket = webSocket;
       webSocket.binaryType = "arraybuffer";
-      const that = this;
 
-      webSocket.onopen = function () {
-        that
-          .sendHello()
-          .then(function () {
-            return that.sendCmdArray(that.requestConfig);
+      webSocket.onopen = () => {
+        this.sendHello()
+          .then(() => {
+            return this.sendCmdArray(this.requestConfig);
           })
-          .then(function () {
-            return that.sendCmdArray([that.command]);
+          .then(() => {
+            return this.sendCmdArray([this.command]);
           })
-          .then(function (val) {
-            webSocket.onmessage = function (event) {
-              that.handle(event);
+          .then((val) => {
+            webSocket.onmessage = (event) => {
+              this.handle(event);
             };
 
             webSocket.send("END\r");
             return val;
           })
           .catch(err => {
-            if (that.errorHandler) {
-              that.errorHandler(err);
+            if (this.errorHandler) {
+              this.errorHandler(err);
             } else {
               throw err;
             }
 
-            that.close();
+            this.close();
           });
       };
 
-      webSocket.onerror = function (event: Event) {
-          that.handleError(new Error("" + stringify(event)));
-          that.close();
+      webSocket.onerror = (event: Event) => {
+          this.handleError(new Error("" + stringify(event)));
+          this.close();
       };
 
-      webSocket.onclose = function (closeEvent) {
-        if (that.closeFn) {
-          that.closeFn(closeEvent);
+      webSocket.onclose = (closeEvent) => {
+        if (this.closeFn) {
+          this.closeFn(closeEvent);
         }
 
-        if (that.webSocket) {
-          that.webSocket = null;
+        if (this.webSocket) {
+          this.webSocket = null;
         }
       };
     } catch (err) {
@@ -240,10 +238,9 @@ export class SeedlinkConnection {
    *   command if successful, or rejects on the first failure.
    */
   sendCmdArray(cmd: Array<string>): Promise<string> {
-    const that = this;
-    return cmd.reduce(function (accum: Promise<string>, next: string) {
-      return accum.then(function (): Promise<string> {
-        return that.createCmdPromise(next);
+    return cmd.reduce((accum: Promise<string>, next: string) => {
+      return accum.then((): Promise<string> => {
+        return this.createCmdPromise(next);
       });
     }, Promise.resolve("OK"));
   }

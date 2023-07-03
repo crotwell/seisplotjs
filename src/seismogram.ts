@@ -87,7 +87,7 @@ export class Seismogram {
 
   checkSimilar(f: SeismogramSegment, s: SeismogramSegment) {
     if ( ! s.sourceId.equals(f.sourceId)) {
-      throw new Error(`SourceId not same: ${s.sourceId} !== ${f.sourceId}`);
+      throw new Error(`SourceId not same: ${s.sourceId.toString()} !== ${f.sourceId.toString()}`);
     }
 
     if (s.yUnit !== f.yUnit) {
@@ -1087,7 +1087,7 @@ export class SeismogramDisplayData {
     return out;
   }
   toString(): string {
-    return `${this.sourceId} ${this.timeRange}`;
+    return `${this.sourceId.toString()} ${this.timeRange.toString()}`;
   }
 }
 

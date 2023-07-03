@@ -364,7 +364,7 @@ export class SeismogramSegment {
   }
 
   seisId(): string {
-    const out = `${this.sourceId}_${this.startTime.toISO()}_${this.endTime.toISO()}`;
+    const out = `${this.sourceId.toString()}_${this.startTime.toISO()}_${this.endTime.toISO()}`;
     return out.replace(/\./g, "_")
       .replace(/:/g, "");
   }
@@ -416,7 +416,7 @@ export class SeismogramSegment {
 
   cut(timeRange: Interval): SeismogramSegment | null {
     checkLuxonValid(timeRange);
-    if ( 
+    if (
       timeRange.start == null || timeRange.end == null ||
       timeRange.end < this._startTime ||
       timeRange.start > this.endTime

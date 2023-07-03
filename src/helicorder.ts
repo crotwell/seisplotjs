@@ -120,7 +120,7 @@ export class Helicorder extends SeisPlotElement {
       } else {
         // only redraw overlaping graphs
 
-        const seismographList = (this.shadowRoot ? Array.from(this.shadowRoot.querySelectorAll('sp-seismograph')) : []) as Array<Seismograph>;
+        const seismographList: Array<Seismograph> = (this.shadowRoot ? Array.from(this.shadowRoot.querySelectorAll('sp-seismograph')) : []);
         seismographList.forEach(seisGraph => {
           const lineInterval = seisGraph.displayTimeRangeForSeisDisplayData(singleSeisData);
           if (segment.timeRange.intersection(lineInterval)) {

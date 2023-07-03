@@ -202,7 +202,6 @@ export class QuakeStationTable extends SeisPlotElement {
   }
   draw() {
     if ( ! this.isConnected) { return; }
-    const mythis = this;
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     while (wrapper.firstChild) {
       // @ts-ignore
@@ -211,8 +210,8 @@ export class QuakeStationTable extends SeisPlotElement {
     const handlebarsCompiled = Handlebars.compile(this.template);
     wrapper.innerHTML = handlebarsCompiled(
         {
-          seisDataList: mythis.seisData,
-          seisConfig: mythis.seismographConfig,
+          seisDataList: this.seisData,
+          seisConfig: this.seismographConfig,
         },
         {
           allowProtoPropertiesByDefault: true, // this might be a security issue???
@@ -499,7 +498,7 @@ export class ChannelTable extends HTMLElement {
     } else if (h === CHANNEL_COLUMN.DIP) {
       return latlonFormat.format(q.dip);
     } else if (h === CHANNEL_COLUMN.SOURCEID) {
-      return `${q.sourceId}`;
+      return `${q.sourceId.toString()}`;
     } else if (h === CHANNEL_COLUMN.CODE) {
       return `${q.codes()}`;
     } else if (h === CHANNEL_COLUMN.NETWORK_CODE) {
@@ -680,7 +679,7 @@ export class StationTable extends HTMLElement {
     } else if (h === STATION_COLUMN.ELEVATION) {
       return depthMeterFormat.format(q.elevation);
     } else if (h === STATION_COLUMN.SOURCEID) {
-      return `${q.sourceId}`;
+      return `${q.sourceId.toString()}`;
     } else if (h === STATION_COLUMN.CODE) {
       return `${q.codes()}`;
     } else if (h === STATION_COLUMN.NETWORK_CODE) {
@@ -857,7 +856,7 @@ export class SeismogramTable extends HTMLElement {
     } else if (h === SEISMOGRAM_COLUMN.SEGMENTS) {
       return q._seismogram ? `${q._seismogram.segments.length}` : "";
     } else if (h === SEISMOGRAM_COLUMN.SOURCEID) {
-      return `${q.sourceId}`;
+      return `${q.sourceId.toString()}`;
     } else if (h === SEISMOGRAM_COLUMN.CODE) {
       return `${q.codes()}`;
     } else if (h === SEISMOGRAM_COLUMN.NETWORK_CODE) {

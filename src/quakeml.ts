@@ -341,8 +341,10 @@ export class Quake extends BaseElement {
         " " +
         magStr
       );
-    } else {
+    } else if (this.eventId != null) {
       return `Event: ${this.eventId}`;
+    } else {
+      return `Event: unknown`;
     }
   }
 }

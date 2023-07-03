@@ -1,6 +1,7 @@
 import {Channel} from './stationxml';
 import {LatLonBox, LatLonRadius} from './fdsncommon';
 import {FDSNSourceId} from './fdsnsourceid';
+import {stringify} from './util';
 
 export const SOURCEID_LIST_ELEMENT = 'sp-sourceid-list';
 export const CHANNEL_LIST_ELEMENT = 'sp-channel-list';
@@ -11,7 +12,11 @@ export const LATLONBOX_ELEMENT = 'sp-latlon-box';
 export const LATLON_CHOICE_ELEMENT = 'sp-latlon-choice';
 
 export function numberOrNaN(a: string | number | null): number {
-  return Number.parseFloat(`${a}`);
+  if (a == null) {
+    return Number.NaN;
+  } else {
+    return Number.parseFloat(`${a}`);
+  }
 }
 
 export function numberFromInput(root: ShadowRoot|Element|null, query: string): number {
@@ -59,16 +64,16 @@ export class ChannelCodeInput extends HTMLElement {
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
     wrapper.setAttribute('class','wrapper');
-    const net = this.hasAttribute(ATTR_NET) ? ""+this.getAttribute(ATTR_NET) : "XX";
+    const net = this.hasAttribute(ATTR_NET) ? stringify(this.getAttribute(ATTR_NET)) : "XX";
     const netIn = wrapper.appendChild(labeledTextInput("Network:", net, ATTR_NET));
     netIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const sta = this.hasAttribute(ATTR_STA) ? ""+this.getAttribute(ATTR_STA) : "";
+    const sta = this.hasAttribute(ATTR_STA) ? stringify(this.getAttribute(ATTR_STA)) : "";
     const staIn = wrapper.appendChild(labeledTextInput("Station:", sta, ATTR_STA));
     staIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const loc = this.hasAttribute(ATTR_LOC) ? ""+this.getAttribute(ATTR_LOC) : "";
+    const loc = this.hasAttribute(ATTR_LOC) ? stringify(this.getAttribute(ATTR_LOC)) : "";
     const locIn = wrapper.appendChild(labeledTextInput("Location:", loc, ATTR_LOC));
     locIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-    const chan = this.hasAttribute(ATTR_CHAN) ? ""+this.getAttribute(ATTR_CHAN) : "";
+    const chan = this.hasAttribute(ATTR_CHAN) ? stringify(this.getAttribute(ATTR_CHAN)) : "";
     const chanIn = wrapper.appendChild(labeledTextInput("Channel:", chan, ATTR_CHAN));
     chanIn.addEventListener("change", () => this.dispatchEvent(new Event("change")));
 
@@ -156,7 +161,7 @@ export class ChannelListChooser extends HTMLElement {
       const cb = div.appendChild(document.createElement('input'));
       cb.setAttribute('type',this.type);
       cb.setAttribute('name','radiogroup');
-      cb.addEventListener('change', event => {
+      cb.addEventListener('change', () => {
         if (this.type === "radio") {
           // radio, only one selected, notify only on select not unselect
           this.selected_channels.clear();

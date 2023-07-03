@@ -90,9 +90,7 @@ export function inverseDFT(
   if (numPoints > packedFreq.length) {
     throw new Error(
       "Not enough points in packed freq array for " +
-        numPoints +
-        ", only " +
-        packedFreq.length,
+        `${numPoints}, only ${packedFreq.length}`,
     );
   }
 
@@ -103,7 +101,7 @@ export function inverseDFT(
   }
 
   if (N !== packedFreq.length) {
-    throw new Error("power of two check fails: " + N + " " + packedFreq.length);
+    throw new Error(`power of two check fails: ${N} ${packedFreq.length}`);
   }
 
   const dft = new RDFT(log2N);

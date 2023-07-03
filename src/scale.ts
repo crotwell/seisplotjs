@@ -198,18 +198,16 @@ export class LinkedAmplitudeScale {
    * @returns array of promise of best amp scales
    */
   recalculate(): Array<Promise<AmplitudeScalable>> {
-    const mythis = this;
-
-    const maxHalfRange = mythis.graphList.reduce((acc, cur) => {
+    const maxHalfRange = this.graphList.reduce((acc, cur) => {
       return acc > cur.halfWidth ? acc : cur.halfWidth;
     }, 0);
     let promiseList;
-    if (mythis.halfWidth !== maxHalfRange) {
-      mythis.halfWidth = maxHalfRange;
-      promiseList = mythis._internalNotifyAll();
+    if (this.halfWidth !== maxHalfRange) {
+      this.halfWidth = maxHalfRange;
+      promiseList = this._internalNotifyAll();
     } else {
       // no change
-      promiseList = mythis.graphList.map(g => Promise.resolve(g));
+      promiseList = this.graphList.map(g => Promise.resolve(g));
     }
     return promiseList;
   }

@@ -105,22 +105,18 @@ export class SacPoleZero {
   }
 
   trimZeros(gamma: number) {
-    const sacPoleZero = this;
-
     for (let i = 0; i < gamma; i++) {
-      const z = sacPoleZero.zeros[sacPoleZero.zeros.length - 1 - i];
+      const z = this.zeros[this.zeros.length - 1 - i];
 
       if (z.real() !== 0 || z.imag() !== 0) {
         throw new Error(
-          `Attempt to trim ${gamma} zeros from SacPoleZero, but zero isn't 0+i0: ${stringify(
-            z,
-          )}`,
+          `Attempt to trim ${gamma} zeros from SacPoleZero, but zero isn't 0+i0: ${stringify(z)}`,
         );
       }
     }
 
     // subtract gama zeros, ex 1 to get
-    let trimmedZeros = sacPoleZero.zeros.slice().reverse();
+    let trimmedZeros = this.zeros.slice().reverse();
 
     for (let i = 0; i < gamma; i++) {
       const idx = trimmedZeros.findIndex(d => d.real() === 0 && d.imag() === 0);
@@ -128,7 +124,7 @@ export class SacPoleZero {
     }
 
     trimmedZeros = trimmedZeros.reverse();
-    sacPoleZero.zeros = trimmedZeros;
+    this.zeros = trimmedZeros;
   }
 
   toText(): string {

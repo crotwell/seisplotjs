@@ -26,6 +26,7 @@ import {
   isNumArg,
   validStartTime,
   validEndTime,
+  stringify,
 } from "./util";
 
 /**
@@ -719,8 +720,6 @@ export class EventQuery extends FDSNCommon {
    * @returns xml Document
    */
   queryRawXml(): Promise<Document> {
-    const mythis = this;
-
     if (!this.isSomeParameterSet()) {
       throw new Error(
         "Must set some parameter to avoid asking for everything.",
@@ -735,7 +734,7 @@ export class EventQuery extends FDSNCommon {
           return response.text();
         } else if (
           response.status === 204 ||
-          (isDef(mythis._nodata) && response.status === mythis._nodata)
+          (isDef(this._nodata) && response.status === this._nodata)
         ) {
           // 204 is nodata, so successful but empty
           return FAKE_EMPTY_XML;
@@ -771,7 +770,7 @@ export class EventQuery extends FDSNCommon {
       colon +
       "//" +
       this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
+      (this._port === 80 ? "" : ":" + stringify(this._port)) +
       "/fdsnws/event/" +
       this._specVersion
     );
@@ -792,8 +791,7 @@ export class EventQuery extends FDSNCommon {
    * @returns Promise to Array of catalog names
    */
   queryCatalogs(): Promise<Array<string>> {
-    const mythis = this;
-    const url = mythis.formCatalogsURL();
+    const url = this.formCatalogsURL();
     const fetchInit = defaultFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then(response => {
@@ -803,10 +801,10 @@ export class EventQuery extends FDSNCommon {
           throw new Error(`Status not 200: ${response.status}`);
         }
       })
-      .then(function (rawXmlText) {
+      .then( (rawXmlText) => {
         return new DOMParser().parseFromString(rawXmlText, XML_MIME);
       })
-      .then(function (rawXml) {
+      .then( (rawXml) => {
         if (!rawXml) {
           throw new Error("raw xml from DOMParser is null.");
         }
@@ -992,10 +990,8 @@ export class EventQuery extends FDSNCommon {
         }
       } else {
         throw new Error(
-          "Cannot use minRadius or maxRadius without latitude and longitude: lat=" +
-            this._latitude +
-            " lon=" +
-            this._longitude,
+          `Cannot use minRadius or maxRadius without latitude and longitude: lat=`+
+          `${this._latitude} lon= ${this._longitude}`,
         );
       }
     }
@@ -1100,10 +1096,9 @@ export class EarthquakeSearch extends HTMLElement {
     this.draw_element(shadow);
   }
   _registerEvent(wrapper: HTMLElement, sel: string) {
-    const mythis = this;
     const component = wrapper.querySelector(sel) as HTMLElement;
     if ( ! component) {throw new Error(`can't find ${sel}`);}
-    component.addEventListener("change", () => mythis.dispatchEvent(new Event("change")));
+    component.addEventListener("change", () => this.dispatchEvent(new Event("change")));
   }
   draw_element(shadow: ShadowRoot) {
     const wrapper = document.createElement('div');

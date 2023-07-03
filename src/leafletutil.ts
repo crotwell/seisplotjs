@@ -360,14 +360,13 @@ export class QuakeStationMap extends SeisPlotElement {
     L.tileLayer(tileUrl, tileOptions).addTo(mymap);
     const magScale = this.magScale;
     const mapItems: Array<LatLngTuple> = [];
-    const mythis = this;
     this.quakeList.concat(uniqueQuakes(this.seisData)).forEach(q => {
       const circle = createQuakeMarker(q, magScale, this.quakeClassMap.get(cssClassForQuake(q)));
       circle.addTo(mymap);
       mapItems.push([q.latitude, q.longitude]);
       circle.addEventListener('click', evt => {
         const ce = createQuakeClickEvent(q, evt.originalEvent);
-        mythis.dispatchEvent(ce);
+        this.dispatchEvent(ce);
       });
     });
     this.stationList.concat(uniqueStations(this.seisData)).forEach(s => {
@@ -376,7 +375,7 @@ export class QuakeStationMap extends SeisPlotElement {
       mapItems.push([s.latitude, s.longitude]);
       m.addEventListener('click', evt => {
         const ce = createStationClickEvent(s, evt.originalEvent);
-        mythis.dispatchEvent(ce);
+        this.dispatchEvent(ce);
       });
     });
     const regionBounds = this.drawGeoRegions(mymap);
@@ -485,7 +484,7 @@ export function cssClassForQuake(q: Quake): string {
   if (q.eventId && q.eventId.length > 0) {
     out = q.eventId;
   } else {
-    out = `${q.origin.time.toISO()}_${q.magnitude}`;
+    out = `${q.origin.time.toISO()}_${q.magnitude.toString()}`;
   }
   return "qid_"+out.replaceAll(badCSSChars, '_');
 }

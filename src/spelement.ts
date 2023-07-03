@@ -17,7 +17,7 @@ export class SeisPlotElement extends HTMLElement {
       } else {
         let msg = `length: ${seisData.length}  `;
         if (seisData.length > 0) {
-          msg = `${msg} ${seisData[0]}`;
+          msg = `${msg} ${seisData[0].toString()}`;
         }
         throw new Error(`first arg must be array of SeismogramDisplayData: ${msg}`);
       }

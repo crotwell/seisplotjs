@@ -1017,14 +1017,13 @@ export class FedCatalogQuery extends FDSNCommon {
   }
 
   queryFdsnDataselect(): Promise<Array<SeismogramDisplayData>> {
-    const mythis = this;
     this.targetService(TARGET_DATASELECT);
     return this.queryRaw()
       .then(fedCatalogResult => {
-        return mythis.setupForFdnsDataSelect(fedCatalogResult);
+        return this.setupForFdnsDataSelect(fedCatalogResult);
       })
       .then(fedCatalogResult => {
-        return mythis.postFdsnDataselectForFedCatResult(fedCatalogResult);
+        return this.postFdsnDataselectForFedCatResult(fedCatalogResult);
       });
   }
 
@@ -1099,7 +1098,6 @@ export class FedCatalogQuery extends FDSNCommon {
   }
 
   postQueryRawWithBody(body: string): Promise<FedCatalogResult> {
-    const mythis = this;
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     fetchInit.method = "POST";
     fetchInit.body = body;
@@ -1112,7 +1110,7 @@ export class FedCatalogQuery extends FDSNCommon {
         return this.handleHttpResponseCodes(response);
       })
       .then(rawText => {
-        return mythis.parseRequest(rawText);
+        return this.parseRequest(rawText);
       });
   }
 
@@ -1122,7 +1120,6 @@ export class FedCatalogQuery extends FDSNCommon {
    * @returns a Promise to an parsed result.
    */
   queryRaw(): Promise<FedCatalogResult> {
-    const mythis = this;
     if (!this.isSomeParameterSet()) {
       throw new Error(
         "Must set some parameter to avoid asking for everything.",
@@ -1139,8 +1136,8 @@ export class FedCatalogQuery extends FDSNCommon {
       .then(response => {
         return this.handleHttpResponseCodes(response);
       })
-      .then(function (rawText) {
-        return mythis.parseRequest(rawText);
+      .then((rawText) => {
+        return this.parseRequest(rawText);
       });
     return this.fedCatResult;
   }

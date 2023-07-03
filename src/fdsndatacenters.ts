@@ -13,6 +13,7 @@
   makeParam,
   isDef,
   isNonEmptyStringArg,
+  stringify,
 } from "./util";
 import {
   TEXT_MIME,
@@ -188,7 +189,7 @@ export class DataCentersQuery extends FDSNCommon {
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      function (response) {
+      (response) => {
         const contentType = response.headers.get("content-type");
 
         if (
@@ -227,16 +228,21 @@ export class DataCentersQuery extends FDSNCommon {
         fdsnavailability.SERVICE_NAME,
         repoName,
       );
-      return out.map(service => {
-        const url = new URL(service.url);
-        const q = new fdsnavailability.AvailabilityQuery(url.hostname);
+      const aqList = out.map(service => {
+        if (service.url) {
+          const url = new URL(service.url);
+          const q = new fdsnavailability.AvailabilityQuery(url.hostname);
 
-        if (url.port && url.port.length > 0) {
-          q.port(Number.parseInt(url.port));
+          if (url.port && url.port.length > 0) {
+            q.port(Number.parseInt(url.port));
+          }
+          return q;
+        } else {
+          return null;
         }
-
-        return q;
       });
+      // remove nulls
+      return aqList.flatMap(f => f ? [f] : []);
     });
   }
 
@@ -401,7 +407,7 @@ export class DataCentersQuery extends FDSNCommon {
       colon +
       "//" +
       this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
+      (this._port === 80 ? "" : stringify(this._port)) +
       "/ws/datacenters/" +
       this._specVersion
     );

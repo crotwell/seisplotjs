@@ -32,7 +32,6 @@ export class HourMinChooser extends HTMLElement {
   popupDiv: HTMLDivElement;
   constructor() {
     super();
-    const mythis = this;
     this._time = DateTime.utc().set({second: 0, millisecond: 0});
     const attr_date_time = this.getAttribute("date-time");
     if (attr_date_time) {
@@ -73,7 +72,7 @@ export class HourMinChooser extends HTMLElement {
     const wrapper = document.createElement('span');
     document.addEventListener('click', e => {
       //console.log("mouseleave wrapper");
-      mythis.hide();
+      this.hide();
     });
 
 
@@ -89,12 +88,12 @@ export class HourMinChooser extends HTMLElement {
     hour_slider.setAttribute("max", "23");
     hour_slider.value = `${this.time.hour}`;
     hour_slider.setAttribute("class", "hourSlider");
-    hour_slider.oninput = function(e: Event) {
+    hour_slider.oninput = (e: Event) => {
       if (e.target !== null) {
         const target = e.target as HTMLInputElement;
         const hour = Number.parseInt(target.value);
         if (!Number.isNaN(hour)) {
-          mythis.time = mythis.time.set({hour: hour});
+          this.time = this.time.set({hour: hour});
         }
       }
     };
@@ -108,12 +107,12 @@ export class HourMinChooser extends HTMLElement {
     min_slider.setAttribute("max", "59");
     min_slider.value = `${this.time.minute}`;
     min_slider.setAttribute("class", "minSlider");
-    min_slider.oninput = function(e: Event) {
+    min_slider.oninput = (e: Event) => {
       if (e.target !== null) {
         const target = e.target as HTMLInputElement;
         const min = Number.parseInt(target.value);
         if (!Number.isNaN(min)) {
-          mythis.time = mythis.time.set({minute: min});
+          this.time = this.time.set({minute: min});
         }
       }
     };
@@ -129,10 +128,10 @@ export class HourMinChooser extends HTMLElement {
     ntext.setAttribute('name','hourMin');
     ntext.setAttribute('class','hourMin');
     ntext.value = this.time.toFormat(HOUR_MIN_24);
-    ntext.onchange = function(e: Event) {
+    ntext.onchange = (e: Event) => {
       let val = ntext.value;
       if (val === null ) {
-        val = mythis.time.toFormat(HOUR_MIN_24);
+        val = this.time.toFormat(HOUR_MIN_24);
         ntext.value = val;
       }
       const match = hourMinRegEx.exec(val);
@@ -141,18 +140,18 @@ export class HourMinChooser extends HTMLElement {
         //ntext.style("background-color", null);
         const h = match[1];
         const m = match[2];
-        const newTime = mythis.time.set({hour: parseInt(h), minute: parseInt(m)});
-        if (newTime !== mythis.time) {
-          mythis.time = newTime;
+        const newTime = this.time.set({hour: parseInt(h), minute: parseInt(m)});
+        if (newTime !== this.time) {
+          this.time = newTime;
         }
-        mythis.hide();
+        this.hide();
       } else {
-        ntext.value = mythis.time.toFormat(HOUR_MIN_24);
+        ntext.value = this.time.toFormat(HOUR_MIN_24);
       }
     };
-    ntext.onclick = function(e) {
+    ntext.onclick = (e) => {
       e.stopPropagation();
-      mythis.showHide();
+      this.showHide();
     };
     shadow.appendChild(wrapper);
   }
@@ -255,7 +254,6 @@ export class DateTimeChooser extends HTMLElement {
 
   constructor(time?: DateTime) {
     super();
-    const mythis = this;
     const attr_date_time = this.getAttribute("date-time");
     if (time) {
       this._time = time;
@@ -281,20 +279,20 @@ export class DateTimeChooser extends HTMLElement {
     dateField.value = stringify(this._time.toISODate());
 
     const hourMin = wrapper.appendChild(new HourMinChooser());
-    hourMin._time = mythis.time;
+    hourMin._time = this.time;
     this.hourMin = hourMin;
     hourMin.addEventListener("change", () => {
-      const origTime = mythis._time;
+      const origTime = this._time;
       const time = hourMin.time;
       if (origTime !== time) {
-        mythis._internalSetTime(time);
-        mythis.timeModified();
+        this._internalSetTime(time);
+        this.timeModified();
       }
     });
     dateField.addEventListener("change", () => {
       const value = dateField.value;
       const pikaValue = DateTime.fromISO(value);
-      const origTime = mythis._time;
+      const origTime = this._time;
       if (
         pikaValue && (
           origTime.year !== pikaValue.year ||
@@ -302,11 +300,11 @@ export class DateTimeChooser extends HTMLElement {
           origTime.day !== pikaValue.day
         )
       ) {
-        mythis.time = mythis.time.set({ year: pikaValue.year,
+        this.time = this.time.set({ year: pikaValue.year,
                          month: pikaValue.month,
                            day: pikaValue.day
                         });
-        mythis.timeModified();
+        this.timeModified();
       }
     });
 
@@ -446,7 +444,7 @@ export class TimeRangeChooser extends HTMLElement {
     const durationLabel = wrapper.appendChild(document.createElement('label'));
     durationLabel.textContent = this.durationLabel;
     const durationInput = wrapper.appendChild(document.createElement('input'));
-    durationInput.value = `${this.duration}`;
+    durationInput.value = `${this.duration.toISO()}`;
     durationInput.setAttribute("class", "duration");
 
     const endLabel = wrapper.appendChild(document.createElement('label'));

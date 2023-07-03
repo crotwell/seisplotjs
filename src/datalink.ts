@@ -54,7 +54,7 @@ export const MSEED3_TYPE = "/MSEED3";
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
 const defaultHandleResponse = function (dlResponse: DataLinkResponse) {
-  util.log(`Unhandled datalink response: ${dlResponse}`);
+  util.log(`Unhandled datalink response: ${dlResponse.toString()}`);
 };
 
 /**
@@ -134,41 +134,40 @@ export class DataLinkConnection {
       this.webSocket.close();
       this.webSocket = null;
     }
-    const that = this;
-    return new Promise(function (resolve, reject) {
-      if (that.webSocket) {that.webSocket.close();}
-      const webSocket = new WebSocket(that.url, DATALINK_PROTOCOL);
-      that.webSocket = webSocket;
+    return new Promise( (resolve, reject) => {
+      if (this.webSocket) {this.webSocket.close();}
+      const webSocket = new WebSocket(this.url, DATALINK_PROTOCOL);
+      this.webSocket = webSocket;
       webSocket.binaryType = "arraybuffer";
 
-      webSocket.onmessage = function (event) {
-        that.handle(event);
+      webSocket.onmessage = (event) => {
+        this.handle(event);
       };
 
-      webSocket.onerror = function (event) {
-        that.handleError(new Error("" + stringify(event)));
+      webSocket.onerror = (event) => {
+        this.handleError(new Error("" + stringify(event)));
         reject(event);
       };
 
-      webSocket.onclose = function (closeEvent) {
-        that.webSocket = null; // clean up
+      webSocket.onclose = (closeEvent) => {
+        this.webSocket = null; // clean up
 
-        that._mode = MODE.Query;
+        this._mode = MODE.Query;
 
-        if (that.closeHandler) {
-          that.closeHandler(closeEvent);
+        if (this.closeHandler) {
+          this.closeHandler(closeEvent);
         }
       };
 
-      webSocket.onopen = function () {
-        resolve(that);
+      webSocket.onopen =  () => {
+        resolve(this);
       };
     })
       .then((datalink: unknown) => {
         return (datalink as DataLinkConnection).sendId();
       })
       .then((idmsg: string) => {
-        that.serverId = idmsg;
+        this.serverId = idmsg;
         return idmsg;
       });
   }
@@ -237,7 +236,6 @@ export class DataLinkConnection {
    * @returns a Promise that resolves to the response from the ringserver.
    */
   sendId(): Promise<string> {
-    const that = this;
     return this.id(
       this.programname,
       this.username,
@@ -247,8 +245,8 @@ export class DataLinkConnection {
       .then(dlResponse => DataLinkConnection.ensureDataLinkResponse(dlResponse))
       .then(dlResponse => {
         if (dlResponse.type === "ID") {
-          that.serverId = "" + dlResponse.message;
-          return that.serverId;
+          this.serverId = "" + dlResponse.message;
+          return this.serverId;
         } else {
           throw new Error("not ID response: " + stringify(dlResponse.type));
         }
@@ -350,20 +348,19 @@ export class DataLinkConnection {
     header: string,
     data?: Uint8Array,
   ): Promise<DataLinkResponse| DataLinkPacket> {
-    const that = this;
-    const promise = new Promise(function (resolve: (a: DataLinkResponse|DataLinkPacket) => void, reject) {
-      that._responseResolve = resolve;
-      that._responseReject = reject;
-      that.sendDLBinary(header, data);
+    const promise = new Promise( (resolve: (a: DataLinkResponse|DataLinkPacket) => void, reject) => {
+      this._responseResolve = resolve;
+      this._responseReject = reject;
+      this.sendDLBinary(header, data);
     })
       .then(response => {
-        that._responseResolve = null;
-        that._responseReject = null;
+        this._responseResolve = null;
+        this._responseReject = null;
         return response;
       })
       .catch(error => {
-        that._responseResolve = null;
-        that._responseReject = null;
+        this._responseResolve = null;
+        this._responseReject = null;
         throw error;
       });
     return promise;
@@ -1082,8 +1079,8 @@ export class StatusResponse {
   }
   toString(): string {
     return `
-${this.idStats}
-${this.datalinkStats}
+${this.idStats.toString()}
+${this.datalinkStats.toString()}
 ${this.threadStats.join("\n")}`;
   }
 
@@ -1215,7 +1212,7 @@ Capabilities="DLPROTO:1.0 PACKETSIZE:512 WRITE">
     return streamResp;
   }
   toString(): string {
-    return `${this.datalinkStats}
+    return `${this.datalinkStats.toString()}
     ${this.streams.map(s=> s.toString()).join("\n")}
     `;
   }
@@ -1241,10 +1238,10 @@ export class ConnectionsResponse {
     }
   }
   static fromXML(daliXML: Element): ConnectionsResponse {
-    return new ConnectionsResponse(`${daliXML}`);
+    return new ConnectionsResponse(`${daliXML.toString()}`);
   }
   toString(): string {
-    return `${this.daliXML}`;
+    return `${this.daliXML.toString()}`;
   }
 }
 
