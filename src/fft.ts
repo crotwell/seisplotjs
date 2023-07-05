@@ -230,7 +230,7 @@ export class FFTResult {
       );
     }
 
-    const modComplex = new Array(amp.length);
+    const modComplex = new Array<InstanceType<typeof Complex>>(amp.length);
     for (let i = 0; i < amp.length; i++) {
       modComplex[i] = complexFromPolar(amp[i],phase[i]);
     }

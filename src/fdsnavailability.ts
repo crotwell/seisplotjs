@@ -477,7 +477,7 @@ export class AvailabilityQuery extends FDSNCommon {
           response.status === 204 ||
           (isDef(this._nodata) && response.status === this._nodata)
         ) {
-          return Promise.resolve(EMPTY_JSON);
+          return EMPTY_JSON;
         }
 
         const contentType = response.headers.get("content-type");
@@ -490,8 +490,12 @@ export class AvailabilityQuery extends FDSNCommon {
         }
 
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
-      },
-    );
+      }).then(jsonValue => {
+        if (isValidRootType(jsonValue)) {
+          return jsonValue;
+        }
+        throw new TypeError(`Oops, we did not get valid root type json`);
+      });
   }
 
   /**
@@ -536,8 +540,12 @@ export class AvailabilityQuery extends FDSNCommon {
         }
 
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
-      },
-    );
+      }).then(jsonValue => {
+        if (isValidRootType(jsonValue)) {
+          return jsonValue;
+        }
+        throw new TypeError(`Oops, we did not get valid root type json`);
+      });
   }
 
   /**
@@ -598,6 +606,11 @@ export class AvailabilityQuery extends FDSNCommon {
       }
 
       throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
+    }).then(jsonValue => {
+      if (isValidRootType(jsonValue)) {
+        return jsonValue;
+      }
+      throw new TypeError(`Oops, we did not get valid root type json`);
     });
   }
 
@@ -628,52 +641,60 @@ export class AvailabilityQuery extends FDSNCommon {
 
   extractFromJson(jsonChanTimes: RootType): Array<SeismogramDisplayData> {
     const out = [];
-    const knownNets = new Map();
+    const knownNets = new Map<string, Network>();
 
     if (isDef(jsonChanTimes.datasources)) {
       for (const ds of jsonChanTimes.datasources) {
-        let n = knownNets.get(ds.network);
+        if (isValidDatasource(ds)) {
+          let n = knownNets.get(ds.network);
 
-        if (!n) {
-          n = new Network(ds.network);
-          knownNets.set(ds.network, n);
-        }
-
-        let s = null;
-
-        for (const ss of n.stations) {
-          if (ss.stationCode === ds.station) {
-            s = ss;
+          if (!n) {
+            n = new Network(ds.network);
+            knownNets.set(ds.network, n);
           }
-        }
 
-        if (!s) {
-          s = new Station(n, ds.station);
-          n.stations.push(s);
-        }
+          let s = null;
 
-        const c = new Channel(s, ds.channel, ds.locationCode);
+          for (const ss of n.stations) {
+            if (ss.stationCode === ds.station) {
+              s = ss;
+            }
+          }
 
-        if (
-          isNonEmptyStringArg(ds.earliest) &&
-          isNonEmptyStringArg(ds.latest)
-        ) {
-          out.push(
-            SeismogramDisplayData.fromChannelAndTimes(
-              c,
-              isoToDateTime(ds.earliest),
-              isoToDateTime(ds.latest),
-            ),
-          );
-        } else if (ds.timespans) {
-          for (const ts of ds.timespans) {
+          if (!s) {
+            s = new Station(n, ds.station);
+            n.stations.push(s);
+          }
+
+          const c = new Channel(s, ds.channel, ds.location);
+
+          if (
+            isNonEmptyStringArg(ds.earliest) &&
+            isNonEmptyStringArg(ds.latest)
+          ) {
             out.push(
               SeismogramDisplayData.fromChannelAndTimes(
                 c,
-                isoToDateTime(ts[0]),
-                isoToDateTime(ts[1]),
+                isoToDateTime(ds.earliest),
+                isoToDateTime(ds.latest),
               ),
             );
+          } else if (ds.timespans) {
+            for (const ts of ds.timespans) {
+              if (Array.isArray(ts) && ts.length > 2 &&
+                  typeof ts[0] === 'string' &&
+                  typeof ts[1] === 'string') {
+                out.push(
+                  SeismogramDisplayData.fromChannelAndTimes(
+                    c,
+                    isoToDateTime(ts[0]),
+                    isoToDateTime(ts[1]),
+                  ),
+                );
+              } else {
+                throw new TypeError("invalid timespans: "+stringify(ts));
+              }
+            }
           }
         }
       }
@@ -757,7 +778,7 @@ export class AvailabilityQuery extends FDSNCommon {
       colon +
       "//" +
       this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
+      (this._port === 80 ? "" : ":" + stringify(this._port)) +
       "/fdsnws/availability/" +
       this._specVersion
     );
@@ -874,9 +895,9 @@ export class AvailabilityQuery extends FDSNCommon {
  */
 export type RootType = {
   created?: FdsnDateTime;
-  version: Record<string, any>;
+  version: Record<string, unknown>;
   datasources: Array<Datasource>;
-} & Record<string, any>;
+} & Record<string, unknown>;
 export type FdsnDateTime = string;
 export type Datasource = ({
   network: string;
@@ -891,13 +912,41 @@ export type Datasource = ({
   updated?: FdsnDateTime;
   timespanCount?: number;
   restriction?: string;
-} & Record<string, any>) &
+} & Record<string, unknown>) &
   (
     | ({
-        timespans: any;
-      } & Record<string, any>)
+        timespans: unknown;
+      } & Record<string, unknown>)
     | ({
-        earliest: any;
-        latest: any;
-      } & Record<string, any>)
+        earliest: FdsnDateTime;
+        latest: FdsnDateTime;
+      } & Record<string, unknown>)
   );
+
+export function isValidRootType(jsonValue: unknown): jsonValue is RootType {
+  if (! jsonValue || typeof jsonValue !== 'object') {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+  if (Array.isArray(jsonObj.datasources) &&
+      jsonObj.datasources.every(isValidDatasource) &&
+      typeof jsonObj.version === 'object') {
+        return true;
+  } else {
+    throw new TypeError("json is not valid for FDSN Availability");
+  }
+}
+export function isValidDatasource(jsonValue: unknown): jsonValue is Datasource {
+  if (! jsonValue || typeof jsonValue !== 'object') {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+  if (typeof jsonObj.network === 'string' &&
+      typeof jsonObj.station === 'string' &&
+      typeof jsonObj.location === 'string' &&
+      typeof jsonObj.channel === 'string') {
+    return true;
+  } else {
+    throw new TypeError("json is not valid for FDSN Availability");
+  }
+}

@@ -19,6 +19,7 @@ import {
   isDef,
   isStringArg,
   toIsoWoZ,
+  isoToDateTime,
   isNonEmptyStringArg,
   TEXT_MIME,
   makeParam,
@@ -579,7 +580,7 @@ export class DataSelectQuery extends FDSNCommon {
       colon +
       "//" +
       this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
+      (this._port === 80 ? "" : ":" + String(this._port)) +
       "/fdsnws/dataselect/" +
       this._specVersion
     );
@@ -671,7 +672,7 @@ export class DataSelectQuery extends FDSNCommon {
   }
 }
 export function createDataSelectQuery(
-  params: Record<string, any>,
+  params: Record<string, string>,
 ): DataSelectQuery {
   if (!params || typeof params !== "object") {
     throw new Error("params null or not an object");
@@ -727,20 +728,14 @@ export function createDataSelectQuery(
     out.channelCode(params.channelCode);
   }
 
-  if (params.start) {
-    out.startTime(params.start);
+  if (params.start || params.starttime) {
+    const s = params.start ? params.start : params.starttime;
+    out.startTime(isoToDateTime(s));
   }
 
-  if (params.starttime) {
-    out.startTime(params.starttime);
-  }
-
-  if (params.end) {
-    out.endTime(params.end);
-  }
-
-  if (params.endtime) {
-    out.endTime(params.endtime);
+  if (params.end || params.endtime) {
+    const e = params.end ? params.end : params.endtime;
+    out.endTime(isoToDateTime(e));
   }
 
   if (params.quality) {
@@ -748,7 +743,7 @@ export function createDataSelectQuery(
   }
 
   if (params.minimumlength) {
-    out.minimumLength(params.minimumlength);
+    out.minimumLength(parseInt(params.minimumlength));
   }
 
   if (params.repository) {
@@ -756,7 +751,7 @@ export function createDataSelectQuery(
   }
 
   if (params.longestonly) {
-    out.longestOnly(params.longestonly);
+    out.longestOnly(params.longestonly.toLowerCase() === 'true');
   }
 
   if (params.format) {
@@ -764,7 +759,7 @@ export function createDataSelectQuery(
   }
 
   if (params.nodata) {
-    out.nodata(params.nodata);
+    out.nodata(parseInt(params.nodata));
   }
 
   if (params.host) {
@@ -772,7 +767,7 @@ export function createDataSelectQuery(
   }
 
   if (params.port) {
-    out.port(params.port);
+    out.port(parseInt(params.port));
   }
 
   if (params.specVersion) {

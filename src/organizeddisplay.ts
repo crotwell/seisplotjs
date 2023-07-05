@@ -27,7 +27,7 @@ export const QUAKE_TABLE = "quake_table";
 export const STATION_TABLE = "station_table";
 
 export class OrganizedDisplayItem extends SeisPlotElement {
-  extras: Map<string, any>;
+  extras: Map<string, unknown>;
 
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
@@ -66,10 +66,10 @@ export class OrganizedDisplayItem extends SeisPlotElement {
   }
 
   static get observedAttributes() { return [PLOT_TYPE]; }
-  attributeChangedCallback(name: string, oldValue: any, newValue: any) {
+  attributeChangedCallback(name: string, oldValue: unknown, newValue: unknown) {
     this.draw();
   }
-  setExtra(key: string, value: any) {
+  setExtra(key: string, value: unknown) {
     this.extras.set(key, value);
   }
 
@@ -77,7 +77,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     return this.extras.has(key);
   }
 
-  getExtra(key: string): any {
+  getExtra(key: string): unknown {
     if (this.extras.has(key)) {
       return this.extras.get(key);
     }
@@ -101,14 +101,13 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       wrapper.removeChild(wrapper.lastChild);
     }
     const qIndex = this.plottype.indexOf("?");
-    let queryParams: object;
+    let queryParams: Record<string, unknown>;
 
     if (qIndex !== -1) {
-      queryParams = querystringify.parse(this.plottype.substring(qIndex));
+      queryParams = querystringify.parse(this.plottype.substring(qIndex)) as Record<string, unknown>;
     } else {
       queryParams = {};
     }
-    const mythis = this;
 
     if (this.plottype.startsWith(SEISMOGRAPH)) {
       const seismograph = new Seismograph(this.seisData, this._seismographConfig);
@@ -117,13 +116,13 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
         // bubble the event, not sure why this is needed???
         const event = new CustomEvent("seismousemove", { detail: seisDetail});
-        mythis.dispatchEvent(event);
+        this.dispatchEvent(event);
       });
       seismograph.addEventListener("seisclick", sEvt => {
         const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
         // bubble the event, not sure why this is needed???
         const event = new CustomEvent("seisclick", { detail: seisDetail});
-        mythis.dispatchEvent(event);
+        this.dispatchEvent(event);
       });
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
@@ -620,13 +619,14 @@ export class OrganizedDisplay extends SeisPlotElement {
 customElements.define(ORG_DISPLAY, OrganizedDisplay);
 
 export function getFromQueryParams(
-  qParams: any,
+  qParams: Record<string, unknown>,
   name: string,
   defaultValue = "",
 ): string {
   if (name in qParams) {
-    if (isStringArg(qParams[name])) {
-      return qParams[name];
+    const v = qParams[name];
+    if (isStringArg(v)) {
+      return v;
     } else {
       throw new Error(`param ${name} exists but is not string: ${stringify(qParams[name])}`);
     }

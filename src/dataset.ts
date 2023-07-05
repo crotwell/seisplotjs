@@ -1,11 +1,13 @@
 
 import {Interval} from "luxon";
-import {downloadBlobAsFile} from "./util";
 import * as mseed3 from "./mseed3";
 import {Quake, parseQuakeML} from "./quakeml";
 import {Network, parseStationXml, allChannels} from "./stationxml";
-import {SeismogramDisplayData} from "./seismogram";
-import {doFetchWithTimeout, defaultFetchInitObj,
+import {SeismogramDisplayData, isValidMarker} from "./seismogram";
+import {isValidTraveltimeArrivalType} from './traveltime';
+import {
+  downloadBlobAsFile, stringify,
+  doFetchWithTimeout, defaultFetchInitObj,
   isDef, XML_MIME, BINARY_MIME, isoToDateTime} from "./util";
 import JSZip from "jszip";
 
@@ -22,7 +24,7 @@ export class Dataset {
   inventory: Array<Network>;
   waveforms: Array<SeismogramDisplayData>;
   processedWaveforms: Array<SeismogramDisplayData>;
-  extra: Map<string, any>;
+  extra: Map<string, unknown>;
   constructor() {
     this.catalog = new Array<Quake>(0);
     this.inventory = new Array<Network>(0);
@@ -226,41 +228,53 @@ export function sddFromMSeed3(ms3records: Array<mseed3.MSeed3Record>, ds?: Datas
   return out;
 }
 
-export function insertExtraHeaders(eh: Record<string, any>, sdd: SeismogramDisplayData, key: string, ds?: Dataset) {
+export function insertExtraHeaders(eh: Record<string, unknown>, sdd: SeismogramDisplayData, key: string, ds?: Dataset) {
   const myEH = eh[key];
   if (! myEH) {
     // key not in extra headers
     return;
   }
-  if ("quake" in myEH) {
-    for(const pid of myEH["quake"]) {
-      if (ds) {
-        for(const q of ds.catalog) {
-          if (q.publicId === pid) {
-            sdd.addQuake(q);
+  if (typeof myEH === 'object') {
+    if ("quake" in myEH && Array.isArray(myEH["quake"])) {
+      for(const pid of myEH["quake"]) {
+        if (ds) {
+          for(const q of ds.catalog) {
+            if (q.publicId === pid) {
+              sdd.addQuake(q);
+            }
           }
+        } else {
+          // no dataset, how to find Quake from publicId?
+          throw new Error(`no dataset, can't find Quake from publicId?: ${stringify(myEH["quake"])}`);
         }
-      } else {
-        // no dataset, how to find Quake from publicId?
       }
     }
-  }
-  if ("traveltimes" in myEH) {
-    sdd.traveltimeList = myEH["traveltimes"];
-  }
-  if ("markers" in myEH) {
-    myEH["markers"].forEach((m: any) => {
-      if (typeof m === 'object' && 'time' in m) {
-        m.time = isoToDateTime(m.time);
-        sdd.markerList.push(m);
+    if ("traveltimes" in myEH && Array.isArray(myEH["traveltimes"])) {
+      for (const tt of myEH["traveltimes"]) {
+        if (isValidTraveltimeArrivalType(tt)) {
+          sdd.traveltimeList.push(tt);
+        }
       }
-    });
+    }
+    if ("markers" in myEH && Array.isArray(myEH["markers"])) {
+      const markers = myEH["markers"];
+      markers.forEach((m: unknown) => {
+        if (m && typeof m === 'object') {
+          if ('time' in m && typeof m.time === 'string' ){
+            m.time = isoToDateTime(m.time);
+          }
+          if (isValidMarker(m)) {
+            sdd.markerList.push(m);
+          }
+        }
+      });
+    }
   }
 }
 
-export function createExtraHeaders(key: string, sdd: SeismogramDisplayData): Record<string, any> {
-  const h: Record<string, any> = {};
-  const out: Record<string, any> = {};
+export function createExtraHeaders(key: string, sdd: SeismogramDisplayData): Record<string, unknown> {
+  const h: Record<string, unknown> = {};
+  const out: Record<string, unknown> = {};
   out[key] = h;
   if (sdd.quakeList && sdd.quakeList.length > 0) {
     h["quake"] = sdd.quakeList.map(q => q.publicId);

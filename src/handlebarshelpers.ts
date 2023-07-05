@@ -16,6 +16,7 @@ import {SeismogramDisplayData} from './seismogram';
 import {DateTime, Duration, Interval} from "luxon";
 import {checkStringOrDate} from './util';
 
+
 export function registerHelpers() {
   Handlebars.registerHelper(
     "onlyChangesChannel",
@@ -70,25 +71,26 @@ export function registerHelpers() {
       if (typeof val === "undefined" || val === null) {
         return "";
       }
+      if (typeof digits === 'string') {
+        digits = parseInt(digits);
+      }
 
-      const decimalDigits = digits === undefined ? 2 : digits;
-
-      if (typeof val === "number") {
-        return val.toFixed(decimalDigits);
+      if (typeof val === "number" && typeof digits === "number") {
+        return val.toFixed(digits);
       }
 
       // not number, so just return unmodified
       return val;
     },
   );
-  Handlebars.registerHelper("formatIsoDate", function (param: DateTime, hash: Record<string, any>) {
+  Handlebars.registerHelper("formatIsoDate", function (param: DateTime, hash: Record<string, unknown>) {
     if (typeof param === "undefined" || param === null) return "no time";
     let m = param;
 
     if (!DateTime.isDateTime(param)) {
       m = checkStringOrDate(param);
     }
-    if (hash.format) {
+    if ("format" in hash && typeof hash.format === 'string') {
       return m.toFormat(hash.format);
     } else {
       return m.toISO();
@@ -100,7 +102,7 @@ export function registerHelpers() {
       param = param.toDuration();
     }
     if (!Duration.isDuration(param)) {
-      return `${param}`;
+      return `${String(param)}`;
     }
     return `${param.toMillis()/1000} sec`;
   });

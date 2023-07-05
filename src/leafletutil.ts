@@ -434,7 +434,7 @@ export class QuakeStationMap extends SeisPlotElement {
         // null means whole world
       } else {
         // unknown region type?
-        throw new Error(`unknown region type: ${gr}`);
+        throw new Error(`unknown region type: ${String(gr)}`);
       }
     });
     return outLatLon;

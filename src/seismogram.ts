@@ -33,6 +33,19 @@ export type MarkerType = {
   link?: string;
 };
 
+export function isValidMarker(v: unknown): v is MarkerType {
+  if (!v || typeof v !== 'object') {
+    return false
+  }
+  const m = v as Record<string, unknown>
+
+  return typeof m.time === 'string' &&
+    typeof m.name === 'string' &&
+    typeof m.markertype === 'string' &&
+    typeof m.description === 'string' &&
+    ( ! ("link" in m) || typeof m.link === 'string');
+}
+
 /**
  * Represents time window for a single channel that may
  * contain gaps or overlaps, but is otherwise more or less

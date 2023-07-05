@@ -192,16 +192,19 @@ export class DataCentersQuery extends FDSNCommon {
       (response) => {
         const contentType = response.headers.get("content-type");
 
-        if (
-          isNonEmptyStringArg(contentType) &&
-          contentType.includes(JSON_MIME)
-        ) {
+        if (isNonEmptyStringArg(contentType) &&
+            contentType.includes(JSON_MIME)) {
           return response.json();
         }
 
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
-      },
-    );
+      }).then(jsonValue => {
+        if (isValidRootType(jsonValue)) {
+          return jsonValue;
+        } else {
+          throw new TypeError(`Oops, we did not get roottype JSON!`);
+        }
+      });
   }
 
   /**
@@ -228,8 +231,8 @@ export class DataCentersQuery extends FDSNCommon {
         fdsnavailability.SERVICE_NAME,
         repoName,
       );
-      const aqList = out.map(service => {
-        if (service.url) {
+      const sList = out.map(service => {
+        if ("url" in service && typeof service.url === 'string') {
           const url = new URL(service.url);
           const q = new fdsnavailability.AvailabilityQuery(url.hostname);
 
@@ -242,7 +245,7 @@ export class DataCentersQuery extends FDSNCommon {
         }
       });
       // remove nulls
-      return aqList.flatMap(f => f ? [f] : []);
+      return sList.flatMap(f => f ? [f] : []);
     });
   }
 
@@ -270,16 +273,22 @@ export class DataCentersQuery extends FDSNCommon {
         fdsndataselect.SERVICE_NAME,
         repoName,
       );
-      return out.map(service => {
-        const url = new URL(service.url);
-        const q = new fdsndataselect.DataSelectQuery(url.hostname);
+      const sList = out.map(service => {
+        if ("url" in service && typeof service.url === 'string') {
+          const url = new URL(service.url);
+          const q = new fdsndataselect.DataSelectQuery(url.hostname);
 
-        if (url.port && url.port.length > 0) {
-          q.port(Number.parseInt(url.port));
+          if (url.port && url.port.length > 0) {
+            q.port(Number.parseInt(url.port));
+          }
+
+          return q;
+        } else {
+          return null;
         }
-
-        return q;
       });
+      // remove nulls
+      return sList.flatMap(f => f ? [f] : []);
     });
   }
 
@@ -307,16 +316,22 @@ export class DataCentersQuery extends FDSNCommon {
         fdsnevent.SERVICE_NAME,
         repoName,
       );
-      return out.map(service => {
-        const url = new URL(service.url);
-        const q = new fdsnevent.EventQuery(url.hostname);
+      const sList = out.map(service => {
+        if ("url" in service && typeof service.url === 'string') {
+          const url = new URL(service.url);
+          const q = new fdsnevent.EventQuery(url.hostname);
 
-        if (url.port && url.port.length > 0) {
-          q.port(Number.parseInt(url.port));
+          if (url.port && url.port.length > 0) {
+            q.port(Number.parseInt(url.port));
+          }
+
+          return q;
+        } else {
+          return null;
         }
-
-        return q;
       });
+      // remove nulls
+      return sList.flatMap(f => f ? [f] : []);
     });
   }
 
@@ -344,16 +359,22 @@ export class DataCentersQuery extends FDSNCommon {
         fdsnstation.SERVICE_NAME,
         repoName,
       );
-      return out.map(service => {
-        const url = new URL(service.url);
-        const q = new fdsnstation.StationQuery(url.hostname);
+      const sList = out.map(service => {
+        if ("url" in service && typeof service.url === 'string') {
+          const url = new URL(service.url);
+          const q = new fdsnstation.StationQuery(url.hostname);
 
-        if (url.port && url.port.length > 0) {
-          q.port(Number.parseInt(url.port));
+          if (url.port && url.port.length > 0) {
+            q.port(Number.parseInt(url.port));
+          }
+
+          return q;
+        } else {
+          return null;
         }
-
-        return q;
       });
+      // remove nulls
+      return sList.flatMap(f => f ? [f] : []);
     });
   }
 
@@ -370,8 +391,8 @@ export class DataCentersQuery extends FDSNCommon {
     json: RootType,
     compatibleName: string,
     repoName?: string,
-  ): Array<any> {
-    const out: Array<any> = [];
+  ): Array<Service> {
+    const out: Array<Service> = [];
     json.datacenters.forEach(dc => {
       dc.repositories.forEach(repo => {
         if (!isDef(repoName) || repoName === repo.name) {
@@ -623,7 +644,7 @@ https://github.com/FDSN/datacenter-registry
  * Root type of fdsn datacenters json query.
  */
 export type RootType = {
-  version: Record<string, any>;
+  version: Record<string, unknown>;
   datacenters: Array<{
     name: string;
     website: string;
@@ -631,7 +652,7 @@ export type RootType = {
     summary?: string;
     repositories: Array<Repository>;
   }>;
-} & Record<string, any>;
+} & Record<string, unknown>;
 export type Repository = {
   name: string;
   description?: string;
@@ -657,3 +678,16 @@ export type Service = {
   url?: string;
   compatibleWith?: string;
 };
+
+export function isValidRootType(jsonValue: unknown): jsonValue is RootType {
+  if (! jsonValue || typeof jsonValue !== 'object') {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+  if (Array.isArray(jsonObj.datacenters) &&
+      typeof jsonObj.version === 'object') {
+        return true;
+  } else {
+    throw new TypeError("json is not valid for FDSN Availability");
+  }
+}

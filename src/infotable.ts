@@ -204,8 +204,10 @@ export class QuakeStationTable extends SeisPlotElement {
     if ( ! this.isConnected) { return; }
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     while (wrapper.firstChild) {
-      // @ts-ignore
-      wrapper.removeChild(wrapper.lastChild);
+      // typescript
+      if (wrapper.lastChild) {
+        wrapper.removeChild(wrapper.lastChild);
+      }
     }
     const handlebarsCompiled = Handlebars.compile(this.template);
     wrapper.innerHTML = handlebarsCompiled(
@@ -333,7 +335,7 @@ export class QuakeTable extends HTMLElement {
     } else if (h === QUAKE_COLUMN.EVENTID) {
       return `${q.eventId}`;
     } else {
-      return `unknown: ${h}`;
+      return `unknown: ${String(h)}`;
     }
   }
   sort(h: QUAKE_COLUMN, headerCell: HTMLTableCellElement) {
@@ -510,7 +512,7 @@ export class ChannelTable extends HTMLElement {
     } else if (h === CHANNEL_COLUMN.CHANNEL_CODE) {
       return `${q.channelCode}`;
     } else {
-      return `unknown: ${h}`;
+      return `unknown: ${String(h)}`;
     }
   }
   sort(h: CHANNEL_COLUMN, headerCell: HTMLTableCellElement) {
@@ -687,7 +689,7 @@ export class StationTable extends HTMLElement {
     } else if (h === STATION_COLUMN.STATION_CODE) {
       return `${q.stationCode}`;
     } else {
-      return `unknown: ${h}`;
+      return `unknown: ${String(h)}`;
     }
   }
   sort(h: STATION_COLUMN, headerCell: HTMLTableCellElement) {
@@ -864,7 +866,7 @@ export class SeismogramTable extends HTMLElement {
     } else if (h === SEISMOGRAM_COLUMN.STATION_CODE) {
       return `${q.stationCode}`;
     } else {
-      return `unknown: ${h}`;
+      return `unknown: ${String(h)}`;
     }
   }
   sort(h: SEISMOGRAM_COLUMN, headerCell: HTMLTableCellElement) {

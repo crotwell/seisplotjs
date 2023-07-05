@@ -627,7 +627,7 @@ export class StationQuery extends FDSNCommon {
       this._maxLon = undefined;
     } else {
       throw new Error(
-        `value argument is optional or LatLonRegion, but was type ${typeof value}, '${value}' `,
+        `value argument is optional or LatLonRegion, but was type ${typeof value}, '${value.toString()}' `,
       );
     }
     return this;
@@ -1083,7 +1083,7 @@ export class StationQuery extends FDSNCommon {
       colon +
       "//" +
       this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
+      (this._port === 80 ? "" : ":" + String(this._port)) +
       "/fdsnws/station/" +
       this._specVersion
     );
@@ -1255,16 +1255,20 @@ export class ChannelSearch extends HTMLElement {
     const chanCodeEl = shadow.querySelector('sp-channel-code-input') as ChannelCodeInput;
     if (chanCodeEl) { //typescript
       if (this.hasAttribute("network")) {
-        chanCodeEl.network = ""+this.getAttribute("network");
+        const v = this.getAttribute("network");
+        if (v) {chanCodeEl.network = v;}
       }
       if (this.hasAttribute("station")) {
-        chanCodeEl.station = ""+this.getAttribute("station");
+        const v = this.getAttribute("station");
+        if (v) {chanCodeEl.station = v;}
       }
       if (this.hasAttribute("location")) {
-        chanCodeEl.location = ""+this.getAttribute("location");
+        const v = this.getAttribute("location");
+        if (v) {chanCodeEl.location = v;}
       }
       if (this.hasAttribute("channel")) {
-        chanCodeEl.channel = ""+this.getAttribute("channel");
+        const v = this.getAttribute("channel");
+        if (v) {chanCodeEl.channel = v;}
       }
     }
     const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;

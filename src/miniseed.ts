@@ -299,19 +299,7 @@ export class DataHeader {
   }
 
   toString(): string {
-    return (
-      this.netCode +
-      "." +
-      this.staCode +
-      "." +
-      this.locCode +
-      "." +
-      this.chanCode +
-      " " +
-      this.startTime.toISO() +
-      " " +
-      this.encoding
-    );
+    return `${this.netCode}.${this.staCode}.${this.locCode}.${this.chanCode} ${this.startTime.toISO()} ${String(this.encoding)}`;
   }
 
   /**

@@ -271,7 +271,7 @@ export class MSeedArchive {
 }
 export function loadDataRecords(
   urlList: Array<string>,
-  fetchInit?: Record<string, any>,
+  fetchInit?: Record<string, unknown>,
   timeoutSec?: number,
 ): Promise<Array<miniseed.DataRecord>> {
   const promiseArray = urlList.map(url => {
@@ -314,7 +314,7 @@ export function loadDataRecords(
         }
       })
       .catch(err => {
-        util.log("caught fetch err, continuing with empty: " + err);
+        util.log("caught fetch err, continuing with empty: " + String(err));
         return [];
       });
   });

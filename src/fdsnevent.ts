@@ -666,7 +666,7 @@ export class EventQuery extends FDSNCommon {
       this._maxLon = undefined;
     } else {
       throw new Error(
-        `value argument is optional or LatLonRegion, but was type ${typeof value}, '${value}' `,
+        `value argument is optional or LatLonRegion, but was type ${typeof value}, '${value.toString()}' `,
       );
     }
     return this;
@@ -1061,7 +1061,7 @@ export class EventQuery extends FDSNCommon {
   }
 }
 
-//@ts-ignore
+
 import {LatLonChoice,
   LatLonBoxEl,
   LatLonRadiusEl,

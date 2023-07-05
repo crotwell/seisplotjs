@@ -16,7 +16,7 @@ import {
   M_TYPECODE,
 } from "./miniseed";
 import {DateTime, Duration} from "luxon";
-export type json_object = Record<string, any>;
+export type json_object = Record<string, unknown>;
 export const MINISEED_THREE_MIME = "application/vnd.fdsn.mseed3";
 
 /** const for unknown data version, 0 */
@@ -37,7 +37,7 @@ export const LITTLE_ENDIAN = true;
 /** const for big endian, false */
 export const BIG_ENDIAN = false;
 
-export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, any>): Array<MSeed3Record> {
+export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, unknown>): Array<MSeed3Record> {
   const out = new Array<MSeed3Record>(0);
   if (!isDef(extraHeaders)) {
     extraHeaders = {};
@@ -158,10 +158,10 @@ export function parseMSeed3Records(
  */
 export class MSeed3Record {
   header: MSeed3Header;
-  extraHeaders: Record<string, any>;
+  extraHeaders: Record<string, unknown>;
   rawData: DataView;
 
-  constructor(header: MSeed3Header, extraHeaders: Record<string, any>, rawData: DataView) {
+  constructor(header: MSeed3Header, extraHeaders: Record<string, unknown>, rawData: DataView) {
     this.header = header;
     this.rawData = rawData;
     this.extraHeaders = extraHeaders;
@@ -695,7 +695,7 @@ export class MSeed3Header {
  * @param   dataView json bytes as DataView
  * @returns           json object
  */
-export function parseExtraHeaders(dataView: DataView): Record<string, any> {
+export function parseExtraHeaders(dataView: DataView): Record<string, unknown> {
   if (dataView.byteLength === 0) {
     return {};
   }
@@ -704,7 +704,13 @@ export function parseExtraHeaders(dataView: DataView): Record<string, any> {
 
   if (firstChar === 123) {
     // looks like json, '{' is ascii 123
-    return JSON.parse(makeString(dataView, 0, dataView.byteLength));
+    const jsonStr = makeString(dataView, 0, dataView.byteLength);
+    const v: unknown = JSON.parse(jsonStr);
+    if (typeof v === 'object') {
+      return v as Record<string, unknown>;
+    } else {
+      throw new Error(`extra headers does not look like JSON object: ${jsonStr}"`);
+    }
   } else {
     throw new Error(
       "do not understand extras with first char val: " +
@@ -948,7 +954,7 @@ export function convertMS2toMSeed3(
  */
 export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   const xHeader = new MSeed3Header();
-  const xExtras: Record<string,any> = {};
+  const xExtras: Record<string,unknown> = {};
   const ms2H = ms2record.header;
   xHeader.flags =
     (ms2H.activityFlags & 1) * 2 +

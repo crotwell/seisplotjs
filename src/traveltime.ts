@@ -47,6 +47,21 @@ export type TraveltimeArrivalType = {
   puristdist: number;
   puristname: string;
 };
+export function isValidTraveltimeArrivalType(v: unknown): v is TraveltimeArrivalType {
+  if (!v || typeof v !== 'object') {
+    return false
+  }
+  const object = v as Record<string, unknown>
+
+  return typeof object.distdeg === 'number' &&
+    typeof object.name === 'string' &&
+    typeof object.time === 'number' &&
+    typeof object.rayparam === 'number' &&
+    typeof object.takeoff === 'number' &&
+    typeof object.incident === 'number' &&
+    typeof object.puristdist === 'number' &&
+    typeof object.puristname === 'string';
+}
 
 /**
  * converts a text line from the text format into an

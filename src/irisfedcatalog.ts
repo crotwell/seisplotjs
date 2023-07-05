@@ -1253,7 +1253,7 @@ export class FedCatalogQuery extends FDSNCommon {
       colon +
       "//" +
       this._host +
-      (this._port === 80 ? "" : ":" + this._port) +
+      (this._port === 80 ? "" : ":" + String(this._port)) +
       "/irisws/fedcatalog/" +
       this._specVersion
     );

@@ -8,6 +8,12 @@ import type {
   ScaleTime} from "d3-scale";
 import {DateTime, Interval} from "luxon";
 
+//import type {HandlebarsInput} from "./handlebarshelpers";
+
+export interface HandlebarsInput {
+  seisConfig?: SeismographConfig,
+}
+
 export class LuxonTimeScale {
   interval: Interval;
   range: [number, number];
@@ -40,7 +46,7 @@ export function drawXLabel(
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
-  handlebarsInput: any = {},
+  handlebarsInput: HandlebarsInput = {},
 ) {
   const svg = d3select(svgEl);
   svg.selectAll("g.xLabel").remove();
@@ -72,7 +78,7 @@ export function drawXSublabel(
   seismographConfig: SeismographConfig,
   height: number,
   width: number, // eslint-disable-next-line no-unused-vars
-  handlebarsInput: any = {},
+  handlebarsInput: HandlebarsInput = {},
 ) {
   const svg = d3select(svgEl);
   svg.selectAll("g.xSublabel").remove();
@@ -98,7 +104,7 @@ export function drawYLabel(
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
-  handlebarsInput: any = {},
+  handlebarsInput: HandlebarsInput = {},
 ) {
   const svg = d3select(svgEl);
   svg.selectAll("g.yLabel").remove();
@@ -157,7 +163,7 @@ export function drawYSublabel(
   seismographConfig: SeismographConfig,
   height: number,
   width: number, // eslint-disable-next-line no-unused-vars
-  handlebarsInput: any = {},
+  handlebarsInput: HandlebarsInput = {},
 ) {
   const svg = d3select(svgEl);
   svg.selectAll("g.ySublabel").remove();
@@ -200,7 +206,7 @@ export function drawTitle(
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
-  handlebarsInput: any = {},
+  handlebarsInput: HandlebarsInput = {},
 ) {
   if (!svgEl) {
     // drawTitle, but no svg element
@@ -247,7 +253,7 @@ export function drawAxisLabels(
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
-  handlebarsInput: any = {},
+  handlebarsInput: HandlebarsInput = {},
 ) {
   if (!svgEl) {
     // axisutil.drawAxisLabels, but no svg element
