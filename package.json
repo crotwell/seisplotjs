@@ -44,7 +44,7 @@
     "esbuild": "cp src/handlebarsimport.esbuild src/handlebarsimport.ts && npx esbuild src/index.ts --bundle --outfile=dist/seisplotjs_${npm_package_version}_standalone.mjs  --target=es2020 --format=esm",
     "esmb": "cp src/handlebarsimport.esbuild src/handlebarsimport.ts && node build.mjs",
     "esm": "npx esbuild src/*.ts --outdir=dist/module  --target=es2020 --format=esm",
-    "srclint": "eslint 'src/*.js' ",
+    "srclint": "eslint 'src' --ext .js,.jsx,.ts,.tsx ",
     "lint": "eslint src test --ext .js,.jsx,.ts,.tsx ",
     "examplelint": "eslint -c .eslintrc.js 'docs/examples/viewobspy/www/[otv]*.js' 'docs/examples/*/[a-r]*.js'  'docs/examples/*/s[t-z]*.js'",
     "test": "jest --config=jest.config.cjs",
