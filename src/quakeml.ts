@@ -973,12 +973,15 @@ export class Magnitude extends BaseElement {
   evaluationMode?: string;
   evaluationStatus?: string;
 
-  constructor(mag: RealQuantity | number) {
+  constructor(mag: RealQuantity | number, type?: string) {
     super();
     if (typeof mag === "number" ) {
       this.magQuantity = new Quantity(mag);
     } else {
       this.magQuantity = mag;
+    }
+    if (type) {
+      this.type = type;
     }
   }
 
