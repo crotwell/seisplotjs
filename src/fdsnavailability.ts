@@ -681,7 +681,7 @@ export class AvailabilityQuery extends FDSNCommon {
             );
           } else if (ds.timespans) {
             for (const ts of ds.timespans) {
-              if (Array.isArray(ts) && ts.length > 2 &&
+              if (Array.isArray(ts) && ts.length === 2 &&
                   typeof ts[0] === 'string' &&
                   typeof ts[1] === 'string') {
                 out.push(
@@ -930,7 +930,7 @@ export function isValidRootType(jsonValue: unknown): jsonValue is RootType {
   const jsonObj = jsonValue as Record<string, unknown>;
   if (Array.isArray(jsonObj.datasources) &&
       jsonObj.datasources.every(isValidDatasource) &&
-      typeof jsonObj.version === 'object') {
+      typeof jsonObj.version === 'number') {
         return true;
   } else {
     throw new TypeError("json is not valid for FDSN Availability");
@@ -947,6 +947,6 @@ export function isValidDatasource(jsonValue: unknown): jsonValue is Datasource {
       typeof jsonObj.channel === 'string') {
     return true;
   } else {
-    throw new TypeError("json is not valid for FDSN Availability");
+    throw new TypeError("json datasource is not valid for FDSN Availability");
   }
 }
