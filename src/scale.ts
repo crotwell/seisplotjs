@@ -250,6 +250,29 @@ export class IndividualAmplitudeScale extends LinkedAmplitudeScale {
   }
 }
 
+
+export class FixedHalfWidthAmplitudeScale extends LinkedAmplitudeScale {
+  constructor( halfWidth: number, graphList?: Array<AmplitudeScalable>) {
+    super(graphList);
+    this.halfWidth = halfWidth;
+  }
+  recalculate(): Array<Promise<AmplitudeScalable>> {
+    // no-op, just notify
+    return this.notifyAll();
+  }
+  notifyAll(): Array<Promise<AmplitudeScalable>> {
+    const hw = this.halfWidth;
+    return this.graphList.map(g => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          g.notifyAmplitudeChange(g.middle, hw);
+          resolve(g);
+        }, 10);
+      });
+    });
+  }
+}
+
 /**
  * Links time scales across multiple seismographs.
  *
