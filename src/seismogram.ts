@@ -288,7 +288,7 @@ export class Seismogram {
    * data segment, this will do nothing.
    *
    * @param timeRange time range to trim to
-   * @returns seismogram if data in the window, null otherwise
+   * @returns new seismogram if data in the window, null otherwise
    * @see cut
    */
   trim(timeRange: Interval): null | Seismogram {
