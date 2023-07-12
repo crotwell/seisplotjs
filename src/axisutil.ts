@@ -40,6 +40,9 @@ export class LuxonTimeScale {
     d3TimeScale.range(this.range);
   return d3TimeScale;
   }
+  millisPerPixel(): number {
+    return this.interval.length('milliseconds')/(this.range[1]-this.range[0]);
+  }
 }
 export function drawXLabel(
   svgEl: SVGElement,
