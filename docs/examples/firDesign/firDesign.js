@@ -1,4 +1,4 @@
-import * as sp from '../../seisplotjs_3.1.0-alpha_standalone.mjs';
+import * as sp from '../../seisplotjs_3.1.0-alpha2_standalone.mjs';
 
 document.querySelector("button#load").addEventListener("click", function(d) { createFIR(); });
 

@@ -35,7 +35,7 @@
         <section class='p2 mb2 clearfix bg-white minishadow'>
           <div class='clearfix'>
 
-            <h3>Seisplotjs <span id="sp_version">3.1.0-alpha</span></h3>
+            <h3>Seisplotjs <span id="sp_version">3.1.0-alpha2</span></h3>
             <p>Seisplotjs is a collection of javascript routines for requesting,
               manipulating and plotting seismic data.
             </p>
@@ -65,7 +65,7 @@
     </div>
 
     <script type="module">
-      import * as sp from './seisplotjs_3.1.0-alpha_standalone.mjs';
+      import * as sp from './seisplotjs_3.1.0-alpha2_standalone.mjs';
       document.querySelector('#sp_version').textContent = sp.version;
       const start = sp.util.isoToDateTime('2019-07-06T03:19:53Z');
       let times = sp.luxon.Interval.after(start, sp.luxon.Duration.fromMillis(1000*1800));
