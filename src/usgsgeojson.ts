@@ -12,10 +12,14 @@ import {
 import { DateTime} from 'luxon';
 
 const timeoutSec = 10;
+export const hourSummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson";
+export const hourSummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
 
-export function loadHourSummary(): Promise<Array<Quake>> {
-  const url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_hour.geojson";
-  return loadUSGSSummary(url);
+export function loadHourSummarySignificant(): Promise<Array<Quake>> {
+  return loadUSGSSummary(hourSummerySignificantUrl);
+}
+export function loadHourSummaryAll(): Promise<Array<Quake>> {
+  return loadUSGSSummary(hourSummeryAllUrl);
 }
 
 export function loadUSGSSummary(url: string): Promise<Array<Quake>> {

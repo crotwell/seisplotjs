@@ -50,6 +50,7 @@ import * as stationxml from "./stationxml";
 import * as taper from "./taper";
 import * as transfer from "./transfer";
 import * as traveltime from "./traveltime";
+import * as usgsgeojson from "./usgsgeojson";
 import * as util from "./util";
 import {version} from "./version";
 import * as vector from "./vector";
@@ -104,6 +105,7 @@ export {
   taper,
   transfer,
   traveltime,
+  usgsgeojson,
   util,
   vector,
   version,
