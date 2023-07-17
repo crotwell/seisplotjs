@@ -68,6 +68,7 @@ export function createStationMarker(
   station: Station,
   classList?: Array<string>,
   isactive = true,
+  centerLon=0,
 ) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(isactive ? StationMarkerClassName : InactiveStationMarkerClassName);
@@ -75,18 +76,19 @@ export function createStationMarker(
   const icon = L.divIcon({
     className: allClassList.join(" "),
   });
-
-  const m = L.marker([station.latitude, station.longitude], {
+  const sLon = station.longitude-centerLon <= 180 ? station.longitude : station.longitude-360;
+  const m = L.marker([station.latitude, sLon], {
     icon: icon,
   });
   m.bindTooltip(station.codes());
   return m;
 }
-export function createQuakeMarker(quake: Quake, magScaleFactor = 5, classList?: Array<string>) {
+export function createQuakeMarker(quake: Quake, magScaleFactor = 5, classList?: Array<string>, centerLon=0) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(QuakeMarkerClassName);
   allClassList.push(cssClassForQuake(quake));
-  const circle = L.circleMarker([quake.latitude, quake.longitude], {
+  const qLon = quake.longitude-centerLon <= 180 ? quake.longitude : quake.longitude-360;
+  const circle = L.circleMarker([quake.latitude, qLon], {
     color: "currentColor",
     radius: quake.magnitude
       ? quake.magnitude.mag * magScaleFactor
@@ -361,7 +363,7 @@ export class QuakeStationMap extends SeisPlotElement {
     const magScale = this.magScale;
     const mapItems: Array<LatLngTuple> = [];
     this.quakeList.concat(uniqueQuakes(this.seisData)).forEach(q => {
-      const circle = createQuakeMarker(q, magScale, this.quakeClassMap.get(cssClassForQuake(q)));
+      const circle = createQuakeMarker(q, magScale, this.quakeClassMap.get(cssClassForQuake(q)), this.centerLon);
       circle.addTo(mymap);
       mapItems.push([q.latitude, q.longitude]);
       circle.addEventListener('click', evt => {
@@ -370,7 +372,7 @@ export class QuakeStationMap extends SeisPlotElement {
       });
     });
     this.stationList.concat(uniqueStations(this.seisData)).forEach(s => {
-      const m = createStationMarker(s, this.stationClassMap.get(s.codes(STATION_CODE_SEP)));
+      const m = createStationMarker(s, this.stationClassMap.get(s.codes(STATION_CODE_SEP)), true, this.centerLon);
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
       m.addEventListener('click', evt => {
