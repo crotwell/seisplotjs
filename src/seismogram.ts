@@ -1099,6 +1099,35 @@ export class SeismogramDisplayData {
     out.timeRange = timeRange;
     return out;
   }
+  /**
+   * Coarse trim the seismogram. Creates a new seismogramDisplayData with the
+   * trimmed seismogram and the timeRange set to the new time window.
+   * If timeRange is not given, the current time range of the
+   * SeismogramDisplayData is used, effectively trimming data to the current
+   * window.
+   *
+   * @param  timeRange start and end of cut
+   * @returns           new seismogramDisplayData
+   */
+  trim(timeRange?: Interval): null | SeismogramDisplayData {
+    if ( ! timeRange ) { timeRange = this.timeRange;}
+    let cutSeis = this.seismogram;
+    let out;
+
+    if (cutSeis) {
+      cutSeis = cutSeis.trim(timeRange);
+      out = this.cloneWithNewSeismogram(cutSeis);
+      if (!isDef(out._seismogram) && !isDef(out.channel)) {
+        // so we con't forget our channel
+        out._sourceId = this.sourceId;
+      }
+    } else {
+      // no seismogram, so just clone?
+      out = this.clone();
+    }
+    out.timeRange = timeRange;
+    return out;
+  }
   toString(): string {
     return `${this.sourceId.toString()} ${this.timeRange.toString()}`;
   }
