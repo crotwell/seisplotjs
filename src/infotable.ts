@@ -198,7 +198,7 @@ export class QuakeStationTable extends SeisPlotElement {
   }
   set template(t: string) {
     this._template = t;
-    this.draw();
+    this.redraw();
   }
   draw() {
     if ( ! this.isConnected) { return; }

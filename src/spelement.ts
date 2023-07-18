@@ -6,9 +6,14 @@ import { isDef } from "./util";
 export class SeisPlotElement extends HTMLElement {
   _seisDataList: Array<SeismogramDisplayData>;
   _seismographConfig: SeismographConfig;
+  onRedraw: (el: SeisPlotElement) => void;
+  _throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
+
   constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>,
       seisConfig?: SeismographConfig) {
     super();
+    this.onRedraw = (el: SeisPlotElement) => {};
+    this._throttleRedraw = null;
     if (isDef(seisData)) {
       if (seisData instanceof SeismogramDisplayData) {
         this._seisDataList = [ seisData ];
@@ -66,6 +71,26 @@ export class SeisPlotElement extends HTMLElement {
   connectedCallback() {
     this.draw();
   }
+  /**
+   * Redraw the element. This implements a throttle so that many redraws
+   * are coelsced into a single actual draw if they occur before the
+   * next animation frame.
+   */
+  redraw() {
+    if (this._throttleRedraw !== null) {
+      cancelAnimationFrame(this._throttleRedraw);
+    }
+    this._throttleRedraw = requestAnimationFrame(() => {
+      this.draw();
+      this.onRedraw(this);
+      this._throttleRedraw = null;
+    });
+  }
+  /**
+   * Draw the element, overridden by subclasses. Generally outside callers
+   * should prefer calling redraw() as it handles throttling and calls the
+   * onRedraw callback.
+   */
   draw() {
     if ( ! this.isConnected) { return; }
   }

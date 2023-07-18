@@ -107,7 +107,7 @@ export class Helicorder extends SeisPlotElement {
           validStartTime(heliTimeRange).plus(lineDuration),
           validEndTime(heliTimeRange).plus(lineDuration)
         );
-        this.draw();
+        this.redraw();
     }
     if (this.seisData && this.seisData.length > 0) {
       const singleSeisData = this.seisData[0];
@@ -116,7 +116,7 @@ export class Helicorder extends SeisPlotElement {
         (origMinMax &&
          (segMinMax.min < origMinMax[0] ||
           origMinMax[1] < segMinMax.max))) {
-        this.draw(); //redraw because amp changed
+        this.redraw(); //redraw because amp changed
       } else {
         // only redraw overlaping graphs
 
@@ -139,7 +139,7 @@ export class Helicorder extends SeisPlotElement {
 
   }
   /**
-   * draws, or redraws, the helicorder.
+   * draws the helicorder.
    */
   draw() {
     this.heliConfig.lineSeisConfig.amplitudeMode = this.heliConfig.amplitudeMode;

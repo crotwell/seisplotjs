@@ -213,7 +213,7 @@ export class ParticleMotion extends SeisPlotElement {
     this.calcScaleDomain();
     d3select(window).on("resize.particleMotion" + this.plotId, () => {
       if (this.checkResize()) {
-        this.draw();
+        this.redraw();
       }
     });
   }

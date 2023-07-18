@@ -182,8 +182,7 @@ export class Seismograph extends SeisPlotElement {
 
   g: any;
   throttleRescale: ReturnType<typeof setTimeout> | null;
-  throttleResize: ReturnType<typeof setTimeout> | null;
-  throttleRedraw: ReturnType<typeof setTimeout> | null;
+  throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
   time_scalable: SeismographTimeScalable;
   amp_scalable: SeismographAmplitudeScalable;
 
@@ -192,7 +191,6 @@ export class Seismograph extends SeisPlotElement {
     this.outerWidth = -1;
     this.outerHeight = -1;
     this.throttleRescale = null;
-    this.throttleResize = null;
     this.throttleRedraw = null;
 
     this.plotId = ++Seismograph._lastID;
@@ -383,28 +381,13 @@ export class Seismograph extends SeisPlotElement {
     }
   }
 
-  redraw(): void {
-    if (this.throttleRedraw) {
-      clearTimeout(this.throttleRedraw);
-    }
-    const mythis = this;
-    this.throttleRedraw = setTimeout(() => {
-      mythis.draw();
-      mythis.throttleRedraw = null;
-    }, 10);
-  }
   draw(): void {
     if ( ! this.isConnected) { return; }
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     const rect = svgEl.getBoundingClientRect();
 
-    if (
-      rect.width === 0 ||
-      !isDef(rect.width) ||
-      rect.height === 0 ||
-      !isDef(rect.height)
-    ) {
+    if (rect.width === 0  || rect.height === 0 ) {
       util.log(
         `Attempt draw seismograph, but width/height too small: ${rect.width} ${rect.height}`,
       );
@@ -478,7 +461,6 @@ export class Seismograph extends SeisPlotElement {
     }
 
     this.beforeFirstDraw = false;
-    return this.svg;
   }
 
   printSizes(): void {
@@ -1254,21 +1236,6 @@ export class Seismograph extends SeisPlotElement {
         .attr("height", this.height + 1);
       this.canvas.attr("width", this.width).attr("height", this.height + 1);
     }
-  }
-
-  throttle(func: () => void, delay: number): void {
-    if (this.throttleResize) {
-      clearTimeout(this.throttleResize);
-    }
-
-    this.throttleResize = setTimeout(func, delay);
-  }
-
-  resizeNeeded() {
-    const myThis = this;
-    this.throttle(function () {
-      myThis.draw();
-    }, 250);
   }
 
   drawTitle() {

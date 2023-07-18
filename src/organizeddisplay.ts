@@ -62,12 +62,12 @@ export class OrganizedDisplayItem extends SeisPlotElement {
   }
   set plottype(val: string) {
     this.setAttribute(PLOT_TYPE, val);
-    this.draw();
+    this.redraw();
   }
 
   static get observedAttributes() { return [PLOT_TYPE]; }
   attributeChangedCallback(name: string, oldValue: unknown, newValue: unknown) {
-    this.draw();
+    this.redraw();
   }
   setExtra(key: string, value: unknown) {
     this.extras.set(key, value);
@@ -420,7 +420,7 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   set orgtype(val: string) {
     this.setAttribute(ORG_TYPE, val);
-    this.draw();
+    this.redraw();
   }
   get tools(): string {
     let k = this.hasAttribute(WITH_TOOLS) ? this.getAttribute(WITH_TOOLS) : DEFAULT_WITH_TOOLS;
@@ -612,7 +612,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       const sortedData = sort(this.seisData, this.sortby);
       this.drawInfo(sortedData);
     } else {
-      this.draw();
+      this.redraw();
     }
   }
 }
