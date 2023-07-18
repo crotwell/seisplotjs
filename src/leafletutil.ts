@@ -119,6 +119,7 @@ export const ZOOM_LEVEL = "zoomLevel";
 export const DEFAULT_ZOOM_LEVEL = 1;
 export const MAG_SCALE = "magScale";
 export const DEFAULT_MAG_SCALE = 5.0;
+export const FIT_BOUNDS = "fitBounds";
 
 export const QUAKE_MARKER_STYLE_EL = "quakeMarkerStyle";
 export const STATION_MARKER_STYLE_EL = "staMarkerStyle";
@@ -283,6 +284,15 @@ export class QuakeStationMap extends SeisPlotElement {
     this.updateQuakeMarkerStyle();
     this.updateStationMarkerStyle();
   }
+  get fitBounds(): boolean {
+    const fbAttr = this.hasAttribute(FIT_BOUNDS) ? this.getAttribute(FIT_BOUNDS) : "true";
+    let fb = true;
+    if (!fbAttr) { fb = true; } else { fb = fbAttr.toLowerCase() === "true";}
+    return fb;
+  }
+  set fitBounds(val: number) {
+    this.setAttribute(FIT_BOUNDS, `${val}`);
+  }
   get centerLat(): number {
     const ks = this.hasAttribute(CENTER_LAT) ? this.getAttribute(CENTER_LAT) : null;
     // typescript null
@@ -382,7 +392,7 @@ export class QuakeStationMap extends SeisPlotElement {
     });
     const regionBounds = this.drawGeoRegions(mymap);
     regionBounds.forEach(b => mapItems.push(b));
-    if (mapItems.length > 1) {
+    if (this.fitBounds && mapItems.length > 1) {
       mymap.fitBounds(mapItems);
     }
   }
@@ -474,7 +484,9 @@ path.${classname} {
       CENTER_LAT,
       CENTER_LON,
       ZOOM_LEVEL,
-      MAG_SCALE];
+      MAG_SCALE,
+      FIT_BOUNDS,
+    ];
   }
 }
 
