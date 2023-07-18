@@ -685,9 +685,9 @@ export function isValidRootType(jsonValue: unknown): jsonValue is RootType {
   }
   const jsonObj = jsonValue as Record<string, unknown>;
   if (Array.isArray(jsonObj.datacenters) &&
-      typeof jsonObj.version === 'object') {
+      typeof jsonObj.version === 'number') {
         return true;
   } else {
-    throw new TypeError("json is not valid for FDSN Availability");
+    throw new TypeError("json is not valid for FDSN DataCenters");
   }
 }
