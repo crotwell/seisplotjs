@@ -4,24 +4,25 @@ import * as sp from '../seisplotjs_3.1.0-alpha2_standalone.mjs';
 const matchPattern = `CO_BIRD_00_HH./MSEED`;
 document.querySelector('span#channel').textContent = matchPattern;
 const duration = sp.luxon.Duration.fromISO('PT5M');
-const timeWindow = new sp.util.durationEnd(duration, sp.luxon.DateTime.utc());
 const seisPlotConfig = new sp.seismographconfig.SeismographConfig();
 seisPlotConfig.wheelZoom = false;
 seisPlotConfig.isYAxisNice = false;
 seisPlotConfig.linkedTimeScale.offset = sp.luxon.Duration.fromMillis(-1*duration.toMillis());
 seisPlotConfig.linkedTimeScale.duration = duration;
-seisPlotConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
-seisPlotConfig.doGain = true;
+seisPlotConfig.linkedAmplitudeScale = new sp.scale.LinkedAmplitudeScale();
 let graphList = new Map();
 let numPackets = 0;
 let paused = false;
 let stopped = true;
-let redrawInProgress = false;
 let realtimeDiv = document.querySelector("div#realtime");
+// snip start timer
 let rect = realtimeDiv.getBoundingClientRect();
 let timerInterval = duration.toMillis()/
                     (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
 while (timerInterval < 50) { timerInterval *= 2;}
+let animatedSeisGroup = new sp.animatedseismograph.AnimatedSeismographGroup([], timerInterval);
+animatedSeisGroup.autotrim = true;
+animatedSeisGroup.animate();
 
 const errorFn = function(error) {
   console.assert(false, error);
@@ -41,51 +42,27 @@ const packetHandler = function(packet) {
         let seismogram = new sp.seismogram.Seismogram( [ seisSegment ]);
         let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
         seisData.alignmentTime = sp.luxon.DateTime.utc();
-        seisPlot = new sp.seismograph.Seismograph([seisData], seisPlotConfig);
-        realtimeDiv.appendChild(seisPlot);
+        const graph = new sp.seismograph.Seismograph([seisData], seisPlotConfig);
+        seisPlot = new sp.animatedseismograph.AnimatedSeismograph(graph, 200);
+        realtimeDiv.appendChild(graph);
+        animatedSeisGroup.add(seisPlot);
         graphList.set(codes, seisPlot);
         console.log(`new plot: ${codes}`)
-      } else {
-        seisPlot.seisData[0].append(seisSegment);
-        seisPlot.recheckAmpScaleDomain();
-      }
-      seisPlot.draw();
+    } else {
+      seisPlot.append(seisSegment);
+      seisPlot.seismograph.recheckAmpScaleDomain();
+    }
   } else {
     console.log(`not a mseed packet: ${packet.streamId}`)
   }
 };
 // snip start datalink
-// wss://thecloud.seis.sc.edu/ringserver/datalink
-// wss://rtserve.iris.washington.edu/datalink
+const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink"
 const datalink = new sp.datalink.DataLinkConnection(
-    "wss://rtserve.iris.washington.edu/datalink",
+    IRIS_DATALINK,
     packetHandler,
     errorFn);
 
-// snip start timer
-let timer = window.setInterval(function(elapsed) {
-  if ( paused || redrawInProgress) {
-    return;
-  }
-  redrawInProgress = true;
-  window.requestAnimationFrame(timestamp => {
-    try {
-      const now = sp.luxon.DateTime.utc();
-      graphList.forEach(function(graph, key) {
-        graph.seisData.forEach(sdd => {
-          sdd.alignmentTime = now;
-        });
-        graph.calcTimeScaleDomain();
-        graph.calcAmpScaleDomain();
-        graph.draw();
-      });
-    } catch(err) {
-      console.assert(false, err);
-    }
-    redrawInProgress = false;
-  });
-
-  }, timerInterval);
 
 // snip start pause
 document.querySelector("button#pause").addEventListener("click", function(evt) {
@@ -96,8 +73,10 @@ let togglePause = function() {
   paused = ! paused;
   if (paused) {
     document.querySelector("button#pause").textContent = "Play";
+    animatedSeisGroup.pause();
   } else {
     document.querySelector("button#pause").textContent = "Pause";
+    animatedSeisGroup.animate();
   }
 }
 
@@ -139,7 +118,8 @@ let toggleConnect = function() {
         return datalink.infoStreams();
       }).then(response => {
         addToDebug(`info streams response: ${response}`)
-        return datalink.positionAfter(timeWindow.start);
+        const start = sp.luxon.DateTime.utc().minus(duration);
+        return datalink.positionAfter(start);
       }).then(response => {
         if (response.isError()) {
           addToDebug(`Oops, positionAfter response is not OK, ignore... ${response}`);

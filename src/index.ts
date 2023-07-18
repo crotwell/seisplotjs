@@ -5,6 +5,7 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
+import * as animatedseismograph from "./animatedseismograph";
 import * as axisutil from "./axisutil";
 import * as components from "./components";
 import * as cssutil from "./cssutil";
@@ -60,6 +61,7 @@ import * as leaflet from "leaflet";
 
 /* reexport */
 export {
+  animatedseismograph,
   axisutil,
   components,
   cssutil,
