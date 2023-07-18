@@ -22,6 +22,7 @@
     "src/*.ts"
   ],
   "dependencies": {
+    "@types/geojson": "^7946.0.10",
     "convert-units": "^3.0.0-beta.5",
     "crc-32": "^1.2.1",
     "d3-array": "^3.2.2",

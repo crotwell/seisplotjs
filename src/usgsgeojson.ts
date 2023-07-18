@@ -2,7 +2,9 @@ import {
   Quake,
   Origin,
   Magnitude,
+  CreationInfo,
   EventDescription,
+  EventParameters,
 } from './quakeml';
 import {
   JSON_MIME,
@@ -10,6 +12,8 @@ import {
   defaultFetchInitObj,
 } from "./util";
 import { DateTime} from 'luxon';
+
+import type {Feature, Point} from  'geojson';
 
 const timeoutSec = 10;
 export const hourSummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson";
@@ -53,22 +57,40 @@ export function loadMonthSummaryAll(): Promise<Array<Quake>> {
 }
 
 export function loadUSGSSummary(url: string): Promise<Array<Quake>> {
+  return loadUSGSGeoJsonSummary(url).then(eventParameters => {
+    return eventParameters.eventList;
+  });
+}
+
+export function loadUSGSGeoJsonSummary(url: string): Promise<EventParameters> {
+  return loadRawUSGSGeoJsonSummary(url)
+  .then((geojson: USGSGeoJsonSummary) => {
+    return parseGeoJSON(geojson);
+  });
+}
+
+export function loadRawUSGSGeoJsonSummary(url: string): Promise<USGSGeoJsonSummary> {
   const fetchInit = defaultFetchInitObj(JSON_MIME);
   return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000)
-    .then(function (response) {
+    .then( response => {
       if (response.status !== 200) {
         // no data
         return [];
       } else {
         return response.json();
       }
-    })
-    .then(function (geojson: string) {
-      return parseGeoJSON(geojson);
+    }).then(jsonValue => {
+      if (isValidUSGSGeoJsonSummary(jsonValue)) {
+        return jsonValue;
+      } else {
+        throw new TypeError(`Oops, we did not get roottype JSON!`);
+      }
     });
 }
 
 /*
+
+[
 {
   "type":"Feature",
   "properties":{
@@ -101,25 +123,49 @@ export function loadUSGSSummary(url: string): Promise<Array<Quake>> {
   },
   "geometry":{
     "type":"Point",
-    "coordinates":[-36.0365,7.3653,10]},
-    "id":"us6000jpxe"}],
+    "coordinates":[-36.0365,7.3653,10]
+  },
+  "id":"us6000jpxe"}
+],
     "bbox":[-149.9803,7.3653,3.98,-36.0365,61.4684,32.6]
   }
  */
 
-export function parseGeoJSON(geojson: any): Array<Quake> {
+/**
+ * Parses geojson from USGS feeds. Not all fields are parsed, just
+ * basic origin and magnitude along with the id.
+ * See https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
+ * @param  geojson  text from USGS feed
+ * @return EventParameters, which holds an array of Quake objects
+ */
+export function parseGeoJSON(geojson: USGSGeoJsonSummary): EventParameters {
     const quakeList = [];
+    const description = geojson.metadata.title;
     for (const f of geojson.features) {
       const quake = parseFeatureAsQuake(f);
       quakeList.push(quake);
     }
-    return quakeList;
+
+    const out = new EventParameters();
+    out.creationInfo = new CreationInfo();
+    out.creationInfo.agencyURI = geojson.metadata.url;
+    out.creationInfo.creationTime = DateTime.fromMillis(geojson.metadata.generated);
+    out.eventList = quakeList;
+    out.description = description;
+
+    return out;
 }
 
-export function parseFeatureAsQuake(feature: any): Quake {
+/**
+ * Parses a single GeoJson feature into a Quake.
+ * @param  feature  from USGS style geojson
+ * @return Quake with origin and magnitude
+ */
+export function parseFeatureAsQuake(feature: USGSGeoJsonFeature): Quake {
   const quake = new Quake();
-  quake.publicId = feature.geometry.id;
+  quake.publicId = `quakeml:earthquake.usgs.gov/fdsnws/event/1/query?eventid={feature.id}`;
   const p = feature.properties;
+  if ( p == null) { throw new Error("Geojson missing properties");}
   quake.descriptionList.push(new EventDescription(p.title));
   const origin = new Origin(DateTime.fromMillis(p.time),
                             feature.geometry.coordinates[1],
@@ -132,4 +178,90 @@ export function parseFeatureAsQuake(feature: any): Quake {
   quake.preferredOrigin = origin;
   quake.preferredMagnitude = mag;
   return quake;
+}
+
+export interface USGSGeoJsonMetaData {
+  generated: number;
+  url: string;
+  title: string;
+  api: string;
+  count: number;
+  status: number;
+}
+
+export interface USGSGeoJsonProperties  {
+  mag: number;
+  place: string;
+  time: number;
+  updated: number;
+  tz: number;
+  url: string;
+  detail: string;
+  felt:number;
+  cdi: number;
+  mmi: number;
+  alert: string;
+  status: string;
+  tsunami: number;
+  sig:number;
+  net: string;
+  code: string;
+  ids: string;
+  sources: string;
+  types: string;
+  nst: number;
+  dmin: number;
+  rms: number;
+  gap: number;
+  magType: string;
+  type: string;
+  title: string;
+}
+
+export interface USGSGeoJsonFeature extends Feature<Point, USGSGeoJsonProperties> {
+}
+
+// subtype of FeatureCollection
+export interface USGSGeoJsonSummary {
+  type: 'FeatureCollection';
+  metadata: USGSGeoJsonMetaData;
+  features: Array<USGSGeoJsonFeature>;
+}
+
+export function isValidUSGSGeoJsonSummary(jsonValue: unknown): jsonValue is USGSGeoJsonSummary {
+  if (! jsonValue || typeof jsonValue !== 'object') {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+  if ( ! (typeof jsonObj.type === 'string' && jsonObj.type === "FeatureCollection") ) {
+    throw new TypeError("geojson is not valid for USGS GeoJson, type should be FeatureCollection");
+  }
+  if ( ! (typeof jsonObj.metadata === 'object')) {
+    throw new TypeError("geojson is not valid for USGS GeoJson, missing metadata");
+  }
+  if ( ! Array.isArray(jsonObj.features)) {
+    throw new TypeError("geojson is not valid for USGS GeoJson, features should be array");
+  } else {
+    if ( ! jsonObj.features.every(isValidUSGSGeoJsonQuake)) {
+      throw new TypeError("geojson is not valid for USGS GeoJson, feature should be USGSGeoJsonFeature");
+    }
+  }
+  return true;
+}
+
+export function isValidUSGSGeoJsonQuake(jsonValue: unknown): jsonValue is USGSGeoJsonFeature {
+  if (! jsonValue || typeof jsonValue !== 'object') {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+  if ( ! (typeof jsonObj.type === 'string' && jsonObj.type === "Feature") ) {
+    throw new TypeError("geojson is not valid for USGS GeoJson, type should be Feature");
+  }
+  if ( ! (typeof jsonObj.properties === 'object')) {
+    throw new TypeError("geojson is not valid for USGS GeoJson, missing properties");
+  }
+  if ( ! (typeof jsonObj.id === 'string') ) {
+    throw new TypeError("geojson is not valid for USGS GeoJson, id should be string");
+  }
+  return true;
 }

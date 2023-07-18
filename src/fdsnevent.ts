@@ -5,7 +5,7 @@
  */
 import {FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius} from './fdsncommon';
 import {DateTime, Duration, Interval} from 'luxon';
-import {Quake, USGS_HOST, parseQuakeML} from "./quakeml";
+import {EventParameters, Quake, USGS_HOST, parseQuakeML} from "./quakeml";
 import {
   XML_MIME,
   TEXT_MIME,
@@ -709,8 +709,14 @@ export class EventQuery extends FDSNCommon {
    *  @returns Promise to an Array of Quake objects.
    */
   query(): Promise<Array<Quake>> {
+    return this.queryEventParameters().then(eventParameters => {
+      return eventParameters.eventList;
+    });
+  }
+
+  queryEventParameters(): Promise<EventParameters> {
     return this.queryRawXml().then(rawXml => {
-      return parseQuakeML(rawXml, this._host).eventList;
+      return parseQuakeML(rawXml, this._host);
     });
   }
 

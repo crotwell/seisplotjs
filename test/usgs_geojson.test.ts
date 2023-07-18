@@ -10,7 +10,8 @@ test( "hour magnitude test", () => {
 
   const parsed = JSON.parse(hour_mag1);
   expect(parsed).toBeDefined();
-  const quakeList = parseGeoJSON(parsed);
+  const e_params = parseGeoJSON(parsed);
+  const quakeList = e_params.eventList;
   expect(quakeList).toHaveLength(5);
   for (const q of quakeList) {
     expect(q.originList).toHaveLength(1);
