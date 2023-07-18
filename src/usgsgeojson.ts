@@ -15,11 +15,41 @@ const timeoutSec = 10;
 export const hourSummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson";
 export const hourSummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
 
+export const daySummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.geojson";
+export const daySummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+
+export const weekSummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson";
+export const weekSummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+
+export const monthSummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson";
+export const monthSummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
+
 export function loadHourSummarySignificant(): Promise<Array<Quake>> {
   return loadUSGSSummary(hourSummerySignificantUrl);
 }
 export function loadHourSummaryAll(): Promise<Array<Quake>> {
   return loadUSGSSummary(hourSummeryAllUrl);
+}
+
+export function loadDaySummarySignificant(): Promise<Array<Quake>> {
+  return loadUSGSSummary(daySummerySignificantUrl);
+}
+export function loadDaySummaryAll(): Promise<Array<Quake>> {
+  return loadUSGSSummary(daySummeryAllUrl);
+}
+
+export function loadWeekSummarySignificant(): Promise<Array<Quake>> {
+  return loadUSGSSummary(weekSummerySignificantUrl);
+}
+export function loadWeekSummaryAll(): Promise<Array<Quake>> {
+  return loadUSGSSummary(weekSummeryAllUrl);
+}
+
+export function loadMonthSummarySignificant(): Promise<Array<Quake>> {
+  return loadUSGSSummary(monthSummerySignificantUrl);
+}
+export function loadMonthSummaryAll(): Promise<Array<Quake>> {
+  return loadUSGSSummary(monthSummeryAllUrl);
 }
 
 export function loadUSGSSummary(url: string): Promise<Array<Quake>> {
