@@ -27,7 +27,8 @@ import {
 } from "./seismographconfig";
 import type {MarkerType} from "./seismogram";
 import type {TraveltimeJsonType} from "./traveltime";
-import type {ScaleLinear} from "d3-scale";
+import type {Axis} from 'd3-axis';
+import type {ScaleLinear, NumberValue as d3NumberValue} from "d3-scale";
 import {
   SeismogramDisplayData,
   calcMinMax,
@@ -886,7 +887,7 @@ export class Seismograph extends SeisPlotElement {
     }
 
   }
-  createLeftRightAxis(): Array<d3.Axis<d3.NumberValue> | null> {
+  createLeftRightAxis(): Array<Axis<d3NumberValue> | null> {
     let yAxis = null;
     let yAxisRight = null;
     const axisScale = this.ampScaleForAxis();
@@ -1754,8 +1755,8 @@ export function createMarkerForPicks(
  * @returns           function that converts input types
  */
 
-export function createNumberFormatWrapper(formatter: (value: number) => string): (nValue: d3.NumberValue) => string {
-  return (nValue: d3.NumberValue) => {
+export function createNumberFormatWrapper(formatter: (value: number) => string): (nValue: d3NumberValue) => string {
+  return (nValue: d3NumberValue) => {
     if (typeof nValue === "number") {
       return formatter(nValue);
     } else {
@@ -1769,8 +1770,8 @@ export function createNumberFormatWrapper(formatter: (value: number) => string):
  * @param  formatter simple formatter
  * @returns           function that converts input types
  */
-export function createDateFormatWrapper(formatter: (value: Date) => string): (nValue: Date | d3.NumberValue, index: number) => string {
-  return (nValue: Date | d3.NumberValue) => {
+export function createDateFormatWrapper(formatter: (value: Date) => string): (nValue: Date | d3NumberValue, index: number) => string {
+  return (nValue: Date | d3NumberValue) => {
     if (nValue instanceof Date) {
       return formatter(nValue);
     } else if (typeof nValue === "number") {
