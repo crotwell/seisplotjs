@@ -27,6 +27,12 @@ import {SeismogramSegment} from "./seismogramsegment";
 import {COLOR_CSS_ID} from "./seismograph";
 import {isDef, isNumArg, SVG_NS, validStartTime, validEndTime} from "./util";
 import * as axisutil from "./axisutil";
+import type {HandlebarsInput} from "./axisutil";
+
+import type {Axis} from 'd3-axis';
+import type {ScaleLinear, NumberValue as d3NumberValue} from "d3-scale";
+import type {Selection} from 'd3-selection';
+
 export const DEFAULT_TITLE =
   "<tspan>{{#each seisDataList}}{{onlyChangesChannel ../seisDataList @index}} {{else}}No Data{{/each}}</tspan>";
 export const DEFAULT_XLABEL =
@@ -117,14 +123,13 @@ export class ParticleMotion extends SeisPlotElement {
   height: number;
   outerWidth = -1;
   outerHeight = -1;
-  xScale: any;
-  xScaleRmean: any;
-  xAxis: any;
-  yScale: any;
-  yScaleRmean: any;
-  yAxis: any;
-  svg: any;
-  g: any;
+  xScale: ScaleLinear<number, number, never>;
+  xScaleRmean: ScaleLinear<number, number, never>;
+  xAxis: Axis<d3NumberValue>;
+  yScale: ScaleLinear<number, number, never>;
+  yScaleRmean: ScaleLinear<number, number, never>;
+  yAxis: Axis<d3NumberValue>;
+  g: Selection<SVGGElement, unknown, null, undefined>;
   static _lastID: number;
 
   constructor(xSeisData?: Array<SeismogramDisplayData>,
@@ -153,7 +158,7 @@ export class ParticleMotion extends SeisPlotElement {
     const svgWrapped = wrapper.appendChild(document.createElementNS(SVG_NS, 'svg'));
     this.getShadowRoot().appendChild(wrapper);
 
-    this.svg = d3select(svgWrapped);
+    const svg = d3select(svgWrapped);
 
     this.plotId = ++ParticleMotion._lastID;
 
@@ -161,9 +166,9 @@ export class ParticleMotion extends SeisPlotElement {
       throw new Error(`xSeisData and ySeisData should have same length: ${this.xSeisData.length} !== ${this.ySeisData.length}`);
     }
 
-    this.svg.attr("version", "1.1");
-    this.svg.classed("particleMotion", true);
-    this.svg.attr("plotId", this.plotId);
+    svg.attr("version", "1.1");
+    svg.classed("particleMotion", true);
+    svg.attr("plotId", this.plotId);
     this.xScale = d3scaleLinear();
     // yScale for axis (not drawing) that puts mean at 0 in center
     this.xScaleRmean = d3scaleLinear();
@@ -186,7 +191,7 @@ export class ParticleMotion extends SeisPlotElement {
     this.width = 100;
     this.height = 100;
     // for line ends to show direction of particle motion
-    const arrow = this.svg.append("defs").append("marker");
+    const arrow = svg.append("defs").append("marker");
     arrow
       .attr("id", "arrow")
       .attr("markerWidth", "10")
@@ -200,7 +205,7 @@ export class ParticleMotion extends SeisPlotElement {
       .attr("d", "M0,0 L0,6 L9,3 z")
       .attr("stroke", "currentColor")
       .attr("fill", "currentColor");
-    this.g = this.svg
+    this.g = svg
       .append("g")
       .attr(
         "transform",
@@ -335,7 +340,7 @@ export class ParticleMotion extends SeisPlotElement {
   }
 
   drawParticleMotionForSegment(
-    lineG: any,
+    lineG: Selection<SVGGElement, unknown, null, undefined>,
     segA: SeismogramSegment,
     segB: SeismogramSegment,
   ) {
@@ -368,10 +373,21 @@ export class ParticleMotion extends SeisPlotElement {
       .attr("marker-end", "url(#arrow)")
       .attr(
         "d",
+        // @ts-ignore
         d3line()
           .curve(d3curveLinear)
-          .x(d => this.xScale(d))
-          .y((d, i) => this.yScale(segB.yAtIndex(idxB + i))),
+          .x((dd) => {
+            // no idea why typescript thinks dd is [number, number]
+            // when it is just number
+            // @ts-ignore
+            return this.xScale(dd);
+          })
+          .y((d, i) => {
+            // no idea why typescript thinks dd is [number, number]
+            // when it is just number
+            // @ts-ignore
+            return this.yScale(segB.yAtIndex(idxB + i));
+          }),
       );
   }
 
@@ -388,14 +404,14 @@ export class ParticleMotion extends SeisPlotElement {
 
   rescaleAxis() {
     const delay = 500;
-    this.g
-      .select(".axis--y")
-      .transition()
+    const yaxisG = this.g
+      .select(".axis--y") as Selection<SVGGElement, unknown, null, undefined>;
+    yaxisG.transition()
       .duration(delay / 2)
       .call(this.yAxis);
-    this.g
-      .select(".axis--x")
-      .transition()
+    const xaxisG = this.g
+      .select(".axis--x") as Selection<SVGGElement, unknown, null, undefined>;
+    xaxisG.transition()
       .duration(delay / 2)
       .call(this.xAxis);
   }
@@ -470,7 +486,7 @@ export class ParticleMotion extends SeisPlotElement {
     this.yScaleRmean.range([this.height, 0]);
   }
 
-  createHandlebarsInput(): any {
+  createHandlebarsInput(): HandlebarsInput {
     return {
       seisDataList: this._seisDataList,
       seisConfig: this._seismographConfig,

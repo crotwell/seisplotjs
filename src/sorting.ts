@@ -1,4 +1,5 @@
 
+import type {DateTime} from 'luxon';
 import { SeismogramDisplayData } from './seismogram';
 import {WAY_FUTURE} from './util';
 
@@ -38,7 +39,7 @@ export function sort(seisData: Array<SeismogramDisplayData>, key: string) {
   });
 }
 
-export function createSortValueFunction(key: string): (sdd: SeismogramDisplayData) => any {
+export function createSortValueFunction(key: string): (sdd: SeismogramDisplayData) => number | string | DateTime {
   if (key === SORT_DISTANCE) {
     return (sdd: SeismogramDisplayData) => {
       let out = Number.MAX_VALUE;
@@ -67,7 +68,7 @@ export function createSortValueFunction(key: string): (sdd: SeismogramDisplayDat
       return out;
     };
   } else if (key === SORT_ALPHABETICAL) {
-    return (sdd: SeismogramDisplayData) => sdd.sourceId;
+    return (sdd: SeismogramDisplayData) => sdd.sourceId.toString();
   } else if (key === SORT_STARTTIME) {
     return (sdd: SeismogramDisplayData) => sdd.startTime;
   } else if (key === SORT_ORIGINTIME) {

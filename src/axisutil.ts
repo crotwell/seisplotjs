@@ -12,6 +12,9 @@ import {DateTime, Interval} from "luxon";
 
 export interface HandlebarsInput {
   seisConfig?: SeismographConfig,
+  seisDataList?: unknown,
+  seisXData?: unknown,
+  seisYData?: unknown,
 }
 
 export class LuxonTimeScale {

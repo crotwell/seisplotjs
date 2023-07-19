@@ -17,6 +17,7 @@ import {
 } from "./seismograph";
 import {isDef, isStringArg, stringify} from "./util";
 
+
 /**
  * Loads seismograms based on queries to Station and Event web services.
  * Uses the traveltime web service to create times for data query. Default
@@ -276,7 +277,7 @@ export class SeismogramLoader {
 
         return Promise.all([Promise.all(ttpromiseList), netList, quakeList]);
     }).then(([ttList, netList, quakeList]) => {
-      const ttMap = new Map<Quake, any>();
+      const ttMap = new Map<Quake, TraveltimeJsonType>();
       for (const [q, tt] of ttList) {
         ttMap.set(q, tt);
       }

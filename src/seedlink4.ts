@@ -24,7 +24,7 @@ export class SEPacket {
   stationId: string;
   _miniseed: DataRecord | null;
   _mseed3: MSeed3Record | null;
-  _json: any | null;
+  _json: unknown | null;
   _rawPayload: DataView | null;
 
   constructor(

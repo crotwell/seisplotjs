@@ -27,8 +27,13 @@ import {
 } from "./seismographconfig";
 import type {MarkerType} from "./seismogram";
 import type {TraveltimeJsonType} from "./traveltime";
+import type {HandlebarsInput,} from "./axisutil";
 import type {Axis} from 'd3-axis';
 import type {ScaleLinear, NumberValue as d3NumberValue} from "d3-scale";
+import type {Selection} from 'd3-selection';
+//import type {ZoomBehavior} from 'd3-zoom';
+
+
 import {
   SeismogramDisplayData,
   calcMinMax,
@@ -58,7 +63,7 @@ export type BBoxType = {
 export type MarkerHolderType = {
   marker: MarkerType;
   sdd: SeismogramDisplayData;
-  xscale: any;
+  xscale: axisutil.LuxonTimeScale;
   bbox?: BBoxType;
 };
 
@@ -177,11 +182,11 @@ export class Seismograph extends SeisPlotElement {
   height: number;
   outerWidth: number;
   outerHeight: number;
-  svg: any;
-  canvasHolder: any;
-  canvas: any;
+  svg: Selection<SVGSVGElement, unknown, null, undefined>;
+  canvasHolder: null | Selection<SVGForeignObjectElement, unknown, null, undefined>;
+  canvas: null | Selection<HTMLCanvasElement, unknown, null, undefined>;
 
-  g: any;
+  g: Selection<SVGGElement, unknown, null, undefined>;
   throttleRescale: ReturnType<typeof setTimeout> | null;
   throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
   time_scalable: SeismographTimeScalable;
@@ -210,8 +215,10 @@ export class Seismograph extends SeisPlotElement {
     this.getShadowRoot().appendChild(wrapper);
 
     this.canvas = null;
+    this.canvasHolder = null;
     this.svg = d3select(wrapper).append("svg").style("z-index", 100);
-    wrapper.appendChild(this.svg.node());
+    const svgNode = this.svg.node();
+    if (svgNode != null) {wrapper.appendChild(svgNode);}
 
     if (
       isDef(this.seismographConfig.minHeight) &&
@@ -372,6 +379,7 @@ export class Seismograph extends SeisPlotElement {
   enableZoom(): void {
     const mythis = this;
     const z = this.svg.call(
+      // @ts-ignore
       d3zoom().on("zoom", function (e) {
         mythis.zoomed(e);
       }),
@@ -423,7 +431,7 @@ export class Seismograph extends SeisPlotElement {
         this.seismographConfig.margin.top +
         ")",
     );
-    if (this.canvas) {
+    if (this.canvas && this.canvasHolder) {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
       this.canvasHolder.attr("x", this.seismographConfig.margin.left);
       this.canvasHolder.attr("y", this.seismographConfig.margin.top);
@@ -437,7 +445,8 @@ export class Seismograph extends SeisPlotElement {
         .attr("y", this.seismographConfig.margin.top)
         .attr("width", this.width)
         .attr("height", this.height + 1);
-      this.canvas = this.canvasHolder
+      if (this.canvasHolder == null) {throw new Error("canvasHolder is null");}
+      const c = this.canvasHolder
         .append("xhtml:canvas")
         .classed("seismograph", true)
         .attr("xmlns", "http://www.w3.org/1999/xhtml")
@@ -445,6 +454,7 @@ export class Seismograph extends SeisPlotElement {
         .attr("y", 0)
         .attr("width", this.width)
         .attr("height", this.height + 1);
+      this.canvas = (c as unknown) as Selection<HTMLCanvasElement, unknown, null, undefined>;
     }
 
     this.drawSeismograms();
@@ -474,18 +484,23 @@ export class Seismograph extends SeisPlotElement {
     const grect = this.getBoundingClientRect();
     out += "parent rect.height " + grect.height + "\n";
     out += "parent rect.width " + grect.width + "\n";
-    const crect = this.canvas.node().getBoundingClientRect();
-    out += "c rect.height " + crect.height + "\n";
-    out += "c rect.width " + crect.width + "\n";
-    out += "c style.height " + this.canvas.style("height") + "\n";
-    out += "c style.width " + this.canvas.style("width") + "\n";
-    out += "this.height " + this.height + "\n";
-    out += "this.width " + this.width + "\n";
-    out += "canvas.height " + this.canvas.node().height + "\n";
-    out += "canvas.width " + this.canvas.node().width + "\n";
-    out += "this.outerHeight " + this.outerHeight + "\n";
-    out += "this.outerWidth " + this.outerWidth + "\n";
-    out += "this.margin " + this.seismographConfig.margin + "\n";
+    const cnode = this.canvas?.node();
+    const crect = cnode?.getBoundingClientRect();
+    if (this.canvas && cnode && crect) {
+      out += "c rect.height " + crect.height + "\n";
+      out += "c rect.width " + crect.width + "\n";
+      out += "c style.height " + this.canvas.style("height") + "\n";
+      out += "c style.width " + this.canvas.style("width") + "\n";
+      out += "this.height " + this.height + "\n";
+      out += "this.width " + this.width + "\n";
+      out += "canvas.height " + cnode.height + "\n";
+      out += "canvas.width " + cnode.width + "\n";
+      out += "this.outerHeight " + this.outerHeight + "\n";
+      out += "this.outerWidth " + this.outerWidth + "\n";
+      out += "this.margin " + this.seismographConfig.margin + "\n";
+    } else {
+      out += "crect bounding rect is null\n";
+    }
     util.log(out);
   }
   calcDetailForEvent(evt: MouseEvent, type?: string): SeisMouseEventType {
@@ -513,7 +528,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   isVisible(): boolean {
-    const elem = this.canvas.node();
+    const elem = this.canvas?.node();
 
     if (!elem) {
       return false;
@@ -535,8 +550,10 @@ export class Seismograph extends SeisPlotElement {
     }
 
     // get the canvas drawing context
-    const canvasNode = this.canvas.node();
+    const canvasNode = this.canvas?.node();
+    if (! canvasNode) {return;}
     const context = canvasNode.getContext("2d");
+    if (! context) {return;}
     context.save();
     // clear the canvas from previous drawing
     context.clearRect(0, 0, canvasNode.width, canvasNode.height);
@@ -926,6 +943,7 @@ export class Seismograph extends SeisPlotElement {
             .select(".axis--y")
             .transition()
             .duration(delay / 2)
+            // @ts-ignore
             .call(yAxis);
         }
 
@@ -934,6 +952,7 @@ export class Seismograph extends SeisPlotElement {
             .select(".axis--y-right")
             .transition()
             .duration(delay / 2)
+            // @ts-ignore
             .call(yAxisRight);
         }
 
@@ -942,7 +961,7 @@ export class Seismograph extends SeisPlotElement {
     }
   }
 
-  createHandlebarsInput(): any {
+  createHandlebarsInput(): HandlebarsInput {
     return {
       seisDataList: this._seisDataList,
       seisConfig: this._seismographConfig,
@@ -1002,7 +1021,8 @@ export class Seismograph extends SeisPlotElement {
       this.g
         .select("g.allmarkers")
         .selectAll("g.marker")
-        .attr("transform", function (mh: MarkerHolderType) {
+        .attr("transform", function (v: unknown) {
+          const mh = v as MarkerHolderType;
           mh.xscale = mythis.timeScaleForSeisDisplayData(mh.sdd);
           const textx = mh.xscale.for(mh.marker.time);
           return "translate(" + textx + "," + 0 + ")";
@@ -1078,7 +1098,8 @@ export class Seismograph extends SeisPlotElement {
     markerG.selectAll("g.marker").remove();
     const labelSelection = markerG
       .selectAll("g.marker")
-      .data(allMarkers, function (mh: MarkerHolderType) {
+      .data(allMarkers, function (v: unknown) {
+        const mh = v as MarkerHolderType;
         // key for data
         return `${mh.marker.name}_${mh.marker.time.toISO()}`;
       });
@@ -1089,7 +1110,8 @@ export class Seismograph extends SeisPlotElement {
       .enter()
       .append("g")
       .classed("marker", true) // translate so marker time is zero
-      .attr("transform", function (mh: MarkerHolderType) {
+      .attr("transform", function (v: unknown) {
+        const mh = v as MarkerHolderType;
         const textx = mh.xscale.for(mh.marker.time);
         return "translate(" + textx + "," + 0 + ")";
       })
@@ -1231,10 +1253,12 @@ export class Seismograph extends SeisPlotElement {
 
     this.calcScaleAndZoom();
 
-    if (this.canvas) {
+    if (this.canvasHolder) {
       this.canvasHolder
         .attr("width", this.width)
         .attr("height", this.height + 1);
+    }
+    if (this.canvas) {
       this.canvas.attr("width", this.width).attr("height", this.height + 1);
     }
   }
