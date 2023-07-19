@@ -47,6 +47,26 @@ export type TraveltimeArrivalType = {
   puristdist: number;
   puristname: string;
 };
+
+export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
+  if (!v || typeof v !== 'object') {
+    return false
+  }
+  const object = v as Record<string, unknown>
+
+  if ( ! ( typeof object.model === 'string' &&
+    typeof object.sourcedepth === 'number' &&
+    typeof object.receiverdepth === 'number')) {
+      return false;
+    }
+  if ( ! Array.isArray(object.phases)) {
+    return false;
+  }
+  if ( ! Array.isArray(object.arrivals)) {
+    return false;
+  }
+  return true;
+}
 export function isValidTraveltimeArrivalType(v: unknown): v is TraveltimeArrivalType {
   if (!v || typeof v !== 'object') {
     return false
@@ -379,7 +399,12 @@ export class TraveltimeQuery extends FDSNCommon {
             arrivals: [],
           };
         } else {
-          return (response.json() as any) as TraveltimeJsonType;
+          const jsonValue = response.json();
+          if (isValidTraveltimeJsonType(jsonValue)) {
+            return jsonValue;
+          } else {
+            throw new TypeError(`Oops, we did not get root traveltime JSON!`);
+          }
         }
       },
     );
@@ -433,7 +458,7 @@ export class TraveltimeQuery extends FDSNCommon {
     });
   }
 
-  query(): Promise<any> {
+  query(): Promise<TraveltimeJsonType | Element | string> {
     if (this._format === JSON_FORMAT) {
       return this.queryJson();
     } else if (this._format === SVG_FORMAT) {

@@ -24,7 +24,7 @@ test("formURL", () => {
      expect(url).toContain('&'+k+'=');
    }
    expect(url).toContain("http://"+traveltime.IRIS_HOST+"/irisws/traveltime/1/query?");
-   return query.query().then( tt => {
+   return query.queryJson().then( tt => {
      expect(tt.arrivals.length).toEqual(11);
    });
 
@@ -36,7 +36,7 @@ test("multiple distances", () => {
   query.format(traveltime.JSON_FORMAT);
   query.distdeg([ 10, 30, 60]);
   query.phases("P");
-  return query.query().then( tt => {
+  return query.queryJson().then( tt => {
     expect(tt.arrivals.length).toEqual(3);
   });
 });
