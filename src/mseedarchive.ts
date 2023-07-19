@@ -9,6 +9,7 @@ import * as miniseed from "./miniseed";
 import {SeismogramDisplayData} from "./seismogram";
 import {Channel} from "./stationxml";
 import {isDef} from "./util";
+
 export const Allowed_Flags = ["n", "s", "l", "c", "Y", "j", "H"];
 
 /**
@@ -271,7 +272,7 @@ export class MSeedArchive {
 }
 export function loadDataRecords(
   urlList: Array<string>,
-  fetchInit?: Record<string, unknown>,
+  fetchInit?: RequestInit,
   timeoutSec?: number,
 ): Promise<Array<miniseed.DataRecord>> {
   const promiseArray = urlList.map(url => {

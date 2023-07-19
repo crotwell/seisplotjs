@@ -14,25 +14,25 @@ export const BINARY_MIME = "application/octet-stream";
 
 export const UTC_OPTIONS = {zone: FixedOffsetZone.utcInstance};
 
-export function hasArgs(value: any): boolean {
+export function hasArgs(value: unknown): boolean {
   return arguments.length !== 0 && typeof value !== "undefined";
 }
-export function hasNoArgs(value: any): boolean {
+export function hasNoArgs(value: unknown): boolean {
   return arguments.length === 0 || typeof value === "undefined";
 }
-export function isStringArg(value: any): value is string {
+export function isStringArg(value: unknown): value is string {
   return (
     arguments.length !== 0 &&
     (typeof value === "string" || (isObject(value) && value instanceof String))
   );
 }
-export function isNumArg(value: any): value is number {
+export function isNumArg(value: unknown): value is number {
   return (
     arguments.length !== 0 &&
     (typeof value === "number" || (isObject(value) && value instanceof Number))
   );
 }
-export function isNonEmptyStringArg(value: any): value is string {
+export function isNonEmptyStringArg(value: unknown): value is string {
   return arguments.length !== 0 && isStringArg(value) && value.length !== 0;
 }
 export function isObject(obj: unknown): obj is object {
@@ -45,28 +45,39 @@ export function isDef<Value>(value: Value | undefined | null): value is Value {
   return value !== null && value !== undefined;
 }
 
-export function reErrorWithMessage(err: any, message: string): Error {
-  let out;
+export function reErrorWithMessage(err: unknown, message: string): Error {
+  let out: Error;
   if ( ! isDef(err)) {
     out = new Error(`${message}`);
   } else if (typeof err === "string") {
     out = new Error(`${message} ${err}`);
-  } else {
-    if (err instanceof Error) {
-      err.message = `${message} ${err.message}`;
-    }
+  } else if (err instanceof Error) {
+    err.message = `${message} ${err.message}`;
     out = err;
+  } else {
+    out = new Error(`${message} ${err}`);
   }
   return out;
 }
 
+export interface StringDictionary {
+  [index: string]: unknown;
+}
+export function asStringDictionary(inobj: unknown): StringDictionary {
+  if ( typeof inobj !== 'object') {
+    throw new Error(`Expect obj to be object, but was ${inobj}`);
+  }
+  const obj = inobj as StringDictionary;
+  return obj;
+}
+
 export function doStringGetterSetter(
-  obj: any,
+  inobj: unknown,
   field: string,
   value?: string,
 ) {
   const hiddenField = `_${field}`;
-
+  const obj = asStringDictionary(inobj);
   if (hasNoArgs(value) || value === null) {
     // passing no args or null effectively unsets field
     obj[hiddenField] = undefined;
@@ -78,14 +89,15 @@ export function doStringGetterSetter(
     );
   }
 
-  return obj;
+  return inobj;
 }
 export function doBoolGetterSetter(
-  obj: any,
+  inobj: unknown,
   field: string,
   value?: boolean,
-): boolean | any {
+) {
   const hiddenField = `_${field}`;
+  const obj = asStringDictionary(inobj);
 
   if (hasNoArgs(value) || value === null) {
     // passing no args or null effectively unsets field
@@ -98,14 +110,15 @@ export function doBoolGetterSetter(
     );
   }
 
-  return obj;
+  return inobj;
 }
 export function doIntGetterSetter(
-  obj: any,
+  inobj: unknown,
   field: string,
   value?: number,
 ) {
   const hiddenField = `_${field}`;
+  const obj = asStringDictionary(inobj);
 
   if (hasNoArgs(value) || value === null) {
     // passing no args or null effectively unsets field
@@ -120,14 +133,15 @@ export function doIntGetterSetter(
     );
   }
 
-  return obj;
+  return inobj;
 }
 export function doFloatGetterSetter(
-  obj: any,
+  inobj: unknown,
   field: string,
   value?: number,
 ) {
   const hiddenField = `_${field}`;
+  const obj = asStringDictionary(inobj);
 
   if (hasNoArgs(value) || value === null) {
     // passing no args or null effectively unsets field
@@ -145,11 +159,12 @@ export function doFloatGetterSetter(
   return obj;
 }
 export function doMomentGetterSetter(
-  obj: any,
+  inobj: unknown,
   field: string,
   value?: DateTime | string,
 ) {
   const hiddenField = `_${field}`;
+  const obj = asStringDictionary(inobj);
 
   if (hasNoArgs(value) || value === null) {
     // passing no args or null effectively unsets field
@@ -284,7 +299,7 @@ export function stringify(value: unknown): string {
   } else if (typeof value === "object") {
     if (value) {
       if (DateTime.isDateTime(value)) {
-        const dateTimeValue = (value as any) as DateTime;
+        const dateTimeValue = (value as unknown) as DateTime;
         // typescript null check
         const s = dateTimeValue.toISO();
         return (dateTimeValue.isValid && s) ? s : `Invalid DateTime: ${dateTimeValue.invalidReason}: ${dateTimeValue.invalidExplanation}`;
@@ -531,6 +546,16 @@ export function checkProtocol(): string {
   return _protocol;
 }
 
+export interface FetchInitObject {
+
+  cache: string;
+  redirect: string;
+  mode: string;
+  referrer: string;
+//  [index: string]: string | Record<string, string>;
+  headers: Record<string, string>;
+  signal?: AbortSignal;
+}
 /**
  * Create default fetch init object with the given mimeType. Sets
  * no-cache, follow redirects, cors mode, referrer as seisplotjs and
@@ -543,7 +568,7 @@ export function checkProtocol(): string {
  * @param   mimeType requested mime type
  * @returns           object with fetch configuration parameters
  */
-export function defaultFetchInitObj(mimeType?: string): Record<string, any> {
+export function defaultFetchInitObj(mimeType?: string): RequestInit {
   const headers: Record<string, string> = {};
 
   if (isStringArg(mimeType)) {
@@ -558,7 +583,7 @@ export function defaultFetchInitObj(mimeType?: string): Record<string, any> {
     headers: headers,
   };
 }
-export function cloneFetchInitObj(fetchInit: Record<string, any>): Record<string, any> {
+export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
   const out = {};
   if (fetchInit) {
     for (const [key, value] of Object.entries(fetchInit)) {
@@ -586,7 +611,7 @@ export function cloneFetchInitObj(fetchInit: Record<string, any>): Record<string
  */
 export function doFetchWithTimeout(
   url: string | URL,
-  fetchInit?: Record<string, any>,
+  fetchInit?: RequestInit,
   timeoutSec?: number,
 ): Promise<Response> {
   const controller = new AbortController();
