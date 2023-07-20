@@ -1244,7 +1244,8 @@ export class ConnectionsResponse {
     }
   }
   static fromXML(daliXML: Element): ConnectionsResponse {
-    return new ConnectionsResponse(`${daliXML.toString()}`);
+    const xmlString = new XMLSerializer().serializeToString(daliXML);
+    return new ConnectionsResponse(xmlString);
   }
   toString(): string {
     return `${this.daliXML.toString()}`;

@@ -39,6 +39,7 @@ import {
   isObject,
   isStringArg,
   isNumArg,
+  stringify,
   validStartTime,
   validEndTime,
 } from "./util";
@@ -627,7 +628,7 @@ export class StationQuery extends FDSNCommon {
       this._maxLon = undefined;
     } else {
       throw new Error(
-        `value argument is optional or LatLonRegion, but was type ${typeof value}, '${value.toString()}' `,
+        `value argument is optional or LatLonRegion, but was type ${typeof value}, '${stringify(value)}' `,
       );
     }
     return this;
