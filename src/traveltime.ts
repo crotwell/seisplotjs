@@ -19,7 +19,7 @@ import {
   defaultFetchInitObj,
   doFetchWithTimeout,
 } from "./util";
-import {Station} from "./stationxml";
+import {Station, Channel} from "./stationxml";
 import {Quake} from "./quakeml";
 export const IRIS_HOST = "service.iris.edu";
 export const TEXT_FORMAT = "text";
@@ -50,9 +50,9 @@ export type TraveltimeArrivalType = {
 
 export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
   if (!v || typeof v !== 'object') {
-    return false
+    return false;
   }
-  const object = v as Record<string, unknown>
+  const object = v as Record<string, unknown>;
 
   if ( ! ( typeof object.model === 'string' &&
     typeof object.sourcedepth === 'number' &&
@@ -69,9 +69,9 @@ export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
 }
 export function isValidTraveltimeArrivalType(v: unknown): v is TraveltimeArrivalType {
   if (!v || typeof v !== 'object') {
-    return false
+    return false;
   }
-  const object = v as Record<string, unknown>
+  const object = v as Record<string, unknown>;
 
   return typeof object.distdeg === 'number' &&
     typeof object.name === 'string' &&
@@ -144,6 +144,9 @@ export class TraveltimeQuery extends FDSNCommon {
 
   /** @private */
   _stalon: number | undefined;
+
+  /** @private */
+  _receiverdepth: number | undefined;
 
   /** @private */
   _evlat: number | undefined;
@@ -299,6 +302,28 @@ export class TraveltimeQuery extends FDSNCommon {
     return this;
   }
 
+  receiverdepth(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(this, "receiverdepth", value);
+    return this;
+  }
+
+  receiverdepthInMeter(value?: number): TraveltimeQuery {
+    doFloatGetterSetter(
+      this,
+      "receiverdepth",
+      isDef(value) ? value / 1000 : value,
+    );
+    return this;
+  }
+
+  receiverdepthFromChannel(channel: Channel): TraveltimeQuery {
+    return this.receiverdepth(channel.depth/1000);
+  }
+
+  getReceiverdepth(): number | undefined {
+    return this._receiverdepth;
+  }
+
   evlat(value?: number): TraveltimeQuery {
     doFloatGetterSetter(this, "evlat", value);
     return this;
@@ -391,13 +416,7 @@ export class TraveltimeQuery extends FDSNCommon {
           (isDef(this._nodata) && response.status === this._nodata)
         ) {
           // no data, create empty
-          return {
-            model: isDef(this._model) ? this._model : "",
-            sourcedepth: isDef(this._evdepth) ? this._evdepth : 0,
-            receiverdepth: 0,
-            phases: isDef(this._phases) ? this._phases.split(",") : [],
-            arrivals: [],
-          };
+          return createEmptyTraveltimeJson(this);
         } else {
           const jsonValue = response.json();
           if (isValidTraveltimeJsonType(jsonValue)) {
@@ -500,6 +519,10 @@ export class TraveltimeQuery extends FDSNCommon {
       url = url + makeParam("evdepth", this._evdepth);
     }
 
+    if (isDef(this._receiverdepth) && this._receiverdepth !== 0) {
+      url = url + makeParam("receiverdepth", this._receiverdepth);
+    }
+
     if (isDef(this._stalat) && isDef(this._stalon)) {
       url =
         url +
@@ -574,6 +597,18 @@ Distance   Depth   Phase   Travel    Ray Param  Takeoff  Incident  Purist    Pur
   (deg)     (km)   Name    Time (s)  p (s/deg)   (deg)    (deg)   Distance   Name
 -----------------------------------------------------------------------------------
 `;
+
+export function createEmptyTraveltimeJson(ttquery: TraveltimeQuery): TraveltimeJsonType {
+  const out: TraveltimeJsonType = {
+    model: isDef(ttquery._model) ? ttquery._model : "",
+    sourcedepth: isDef(ttquery._evdepth) ? ttquery._evdepth : 0,
+    receiverdepth: isDef(ttquery._receiverdepth) ? ttquery._receiverdepth : 0,
+    phases: isDef(ttquery._phases) ? ttquery._phases.split(",") : [],
+    arrivals: [],
+  };
+  return out;
+}
+
 export const FAKE_EMPTY_SVG = `
 <svg version="1.1" baseProfile="full" xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 14016.2 14016.2">
 <!--

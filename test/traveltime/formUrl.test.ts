@@ -21,3 +21,9 @@ test("formURL", () => {
    expect(url).toContain("http://"+traveltime.IRIS_HOST+"/irisws/traveltime/1/query?");
 
 });
+
+test("createEmptyJsonResult", () => {
+  const query = new traveltime.TraveltimeQuery();
+  const emptyJson = traveltime.createEmptyTraveltimeJson(query);
+  expect(traveltime.isValidTraveltimeJsonType(emptyJson)).toBeTrue();
+});
