@@ -214,14 +214,18 @@ export class SeedlinkConnection {
     const promise: Promise<[string,string]> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          const data: ArrayBuffer = event.data;
-          const replyMsg = dataViewToString(new DataView(data));
-          const lines = replyMsg.trim().split("\r");
+          if ( event.data instanceof ArrayBuffer) {
+            const data: ArrayBuffer = event.data;
+            const replyMsg = dataViewToString(new DataView(data));
+            const lines = replyMsg.trim().split("\r");
 
-          if (lines.length === 2) {
-            resolve([lines[0],lines[1]]);
+            if (lines.length === 2) {
+              resolve([lines[0],lines[1]]);
+            } else {
+              reject("not 2 lines: " + replyMsg);
+            }
           } else {
-            reject("not 2 lines: " + replyMsg);
+            reject("event.data not ArrayBuffer?");
           }
         };
 
@@ -260,13 +264,17 @@ export class SeedlinkConnection {
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          const data: ArrayBuffer = event.data;
-          const replyMsg = dataViewToString(new DataView(data)).trim();
+          if ( event.data instanceof ArrayBuffer) {
+            const data: ArrayBuffer = event.data;
+            const replyMsg = dataViewToString(new DataView(data)).trim();
 
-          if (replyMsg === "OK") {
-            resolve(replyMsg);
+            if (replyMsg === "OK") {
+              resolve(replyMsg);
+            } else {
+              reject("msg not OK: " + replyMsg);
+            }
           } else {
-            reject("msg not OK: " + replyMsg);
+            reject("event.data not ArrayBuffer?");
           }
         };
 

@@ -91,7 +91,8 @@ export class SEPacket {
         sePacket._mseed3 = mseed3.MSeed3Record.parseSingleDataRecord(dataView);
       } else if (dataFormat === 74) {
         // ascii J = 74, json e.g. info packet
-        sePacket._json = JSON.parse(dataViewToString(dataView));
+        const jsonData = JSON.parse(dataViewToString(dataView));
+        sePacket._json = jsonData;
       }
     } else {
       throw new Error(
@@ -317,6 +318,7 @@ export class SeedlinkConnection {
           }
         };
       } catch (err) {
+        this.close();
         if (this.errorHandler) {
           this.errorHandler(toError(err));
         }
@@ -350,27 +352,38 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    const rawdata: ArrayBuffer = event.data;
-    const data = new Uint8Array(rawdata);
+    if ( event.data instanceof ArrayBuffer) {
+      const rawdata: ArrayBuffer = event.data;
+      const data = new Uint8Array(rawdata);
 
-    if (data[0] === 83 && data[1] === 69) {
-      this.handleSEPacket(event);
+      if (data[0] === 83 && data[1] === 69) {
+        this.handleSEPacket(event);
+      } else {
+        this.close();
+        this.errorHandler(
+          new Error(`Packet does not look like SE packet: ${data[0]} ${data[1]}`),
+        );
+      }
     } else {
-      this.errorHandler(
-        new Error(`Packet does not look like SE packet: ${data[0]} ${data[1]}`),
-      );
+      this.close();
+      this.errorHandler(new Error("event.data is not ArrayBuffer"));
     }
   }
 
   handleSEPacket(event: MessageEvent): void {
-    const data: ArrayBuffer = event.data;
+    if ( event.data instanceof ArrayBuffer) {
+      const data: ArrayBuffer = event.data;
 
-    try {
-      const out = SEPacket.parse(data);
-      this.receivePacketFn(out);
-    } catch (e) {
-      this.errorHandler(toError(e));
+      try {
+        const out = SEPacket.parse(data);
+        this.receivePacketFn(out);
+      } catch (e) {
+        this.close();
+        this.errorHandler(toError(e));
+      }
+    } else {
       this.close();
+      this.errorHandler(new Error("event.data is not ArrayBuffer"));
     }
   }
 
@@ -384,18 +397,24 @@ export class SeedlinkConnection {
    * @returns            Promise that resolves to the response from the server.
    */
   sendHello(): Promise<Array<string>> {
+    const mythis = this;
     const webSocket = this.webSocket;
     const promise: Promise<Array<string>> = new Promise(function (resolve, reject) {
       if (webSocket) {
-        webSocket.onmessage = function (event) {
-          const data: ArrayBuffer = event.data;
-          const replyMsg = dataViewToString(new DataView(data));
-          const lines = replyMsg.trim().split("\r");
+        webSocket.onmessage =  (event) => {
+          if ( event.data instanceof ArrayBuffer) {
+            const data: ArrayBuffer = event.data;
+            const replyMsg = dataViewToString(new DataView(data));
+            const lines = replyMsg.trim().split("\r");
 
-          if (lines.length === 2) {
-            resolve(lines);
+            if (lines.length === 2) {
+              resolve(lines);
+            } else {
+              reject("not 2 lines: " + replyMsg);
+            }
           } else {
-            reject("not 2 lines: " + replyMsg);
+            mythis.close();
+            mythis.errorHandler(new Error("event.data is not ArrayBuffer"));
           }
         };
 
@@ -430,18 +449,24 @@ export class SeedlinkConnection {
    * @returns        Promise that resolves to the reply from the server.
    */
   createCmdPromise(mycmd: string): Promise<string> {
+    const mythis = this;
     const webSocket = this.webSocket;
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
-        webSocket.onmessage = function (event) {
-          const data: ArrayBuffer = event.data;
-          const replyMsg = dataViewToString(new DataView(data)).trim();
+        webSocket.onmessage =  (event) => {
+          if ( event.data instanceof ArrayBuffer) {
+            const data: ArrayBuffer = event.data;
+            const replyMsg = dataViewToString(new DataView(data)).trim();
 
-          if (replyMsg === "OK") {
-            resolve(replyMsg);
-          } else {
-            reject("msg not OK: " + replyMsg);
-          }
+            if (replyMsg === "OK") {
+              resolve(replyMsg);
+            } else {
+              reject("msg not OK: " + replyMsg);
+            }
+        } else {
+          mythis.close();
+          mythis.errorHandler(new Error("event.data is not ArrayBuffer"));
+        }
         };
 
         webSocket.send(mycmd + "\r\n");
