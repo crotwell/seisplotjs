@@ -15,7 +15,7 @@ export function sort(seisData: Array<SeismogramDisplayData>, key: string) {
   if (key === SORT_NONE) {
     return seisData;
   }
-  const cache = new Map();
+  const cache = new Map<SeismogramDisplayData, number | string | DateTime>();
   const calcSortValue = createSortValueFunction(key);
   seisData.forEach(sdd => {
     cache.set(sdd, calcSortValue(sdd));

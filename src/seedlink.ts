@@ -140,17 +140,21 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    const data: ArrayBuffer = event.data;
+    if ( event.data instanceof ArrayBuffer) {
+      const data: ArrayBuffer = event.data;
 
-    if (data.byteLength < 64) {
-      //assume text
+      if (data.byteLength < 64) {
+        //assume text
+      } else {
+        this.handleMiniseed(data);
+      }
     } else {
-      this.handleMiniseed(event);
+      // ?? error??
+      this.handleError(new Error("Unknown message type" + String(event)));
     }
   }
 
-  handleMiniseed(event: MessageEvent): void {
-    const data: ArrayBuffer = event.data;
+  handleMiniseed(data: ArrayBuffer): void {
 
     try {
       if (data.byteLength < 64) {
