@@ -14,7 +14,9 @@
 <body>
   <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
   <h5 id="sp-seismograph">&lt;sp-seismograph&gt;</h5>
-
+  <div>
+    Mouse Time: <span id="mousetime">time</span>  Click: <span id="clicktime">time</span>
+  </div>
   <h3>Seismograph:</h3>
   <div>
     <sp-seismograph id="raw"></sp-seismograph>
@@ -56,6 +58,12 @@
     seismographList.forEach( graph => {
       graph.appendSeisData([sddA, sddB]);
       graph.draw();
+      graph.addEventListener("seismousemove", evt => {
+        document.querySelector('#mousetime').textContent = evt.detail.time;
+      });
+      graph.addEventListener("seisclick", evt => {
+        document.querySelector('#clicktime').textContent = evt.detail.time;
+      });
     });
   </script>
 </body>
