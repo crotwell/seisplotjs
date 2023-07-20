@@ -8,8 +8,10 @@ import {SeismographConfig} from "./seismographconfig";
 import {isDef} from "./util";
 import { select as d3select} from "d3-selection";
 
+import type {Selection} from 'd3-selection';
+
 export function createEditor(
-  div: any,
+  div: Selection<HTMLElement, unknown, null, undefined>,
   config: SeismographConfig,
   onChange: () => void,
 ) {
@@ -229,9 +231,9 @@ export function createEditor(
     onChange,
   );
 }
-
+export type SEL_DIV_SPAN = Selection<HTMLDivElement, unknown, null, undefined> | Selection<HTMLSpanElement, unknown, null, undefined>
 function createBooleanOptionByKey(
-  myspan: any,
+  myspan: SEL_DIV_SPAN,
   label: string,
   key: string,
   config: SeismographConfig,
@@ -253,7 +255,7 @@ function createBooleanOptionByKey(
 }
 
 function createTextOption(
-  mydiv: any,
+  mydiv: SEL_DIV_SPAN,
   label: string,
   key: string,
   config: any,
@@ -277,7 +279,7 @@ function createTextOption(
 }
 
 function createNumberOption(
-  mydiv: any,
+  mydiv: SEL_DIV_SPAN,
   label: string,
   key: string,
   config: any,
