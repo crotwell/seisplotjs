@@ -130,7 +130,9 @@ export class AnimatedSeismographGroup {
         this.redrawInProgress = false;
       }
       if (this.goAnimation) {
-        window.requestAnimationFrame(timestamp => this.stepper(timestamp));
+        window.setTimeout( () => {
+          window.requestAnimationFrame(timestamp => this.stepper(timestamp));
+        }, this.minRedrawMillis);
       }
     };
   }
