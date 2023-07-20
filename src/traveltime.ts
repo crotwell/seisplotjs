@@ -60,10 +60,6 @@ export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
        typeof object.sourceDepth === 'number') &&
       (typeof object.receiverdepth === 'number' ||
       typeof object.receiverDepth === 'number'))) {
-    console.log(JSON.stringify(v));
-    console.log(`sd: ${(typeof object.sourcedepth === 'number' || typeof object.sourceDepth === 'number')}`)
-    console.log(`low: ${object.sourcedepth}  ${typeof object.sourcedepth === 'number'}`)
-    console.log(`cap: ${object.sourceDepth} ${typeof object.sourceDepth === 'number'}`)
     return false;
   }
   // fix to lower d
