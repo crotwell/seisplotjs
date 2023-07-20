@@ -1034,7 +1034,7 @@ export class Magnitude extends BaseElement {
   }
 
   toString(): string {
-    return stringify(this.mag) + " " + stringify(this.type);
+    return `${this.mag} ${this.type?this.type:""}`;
   }
   get mag(): number {
     return this.magQuantity.value;

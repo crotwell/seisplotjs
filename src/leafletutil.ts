@@ -83,26 +83,32 @@ export function createStationMarker(
   m.bindTooltip(station.codes());
   return m;
 }
+
+/**
+ * Create a circle marker for Quake. Radius is linearly scaled by magnitude,
+ * with min radius of 1 for very small magnitudes. Longitudes are adjusted
+ * by +-360 to draw centered on the given center longitude, eg event at
+ * lon=350 may plot at -10 if centerlon < 180.
+ * @param  quake                          earthquake
+ * @param  magScaleFactor=5               scale factor
+ * @param  classList                      CSS classes to attach
+ * @param  centerLon=0                    center longitude of the map
+ */
 export function createQuakeMarker(quake: Quake, magScaleFactor = 5, classList?: Array<string>, centerLon=0) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(QuakeMarkerClassName);
   allClassList.push(cssClassForQuake(quake));
   const qLon = quake.longitude-centerLon <= 180 ? quake.longitude : quake.longitude-360;
+  // in case no mag
+  let radius =quake.magnitude ? quake.magnitude.mag * magScaleFactor : magScaleFactor;
+  if (radius < 1) { radius = 1;}
   const circle = L.circleMarker([quake.latitude, qLon], {
     color: "currentColor",
-    radius: quake.magnitude
-      ? quake.magnitude.mag * magScaleFactor
-      : magScaleFactor,
-    // in case no mag
+    radius: radius,
     className: allClassList.join(" "),
   });
-  circle.bindTooltip(
-    `${quake.time.toISO()} ${
-      quake.magnitude
-        ? quake.magnitude.mag + " " + quake.magnitude.type
-        : "unkn"
-    }`,
-  );
+  const magStr = quake.magnitude ? quake.magnitude.toString() : "unkn";
+  circle.bindTooltip(`${quake.time.toISO()} ${magStr}`);
   return circle;
 }
 export const leaflet_css = import_leaflet_css.leaflet_css;
