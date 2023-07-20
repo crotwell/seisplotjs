@@ -352,7 +352,7 @@ export class ParticleMotion extends SeisPlotElement {
     }
 
     const s = validStartTime(timeRange);
-    const e = validEndTime(timeRange)
+    const e = validEndTime(timeRange);
     const idxA = segA.indexOfTime(s);
     const lastIdxA = segA.indexOfTime(e);
     const idxB = segB.indexOfTime(s);

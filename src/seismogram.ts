@@ -35,9 +35,9 @@ export type MarkerType = {
 
 export function isValidMarker(v: unknown): v is MarkerType {
   if (!v || typeof v !== 'object') {
-    return false
+    return false;
   }
-  const m = v as Record<string, unknown>
+  const m = v as Record<string, unknown>;
 
   return typeof m.time === 'string' &&
     typeof m.name === 'string' &&

@@ -136,7 +136,7 @@ export function loadRawUSGSGeoJsonSummary(url: string): Promise<USGSGeoJsonSumma
  * basic origin and magnitude along with the id.
  * See https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
  * @param  geojson  text from USGS feed
- * @return EventParameters, which holds an array of Quake objects
+ * @returns EventParameters, which holds an array of Quake objects
  */
 export function parseGeoJSON(geojson: USGSGeoJsonSummary): EventParameters {
     const quakeList = [];
@@ -159,7 +159,7 @@ export function parseGeoJSON(geojson: USGSGeoJsonSummary): EventParameters {
 /**
  * Parses a single GeoJson feature into a Quake.
  * @param  feature  from USGS style geojson
- * @return Quake with origin and magnitude
+ * @returns Quake with origin and magnitude
  */
 export function parseFeatureAsQuake(feature: USGSGeoJsonFeature): Quake {
   const quake = new Quake();

@@ -90,9 +90,10 @@ export function createStationMarker(
  * by +-360 to draw centered on the given center longitude, eg event at
  * lon=350 may plot at -10 if centerlon < 180.
  * @param  quake                          earthquake
- * @param  magScaleFactor=5               scale factor
+ * @param  magScaleFactor               scale factor
  * @param  classList                      CSS classes to attach
- * @param  centerLon=0                    center longitude of the map
+ * @param  centerLon                    center longitude of the map
+ * @returns leaflet circleMarker
  */
 export function createQuakeMarker(quake: Quake, magScaleFactor = 5, classList?: Array<string>, centerLon=0) {
   const allClassList = classList ? classList.slice() : [];
