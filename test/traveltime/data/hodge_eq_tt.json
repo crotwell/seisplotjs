@@ -1,0 +1,106 @@
+{
+  "model" : "iasp91",
+  "sourceDepth" : 0.0,
+  "receiverDepth" : 0.0,
+  "phases" : [ "P", "S", "PcP" ],
+  "arrivals" : [ {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "P",
+    "time" : 24.8633,
+    "rayparam" : 19.1703003,
+    "takeoff" : 89.348655,
+    "incident" : 89.348655,
+    "puristdist" : 1.296916,
+    "puristname" : "P"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "P",
+    "time" : 25.2488,
+    "rayparam" : 17.0529745,
+    "takeoff" : 62.809768,
+    "incident" : 62.809768,
+    "puristdist" : 1.296916,
+    "puristname" : "P"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "P",
+    "time" : 25.3568,
+    "rayparam" : 13.7540362,
+    "takeoff" : 45.841839,
+    "incident" : 45.841839,
+    "puristdist" : 1.296916,
+    "puristname" : "P"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "P",
+    "time" : 25.7649,
+    "rayparam" : 18.4425904,
+    "takeoff" : 74.149484,
+    "incident" : 74.149484,
+    "puristdist" : 1.296916,
+    "puristname" : "P"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "P",
+    "time" : 26.1192,
+    "rayparam" : 16.0116741,
+    "takeoff" : 56.634521,
+    "incident" : 56.634521,
+    "puristdist" : 1.296916,
+    "puristname" : "P"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "S",
+    "time" : 42.9188,
+    "rayparam" : 33.0915713,
+    "takeoff" : 89.345846,
+    "incident" : 89.345846,
+    "puristdist" : 1.296916,
+    "puristname" : "S"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "S",
+    "time" : 43.6553,
+    "rayparam" : 29.5585086,
+    "takeoff" : 63.275037,
+    "incident" : 63.275037,
+    "puristdist" : 1.296916,
+    "puristname" : "S"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "S",
+    "time" : 44.3421,
+    "rayparam" : 24.738666,
+    "takeoff" : 48.37716,
+    "incident" : 48.37716,
+    "puristdist" : 1.296916,
+    "puristname" : "S"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "S",
+    "time" : 44.4752,
+    "rayparam" : 31.83515,
+    "takeoff" : 74.147748,
+    "incident" : 74.147748,
+    "puristdist" : 1.296916,
+    "puristname" : "S"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "S",
+    "time" : 45.1829,
+    "rayparam" : 27.7279093,
+    "takeoff" : 56.91482,
+    "incident" : 56.91482,
+    "puristdist" : 1.296916,
+    "puristname" : "S"
+  }, {
+    "distdeg" : 1.2969157695770264,
+    "phase" : "PcP",
+    "time" : 511.3485,
+    "rayparam" : 0.1247144,
+    "takeoff" : 0.372722,
+    "incident" : 0.372722,
+    "puristdist" : 1.296916,
+    "puristname" : "PcP"
+  } ]
+}

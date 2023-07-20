@@ -1,4 +1,5 @@
-// @flow
+
+import fs from 'fs';
 
 import * as traveltime from '../../src/traveltime';
 
@@ -26,4 +27,14 @@ test("createEmptyJsonResult", () => {
   const query = new traveltime.TraveltimeQuery();
   const emptyJson = traveltime.createEmptyTraveltimeJson(query);
   expect(traveltime.isValidTraveltimeJsonType(emptyJson)).toBeTrue();
+});
+
+test("IRISWSisValidJson", () => {
+  // iris ws has cap D in sourceDepth and receiverDepth while
+  // TauP has sourcedepth and receiverdepth
+  // make sure can read iris style, converted internally to lower case
+    const filename = "./test/traveltime/data/hodge_eq_tt.json";
+    const rawData = fs.readFileSync(filename, 'utf8');
+    const json = JSON.parse(rawData);
+    expect(traveltime.isValidTraveltimeJsonType(json)).toBeTrue();
 });

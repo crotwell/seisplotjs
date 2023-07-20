@@ -26,6 +26,8 @@ test("formURL", () => {
    expect(url).toContain("http://"+traveltime.IRIS_HOST+"/irisws/traveltime/1/query?");
    return query.queryJson().then( tt => {
      expect(tt.arrivals.length).toEqual(11);
+     expect(tt.sourcedepth).toEqual(query.evdepth());
+     expect(tt.receiverdepth).toEqual(query.receiverdepth());
    });
 
 });

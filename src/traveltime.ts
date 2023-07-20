@@ -54,11 +54,29 @@ export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
   }
   const object = v as Record<string, unknown>;
 
+  // IRIS web service uses sourceDepth, TauP uses sourcedepth
   if ( ! ( typeof object.model === 'string' &&
-    typeof object.sourcedepth === 'number' &&
-    typeof object.receiverdepth === 'number')) {
-      return false;
-    }
+      (typeof object.sourcedepth === 'number' ||
+       typeof object.sourceDepth === 'number') &&
+      (typeof object.receiverdepth === 'number' ||
+      typeof object.receiverDepth === 'number'))) {
+    console.log(JSON.stringify(v));
+    console.log(`sd: ${(typeof object.sourcedepth === 'number' || typeof object.sourceDepth === 'number')}`)
+    console.log(`low: ${object.sourcedepth}  ${typeof object.sourcedepth === 'number'}`)
+    console.log(`cap: ${object.sourceDepth} ${typeof object.sourceDepth === 'number'}`)
+    return false;
+  }
+  // fix to lower d
+  if (typeof object.sourceDepth === "number") {
+    // fix IRIS typo D
+    object.sourcedepth = object.sourceDepth;
+    object.sourceDepth = undefined;
+  }
+  if (typeof object.receiverDepth === "number") {
+    // fix IRIS typo D
+    object.receiverdepth = object.receiverDepth;
+    object.receiverDepth = undefined;
+  }
   if ( ! Array.isArray(object.phases)) {
     return false;
   }
@@ -418,12 +436,13 @@ export class TraveltimeQuery extends FDSNCommon {
           // no data, create empty
           return createEmptyTraveltimeJson(this);
         } else {
-          const jsonValue = response.json();
-          if (isValidTraveltimeJsonType(jsonValue)) {
-            return jsonValue;
-          } else {
-            throw new TypeError(`Oops, we did not get root traveltime JSON!`);
-          }
+          return response.json();
+        }
+      }).then(jsonValue => {
+        if (isValidTraveltimeJsonType(jsonValue)) {
+          return jsonValue;
+        } else {
+          throw new TypeError(`Oops, we did not get root traveltime JSON!`);
         }
       },
     );
