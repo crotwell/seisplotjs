@@ -394,7 +394,7 @@ export class LinkedTimeScale {
 
   set duration(duration: Duration) {
     if (!isDef(duration)) {
-      throw new Error(`Duration must be defined: ${duration}`);
+      throw new Error(`Duration must be defined`);
     }
     this._originalDuration = duration;
     this._zoomedDuration = duration;

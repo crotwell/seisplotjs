@@ -58,7 +58,7 @@ export function toMSeed3(seis: Seismogram, extraHeaders?: Record<string, unknown
         });
         const encodeTypes = Array.from(encodeTypeSet.values());
         if (encodeTypes.length > 1) {
-          throw new Error(`more than one encoding type in seis segment: ${encodeTypes}`);
+          throw new Error(`more than one encoding type in seis segment: ${encodeTypes.length}`);
         } else if (encodeTypes.length === 0) {
           throw new Error(`zero encoding type in seis segment`);
         } else if ( !encodeTypes[0]) {

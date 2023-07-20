@@ -497,7 +497,8 @@ export class Seismograph extends SeisPlotElement {
       out += "canvas.width " + cnode.width + "\n";
       out += "this.outerHeight " + this.outerHeight + "\n";
       out += "this.outerWidth " + this.outerWidth + "\n";
-      out += "this.margin " + this.seismographConfig.margin + "\n";
+      const m = this.seismographConfig.margin;
+      out += m ? `this.margin ${m}\n` : `this.margin null\n`;
     } else {
       out += "crect bounding rect is null\n";
     }
@@ -567,7 +568,7 @@ export class Seismograph extends SeisPlotElement {
       const s = xscaleForSDD.domain().start?.valueOf();
       const e = xscaleForSDD.domain().end?.valueOf();
       if (s == null || e == null) {
-        throw new Error(`Bad xscale domain: ${xscaleForSDD.domain()}`);
+        throw new Error(`Bad xscale domain: ${util.stringify(xscaleForSDD.domain())}`);
       }
       const secondsPerPixel =
         (e - s) /

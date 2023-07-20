@@ -11,7 +11,7 @@ import {IndividualAmplitudeScale,
 } from "./scale";
 
 import {SeismogramDisplayData, Seismogram} from "./seismogram";
-import {isDef, validStartTime} from "./util";
+import {isDef, validStartTime, stringify} from "./util";
 import { Duration, Interval} from "luxon";
 import {format as d3format} from "d3-format";
 import { utcFormat as d3utcFormat} from "d3-time-format";
@@ -354,7 +354,7 @@ export class SeismographConfig {
     }
     // don't think this can happen, keep typescript happy
     if (! this._titleHandlebarsCompiled) {
-      throw new Error(`Unable to compile handlebars title for ${this._title}`);
+      throw new Error(`Unable to compile handlebars title for ${stringify(this._title)}`);
     }
     return this._titleHandlebarsCompiled(context, runtimeOptions);
   }
@@ -712,7 +712,7 @@ export function numberFormatWrapper( formater: (arg0: number) => string): ((doma
     if (typeof domainValue === "number" ) {
       return formater(domainValue);
     } else {
-      throw new Error("Can only format number, "+domainValue);
+      throw new Error("Can only format number, "+stringify(domainValue));
     }
   };
 }

@@ -55,7 +55,7 @@ export function reErrorWithMessage(err: unknown, message: string): Error {
     err.message = `${message} ${err.message}`;
     out = err;
   } else {
-    out = new Error(`${message} ${err}`);
+    out = new Error(`${message} ${stringify(err)}`);
   }
   return out;
 }
@@ -65,7 +65,7 @@ export interface StringDictionary {
 }
 export function asStringDictionary(inobj: unknown): StringDictionary {
   if ( typeof inobj !== 'object') {
-    throw new Error(`Expect obj to be object, but was ${inobj}`);
+    throw new Error(`Expect obj to be object, but was ${stringify(inobj)}`);
   }
   const obj = inobj as StringDictionary;
   return obj;
@@ -418,7 +418,7 @@ export function checkStringOrDate(d: string | Date | DateTime): DateTime {
     }
   }
 
-  throw new Error(`unknown date type: ${d} ${typeof d}`);
+  throw new Error(`unknown date type: ${stringify(d)} ${typeof d}`);
 }
 
 /**
@@ -454,7 +454,7 @@ export function makePostParam(name: string, val: unknown): string {
 export function toIsoWoZ(date: DateTime): string {
   if (date.isValid) {
     let out = date.toISO();
-    if (out == null) { throw new Error(`Bad date: ${date}`);}
+    if (out == null) { throw new Error(`Bad date: ${stringify(date)}`);}
     if (out.endsWith('Z')) {
       out = out.substring(0, out.length - 1);
     }
@@ -472,7 +472,7 @@ export function toIsoWoZ(date: DateTime): string {
  */
 export function validStartTime(interval: Interval): DateTime {
   const d = interval.start;
-  if (d == null) {throw new Error(`Bad interval: ${interval}`);}
+  if (d == null) {throw new Error(`Bad interval: ${stringify(interval)}`);}
   return d;
 }
 
@@ -484,7 +484,7 @@ export function validStartTime(interval: Interval): DateTime {
  */
 export function validEndTime(interval: Interval): DateTime {
   const d = interval.end;
-  if (d == null) {throw new Error(`Bad interval: ${interval}`);}
+  if (d == null) {throw new Error(`Bad interval: ${stringify(interval)}`);}
   return d;
 }
 
@@ -514,7 +514,7 @@ export function toJSDate(d: DateTime|null|undefined) {
  * @param  msg               optional message to add to error
  * @returns  passed in object if valid
  */
-export function checkLuxonValid(d: DateTime|Interval|Duration, msg?: string) {
+export function checkLuxonValid(d: null|DateTime|Interval|Duration, msg?: string) {
   if ( d == null) {
     const m = msg ? msg : "";
     throw new Error(`Null luxon value: ${d} ${m}`);

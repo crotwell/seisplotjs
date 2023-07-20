@@ -231,7 +231,7 @@ export class ParticleMotion extends SeisPlotElement {
     } else if (xsdd instanceof SeismogramDisplayData) {
       this._xSeisData = [ xsdd ];
     } else {
-      throw new Error(`Unknown data for xSeisData: ${xsdd}`);
+      throw new Error(`Unknown data for xSeisData`);
     }
     this._seisDataList = this._xSeisData.concat(this._ySeisData);
   }
@@ -244,7 +244,7 @@ export class ParticleMotion extends SeisPlotElement {
     } else if (ysdd instanceof SeismogramDisplayData) {
       this._ySeisData = [ ysdd ];
     } else {
-      throw new Error(`Unknown data for xSeisData: ${ysdd}`);
+      throw new Error(`Unknown data for xSeisData:`);
     }
     this._seisDataList = this._xSeisData.concat(this._ySeisData);
   }

@@ -379,7 +379,7 @@ export class Seismogram {
       outArray = new Float64Array(this.numPoints);
     } else {
       throw new Error(
-        `data not one of Int32Array, Float32Array or Float64Array: ${this._segmentArray[0].y}`,
+        `data not one of Int32Array, Float32Array or Float64Array`,
       );
     }
 
@@ -481,7 +481,7 @@ export function ensureIsSeismogram(
     }
   } else {
     throw new Error(
-      "must be Seismogram or SeismogramSegment but not an object: "+seisSeismogram,
+      "must be Seismogram or SeismogramSegment but not an object: "+stringify(seisSeismogram),
     );
   }
 }
@@ -1327,7 +1327,7 @@ export function calcMinMax(
         middle = (minwz+maxwz)/2.0;
         halfWidth = (maxwz-minwz)/2.0/sens;
       } else {
-        throw new Error(`Unknown ampCentering: ${ampCentering}. Must be one of raw, zero, minmax, mean`);
+        throw new Error(`Unknown ampCentering: ${stringify(ampCentering)}. Must be one of raw, zero, minmax, mean`);
       }
       return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
     }

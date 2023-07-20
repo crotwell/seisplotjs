@@ -1,7 +1,7 @@
 
 import { SeismogramDisplayData } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
-import { isDef } from "./util";
+import { isDef, stringify } from "./util";
 
 export class SeisPlotElement extends HTMLElement {
   _seisDataList: Array<SeismogramDisplayData>;
@@ -45,7 +45,7 @@ export class SeisPlotElement extends HTMLElement {
     } else if (Array.isArray(seisData)) {
       this._seisDataList = seisData;
     } else {
-      throw new Error(`Unknown type for seisData: ${seisData}`);
+      throw new Error(`Unknown type for seisData: ${stringify(seisData)}`);
     }
     this.seisDataUpdated();
   }
