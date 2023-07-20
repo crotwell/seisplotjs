@@ -24,7 +24,7 @@ export class SEPacket {
   stationId: string;
   _miniseed: DataRecord | null;
   _mseed3: MSeed3Record | null;
-  _json: unknown | null;
+  _json: Record<string, unknown> | null;
   _rawPayload: DataView | null;
 
   constructor(
@@ -276,13 +276,13 @@ export class SeedlinkConnection {
         return val;
       })
       .catch(err => {
-        if (this.errorHandler) {
-          this.errorHandler(err);
-        } else {
-          throw err;
-        }
-
         this.close();
+        const insureErr = err instanceof Error ? err : new Error(stringify(err));
+        if (this.errorHandler) {
+          this.errorHandler(insureErr);
+        } else {
+          throw insureErr;
+        }
       });
   }
 
