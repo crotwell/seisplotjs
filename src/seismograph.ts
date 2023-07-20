@@ -192,6 +192,8 @@ export class Seismograph extends SeisPlotElement {
   time_scalable: SeismographTimeScalable;
   amp_scalable: SeismographAmplitudeScalable;
 
+  _resizeObserver: ResizeObserver;
+
   constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     this.outerWidth = -1;
@@ -274,8 +276,6 @@ export class Seismograph extends SeisPlotElement {
       this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
 
-
-    const mythis = this;
     this.g = this.svg
       .append("g")
       .classed("marginTransform", true)
@@ -300,25 +300,34 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .attr("class", "allmarkers")
       .attr("style", "clip-path: url(#" + CLIP_PREFIX + this.plotId + ")");
-    d3select(window).on(
-      "resize.canvasseismograph" + mythis.plotId,
-      function () {
-        if (!mythis.beforeFirstDraw && mythis.checkResize()) {
-          mythis.redraw();
+
+    // set up to redraw if size changes
+    this._resizeObserver = new ResizeObserver((entries) => {
+      console.log("in resizeObserver: "+entries.length)
+      for (const entry of entries) {
+        if (entry.target instanceof Seismograph) {
+          const graph = entry.target;
+          const rect = entry.contentRect;
+          if (!graph.beforeFirstDraw &&
+            (rect.width !== graph.outerWidth || rect.height !== graph.outerHeight)) {
+            console.log('_resizeObserver do resize')
+            graph.redraw();
+          }
         }
-      },
-    );
+      }
+    });
+    this._resizeObserver.observe(this);
 
     // event listener to transform mouse click into time
     this.addEventListener("click", evt => {
-      const detail = mythis.calcDetailForEvent(evt, "click");
+      const detail = this.calcDetailForEvent(evt, "click");
       const event = new CustomEvent("seisclick", { detail: detail});
-      mythis.dispatchEvent(event);
+      this.dispatchEvent(event);
     });
     this.addEventListener('mousemove', evt => {
-      const detail = mythis.calcDetailForEvent(evt, "mousemove");
+      const detail = this.calcDetailForEvent(evt, "mousemove");
       const event = new CustomEvent("seismousemove", { detail: detail});
-      mythis.dispatchEvent(event);
+      this.dispatchEvent(event);
     });
   }
 
