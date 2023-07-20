@@ -303,14 +303,12 @@ export class Seismograph extends SeisPlotElement {
 
     // set up to redraw if size changes
     this._resizeObserver = new ResizeObserver((entries) => {
-      console.log("in resizeObserver: "+entries.length)
       for (const entry of entries) {
         if (entry.target instanceof Seismograph) {
           const graph = entry.target;
           const rect = entry.contentRect;
           if (!graph.beforeFirstDraw &&
             (rect.width !== graph.outerWidth || rect.height !== graph.outerHeight)) {
-            console.log('_resizeObserver do resize')
             graph.redraw();
           }
         }
@@ -507,7 +505,7 @@ export class Seismograph extends SeisPlotElement {
       out += "this.outerHeight " + this.outerHeight + "\n";
       out += "this.outerWidth " + this.outerWidth + "\n";
       const m = this.seismographConfig.margin;
-      out += m ? `this.margin ${m}\n` : `this.margin null\n`;
+      out += m ? `this.margin ${String(m)}\n` : `this.margin null\n`;
     } else {
       out += "crect bounding rect is null\n";
     }
@@ -552,7 +550,6 @@ export class Seismograph extends SeisPlotElement {
   }
 
   drawSeismogramsCanvas(): void {
-    const mythis = this;
 
     if (!this.isVisible()) {
       // no need to draw if we are not visible
@@ -583,7 +580,7 @@ export class Seismograph extends SeisPlotElement {
         (e - s) /
         1000 /
         (xscaleForSDD.range[1] - xscaleForSDD.range[0]);
-      const color = mythis.seismographConfig.getColorForIndex(ti);
+      const color = this.seismographConfig.getColorForIndex(ti);
 
       let firstTime = true;
 
@@ -939,17 +936,16 @@ export class Seismograph extends SeisPlotElement {
   rescaleYAxis(): void {
     if (!this.beforeFirstDraw) {
       const delay = 500;
-      const mythis = this;
 
       if (this.throttleRescale) {
         clearTimeout(this.throttleRescale);
       }
 
-      this.throttleRescale = setTimeout(function () {
+      this.throttleRescale = setTimeout( () => {
 
-        const [yAxis, yAxisRight] = mythis.createLeftRightAxis();
+        const [yAxis, yAxisRight] = this.createLeftRightAxis();
         if (yAxis) {
-          mythis.g
+          this.g
             .select(".axis--y")
             .transition()
             .duration(delay / 2)
@@ -958,7 +954,7 @@ export class Seismograph extends SeisPlotElement {
         }
 
         if (yAxisRight) {
-          mythis.g
+          this.g
             .select(".axis--y-right")
             .transition()
             .duration(delay / 2)
@@ -966,7 +962,7 @@ export class Seismograph extends SeisPlotElement {
             .call(yAxisRight);
         }
 
-        mythis.throttleRescale = null;
+        this.throttleRescale = null;
       }, delay);
     }
   }

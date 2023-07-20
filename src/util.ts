@@ -304,7 +304,7 @@ export function stringify(value: unknown): string {
         const s = dateTimeValue.toISO();
         return (dateTimeValue.isValid && s) ? s : `Invalid DateTime: ${dateTimeValue.invalidReason}: ${dateTimeValue.invalidExplanation}`;
       } else {
-        return `value.constructor.name ${value}`;
+        return `${value?.constructor?.name} ${String(value)}`;
       }
     //} else if (typeof value === 'symbol') {
     //  return value.toString();
