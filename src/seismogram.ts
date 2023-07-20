@@ -369,28 +369,32 @@ export class Seismogram {
    * @returns contatenated data
    */
   merge(): Int32Array | Float32Array | Float64Array {
-    let outArray;
+    let outArray: Int32Array | Float32Array | Float64Array;
 
-    if (this._segmentArray[0].y instanceof Int32Array) {
+    let idx = 0;
+    if (this._segmentArray.every(seg => seg.y instanceof Int32Array)) {
       outArray = new Int32Array(this.numPoints);
-    } else if (this._segmentArray[0].y instanceof Float32Array) {
+      this._segmentArray.forEach(seg => {
+        outArray.set(seg.y, idx);
+        idx += seg.y.length;
+      });
+    } else if (this._segmentArray.every(seg => seg.y instanceof Float32Array)) {
       outArray = new Float32Array(this.numPoints);
-    } else if (this._segmentArray[0].y instanceof Float64Array) {
+      this._segmentArray.forEach(seg => {
+        outArray.set(seg.y, idx);
+        idx += seg.y.length;
+      });
+    } else if (this._segmentArray.every(seg => seg.y instanceof Float64Array)) {
       outArray = new Float64Array(this.numPoints);
+      this._segmentArray.forEach(seg => {
+        outArray.set(seg.y, idx);
+        idx += seg.y.length;
+      });
     } else {
       throw new Error(
-        `data not one of Int32Array, Float32Array or Float64Array`,
+        `data not all same one of Int32Array, Float32Array or Float64Array`,
       );
     }
-
-    let i = 0;
-
-    this._segmentArray.forEach(seg => {
-      for (const v of seg.y) {
-        outArray[i] = v;
-        i++;
-      }
-    });
 
     return outArray;
   }
