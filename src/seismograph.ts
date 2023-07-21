@@ -31,7 +31,7 @@ import type {HandlebarsInput,} from "./axisutil";
 import type {Axis} from 'd3-axis';
 import type {ScaleLinear, NumberValue as d3NumberValue} from "d3-scale";
 import type {Selection} from 'd3-selection';
-//import type {ZoomBehavior} from 'd3-zoom';
+import type {ZoomTransform} from 'd3-zoom';
 
 
 import {
@@ -991,7 +991,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   zoomed(e: any): void {
-    const t = e.transform;
+    const t: ZoomTransform = e.transform;
 
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTS = this.seismographConfig.linkedTimeScale;

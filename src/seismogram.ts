@@ -1055,16 +1055,16 @@ export class SeismogramDisplayData {
   cloneWithNewSeismogram(seis: Seismogram | null): SeismogramDisplayData {
     const out = new SeismogramDisplayData(this.timeRange);
     const handled = ["_seismogram", "_statsCache", "_sourceId"];
+    Object.assign(out, this);
     Object.getOwnPropertyNames(this).forEach(name => {
+      // @ts-ignore
+      const v = this[name];
       if (handled.find(n => name === n)) {
         // handled below
         // @ts-ignore
-      } else if (Array.isArray(this[name])) {
+      } else if (Array.isArray(v)) {
         // @ts-ignore
-        out[name] = this[name].slice();
-      } else {
-        // @ts-ignore
-        out[name] = this[name];
+        out[name] = v.slice();
       }
     });
     out.seismogram = seis;
