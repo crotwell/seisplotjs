@@ -91,7 +91,8 @@ export class SEPacket {
         sePacket._mseed3 = mseed3.MSeed3Record.parseSingleDataRecord(dataView);
       } else if (dataFormat === 74) {
         // ascii J = 74, json e.g. info packet
-        const jsonData = JSON.parse(dataViewToString(dataView));
+        // spec says must be json object
+        const jsonData = JSON.parse(dataViewToString(dataView)) as Record<string, unknown>;
         sePacket._json = jsonData;
       }
     } else {
