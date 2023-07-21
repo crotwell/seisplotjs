@@ -1,4 +1,4 @@
-import { parseGeoJSON }  from '../src/usgsgeojson';
+import { parseGeoJSON, isValidUSGSGeoJsonSummary }  from '../src/usgsgeojson';
 import { DateTime } from 'luxon';
 
 test( "hour magnitude test", () => {
@@ -8,9 +8,10 @@ test( "hour magnitude test", () => {
 {"type":"Feature","properties":{"mag":1.4,"place":"6 km SSW of Big Lake, Alaska","time":1676729392619,"updated":1676730314245,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/ak023299q465","detail":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/ak023299q465.geojson","felt":1,"cdi":2.7,"mmi":null,"alert":null,"status":"automatic","tsunami":0,"sig":30,"net":"ak","code":"023299q465","ids":",ak023299q465,","sources":",ak,","types":",dyfi,origin,phase-data,","nst":null,"dmin":null,"rms":0.37,"gap":null,"magType":"ml","type":"earthquake","title":"M 1.4 - 6 km SSW of Big Lake, Alaska"},"geometry":{"type":"Point","coordinates":[-149.9803,61.4684,32.6]},"id":"ak023299q465"},
 {"type":"Feature","properties":{"mag":4.7,"place":"central Mid-Atlantic Ridge","time":1676729263180,"updated":1676730921040,"tz":null,"url":"https://earthquake.usgs.gov/earthquakes/eventpage/us6000jpxe","detail":"https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/us6000jpxe.geojson","felt":null,"cdi":null,"mmi":null,"alert":null,"status":"reviewed","tsunami":0,"sig":340,"net":"us","code":"6000jpxe","ids":",us6000jpxe,","sources":",us,","types":",origin,phase-data,","nst":27,"dmin":14.339,"rms":0.71,"gap":90,"magType":"mb","type":"earthquake","title":"M 4.7 - central Mid-Atlantic Ridge"},"geometry":{"type":"Point","coordinates":[-36.0365,7.3653,10]},"id":"us6000jpxe"}],"bbox":[-149.9803,7.3653,3.98,-36.0365,61.4684,32.6]}`;
 
-  const parsed = JSON.parse(hour_mag1);
+  const parsed: unknown = JSON.parse(hour_mag1);
   expect(parsed).toBeDefined();
-  const e_params = parseGeoJSON(parsed);
+  const e_params = isValidUSGSGeoJsonSummary(parsed)?parseGeoJSON(parsed):null;
+  expect(e_params).toBeDefined();
   const quakeList = e_params.eventList;
   expect(quakeList).toHaveLength(5);
   for (const q of quakeList) {

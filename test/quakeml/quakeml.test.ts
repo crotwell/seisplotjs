@@ -7,7 +7,7 @@ import {isoToDateTime} from '../../src/util';
 test("time getset", () => {
   const t = isoToDateTime("2019-10-31T01:20:58.661000Z");
   const wid = new quakeml.WaveformID("XX","FAKE");
-  const p = new quakeml.Pick(t, wid)
+  const p = new quakeml.Pick(t, wid);
   expect(p.time).toBe(t);
   expect(p.timeQuantity.value).toBe(t);
   const othert = isoToDateTime("2019-10-31T02:22:22.222000Z");

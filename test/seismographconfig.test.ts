@@ -52,7 +52,7 @@ test("simple seismographconfig clone", () => {
 test("json round trip", () => {
   const seisConfig = new SeismographConfig();
   const jsonConfig = seisConfig.asJSON();
-  console.log(JSON.stringify(jsonConfig, null, 2))
+  console.log(JSON.stringify(jsonConfig, null, 2));
   const rtConfig = SeismographConfig.fromJSON(jsonConfig);
 
   Object.getOwnPropertyNames(seisConfig).forEach(p => {
