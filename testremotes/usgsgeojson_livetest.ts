@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 global.fetch = fetch;
 
 import * as usgsgeosjon from '../src/usgsgeojson';
-
+import type {Quake} from '../src/quakeml';
 
 test("grab", () => {
   return usgsgeosjon.loadHourSummaryAll().then((quakeList: Array<Quake>) => {
