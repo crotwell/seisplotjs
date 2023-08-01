@@ -284,25 +284,25 @@ export class LinkedTimeScale {
    */
   _graphSet: Set<TimeScalable>;
   _originalDuration: Duration;
-  _originalStartOffset: Duration;
+  _originalOffset: Duration;
   _zoomedDuration: null | Duration;
-  _zoomedStartOffset: null | Duration;
+  _zoomedOffset: null | Duration;
   _scaleId: number;
 
   constructor(
     graphList?: Array<TimeScalable>,
     originalDuration?: Duration,
-    originalStartOffset?: Duration,
+    originalOffset?: Duration,
     scaleId?: number,
   ) {
-    if (scaleId) {this._scaleId = scaleId;} else {this._scaleId = -1;}
+    if (scaleId) { this._scaleId = scaleId; } else { this._scaleId = -1; }
     const glist = graphList ? graphList : []; // in case null
 
     this._graphSet = new Set(glist);
     this._originalDuration = Duration.fromMillis(0);
-    this._originalStartOffset = Duration.fromMillis(0);
+    this._originalOffset = Duration.fromMillis(0);
     this._zoomedDuration = null;
-    this._zoomedStartOffset = null;
+    this._zoomedOffset = null;
 
     if (isDef(originalDuration)) {
       this._originalDuration = originalDuration;
@@ -317,10 +317,10 @@ export class LinkedTimeScale {
       }, Duration.fromMillis(0));
     }
 
-    if (originalStartOffset) {
-      this._originalStartOffset = originalStartOffset;
+    if (originalOffset) {
+      this._originalOffset = originalOffset;
     } else {
-      this._originalStartOffset = Duration.fromMillis(0);
+      this._originalOffset = Duration.fromMillis(0);
     }
     this.recalculate();
   }
@@ -341,15 +341,15 @@ export class LinkedTimeScale {
    *
    * @param   graphList Array of TimeScalable to link
    */
-  linkAll(graphList: Array<TimeScalable | { time_scalable: TimeScalable}>) {
+  linkAll(graphList: Array<TimeScalable | { time_scalable: TimeScalable }>) {
     graphList.forEach(graph => {
-        if ("notifyTimeRangeChange" in graph) {
-          this._graphSet.add(graph);
-        } else if ("time_scalable" in graph) {
-          this._graphSet.add(graph.time_scalable);
-        } else {
-          //graph does not have notifyTimeRangeChange method or time_scalable field, skipping
-        }
+      if ("notifyTimeRangeChange" in graph) {
+        this._graphSet.add(graph);
+      } else if ("time_scalable" in graph) {
+        this._graphSet.add(graph.time_scalable);
+      } else {
+        //graph does not have notifyTimeRangeChange method or time_scalable field, skipping
+      }
     });
     this.recalculate();
   }
@@ -366,25 +366,25 @@ export class LinkedTimeScale {
 
   zoom(startOffset: Duration, duration: Duration) {
     this._zoomedDuration = duration;
-    this._zoomedStartOffset = startOffset;
+    this._zoomedOffset = startOffset;
     this.notifyAll();
   }
 
   unzoom() {
     this._zoomedDuration = null;
-    this._zoomedStartOffset = null;
+    this._zoomedOffset = null;
     this.recalculate();
   }
 
   get offset(): Duration {
-    return this._zoomedStartOffset
-      ? this._zoomedStartOffset
-      : this._originalStartOffset;
+    return this._zoomedOffset
+      ? this._zoomedOffset
+      : this._originalOffset;
   }
 
   set offset(offset: Duration) {
-    this._originalStartOffset = offset;
-    this._zoomedStartOffset = offset;
+    this._originalOffset = offset;
+    this._zoomedOffset = offset;
     this.recalculate();
   }
 
@@ -402,7 +402,7 @@ export class LinkedTimeScale {
   }
 
   get origOffset(): Duration {
-    return this._originalStartOffset;
+    return this._originalOffset;
   }
   get origDuration(): Duration {
     return this._originalDuration;
@@ -433,5 +433,39 @@ export class LinkedTimeScale {
   }
   get graphList() {
     return Array.from(this._graphSet.values());
+  }
+}
+
+/**
+ * Linked Time Scale that only modifies the alignment via the offset. The
+ * duration of the linked TimeScalable is reused.
+ * @param graphList            [description]
+ * @param originalDuration     [description]
+ * @param originalOffset  [description]
+ * @param scaleId              [description]
+ */
+export class AlignmentLinkedTimeScale extends LinkedTimeScale {
+
+  constructor(
+    graphList?: Array<TimeScalable>,
+    originalDuration?: Duration,
+    originalOffset?: Duration,
+    scaleId?: number,) {
+    super(graphList, originalDuration, originalOffset, scaleId);
+  }
+
+  /**
+   * Does no calculation, just causes a redraw.
+   */
+  recalculate() {
+    this.notifyAll();
+  }
+  notifyAll() {
+    this.graphList.forEach(graph => {
+      // run later via event loop
+      setTimeout(() => {
+        graph.notifyTimeRangeChange(this.offset, this.duration);
+      });
+    });
   }
 }
