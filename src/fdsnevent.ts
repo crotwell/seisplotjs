@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius} from './fdsncommon';
-import {DateTime, Duration, Interval} from 'luxon';
-import {EventParameters, Quake, USGS_HOST, parseQuakeML} from "./quakeml";
+import { FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius } from './fdsncommon';
+import { DateTime, Duration, Interval } from 'luxon';
+import { EventParameters, Quake, USGS_HOST, parseQuakeML } from "./quakeml";
 import {
   XML_MIME,
   TEXT_MIME,
@@ -40,7 +40,7 @@ export const SERVICE_VERSION = 1;
  * http://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `fdsnws-event-${SERVICE_VERSION}`;
-export {USGS_HOST};
+export { USGS_HOST };
 export const FAKE_EMPTY_XML =
   '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
 
@@ -53,85 +53,85 @@ export const FAKE_EMPTY_XML =
 export class EventQuery extends FDSNCommon {
 
   /** @private */
-  _eventId: string|undefined;
+  _eventId: string | undefined;
 
   /** @private */
-  _startTime: DateTime|undefined;
+  _startTime: DateTime | undefined;
 
   /** @private */
-  _endTime: DateTime|undefined;
+  _endTime: DateTime | undefined;
 
   /** @private */
-  _updatedAfter: DateTime|undefined;
+  _updatedAfter: DateTime | undefined;
 
   /** @private */
-  _minMag: number|undefined;
+  _minMag: number | undefined;
 
   /** @private */
-  _maxMag: number|undefined;
+  _maxMag: number | undefined;
 
   /** @private */
-  _magnitudeType: string|undefined;
+  _magnitudeType: string | undefined;
 
   /** @private */
-  _minDepth: number|undefined;
+  _minDepth: number | undefined;
 
   /** @private */
-  _maxDepth: number|undefined;
+  _maxDepth: number | undefined;
 
   /** @private */
-  _minLat: number|undefined;
+  _minLat: number | undefined;
 
   /** @private */
-  _maxLat: number|undefined;
+  _maxLat: number | undefined;
 
   /** @private */
-  _minLon: number|undefined;
+  _minLon: number | undefined;
 
   /** @private */
-  _maxLon: number|undefined;
+  _maxLon: number | undefined;
 
   /** @private */
-  _latitude: number|undefined;
+  _latitude: number | undefined;
 
   /** @private */
-  _longitude: number|undefined;
+  _longitude: number | undefined;
 
   /** @private */
-  _minRadius: number|undefined;
+  _minRadius: number | undefined;
 
   /** @private */
-  _maxRadius: number|undefined;
+  _maxRadius: number | undefined;
 
   /** @private */
-  _includeArrivals: boolean|undefined;
+  _includeArrivals: boolean | undefined;
 
   /** @private */
-  _includeAllOrigins: boolean|undefined;
+  _includeAllOrigins: boolean | undefined;
 
   /** @private */
-  _includeAllMagnitudes: boolean|undefined;
+  _includeAllMagnitudes: boolean | undefined;
 
   /** @private */
-  _limit: number|undefined;
+  _limit: number | undefined;
 
   /** @private */
-  _offset: number|undefined;
+  _offset: number | undefined;
 
   /** @private */
-  _orderBy: string|undefined;
+  _orderBy: string | undefined;
 
   /** @private */
-  _contributor: string|undefined;
+  _contributor: string | undefined;
 
   /** @private */
-  _catalog: string|undefined;
+  _catalog: string | undefined;
 
   /** @private */
-  _format: string|undefined;
+  _format: string | undefined;
 
   constructor(host?: string) {
-    if ( ! isNonEmptyStringArg(host)) {
+    if (!isNonEmptyStringArg(host)) {
       host = USGS_HOST;
     }
     super(host);
@@ -654,7 +654,7 @@ export class EventQuery extends FDSNCommon {
       this._maxLat = undefined;
       this._minLon = undefined;
       this._maxLon = undefined;
-    } else if ( ! isDef(value)) {
+    } else if (!isDef(value)) {
       // unset
       this._latitude = undefined;
       this._longitude = undefined;
@@ -748,7 +748,7 @@ export class EventQuery extends FDSNCommon {
           throw new Error(`Status not successful: ${response.status}`);
         }
       })
-      .then(function (rawXmlText) {
+      .then(function(rawXmlText) {
         return new DOMParser().parseFromString(rawXmlText, XML_MIME);
       });
   }
@@ -807,10 +807,10 @@ export class EventQuery extends FDSNCommon {
           throw new Error(`Status not 200: ${response.status}`);
         }
       })
-      .then( (rawXmlText) => {
+      .then((rawXmlText) => {
         return new DOMParser().parseFromString(rawXmlText, XML_MIME);
       })
-      .then( (rawXml) => {
+      .then((rawXml) => {
         if (!rawXml) {
           throw new Error("raw xml from DOMParser is null.");
         }
@@ -863,10 +863,10 @@ export class EventQuery extends FDSNCommon {
           throw new Error(`Status not 200: ${response.status}`);
         }
       })
-      .then(function (rawXmlText) {
+      .then(function(rawXmlText) {
         return new DOMParser().parseFromString(rawXmlText, XML_MIME);
       })
-      .then(function (rawXml) {
+      .then(function(rawXml) {
         const top = rawXml.documentElement;
 
         if (!top) {
@@ -996,7 +996,7 @@ export class EventQuery extends FDSNCommon {
         }
       } else {
         throw new Error(
-          `Cannot use minRadius or maxRadius without latitude and longitude: lat=`+
+          `Cannot use minRadius or maxRadius without latitude and longitude: lat=` +
           `${this._latitude} lon= ${this._longitude}`,
         );
       }
@@ -1068,11 +1068,13 @@ export class EventQuery extends FDSNCommon {
 }
 
 
-import {LatLonChoice,
+import {
+  LatLonChoice,
   LatLonBoxEl,
   LatLonRadiusEl,
-  LabeledMinMax} from './components';
-import {TimeRangeChooser,} from './datechooser';
+  LabeledMinMax
+} from './components';
+import { TimeRangeChooser, } from './datechooser';
 
 const eqsearchHtml = `
 <div class="wrapper">
@@ -1098,17 +1100,17 @@ const eqsearchHtml = `
 export class EarthquakeSearch extends HTMLElement {
   constructor() {
     super();
-    const shadow = this.attachShadow({mode: 'open'});
+    const shadow = this.attachShadow({ mode: 'open' });
     this.draw_element(shadow);
   }
   _registerEvent(wrapper: HTMLElement, sel: string) {
     const component = wrapper.querySelector(sel) as HTMLElement;
-    if ( ! component) {throw new Error(`can't find ${sel}`);}
+    if (!component) { throw new Error(`can't find ${sel}`); }
     component.addEventListener("change", () => this.dispatchEvent(new Event("change")));
   }
   draw_element(shadow: ShadowRoot) {
     const wrapper = document.createElement('div');
-    wrapper.setAttribute('class','wrapper');
+    wrapper.setAttribute('class', 'wrapper');
     wrapper.innerHTML = eqsearchHtml;
     shadow.appendChild(wrapper);
     this._registerEvent(wrapper, 'sp-timerange');
@@ -1117,7 +1119,7 @@ export class EarthquakeSearch extends HTMLElement {
     this._registerEvent(wrapper, 'sp-minmax#depth');
 
     const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;
-    if ( ! trChooser) {throw new Error("can't find sp-timerange");}
+    if (!trChooser) { throw new Error("can't find sp-timerange"); }
     if (this.hasAttribute("start")) {
       const s = this.getAttribute("start");
       if (s !== null) {
@@ -1133,12 +1135,12 @@ export class EarthquakeSearch extends HTMLElement {
     if (this.hasAttribute("duration")) {
       const d = this.getAttribute("duration");
       if (d !== null) {
-        trChooser.duration = Duration.fromISO(""+d);
+        trChooser.duration = Duration.fromISO("" + d);
       }
     }
 
     const magChooser = wrapper.querySelector('sp-minmax#magnitude') as LabeledMinMax;
-    if ( ! magChooser) {throw new Error("can't find sp-minmax#magnitude");}
+    if (!magChooser) { throw new Error("can't find sp-minmax#magnitude"); }
     if (this.hasAttribute("mag-min")) {
       const m = this.getAttribute("mag-min");
       if (m !== null) {
@@ -1153,7 +1155,7 @@ export class EarthquakeSearch extends HTMLElement {
     }
 
     const depthChooser = wrapper.querySelector('sp-minmax#depth') as LabeledMinMax;
-    if ( ! depthChooser) {throw new Error("can't find sp-minmax#depth");}
+    if (!depthChooser) { throw new Error("can't find sp-minmax#depth"); }
     if (this.hasAttribute("depth-min")) {
       const m = this.getAttribute("depth-min");
       if (m !== null) {
@@ -1168,79 +1170,79 @@ export class EarthquakeSearch extends HTMLElement {
     }
 
     const latlonChooser = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
-    if ( ! latlonChooser) {throw new Error("can't find sp-latlon-choice");}
+    if (!latlonChooser) { throw new Error("can't find sp-latlon-choice"); }
     LatLonChoice.observedAttributes.forEach(attr => {
       if (this.hasAttribute(attr)) {
         // typescript
         const attrVal = this.getAttribute(attr);
-        if (attrVal) {latlonChooser.setAttribute(attr, attrVal);}
+        if (attrVal) { latlonChooser.setAttribute(attr, attrVal); }
       }
     });
 
     const nowBtn = wrapper.querySelector('#now');
-    if ( ! nowBtn) {throw new Error("can't find button#now");}
+    if (!nowBtn) { throw new Error("can't find button#now"); }
     nowBtn.addEventListener('click', event => {
       trChooser.end = DateTime.utc();
     });
 
     const todayBtn = wrapper.querySelector('#today');
-    if ( ! todayBtn) {throw new Error("can't find button#today");}
+    if (!todayBtn) { throw new Error("can't find button#today"); }
     todayBtn.addEventListener('click', event => {
       trChooser.duration = Duration.fromISO('P1D');
     });
 
     const weekBtn = wrapper.querySelector('#week');
-    if ( ! weekBtn) {throw new Error("can't find button#week");}
+    if (!weekBtn) { throw new Error("can't find button#week"); }
     weekBtn.addEventListener('click', event => {
       trChooser.duration = Duration.fromISO('P7D');
     });
 
     const monthBtn = wrapper.querySelector('#month');
-    if ( ! monthBtn) {throw new Error("can't find button#month");}
+    if (!monthBtn) { throw new Error("can't find button#month"); }
     monthBtn.addEventListener('click', event => {
       trChooser.duration = Duration.fromISO('P1M');
     });
 
     const yearBtn = wrapper.querySelector('#year');
-    if ( ! yearBtn) {throw new Error("can't find button#year");}
+    if (!yearBtn) { throw new Error("can't find button#year"); }
     yearBtn.addEventListener('click', event => {
       trChooser.duration = Duration.fromISO('P1Y');
     });
   }
   populateQuery(query?: EventQuery): EventQuery {
-    if ( ! query) {
+    if (!query) {
       query = new EventQuery();
     }
     const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
     const trChooser = wrapper.querySelector('sp-timerange') as TimeRangeChooser;
-    if ( ! trChooser) {throw new Error("can't find sp-timerange");}
+    if (!trChooser) { throw new Error("can't find sp-timerange"); }
     query.startTime(trChooser.start);
     query.endTime(trChooser.end);
     const latlonchoice = wrapper.querySelector('sp-latlon-choice') as LatLonChoice;
     const choosenLatLon = latlonchoice.choosen();
     if (choosenLatLon instanceof LatLonBoxEl) {
       const latlonbox = choosenLatLon;
-      if (latlonbox.south > -90) {query.minLat(latlonbox.south);}
-      if (latlonbox.north < 90) {query.maxLat(latlonbox.north);}
-      if (latlonbox.west > -180 && latlonbox.west+360 !==latlonbox.east) {query.minLon(latlonbox.west);}
-      if (latlonbox.east < 360 && latlonbox.west+360 !==latlonbox.east) {query.maxLon(latlonbox.east);}
+      if (latlonbox.south > -90) { query.minLat(latlonbox.south); }
+      if (latlonbox.north < 90) { query.maxLat(latlonbox.north); }
+      if (latlonbox.west > -180 && latlonbox.west + 360 !== latlonbox.east) { query.minLon(latlonbox.west); }
+      if (latlonbox.east < 360 && latlonbox.west + 360 !== latlonbox.east) { query.maxLon(latlonbox.east); }
     } else if (choosenLatLon instanceof LatLonRadiusEl) {
       const latlonrad = choosenLatLon;
-      if (latlonrad.minRadius>0 || latlonrad.maxRadius<180) {
+      if (latlonrad.minRadius > 0 || latlonrad.maxRadius < 180) {
         query.latitude(latlonrad.latitude);
         query.longitude(latlonrad.longitude);
-        if (latlonrad.minRadius>0) {query.minRadius(latlonrad.minRadius);}
-        if (latlonrad.maxRadius<180) {query.maxRadius(latlonrad.maxRadius);}
+        if (latlonrad.minRadius > 0) { query.minRadius(latlonrad.minRadius); }
+        if (latlonrad.maxRadius < 180) { query.maxRadius(latlonrad.maxRadius); }
       }
     } else {
       // null means all, whole world
     }
     const mag = wrapper.querySelector('sp-minmax#magnitude') as LabeledMinMax;
-    if (mag.min > 0) {query.minMag(mag.min);}
-    if (mag.max < 10) {query.maxMag(mag.max);}
+    if (mag.min > 0) { query.minMag(mag.min); }
+    if (mag.max < 10) { query.maxMag(mag.max); }
     const depth = wrapper.querySelector('sp-minmax#depth') as LabeledMinMax;
-    if (depth.min > 0) {query.minDepth(depth.min);}
-    if (depth.max < 1000) {query.maxDepth(depth.max);}
+    if (depth.min > 0) { query.minDepth(depth.min); }
+    if (depth.max < 1000) { query.maxDepth(depth.max); }
     return query;
   }
 }

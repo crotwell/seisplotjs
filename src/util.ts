@@ -4,7 +4,7 @@
  * http://www.seis.sc.edu
  */
 
-import {DateTime, Duration, Interval, FixedOffsetZone} from "luxon";
+import { DateTime, Duration, Interval, FixedOffsetZone } from "luxon";
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";
@@ -12,7 +12,7 @@ export const SVG_MIME = "image/svg+xml";
 export const TEXT_MIME = "text/plain";
 export const BINARY_MIME = "application/octet-stream";
 
-export const UTC_OPTIONS = {zone: FixedOffsetZone.utcInstance};
+export const UTC_OPTIONS = { zone: FixedOffsetZone.utcInstance };
 
 export function hasArgs(value: unknown): boolean {
   return arguments.length !== 0 && typeof value !== "undefined";
@@ -47,7 +47,7 @@ export function isDef<Value>(value: Value | undefined | null): value is Value {
 
 export function reErrorWithMessage(err: unknown, message: string): Error {
   let out: Error;
-  if ( ! isDef(err)) {
+  if (!isDef(err)) {
     out = new Error(`${message}`);
   } else if (typeof err === "string") {
     out = new Error(`${message} ${err}`);
@@ -64,7 +64,7 @@ export interface StringDictionary {
   [index: string]: unknown;
 }
 export function asStringDictionary(inobj: unknown): StringDictionary {
-  if ( typeof inobj !== 'object') {
+  if (typeof inobj !== 'object') {
     throw new Error(`Expect obj to be object, but was ${stringify(inobj)}`);
   }
   const obj = inobj as StringDictionary;
@@ -306,8 +306,8 @@ export function stringify(value: unknown): string {
       } else {
         return `${value?.constructor?.name} ${String(value)}`;
       }
-    //} else if (typeof value === 'symbol') {
-    //  return value.toString();
+      //} else if (typeof value === 'symbol') {
+      //  return value.toString();
     } else {
       return `${value}`;
     }
@@ -331,7 +331,7 @@ export function isoToDateTime(val: string): DateTime {
  * @returns          the interval
  */
 export function startEnd(start: string | DateTime,
-                              end: string | DateTime ): Interval {
+  end: string | DateTime): Interval {
   if (isStringArg(start)) {
     start = isoToDateTime(start);
   }
@@ -342,43 +342,55 @@ export function startEnd(start: string | DateTime,
 }
 
 /**
- * Create a luxon Interval from a start and a duration.
+ * Create a luxon Interval from a start and a duration. If the duration is negative, the
+ * start time will become the end time. This differs from luxon Interval.after which
+ * will return an invalid Interval instead.
  *
  * @param  start         start of the interval as iso string or DateTime
  * @param  duration      duration of the interval as iso string, number of seconds, or Duration
  * @returns          the interval
  */
 export function startDuration(start: string | DateTime,
-                              duration: string | Duration | number): Interval {
+  duration: string | Duration | number): Interval {
   if (isStringArg(start)) {
     start = isoToDateTime(start);
   }
   if (isStringArg(duration)) {
     duration = Duration.fromISO(duration);
   } else if (isNumArg(duration)) {
-    duration = Duration.fromMillis(1000*duration);
+    duration = Duration.fromMillis(1000 * duration);
   }
-  return Interval.after(start, duration);
+  if (duration.valueOf() < 0) {
+    return Interval.before(start, duration.negate());
+  } else {
+    return Interval.after(start, duration);
+  }
 }
 
 /**
- * Create a luxon Interval from a duration and a end.
+ * Create a luxon Interval from a duration and a end. If the duration is negative, the
+ * end time will become the start time. This differs from luxon Interval.before which
+ * will return an invalid Interval instead.
  *
  * @param  duration      duration of the interval as iso string, number of seconds, or Duration
  * @param  end         end of the interval as string or DateTime
  * @returns          the interval
  */
 export function durationEnd(duration: string | Duration | number,
-                              end: string | DateTime): Interval {
+  end: string | DateTime): Interval {
   if (isStringArg(end)) {
     end = isoToDateTime(end);
   }
   if (isStringArg(duration)) {
     duration = Duration.fromISO(duration);
   } else if (isNumArg(duration)) {
-    duration = Duration.fromMillis(1000*duration);
+    duration = Duration.fromMillis(1000 * duration);
   }
-  return Interval.before(end, duration);
+  if (duration.valueOf() < 0) {
+    return Interval.after(end, duration.negate());
+  } else {
+    return Interval.before(end, duration);
+  }
 }
 
 /**
@@ -389,7 +401,7 @@ export function durationEnd(duration: string | Duration | number,
  * @returns offset in seconds to now on local machine
  */
 export function calcClockOffset(serverTimeUTC: DateTime): number {
-  return DateTime.utc().diff(serverTimeUTC).toMillis()*1000.0;
+  return DateTime.utc().diff(serverTimeUTC).toMillis() * 1000.0;
 }
 export const WAY_FUTURE: DateTime = DateTime.fromISO("2500-01-01T00:00:00Z");
 
@@ -454,7 +466,7 @@ export function makePostParam(name: string, val: unknown): string {
 export function toIsoWoZ(date: DateTime): string {
   if (date.isValid) {
     let out = date.toISO();
-    if (out == null) { throw new Error(`Bad date: ${stringify(date)}`);}
+    if (out == null) { throw new Error(`Bad date: ${stringify(date)}`); }
     if (out.endsWith('Z')) {
       out = out.substring(0, out.length - 1);
     }
@@ -472,7 +484,7 @@ export function toIsoWoZ(date: DateTime): string {
  */
 export function validStartTime(interval: Interval): DateTime {
   const d = interval.start;
-  if (d == null) {throw new Error(`Bad interval: ${stringify(interval)}`);}
+  if (d == null) { throw new Error(`Bad interval: ${stringify(interval)}`); }
   return d;
 }
 
@@ -484,7 +496,7 @@ export function validStartTime(interval: Interval): DateTime {
  */
 export function validEndTime(interval: Interval): DateTime {
   const d = interval.end;
-  if (d == null) {throw new Error(`Bad interval: ${stringify(interval)}`);}
+  if (d == null) { throw new Error(`Bad interval: ${stringify(interval)}`); }
   return d;
 }
 
@@ -495,11 +507,11 @@ export function validEndTime(interval: Interval): DateTime {
  * @param  d  luxon DateTime
  * @returns   Javascript Date
  */
-export function toJSDate(d: DateTime|null|undefined) {
-  if (! d) {
+export function toJSDate(d: DateTime | null | undefined) {
+  if (!d) {
     throw new Error(`Null/undef DateTime: ${d}`);
   }
-  if (! d.isValid) {
+  if (!d.isValid) {
     throw new Error(`${d.invalidReason}: ${d.invalidExplanation}`);
   }
   return d.toJSDate();
@@ -514,12 +526,12 @@ export function toJSDate(d: DateTime|null|undefined) {
  * @param  msg               optional message to add to error
  * @returns  passed in object if valid
  */
-export function checkLuxonValid(d: null|DateTime|Interval|Duration, msg?: string) {
-  if ( d == null) {
+export function checkLuxonValid(d: null | DateTime | Interval | Duration, msg?: string) {
+  if (d == null) {
     const m = msg ? msg : "";
     throw new Error(`Null luxon value: ${d} ${m}`);
   }
-  if (! d.isValid) {
+  if (!d.isValid) {
     const m = msg ? msg : "";
     throw new Error(`Invalid Luxon: ${typeof d} ${d.constructor.name} ${d.invalidReason}: ${d.invalidExplanation} ${m}`);
   }
@@ -552,7 +564,7 @@ export interface FetchInitObject {
   redirect: string;
   mode: string;
   referrer: string;
-//  [index: string]: string | Record<string, string>;
+  //  [index: string]: string | Record<string, string>;
   headers: Record<string, string>;
   signal?: AbortSignal;
 }
@@ -656,16 +668,16 @@ export function doFetchWithTimeout(
       log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
       throw err;
     })
-    .then(function (response) {
+    .then(function(response) {
       if (response.ok || response.status === 404) {
         return response;
-      } else if (response.status >= 300 &&  response.status <= 399) {
+      } else if (response.status >= 300 && response.status <= 399) {
         if (checkProtocol() === 'http:' && absoluteUrl.href.startsWith("http://")) {
           // maybe try https just in case
           const httpsUrl = new URL(`https://${absoluteUrl.href.slice(7)}`);
           const method = internalFetchInit.method ? internalFetchInit.method : "";
           log(`attempt fetch redirect ${response.status} ${method} to ${stringify(httpsUrl)}`);
-          return fetch(httpsUrl.href, internalFetchInit).then( httpsResponse => {
+          return fetch(httpsUrl.href, internalFetchInit).then(httpsResponse => {
             if (httpsResponse.ok || httpsResponse.status === 404) {
               return httpsResponse;
             } else {
@@ -696,19 +708,19 @@ export function doFetchWithTimeout(
  * @param  mimeType      mimeType, default application/octet-stream
  */
 export function downloadBlobAsFile(data: ArrayBuffer, filename: string, mimeType = 'application/octet-stream') {
-  if(!data) {
-      throw new Error("data is empty");
+  if (!data) {
+    throw new Error("data is empty");
   }
 
-  if(!filename) filename = 'filetodownload.txt';
+  if (!filename) filename = 'filetodownload.txt';
 
-  const blob = new Blob([data], {type: mimeType});
-  const e    = document.createEvent('MouseEvents');
-  const a    = document.createElement('a');
+  const blob = new Blob([data], { type: mimeType });
+  const e = document.createEvent('MouseEvents');
+  const a = document.createElement('a');
 
   a.download = filename;
   a.href = window.URL.createObjectURL(blob);
-  a.dataset.downloadurl =  [mimeType, a.download, a.href].join(':');
+  a.dataset.downloadurl = [mimeType, a.download, a.href].join(':');
   e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
   a.dispatchEvent(e);
 }
@@ -729,8 +741,8 @@ export function meanOfSlice(
   if (dataSlice.length < 8) {
     // @ts-ignore
     return dataSlice.reduce(function(acc: number, val: number): number {
-        return acc + val;
-      }, 0) / totalPts;
+      return acc + val;
+    }, 0) / totalPts;
   } else {
     const byTwo = Math.floor(dataSlice.length / 2);
     return (

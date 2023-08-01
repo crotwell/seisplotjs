@@ -70,7 +70,7 @@ export class Dataset {
           ms3Rec.save(dv);
           offset += recSize;
         });
-        let i=1;
+        let i = 1;
         let seisId;
         if (!!sdd.id && sdd.id.length > 0) {
           seisId = sdd.id;
@@ -82,7 +82,7 @@ export class Dataset {
           seisId = `${seisId}_${sdd.startTime.year}-${sdd.startTime.month}-${sdd.startTime.day}`;
         }
         while (out.has(filename)) {
-          i+=1;
+          i += 1;
           filename = `${seisId}_${i}.${ext}`;
         }
         out.set(filename, outBuf);
@@ -101,11 +101,12 @@ export class Dataset {
   associateQuakes(timeOverlapSecs = 1800) {
     this.waveforms.forEach((w: SeismogramDisplayData) => {
       // only try to set quake if don't already have one
-      if ( ! w.hasQuake()) {
-        this.catalog.forEach((q:Quake)=> {
+      if (!w.hasQuake()) {
+        this.catalog.forEach((q: Quake) => {
           if (q.hasPreferredOrigin()) {
             if (q.preferredOrigin?.time) {
-              const twindow = Interval.after(q.preferredOrigin?.time, 1000*timeOverlapSecs);
+              const dur = Duration.fromMillis(1000 * timeOverlapSecs);
+              const twindow = startDuration(q.preferredOrigin?.time, dur);
               if (twindow.overlaps(w.timeRange)) {
                 w.addQuake(q);
               }
@@ -117,7 +118,7 @@ export class Dataset {
   }
   associateChannels() {
     this.waveforms.forEach(sdd => {
-      if ( ! sdd.hasChannel()) {
+      if (!sdd.hasChannel()) {
         for (const c of allChannels(this.inventory)) {
           if (c.sourceId.equals(sdd.sourceId) && sdd.timeRange.overlaps(c.timeRange)) {
             sdd.channel = c;
@@ -230,22 +231,25 @@ export function sddFromMSeed3(ms3records: Array<mseed3.MSeed3Record>, ds?: Datas
 
 export function insertExtraHeaders(eh: Record<string, unknown>, sdd: SeismogramDisplayData, key: string, ds?: Dataset) {
   const myEH = eh[key];
-  if (! myEH) {
+  if (!myEH) {
     // key not in extra headers
     return;
   }
   if (typeof myEH === 'object') {
-    if ("quake" in myEH && Array.isArray(myEH["quake"])) {
-      for(const pid of myEH["quake"]) {
-        if (ds) {
-          for(const q of ds.catalog) {
-            if (q.publicId === pid) {
-              sdd.addQuake(q);
+    if ("quake" in myEH) {
+      const qList = myEH["quake"];
+      if (qList && Array.isArray(qList)) {
+        for (const pid of qList) {
+          if (ds) {
+            for (const q of ds.catalog) {
+              if (q.publicId === pid) {
+                sdd.addQuake(q);
+              }
             }
+          } else {
+            // no dataset, how to find Quake from publicId?
+            qList.forEach((q: string) => sdd.addQuakeId(q));
           }
-        } else {
-          // no dataset, how to find Quake from publicId?
-          throw new Error(`no dataset, can't find Quake from publicId?: ${stringify(myEH["quake"])}`);
         }
       }
     }
@@ -260,7 +264,7 @@ export function insertExtraHeaders(eh: Record<string, unknown>, sdd: SeismogramD
       const markers = myEH["markers"];
       markers.forEach((m: unknown) => {
         if (m && typeof m === 'object') {
-          if ('time' in m && typeof m.time === 'string' ){
+          if ('time' in m && typeof m.time === 'string') {
             m.time = isoToDateTime(m.time);
           }
           if (isValidMarker(m)) {

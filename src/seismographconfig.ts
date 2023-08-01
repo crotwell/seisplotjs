@@ -3,29 +3,30 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR} from "./cssutil";
-import {IndividualAmplitudeScale,
+import { AUTO_COLOR_SELECTOR, G_DATA_SELECTOR } from "./cssutil";
+import {
+  IndividualAmplitudeScale,
   LinkedAmplitudeScale,
   LinkedTimeScale,
   AMPLITUDE_MODE
 } from "./scale";
 
-import {SeismogramDisplayData, Seismogram} from "./seismogram";
-import {isDef, validStartTime, stringify} from "./util";
-import { Duration, Interval} from "luxon";
-import {format as d3format} from "d3-format";
-import { utcFormat as d3utcFormat} from "d3-time-format";
+import { SeismogramDisplayData, Seismogram } from "./seismogram";
+import { isDef, validStartTime, stringify } from "./util";
+import { Duration, Interval } from "luxon";
+import { format as d3format } from "d3-format";
+import { utcFormat as d3utcFormat } from "d3-time-format";
 import {
   utcSecond as d3utcSecond,
-  utcMinute as d3utcMinute ,
-  utcHour as d3utcHour ,
-  utcDay as d3utcDay ,
-  utcMonth as d3utcMonth ,
-  utcYear as d3utcYear ,
+  utcMinute as d3utcMinute,
+  utcHour as d3utcHour,
+  utcDay as d3utcDay,
+  utcMonth as d3utcMonth,
+  utcYear as d3utcYear,
 } from "d3-time";
 
-import type {AxisDomain} from "d3-axis";
-import {Handlebars, registerHelpers} from "./handlebarshelpers";
+import type { AxisDomain } from "d3-axis";
+import { Handlebars, registerHelpers } from "./handlebarshelpers";
 registerHelpers();
 
 export type MarginType = {
@@ -172,7 +173,7 @@ export class SeismographConfig {
       right: 20,
       bottom: 42,
       left: 85,
-      toString: function () {
+      toString: function() {
         return `t: ${this.top} l: ${this.left} b: ${this.bottom} r: ${this.right}`;
       },
     };
@@ -224,7 +225,7 @@ export class SeismographConfig {
 
     if (json.isLinkedAmplitudeScale) {
       seisConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
-    } else if ( isDef(json.fixedAmplitudeScale)) {
+    } else if (isDef(json.fixedAmplitudeScale)) {
       seisConfig.fixedAmplitudeScale = json.fixedAmplitudeScale;
     } else {
       // neither fixed nor linked, so individual
@@ -245,7 +246,7 @@ export class SeismographConfig {
     delete out._fixedTimeScale;
     delete out._linkedTimeScale;
     out.isLinkedTimeScale = isDef(this._linkedTimeScale);
-    out.isLinkedAmplitudeScale = isDef(this._linkedAmplitudeScale) && ! (this._linkedAmplitudeScale instanceof IndividualAmplitudeScale);
+    out.isLinkedAmplitudeScale = isDef(this._linkedAmplitudeScale) && !(this._linkedAmplitudeScale instanceof IndividualAmplitudeScale);
     delete out._linkedAmplitudeScale;
     delete out.__cache__;
     Object.getOwnPropertyNames(out).forEach(p => {
@@ -263,7 +264,7 @@ export class SeismographConfig {
   }
 
   set fixedAmplitudeScale(ts: null | Array<number>) {
-    if (!isDef(ts)) {throw new Error("amp scale must be defined setting fixed");}
+    if (!isDef(ts)) { throw new Error("amp scale must be defined setting fixed"); }
     this._fixedAmplitudeScale = ts;
     this._linkedAmplitudeScale = null;
   }
@@ -273,7 +274,7 @@ export class SeismographConfig {
   }
 
   set linkedAmplitudeScale(ts: null | LinkedAmplitudeScale) {
-    if (!isDef(ts)) {throw new Error("amp scale must be defined setting linked");}
+    if (!isDef(ts)) { throw new Error("amp scale must be defined setting linked"); }
     if (this._linkedAmplitudeScale) {
       ts.linkAll(this._linkedAmplitudeScale.graphList);
     }
@@ -310,7 +311,7 @@ export class SeismographConfig {
    */
   isCenteredAmp() {
     return this.amplitudeMode === AMPLITUDE_MODE.MinMax
-            || this.amplitudeMode === AMPLITUDE_MODE.Mean;
+      || this.amplitudeMode === AMPLITUDE_MODE.Mean;
   }
 
   get fixedTimeScale(): null | Interval {
@@ -318,7 +319,7 @@ export class SeismographConfig {
   }
 
   set fixedTimeScale(ts: null | Interval) {
-    if (!isDef(ts)) {throw new Error("time scale must be defined");}
+    if (!isDef(ts)) { throw new Error("time scale must be defined"); }
     this._fixedTimeScale = ts;
     this._linkedTimeScale = null;
   }
@@ -328,7 +329,7 @@ export class SeismographConfig {
   }
 
   set linkedTimeScale(ts: null | LinkedTimeScale) {
-    if (!isDef(ts)) {throw new Error("time scale must be defined");}
+    if (!isDef(ts)) { throw new Error("time scale must be defined"); }
     if (this._linkedTimeScale) {
       ts.linkAll(this._linkedTimeScale.graphList);
     }
@@ -382,7 +383,7 @@ export class SeismographConfig {
       }
     }
     // don't think this can happen, keep typescript happy
-    if (! this.__cache__.titleHandlebarsCompiled) {
+    if (!this.__cache__.titleHandlebarsCompiled) {
       throw new Error(`Unable to compile handlebars title for ${stringify(this._title)}`);
     }
     return this.__cache__.titleHandlebarsCompiled(context, runtimeOptions);
@@ -448,7 +449,7 @@ export class SeismographConfig {
       }
     }
     // don't think this can happen, keep typescript happy
-    if (! this.__cache__.xLabelHandlebarsCompiled) {
+    if (!this.__cache__.xLabelHandlebarsCompiled) {
       throw new Error(`Unable to compile handlebars xLabel for ${this._xLabel}`);
     }
 
@@ -466,7 +467,7 @@ export class SeismographConfig {
       }
     }
     // don't think this can happen, keep typescript happy
-    if (! this.__cache__.xSublabelHandlebarsCompiled) {
+    if (!this.__cache__.xSublabelHandlebarsCompiled) {
       throw new Error(`Unable to compile handlebars xLabel for ${this._xSublabel}`);
     }
 
@@ -532,7 +533,7 @@ export class SeismographConfig {
       }
     }
     // don't think this can happen, keep typescript happy
-    if (! this.__cache__.yLabelHandlebarsCompiled) {
+    if (!this.__cache__.yLabelHandlebarsCompiled) {
       throw new Error(`Unable to compile handlebars yLabel for ${this._yLabel}`);
     }
 
@@ -549,7 +550,7 @@ export class SeismographConfig {
       }
     }
     // don't think this can happen, keep typescript happy
-    if (! this.__cache__.ySublabelHandlebarsCompiled) {
+    if (!this.__cache__.ySublabelHandlebarsCompiled) {
       throw new Error(`Unable to compile handlebars yLabel for ${this._ySublabel}`);
     }
 
@@ -593,7 +594,7 @@ export class SeismographConfig {
       }
     }
     // don't think this can happen, keep typescript happy
-    if (! this.__cache__.yLabelRightHandlebarsCompiled) {
+    if (!this.__cache__.yLabelRightHandlebarsCompiled) {
       throw new Error(`Unable to compile handlebars yLabelRight for ${this._yLabelRight}`);
     }
 
@@ -628,7 +629,7 @@ export class SeismographConfig {
       min,
     ]);
     const fakeSampleRate =
-      1 / (1000*timeRange.toDuration().toMillis() / (fakeData.length - 1));
+      1 / (1000 * timeRange.toDuration().toMillis() / (fakeData.length - 1));
     const fakeSeis = Seismogram.fromContiguousData(
       fakeData,
       fakeSampleRate,
@@ -681,9 +682,8 @@ export class SeismographConfig {
       // not used by actual waveform as default is canvas, not svg
       // is used by fftplot
       cssText += `
-        ${svgEl} g.${G_DATA_SELECTOR} g:nth-child(${numColors}n+${
-        index + 1
-      }) path {
+        ${svgEl} g.${G_DATA_SELECTOR} g:nth-child(${numColors}n+${index + 1
+        }) path {
           stroke: ${color};
         }
         `;
@@ -709,7 +709,7 @@ export class SeismographConfig {
         right: this.margin.right,
         bottom: this.margin.bottom,
         left: this.margin.left,
-        toString: function () {
+        toString: function() {
           return (
             "t:" +
             this.top +
@@ -792,18 +792,18 @@ export type SeismographConfigJsonType = {
   isRelativeTime: boolean;
 }
 
-export function numberFormatWrapper( formater: (arg0: number) => string): ((domainValue: AxisDomain) => string) {
+export function numberFormatWrapper(formater: (arg0: number) => string): ((domainValue: AxisDomain) => string) {
   return function(domainValue: AxisDomain) {
-    if (typeof domainValue === "number" ) {
+    if (typeof domainValue === "number") {
       return formater(domainValue);
     } else {
-      throw new Error("Can only format number, "+stringify(domainValue));
+      throw new Error("Can only format number, " + stringify(domainValue));
     }
   };
 }
 export const formatCount: (arg0: number) => string = d3format("~s");
 export const formatExp: (arg0: number) => string = d3format(".2e");
-export const formatCountOrAmp = function (v: number): string {
+export const formatCountOrAmp = function(v: number): string {
   return -1 < v && v < 1 && v !== 0 ? formatExp(v) : formatCount(v);
 };
 export const formatMillisecond: (arg0: Date) => string = d3utcFormat(".%L");
@@ -813,20 +813,20 @@ export const formatHour: (arg0: Date) => string = d3utcFormat("%H:%M");
 export const formatDay: (arg0: Date) => string = d3utcFormat("%m/%d");
 export const formatMonth: (arg0: Date) => string = d3utcFormat("%Y/%m");
 export const formatYear: (arg0: Date) => string = d3utcFormat("%Y");
-export const multiFormatHour = function (date: Date): string {
+export const multiFormatHour = function(date: Date): string {
   return (d3utcSecond(date) < date
     ? formatMillisecond
     : d3utcMinute(date) < date
-    ? formatSecond
-    : d3utcHour(date) < date
-    ? formatMinute
-    : d3utcDay(date) < date
-    ? formatHour
-    : d3utcMonth(date) < date
-    ? formatDay
-    : d3utcYear(date) < date
-    ? formatMonth
-    : formatYear)(date);
+      ? formatSecond
+      : d3utcHour(date) < date
+        ? formatMinute
+        : d3utcDay(date) < date
+          ? formatHour
+          : d3utcMonth(date) < date
+            ? formatDay
+            : d3utcYear(date) < date
+              ? formatMonth
+              : formatYear)(date);
 };
 
 SeismographConfig._lastID = 0;

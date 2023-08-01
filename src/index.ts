@@ -53,7 +53,7 @@ import * as transfer from "./transfer";
 import * as traveltime from "./traveltime";
 import * as usgsgeojson from "./usgsgeojson";
 import * as util from "./util";
-import {version} from "./version";
+import { version } from "./version";
 import * as vector from "./vector";
 import * as OregonDSP from "oregondsp";
 import * as luxon from "luxon";

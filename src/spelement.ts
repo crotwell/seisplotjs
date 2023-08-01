@@ -10,13 +10,13 @@ export class SeisPlotElement extends HTMLElement {
   _throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
 
   constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>,
-      seisConfig?: SeismographConfig) {
+    seisConfig?: SeismographConfig) {
     super();
-    this.onRedraw = (el: SeisPlotElement) => {};
+    this.onRedraw = (el: SeisPlotElement) => { };
     this._throttleRedraw = null;
     if (isDef(seisData)) {
       if (seisData instanceof SeismogramDisplayData) {
-        this._seisDataList = [ seisData ];
+        this._seisDataList = [seisData];
       } else if (Array.isArray(seisData) && (seisData.length === 0 || seisData[0] instanceof SeismogramDisplayData)) {
         this._seisDataList = seisData;
       } else {
@@ -34,14 +34,14 @@ export class SeisPlotElement extends HTMLElement {
     } else {
       this._seismographConfig = new SeismographConfig();
     }
-    this.attachShadow({mode: 'open'});
+    this.attachShadow({ mode: 'open' });
   }
   get seisData() {
     return this._seisDataList;
   }
   set seisData(seisData: Array<SeismogramDisplayData>) {
     if (seisData instanceof SeismogramDisplayData) {
-      this._seisDataList = [ seisData ];
+      this._seisDataList = [seisData];
     } else if (Array.isArray(seisData)) {
       this._seisDataList = seisData;
     } else {
@@ -66,10 +66,10 @@ export class SeisPlotElement extends HTMLElement {
    * configuration has changed. This should trigger a redraw.
    */
   seisDataUpdated() {
-    this.draw();
+    this.redraw();
   }
   connectedCallback() {
-    this.draw();
+    this.redraw();
   }
   /**
    * Redraw the element. This implements a throttle so that many redraws
@@ -92,12 +92,12 @@ export class SeisPlotElement extends HTMLElement {
    * onRedraw callback.
    */
   draw() {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) { return; }
   }
   getShadowRoot(autoAdd = true): ShadowRoot {
-    if ( ! this.shadowRoot) {
+    if (!this.shadowRoot) {
       if (autoAdd) {
-        this.attachShadow({mode: 'open'});
+        this.attachShadow({ mode: 'open' });
         return this.getShadowRoot(false); // prevent inf recur
       } else {
         throw new Error("shadowRoot is missing");
@@ -109,10 +109,10 @@ export class SeisPlotElement extends HTMLElement {
 }
 
 export function addStyleToElement(element: HTMLElement,
-                                  css: string,
-                                  id?: string): HTMLStyleElement {
-  if ( ! element.shadowRoot) {
-    element.attachShadow({mode: 'open'});
+  css: string,
+  id?: string): HTMLStyleElement {
+  if (!element.shadowRoot) {
+    element.attachShadow({ mode: 'open' });
   }
   const styleEl = document.createElement("style");
   styleEl.textContent = css;

@@ -3,14 +3,14 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {DateTime, Duration, Interval} from "luxon";
-import {removeTrend } from "./filter";
-import {Seismogram, SeismogramDisplayData, findMinMaxOverTimeRange} from "./seismogram";
-import {SeismogramSegment} from "./seismogramsegment";
-import {Seismograph} from "./seismograph";
-import {SeismographConfig} from "./seismographconfig";
-import {SeisPlotElement} from "./spelement";
-import { isDef, validStartTime, validEndTime} from "./util";
+import { DateTime, Duration, Interval } from "luxon";
+import { removeTrend } from "./filter";
+import { Seismogram, SeismogramDisplayData, findMinMaxOverTimeRange } from "./seismogram";
+import { SeismogramSegment } from "./seismogramsegment";
+import { Seismograph } from "./seismograph";
+import { SeismographConfig } from "./seismographconfig";
+import { SeisPlotElement } from "./spelement";
+import { isDef, validStartTime, validEndTime, startDuration } from "./util";
 
 export const HELICORDER_ELEMENT = 'sp-helicorder';
 
@@ -25,8 +25,8 @@ export class Helicorder extends SeisPlotElement {
 
   constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     let heliConfig;
-    if ( ! seisConfig) {
-      const timeWindow = Interval.before(DateTime.utc(), Duration.fromObject({hours: 24}));
+    if (!seisConfig) {
+      const timeWindow = Interval.before(DateTime.utc(), Duration.fromObject({ hours: 24 }));
       heliConfig = new HelicorderConfig(timeWindow);
     } else if (seisConfig instanceof HelicorderConfig) {
       heliConfig = seisConfig;
@@ -45,20 +45,20 @@ export class Helicorder extends SeisPlotElement {
     // event listener to transform mouse click into time
     this.addEventListener("click", evt => {
       const detail = this.calcDetailForEvent(evt);
-      const event = new CustomEvent("heliclick", { detail: detail});
+      const event = new CustomEvent("heliclick", { detail: detail });
       this.dispatchEvent(event);
     });
     this.addEventListener('mousemove', evt => {
       const detail = this.calcDetailForEvent(evt);
-      const event = new CustomEvent("helimousemove", { detail: detail});
+      const event = new CustomEvent("helimousemove", { detail: detail });
       this.dispatchEvent(event);
     });
     this.addEventListener("helimousemove", hEvent => {
       const detail = (hEvent as CustomEvent).detail as HeliMouseEventType;
-      wrapper.querySelectorAll(`sp-seismograph`).forEach( (seismograph, idx) => {
+      wrapper.querySelectorAll(`sp-seismograph`).forEach((seismograph, idx) => {
         if (idx === detail.lineNum) {
           let selectedStyle = seismograph.shadowRoot?.querySelector("style.selection");
-          if ( ! selectedStyle) {
+          if (!selectedStyle) {
             selectedStyle = document.createElement('style');
             seismograph.shadowRoot?.insertBefore(selectedStyle, seismograph.shadowRoot?.firstChild);
             selectedStyle.setAttribute("class", "selection");
@@ -97,7 +97,7 @@ export class Helicorder extends SeisPlotElement {
     const segMinMax = segment.findMinMax();
     const origMinMax = this.heliConfig.fixedAmplitudeScale;
     const heliTimeRange = this.heliConfig.fixedTimeScale;
-    if (!heliTimeRange) { throw new Error("Heli is not fixedTimeScale");}
+    if (!heliTimeRange) { throw new Error("Heli is not fixedTimeScale"); }
     if (validEndTime(heliTimeRange) < validEndTime(segment.timeRange)) {
       const lineDuration = Duration.fromMillis(
         heliTimeRange.toDuration().toMillis() / this.heliConfig.numLines);
@@ -107,15 +107,15 @@ export class Helicorder extends SeisPlotElement {
           validStartTime(heliTimeRange).plus(lineDuration),
           validEndTime(heliTimeRange).plus(lineDuration)
         );
-        this.redraw();
+      this.redraw();
     }
     if (this.seisData && this.seisData.length > 0) {
       const singleSeisData = this.seisData[0];
       singleSeisData.append(segment);
       if (validEndTime(heliTimeRange) < validEndTime(segment.timeRange) ||
         (origMinMax &&
-         (segMinMax.min < origMinMax[0] ||
-          origMinMax[1] < segMinMax.max))) {
+          (segMinMax.min < origMinMax[0] ||
+            origMinMax[1] < segMinMax.max))) {
         this.redraw(); //redraw because amp changed
       } else {
         // only redraw overlaping graphs
@@ -152,7 +152,7 @@ export class Helicorder extends SeisPlotElement {
    * @private
    */
   drawSeismograms(): void {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) { return; }
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const timeRange = this.heliConfig.fixedTimeScale;
 
@@ -177,9 +177,9 @@ export class Helicorder extends SeisPlotElement {
 
           if (singleSeisData.seismogram.timeRange.overlaps(timeRange)) {
             const minMax = findMinMaxOverTimeRange([singleSeisData],
-                                                  timeRange,
-                                                  false,
-                                                  this.heliConfig.amplitudeMode);
+              timeRange,
+              false,
+              this.heliConfig.amplitudeMode);
             maxVariation = minMax.expandPercentage(mul_percent).fullWidth;
           }
         } else {
@@ -238,7 +238,7 @@ export class Helicorder extends SeisPlotElement {
       lineSeisConfig.yLabelRight = `${endTime?.toFormat("HH:mm")}`;
       lineSeisConfig.lineColors = [
         this.heliConfig.lineColors[
-          lineNumber % this.heliConfig.lineColors.length
+        lineNumber % this.heliConfig.lineColors.length
         ],
       ];
       const lineSeisData = this.cutForLine(singleSeisData, lineInterval);
@@ -249,7 +249,7 @@ export class Helicorder extends SeisPlotElement {
         lineSeisConfig.fixedAmplitudeScale = this.heliConfig.fixedAmplitudeScale;
       } else {
         lineSeisConfig.fixedAmplitudeScale = [
-          -1* maxVariation,
+          -1 * maxVariation,
           maxVariation,
         ];
       }
@@ -259,7 +259,7 @@ export class Helicorder extends SeisPlotElement {
       seismograph.setAttribute("class", "heliLine");
       seismograph.setAttribute("style", `height: ${height}px;margin-top: ${marginTop}px`);
       const seismographWrapper = (seismograph.shadowRoot?.querySelector('div') as HTMLDivElement);
-      const styleEl= document.createElement('style');
+      const styleEl = document.createElement('style');
       const seismographRoot = seismograph.shadowRoot;
       if (seismographRoot) {
         const helicss = seismographRoot.insertBefore(styleEl, seismographWrapper);
@@ -335,7 +335,7 @@ export class Helicorder extends SeisPlotElement {
   ): Array<HeliTimeRange> {
     const out = [];
     let s = startTime;
-    const durationPerLine = Duration.fromMillis(secondsPerLine*1000);
+    const durationPerLine = Duration.fromMillis(secondsPerLine * 1000);
     for (let lineNum = 0; lineNum < numberOfLines; lineNum++) {
       const startEnd = new HeliTimeRange(s, durationPerLine, lineNum);
       out.push(startEnd);
@@ -353,23 +353,23 @@ export class Helicorder extends SeisPlotElement {
         ? this.heliConfig.maxHeight
         : DEFAULT_MAX_HEIGHT;
     const baseHeight =
-      (maxHeight - (heliMargin.top+heliMargin.bottom )) /
+      (maxHeight - (heliMargin.top + heliMargin.bottom)) /
       (nl - (nl - 1) * this.heliConfig.overlap);
 
     let clickLine = 0;
-    if (evt.offsetY < heliMargin.top+baseHeight*(0.5)) {
+    if (evt.offsetY < heliMargin.top + baseHeight * (0.5)) {
       clickLine = 0;
     } else {
-      clickLine = Math.round(((evt.offsetY-heliMargin.top)-baseHeight*(0.5))/
-                              (baseHeight*(1-this.heliConfig.overlap)));
+      clickLine = Math.round(((evt.offsetY - heliMargin.top) - baseHeight * (0.5)) /
+        (baseHeight * (1 - this.heliConfig.overlap)));
     }
     const timeRange = this.heliConfig.fixedTimeScale;
-    if ( timeRange ) {
-      const timeLineFraction = (evt.offsetX-margin.left)/(this.width-margin.left-margin.right);
+    if (timeRange) {
+      const timeLineFraction = (evt.offsetX - margin.left) / (this.width - margin.left - margin.right);
 
       const secondsPerLine =
         timeRange.toDuration().toMillis() / 1000 / this.heliConfig.numLines;
-      const clickTime = validStartTime(timeRange).plus(Duration.fromMillis((clickLine+timeLineFraction)*secondsPerLine*1000));
+      const clickTime = validStartTime(timeRange).plus(Duration.fromMillis((clickLine + timeLineFraction) * secondsPerLine * 1000));
       return {
         mouseevent: evt,
         time: clickTime,
@@ -438,7 +438,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.lineSeisConfig.wheelZoom = false;
   }
   static fromSeismographConfig(seisConfig: SeismographConfig): HelicorderConfig {
-    if (! seisConfig.fixedTimeScale) {
+    if (!seisConfig.fixedTimeScale) {
       throw new Error("Helicorder config must have fixedTimeScale set");
     }
     const heliConfig = new HelicorderConfig(seisConfig.fixedTimeScale);
@@ -461,7 +461,7 @@ export class HeliTimeRange {
     duration: Duration,
     lineNumber: number,
   ) {
-    this.interval = Interval.after(startTime, duration);
+    this.interval = startDuration(startTime, duration);
     this.lineNumber = lineNumber;
   }
 }

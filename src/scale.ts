@@ -1,6 +1,6 @@
 
-import {isDef} from "./util";
-import {Duration} from "luxon";
+import { isDef } from "./util";
+import { Duration } from "luxon";
 
 /** enum for amplitude modes, RAW, ZERO, MINMAX, MEAN */
 export enum AMPLITUDE_MODE {
@@ -21,13 +21,13 @@ export class MinMaxable {
     this.max = max;
   }
   get middle(): number {
-    return (this.min+this.max)/2;
+    return (this.min + this.max) / 2;
   }
   get halfWidth(): number {
-    return (this.fullWidth)/2;
+    return (this.fullWidth) / 2;
   }
   get fullWidth(): number {
-    return (this.max-this.min);
+    return (this.max - this.min);
   }
   union(omm?: MinMaxable): MinMaxable {
     if (omm) {
@@ -37,7 +37,7 @@ export class MinMaxable {
     }
   }
   expandPercentage(percent: number): MinMaxable {
-    return MinMaxable.fromMiddleHalfWidth(this.middle, this.halfWidth*percent);
+    return MinMaxable.fromMiddleHalfWidth(this.middle, this.halfWidth * percent);
   }
   /**
    * This as a d3 style 2 element array.
@@ -63,7 +63,7 @@ export class MinMaxable {
     return new MinMaxable(minmax[0], minmax[1]);
   }
   static fromMiddleHalfWidth(mid: number, halfWidth: number): MinMaxable {
-    return new MinMaxable(mid-halfWidth, mid+halfWidth);
+    return new MinMaxable(mid - halfWidth, mid + halfWidth);
   }
 }
 
@@ -74,7 +74,7 @@ export class AmplitudeScalable {
     if (minMax) {
       this.minMax = minMax;
     } else {
-      this.minMax = new MinMaxable(0,0);
+      this.minMax = new MinMaxable(0, 0);
     }
   }
 
@@ -160,15 +160,15 @@ export class LinkedAmplitudeScale {
    *
    * @param   graphList Array of AmplitudeScalable to link
    */
-  linkAll(graphList: Array<AmplitudeScalable | { amp_scalable: AmplitudeScalable}>) {
+  linkAll(graphList: Array<AmplitudeScalable | { amp_scalable: AmplitudeScalable }>) {
     graphList.forEach(graph => {
-        if ("notifyAmplitudeChange" in graph) {
-          this._graphSet.add(graph);
-        } else if ("amp_scalable" in graph) {
-          this._graphSet.add(graph.amp_scalable);
-        } else {
-          // graph does not have notifyAmplitudeChange method or amp_scalable field, skipping
-        }
+      if ("notifyAmplitudeChange" in graph) {
+        this._graphSet.add(graph);
+      } else if ("amp_scalable" in graph) {
+        this._graphSet.add(graph.amp_scalable);
+      } else {
+        // graph does not have notifyAmplitudeChange method or amp_scalable field, skipping
+      }
     });
     this.recalculate();
   }
@@ -177,7 +177,7 @@ export class LinkedAmplitudeScale {
    *
    * @param   graph AmplitudeScalable to link
    */
-  link(graph: AmplitudeScalable | { amp_scalable: AmplitudeScalable}) {
+  link(graph: AmplitudeScalable | { amp_scalable: AmplitudeScalable }) {
     this.linkAll([graph]);
   }
 
@@ -252,7 +252,7 @@ export class IndividualAmplitudeScale extends LinkedAmplitudeScale {
 
 
 export class FixedHalfWidthAmplitudeScale extends LinkedAmplitudeScale {
-  constructor( halfWidth: number, graphList?: Array<AmplitudeScalable>) {
+  constructor(halfWidth: number, graphList?: Array<AmplitudeScalable>) {
     super(graphList);
     this.halfWidth = halfWidth;
   }
@@ -330,7 +330,7 @@ export class LinkedTimeScale {
    *
    * @param   graph TimeScalable to link
    */
-  link(graph: TimeScalable | { time_scalable: TimeScalable}) {
+  link(graph: TimeScalable | { time_scalable: TimeScalable }) {
     this.linkAll([graph]);
   }
 

@@ -3,18 +3,18 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import { DateTime, Duration, Interval} from "luxon";
+import { DateTime, Duration, Interval } from "luxon";
 //import * as d3 from "d3";
-import {select as d3select} from "d3-selection";
-import {scaleLinear as d3scaleLinear } from "d3-scale";
+import { select as d3select } from "d3-selection";
+import { scaleLinear as d3scaleLinear } from "d3-scale";
 import {
-  axisLeft as d3axisLeft ,
+  axisLeft as d3axisLeft,
   axisBottom as d3axisBottom,
   axisTop as d3axisTop,
   axisRight as d3axisRight
 } from "d3-axis";
 
-import {zoom as d3zoom } from "d3-zoom";
+import { zoom as d3zoom } from "d3-zoom";
 import { AUTO_COLOR_SELECTOR } from "./cssutil";
 import {
   AmplitudeScalable,
@@ -25,13 +25,14 @@ import {
   SeismographConfig,
   numberFormatWrapper,
 } from "./seismographconfig";
-import type {MarkerType} from "./seismogram";
-import type {TraveltimeJsonType} from "./traveltime";
-import type {HandlebarsInput,} from "./axisutil";
-import type {Axis} from 'd3-axis';
-import type {ScaleLinear, NumberValue as d3NumberValue} from "d3-scale";
-import type {Selection} from 'd3-selection';
-import type {ZoomTransform} from 'd3-zoom';
+import { drawAllOnCanvas } from "./seismographutil";
+import type { MarkerType } from "./seismogram";
+import type { TraveltimeJsonType } from "./traveltime";
+import type { HandlebarsInput, } from "./axisutil";
+import type { Axis } from 'd3-axis';
+import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";
+import type { Selection } from 'd3-selection';
+import type { ZoomTransform } from 'd3-zoom';
 
 
 import {
@@ -44,15 +45,15 @@ import {
   Seismogram,
   COUNT_UNIT,
 } from "./seismogram";
-import {SeisPlotElement} from "./spelement";
-import {Quake, Origin} from "./quakeml";
-import {Station, Channel} from "./stationxml";
+import { SeisPlotElement } from "./spelement";
+import { Quake, Origin } from "./quakeml";
+import { Station, Channel } from "./stationxml";
 import * as distaz from "./distaz";
 import * as axisutil from "./axisutil";
 import * as util from "./util"; // for util.log to replace console.log
 
-import {isDef, isNumArg, validStartTime, validEndTime} from "./util";
-import {registerHelpers} from "./handlebarshelpers";
+import { isDef, isNumArg, validStartTime, validEndTime } from "./util";
+import { registerHelpers } from "./handlebarshelpers";
 registerHelpers();
 
 const CLIP_PREFIX = "seismographclip";
@@ -220,7 +221,7 @@ export class Seismograph extends SeisPlotElement {
     this.canvasHolder = null;
     this.svg = d3select(wrapper).append("svg").style("z-index", 100);
     const svgNode = this.svg.node();
-    if (svgNode != null) {wrapper.appendChild(svgNode);}
+    if (svgNode != null) { wrapper.appendChild(svgNode); }
 
     if (
       isDef(this.seismographConfig.minHeight) &&
@@ -282,16 +283,16 @@ export class Seismograph extends SeisPlotElement {
       .attr(
         "transform",
         "translate(" +
-          this.seismographConfig.margin.left +
-          "," +
-          this.seismographConfig.margin.top +
-          ")",
+        this.seismographConfig.margin.left +
+        "," +
+        this.seismographConfig.margin.top +
+        ")",
       );
     this.g
       .append("g")
       .classed("allseismograms", true)
       .classed(AUTO_COLOR_SELECTOR, true);
-    if ( ! this.seismographConfig.fixedTimeScale) {
+    if (!this.seismographConfig.fixedTimeScale) {
       this.enableZoom();
     }
 
@@ -319,12 +320,12 @@ export class Seismograph extends SeisPlotElement {
     // event listener to transform mouse click into time
     this.addEventListener("click", evt => {
       const detail = this.calcDetailForEvent(evt, "click");
-      const event = new CustomEvent("seisclick", { detail: detail});
+      const event = new CustomEvent("seisclick", { detail: detail });
       this.dispatchEvent(event);
     });
     this.addEventListener('mousemove', evt => {
       const detail = this.calcDetailForEvent(evt, "mousemove");
-      const event = new CustomEvent("seismousemove", { detail: detail});
+      const event = new CustomEvent("seismousemove", { detail: detail });
       this.dispatchEvent(event);
     });
   }
@@ -387,7 +388,7 @@ export class Seismograph extends SeisPlotElement {
     const mythis = this;
     const z = this.svg.call(
       // @ts-ignore
-      d3zoom().on("zoom", function (e) {
+      d3zoom().on("zoom", function(e) {
         mythis.zoomed(e);
       }),
     );
@@ -398,12 +399,12 @@ export class Seismograph extends SeisPlotElement {
   }
 
   draw(): void {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) { return; }
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
     const rect = svgEl.getBoundingClientRect();
 
-    if (rect.width === 0  || rect.height === 0 ) {
+    if (rect.width === 0 || rect.height === 0) {
       util.log(
         `Attempt draw seismograph, but width/height too small: ${rect.width} ${rect.height}`,
       );
@@ -433,10 +434,10 @@ export class Seismograph extends SeisPlotElement {
     this.g.attr(
       "transform",
       "translate(" +
-        this.seismographConfig.margin.left +
-        "," +
-        this.seismographConfig.margin.top +
-        ")",
+      this.seismographConfig.margin.left +
+      "," +
+      this.seismographConfig.margin.top +
+      ")",
     );
     if (this.canvas && this.canvasHolder) {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
@@ -452,7 +453,7 @@ export class Seismograph extends SeisPlotElement {
         .attr("y", this.seismographConfig.margin.top)
         .attr("width", this.width)
         .attr("height", this.height + 1);
-      if (this.canvasHolder == null) {throw new Error("canvasHolder is null");}
+      if (this.canvasHolder == null) { throw new Error("canvasHolder is null"); }
       const c = this.canvasHolder
         .append("xhtml:canvas")
         .classed("seismograph", true)
@@ -671,8 +672,8 @@ export class Seismograph extends SeisPlotElement {
               i++
             ) {
               context.lineTo(
-                startPixel + i * pixelsPerSample+0.5,
-                Math.round(yscaleForSDD(s.y[i]))+0.5,
+                startPixel + i * pixelsPerSample + 0.5,
+                Math.round(yscaleForSDD(s.y[i])) + 0.5,
               );
             }
           }
@@ -807,8 +808,8 @@ export class Seismograph extends SeisPlotElement {
       } else {
         middle = this.amp_scalable.drawMiddle;
       }
-      ampAxisScale.domain([ middle - this.amp_scalable.drawHalfWidth,
-                      middle + this.amp_scalable.drawHalfWidth ]);
+      ampAxisScale.domain([middle - this.amp_scalable.drawHalfWidth,
+      middle + this.amp_scalable.drawHalfWidth]);
     } else {
       throw new Error("ampScaleForAxis Must be either linked or fixed amp scale");
     }
@@ -930,7 +931,7 @@ export class Seismograph extends SeisPlotElement {
       yAxisRight.ticks(8, this.seismographConfig.amplitudeFormat);
 
     }
-    return [ yAxis, yAxisRight ];
+    return [yAxis, yAxisRight];
   }
 
   rescaleYAxis(): void {
@@ -941,7 +942,7 @@ export class Seismograph extends SeisPlotElement {
         clearTimeout(this.throttleRescale);
       }
 
-      this.throttleRescale = setTimeout( () => {
+      this.throttleRescale = setTimeout(() => {
 
         const [yAxis, yAxisRight] = this.createLeftRightAxis();
         if (yAxis) {
@@ -1027,7 +1028,7 @@ export class Seismograph extends SeisPlotElement {
       this.g
         .select("g.allmarkers")
         .selectAll("g.marker")
-        .attr("transform", function (v: unknown) {
+        .attr("transform", function(v: unknown) {
           const mh = v as MarkerHolderType;
           mh.xscale = mythis.timeScaleForSeisDisplayData(mh.sdd);
           const textx = mh.xscale.for(mh.marker.time);
@@ -1036,7 +1037,7 @@ export class Seismograph extends SeisPlotElement {
       this.g
         .select("g.allmarkers")
         .selectAll("g.markertext")
-        .attr("transform", function () {
+        .attr("transform", function() {
           // shift up by this.seismographConfig.markerTextOffset percentage
           const axisScale = mythis.ampScaleForAxis();
           const maxY = axisScale.range()[0];
@@ -1104,7 +1105,7 @@ export class Seismograph extends SeisPlotElement {
     markerG.selectAll("g.marker").remove();
     const labelSelection = markerG
       .selectAll("g.marker")
-      .data(allMarkers, function (v: unknown) {
+      .data(allMarkers, function(v: unknown) {
         const mh = v as MarkerHolderType;
         // key for data
         return `${mh.marker.name}_${mh.marker.time.toISO()}`;
@@ -1116,12 +1117,12 @@ export class Seismograph extends SeisPlotElement {
       .enter()
       .append("g")
       .classed("marker", true) // translate so marker time is zero
-      .attr("transform", function (v: unknown) {
+      .attr("transform", function(v: unknown) {
         const mh = v as MarkerHolderType;
         const textx = mh.xscale.for(mh.marker.time);
         return "translate(" + textx + "," + 0 + ")";
       })
-      .each(function (mh: MarkerHolderType) {
+      .each(function(mh: MarkerHolderType) {
         // @ts-ignore
         const drawG = d3select(this);
         drawG.classed(mh.marker.name, true).classed(mh.marker.markertype, true);
@@ -1148,7 +1149,7 @@ export class Seismograph extends SeisPlotElement {
           if (mh.marker.description) {
             return mh.marker.description;
           } else {
-            return mh.marker.markertype+" "+mh.marker.name + " " + mh.marker.time.toISO();
+            return mh.marker.markertype + " " + mh.marker.name + " " + mh.marker.time.toISO();
           }
         });
         const textSel = innerTextG.append("text");
@@ -1157,21 +1158,21 @@ export class Seismograph extends SeisPlotElement {
           // if marker has link, make it clickable
           textSel
             .append("svg:a")
-            .attr("xlink:href", () => ""+mh.marker.link)
-            .text(function (datum) {
+            .attr("xlink:href", () => "" + mh.marker.link)
+            .text(function(datum) {
               const mh: MarkerHolderType = datum as MarkerHolderType;
               return mh.marker.name;
             });
         } else {
-          textSel.text(function (datum) {
+          textSel.text(function(datum) {
             const mh: MarkerHolderType = datum as MarkerHolderType;
             return mh.marker.name;
           });
         }
 
-        textSel.attr("dy", "-0.35em").call(function (selection) {
+        textSel.attr("dy", "-0.35em").call(function(selection) {
           // this stores the BBox of the text in the bbox field for later use
-          selection.each(function (datum) {
+          selection.each(function(datum) {
             const mh: MarkerHolderType = datum as MarkerHolderType;
             // set a default just in case
             mh.bbox = {
@@ -1189,7 +1190,7 @@ export class Seismograph extends SeisPlotElement {
           });
         });
         // draw/insert flag behind/before text
-        innerTextG.insert("polygon", "text").attr("points", function (datum) {
+        innerTextG.insert("polygon", "text").attr("points", function(datum) {
           const mh: MarkerHolderType = datum as MarkerHolderType;
           let bboxH = 10 + 5; // defaults if no bbox, should not happen
           let bboxW = 10;
@@ -1213,7 +1214,7 @@ export class Seismograph extends SeisPlotElement {
         });
         // let style be in css?
         //              .style("fill", "rgba(220,220,220,.4)");
-        let markerPoleY =0;
+        let markerPoleY = 0;
         if (mythis.seismographConfig.markerFlagpoleBase === "center") {
           markerPoleY = (axisScale.range()[0] + axisScale.range()[1]) / 2;
         } else {
@@ -1336,7 +1337,7 @@ export class Seismograph extends SeisPlotElement {
   calcTimeScaleDomain(): void {
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTimeScale = this.seismographConfig.linkedTimeScale;
-      if (this._seisDataList.length !== 0 && linkedTimeScale.duration.toMillis()===0) {
+      if (this._seisDataList.length !== 0 && linkedTimeScale.duration.toMillis() === 0) {
         this.seismographConfig.linkedTimeScale.duration = findMaxDuration(this._seisDataList);
       }
     }
@@ -1417,8 +1418,8 @@ export class Seismograph extends SeisPlotElement {
       this._seisDataList.length > 0 &&
       this._seisDataList.every(sdd => sdd.hasSensitivity()) &&
       this._seisDataList.every(
-              sdd => isDef(sdd.seismogram) && sdd.seismogram.yUnit === COUNT_UNIT,
-            )
+        sdd => isDef(sdd.seismogram) && sdd.seismogram.yUnit === COUNT_UNIT,
+      )
     ) {
       // each has seisitivity
       const firstSensitivity = this._seisDataList[0].sensitivity;
@@ -1565,7 +1566,7 @@ export class Seismograph extends SeisPlotElement {
    */
   trim(timeRange: Interval): void {
     if (this._seisDataList) {
-      this._seisDataList = this._seisDataList.filter(function (d) {
+      this._seisDataList = this._seisDataList.filter(function(d) {
         return d.timeRange.overlaps(timeRange);
       });
 
@@ -1625,12 +1626,14 @@ export class SeismographTimeScalable extends TimeScalable {
     duration: Duration,
   ) {
     if (!this.drawAlignmentTimeOffset.equals(offset) ||
-        !this.drawDuration.equals(duration)) {
+      !this.drawDuration.equals(duration)) {
       this.drawAlignmentTimeOffset = offset;
       this.drawDuration = duration;
       // something changed, maybe redraw
-      if (isDef(this.graph) && ! this.graph.beforeFirstDraw) {
-        this.graph.redrawWithXScale();
+      if (isDef(this.graph) && !this.graph.beforeFirstDraw) {
+        window.requestAnimationFrame(() => {
+          this.graph.redrawWithXScale();
+        });
       }
     }
   }
@@ -1655,7 +1658,7 @@ export function createMarkersForTravelTimes(
     return {
       markertype: "predicted",
       name: a.phase,
-      time: quake.time.plus(Duration.fromMillis(1000*a.time)),
+      time: quake.time.plus(Duration.fromMillis(1000 * a.time)),
       description: "",
     };
   });
@@ -1700,8 +1703,8 @@ export function createFullMarkersForQuakeAtStation(
       link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
       description: `${quake.time.toISO()}
 ${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(
-      quake.depth / 1000
-    ).toFixed(2)} km
+          quake.depth / 1000
+        ).toFixed(2)} km
 ${quake.description}
 ${magStr}
 ${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
