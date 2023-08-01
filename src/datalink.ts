@@ -590,10 +590,10 @@ export class DataLinkConnection {
           try {
             this.packetHandler(packet);
           } catch (e) {
-            this.errorHandler(toError(e));
+            this.handleError(toError(e));
           }
         } else {
-          this.errorHandler(new Error("packetHandler not defined"));
+          this.handleError(new Error("packetHandler not defined"));
         }
       } else {
         let dv;
