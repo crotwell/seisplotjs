@@ -1,19 +1,21 @@
 
-import {Interval} from "luxon";
+import { Duration } from "luxon";
 import * as mseed3 from "./mseed3";
-import {Quake, parseQuakeML} from "./quakeml";
-import {Network, parseStationXml, allChannels} from "./stationxml";
-import {SeismogramDisplayData, isValidMarker} from "./seismogram";
-import {isValidTraveltimeArrivalType} from './traveltime';
+import { Quake, parseQuakeML } from "./quakeml";
+import { Network, parseStationXml, allChannels } from "./stationxml";
+import { SeismogramDisplayData, isValidMarker } from "./seismogram";
+import { isValidTraveltimeArrivalType } from './traveltime';
 import {
-  downloadBlobAsFile, stringify,
+  downloadBlobAsFile,
   doFetchWithTimeout, defaultFetchInitObj,
-  isDef, XML_MIME, BINARY_MIME, isoToDateTime} from "./util";
+  isDef, XML_MIME, BINARY_MIME, isoToDateTime,
+  startDuration,
+} from "./util";
 import JSZip from "jszip";
 
 export const DATASET_DIR = "dataset";
 export const DOT_ZIP_EXT = ".zip";
-export const ZIP_FILENAME = DATASET_DIR+DOT_ZIP_EXT;
+export const ZIP_FILENAME = DATASET_DIR + DOT_ZIP_EXT;
 export const SEISMOGRAM_DIR = "seismograms";
 export const CATALOG_FILE = "catalog.quakeml";
 export const INVENTORY_FILE = "inventory.staxml";
@@ -32,27 +34,26 @@ export class Dataset {
     this.processedWaveforms = new Array<SeismogramDisplayData>(0);
     this.extra = new Map();
   }
-  saveToZipFile(filename: string = ZIP_FILENAME) {
+  async saveToZipFile(filename: string = ZIP_FILENAME) {
     let dirname = DATASET_DIR;
     if (filename.endsWith(DOT_ZIP_EXT)) {
-      dirname = filename.slice(0,-4);
+      dirname = filename.slice(0, -4);
     }
     const zipfile = new JSZip();
     const zip = zipfile.folder(dirname);
     if (!zip) {
-      throw new Error("unable to create subfolder in zip file: "+dirname);
+      throw new Error("unable to create subfolder in zip file: " + dirname);
     }
 
     zip.file("Hello.txt", "Hello World\n");
 
     const seisFolder = zip.folder(SEISMOGRAM_DIR);
-    if (seisFolder === null) {throw new Error("can't make folder");}
-    for (const [key,val] of this.waveformsToMSeed3()) {
+    if (seisFolder === null) { throw new Error("can't make folder"); }
+    for (const [key, val] of this.waveformsToMSeed3()) {
       seisFolder.file(key, val);
     }
-    return zipfile.generateAsync({type:"uint8array", compression: "DEFLATE"}).then(function(content) {
-        downloadBlobAsFile(content, filename);
-    });
+    const content = await zipfile.generateAsync({ type: "uint8array", compression: "DEFLATE" });
+    downloadBlobAsFile(content, filename);
 
   }
   waveformsToMSeed3(): Map<string, ArrayBuffer> {
@@ -61,7 +62,7 @@ export class Dataset {
     this.waveforms.forEach(sdd => {
       if (sdd.seismogram) {
         const mseed3Records = mseed3.toMSeed3(sdd.seismogram, createExtraHeaders("spjs", sdd));
-        const byteSize = mseed3Records.reduce( (acc, cur) => acc+cur.calcSize(), 0);
+        const byteSize = mseed3Records.reduce((acc, cur) => acc + cur.calcSize(), 0);
         const outBuf = new ArrayBuffer(byteSize);
         let offset = 0;
         mseed3Records.forEach(ms3Rec => {
@@ -133,86 +134,82 @@ export class Dataset {
 export function load(url: string): Promise<Dataset> {
   const fetchInitOptions = defaultFetchInitObj(BINARY_MIME);
   return doFetchWithTimeout(url, fetchInitOptions)
-  .then(function (response) {
-    if (response.status === 200 || response.status === 0) {
-      return response.blob();
-    } else {
-      // no data
-      throw new Error("No data");
-    }
-  }).then(data => JSZip.loadAsync(data)).then(zip => loadFromZip(zip));
+    .then(function(response) {
+      if (response.status === 200 || response.status === 0) {
+        return response.blob();
+      } else {
+        // no data
+        throw new Error("No data");
+      }
+    }).then(data => JSZip.loadAsync(data)).then(zip => loadFromZip(zip));
 }
-export function loadFromFile(file: File): Promise<Dataset> {
-  return new JSZip().loadAsync(file)
-  .then(loadFromZip);
+export async function loadFromFile(file: File): Promise<Dataset> {
+  const zip = await new JSZip().loadAsync(file);
+  return loadFromZip(zip);
 }
-export function loadFromZip(zip: JSZip): Promise<Dataset> {
-    // Read from the zip file!
-    const promiseArray = new Array<Promise<Array<SeismogramDisplayData>>>(0);
-    let datasetDir: JSZip;
-    const possibleDirs = zip.folder(new RegExp('/'+SEISMOGRAM_DIR));
-    if (possibleDirs.length === 0) {
+export async function loadFromZip(zip: JSZip): Promise<Dataset> {
+  // Read from the zip file!
+  const promiseArray = new Array<Promise<Array<SeismogramDisplayData>>>(0);
+  let datasetDir: JSZip;
+  const possibleDirs = zip.folder(new RegExp('/' + SEISMOGRAM_DIR));
+  if (possibleDirs.length === 0) {
+    throw new Error("Unable to find dataset directory in zip file");
+  } else {
+    const tmpdatasetDir = zip.folder(possibleDirs[0].name.slice(0, -1 * (SEISMOGRAM_DIR.length + 1)));
+    if (tmpdatasetDir === null) {
+      // can't happen, just to keep typescript happy
       throw new Error("Unable to find dataset directory in zip file");
     } else {
-      const tmpdatasetDir = zip.folder(possibleDirs[0].name.slice(0, -1*(SEISMOGRAM_DIR.length+1)));
-      if (tmpdatasetDir === null) {
-        // can't happen, just to keep typescript happy
-        throw new Error("Unable to find dataset directory in zip file");
-      } else {
-        datasetDir = tmpdatasetDir;
-      }
-      const seisDir = datasetDir.folder(SEISMOGRAM_DIR);
-      if (isDef(seisDir)) {
-        seisDir.forEach(function (relativePath, file){
-          if (file.name.endsWith(".ms3")) {
-            const seisPromise = file.async("arraybuffer").then(function (buffer) {
-              const ms3records = mseed3.parseMSeed3Records(buffer);
-              return sddFromMSeed3(ms3records);
-            });
-            promiseArray.push(seisPromise);
-          }
-        });
-      }
+      datasetDir = tmpdatasetDir;
     }
-
-    return Promise.all(promiseArray).then((sddListList: Array<Array<SeismogramDisplayData>>) => {
-      return sddListList.reduce((acc, sddList) => acc.concat(sddList), new Array<SeismogramDisplayData>(0));
-    }).then((sddList: Array<SeismogramDisplayData>) => {
-
-      const catalogFile = datasetDir.file(CATALOG_FILE);
-      const qml = catalogFile ? catalogFile.async("string").then(function (rawXmlText) {
-        if (rawXmlText.length === 0) {
-          // empty
-          return [];
-        } else if (rawXmlText.length < 10) {
-          throw new Error(`qml text is really short: ${rawXmlText}`);
-        } else {
-          const rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
-          return parseQuakeML(rawXml).eventList;
+    const seisDir = datasetDir.folder(SEISMOGRAM_DIR);
+    if (isDef(seisDir)) {
+      seisDir.forEach(function(relativePath, file) {
+        if (file.name.endsWith(".ms3")) {
+          const seisPromise = file.async("arraybuffer").then(function(buffer) {
+            const ms3records = mseed3.parseMSeed3Records(buffer);
+            return sddFromMSeed3(ms3records);
+          });
+          promiseArray.push(seisPromise);
         }
-      }) : [];
-      const inventoryFile = datasetDir.file(INVENTORY_FILE);
-      const staml = inventoryFile ? inventoryFile.async("string").then(function (rawXmlText) {
-        if (rawXmlText.length === 0) {
-          // empty
-          return [];
-        } else if (rawXmlText.length < 10) {
-          throw new Error(`staxml text is really short: ${rawXmlText}`);
-        } else {
-          const rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
-          return parseStationXml(rawXml);
-        }
-      }) : [];
-      return Promise.all([sddList, qml, staml]);
-    }).then(promises => {
-      const dataset = new Dataset();
-      dataset.waveforms = promises[0];
-      dataset.catalog = promises[1];
-      dataset.inventory = promises[2];
-      dataset.associateChannels();
-      dataset.associateQuakes();
-      return dataset;
-    });
+      });
+    }
+  }
+
+  const sddListList = await Promise.all(promiseArray);
+  const sddList_1 = sddListList.reduce((acc, sddList) => acc.concat(sddList), new Array<SeismogramDisplayData>(0));
+  const catalogFile = datasetDir.file(CATALOG_FILE);
+  const qml = catalogFile ? catalogFile.async("string").then(function(rawXmlText) {
+    if (rawXmlText.length === 0) {
+      // empty
+      return [];
+    } else if (rawXmlText.length < 10) {
+      throw new Error(`qml text is really short: ${rawXmlText}`);
+    } else {
+      const rawXml = new DOMParser().parseFromString(rawXmlText, XML_MIME);
+      return parseQuakeML(rawXml).eventList;
+    }
+  }) : [];
+  const inventoryFile = datasetDir.file(INVENTORY_FILE);
+  const staml = inventoryFile ? inventoryFile.async("string").then(function(rawXmlText_1) {
+    if (rawXmlText_1.length === 0) {
+      // empty
+      return [];
+    } else if (rawXmlText_1.length < 10) {
+      throw new Error(`staxml text is really short: ${rawXmlText_1}`);
+    } else {
+      const rawXml_2 = new DOMParser().parseFromString(rawXmlText_1, XML_MIME);
+      return parseStationXml(rawXml_2);
+    }
+  }) : [];
+  const promises = await Promise.all([sddList_1, qml, staml]);
+  const dataset = new Dataset();
+  dataset.waveforms = promises[0];
+  dataset.catalog = promises[1];
+  dataset.inventory = promises[2];
+  dataset.associateChannels();
+  dataset.associateQuakes();
+  return dataset;
 }
 
 export function sddFromMSeed3(ms3records: Array<mseed3.MSeed3Record>, ds?: Dataset): Array<SeismogramDisplayData> {
