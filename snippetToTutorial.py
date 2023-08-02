@@ -6,8 +6,8 @@ import filecmp
 from html.parser import HTMLParser
 from bs4 import BeautifulSoup
 
-StartSnip = re.compile('// snip start (\w+)')
-EndSnip = re.compile('// snip end.*')
+StartSnip = re.compile('\s*// snip start (\w+)')
+EndSnip = re.compile('\s*// snip end.*')
 StartTag = re.compile('^<\w+.*>')
 EndTag = re.compile('^</\w+>')
 ComboStartEndTag = re.compile('^<\w+.*/>')
