@@ -1,76 +1,26 @@
-import {Seismograph} from './seismograph';
-import {SeismogramSegment} from './seismogramsegment';
-import {Seismogram, SeismogramDisplayData} from './seismogram';
-import {DateTime, Interval} from "luxon";
 
-export class AnimatedSeismograph {
-  seismograph: Seismograph;
-  minRedrawMillis: number;
-  appendable: Array<SeismogramSegment>;
-  previousStep?: DOMHighResTimeStamp;
-  stepper: (timestamp: DOMHighResTimeStamp) => void;
-  redrawInProgress = false;
+import { DateTime, Duration, Interval } from "luxon";
+import { DataLinkPacket } from './datalink';
+import * as miniseed from './miniseed';
+import { OrganizedDisplay } from './organizeddisplay';
+import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from './scale';
+import { SeismogramDisplayData } from './seismogram';
+import { SeisPlotElement } from './spelement';
+import { SeismographConfig } from './seismographconfig';
+
+export class AnimatedTimeScaler {
+  alignmentTime: DateTime;
+  timeScale: AlignmentLinkedTimeScale;
+  minRedrawMillis = 100;
   goAnimation = true;
-  constructor(seismograph: Seismograph, minRedrawMillis = 100) {
-    this.seismograph = seismograph;
-    this.appendable = [];
+  previousStep: DOMHighResTimeStamp = Number.NEGATIVE_INFINITY;
+  _animationId = 0;
+  constructor(timeScale: AlignmentLinkedTimeScale,
+    alignmentTime?: DateTime,
+    minRedrawMillis = 100) {
+    this.timeScale = timeScale;
+    this.alignmentTime = alignmentTime ? alignmentTime : DateTime.utc();
     this.minRedrawMillis = minRedrawMillis;
-    this.stepper = (timestamp: DOMHighResTimeStamp) => {
-      if (this.previousStep == null) {
-        this.previousStep = timestamp;
-      }
-      const elapsed = timestamp-this.previousStep;
-      if ( ! this.redrawInProgress && elapsed > minRedrawMillis) {
-        this.redrawInProgress = true;
-        this.animateSeismograph();
-        this.previousStep = timestamp;
-        this.redrawInProgress = false;
-      }
-      if (this.goAnimation) {
-        window.setTimeout( () => {
-          window.requestAnimationFrame(timestamp => this.stepper(timestamp));
-        }, this.minRedrawMillis);
-      }
-    };
-  }
-  /**
-   * Holds onto new segments for appending at next redraw;
-   * @param  segment  to append
-   */
-  append(segment: SeismogramSegment) {
-    this.appendable.push(segment);
-  }
-  appendAll() {
-    const appendable = this.appendable;
-    this.appendable = [];
-    appendable.forEach(segment => {
-      const sdd = this.seismograph.seisData.find(s => s.sourceId.equals(segment.sourceId));
-      if (sdd) {
-        sdd.append(segment);
-      } else {
-        const nsdd = SeismogramDisplayData.fromSeismogram(new Seismogram(segment));
-        this.seismograph.seisData.push(nsdd);
-      }
-    });
-  }
-  /**
-   * Trims all seismograms to the given window.
-   *
-   * @param  timeWindow  window to coarse trim the data to
-   */
-  trim(timeWindow?: Interval) {
-    const trimmedSeisData: Array<SeismogramDisplayData> = [];
-    this.seismograph.seisData.forEach(sdd => {
-      const sddTrimWindow = timeWindow ? timeWindow : this.seismograph.displayTimeRangeForSeisDisplayData(sdd);
-      const trimmed = sdd.trim(sddTrimWindow);
-      if (trimmed != null) {
-        trimmedSeisData.push(trimmed);
-      }
-    });
-    this.seismograph.seisData = trimmedSeisData;
-  }
-  draw() {
-    this.seismograph.draw();
   }
   animate() {
     this.goAnimation = true;
@@ -79,94 +29,126 @@ export class AnimatedSeismograph {
   animateOnce() {
     this.goAnimation = false;
     window.requestAnimationFrame(timestamp => {
-      if ( ! this.redrawInProgress) {
-        this.redrawInProgress = true;
-        this.animateSeismograph();
-        this.previousStep = timestamp;
-        this.redrawInProgress = false;
-      }
+      this.previousStep = timestamp;
+      this.step();
     });
   }
   pause() {
     this.goAnimation = false;
   }
-  animateSeismograph(alignNow?: DateTime) {
-    const now = (alignNow == null) ? DateTime.utc() : alignNow;
-    this.appendAll(); // any new segments
-    this.seismograph.seisData.forEach(sdd => {
-      sdd.alignmentTime = now;
-    });
-    this.seismograph.draw();
+  stepper(timestamp: DOMHighResTimeStamp) {
+    this._animationId = 0;
+    const elapsed = timestamp - this.previousStep;
+
+    if (elapsed > this.minRedrawMillis) {
+      this.previousStep = timestamp;
+      this.step();
+    }
+
+    if (this.goAnimation) {
+      // schedule next redraw
+      const now = window.performance.now();
+      window.setTimeout(() => {
+        // in case we ask for second animation frame before first runs
+        if (this._animationId !== 0) { window.cancelAnimationFrame(this._animationId); }
+        this._animationId = window.requestAnimationFrame(timestamp => this.stepper(timestamp));
+      }, this.minRedrawMillis - (now - timestamp));
+    }
+  }
+  step() {
+    const now = DateTime.utc();
+    const calcOffset = now.diff(this.alignmentTime);
+    this.timeScale.offset = calcOffset;
   }
 }
 
+export type RTDisplayContainer = {
+  organizedDisplay: OrganizedDisplay,
+  animationScaler: AnimatedTimeScaler,
+  packetHandler: (packet: DataLinkPacket) => void,
+};
 
-export class AnimatedSeismographGroup {
-  animatedGraphList: Array<AnimatedSeismograph> = [];
-  minRedrawMillis = 100;
-  stepper: (timestamp: DOMHighResTimeStamp) => void;
-  redrawInProgress = false;
-  goAnimation = true;
-  autotrim = true;
-  previousStep?: DOMHighResTimeStamp;
-  constructor(animatedGraphList: Array<AnimatedSeismograph>, minRedrawMillis = 100) {
-    if (animatedGraphList) {
-      this.animatedGraphList = animatedGraphList;
-    }
-    this.minRedrawMillis = minRedrawMillis;
-    this.stepper = (timestamp: DOMHighResTimeStamp) => {
-      if (this.previousStep == null) {
-        this.previousStep = timestamp;
-      }
-      const elapsed = timestamp-this.previousStep;
-      if ( ! this.redrawInProgress && elapsed > this.minRedrawMillis) {
-        this.redrawInProgress = true;
-        const now = DateTime.utc();
-        if (this.autotrim) {
-          this.animatedGraphList.forEach(am => am.trim());
+export function createRealtimeDisplay(minRedrawMillis = 100): RTDisplayContainer {
+  const alignmentTime = DateTime.utc();
+  const duration = Duration.fromISO('PT5M');
+  const offset = Duration.fromMillis(0);
+
+  const timeScale = new AlignmentLinkedTimeScale([], duration.negate(), offset);
+  const seisPlotConfig = new SeismographConfig();
+  seisPlotConfig.wheelZoom = false;
+  seisPlotConfig.isYAxisNice = false;
+  seisPlotConfig.linkedTimeScale = timeScale;
+  seisPlotConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
+  const animationScaler = new AnimatedTimeScaler(timeScale, alignmentTime, minRedrawMillis);
+
+  const orgDisp = new OrganizedDisplay([], seisPlotConfig);
+
+  const packetHandler = (packet: DataLinkPacket) => {
+    if (!packet) { return; }
+    if (packet.isMiniseed()) {
+      const msr = packet.asMiniseed();
+      if (msr) {
+        const seisSegment = miniseed.createSeismogramSegment(msr);
+        const codes = seisSegment.codes();
+        const matchSDD = orgDisp.seisData.find((sdd: SeismogramDisplayData) => sdd.codes() === codes);
+        if (matchSDD) {
+          matchSDD.append(seisSegment);
+        } else {
+          const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
+          sdd.alignmentTime = animationScaler.alignmentTime;
+          orgDisp.seisData.push(sdd);
+          // trigger redraw if new channel, but not for simple append.
+          orgDisp.seisDataUpdated();
         }
-        this.animatedGraphList.forEach(am => am.animateSeismograph(now));
-        this.previousStep = timestamp;
-        this.redrawInProgress = false;
       }
-      if (this.goAnimation) {
-        window.setTimeout( () => {
-          window.requestAnimationFrame(timestamp => this.stepper(timestamp));
-        }, this.minRedrawMillis);
-      }
-    };
+    }
+  };
+
+  //animationScaler.animate();
+  return {
+    organizedDisplay: orgDisp,
+    animationScaler: animationScaler,
+    packetHandler: packetHandler,
+  };
+}
+
+/**
+ * Trims all seismograms to the given window.
+ *
+ * @param  timeWindow  window to coarse trim the data to
+ */
+export function trim(orgDisplay: OrganizedDisplay, timeWindow: Interval) {
+  const trimmedSeisData: Array<SeismogramDisplayData> = [];
+  orgDisplay.seisData.forEach(sdd => {
+    const trimmed = sdd.trim(timeWindow);
+    if (trimmed != null) {
+      trimmedSeisData.push(trimmed);
+    }
+  });
+  orgDisplay.seisData = trimmedSeisData;
+}
+
+/**
+ * Calculates the time window covered by one pixel on the time axis. This is the optimal
+ * time interval for updating the animation of a real time display as updates more
+ * frequently than this tend to cause more flikering than actual movement of the seismogram.
+ */
+export function calcOnePixelTimeInterval(seismograph: SeisPlotElement): Duration {
+  const rect = seismograph.getBoundingClientRect();
+  const margin = seismograph.seismographConfig.margin;
+  const lts = seismograph.seismographConfig.linkedTimeScale;
+  const fts = seismograph.seismographConfig.fixedTimeScale;
+  let timerInterval;
+  if (lts) {
+    timerInterval = lts.duration.toMillis();
+  } else if (fts) {
+    timerInterval = fts.toDuration().toMillis();
+  } else {
+    timerInterval = 1000;
   }
-  add(animatedSeismograph: AnimatedSeismograph) {
-    this.animatedGraphList.push(animatedSeismograph);
-  }
-  draw() {
-    this.animatedGraphList.forEach(am => am.draw());
-  }
-  /**
-   * Trims all graphs in this group to the optional time window. If not
-   * given, the current display time window for each is used.
-   * @param  timeWindow  optional display to trim
-   */
-  trim(timeWindow?: Interval) {
-    this.animatedGraphList.forEach(am => am.trim(timeWindow));
-  }
-  animate() {
-    this.goAnimation = true;
-    window.requestAnimationFrame(timestamp => this.stepper(timestamp));
-  }
-  animateOnce() {
-    this.goAnimation = false;
-    window.requestAnimationFrame(timestamp => {
-      if ( ! this.redrawInProgress) {
-        this.redrawInProgress = true;
-        const now = DateTime.utc();
-        this.animatedGraphList.forEach(am => am.animateSeismograph(now));
-        this.previousStep = timestamp;
-        this.redrawInProgress = false;
-      }
-    });
-  }
-  pause() {
-    this.goAnimation = false;
-  }
+  if (timerInterval < 0) { timerInterval = timerInterval *= -1; }
+  timerInterval = timerInterval / (rect.width - margin.left - margin.right);
+  if (timerInterval === 0) { timerInterval = 1000; }
+  while (timerInterval < 50) { timerInterval *= 2; }
+  return Duration.fromMillis(timerInterval);
 }

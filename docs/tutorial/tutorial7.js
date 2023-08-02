@@ -4,86 +4,31 @@ import * as sp from '../seisplotjs_3.1.0-alpha2_standalone.mjs';
 const matchPattern = `CO_BIRD_00_HH./MSEED`;
 document.querySelector('span#channel').textContent = matchPattern;
 const duration = sp.luxon.Duration.fromISO('PT5M');
-const seisPlotConfig = new sp.seismographconfig.SeismographConfig();
-seisPlotConfig.wheelZoom = false;
-seisPlotConfig.isYAxisNice = false;
-seisPlotConfig.linkedTimeScale.offset = sp.luxon.Duration.fromMillis(-1*duration.toMillis());
-seisPlotConfig.linkedTimeScale.duration = duration;
-seisPlotConfig.linkedAmplitudeScale = new sp.scale.LinkedAmplitudeScale();
-let graphList = new Map();
+
 let numPackets = 0;
 let paused = false;
 let stopped = true;
 let realtimeDiv = document.querySelector("div#realtime");
+
+
 // snip start timer
-let rect = realtimeDiv.getBoundingClientRect();
-let timerInterval = duration.toMillis()/
-                    (rect.width-seisPlotConfig.margin.left-seisPlotConfig.margin.right);
-while (timerInterval < 50) { timerInterval *= 2;}
-let animatedSeisGroup = new sp.animatedseismograph.AnimatedSeismographGroup([], timerInterval);
-animatedSeisGroup.autotrim = true;
-animatedSeisGroup.animate();
+const rtDisp = sp.animatedseismograph.createRealtimeDisplay();
+realtimeDiv.appendChild(rtDisp.organizedDisplay);
+rtDisp.organizedDisplay.draw();
+rtDisp.animationScaler.minRedrawMillis = sp.animatedseismograph.calcOnePixelTimeInterval(rtDisp.organizedDisplay);
 
-const errorFn = function(error) {
-  console.assert(false, error);
-  if (datalink) {datalink.close();}
-  document.querySelector("p#error").textContent = "Error: "+error;
-};
+rtDisp.animationScaler.animate();
 
-// snip start handle
-const packetHandler = function(packet) {
-  if (packet.isMiniseed()) {
-    numPackets++;
-    document.querySelector("span#numPackets").textContent = numPackets;
-    let seisSegment = sp.miniseed.createSeismogramSegment(packet.asMiniseed());
-    const codes = seisSegment.codes();
-    let seisPlot = graphList.get(codes);
-    if ( ! seisPlot) {
-        let seismogram = new sp.seismogram.Seismogram( [ seisSegment ]);
-        let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-        seisData.alignmentTime = sp.luxon.DateTime.utc();
-        const graph = new sp.seismograph.Seismograph([seisData], seisPlotConfig);
-        seisPlot = new sp.animatedseismograph.AnimatedSeismograph(graph, 200);
-        realtimeDiv.appendChild(graph);
-        animatedSeisGroup.add(seisPlot);
-        graphList.set(codes, seisPlot);
-        console.log(`new plot: ${codes}`)
-    } else {
-      seisPlot.append(seisSegment);
-      seisPlot.seismograph.recheckAmpScaleDomain();
-    }
-  } else {
-    console.log(`not a mseed packet: ${packet.streamId}`)
-  }
-};
-// snip start datalink
-const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink"
-const datalink = new sp.datalink.DataLinkConnection(
-    IRIS_DATALINK,
-    packetHandler,
-    errorFn);
+// snip start nowtime
+const n_span = document.querySelector("#nt");
+setInterval(() => {
+  const seisConfig = rtDisp.organizedDisplay.seismographConfig;
+  const lts = seisConfig.linkedTimeScale;
+  n_span.textContent = sp.luxon.DateTime.utc().toISO();
+}, 1000)
 
 
-// snip start pause
-document.querySelector("button#pause").addEventListener("click", function(evt) {
-  togglePause( );
-});
-
-let togglePause = function() {
-  paused = ! paused;
-  if (paused) {
-    document.querySelector("button#pause").textContent = "Play";
-    animatedSeisGroup.pause();
-  } else {
-    document.querySelector("button#pause").textContent = "Pause";
-    animatedSeisGroup.animate();
-  }
-}
-
-// snip start disconnet
-document.querySelector("button#disconnect").addEventListener("click", function(evt) {
-  toggleConnect();
-});
+// snip start helpers
 
 function addToDebug(message) {
   const debugDiv = document.querySelector("div#debug");
@@ -92,51 +37,77 @@ function addToDebug(message) {
   const code = pre.appendChild(document.createElement("code"));
   code.textContent = message;
 }
+function errorFn(error) {
+  console.assert(false, error);
+  if (datalink) { datalink.close(); }
+  addToDebug("Error: " + error);
+};
+
+// snip start datalink
+let datalink = null;
+const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink"
+const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/ringserver/datalink"
 
 let toggleConnect = function() {
-  stopped = ! stopped;
+  stopped = !stopped;
   if (stopped) {
+    document.querySelector("button#disconnect").textContent = "Reconnect";
     if (datalink) {
       datalink.endStream();
       datalink.close();
     }
-    document.querySelector("button#disconnect").textContent = "Reconnect";
   } else {
+    document.querySelector("button#disconnect").textContent = "Disconnect";
+    if (!datalink) {
+      datalink = new sp.datalink.DataLinkConnection(
+        SCSN_DATALINK,
+        rtDisp.packetHandler,
+        errorFn
+      );
+    }
     if (datalink) {
       datalink.connect()
-      .then(serverId => {
-        addToDebug(`id response: ${serverId}`);
-        return datalink.match(matchPattern);
-      }).then(response => {
-        addToDebug(`match response: ${response}`)
-        if (response.isError()) {
-          addToDebug(`response is not OK, ignore... ${response}`);
-        }
-        return datalink.infoStatus();
-      }).then(response => {
-        addToDebug(`info status response: ${response}`);
-        return datalink.infoStreams();
-      }).then(response => {
-        addToDebug(`info streams response: ${response}`)
-        const start = sp.luxon.DateTime.utc().minus(duration);
-        return datalink.positionAfter(start);
-      }).then(response => {
-        if (response.isError()) {
-          addToDebug(`Oops, positionAfter response is not OK, ignore... ${response}`);
-          // bail, ignore, or do something about it...
-        }
-        return datalink.stream();
-      }).catch( function(error) {
-        let errMsg = `${error}`;
-        if (error.cause && error.cause instanceof sp.datalink.DataLinkResponse) {
-          errMsg = `${error}, ${errMsg.cause}`;
-        }
-        addToDebug("Error: " +errMsg);
-        console.assert(false, error);
-      });
+        .then(serverId => {
+          return datalink.match(matchPattern);
+        }).then(response => {
+          addToDebug(`match response: ${response}`)
+          if (response.isError()) {
+            addToDebug(`response is not OK, ignore... ${response}`);
+          }
+          const start = sp.luxon.DateTime.utc().minus(duration);
+          console.log(`start datalink at : ${start}`)
+          return datalink.positionAfter(start);
+        }).then(response => {
+          if (response.isError()) {
+            addToDebug(`Oops, positionAfter response is not OK, ignore... ${response}`);
+            // bail, ignore, or do something about it...
+          }
+          return datalink.stream();
+        });
     }
-    document.querySelector("button#disconnect").textContent = "Disconnect";
   }
 }
+
+// snip start disconnet
+document.querySelector("button#disconnect").addEventListener("click", function(evt) {
+  toggleConnect();
+});
+
+// snip start pause
+document.querySelector("button#pause").addEventListener("click", function(evt) {
+  togglePause();
+});
+
+let togglePause = function() {
+  paused = !paused;
+  if (paused) {
+    document.querySelector("button#pause").textContent = "Play";
+    rtDisp.animationScaler.pause();
+  } else {
+    document.querySelector("button#pause").textContent = "Pause";
+    rtDisp.animationScaler.animate();
+  }
+}
+
 // snip start go
 toggleConnect();
