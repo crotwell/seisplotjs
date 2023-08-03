@@ -3,20 +3,20 @@
  * University of South Carolina, 2019
  * http://www.seis.sc.edu
  */
-import {DateTime, Duration, Interval} from "luxon";
-import {FDSNSourceId, NslcId} from "./fdsnsourceid";
+import { DateTime, Duration, Interval } from "luxon";
+import { FDSNSourceId, NslcId } from "./fdsnsourceid";
 import {
-  meanOfSlice, isDef, stringify, isoToDateTime,
-  checkLuxonValid, validStartTime, validEndTime
+  meanOfSlice, isDef, stringify,
+  checkLuxonValid, validStartTime, validEndTime, startDuration
 } from "./util";
 import * as seedcodec from "./seedcodec";
-import {distaz, DistAzOutput} from "./distaz";
-import {Network, Station, Channel, InstrumentSensitivity, findChannels} from "./stationxml";
-import {Quake} from "./quakeml";
-import {AMPLITUDE_MODE, MinMaxable} from "./scale";
-import {SeismogramSegment} from "./seismogramsegment";
+import { distaz, DistAzOutput } from "./distaz";
+import { Network, Station, Channel, InstrumentSensitivity, findChannels } from "./stationxml";
+import { Quake } from "./quakeml";
+import { AMPLITUDE_MODE, MinMaxable } from "./scale";
+import { SeismogramSegment } from "./seismogramsegment";
 //export {SeismogramSegment} from "./seismogramsegment";
-import type {TraveltimeJsonType, TraveltimeArrivalType} from "./traveltime";
+import type { TraveltimeJsonType, TraveltimeArrivalType } from "./traveltime";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
   xScaleDomain: Array<Date>;
@@ -315,6 +315,9 @@ export class Seismogram {
   }
 
   break(duration: Duration): void {
+    if (duration.valueOf() < 0) {
+      throw new Error(`Negative duration not allowed: ${duration}`);
+    }
     if (this._segmentArray) {
       let breakStart = this.startTime;
       let out: Array<SeismogramSegment> = [];
@@ -500,6 +503,7 @@ export class SeismogramDisplayData {
   channel: Channel | null;
   _instrumentSensitivity: InstrumentSensitivity | null;
   quakeList: Array<Quake>;
+  quakeReferenceList: Array<string> = [];
   timeRange: Interval;
   alignmentTime: DateTime;
   doShow: boolean;
@@ -536,6 +540,17 @@ export class SeismogramDisplayData {
     out.seismogram = seismogram;
     return out;
   }
+
+  /**
+   * Create a Seismogram from the segment, then call fromSeismogram to create
+   * the SeismogramDisplayData;
+   * @param  seisSegment segment of contiguous data
+   * @return             new SeismogramDisplayData
+   */
+  static fromSeismogramSegment(seisSegment: SeismogramSegment): SeismogramDisplayData {
+    return SeismogramDisplayData.fromSeismogram(new Seismogram([seisSegment]));
+  }
+
   /**
    * Useful for creating fake data from an array, sample rate and start time
    *
@@ -622,6 +637,15 @@ export class SeismogramDisplayData {
     } else {
       this.quakeList.push(quake);
     }
+  }
+
+  /**
+   * Adds a public id for a Quake to the seismogram. For use in case where
+   * the quake is not yet available, but wish to retain the connection.
+   * @param  publicId  id of the earthquake assocated with this seismogram
+   */
+  addQuakeId(publicId: string) {
+    this.quakeReferenceList.push(publicId);
   }
 
   addMarker(marker: MarkerType) {
@@ -861,13 +885,13 @@ export class SeismogramDisplayData {
     return 0;
   }
 
-  associateChannel(nets: Array<Network> ) {
+  associateChannel(nets: Array<Network>) {
     const matchChans = findChannels(nets,
-                                    this.networkCode,
-                                    this.stationCode,
-                                    this.locationCode,
-                                    this.channelCode);
-    for( const c of matchChans) {
+      this.networkCode,
+      this.stationCode,
+      this.locationCode,
+      this.channelCode);
+    for (const c of matchChans) {
       if (c.timeRange.overlaps(this.timeRange)) {
         this.channel = c;
         return;
@@ -913,21 +937,16 @@ export class SeismogramDisplayData {
     }
   }
 
+  /**
+   * Create a time window relative to the alignmentTime if set, or the start time if not.
+   * Negative durations are allowed.
+  */
   relativeTimeWindow(
-    startOffset: Duration,
+    alignmentOffset: Duration,
     duration: Duration,
   ): Interval {
-    if (this.alignmentTime) {
-      return Interval.after(
-        this.alignmentTime.plus(startOffset),
-        duration,
-      );
-    } else {
-      return Interval.after(
-        this.startTime.plus(startOffset),
-        duration,
-      );
-    }
+    const atime = this.alignmentTime ? this.alignmentTime.plus(alignmentOffset) : this.startTime.plus(alignmentOffset);
+    return startDuration(atime, duration);
   }
 
   get sensitivity(): InstrumentSensitivity | null {
@@ -1150,18 +1169,18 @@ export class SeismogramDisplayStats {
     this.trendSlope = 0;
   }
   get middle(): number {
-    return (this.min+this.max)/2;
+    return (this.min + this.max) / 2;
   }
 }
 export function findStartEnd(
   sddList: Array<SeismogramDisplayData>,
 ): Interval {
   if (sddList.length === 0) {
-    // just use the default???
-    return Interval.before(DateTime.utc(), 300);
+    // just use zero length at now
+    return Interval.before(DateTime.utc(), 0);
   }
   return sddList.reduce((acc, sdd) => acc.union(sdd.timeRange),
-                        sddList[0].timeRange);
+    sddList[0].timeRange);
 }
 export function findMaxDuration(
   sddList: Array<SeismogramDisplayData>,
@@ -1261,25 +1280,25 @@ export function findMinMaxOverTimeRange(
 
 export function findMinMaxOverRelativeTimeRange(
   sddList: Array<SeismogramDisplayData>,
-  startOffset: Duration,
+  alignmentOffset: Duration,
   duration: Duration,
   doGain = false,
   ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
 ): MinMaxable {
   if (sddList.length === 0) {
-    return new MinMaxable(0,0);
+    return new MinMaxable(0, 0);
   }
   const minMaxArr = sddList.map(sdd => {
-    const timeRange = sdd.relativeTimeWindow(startOffset, duration);
+    const timeRange = sdd.relativeTimeWindow(alignmentOffset, duration);
     return calcMinMax(sdd, timeRange, doGain, ampCentering);
   }).filter(x => x) // remove nulls
-    .reduce(function (p, v) {
+    .reduce(function(p, v) {
       // Raw and Zero are actual values, no centering
       if (ampCentering === AMPLITUDE_MODE.Raw || ampCentering === AMPLITUDE_MODE.Zero) {
-        return p ? (v ? p.union(v): p) : v;
+        return p ? (v ? p.union(v) : p) : v;
       } else {
         // non-Raw mode assumes only halfwidth matters, middle will be zeroed
-        let hw=0;
+        let hw = 0;
         if (p && v) {
           hw = Math.max(p.halfWidth, v.halfWidth);
         } else if (p) {
@@ -1349,17 +1368,18 @@ export function findStartEndOfSeismograms(
   if (!accumulator && !data) {
     throw new Error("data and accumulator are not defined");
   } else if (!accumulator) {
-    out = Interval.fromDateTimes(
-      isoToDateTime("2500-01-01T00:00:00Z"),
-      isoToDateTime("1001-01-01T00:00:00Z"),
-    );
+    if (data.length != 0) {
+      out = data[0].timeRange;
+    } else {
+      throw new Error("data.length == 0 and accumulator is not defined");
+    }
   } else {
     out = accumulator;
   }
 
   if (Array.isArray(data)) {
     return data.reduce((acc, cur) => acc.union(cur.timeRange),
-        data[0].timeRange);
+      data[0].timeRange);
   } else {
     throw new Error(`Expected Array as first arg but was: ${typeof data}`);
   }
