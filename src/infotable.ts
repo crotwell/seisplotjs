@@ -1,71 +1,72 @@
 
-import {Quake, createQuakeClickEvent} from './quakeml';
-import {Channel, Station, createStationClickEvent, createChannelClickEvent} from './stationxml';
-import {SeisPlotElement, addStyleToElement} from "./spelement";
+import { Quake, createQuakeClickEvent } from './quakeml';
+import { Channel, Station, createStationClickEvent, createChannelClickEvent } from './stationxml';
+import { SeisPlotElement, addStyleToElement } from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
-import {SeismographConfig} from "./seismographconfig";
-import {stringify} from "./util";
+import { SeismographConfig } from "./seismographconfig";
+import { stringify } from "./util";
 
-import {Handlebars} from "./handlebarshelpers";
+import { Handlebars } from "./handlebarshelpers";
 
 
 export const INFO_ELEMENT = 'sp-station-quake-table';
 export const QUAKE_INFO_ELEMENT = 'sp-quake-table';
 
 export enum QUAKE_COLUMN {
-    LAT = "Lat",
-    LON = "Lon",
-    TIME = "Time",
-    MAG = "Mag",
-    MAGTYPE = "MagType",
-    DEPTH = "Depth",
-    DESC = "Description",
-    EVENTID = "EventId",
+  LAT = "Lat",
+  LON = "Lon",
+  TIME = "Time",
+  MAG = "Mag",
+  MAGTYPE = "MagType",
+  DEPTH = "Depth",
+  DESC = "Description",
+  EVENTID = "EventId",
 }
 
 export enum CHANNEL_COLUMN {
-    LAT = "Lat",
-    LON = "Lon",
-    AZIMUTH = "Az",
-    DIP = "Dip",
-    START = "Start",
-    END = "End",
-    ELEVATION = "Elev",
-    DEPTH = "Depth",
-    SOURCEID = "SourceId",
-    CODE = "Code",
-    NETWORK_CODE = "NetworkCode",
-    STATION_CODE = "StationCode",
-    LOCATION_CODE = "LocationCode",
-    CHANNEL_CODE = "ChannelCode",
+  LAT = "Lat",
+  LON = "Lon",
+  AZIMUTH = "Az",
+  DIP = "Dip",
+  START = "Start",
+  END = "End",
+  ELEVATION = "Elev",
+  DEPTH = "Depth",
+  SOURCEID = "SourceId",
+  CODE = "Code",
+  NETWORK_CODE = "NetworkCode",
+  STATION_CODE = "StationCode",
+  LOCATION_CODE = "LocationCode",
+  CHANNEL_CODE = "ChannelCode",
 }
 
 
 export enum STATION_COLUMN {
-    LAT = "Lat",
-    LON = "Lon",
-    START = "Start",
-    END = "End",
-    ELEVATION = "Elev",
-    SOURCEID = "SourceId",
-    CODE = "Code",
-    NETWORK_CODE = "NetworkCode",
-    STATION_CODE = "StationCode",
+  LAT = "Lat",
+  LON = "Lon",
+  START = "Start",
+  END = "End",
+  ELEVATION = "Elev",
+  SOURCEID = "SourceId",
+  CODE = "Code",
+  NETWORK_CODE = "NetworkCode",
+  STATION_CODE = "StationCode",
+  DESCRIPTION = "Description",
 }
 
 
 export enum SEISMOGRAM_COLUMN {
-    START = "Start",
-    DURATION = "Duration",
-    END = "End",
-    NUM_POINTS = "Num Pts",
-    SAMPLE_RATE = "Sample Rate",
-    SAMPLE_PERIOD = "Sample Period",
-    SEGMENTS = "Segments",
-    SOURCEID = "SourceId",
-    CODE = "Codes",
-    NETWORK_CODE = "NetworkCode",
-    STATION_CODE = "StationCode",
+  START = "Start",
+  DURATION = "Duration",
+  END = "End",
+  NUM_POINTS = "Num Pts",
+  SAMPLE_RATE = "Sample Rate",
+  SAMPLE_PERIOD = "Sample Period",
+  SEGMENTS = "Segments",
+  SOURCEID = "SourceId",
+  CODE = "Codes",
+  NETWORK_CODE = "NetworkCode",
+  STATION_CODE = "StationCode",
 }
 
 
@@ -201,7 +202,7 @@ export class QuakeStationTable extends SeisPlotElement {
     this.redraw();
   }
   draw() {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) { return; }
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     while (wrapper.firstChild) {
       // typescript
@@ -211,14 +212,14 @@ export class QuakeStationTable extends SeisPlotElement {
     }
     const handlebarsCompiled = Handlebars.compile(this.template);
     wrapper.innerHTML = handlebarsCompiled(
-        {
-          seisDataList: this.seisData,
-          seisConfig: this.seismographConfig,
-        },
-        {
-          allowProtoPropertiesByDefault: true, // this might be a security issue???
-        },
-      );
+      {
+        seisDataList: this.seisData,
+        seisConfig: this.seismographConfig,
+      },
+      {
+        allowProtoPropertiesByDefault: true, // this might be a security issue???
+      },
+    );
   }
 
 }
@@ -235,14 +236,14 @@ export class QuakeTable extends HTMLElement {
   lastSortCol: QUAKE_COLUMN | undefined;
   constructor(quakeList?: Array<Quake>, columnLabels?: Map<QUAKE_COLUMN, string>) {
     super();
-    if ( ! quakeList) {
+    if (!quakeList) {
       quakeList = [];
     }
-    if ( ! columnLabels) {
+    if (!columnLabels) {
       columnLabels = new Map();
       columnLabels.set(QUAKE_COLUMN.TIME, "Time");
       columnLabels.set(QUAKE_COLUMN.LAT, "Lat");
-      columnLabels.set(QUAKE_COLUMN.LON,  "Lon");
+      columnLabels.set(QUAKE_COLUMN.LON, "Lon");
       columnLabels.set(QUAKE_COLUMN.MAG, "Mag");
       columnLabels.set(QUAKE_COLUMN.MAGTYPE, "Type");
       columnLabels.set(QUAKE_COLUMN.DEPTH, "Depth");
@@ -252,7 +253,7 @@ export class QuakeTable extends HTMLElement {
     this._columnLabels = columnLabels;
     this._rowToQuake = new Map();
 
-    const shadow = this.attachShadow({mode: 'open'});
+    const shadow = this.attachShadow({ mode: 'open' });
     const table = document.createElement('table');
     table.setAttribute("class", "wrapper");
     addStyleToElement(this, TABLE_CSS);
@@ -278,22 +279,22 @@ export class QuakeTable extends HTMLElement {
   }
   findRowForQuake(q: Quake): HTMLTableRowElement | null {
     let quakeRow = null;
-    this._rowToQuake.forEach( (v,k) => {
-      if (v === q) {quakeRow = k;}
+    this._rowToQuake.forEach((v, k) => {
+      if (v === q) { quakeRow = k; }
     });
     return quakeRow;
   }
   draw() {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) { return; }
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach(h => {
       const cell = theader.appendChild(document.createElement("th"));
       cell.textContent = h;
-      cell.addEventListener('click', () => {this.sort(h, cell);});
+      cell.addEventListener('click', () => { this.sort(h, cell); });
     });
-    table.querySelectorAll("tbody")?.forEach( (tb: Node) => {
+    table.querySelectorAll("tbody")?.forEach((tb: Node) => {
       table.removeChild(tb);
     });
     const tbody = table.createTBody();
@@ -314,7 +315,7 @@ export class QuakeTable extends HTMLElement {
     this.headers().forEach(h => {
       const cell = row.insertCell(index);
       cell.textContent = QuakeTable.getQuakeValue(q, h);
-      if (index !== -1) { index++;}
+      if (index !== -1) { index++; }
     });
   }
   static getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
@@ -342,32 +343,32 @@ export class QuakeTable extends HTMLElement {
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     const tbody = table.querySelector("tbody");
     if (tbody) {
-      const rows = Array.from(tbody.querySelectorAll("tr") );
-      rows.sort((rowa,rowb) => {
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      rows.sort((rowa, rowb) => {
         let out = 0;
         const qa = this._rowToQuake.get(rowa);
         const qb = this._rowToQuake.get(rowb);
         if (qa && qb) {
           if (h === QUAKE_COLUMN.TIME) {
-            out = qa.time.toMillis()-qb.time.toMillis();
+            out = qa.time.toMillis() - qb.time.toMillis();
           } else if (h === QUAKE_COLUMN.LAT) {
-            out =  qa.latitude - qb.latitude;
+            out = qa.latitude - qb.latitude;
           } else if (h === QUAKE_COLUMN.LON) {
-            out =  qa.longitude - qb.longitude;
+            out = qa.longitude - qb.longitude;
           } else if (h === QUAKE_COLUMN.MAG) {
-            out =  qa.magnitude.mag - qb.magnitude.mag;
+            out = qa.magnitude.mag - qb.magnitude.mag;
           } else if (h === QUAKE_COLUMN.DEPTH) {
-            out =  qa.depthKm - qb.depthKm;
+            out = qa.depthKm - qb.depthKm;
           } else {
             // just use string
             const ta = QuakeTable.getQuakeValue(qa, h);
             const tb = QuakeTable.getQuakeValue(qb, h);
             if (ta < tb) {
-              out =  -1;
+              out = -1;
             } else if (ta > tb) {
-              out =  1;
+              out = 1;
             } else {
-              out =  0;
+              out = 0;
             }
           }
         } else {
@@ -379,12 +380,12 @@ export class QuakeTable extends HTMLElement {
         if (this.lastSortAsc) {
           rows.reverse();
         }
-        this.lastSortAsc = ! this.lastSortAsc;
+        this.lastSortAsc = !this.lastSortAsc;
       } else {
         this.lastSortAsc = true;
       }
       // this effectively remove and then appends the rows in new order
-      rows.forEach( v => {
+      rows.forEach(v => {
         tbody.appendChild(v);
       });
       this.lastSortCol = h;
@@ -405,16 +406,16 @@ export class ChannelTable extends HTMLElement {
   lastSortCol: CHANNEL_COLUMN | undefined;
   constructor(channelList?: Array<Channel>, columnLabels?: Map<CHANNEL_COLUMN, string>) {
     super();
-    if ( ! channelList) {
+    if (!channelList) {
       channelList = [];
     }
-    if ( ! columnLabels) {
+    if (!columnLabels) {
       columnLabels = new Map();
       columnLabels.set(CHANNEL_COLUMN.CODE, "Code");
       columnLabels.set(CHANNEL_COLUMN.START, "Start");
       columnLabels.set(CHANNEL_COLUMN.END, "End");
       columnLabels.set(CHANNEL_COLUMN.LAT, "Lat");
-      columnLabels.set(CHANNEL_COLUMN.LON,  "Lon");
+      columnLabels.set(CHANNEL_COLUMN.LON, "Lon");
       columnLabels.set(CHANNEL_COLUMN.AZIMUTH, "Az");
       columnLabels.set(CHANNEL_COLUMN.DIP, "Dip");
       columnLabels.set(CHANNEL_COLUMN.DEPTH, "Depth");
@@ -425,7 +426,7 @@ export class ChannelTable extends HTMLElement {
     this._columnLabels = columnLabels;
     this._rowToChannel = new Map();
 
-    const shadow = this.attachShadow({mode: 'open'});
+    const shadow = this.attachShadow({ mode: 'open' });
     const table = document.createElement('table');
     table.setAttribute("class", "wrapper");
     addStyleToElement(this, TABLE_CSS);
@@ -450,16 +451,16 @@ export class ChannelTable extends HTMLElement {
     return addStyleToElement(this, css, id);
   }
   draw() {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) { return; }
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach(h => {
       const cell = theader.appendChild(document.createElement("th"));
       cell.textContent = h;
-      cell.addEventListener('click', () => {this.sort(h, cell);});
+      cell.addEventListener('click', () => { this.sort(h, cell); });
     });
-    table.querySelectorAll("tbody")?.forEach( (tb: Node) => {
+    table.querySelectorAll("tbody")?.forEach((tb: Node) => {
       table.removeChild(tb);
     });
     const tbody = table.createTBody();
@@ -479,7 +480,7 @@ export class ChannelTable extends HTMLElement {
     this.headers().forEach(h => {
       const cell = row.insertCell(index);
       cell.textContent = ChannelTable.getChannelValue(q, h);
-      if (index !== -1) { index++;}
+      if (index !== -1) { index++; }
     });
   }
   static getChannelValue(q: Channel, h: CHANNEL_COLUMN): string {
@@ -519,44 +520,44 @@ export class ChannelTable extends HTMLElement {
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     const tbody = table.querySelector("tbody");
     if (tbody) {
-      const rows = Array.from(tbody.querySelectorAll("tr") );
-      rows.sort((rowa,rowb) => {
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      rows.sort((rowa, rowb) => {
         let out = 0;
         const qa = this._rowToChannel.get(rowa);
         const qb = this._rowToChannel.get(rowb);
         if (qa && qb) {
           if (h === CHANNEL_COLUMN.START) {
-            out = qa.startDate.toMillis()-qb.startDate.toMillis();
+            out = qa.startDate.toMillis() - qb.startDate.toMillis();
           } else if (h === CHANNEL_COLUMN.END) {
-            if (qa.endDate && qb.endDate ) {
-              out = qa.endDate.toMillis()-qb.endDate.toMillis();
+            if (qa.endDate && qb.endDate) {
+              out = qa.endDate.toMillis() - qb.endDate.toMillis();
             } else if (qb.endDate) {
               return 1;
             } else {
               return -1;
             }
           } else if (h === CHANNEL_COLUMN.LAT) {
-            out =  qa.latitude - qb.latitude;
+            out = qa.latitude - qb.latitude;
           } else if (h === CHANNEL_COLUMN.LON) {
-            out =  qa.longitude - qb.longitude;
+            out = qa.longitude - qb.longitude;
           } else if (h === CHANNEL_COLUMN.AZIMUTH) {
-            out =  qa.azimuth - qb.azimuth;
+            out = qa.azimuth - qb.azimuth;
           } else if (h === CHANNEL_COLUMN.DIP) {
-            out =  qa.dip - qb.dip;
+            out = qa.dip - qb.dip;
           } else if (h === CHANNEL_COLUMN.DEPTH) {
-            out =  qa.depth - qb.depth;
+            out = qa.depth - qb.depth;
           } else if (h === CHANNEL_COLUMN.ELEVATION) {
-            out =  qa.elevation - qb.elevation;
+            out = qa.elevation - qb.elevation;
           } else {
             // just use string
             const ta = ChannelTable.getChannelValue(qa, h);
             const tb = ChannelTable.getChannelValue(qb, h);
             if (ta < tb) {
-              out =  -1;
+              out = -1;
             } else if (ta > tb) {
-              out =  1;
+              out = 1;
             } else {
-              out =  0;
+              out = 0;
             }
           }
         } else {
@@ -568,12 +569,12 @@ export class ChannelTable extends HTMLElement {
         if (this.lastSortAsc) {
           rows.reverse();
         }
-        this.lastSortAsc = ! this.lastSortAsc;
+        this.lastSortAsc = !this.lastSortAsc;
       } else {
         this.lastSortAsc = true;
       }
       // this effectively remove and then appends the rows in new order
-      rows.forEach( v => {
+      rows.forEach(v => {
         tbody.appendChild(v);
       });
       this.lastSortCol = h;
@@ -595,16 +596,16 @@ export class StationTable extends HTMLElement {
   lastSortCol: STATION_COLUMN | undefined;
   constructor(stationList?: Array<Station>, columnLabels?: Map<STATION_COLUMN, string>) {
     super();
-    if ( ! stationList) {
+    if (!stationList) {
       stationList = [];
     }
-    if ( ! columnLabels) {
+    if (!columnLabels) {
       columnLabels = new Map();
       columnLabels.set(STATION_COLUMN.CODE, "Code");
       columnLabels.set(STATION_COLUMN.START, "Start");
       columnLabels.set(STATION_COLUMN.END, "End");
       columnLabels.set(STATION_COLUMN.LAT, "Lat");
-      columnLabels.set(STATION_COLUMN.LON,  "Lon");
+      columnLabels.set(STATION_COLUMN.LON, "Lon");
       columnLabels.set(STATION_COLUMN.ELEVATION, "Evel");
       columnLabels.set(STATION_COLUMN.SOURCEID, "SourceId");
     }
@@ -612,7 +613,7 @@ export class StationTable extends HTMLElement {
     this._columnLabels = columnLabels;
     this._rowToStation = new Map();
 
-    const shadow = this.attachShadow({mode: 'open'});
+    const shadow = this.attachShadow({ mode: 'open' });
     const table = document.createElement('table');
     table.setAttribute("class", "wrapper");
     addStyleToElement(this, TABLE_CSS);
@@ -637,16 +638,16 @@ export class StationTable extends HTMLElement {
     return addStyleToElement(this, css, id);
   }
   draw() {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) { return; }
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach(h => {
       const cell = theader.appendChild(document.createElement("th"));
       cell.textContent = h;
-      cell.addEventListener('click', () => {this.sort(h, cell);});
+      cell.addEventListener('click', () => { this.sort(h, cell); });
     });
-    table.querySelectorAll("tbody")?.forEach( (tb: Node) => {
+    table.querySelectorAll("tbody")?.forEach((tb: Node) => {
       table.removeChild(tb);
     });
     const tbody = table.createTBody();
@@ -666,7 +667,7 @@ export class StationTable extends HTMLElement {
     this.headers().forEach(h => {
       const cell = row.insertCell(index);
       cell.textContent = StationTable.getStationValue(q, h);
-      if (index !== -1) { index++;}
+      if (index !== -1) { index++; }
     });
   }
   static getStationValue(q: Station, h: STATION_COLUMN): string {
@@ -688,6 +689,8 @@ export class StationTable extends HTMLElement {
       return `${q.networkCode}`;
     } else if (h === STATION_COLUMN.STATION_CODE) {
       return `${q.stationCode}`;
+    } else if (h === STATION_COLUMN.DESCRIPTION) {
+      return `${q.description}`;
     } else {
       return `unknown: ${String(h)}`;
     }
@@ -696,38 +699,38 @@ export class StationTable extends HTMLElement {
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     const tbody = table.querySelector("tbody");
     if (tbody) {
-      const rows = Array.from(tbody.querySelectorAll("tr") );
-      rows.sort((rowa,rowb) => {
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      rows.sort((rowa, rowb) => {
         let out = 0;
         const qa = this._rowToStation.get(rowa);
         const qb = this._rowToStation.get(rowb);
         if (qa && qb) {
           if (h === STATION_COLUMN.START) {
-            out = qa.startDate.toMillis()-qb.startDate.toMillis();
+            out = qa.startDate.toMillis() - qb.startDate.toMillis();
           } else if (h === STATION_COLUMN.END) {
-            if (qa.endDate && qb.endDate ) {
-              out = qa.endDate.toMillis()-qb.endDate.toMillis();
+            if (qa.endDate && qb.endDate) {
+              out = qa.endDate.toMillis() - qb.endDate.toMillis();
             } else if (qb.endDate) {
               return 1;
             } else {
               return -1;
             }
           } else if (h === STATION_COLUMN.LAT) {
-            out =  qa.latitude - qb.latitude;
+            out = qa.latitude - qb.latitude;
           } else if (h === STATION_COLUMN.LON) {
-            out =  qa.longitude - qb.longitude;
+            out = qa.longitude - qb.longitude;
           } else if (h === STATION_COLUMN.ELEVATION) {
-            out =  qa.elevation - qb.elevation;
+            out = qa.elevation - qb.elevation;
           } else {
             // just use string
             const ta = StationTable.getStationValue(qa, h);
             const tb = StationTable.getStationValue(qb, h);
             if (ta < tb) {
-              out =  -1;
+              out = -1;
             } else if (ta > tb) {
-              out =  1;
+              out = 1;
             } else {
-              out =  0;
+              out = 0;
             }
           }
         } else {
@@ -739,12 +742,12 @@ export class StationTable extends HTMLElement {
         if (this.lastSortAsc) {
           rows.reverse();
         }
-        this.lastSortAsc = ! this.lastSortAsc;
+        this.lastSortAsc = !this.lastSortAsc;
       } else {
         this.lastSortAsc = true;
       }
       // this effectively remove and then appends the rows in new order
-      rows.forEach( v => {
+      rows.forEach(v => {
         tbody.appendChild(v);
       });
       this.lastSortCol = h;
@@ -769,10 +772,10 @@ export class SeismogramTable extends HTMLElement {
   lastSortCol: SEISMOGRAM_COLUMN | undefined;
   constructor(sddList?: Array<SeismogramDisplayData>, columnLabels?: Map<SEISMOGRAM_COLUMN, string>) {
     super();
-    if ( ! sddList) {
+    if (!sddList) {
       sddList = [];
     }
-    if ( ! columnLabels) {
+    if (!columnLabels) {
       columnLabels = new Map();
       columnLabels.set(SEISMOGRAM_COLUMN.CODE, "Code");
       columnLabels.set(SEISMOGRAM_COLUMN.START, "Start");
@@ -780,7 +783,7 @@ export class SeismogramTable extends HTMLElement {
       columnLabels.set(SEISMOGRAM_COLUMN.DURATION, "Dur");
       columnLabels.set(SEISMOGRAM_COLUMN.SAMPLE_RATE, "Sample Rate");
       columnLabels.set(SEISMOGRAM_COLUMN.SAMPLE_PERIOD, "Sample Period");
-      columnLabels.set(SEISMOGRAM_COLUMN.NUM_POINTS,  "Npts");
+      columnLabels.set(SEISMOGRAM_COLUMN.NUM_POINTS, "Npts");
       columnLabels.set(SEISMOGRAM_COLUMN.SEGMENTS, "Segments");
       columnLabels.set(SEISMOGRAM_COLUMN.SOURCEID, "SourceId");
     }
@@ -788,7 +791,7 @@ export class SeismogramTable extends HTMLElement {
     this._columnLabels = columnLabels;
     this._rowToSDD = new Map();
 
-    const shadow = this.attachShadow({mode: 'open'});
+    const shadow = this.attachShadow({ mode: 'open' });
     const table = document.createElement('table');
     table.setAttribute("class", "wrapper");
     addStyleToElement(this, TABLE_CSS);
@@ -813,16 +816,16 @@ export class SeismogramTable extends HTMLElement {
     return addStyleToElement(this, css, id);
   }
   draw() {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) { return; }
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     table.deleteTHead();
     const theader = table.createTHead().insertRow();
     this.headers().forEach(h => {
       const cell = theader.appendChild(document.createElement("th"));
       cell.textContent = h;
-      cell.addEventListener('click', () => {this.sort(h, cell);});
+      cell.addEventListener('click', () => { this.sort(h, cell); });
     });
-    table.querySelectorAll("tbody")?.forEach( (tb: Node) => {
+    table.querySelectorAll("tbody")?.forEach((tb: Node) => {
       table.removeChild(tb);
     });
     const tbody = table.createTBody();
@@ -839,7 +842,7 @@ export class SeismogramTable extends HTMLElement {
     this.headers().forEach(h => {
       const cell = row.insertCell(index);
       cell.textContent = SeismogramTable.getSeismogramValue(q, h);
-      if (index !== -1) { index++;}
+      if (index !== -1) { index++; }
     });
   }
   static getSeismogramValue(q: SeismogramDisplayData, h: SEISMOGRAM_COLUMN): string {
@@ -873,26 +876,26 @@ export class SeismogramTable extends HTMLElement {
     const table = (this.shadowRoot?.querySelector('table') as HTMLTableElement);
     const tbody = table.querySelector("tbody");
     if (tbody) {
-      const rows = Array.from(tbody.querySelectorAll("tr") );
-      rows.sort((rowa,rowb) => {
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      rows.sort((rowa, rowb) => {
         let out = 0;
         const qa = this._rowToSDD.get(rowa);
         const qb = this._rowToSDD.get(rowb);
         if (qa && qb) {
           if (h === SEISMOGRAM_COLUMN.START) {
-            out = qa.start.toMillis()-qb.start.toMillis();
+            out = qa.start.toMillis() - qb.start.toMillis();
           } else if (h === SEISMOGRAM_COLUMN.END) {
-            out = qa.end.toMillis()-qb.end.toMillis();
+            out = qa.end.toMillis() - qb.end.toMillis();
           } else if (h === SEISMOGRAM_COLUMN.DURATION) {
-            out =  (qa.timeRange.toDuration().toMillis() - qb.timeRange.toDuration().toMillis());
+            out = (qa.timeRange.toDuration().toMillis() - qb.timeRange.toDuration().toMillis());
           } else if (h === SEISMOGRAM_COLUMN.NUM_POINTS) {
-            out =  qa.numPoints - qb.numPoints;
+            out = qa.numPoints - qb.numPoints;
           } else if (h === SEISMOGRAM_COLUMN.SAMPLE_RATE) {
-            out =  (qa._seismogram ? qa._seismogram.sampleRate : 0)
-              - (qb._seismogram ? qb._seismogram.sampleRate : 0) ;
+            out = (qa._seismogram ? qa._seismogram.sampleRate : 0)
+              - (qb._seismogram ? qb._seismogram.sampleRate : 0);
           } else if (h === SEISMOGRAM_COLUMN.SAMPLE_PERIOD) {
-            out =  (qa._seismogram ? qa._seismogram.samplePeriod : 0)
-              - (qb._seismogram ? qb._seismogram.samplePeriod : 0) ;
+            out = (qa._seismogram ? qa._seismogram.samplePeriod : 0)
+              - (qb._seismogram ? qb._seismogram.samplePeriod : 0);
           } else if (h === SEISMOGRAM_COLUMN.SEGMENTS) {
             out = (qa._seismogram ? qa._seismogram.segments.length : 0)
               - (qb._seismogram ? qb._seismogram.segments.length : 0);
@@ -901,11 +904,11 @@ export class SeismogramTable extends HTMLElement {
             const ta = SeismogramTable.getSeismogramValue(qa, h);
             const tb = SeismogramTable.getSeismogramValue(qb, h);
             if (ta < tb) {
-              out =  -1;
+              out = -1;
             } else if (ta > tb) {
-              out =  1;
+              out = 1;
             } else {
-              out =  0;
+              out = 0;
             }
           }
         } else {
@@ -917,12 +920,12 @@ export class SeismogramTable extends HTMLElement {
         if (this.lastSortAsc) {
           rows.reverse();
         }
-        this.lastSortAsc = ! this.lastSortAsc;
+        this.lastSortAsc = !this.lastSortAsc;
       } else {
         this.lastSortAsc = true;
       }
       // this effectively remove and then appends the rows in new order
-      rows.forEach( v => {
+      rows.forEach(v => {
         tbody.appendChild(v);
       });
       this.lastSortCol = h;
