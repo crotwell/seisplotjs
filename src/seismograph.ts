@@ -194,7 +194,7 @@ export class Seismograph extends SeisPlotElement {
   amp_scalable: SeismographAmplitudeScalable;
 
   _resizeObserver: ResizeObserver;
-
+  minmax_sample_pixels = 20;
   constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     this.outerWidth = -1;
@@ -514,26 +514,22 @@ export class Seismograph extends SeisPlotElement {
   }
   calcDetailForEvent(evt: MouseEvent, type?: string): SeisMouseEventType {
     const margin = this.seismographConfig.margin;
-    const mouseTimeVal = this.timeScaleForAxis().invert(evt.offsetX-margin.left);
-    const mouseAmp = this.ampScaleForAxis().invert(evt.offsetY-margin.top);
+    const mouseTimeVal = this.timeScaleForAxis().invert(evt.offsetX - margin.left);
+    const mouseAmp = this.ampScaleForAxis().invert(evt.offsetY - margin.top);
     const out = {
-        mouseevent: evt,
-        time: null,
-        relative_time: null,
-        amplitude: mouseAmp,
-        seismograph: this,
-      } as SeisMouseEventType;
+      mouseevent: evt,
+      time: null,
+      relative_time: null,
+      amplitude: mouseAmp,
+      seismograph: this,
+    } as SeisMouseEventType;
     if (mouseTimeVal instanceof DateTime) {
       out.time = mouseTimeVal;
     } else {
       // relative time in seconds
-      out.relative_time = Duration.fromMillis(mouseTimeVal*1000);
+      out.relative_time = Duration.fromMillis(mouseTimeVal * 1000);
     }
     return out;
-  }
-
-  drawSeismograms() {
-    this.drawSeismogramsCanvas();
   }
 
   isVisible(): boolean {
@@ -550,146 +546,24 @@ export class Seismograph extends SeisPlotElement {
     );
   }
 
-  drawSeismogramsCanvas(): void {
+  drawSeismograms(): void {
 
     if (!this.isVisible()) {
       // no need to draw if we are not visible
       return;
     }
-
-    // get the canvas drawing context
-    const canvasNode = this.canvas?.node();
-    if (! canvasNode) {return;}
-    const context = canvasNode.getContext("2d");
-    if (! context) {return;}
-    context.save();
-    // clear the canvas from previous drawing
-    context.clearRect(0, 0, canvasNode.width, canvasNode.height);
-    context.lineWidth = this.seismographConfig.lineWidth;
-
-    const sddList = this._seisDataList.concat(this._debugAlignmentSeisData);
-    sddList.forEach((sdd, sddIndex) => {
-      const ti = sddIndex;
-      const xscaleForSDD = this.timeScaleForSeisDisplayData(sdd);
-      const yscaleForSDD = this.ampScaleForSeisDisplayData(sdd);
-      const s = xscaleForSDD.domain().start?.valueOf();
-      const e = xscaleForSDD.domain().end?.valueOf();
-      if (s == null || e == null) {
-        throw new Error(`Bad xscale domain: ${util.stringify(xscaleForSDD.domain())}`);
-      }
-      const secondsPerPixel =
-        (e - s) /
-        1000 /
-        (xscaleForSDD.range[1] - xscaleForSDD.range[0]);
-      const color = this.seismographConfig.getColorForIndex(ti);
-
-      let firstTime = true;
-
-      if (sdd.seismogram) {
-        sdd.seismogram.segments.forEach((s, segIdx) => {
-          if (
-            xscaleForSDD.for(s.startTime) > xscaleForSDD.range[1] ||
-            xscaleForSDD.for(s.endTime) < xscaleForSDD.range[0]
-          ) {
-            // segment either totally off to left or right of visible
-            return;
-          }
-
-          const samplesPerPixel = 1.0 * s.sampleRate * secondsPerPixel;
-
-          const pixelsPerSample = 1.0 / samplesPerPixel;
-          const startPixel = xscaleForSDD.for(s.startTime);
-          const endPixel = xscaleForSDD.for(s.endTime);
-          let leftVisibleSample = 0;
-          let rightVisibleSample = s.y.length;
-          let leftVisiblePixel = startPixel;
-
-          if (startPixel < 0) {
-            leftVisibleSample =
-              Math.floor(-1 * startPixel * samplesPerPixel) - 1;
-            leftVisiblePixel = 0;
-          }
-
-          if (endPixel > xscaleForSDD.range[1] + 1) {
-            rightVisibleSample =
-              leftVisibleSample +
-              Math.ceil((this.width + 1) * samplesPerPixel) +
-              1;
-          }
-
-          if (firstTime || !this.seismographConfig.connectSegments) {
-            context.beginPath();
-            context.strokeStyle = color;
-            context.lineWidth = this.seismographConfig.lineWidth;
-            context.moveTo(
-              leftVisiblePixel,
-              yscaleForSDD(s.y[leftVisibleSample]),
-            );
-            firstTime = false;
-          }
-          if (samplesPerPixel > 10) {
-            // only draw min-max
-
-            let i = leftVisibleSample;
-            while (i < rightVisibleSample + 2 && i < s.y.length) {
-              const curPixel = Math.floor(startPixel + i * pixelsPerSample);
-              let min = s.y[i];
-              let max = s.y[i];
-              let minIdx = i;
-              let maxIdx = i;
-              while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
-                if (min > s.y[i]) { min = s.y[i]; minIdx = i; }
-                if (max < s.y[i]) { max = s.y[i]; maxIdx = i; }
-                i++;
-              }
-              const topPixelFlt = yscaleForSDD(max); // note pixel coord flipped
-              const botPixelFlt = yscaleForSDD(min); // so minValue=>maxPixel, maxValue=>minPixel
-              const botPixel = Math.floor(botPixelFlt);
-              const topPixel = Math.ceil(topPixelFlt);
-              if (botPixelFlt-topPixelFlt < 1.25) {
-                // very horizontal, just draw single
-                context.lineTo(curPixel+0.5, topPixelFlt);
-              } else {
-                // drawing min to max vs max to min depending on order
-                // and offseting by half a pixel
-                // helps a lot with avoiding fuzziness due to antialiasing
-                if (minIdx < maxIdx) {
-                  // min/bot occurs before max/top
-                  context.lineTo(curPixel-0.5, botPixel-0.5);
-                  context.lineTo(curPixel+0.5, topPixel+0.5);
-                } else {
-                  // max/top occurs before min/bot
-                  context.lineTo(curPixel-0.5, topPixel+0.5);
-                  context.lineTo(curPixel+0.5, botPixel-0.5);
-                }
-              }
-            }
-          } else {
-            // draw all samples
-            for (
-              let i = leftVisibleSample;
-              i < rightVisibleSample + 2 && i < s.y.length;
-              i++
-            ) {
-              context.lineTo(
-                startPixel + i * pixelsPerSample + 0.5,
-                Math.round(yscaleForSDD(s.y[i])) + 0.5,
-              );
-            }
-          }
-
-          if (!this.seismographConfig.connectSegments) {
-            context.stroke();
-          }
-        });
-      }
-
-      if (this.seismographConfig.connectSegments) {
-        context.stroke();
-      }
-    });
-
-    context.restore();
+    const canvas = this.canvas?.node();
+    if (!canvas) { return; }
+    drawAllOnCanvas(
+      canvas,
+      this._seisDataList,
+      this._seisDataList.map(sdd => this.timeScaleForSeisDisplayData(sdd)),
+      this._seisDataList.map(sdd => this.ampScaleForSeisDisplayData(sdd)),
+      this._seisDataList.map((_sdd, ti) => this.seismographConfig.getColorForIndex(ti)),
+      this.seismographConfig.lineWidth,
+      this.seismographConfig.connectSegments,
+      this.minmax_sample_pixels,
+    );
   }
 
   calcScaleAndZoom(): void {
@@ -712,40 +586,40 @@ export class Seismograph extends SeisPlotElement {
   }
 
   ampScaleForSeisDisplayData(sdd: SeismogramDisplayData): ScaleLinear<number, number, never> {
-      const ampScale = d3scaleLinear();
-      ampScale.range([this.height, 0]);
-      if (this.seismographConfig.linkedAmplitudeScale) {
-        const drawHalfWidth = this.amp_scalable.drawHalfWidth;
-        let sensitivityVal = 1;
-        if (this.seismographConfig.doGain && sdd.sensitivity?.sensitivity) {
-          sensitivityVal = sdd.sensitivity.sensitivity;
-        }
-        if ( ! this.seismographConfig.isCenteredAmp()) {
-          return ampScale.domain([(this.amp_scalable.drawMiddle - drawHalfWidth)*sensitivityVal,
-                                  (this.amp_scalable.drawMiddle + drawHalfWidth)*sensitivityVal]);
-        }
-        const sddInterval = this.displayTimeRangeForSeisDisplayData(sdd);
-        const minMax = calcMinMax(sdd,
-                                            sddInterval,
-                                            false,
-                                            this.seismographConfig.amplitudeMode,
-                                          );
-        if (minMax) {
-          // if doGain, halfWidth is in real world units, so mul sensitivity to
-          // get counts for drawing
-          const myMin = minMax.middle - (drawHalfWidth)*sensitivityVal;
-          const myMax = minMax.middle + (drawHalfWidth)*sensitivityVal;
-          ampScale.domain([myMin, myMax]);
-        } else {
-          // no data?
-          ampScale.domain([-1, 1]);
-        }
-      } else if (this.seismographConfig.fixedAmplitudeScale) {
-        ampScale.domain(this.seismographConfig.fixedAmplitudeScale);
-      } else {
-        throw new Error("ampScaleForSeisDisplayData Must be either linked or fixed amp scale");
+    const ampScale = d3scaleLinear();
+    ampScale.range([this.height, 0]);
+    if (this.seismographConfig.linkedAmplitudeScale) {
+      const drawHalfWidth = this.amp_scalable.drawHalfWidth;
+      let sensitivityVal = 1;
+      if (this.seismographConfig.doGain && sdd.sensitivity?.sensitivity) {
+        sensitivityVal = sdd.sensitivity.sensitivity;
       }
-      return ampScale;
+      if (!this.seismographConfig.isCenteredAmp()) {
+        return ampScale.domain([(this.amp_scalable.drawMiddle - drawHalfWidth) * sensitivityVal,
+        (this.amp_scalable.drawMiddle + drawHalfWidth) * sensitivityVal]);
+      }
+      const sddInterval = this.displayTimeRangeForSeisDisplayData(sdd);
+      const minMax = calcMinMax(sdd,
+        sddInterval,
+        false,
+        this.seismographConfig.amplitudeMode,
+      );
+      if (minMax) {
+        // if doGain, halfWidth is in real world units, so mul sensitivity to
+        // get counts for drawing
+        const myMin = minMax.middle - (drawHalfWidth) * sensitivityVal;
+        const myMax = minMax.middle + (drawHalfWidth) * sensitivityVal;
+        ampScale.domain([myMin, myMax]);
+      } else {
+        // no data?
+        ampScale.domain([-1, 1]);
+      }
+    } else if (this.seismographConfig.fixedAmplitudeScale) {
+      ampScale.domain(this.seismographConfig.fixedAmplitudeScale);
+    } else {
+      throw new Error("ampScaleForSeisDisplayData Must be either linked or fixed amp scale");
+    }
+    return ampScale;
   }
 
 
@@ -777,12 +651,12 @@ export class Seismograph extends SeisPlotElement {
       }
     } else {
       if (this.seismographConfig.linkedTimeScale) {
-        plotInterval = Interval.before(DateTime.utc(), this.seismographConfig.linkedTimeScale.duration);
+        plotInterval = util.durationEnd(this.seismographConfig.linkedTimeScale.duration, DateTime.utc());
       } else if (this.seismographConfig.fixedTimeScale) {
         plotInterval = this.seismographConfig.fixedTimeScale;
       } else {
         // ??? should not happen, just use now and 1 sec?
-        plotInterval = util.durationEnd(1, DateTime.utc() );
+        plotInterval = util.durationEnd(1, DateTime.utc());
       }
     }
     return new axisutil.LuxonTimeScale(plotInterval, [0, this.width]);
@@ -822,14 +696,18 @@ export class Seismograph extends SeisPlotElement {
       xScaleToDraw = d3scaleLinear();
       xScaleToDraw.range([0, this.width]);
       if (this.seismographConfig.linkedTimeScale) {
-        const startOffset = this.time_scalable.drawAlignmentTimeOffset.toMillis()/1000;
-        const duration = this.time_scalable.drawDuration.toMillis()/1000;
-        xScaleToDraw.domain([startOffset, startOffset+duration]);
+        const startOffset = this.time_scalable.drawAlignmentTimeOffset.toMillis() / 1000;
+        const duration = this.time_scalable.drawDuration.toMillis() / 1000;
+        if (duration > 0) {
+          xScaleToDraw.domain([startOffset, startOffset + duration]);
+        } else {
+          xScaleToDraw.domain([startOffset + duration, startOffset]);
+        }
       } else if (this.seismographConfig.fixedTimeScale) {
         const psed = this.seismographConfig.fixedTimeScale;
         const s = validStartTime(psed);
         const e = validEndTime(psed);
-        xScaleToDraw.domain([s.toMillis()/1000, e.toMillis()/1000]);
+        xScaleToDraw.domain([s.toMillis() / 1000, e.toMillis() / 1000]);
       } else {
         throw new Error("neither fixed nor linked time scale");
       }
@@ -997,17 +875,21 @@ export class Seismograph extends SeisPlotElement {
     if (isDef(this.seismographConfig.linkedTimeScale)) {
       const linkedTS = this.seismographConfig.linkedTimeScale;
 
-      const origOffset = linkedTS.origOffset.toMillis()/1000;
-      const origDuration = linkedTS.origDuration.toMillis()/1000;
+      const origOffset = linkedTS.origOffset.toMillis() / 1000;
+      const origDuration = linkedTS.origDuration.toMillis() / 1000;
       const origXScale = d3scaleLinear();
       origXScale.range([0, this.width]);
-      origXScale.domain([origOffset, origOffset+origDuration]);
+      if (origDuration > 0) {
+        origXScale.domain([origOffset, origOffset + origDuration]);
+      } else {
+        origXScale.domain([origOffset + origDuration, origOffset]);
+      }
       const xt = t.rescaleX(origXScale);
       const startDelta = xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
       const duration = xt.domain()[1] - xt.domain()[0];
       linkedTS.zoom(
-        Duration.fromMillis(startDelta*1000),
-        Duration.fromMillis(duration*1000),
+        Duration.fromMillis(startDelta * 1000),
+        Duration.fromMillis(duration * 1000),
       );
     } else {
       throw new Error("can't zoom fixedTimeScale");
