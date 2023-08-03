@@ -14,9 +14,9 @@ import {
   reErrorWithMessage,
   WAY_FUTURE,
 } from "./util";
-import {Complex} from "./oregondsputil";
-import {FDSNSourceId, NetworkSourceId, StationSourceId, NslcId, SourceIdSorter} from "./fdsnsourceid";
-import {DateTime, Interval} from "luxon";
+import { Complex } from "./oregondsputil";
+import { FDSNSourceId, NetworkSourceId, StationSourceId, NslcId, SourceIdSorter } from "./fdsnsourceid";
+import { DateTime, Interval } from "luxon";
 
 /** xml namespace for stationxml */
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
@@ -42,7 +42,7 @@ export function createChannelClickEvent(sta: Channel, mouseclick: Event): Custom
     mouseevent: mouseclick,
     channel: sta,
   };
-  return new CustomEvent(CHANNEL_CLICK_EVENT, { detail: detail});
+  return new CustomEvent(CHANNEL_CLICK_EVENT, { detail: detail });
 }
 
 /**
@@ -58,7 +58,7 @@ export function createStationClickEvent(sta: Station, mouseclick: Event): Custom
     mouseevent: mouseclick,
     station: sta,
   };
-  return new CustomEvent(STATION_CLICK_EVENT, { detail: detail});
+  return new CustomEvent(STATION_CLICK_EVENT, { detail: detail });
 }
 
 
@@ -116,7 +116,7 @@ export class Network {
   }
 
   isActiveAt(d?: DateTime): boolean {
-    if ( ! isDef(d)) {
+    if (!isDef(d)) {
       d = DateTime.utc();
     }
     return this.timeRange.contains(d);
@@ -135,6 +135,7 @@ export class Network {
 export class Station {
   network: Network;
   stationCode: string;
+  sourceID: string | null;
 
   /** @private */
   _startDate: DateTime;
@@ -146,11 +147,21 @@ export class Station {
   latitude: number;
   longitude: number;
   elevation: number;
+  waterLevel: number | null;
+  comments: Array<Comment>;
+  equipmentList: Array<Equipment>;
+  dataAvailability: DataAvailability | null;
+  identifierList: Array<string>;
+  description: string;
+  geology: string;
+  vault: string;
   channels: Array<Channel>;
 
   constructor(network: Network, stationCode: string) {
     this.network = network;
     this.name = "";
+    this.description = "";
+    this.sourceID = null;
     this.restrictedStatus = "";
     this._startDate = FAKE_START_DATE;
     this._endDate = null;
@@ -159,11 +170,18 @@ export class Station {
     this.latitude = INVALID_NUMBER;
     this.longitude = INVALID_NUMBER;
     this.elevation = 0;
+    this.waterLevel = null;
+    this.comments = [];
+    this.equipmentList = [];
+    this.dataAvailability = null;
+    this.geology = "";
+    this.vault = "";
+    this.identifierList = [];
   }
 
   get sourceId(): StationSourceId {
     return new StationSourceId(this.networkCode ? this.networkCode : "",
-                              (this.stationCode ? this.stationCode : ""));
+      (this.stationCode ? this.stationCode : ""));
   }
 
   get startDate(): DateTime {
@@ -195,7 +213,7 @@ export class Station {
   }
 
   isActiveAt(d?: DateTime): boolean {
-    if ( ! isDef(d)) {
+    if (!isDef(d)) {
       d = DateTime.utc();
     }
     return this.timeRange.contains(d);
@@ -226,6 +244,12 @@ export class Channel {
   azimuth: number;
   dip: number;
   sampleRate: number;
+  waterLevel: number | null = null;
+  comments: Array<Comment> = [];
+  equipmentList: Array<Equipment> = [];
+  dataAvailability: DataAvailability | null = null;
+  identifierList: Array<string> = [];
+  description: string = "";
   response: Response | null;
   sensor: Equipment | null;
   preamplifier: Equipment | null;
@@ -273,9 +297,9 @@ export class Channel {
       return this._sourceId;
     }
     return FDSNSourceId.fromNslc(this.networkCode,
-                                 this.stationCode,
-                                 this.locationCode,
-                                 this.channelCode);
+      this.stationCode,
+      this.locationCode,
+      this.channelCode);
   }
 
   get nslcId(): NslcId {
@@ -342,7 +366,7 @@ export class Channel {
   }
 
   set instrumentSensitivity(value: InstrumentSensitivity) {
-    if (! isDef(this.response)) {
+    if (!isDef(this.response)) {
       this.response = new Response(value);
     } else {
       this.response.instrumentSensitivity = value;
@@ -379,7 +403,7 @@ export class Channel {
   }
 
   isActiveAt(d?: DateTime): boolean {
-    if ( ! isDef(d)) {
+    if (!isDef(d)) {
       d = DateTime.utc();
     }
     return this.timeRange.contains(d);
@@ -500,7 +524,7 @@ export class FIR extends AbstractFilterType {
   constructor(inputUnits: string, outputUnits: string) {
     super(inputUnits, outputUnits);
     this.symmetry = "none";
-    this.numerator = [ 1 ];
+    this.numerator = [1];
   }
 }
 export class CoefficientsFilter extends AbstractFilterType {
@@ -511,7 +535,7 @@ export class CoefficientsFilter extends AbstractFilterType {
   constructor(inputUnits: string, outputUnits: string) {
     super(inputUnits, outputUnits);
     this.cfTransferFunction = "";
-    this.numerator = [ 1 ];
+    this.numerator = [1];
     this.denominator = new Array<number>(0);
   }
 }
@@ -533,6 +557,43 @@ export class Gain {
     this.value = value;
     this.frequency = frequency;
   }
+}
+
+export class Span {
+  interval: Interval;
+  numberSegments = 0;
+  maximumTimeTear: number | null;
+  constructor(interval: Interval) {
+    this.maximumTimeTear = null;
+    this.interval = interval;
+  }
+}
+export class DataAvailability {
+  extent: Interval | null;
+  spanList: Array<Span>;
+  constructor() {
+    this.extent = null;
+    this.spanList = [];
+  }
+}
+
+export class Comment {
+  id: string | null = null;
+  subject: string | null = null;
+  value: string;
+  beginEffectiveTime: DateTime | null = null;
+  endEffectiveTime: DateTime | null = null;
+  authorList: Array<Author> = [];
+  constructor(value: string) {
+    this.value = value;
+  }
+}
+
+export class Author {
+  name: string | null = null;
+  agency: string | null = null;
+  email: string | null = null;
+  phone: string | null = null;
 }
 
 /**
@@ -630,49 +691,84 @@ export function convertToStation(network: Network, xml: Element): Station {
     out.startDate = _requireAttribute(xml, "startDate");
 
     const rs = _grabAttribute(xml, "restrictedStatus");
-
     if (isNonEmptyStringArg(rs)) {
       out.restrictedStatus = rs;
     }
 
     const lat = _grabFirstElFloat(xml, "Latitude");
-
     if (isNumArg(lat)) {
       out.latitude = lat;
     }
 
     const lon = _grabFirstElFloat(xml, "Longitude");
-
     if (isNumArg(lon)) {
       out.longitude = lon;
     }
 
     const elev = _grabFirstElFloat(xml, "Elevation");
-
     if (isNumArg(elev)) {
       out.elevation = elev;
     }
 
-    const name = _grabFirstElText(_grabFirstEl(xml, "Site"), "Name");
+    const waterLevel = _grabFirstElFloat(xml, "WaterLevel");
+    if (isNumArg(waterLevel)) {
+      out.waterLevel = waterLevel;
+    }
 
+    const vault = _grabFirstElText(xml, "Vault");
+    if (isStringArg(vault)) {
+      out.vault = vault;
+    }
+
+    const geology = _grabFirstElText(xml, "Geology");
+    if (isStringArg(geology)) {
+      out.geology = geology;
+    }
+
+    const name = _grabFirstElText(_grabFirstEl(xml, "Site"), "Name");
     if (isStringArg(name)) {
       out.name = name;
     }
 
     const endDate = _grabAttribute(xml, "endDate");
-
     if (isDef(endDate)) {
       out.endDate = _grabAttribute(xml, "endDate");
     }
 
+    const description = _grabFirstElText(xml, "Description");
+    if (isDef(description)) {
+      out.description = description;
+    }
+
+    const identifierList = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Identifier"));
+    out.identifierList = identifierList.map(el => { return el.textContent ? el.textContent : ""; });
+
+    const dataAvailEl = _grabFirstEl(xml, "DataAvailability");
+    if (isDef(dataAvailEl)) {
+      out.dataAvailability = convertToDataAvailability(dataAvailEl);
+    }
+
+    const commentArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Comment"));
+    const comments = [];
+    for (const c of commentArray) {
+      comments.push(convertToComment(c));
+    }
+    out.comments = comments;
+
+    const equipmentArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Equipment"));
+    const equipmentList = [];
+    for (const c of equipmentArray) {
+      equipmentList.push(convertToEquipment(c));
+    }
+    out.equipmentList = equipmentList;
+
     const chanArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Channel"));
     const channels = [];
-
     for (const c of chanArray) {
       channels.push(convertToChannel(out, c));
     }
-
     out.channels = channels;
+
     return out;
   } catch (err) {
     throw reErrorWithMessage(err, staCode);
@@ -733,6 +829,11 @@ export function convertToChannel(station: Station, xml: Element): Channel {
       out.depth = depth;
     }
 
+    const waterLevel = _grabFirstElFloat(xml, "WaterLevel");
+    if (isNumArg(waterLevel)) {
+      out.waterLevel = waterLevel;
+    }
+
     const azimuth = _grabFirstElFloat(xml, "Azimuth");
 
     if (isNumArg(azimuth)) {
@@ -744,6 +845,9 @@ export function convertToChannel(station: Station, xml: Element): Channel {
     if (isNumArg(dip)) {
       out.dip = dip;
     }
+
+    const desc = _grabFirstElText(xml, "Description");
+    if (desc) { out.description = desc; }
 
     const sampleRate = _grabFirstElFloat(xml, "SampleRate");
 
@@ -785,6 +889,33 @@ export function convertToChannel(station: Station, xml: Element): Channel {
       }
     }
 
+    const description = _grabFirstElText(xml, "Description");
+    if (isDef(description)) {
+      out.description = description;
+    }
+
+    const identifierList = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Identifier"));
+    out.identifierList = identifierList.map(el => { return el.textContent ? el.textContent : ""; });
+
+    const dataAvailEl = _grabFirstEl(xml, "DataAvailability");
+    if (isDef(dataAvailEl)) {
+      out.dataAvailability = convertToDataAvailability(dataAvailEl);
+    }
+
+    const commentArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Comment"));
+    const comments = [];
+    for (const c of commentArray) {
+      comments.push(convertToComment(c));
+    }
+    out.comments = comments;
+
+    const equipmentArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Equipment"));
+    const equipmentList = [];
+    for (const c of equipmentArray) {
+      equipmentList.push(convertToEquipment(c));
+    }
+    out.equipmentList = equipmentList;
+
     const responseXml = xml.getElementsByTagNameNS(STAML_NS, "Response");
 
     if (responseXml && responseXml.length > 0) {
@@ -800,6 +931,67 @@ export function convertToChannel(station: Station, xml: Element): Channel {
     throw reErrorWithMessage(err, `${locCode}.${chanCode}`);
   }
 }
+
+export function convertToDataAvailability(xml: Element): DataAvailability {
+  const out = new DataAvailability();
+  const extent = _grabFirstEl(xml, "Extent");
+  if (extent && "start" in extent && "end" in extent) {
+    const s = _grabAttribute(extent, "start");
+    const e = _grabAttribute(extent, "end");
+    if (s && e) {
+      out.extent = Interval.fromDateTimes(DateTime.fromISO(s), DateTime.fromISO(e));
+    }
+  }
+
+  const spanArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Span"));
+  const spanList = [];
+  for (const c of spanArray) {
+    const s = _grabAttribute(c, "start");
+    const e = _grabAttribute(c, "end");
+    if (s && e) {
+      const span = new Span(Interval.fromDateTimes(DateTime.fromISO(s), DateTime.fromISO(e)));
+      const numSeg = _grabAttribute(c, "numberSegments");
+      if (numSeg) { span.numberSegments = parseInt(numSeg); }
+      const maxTear = _grabAttribute(c, "maximumTimeTear");
+      if (maxTear) { span.maximumTimeTear = parseFloat(maxTear); }
+      spanList.push(span);
+    }
+  }
+  out.spanList = spanList;
+
+  return out;
+}
+
+export function convertToComment(xml: Element): Comment {
+  let val = _grabFirstElText(xml, "Value");
+  if (!val) { val = ""; }
+  const out = new Comment(val);
+  const id = _grabAttribute(xml, "id");
+  if (id) { out.id = id; }
+  const subject = _grabAttribute(xml, "subject");
+  if (subject) { out.subject = subject; }
+  const b = _grabFirstElText(xml, "BeginEffectiveTime");
+  if (b) { out.beginEffectiveTime = DateTime.fromISO(b); }
+  const e = _grabFirstElText(xml, "EndEffectiveTime");
+  if (e) { out.endEffectiveTime = DateTime.fromISO(e); }
+  const authList = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Author"));
+  out.authorList = authList.map(aEl => convertToAuthor(aEl));
+  return out;
+}
+
+export function convertToAuthor(xml: Element): Author {
+  const out = new Author();
+  const name = _grabFirstElText(xml, "Name");
+  if (name) { out.name = name; }
+  const agency = _grabFirstElText(xml, "Agency");
+  if (agency) { out.agency = agency; }
+  const phEl = _grabFirstEl(xml, "Phone");
+  if (phEl) {
+    out.phone = `${_grabFirstElText(phEl, "CountryCode")}-${_grabFirstElText(phEl, "AreaCode")}-${_grabFirstElText(phEl, "PhoneNumber")}`;
+  }
+  return out;
+}
+
 export function convertToEquipment(xml: Element): Equipment {
   const out = new Equipment();
   let val;
@@ -857,7 +1049,7 @@ export function convertToEquipment(xml: Element): Equipment {
   for (const cal of calibXml) {
     if (isDef(cal.textContent)) {
       const d = checkStringOrDate(cal.textContent);
-      if (isDef(d)) {out.calibrationDateList.push(d);}
+      if (isDef(d)) { out.calibrationDateList.push(d); }
     }
   }
 
@@ -894,7 +1086,7 @@ export function convertToResponse(responseXml: Element): Response {
   const xmlStages = responseXml.getElementsByTagNameNS(STAML_NS, "Stage");
 
   if (xmlStages && xmlStages.length > 0) {
-    const jsStages = Array.from(xmlStages).map(function (stageXml) {
+    const jsStages = Array.from(xmlStages).map(function(stageXml) {
       return convertToStage(stageXml);
     });
     out.stages = jsStages;
@@ -1008,12 +1200,12 @@ export function convertToStage(stageXml: Element): Stage {
 
       const zeros = Array.from(
         stageXml.getElementsByTagNameNS(STAML_NS, "Zero"),
-      ).map(function (zeroEl) {
+      ).map(function(zeroEl) {
         return extractComplex(zeroEl);
       });
       const poles = Array.from(
         stageXml.getElementsByTagNameNS(STAML_NS, "Pole"),
-      ).map(function (poleEl) {
+      ).map(function(poleEl) {
         return extractComplex(poleEl);
       });
       pzFilter.zeros = zeros;
@@ -1031,14 +1223,14 @@ export function convertToStage(stageXml: Element): Stage {
 
       cFilter.numerator = Array.from(
         coeffXml.getElementsByTagNameNS(STAML_NS, "Numerator"),
-      ).map(function (numerEl) {
+      ).map(function(numerEl) {
         return isNonEmptyStringArg(numerEl.textContent) ? parseFloat(numerEl.textContent) : null;
-      }).filter( isDef );
+      }).filter(isDef);
       cFilter.denominator = Array.from(
         coeffXml.getElementsByTagNameNS(STAML_NS, "Denominator"),
-      ).map(function (denomEl) {
+      ).map(function(denomEl) {
         return isNonEmptyStringArg(denomEl.textContent) ? parseFloat(denomEl.textContent) : null;
-      }).filter( isDef );
+      }).filter(isDef);
       filter = cFilter;
     } else if (subEl.localName === "ResponseList") {
       throw new Error("ResponseList not supported: ");
@@ -1054,9 +1246,9 @@ export function convertToStage(stageXml: Element): Stage {
 
       firFilter.numerator = Array.from(
         firXml.getElementsByTagNameNS(STAML_NS, "NumeratorCoefficient"),
-      ).map(function (numerEl) {
+      ).map(function(numerEl) {
         return isNonEmptyStringArg(numerEl.textContent) ? parseFloat(numerEl.textContent) : null;
-      }).filter( isDef );
+      }).filter(isDef);
       filter = firFilter;
     } else if (subEl.localName === "Polynomial") {
       throw new Error("Polynomial not supported: ");
@@ -1101,7 +1293,7 @@ export function convertToStage(stageXml: Element): Stage {
   } else {
     throw new Error(
       "Did not find Gain in stage number " +
-        stringify(_grabAttribute(stageXml, "number")),
+      stringify(_grabAttribute(stageXml, "number")),
     );
   }
 
@@ -1146,7 +1338,7 @@ export function convertToGain(gainXml: Element): Gain {
   const f = _grabFirstElFloat(gainXml, "Frequency");
 
   if (isNumArg(v) && isNumArg(f)) {
-    out = new Gain(v,f);
+    out = new Gain(v, f);
   } else {
     throw new Error(`Gain does not have value and frequency: ${v} ${f}`);
   }
@@ -1247,7 +1439,7 @@ export function* findChannels(
 
 export function uniqueSourceIds(channelList: Iterable<Channel>): Array<FDSNSourceId> {
   const out = new Map<string, FDSNSourceId>();
-  for(const c of channelList) {
+  for (const c of channelList) {
     if (c) {
       out.set(c.sourceId.toString(), c.sourceId);
     }
@@ -1259,7 +1451,7 @@ export function uniqueStations(
   channelList: Iterable<Channel>,
 ): Array<Station> {
   const out = new Set<Station>();
-  for(const c of channelList) {
+  for (const c of channelList) {
     if (c) {
       out.add(c.station);
     }
@@ -1271,7 +1463,7 @@ export function uniqueNetworks(
   channelList: Iterable<Channel>,
 ): Array<Network> {
   const out = new Set<Network>();
-  for(const c of channelList) {
+  for (const c of channelList) {
     if (c) {
       out.add(c.station.network);
     }
@@ -1282,7 +1474,7 @@ export function uniqueNetworks(
 
 // these are similar methods as in seisplotjs.quakeml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
-const _grabFirstEl = function (
+const _grabFirstEl = function(
   xml: Element | null | void,
   tagName: string,
 ): Element | null {
@@ -1376,7 +1568,7 @@ const _requireAttribute = function _requireAttribute(
   return out;
 };
 
-const _grabAttributeNS = function (
+const _grabAttributeNS = function(
   xml: Element | null | void,
   namespace: string,
   tagName: string,
