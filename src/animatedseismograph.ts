@@ -150,19 +150,16 @@ export function interanlCreateRealtimeDisplay(config: RTConfig): RTDisplayContai
 }
 
 /**
- * Trims all seismograms to the given window.
+ * Trims all seismograms to the given window in place. This should not
+ * cause a redraw.
  *
- * @param  timeWindow  window to coarse trim the data to
+ * @param  timeRange  time window to coarse trim the data to
  */
-export function trim(orgDisplay: OrganizedDisplay, timeWindow: Interval) {
-  const trimmedSeisData: Array<SeismogramDisplayData> = [];
+export function trim(orgDisplay: OrganizedDisplay, timeRange: Interval) {
   orgDisplay.seisData.forEach(sdd => {
-    const trimmed = sdd.trim(timeWindow);
-    if (trimmed != null) {
-      trimmedSeisData.push(trimmed);
-    }
+    sdd.trimInPlace(timeRange);
+    sdd.timeRange = timeRange;
   });
-  orgDisplay.seisData = trimmedSeisData;
 }
 
 /**

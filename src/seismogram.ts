@@ -1151,6 +1151,23 @@ export class SeismogramDisplayData {
     out.timeRange = timeRange;
     return out;
   }
+
+  /**
+   * Coarse trim the seismogram in place. The seismogram is
+   * trimmed to the given time window.
+   * If timeRange is not given, the current time range of the
+   * SeismogramDisplayData is used, effectively trimming data to the current
+   * window.
+   *
+   * @param  timeRange start and end of cut
+   */
+  trimInPlace(timeRange?: Interval) {
+    if (!timeRange) { timeRange = this.timeRange; }
+    let cutSeis = this.seismogram;
+    if (cutSeis) {
+      this.seismogram = cutSeis.trim(timeRange);
+    }
+  }
   toString(): string {
     return `${this.sourceId.toString()} ${this.timeRange.toString()}`;
   }
