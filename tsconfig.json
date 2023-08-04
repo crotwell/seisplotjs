@@ -20,5 +20,11 @@
     "outDir": "dist/dts",
   },
   "files": ["global.d.ts"],
-  "include": ["src", "test", "testremotes"]
+  "include": [
+    "src",
+    "test",
+	  "testremotes"
+  ],
+  "sourceMap": true
+
 }
