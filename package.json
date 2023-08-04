@@ -34,7 +34,7 @@
     "d3-time": "^3.1.0",
     "d3-time-format": "^4.1.0",
     "d3-zoom": "^3.0.0",
-    "handlebars": "^4.7.7",
+    "handlebars": "^4.7.8",
     "jszip": "^3.7.1",
     "leaflet": "^1.7.1",
     "luxon": "^3.0.1",
@@ -42,8 +42,8 @@
     "querystringify": "^2.2.0"
   },
   "scripts": {
-    "esbuild": "cp src/handlebarsimport.esbuild src/handlebarsimport.ts && npx esbuild src/index.ts --bundle --outfile=dist/seisplotjs_${npm_package_version}_standalone.mjs  --target=es2020 --format=esm",
-    "esmb": "cp src/handlebarsimport.esbuild src/handlebarsimport.ts && node build.mjs",
+    "esbuild": "npx esbuild src/index.ts --bundle --outfile=dist/seisplotjs_${npm_package_version}_standalone.mjs  --target=es2020 --format=esm",
+    "esmb": "node build.mjs",
     "esm": "npx esbuild src/*.ts --outdir=dist/module  --target=es2020 --format=esm",
     "srclint": "eslint 'src' --ext .js,.jsx,.ts,.tsx ",
     "lint": "eslint src test --ext .js,.jsx,.ts,.tsx ",
@@ -67,8 +67,8 @@
     "doingdevelopment": "git update-index --skip-worktree docs/api/*.html",
     "prepublishOnly": "npm run compile && npm run test && npm run livetest && echo skip npm outdated && echo skip lint && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code",
     "servedocs": "npx http-server ./docs -c-1 --cors -a 127.0.0.1",
-    "tsc": "cp src/handlebarsimport.typescript src/handlebarsimport.ts && tsc --project tsconfig.json",
-    "dts": "cp src/handlebarsimport.typescript src/handlebarsimport.ts && npx npm-dts generate --output dist/index.d.ts"
+    "tsc": "tsc --project tsconfig.json",
+    "dts": "npx npm-dts generate --output dist/index.d.ts"
   },
   "repository": {
     "type": "git",
