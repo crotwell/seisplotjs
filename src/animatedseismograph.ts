@@ -7,6 +7,7 @@ import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from './scale';
 import { SeismogramDisplayData } from './seismogram';
 import { SeisPlotElement } from './spelement';
 import { SeismographConfig } from './seismographconfig';
+import { Network } from './stationxml';
 
 export class AnimatedTimeScaler {
   alignmentTime: DateTime;
@@ -66,20 +67,54 @@ export type RTDisplayContainer = {
   organizedDisplay: OrganizedDisplay,
   animationScaler: AnimatedTimeScaler,
   packetHandler: (packet: DataLinkPacket) => void,
+  config: RTConfig,
 };
 
-export function createRealtimeDisplay(minRedrawMillis = 100): RTDisplayContainer {
-  const alignmentTime = DateTime.utc();
-  const duration = Duration.fromISO('PT5M');
-  const offset = Duration.fromMillis(0);
+export type RTConfig = {
+        duration: Duration,
+        alignmentTime: DateTime,
+        offset: Duration,
+        minRedrawMillis: number,
+        networkList: Array<Network>,
+}
+export function isValidRTConfig(configObj: unknown): configObj is RTConfig {
+  if (! configObj || typeof configObj !== 'object') {
+    throw new TypeError("config is not object");
+  }
+  const config = configObj as Record<string, unknown>;
+  if (typeof config.duration === "undefined") {
+    config.duration = Duration.fromISO('PT5M');
+  }
+  if (typeof config.alignmentTime === "undefined") {
+    config.alignmentTime = DateTime.utc();
+  }
+  if (typeof config.offset === "undefined") {
+    config.offset = Duration.fromMillis(0);
+  }
+  if (typeof config.minRedrawMillis === "undefined") {
+    config.minRedrawMillis = 100;
+  }
+  if (typeof config.networkList === "undefined") {
+    config.networkList = [];
+  }
+  return true;
+}
+export function createRealtimeDisplay(config: unknown): RTDisplayContainer {
+  if ( isValidRTConfig(config)) {
+    return interanlCreateRealtimeDisplay(config);
+  } else {
+    throw new Error("config is not valid");
+  }
+}
 
-  const timeScale = new AlignmentLinkedTimeScale([], duration.negate(), offset);
+export function interanlCreateRealtimeDisplay(config: RTConfig): RTDisplayContainer {
+  const timeScale = new AlignmentLinkedTimeScale([], config.duration.negate(), config.offset);
   const seisPlotConfig = new SeismographConfig();
   seisPlotConfig.wheelZoom = false;
   seisPlotConfig.isYAxisNice = false;
   seisPlotConfig.linkedTimeScale = timeScale;
   seisPlotConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
-  const animationScaler = new AnimatedTimeScaler(timeScale, alignmentTime, minRedrawMillis);
+  const animationScaler = new AnimatedTimeScaler(timeScale, config.alignmentTime, config.minRedrawMillis);
 
   const orgDisp = new OrganizedDisplay([], seisPlotConfig);
 
@@ -95,6 +130,7 @@ export function createRealtimeDisplay(minRedrawMillis = 100): RTDisplayContainer
           matchSDD.append(seisSegment);
         } else {
           const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
+          if (config.networkList) {sdd.associateChannel(config.networkList);}
           sdd.alignmentTime = animationScaler.alignmentTime;
           orgDisp.seisData.push(sdd);
           // trigger redraw if new channel, but not for simple append.
@@ -109,6 +145,7 @@ export function createRealtimeDisplay(minRedrawMillis = 100): RTDisplayContainer
     organizedDisplay: orgDisp,
     animationScaler: animationScaler,
     packetHandler: packetHandler,
+    config: config,
   };
 }
 
@@ -146,9 +183,11 @@ export function calcOnePixelTimeInterval(seismograph: SeisPlotElement): Duration
   } else {
     timerInterval = 1000;
   }
-  if (timerInterval < 0) { timerInterval = timerInterval *= -1; }
-  timerInterval = timerInterval / (rect.width - margin.left - margin.right);
+  if (timerInterval < 0) { timerInterval *= -1; }
+  let pixels = rect.width - margin.left - margin.right;
+  if (pixels <= 0) {pixels = 1000;}
+  timerInterval = timerInterval / pixels;
   if (timerInterval === 0) { timerInterval = 1000; }
-  while (timerInterval < 50) { timerInterval *= 2; }
+  while (timerInterval > 0 && timerInterval < 50) { timerInterval *= 2; }
   return Duration.fromMillis(timerInterval);
 }
