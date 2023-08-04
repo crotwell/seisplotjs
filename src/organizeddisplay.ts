@@ -47,7 +47,10 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       height: 400px;
     }
     sp-seismograph {
-      height: 200px;
+      min-height: 200px;
+    }
+    div.wrapper {
+      height: 100%;
     }
     `);
     const wrapper = document.createElement('div');
@@ -395,7 +398,10 @@ export class OrganizedDisplay extends SeisPlotElement {
       min-height: 200px;
     }
     sp-seismograph {
-      height: 200px;
+      min-height: 200px;
+    }
+    div.wrapper {
+      height: 100%;
     }
     `);
     this.getShadowRoot().appendChild(wrapper);
