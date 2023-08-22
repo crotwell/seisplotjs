@@ -220,9 +220,10 @@ export class Helicorder extends SeisPlotElement {
           : Math.round(-1.0 * height * this.heliConfig.overlap);
       const lineSeisConfig = this.heliConfig.lineSeisConfig.clone();
       // don't title lines past the first
-      lineSeisConfig.title = null;
+      lineSeisConfig.showTitle = false;
 
       if (lineNumber === 0) {
+        lineSeisConfig.showTitle = true;
         lineSeisConfig.title = this.heliConfig.title;
         lineSeisConfig.isXAxisTop = this.heliConfig.isXAxisTop;
         lineSeisConfig.margin.top += this.heliConfig.margin.top;
