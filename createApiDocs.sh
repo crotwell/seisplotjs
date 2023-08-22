@@ -23,6 +23,7 @@ fi
 # descriptions of each module
 desc_areautil='area utils, lat,lon point inside area'
 desc_axisutil='draw title and axis labels'
+desc_animatedseismograph='real time animated seismograph'
 desc_components='simple web components'
 desc_cssutil='simple util to inject css into web document'
 desc_datalink='datalink protocol over web socket to a [Ringserver](https://seiscode.iris.washington.edu/projects/ringserver) datalink server'
