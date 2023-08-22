@@ -12,7 +12,10 @@ let realtimeDiv = document.querySelector("div#realtime");
 
 
 // snip start timer
-const rtDisp = sp.animatedseismograph.createRealtimeDisplay();
+const rtConfig = {
+  duration: sp.luxon.Duration.fromISO("PT5M"),
+};
+const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
 realtimeDiv.appendChild(rtDisp.organizedDisplay);
 rtDisp.organizedDisplay.draw();
 rtDisp.animationScaler.minRedrawMillis = sp.animatedseismograph.calcOnePixelTimeInterval(rtDisp.organizedDisplay);
