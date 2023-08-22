@@ -77,6 +77,12 @@ export type RTConfig = {
         minRedrawMillis: number,
         networkList: Array<Network>,
 }
+
+/**
+ * Validates the object for typescript and adds any missing required
+ * fields. Passing in an empty object is allowed.
+ * @param  configObj  config object
+ */
 export function isValidRTConfig(configObj: unknown): configObj is RTConfig {
   if (! configObj || typeof configObj !== 'object') {
     throw new TypeError("config is not object");
@@ -100,6 +106,10 @@ export function isValidRTConfig(configObj: unknown): configObj is RTConfig {
   return true;
 }
 export function createRealtimeDisplay(config: unknown): RTDisplayContainer {
+  if ( ! config) {
+    // this will create a default config
+    config = {};
+  }
   if ( isValidRTConfig(config)) {
     return interanlCreateRealtimeDisplay(config);
   } else {
