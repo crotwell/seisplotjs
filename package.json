@@ -22,7 +22,6 @@
     "src/*.ts"
   ],
   "dependencies": {
-    "@types/geojson": "^7946.0.10",
     "convert-units": "^3.0.0-beta.5",
     "crc-32": "^1.2.1",
     "d3-array": "^3.2.2",
@@ -98,6 +97,7 @@
     "@types/d3-time-format": "^4.0.0",
     "@types/d3-transition": "^3.0.3",
     "@types/d3-zoom": "^3.0.3",
+    "@types/geojson": "^7946.0.10",
     "@types/jest": "^29.5.2",
     "@types/leaflet": "^1.7.9",
     "@types/luxon": "^3.0.0",
