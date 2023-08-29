@@ -34,6 +34,7 @@ let state = {
     highcut: '10.0',
   },
 };
+state.station = 'BIRD';
 
 let savedData = {
   config: state,
@@ -73,6 +74,8 @@ if (currentState) {
     state = currentState;
     loadAndPlot(state);
   }
+} else {
+  loadAndPlot(state);
 }
 // also register for events that change state
 window.onpopstate = function(event) {
