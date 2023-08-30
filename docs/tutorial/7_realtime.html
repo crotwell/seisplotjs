@@ -153,7 +153,7 @@ setInterval(() =&gt; {
   const seisConfig = rtDisp.organizedDisplay.seismographConfig;
   const lts = seisConfig.linkedTimeScale;
   n_span.textContent = sp.luxon.DateTime.utc().toISO();
-}, 1000)
+}, 1000);
 
 
 </code></pre>
@@ -183,7 +183,10 @@ rtDisp.animationScaler.animate();
        We will also need a couple of functions for error handling.
       </p>
       <pre><code class="language-javascript" snippet="helpers">
-
+function updateNumPackets() {
+  numPackets++;
+  document.querySelector("#numPackets").textContent = numPackets;
+}
 function addToDebug(message) {
   const debugDiv = document.querySelector("div#debug");
   if (!debugDiv) { return; }
@@ -228,7 +231,10 @@ let toggleConnect = function() {
     if (!datalink) {
       datalink = new sp.datalink.DataLinkConnection(
         SCSN_DATALINK,
-        rtDisp.packetHandler,
+        packet =&gt; {
+          rtDisp.packetHandler(packet);
+          updateNumPackets();
+        },
         errorFn
       );
     }

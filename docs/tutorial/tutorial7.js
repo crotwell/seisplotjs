@@ -28,11 +28,14 @@ setInterval(() => {
   const seisConfig = rtDisp.organizedDisplay.seismographConfig;
   const lts = seisConfig.linkedTimeScale;
   n_span.textContent = sp.luxon.DateTime.utc().toISO();
-}, 1000)
+}, 1000);
 
 
 // snip start helpers
-
+function updateNumPackets() {
+  numPackets++;
+  document.querySelector("#numPackets").textContent = numPackets;
+}
 function addToDebug(message) {
   const debugDiv = document.querySelector("div#debug");
   if (!debugDiv) { return; }
@@ -64,7 +67,10 @@ let toggleConnect = function() {
     if (!datalink) {
       datalink = new sp.datalink.DataLinkConnection(
         SCSN_DATALINK,
-        rtDisp.packetHandler,
+        packet => {
+          rtDisp.packetHandler(packet);
+          updateNumPackets();
+        },
         errorFn
       );
     }
