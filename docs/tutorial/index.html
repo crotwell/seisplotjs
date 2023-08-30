@@ -129,6 +129,7 @@
     &lt;/div&gt;
 
     &lt;script  type="module" &gt;
+    import * as sp from '../seisplotjs_3.1.0-alpha2_standalone.mjs';
     // your code goes here...
     &lt;/script&gt;
   &lt;/body&gt;
@@ -138,7 +139,7 @@
        If this is to be hosted locally, then we need to download the standalone version of seisplotjs,
             from here
        <a href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.1.0-alpha2_standalone.mjs">
-        http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs/seisplotjs_3.0.0_standalone.mjs
+        http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs/seisplotjs_3.1.0-alpha2_standalone.mjs
        </a>
        and put it in the same directory as our html file.
               The
@@ -167,21 +168,22 @@
        element.
       </p>
       <pre><code class="language-javascript" snippet="createseis">
+import * as sp from '../seisplotjs_3.1.0-alpha2_standalone.mjs';
 
-import * as sp from '../seisplotjs_3.0.0_standalone.mjs';
-
-let dataArray = new Float32Array(1000).map(function(d, i) {
-  return Math.sin(2*Math.PI*i/100) * 100;
-});
 let sampleRate = 20;
+const sinePeriod = 5*sampleRate; // 5 second period
+const amp = 100; // 100 count amplitude
+let dataArray = new Float32Array(10*sinePeriod).map(function(d, i) {
+  return Math.sin(2 * Math.PI * i / sinePeriod) * amp;
+});
 let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
 let myseismogram = sp.seismogram.Seismogram.fromContiguousData(dataArray, sampleRate, start);
 </code></pre>
       <p>
        Now we have created a contiguous (no gaps) seismogram that represents
-            a sine wave with a period of 100 samples in a seismogram with a
-            sample rate of 20 samples per second. So this sine wave should have
-            a period of 5 seconds. The start time is given in UTC as all seismic
+            a sine wave with a period of 5 seconds in a seismogram with a
+            sample rate of 20 samples per second. This seismogram is long
+            enough to contain 10 cycles. The start time is given in UTC as all seismic
             data should be. To display this data we need a
        <code class="language-javascript">
         Seismograph
@@ -218,9 +220,9 @@ let myseismogram = sp.seismogram.Seismogram.fromContiguousData(dataArray, sample
        <code class="language-javascript">
         SeismogramDisplayData
        </code>
-       objects.
+       objects, allowing overlaying data.
        Just for fun we add a title and give a bit of space
-            at the top for the title to be without overlapping the seismograph.
+        at the top for the title to be without overlapping the seismograph.
       </p>
       <pre><code class="language-javascript" snippet="draw">
 let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);

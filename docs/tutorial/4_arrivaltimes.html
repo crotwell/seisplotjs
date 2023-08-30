@@ -148,36 +148,37 @@
 let stationsPromise = stationQuery.queryChannels();
 let quakePromise = eventQuery.query();
 const allPhases = 'P,S';
-const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
-.then( ( [ quakeList, networkList ] ) =&gt; {
-  let quakeTTimes = quakeList.map(q =&gt; {
-    const allDistDeg = [];
-    for (const s of sp.stationxml.allStations(networkList)) {
-      if (s.timeRange.contains(q.time)) {
-        const daz = sp.distaz.distaz(
-          s.latitude,
-          s.longitude,
-          q.latitude,
-          q.longitude,
-        );
-        allDistDeg.push(daz.distanceDeg);
+const ttimePromise = Promise.all([quakePromise, stationsPromise])
+  .then(([quakeList, networkList]) =&gt; {
+    document.querySelector("span#stationCode").textContent = networkList[0].stations[0].codes();
+    document.querySelector("span#earthquakeDescription").textContent = quakeList[0].description;
+    let quakeTTimesPromiseList = quakeList.map(q =&gt; {
+      const allDistDeg = [];
+      for (const s of sp.stationxml.allStations(networkList)) {
+        if (s.timeRange.contains(q.time)) {
+          const daz = sp.distaz.distaz(
+            s.latitude,
+            s.longitude,
+            q.latitude,
+            q.longitude,
+          );
+          allDistDeg.push(daz.distanceDeg);
+        }
       }
-    }
-    const taupQuery = new sp.traveltime.TraveltimeQuery();
-    taupQuery.distdeg(allDistDeg);
-    taupQuery.evdepthInMeter(q.depth);
-    taupQuery.phases(allPhases);
-//    return taupQuery.queryJson();
-    return taupQuery.queryText();
+      const taupQuery = new sp.traveltime.TraveltimeQuery();
+      taupQuery.distdeg(allDistDeg);
+      taupQuery.evdepthInMeter(q.depth);
+      taupQuery.phases(allPhases);
+      return taupQuery.queryText();
+    });
+    return Promise.all([quakeList, networkList, Promise.all(quakeTTimesPromiseList)]);
+  }).then(([quakeList, networkList, quakeTTimesList]) =&gt; {
+    const ttdiv = document.querySelector("#traveltimes");
+    quakeTTimesList.forEach(qtt =&gt; {
+      const preEl = ttdiv.appendChild(document.createElement("pre"));
+      preEl.textContent = qtt;
+    });
   });
-  return Promise.all( [ quakeList, networkList, Promise.all( quakeTTimes ) ] );
-}).then( ( [ quakeList, networkList, quakeTTimes ] ) =&gt; {
-  const ttdiv = document.querySelector("#traveltimes");
-  quakeTTimes.forEach(qtt =&gt; {
-    const preEl = ttdiv.appendChild(document.createElement("pre"));
-    preEl.textContent = qtt;
-  });
-});
 </code></pre>
       <p>
        This would allow us to use the predicted travel times to
@@ -194,7 +195,12 @@ const ttimePromise = Promise.all( [ quakePromise, stationsPromise ] )
             for other phases that we may wish to mark on the plot. The
             loader handles figuring out the travel times for each quake-station,
             associating the request with a SeismogramDisplayData and retrieving
-            the waveform.
+            the waveforms. The result is populated into a
+       <code class="language-javascript">
+        DataSet
+       </code>
+       which is a big holder object for waveforms, quakes, station,
+            channels and other items.
       </p>
       <pre><code class="language-javascript" snippet="seismogramload">
 const loader = new sp.seismogramloader.SeismogramLoader(stationQuery, eventQuery);
@@ -220,12 +226,12 @@ loader.load().then(dataset =&gt; {
   commonSeisConfig.linkedAmpScale = new sp.scale.LinkedAmplitudeScale();
   commonSeisConfig.linkedTimeScale = new sp.scale.LinkedTimeScale();
   commonSeisConfig.doGain = true;
-  for( let sdd of seismogramDataList) {
-    let graph = new sp.seismograph.Seismograph([ sdd ], commonSeisConfig);
+  for (let sdd of seismogramDataList) {
+    let graph = new sp.seismograph.Seismograph([sdd], commonSeisConfig);
     graphList.push(graph);
     div.appendChild(graph);
   }
-  return Promise.all([ seismogramDataList, graphList, dataset ]);
+  return Promise.all([seismogramDataList, graphList, dataset]);
 </code></pre>
       <p>
        For something a little extra, we also can plot the particle motion around the
@@ -251,30 +257,37 @@ loader.load().then(dataset =&gt; {
         to show the time range plotted.
       </p>
       <pre><code class="language-javascript" snippet="particlemotion">
-}).then( ( [ seismogramDataList, graphList, dataset ] ) =&gt; {
+}).then(([seismogramDataList, graphList, dataset]) =&gt; {
   let pmdiv = document.querySelector("div#myparticlemotion");
   console.log(`pmdiv: ${pmdiv}`)
   let firstS = seismogramDataList[0].traveltimeList.find(a =&gt; a.phase.startsWith("S"));
   let windowDuration = 60;
-  let windowStart = seismogramDataList[0].quake.time.plus({seconds: firstS.time,}).minus({seconds: windowDuration/4});
+  let windowStart = seismogramDataList[0].quake.time.plus({ seconds: firstS.time, }).minus({ seconds: windowDuration / 4 });
   let firstSTimeWindow = sp.util.startDuration(windowStart, windowDuration);
-  seismogramDataList.forEach(sdd =&gt; sdd.addMarkers({
-    name: "pm start",
-    time: firstSTimeWindow.start,
-    type: "other",
-    description: "pm start"}));
-  seismogramDataList.forEach(sdd =&gt; sdd.addMarkers({
-    name: "pm end",
-    time: firstSTimeWindow.end,
-    type: "other",
-    description: "pm end"}));
+  seismogramDataList.forEach(sdd =&gt; {
+    sdd.addMarkers(
+      [
+        {
+          name: "pm start",
+          time: firstSTimeWindow.start,
+          type: "other",
+          description: "pm start"
+        },
+        {
+          name: "pm end",
+          time: firstSTimeWindow.end,
+          type: "other",
+          description: "pm end"
+        }
+      ]);
+  });
   graphList.forEach(g =&gt; g.drawMarkers());
   let xSeisData = seismogramDataList[0].cut(firstSTimeWindow);
   let ySeisData = seismogramDataList[1].cut(firstSTimeWindow);
   let zSeisData = seismogramDataList[2].cut(firstSTimeWindow);
 
   const doGain = true;
-  let minMax = sp.seismogram.findMinMax([ xSeisData, ySeisData, zSeisData], doGain);
+  let minMax = sp.seismogram.findMinMax([xSeisData, ySeisData, zSeisData], doGain);
   let pmSeisConfig = new sp.particlemotion.createParticleMotionConfig(firstSTimeWindow);
   pmSeisConfig.fixedYScale = minMax;
   pmSeisConfig.doGain = doGain;
@@ -285,8 +298,8 @@ loader.load().then(dataset =&gt; {
   let pmpC = new sp.particlemotion.ParticleMotion(ySeisData, zSeisData, pmSeisConfig);
   pmdiv.appendChild(pmpC);
 
-  return Promise.all([ seismogramDataList, graphList, dataset ]);
-}).catch( function(error) {
+  return Promise.all([seismogramDataList, graphList, dataset]);
+}).catch(function(error) {
   const div = document.querySelector('div#myseismograph');
   div.innerHTML = `&lt;p&gt;Error loading data. ${error}&lt;/p&gt;`;
   console.assert(false, error);
