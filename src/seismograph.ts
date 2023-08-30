@@ -26,6 +26,7 @@ import {
   numberFormatWrapper,
 } from "./seismographconfig";
 import { drawAllOnCanvas } from "./seismographutil";
+import {XHTML_NS} from "./util";
 import type { MarkerType } from "./seismogram";
 import type { TraveltimeJsonType } from "./traveltime";
 import type { HandlebarsInput, } from "./axisutil";

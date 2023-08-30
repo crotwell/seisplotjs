@@ -43275,6 +43275,7 @@ __export(util_exports, {
   TEXT_MIME: () => TEXT_MIME,
   UTC_OPTIONS: () => UTC_OPTIONS,
   WAY_FUTURE: () => WAY_FUTURE,
+  XHTML_NS: () => XHTML_NS,
   XML_MIME: () => XML_MIME,
   asStringDictionary: () => asStringDictionary,
   calcClockOffset: () => calcClockOffset,
@@ -43755,6 +43756,7 @@ function meanOfSlice(dataSlice, totalPts) {
   }
 }
 var SVG_NS = "http://www.w3.org/2000/svg";
+var XHTML_NS = "http://www.w3.org/1999/xhtml";
 function createSVGElement(name) {
   return document.createElementNS(SVG_NS, name);
 }
@@ -54595,7 +54597,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
       if (this.canvasHolder == null) {
         throw new Error("canvasHolder is null");
       }
-      const c = this.canvasHolder.append("xhtml:canvas").classed("seismograph", true).attr("xmlns", "http://www.w3.org/1999/xhtml").attr("x", 0).attr("y", 0).attr("width", this.width).attr("height", this.height + 1);
+      const c = this.canvasHolder.append("xhtml:canvas").classed("seismograph", true).attr("xmlns", XHTML_NS).attr("x", 0).attr("y", 0).attr("width", this.width).attr("height", this.height + 1);
       this.canvas = c;
     }
     this.drawSeismograms();
@@ -55984,7 +55986,7 @@ var SpectraPlot = class extends HTMLElement {
     while (wrapper.lastChild) {
       wrapper.removeChild(wrapper.lastChild);
     }
-    const svg_element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const svg_element = document.createElementNS(SVG_NS, "svg");
     wrapper.appendChild(svg_element);
     const svg = select_default2(svg_element);
     svg.classed("spectra_plot", true).classed(AUTO_COLOR_SELECTOR, true);
