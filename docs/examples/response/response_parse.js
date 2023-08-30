@@ -1,4 +1,4 @@
-import * as sp from '../../seisplotjs_3.1.0-alpha2_standalone.mjs';
+import * as sp from '../../seisplotjs_3.1.0_standalone.mjs';
 
 export const SIS_NS = "http://anss-sis.scsn.org/xml/ext-stationxml/3.0";
 export const STAML_NS = sp.stationxml.STAML_NS;

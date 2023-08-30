@@ -40,6 +40,7 @@ def replaceInFile(dirpath, filename):
             print(f"Update {dirpath}/{filename}")
 
 stuffToChange = ['docs/tutorial/*.html', 'docs/tutorial/*.js',
+                 'docs/examples',
                  'docs/gallery/*.html','docs/api/*.html',
                  'src', 'test', 'testremotes']
 for stuff in stuffToChange:
