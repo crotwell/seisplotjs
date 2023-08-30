@@ -16,44 +16,92 @@ import { DateTime} from 'luxon';
 import type {Feature, Point} from  'geojson';
 
 const timeoutSec = 10;
-export const hourSummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson";
-export const hourSummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
+export const hourSummarySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson";
+export const hourSummaryM4_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_hour.geojson";
+export const hourSummaryM2_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_hour.geojson";
+export const hourSummaryM1_0Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_hour.geojson";
+export const hourSummaryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson";
 
-export const daySummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.geojson";
-export const daySummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+export const daySummarySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_day.geojson";
+export const daySummaryM4_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_day.geojson";
+export const daySummaryM2_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson";
+export const daySummaryM1_0Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_day.geojson";
+export const daySummaryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
 
-export const weekSummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson";
-export const weekSummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+export const weekSummarySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson";
+export const weekSummaryM4_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
+export const weekSummaryM2_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson";
+export const weekSummaryM1_0Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_week.geojson";
+export const weekSummaryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
-export const monthSummerySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson";
-export const monthSummeryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
+export const monthSummarySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson";
+export const monthSummaryM4_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson";
+export const monthSummaryM2_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson";
+export const monthSummaryM1_0Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_month.geojson";
+export const monthSummaryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
 
 export function loadHourSummarySignificant(): Promise<Array<Quake>> {
-  return loadUSGSSummary(hourSummerySignificantUrl);
+  return loadUSGSSummary(hourSummarySignificantUrl);
+}
+export function loadHourSummaryM4_5(): Promise<Array<Quake>> {
+  return loadUSGSSummary(hourSummaryM4_5Url);
+}
+export function loadHourSummaryM2_5(): Promise<Array<Quake>> {
+  return loadUSGSSummary(hourSummaryM2_5Url);
+}
+export function loadHourSummaryM1_0(): Promise<Array<Quake>> {
+  return loadUSGSSummary(hourSummaryM1_0Url);
 }
 export function loadHourSummaryAll(): Promise<Array<Quake>> {
-  return loadUSGSSummary(hourSummeryAllUrl);
+  return loadUSGSSummary(hourSummaryAllUrl);
 }
 
 export function loadDaySummarySignificant(): Promise<Array<Quake>> {
-  return loadUSGSSummary(daySummerySignificantUrl);
+  return loadUSGSSummary(daySummarySignificantUrl);
+}
+export function loadDaySummaryM4_5(): Promise<Array<Quake>> {
+  return loadUSGSSummary(daySummaryM4_5Url);
+}
+export function loadDaySummaryM2_5(): Promise<Array<Quake>> {
+  return loadUSGSSummary(daySummaryM2_5Url);
+}
+export function loadDaySummaryM1_0(): Promise<Array<Quake>> {
+  return loadUSGSSummary(daySummaryM1_0Url);
 }
 export function loadDaySummaryAll(): Promise<Array<Quake>> {
-  return loadUSGSSummary(daySummeryAllUrl);
+  return loadUSGSSummary(daySummaryAllUrl);
 }
 
 export function loadWeekSummarySignificant(): Promise<Array<Quake>> {
-  return loadUSGSSummary(weekSummerySignificantUrl);
+  return loadUSGSSummary(weekSummarySignificantUrl);
+}
+export function loadWeekSummaryM4_5(): Promise<Array<Quake>> {
+  return loadUSGSSummary(weekSummaryM4_5Url);
+}
+export function loadWeekSummaryM2_5(): Promise<Array<Quake>> {
+  return loadUSGSSummary(weekSummaryM2_5Url);
+}
+export function loadWeekSummaryM1_0(): Promise<Array<Quake>> {
+  return loadUSGSSummary(weekSummaryM1_0Url);
 }
 export function loadWeekSummaryAll(): Promise<Array<Quake>> {
-  return loadUSGSSummary(weekSummeryAllUrl);
+  return loadUSGSSummary(weekSummaryAllUrl);
 }
 
 export function loadMonthSummarySignificant(): Promise<Array<Quake>> {
-  return loadUSGSSummary(monthSummerySignificantUrl);
+  return loadUSGSSummary(monthSummarySignificantUrl);
+}
+export function loadMonthSummaryM4_5(): Promise<Array<Quake>> {
+  return loadUSGSSummary(monthSummaryM4_5Url);
+}
+export function loadMonthSummaryM2_5(): Promise<Array<Quake>> {
+  return loadUSGSSummary(monthSummaryM2_5Url);
+}
+export function loadMonthSummaryM1_0(): Promise<Array<Quake>> {
+  return loadUSGSSummary(monthSummaryM1_0Url);
 }
 export function loadMonthSummaryAll(): Promise<Array<Quake>> {
-  return loadUSGSSummary(monthSummeryAllUrl);
+  return loadUSGSSummary(monthSummaryAllUrl);
 }
 
 export function loadUSGSSummary(url: string): Promise<Array<Quake>> {
