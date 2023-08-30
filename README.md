@@ -2,7 +2,7 @@
 Javascript modules for parsing, manipulating and plotting seismic data.
 
 A tutorial with examples of various access and display types can be seen at
-[crotwell.github.io/seisplotjs](http://crotwell.github.io/seisplotjs/).
+[crotwell.github.io/seisplotjs](https://crotwell.github.io/seisplotjs/).
 Also see the [wiki](https://github.com/crotwell/seisplotjs/wiki).
 
 Install with `npm i --save seisplotjs`
@@ -27,8 +27,8 @@ Seisplotjs is divided into submodules:
   * [fdsnstation](https://crotwell.github.io/seisplotjs/api/fdsnstation.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnstation.ts) query networks, stations and channels from an FDSN web service
   * [fft](https://crotwell.github.io/seisplotjs/api/fft.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/fft.ts) discrete fourier transforms via [OregonDSP](https://www.npmjs.com/package/oregondsp)
   * [filter](https://crotwell.github.io/seisplotjs/api/filter.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/filter.ts) timeseries filtering and utility functionality via [OregonDSP](https://www.npmjs.com/package/oregondsp)
-  * [handlebarshelpers](https://crotwell.github.io/seisplotjs/api/handlebarshelpers.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/handlebarshelpers.ts) helpers for use with [handlebars](http://handlebarsjs.com/), eg in titles
-  * [helicorder](https://crotwell.github.io/seisplotjs/api/helicorder.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/helicorder.ts) helicorder style 24 hour plots using [d3](http://d3js.org)
+  * [handlebarshelpers](https://crotwell.github.io/seisplotjs/api/handlebarshelpers.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/handlebarshelpers.ts) helpers for use with [handlebars](https://handlebarsjs.com/), eg in titles
+  * [helicorder](https://crotwell.github.io/seisplotjs/api/helicorder.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/helicorder.ts) helicorder style 24 hour plots
   * [infotable](https://crotwell.github.io/seisplotjs/api/infotable.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/infotable.ts) component to display information about seismograms
   * [irisfedcatalog](https://crotwell.github.io/seisplotjs/api/irisfedcatalog.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/irisfedcatalog.ts) query IRIS fedcatalog web service
   * [leaflet_css](https://crotwell.github.io/seisplotjs/api/leaflet_css.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/leaflet_css.ts) standard css for leaflet
@@ -64,6 +64,7 @@ Seisplotjs is divided into submodules:
   * [util](https://crotwell.github.io/seisplotjs/api/util.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/util.ts) general utility functions
   * [vector](https://crotwell.github.io/seisplotjs/api/vector.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/vector.ts) vector process of seismograms
   * [version](https://crotwell.github.io/seisplotjs/api/version.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.1/src/version.ts) version of this library
+
 
 
 # Upgrade 2 -> 3
