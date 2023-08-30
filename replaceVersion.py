@@ -14,6 +14,8 @@ print(f"Update {old} to {ver}")
 
 replaceItems = {
   f"seisplotjs_{old}_standalone.mjs": f"seisplotjs_{ver}_standalone.mjs",
+  "seisplotjs 3.0": f"seisplotjs 3.1",
+  "Seisplotjs 3.0": f"Seisplotjs 3.1",
   old: ver
 }
 
@@ -40,7 +42,7 @@ def replaceInFile(dirpath, filename):
             print(f"Update {dirpath}/{filename}")
 
 stuffToChange = ['docs/tutorial/*.html', 'docs/tutorial/*.js',
-                 'docs/examples',
+                 'docs/examples', 'docs/index.html',
                  'docs/gallery/*.html','docs/api/*.html',
                  'src', 'test', 'testremotes']
 for stuff in stuffToChange:
