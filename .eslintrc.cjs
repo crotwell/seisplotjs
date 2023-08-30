@@ -31,10 +31,16 @@ module.exports = {
     "no-var": ["error"],
     "no-console": [ "error"],
     "@typescript-eslint/no-unused-vars": [ "error"],
-    "eqeqeq": ["error", "always"],
+    "@typescript-eslint/restrict-template-expressions": [ "error", {
+        allowNumber: true,
+        allowNullish: true,
+        allowBoolean: true,
+      }],
+    "eqeqeq": ["error", "smart"],
     "jsdoc/require-param-type": ["off"],
     "jsdoc/require-returns-type": ["off"],
     "jsdoc/no-types": ["error"],
-    "jsdoc/require-jsdoc": ["off", {"require":{"MethodDefinition":true}}]
+    "jsdoc/require-jsdoc": ["off", {"require":{"MethodDefinition":true}}],
+    "jsdoc/tag-lines": ["off"]
   }
 };
