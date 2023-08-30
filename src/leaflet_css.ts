@@ -61,6 +61,11 @@ export const leaflet_css = `
 	padding: 0;
 	}
 
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
 .leaflet-container.leaflet-touch-zoom {
 	-ms-touch-action: pan-x pan-y;
 	touch-action: pan-x pan-y;
@@ -424,8 +429,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .leaflet-control-attribution a:focus {
 	text-decoration: underline;
 	}
-.leaflet-control-attribution svg {
+.leaflet-attribution-flag {
 	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
 	}
 .leaflet-left .leaflet-control-scale {
 	margin-left: 5px;
@@ -439,12 +447,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	line-height: 1.1;
 	padding: 2px 5px 1px;
 	white-space: nowrap;
-	overflow: hidden;
 	-moz-box-sizing: border-box;
 	     box-sizing: border-box;
-
-	background: #fff;
-	background: rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
 	}
 .leaflet-control-scale-line:not(:first-child) {
 	border-top: 2px solid #777;
@@ -538,8 +544,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	}
 .leaflet-popup-scrolled {
 	overflow: auto;
-	border-bottom: 1px solid #ddd;
-	border-top: 1px solid #ddd;
 	}
 
 .leaflet-oldie .leaflet-popup-content-wrapper {
@@ -653,7 +657,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	/* Prevent printers from removing background-images of controls. */
 	.leaflet-control {
 		-webkit-print-color-adjust: exact;
-		color-adjust: exact;
+		print-color-adjust: exact;
 		}
 	}
+
 `;
