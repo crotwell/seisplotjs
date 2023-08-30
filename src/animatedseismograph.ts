@@ -112,13 +112,13 @@ export function createRealtimeDisplay(config: unknown): RTDisplayContainer {
     config = {};
   }
   if ( isValidRTConfig(config)) {
-    return interanlCreateRealtimeDisplay(config);
+    return internalCreateRealtimeDisplay(config);
   } else {
     throw new Error("config is not valid");
   }
 }
 
-export function interanlCreateRealtimeDisplay(config: RTConfig): RTDisplayContainer {
+export function internalCreateRealtimeDisplay(config: RTConfig): RTDisplayContainer {
   const timeScale = new AlignmentLinkedTimeScale([], config.duration.negate(), config.offset);
   const seisPlotConfig = new SeismographConfig();
   seisPlotConfig.wheelZoom = false;
@@ -175,13 +175,13 @@ export function trim(orgDisplay: OrganizedDisplay, timeRange: Interval) {
 }
 
 /**
- * Calculates the time window covered by one pixel on the time axis. This is the optimal
+ * Calculates the duration covered by one pixel on the time axis. This is the optimal
  * time interval for updating the animation of a real time display as updates more
  * frequently than this tend to cause more flikering than actual movement of the seismogram.
  * @param seismograph the seismograph to get pixel size from
  * @returns the pixel width as a Duration
  */
-export function calcOnePixelTimeInterval(seismograph: SeisPlotElement): Duration {
+export function calcOnePixelDuration(seismograph: SeisPlotElement): Duration {
   const rect = seismograph.getBoundingClientRect();
   const margin = seismograph.seismographConfig.margin;
   const lts = seismograph.seismographConfig.linkedTimeScale;
