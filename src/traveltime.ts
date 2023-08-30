@@ -48,6 +48,12 @@ export type TraveltimeArrivalType = {
   puristname: string;
 };
 
+/**
+ * Verifies that JSON matches the types we expect, for typescript.
+ *
+ * @param  v JSON object, usually from the traveltime web service
+ * @return   true if matches expected structure
+ */
 export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
   if (!v || typeof v !== 'object') {
     return false;
@@ -119,15 +125,22 @@ export function convertTravelTimeLineToObject(
     puristname: items[9],
   };
 }
-export function createOriginArrival(dist: number): TraveltimeArrivalType {
+
+/**
+ * Creates a fake arrival for the origin time, useful to display a flag
+ * at origin time similar to the P and S arrival.
+ * @param  dist earthquake to station distance, in degrees
+ * @return      an arrival for the origin
+ */
+export function createOriginArrival(distdeg: number): TraveltimeArrivalType {
   return {
-    distdeg: dist,
+    distdeg: distdeg,
     phase: "origin",
     time: 0,
     rayparam: 0,
     takeoff: 0,
     incident: 0,
-    puristdist: dist,
+    puristdist: distdeg,
     puristname: "origin",
   };
 }
