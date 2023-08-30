@@ -119,9 +119,7 @@
         set up the stationQuery and eventQuery with our search parameters.
       </p>
       <pre><code class="language-javascript" snippet="eventandstation">
-let queryTimeWindow = sp.luxon.Interval.fromDateTimes(
-  sp.util.isoToDateTime('2019-07-01'),
-  sp.util.isoToDateTime('2019-07-31'));
+let queryTimeWindow = sp.util.startEnd('2019-07-01', '2019-07-31');
 let eventQuery = new sp.fdsnevent.EventQuery()
   .timeRange(queryTimeWindow)
   .minMag(7)
@@ -136,8 +134,11 @@ let stationQuery = new sp.fdsnstation.StationQuery()
 </code></pre>
       <p>
        Of course 100 sps means that we will have 100 times as many samples, so
-            lets reduce the time window to just the region where the P
-            arrival is, say 300 seconds instead of 1800.
+        lets reduce the time window to just the region where the P
+        arrival is, say 300 seconds instead of 1800. Notice we are
+        passing the station and event queries directly to the loader, it can
+        take either queries or the returned arrays. We will also mark the origin
+        time as if it were a predicted travel time.
       </p>
       <pre><code class="language-javascript" snippet="loaderinit">
 let loader = new sp.seismogramloader.SeismogramLoader(stationQuery, eventQuery);
@@ -154,7 +155,7 @@ loader.load().then(dataset =&gt; {
         span elements here just as an example. Note that the quake and channel
         are also saved within the list of SeismogramDisplayData objects
         so they are not lost even if we do not make
-        use of these extra dataset fields.
+        use of these extra inventory and catalog fields in the dataset.
       </p>
       <pre><code class="language-javascript" snippet="map">
   let staText = "";

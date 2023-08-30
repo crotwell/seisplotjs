@@ -4,7 +4,7 @@ import * as sp from '../seisplotjs_3.1.0-alpha2_standalone.mjs';
 const plotEnd = sp.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});
 if (plotEnd.hour % 2 === 1) {plotEnd.plus({hours: 1});}
 const oneDay = sp.luxon.Duration.fromISO('P1D');
-const timeWindow = sp.luxon.Interval.before(plotEnd, oneDay);
+const timeWindow = sp.util.durationEnd(oneDay, plotEnd);
 const luxOpts = {
   suppressMilliseconds: true,
   suppressSeconds: true,

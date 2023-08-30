@@ -159,25 +159,28 @@ setInterval(() =&gt; {
 </code></pre>
       <p>
        Here we create the organized display element to show the seismographs,
-                        a timer that will periodically refresh the displays.
-                        The animationScaler timer interval is set so that hopefully it updates the display
-                        just often enough to move the image over by one pixel. This must be calculated
-                        after the organized display is drawn for the first time to know how many pixels
-                        wide it is. We then start the animation, although with no data this will not
-                        actually do anything useful.
+        and a timer that will periodically refresh the displays.
+        The field minRedrawMillis on the animationScaler sets the timer interval
+        so that hopefully it updates the display
+        just often enough to move the image over by one pixel. This must be calculated
+        after the organized display is drawn for the first time to know how many pixels
+        wide it is. We then start the animation, although with no data this will not
+        actually do anything useful.
       </p>
       <pre><code class="language-javascript" snippet="timer">
-const rtDisp = sp.animatedseismograph.createRealtimeDisplay();
+const rtConfig = {
+  duration: sp.luxon.Duration.fromISO("PT5M"),
+};
+const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
 realtimeDiv.appendChild(rtDisp.organizedDisplay);
 rtDisp.organizedDisplay.draw();
-rtDisp.animationScaler.minRedrawMillis = sp.animatedseismograph.calcOnePixelTimeInterval(rtDisp.organizedDisplay);
+rtDisp.animationScaler.minRedrawMillis = sp.animatedseismograph.calcOnePixelDuration(rtDisp.organizedDisplay);
 
 rtDisp.animationScaler.animate();
 
 </code></pre>
       <p>
-       We will also
-                        need a couple of functions for error handling.
+       We will also need a couple of functions for error handling.
       </p>
       <pre><code class="language-javascript" snippet="helpers">
 
@@ -201,6 +204,11 @@ function errorFn(error) {
         IRIS ringserver
        </a>
        . This creates the Datalink connection the first time it is toggled on.
+       We are using a secure web socket, via
+       <code class="language-html">
+        wss://
+       </code>
+       , which is effectively a web socket over HTTPS.
       </p>
       <pre><code class="language-javascript" snippet="datalink">
 let datalink = null;
