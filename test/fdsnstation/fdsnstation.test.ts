@@ -1,4 +1,3 @@
-// @flow
 
 import * as fdsnstation from '../../src/fdsnstation.js';
 import * as stationxml from '../../src/stationxml.js';

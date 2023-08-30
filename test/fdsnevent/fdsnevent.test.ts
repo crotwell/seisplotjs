@@ -1,4 +1,3 @@
-// @flow
 
 import * as fdsnevent from '../../src/fdsnevent.js';
 import * as quakeml from '../../src/quakeml.js';

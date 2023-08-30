@@ -1,4 +1,3 @@
-// @flow
 
 import * as stationxml from '../../src/stationxml.js';
 

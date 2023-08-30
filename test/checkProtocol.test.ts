@@ -1,4 +1,3 @@
-// @flow
 
 import {checkProtocol} from '../src/util';
 

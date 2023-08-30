@@ -1,4 +1,3 @@
-// @flow
 
 import * as ringserverweb from '../src/ringserverweb.js';
 

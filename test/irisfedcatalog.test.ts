@@ -1,4 +1,3 @@
-// @flow
 
 import {FedCatalogQuery} from '../src/irisfedcatalog.js';
 

@@ -1,4 +1,3 @@
-// @flow
 
 import {FDSNSourceId} from '../../src/fdsnsourceid';
 import {Seismogram} from '../../src/seismogram';

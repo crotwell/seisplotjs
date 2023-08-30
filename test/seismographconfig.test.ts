@@ -1,4 +1,3 @@
-// @flow
 
 import {SeismographConfig} from '../src/seismographconfig.js';
 

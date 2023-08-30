@@ -1,4 +1,3 @@
-// @flow
 
 import {SacPoleZero} from '../../src/sacpolezero';
 import {readSacPoleZero} from './sacfile';

@@ -1,4 +1,3 @@
-// @flow
 
 import * as fdsndatacenters from '../src/fdsndatacenters.js';
 
