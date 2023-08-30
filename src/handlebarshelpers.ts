@@ -1,14 +1,4 @@
-
-// browser field in package.json for handlebars 4.7.7 is bad,
-// and breaks esbuild
-// direct import from file works for now, but is fragile
-//import Handlebars from "handlebars/dist/cjs/handlebars.js";
-// however the above breaks typescript
-//import Handlebars from "handlebars";
-
-// dumb, keep separate imports for esbuild and typescript and switch
-// from within package.json
-import {Handlebars} from "./handlebarsimport";
+import Handlebars from "handlebars";
 // re-export
 export {Handlebars};
 
