@@ -16,6 +16,7 @@ export function drawAllOnCanvas(
   maxSamplePerPixelForLineDraw = 20,
 ): void {
 
+  if (canvas.height === 0) { return;}
   const context = canvas.getContext("2d");
   if (!context) { return; }
   // clear the canvas from previous drawing
@@ -168,6 +169,8 @@ export function drawSegment(
 
 export function pixelColumn(imgData: ImageData, xPixel: number, bot: number, top: number, colorRGBA: Uint8ClampedArray) {
   // top < bot in image space
+  if (bot >= imgData.height) { bot = imgData.height-1;}
+  if (top < 0) {top = 0;}
   for (let p = top; p <= bot; p++) {
     const offset = 4 * (p * imgData.width + xPixel);
     imgData.data.set(colorRGBA, offset);
