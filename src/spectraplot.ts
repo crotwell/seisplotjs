@@ -9,7 +9,7 @@ import {SeismographConfig} from "./seismographconfig";
 import {SeismogramDisplayData} from "./seismogram";
 import {addStyleToElement} from './spelement';
 import {Complex} from "./oregondsputil";
-//import * as d3 from "d3";
+import {SVG_NS} from "./util";
 import {extent as d3extent} from "d3-array";
 import {select as d3select} from "d3-selection";
 import {
@@ -303,7 +303,7 @@ export class SpectraPlot extends HTMLElement {
       wrapper.removeChild(wrapper.lastChild);
     }
 
-    const svg_element = document.createElementNS("http://www.w3.org/2000/svg","svg");
+    const svg_element = document.createElementNS(SVG_NS,"svg");
     wrapper.appendChild(svg_element);
     const svg = d3select(svg_element);
     svg.classed("spectra_plot", true).classed(AUTO_COLOR_SELECTOR, true);

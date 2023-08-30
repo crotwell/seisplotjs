@@ -457,7 +457,7 @@ export class Seismograph extends SeisPlotElement {
       const c = this.canvasHolder
         .append("xhtml:canvas")
         .classed("seismograph", true)
-        .attr("xmlns", "http://www.w3.org/1999/xhtml")
+        .attr("xmlns", XHTML_NS)
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", this.width)
