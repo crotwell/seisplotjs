@@ -104,11 +104,11 @@ export function drawSegment(
   const samplesPerPixel = 1.0 * segment.sampleRate * secondsPerPixel;
 
   if (!(Number.isFinite(secondsPerPixel) && Number.isFinite(samplesPerPixel))) {
-    throw new Error(`spp: ${secondsPerPixel}  spp: ${samplesPerPixel}`)
+    throw new Error(`spp: ${secondsPerPixel}  spp: ${samplesPerPixel}`);
   }
 
   if ((secondsPerPixel === 0 || samplesPerPixel === 0)) {
-    throw new Error(`zero spp: ${secondsPerPixel}  sampp: ${samplesPerPixel}`)
+    throw new Error(`zero spp: ${secondsPerPixel}  sampp: ${samplesPerPixel}`);
   }
   const pixelsPerSample = 1.0 / samplesPerPixel;
   const startPixel = xScale.for(segment.startTime);
@@ -150,19 +150,17 @@ export function drawSegment(
 
     pixelColumn(imgData, curPixel, botPixel, topPixel, colorRGBA);
     // in case prev column of pixels is offset from current, need to connect
-    let doit = false;
-    if (doit) {
-      if (prevTopPixel != null && prevTopPixel > botPixel + 1) {
-        const halfPixel = Math.round((prevTopPixel + botPixel) / 2);
-        pixelColumn(imgData, curPixel - 1, prevTopPixel, halfPixel, colorRGBA);
-        pixelColumn(imgData, curPixel, halfPixel - 1, botPixel, colorRGBA);
-      }
-      if (prevBotPixel !== null && prevBotPixel < topPixel - 1) {
-        const halfPixel = Math.round((prevBotPixel + topPixel) / 2);
-        pixelColumn(imgData, curPixel - 1, halfPixel - 1, prevBotPixel, colorRGBA);
-        pixelColumn(imgData, curPixel, topPixel, halfPixel, colorRGBA);
-      }
+    if (prevTopPixel != null && prevTopPixel > botPixel + 1) {
+      const halfPixel = Math.round((prevTopPixel + botPixel) / 2);
+      pixelColumn(imgData, curPixel - 1, prevTopPixel, halfPixel, colorRGBA);
+      pixelColumn(imgData, curPixel, halfPixel - 1, botPixel, colorRGBA);
     }
+    if (prevBotPixel !== null && prevBotPixel < topPixel - 1) {
+      const halfPixel = Math.round((prevBotPixel + topPixel) / 2);
+      pixelColumn(imgData, curPixel - 1, halfPixel - 1, prevBotPixel, colorRGBA);
+      pixelColumn(imgData, curPixel, topPixel, halfPixel, colorRGBA);
+    }
+
     prevTopPixel = topPixel;
     prevBotPixel = botPixel;
   }

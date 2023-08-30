@@ -398,9 +398,8 @@ export class SeedlinkConnection {
    * @returns            Promise that resolves to the response from the server.
    */
   sendHello(): Promise<Array<string>> {
-    const mythis = this;
     const webSocket = this.webSocket;
-    const promise: Promise<Array<string>> = new Promise(function (resolve, reject) {
+    const promise: Promise<Array<string>> = new Promise( (resolve, reject) => {
       if (webSocket) {
         webSocket.onmessage =  (event) => {
           if ( event.data instanceof ArrayBuffer) {
@@ -414,8 +413,8 @@ export class SeedlinkConnection {
               reject("not 2 lines: " + replyMsg);
             }
           } else {
-            mythis.close();
-            mythis.errorHandler(new Error("event.data is not ArrayBuffer"));
+            this.close();
+            this.errorHandler(new Error("event.data is not ArrayBuffer"));
           }
         };
 

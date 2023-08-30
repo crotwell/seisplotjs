@@ -29,7 +29,6 @@ test("constant", () => {
     expected[i] = orig[i] * (f0 - f1 * Math.cos(omega * i));
     expected[dataLen-i-1] = orig[i] * (f0 - f1 * Math.cos(omega * i));
   }
-  // $FlowFixMe
   expect(bagtaper.y).arrayToBeCloseToRatio(expected, 5);
 });
 
@@ -58,11 +57,9 @@ test("const100 taper", () => {
      expect(bagdata[3]).toBeCloseTo(65.45085, 5);
      expect(sacdata[4]).toBeCloseTo(90.45085, 5);
      expect(bagdata[4]).toBeCloseTo(90.45085, 5);
-     // $FlowFixMe
      expect(bagdata).arrayToBeCloseToRatio(sacdata, 5);
 
      for(let i = 0; i < bagdata.length; i++) {
-       // $FlowFixMe
          expect(bagdata[i]).toBeCloseToRatio(sacdata[i], 5);
      }
    });
@@ -87,11 +84,9 @@ test("HRV taper", () => {
       const bagtaper = taper.taper(filter.rMean(ensureIsSeismogram(origseis)));
       const sacdata = sactaper.y;
       const bagdata = bagtaper.y;
-      // $FlowFixMe
       expect(bagdata).arrayToBeCloseToRatio(sacdata, 5);
 
       for(let i = 0; i < bagdata.length; i++) {
-        // $FlowFixMe
           expect(bagdata[i]).toBeCloseToRatio(sacdata[i], 5);
             //  assertEquals("data", 1, sacdata[i] / bagdata[i], 0.0001);
 

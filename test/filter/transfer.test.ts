@@ -481,7 +481,6 @@ test("impulse one zero", () => {
         });
       }
       return saveDataPromise.then( () => {
-      // $FlowFixMe
         expect(bagdata).arrayToBeCloseToRatio(sacdata, 2 , 1e-2, 1e-3);
       });
     });
@@ -521,7 +520,6 @@ test("impulse", () => {
         });
       }
       return saveDataPromise.then( () => {
-      // $FlowFixMe
         expect(bagdata).arrayToBeCloseToRatio(sacdata, 6);
       });
 
@@ -557,14 +555,12 @@ test("HRV test", () => {
       const bag_rmean = filter.rMean(seis);
       const rmean_data = bag_rmean.y;
       let sacdata = rmean.y;
-      // $FlowFixMe
       expect(rmean_data).arrayToBeCloseToRatio(sacdata, 5);
 
       const bag_taper = taper.taper(bag_rmean, 0.05, taper.HANNING);
       const taper_data = bag_taper.y;
       sacdata = taperSeis.y;
 
-      // $FlowFixMe
       expect(taper_data).arrayToBeCloseToRatio(sacdata, 5);
 
       const bagtfr = transfer.transferSacPZ(bag_taper,
@@ -575,7 +571,6 @@ test("HRV test", () => {
                                       1e6);
       const bagdata = ensureFloat32Array(bagtfr.y);
       sacdata = transferSeis.y;
-      // $FlowFixMe
       expect(bagdata).arrayToBeCloseToRatio(sacdata, 5, .0001, 5);
 
       let saveDataPromise: Promise<void | null> = Promise.resolve(null);
@@ -588,7 +583,6 @@ test("HRV test", () => {
         });
       }
       return saveDataPromise.then( () => {
-      // $FlowFixMe
         expect(bagdata).arrayToBeCloseToRatio(sacdata, 5, .0001, 5);
       });
   });

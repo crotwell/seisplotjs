@@ -150,7 +150,6 @@ test("FFT", () => {
       expect(bagAmp).toHaveLength(sacAmp.y.length);
       expect(bagAmp).arrayToBeCloseToRatio(sacAmp.y, 2);
       expect(bagPhase).toHaveLength(sacPhase.y.length);
-      // $FlowFixMe
       expect(bagPhase).arrayToBeCloseTo(sacPhase.y, 2);
     });
 });

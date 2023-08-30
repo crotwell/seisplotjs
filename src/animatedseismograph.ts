@@ -82,6 +82,7 @@ export type RTConfig = {
  * Validates the object for typescript and adds any missing required
  * fields. Passing in an empty object is allowed.
  * @param  configObj  config object
+ * @returns true if object has correct structure, with defaults populated
  */
 export function isValidRTConfig(configObj: unknown): configObj is RTConfig {
   if (! configObj || typeof configObj !== 'object') {
@@ -163,6 +164,7 @@ export function interanlCreateRealtimeDisplay(config: RTConfig): RTDisplayContai
  * Trims all seismograms to the given window in place. This should not
  * cause a redraw.
  *
+ * @param orgDisplay OrganizedDisplay to trim
  * @param  timeRange  time window to coarse trim the data to
  */
 export function trim(orgDisplay: OrganizedDisplay, timeRange: Interval) {
@@ -176,6 +178,8 @@ export function trim(orgDisplay: OrganizedDisplay, timeRange: Interval) {
  * Calculates the time window covered by one pixel on the time axis. This is the optimal
  * time interval for updating the animation of a real time display as updates more
  * frequently than this tend to cause more flikering than actual movement of the seismogram.
+ * @param seismograph the seismograph to get pixel size from
+ * @returns the pixel width as a Duration
  */
 export function calcOnePixelTimeInterval(seismograph: SeisPlotElement): Duration {
   const rect = seismograph.getBoundingClientRect();

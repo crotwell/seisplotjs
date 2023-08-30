@@ -316,7 +316,7 @@ export class Seismogram {
 
   break(duration: Duration): void {
     if (duration.valueOf() < 0) {
-      throw new Error(`Negative duration not allowed: ${duration}`);
+      throw new Error(`Negative duration not allowed: ${duration.toString()}`);
     }
     if (this._segmentArray) {
       let breakStart = this.startTime;
@@ -545,7 +545,7 @@ export class SeismogramDisplayData {
    * Create a Seismogram from the segment, then call fromSeismogram to create
    * the SeismogramDisplayData;
    * @param  seisSegment segment of contiguous data
-   * @return             new SeismogramDisplayData
+   * @returns             new SeismogramDisplayData
    */
   static fromSeismogramSegment(seisSegment: SeismogramSegment): SeismogramDisplayData {
     return SeismogramDisplayData.fromSeismogram(new Seismogram([seisSegment]));
@@ -940,6 +940,9 @@ export class SeismogramDisplayData {
   /**
    * Create a time window relative to the alignmentTime if set, or the start time if not.
    * Negative durations are allowed.
+   * @param alignmentOffset offset duration from the alignment time
+   * @param duration duration from the offset for the window
+   * @returns time window as an Interval
   */
   relativeTimeWindow(
     alignmentOffset: Duration,
@@ -1163,7 +1166,7 @@ export class SeismogramDisplayData {
    */
   trimInPlace(timeRange?: Interval) {
     if (!timeRange) { timeRange = this.timeRange; }
-    let cutSeis = this.seismogram;
+    const cutSeis = this.seismogram;
     if (cutSeis) {
       this.seismogram = cutSeis.trim(timeRange);
     }
@@ -1385,7 +1388,7 @@ export function findStartEndOfSeismograms(
   if (!accumulator && !data) {
     throw new Error("data and accumulator are not defined");
   } else if (!accumulator) {
-    if (data.length != 0) {
+    if (data.length !== 0) {
       out = data[0].timeRange;
     } else {
       throw new Error("data.length == 0 and accumulator is not defined");

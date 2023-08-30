@@ -47,6 +47,7 @@ export class SeismogramSegment {
   constructor(
     yArray:
       | Array<seedcodec.EncodedDataSegment>
+      | Array<number>
       | Int32Array
       | Float32Array
       | Float64Array,
@@ -54,25 +55,19 @@ export class SeismogramSegment {
     startTime: DateTime,
     sourceId?: FDSNSourceId,
   ) {
-    if (
-      yArray instanceof Int32Array ||
-      yArray instanceof Float32Array ||
-      yArray instanceof Float64Array
-    ) {
+    if (yArray instanceof Int32Array ||
+        yArray instanceof Float32Array ||
+        yArray instanceof Float64Array) {
       this._y = yArray;
       this._compressed = null;
-    } else if (
-      Array.isArray(yArray) &&
-      yArray.every(ee => ee instanceof seedcodec.EncodedDataSegment)
-    ) {
-      this._compressed = yArray;
+    } else if (Array.isArray(yArray) &&
+              yArray.every(ee => ee instanceof seedcodec.EncodedDataSegment)) {
+      this._compressed = (yArray as unknown) as Array<seedcodec.EncodedDataSegment>;
       this._y = null;
-    } else if (
-      Array.isArray(yArray) &&
-      yArray.every(ee => typeof ee === "number")
-    ) {
+    } else if (Array.isArray(yArray) &&
+              yArray.every(ee => typeof ee === "number")) {
       // numbers in js are 64bit, so...
-      this._y = Float64Array.from((yArray as any) as Array<number>);
+      this._y = Float64Array.from((yArray as unknown) as Array<number>);
       this._compressed = null;
     } else {
       this._compressed = null;

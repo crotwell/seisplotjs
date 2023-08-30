@@ -39,9 +39,7 @@ test("simple seismographconfig clone", () => {
   seisConfig.lineWidth = 2;
   const cloned = seisConfig.clone();
   // margin toString function causes problems, so delete before compare
-  // $FlowExpectedError[cannot-write]
   delete seisConfig.margin.toString;
-  // $FlowExpectedError[cannot-write]
   delete cloned.margin.toString;
   expect(seisConfig).toEqual(cloned);
   seisConfig.yLabel = "Changed";

@@ -52,7 +52,7 @@ export type TraveltimeArrivalType = {
  * Verifies that JSON matches the types we expect, for typescript.
  *
  * @param  v JSON object, usually from the traveltime web service
- * @return   true if matches expected structure
+ * @returns   true if matches expected structure
  */
 export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
   if (!v || typeof v !== 'object') {
@@ -129,8 +129,8 @@ export function convertTravelTimeLineToObject(
 /**
  * Creates a fake arrival for the origin time, useful to display a flag
  * at origin time similar to the P and S arrival.
- * @param  dist earthquake to station distance, in degrees
- * @return      an arrival for the origin
+ * @param  distdeg earthquake to station distance, in degrees
+ * @returns      an arrival for the origin
  */
 export function createOriginArrival(distdeg: number): TraveltimeArrivalType {
   return {
