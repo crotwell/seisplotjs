@@ -8,7 +8,7 @@ with Path("package.json").open() as infile:
     npmPackage = json.load(infile)
 
 
-old="3.1.0-alpha1"
+old="3.1.0-alpha2"
 ver=npmPackage["version"]
 print(f"Update {old} to {ver}")
 
@@ -39,10 +39,17 @@ def replaceInFile(dirpath, filename):
             file.write(filedata)
             print(f"Update {dirpath}/{filename}")
 
-stuffToChange = ['docs/api/*.html', 'src', 'test', 'testremotes']
+stuffToChange = ['docs/tutorial/*.html', 'docs/tutorial/*.js',
+                 'docs/gallery/*.html','docs/api/*.html',
+                 'src', 'test', 'testremotes']
 for stuff in stuffToChange:
     for toppath in Path('.').glob(stuff):
-        for dirpath, dirs, files in os.walk(toppath):
-            for filename in files:
-                if (filename.endswith('.html') or filename.endswith('.ts') or filename.endswith('.js')):
-                    replaceInFile(dirpath, filename)
+        if toppath.is_dir():
+            for dirpath, dirs, files in os.walk(toppath):
+                for filename in files:
+                    if (filename.endswith('.html') or filename.endswith('.ts') or filename.endswith('.js')):
+                        print(f"{dirpath}/{filename}")
+                        replaceInFile(dirpath, filename)
+        else:
+            print(f"{toppath}")
+            replaceInFile(".", toppath)

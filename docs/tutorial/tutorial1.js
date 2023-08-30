@@ -1,5 +1,5 @@
 // snip start createseis
-import * as sp from '../seisplotjs_3.1.0-alpha2_standalone.mjs';
+import * as sp from '../seisplotjs_3.1.0_standalone.mjs';
 
 let sampleRate = 20;
 const sinePeriod = 5*sampleRate; // 5 second period
