@@ -44,11 +44,12 @@
     dateInput.updateCallback = (time) => {
       outputArea.textContent = `Date: ${time.toISO()}`;
     }
-    const rangeInput = document.querySelector('sp-timerange');
-    rangeInput.updateCallback = (timeRange) => {
-      outputArea.textContent = `Range: ${timeRange.start.toISO()} to ${timeRange.end.toISO()}`;
-    }
-
+    const rangeInputList = document.querySelectorAll('sp-timerange');
+    for (const rangeInput of rangeInputList ) {
+      rangeInput.updateCallback = (timeRange) => {
+        outputArea.textContent = `Range: ${timeRange.start.toISO()} to ${timeRange.end.toISO()}`;
+      }
+  }
   </script>
 </body>
 </html>
