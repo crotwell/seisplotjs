@@ -210,6 +210,10 @@ export class Seismogram {
     return this._segmentArray[0].yUnit;
   }
 
+  isYUnitCount(): boolean {
+    return this.yUnit?.toLowerCase() === COUNT_UNIT;
+  }
+
   get numPoints(): number {
     return this._segmentArray.reduce(
       (accumulator, seis) => accumulator + seis.numPoints,

@@ -591,7 +591,9 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.linkedAmplitudeScale) {
       const drawHalfWidth = this.amp_scalable.drawHalfWidth;
       let sensitivityVal = 1;
-      if (this.seismographConfig.doGain && sdd.sensitivity?.sensitivity) {
+      if (this.seismographConfig.doGain  
+            && sdd.seismogram?.isYUnitCount()
+            && sdd.sensitivity?.sensitivity) {
         sensitivityVal = sdd.sensitivity.sensitivity;
       }
       if (!this.seismographConfig.isCenteredAmp()) {
