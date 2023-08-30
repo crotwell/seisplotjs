@@ -2,7 +2,7 @@
 
 format=html
 md='.md'
-github_branch='version3'
+github_branch='version3.1'
 
 
 if [[ 'html' == "$format"  ]]
@@ -171,7 +171,7 @@ do
       fi
       # modules links for README.md
       cat >> README_part.md <<EOF
-  * [${jsfile}](https://crotwell.github.io/seisplotjs/api/${jsfile}.html) [(source)](https://github.com/crotwell/seisplotjs/blob/version3.0/src/${jsfile}.ts) ${descText}
+  * [${jsfile}](https://crotwell.github.io/seisplotjs/api/${jsfile}.html) [(source)](https://github.com/crotwell/seisplotjs/blob/${github_branch}/src/${jsfile}.ts) ${descText}
 EOF
 
     fi
