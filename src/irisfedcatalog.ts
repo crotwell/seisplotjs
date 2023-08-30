@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2020
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 import {FDSNCommon} from './fdsncommon';
 import {DateTime, Interval} from 'luxon';
@@ -47,7 +47,7 @@ export const SERVICE_VERSION = 1;
 
 /**
  * Service name as used in the FDSN DataCenters registry,
- * http://www.fdsn.org/datacenters
+ * https://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `irisws-fedcatalog-${SERVICE_VERSION}`;
 export const IRIS_HOST = "service.iris.edu";
@@ -150,7 +150,7 @@ export class FedCatalogResult {
 /**
  * Query to a IRIS FedCatalog web service.
  *
- * @see http://service.iris.edu/irisws/fedcatalog/1/
+ * @see https://service.iris.edu/irisws/fedcatalog/1/
  * @param host optional host to connect to, defaults to IRIS
  */
 export class FedCatalogQuery extends FDSNCommon {

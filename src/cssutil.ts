@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 export const AUTO_CLASSED = "autoseisplotjs";
 export const AUTO_COLOR_SELECTOR = "seisplotjsautocolor";

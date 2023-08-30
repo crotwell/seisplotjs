@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 import { FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius } from './fdsncommon';
 import { DateTime, Duration, Interval } from 'luxon';
@@ -37,7 +37,7 @@ export const SERVICE_VERSION = 1;
 
 /**
  * Service name as used in the FDSN DataCenters registry,
- * http://www.fdsn.org/datacenters
+ * https://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `fdsnws-event-${SERVICE_VERSION}`;
 export { USGS_HOST };
@@ -47,7 +47,7 @@ export const FAKE_EMPTY_XML =
 /**
  * Query to a FDSN Event web service.
  *
- * @see http://www.fdsn.org/webservices/
+ * @see https://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to USGS
  */
 export class EventQuery extends FDSNCommon {

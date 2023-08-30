@@ -3,7 +3,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 import * as animatedseismograph from "./animatedseismograph";
 import * as axisutil from "./axisutil";

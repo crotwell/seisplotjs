@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 
 /** const for kilometers per degree on the earth, 111.19 */

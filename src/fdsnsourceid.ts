@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2022
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 
 export const FDSN_PREFIX = "FDSN:";

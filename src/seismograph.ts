@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval } from "luxon";
 //import * as d3 from "d3";
@@ -591,7 +591,7 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.linkedAmplitudeScale) {
       const drawHalfWidth = this.amp_scalable.drawHalfWidth;
       let sensitivityVal = 1;
-      if (this.seismographConfig.doGain  
+      if (this.seismographConfig.doGain
             && sdd.seismogram?.isYUnitCount()
             && sdd.sensitivity?.sensitivity) {
         sensitivityVal = sdd.sensitivity.sensitivity;

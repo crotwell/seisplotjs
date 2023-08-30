@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 import {FDSNCommon, IRIS_HOST} from './fdsncommon';
 import {DateTime, Interval} from "luxon";
@@ -55,7 +55,7 @@ export const SERVICE_VERSION = 1;
 
 /**
  * Service name as used in the FDSN DataCenters registry,
- * http://www.fdsn.org/datacenters
+ * https://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `fdsnws-availability-${SERVICE_VERSION}`;
 
@@ -76,7 +76,7 @@ export {IRIS_HOST};
  * });
  * ```
  *
- * @see http://www.fdsn.org/webservices/
+ * @see https://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to IRIS
  */
 export class AvailabilityQuery extends FDSNCommon {

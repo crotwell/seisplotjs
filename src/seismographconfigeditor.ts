@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 import {insertCSS,} from "./cssutil";
 import {SeismographConfig} from "./seismographconfig";

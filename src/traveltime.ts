@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 import {FDSNCommon} from './fdsncommon';
 import {
@@ -147,7 +147,7 @@ export function createOriginArrival(distdeg: number): TraveltimeArrivalType {
 
 /**
  * Query to the IRIS traveltime webservice, based on the TauP Toolkit. See
- * http://service.iris.edu/irisws/traveltime/1/ and
+ * https://service.iris.edu/irisws/traveltime/1/ and
  * https://www.seis.sc.edu/TauP/
  *
  * @param host optional host to connect to, defaults to IRIS

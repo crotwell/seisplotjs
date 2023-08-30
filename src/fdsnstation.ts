@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 import {
     CHANNEL_CODE_ELEMENT,
@@ -62,7 +62,7 @@ export const SERVICE_VERSION = 1;
 
 /**
  * Service name as used in the FDSN DataCenters registry,
- * http://www.fdsn.org/datacenters
+ * https://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `fdsnws-station-${SERVICE_VERSION}`;
 
@@ -76,7 +76,7 @@ export {IRIS_HOST};
 /**
  * Query to a FDSN Station web service.
  *
- * @see http://www.fdsn.org/webservices/
+ * @see https://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to IRIS
  */
 export class StationQuery extends FDSNCommon {

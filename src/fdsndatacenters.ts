@@ -1,7 +1,7 @@
 /*
  * Philip Crotwell
  * University of South Carolina, 2019
- * http://www.seis.sc.edu
+ * https://www.seis.sc.edu
  */
 
  import {FDSNCommon} from './fdsncommon';
@@ -32,7 +32,7 @@ export const FDSN_HOST = "www.fdsn.org";
 /**
  * Query to a FDSN Data Centers Registry web service.
  *
- * @see http://www.fdsn.org/webservices/
+ * @see https://www.fdsn.org/webservices/
  * @param host optional host to connect to, defaults to FDSN
  */
 export class DataCentersQuery extends FDSNCommon {
