@@ -6,6 +6,7 @@ import {Duration, Interval} from 'luxon';
 
 test( "query setter test", () => {
   const dsQuery = new fdsnavailability.AvailabilityQuery();
+  dsQuery.protocol("https:");
   const NET = 'CO';
   const STA = 'JSC';
   const LOC = '00';
@@ -48,5 +49,5 @@ test( "query setter test", () => {
    'merge', 'quality', 'format', 'nodata']) {
      expect(url).toContain('&'+k+'=');
    }
-   expect(url).toContain("http://"+fdsnavailability.IRIS_HOST+"/fdsnws/availability/1/query?");
+   expect(url).toContain("https://"+fdsnavailability.IRIS_HOST+"/fdsnws/availability/1/query?");
 });

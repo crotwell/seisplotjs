@@ -5,6 +5,7 @@ import * as traveltime from '../../src/traveltime';
 
 test("formURL", () => {
   const query = new traveltime.TraveltimeQuery();
+  query.protocol("https:");
   expect(query.evdepth(50)).toBe(query);
   expect(query.stalat(34)).toBe(query);
   expect(query.stalon(-81)).toBe(query);
@@ -19,7 +20,7 @@ test("formURL", () => {
    'phases', 'format']) {
      expect(url).toContain('&'+k+'=');
    }
-   expect(url).toContain("http://"+traveltime.IRIS_HOST+"/irisws/traveltime/1/query?");
+   expect(url).toContain("https://"+traveltime.IRIS_HOST+"/irisws/traveltime/1/query?");
 
 });
 
