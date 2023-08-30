@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset='utf-8'>
+  <title>seisplotjs 3.1.0-alpha2 | Documentation</title>
+  <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <link href='assets/bass.css' rel='stylesheet'>
+  <link href='assets/style.css' rel='stylesheet'>
+  <link href='assets/github.css' rel='stylesheet'>
+  <link href='assets/split.css' rel='stylesheet'>
+</head>
+<body class='documentation m0'>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
+        <div class='py1 px2'>
+          <h3 class='mb0 no-anchor'>seisplotjs</h3>
+          <div class='mb1'><code>3.1.0-alpha2</code></div>
+          <input
+            placeholder='Filter'
+            id='filter-input'
+            class='col12 block input'
+            spellcheck='false'
+            autocapitalize='off'
+            autocorrect='off'
+            type='text' />
+          <div id='toc'>
+            <ul class='list-reset h5 py1-ul'>
+              
+                
+                <li><a
+                  href='#drawalloncanvas'
+                  class="">
+                  drawAllOnCanvas
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#drawseismogram'
+                  class="">
+                  drawSeismogram
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#drawsegment'
+                  class="">
+                  drawSegment
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#pixelcolumn'
+                  class="">
+                  pixelColumn
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#drawseismogramasline'
+                  class="">
+                  drawSeismogramAsLine
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#drawconnectsegments'
+                  class="">
+                  drawConnectSegments
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#rgbaforcolorname'
+                  class="">
+                  rgbaForColorName
+                  
+                </a>
+                
+                </li>
+              
+            </ul>
+          </div>
+          <div class='mt1 h6 quiet'>
+            <a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
+          </div>
+        </div>
+      </div>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='drawalloncanvas'>
+      drawAllOnCanvas
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/seismographutil.ts#L8-L65'>
+      <span>src/seismographutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>drawAllOnCanvas(canvas: <a href="https://developer.mozilla.org/docs/Web/API/HTMLCanvasElement">HTMLCanvasElement</a>, sddList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>, xScaleList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;LuxonTimeScale>, yScaleList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>>, colornameList: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>, lineWidth: any, connectSegments: any, maxSamplePerPixelForLineDraw: any): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>canvas</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/HTMLCanvasElement">HTMLCanvasElement</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sddList</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;SeismogramDisplayData>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>xScaleList</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;LuxonTimeScale>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>yScaleList</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>colornameList</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>lineWidth</span> <code class='quiet'>(any
+            = <code>1</code>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>connectSegments</span> <code class='quiet'>(any
+            = <code>false</code>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>maxSamplePerPixelForLineDraw</span> <code class='quiet'>(any
+            = <code>20</code>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='drawseismogram'>
+      drawSeismogram
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/seismographutil.ts#L67-L77'>
+      <span>src/seismographutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>drawSeismogram(imgData: ImageData, sdd: SeismogramDisplayData, xScale: LuxonTimeScale, yScale: ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>, colorRGBA: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray">Uint8ClampedArray</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>imgData</span> <code class='quiet'>(ImageData)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sdd</span> <code class='quiet'>(SeismogramDisplayData)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>xScale</span> <code class='quiet'>(LuxonTimeScale)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>yScale</span> <code class='quiet'>(ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>colorRGBA</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray">Uint8ClampedArray</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='drawsegment'>
+      drawSegment
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/seismographutil.ts#L79-L168'>
+      <span>src/seismographutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>drawSegment(imgData: ImageData, segment: SeismogramSegment, xScale: LuxonTimeScale, yScale: ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>, colorRGBA: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray">Uint8ClampedArray</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>imgData</span> <code class='quiet'>(ImageData)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>segment</span> <code class='quiet'>(SeismogramSegment)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>xScale</span> <code class='quiet'>(LuxonTimeScale)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>yScale</span> <code class='quiet'>(ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>colorRGBA</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray">Uint8ClampedArray</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='pixelcolumn'>
+      pixelColumn
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/seismographutil.ts#L170-L178'>
+      <span>src/seismographutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>pixelColumn(imgData: ImageData, xPixel: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, bot: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, top: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, colorRGBA: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray">Uint8ClampedArray</a>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>imgData</span> <code class='quiet'>(ImageData)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>xPixel</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>bot</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>top</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>colorRGBA</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray">Uint8ClampedArray</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='drawseismogramasline'>
+      drawSeismogramAsLine
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/seismographutil.ts#L180-L261'>
+      <span>src/seismographutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>drawSeismogramAsLine(sdd: SeismogramDisplayData, context: <a href="https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D">CanvasRenderingContext2D</a>, width: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, xScale: LuxonTimeScale, yScale: ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>, color: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, lineWidth: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, connectSegments: any): void</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sdd</span> <code class='quiet'>(SeismogramDisplayData)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>context</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D">CanvasRenderingContext2D</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>width</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>xScale</span> <code class='quiet'>(LuxonTimeScale)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>yScale</span> <code class='quiet'>(ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>color</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>lineWidth</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>
+            = <code>1</code>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>connectSegments</span> <code class='quiet'>(any
+            = <code>false</code>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>void</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='drawconnectsegments'>
+      drawConnectSegments
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/seismographutil.ts#L263-L277'>
+      <span>src/seismographutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>drawConnectSegments(sdd: SeismogramDisplayData, context: <a href="https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D">CanvasRenderingContext2D</a>, width: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, xScale: LuxonTimeScale, yScale: ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sdd</span> <code class='quiet'>(SeismogramDisplayData)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>context</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/API/CanvasRenderingContext2D">CanvasRenderingContext2D</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>width</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>xScale</span> <code class='quiet'>(LuxonTimeScale)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>yScale</span> <code class='quiet'>(ScaleLinear&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, never>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='rgbaforcolorname'>
+      rgbaForColorName
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/seismographutil.ts#L279-L291'>
+      <span>src/seismographutil.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>rgbaForColorName(name: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray">Uint8ClampedArray</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>name</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray">Uint8ClampedArray</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+      </div>
+    </div>
+  <script src='assets/anchor.js'></script>
+  <script src='assets/split.js'></script>
+  <script src='assets/site.js'></script>
+</body>
+</html>

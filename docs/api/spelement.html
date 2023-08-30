@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs 3.0.0 | Documentation</title>
+  <title>seisplotjs 3.1.0-alpha2 | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>seisplotjs</h3>
-          <div class='mb1'><code>3.0.0</code></div>
+          <div class='mb1'><code>3.1.0-alpha2</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -51,6 +51,18 @@
                         href='#seisplotelement_seismographconfig'
                         class='regular pre-open'>
                         #_seismographConfig
+                      </a></li>
+                      
+                      <li><a
+                        href='#seisplotelementonredraw'
+                        class='regular pre-open'>
+                        #onRedraw
+                      </a></li>
+                      
+                      <li><a
+                        href='#seisplotelement_throttleredraw'
+                        class='regular pre-open'>
+                        #_throttleRedraw
                       </a></li>
                       
                       <li><a
@@ -93,6 +105,12 @@
                         href='#seisplotelementconnectedcallback'
                         class='regular pre-open'>
                         #connectedCallback
+                      </a></li>
+                      
+                      <li><a
+                        href='#seisplotelementredraw'
+                        class='regular pre-open'>
+                        #redraw
                       </a></li>
                       
                       <li><a
@@ -145,7 +163,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L6-L84'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L6-L109'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -224,7 +242,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L7-L7'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L7-L7'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -286,7 +304,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L8-L8'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L8-L8'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -299,6 +317,130 @@
     <p>
       Type:
       SeismographConfig
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='seisplotelementonredraw'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>onRedraw</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L9-L9'>
+      <span>src/spelement.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>onRedraw</div>
+  
+    <p>
+      Type:
+      function (el: <a href="#seisplotelement">SeisPlotElement</a>): void
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='seisplotelement_throttleredraw'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>_throttleRedraw</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L10-L10'>
+      <span>src/spelement.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>_throttleRedraw</div>
+  
+    <p>
+      Type:
+      (ReturnType&#x3C;any> | null)
     </p>
   
   
@@ -348,7 +490,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L34-L36'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L39-L41'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -405,7 +547,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L37-L46'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L42-L51'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -480,7 +622,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L47-L49'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L52-L54'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -537,7 +679,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L50-L53'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L55-L58'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -612,7 +754,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L54-L56'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L59-L61'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -695,7 +837,7 @@
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L63-L65'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L68-L70'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -756,7 +898,7 @@ configuration has changed. This should trigger a redraw.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L66-L68'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L71-L73'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -765,6 +907,66 @@ configuration has changed. This should trigger a redraw.</p>
 
   
     <div class='pre p1 fill-light mt0'>connectedCallback()</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='seisplotelementredraw'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>redraw()</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L79-L88'>
+      <span>src/spelement.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Redraw the element. This implements a throttle so that many redraws
+are coelsced into a single actual draw if they occur before the
+next animation frame.</p>
+
+    <div class='pre p1 fill-light mt0'>redraw()</div>
   
   
 
@@ -813,14 +1015,17 @@ configuration has changed. This should trigger a redraw.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L69-L71'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L94-L96'>
       <span>src/spelement.ts</span>
       </a>
     
   </div>
   
 
-  
+  <p>Draw the element, overridden by subclasses. Generally outside callers
+should prefer calling redraw() as it handles throttling and calls the
+onRedraw callback.</p>
+
     <div class='pre p1 fill-light mt0'>draw()</div>
   
   
@@ -870,7 +1075,7 @@ configuration has changed. This should trigger a redraw.</p>
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L72-L83'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L97-L108'>
       <span>src/spelement.ts</span>
       </a>
     
@@ -954,7 +1159,7 @@ configuration has changed. This should trigger a redraw.</p>
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/64b0028799ee9e319019c2fcd89317bb751d242e/src/spelement.ts#L86-L99'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/74d4bc40a2c2b0716b57d418cf1851c4c886bcf4/src/spelement.ts#L111-L124'>
       <span>src/spelement.ts</span>
       </a>
     
