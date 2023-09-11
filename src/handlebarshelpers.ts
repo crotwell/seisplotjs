@@ -6,7 +6,10 @@ import {SeismogramDisplayData} from './seismogram';
 import {DateTime, Duration, Interval} from "luxon";
 import {checkStringOrDate} from './util';
 
-
+/**
+ * Registers Handlebars helpers like onlyChangesChannel and other formatters
+ * 
+ */
 export function registerHelpers() {
   Handlebars.registerHelper(
     "onlyChangesChannel",
