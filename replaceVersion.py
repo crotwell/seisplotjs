@@ -8,7 +8,7 @@ with Path("package.json").open() as infile:
     npmPackage = json.load(infile)
 
 
-old="3.1.0-alpha2"
+old="3.1.0"
 ver=npmPackage["version"]
 print(f"Update {old} to {ver}")
 
