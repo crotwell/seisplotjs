@@ -1,4 +1,4 @@
-import * as sp from '../seisplotjs_3.1.0_standalone.mjs';
+import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
 
 // snip start eventandstation
 let queryTimeWindow = sp.util.startEnd('2019-07-01', '2019-07-31');

@@ -1,4 +1,4 @@
-import * as sp from '../seisplotjs_3.1.0_standalone.mjs';
+import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
 
 // snip start vars
 const matchPattern = `CO_BIRD_00_HH./MSEED`;
