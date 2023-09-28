@@ -1,0 +1,34 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Seisplotjs
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - family-names: Crotwell
+    given-names: H. Philip
+    email: crotwell@seis.sc.edu
+    affiliation: University of South Carolina
+    orcid: 'https://orcid.org/0000-0001-6231-4847'
+repository-code: 'https://github.com/crotwell/seisplotjs'
+url: 'https://crotwell.github.io/seisplotjs/'
+repository: 'http://www.seis.sc.edu/downloads/seisplotjs/'
+repository-artifact: 'https://www.npmjs.com/package/seisplotjs'
+abstract: >-
+  Javascript modules for parsing, manipulating and plotting
+  seismic data.
+keywords:
+  - seismology
+  - earthquake
+  - miniseed
+  - seismograph
+  - stationxml
+  - quakeml
+  - fdsn web services
+license: MIT
+commit: 13b0244fe88f601de4cd29544dfd75050897dc1e
+version: 3.1.1
+date-released: '2023-09-11'
