@@ -59,7 +59,7 @@
     "version": "npm run compile && npm run bumpversion && npm run doc",
     "version_to_src": "genversion --semi --es6 src/version.ts",
     "postversion": "echo remember: git push && echo remember: git push --tags",
-    "bumpversion": "python3 replaceVersion.py",
+    "bumpversion": "python3 replaceVersion.py && echo ${npm_package_version} > VERSION",
     "doingdevelopment": "git update-index --skip-worktree docs/api/*.html",
     "prepublishOnly": "npm run compile && npm run test && npm run livetest && echo skip npm outdated && echo skip lint && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code",
     "servedocs": "npx http-server ./docs -c-1 --cors -a 127.0.0.1",
