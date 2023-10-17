@@ -190,9 +190,9 @@ export class SeismographConfig {
       "goldenrod",
       "firebrick",
       "darkcyan",
-      "orange",
+      "chocolate",
       "darkmagenta",
-      "mediumvioletred",
+      "rebeccapurple",
       "sienna",
       "black",
     ];
