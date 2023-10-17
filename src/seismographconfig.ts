@@ -192,8 +192,14 @@ export class SeismographConfig {
       "darkcyan",
       "chocolate",
       "darkmagenta",
+      "mediumseagreen",
       "rebeccapurple",
       "sienna",
+      "orchid",
+      "royalblue",
+      "mediumturquoise",
+      "chartreuse",
+      "peru",
       "black",
     ];
     this.lineWidth = 1;
