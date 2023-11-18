@@ -378,7 +378,7 @@ function updateEarthquakeQueryParam(currentConfig, id, defaultValue) {
     .querySelector("input#"+id).value = currentConfig[id];
 };
 
-function loadAllEarthquakeQueryParams(currentConfig) {
+export function loadAllEarthquakeQueryParams(currentConfig) {
   loadEarthquakeQueryParam(currentConfig, 'localMinLat');
   loadEarthquakeQueryParam(currentConfig, 'localMaxLat');
   loadEarthquakeQueryParam(currentConfig, 'localMinLon');
