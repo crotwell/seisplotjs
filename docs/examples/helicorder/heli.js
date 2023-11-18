@@ -1,6 +1,6 @@
 import * as sp from '../../seisplotjs_3.1.1_standalone.mjs';
 import {HOURS_PER_LINE, doPlot, queryEarthquakes, redrawHeli, getNowTime, drawSeismograph} from './doplot.js';
-import {updatePageForConfig, setupEventHandlers, enableFiltering} from './controls.js';
+import {updatePageForConfig, setupEventHandlers, enableFiltering, loadAllEarthquakeQueryParams,} from './controls.js';
 
 const d3 = sp.d3;
 const luxon = sp.luxon;
