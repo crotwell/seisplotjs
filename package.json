@@ -1,6 +1,6 @@
 {
   "name": "seisplotjs",
-  "version": "3.1.1",
+  "version": "3.1.2-SNAPSHOT",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
   "module": "./dist/index.esm.js",
   "main": "dist/index.js",
