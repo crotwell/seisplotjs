@@ -277,6 +277,7 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
+    this.redoDisplayYScale();
 
     this.g = this.svg
       .append("g")
@@ -335,7 +336,7 @@ export class Seismograph extends SeisPlotElement {
     return super.seisData;
   }
   set seisData(seisData: Array<SeismogramDisplayData>) {
-    super._seisDataList = [];
+    this._seisDataList = [];
     this.appendSeisData(seisData);
   }
   get seismographConfig() {
@@ -1314,15 +1315,14 @@ export class Seismograph extends SeisPlotElement {
           sdd.sensitivity &&
           firstSensitivity.inputUnits === sdd.sensitivity.inputUnits
       );
-      const unitList = this._seisDataList.map(sdd => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
-      if (!allSameUnits) {
-        this.seismographConfig.ySublabel = unitList;
+      if (this.seismographConfig.ySublabelIsUnits) {
+        const unitList = this._seisDataList.map(sdd => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
+        if (!allSameUnits) {
+          this.seismographConfig.ySublabel = unitList;
+        } else {
+          this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
+        }
       }
-
-      if (allSameUnits && this.seismographConfig.ySublabelIsUnits) {
-        this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
-      }
-
     } else {
       if (this.seismographConfig.ySublabelIsUnits) {
         this.seismographConfig.ySublabel = "";
