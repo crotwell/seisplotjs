@@ -9,7 +9,7 @@ import {EventQuery} from "./fdsnevent";
 import {StationQuery} from "./fdsnstation";
 import {FedCatalogQuery} from "./irisfedcatalog";
 import {Quake} from "./quakeml";
-import {allStations, Network} from "./stationxml";
+import {allStations, allChannels, Network} from "./stationxml";
 import {SeismogramDisplayData} from "./seismogram";
 import {
   createMarkersForTravelTimes,
@@ -265,14 +265,15 @@ export class SeismogramLoader {
               allDistDeg.push(daz.distanceDeg);
             }
           }
-          const taupQuery = new TraveltimeQuery();
-          taupQuery.distdeg(allDistDeg);
-          taupQuery.phases(allPhasesWithoutOrigin);
-          // save quake along with result from traveltime
-          ttpromiseList.push(
-            Promise.all([q, taupQuery.queryJson()]),
-          );
-
+          if (allDistDeg.length > 0) {
+            const taupQuery = new TraveltimeQuery();
+            taupQuery.distdeg(allDistDeg);
+            taupQuery.phases(allPhasesWithoutOrigin);
+            // save quake along with result from traveltime
+            ttpromiseList.push(
+              Promise.all([q, taupQuery.queryJson()]),
+            );
+          }
         }
 
         return Promise.all([Promise.all(ttpromiseList), netList, quakeList]);
@@ -289,7 +290,7 @@ export class SeismogramLoader {
         for (const station of allStations(netList)) {
           if ( ! station.timeRange.contains(quake.time)) {
             // skip stations not active during quake
-            break;
+            continue;
           }
           const daz = distaz(
             station.latitude,
@@ -297,6 +298,22 @@ export class SeismogramLoader {
             quake.latitude,
             quake.longitude,
           );
+          // find arrivals for station, match distance
+          const stationArrivals = []
+          for (const a of ttjson.arrivals) {
+            // look for station with same distance
+            if ((Math.abs((a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6 ||
+                 Math.abs(360-(a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6  )) {
+              stationArrivals.push(a);
+            }
+          }
+          const station_ttjson: TraveltimeJsonType = {
+            model: ttjson.model,
+            sourcedepth: ttjson.sourcedepth,
+            receiverdepth: ttjson.receiverdepth,
+            phases: ttjson.phases,
+            arrivals: stationArrivals
+          };
 
           // find earliest start and end arrival
           let startArrival = null;
@@ -307,11 +324,9 @@ export class SeismogramLoader {
                 (startArrival === null || startArrival.time > 0)) {
               startArrival = createOriginArrival(daz.distanceDeg);
             } else {
-              for (const a of ttjson.arrivals) {
+              for (const a of stationArrivals) {
                 // look for station with same distance
-                if ((Math.abs((a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6 ||
-                     Math.abs(360-(a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6  ) &&
-                    a.phase === pname &&
+                if (a.phase === pname &&
                     (startArrival===null || startArrival.time > a.time) ) {
                   startArrival = a;
                 }
@@ -325,12 +340,9 @@ export class SeismogramLoader {
                 (endArrival===null || endArrival.time < 0)) {
               endArrival = createOriginArrival(daz.distanceDeg);
             } else {
-              for (const a of ttjson.arrivals) {
-                if ((Math.abs((a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6 ||
-                     Math.abs(360-(a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6  ) &&
-                  a.phase === pname &&
-                  (endArrival===null || endArrival.time < a.time)
-                ) {
+              for (const a of stationArrivals) {
+                if (a.phase === pname &&
+                    (endArrival===null || endArrival.time < a.time)) {
                   endArrival = a;
                 }
               }
@@ -345,13 +357,16 @@ export class SeismogramLoader {
               .plus(Duration.fromMillis(1000*endArrival.time)) // seconds
               .plus(this.endOffset);
             const timeRange = Interval.fromDateTimes(startTime, endTime);
-            const phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
+            const phaseMarkers = createMarkersForTravelTimes(quake, station_ttjson);
 
             if (this.markOrigin) {
               phaseMarkers.push(createMarkerForOriginTime(quake));
             }
-
             for (const chan of station.channels) {
+              if ( ! chan.timeRange.contains(quake.time)) {
+                // skip channels not active during quake
+                continue;
+              }
               const sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
                 chan,
                 timeRange,
@@ -366,7 +381,6 @@ export class SeismogramLoader {
       }
 
       let sddListPromise;
-
       if (this.dataselectQuery !== null) {
         sddListPromise = this.dataselectQuery.postQuerySeismograms(
           seismogramDataList,
