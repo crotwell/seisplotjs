@@ -20,7 +20,11 @@ import {
 } from './fdsncommon';
 import {NslcId} from './fdsnsourceid';
 import {DateTime, Duration, Interval} from 'luxon';
-import {parseStationXml, Network} from "./stationxml";
+import {
+  parseStationXml, 
+  Network,
+  FAKE_EMPTY_XML,
+} from "./stationxml";
 import {
   XML_MIME,
   TEXT_MIME,
@@ -65,10 +69,6 @@ export const SERVICE_VERSION = 1;
  * https://www.fdsn.org/datacenters
  */
 export const SERVICE_NAME = `fdsnws-station-${SERVICE_VERSION}`;
-
-/** a fake, completely empty stationxml document in case of no data. */
-export const FAKE_EMPTY_XML =
-  '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>';
 
 /** const for the default IRIS web service host, service.iris.edu */
 export {IRIS_HOST};

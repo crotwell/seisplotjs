@@ -11,6 +11,9 @@ import {
   isNonEmptyStringArg,
   isoToDateTime,
   stringify,
+  doFetchWithTimeout,
+  defaultFetchInitObj,
+  XML_MIME,
 } from "./util";
 
 import {DateTime} from "luxon";
@@ -24,6 +27,9 @@ export const USGS_HOST = "earthquake.usgs.gov";
 export const UNKNOWN_MAG_TYPE = "unknown";
 export const UNKNOWN_PUBLIC_ID = "unknownId";
 export const FAKE_ORIGIN_TIME = DateTime.fromISO("1900-01-01T00:00:00Z");
+
+export const FAKE_EMPTY_XML =
+  '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
 
 
 export const QUAKE_CLICK_EVENT = "quakeclick";
@@ -2005,6 +2011,37 @@ export function createQuakeFromValues(publicId: string,
     quake.publicId = publicId;
     quake.originList.push(origin);
     return quake;
+}
+
+/**
+ * Fetches and parses QuakeML from a URL. This can be used in instances where
+ * a static quakeML file is available on a web site instead of via a web
+ * service with query paramters.
+ * @param  url             the url to download from
+ * @param  timeoutSec=10   tiemout in case of failed connection
+ * @return               Promise to parsed quakeML as an EventParameters object
+ */
+export function fetchQuakeML(url: string|URL, timeoutSec=10, nodata=204): Promise<EventParameters> {
+  const fetchInit = defaultFetchInitObj(XML_MIME);
+  const host = new URL(url).hostname
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000)
+    .then(response => {
+      if (response.status === 200) {
+        return response.text();
+      } else if (
+        response.status === 204 ||
+        (isDef(nodata) && response.status === nodata)
+      ) {
+        // 204 is nodata, so successful but empty
+        return FAKE_EMPTY_XML;
+      } else {
+        throw new Error(`Status not successful: ${response.status}`);
+      }
+    }).then(function(rawXmlText) {
+      return new DOMParser().parseFromString(rawXmlText, XML_MIME);
+    }).then(rawXml => {
+      return parseQuakeML(rawXml, host);
+    });
 }
 
 // these are similar methods as in seisplotjs.stationxml
