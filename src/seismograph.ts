@@ -4,8 +4,9 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval } from "luxon";
-//import * as d3 from "d3";
 import { select as d3select } from "d3-selection";
+import 'd3-transition'
+
 import { scaleLinear as d3scaleLinear } from "d3-scale";
 import {
   axisLeft as d3axisLeft,
