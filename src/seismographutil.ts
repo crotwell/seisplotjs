@@ -1,7 +1,7 @@
 import { LuxonTimeScale } from "./axisutil";
 import { SeismogramDisplayData } from "./seismogram";
 import { SeismogramSegment } from "./seismogramsegment";
-
+import { isDef } from "./util";
 
 import type { ScaleLinear } from "d3-scale";
 
@@ -17,8 +17,10 @@ export function drawAllOnCanvas(
 ): void {
 
   if (canvas.height === 0) { return;}
-  const context = canvas.getContext("2d");
-  if (!context) { return; }
+  const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+  if (!isDef(context)) {// for typescript
+    throw new Error("canvas 2d context is null, should not happen...");
+  }
   // clear the canvas from previous drawing
   context.clearRect(0, 0, canvas.width, canvas.height);
 
