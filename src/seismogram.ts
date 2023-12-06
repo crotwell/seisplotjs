@@ -1224,8 +1224,8 @@ export function findMaxDurationOfType(
   type: string,
   sddList: Array<SeismogramDisplayData>,
 ): Duration {
-  return sddList.reduce((acc, sdd) => {
-    let timeRange;
+  return sddList.reduce((acc: Duration, sdd: SeismogramDisplayData) => {
+    let timeRange: Interval;
 
     if (type === "start") {
       timeRange = sdd.timeRange;

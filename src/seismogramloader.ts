@@ -9,7 +9,7 @@ import {EventQuery} from "./fdsnevent";
 import {StationQuery} from "./fdsnstation";
 import {FedCatalogQuery} from "./irisfedcatalog";
 import {Quake} from "./quakeml";
-import {allStations, allChannels, Network} from "./stationxml";
+import {allStations, Network} from "./stationxml";
 import {SeismogramDisplayData} from "./seismogram";
 import {
   createMarkersForTravelTimes,
