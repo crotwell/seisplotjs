@@ -26,7 +26,7 @@ import {
   SeismographConfig,
   numberFormatWrapper,
 } from "./seismographconfig";
-import { drawAllOnCanvas } from "./seismographutil";
+import { drawAllOnCanvas, clearCanvas } from "./seismographutil";
 import {XHTML_NS} from "./util";
 import type { MarkerType } from "./seismogram";
 import type { TraveltimeJsonType } from "./traveltime";
@@ -557,6 +557,7 @@ export class Seismograph extends SeisPlotElement {
     }
     const canvas = this.canvas?.node();
     if (!canvas) { return; }
+    clearCanvas(canvas);
     drawAllOnCanvas(
       canvas,
       this._seisDataList,
