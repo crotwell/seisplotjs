@@ -484,7 +484,8 @@ export class BTime {
       "." +
       this.tenthMilli.toFixed().padStart(4, "0") +
       " " +
-      this.toDateTime().toISO()
+      (this.microsecond !== 0 ? `usec: ${this.microsecond} ` : "")+
+      "iso: "+this.toDateTime().toISO()
     );
   }
 
@@ -495,12 +496,15 @@ export class BTime {
    * @returns         BTime as a DateTime
    */
   toDateTime(): DateTime {
+    let millis = Math.round(this.tenthMilli / 10);
+    const addSec =  Math.floor(millis/1000);
+    millis = millis - 1000 * addSec;
     return DateTime.fromObject({year: this.year,
                                 ordinal: this.jday,
                                 hour: this.hour,
                                 minute: this.min,
-                                second: this.sec,
-                                millisecond: Math.round(this.tenthMilli / 10)},
+                                second: this.sec + addSec,
+                                millisecond: millis},
                               UTC_OPTIONS);
   }
 }
