@@ -947,7 +947,7 @@ export class SeismogramDisplayData {
    * @param alignmentOffset offset duration from the alignment time
    * @param duration duration from the offset for the window
    * @returns time window as an Interval
-  */
+   */
   relativeTimeWindow(
     alignmentOffset: Duration,
     duration: Duration,

@@ -299,7 +299,7 @@ export class SeismogramLoader {
             quake.longitude,
           );
           // find arrivals for station, match distance
-          const stationArrivals = []
+          const stationArrivals = [];
           for (const a of ttjson.arrivals) {
             // look for station with same distance
             if ((Math.abs((a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6 ||
