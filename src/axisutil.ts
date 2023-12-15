@@ -3,6 +3,7 @@ import {createSVGElement, checkLuxonValid, toJSDate} from "./util";
 //import * as d3 from "d3";
 import {scaleUtc as d3scaleUtc } from "d3-scale";
 import {select as d3select} from "d3-selection";
+import 'd3-transition';
 import type {
   //ScaleLinear,
   ScaleTime} from "d3-scale";
