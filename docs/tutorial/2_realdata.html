@@ -145,6 +145,7 @@
       </p>
       <pre><code class="language-javascript" snippet="querystation">
 import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+sp.util.updateVersionText('.sp_version');
 
 let timeWindow = sp.util.startDuration('2019-07-06T03:19:53Z', 1800);
 let dsQuery = new sp.fdsndataselect.DataSelectQuery();
