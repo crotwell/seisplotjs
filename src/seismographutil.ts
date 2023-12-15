@@ -69,6 +69,7 @@ export function drawSeismogramAsLine(
   if (s == null || e == null) {
     throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
   }
+  let horizontalPixel: null | number = null;
   seismogram.segments.forEach((segment) => {
     if (
       xScale.for(segment.startTime) > xScale.range[1] ||
@@ -108,9 +109,10 @@ export function drawSeismogramAsLine(
       context.beginPath();
       context.strokeStyle = color;
       context.lineWidth = lineWidth;
+      horizontalPixel = yScale(segment.y[leftVisibleSample]);
       context.moveTo(
         leftVisiblePixel,
-        yScale(segment.y[leftVisibleSample]),
+        horizontalPixel,
       );
       firstTime = false;
     }
@@ -129,7 +131,6 @@ export function drawSeismogramAsLine(
       // this tends to be better even with as few as 3 point per pixel,
       // especially in near horizontal line
       let i = leftVisibleSample;
-      let horizontalPixel: null | number = null;
       while (i < rightVisibleSample + 2 && i < segment.y.length) {
         const curPixel = Math.floor(startPixel + i * pixelsPerSample);
         let min = segment.y[i];
