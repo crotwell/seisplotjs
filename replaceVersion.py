@@ -44,7 +44,7 @@ def replaceInFile(dirpath, filename):
 stuffToChange = ['docs/tutorial/*.html', 'docs/tutorial/*.js',
                  'docs/examples', 'docs/index.html',
                  'docs/gallery/*.html','docs/api/*.html',
-                 'src', 'test', 'testremotes']
+                 'src', 'test', 'testremotes', 'createApiDocs.sh']
 for stuff in stuffToChange:
     for toppath in Path('.').glob(stuff):
         if toppath.is_dir():
