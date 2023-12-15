@@ -4,6 +4,8 @@ import { isDef } from "./util";
 
 import type { ScaleLinear } from "d3-scale";
 
+export const DEFAULT_MAX_SAMPLE_PER_PIXEL = 3;
+
 export function clearCanvas(canvas: HTMLCanvasElement) {
   // clear the canvas from previous drawing
   canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
@@ -17,7 +19,7 @@ export function drawAllOnCanvas(
   colornameList: Array<string>,
   lineWidth = 1,
   connectSegments = false,
-  maxSamplePerPixelForLineDraw = 20,
+  maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL,
 ): void {
 
   if (canvas.height === 0) { return;}
@@ -29,6 +31,7 @@ export function drawAllOnCanvas(
   sddList.forEach((sdd, i) => {
     const xScale = xScaleList[i];
     const yScale = yScaleList[i];
+
     const s = xScale.domain().start?.valueOf();
     const e = xScale.domain().end?.valueOf();
     if (s == null || e == null || s === e) {
@@ -111,20 +114,20 @@ export function drawSeismogramAsLine(
       );
       firstTime = false;
     }
-    if (samplesPerPixel <= maxSamplePerPixelForLineDraw) {
+    if ( samplesPerPixel <= maxSamplePerPixelForLineDraw) {
       // draw all samples
       for (
         let i = leftVisibleSample;
         i < rightVisibleSample + 2 && i < segment.y.length;
         i++
       ) {
-        context.lineTo(
-          startPixel + i * pixelsPerSample + 0.5,
-          Math.round(yScale(segment.y[i])) + 0.5,
-        );
+        context.lineTo(startPixel + i * pixelsPerSample ,
+                        Math.round(yScale(segment.y[i])));
       }
     } else {
       // draw min-max
+      // this tends to be better even with as few as 3 point per pixel,
+      // especially in near horizontal line
       let i = leftVisibleSample;
       let horizontalPixel: null | number = null;
       while (i < rightVisibleSample + 2 && i < segment.y.length) {
@@ -139,31 +142,33 @@ export function drawSeismogramAsLine(
           i++;
         }
         const topPixelFlt = yScale(max); // note pixel coord flipped
-        const botPixelFlt = yScale(min); // so minValue=>maxPixel, maxValue=>minPixel
-        const botPixel = Math.floor(botPixelFlt);
-        const topPixel = Math.ceil(topPixelFlt);
+        const botPixelFlt = yScale(min); // so botPixelFlt>topPixelFlt
+        const botPixel = Math.round(botPixelFlt);
+        const topPixel = Math.round(topPixelFlt);
         if (topPixel === botPixel) {
           // horizontal
           if (horizontalPixel === topPixel) {
             // and previous was also same horizontal, keep going to draw one
             // longer horizontal line
             continue;
-          } else if (horizontalPixel === null) {
-            horizontalPixel = topPixel;
           } else {
-            context.lineTo(curPixel, horizontalPixel);
+            if (horizontalPixel !== null) {
+              const y = horizontalPixel as number; // typescript
+              context.lineTo(curPixel, y);
+            }
             horizontalPixel = topPixel;
           }
         } else if (botPixelFlt-topPixelFlt < 1.25) {
           // very horizontal, just draw single
-          context.lineTo(curPixel, topPixelFlt);
+          context.lineTo(curPixel, topPixel);
           horizontalPixel = topPixel;
         } else {
           // drawing min to max vs max to min depending on order
           // and offseting by half a pixel
           // helps a lot with avoiding fuzziness due to antialiasing
           if (horizontalPixel !== null) {
-            context.lineTo(curPixel-0.5, horizontalPixel);
+            const y = horizontalPixel as number; // typescript
+            context.lineTo(curPixel-0.5, y);
             horizontalPixel = null;
           }
           if (minIdx < maxIdx) {
@@ -180,7 +185,8 @@ export function drawSeismogramAsLine(
       if (horizontalPixel !== null) {
         // in case end of segment is horizontal line we did not finish drawing
         const curPixel = Math.floor(startPixel + (rightVisibleSample+1) * pixelsPerSample);
-        context.lineTo(curPixel-0.5, horizontalPixel);
+        const y = horizontalPixel as number; // typescript
+        context.lineTo(curPixel-0.5, y);
         horizontalPixel = null;
       }
     }

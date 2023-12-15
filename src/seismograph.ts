@@ -196,7 +196,7 @@ export class Seismograph extends SeisPlotElement {
   amp_scalable: SeismographAmplitudeScalable;
 
   _resizeObserver: ResizeObserver;
-  minmax_sample_pixels = 20;
+  minmax_sample_pixels = DEFAULT_MAX_SAMPLE_PER_PIXEL;
   constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     this.outerWidth = -1;
