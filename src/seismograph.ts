@@ -4,8 +4,9 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration, Interval } from "luxon";
-//import * as d3 from "d3";
 import { select as d3select } from "d3-selection";
+import 'd3-transition';
+
 import { scaleLinear as d3scaleLinear } from "d3-scale";
 import {
   axisLeft as d3axisLeft,
@@ -25,7 +26,9 @@ import {
   SeismographConfig,
   numberFormatWrapper,
 } from "./seismographconfig";
-import { drawAllOnCanvas } from "./seismographutil";
+import {
+  drawAllOnCanvas, clearCanvas, DEFAULT_MAX_SAMPLE_PER_PIXEL
+} from "./seismographutil";
 import {XHTML_NS} from "./util";
 import type { MarkerType } from "./seismogram";
 import type { TraveltimeJsonType } from "./traveltime";
@@ -195,7 +198,7 @@ export class Seismograph extends SeisPlotElement {
   amp_scalable: SeismographAmplitudeScalable;
 
   _resizeObserver: ResizeObserver;
-  minmax_sample_pixels = 20;
+  minmax_sample_pixels = DEFAULT_MAX_SAMPLE_PER_PIXEL;
   constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
     super(seisData, seisConfig);
     this.outerWidth = -1;
@@ -277,6 +280,7 @@ export class Seismograph extends SeisPlotElement {
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
+    this.redoDisplayYScale();
 
     this.g = this.svg
       .append("g")
@@ -335,7 +339,7 @@ export class Seismograph extends SeisPlotElement {
     return super.seisData;
   }
   set seisData(seisData: Array<SeismogramDisplayData>) {
-    super._seisDataList = [];
+    this._seisDataList = [];
     this.appendSeisData(seisData);
   }
   get seismographConfig() {
@@ -555,6 +559,7 @@ export class Seismograph extends SeisPlotElement {
     }
     const canvas = this.canvas?.node();
     if (!canvas) { return; }
+    clearCanvas(canvas);
     drawAllOnCanvas(
       canvas,
       this._seisDataList,
@@ -1314,15 +1319,14 @@ export class Seismograph extends SeisPlotElement {
           sdd.sensitivity &&
           firstSensitivity.inputUnits === sdd.sensitivity.inputUnits
       );
-      const unitList = this._seisDataList.map(sdd => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
-      if (!allSameUnits) {
-        this.seismographConfig.ySublabel = unitList;
+      if (this.seismographConfig.ySublabelIsUnits) {
+        const unitList = this._seisDataList.map(sdd => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
+        if (!allSameUnits) {
+          this.seismographConfig.ySublabel = unitList;
+        } else {
+          this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
+        }
       }
-
-      if (allSameUnits && this.seismographConfig.ySublabelIsUnits) {
-        this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
-      }
-
     } else {
       if (this.seismographConfig.ySublabelIsUnits) {
         this.seismographConfig.ySublabel = "";

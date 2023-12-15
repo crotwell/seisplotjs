@@ -19,7 +19,10 @@
   </style>
 </head>
 <body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+  <h5><a href="../index.html" class="">Seisplotjs</a>
+     - <a href="index.html" class="">Gallery</a>
+    <span class="sp_version">3.1.2</span>
+  </h5>
 
   <h3>Earthquake Table:</h3>
   <h5 id="sp-quake-table">&lt;sp-quake-table&gt;</h5>
@@ -53,7 +56,9 @@
 
   <script type="module">
 
-    import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
+    import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+    sp.util.updateVersionText('.sp_version');
+
     sp.dataset.load('dataset.zip')
     .then((ds) => {
       document.querySelectorAll('sp-station-quake-table').forEach( graph => {

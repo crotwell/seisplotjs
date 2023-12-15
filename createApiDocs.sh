@@ -91,7 +91,7 @@ cat > docs/api/index.html <<EOF
 <html>
   <head>
     <meta charset='utf-8'>
-    <title>Seisplotjs 3.0 API Documentation</title>
+    <title>Seisplotjs 3.1 API Documentation</title>
     <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
     <meta name='viewport' content='width=device-width,initial-scale=1'>
     <link href='../api/assets/bass.css' rel='stylesheet'>
@@ -117,7 +117,7 @@ cat > docs/api/index.html <<EOF
               <section class='p2 mb2 clearfix bg-white minishadow'>
         <div class='clearfix'>
 
-          <h3>Seisplotjs 3.1.0-alpha2 API Documentation</h3>
+          <h3>Seisplotjs <span class="sp_version">3.1.2</span> API Documentation</h3>
           <p>Seisplotjs is a collection of javascript routines for requesting,
             manipulating and plotting seismic data. It is divided into submodules,
             which are listed below.

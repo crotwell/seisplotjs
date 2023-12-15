@@ -1,4 +1,5 @@
-import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
+import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+sp.util.updateVersionText('.sp_version');
 
 // snip start window
 const plotEnd = sp.luxon.DateTime.utc().endOf('hour').plus({milliseconds: 1});

@@ -1,4 +1,4 @@
-import * as sp from '../../seisplotjs_3.1.1_standalone.mjs';
+import * as sp from '../../seisplotjs_3.1.2_standalone.mjs';
 
 import {parse_sis_xml} from './response_parse.js';
 
@@ -134,7 +134,8 @@ function load_ext(input_selector) {
         if ( ! firstChan.response.stages) {
           console.log(`No stages: ${firstChan.channelCode}  ${firstChan.response}`);
         }
-        document.querySelector("channel-list-chooser")[0].channels = Array.from(sp.stationxml.allChannels(networkList));
+        const chanChooser = document.querySelector("sp-channel-list");
+        chanChooser.setChannels(Array.from(sp.stationxml.allChannels(networkList)));
         process_stages(firstChan.response.stages);
       } else {
         let div = document.querySelector("div.stageplot");
@@ -142,7 +143,7 @@ function load_ext(input_selector) {
       }
     }).catch(e => {
       let div = document.querySelector("div.stageplot");
-      div.textContent = "<p>Error: ${e}</p>";
+      div.textContent = `<p>Error: ${e}</p>`;
       console.warn(e);
     })
 }

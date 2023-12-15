@@ -1,9 +1,15 @@
 import { LuxonTimeScale } from "./axisutil";
 import { SeismogramDisplayData } from "./seismogram";
-import { SeismogramSegment } from "./seismogramsegment";
-
+import { isDef } from "./util";
 
 import type { ScaleLinear } from "d3-scale";
+
+export const DEFAULT_MAX_SAMPLE_PER_PIXEL = 3;
+
+export function clearCanvas(canvas: HTMLCanvasElement) {
+  // clear the canvas from previous drawing
+  canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+}
 
 export function drawAllOnCanvas(
   canvas: HTMLCanvasElement,
@@ -13,19 +19,19 @@ export function drawAllOnCanvas(
   colornameList: Array<string>,
   lineWidth = 1,
   connectSegments = false,
-  maxSamplePerPixelForLineDraw = 20,
+  maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL,
 ): void {
 
   if (canvas.height === 0) { return;}
-  const context = canvas.getContext("2d");
-  if (!context) { return; }
-  // clear the canvas from previous drawing
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+  if (!isDef(context)) {// for typescript
+    throw new Error("canvas 2d context is null, should not happen...");
+  }
 
   sddList.forEach((sdd, i) => {
-    const colorRGBA = rgbaForColorName(colornameList[i]);
     const xScale = xScaleList[i];
     const yScale = yScaleList[i];
+
     const s = xScale.domain().start?.valueOf();
     const e = xScale.domain().end?.valueOf();
     if (s == null || e == null || s === e) {
@@ -33,148 +39,14 @@ export function drawAllOnCanvas(
     } else {
       const seismogram = sdd.seismogram;
       if (!seismogram) { return; }
-      const secondsPerPixel = (e - s) / 1000 / (xScale.range[1] - xScale.range[0]);
-      const samplesPerPixel = 1.0 * seismogram.sampleRate * secondsPerPixel;
-      //const drawStyle = (samplesPerPixel > maxSamplePerPixelForLineDraw) ? "image" : "all";
-      //window.performance.mark("startdraw");
-      //for (let n = 0; n < 100; n++) {
-      if (samplesPerPixel > maxSamplePerPixelForLineDraw) {
-        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-        drawSeismogram(imgData, sdd, xScale, yScale, colorRGBA);
-        context.putImageData(imgData, 0, 0);
-        if (connectSegments) {
-          context.save();
-          context.beginPath();
-          context.strokeStyle = colornameList[i];
-          context.lineWidth = lineWidth;
-          drawConnectSegments(sdd, context, canvas.width, xScale, yScale);
-          context.stroke();
-          context.restore();
-        }
-      } else {
+
         context.save();
         drawSeismogramAsLine(sdd, context, canvas.width, xScale, yScale, colornameList[i],
-          lineWidth, connectSegments);
+          lineWidth, connectSegments, maxSamplePerPixelForLineDraw);
         context.restore();
-      }
-      //}
-      //const perfTime = window.performance.measure("drawtime", "startdraw");
-      //console.log(`draw time: ${perfTime.duration}  for ${drawStyle}`)
     }
   });
-}
 
-export function drawSeismogram(
-  imgData: ImageData,
-  sdd: SeismogramDisplayData,
-  xScale: LuxonTimeScale,
-  yScale: ScaleLinear<number, number, never>,
-  colorRGBA: Uint8ClampedArray) {
-
-  sdd.segments.forEach(seg => {
-    drawSegment(imgData, seg, xScale, yScale, colorRGBA);
-  });
-}
-
-export function drawSegment(
-  imgData: ImageData,
-  segment: SeismogramSegment,
-  xScale: LuxonTimeScale,
-  yScale: ScaleLinear<number, number, never>,
-  colorRGBA: Uint8ClampedArray) {
-  if (
-    xScale.for(segment.startTime) > xScale.range[1] ||
-    xScale.for(segment.endTime) < xScale.range[0]
-  ) {
-    // segment either totally off to left or right of visible
-    return;
-  }
-  const s = xScale.domain().start?.valueOf();
-  const e = xScale.domain().end?.valueOf();
-  if (s == null || e == null) {
-    throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
-  }
-  if (s === e) {
-    // zero time width, nothing to do
-    return;
-  }
-  const secondsPerPixel =
-    (e - s) /
-    1000 /
-    (xScale.range[1] - xScale.range[0]);
-  const samplesPerPixel = 1.0 * segment.sampleRate * secondsPerPixel;
-
-  if (!(Number.isFinite(secondsPerPixel) && Number.isFinite(samplesPerPixel))) {
-    throw new Error(`spp: ${secondsPerPixel}  spp: ${samplesPerPixel}`);
-  }
-
-  if ((secondsPerPixel === 0 || samplesPerPixel === 0)) {
-    throw new Error(`zero spp: ${secondsPerPixel}  sampp: ${samplesPerPixel}`);
-  }
-  const pixelsPerSample = 1.0 / samplesPerPixel;
-  const startPixel = xScale.for(segment.startTime);
-  const endPixel = xScale.for(segment.endTime);
-  let leftVisibleSample = 0;
-  let rightVisibleSample = segment.y.length;
-
-  if (startPixel < 0) {
-    leftVisibleSample =
-      Math.floor(-1 * startPixel * samplesPerPixel) - 1;
-  }
-
-  if (endPixel > xScale.range[1] + 1) {
-    rightVisibleSample =
-      leftVisibleSample +
-      Math.ceil((imgData.width + 1) * samplesPerPixel) +
-      1;
-  }
-
-  let i = leftVisibleSample;
-  let prevTopPixel: null | number = null;
-  let prevBotPixel: null | number = null;
-  while (i < rightVisibleSample + 2 && i < segment.y.length) {
-    const curPixel = Math.floor(startPixel + i * pixelsPerSample);
-    if (curPixel > imgData.width) { break; }
-    if (curPixel < 0) { i++; continue; }
-
-    let min = segment.y[i];
-    let max = segment.y[i];
-    while (i < segment.y.length && curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
-      if (min > segment.y[i]) { min = segment.y[i]; }
-      if (max < segment.y[i]) { max = segment.y[i]; }
-      i++;
-    }
-    const topPixelFlt = yScale(max); // note pixel coord flipped
-    const botPixelFlt = yScale(min); // so minValue=>maxPixel, maxValue=>minPixel
-    const botPixel = Math.min(imgData.height - 1, Math.floor(botPixelFlt));
-    const topPixel = Math.max(0, Math.ceil(topPixelFlt));
-
-    pixelColumn(imgData, curPixel, botPixel, topPixel, colorRGBA);
-    // in case prev column of pixels is offset from current, need to connect
-    if (prevTopPixel != null && prevTopPixel > botPixel + 1) {
-      const halfPixel = Math.round((prevTopPixel + botPixel) / 2);
-      pixelColumn(imgData, curPixel - 1, prevTopPixel, halfPixel, colorRGBA);
-      pixelColumn(imgData, curPixel, halfPixel - 1, botPixel, colorRGBA);
-    }
-    if (prevBotPixel !== null && prevBotPixel < topPixel - 1) {
-      const halfPixel = Math.round((prevBotPixel + topPixel) / 2);
-      pixelColumn(imgData, curPixel - 1, halfPixel - 1, prevBotPixel, colorRGBA);
-      pixelColumn(imgData, curPixel, topPixel, halfPixel, colorRGBA);
-    }
-
-    prevTopPixel = topPixel;
-    prevBotPixel = botPixel;
-  }
-}
-
-export function pixelColumn(imgData: ImageData, xPixel: number, bot: number, top: number, colorRGBA: Uint8ClampedArray) {
-  // top < bot in image space
-  if (bot >= imgData.height) { bot = imgData.height-1;}
-  if (top < 0) {top = 0;}
-  for (let p = top; p <= bot; p++) {
-    const offset = 4 * (p * imgData.width + xPixel);
-    imgData.data.set(colorRGBA, offset);
-  }
 }
 
 export function drawSeismogramAsLine(
@@ -186,22 +58,25 @@ export function drawSeismogramAsLine(
   color: string,
   lineWidth: number = 1,
   connectSegments = false,
+  maxSamplePerPixelForLineDraw = 20
 ): void {
   const seismogram = sdd.seismogram;
   if (!seismogram) { return; }
   let firstTime = true;
-  seismogram.segments.forEach((segment, segIdx) => {
+
+  const s = xScale.domain().start?.valueOf();
+  const e = xScale.domain().end?.valueOf();
+  if (s == null || e == null) {
+    throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
+  }
+  let horizontalPixel: null | number = null;
+  seismogram.segments.forEach((segment) => {
     if (
       xScale.for(segment.startTime) > xScale.range[1] ||
       xScale.for(segment.endTime) < xScale.range[0]
     ) {
       // segment either totally off to left or right of visible
       return;
-    }
-    const s = xScale.domain().start?.valueOf();
-    const e = xScale.domain().end?.valueOf();
-    if (s == null || e == null) {
-      throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
     }
     const secondsPerPixel =
       (e - s) /
@@ -234,46 +109,94 @@ export function drawSeismogramAsLine(
       context.beginPath();
       context.strokeStyle = color;
       context.lineWidth = lineWidth;
+      horizontalPixel = yScale(segment.y[leftVisibleSample]);
       context.moveTo(
         leftVisiblePixel,
-        yScale(segment.y[leftVisibleSample]),
+        horizontalPixel,
       );
       firstTime = false;
     }
-    // draw all samples
-    for (
+    if ( samplesPerPixel <= maxSamplePerPixelForLineDraw) {
+      // draw all samples
+      for (
+        let i = leftVisibleSample;
+        i < rightVisibleSample + 2 && i < segment.y.length;
+        i++
+      ) {
+        context.lineTo(startPixel + i * pixelsPerSample ,
+                        Math.round(yScale(segment.y[i])));
+      }
+    } else {
+      // draw min-max
+      // this tends to be better even with as few as 3 point per pixel,
+      // especially in near horizontal line
       let i = leftVisibleSample;
-      i < rightVisibleSample + 2 && i < segment.y.length;
-      i++
-    ) {
-      context.lineTo(
-        startPixel + i * pixelsPerSample + 0.5,
-        Math.round(yScale(segment.y[i])) + 0.5,
-      );
+      while (i < rightVisibleSample + 2 && i < segment.y.length) {
+        const curPixel = Math.floor(startPixel + i * pixelsPerSample);
+        let min = segment.y[i];
+        let max = segment.y[i];
+        let minIdx = i;
+        let maxIdx = i;
+        while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
+          if (min > segment.y[i]) { min = segment.y[i]; minIdx = i; }
+          if (max < segment.y[i]) { max = segment.y[i]; maxIdx = i; }
+          i++;
+        }
+        const topPixelFlt = yScale(max); // note pixel coord flipped
+        const botPixelFlt = yScale(min); // so botPixelFlt>topPixelFlt
+        const botPixel = Math.round(botPixelFlt);
+        const topPixel = Math.round(topPixelFlt);
+        if (topPixel === botPixel) {
+          // horizontal
+          if (horizontalPixel === topPixel) {
+            // and previous was also same horizontal, keep going to draw one
+            // longer horizontal line
+            continue;
+          } else {
+            if (horizontalPixel !== null) {
+              const y = horizontalPixel as number; // typescript
+              context.lineTo(curPixel, y);
+            }
+            horizontalPixel = topPixel;
+          }
+        } else if (botPixelFlt-topPixelFlt < 1.25) {
+          // very horizontal, just draw single
+          context.lineTo(curPixel, topPixel);
+          horizontalPixel = topPixel;
+        } else {
+          // drawing min to max vs max to min depending on order
+          // and offseting by half a pixel
+          // helps a lot with avoiding fuzziness due to antialiasing
+          if (horizontalPixel !== null) {
+            const y = horizontalPixel as number; // typescript
+            context.lineTo(curPixel-0.5, y);
+            horizontalPixel = null;
+          }
+          if (minIdx < maxIdx) {
+            // min/bot occurs before max/top
+            context.lineTo(curPixel-0.5, botPixel-0.5);
+            context.lineTo(curPixel+0.5, topPixel+0.5);
+          } else {
+            // max/top occurs before min/bot
+            context.lineTo(curPixel-0.5, topPixel+0.5);
+            context.lineTo(curPixel+0.5, botPixel-0.5);
+          }
+        }
+      }
+      if (horizontalPixel !== null) {
+        // in case end of segment is horizontal line we did not finish drawing
+        const curPixel = Math.floor(startPixel + (rightVisibleSample+1) * pixelsPerSample);
+        const y = horizontalPixel as number; // typescript
+        context.lineTo(curPixel-0.5, y);
+        horizontalPixel = null;
+      }
     }
-
 
     if (!connectSegments) {
       context.stroke();
     }
   });
   context.stroke();
-}
-
-export function drawConnectSegments(
-  sdd: SeismogramDisplayData,
-  context: CanvasRenderingContext2D,
-  width: number,
-  xScale: LuxonTimeScale,
-  yScale: ScaleLinear<number, number, never>,) {
-  let prev: SeismogramSegment | null = null;
-  sdd.seismogram?.segments.forEach((seg, idx) => {
-    if (prev !== null) {
-      context.lineTo(xScale.for(seg.startTime), yScale(seg.y[0]));
-    }
-    context.moveTo(xScale.for(seg.endTime), yScale(seg.y[seg.y.length - 1]));
-    prev = seg;
-  });
 }
 
 export function rgbaForColorName(name: string): Uint8ClampedArray {

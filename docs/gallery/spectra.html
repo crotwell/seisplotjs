@@ -12,7 +12,10 @@
   </style>
 </head>
 <body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+  <h5><a href="../index.html" class="">Seisplotjs</a>
+     - <a href="index.html" class="">Gallery</a>
+    <span class="sp_version">3.1.2</span>
+  </h5>
   <h5 id="sp-spectra">&lt;sp-spectra&gt;</h5>
 
   <h3>Spectra:</h3>
@@ -24,7 +27,9 @@
   <sp-spectra kind="phase" logfreq="true"></sp-spectra>
 
   <script type="module">
-    import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
+    import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+    sp.util.updateVersionText('.sp_version');
+
     const ranData = [];
     for( let i=0; i<1024; i++) {ranData.push((Math.random()-0.5)*1000);}
     const fData = Float32Array.from(ranData);

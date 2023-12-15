@@ -7,7 +7,9 @@
    <title>Channel Choosers</title>
 </head>
 <body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a>
+    <span class="sp_version">3.1.2</span>
+  </h5>
 
   <h5 id="sp-channel-code-input">&lt;sp-channel-code-input&gt;</h5>
   <div>
@@ -23,7 +25,10 @@
   </div>
 
   <script type="module">
-    import {components, fdsnstation, stationxml} from '../seisplotjs_3.1.1_standalone.mjs';
+    import {
+      components, fdsnstation, stationxml, util
+    } from '../seisplotjs_3.1.2_standalone.mjs';
+    util.updateVersionText('.sp_version');
 
     const listInput = document.querySelector('sp-channel-list');
 

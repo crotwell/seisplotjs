@@ -198,7 +198,9 @@ export function calcOnePixelDuration(seismograph: SeisPlotElement): Duration {
   let pixels = rect.width - margin.left - margin.right;
   if (pixels <= 0) {pixels = 1000;}
   timerInterval = timerInterval / pixels;
-  if (timerInterval === 0) { timerInterval = 1000; }
+  // aim for updates between 50 and 250 milliseconds
+  if (timerInterval === 0) { timerInterval = 100; }
   while (timerInterval > 0 && timerInterval < 50) { timerInterval *= 2; }
+  if (timerInterval > 250) { timerInterval /= 2;}
   return Duration.fromMillis(timerInterval);
 }

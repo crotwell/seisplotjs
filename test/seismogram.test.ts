@@ -257,3 +257,27 @@ test("find minmax test", () => {
     expect(minMax.max).toEqual(   seisAMean);
     expect(minMax.middle).toEqual(0);
 });
+
+
+test("find end len 2 test", () => {
+    const yValues = new Float32Array([3, 0]);
+    const sampleRate = 20.0;
+    const startTime = isoToDateTime("2013-02-08T09:30:26");
+    const endTime = isoToDateTime("2013-02-08T09:30:26.050")
+
+    const seisA = Seismogram.fromContiguousData(yValues, sampleRate, startTime);
+    const sddA = SeismogramDisplayData.fromSeismogram(seisA);
+    expect(seisA.startTime).toEqual(startTime);
+    expect(seisA.endTime).toEqual(endTime);
+    expect(sddA.startTime).toEqual(startTime);
+    expect(sddA.endTime).toEqual(endTime);
+    // len one
+    const yValuesB = new Float32Array([3]);
+    const seisB = Seismogram.fromContiguousData(yValuesB, sampleRate, startTime);
+    const sddB = SeismogramDisplayData.fromSeismogram(seisB);
+    expect(seisB.startTime).toEqual(startTime);
+    expect(seisB.endTime).toEqual(startTime);
+    expect(sddB.startTime).toEqual(startTime);
+    expect(sddB.endTime).toEqual(startTime);
+
+});

@@ -13,6 +13,9 @@ import {
   stringify,
   reErrorWithMessage,
   WAY_FUTURE,
+  doFetchWithTimeout,
+  defaultFetchInitObj,
+  XML_MIME,
 } from "./util";
 import { Complex } from "./oregondsputil";
 import { FDSNSourceId, NetworkSourceId, StationSourceId, NslcId, SourceIdSorter } from "./fdsnsourceid";
@@ -24,6 +27,10 @@ export const COUNT_UNIT_NAME = "count";
 export const FIX_INVALID_STAXML = true;
 export const INVALID_NUMBER = -99999;
 export const FAKE_START_DATE = DateTime.fromISO("1900-01-01T00:00:00Z");
+
+/** a fake, completely empty stationxml document in case of no data. */
+export const FAKE_EMPTY_XML =
+  '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>';
 
 
 export const CHANNEL_CLICK_EVENT = "channelclick";
@@ -1471,6 +1478,38 @@ export function uniqueNetworks(
   return Array.from(out.values());
 }
 
+
+
+
+/**
+ * Fetches and parses StationXML from a URL. This can be used in instances where
+ * a static stationXML file is available on a web site instead of via a web
+ * service with query paramters.
+ * @param  url             the url to download from
+ * @param  timeoutSec=10   tiemout in case of failed connection
+ * @return               Promise to parsed quakeML as an EventParameters object
+ */
+export function fetchStationXml(url: string|URL, timeoutSec=10, nodata=204): Promise<Array<Network>> {
+  const fetchInit = defaultFetchInitObj(XML_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000)
+    .then(response => {
+      if (response.status === 200) {
+        return response.text();
+      } else if (
+        response.status === 204 ||
+        (isDef(nodata) && response.status === nodata)
+      ) {
+        // 204 is nodata, so successful but empty
+        return FAKE_EMPTY_XML;
+      } else {
+        throw new Error(`Status not successful: ${response.status}`);
+      }
+    }).then(function(rawXmlText) {
+      return new DOMParser().parseFromString(rawXmlText, XML_MIME);
+    }).then(rawXml => {
+      return parseStationXml(rawXml);
+    });
+}
 
 // these are similar methods as in seisplotjs.quakeml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...

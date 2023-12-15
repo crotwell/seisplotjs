@@ -7,7 +7,10 @@
    <title>Date and Time Choosers</title>
 </head>
 <body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+  <h5><a href="../index.html" class="">Seisplotjs</a>
+     - <a href="index.html" class="">Gallery</a>
+    <span class="sp_version">3.1.2</span>
+  </h5>
 
   <h3>Dates and Times:</h3>
   <div>
@@ -33,7 +36,10 @@
   </div>
 
   <script type="module">
-    import {datechooser} from '../seisplotjs_3.1.1_standalone.mjs';
+    import {
+      datechooser, util
+    } from '../seisplotjs_3.1.2_standalone.mjs';
+    util.updateVersionText('.sp_version');
 
     const outputArea = document.querySelector('#output');
     const timeInput = document.querySelector('sp-hourmin');

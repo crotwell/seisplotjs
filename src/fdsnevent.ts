@@ -5,7 +5,9 @@
  */
 import { FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius } from './fdsncommon';
 import { DateTime, Duration, Interval } from 'luxon';
-import { EventParameters, Quake, USGS_HOST, parseQuakeML } from "./quakeml";
+import { EventParameters, Quake, USGS_HOST, parseQuakeML,
+  FAKE_EMPTY_XML,
+} from "./quakeml";
 import {
   XML_MIME,
   TEXT_MIME,
@@ -41,8 +43,6 @@ export const SERVICE_VERSION = 1;
  */
 export const SERVICE_NAME = `fdsnws-event-${SERVICE_VERSION}`;
 export { USGS_HOST };
-export const FAKE_EMPTY_XML =
-  '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
 
 /**
  * Query to a FDSN Event web service.
@@ -1066,7 +1066,6 @@ export class EventQuery extends FDSNCommon {
     return url;
   }
 }
-
 
 import {
   LatLonChoice,

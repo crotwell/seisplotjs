@@ -93,6 +93,9 @@
      <div class="clearfix">
       <h1>
        Seisplotjs Tutorial
+       <span class="sp_version">
+        3.1.2
+       </span>
       </h1>
       <h3>
        Quakes and Channels:
@@ -376,6 +379,10 @@ Promise.all( [ quakePromise, stationsPromise ] )
     </section>
    </div>
   </div>
+  <script type="module">
+   import * as sp from './seisplotjs_3.1.2_standalone.mjs';
+    sp.util.updateVersionText('.sp_version');
+  </script>
   <script src="../prism.js">
   </script>
   <script>
