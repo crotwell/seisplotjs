@@ -7,7 +7,11 @@
    <link rel="icon" type="image/png" href="../../flavicon.png" />
 </head>
 <body>
-  <h5><a href="../../index.html" class="">Seisplotjs</a> - <a href="../index.html" class="">Examples</a> - Helicorder</h5>
+  <h5><a href="../../index.html" class="">Seisplotjs</a>
+     - <a href="../index.html" class="">Examples</a>
+      - Helicorder
+       <span class="sp_version">3.1.2</span>
+    </h5>
 
 <h3>Helicorder Plots for South Carolina Seismic Network Stations:</h3>
 <div id="scsnStations">
@@ -128,13 +132,13 @@
 
 
 
-<h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
+<h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span class="sp_version">3.1.2</span></a>.</h5>
 
 
 <script type="module" src="heli.js"></script>
 <script type="module">
-  import * as sp from '../../seisplotjs_3.1.1_standalone.mjs';
-  document.querySelector("#version").textContent = sp.version;
+  import * as sp from '../../seisplotjs_3.1.2_standalone.mjs';
+  sp.util.updateVersionText('.sp_version');
 </script>
 </body>
 </html>
