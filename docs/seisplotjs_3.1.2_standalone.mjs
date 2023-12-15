@@ -49,7 +49,7 @@ var require_kotlin_kotlin_stdlib_js_ir = __commonJS({
       };
     }
     if (typeof Math.clz32 === "undefined") {
-      Math.clz32 = function(log3, LN2) {
+      Math.clz32 = /* @__PURE__ */ function(log3, LN2) {
         return function(x2) {
           var asUint = x2 >>> 0;
           if (asUint === 0) {
@@ -24702,7 +24702,7 @@ var require_leaflet_src = __commonJS({
         }
         return dest;
       }
-      var create$2 = Object.create || function() {
+      var create$2 = Object.create || /* @__PURE__ */ function() {
         function F() {
         }
         return function(proto) {
@@ -28815,7 +28815,7 @@ var require_leaflet_src = __commonJS({
         return _sqClosestPointOnSegment(p, p1, p2);
       }
       function _simplifyDP(points, sqTolerance) {
-        var len = points.length, ArrayConstructor = typeof Uint8Array !== void 0 + "" ? Uint8Array : Array, markers = new ArrayConstructor(len);
+        var len = points.length, ArrayConstructor = typeof Uint8Array !== "undefined" ? Uint8Array : Array, markers = new ArrayConstructor(len);
         markers[0] = markers[len - 1] = 1;
         _simplifyDPStep(points, markers, sqTolerance, 0, len - 1);
         var i, newPoints = [];
@@ -37530,6 +37530,16 @@ function systemLocale() {
     return sysLocaleCache;
   }
 }
+var weekInfoCache = {};
+function getCachedWeekInfo(locString) {
+  let data = weekInfoCache[locString];
+  if (!data) {
+    const locale3 = new Intl.Locale(locString);
+    data = "getWeekInfo" in locale3 ? locale3.getWeekInfo() : locale3.weekInfo;
+    weekInfoCache[locString] = data;
+  }
+  return data;
+}
 function parseLocaleString(localeStr) {
   const xIndex = localeStr.indexOf("-x-");
   if (xIndex !== -1) {
@@ -37708,16 +37718,28 @@ var PolyRelFormatter = class {
     }
   }
 };
+var fallbackWeekSettings = {
+  firstDay: 1,
+  minimalDays: 4,
+  weekend: [6, 7]
+};
 var Locale = class _Locale {
   static fromOpts(opts) {
-    return _Locale.create(opts.locale, opts.numberingSystem, opts.outputCalendar, opts.defaultToEN);
+    return _Locale.create(
+      opts.locale,
+      opts.numberingSystem,
+      opts.outputCalendar,
+      opts.weekSettings,
+      opts.defaultToEN
+    );
   }
-  static create(locale3, numberingSystem, outputCalendar, defaultToEN = false) {
+  static create(locale3, numberingSystem, outputCalendar, weekSettings, defaultToEN = false) {
     const specifiedLocale = locale3 || Settings.defaultLocale;
     const localeR = specifiedLocale || (defaultToEN ? "en-US" : systemLocale());
     const numberingSystemR = numberingSystem || Settings.defaultNumberingSystem;
     const outputCalendarR = outputCalendar || Settings.defaultOutputCalendar;
-    return new _Locale(localeR, numberingSystemR, outputCalendarR, specifiedLocale);
+    const weekSettingsR = validateWeekSettings(weekSettings) || Settings.defaultWeekSettings;
+    return new _Locale(localeR, numberingSystemR, outputCalendarR, weekSettingsR, specifiedLocale);
   }
   static resetCache() {
     sysLocaleCache = null;
@@ -37725,14 +37747,15 @@ var Locale = class _Locale {
     intlNumCache = {};
     intlRelCache = {};
   }
-  static fromObject({ locale: locale3, numberingSystem, outputCalendar } = {}) {
-    return _Locale.create(locale3, numberingSystem, outputCalendar);
+  static fromObject({ locale: locale3, numberingSystem, outputCalendar, weekSettings } = {}) {
+    return _Locale.create(locale3, numberingSystem, outputCalendar, weekSettings);
   }
-  constructor(locale3, numbering, outputCalendar, specifiedLocale) {
+  constructor(locale3, numbering, outputCalendar, weekSettings, specifiedLocale) {
     const [parsedLocale, parsedNumberingSystem, parsedOutputCalendar] = parseLocaleString(locale3);
     this.locale = parsedLocale;
     this.numberingSystem = numbering || parsedNumberingSystem || null;
     this.outputCalendar = outputCalendar || parsedOutputCalendar || null;
+    this.weekSettings = weekSettings;
     this.intl = intlConfigString(this.locale, this.numberingSystem, this.outputCalendar);
     this.weekdaysCache = { format: {}, standalone: {} };
     this.monthsCache = { format: {}, standalone: {} };
@@ -37760,6 +37783,7 @@ var Locale = class _Locale {
         alts.locale || this.specifiedLocale,
         alts.numberingSystem || this.numberingSystem,
         alts.outputCalendar || this.outputCalendar,
+        validateWeekSettings(alts.weekSettings) || this.weekSettings,
         alts.defaultToEN || false
       );
     }
@@ -37835,6 +37859,24 @@ var Locale = class _Locale {
   }
   isEnglish() {
     return this.locale === "en" || this.locale.toLowerCase() === "en-us" || new Intl.DateTimeFormat(this.intl).resolvedOptions().locale.startsWith("en-us");
+  }
+  getWeekSettings() {
+    if (this.weekSettings) {
+      return this.weekSettings;
+    } else if (!hasLocaleWeekInfo()) {
+      return fallbackWeekSettings;
+    } else {
+      return getCachedWeekInfo(this.locale);
+    }
+  }
+  getStartOfWeek() {
+    return this.getWeekSettings().firstDay;
+  }
+  getMinDaysInFirstWeek() {
+    return this.getWeekSettings().minimalDays;
+  }
+  getWeekendDays() {
+    return this.getWeekSettings().weekend;
   }
   equals(other) {
     return this.locale === other.locale && this.numberingSystem === other.numberingSystem && this.outputCalendar === other.outputCalendar;
@@ -37998,6 +38040,7 @@ var defaultNumberingSystem = null;
 var defaultOutputCalendar = null;
 var twoDigitCutoffYear = 60;
 var throwOnInvalid;
+var defaultWeekSettings = null;
 var Settings = class {
   /**
    * Get the callback for returning the current timestamp.
@@ -38075,6 +38118,28 @@ var Settings = class {
     defaultOutputCalendar = outputCalendar;
   }
   /**
+   * @typedef {Object} WeekSettings
+   * @property {number} firstDay
+   * @property {number} minimalDays
+   * @property {number[]} weekend
+   */
+  /**
+   * @return {WeekSettings|null}
+   */
+  static get defaultWeekSettings() {
+    return defaultWeekSettings;
+  }
+  /**
+   * Allows overriding the default locale week settings, i.e. the start of the week, the weekend and
+   * how many days are required in the first week of a year.
+   * Does not affect existing instances.
+   *
+   * @param {WeekSettings|null} weekSettings
+   */
+  static set defaultWeekSettings(weekSettings) {
+    defaultWeekSettings = validateWeekSettings(weekSettings);
+  }
+  /**
    * Get the cutoff year after which a string encoding a year as two digits is interpreted to occur in the current century.
    * @type {number}
    */
@@ -38116,6 +38181,163 @@ var Settings = class {
   }
 };
 
+// node_modules/luxon/src/impl/invalid.js
+var Invalid = class {
+  constructor(reason, explanation) {
+    this.reason = reason;
+    this.explanation = explanation;
+  }
+  toMessage() {
+    if (this.explanation) {
+      return `${this.reason}: ${this.explanation}`;
+    } else {
+      return this.reason;
+    }
+  }
+};
+
+// node_modules/luxon/src/impl/conversions.js
+var nonLeapLadder = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+var leapLadder = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
+function unitOutOfRange(unit3, value) {
+  return new Invalid(
+    "unit out of range",
+    `you specified ${value} (of type ${typeof value}) as a ${unit3}, which is invalid`
+  );
+}
+function dayOfWeek(year, month, day) {
+  const d = new Date(Date.UTC(year, month - 1, day));
+  if (year < 100 && year >= 0) {
+    d.setUTCFullYear(d.getUTCFullYear() - 1900);
+  }
+  const js = d.getUTCDay();
+  return js === 0 ? 7 : js;
+}
+function computeOrdinal(year, month, day) {
+  return day + (isLeapYear(year) ? leapLadder : nonLeapLadder)[month - 1];
+}
+function uncomputeOrdinal(year, ordinal) {
+  const table = isLeapYear(year) ? leapLadder : nonLeapLadder, month0 = table.findIndex((i) => i < ordinal), day = ordinal - table[month0];
+  return { month: month0 + 1, day };
+}
+function isoWeekdayToLocal(isoWeekday, startOfWeek) {
+  return (isoWeekday - startOfWeek + 7) % 7 + 1;
+}
+function gregorianToWeek(gregObj, minDaysInFirstWeek = 4, startOfWeek = 1) {
+  const { year, month, day } = gregObj, ordinal = computeOrdinal(year, month, day), weekday = isoWeekdayToLocal(dayOfWeek(year, month, day), startOfWeek);
+  let weekNumber = Math.floor((ordinal - weekday + 14 - minDaysInFirstWeek) / 7), weekYear;
+  if (weekNumber < 1) {
+    weekYear = year - 1;
+    weekNumber = weeksInWeekYear(weekYear, minDaysInFirstWeek, startOfWeek);
+  } else if (weekNumber > weeksInWeekYear(year, minDaysInFirstWeek, startOfWeek)) {
+    weekYear = year + 1;
+    weekNumber = 1;
+  } else {
+    weekYear = year;
+  }
+  return { weekYear, weekNumber, weekday, ...timeObject(gregObj) };
+}
+function weekToGregorian(weekData, minDaysInFirstWeek = 4, startOfWeek = 1) {
+  const { weekYear, weekNumber, weekday } = weekData, weekdayOfJan4 = isoWeekdayToLocal(dayOfWeek(weekYear, 1, minDaysInFirstWeek), startOfWeek), yearInDays = daysInYear(weekYear);
+  let ordinal = weekNumber * 7 + weekday - weekdayOfJan4 - 7 + minDaysInFirstWeek, year;
+  if (ordinal < 1) {
+    year = weekYear - 1;
+    ordinal += daysInYear(year);
+  } else if (ordinal > yearInDays) {
+    year = weekYear + 1;
+    ordinal -= daysInYear(weekYear);
+  } else {
+    year = weekYear;
+  }
+  const { month, day } = uncomputeOrdinal(year, ordinal);
+  return { year, month, day, ...timeObject(weekData) };
+}
+function gregorianToOrdinal(gregData) {
+  const { year, month, day } = gregData;
+  const ordinal = computeOrdinal(year, month, day);
+  return { year, ordinal, ...timeObject(gregData) };
+}
+function ordinalToGregorian(ordinalData) {
+  const { year, ordinal } = ordinalData;
+  const { month, day } = uncomputeOrdinal(year, ordinal);
+  return { year, month, day, ...timeObject(ordinalData) };
+}
+function usesLocalWeekValues(obj, loc) {
+  const hasLocaleWeekData = !isUndefined(obj.localWeekday) || !isUndefined(obj.localWeekNumber) || !isUndefined(obj.localWeekYear);
+  if (hasLocaleWeekData) {
+    const hasIsoWeekData = !isUndefined(obj.weekday) || !isUndefined(obj.weekNumber) || !isUndefined(obj.weekYear);
+    if (hasIsoWeekData) {
+      throw new ConflictingSpecificationError(
+        "Cannot mix locale-based week fields with ISO-based week fields"
+      );
+    }
+    if (!isUndefined(obj.localWeekday))
+      obj.weekday = obj.localWeekday;
+    if (!isUndefined(obj.localWeekNumber))
+      obj.weekNumber = obj.localWeekNumber;
+    if (!isUndefined(obj.localWeekYear))
+      obj.weekYear = obj.localWeekYear;
+    delete obj.localWeekday;
+    delete obj.localWeekNumber;
+    delete obj.localWeekYear;
+    return {
+      minDaysInFirstWeek: loc.getMinDaysInFirstWeek(),
+      startOfWeek: loc.getStartOfWeek()
+    };
+  } else {
+    return { minDaysInFirstWeek: 4, startOfWeek: 1 };
+  }
+}
+function hasInvalidWeekData(obj, minDaysInFirstWeek = 4, startOfWeek = 1) {
+  const validYear = isInteger(obj.weekYear), validWeek = integerBetween(
+    obj.weekNumber,
+    1,
+    weeksInWeekYear(obj.weekYear, minDaysInFirstWeek, startOfWeek)
+  ), validWeekday = integerBetween(obj.weekday, 1, 7);
+  if (!validYear) {
+    return unitOutOfRange("weekYear", obj.weekYear);
+  } else if (!validWeek) {
+    return unitOutOfRange("week", obj.weekNumber);
+  } else if (!validWeekday) {
+    return unitOutOfRange("weekday", obj.weekday);
+  } else
+    return false;
+}
+function hasInvalidOrdinalData(obj) {
+  const validYear = isInteger(obj.year), validOrdinal = integerBetween(obj.ordinal, 1, daysInYear(obj.year));
+  if (!validYear) {
+    return unitOutOfRange("year", obj.year);
+  } else if (!validOrdinal) {
+    return unitOutOfRange("ordinal", obj.ordinal);
+  } else
+    return false;
+}
+function hasInvalidGregorianData(obj) {
+  const validYear = isInteger(obj.year), validMonth = integerBetween(obj.month, 1, 12), validDay = integerBetween(obj.day, 1, daysInMonth(obj.year, obj.month));
+  if (!validYear) {
+    return unitOutOfRange("year", obj.year);
+  } else if (!validMonth) {
+    return unitOutOfRange("month", obj.month);
+  } else if (!validDay) {
+    return unitOutOfRange("day", obj.day);
+  } else
+    return false;
+}
+function hasInvalidTimeData(obj) {
+  const { hour, minute, second: second2, millisecond: millisecond2 } = obj;
+  const validHour = integerBetween(hour, 0, 23) || hour === 24 && minute === 0 && second2 === 0 && millisecond2 === 0, validMinute = integerBetween(minute, 0, 59), validSecond = integerBetween(second2, 0, 59), validMillisecond = integerBetween(millisecond2, 0, 999);
+  if (!validHour) {
+    return unitOutOfRange("hour", hour);
+  } else if (!validMinute) {
+    return unitOutOfRange("minute", minute);
+  } else if (!validSecond) {
+    return unitOutOfRange("second", second2);
+  } else if (!validMillisecond) {
+    return unitOutOfRange("millisecond", millisecond2);
+  } else
+    return false;
+}
+
 // node_modules/luxon/src/impl/util.js
 function isUndefined(o) {
   return typeof o === "undefined";
@@ -38135,6 +38357,13 @@ function isDate(o) {
 function hasRelative() {
   try {
     return typeof Intl !== "undefined" && !!Intl.RelativeTimeFormat;
+  } catch (e) {
+    return false;
+  }
+}
+function hasLocaleWeekInfo() {
+  try {
+    return typeof Intl !== "undefined" && !!Intl.Locale && ("weekInfo" in Intl.Locale.prototype || "getWeekInfo" in Intl.Locale.prototype);
   } catch (e) {
     return false;
   }
@@ -38165,6 +38394,22 @@ function pick(obj, keys) {
 }
 function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+function validateWeekSettings(settings) {
+  if (settings == null) {
+    return null;
+  } else if (typeof settings !== "object") {
+    throw new InvalidArgumentError("Week settings must be an object");
+  } else {
+    if (!integerBetween(settings.firstDay, 1, 7) || !integerBetween(settings.minimalDays, 1, 7) || !Array.isArray(settings.weekend) || settings.weekend.some((v) => !integerBetween(v, 1, 7))) {
+      throw new InvalidArgumentError("Invalid week settings");
+    }
+    return {
+      firstDay: settings.firstDay,
+      minimalDays: settings.minimalDays,
+      weekend: Array.from(settings.weekend)
+    };
+  }
 }
 function integerBetween(thing, bottom2, top2) {
   return isInteger(thing) && thing >= bottom2 && thing <= top2;
@@ -38238,9 +38483,14 @@ function objToLocalTS(obj) {
   }
   return +d;
 }
-function weeksInWeekYear(weekYear) {
-  const p1 = (weekYear + Math.floor(weekYear / 4) - Math.floor(weekYear / 100) + Math.floor(weekYear / 400)) % 7, last = weekYear - 1, p2 = (last + Math.floor(last / 4) - Math.floor(last / 100) + Math.floor(last / 400)) % 7;
-  return p1 === 4 || p2 === 3 ? 53 : 52;
+function firstWeekOffset(year, minDaysInFirstWeek, startOfWeek) {
+  const fwdlw = isoWeekdayToLocal(dayOfWeek(year, 1, minDaysInFirstWeek), startOfWeek);
+  return -fwdlw + minDaysInFirstWeek - 1;
+}
+function weeksInWeekYear(weekYear, minDaysInFirstWeek = 4, startOfWeek = 1) {
+  const weekOffset = firstWeekOffset(weekYear, minDaysInFirstWeek, startOfWeek);
+  const weekOffsetNext = firstWeekOffset(weekYear + 1, minDaysInFirstWeek, startOfWeek);
+  return (daysInYear(weekYear) - weekOffset + weekOffsetNext) / 7;
 }
 function untruncateYear(year) {
   if (year > 99) {
@@ -38661,6 +38911,14 @@ var Formatter = class _Formatter {
           return this.num(dt.weekNumber);
         case "WW":
           return this.num(dt.weekNumber, 2);
+        case "n":
+          return this.num(dt.localWeekNumber);
+        case "nn":
+          return this.num(dt.localWeekNumber, 2);
+        case "ii":
+          return this.num(dt.localWeekYear.toString().slice(-2), 2);
+        case "iiii":
+          return this.num(dt.localWeekYear, 4);
         case "o":
           return this.num(dt.ordinal);
         case "ooo":
@@ -38713,21 +38971,6 @@ var Formatter = class _Formatter {
       []
     ), collapsed = dur.shiftTo(...realTokens.map(tokenToField).filter((t) => t));
     return stringifyTokens(tokens, tokenToString(collapsed));
-  }
-};
-
-// node_modules/luxon/src/impl/invalid.js
-var Invalid = class {
-  constructor(reason, explanation) {
-    this.reason = reason;
-    this.explanation = explanation;
-  }
-  toMessage() {
-    if (this.explanation) {
-      return `${this.reason}: ${this.explanation}`;
-    } else {
-      return this.reason;
-    }
   }
 };
 
@@ -39347,9 +39590,10 @@ var Duration = class _Duration {
   }
   /**
    * Returns a string representation of a Duration with all units included.
-   * To modify its behavior use the `listStyle` and any Intl.NumberFormat option, though `unitDisplay` is especially relevant.
-   * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
-   * @param opts - On option object to override the formatting. Accepts the same keys as the options parameter of the native `Int.NumberFormat` constructor, as well as `listStyle`.
+   * To modify its behavior, use `listStyle` and any Intl.NumberFormat option, though `unitDisplay` is especially relevant.
+   * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#options
+   * @param {Object} opts - Formatting options. Accepts the same keys as the options parameter of the native `Intl.NumberFormat` constructor, as well as `listStyle`.
+   * @param {string} [opts.listStyle='narrow'] - How to format the merged list. Corresponds to the `style` property of the options parameter of the native `Intl.ListFormat` constructor.
    * @example
    * ```js
    * var dur = Duration.fromObject({ days: 1, hours: 5, minutes: 6 })
@@ -39462,6 +39706,17 @@ var Duration = class _Duration {
     return this.toISO();
   }
   /**
+   * Returns a string representation of this Duration appropriate for the REPL.
+   * @return {string}
+   */
+  [Symbol.for("nodejs.util.inspect.custom")]() {
+    if (this.isValid) {
+      return `Duration { values: ${JSON.stringify(this.values)} }`;
+    } else {
+      return `Duration { Invalid, reason: ${this.invalidReason} }`;
+    }
+  }
+  /**
    * Returns an milliseconds value of this Duration.
    * @return {number}
    */
@@ -39570,7 +39825,7 @@ var Duration = class _Duration {
    * Assuming the overall value of the Duration is positive, this means:
    * - excessive values for lower-order units are converted to higher-order units (if possible, see first and second example)
    * - negative lower-order units are converted to higher order units (there must be such a higher order unit, otherwise
-   *   the overall value would be negative, see second example)
+   *   the overall value would be negative, see third example)
    * - fractional values for higher-order units are converted to lower-order units (if possible, see fourth example)
    *
    * If the overall value is negative, the result of this method is equivalent to `this.negate().normalize().negate()`.
@@ -39962,12 +40217,21 @@ var Interval = class _Interval {
    * Unlike {@link Interval#length} this counts sections of the calendar, not periods of time, e.g. specifying 'day'
    * asks 'what dates are included in this interval?', not 'how many days long is this interval?'
    * @param {string} [unit='milliseconds'] - the unit of time to count.
+   * @param {Object} opts - options
+   * @param {boolean} [opts.useLocaleWeeks=false] - If true, use weeks based on the locale, i.e. use the locale-dependent start of the week; this operation will always use the locale of the start DateTime
    * @return {number}
    */
-  count(unit3 = "milliseconds") {
+  count(unit3 = "milliseconds", opts) {
     if (!this.isValid)
       return NaN;
-    const start2 = this.start.startOf(unit3), end = this.end.startOf(unit3);
+    const start2 = this.start.startOf(unit3, opts);
+    let end;
+    if (opts?.useLocaleWeeks) {
+      end = this.end.reconfigure({ locale: start2.locale });
+    } else {
+      end = this.end;
+    }
+    end = end.startOf(unit3, opts);
     return Math.floor(end.diff(start2, unit3).get(unit3)) + (end.valueOf() !== this.end.valueOf());
   }
   /**
@@ -40035,7 +40299,7 @@ var Interval = class _Interval {
   splitAt(...dateTimes) {
     if (!this.isValid)
       return [];
-    const sorted = dateTimes.map(friendlyDateTime).filter((d) => this.contains(d)).sort(), results = [];
+    const sorted = dateTimes.map(friendlyDateTime).filter((d) => this.contains(d)).sort((a, b) => a.toMillis() - b.toMillis()), results = [];
     let { s: s2 } = this, i = 0;
     while (s2 < this.e) {
       const added = sorted[i] || this.e, next = +added > +this.e ? this.e : added;
@@ -40221,6 +40485,17 @@ var Interval = class _Interval {
     return `[${this.s.toISO()} \u2013 ${this.e.toISO()})`;
   }
   /**
+   * Returns a string representation of this Interval appropriate for the REPL.
+   * @return {string}
+   */
+  [Symbol.for("nodejs.util.inspect.custom")]() {
+    if (this.isValid) {
+      return `Interval { start: ${this.s.toISO()}, end: ${this.e.toISO()} }`;
+    } else {
+      return `Interval { Invalid, reason: ${this.invalidReason} }`;
+    }
+  }
+  /**
    * Returns a localized string representing this Interval. Accepts the same options as the
    * Intl.DateTimeFormat constructor and any presets defined by Luxon, such as
    * {@link DateTime.DATE_FULL} or {@link DateTime.TIME_SIMPLE}. The exact behavior of this method
@@ -40358,6 +40633,37 @@ var Info = class {
     return normalizeZone(input, Settings.defaultZone);
   }
   /**
+   * Get the weekday on which the week starts according to the given locale.
+   * @param {Object} opts - options
+   * @param {string} [opts.locale] - the locale code
+   * @param {string} [opts.locObj=null] - an existing locale object to use
+   * @returns {number} the start of the week, 1 for Monday through 7 for Sunday
+   */
+  static getStartOfWeek({ locale: locale3 = null, locObj = null } = {}) {
+    return (locObj || Locale.create(locale3)).getStartOfWeek();
+  }
+  /**
+   * Get the minimum number of days necessary in a week before it is considered part of the next year according
+   * to the given locale.
+   * @param {Object} opts - options
+   * @param {string} [opts.locale] - the locale code
+   * @param {string} [opts.locObj=null] - an existing locale object to use
+   * @returns {number}
+   */
+  static getMinimumDaysInFirstWeek({ locale: locale3 = null, locObj = null } = {}) {
+    return (locObj || Locale.create(locale3)).getMinDaysInFirstWeek();
+  }
+  /**
+   * Get the weekdays, which are considered the weekend according to the given locale
+   * @param {Object} opts - options
+   * @param {string} [opts.locale] - the locale code
+   * @param {string} [opts.locObj=null] - an existing locale object to use
+   * @returns {number[]} an array of weekdays, 1 for Monday through 7 for Sunday
+   */
+  static getWeekendWeekdays({ locale: locale3 = null, locObj = null } = {}) {
+    return (locObj || Locale.create(locale3)).getWeekendDays().slice();
+  }
+  /**
    * Return an array of standalone month names.
    * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat
    * @param {string} [length='long'] - the length of the month representation, such as "numeric", "2-digit", "narrow", "short", "long"
@@ -40454,11 +40760,12 @@ var Info = class {
    * Some features of Luxon are not available in all environments. For example, on older browsers, relative time formatting support is not available. Use this function to figure out if that's the case.
    * Keys:
    * * `relative`: whether this environment supports relative time formatting
-   * @example Info.features() //=> { relative: false }
+   * * `localeWeek`: whether this environment supports different weekdays for the start of the week based on the locale
+   * @example Info.features() //=> { relative: false, localeWeek: true }
    * @return {Object}
    */
   static features() {
-    return { relative: hasRelative() };
+    return { relative: hasRelative(), localeWeek: hasLocaleWeekInfo() };
   }
 };
 
@@ -40966,115 +41273,6 @@ function formatOptsToTokens(formatOpts, locale3) {
   return parts.map((p) => tokenForPart(p, formatOpts, resolvedOpts));
 }
 
-// node_modules/luxon/src/impl/conversions.js
-var nonLeapLadder = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
-var leapLadder = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335];
-function unitOutOfRange(unit3, value) {
-  return new Invalid(
-    "unit out of range",
-    `you specified ${value} (of type ${typeof value}) as a ${unit3}, which is invalid`
-  );
-}
-function dayOfWeek(year, month, day) {
-  const d = new Date(Date.UTC(year, month - 1, day));
-  if (year < 100 && year >= 0) {
-    d.setUTCFullYear(d.getUTCFullYear() - 1900);
-  }
-  const js = d.getUTCDay();
-  return js === 0 ? 7 : js;
-}
-function computeOrdinal(year, month, day) {
-  return day + (isLeapYear(year) ? leapLadder : nonLeapLadder)[month - 1];
-}
-function uncomputeOrdinal(year, ordinal) {
-  const table = isLeapYear(year) ? leapLadder : nonLeapLadder, month0 = table.findIndex((i) => i < ordinal), day = ordinal - table[month0];
-  return { month: month0 + 1, day };
-}
-function gregorianToWeek(gregObj) {
-  const { year, month, day } = gregObj, ordinal = computeOrdinal(year, month, day), weekday = dayOfWeek(year, month, day);
-  let weekNumber = Math.floor((ordinal - weekday + 10) / 7), weekYear;
-  if (weekNumber < 1) {
-    weekYear = year - 1;
-    weekNumber = weeksInWeekYear(weekYear);
-  } else if (weekNumber > weeksInWeekYear(year)) {
-    weekYear = year + 1;
-    weekNumber = 1;
-  } else {
-    weekYear = year;
-  }
-  return { weekYear, weekNumber, weekday, ...timeObject(gregObj) };
-}
-function weekToGregorian(weekData) {
-  const { weekYear, weekNumber, weekday } = weekData, weekdayOfJan4 = dayOfWeek(weekYear, 1, 4), yearInDays = daysInYear(weekYear);
-  let ordinal = weekNumber * 7 + weekday - weekdayOfJan4 - 3, year;
-  if (ordinal < 1) {
-    year = weekYear - 1;
-    ordinal += daysInYear(year);
-  } else if (ordinal > yearInDays) {
-    year = weekYear + 1;
-    ordinal -= daysInYear(weekYear);
-  } else {
-    year = weekYear;
-  }
-  const { month, day } = uncomputeOrdinal(year, ordinal);
-  return { year, month, day, ...timeObject(weekData) };
-}
-function gregorianToOrdinal(gregData) {
-  const { year, month, day } = gregData;
-  const ordinal = computeOrdinal(year, month, day);
-  return { year, ordinal, ...timeObject(gregData) };
-}
-function ordinalToGregorian(ordinalData) {
-  const { year, ordinal } = ordinalData;
-  const { month, day } = uncomputeOrdinal(year, ordinal);
-  return { year, month, day, ...timeObject(ordinalData) };
-}
-function hasInvalidWeekData(obj) {
-  const validYear = isInteger(obj.weekYear), validWeek = integerBetween(obj.weekNumber, 1, weeksInWeekYear(obj.weekYear)), validWeekday = integerBetween(obj.weekday, 1, 7);
-  if (!validYear) {
-    return unitOutOfRange("weekYear", obj.weekYear);
-  } else if (!validWeek) {
-    return unitOutOfRange("week", obj.week);
-  } else if (!validWeekday) {
-    return unitOutOfRange("weekday", obj.weekday);
-  } else
-    return false;
-}
-function hasInvalidOrdinalData(obj) {
-  const validYear = isInteger(obj.year), validOrdinal = integerBetween(obj.ordinal, 1, daysInYear(obj.year));
-  if (!validYear) {
-    return unitOutOfRange("year", obj.year);
-  } else if (!validOrdinal) {
-    return unitOutOfRange("ordinal", obj.ordinal);
-  } else
-    return false;
-}
-function hasInvalidGregorianData(obj) {
-  const validYear = isInteger(obj.year), validMonth = integerBetween(obj.month, 1, 12), validDay = integerBetween(obj.day, 1, daysInMonth(obj.year, obj.month));
-  if (!validYear) {
-    return unitOutOfRange("year", obj.year);
-  } else if (!validMonth) {
-    return unitOutOfRange("month", obj.month);
-  } else if (!validDay) {
-    return unitOutOfRange("day", obj.day);
-  } else
-    return false;
-}
-function hasInvalidTimeData(obj) {
-  const { hour, minute, second: second2, millisecond: millisecond2 } = obj;
-  const validHour = integerBetween(hour, 0, 23) || hour === 24 && minute === 0 && second2 === 0 && millisecond2 === 0, validMinute = integerBetween(minute, 0, 59), validSecond = integerBetween(second2, 0, 59), validMillisecond = integerBetween(millisecond2, 0, 999);
-  if (!validHour) {
-    return unitOutOfRange("hour", hour);
-  } else if (!validMinute) {
-    return unitOutOfRange("minute", minute);
-  } else if (!validSecond) {
-    return unitOutOfRange("second", second2);
-  } else if (!validMillisecond) {
-    return unitOutOfRange("millisecond", millisecond2);
-  } else
-    return false;
-}
-
 // node_modules/luxon/src/datetime.js
 var INVALID3 = "Invalid DateTime";
 var MAX_DATE = 864e13;
@@ -41086,6 +41284,16 @@ function possiblyCachedWeekData(dt) {
     dt.weekData = gregorianToWeek(dt.c);
   }
   return dt.weekData;
+}
+function possiblyCachedLocalWeekData(dt) {
+  if (dt.localWeekData === null) {
+    dt.localWeekData = gregorianToWeek(
+      dt.c,
+      dt.loc.getMinDaysInFirstWeek(),
+      dt.loc.getStartOfWeek()
+    );
+  }
+  return dt.localWeekData;
 }
 function clone2(inst, alts) {
   const current = {
@@ -41292,6 +41500,21 @@ function normalizeUnit(unit3) {
     throw new InvalidUnitError(unit3);
   return normalized;
 }
+function normalizeUnitWithLocalWeeks(unit3) {
+  switch (unit3.toLowerCase()) {
+    case "localweekday":
+    case "localweekdays":
+      return "localWeekday";
+    case "localweeknumber":
+    case "localweeknumbers":
+      return "localWeekNumber";
+    case "localweekyear":
+    case "localweekyears":
+      return "localWeekYear";
+    default:
+      return normalizeUnit(unit3);
+  }
+}
 function quickDT(obj, opts) {
   const zone = normalizeZone(opts.zone, Settings.defaultZone), loc = Locale.fromObject(opts), tsNow = Settings.now();
   let ts, o;
@@ -41373,6 +41596,7 @@ var DateTime = class _DateTime {
     this.loc = config.loc || Locale.create();
     this.invalid = invalid;
     this.weekData = null;
+    this.localWeekData = null;
     this.c = c;
     this.o = o;
     this.isLuxonDateTime = true;
@@ -41520,13 +41744,16 @@ var DateTime = class _DateTime {
    * @param {number} obj.weekYear - an ISO week year
    * @param {number} obj.weekNumber - an ISO week number, between 1 and 52 or 53, depending on the year
    * @param {number} obj.weekday - an ISO weekday, 1-7, where 1 is Monday and 7 is Sunday
+   * @param {number} obj.localWeekYear - a week year, according to the locale
+   * @param {number} obj.localWeekNumber - a week number, between 1 and 52 or 53, depending on the year, according to the locale
+   * @param {number} obj.localWeekday - a weekday, 1-7, where 1 is the first and 7 is the last day of the week, according to the locale
    * @param {number} obj.hour - hour of the day, 0-23
    * @param {number} obj.minute - minute of the hour, 0-59
    * @param {number} obj.second - second of the minute, 0-59
    * @param {number} obj.millisecond - millisecond of the second, 0-999
    * @param {Object} opts - options for creating this DateTime
    * @param {string|Zone} [opts.zone='local'] - interpret the numbers in the context of a particular zone. Can take any value taken as the first argument to setZone()
-   * @param {string} [opts.locale='system's locale'] - a locale to set on the resulting DateTime instance
+   * @param {string} [opts.locale='system\'s locale'] - a locale to set on the resulting DateTime instance
    * @param {string} opts.outputCalendar - the output calendar to set on the resulting DateTime instance
    * @param {string} opts.numberingSystem - the numbering system to set on the resulting DateTime instance
    * @example DateTime.fromObject({ year: 1982, month: 5, day: 25}).toISODate() //=> '1982-05-25'
@@ -41536,6 +41763,7 @@ var DateTime = class _DateTime {
    * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6 }, { zone: 'local' })
    * @example DateTime.fromObject({ hour: 10, minute: 26, second: 6 }, { zone: 'America/New_York' })
    * @example DateTime.fromObject({ weekYear: 2016, weekNumber: 2, weekday: 3 }).toISODate() //=> '2016-01-13'
+   * @example DateTime.fromObject({ localWeekYear: 2022, localWeekNumber: 1, localWeekday: 1 }, { locale: "en-US" }).toISODate() //=> '2021-12-26'
    * @return {DateTime}
    */
   static fromObject(obj, opts = {}) {
@@ -41544,7 +41772,10 @@ var DateTime = class _DateTime {
     if (!zoneToUse.isValid) {
       return _DateTime.invalid(unsupportedZone(zoneToUse));
     }
-    const tsNow = Settings.now(), offsetProvis = !isUndefined(opts.specificOffset) ? opts.specificOffset : zoneToUse.offset(tsNow), normalized = normalizeObject(obj, normalizeUnit), containsOrdinal = !isUndefined(normalized.ordinal), containsGregorYear = !isUndefined(normalized.year), containsGregorMD = !isUndefined(normalized.month) || !isUndefined(normalized.day), containsGregor = containsGregorYear || containsGregorMD, definiteWeekDef = normalized.weekYear || normalized.weekNumber, loc = Locale.fromObject(opts);
+    const loc = Locale.fromObject(opts);
+    const normalized = normalizeObject(obj, normalizeUnitWithLocalWeeks);
+    const { minDaysInFirstWeek, startOfWeek } = usesLocalWeekValues(normalized, loc);
+    const tsNow = Settings.now(), offsetProvis = !isUndefined(opts.specificOffset) ? opts.specificOffset : zoneToUse.offset(tsNow), containsOrdinal = !isUndefined(normalized.ordinal), containsGregorYear = !isUndefined(normalized.year), containsGregorMD = !isUndefined(normalized.month) || !isUndefined(normalized.day), containsGregor = containsGregorYear || containsGregorMD, definiteWeekDef = normalized.weekYear || normalized.weekNumber;
     if ((containsGregor || containsOrdinal) && definiteWeekDef) {
       throw new ConflictingSpecificationError(
         "Can't mix weekYear/weekNumber units with year/month/day or ordinals"
@@ -41558,7 +41789,7 @@ var DateTime = class _DateTime {
     if (useWeekData) {
       units = orderedWeekUnits;
       defaultValues = defaultWeekUnitValues;
-      objNow = gregorianToWeek(objNow);
+      objNow = gregorianToWeek(objNow, minDaysInFirstWeek, startOfWeek);
     } else if (containsOrdinal) {
       units = orderedOrdinalUnits;
       defaultValues = defaultOrdinalUnitValues;
@@ -41578,11 +41809,11 @@ var DateTime = class _DateTime {
         normalized[u] = objNow[u];
       }
     }
-    const higherOrderInvalid = useWeekData ? hasInvalidWeekData(normalized) : containsOrdinal ? hasInvalidOrdinalData(normalized) : hasInvalidGregorianData(normalized), invalid = higherOrderInvalid || hasInvalidTimeData(normalized);
+    const higherOrderInvalid = useWeekData ? hasInvalidWeekData(normalized, minDaysInFirstWeek, startOfWeek) : containsOrdinal ? hasInvalidOrdinalData(normalized) : hasInvalidGregorianData(normalized), invalid = higherOrderInvalid || hasInvalidTimeData(normalized);
     if (invalid) {
       return _DateTime.invalid(invalid);
     }
-    const gregorian = useWeekData ? weekToGregorian(normalized) : containsOrdinal ? ordinalToGregorian(normalized) : normalized, [tsFinal, offsetFinal] = objToTS(gregorian, offsetProvis, zoneToUse), inst = new _DateTime({
+    const gregorian = useWeekData ? weekToGregorian(normalized, minDaysInFirstWeek, startOfWeek) : containsOrdinal ? ordinalToGregorian(normalized) : normalized, [tsFinal, offsetFinal] = objToTS(gregorian, offsetProvis, zoneToUse), inst = new _DateTime({
       ts: tsFinal,
       zone: zoneToUse,
       o: offsetFinal,
@@ -41922,6 +42153,39 @@ var DateTime = class _DateTime {
     return this.isValid ? possiblyCachedWeekData(this).weekday : NaN;
   }
   /**
+   * Returns true if this date is on a weekend according to the locale, false otherwise
+   * @returns {boolean}
+   */
+  get isWeekend() {
+    return this.isValid && this.loc.getWeekendDays().includes(this.weekday);
+  }
+  /**
+   * Get the day of the week according to the locale.
+   * 1 is the first day of the week and 7 is the last day of the week.
+   * If the locale assigns Sunday as the first day of the week, then a date which is a Sunday will return 1,
+   * @returns {number}
+   */
+  get localWeekday() {
+    return this.isValid ? possiblyCachedLocalWeekData(this).weekday : NaN;
+  }
+  /**
+   * Get the week number of the week year according to the locale. Different locales assign week numbers differently,
+   * because the week can start on different days of the week (see localWeekday) and because a different number of days
+   * is required for a week to count as the first week of a year.
+   * @returns {number}
+   */
+  get localWeekNumber() {
+    return this.isValid ? possiblyCachedLocalWeekData(this).weekNumber : NaN;
+  }
+  /**
+   * Get the week year according to the locale. Different locales assign week numbers (and therefor week years)
+   * differently, see localWeekNumber.
+   * @returns {number}
+   */
+  get localWeekYear() {
+    return this.isValid ? possiblyCachedLocalWeekData(this).weekYear : NaN;
+  }
+  /**
    * Get the ordinal (meaning the day of the year)
    * @example DateTime.local(2017, 5, 25).ordinal //=> 145
    * @type {number|DateTime}
@@ -42090,6 +42354,19 @@ var DateTime = class _DateTime {
     return this.isValid ? weeksInWeekYear(this.weekYear) : NaN;
   }
   /**
+   * Returns the number of weeks in this DateTime's local week year
+   * @example DateTime.local(2020, 6, {locale: 'en-US'}).weeksInLocalWeekYear //=> 52
+   * @example DateTime.local(2020, 6, {locale: 'de-DE'}).weeksInLocalWeekYear //=> 53
+   * @type {number}
+   */
+  get weeksInLocalWeekYear() {
+    return this.isValid ? weeksInWeekYear(
+      this.localWeekYear,
+      this.loc.getMinDaysInFirstWeek(),
+      this.loc.getStartOfWeek()
+    ) : NaN;
+  }
+  /**
    * Returns the resolved Intl options for this DateTime.
    * This is useful in understanding the behavior of formatting methods
    * @param {Object} opts - the same options as toLocaleString
@@ -42170,6 +42447,9 @@ var DateTime = class _DateTime {
   /**
    * "Set" the values of specified units. Returns a newly-constructed DateTime.
    * You can only set units with this method; for "setting" metadata, see {@link DateTime#reconfigure} and {@link DateTime#setZone}.
+   *
+   * This method also supports setting locale-based week units, i.e. `localWeekday`, `localWeekNumber` and `localWeekYear`.
+   * They cannot be mixed with ISO-week units like `weekday`.
    * @param {Object} values - a mapping of units to numbers
    * @example dt.set({ year: 2017 })
    * @example dt.set({ hour: 8, minute: 30 })
@@ -42180,7 +42460,9 @@ var DateTime = class _DateTime {
   set(values) {
     if (!this.isValid)
       return this;
-    const normalized = normalizeObject(values, normalizeUnit), settingWeekStuff = !isUndefined(normalized.weekYear) || !isUndefined(normalized.weekNumber) || !isUndefined(normalized.weekday), containsOrdinal = !isUndefined(normalized.ordinal), containsGregorYear = !isUndefined(normalized.year), containsGregorMD = !isUndefined(normalized.month) || !isUndefined(normalized.day), containsGregor = containsGregorYear || containsGregorMD, definiteWeekDef = normalized.weekYear || normalized.weekNumber;
+    const normalized = normalizeObject(values, normalizeUnitWithLocalWeeks);
+    const { minDaysInFirstWeek, startOfWeek } = usesLocalWeekValues(normalized, this.loc);
+    const settingWeekStuff = !isUndefined(normalized.weekYear) || !isUndefined(normalized.weekNumber) || !isUndefined(normalized.weekday), containsOrdinal = !isUndefined(normalized.ordinal), containsGregorYear = !isUndefined(normalized.year), containsGregorMD = !isUndefined(normalized.month) || !isUndefined(normalized.day), containsGregor = containsGregorYear || containsGregorMD, definiteWeekDef = normalized.weekYear || normalized.weekNumber;
     if ((containsGregor || containsOrdinal) && definiteWeekDef) {
       throw new ConflictingSpecificationError(
         "Can't mix weekYear/weekNumber units with year/month/day or ordinals"
@@ -42191,7 +42473,11 @@ var DateTime = class _DateTime {
     }
     let mixed;
     if (settingWeekStuff) {
-      mixed = weekToGregorian({ ...gregorianToWeek(this.c), ...normalized });
+      mixed = weekToGregorian(
+        { ...gregorianToWeek(this.c, minDaysInFirstWeek, startOfWeek), ...normalized },
+        minDaysInFirstWeek,
+        startOfWeek
+      );
     } else if (!isUndefined(normalized.ordinal)) {
       mixed = ordinalToGregorian({ ...gregorianToOrdinal(this.c), ...normalized });
     } else {
@@ -42237,6 +42523,8 @@ var DateTime = class _DateTime {
   /**
    * "Set" this DateTime to the beginning of a unit of time.
    * @param {string} unit - The unit to go to the beginning of. Can be 'year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second', or 'millisecond'.
+   * @param {Object} opts - options
+   * @param {boolean} [opts.useLocaleWeeks=false] - If true, use weeks based on the locale, i.e. use the locale-dependent start of the week
    * @example DateTime.local(2014, 3, 3).startOf('month').toISODate(); //=> '2014-03-01'
    * @example DateTime.local(2014, 3, 3).startOf('year').toISODate(); //=> '2014-01-01'
    * @example DateTime.local(2014, 3, 3).startOf('week').toISODate(); //=> '2014-03-03', weeks always start on Mondays
@@ -42244,7 +42532,7 @@ var DateTime = class _DateTime {
    * @example DateTime.local(2014, 3, 3, 5, 30).startOf('hour').toISOTime(); //=> '05:00:00.000-05:00'
    * @return {DateTime}
    */
-  startOf(unit3) {
+  startOf(unit3, { useLocaleWeeks = false } = {}) {
     if (!this.isValid)
       return this;
     const o = {}, normalizedUnit = Duration.normalizeUnit(unit3);
@@ -42268,7 +42556,16 @@ var DateTime = class _DateTime {
         break;
     }
     if (normalizedUnit === "weeks") {
-      o.weekday = 1;
+      if (useLocaleWeeks) {
+        const startOfWeek = this.loc.getStartOfWeek();
+        const { weekday } = this;
+        if (weekday < startOfWeek) {
+          o.weekNumber = this.weekNumber - 1;
+        }
+        o.weekday = startOfWeek;
+      } else {
+        o.weekday = 1;
+      }
     }
     if (normalizedUnit === "quarters") {
       const q = Math.ceil(this.month / 3);
@@ -42279,6 +42576,8 @@ var DateTime = class _DateTime {
   /**
    * "Set" this DateTime to the end (meaning the last millisecond) of a unit of time
    * @param {string} unit - The unit to go to the end of. Can be 'year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'second', or 'millisecond'.
+   * @param {Object} opts - options
+   * @param {boolean} [opts.useLocaleWeeks=false] - If true, use weeks based on the locale, i.e. use the locale-dependent start of the week
    * @example DateTime.local(2014, 3, 3).endOf('month').toISO(); //=> '2014-03-31T23:59:59.999-05:00'
    * @example DateTime.local(2014, 3, 3).endOf('year').toISO(); //=> '2014-12-31T23:59:59.999-05:00'
    * @example DateTime.local(2014, 3, 3).endOf('week').toISO(); // => '2014-03-09T23:59:59.999-05:00', weeks start on Mondays
@@ -42286,8 +42585,8 @@ var DateTime = class _DateTime {
    * @example DateTime.local(2014, 3, 3, 5, 30).endOf('hour').toISO(); //=> '2014-03-03T05:59:59.999-05:00'
    * @return {DateTime}
    */
-  endOf(unit3) {
-    return this.isValid ? this.plus({ [unit3]: 1 }).startOf(unit3).minus(1) : this;
+  endOf(unit3, opts) {
+    return this.isValid ? this.plus({ [unit3]: 1 }).startOf(unit3, opts).minus(1) : this;
   }
   // OUTPUT
   /**
@@ -42514,6 +42813,17 @@ var DateTime = class _DateTime {
     return this.isValid ? this.toISO() : INVALID3;
   }
   /**
+   * Returns a string representation of this DateTime appropriate for the REPL.
+   * @return {string}
+   */
+  [Symbol.for("nodejs.util.inspect.custom")]() {
+    if (this.isValid) {
+      return `DateTime { ts: ${this.toISO()}, zone: ${this.zone.name}, locale: ${this.locale} }`;
+    } else {
+      return `DateTime { Invalid, reason: ${this.invalidReason} }`;
+    }
+  }
+  /**
    * Returns the epoch milliseconds of this DateTime. Alias of {@link DateTime#toMillis}
    * @return {number}
    */
@@ -42629,15 +42939,17 @@ var DateTime = class _DateTime {
    * Note that time zones are **ignored** in this comparison, which compares the **local** calendar time. Use {@link DateTime#setZone} to convert one of the dates if needed.
    * @param {DateTime} otherDateTime - the other DateTime
    * @param {string} unit - the unit of time to check sameness on
+   * @param {Object} opts - options
+   * @param {boolean} [opts.useLocaleWeeks=false] - If true, use weeks based on the locale, i.e. use the locale-dependent start of the week; only the locale of this DateTime is used
    * @example DateTime.now().hasSame(otherDT, 'day'); //~> true if otherDT is in the same current calendar day
    * @return {boolean}
    */
-  hasSame(otherDateTime, unit3) {
+  hasSame(otherDateTime, unit3, opts) {
     if (!this.isValid)
       return false;
     const inputMs = otherDateTime.valueOf();
     const adjustedToZone = this.setZone(otherDateTime.zone, { keepLocalTime: true });
-    return adjustedToZone.startOf(unit3) <= inputMs && inputMs <= adjustedToZone.endOf(unit3);
+    return adjustedToZone.startOf(unit3, opts) <= inputMs && inputMs <= adjustedToZone.endOf(unit3, opts);
   }
   /**
    * Equality check
@@ -42922,7 +43234,7 @@ function friendlyDateTime(dateTimeish) {
 }
 
 // node_modules/luxon/src/luxon.js
-var VERSION = "3.4.3";
+var VERSION = "3.4.4";
 
 // src/miniseed.ts
 var miniseed_exports = {};
@@ -43328,10 +43640,16 @@ __export(util_exports, {
   toError: () => toError,
   toIsoWoZ: () => toIsoWoZ,
   toJSDate: () => toJSDate,
+  updateVersionText: () => updateVersionText,
   validEndTime: () => validEndTime,
   validStartTime: () => validStartTime,
   warn: () => warn
 });
+
+// src/version.ts
+var version = "3.1.2";
+
+// src/util.ts
 var XML_MIME = "application/xml";
 var JSON_MIME = "application/json";
 var JSONAPI_MIME = "application/vnd.api+json";
@@ -43773,6 +44091,11 @@ var SVG_NS = "http://www.w3.org/2000/svg";
 var XHTML_NS = "http://www.w3.org/1999/xhtml";
 function createSVGElement(name) {
   return document.createElementNS(SVG_NS, name);
+}
+function updateVersionText(selector = "#sp-version") {
+  document.querySelectorAll(selector).forEach((el) => {
+    el.textContent = version;
+  });
 }
 
 // src/scale.ts
@@ -44974,6 +45297,7 @@ __export(stationxml_exports, {
   DataAvailability: () => DataAvailability,
   Decimation: () => Decimation,
   Equipment: () => Equipment,
+  FAKE_EMPTY_XML: () => FAKE_EMPTY_XML,
   FAKE_START_DATE: () => FAKE_START_DATE,
   FIR: () => FIR,
   FIX_INVALID_STAXML: () => FIX_INVALID_STAXML,
@@ -45006,6 +45330,7 @@ __export(stationxml_exports, {
   createInterval: () => createInterval,
   createStationClickEvent: () => createStationClickEvent,
   extractComplex: () => extractComplex,
+  fetchStationXml: () => fetchStationXml,
   findChannels: () => findChannels,
   parseStationXml: () => parseStationXml,
   parseUtil: () => parseUtil,
@@ -45114,6 +45439,7 @@ var COUNT_UNIT_NAME = "count";
 var FIX_INVALID_STAXML = true;
 var INVALID_NUMBER = -99999;
 var FAKE_START_DATE = DateTime.fromISO("1900-01-01T00:00:00Z");
+var FAKE_EMPTY_XML = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>';
 var CHANNEL_CLICK_EVENT = "channelclick";
 var STATION_CLICK_EVENT = "stationclick";
 function createChannelClickEvent(sta, mouseclick) {
@@ -46199,6 +46525,22 @@ function uniqueNetworks(channelList) {
   }
   return Array.from(out.values());
 }
+function fetchStationXml(url, timeoutSec2 = 10, nodata = 204) {
+  const fetchInit = defaultFetchInitObj(XML_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec2 * 1e3).then((response) => {
+    if (response.status === 200) {
+      return response.text();
+    } else if (response.status === 204 || isDef(nodata) && response.status === nodata) {
+      return FAKE_EMPTY_XML;
+    } else {
+      throw new Error(`Status not successful: ${response.status}`);
+    }
+  }).then(function(rawXmlText) {
+    return new DOMParser().parseFromString(rawXmlText, XML_MIME);
+  }).then((rawXml) => {
+    return parseStationXml(rawXml);
+  });
+}
 var _grabFirstEl = function(xml, tagName) {
   let out = null;
   if (xml instanceof Element) {
@@ -46990,7 +47332,7 @@ var SeismogramDisplayData = class _SeismogramDisplayData {
    * @param alignmentOffset offset duration from the alignment time
    * @param duration duration from the offset for the window
    * @returns time window as an Interval
-  */
+   */
   relativeTimeWindow(alignmentOffset, duration) {
     const atime = this.alignmentTime ? this.alignmentTime.plus(alignmentOffset) : this.startTime.plus(alignmentOffset);
     return startDuration(atime, duration);
@@ -47730,7 +48072,7 @@ var BTime = class {
     this.microsecond = 0;
   }
   toString() {
-    return this.year + "-" + this.jday + " " + this.hour + ":" + this.min + ":" + this.sec + "." + this.tenthMilli.toFixed().padStart(4, "0") + " " + this.toDateTime().toISO();
+    return this.year + "-" + this.jday + " " + this.hour + ":" + this.min + ":" + this.sec + "." + this.tenthMilli.toFixed().padStart(4, "0") + " " + (this.microsecond !== 0 ? `usec: ${this.microsecond} ` : "") + "iso: " + this.toDateTime().toISO();
   }
   /**
    * Converts this BTime to a luxon utc DateTime. Note DateTime's precision
@@ -47739,14 +48081,17 @@ var BTime = class {
    * @returns         BTime as a DateTime
    */
   toDateTime() {
+    let millis = Math.round(this.tenthMilli / 10);
+    const addSec = Math.floor(millis / 1e3);
+    millis = millis - 1e3 * addSec;
     return DateTime.fromObject(
       {
         year: this.year,
         ordinal: this.jday,
         hour: this.hour,
         minute: this.min,
-        second: this.sec,
-        millisecond: Math.round(this.tenthMilli / 10)
+        second: this.sec + addSec,
+        millisecond: millis
       },
       UTC_OPTIONS
     );
@@ -49018,194 +49363,365 @@ function pointer_default(event, node) {
   return [event.pageX, event.pageY];
 }
 
-// node_modules/d3-array/src/ascending.js
-function ascending2(a, b) {
-  return a == null || b == null ? NaN : a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+// node_modules/d3-dispatch/src/dispatch.js
+var noop = { value: () => {
+} };
+function dispatch() {
+  for (var i = 0, n2 = arguments.length, _ = {}, t; i < n2; ++i) {
+    if (!(t = arguments[i] + "") || t in _ || /[\s.]/.test(t))
+      throw new Error("illegal type: " + t);
+    _[t] = [];
+  }
+  return new Dispatch(_);
 }
-
-// node_modules/d3-array/src/descending.js
-function descending(a, b) {
-  return a == null || b == null ? NaN : b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
+function Dispatch(_) {
+  this._ = _;
 }
+function parseTypenames2(typenames, types) {
+  return typenames.trim().split(/^|\s+/).map(function(t) {
+    var name = "", i = t.indexOf(".");
+    if (i >= 0)
+      name = t.slice(i + 1), t = t.slice(0, i);
+    if (t && !types.hasOwnProperty(t))
+      throw new Error("unknown type: " + t);
+    return { type: t, name };
+  });
+}
+Dispatch.prototype = dispatch.prototype = {
+  constructor: Dispatch,
+  on: function(typename, callback) {
+    var _ = this._, T = parseTypenames2(typename + "", _), t, i = -1, n2 = T.length;
+    if (arguments.length < 2) {
+      while (++i < n2)
+        if ((t = (typename = T[i]).type) && (t = get(_[t], typename.name)))
+          return t;
+      return;
+    }
+    if (callback != null && typeof callback !== "function")
+      throw new Error("invalid callback: " + callback);
+    while (++i < n2) {
+      if (t = (typename = T[i]).type)
+        _[t] = set(_[t], typename.name, callback);
+      else if (callback == null)
+        for (t in _)
+          _[t] = set(_[t], typename.name, null);
+    }
+    return this;
+  },
+  copy: function() {
+    var copy2 = {}, _ = this._;
+    for (var t in _)
+      copy2[t] = _[t].slice();
+    return new Dispatch(copy2);
+  },
+  call: function(type, that) {
+    if ((n2 = arguments.length - 2) > 0)
+      for (var args = new Array(n2), i = 0, n2, t; i < n2; ++i)
+        args[i] = arguments[i + 2];
+    if (!this._.hasOwnProperty(type))
+      throw new Error("unknown type: " + type);
+    for (t = this._[type], i = 0, n2 = t.length; i < n2; ++i)
+      t[i].value.apply(that, args);
+  },
+  apply: function(type, that, args) {
+    if (!this._.hasOwnProperty(type))
+      throw new Error("unknown type: " + type);
+    for (var t = this._[type], i = 0, n2 = t.length; i < n2; ++i)
+      t[i].value.apply(that, args);
+  }
+};
+function get(type, name) {
+  for (var i = 0, n2 = type.length, c; i < n2; ++i) {
+    if ((c = type[i]).name === name) {
+      return c.value;
+    }
+  }
+}
+function set(type, name, callback) {
+  for (var i = 0, n2 = type.length; i < n2; ++i) {
+    if (type[i].name === name) {
+      type[i] = noop, type = type.slice(0, i).concat(type.slice(i + 1));
+      break;
+    }
+  }
+  if (callback != null)
+    type.push({ name, value: callback });
+  return type;
+}
+var dispatch_default2 = dispatch;
 
-// node_modules/d3-array/src/bisector.js
-function bisector(f) {
-  let compare1, compare2, delta;
-  if (f.length !== 2) {
-    compare1 = ascending2;
-    compare2 = (d, x2) => ascending2(f(d), x2);
-    delta = (d, x2) => f(d) - x2;
+// node_modules/d3-timer/src/timer.js
+var frame = 0;
+var timeout = 0;
+var interval = 0;
+var pokeDelay = 1e3;
+var taskHead;
+var taskTail;
+var clockLast = 0;
+var clockNow = 0;
+var clockSkew = 0;
+var clock = typeof performance === "object" && performance.now ? performance : Date;
+var setFrame = typeof window === "object" && window.requestAnimationFrame ? window.requestAnimationFrame.bind(window) : function(f) {
+  setTimeout(f, 17);
+};
+function now2() {
+  return clockNow || (setFrame(clearNow), clockNow = clock.now() + clockSkew);
+}
+function clearNow() {
+  clockNow = 0;
+}
+function Timer() {
+  this._call = this._time = this._next = null;
+}
+Timer.prototype = timer.prototype = {
+  constructor: Timer,
+  restart: function(callback, delay, time) {
+    if (typeof callback !== "function")
+      throw new TypeError("callback is not a function");
+    time = (time == null ? now2() : +time) + (delay == null ? 0 : +delay);
+    if (!this._next && taskTail !== this) {
+      if (taskTail)
+        taskTail._next = this;
+      else
+        taskHead = this;
+      taskTail = this;
+    }
+    this._call = callback;
+    this._time = time;
+    sleep();
+  },
+  stop: function() {
+    if (this._call) {
+      this._call = null;
+      this._time = Infinity;
+      sleep();
+    }
+  }
+};
+function timer(callback, delay, time) {
+  var t = new Timer();
+  t.restart(callback, delay, time);
+  return t;
+}
+function timerFlush() {
+  now2();
+  ++frame;
+  var t = taskHead, e;
+  while (t) {
+    if ((e = clockNow - t._time) >= 0)
+      t._call.call(void 0, e);
+    t = t._next;
+  }
+  --frame;
+}
+function wake() {
+  clockNow = (clockLast = clock.now()) + clockSkew;
+  frame = timeout = 0;
+  try {
+    timerFlush();
+  } finally {
+    frame = 0;
+    nap();
+    clockNow = 0;
+  }
+}
+function poke() {
+  var now3 = clock.now(), delay = now3 - clockLast;
+  if (delay > pokeDelay)
+    clockSkew -= delay, clockLast = now3;
+}
+function nap() {
+  var t02, t12 = taskHead, t2, time = Infinity;
+  while (t12) {
+    if (t12._call) {
+      if (time > t12._time)
+        time = t12._time;
+      t02 = t12, t12 = t12._next;
+    } else {
+      t2 = t12._next, t12._next = null;
+      t12 = t02 ? t02._next = t2 : taskHead = t2;
+    }
+  }
+  taskTail = t02;
+  sleep(time);
+}
+function sleep(time) {
+  if (frame)
+    return;
+  if (timeout)
+    timeout = clearTimeout(timeout);
+  var delay = time - clockNow;
+  if (delay > 24) {
+    if (time < Infinity)
+      timeout = setTimeout(wake, time - clock.now() - clockSkew);
+    if (interval)
+      interval = clearInterval(interval);
   } else {
-    compare1 = f === ascending2 || f === descending ? f : zero;
-    compare2 = f;
-    delta = f;
+    if (!interval)
+      clockLast = clock.now(), interval = setInterval(poke, pokeDelay);
+    frame = 1, setFrame(wake);
   }
-  function left2(a, x2, lo = 0, hi = a.length) {
-    if (lo < hi) {
-      if (compare1(x2, x2) !== 0)
-        return hi;
-      do {
-        const mid = lo + hi >>> 1;
-        if (compare2(a[mid], x2) < 0)
-          lo = mid + 1;
-        else
-          hi = mid;
-      } while (lo < hi);
-    }
-    return lo;
-  }
-  function right2(a, x2, lo = 0, hi = a.length) {
-    if (lo < hi) {
-      if (compare1(x2, x2) !== 0)
-        return hi;
-      do {
-        const mid = lo + hi >>> 1;
-        if (compare2(a[mid], x2) <= 0)
-          lo = mid + 1;
-        else
-          hi = mid;
-      } while (lo < hi);
-    }
-    return lo;
-  }
-  function center2(a, x2, lo = 0, hi = a.length) {
-    const i = left2(a, x2, lo, hi - 1);
-    return i > lo && delta(a[i - 1], x2) > -delta(a[i], x2) ? i - 1 : i;
-  }
-  return { left: left2, center: center2, right: right2 };
-}
-function zero() {
-  return 0;
 }
 
-// node_modules/d3-array/src/number.js
-function number(x2) {
-  return x2 === null ? NaN : +x2;
+// node_modules/d3-timer/src/timeout.js
+function timeout_default(callback, delay, time) {
+  var t = new Timer();
+  delay = delay == null ? 0 : +delay;
+  t.restart((elapsed) => {
+    t.stop();
+    callback(elapsed + delay);
+  }, delay, time);
+  return t;
 }
 
-// node_modules/d3-array/src/bisect.js
-var ascendingBisect = bisector(ascending2);
-var bisectRight = ascendingBisect.right;
-var bisectLeft = ascendingBisect.left;
-var bisectCenter = bisector(number).center;
-var bisect_default = bisectRight;
-
-// node_modules/d3-array/src/extent.js
-function extent(values, valueof) {
-  let min;
-  let max;
-  if (valueof === void 0) {
-    for (const value of values) {
-      if (value != null) {
-        if (min === void 0) {
-          if (value >= value)
-            min = max = value;
-        } else {
-          if (min > value)
-            min = value;
-          if (max < value)
-            max = value;
-        }
+// node_modules/d3-transition/src/transition/schedule.js
+var emptyOn = dispatch_default2("start", "end", "cancel", "interrupt");
+var emptyTween = [];
+var CREATED = 0;
+var SCHEDULED = 1;
+var STARTING = 2;
+var STARTED = 3;
+var RUNNING = 4;
+var ENDING = 5;
+var ENDED = 6;
+function schedule_default(node, name, id2, index, group, timing) {
+  var schedules = node.__transition;
+  if (!schedules)
+    node.__transition = {};
+  else if (id2 in schedules)
+    return;
+  create(node, id2, {
+    name,
+    index,
+    // For context during callback.
+    group,
+    // For context during callback.
+    on: emptyOn,
+    tween: emptyTween,
+    time: timing.time,
+    delay: timing.delay,
+    duration: timing.duration,
+    ease: timing.ease,
+    timer: null,
+    state: CREATED
+  });
+}
+function init(node, id2) {
+  var schedule = get2(node, id2);
+  if (schedule.state > CREATED)
+    throw new Error("too late; already scheduled");
+  return schedule;
+}
+function set2(node, id2) {
+  var schedule = get2(node, id2);
+  if (schedule.state > STARTED)
+    throw new Error("too late; already running");
+  return schedule;
+}
+function get2(node, id2) {
+  var schedule = node.__transition;
+  if (!schedule || !(schedule = schedule[id2]))
+    throw new Error("transition not found");
+  return schedule;
+}
+function create(node, id2, self2) {
+  var schedules = node.__transition, tween;
+  schedules[id2] = self2;
+  self2.timer = timer(schedule, 0, self2.time);
+  function schedule(elapsed) {
+    self2.state = SCHEDULED;
+    self2.timer.restart(start2, self2.delay, self2.time);
+    if (self2.delay <= elapsed)
+      start2(elapsed - self2.delay);
+  }
+  function start2(elapsed) {
+    var i, j, n2, o;
+    if (self2.state !== SCHEDULED)
+      return stop();
+    for (i in schedules) {
+      o = schedules[i];
+      if (o.name !== self2.name)
+        continue;
+      if (o.state === STARTED)
+        return timeout_default(start2);
+      if (o.state === RUNNING) {
+        o.state = ENDED;
+        o.timer.stop();
+        o.on.call("interrupt", node, node.__data__, o.index, o.group);
+        delete schedules[i];
+      } else if (+i < id2) {
+        o.state = ENDED;
+        o.timer.stop();
+        o.on.call("cancel", node, node.__data__, o.index, o.group);
+        delete schedules[i];
       }
     }
-  } else {
-    let index = -1;
-    for (let value of values) {
-      if ((value = valueof(value, ++index, values)) != null) {
-        if (min === void 0) {
-          if (value >= value)
-            min = max = value;
-        } else {
-          if (min > value)
-            min = value;
-          if (max < value)
-            max = value;
-        }
+    timeout_default(function() {
+      if (self2.state === STARTED) {
+        self2.state = RUNNING;
+        self2.timer.restart(tick, self2.delay, self2.time);
+        tick(elapsed);
+      }
+    });
+    self2.state = STARTING;
+    self2.on.call("start", node, node.__data__, self2.index, self2.group);
+    if (self2.state !== STARTING)
+      return;
+    self2.state = STARTED;
+    tween = new Array(n2 = self2.tween.length);
+    for (i = 0, j = -1; i < n2; ++i) {
+      if (o = self2.tween[i].value.call(node, node.__data__, self2.index, self2.group)) {
+        tween[++j] = o;
       }
     }
+    tween.length = j + 1;
   }
-  return [min, max];
+  function tick(elapsed) {
+    var t = elapsed < self2.duration ? self2.ease.call(null, elapsed / self2.duration) : (self2.timer.restart(stop), self2.state = ENDING, 1), i = -1, n2 = tween.length;
+    while (++i < n2) {
+      tween[i].call(node, t);
+    }
+    if (self2.state === ENDING) {
+      self2.on.call("end", node, node.__data__, self2.index, self2.group);
+      stop();
+    }
+  }
+  function stop() {
+    self2.state = ENDED;
+    self2.timer.stop();
+    delete schedules[id2];
+    for (var i in schedules)
+      return;
+    delete node.__transition;
+  }
 }
 
-// node_modules/d3-array/src/ticks.js
-var e10 = Math.sqrt(50);
-var e5 = Math.sqrt(10);
-var e2 = Math.sqrt(2);
-function tickSpec(start2, stop, count) {
-  const step = (stop - start2) / Math.max(0, count), power = Math.floor(Math.log10(step)), error = step / Math.pow(10, power), factor = error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1;
-  let i1, i2, inc;
-  if (power < 0) {
-    inc = Math.pow(10, -power) / factor;
-    i1 = Math.round(start2 * inc);
-    i2 = Math.round(stop * inc);
-    if (i1 / inc < start2)
-      ++i1;
-    if (i2 / inc > stop)
-      --i2;
-    inc = -inc;
-  } else {
-    inc = Math.pow(10, power) * factor;
-    i1 = Math.round(start2 / inc);
-    i2 = Math.round(stop / inc);
-    if (i1 * inc < start2)
-      ++i1;
-    if (i2 * inc > stop)
-      --i2;
+// node_modules/d3-transition/src/interrupt.js
+function interrupt_default(node, name) {
+  var schedules = node.__transition, schedule, active, empty2 = true, i;
+  if (!schedules)
+    return;
+  name = name == null ? null : name + "";
+  for (i in schedules) {
+    if ((schedule = schedules[i]).name !== name) {
+      empty2 = false;
+      continue;
+    }
+    active = schedule.state > STARTING && schedule.state < ENDING;
+    schedule.state = ENDED;
+    schedule.timer.stop();
+    schedule.on.call(active ? "interrupt" : "cancel", node, node.__data__, schedule.index, schedule.group);
+    delete schedules[i];
   }
-  if (i2 < i1 && 0.5 <= count && count < 2)
-    return tickSpec(start2, stop, count * 2);
-  return [i1, i2, inc];
-}
-function ticks(start2, stop, count) {
-  stop = +stop, start2 = +start2, count = +count;
-  if (!(count > 0))
-    return [];
-  if (start2 === stop)
-    return [start2];
-  const reverse = stop < start2, [i1, i2, inc] = reverse ? tickSpec(stop, start2, count) : tickSpec(start2, stop, count);
-  if (!(i2 >= i1))
-    return [];
-  const n2 = i2 - i1 + 1, ticks2 = new Array(n2);
-  if (reverse) {
-    if (inc < 0)
-      for (let i = 0; i < n2; ++i)
-        ticks2[i] = (i2 - i) / -inc;
-    else
-      for (let i = 0; i < n2; ++i)
-        ticks2[i] = (i2 - i) * inc;
-  } else {
-    if (inc < 0)
-      for (let i = 0; i < n2; ++i)
-        ticks2[i] = (i1 + i) / -inc;
-    else
-      for (let i = 0; i < n2; ++i)
-        ticks2[i] = (i1 + i) * inc;
-  }
-  return ticks2;
-}
-function tickIncrement(start2, stop, count) {
-  stop = +stop, start2 = +start2, count = +count;
-  return tickSpec(start2, stop, count)[2];
-}
-function tickStep(start2, stop, count) {
-  stop = +stop, start2 = +start2, count = +count;
-  const reverse = stop < start2, inc = reverse ? tickIncrement(stop, start2, count) : tickIncrement(start2, stop, count);
-  return (reverse ? -1 : 1) * (inc < 0 ? 1 / -inc : inc);
+  if (empty2)
+    delete node.__transition;
 }
 
-// node_modules/d3-scale/src/init.js
-function initRange(domain, range) {
-  switch (arguments.length) {
-    case 0:
-      break;
-    case 1:
-      this.range(domain);
-      break;
-    default:
-      this.range(range).domain(domain);
-      break;
-  }
-  return this;
+// node_modules/d3-transition/src/selection/interrupt.js
+function interrupt_default2(name) {
+  return this.each(function() {
+    interrupt_default(this, name);
+  });
 }
 
 // node_modules/d3-color/src/define.js
@@ -49724,7 +50240,7 @@ function object_default(a, b) {
 // node_modules/d3-interpolate/src/string.js
 var reA = /[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?/g;
 var reB = new RegExp(reA.source, "g");
-function zero2(b) {
+function zero(b) {
   return function() {
     return b;
   };
@@ -49763,7 +50279,7 @@ function string_default(a, b) {
     else
       s2[++i] = bs;
   }
-  return s2.length < 2 ? q[0] ? one(q[0].x) : zero2(b) : (b = q.length, function(t) {
+  return s2.length < 2 ? q[0] ? one(q[0].x) : zero(b) : (b = q.length, function(t) {
     for (var i2 = 0, o; i2 < b; ++i2)
       s2[(o = q[i2]).i] = o.x(t);
     return s2.join("");
@@ -49933,6 +50449,784 @@ var zoom_default = function zoomRho(rho, rho2, rho4) {
   };
   return zoom;
 }(Math.SQRT2, 2, 4);
+
+// node_modules/d3-transition/src/transition/tween.js
+function tweenRemove(id2, name) {
+  var tween0, tween1;
+  return function() {
+    var schedule = set2(this, id2), tween = schedule.tween;
+    if (tween !== tween0) {
+      tween1 = tween0 = tween;
+      for (var i = 0, n2 = tween1.length; i < n2; ++i) {
+        if (tween1[i].name === name) {
+          tween1 = tween1.slice();
+          tween1.splice(i, 1);
+          break;
+        }
+      }
+    }
+    schedule.tween = tween1;
+  };
+}
+function tweenFunction(id2, name, value) {
+  var tween0, tween1;
+  if (typeof value !== "function")
+    throw new Error();
+  return function() {
+    var schedule = set2(this, id2), tween = schedule.tween;
+    if (tween !== tween0) {
+      tween1 = (tween0 = tween).slice();
+      for (var t = { name, value }, i = 0, n2 = tween1.length; i < n2; ++i) {
+        if (tween1[i].name === name) {
+          tween1[i] = t;
+          break;
+        }
+      }
+      if (i === n2)
+        tween1.push(t);
+    }
+    schedule.tween = tween1;
+  };
+}
+function tween_default(name, value) {
+  var id2 = this._id;
+  name += "";
+  if (arguments.length < 2) {
+    var tween = get2(this.node(), id2).tween;
+    for (var i = 0, n2 = tween.length, t; i < n2; ++i) {
+      if ((t = tween[i]).name === name) {
+        return t.value;
+      }
+    }
+    return null;
+  }
+  return this.each((value == null ? tweenRemove : tweenFunction)(id2, name, value));
+}
+function tweenValue(transition2, name, value) {
+  var id2 = transition2._id;
+  transition2.each(function() {
+    var schedule = set2(this, id2);
+    (schedule.value || (schedule.value = {}))[name] = value.apply(this, arguments);
+  });
+  return function(node) {
+    return get2(node, id2).value[name];
+  };
+}
+
+// node_modules/d3-transition/src/transition/interpolate.js
+function interpolate_default(a, b) {
+  var c;
+  return (typeof b === "number" ? number_default : b instanceof color ? rgb_default : (c = color(b)) ? (b = c, rgb_default) : string_default)(a, b);
+}
+
+// node_modules/d3-transition/src/transition/attr.js
+function attrRemove2(name) {
+  return function() {
+    this.removeAttribute(name);
+  };
+}
+function attrRemoveNS2(fullname) {
+  return function() {
+    this.removeAttributeNS(fullname.space, fullname.local);
+  };
+}
+function attrConstant2(name, interpolate, value1) {
+  var string00, string1 = value1 + "", interpolate0;
+  return function() {
+    var string0 = this.getAttribute(name);
+    return string0 === string1 ? null : string0 === string00 ? interpolate0 : interpolate0 = interpolate(string00 = string0, value1);
+  };
+}
+function attrConstantNS2(fullname, interpolate, value1) {
+  var string00, string1 = value1 + "", interpolate0;
+  return function() {
+    var string0 = this.getAttributeNS(fullname.space, fullname.local);
+    return string0 === string1 ? null : string0 === string00 ? interpolate0 : interpolate0 = interpolate(string00 = string0, value1);
+  };
+}
+function attrFunction2(name, interpolate, value) {
+  var string00, string10, interpolate0;
+  return function() {
+    var string0, value1 = value(this), string1;
+    if (value1 == null)
+      return void this.removeAttribute(name);
+    string0 = this.getAttribute(name);
+    string1 = value1 + "";
+    return string0 === string1 ? null : string0 === string00 && string1 === string10 ? interpolate0 : (string10 = string1, interpolate0 = interpolate(string00 = string0, value1));
+  };
+}
+function attrFunctionNS2(fullname, interpolate, value) {
+  var string00, string10, interpolate0;
+  return function() {
+    var string0, value1 = value(this), string1;
+    if (value1 == null)
+      return void this.removeAttributeNS(fullname.space, fullname.local);
+    string0 = this.getAttributeNS(fullname.space, fullname.local);
+    string1 = value1 + "";
+    return string0 === string1 ? null : string0 === string00 && string1 === string10 ? interpolate0 : (string10 = string1, interpolate0 = interpolate(string00 = string0, value1));
+  };
+}
+function attr_default2(name, value) {
+  var fullname = namespace_default(name), i = fullname === "transform" ? interpolateTransformSvg : interpolate_default;
+  return this.attrTween(name, typeof value === "function" ? (fullname.local ? attrFunctionNS2 : attrFunction2)(fullname, i, tweenValue(this, "attr." + name, value)) : value == null ? (fullname.local ? attrRemoveNS2 : attrRemove2)(fullname) : (fullname.local ? attrConstantNS2 : attrConstant2)(fullname, i, value));
+}
+
+// node_modules/d3-transition/src/transition/attrTween.js
+function attrInterpolate(name, i) {
+  return function(t) {
+    this.setAttribute(name, i.call(this, t));
+  };
+}
+function attrInterpolateNS(fullname, i) {
+  return function(t) {
+    this.setAttributeNS(fullname.space, fullname.local, i.call(this, t));
+  };
+}
+function attrTweenNS(fullname, value) {
+  var t02, i0;
+  function tween() {
+    var i = value.apply(this, arguments);
+    if (i !== i0)
+      t02 = (i0 = i) && attrInterpolateNS(fullname, i);
+    return t02;
+  }
+  tween._value = value;
+  return tween;
+}
+function attrTween(name, value) {
+  var t02, i0;
+  function tween() {
+    var i = value.apply(this, arguments);
+    if (i !== i0)
+      t02 = (i0 = i) && attrInterpolate(name, i);
+    return t02;
+  }
+  tween._value = value;
+  return tween;
+}
+function attrTween_default(name, value) {
+  var key = "attr." + name;
+  if (arguments.length < 2)
+    return (key = this.tween(key)) && key._value;
+  if (value == null)
+    return this.tween(key, null);
+  if (typeof value !== "function")
+    throw new Error();
+  var fullname = namespace_default(name);
+  return this.tween(key, (fullname.local ? attrTweenNS : attrTween)(fullname, value));
+}
+
+// node_modules/d3-transition/src/transition/delay.js
+function delayFunction(id2, value) {
+  return function() {
+    init(this, id2).delay = +value.apply(this, arguments);
+  };
+}
+function delayConstant(id2, value) {
+  return value = +value, function() {
+    init(this, id2).delay = value;
+  };
+}
+function delay_default(value) {
+  var id2 = this._id;
+  return arguments.length ? this.each((typeof value === "function" ? delayFunction : delayConstant)(id2, value)) : get2(this.node(), id2).delay;
+}
+
+// node_modules/d3-transition/src/transition/duration.js
+function durationFunction(id2, value) {
+  return function() {
+    set2(this, id2).duration = +value.apply(this, arguments);
+  };
+}
+function durationConstant(id2, value) {
+  return value = +value, function() {
+    set2(this, id2).duration = value;
+  };
+}
+function duration_default(value) {
+  var id2 = this._id;
+  return arguments.length ? this.each((typeof value === "function" ? durationFunction : durationConstant)(id2, value)) : get2(this.node(), id2).duration;
+}
+
+// node_modules/d3-transition/src/transition/ease.js
+function easeConstant(id2, value) {
+  if (typeof value !== "function")
+    throw new Error();
+  return function() {
+    set2(this, id2).ease = value;
+  };
+}
+function ease_default(value) {
+  var id2 = this._id;
+  return arguments.length ? this.each(easeConstant(id2, value)) : get2(this.node(), id2).ease;
+}
+
+// node_modules/d3-transition/src/transition/easeVarying.js
+function easeVarying(id2, value) {
+  return function() {
+    var v = value.apply(this, arguments);
+    if (typeof v !== "function")
+      throw new Error();
+    set2(this, id2).ease = v;
+  };
+}
+function easeVarying_default(value) {
+  if (typeof value !== "function")
+    throw new Error();
+  return this.each(easeVarying(this._id, value));
+}
+
+// node_modules/d3-transition/src/transition/filter.js
+function filter_default2(match2) {
+  if (typeof match2 !== "function")
+    match2 = matcher_default(match2);
+  for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
+    for (var group = groups[j], n2 = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n2; ++i) {
+      if ((node = group[i]) && match2.call(node, node.__data__, i, group)) {
+        subgroup.push(node);
+      }
+    }
+  }
+  return new Transition(subgroups, this._parents, this._name, this._id);
+}
+
+// node_modules/d3-transition/src/transition/merge.js
+function merge_default2(transition2) {
+  if (transition2._id !== this._id)
+    throw new Error();
+  for (var groups0 = this._groups, groups1 = transition2._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
+    for (var group0 = groups0[j], group1 = groups1[j], n2 = group0.length, merge3 = merges[j] = new Array(n2), node, i = 0; i < n2; ++i) {
+      if (node = group0[i] || group1[i]) {
+        merge3[i] = node;
+      }
+    }
+  }
+  for (; j < m0; ++j) {
+    merges[j] = groups0[j];
+  }
+  return new Transition(merges, this._parents, this._name, this._id);
+}
+
+// node_modules/d3-transition/src/transition/on.js
+function start(name) {
+  return (name + "").trim().split(/^|\s+/).every(function(t) {
+    var i = t.indexOf(".");
+    if (i >= 0)
+      t = t.slice(0, i);
+    return !t || t === "start";
+  });
+}
+function onFunction(id2, name, listener) {
+  var on0, on1, sit = start(name) ? init : set2;
+  return function() {
+    var schedule = sit(this, id2), on = schedule.on;
+    if (on !== on0)
+      (on1 = (on0 = on).copy()).on(name, listener);
+    schedule.on = on1;
+  };
+}
+function on_default2(name, listener) {
+  var id2 = this._id;
+  return arguments.length < 2 ? get2(this.node(), id2).on.on(name) : this.each(onFunction(id2, name, listener));
+}
+
+// node_modules/d3-transition/src/transition/remove.js
+function removeFunction(id2) {
+  return function() {
+    var parent = this.parentNode;
+    for (var i in this.__transition)
+      if (+i !== id2)
+        return;
+    if (parent)
+      parent.removeChild(this);
+  };
+}
+function remove_default2() {
+  return this.on("end.remove", removeFunction(this._id));
+}
+
+// node_modules/d3-transition/src/transition/select.js
+function select_default3(select) {
+  var name = this._name, id2 = this._id;
+  if (typeof select !== "function")
+    select = selector_default(select);
+  for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
+    for (var group = groups[j], n2 = group.length, subgroup = subgroups[j] = new Array(n2), node, subnode, i = 0; i < n2; ++i) {
+      if ((node = group[i]) && (subnode = select.call(node, node.__data__, i, group))) {
+        if ("__data__" in node)
+          subnode.__data__ = node.__data__;
+        subgroup[i] = subnode;
+        schedule_default(subgroup[i], name, id2, i, subgroup, get2(node, id2));
+      }
+    }
+  }
+  return new Transition(subgroups, this._parents, name, id2);
+}
+
+// node_modules/d3-transition/src/transition/selectAll.js
+function selectAll_default2(select) {
+  var name = this._name, id2 = this._id;
+  if (typeof select !== "function")
+    select = selectorAll_default(select);
+  for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
+    for (var group = groups[j], n2 = group.length, node, i = 0; i < n2; ++i) {
+      if (node = group[i]) {
+        for (var children2 = select.call(node, node.__data__, i, group), child, inherit2 = get2(node, id2), k = 0, l2 = children2.length; k < l2; ++k) {
+          if (child = children2[k]) {
+            schedule_default(child, name, id2, k, children2, inherit2);
+          }
+        }
+        subgroups.push(children2);
+        parents.push(node);
+      }
+    }
+  }
+  return new Transition(subgroups, parents, name, id2);
+}
+
+// node_modules/d3-transition/src/transition/selection.js
+var Selection2 = selection_default.prototype.constructor;
+function selection_default2() {
+  return new Selection2(this._groups, this._parents);
+}
+
+// node_modules/d3-transition/src/transition/style.js
+function styleNull(name, interpolate) {
+  var string00, string10, interpolate0;
+  return function() {
+    var string0 = styleValue(this, name), string1 = (this.style.removeProperty(name), styleValue(this, name));
+    return string0 === string1 ? null : string0 === string00 && string1 === string10 ? interpolate0 : interpolate0 = interpolate(string00 = string0, string10 = string1);
+  };
+}
+function styleRemove2(name) {
+  return function() {
+    this.style.removeProperty(name);
+  };
+}
+function styleConstant2(name, interpolate, value1) {
+  var string00, string1 = value1 + "", interpolate0;
+  return function() {
+    var string0 = styleValue(this, name);
+    return string0 === string1 ? null : string0 === string00 ? interpolate0 : interpolate0 = interpolate(string00 = string0, value1);
+  };
+}
+function styleFunction2(name, interpolate, value) {
+  var string00, string10, interpolate0;
+  return function() {
+    var string0 = styleValue(this, name), value1 = value(this), string1 = value1 + "";
+    if (value1 == null)
+      string1 = value1 = (this.style.removeProperty(name), styleValue(this, name));
+    return string0 === string1 ? null : string0 === string00 && string1 === string10 ? interpolate0 : (string10 = string1, interpolate0 = interpolate(string00 = string0, value1));
+  };
+}
+function styleMaybeRemove(id2, name) {
+  var on0, on1, listener0, key = "style." + name, event = "end." + key, remove2;
+  return function() {
+    var schedule = set2(this, id2), on = schedule.on, listener = schedule.value[key] == null ? remove2 || (remove2 = styleRemove2(name)) : void 0;
+    if (on !== on0 || listener0 !== listener)
+      (on1 = (on0 = on).copy()).on(event, listener0 = listener);
+    schedule.on = on1;
+  };
+}
+function style_default2(name, value, priority) {
+  var i = (name += "") === "transform" ? interpolateTransformCss : interpolate_default;
+  return value == null ? this.styleTween(name, styleNull(name, i)).on("end.style." + name, styleRemove2(name)) : typeof value === "function" ? this.styleTween(name, styleFunction2(name, i, tweenValue(this, "style." + name, value))).each(styleMaybeRemove(this._id, name)) : this.styleTween(name, styleConstant2(name, i, value), priority).on("end.style." + name, null);
+}
+
+// node_modules/d3-transition/src/transition/styleTween.js
+function styleInterpolate(name, i, priority) {
+  return function(t) {
+    this.style.setProperty(name, i.call(this, t), priority);
+  };
+}
+function styleTween(name, value, priority) {
+  var t, i0;
+  function tween() {
+    var i = value.apply(this, arguments);
+    if (i !== i0)
+      t = (i0 = i) && styleInterpolate(name, i, priority);
+    return t;
+  }
+  tween._value = value;
+  return tween;
+}
+function styleTween_default(name, value, priority) {
+  var key = "style." + (name += "");
+  if (arguments.length < 2)
+    return (key = this.tween(key)) && key._value;
+  if (value == null)
+    return this.tween(key, null);
+  if (typeof value !== "function")
+    throw new Error();
+  return this.tween(key, styleTween(name, value, priority == null ? "" : priority));
+}
+
+// node_modules/d3-transition/src/transition/text.js
+function textConstant2(value) {
+  return function() {
+    this.textContent = value;
+  };
+}
+function textFunction2(value) {
+  return function() {
+    var value1 = value(this);
+    this.textContent = value1 == null ? "" : value1;
+  };
+}
+function text_default2(value) {
+  return this.tween("text", typeof value === "function" ? textFunction2(tweenValue(this, "text", value)) : textConstant2(value == null ? "" : value + ""));
+}
+
+// node_modules/d3-transition/src/transition/textTween.js
+function textInterpolate(i) {
+  return function(t) {
+    this.textContent = i.call(this, t);
+  };
+}
+function textTween(value) {
+  var t02, i0;
+  function tween() {
+    var i = value.apply(this, arguments);
+    if (i !== i0)
+      t02 = (i0 = i) && textInterpolate(i);
+    return t02;
+  }
+  tween._value = value;
+  return tween;
+}
+function textTween_default(value) {
+  var key = "text";
+  if (arguments.length < 1)
+    return (key = this.tween(key)) && key._value;
+  if (value == null)
+    return this.tween(key, null);
+  if (typeof value !== "function")
+    throw new Error();
+  return this.tween(key, textTween(value));
+}
+
+// node_modules/d3-transition/src/transition/transition.js
+function transition_default() {
+  var name = this._name, id0 = this._id, id1 = newId();
+  for (var groups = this._groups, m = groups.length, j = 0; j < m; ++j) {
+    for (var group = groups[j], n2 = group.length, node, i = 0; i < n2; ++i) {
+      if (node = group[i]) {
+        var inherit2 = get2(node, id0);
+        schedule_default(node, name, id1, i, group, {
+          time: inherit2.time + inherit2.delay + inherit2.duration,
+          delay: 0,
+          duration: inherit2.duration,
+          ease: inherit2.ease
+        });
+      }
+    }
+  }
+  return new Transition(groups, this._parents, name, id1);
+}
+
+// node_modules/d3-transition/src/transition/end.js
+function end_default() {
+  var on0, on1, that = this, id2 = that._id, size = that.size();
+  return new Promise(function(resolve, reject) {
+    var cancel = { value: reject }, end = { value: function() {
+      if (--size === 0)
+        resolve();
+    } };
+    that.each(function() {
+      var schedule = set2(this, id2), on = schedule.on;
+      if (on !== on0) {
+        on1 = (on0 = on).copy();
+        on1._.cancel.push(cancel);
+        on1._.interrupt.push(cancel);
+        on1._.end.push(end);
+      }
+      schedule.on = on1;
+    });
+    if (size === 0)
+      resolve();
+  });
+}
+
+// node_modules/d3-transition/src/transition/index.js
+var id = 0;
+function Transition(groups, parents, name, id2) {
+  this._groups = groups;
+  this._parents = parents;
+  this._name = name;
+  this._id = id2;
+}
+function transition(name) {
+  return selection_default().transition(name);
+}
+function newId() {
+  return ++id;
+}
+var selection_prototype = selection_default.prototype;
+Transition.prototype = transition.prototype = {
+  constructor: Transition,
+  select: select_default3,
+  selectAll: selectAll_default2,
+  selectChild: selection_prototype.selectChild,
+  selectChildren: selection_prototype.selectChildren,
+  filter: filter_default2,
+  merge: merge_default2,
+  selection: selection_default2,
+  transition: transition_default,
+  call: selection_prototype.call,
+  nodes: selection_prototype.nodes,
+  node: selection_prototype.node,
+  size: selection_prototype.size,
+  empty: selection_prototype.empty,
+  each: selection_prototype.each,
+  on: on_default2,
+  attr: attr_default2,
+  attrTween: attrTween_default,
+  style: style_default2,
+  styleTween: styleTween_default,
+  text: text_default2,
+  textTween: textTween_default,
+  remove: remove_default2,
+  tween: tween_default,
+  delay: delay_default,
+  duration: duration_default,
+  ease: ease_default,
+  easeVarying: easeVarying_default,
+  end: end_default,
+  [Symbol.iterator]: selection_prototype[Symbol.iterator]
+};
+
+// node_modules/d3-ease/src/cubic.js
+function cubicInOut(t) {
+  return ((t *= 2) <= 1 ? t * t * t : (t -= 2) * t * t + 2) / 2;
+}
+
+// node_modules/d3-transition/src/selection/transition.js
+var defaultTiming = {
+  time: null,
+  // Set on use.
+  delay: 0,
+  duration: 250,
+  ease: cubicInOut
+};
+function inherit(node, id2) {
+  var timing;
+  while (!(timing = node.__transition) || !(timing = timing[id2])) {
+    if (!(node = node.parentNode)) {
+      throw new Error(`transition ${id2} not found`);
+    }
+  }
+  return timing;
+}
+function transition_default2(name) {
+  var id2, timing;
+  if (name instanceof Transition) {
+    id2 = name._id, name = name._name;
+  } else {
+    id2 = newId(), (timing = defaultTiming).time = now2(), name = name == null ? null : name + "";
+  }
+  for (var groups = this._groups, m = groups.length, j = 0; j < m; ++j) {
+    for (var group = groups[j], n2 = group.length, node, i = 0; i < n2; ++i) {
+      if (node = group[i]) {
+        schedule_default(node, name, id2, i, group, timing || inherit(node, id2));
+      }
+    }
+  }
+  return new Transition(groups, this._parents, name, id2);
+}
+
+// node_modules/d3-transition/src/selection/index.js
+selection_default.prototype.interrupt = interrupt_default2;
+selection_default.prototype.transition = transition_default2;
+
+// node_modules/d3-array/src/ascending.js
+function ascending2(a, b) {
+  return a == null || b == null ? NaN : a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+}
+
+// node_modules/d3-array/src/descending.js
+function descending(a, b) {
+  return a == null || b == null ? NaN : b < a ? -1 : b > a ? 1 : b >= a ? 0 : NaN;
+}
+
+// node_modules/d3-array/src/bisector.js
+function bisector(f) {
+  let compare1, compare2, delta;
+  if (f.length !== 2) {
+    compare1 = ascending2;
+    compare2 = (d, x2) => ascending2(f(d), x2);
+    delta = (d, x2) => f(d) - x2;
+  } else {
+    compare1 = f === ascending2 || f === descending ? f : zero2;
+    compare2 = f;
+    delta = f;
+  }
+  function left2(a, x2, lo = 0, hi = a.length) {
+    if (lo < hi) {
+      if (compare1(x2, x2) !== 0)
+        return hi;
+      do {
+        const mid = lo + hi >>> 1;
+        if (compare2(a[mid], x2) < 0)
+          lo = mid + 1;
+        else
+          hi = mid;
+      } while (lo < hi);
+    }
+    return lo;
+  }
+  function right2(a, x2, lo = 0, hi = a.length) {
+    if (lo < hi) {
+      if (compare1(x2, x2) !== 0)
+        return hi;
+      do {
+        const mid = lo + hi >>> 1;
+        if (compare2(a[mid], x2) <= 0)
+          lo = mid + 1;
+        else
+          hi = mid;
+      } while (lo < hi);
+    }
+    return lo;
+  }
+  function center2(a, x2, lo = 0, hi = a.length) {
+    const i = left2(a, x2, lo, hi - 1);
+    return i > lo && delta(a[i - 1], x2) > -delta(a[i], x2) ? i - 1 : i;
+  }
+  return { left: left2, center: center2, right: right2 };
+}
+function zero2() {
+  return 0;
+}
+
+// node_modules/d3-array/src/number.js
+function number(x2) {
+  return x2 === null ? NaN : +x2;
+}
+
+// node_modules/d3-array/src/bisect.js
+var ascendingBisect = bisector(ascending2);
+var bisectRight = ascendingBisect.right;
+var bisectLeft = ascendingBisect.left;
+var bisectCenter = bisector(number).center;
+var bisect_default = bisectRight;
+
+// node_modules/d3-array/src/extent.js
+function extent(values, valueof) {
+  let min;
+  let max;
+  if (valueof === void 0) {
+    for (const value of values) {
+      if (value != null) {
+        if (min === void 0) {
+          if (value >= value)
+            min = max = value;
+        } else {
+          if (min > value)
+            min = value;
+          if (max < value)
+            max = value;
+        }
+      }
+    }
+  } else {
+    let index = -1;
+    for (let value of values) {
+      if ((value = valueof(value, ++index, values)) != null) {
+        if (min === void 0) {
+          if (value >= value)
+            min = max = value;
+        } else {
+          if (min > value)
+            min = value;
+          if (max < value)
+            max = value;
+        }
+      }
+    }
+  }
+  return [min, max];
+}
+
+// node_modules/d3-array/src/ticks.js
+var e10 = Math.sqrt(50);
+var e5 = Math.sqrt(10);
+var e2 = Math.sqrt(2);
+function tickSpec(start2, stop, count) {
+  const step = (stop - start2) / Math.max(0, count), power = Math.floor(Math.log10(step)), error = step / Math.pow(10, power), factor = error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1;
+  let i1, i2, inc;
+  if (power < 0) {
+    inc = Math.pow(10, -power) / factor;
+    i1 = Math.round(start2 * inc);
+    i2 = Math.round(stop * inc);
+    if (i1 / inc < start2)
+      ++i1;
+    if (i2 / inc > stop)
+      --i2;
+    inc = -inc;
+  } else {
+    inc = Math.pow(10, power) * factor;
+    i1 = Math.round(start2 / inc);
+    i2 = Math.round(stop / inc);
+    if (i1 * inc < start2)
+      ++i1;
+    if (i2 * inc > stop)
+      --i2;
+  }
+  if (i2 < i1 && 0.5 <= count && count < 2)
+    return tickSpec(start2, stop, count * 2);
+  return [i1, i2, inc];
+}
+function ticks(start2, stop, count) {
+  stop = +stop, start2 = +start2, count = +count;
+  if (!(count > 0))
+    return [];
+  if (start2 === stop)
+    return [start2];
+  const reverse = stop < start2, [i1, i2, inc] = reverse ? tickSpec(stop, start2, count) : tickSpec(start2, stop, count);
+  if (!(i2 >= i1))
+    return [];
+  const n2 = i2 - i1 + 1, ticks2 = new Array(n2);
+  if (reverse) {
+    if (inc < 0)
+      for (let i = 0; i < n2; ++i)
+        ticks2[i] = (i2 - i) / -inc;
+    else
+      for (let i = 0; i < n2; ++i)
+        ticks2[i] = (i2 - i) * inc;
+  } else {
+    if (inc < 0)
+      for (let i = 0; i < n2; ++i)
+        ticks2[i] = (i1 + i) / -inc;
+    else
+      for (let i = 0; i < n2; ++i)
+        ticks2[i] = (i1 + i) * inc;
+  }
+  return ticks2;
+}
+function tickIncrement(start2, stop, count) {
+  stop = +stop, start2 = +start2, count = +count;
+  return tickSpec(start2, stop, count)[2];
+}
+function tickStep(start2, stop, count) {
+  stop = +stop, start2 = +start2, count = +count;
+  const reverse = stop < start2, inc = reverse ? tickIncrement(stop, start2, count) : tickIncrement(start2, stop, count);
+  return (reverse ? -1 : 1) * (inc < 0 ? 1 / -inc : inc);
+}
+
+// node_modules/d3-scale/src/init.js
+function initRange(domain, range) {
+  switch (arguments.length) {
+    case 0:
+      break;
+    case 1:
+      this.range(domain);
+      break;
+    default:
+      this.range(range).domain(domain);
+      break;
+  }
+  return this;
+}
 
 // node_modules/d3-scale/src/constant.js
 function constants(x2) {
@@ -51593,93 +52887,6 @@ function axisLeft(scale) {
   return axis(left, scale);
 }
 
-// node_modules/d3-dispatch/src/dispatch.js
-var noop = { value: () => {
-} };
-function dispatch() {
-  for (var i = 0, n2 = arguments.length, _ = {}, t; i < n2; ++i) {
-    if (!(t = arguments[i] + "") || t in _ || /[\s.]/.test(t))
-      throw new Error("illegal type: " + t);
-    _[t] = [];
-  }
-  return new Dispatch(_);
-}
-function Dispatch(_) {
-  this._ = _;
-}
-function parseTypenames2(typenames, types) {
-  return typenames.trim().split(/^|\s+/).map(function(t) {
-    var name = "", i = t.indexOf(".");
-    if (i >= 0)
-      name = t.slice(i + 1), t = t.slice(0, i);
-    if (t && !types.hasOwnProperty(t))
-      throw new Error("unknown type: " + t);
-    return { type: t, name };
-  });
-}
-Dispatch.prototype = dispatch.prototype = {
-  constructor: Dispatch,
-  on: function(typename, callback) {
-    var _ = this._, T = parseTypenames2(typename + "", _), t, i = -1, n2 = T.length;
-    if (arguments.length < 2) {
-      while (++i < n2)
-        if ((t = (typename = T[i]).type) && (t = get(_[t], typename.name)))
-          return t;
-      return;
-    }
-    if (callback != null && typeof callback !== "function")
-      throw new Error("invalid callback: " + callback);
-    while (++i < n2) {
-      if (t = (typename = T[i]).type)
-        _[t] = set(_[t], typename.name, callback);
-      else if (callback == null)
-        for (t in _)
-          _[t] = set(_[t], typename.name, null);
-    }
-    return this;
-  },
-  copy: function() {
-    var copy2 = {}, _ = this._;
-    for (var t in _)
-      copy2[t] = _[t].slice();
-    return new Dispatch(copy2);
-  },
-  call: function(type, that) {
-    if ((n2 = arguments.length - 2) > 0)
-      for (var args = new Array(n2), i = 0, n2, t; i < n2; ++i)
-        args[i] = arguments[i + 2];
-    if (!this._.hasOwnProperty(type))
-      throw new Error("unknown type: " + type);
-    for (t = this._[type], i = 0, n2 = t.length; i < n2; ++i)
-      t[i].value.apply(that, args);
-  },
-  apply: function(type, that, args) {
-    if (!this._.hasOwnProperty(type))
-      throw new Error("unknown type: " + type);
-    for (var t = this._[type], i = 0, n2 = t.length; i < n2; ++i)
-      t[i].value.apply(that, args);
-  }
-};
-function get(type, name) {
-  for (var i = 0, n2 = type.length, c; i < n2; ++i) {
-    if ((c = type[i]).name === name) {
-      return c.value;
-    }
-  }
-}
-function set(type, name, callback) {
-  for (var i = 0, n2 = type.length; i < n2; ++i) {
-    if (type[i].name === name) {
-      type[i] = noop, type = type.slice(0, i).concat(type.slice(i + 1));
-      break;
-    }
-  }
-  if (callback != null)
-    type.push({ name, value: callback });
-  return type;
-}
-var dispatch_default2 = dispatch;
-
 // node_modules/d3-drag/src/noevent.js
 var nonpassivecapture = { capture: true, passive: false };
 function noevent_default(event) {
@@ -51712,868 +52919,6 @@ function yesdrag(view, noclick) {
     delete root2.__noselect;
   }
 }
-
-// node_modules/d3-timer/src/timer.js
-var frame = 0;
-var timeout = 0;
-var interval = 0;
-var pokeDelay = 1e3;
-var taskHead;
-var taskTail;
-var clockLast = 0;
-var clockNow = 0;
-var clockSkew = 0;
-var clock = typeof performance === "object" && performance.now ? performance : Date;
-var setFrame = typeof window === "object" && window.requestAnimationFrame ? window.requestAnimationFrame.bind(window) : function(f) {
-  setTimeout(f, 17);
-};
-function now2() {
-  return clockNow || (setFrame(clearNow), clockNow = clock.now() + clockSkew);
-}
-function clearNow() {
-  clockNow = 0;
-}
-function Timer() {
-  this._call = this._time = this._next = null;
-}
-Timer.prototype = timer.prototype = {
-  constructor: Timer,
-  restart: function(callback, delay, time) {
-    if (typeof callback !== "function")
-      throw new TypeError("callback is not a function");
-    time = (time == null ? now2() : +time) + (delay == null ? 0 : +delay);
-    if (!this._next && taskTail !== this) {
-      if (taskTail)
-        taskTail._next = this;
-      else
-        taskHead = this;
-      taskTail = this;
-    }
-    this._call = callback;
-    this._time = time;
-    sleep();
-  },
-  stop: function() {
-    if (this._call) {
-      this._call = null;
-      this._time = Infinity;
-      sleep();
-    }
-  }
-};
-function timer(callback, delay, time) {
-  var t = new Timer();
-  t.restart(callback, delay, time);
-  return t;
-}
-function timerFlush() {
-  now2();
-  ++frame;
-  var t = taskHead, e;
-  while (t) {
-    if ((e = clockNow - t._time) >= 0)
-      t._call.call(void 0, e);
-    t = t._next;
-  }
-  --frame;
-}
-function wake() {
-  clockNow = (clockLast = clock.now()) + clockSkew;
-  frame = timeout = 0;
-  try {
-    timerFlush();
-  } finally {
-    frame = 0;
-    nap();
-    clockNow = 0;
-  }
-}
-function poke() {
-  var now3 = clock.now(), delay = now3 - clockLast;
-  if (delay > pokeDelay)
-    clockSkew -= delay, clockLast = now3;
-}
-function nap() {
-  var t02, t12 = taskHead, t2, time = Infinity;
-  while (t12) {
-    if (t12._call) {
-      if (time > t12._time)
-        time = t12._time;
-      t02 = t12, t12 = t12._next;
-    } else {
-      t2 = t12._next, t12._next = null;
-      t12 = t02 ? t02._next = t2 : taskHead = t2;
-    }
-  }
-  taskTail = t02;
-  sleep(time);
-}
-function sleep(time) {
-  if (frame)
-    return;
-  if (timeout)
-    timeout = clearTimeout(timeout);
-  var delay = time - clockNow;
-  if (delay > 24) {
-    if (time < Infinity)
-      timeout = setTimeout(wake, time - clock.now() - clockSkew);
-    if (interval)
-      interval = clearInterval(interval);
-  } else {
-    if (!interval)
-      clockLast = clock.now(), interval = setInterval(poke, pokeDelay);
-    frame = 1, setFrame(wake);
-  }
-}
-
-// node_modules/d3-timer/src/timeout.js
-function timeout_default(callback, delay, time) {
-  var t = new Timer();
-  delay = delay == null ? 0 : +delay;
-  t.restart((elapsed) => {
-    t.stop();
-    callback(elapsed + delay);
-  }, delay, time);
-  return t;
-}
-
-// node_modules/d3-transition/src/transition/schedule.js
-var emptyOn = dispatch_default2("start", "end", "cancel", "interrupt");
-var emptyTween = [];
-var CREATED = 0;
-var SCHEDULED = 1;
-var STARTING = 2;
-var STARTED = 3;
-var RUNNING = 4;
-var ENDING = 5;
-var ENDED = 6;
-function schedule_default(node, name, id2, index, group, timing) {
-  var schedules = node.__transition;
-  if (!schedules)
-    node.__transition = {};
-  else if (id2 in schedules)
-    return;
-  create(node, id2, {
-    name,
-    index,
-    // For context during callback.
-    group,
-    // For context during callback.
-    on: emptyOn,
-    tween: emptyTween,
-    time: timing.time,
-    delay: timing.delay,
-    duration: timing.duration,
-    ease: timing.ease,
-    timer: null,
-    state: CREATED
-  });
-}
-function init(node, id2) {
-  var schedule = get2(node, id2);
-  if (schedule.state > CREATED)
-    throw new Error("too late; already scheduled");
-  return schedule;
-}
-function set2(node, id2) {
-  var schedule = get2(node, id2);
-  if (schedule.state > STARTED)
-    throw new Error("too late; already running");
-  return schedule;
-}
-function get2(node, id2) {
-  var schedule = node.__transition;
-  if (!schedule || !(schedule = schedule[id2]))
-    throw new Error("transition not found");
-  return schedule;
-}
-function create(node, id2, self2) {
-  var schedules = node.__transition, tween;
-  schedules[id2] = self2;
-  self2.timer = timer(schedule, 0, self2.time);
-  function schedule(elapsed) {
-    self2.state = SCHEDULED;
-    self2.timer.restart(start2, self2.delay, self2.time);
-    if (self2.delay <= elapsed)
-      start2(elapsed - self2.delay);
-  }
-  function start2(elapsed) {
-    var i, j, n2, o;
-    if (self2.state !== SCHEDULED)
-      return stop();
-    for (i in schedules) {
-      o = schedules[i];
-      if (o.name !== self2.name)
-        continue;
-      if (o.state === STARTED)
-        return timeout_default(start2);
-      if (o.state === RUNNING) {
-        o.state = ENDED;
-        o.timer.stop();
-        o.on.call("interrupt", node, node.__data__, o.index, o.group);
-        delete schedules[i];
-      } else if (+i < id2) {
-        o.state = ENDED;
-        o.timer.stop();
-        o.on.call("cancel", node, node.__data__, o.index, o.group);
-        delete schedules[i];
-      }
-    }
-    timeout_default(function() {
-      if (self2.state === STARTED) {
-        self2.state = RUNNING;
-        self2.timer.restart(tick, self2.delay, self2.time);
-        tick(elapsed);
-      }
-    });
-    self2.state = STARTING;
-    self2.on.call("start", node, node.__data__, self2.index, self2.group);
-    if (self2.state !== STARTING)
-      return;
-    self2.state = STARTED;
-    tween = new Array(n2 = self2.tween.length);
-    for (i = 0, j = -1; i < n2; ++i) {
-      if (o = self2.tween[i].value.call(node, node.__data__, self2.index, self2.group)) {
-        tween[++j] = o;
-      }
-    }
-    tween.length = j + 1;
-  }
-  function tick(elapsed) {
-    var t = elapsed < self2.duration ? self2.ease.call(null, elapsed / self2.duration) : (self2.timer.restart(stop), self2.state = ENDING, 1), i = -1, n2 = tween.length;
-    while (++i < n2) {
-      tween[i].call(node, t);
-    }
-    if (self2.state === ENDING) {
-      self2.on.call("end", node, node.__data__, self2.index, self2.group);
-      stop();
-    }
-  }
-  function stop() {
-    self2.state = ENDED;
-    self2.timer.stop();
-    delete schedules[id2];
-    for (var i in schedules)
-      return;
-    delete node.__transition;
-  }
-}
-
-// node_modules/d3-transition/src/interrupt.js
-function interrupt_default(node, name) {
-  var schedules = node.__transition, schedule, active, empty2 = true, i;
-  if (!schedules)
-    return;
-  name = name == null ? null : name + "";
-  for (i in schedules) {
-    if ((schedule = schedules[i]).name !== name) {
-      empty2 = false;
-      continue;
-    }
-    active = schedule.state > STARTING && schedule.state < ENDING;
-    schedule.state = ENDED;
-    schedule.timer.stop();
-    schedule.on.call(active ? "interrupt" : "cancel", node, node.__data__, schedule.index, schedule.group);
-    delete schedules[i];
-  }
-  if (empty2)
-    delete node.__transition;
-}
-
-// node_modules/d3-transition/src/selection/interrupt.js
-function interrupt_default2(name) {
-  return this.each(function() {
-    interrupt_default(this, name);
-  });
-}
-
-// node_modules/d3-transition/src/transition/tween.js
-function tweenRemove(id2, name) {
-  var tween0, tween1;
-  return function() {
-    var schedule = set2(this, id2), tween = schedule.tween;
-    if (tween !== tween0) {
-      tween1 = tween0 = tween;
-      for (var i = 0, n2 = tween1.length; i < n2; ++i) {
-        if (tween1[i].name === name) {
-          tween1 = tween1.slice();
-          tween1.splice(i, 1);
-          break;
-        }
-      }
-    }
-    schedule.tween = tween1;
-  };
-}
-function tweenFunction(id2, name, value) {
-  var tween0, tween1;
-  if (typeof value !== "function")
-    throw new Error();
-  return function() {
-    var schedule = set2(this, id2), tween = schedule.tween;
-    if (tween !== tween0) {
-      tween1 = (tween0 = tween).slice();
-      for (var t = { name, value }, i = 0, n2 = tween1.length; i < n2; ++i) {
-        if (tween1[i].name === name) {
-          tween1[i] = t;
-          break;
-        }
-      }
-      if (i === n2)
-        tween1.push(t);
-    }
-    schedule.tween = tween1;
-  };
-}
-function tween_default(name, value) {
-  var id2 = this._id;
-  name += "";
-  if (arguments.length < 2) {
-    var tween = get2(this.node(), id2).tween;
-    for (var i = 0, n2 = tween.length, t; i < n2; ++i) {
-      if ((t = tween[i]).name === name) {
-        return t.value;
-      }
-    }
-    return null;
-  }
-  return this.each((value == null ? tweenRemove : tweenFunction)(id2, name, value));
-}
-function tweenValue(transition2, name, value) {
-  var id2 = transition2._id;
-  transition2.each(function() {
-    var schedule = set2(this, id2);
-    (schedule.value || (schedule.value = {}))[name] = value.apply(this, arguments);
-  });
-  return function(node) {
-    return get2(node, id2).value[name];
-  };
-}
-
-// node_modules/d3-transition/src/transition/interpolate.js
-function interpolate_default(a, b) {
-  var c;
-  return (typeof b === "number" ? number_default : b instanceof color ? rgb_default : (c = color(b)) ? (b = c, rgb_default) : string_default)(a, b);
-}
-
-// node_modules/d3-transition/src/transition/attr.js
-function attrRemove2(name) {
-  return function() {
-    this.removeAttribute(name);
-  };
-}
-function attrRemoveNS2(fullname) {
-  return function() {
-    this.removeAttributeNS(fullname.space, fullname.local);
-  };
-}
-function attrConstant2(name, interpolate, value1) {
-  var string00, string1 = value1 + "", interpolate0;
-  return function() {
-    var string0 = this.getAttribute(name);
-    return string0 === string1 ? null : string0 === string00 ? interpolate0 : interpolate0 = interpolate(string00 = string0, value1);
-  };
-}
-function attrConstantNS2(fullname, interpolate, value1) {
-  var string00, string1 = value1 + "", interpolate0;
-  return function() {
-    var string0 = this.getAttributeNS(fullname.space, fullname.local);
-    return string0 === string1 ? null : string0 === string00 ? interpolate0 : interpolate0 = interpolate(string00 = string0, value1);
-  };
-}
-function attrFunction2(name, interpolate, value) {
-  var string00, string10, interpolate0;
-  return function() {
-    var string0, value1 = value(this), string1;
-    if (value1 == null)
-      return void this.removeAttribute(name);
-    string0 = this.getAttribute(name);
-    string1 = value1 + "";
-    return string0 === string1 ? null : string0 === string00 && string1 === string10 ? interpolate0 : (string10 = string1, interpolate0 = interpolate(string00 = string0, value1));
-  };
-}
-function attrFunctionNS2(fullname, interpolate, value) {
-  var string00, string10, interpolate0;
-  return function() {
-    var string0, value1 = value(this), string1;
-    if (value1 == null)
-      return void this.removeAttributeNS(fullname.space, fullname.local);
-    string0 = this.getAttributeNS(fullname.space, fullname.local);
-    string1 = value1 + "";
-    return string0 === string1 ? null : string0 === string00 && string1 === string10 ? interpolate0 : (string10 = string1, interpolate0 = interpolate(string00 = string0, value1));
-  };
-}
-function attr_default2(name, value) {
-  var fullname = namespace_default(name), i = fullname === "transform" ? interpolateTransformSvg : interpolate_default;
-  return this.attrTween(name, typeof value === "function" ? (fullname.local ? attrFunctionNS2 : attrFunction2)(fullname, i, tweenValue(this, "attr." + name, value)) : value == null ? (fullname.local ? attrRemoveNS2 : attrRemove2)(fullname) : (fullname.local ? attrConstantNS2 : attrConstant2)(fullname, i, value));
-}
-
-// node_modules/d3-transition/src/transition/attrTween.js
-function attrInterpolate(name, i) {
-  return function(t) {
-    this.setAttribute(name, i.call(this, t));
-  };
-}
-function attrInterpolateNS(fullname, i) {
-  return function(t) {
-    this.setAttributeNS(fullname.space, fullname.local, i.call(this, t));
-  };
-}
-function attrTweenNS(fullname, value) {
-  var t02, i0;
-  function tween() {
-    var i = value.apply(this, arguments);
-    if (i !== i0)
-      t02 = (i0 = i) && attrInterpolateNS(fullname, i);
-    return t02;
-  }
-  tween._value = value;
-  return tween;
-}
-function attrTween(name, value) {
-  var t02, i0;
-  function tween() {
-    var i = value.apply(this, arguments);
-    if (i !== i0)
-      t02 = (i0 = i) && attrInterpolate(name, i);
-    return t02;
-  }
-  tween._value = value;
-  return tween;
-}
-function attrTween_default(name, value) {
-  var key = "attr." + name;
-  if (arguments.length < 2)
-    return (key = this.tween(key)) && key._value;
-  if (value == null)
-    return this.tween(key, null);
-  if (typeof value !== "function")
-    throw new Error();
-  var fullname = namespace_default(name);
-  return this.tween(key, (fullname.local ? attrTweenNS : attrTween)(fullname, value));
-}
-
-// node_modules/d3-transition/src/transition/delay.js
-function delayFunction(id2, value) {
-  return function() {
-    init(this, id2).delay = +value.apply(this, arguments);
-  };
-}
-function delayConstant(id2, value) {
-  return value = +value, function() {
-    init(this, id2).delay = value;
-  };
-}
-function delay_default(value) {
-  var id2 = this._id;
-  return arguments.length ? this.each((typeof value === "function" ? delayFunction : delayConstant)(id2, value)) : get2(this.node(), id2).delay;
-}
-
-// node_modules/d3-transition/src/transition/duration.js
-function durationFunction(id2, value) {
-  return function() {
-    set2(this, id2).duration = +value.apply(this, arguments);
-  };
-}
-function durationConstant(id2, value) {
-  return value = +value, function() {
-    set2(this, id2).duration = value;
-  };
-}
-function duration_default(value) {
-  var id2 = this._id;
-  return arguments.length ? this.each((typeof value === "function" ? durationFunction : durationConstant)(id2, value)) : get2(this.node(), id2).duration;
-}
-
-// node_modules/d3-transition/src/transition/ease.js
-function easeConstant(id2, value) {
-  if (typeof value !== "function")
-    throw new Error();
-  return function() {
-    set2(this, id2).ease = value;
-  };
-}
-function ease_default(value) {
-  var id2 = this._id;
-  return arguments.length ? this.each(easeConstant(id2, value)) : get2(this.node(), id2).ease;
-}
-
-// node_modules/d3-transition/src/transition/easeVarying.js
-function easeVarying(id2, value) {
-  return function() {
-    var v = value.apply(this, arguments);
-    if (typeof v !== "function")
-      throw new Error();
-    set2(this, id2).ease = v;
-  };
-}
-function easeVarying_default(value) {
-  if (typeof value !== "function")
-    throw new Error();
-  return this.each(easeVarying(this._id, value));
-}
-
-// node_modules/d3-transition/src/transition/filter.js
-function filter_default2(match2) {
-  if (typeof match2 !== "function")
-    match2 = matcher_default(match2);
-  for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
-    for (var group = groups[j], n2 = group.length, subgroup = subgroups[j] = [], node, i = 0; i < n2; ++i) {
-      if ((node = group[i]) && match2.call(node, node.__data__, i, group)) {
-        subgroup.push(node);
-      }
-    }
-  }
-  return new Transition(subgroups, this._parents, this._name, this._id);
-}
-
-// node_modules/d3-transition/src/transition/merge.js
-function merge_default2(transition2) {
-  if (transition2._id !== this._id)
-    throw new Error();
-  for (var groups0 = this._groups, groups1 = transition2._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
-    for (var group0 = groups0[j], group1 = groups1[j], n2 = group0.length, merge3 = merges[j] = new Array(n2), node, i = 0; i < n2; ++i) {
-      if (node = group0[i] || group1[i]) {
-        merge3[i] = node;
-      }
-    }
-  }
-  for (; j < m0; ++j) {
-    merges[j] = groups0[j];
-  }
-  return new Transition(merges, this._parents, this._name, this._id);
-}
-
-// node_modules/d3-transition/src/transition/on.js
-function start(name) {
-  return (name + "").trim().split(/^|\s+/).every(function(t) {
-    var i = t.indexOf(".");
-    if (i >= 0)
-      t = t.slice(0, i);
-    return !t || t === "start";
-  });
-}
-function onFunction(id2, name, listener) {
-  var on0, on1, sit = start(name) ? init : set2;
-  return function() {
-    var schedule = sit(this, id2), on = schedule.on;
-    if (on !== on0)
-      (on1 = (on0 = on).copy()).on(name, listener);
-    schedule.on = on1;
-  };
-}
-function on_default2(name, listener) {
-  var id2 = this._id;
-  return arguments.length < 2 ? get2(this.node(), id2).on.on(name) : this.each(onFunction(id2, name, listener));
-}
-
-// node_modules/d3-transition/src/transition/remove.js
-function removeFunction(id2) {
-  return function() {
-    var parent = this.parentNode;
-    for (var i in this.__transition)
-      if (+i !== id2)
-        return;
-    if (parent)
-      parent.removeChild(this);
-  };
-}
-function remove_default2() {
-  return this.on("end.remove", removeFunction(this._id));
-}
-
-// node_modules/d3-transition/src/transition/select.js
-function select_default3(select) {
-  var name = this._name, id2 = this._id;
-  if (typeof select !== "function")
-    select = selector_default(select);
-  for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
-    for (var group = groups[j], n2 = group.length, subgroup = subgroups[j] = new Array(n2), node, subnode, i = 0; i < n2; ++i) {
-      if ((node = group[i]) && (subnode = select.call(node, node.__data__, i, group))) {
-        if ("__data__" in node)
-          subnode.__data__ = node.__data__;
-        subgroup[i] = subnode;
-        schedule_default(subgroup[i], name, id2, i, subgroup, get2(node, id2));
-      }
-    }
-  }
-  return new Transition(subgroups, this._parents, name, id2);
-}
-
-// node_modules/d3-transition/src/transition/selectAll.js
-function selectAll_default2(select) {
-  var name = this._name, id2 = this._id;
-  if (typeof select !== "function")
-    select = selectorAll_default(select);
-  for (var groups = this._groups, m = groups.length, subgroups = [], parents = [], j = 0; j < m; ++j) {
-    for (var group = groups[j], n2 = group.length, node, i = 0; i < n2; ++i) {
-      if (node = group[i]) {
-        for (var children2 = select.call(node, node.__data__, i, group), child, inherit2 = get2(node, id2), k = 0, l2 = children2.length; k < l2; ++k) {
-          if (child = children2[k]) {
-            schedule_default(child, name, id2, k, children2, inherit2);
-          }
-        }
-        subgroups.push(children2);
-        parents.push(node);
-      }
-    }
-  }
-  return new Transition(subgroups, parents, name, id2);
-}
-
-// node_modules/d3-transition/src/transition/selection.js
-var Selection2 = selection_default.prototype.constructor;
-function selection_default2() {
-  return new Selection2(this._groups, this._parents);
-}
-
-// node_modules/d3-transition/src/transition/style.js
-function styleNull(name, interpolate) {
-  var string00, string10, interpolate0;
-  return function() {
-    var string0 = styleValue(this, name), string1 = (this.style.removeProperty(name), styleValue(this, name));
-    return string0 === string1 ? null : string0 === string00 && string1 === string10 ? interpolate0 : interpolate0 = interpolate(string00 = string0, string10 = string1);
-  };
-}
-function styleRemove2(name) {
-  return function() {
-    this.style.removeProperty(name);
-  };
-}
-function styleConstant2(name, interpolate, value1) {
-  var string00, string1 = value1 + "", interpolate0;
-  return function() {
-    var string0 = styleValue(this, name);
-    return string0 === string1 ? null : string0 === string00 ? interpolate0 : interpolate0 = interpolate(string00 = string0, value1);
-  };
-}
-function styleFunction2(name, interpolate, value) {
-  var string00, string10, interpolate0;
-  return function() {
-    var string0 = styleValue(this, name), value1 = value(this), string1 = value1 + "";
-    if (value1 == null)
-      string1 = value1 = (this.style.removeProperty(name), styleValue(this, name));
-    return string0 === string1 ? null : string0 === string00 && string1 === string10 ? interpolate0 : (string10 = string1, interpolate0 = interpolate(string00 = string0, value1));
-  };
-}
-function styleMaybeRemove(id2, name) {
-  var on0, on1, listener0, key = "style." + name, event = "end." + key, remove2;
-  return function() {
-    var schedule = set2(this, id2), on = schedule.on, listener = schedule.value[key] == null ? remove2 || (remove2 = styleRemove2(name)) : void 0;
-    if (on !== on0 || listener0 !== listener)
-      (on1 = (on0 = on).copy()).on(event, listener0 = listener);
-    schedule.on = on1;
-  };
-}
-function style_default2(name, value, priority) {
-  var i = (name += "") === "transform" ? interpolateTransformCss : interpolate_default;
-  return value == null ? this.styleTween(name, styleNull(name, i)).on("end.style." + name, styleRemove2(name)) : typeof value === "function" ? this.styleTween(name, styleFunction2(name, i, tweenValue(this, "style." + name, value))).each(styleMaybeRemove(this._id, name)) : this.styleTween(name, styleConstant2(name, i, value), priority).on("end.style." + name, null);
-}
-
-// node_modules/d3-transition/src/transition/styleTween.js
-function styleInterpolate(name, i, priority) {
-  return function(t) {
-    this.style.setProperty(name, i.call(this, t), priority);
-  };
-}
-function styleTween(name, value, priority) {
-  var t, i0;
-  function tween() {
-    var i = value.apply(this, arguments);
-    if (i !== i0)
-      t = (i0 = i) && styleInterpolate(name, i, priority);
-    return t;
-  }
-  tween._value = value;
-  return tween;
-}
-function styleTween_default(name, value, priority) {
-  var key = "style." + (name += "");
-  if (arguments.length < 2)
-    return (key = this.tween(key)) && key._value;
-  if (value == null)
-    return this.tween(key, null);
-  if (typeof value !== "function")
-    throw new Error();
-  return this.tween(key, styleTween(name, value, priority == null ? "" : priority));
-}
-
-// node_modules/d3-transition/src/transition/text.js
-function textConstant2(value) {
-  return function() {
-    this.textContent = value;
-  };
-}
-function textFunction2(value) {
-  return function() {
-    var value1 = value(this);
-    this.textContent = value1 == null ? "" : value1;
-  };
-}
-function text_default2(value) {
-  return this.tween("text", typeof value === "function" ? textFunction2(tweenValue(this, "text", value)) : textConstant2(value == null ? "" : value + ""));
-}
-
-// node_modules/d3-transition/src/transition/textTween.js
-function textInterpolate(i) {
-  return function(t) {
-    this.textContent = i.call(this, t);
-  };
-}
-function textTween(value) {
-  var t02, i0;
-  function tween() {
-    var i = value.apply(this, arguments);
-    if (i !== i0)
-      t02 = (i0 = i) && textInterpolate(i);
-    return t02;
-  }
-  tween._value = value;
-  return tween;
-}
-function textTween_default(value) {
-  var key = "text";
-  if (arguments.length < 1)
-    return (key = this.tween(key)) && key._value;
-  if (value == null)
-    return this.tween(key, null);
-  if (typeof value !== "function")
-    throw new Error();
-  return this.tween(key, textTween(value));
-}
-
-// node_modules/d3-transition/src/transition/transition.js
-function transition_default() {
-  var name = this._name, id0 = this._id, id1 = newId();
-  for (var groups = this._groups, m = groups.length, j = 0; j < m; ++j) {
-    for (var group = groups[j], n2 = group.length, node, i = 0; i < n2; ++i) {
-      if (node = group[i]) {
-        var inherit2 = get2(node, id0);
-        schedule_default(node, name, id1, i, group, {
-          time: inherit2.time + inherit2.delay + inherit2.duration,
-          delay: 0,
-          duration: inherit2.duration,
-          ease: inherit2.ease
-        });
-      }
-    }
-  }
-  return new Transition(groups, this._parents, name, id1);
-}
-
-// node_modules/d3-transition/src/transition/end.js
-function end_default() {
-  var on0, on1, that = this, id2 = that._id, size = that.size();
-  return new Promise(function(resolve, reject) {
-    var cancel = { value: reject }, end = { value: function() {
-      if (--size === 0)
-        resolve();
-    } };
-    that.each(function() {
-      var schedule = set2(this, id2), on = schedule.on;
-      if (on !== on0) {
-        on1 = (on0 = on).copy();
-        on1._.cancel.push(cancel);
-        on1._.interrupt.push(cancel);
-        on1._.end.push(end);
-      }
-      schedule.on = on1;
-    });
-    if (size === 0)
-      resolve();
-  });
-}
-
-// node_modules/d3-transition/src/transition/index.js
-var id = 0;
-function Transition(groups, parents, name, id2) {
-  this._groups = groups;
-  this._parents = parents;
-  this._name = name;
-  this._id = id2;
-}
-function transition(name) {
-  return selection_default().transition(name);
-}
-function newId() {
-  return ++id;
-}
-var selection_prototype = selection_default.prototype;
-Transition.prototype = transition.prototype = {
-  constructor: Transition,
-  select: select_default3,
-  selectAll: selectAll_default2,
-  selectChild: selection_prototype.selectChild,
-  selectChildren: selection_prototype.selectChildren,
-  filter: filter_default2,
-  merge: merge_default2,
-  selection: selection_default2,
-  transition: transition_default,
-  call: selection_prototype.call,
-  nodes: selection_prototype.nodes,
-  node: selection_prototype.node,
-  size: selection_prototype.size,
-  empty: selection_prototype.empty,
-  each: selection_prototype.each,
-  on: on_default2,
-  attr: attr_default2,
-  attrTween: attrTween_default,
-  style: style_default2,
-  styleTween: styleTween_default,
-  text: text_default2,
-  textTween: textTween_default,
-  remove: remove_default2,
-  tween: tween_default,
-  delay: delay_default,
-  duration: duration_default,
-  ease: ease_default,
-  easeVarying: easeVarying_default,
-  end: end_default,
-  [Symbol.iterator]: selection_prototype[Symbol.iterator]
-};
-
-// node_modules/d3-ease/src/cubic.js
-function cubicInOut(t) {
-  return ((t *= 2) <= 1 ? t * t * t : (t -= 2) * t * t + 2) / 2;
-}
-
-// node_modules/d3-transition/src/selection/transition.js
-var defaultTiming = {
-  time: null,
-  // Set on use.
-  delay: 0,
-  duration: 250,
-  ease: cubicInOut
-};
-function inherit(node, id2) {
-  var timing;
-  while (!(timing = node.__transition) || !(timing = timing[id2])) {
-    if (!(node = node.parentNode)) {
-      throw new Error(`transition ${id2} not found`);
-    }
-  }
-  return timing;
-}
-function transition_default2(name) {
-  var id2, timing;
-  if (name instanceof Transition) {
-    id2 = name._id, name = name._name;
-  } else {
-    id2 = newId(), (timing = defaultTiming).time = now2(), name = name == null ? null : name + "";
-  }
-  for (var groups = this._groups, m = groups.length, j = 0; j < m; ++j) {
-    for (var group = groups[j], n2 = group.length, node, i = 0; i < n2; ++i) {
-      if (node = group[i]) {
-        schedule_default(node, name, id2, i, group, timing || inherit(node, id2));
-      }
-    }
-  }
-  return new Transition(groups, this._parents, name, id2);
-}
-
-// node_modules/d3-transition/src/selection/index.js
-selection_default.prototype.interrupt = interrupt_default2;
-selection_default.prototype.transition = transition_default2;
 
 // node_modules/d3-zoom/src/constant.js
 var constant_default3 = (x2) => () => x2;
@@ -53294,10 +53639,16 @@ var _SeismographConfig = class _SeismographConfig {
       "goldenrod",
       "firebrick",
       "darkcyan",
-      "orange",
+      "chocolate",
       "darkmagenta",
-      "mediumvioletred",
+      "mediumseagreen",
+      "rebeccapurple",
       "sienna",
+      "orchid",
+      "royalblue",
+      "mediumturquoise",
+      "chartreuse",
+      "peru",
       "black"
     ];
     this.lineWidth = 1;
@@ -53781,25 +54132,25 @@ SeismographConfig._lastID = 0;
 // src/seismographutil.ts
 var seismographutil_exports = {};
 __export(seismographutil_exports, {
+  DEFAULT_MAX_SAMPLE_PER_PIXEL: () => DEFAULT_MAX_SAMPLE_PER_PIXEL,
+  clearCanvas: () => clearCanvas,
   drawAllOnCanvas: () => drawAllOnCanvas,
-  drawConnectSegments: () => drawConnectSegments,
-  drawSegment: () => drawSegment,
-  drawSeismogram: () => drawSeismogram,
   drawSeismogramAsLine: () => drawSeismogramAsLine,
-  pixelColumn: () => pixelColumn,
   rgbaForColorName: () => rgbaForColorName
 });
-function drawAllOnCanvas(canvas, sddList, xScaleList, yScaleList, colornameList, lineWidth = 1, connectSegments = false, maxSamplePerPixelForLineDraw = 20) {
+var DEFAULT_MAX_SAMPLE_PER_PIXEL = 3;
+function clearCanvas(canvas) {
+  canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+}
+function drawAllOnCanvas(canvas, sddList, xScaleList, yScaleList, colornameList, lineWidth = 1, connectSegments = false, maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL) {
   if (canvas.height === 0) {
     return;
   }
   const context = canvas.getContext("2d");
-  if (!context) {
-    return;
+  if (!isDef(context)) {
+    throw new Error("canvas 2d context is null, should not happen...");
   }
-  context.clearRect(0, 0, canvas.width, canvas.height);
   sddList.forEach((sdd, i) => {
-    const colorRGBA = rgbaForColorName(colornameList[i]);
     const xScale = xScaleList[i];
     const yScale = yScaleList[i];
     const s2 = xScale.domain().start?.valueOf();
@@ -53811,142 +54162,37 @@ function drawAllOnCanvas(canvas, sddList, xScaleList, yScaleList, colornameList,
       if (!seismogram) {
         return;
       }
-      const secondsPerPixel = (e - s2) / 1e3 / (xScale.range[1] - xScale.range[0]);
-      const samplesPerPixel = 1 * seismogram.sampleRate * secondsPerPixel;
-      if (samplesPerPixel > maxSamplePerPixelForLineDraw) {
-        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-        drawSeismogram(imgData, sdd, xScale, yScale, colorRGBA);
-        context.putImageData(imgData, 0, 0);
-        if (connectSegments) {
-          context.save();
-          context.beginPath();
-          context.strokeStyle = colornameList[i];
-          context.lineWidth = lineWidth;
-          drawConnectSegments(sdd, context, canvas.width, xScale, yScale);
-          context.stroke();
-          context.restore();
-        }
-      } else {
-        context.save();
-        drawSeismogramAsLine(
-          sdd,
-          context,
-          canvas.width,
-          xScale,
-          yScale,
-          colornameList[i],
-          lineWidth,
-          connectSegments
-        );
-        context.restore();
-      }
+      context.save();
+      drawSeismogramAsLine(
+        sdd,
+        context,
+        canvas.width,
+        xScale,
+        yScale,
+        colornameList[i],
+        lineWidth,
+        connectSegments,
+        maxSamplePerPixelForLineDraw
+      );
+      context.restore();
     }
   });
 }
-function drawSeismogram(imgData, sdd, xScale, yScale, colorRGBA) {
-  sdd.segments.forEach((seg) => {
-    drawSegment(imgData, seg, xScale, yScale, colorRGBA);
-  });
-}
-function drawSegment(imgData, segment, xScale, yScale, colorRGBA) {
-  if (xScale.for(segment.startTime) > xScale.range[1] || xScale.for(segment.endTime) < xScale.range[0]) {
-    return;
-  }
-  const s2 = xScale.domain().start?.valueOf();
-  const e = xScale.domain().end?.valueOf();
-  if (s2 == null || e == null) {
-    throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
-  }
-  if (s2 === e) {
-    return;
-  }
-  const secondsPerPixel = (e - s2) / 1e3 / (xScale.range[1] - xScale.range[0]);
-  const samplesPerPixel = 1 * segment.sampleRate * secondsPerPixel;
-  if (!(Number.isFinite(secondsPerPixel) && Number.isFinite(samplesPerPixel))) {
-    throw new Error(`spp: ${secondsPerPixel}  spp: ${samplesPerPixel}`);
-  }
-  if (secondsPerPixel === 0 || samplesPerPixel === 0) {
-    throw new Error(`zero spp: ${secondsPerPixel}  sampp: ${samplesPerPixel}`);
-  }
-  const pixelsPerSample = 1 / samplesPerPixel;
-  const startPixel = xScale.for(segment.startTime);
-  const endPixel = xScale.for(segment.endTime);
-  let leftVisibleSample = 0;
-  let rightVisibleSample = segment.y.length;
-  if (startPixel < 0) {
-    leftVisibleSample = Math.floor(-1 * startPixel * samplesPerPixel) - 1;
-  }
-  if (endPixel > xScale.range[1] + 1) {
-    rightVisibleSample = leftVisibleSample + Math.ceil((imgData.width + 1) * samplesPerPixel) + 1;
-  }
-  let i = leftVisibleSample;
-  let prevTopPixel = null;
-  let prevBotPixel = null;
-  while (i < rightVisibleSample + 2 && i < segment.y.length) {
-    const curPixel = Math.floor(startPixel + i * pixelsPerSample);
-    if (curPixel > imgData.width) {
-      break;
-    }
-    if (curPixel < 0) {
-      i++;
-      continue;
-    }
-    let min = segment.y[i];
-    let max = segment.y[i];
-    while (i < segment.y.length && curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
-      if (min > segment.y[i]) {
-        min = segment.y[i];
-      }
-      if (max < segment.y[i]) {
-        max = segment.y[i];
-      }
-      i++;
-    }
-    const topPixelFlt = yScale(max);
-    const botPixelFlt = yScale(min);
-    const botPixel = Math.min(imgData.height - 1, Math.floor(botPixelFlt));
-    const topPixel = Math.max(0, Math.ceil(topPixelFlt));
-    pixelColumn(imgData, curPixel, botPixel, topPixel, colorRGBA);
-    if (prevTopPixel != null && prevTopPixel > botPixel + 1) {
-      const halfPixel = Math.round((prevTopPixel + botPixel) / 2);
-      pixelColumn(imgData, curPixel - 1, prevTopPixel, halfPixel, colorRGBA);
-      pixelColumn(imgData, curPixel, halfPixel - 1, botPixel, colorRGBA);
-    }
-    if (prevBotPixel !== null && prevBotPixel < topPixel - 1) {
-      const halfPixel = Math.round((prevBotPixel + topPixel) / 2);
-      pixelColumn(imgData, curPixel - 1, halfPixel - 1, prevBotPixel, colorRGBA);
-      pixelColumn(imgData, curPixel, topPixel, halfPixel, colorRGBA);
-    }
-    prevTopPixel = topPixel;
-    prevBotPixel = botPixel;
-  }
-}
-function pixelColumn(imgData, xPixel, bot, top2, colorRGBA) {
-  if (bot >= imgData.height) {
-    bot = imgData.height - 1;
-  }
-  if (top2 < 0) {
-    top2 = 0;
-  }
-  for (let p = top2; p <= bot; p++) {
-    const offset2 = 4 * (p * imgData.width + xPixel);
-    imgData.data.set(colorRGBA, offset2);
-  }
-}
-function drawSeismogramAsLine(sdd, context, width, xScale, yScale, color2, lineWidth = 1, connectSegments = false) {
+function drawSeismogramAsLine(sdd, context, width, xScale, yScale, color2, lineWidth = 1, connectSegments = false, maxSamplePerPixelForLineDraw = 20) {
   const seismogram = sdd.seismogram;
   if (!seismogram) {
     return;
   }
   let firstTime = true;
-  seismogram.segments.forEach((segment, segIdx) => {
+  const s2 = xScale.domain().start?.valueOf();
+  const e = xScale.domain().end?.valueOf();
+  if (s2 == null || e == null) {
+    throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
+  }
+  let horizontalPixel = null;
+  seismogram.segments.forEach((segment) => {
     if (xScale.for(segment.startTime) > xScale.range[1] || xScale.for(segment.endTime) < xScale.range[0]) {
       return;
-    }
-    const s2 = xScale.domain().start?.valueOf();
-    const e = xScale.domain().end?.valueOf();
-    if (s2 == null || e == null) {
-      throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
     }
     const secondsPerPixel = (e - s2) / 1e3 / (xScale.range[1] - xScale.range[0]);
     const samplesPerPixel = 1 * segment.sampleRate * secondsPerPixel;
@@ -53967,33 +54213,83 @@ function drawSeismogramAsLine(sdd, context, width, xScale, yScale, color2, lineW
       context.beginPath();
       context.strokeStyle = color2;
       context.lineWidth = lineWidth;
+      horizontalPixel = yScale(segment.y[leftVisibleSample]);
       context.moveTo(
         leftVisiblePixel,
-        yScale(segment.y[leftVisibleSample])
+        horizontalPixel
       );
       firstTime = false;
     }
-    for (let i = leftVisibleSample; i < rightVisibleSample + 2 && i < segment.y.length; i++) {
-      context.lineTo(
-        startPixel + i * pixelsPerSample + 0.5,
-        Math.round(yScale(segment.y[i])) + 0.5
-      );
+    if (samplesPerPixel <= maxSamplePerPixelForLineDraw) {
+      for (let i = leftVisibleSample; i < rightVisibleSample + 2 && i < segment.y.length; i++) {
+        context.lineTo(
+          startPixel + i * pixelsPerSample,
+          Math.round(yScale(segment.y[i]))
+        );
+      }
+    } else {
+      let i = leftVisibleSample;
+      while (i < rightVisibleSample + 2 && i < segment.y.length) {
+        const curPixel = Math.floor(startPixel + i * pixelsPerSample);
+        let min = segment.y[i];
+        let max = segment.y[i];
+        let minIdx = i;
+        let maxIdx = i;
+        while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
+          if (min > segment.y[i]) {
+            min = segment.y[i];
+            minIdx = i;
+          }
+          if (max < segment.y[i]) {
+            max = segment.y[i];
+            maxIdx = i;
+          }
+          i++;
+        }
+        const topPixelFlt = yScale(max);
+        const botPixelFlt = yScale(min);
+        const botPixel = Math.round(botPixelFlt);
+        const topPixel = Math.round(topPixelFlt);
+        if (topPixel === botPixel) {
+          if (horizontalPixel === topPixel) {
+            continue;
+          } else {
+            if (horizontalPixel !== null) {
+              const y2 = horizontalPixel;
+              context.lineTo(curPixel, y2);
+            }
+            horizontalPixel = topPixel;
+          }
+        } else if (botPixelFlt - topPixelFlt < 1.25) {
+          context.lineTo(curPixel, topPixel);
+          horizontalPixel = topPixel;
+        } else {
+          if (horizontalPixel !== null) {
+            const y2 = horizontalPixel;
+            context.lineTo(curPixel - 0.5, y2);
+            horizontalPixel = null;
+          }
+          if (minIdx < maxIdx) {
+            context.lineTo(curPixel - 0.5, botPixel - 0.5);
+            context.lineTo(curPixel + 0.5, topPixel + 0.5);
+          } else {
+            context.lineTo(curPixel - 0.5, topPixel + 0.5);
+            context.lineTo(curPixel + 0.5, botPixel - 0.5);
+          }
+        }
+      }
+      if (horizontalPixel !== null) {
+        const curPixel = Math.floor(startPixel + (rightVisibleSample + 1) * pixelsPerSample);
+        const y2 = horizontalPixel;
+        context.lineTo(curPixel - 0.5, y2);
+        horizontalPixel = null;
+      }
     }
     if (!connectSegments) {
       context.stroke();
     }
   });
   context.stroke();
-}
-function drawConnectSegments(sdd, context, width, xScale, yScale) {
-  let prev = null;
-  sdd.seismogram?.segments.forEach((seg, idx) => {
-    if (prev !== null) {
-      context.lineTo(xScale.for(seg.startTime), yScale(seg.y[0]));
-    }
-    context.moveTo(xScale.for(seg.endTime), yScale(seg.y[seg.y.length - 1]));
-    prev = seg;
-  });
 }
 function rgbaForColorName(name) {
   const out = new Uint8ClampedArray(4);
@@ -54427,7 +54723,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     __publicField(this, "time_scalable");
     __publicField(this, "amp_scalable");
     __publicField(this, "_resizeObserver");
-    __publicField(this, "minmax_sample_pixels", 20);
+    __publicField(this, "minmax_sample_pixels", DEFAULT_MAX_SAMPLE_PER_PIXEL);
     this.outerWidth = -1;
     this.outerHeight = -1;
     this.throttleRescale = null;
@@ -54479,6 +54775,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     if (this.seismographConfig.linkedAmplitudeScale) {
       this.seismographConfig.linkedAmplitudeScale.link(this.amp_scalable);
     }
+    this.redoDisplayYScale();
     this.g = this.svg.append("g").classed("marginTransform", true).attr(
       "transform",
       "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")"
@@ -54515,7 +54812,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     return super.seisData;
   }
   set seisData(seisData) {
-    super._seisDataList = [];
+    this._seisDataList = [];
     this.appendSeisData(seisData);
   }
   get seismographConfig() {
@@ -54693,6 +54990,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     if (!canvas) {
       return;
     }
+    clearCanvas(canvas);
     drawAllOnCanvas(
       canvas,
       this._seisDataList,
@@ -55269,12 +55567,13 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
       const allSameUnits = firstSensitivity && this._seisDataList.every(
         (sdd) => isDef(firstSensitivity) && sdd.sensitivity && firstSensitivity.inputUnits === sdd.sensitivity.inputUnits
       );
-      const unitList = this._seisDataList.map((sdd) => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
-      if (!allSameUnits) {
-        this.seismographConfig.ySublabel = unitList;
-      }
-      if (allSameUnits && this.seismographConfig.ySublabelIsUnits) {
-        this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
+      if (this.seismographConfig.ySublabelIsUnits) {
+        const unitList = this._seisDataList.map((sdd) => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
+        if (!allSameUnits) {
+          this.seismographConfig.ySublabel = unitList;
+        } else {
+          this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
+        }
       }
     } else {
       if (this.seismographConfig.ySublabelIsUnits) {
@@ -56150,6 +56449,7 @@ __export(quakeml_exports, {
   DataUsed: () => DataUsed,
   EventDescription: () => EventDescription,
   EventParameters: () => EventParameters,
+  FAKE_EMPTY_XML: () => FAKE_EMPTY_XML2,
   FAKE_ORIGIN_TIME: () => FAKE_ORIGIN_TIME,
   FocalMechanism: () => FocalMechanism,
   IRIS_NS: () => IRIS_NS,
@@ -56177,6 +56477,7 @@ __export(quakeml_exports, {
   WaveformID: () => WaveformID,
   createQuakeClickEvent: () => createQuakeClickEvent,
   createQuakeFromValues: () => createQuakeFromValues,
+  fetchQuakeML: () => fetchQuakeML,
   parseQuakeML: () => parseQuakeML,
   parseUtil: () => parseUtil2
 });
@@ -56189,6 +56490,7 @@ var USGS_HOST = "earthquake.usgs.gov";
 var UNKNOWN_MAG_TYPE = "unknown";
 var UNKNOWN_PUBLIC_ID = "unknownId";
 var FAKE_ORIGIN_TIME = DateTime.fromISO("1900-01-01T00:00:00Z");
+var FAKE_EMPTY_XML2 = '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
 var QUAKE_CLICK_EVENT = "quakeclick";
 function createQuakeClickEvent(q, mouseclick) {
   const detail = {
@@ -57667,6 +57969,23 @@ function createQuakeFromValues(publicId, time, latitude, longitude, depth) {
   quake.publicId = publicId;
   quake.originList.push(origin);
   return quake;
+}
+function fetchQuakeML(url, timeoutSec2 = 10, nodata = 204) {
+  const fetchInit = defaultFetchInitObj(XML_MIME);
+  const host = new URL(url).hostname;
+  return doFetchWithTimeout(url, fetchInit, timeoutSec2 * 1e3).then((response) => {
+    if (response.status === 200) {
+      return response.text();
+    } else if (response.status === 204 || isDef(nodata) && response.status === nodata) {
+      return FAKE_EMPTY_XML2;
+    } else {
+      throw new Error(`Status not successful: ${response.status}`);
+    }
+  }).then(function(rawXmlText) {
+    return new DOMParser().parseFromString(rawXmlText, XML_MIME);
+  }).then((rawXml) => {
+    return parseQuakeML(rawXml, host);
+  });
 }
 var _grabAllElComment = function(xml, tagName) {
   const out = [];
@@ -61319,10 +61638,13 @@ function calcOnePixelDuration(seismograph) {
   }
   timerInterval = timerInterval / pixels;
   if (timerInterval === 0) {
-    timerInterval = 1e3;
+    timerInterval = 100;
   }
   while (timerInterval > 0 && timerInterval < 50) {
     timerInterval *= 2;
+  }
+  if (timerInterval > 250) {
+    timerInterval /= 2;
   }
   return Duration.fromMillis(timerInterval);
 }
@@ -66956,14 +67278,12 @@ var fdsnevent_exports = {};
 __export(fdsnevent_exports, {
   EarthquakeSearch: () => EarthquakeSearch,
   EventQuery: () => EventQuery,
-  FAKE_EMPTY_XML: () => FAKE_EMPTY_XML,
   SERVICE_NAME: () => SERVICE_NAME3,
   SERVICE_VERSION: () => SERVICE_VERSION3,
   USGS_HOST: () => USGS_HOST
 });
 var SERVICE_VERSION3 = 1;
 var SERVICE_NAME3 = `fdsnws-event-${SERVICE_VERSION3}`;
-var FAKE_EMPTY_XML = '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
 var EventQuery = class extends FDSNCommon {
   constructor(host) {
     if (!isNonEmptyStringArg(host)) {
@@ -67531,7 +67851,7 @@ var EventQuery = class extends FDSNCommon {
       if (response.status === 200) {
         return response.text();
       } else if (response.status === 204 || isDef(this._nodata) && response.status === this._nodata) {
-        return FAKE_EMPTY_XML;
+        return FAKE_EMPTY_XML2;
       } else {
         throw new Error(`Status not successful: ${response.status}`);
       }
@@ -67987,7 +68307,6 @@ var fdsnstation_exports = {};
 __export(fdsnstation_exports, {
   CHANNEL_SEARCH_ELEMENT: () => CHANNEL_SEARCH_ELEMENT,
   ChannelSearch: () => ChannelSearch,
-  FAKE_EMPTY_XML: () => FAKE_EMPTY_XML2,
   IRIS_HOST: () => IRIS_HOST,
   LEVELS: () => LEVELS,
   LEVEL_CHANNEL: () => LEVEL_CHANNEL,
@@ -68010,7 +68329,6 @@ var LEVELS = [
 ];
 var SERVICE_VERSION4 = 1;
 var SERVICE_NAME4 = `fdsnws-station-${SERVICE_VERSION4}`;
-var FAKE_EMPTY_XML2 = '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>';
 var StationQuery = class extends FDSNCommon {
   /**
    * Construct a query
@@ -68679,7 +68997,7 @@ var StationQuery = class extends FDSNCommon {
       if (response.status === 200) {
         return response.text();
       } else if (response.status === 204 || isDef(this._nodata) && response.status === this._nodata) {
-        return FAKE_EMPTY_XML2;
+        return FAKE_EMPTY_XML;
       } else {
         throw new Error(`Status not successful: ${response.status}`);
       }
@@ -68699,7 +69017,7 @@ var StationQuery = class extends FDSNCommon {
    */
   postQueryRawXml(level, postLines) {
     if (postLines.length === 0) {
-      return Promise.resolve(FAKE_EMPTY_XML2).then(function(rawXmlText) {
+      return Promise.resolve(FAKE_EMPTY_XML).then(function(rawXmlText) {
         return new DOMParser().parseFromString(rawXmlText, "text/xml");
       });
     } else {
@@ -68714,7 +69032,7 @@ var StationQuery = class extends FDSNCommon {
         if (response.status === 200) {
           return response.text();
         } else if (response.status === 204 || isDef(this._nodata) && response.status === this._nodata) {
-          return FAKE_EMPTY_XML2;
+          return FAKE_EMPTY_XML;
         } else {
           throw new Error(`Status not successful: ${response.status}`);
         }
@@ -71259,11 +71577,6 @@ __export(seedlink4_exports, {
   SE_PACKET_SIGNATURE: () => SE_PACKET_SIGNATURE,
   SeedlinkConnection: () => SeedlinkConnection2
 });
-
-// src/version.ts
-var version = "3.1.1";
-
-// src/seedlink4.ts
 var SEEDLINK4_PROTOCOL = "SLPROTO4.0";
 var MINISEED_2_FORMAT = "2";
 var MINISEED_3_FORMAT = "3";
@@ -72931,12 +73244,14 @@ var SeismogramLoader = class {
               allDistDeg.push(daz.distanceDeg);
             }
           }
-          const taupQuery = new TraveltimeQuery();
-          taupQuery.distdeg(allDistDeg);
-          taupQuery.phases(allPhasesWithoutOrigin);
-          ttpromiseList.push(
-            Promise.all([q, taupQuery.queryJson()])
-          );
+          if (allDistDeg.length > 0) {
+            const taupQuery = new TraveltimeQuery();
+            taupQuery.distdeg(allDistDeg);
+            taupQuery.phases(allPhasesWithoutOrigin);
+            ttpromiseList.push(
+              Promise.all([q, taupQuery.queryJson()])
+            );
+          }
         }
         return Promise.all([Promise.all(ttpromiseList), netList, quakeList]);
       }
@@ -72951,7 +73266,7 @@ var SeismogramLoader = class {
       for (const [quake, ttjson] of ttMap) {
         for (const station of allStations(netList)) {
           if (!station.timeRange.contains(quake.time)) {
-            break;
+            continue;
           }
           const daz = distaz(
             station.latitude,
@@ -72959,14 +73274,27 @@ var SeismogramLoader = class {
             quake.latitude,
             quake.longitude
           );
+          const stationArrivals = [];
+          for (const a of ttjson.arrivals) {
+            if (Math.abs(a.distdeg % 360 - daz.distanceDeg % 360) < 1e-6 || Math.abs(360 - a.distdeg % 360 - daz.distanceDeg % 360) < 1e-6) {
+              stationArrivals.push(a);
+            }
+          }
+          const station_ttjson = {
+            model: ttjson.model,
+            sourcedepth: ttjson.sourcedepth,
+            receiverdepth: ttjson.receiverdepth,
+            phases: ttjson.phases,
+            arrivals: stationArrivals
+          };
           let startArrival = null;
           let endArrival = null;
           for (const pname of this.startPhaseList) {
             if (pname === "origin" && (startArrival === null || startArrival.time > 0)) {
               startArrival = createOriginArrival(daz.distanceDeg);
             } else {
-              for (const a of ttjson.arrivals) {
-                if ((Math.abs(a.distdeg % 360 - daz.distanceDeg % 360) < 1e-6 || Math.abs(360 - a.distdeg % 360 - daz.distanceDeg % 360) < 1e-6) && a.phase === pname && (startArrival === null || startArrival.time > a.time)) {
+              for (const a of stationArrivals) {
+                if (a.phase === pname && (startArrival === null || startArrival.time > a.time)) {
                   startArrival = a;
                 }
               }
@@ -72976,8 +73304,8 @@ var SeismogramLoader = class {
             if (pname === "origin" && (endArrival === null || endArrival.time < 0)) {
               endArrival = createOriginArrival(daz.distanceDeg);
             } else {
-              for (const a of ttjson.arrivals) {
-                if ((Math.abs(a.distdeg % 360 - daz.distanceDeg % 360) < 1e-6 || Math.abs(360 - a.distdeg % 360 - daz.distanceDeg % 360) < 1e-6) && a.phase === pname && (endArrival === null || endArrival.time < a.time)) {
+              for (const a of stationArrivals) {
+                if (a.phase === pname && (endArrival === null || endArrival.time < a.time)) {
                   endArrival = a;
                 }
               }
@@ -72987,11 +73315,14 @@ var SeismogramLoader = class {
             const startTime = quake.time.plus(Duration.fromMillis(1e3 * startArrival.time)).plus(this.startOffset);
             const endTime = quake.time.plus(Duration.fromMillis(1e3 * endArrival.time)).plus(this.endOffset);
             const timeRange = Interval.fromDateTimes(startTime, endTime);
-            const phaseMarkers = createMarkersForTravelTimes(quake, ttjson);
+            const phaseMarkers = createMarkersForTravelTimes(quake, station_ttjson);
             if (this.markOrigin) {
               phaseMarkers.push(createMarkerForOriginTime(quake));
             }
             for (const chan of station.channels) {
+              if (!chan.timeRange.contains(quake.time)) {
+                continue;
+              }
               const sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
                 chan,
                 timeRange
