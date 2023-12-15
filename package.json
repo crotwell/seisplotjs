@@ -83,7 +83,7 @@
   "bugs": {
     "url": "https://github.com/crotwell/seisplotjs/issues"
   },
-  "homepage": "https://github.com/crotwell/seisplotjs",
+  "homepage": "http://crotwell.github.io/seisplotjs/",
   "devDependencies": {
     "@types/d3-array": "^3.0.5",
     "@types/d3-axis": "^3.0.2",
