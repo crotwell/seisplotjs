@@ -26,7 +26,9 @@ import {
   SeismographConfig,
   numberFormatWrapper,
 } from "./seismographconfig";
-import { drawAllOnCanvas, clearCanvas } from "./seismographutil";
+import {
+  drawAllOnCanvas, clearCanvas, DEFAULT_MAX_SAMPLE_PER_PIXEL
+} from "./seismographutil";
 import {XHTML_NS} from "./util";
 import type { MarkerType } from "./seismogram";
 import type { TraveltimeJsonType } from "./traveltime";
