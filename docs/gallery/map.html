@@ -12,7 +12,10 @@
   </style>
 </head>
 <body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+  <h5><a href="../index.html" class="">Seisplotjs</a>
+     - <a href="index.html" class="">Gallery</a>
+    <span class="sp_version">3.1.2</span>
+  </h5>
 
   <h3>Map:</h3>
   <h5 id="sp-station-quake-map">&lt;sp-station-quake-map&gt;</h5>
@@ -22,11 +25,21 @@
     <sp-quake-table></sp-quake-table>
   </div>
   <script type="module">
-    import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
+    import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+    sp.util.updateVersionText('.sp_version');
+    
+    const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
+    const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
+    const mapList = document.querySelectorAll('sp-station-quake-map');
+    mapList.forEach( map => {
+      map.setAttribute(sp.leafletutil.TILE_TEMPLATE, tileURL);
+      map.setAttribute(sp.leafletutil.TILE_ATTRIBUTION, tileAttrib);
+    });
+
     let allStations = [];
     sp.dataset.load('dataset.zip')
     .then((ds) => {
-      const mapList = document.querySelectorAll('sp-station-quake-map');
+
       mapList.forEach( map => {
         // plot quakes and station from seismograms
         //map.seisData = ds.waveforms;

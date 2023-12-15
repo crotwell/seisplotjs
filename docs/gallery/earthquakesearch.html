@@ -3,10 +3,14 @@
   <head>
     <meta charset='utf-8'>
     <title>Earthquake Search</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="../flavicon.png" />
   </head>
   <body>
-    <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+    <h5><a href="../index.html" class="">Seisplotjs</a>
+       - <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.2</span>
+    </h5>
 
     <div id='message'>
       <p></p>
@@ -29,7 +33,11 @@
     <h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
 
     <script type="module" >
-      import {fdsnevent} from '../seisplotjs_3.1.1_standalone.mjs';
+      import {
+        fdsnevent, util
+      } from '../seisplotjs_3.1.2_standalone.mjs';
+      util.updateVersionText('.sp_version');
+
       const eqSearch = document.querySelector('sp-earthquake-search');
       eqSearch.addEventListener("change", () => {
         const eqQuery = eqSearch.populateQuery();

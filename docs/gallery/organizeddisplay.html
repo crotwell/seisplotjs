@@ -11,12 +11,15 @@
       display: block;
     }
     sp-organized-display {
-      min-height: 100px;
+      min-height: 200px;
     }
   </style>
 </head>
 <body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+  <h5><a href="../index.html" class="">Seisplotjs</a>
+     - <a href="index.html" class="">Gallery</a>
+    <span class="sp_version">3.1.2</span>
+  </h5>
 
   <h3>Organized Display:</h3>
   <h5 id="sp-organized-display">&lt;sp-organized-display&gt;</h5>
@@ -25,7 +28,9 @@
   </div>
   <script type="module">
 
-    import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
+    import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+    sp.util.updateVersionText('.sp_version');
+
     sp.dataset.load('dataset.zip')
       .then((ds) => {
         let seisConfig = new sp.seismographconfig.SeismographConfig();
@@ -33,6 +38,7 @@
         seisConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
         seisConfig.doGain = true;
         seisConfig.doRmean = true;
+        //seisConfig.minHeight = 400;
         seisConfig.isRelativeTime = false;
         console.log(`seisconfig in html: ${seisConfig.configId}  ${seisConfig.doGain}`)
         document.querySelectorAll('sp-organized-display').forEach( graph => {

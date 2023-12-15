@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-
+import {version } from './version';
 import { DateTime, Duration, Interval, FixedOffsetZone } from "luxon";
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
@@ -757,4 +757,10 @@ export const XHTML_NS = "http://www.w3.org/1999/xhtml";
 
 export function createSVGElement(name: string): SVGElement {
   return document.createElementNS(SVG_NS, name);
+}
+
+export function updateVersionText(selector = "#sp-version") {
+  document.querySelectorAll(selector).forEach( el => {
+    el.textContent = version;
+  });
 }

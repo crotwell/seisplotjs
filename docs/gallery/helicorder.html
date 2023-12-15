@@ -14,7 +14,10 @@
   </style>
 </head>
 <body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+  <h5><a href="../index.html" class="">Seisplotjs</a>
+     - <a href="index.html" class="">Gallery</a>
+    <span class="sp_version">3.1.2</span>
+  </h5>
 
   <h3>Helicorder:</h3>
   <h5 id="sp-helicorder">&lt;sp-helicorder&gt;</h5>
@@ -23,8 +26,9 @@
   </div>
 
   <script type="module">
-    import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
-
+    import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+    sp.util.updateVersionText('.sp_version');
+    
     let dataArray = new Float32Array(1000).map(function(d, i) {
       return Math.sin(2*Math.PI*i/100) * 100;
     });

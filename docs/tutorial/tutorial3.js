@@ -1,5 +1,6 @@
 // snip start map
-import * as sp from '../seisplotjs_3.1.1_standalone.mjs';
+import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+sp.util.updateVersionText('.sp_version');
 
 // snip start mapcss
 const mymap = document.querySelector('sp-station-quake-map');

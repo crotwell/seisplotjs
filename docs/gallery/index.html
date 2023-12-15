@@ -6,6 +6,7 @@
     <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
     <meta name='viewport' content='width=device-width,initial-scale=1'>
     <link rel="icon" type="image/png" href="../flavicon.png" />
+    <link rel="stylesheet" href="style.css">
     <link href='../bass.css' rel='stylesheet'>
     <link href='../split.css' rel='stylesheet'>
     <link href="../prism.css" rel="stylesheet" />
@@ -29,7 +30,7 @@
         <section class='p2 mb2 clearfix bg-white minishadow'>
         <div class='clearfix'>
 
-          <h1>Seisplotjs Gallery</h1>
+          <h1>Seisplotjs Gallery <span class="sp_version">3.1.2</span></h1>
           <p>Very small examples of web components from seisplotjs.</p>
 
           <ul>
@@ -192,6 +193,13 @@
               </p>
             </li>
 
+            <li>
+              <h3><a href="colors.html">
+                &lt;sp-colors&gt;</a>
+              </h3>
+              <p>A list of colors.
+              </p>
+            </li>
           </ul>
 
         </div>
@@ -199,6 +207,10 @@
       </div>
     </div>
 
+    <script type="module">
+      import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+      sp.util.updateVersionText('.sp_version');
+    </script>
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({

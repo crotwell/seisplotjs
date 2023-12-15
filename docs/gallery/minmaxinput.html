@@ -7,7 +7,10 @@
    <title>Min-max input</title>
 </head>
 <body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a></h5>
+  <h5><a href="../index.html" class="">Seisplotjs</a>
+     - <a href="index.html" class="">Gallery</a>
+    <span class="sp_version">3.1.2</span>
+  </h5>
 
   <h3>Min Max:</h3>
   <h5 id="sp-minmax">&lt;sp-minmax&gt;</h5>
@@ -21,7 +24,10 @@
   </div>
 
   <script type="module">
-    import {components} from '../seisplotjs_3.1.1_standalone.mjs';
+    import {
+      components, util
+    } from '../seisplotjs_3.1.2_standalone.mjs';
+    util.updateVersionText('.sp_version');
 
     const outputArea = document.querySelector('#output');
     const minmaxEl = document.querySelector('sp-minmax');
