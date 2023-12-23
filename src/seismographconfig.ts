@@ -729,6 +729,8 @@ export class SeismographConfig {
         },
       };
     });
+    // empty cache
+    out.__cache__ = new SeismographConfigCache();
     return out;
   }
 
