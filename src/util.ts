@@ -599,12 +599,11 @@ export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
   const out = {};
   if (fetchInit) {
     for (const [key, value] of Object.entries(fetchInit)) {
-      // @ts-ignore
       if (Array.isArray(value)) {
-        // @ts-ignore
+        // @ts-expect-error
         out[key] = value.slice();
       } else {
-        // @ts-ignore
+        // @ts-expect-error
         out[key] = value;
       }
     }
@@ -739,7 +738,7 @@ export function meanOfSlice(
   totalPts: number,
 ): number {
   if (dataSlice.length < 8) {
-    // @ts-ignore
+    // @ts-expect-error
     return dataSlice.reduce(function(acc: number, val: number): number {
       return acc + val;
     }, 0) / totalPts;

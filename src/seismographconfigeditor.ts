@@ -174,7 +174,6 @@ export function createEditor(
         .attr("name", `color${cindex + 1}`)
         .property("value", color)
         .on("change", function () {
-          // @ts-ignore
           const val = d3select(this).property("value");
           config.lineColors[cindex] = val;
           colorspan.style("color", val);
@@ -243,10 +242,10 @@ function createBooleanOptionByKey(
     .append("input")
     .attr("type", "checkbox")
     .attr("id", key)
-    .attr("name", key) // @ts-ignore
+    .attr("name", key) // @ts-expect-error
     .property("checked", config[key])
     .on("change", function () {
-      // @ts-ignore
+      // @ts-expect-error
       config[key] = d3select(this).property("checked");
       onChange();
     });
@@ -271,7 +270,6 @@ function createTextOption(
     .attr("name", key)
     .property("value", config[key])
     .on("change", function () {
-      // @ts-ignore
       config[key] = d3select(this).property("value");
       onChange();
     });
@@ -295,7 +293,6 @@ function createNumberOption(
     .attr("name", key)
     .property("value", config[key])
     .on("change", function () {
-      // @ts-ignore
       config[key] = Number.parseInt(d3select(this).property("value"));
       onChange();
     });

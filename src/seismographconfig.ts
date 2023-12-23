@@ -700,12 +700,12 @@ export class SeismographConfig {
   clone(): SeismographConfig {
     const out = new SeismographConfig();
     Object.getOwnPropertyNames(this).forEach(name => {
-      // @ts-ignore
+      // @ts-expect-error
       if (Array.isArray(this[name])) {
-        // @ts-ignore
+        // @ts-expect-error
         out[name] = this[name].slice();
       } else {
-        // @ts-ignore
+        // @ts-expect-error
         out[name] = this[name];
       }
 
@@ -737,7 +737,7 @@ export class SeismographConfig {
   toString(): string {
     let outS = "";
     Object.getOwnPropertyNames(this).forEach(name => {
-      // @ts-ignore
+      // @ts-expect-error
       outS += `  seisConfig.${name} = ${JSON.stringify(this[name])}\n`;
     });
     return outS;

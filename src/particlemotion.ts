@@ -374,19 +374,18 @@ export class ParticleMotion extends SeisPlotElement {
       .attr("marker-end", "url(#arrow)")
       .attr(
         "d",
-        // @ts-ignore
+        // @ts-expect-error
         d3line()
           .curve(d3curveLinear)
           .x((dd) => {
             // no idea why typescript thinks dd is [number, number]
             // when it is just number
-            // @ts-ignore
+            // @ts-expect-error
             return this.xScale(dd);
           })
           .y((d, i) => {
             // no idea why typescript thinks dd is [number, number]
             // when it is just number
-            // @ts-ignore
             return this.yScale(segB.yAtIndex(idxB + i));
           }),
       );

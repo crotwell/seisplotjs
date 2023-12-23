@@ -940,7 +940,7 @@ export class FedCatalogQuery extends FDSNCommon {
         r.stationQuery = stationQuery;
         fedCatalogResult.params.forEach((v, k) => {
           const field = `_${k}`;
-          // @ts-ignore
+          // @ts-expect-error
           stationQuery[field] = v;
         });
 
@@ -987,7 +987,7 @@ export class FedCatalogQuery extends FDSNCommon {
       r.dataSelectQuery = dataSelectQuery;
       fedCatalogResult.params.forEach((k, v) => {
         const field = `_${k}`;
-        // @ts-ignore
+        // @ts-expect-error
         dataSelectQuery[field] = v;
       });
 

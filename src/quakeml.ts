@@ -2017,13 +2017,14 @@ export function createQuakeFromValues(publicId: string,
  * Fetches and parses QuakeML from a URL. This can be used in instances where
  * a static quakeML file is available on a web site instead of via a web
  * service with query paramters.
- * @param  url             the url to download from
- * @param  timeoutSec=10   tiemout in case of failed connection
- * @return               Promise to parsed quakeML as an EventParameters object
+ * @param  url          the url to download from
+ * @param  timeoutSec   timeout seconds in case of failed connection
+ * @param nodata        nodata http error code
+ * @returns             Promise to parsed quakeML as an EventParameters object
  */
 export function fetchQuakeML(url: string|URL, timeoutSec=10, nodata=204): Promise<EventParameters> {
   const fetchInit = defaultFetchInitObj(XML_MIME);
-  const host = new URL(url).hostname
+  const host = new URL(url).hostname;
   return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000)
     .then(response => {
       if (response.status === 200) {

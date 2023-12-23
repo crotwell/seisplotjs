@@ -100,7 +100,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
 
     while (wrapper.firstChild) {
-      // @ts-ignore
+      // @ts-expect-error
       wrapper.removeChild(wrapper.lastChild);
     }
     const qIndex = this.plottype.indexOf("?");

@@ -392,7 +392,7 @@ export class Seismograph extends SeisPlotElement {
   enableZoom(): void {
     const mythis = this;
     const z = this.svg.call(
-      // @ts-ignore
+      // @ts-expect-error
       d3zoom().on("zoom", function(e) {
         mythis.zoomed(e);
       }),
@@ -836,7 +836,7 @@ export class Seismograph extends SeisPlotElement {
             .select(".axis--y")
             .transition()
             .duration(delay / 2)
-            // @ts-ignore
+            // @ts-expect-error
             .call(yAxis);
         }
 
@@ -845,7 +845,7 @@ export class Seismograph extends SeisPlotElement {
             .select(".axis--y-right")
             .transition()
             .duration(delay / 2)
-            // @ts-ignore
+            // @ts-expect-error
             .call(yAxisRight);
         }
 
@@ -1013,7 +1013,6 @@ export class Seismograph extends SeisPlotElement {
         return "translate(" + textx + "," + 0 + ")";
       })
       .each(function(mh: MarkerHolderType) {
-        // @ts-ignore
         const drawG = d3select(this);
         drawG.classed(mh.marker.name, true).classed(mh.marker.markertype, true);
         const innerTextG = drawG

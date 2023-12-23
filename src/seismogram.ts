@@ -1083,13 +1083,12 @@ export class SeismogramDisplayData {
     const handled = ["_seismogram", "_statsCache", "_sourceId"];
     Object.assign(out, this);
     Object.getOwnPropertyNames(this).forEach(name => {
-      // @ts-ignore
+      // @ts-expect-error
       const v = this[name];
       if (handled.find(n => name === n)) {
         // handled below
-        // @ts-ignore
       } else if (Array.isArray(v)) {
-        // @ts-ignore
+        // @ts-expect-error
         out[name] = v.slice();
       }
     });

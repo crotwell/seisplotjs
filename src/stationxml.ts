@@ -1485,9 +1485,10 @@ export function uniqueNetworks(
  * Fetches and parses StationXML from a URL. This can be used in instances where
  * a static stationXML file is available on a web site instead of via a web
  * service with query paramters.
- * @param  url             the url to download from
- * @param  timeoutSec=10   tiemout in case of failed connection
- * @return               Promise to parsed quakeML as an EventParameters object
+ * @param  url          the url to download from
+ * @param  timeoutSec   timeout in case of failed connection
+ * @param nodata        http code for no data
+ * @returns             Promise to parsed StationXML as an Network array
  */
 export function fetchStationXml(url: string|URL, timeoutSec=10, nodata=204): Promise<Array<Network>> {
   const fetchInit = defaultFetchInitObj(XML_MIME);

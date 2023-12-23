@@ -263,7 +263,7 @@ test("find end len 2 test", () => {
     const yValues = new Float32Array([3, 0]);
     const sampleRate = 20.0;
     const startTime = isoToDateTime("2013-02-08T09:30:26");
-    const endTime = isoToDateTime("2013-02-08T09:30:26.050")
+    const endTime = isoToDateTime("2013-02-08T09:30:26.050");
 
     const seisA = Seismogram.fromContiguousData(yValues, sampleRate, startTime);
     const sddA = SeismogramDisplayData.fromSeismogram(seisA);
