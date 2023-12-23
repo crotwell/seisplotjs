@@ -491,21 +491,28 @@ export class BTime {
 
   /**
    * Converts this BTime to a luxon utc DateTime. Note DateTime's precision
-   * is limited to milliseconds.
+   * is limited to milliseconds and leap seconds are not supported,
+   * ie 60 seconds returns DateTime.invalid.
    *
    * @returns         BTime as a DateTime
    */
   toDateTime(): DateTime {
     let millis = Math.round(this.tenthMilli / 10);
-    const addSec =  Math.floor(millis/1000);
-    millis = millis - 1000 * addSec;
-    return DateTime.fromObject({year: this.year,
+    if (this.sec === 60) {
+      // luxon doesn't handle leap seconds, so invalid???
+      return DateTime.invalid(
+        "Leap seconds not supported",
+        `seconds value ${this.sec} is a leap second, but luxon does not support`
+      );
+    }
+    const d = DateTime.fromObject({year: this.year,
                                 ordinal: this.jday,
                                 hour: this.hour,
                                 minute: this.min,
-                                second: this.sec + addSec,
-                                millisecond: millis},
+                                second: this.sec,
+                                millisecond: 0},
                               UTC_OPTIONS);
+    return d.plus(millis)
   }
 }
 

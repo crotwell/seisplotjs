@@ -34,5 +34,16 @@ test("clone fetch init", () => {
   const fetchInit = util.defaultFetchInitObj();
   const cloned = util.cloneFetchInitObj(fetchInit);
   expect(cloned).toMatchObject(fetchInit);
-  
+
+});
+
+test("isoToDateTime", () => {
+  const d = util.isoToDateTime('2019-07-04T05:46:23');
+  expect(d.toFormat("HH:mm")).toBe("05:46");
+});
+
+
+test("luxon leap second", () => {
+  const d = util.isoToDateTime('2016-12-31T23:59:60');
+  expect(d.isValid).toBeFalse();
 });

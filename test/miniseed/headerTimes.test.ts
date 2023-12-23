@@ -27,3 +27,16 @@ test("contig", () => {
   expect(dhFirst.timeOfSample(dhFirst.numSamples)).toEqual(dhSecond.startTime);
   expect(miniseed.areContiguous(drFirst, drSecond)).toBe(true);
 });
+
+test("tenth millis 9999", () => {
+  const btime = new miniseed.BTime(1999, 365, 23, 59, 59, 9999);
+  const dt = btime.toDateTime();
+  expect(dt.year).toEqual(2000);
+  expect(dt.month).toEqual(1);
+  expect(dt.day).toEqual(1);
+  expect(dt.hour).toEqual(0);
+  expect(dt.minute).toEqual(0);
+  expect(dt.second).toEqual(0);
+  expect(dt.millisecond).toEqual(0);
+
+});
