@@ -1,5 +1,5 @@
 // snip start querystation
-import * as sp from '../seisplotjs_3.1.2_standalone.mjs';
+import * as sp from '../seisplotjs_3.1.3-SNAPSHOT_standalone.mjs';
 sp.util.updateVersionText('.sp_version');
 
 let timeWindow = sp.util.startDuration('2019-07-06T03:19:53Z', 1800);

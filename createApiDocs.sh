@@ -117,7 +117,7 @@ cat > docs/api/index.html <<EOF
               <section class='p2 mb2 clearfix bg-white minishadow'>
         <div class='clearfix'>
 
-          <h3>Seisplotjs <span class="sp_version">3.1.2</span> API Documentation</h3>
+          <h3>Seisplotjs <span class="sp_version">3.1.3-SNAPSHOT</span> API Documentation</h3>
           <p>Seisplotjs is a collection of javascript routines for requesting,
             manipulating and plotting seismic data. It is divided into submodules,
             which are listed below.
