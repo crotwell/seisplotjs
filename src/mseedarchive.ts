@@ -99,7 +99,7 @@ export class MSeedArchive {
    * the minimum sample rate
    * for the channel band code and the given time window.
    *
-   * @param   channelTimeList requst channels and time windows
+   * @param   channelTimeList request channels and time windows
    * @returns Promise to the same SeismogramDisplayData array, but with seismograms populated
    */
   loadSeismograms(

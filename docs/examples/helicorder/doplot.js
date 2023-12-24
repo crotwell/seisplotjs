@@ -448,7 +448,7 @@ export function loadDataReal(sddList) {
     mseedQ.loadSeismograms(beforeNowChanTR),
     dsQuery.postQuerySeismograms(other_sddList),
   ]).then(parr => parr[0].concat(parr[1]))
-  .then( sddList => {console.log(`real dta : ${sddList.length}`); return sddList;})
+  .then( sddList => {console.log(`real data : ${sddList.length}`); return sddList;})
 }
 
 export function filterData(config, origData) {

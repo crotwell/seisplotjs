@@ -1252,7 +1252,7 @@ export function findMaxDurationOfType(
 
 /**
  * Finds the min and max amplitude over the seismogram list, considering gain
- * and how to center the seismograms, either Rw, MinMax or Mean.
+ * and how to center the seismograms, either Raw, MinMax or Mean.
  *
  * @param  sddList  list of seismogramdisplaydata
  * @param  doGain  should gain be used
