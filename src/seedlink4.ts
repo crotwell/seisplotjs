@@ -15,6 +15,18 @@ export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";
 export const MINISEED_2_FORMAT = "2";
 export const MINISEED_3_FORMAT = "3";
 export const SE_PACKET_SIGNATURE = "SE";
+export const END_COMMAND = "END";
+export const ENDFETCH_COMMAND = "ENDFETCH";
+export const AUTH_COMMAND = "AUTH";
+export const BYE_COMMAND = "BYE";
+export const DATA_COMMAND = "DATA";
+export const HELLO_COMMAND = "HELLO";
+export const INFO_COMMAND = "INFO";
+export const SELECT_COMMAND = "SELECT";
+export const SLPROTO_COMMAND = "SLPROTO";
+export const STATION_COMMAND = "STATION";
+export const USERAGENT_COMMAND = "USERAGENT";
+
 const useLittleEndian = true;
 export class SEPacket {
   dataFormat: string;
@@ -189,14 +201,25 @@ export class SEPacket {
  * supports websockets, but it may be possible to use thrid party
  * tools to proxy the websocket to a TCP seedlink socket.
  *
+ * The spec is available via the FDSN, https://www.fdsn.org/publications/
+ *
+ * Note as of 2023, this is largely untested as there are now servers
+ * available to test against.
+ *
  * @param url websocket URL to connect to
  * @param requestConfig an array of seedlink commands
  * like:<pre><code>
- *   [ 'STATION JSC CO',
- *     'SELECT 00BHZ.D' ]
+ *   [ 'STATION CO_JSC',
+ *     'SELECT 00_B_H_Z' ]
  *     </pre></code>
  * @param receivePacketFn the callback function that
  * will be invoked for each seedlink packet received.
+ * @param errorHandler callback function for errors
+ * @param closeFn callback function for closing connection
+ * @param webSocket optional web socket connection
+ * @param endCommand handshake ending command, either END or ENDFETCH
+ * @param agent agent identifier
+ * @param agentVersion agent version
  */
 export class SeedlinkConnection {
   url: string;
@@ -205,7 +228,7 @@ export class SeedlinkConnection {
   errorHandler: (error: Error) => void;
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
-  command: string;
+  endCommand: string;
   agent: string;
   agentVersion: string;
 
@@ -221,7 +244,7 @@ export class SeedlinkConnection {
     this.receivePacketFn = receivePacketFn;
     this.errorHandler = errorHandler;
     this.closeFn = null;
-    this.command = "DATA";
+    this.endCommand = END_COMMAND;
     this.agent = "seisplotjs";
     this.agentVersion = version;
   }
@@ -230,9 +253,9 @@ export class SeedlinkConnection {
     this.agent = agent.trim().replaceAll(/\w+/g, "_");
   }
 
-  setTimeCommand(startTime: DateTime) {
-    this.command =
-      "TIME " + startTime.toFormat("yyyy,LL,dd,HH,mm,ss");
+  createDataTimeCommand(startTime: DateTime, endTime: DateTime|undefined): String {
+    const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
+    return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
   }
 
   setOnError(errorHandler: (error: Error) => void) {
@@ -257,14 +280,14 @@ export class SeedlinkConnection {
       })
       .then(() => {
         return this.sendCmdArray([
-          `USERAGENT ${this.agent}/${this.agentVersion} (seisplotjs/${version})`,
+          `${USERAGENT_COMMAND} ${this.agent}/${this.agentVersion} (seisplotjs/${version})`,
         ]);
       })
       .then(() => {
         return this.sendCmdArray(this.requestConfig);
       })
       .then(() => {
-        return this.sendCmdArray([this.command]);
+        return this.sendCmdArray([this.endCommand]);
       })
       .then((val) => {
         if (this.webSocket === null) {
@@ -274,7 +297,7 @@ export class SeedlinkConnection {
           this.handle(event);
         };
 
-        this.webSocket.send("END\r");
+        this.webSocket.send(`${this.endCommand}\r`);
         return val;
       })
       .catch(err => {
@@ -418,7 +441,7 @@ export class SeedlinkConnection {
           }
         };
 
-        webSocket.send("HELLO\r");
+        webSocket.send(`${HELLO_COMMAND}\r`);
       } else {
         reject("webSocket has been closed");
       }
