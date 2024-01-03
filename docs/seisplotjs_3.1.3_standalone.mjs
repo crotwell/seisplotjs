@@ -43647,7 +43647,7 @@ __export(util_exports, {
 });
 
 // src/version.ts
-var version = "3.1.2";
+var version = "3.1.3";
 
 // src/util.ts
 var XML_MIME = "application/xml";
@@ -44235,7 +44235,7 @@ var LinkedAmplitudeScale = class {
   set halfWidth(val) {
     if (this._halfWidth !== val) {
       this._halfWidth = val;
-      this.notifyAll();
+      Promise.all(this.notifyAll());
     }
   }
   /**
@@ -44252,7 +44252,7 @@ var LinkedAmplitudeScale = class {
       } else {
       }
     });
-    this.recalculate();
+    Promise.all(this.recalculate());
   }
   /**
    * Link new Seismograph with this amplitude scale.
@@ -44269,7 +44269,7 @@ var LinkedAmplitudeScale = class {
    */
   unlink(graph) {
     this._graphSet.delete(graph);
-    this.recalculate();
+    Promise.all(this.recalculate());
   }
   /**
    * Recalculate the best amplitude scale for all Seismographs. Causes a redraw.
@@ -48076,25 +48076,31 @@ var BTime = class {
   }
   /**
    * Converts this BTime to a luxon utc DateTime. Note DateTime's precision
-   * is limited to milliseconds.
+   * is limited to milliseconds and leap seconds are not supported,
+   * ie 60 seconds returns DateTime.invalid.
    *
    * @returns         BTime as a DateTime
    */
   toDateTime() {
-    let millis = Math.round(this.tenthMilli / 10);
-    const addSec = Math.floor(millis / 1e3);
-    millis = millis - 1e3 * addSec;
-    return DateTime.fromObject(
+    const millis = Math.round(this.tenthMilli / 10);
+    if (this.sec === 60) {
+      return DateTime.invalid(
+        "Leap seconds not supported",
+        `seconds value ${this.sec} is a leap second, but luxon does not support`
+      );
+    }
+    const d = DateTime.fromObject(
       {
         year: this.year,
         ordinal: this.jday,
         hour: this.hour,
         minute: this.min,
-        second: this.sec + addSec,
-        millisecond: millis
+        second: this.sec,
+        millisecond: 0
       },
       UTC_OPTIONS
     );
+    return d.plus(millis);
   }
 };
 function checkByteSwap(bTime) {
@@ -54090,6 +54096,7 @@ var _SeismographConfig = class _SeismographConfig {
         }
       };
     });
+    out.__cache__ = new SeismographConfigCache();
     return out;
   }
   toString() {
@@ -54861,7 +54868,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
   enableZoom() {
     const mythis = this;
     const z = this.svg.call(
-      // @ts-ignore
+      // @ts-expect-error
       zoom_default2().on("zoom", function(e) {
         mythis.zoomed(e);
       })
@@ -60569,7 +60576,7 @@ var _ParticleMotion = class _ParticleMotion extends SeisPlotElement {
     path2.exit().remove();
     path2.enter().append("path").classed("seispath", true).attr("marker-end", "url(#arrow)").attr(
       "d",
-      // @ts-ignore
+      // @ts-expect-error
       line_default().curve(linear_default).x((dd) => {
         return this.xScale(dd);
       }).y((d, i) => {
@@ -70572,7 +70579,7 @@ var MSeedArchive = class {
    * the minimum sample rate
    * for the channel band code and the given time window.
    *
-   * @param   channelTimeList requst channels and time windows
+   * @param   channelTimeList request channels and time windows
    * @returns Promise to the same SeismogramDisplayData array, but with seismograms populated
    */
   loadSeismograms(channelTimeList) {
@@ -71570,17 +71577,39 @@ var SeedlinkConnection = class {
 // src/seedlink4.ts
 var seedlink4_exports = {};
 __export(seedlink4_exports, {
+  AUTH_COMMAND: () => AUTH_COMMAND,
+  BYE_COMMAND: () => BYE_COMMAND,
+  DATA_COMMAND: () => DATA_COMMAND,
+  ENDFETCH_COMMAND: () => ENDFETCH_COMMAND,
+  END_COMMAND: () => END_COMMAND,
+  HELLO_COMMAND: () => HELLO_COMMAND,
+  INFO_COMMAND: () => INFO_COMMAND,
   MINISEED_2_FORMAT: () => MINISEED_2_FORMAT,
   MINISEED_3_FORMAT: () => MINISEED_3_FORMAT,
   SEEDLINK4_PROTOCOL: () => SEEDLINK4_PROTOCOL,
+  SELECT_COMMAND: () => SELECT_COMMAND,
   SEPacket: () => SEPacket,
   SE_PACKET_SIGNATURE: () => SE_PACKET_SIGNATURE,
-  SeedlinkConnection: () => SeedlinkConnection2
+  SLPROTO_COMMAND: () => SLPROTO_COMMAND,
+  STATION_COMMAND: () => STATION_COMMAND,
+  SeedlinkConnection: () => SeedlinkConnection2,
+  USERAGENT_COMMAND: () => USERAGENT_COMMAND
 });
 var SEEDLINK4_PROTOCOL = "SLPROTO4.0";
 var MINISEED_2_FORMAT = "2";
 var MINISEED_3_FORMAT = "3";
 var SE_PACKET_SIGNATURE = "SE";
+var END_COMMAND = "END";
+var ENDFETCH_COMMAND = "ENDFETCH";
+var AUTH_COMMAND = "AUTH";
+var BYE_COMMAND = "BYE";
+var DATA_COMMAND = "DATA";
+var HELLO_COMMAND = "HELLO";
+var INFO_COMMAND = "INFO";
+var SELECT_COMMAND = "SELECT";
+var SLPROTO_COMMAND = "SLPROTO";
+var STATION_COMMAND = "STATION";
+var USERAGENT_COMMAND = "USERAGENT";
 var useLittleEndian = true;
 var SEPacket = class _SEPacket {
   constructor(dataFormat, dataSubformat, payloadLength, sequence, stationId) {
@@ -71721,7 +71750,7 @@ var SeedlinkConnection2 = class {
     __publicField(this, "errorHandler");
     __publicField(this, "closeFn");
     __publicField(this, "webSocket");
-    __publicField(this, "command");
+    __publicField(this, "endCommand");
     __publicField(this, "agent");
     __publicField(this, "agentVersion");
     this.webSocket = null;
@@ -71730,15 +71759,16 @@ var SeedlinkConnection2 = class {
     this.receivePacketFn = receivePacketFn;
     this.errorHandler = errorHandler;
     this.closeFn = null;
-    this.command = "DATA";
+    this.endCommand = END_COMMAND;
     this.agent = "seisplotjs";
     this.agentVersion = version;
   }
   setAgent(agent) {
     this.agent = agent.trim().replaceAll(/\w+/g, "_");
   }
-  setTimeCommand(startTime) {
-    this.command = "TIME " + startTime.toFormat("yyyy,LL,dd,HH,mm,ss");
+  createDataTimeCommand(startTime, endTime) {
+    const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
+    return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
   }
   setOnError(errorHandler) {
     this.errorHandler = errorHandler;
@@ -71757,12 +71787,12 @@ var SeedlinkConnection2 = class {
       }
     }).then(() => {
       return this.sendCmdArray([
-        `USERAGENT ${this.agent}/${this.agentVersion} (seisplotjs/${version})`
+        `${USERAGENT_COMMAND} ${this.agent}/${this.agentVersion} (seisplotjs/${version})`
       ]);
     }).then(() => {
       return this.sendCmdArray(this.requestConfig);
     }).then(() => {
-      return this.sendCmdArray([this.command]);
+      return this.sendCmdArray([this.endCommand]);
     }).then((val) => {
       if (this.webSocket === null) {
         throw new Error("websocket is null");
@@ -71770,7 +71800,7 @@ var SeedlinkConnection2 = class {
       this.webSocket.onmessage = (event) => {
         this.handle(event);
       };
-      this.webSocket.send("END\r");
+      this.webSocket.send(`${this.endCommand}\r`);
       return val;
     }).catch((err) => {
       this.close();
@@ -71893,7 +71923,7 @@ var SeedlinkConnection2 = class {
             this.errorHandler(new Error("event.data is not ArrayBuffer"));
           }
         };
-        webSocket.send("HELLO\r");
+        webSocket.send(`${HELLO_COMMAND}\r`);
       } else {
         reject("webSocket has been closed");
       }
