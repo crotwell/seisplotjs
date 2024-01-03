@@ -497,7 +497,7 @@ export class BTime {
    * @returns         BTime as a DateTime
    */
   toDateTime(): DateTime {
-    let millis = Math.round(this.tenthMilli / 10);
+    const millis = Math.round(this.tenthMilli / 10);
     if (this.sec === 60) {
       // luxon doesn't handle leap seconds, so invalid???
       return DateTime.invalid(
@@ -512,7 +512,7 @@ export class BTime {
                                 second: this.sec,
                                 millisecond: 0},
                               UTC_OPTIONS);
-    return d.plus(millis)
+    return d.plus(millis);
   }
 }
 

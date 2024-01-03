@@ -5,7 +5,7 @@
  */
 //import * as d3 from "d3";
 import {select as d3select} from "d3-selection";
-import 'd3-transition'
+import 'd3-transition';
 import {scaleLinear as d3scaleLinear } from "d3-scale";
 import {
   line as d3line,
