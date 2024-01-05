@@ -525,7 +525,7 @@ export class SeismographConfig {
     } else {
       this._ySublabel = value;
     }
-
+    this.ySublabelIsUnits = false;
     this.__cache__.ySublabelHandlebarsCompiled = null;
   }
 
