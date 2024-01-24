@@ -24,6 +24,10 @@ export type SequencedDataRecord = {
  * supports websockets, but it may be possible to use thrid party
  * tools to proxy the websocket to a TCP seedlink socket.
  *
+ * The seedlink (ver 3) protocol does not have an official spec document, but
+ * some details are here:
+ * https://www.seiscomp.de/doc/apps/seedlink.html
+ *
  * @param url websocket URL to connect to
  * @param requestConfig an array of seedlink commands
  * like:<pre><code>

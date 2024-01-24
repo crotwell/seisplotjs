@@ -69,7 +69,7 @@ const defaultHandleResponse = function (dlResponse: DataLinkResponse) {
  * tools to proxy the websocket to a TCP datalink socket.
  *
  * The datalink protocol is documented here
- *  https://iris-edu.github.io/libdali/datalink-protocol.html
+ *  https://earthscope.github.io/libdali/datalink-protocol.html
  *
  * @param url websocket url to the ringserver
  * @param packetHandler callback for packets as they arrive
