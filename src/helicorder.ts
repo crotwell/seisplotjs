@@ -5,6 +5,7 @@
  */
 import { DateTime, Duration, Interval } from "luxon";
 import { removeTrend } from "./filter";
+import { AMPLITUDE_MODE, FixedHalfWidthAmplitudeScale } from "./scale";
 import { Seismogram, SeismogramDisplayData, findMinMaxOverTimeRange } from "./seismogram";
 import { SeismogramSegment } from "./seismogramsegment";
 import { Seismograph } from "./seismograph";
@@ -185,6 +186,9 @@ export class Helicorder extends SeisPlotElement {
         } else {
           maxVariation = this.heliConfig.maxVariation;
         }
+        if (this.heliConfig.lineSeisConfig.linkedAmplitudeScale) {
+          this.heliConfig.lineSeisConfig.linkedAmplitudeScale.halfWidth = maxVariation;
+        }
       }
     }
 
@@ -248,11 +252,6 @@ export class Helicorder extends SeisPlotElement {
         this.heliConfig.fixedAmplitudeScale[0] !== 0 || this.heliConfig.fixedAmplitudeScale[1] !== 0
       )) {
         lineSeisConfig.fixedAmplitudeScale = this.heliConfig.fixedAmplitudeScale;
-      } else {
-        lineSeisConfig.fixedAmplitudeScale = [
-          -1 * maxVariation,
-          maxVariation,
-        ];
       }
 
       const seismograph = new Seismograph([lineSeisData], lineSeisConfig);
@@ -423,6 +422,9 @@ export class HelicorderConfig extends SeismographConfig {
     this.margin.top = 40;
     this.lineColors = ["skyblue", "olivedrab", "goldenrod"];
     this.lineSeisConfig = new SeismographConfig();
+    this.lineSeisConfig.amplitudeMode = AMPLITUDE_MODE.MinMax;
+    this.lineSeisConfig.linkedAmplitudeScale = new FixedHalfWidthAmplitudeScale(1);
+
     this.lineSeisConfig.ySublabel = ` `;
     this.lineSeisConfig.xLabel = " ";
     this.lineSeisConfig.yLabel = ""; // replace later with `${startTime.toFormat("HH:mm")}`;
