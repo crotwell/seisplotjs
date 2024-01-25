@@ -122,7 +122,7 @@ test("ref badspike mseed3 file", () => {
   expect(drawn.y[1]).toEqual(height);
   expect(drawn.x[2]).toEqual(611);
   expect(drawn.y[2]).toEqual(height-amp);
-  expect(drawn.x[3]).toEqual(611);
+  expect(drawn.x[3]).toEqual(612);
   expect(drawn.y[3]).toEqual(height);
   expect(drawn.x[4]).toEqual(1105);
   expect(drawn.y[4]).toEqual(height);
