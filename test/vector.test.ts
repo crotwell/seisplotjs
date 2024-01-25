@@ -1,7 +1,7 @@
 import './jestRatioMatchers';
 
 import {FDSNSourceId} from '../src/fdsnsourceid';
-import * as vector from '../src/vector.js';
+import * as vector from '../src/vector';
 import {DateTime} from 'luxon';
 
 import { Seismogram }  from "../src/seismogram";

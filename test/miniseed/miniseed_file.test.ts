@@ -1,6 +1,6 @@
 
-import * as miniseed from '../../src/miniseed.js';
-import * as seedcodec from '../../src/seedcodec.js';
+import * as miniseed from '../../src/miniseed';
+import * as seedcodec from '../../src/seedcodec';
 import {UTC_OPTIONS} from '../../src/util';
 import {DateTime} from 'luxon';
 

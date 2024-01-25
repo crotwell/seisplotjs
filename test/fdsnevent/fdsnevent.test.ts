@@ -1,7 +1,11 @@
 
-import * as fdsnevent from '../../src/fdsnevent.js';
-import * as quakeml from '../../src/quakeml.js';
-import * as util from '../../src/util.js';
+/**
+ * @jest-environment jsdom
+ */
+
+import * as fdsnevent from '../../src/fdsnevent';
+import * as quakeml from '../../src/quakeml';
+import * as util from '../../src/util';
 import {isoToDateTime} from '../../src/util';
 
 test( "query setter test", () => {

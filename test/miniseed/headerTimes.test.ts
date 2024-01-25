@@ -1,6 +1,6 @@
 
 
-import * as miniseed from '../../src/miniseed.js';
+import * as miniseed from '../../src/miniseed';
 import  {Duration} from 'luxon';
 
 

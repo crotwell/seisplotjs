@@ -1,6 +1,10 @@
 
-import * as fdsnstation from '../../src/fdsnstation.js';
-import * as stationxml from '../../src/stationxml.js';
+/**
+ * @jest-environment jsdom
+ */
+
+import * as fdsnstation from '../../src/fdsnstation';
+import * as stationxml from '../../src/stationxml';
 import {isoToDateTime} from '../../src/util';
 
 

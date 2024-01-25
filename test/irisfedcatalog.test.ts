@@ -1,6 +1,9 @@
 
-import {FedCatalogQuery} from '../src/irisfedcatalog.js';
+/**
+ * @jest-environment jsdom
+ */
 
+import {FedCatalogQuery} from '../src/irisfedcatalog';
 
 test( "query setter test", () => {
   const fedCatQuery = new FedCatalogQuery();

@@ -1,5 +1,5 @@
 
-import * as ringserverweb from '../src/ringserverweb.js';
+import * as ringserverweb from '../src/ringserverweb';
 
 
 test( "query setter test", () => {

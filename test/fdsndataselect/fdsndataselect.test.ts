@@ -1,6 +1,6 @@
 
-import * as fdsndataselect from '../../src/fdsndataselect.js';
-import * as util from '../../src/util.js';
+import * as fdsndataselect from '../../src/fdsndataselect';
+import * as util from '../../src/util';
 import {validStartTime, validEndTime} from '../../src/util';
 import {Duration, Interval} from 'luxon';
 

@@ -1,5 +1,5 @@
 
-import {SeismographConfig} from '../src/seismographconfig.js';
+import {SeismographConfig} from '../src/seismographconfig';
 
 test("simple seismographconfig clone", () => {
   const seisConfig = new SeismographConfig();

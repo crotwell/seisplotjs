@@ -1,7 +1,11 @@
 
+/**
+ * @jest-environment jsdom
+ */
+
 import fs from 'fs';
 
-import * as quakeml from '../../src/quakeml.js';
+import * as quakeml from '../../src/quakeml';
 import {isoToDateTime} from '../../src/util';
 
 test("time getset", () => {

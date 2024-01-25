@@ -1,4 +1,8 @@
 
+/**
+ * @jest-environment jsdom
+ */
+
 import {
   LinkedAmplitudeScale,
   LinkedTimeScale,

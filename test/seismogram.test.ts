@@ -1,7 +1,7 @@
 
 import {FDSNSourceId} from '../src/fdsnsourceid';
-import { createQuakeFromValues, UNKNOWN_PUBLIC_ID} from '../src/quakeml.js';
-import {AMPLITUDE_MODE } from '../src/scale.js';
+import { createQuakeFromValues, UNKNOWN_PUBLIC_ID} from '../src/quakeml';
+import {AMPLITUDE_MODE } from '../src/scale';
 import {Seismogram, SeismogramDisplayData, findMinMaxOverTimeRange} from '../src/seismogram';
 import {SeismogramSegment} from '../src/seismogramsegment';
 import  {isDef, isoToDateTime} from '../src/util';

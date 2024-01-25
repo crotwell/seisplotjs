@@ -1,5 +1,9 @@
 
-import * as stationxml from '../../src/stationxml.js';
+/**
+ * @jest-environment jsdom
+ */
+
+import * as stationxml from '../../src/stationxml';
 
 test( "_grabFirstEl test", () => {
   const LATITUDE = "Latitude";

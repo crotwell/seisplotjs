@@ -7,9 +7,9 @@ const TextDecoder = require('util').TextDecoder;
 // eslint-disable-next-line no-undef
 global.TextDecoder = TextDecoder;
 
-import { isDef } from '../../src/util.js';
-import * as mseed3 from '../../src/mseed3.js';
-import * as miniseed from '../../src/miniseed.js';
+import { isDef } from '../../src/util';
+import * as mseed3 from '../../src/mseed3';
+import * as miniseed from '../../src/miniseed';
 import fs from 'fs';
 
 const fileList = [
