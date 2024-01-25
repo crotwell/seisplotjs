@@ -96,7 +96,7 @@
     "@types/d3-transition": "^3.0.3",
     "@types/d3-zoom": "^3.0.3",
     "@types/geojson": "^7946.0.10",
-    "@types/jest": "^29.5.2",
+    "@types/jest": "^29.5.11",
     "@types/leaflet": "^1.7.9",
     "@types/luxon": "^3.0.0",
     "@types/querystringify": "^2.0.0",
@@ -121,6 +121,7 @@
     "prismjs": "^1.26.0",
     "replace-in-file": "^7.0.1",
     "resize-observer-polyfill": "^1.5.1",
+    "ts-jest": "^29.1.2",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }
