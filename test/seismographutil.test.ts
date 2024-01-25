@@ -1,0 +1,63 @@
+import {seismogramSegmentAsLine} from '../src/seismographutil';
+import {Seismogram, SeismogramDisplayData} from '../src/seismogram';
+import {Seismograph} from '../src/seismograph';
+import {SeismographConfig} from '../src/seismographconfig';
+import {isoToDateTime} from '../src/util';
+
+test("line create test", () => {
+
+  const width = 100;
+  const height = 100;
+  let sampleRate = 20;
+  //const sinePeriod = 5*sampleRate; // 5 second period
+  const amp = height;
+  let dataArray = new Float32Array(10000).map(function(d, i) {
+    //return Math.sin(2 * Math.PI * i / sinePeriod) * amp;
+    return 0;
+  });
+  dataArray[0] = 0;
+  dataArray[9000] = amp;
+  let start = isoToDateTime('2019-07-04T05:46:23');
+  let myseismogram = Seismogram.fromContiguousData(dataArray, sampleRate, start);
+  const segment = myseismogram.segments[0];
+  let seisData = SeismogramDisplayData.fromSeismogram(myseismogram);
+
+  const seisConfig = new SeismographConfig();
+  seisConfig.title = "Another sine wave!";
+  seisConfig.margin.top = 25;
+  seisConfig.fixedTimeScale = seisData.timeRange;
+  seisConfig.amplitudeRaw();
+  seisConfig.margin.top = 0;
+  seisConfig.margin.bottom = 0;
+  seisConfig.margin.left = 0;
+  seisConfig.margin.right = 0;
+  const graph = new Seismograph([seisData], seisConfig);
+  graph.width = width;
+  graph.height = 100;
+  const maxSamplePerPixelForLineDraw = 3;
+  const tScale = graph.timeScaleForSeisDisplayData(seisData);
+  const yScale = graph.ampScaleForSeisDisplayData(seisData);
+  expect(yScale.range()[1]).toBe(0);
+  expect(yScale.range()[0]).toBe(100);
+  const drawn = seismogramSegmentAsLine(segment,
+    width,
+    tScale,
+    yScale,
+    maxSamplePerPixelForLineDraw);
+  expect(drawn.samplesPerPixel).toBeCloseTo(dataArray.length/width, 1);
+  expect(drawn.y.length).toEqual(drawn.x.length);
+  expect(drawn.x.length).toEqual(5);
+  for (let i=0; i< drawn.x.length; i++) {
+    console.log(`${i}   ${drawn.x[i]} ${drawn.y[i]}`);
+  }
+  expect(drawn.x[0]).toEqual(0);
+  expect(drawn.y[0]).toEqual(height);
+  expect(drawn.x[1]).toEqual(90);
+  expect(drawn.y[1]).toEqual(height);
+  expect(drawn.x[2]).toEqual(90);
+  expect(drawn.y[2]).toEqual(height-amp);
+  expect(drawn.x[3]).toEqual(90);
+  expect(drawn.y[3]).toEqual(height);
+  expect(drawn.x[4]).toEqual(width);
+  expect(drawn.y[4]).toEqual(height);
+});
