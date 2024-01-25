@@ -4,7 +4,7 @@ import {Seismograph} from '../src/seismograph';
 import {SeismographConfig} from '../src/seismographconfig';
 import {isoToDateTime} from '../src/util';
 
-import * as mseed3 from '../src/mseed3.js';
+import * as mseed3 from '../src/mseed3';
 import fs from 'fs';
 
 // eslint-disable-next-line no-undef
