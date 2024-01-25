@@ -192,6 +192,7 @@ export function seismogramSegmentAsLine(
     // this tends to be better even with as few as 3 point per pixel,
     // especially in near horizontal line
     let i = leftVisibleSample;
+    let inHorizontalLine = false;
     while (i < rightVisibleSample + 2 && i < segment.y.length) {
       const curPixel = Math.floor(startPixel + i * pixelsPerSample);
       let min = segment.y[i];
@@ -216,12 +217,18 @@ export function seismogramSegmentAsLine(
         if (prevLastYPixel === topPixel) {
           // and previous was also same horizontal, keep going to draw one
           // longer horizontal line
+          inHorizontalLine = true;
           continue;
         } else {
           pushPoint(out, curPixel, firstYPixel);
+          inHorizontalLine = false;
         }
       } else {
         // drawing min to max vs max to min depending on order
+        if (inHorizontalLine && prevLastYPixel !== firstYPixel) {
+          pushPoint(out, curPixel-1, prevLastYPixel);
+        }
+        inHorizontalLine = false;
         if (minIdx < maxIdx) {
           // min/bot occurs before max/top
           if (firstYPixel !== botPixel) {
@@ -249,7 +256,8 @@ export function seismogramSegmentAsLine(
       prevLastYPixel = lastYPixel;
     }
     // in case end of segment is horizontal line we did not finish drawing
-    if (i < segment.y.length) {
+    if (inHorizontalLine || i < segment.y.length) {
+      if (i >= segment.y.length) { i = segment.y.length-1;}
       const curPixel = Math.floor(startPixel + (i) * pixelsPerSample);
       lastYPixel = Math.round(yScale(segment.y[i])); // to off screen sample
       pushPoint(out, curPixel, lastYPixel);

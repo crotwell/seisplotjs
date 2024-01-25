@@ -51,20 +51,19 @@ test("line create test", () => {
     yScale,
     maxSamplePerPixelForLineDraw);
   expect(drawn.samplesPerPixel).toBeCloseTo(dataArray.length/width, 1);
+  console.log(`line create test drawn: ${drawn.x.length}`)
+
   expect(drawn.y.length).toEqual(drawn.x.length);
   expect(drawn.x.length).toEqual(5);
-  for (let i=0; i< drawn.x.length; i++) {
-    console.log(`${i}   ${drawn.x[i]} ${drawn.y[i]}`);
-  }
   expect(drawn.x[0]).toEqual(0);
   expect(drawn.y[0]).toEqual(height);
-  expect(drawn.x[1]).toEqual(90);
+  expect(drawn.x[1]).toEqual(89);
   expect(drawn.y[1]).toEqual(height);
   expect(drawn.x[2]).toEqual(90);
   expect(drawn.y[2]).toEqual(height-amp);
   expect(drawn.x[3]).toEqual(90);
   expect(drawn.y[3]).toEqual(height);
-  expect(drawn.x[4]).toEqual(width);
+  expect(drawn.x[4]).toEqual(width-1);
   expect(drawn.y[4]).toEqual(height);
 });
 
@@ -73,7 +72,7 @@ test("ref badspike mseed3 file", () => {
 
   const width = 1113;
   const height = 100;
-  const amp = 1;
+  const amp = height;
 
   const filename = "test/badspike.ms3";
   expect(fs.existsSync(filename)).toEqual(true);
@@ -112,10 +111,7 @@ test("ref badspike mseed3 file", () => {
   expect(dataArray).not.toBeNull();
   expect(drawn.samplesPerPixel).toBeCloseTo(dataArray.length/width, 1);
   expect(drawn.y.length).toEqual(drawn.x.length);
-  expect(drawn.x.length).toEqual(9);
-  for (let i=0; i< drawn.x.length; i++) {
-    console.log(`${i}   ${drawn.x[i]} ${drawn.y[i]}`);
-  }
+  expect(drawn.x.length).toEqual(8);
   expect(drawn.x[0]).toEqual(0);
   expect(drawn.y[0]).toEqual(height);
   expect(drawn.x[1]).toEqual(611);
@@ -130,6 +126,6 @@ test("ref badspike mseed3 file", () => {
   expect(drawn.y[5]).toEqual(height-amp);
   expect(drawn.x[6]).toEqual(1105);
   expect(drawn.y[6]).toEqual(height);
-  expect(drawn.x[7]).toEqual(width-1);
+  expect(drawn.x[7]).toEqual(width);
   expect(drawn.y[7]).toEqual(height);
 });
