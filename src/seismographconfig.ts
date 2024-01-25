@@ -221,6 +221,10 @@ export class SeismographConfig {
     if (Object.hasOwn(tempJson, "isLinkedAmplitudeScale")) {
       delete tempJson.isLinkedAmplitudeScale;
     }
+    if (Object.hasOwn(tempJson, "ySublabel") && tempJson.ySublabel.length === 0) {
+      // don't set in case ySublabelIsUnits
+      delete tempJson.ySublabel;
+    }
     Object.assign(seisConfig, tempJson);
 
     if (json.isLinkedTimeScale) {
