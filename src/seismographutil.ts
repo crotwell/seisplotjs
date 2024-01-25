@@ -212,10 +212,8 @@ out.samplesPerPixel = samplesPerPixel;
           // longer horizontal line
           continue;
         } else {
-          console.log(` same pixel: c:${curPixel} ${topPixel} ${botPixel}  h: ${horizontalPixel}`);
           if (horizontalPixel !== null) {
             const y = horizontalPixel as number; // typescript
-            console.log(`lineTo(${curPixel}, ${y})`)
 
             out.x.push(curPixel);
             out.y.push(y);
@@ -223,7 +221,6 @@ out.samplesPerPixel = samplesPerPixel;
           horizontalPixel = topPixel;
         }
       } else {
-        console.log(`not same pixel: c:${curPixel} ${topPixel} ${botPixel}  h: ${horizontalPixel}`);
         // drawing min to max vs max to min depending on order
         // and offseting by half a pixel
         // helps a lot with avoiding fuzziness due to antialiasing
@@ -235,18 +232,14 @@ out.samplesPerPixel = samplesPerPixel;
         }
         if (minIdx < maxIdx) {
           // min/bot occurs before max/top
-          console.log(`lineTo(${curPixel}, ${botPixel})`)
           out.x.push(curPixel);
           out.y.push(botPixel);
-          console.log(`lineTo(${curPixel}, ${topPixel})`)
           out.x.push(curPixel);
           out.y.push(topPixel);
         } else {
           // max/top occurs before min/bot
-          console.log(`lineTo(${curPixel}, ${topPixel})`)
           out.x.push(curPixel);
           out.y.push(topPixel);
-          console.log(`lineTo(${curPixel}, ${botPixel})`)
           out.x.push(curPixel);
           out.y.push(botPixel);
         }
@@ -258,7 +251,6 @@ out.samplesPerPixel = samplesPerPixel;
       const y = horizontalPixel as number; // typescript
       out.x.push(curPixel);
       out.y.push(y);
-      console.log(`lineTo(${curPixel}, ${y})`)
       horizontalPixel = null;
     }
 
