@@ -59,7 +59,7 @@ export function drawSeismogramAsLine(
   color: string,
   lineWidth: number = 1,
   connectSegments = false,
-  maxSamplePerPixelForLineDraw = 20
+  maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL,
 ): void {
   const seismogram = sdd.seismogram;
   if (!seismogram) { return; }
@@ -115,19 +115,21 @@ export type XYLine = {
   x: Array<number>,
   y: Array<number>,
   samplesPerPixel: number,
+  maxSamplePerPixelForLineDraw: number,
 };
 
 export function seismogramSegmentAsLine(
-  segment: SeismogramSegment,
+  segment: SeismogramSegment | null,
   width: number,
   xScale: LuxonTimeScale,
   yScale: ScaleLinear<number, number, never>,
-  maxSamplePerPixelForLineDraw = 20
+  maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL,
 ): XYLine {
   const out: XYLine =  {
     x: [],
     y: [],
     samplesPerPixel: 0,
+    maxSamplePerPixelForLineDraw: maxSamplePerPixelForLineDraw,
   };
   if (!segment) { return out; }
 
@@ -136,7 +138,6 @@ export function seismogramSegmentAsLine(
   if (s == null || e == null) {
     throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
   }
-  let horizontalPixel: null | number = null;
   if (
     xScale.for(segment.startTime) > xScale.range[1] ||
     xScale.for(segment.endTime) < xScale.range[0]
@@ -149,7 +150,8 @@ export function seismogramSegmentAsLine(
     1000 /
     (xScale.range[1] - xScale.range[0]);
   const samplesPerPixel = 1.0 * segment.sampleRate * secondsPerPixel;
-out.samplesPerPixel = samplesPerPixel;
+  out.samplesPerPixel = samplesPerPixel;
+  out.maxSamplePerPixelForLineDraw = maxSamplePerPixelForLineDraw;
 
   const pixelsPerSample = 1.0 / samplesPerPixel;
   const startPixel = xScale.for(segment.startTime);
@@ -171,9 +173,9 @@ out.samplesPerPixel = samplesPerPixel;
       1;
   }
 
-  horizontalPixel = yScale(segment.y[leftVisibleSample]);
-  out.x.push(leftVisiblePixel);
-  out.y.push(horizontalPixel);
+  let prevLastYPixel = Math.round(yScale(segment.y[leftVisibleSample])); // init to first sample
+  let lastYPixel = prevLastYPixel;
+  pushPoint(out, leftVisiblePixel, prevLastYPixel);
 
   if ( samplesPerPixel <= maxSamplePerPixelForLineDraw) {
     // draw all samples
@@ -196,66 +198,69 @@ out.samplesPerPixel = samplesPerPixel;
       let max = segment.y[i];
       let minIdx = i;
       let maxIdx = i;
+
+      const firstYPixel = Math.round(yScale(segment.y[i])); // first sample in the column
+
       while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
         if (min > segment.y[i]) { min = segment.y[i]; minIdx = i; }
         if (max < segment.y[i]) { max = segment.y[i]; maxIdx = i; }
         i++;
       }
+      lastYPixel = Math.round(yScale(segment.y[i-1])); // last sample in the column
       const topPixelFlt = yScale(max); // note pixel coord flipped
       const botPixelFlt = yScale(min); // so botPixelFlt>topPixelFlt
       const botPixel = Math.round(botPixelFlt);
       const topPixel = Math.round(topPixelFlt);
       if (topPixel === botPixel) {
-        // horizontal
-        if (horizontalPixel === topPixel) {
+        // only one pixel high in column
+        if (prevLastYPixel === topPixel) {
           // and previous was also same horizontal, keep going to draw one
           // longer horizontal line
           continue;
         } else {
-          if (horizontalPixel !== null) {
-            const y = horizontalPixel as number; // typescript
-
-            out.x.push(curPixel);
-            out.y.push(y);
-          }
-          horizontalPixel = topPixel;
+          pushPoint(out, curPixel, firstYPixel);
         }
       } else {
         // drawing min to max vs max to min depending on order
-        // and offseting by half a pixel
-        // helps a lot with avoiding fuzziness due to antialiasing
-        if (horizontalPixel !== null) {
-          const y = horizontalPixel as number; // typescript
-          out.x.push(curPixel);
-          out.y.push(y);
-          horizontalPixel = null;
-        }
         if (minIdx < maxIdx) {
           // min/bot occurs before max/top
-          out.x.push(curPixel);
-          out.y.push(botPixel);
-          out.x.push(curPixel);
-          out.y.push(topPixel);
+          if (firstYPixel !== botPixel) {
+            pushPoint(out, curPixel, firstYPixel);
+          }
+          pushPoint(out, curPixel, botPixel);
+          pushPoint(out, curPixel, topPixel);
+          if (lastYPixel !== topPixel) {
+            // so next line starts at last point in col, which may not be top or bottom
+            pushPoint(out, curPixel, lastYPixel);
+          }
         } else {
           // max/top occurs before min/bot
-          out.x.push(curPixel);
-          out.y.push(topPixel);
-          out.x.push(curPixel);
-          out.y.push(botPixel);
+          if (firstYPixel !== topPixel) {
+            pushPoint(out, curPixel, firstYPixel);
+          }
+          pushPoint(out, curPixel, topPixel);
+          pushPoint(out, curPixel, botPixel);
+          if (lastYPixel !== botPixel) {
+            // so next line starts at last point in col, which may not be top or bottom
+            pushPoint(out, curPixel, lastYPixel);
+          }
         }
       }
+      prevLastYPixel = lastYPixel;
     }
-    if (horizontalPixel !== null) {
-      // in case end of segment is horizontal line we did not finish drawing
-      const curPixel = Math.floor(startPixel + (rightVisibleSample+1) * pixelsPerSample);
-      const y = horizontalPixel as number; // typescript
-      out.x.push(curPixel);
-      out.y.push(y);
-      horizontalPixel = null;
+    // in case end of segment is horizontal line we did not finish drawing
+    if (i < segment.y.length) {
+      const curPixel = Math.floor(startPixel + (i) * pixelsPerSample);
+      lastYPixel = Math.round(yScale(segment.y[i])); // to off screen sample
+      pushPoint(out, curPixel, lastYPixel);
     }
-
   }
   return out;
+}
+
+export function pushPoint(out: XYLine, xpixel: number, ypixel: number ): void {
+  out.x.push(xpixel);
+  out.y.push(ypixel);
 }
 
 export function rgbaForColorName(name: string): Uint8ClampedArray {
