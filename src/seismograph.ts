@@ -27,7 +27,11 @@ import {
   numberFormatWrapper,
 } from "./seismographconfig";
 import {
-  drawAllOnCanvas, clearCanvas, DEFAULT_MAX_SAMPLE_PER_PIXEL
+  clearCanvas,
+  DEFAULT_MAX_SAMPLE_PER_PIXEL,
+  drawAllOnCanvas,
+  drawXScaleGridLines,
+  drawYScaleGridLines,
 } from "./seismographutil";
 import {XHTML_NS} from "./util";
 import type { MarkerType } from "./seismogram";
@@ -560,6 +564,18 @@ export class Seismograph extends SeisPlotElement {
     const canvas = this.canvas?.node();
     if (!canvas) { return; }
     clearCanvas(canvas);
+    if (this.seismographConfig.xGridLines) {
+      drawXScaleGridLines(
+        canvas,
+        this.timeScaleForAxis(),
+        this.seismographConfig.gridLineColor);
+    }
+    if (this.seismographConfig.yGridLines) {
+      drawYScaleGridLines(
+        canvas,
+        this.ampScaleForAxis(),
+        this.seismographConfig.gridLineColor);
+    }
     drawAllOnCanvas(
       canvas,
       this._seisDataList,

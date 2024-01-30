@@ -83,6 +83,10 @@ export class SeismographConfig {
   xLabelOrientation: string;
   _xSublabel: string;
   xSublabelIsUnits: boolean;
+  /**
+   * Should grid lines be drawn for each tick on the x axis.
+   */
+  xGridLines: boolean;
   isYAxis: boolean;
   isYAxisRight: boolean;
   isYAxisNice: boolean;
@@ -94,6 +98,7 @@ export class SeismographConfig {
   _ySublabel: string;
   ySublabelTrans: number;
   ySublabelIsUnits: boolean;
+  yGridLines: boolean;
   doMarkers: boolean;
   markerTextOffset: number;
   markerTextAngle: number;
@@ -111,6 +116,7 @@ export class SeismographConfig {
   connectSegments: boolean;
   lineColors: Array<string>;
   lineWidth: number;
+  gridLineColor: string;
   wheelZoom: boolean;
   amplitudeMode: AMPLITUDE_MODE;
   doGain: boolean;
@@ -136,6 +142,20 @@ export class SeismographConfig {
     this.isYAxisNice = true;
     this.isYAxis = true;
     this.isYAxisRight = false;
+    /**
+     * Should grid lines be drawn for each tick on the X axis.
+     * Defaults to false;
+     */
+    this.xGridLines = false;
+    /**
+     * Should grid lines be drawn for each tick on the Y axis.
+     * Defaults to false;
+     */
+    this.yGridLines = false;
+    /**
+     * Color for gridlines. Defaults to lightgrey.
+     */
+    this.gridLineColor = "lightgrey";
     this.timeFormat = multiFormatHour;
     this.relativeTimeFormat = formatCountOrAmp;
     this.amplitudeFormat = formatCountOrAmp;

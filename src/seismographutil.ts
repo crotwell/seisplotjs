@@ -3,13 +3,61 @@ import { SeismogramSegment } from "./seismogramsegment";
 import { SeismogramDisplayData } from "./seismogram";
 import { isDef } from "./util";
 
-import type { ScaleLinear } from "d3-scale";
+import type { ScaleLinear, ScaleTime } from "d3-scale";
 
 export const DEFAULT_MAX_SAMPLE_PER_PIXEL = 3;
+export const DEFAULT_GRID_LINE_COLOR = "lightgrey";
 
 export function clearCanvas(canvas: HTMLCanvasElement) {
   // clear the canvas from previous drawing
   canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+export function drawXScaleGridLines(
+  canvas: HTMLCanvasElement,
+  xScale: ScaleLinear<number, number, never> | LuxonTimeScale,
+  colorname: string = DEFAULT_GRID_LINE_COLOR,
+  lineWidth = 1,): void {
+    if (canvas.height === 0) { return;}
+    const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+    if (!isDef(context)) {// for typescript
+      throw new Error("canvas 2d context is null, should not happen...");
+    }
+    let xScaleToDraw: ScaleLinear<number, number, never> | ScaleTime<number, number, never>;
+    if (xScale instanceof LuxonTimeScale) {
+      xScaleToDraw = (xScale as LuxonTimeScale).d3scale;
+    } else {
+      xScaleToDraw = xScale as ScaleLinear<number, number, never>;
+    }
+    xScaleToDraw.ticks().forEach(t => {
+      context.beginPath();
+      context.strokeStyle = colorname;
+      context.lineWidth = lineWidth;
+      context.moveTo(xScaleToDraw(t), 0);
+      context.lineTo(xScaleToDraw(t), canvas.height);
+      context.stroke();
+    });
+}
+
+export function drawYScaleGridLines(
+  canvas: HTMLCanvasElement,
+  yScale: ScaleLinear<number, number, never>,
+  colorname: string = DEFAULT_GRID_LINE_COLOR,
+  lineWidth = 1,): void {
+    if (canvas.height === 0) { return;}
+    const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+    if (!isDef(context)) {// for typescript
+      throw new Error("canvas 2d context is null, should not happen...");
+    }
+
+    yScale.ticks().forEach(t => {
+      context.beginPath();
+      context.strokeStyle = colorname;
+      context.lineWidth = lineWidth;
+      context.moveTo(0,yScale(t));
+      context.lineTo(canvas.width, yScale(t));
+      context.stroke();
+    });
 }
 
 export function drawAllOnCanvas(
