@@ -62,6 +62,7 @@ export class SeismographConfigCache {
  *
  */
 export class SeismographConfig {
+  /** @private */
   static _lastID: number;
   configId: number;
   /** @private */
@@ -78,9 +79,11 @@ export class SeismographConfig {
   /** @private */
   isXAxis: boolean;
   isXAxisTop: boolean;
+  /** @private */
   _xLabel: string;
 
   xLabelOrientation: string;
+  /** @private */
   _xSublabel: string;
   xSublabelIsUnits: boolean;
   /**
@@ -90,11 +93,14 @@ export class SeismographConfig {
   isYAxis: boolean;
   isYAxisRight: boolean;
   isYAxisNice: boolean;
+  /** @private */
   _yLabel: string;
 
+  /** @private */
   _yLabelRight: string;
 
   yLabelOrientation: string;
+  /** @private */
   _ySublabel: string;
   ySublabelTrans: number;
   ySublabelIsUnits: boolean;
@@ -320,15 +326,33 @@ export class SeismographConfig {
     // setter handles details...
     this.linkedAmplitudeScale = new LinkedAmplitudeScale();
   }
+  /**
+   * Set Raw amplitude mode, plot absolute and
+   * goes from minimun to maximum of data
+   */
   amplitudeRaw() {
     this.amplitudeMode = AMPLITUDE_MODE.Raw;
   }
+  /**
+   * Set MinMax amplitude mode, plot is relative and
+   * centered on (minimun + maximum)/2
+   */
   amplitudeMinMax() {
     this.amplitudeMode = AMPLITUDE_MODE.MinMax;
   }
+  /**
+   * Set Mean amplitude mode, plot is relative and
+   * centered on mean of data
+   */
   amplitudeMean() {
     this.amplitudeMode = AMPLITUDE_MODE.Mean;
   }
+  /**
+   * Set WithZero amplitude mode, plot is absolute and
+   * centered on mean of data like Raw, but also includes zero
+   * even if all data is positive. Useful when showing
+   * data compared to zero is helpful.
+   */
   amplitudeWithZero() {
     this.amplitudeMode = AMPLITUDE_MODE.Zero;
   }
