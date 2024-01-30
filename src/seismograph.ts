@@ -442,11 +442,7 @@ export class Seismograph extends SeisPlotElement {
 
     this.g.attr(
       "transform",
-      "translate(" +
-      this.seismographConfig.margin.left +
-      "," +
-      this.seismographConfig.margin.top +
-      ")",
+      `translate(${this.seismographConfig.margin.left}, ${this.seismographConfig.margin.top} )`,
     );
     if (this.canvas && this.canvasHolder) {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
