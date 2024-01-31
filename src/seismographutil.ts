@@ -6,7 +6,7 @@ import { isDef } from "./util";
 import type { ScaleLinear, ScaleTime } from "d3-scale";
 
 export const DEFAULT_MAX_SAMPLE_PER_PIXEL = 3;
-export const DEFAULT_GRID_LINE_COLOR = "lightgrey";
+export const DEFAULT_GRID_LINE_COLOR = "gainsboro";
 
 export function clearCanvas(canvas: HTMLCanvasElement) {
   // clear the canvas from previous drawing

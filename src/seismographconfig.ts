@@ -10,7 +10,7 @@ import {
   LinkedTimeScale,
   AMPLITUDE_MODE
 } from "./scale";
-
+import {DEFAULT_GRID_LINE_COLOR} from "./seismographutil";
 import { SeismogramDisplayData, Seismogram } from "./seismogram";
 import { isDef, validStartTime, stringify } from "./util";
 import { Duration, Interval } from "luxon";
@@ -159,9 +159,9 @@ export class SeismographConfig {
      */
     this.yGridLines = false;
     /**
-     * Color for gridlines. Defaults to lightgrey.
+     * Color for gridlines. Defaults to gainsboro, a very light grey.
      */
-    this.gridLineColor = "lightgrey";
+    this.gridLineColor = DEFAULT_GRID_LINE_COLOR;
     this.timeFormat = multiFormatHour;
     this.relativeTimeFormat = formatCountOrAmp;
     this.amplitudeFormat = formatCountOrAmp;
