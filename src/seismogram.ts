@@ -1256,29 +1256,29 @@ export function findMaxDurationOfType(
  *
  * @param  sddList  list of seismogramdisplaydata
  * @param  doGain  should gain be used
- * @param  ampCentering centering style
+ * @param  amplitudeMode centering style
  * @returns    min max
  */
 export function findMinMax(
   sddList: Array<SeismogramDisplayData>,
   doGain = false,
-  ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
+  amplitudeMode: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
 ): MinMaxable {
-  return findMinMaxOverTimeRange(sddList, null, doGain, ampCentering);
+  return findMinMaxOverTimeRange(sddList, null, doGain, amplitudeMode);
 }
 
 export function findMinMaxOverTimeRange(
   sddList: Array<SeismogramDisplayData>,
   timeRange: Interval | null = null,
   doGain = false,
-  ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
+  amplitudeMode: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
 ): MinMaxable {
   if (sddList.length === 0) { return new MinMaxable(-1, 1); }
   const minMaxArr = sddList.map(sdd => {
-    return calcMinMax(sdd, timeRange, doGain, ampCentering);
+    return calcMinMax(sdd, timeRange, doGain, amplitudeMode);
   }).filter(x => x) // remove nulls
     .reduce(function(p, v) {
-      if (ampCentering === AMPLITUDE_MODE.Raw || ampCentering === AMPLITUDE_MODE.Zero) {
+      if (amplitudeMode === AMPLITUDE_MODE.Raw || amplitudeMode === AMPLITUDE_MODE.Zero) {
         return p ? (v ? p.union(v) : p) : v;
       } else {
         // non-Raw mode assumes only halfwidth matters, middle will be zeroed
@@ -1306,18 +1306,18 @@ export function findMinMaxOverRelativeTimeRange(
   alignmentOffset: Duration,
   duration: Duration,
   doGain = false,
-  ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
+  amplitudeMode: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
 ): MinMaxable {
   if (sddList.length === 0) {
     return new MinMaxable(0, 0);
   }
   const minMaxArr = sddList.map(sdd => {
     const timeRange = sdd.relativeTimeWindow(alignmentOffset, duration);
-    return calcMinMax(sdd, timeRange, doGain, ampCentering);
+    return calcMinMax(sdd, timeRange, doGain, amplitudeMode);
   }).filter(x => x) // remove nulls
     .reduce(function(p, v) {
       // Raw and Zero are actual values, no centering
-      if (ampCentering === AMPLITUDE_MODE.Raw || ampCentering === AMPLITUDE_MODE.Zero) {
+      if (amplitudeMode === AMPLITUDE_MODE.Raw || amplitudeMode === AMPLITUDE_MODE.Zero) {
         return p ? (v ? p.union(v) : p) : v;
       } else {
         // non-Raw mode assumes only halfwidth matters, middle will be zeroed
@@ -1344,7 +1344,7 @@ export function calcMinMax(
   sdd: SeismogramDisplayData,
   timeRange: Interval | null = null,
   doGain = false,
-  ampCentering: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
+  amplitudeMode: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
 ): MinMaxable | null {
   if (sdd.seismogram) {
     let cutSDD;
@@ -1361,19 +1361,19 @@ export function calcMinMax(
       }
       let middle = 0;
       let halfWidth = 0;
-      if (ampCentering === AMPLITUDE_MODE.MinMax || ampCentering === AMPLITUDE_MODE.Raw) {
+      if (amplitudeMode === AMPLITUDE_MODE.MinMax || amplitudeMode === AMPLITUDE_MODE.Raw) {
         middle = cutSDD.middle;
         halfWidth = Math.max((middle - cutSDD.min) / sens, (cutSDD.max - middle) / sens);
-      } else if (ampCentering === AMPLITUDE_MODE.Mean) {
+      } else if (amplitudeMode === AMPLITUDE_MODE.Mean) {
         middle = sdd.mean;
         halfWidth = Math.max((middle - cutSDD.min) / sens, (cutSDD.max - middle) / sens);
-      } else if (ampCentering === AMPLITUDE_MODE.Zero) {
+      } else if (amplitudeMode === AMPLITUDE_MODE.Zero) {
         const minwz = Math.min(0, cutSDD.min);
         const maxwz = Math.max(0, cutSDD.max);
         middle = (minwz + maxwz) / 2.0;
         halfWidth = (maxwz - minwz) / 2.0 / sens;
       } else {
-        throw new Error(`Unknown ampCentering: ${stringify(ampCentering)}. Must be one of raw, zero, minmax, mean`);
+        throw new Error(`Unknown amplitudeMode: ${stringify(amplitudeMode)}. Must be one of raw, zero, minmax, mean`);
       }
       return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
     }
