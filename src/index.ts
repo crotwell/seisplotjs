@@ -31,6 +31,7 @@ import * as infotable from "./infotable";
 import * as leafletutil from "./leafletutil";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
+import * as mseed3eh from "./mseed3eh";
 import * as mseedarchive from "./mseedarchive";
 import * as oregondsputil from "./oregondsputil";
 import * as organizeddisplay from "./organizeddisplay";
@@ -90,6 +91,7 @@ export {
   leafletutil,
   miniseed,
   mseed3,
+  mseed3eh,
   mseedarchive,
   oregondsputil,
   organizeddisplay,
