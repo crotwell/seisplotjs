@@ -10,7 +10,8 @@ import {SacPoleZero} from "./sacpolezero";
 import {Response, PolesZeros} from "./stationxml";
 import {Complex} from "./oregondsputil";
 // `allMeasures` includes all the measures packaged with this library
-import configureMeasurements, { allMeasures,  AllMeasuresUnits } from 'convert-units';
+import configureMeasurements from 'convert-units';
+import allMeasures, {AllMeasuresUnits} from 'convert-units/definitions/all';
 const convert = configureMeasurements(allMeasures);
 
 
