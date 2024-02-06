@@ -562,6 +562,14 @@ export class OrganizedDisplay extends SeisPlotElement {
       wrapper.removeChild(mapElement);
     } else if (this.map === 'true' && !isDef(mapElement)) {
       const mapdisp = new QuakeStationMap(sortedData, this.seismographConfig);
+      const tileURLAttr = this.getAttribute("tileURL");
+      if (tileURLAttr != null) {
+        mapdisp.setAttribute("tileURL", tileURLAttr);
+      }
+      const tileAttributionAttr = this.getAttribute("tileAttribution");
+      if (tileAttributionAttr != null) {
+        mapdisp.setAttribute("tileAttribution", tileAttributionAttr);
+      }
       // map is first
       const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);
       // info second after map
