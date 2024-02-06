@@ -533,7 +533,7 @@ export function checkLuxonValid(d: null | DateTime | Interval | Duration, msg?: 
   }
   if (!d.isValid) {
     const m = msg ? msg : "";
-    throw new Error(`Invalid Luxon: ${typeof d} ${d.constructor.name} ${d.invalidReason}: ${d.invalidExplanation} ${m}`);
+    throw new Error(`Invalid Luxon: ${typeof d} ${d?.constructor?.name} ${d.invalidReason}: ${d.invalidExplanation} ${m}`);
   }
   return d;
 }
