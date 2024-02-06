@@ -332,7 +332,12 @@ export class QuakeTable extends HTMLElement {
     } else if (h === QUAKE_COLUMN.MAGTYPE) {
       return q.magnitude.type ? q.magnitude.type : "";
     } else if (h === QUAKE_COLUMN.DESC) {
-      return q.description;
+      const desc = q.description;
+      if (desc && desc.length>0) {
+        return desc;
+      } else {
+        return stringify(q.time.toISO());
+      }
     } else if (h === QUAKE_COLUMN.EVENTID) {
       return `${q.eventId}`;
     } else {
