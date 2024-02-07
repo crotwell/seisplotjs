@@ -407,7 +407,9 @@ export class OrganizedDisplay extends SeisPlotElement {
     this.getShadowRoot().appendChild(wrapper);
   }
   static get observedAttributes() {
-    return [ORG_TYPE, WITH_TOOLS, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY];
+    const mine = [ORG_TYPE, WITH_TOOLS, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY];
+    const map = QuakeStationMap.observedAttributes;
+    return mine.concat(map);
   }
 
   getDisplayItems(): Array<OrganizedDisplayItem> {
@@ -518,6 +520,7 @@ export class OrganizedDisplay extends SeisPlotElement {
 
     allOrgDispItems.forEach(oi => {
       wrapper.appendChild(oi);
+
       oi.draw();
       if (oi.plottype === SEISMOGRAPH) {
         oi.addEventListener("seismousemove", sEvt => {
@@ -562,14 +565,12 @@ export class OrganizedDisplay extends SeisPlotElement {
       wrapper.removeChild(mapElement);
     } else if (this.map === 'true' && !isDef(mapElement)) {
       const mapdisp = new QuakeStationMap(sortedData, this.seismographConfig);
-      const tileURLAttr = this.getAttribute("tileURL");
-      if (tileURLAttr != null) {
-        mapdisp.setAttribute("tileURL", tileURLAttr);
-      }
-      const tileAttributionAttr = this.getAttribute("tileAttribution");
-      if (tileAttributionAttr != null) {
-        mapdisp.setAttribute("tileAttribution", tileAttributionAttr);
-      }
+      QuakeStationMap.observedAttributes.forEach(a => {
+        const my_attr = this.getAttribute(a);
+        if (my_attr) {
+          mapdisp.setAttribute(a, my_attr);
+        }
+      });
       // map is first
       const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);
       // info second after map
@@ -625,6 +626,12 @@ export class OrganizedDisplay extends SeisPlotElement {
     } else if (name === WITH_INFO) {
       const sortedData = sort(this.seisData, this.sortby);
       this.drawInfo(sortedData);
+    } else if (QuakeStationMap.observedAttributes.includes(name)) {
+      const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
+      const mapElement = wrapper?.querySelector(MAP_ELEMENT) as QuakeStationMap;
+      if (mapElement) {
+        mapElement.setAttribute(name, newValue);
+      }
     } else {
       this.redraw();
     }
