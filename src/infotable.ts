@@ -5,7 +5,7 @@ import { SeisPlotElement, addStyleToElement } from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
 import { stringify } from "./util";
-
+import * as textformat from "./textformat";
 import { Handlebars } from "./handlebarshelpers";
 
 
@@ -943,33 +943,7 @@ export class SeismogramTable extends HTMLElement {
 export const SDD_INFO_ELEMENT = 'sp-seismogram-table';
 customElements.define(SDD_INFO_ELEMENT, SeismogramTable);
 
-
-
-
-
-export const latlonFormat = new Intl.NumberFormat(navigator.languages[0], {
-  style: "unit",
-  unit: "degree",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 2,
-});
-
-export const magFormat = new Intl.NumberFormat(navigator.languages[0], {
-  style: "decimal",
-  maximumFractionDigits: 2,
-});
-
-export const depthFormat = new Intl.NumberFormat(navigator.languages[0], {
-  style: "unit",
-  unit: "kilometer",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2,
-});
-export const depthMeterFormat = new Intl.NumberFormat(navigator.languages[0], {
-  style: "unit",
-  unit: "meter",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 1,
-  minimumFractionDigits: 1,
-});
+export const latlonFormat = textformat.latlonFormat;
+export const magFormat = textformat.magFormat;
+export const depthFormat = textformat.depthFormat;
+export const depthMeterFormat = textformat.depthMeterFormat;

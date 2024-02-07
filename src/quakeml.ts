@@ -15,6 +15,7 @@ import {
   defaultFetchInitObj,
   XML_MIME,
 } from "./util";
+import {latlonFormat, depthFormat, magFormat} from "./textformat";
 
 import {DateTime} from "luxon";
 
@@ -335,18 +336,9 @@ export class Quake extends BaseElement {
   toString(): string {
     if (this.hasOrigin()) {
       const magStr = this.hasMagnitude() ? this.magnitude.toString() : "";
-      return (
-        stringify(this.time) +
-        " " +
-        stringify(this.latitude) +
-        "/" +
-        stringify(this.longitude) +
-        " " +
-        stringify(this.depth / 1000) +
-        " km" +
-        " " +
-        magStr
-      );
+      const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
+      const depth = depthFormat.format(this.depth / 1000);
+      return `${this.time} ${latlon} ${depth} ${magStr}`;
     } else if (this.eventId != null) {
       return `Event: ${this.eventId}`;
     } else {
@@ -688,15 +680,9 @@ export class Origin extends BaseElement {
   }
 
   toString(): string {
-    return (
-      stringify(this.time) +
-      " " +
-      stringify(this.latitude) +
-      " " +
-      stringify(this.longitude) +
-      " " +
-      stringify(this.depth)
-    );
+    const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
+    const depth = depthFormat.format(this.depth / 1000);
+    return `${this.time} ${latlon} ${depth} km`;
   }
 
   get time(): DateTime {
@@ -1040,7 +1026,7 @@ export class Magnitude extends BaseElement {
   }
 
   toString(): string {
-    return `${this.mag} ${this.type?this.type:""}`;
+    return `${magFormat.format(this.mag)} ${this.type?this.type:""}`;
   }
   get mag(): number {
     return this.magQuantity.value;
