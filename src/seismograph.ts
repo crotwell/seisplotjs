@@ -472,12 +472,14 @@ export class Seismograph extends SeisPlotElement {
 
     this.drawSeismograms();
     this.drawAxis();
+    const unitsLabel = this.seismographConfig.ySublabelIsUnits ? this.createUnitsLabel() : "";
     axisutil.drawAxisLabels(
       svgEl,
       this.seismographConfig,
       this.height,
       this.width,
       this.createHandlebarsInput(),
+      unitsLabel,
     );
 
     if (this.seismographConfig.doMarkers) {
@@ -1222,12 +1224,14 @@ export class Seismograph extends SeisPlotElement {
   drawYSublabel() {
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
     const svgEl = wrapper.querySelector('svg') as SVGElement;
+    const unitsLabel = this.seismographConfig.ySublabelIsUnits ? this.createUnitsLabel() : "";
     axisutil.drawYSublabel(
       svgEl,
       this.seismographConfig,
       this.height,
       this.width,
       this.createHandlebarsInput(),
+      unitsLabel,
     );
   }
 
@@ -1315,6 +1319,14 @@ export class Seismograph extends SeisPlotElement {
   }
 
   redoDisplayYScale(): void {
+    this.rescaleYAxis();
+
+    if (this.seismographConfig.ySublabelIsUnits) {
+      this.drawYSublabel();
+    }
+  }
+  createUnitsLabel(): string {
+    let ySublabel = "";
     if (this.seismographConfig.doGain &&
       this._seisDataList.length > 0 &&
       this._seisDataList.every(sdd => sdd.hasSensitivity()) &&
@@ -1333,21 +1345,20 @@ export class Seismograph extends SeisPlotElement {
       if (this.seismographConfig.ySublabelIsUnits) {
         const unitList = this._seisDataList.map(sdd => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
         if (!allSameUnits) {
-          this.seismographConfig.ySublabel = unitList;
+          ySublabel = unitList;
         } else {
-          this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
+          ySublabel = firstSensitivity.inputUnits;
         }
       }
     } else {
       if (this.seismographConfig.ySublabelIsUnits) {
-        this.seismographConfig.ySublabel = "";
+        ySublabel = "";
         const allUnits = [];
 
         for (const t of this._seisDataList) {
           if (t.seismogram) {
             const u = t.seismogram.yUnit;
             allUnits.push(u);
-            this.seismographConfig.ySublabel += `${u} `;
           }
         }
 
@@ -1355,19 +1366,14 @@ export class Seismograph extends SeisPlotElement {
           allUnits.push("Count");
         }
 
-        this.seismographConfig.ySublabel = allUnits.join(" ");
+        ySublabel = allUnits.join(" ");
       }
     }
 
     if (this.seismographConfig.ySublabelIsUnits && this.seismographConfig.isCenteredAmp()) {
-      this.seismographConfig.ySublabel = `centered ${this.seismographConfig.ySublabel}`;
+      ySublabel = `centered ${ySublabel}`;
     }
-
-    this.rescaleYAxis();
-
-    if (this.seismographConfig.ySublabelIsUnits) {
-      this.drawYSublabel();
-    }
+    return ySublabel;
   }
 
   getSeismogramData(): Array<SeismogramDisplayData> {

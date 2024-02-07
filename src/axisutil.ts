@@ -165,12 +165,23 @@ export function drawYLabel(
     }
   }
 }
+/**
+ * Draws Y axis sublabel, possibly reflecting units of seismograph.
+ *
+ * @param  svgEl             svg to draw to
+ * @param  seismographConfig  config options
+ * @param  height             height of svg
+ * @param  width              width of svg
+ * @param  handlebarsInput    optional key-values for handlebars
+ * @param  unitText          option label representing units if config.ySublabelIsUnit
+ */
 export function drawYSublabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
   width: number, // eslint-disable-next-line no-unused-vars
   handlebarsInput: HandlebarsInput = {},
+  unitsLabel: string = "",
 ) {
   const svg = d3select(svgEl);
   svg.selectAll("g.ySublabel").remove();
@@ -202,10 +213,15 @@ export function drawYSublabel(
       svgText.attr("x", seismographConfig.margin.right-1);
     }
   }
-  const handlebarOut = seismographConfig.handlebarsYSublabel(handlebarsInput, {
-    allowProtoPropertiesByDefault: true, // this might be a security issue???
-  });
-  svgText.html(handlebarOut);
+
+  if (seismographConfig.ySublabelIsUnits) {
+    svgText.html(unitsLabel);
+  } else {
+    const handlebarOut = seismographConfig.handlebarsYSublabel(handlebarsInput, {
+      allowProtoPropertiesByDefault: true, // this might be a security issue???
+    });
+    svgText.html(handlebarOut);
+  }
   }
 }
 export function drawTitle(
@@ -255,12 +271,24 @@ export function drawTitle(
   textEl.innerHTML = handlebarOut;
 }
 
+
+/**
+ * Draws axis labels and title, possibly reflecting units of seismograph.
+ *
+ * @param  svgEl             svg to draw to
+ * @param  seismographConfig  config options
+ * @param  height             height of svg
+ * @param  width              width of svg
+ * @param  handlebarsInput    optional key-values for handlebars
+ * @param  unitText          option label representing units if config.ySublabelIsUnit
+ */
 export function drawAxisLabels(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
   width: number,
   handlebarsInput: HandlebarsInput = {},
+  unitsLabel: string = "",
 ) {
   if (!svgEl) {
     // axisutil.drawAxisLabels, but no svg element
@@ -272,7 +300,7 @@ export function drawAxisLabels(
   }
   drawTitle(svgEl, seismographConfig, height, width, handlebarsInput);
   drawXLabel(svgEl, seismographConfig, height, width, handlebarsInput);
-  drawXSublabel(svgEl, seismographConfig, height, width);
+  drawXSublabel(svgEl, seismographConfig, height, width, handlebarsInput);
   drawYLabel(svgEl, seismographConfig, height, width, handlebarsInput);
-  drawYSublabel(svgEl, seismographConfig, height, width);
+  drawYSublabel(svgEl, seismographConfig, height, width, handlebarsInput, unitsLabel);
 }
