@@ -39,7 +39,7 @@ div.wrapper {
   width: 100%;
 }
 
-.${InactiveStationMarkerClassName} {
+.${StationMarkerClassName}.${InactiveStationMarkerClassName} {
   color: darkgrey;
   font-size: large;
   z-index: 1;
