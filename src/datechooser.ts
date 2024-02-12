@@ -541,38 +541,53 @@ export class TimeRangeChooser extends HTMLElement {
     }
     checkLuxonValid(time);
     this.startChooser.updateTime(time);
-    this.setAttribute('start', stringify(time.toISO()));
+    const startStr = stringify(time.toISO());
+    if (startStr !== this.getAttribute("start")) {
+      // only set if hasn't changed, avoid inf loop
+      this.setAttribute('start', startStr);
+    }
     this.resyncValues(START_CHANGED);
   }
   get end(): DateTime {
     return this.endChooser.time;
   }
-  set end(time: DateTime|string) {
+  set end(time: DateTime) {
     if (typeof time === "string") {
       time = DateTime.fromISO(time);
     }
     checkLuxonValid(time);
     this.endChooser.updateTime(time);
-    this.setAttribute('end', stringify(time.toISO()));
+    const endStr = stringify(time.toISO());
+    if (endStr !== this.getAttribute("end")) {
+      // only set if hasn't changed, avoid inf loop
+      this.setAttribute('end', endStr);
+    }
     this.resyncValues(END_CHANGED);
   }
-  set duration(duration: Duration|string) {
-    if (typeof duration === "string") {
-      duration = Duration.fromISO(duration);
-    }
+  set duration(duration: Duration) {
     this._updateDuration(duration);
     this.resyncValues(DURATION_CHANGED);
   }
   get duration(): Duration {
     return this._duration;
   }
-  _updateDuration(duration: Duration) {
+  _updateDuration(duration: Duration|string) {
+    let durationStr;
+    if (typeof duration === "string") {
+      durationStr = duration;
+      duration = Duration.fromISO(duration);
+    } else {
+      durationStr = stringify(duration.toISO());
+    }
     checkLuxonValid(duration);
     this._duration = duration;
-    this.setAttribute('duration', stringify(duration.toISO()));
+
+    if (durationStr !== this.getAttribute('duration')) {
+      this.setAttribute('duration', durationStr);
+    }
     const dur_input = this.shadowRoot?.querySelector('input.duration') as HTMLInputElement;
     if ( ! dur_input) {throw new Error("can't find input.duration in sp-timerange");}
-    dur_input.value = stringify(this._duration.toISO());
+    dur_input.value = durationStr;
   }
   resyncValues(curChanged: string) {
     if (curChanged === START_CHANGED) {
