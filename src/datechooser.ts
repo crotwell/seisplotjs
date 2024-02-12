@@ -351,7 +351,11 @@ export class DateTimeChooser extends HTMLElement {
     ntext.value = stringify(this.time.toISODate());
     this.hourMin._internalSetTime(newTime);
   }
-
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === "date-time") {
+      this.time = isoToDateTime(newValue);
+    }
+  }
   static get observedAttributes() {
     return ["date-time"];
   }
@@ -419,6 +423,7 @@ export class TimeRangeChooser extends HTMLElement {
 
     const shadow = this.attachShadow({mode: 'open'});
     const wrapper = document.createElement('span');
+    wrapper.classList.add("wrapper");
 
     // style
     const style = document.createElement('style');
@@ -435,6 +440,7 @@ export class TimeRangeChooser extends HTMLElement {
 
     const startLabel = wrapper.appendChild(document.createElement('label'));
     startLabel.textContent = this.startLabel;
+    startLabel.classList.add("startlabel");
     const startChooser = wrapper.appendChild(new DateTimeChooser());
     this.startChooser = startChooser ;
     startChooser.setAttribute("class", "start");
@@ -443,12 +449,14 @@ export class TimeRangeChooser extends HTMLElement {
     durationDiv.setAttribute("class", "duration");
     const durationLabel = wrapper.appendChild(document.createElement('label'));
     durationLabel.textContent = this.durationLabel;
+    durationLabel.classList.add("durationlabel");
     const durationInput = wrapper.appendChild(document.createElement('input'));
     durationInput.value = `${this.duration.toISO()}`;
     durationInput.setAttribute("class", "duration");
 
     const endLabel = wrapper.appendChild(document.createElement('label'));
     endLabel.textContent = this.endLabel;
+    endLabel.classList.add("endlabel");
     const endChooser = wrapper.appendChild(new DateTimeChooser());
     this.endChooser = endChooser ;
     endChooser.setAttribute("class", "end");
@@ -527,7 +535,10 @@ export class TimeRangeChooser extends HTMLElement {
   get start(): DateTime {
     return this.startChooser.time;
   }
-  set start(time: DateTime) {
+  set start(time: DateTime|string) {
+    if (typeof time === "string") {
+      time = DateTime.fromISO(time);
+    }
     checkLuxonValid(time);
     this.startChooser.updateTime(time);
     this.setAttribute('start', stringify(time.toISO()));
@@ -536,13 +547,19 @@ export class TimeRangeChooser extends HTMLElement {
   get end(): DateTime {
     return this.endChooser.time;
   }
-  set end(time: DateTime) {
+  set end(time: DateTime|string) {
+    if (typeof time === "string") {
+      time = DateTime.fromISO(time);
+    }
     checkLuxonValid(time);
     this.endChooser.updateTime(time);
     this.setAttribute('end', stringify(time.toISO()));
     this.resyncValues(END_CHANGED);
   }
-  set duration(duration: Duration) {
+  set duration(duration: Duration|string) {
+    if (typeof duration === "string") {
+      duration = Duration.fromISO(duration);
+    }
     this._updateDuration(duration);
     this.resyncValues(DURATION_CHANGED);
   }
@@ -587,6 +604,23 @@ export class TimeRangeChooser extends HTMLElement {
     this.dispatchEvent(new Event("change"));
     this.updateCallback(this.getTimeRange());
 
+  }
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    if (name === "start") {
+      this.start = isoToDateTime(newValue);
+    } else if (name === "end") {
+      this.end = isoToDateTime(newValue);
+    } else if (name === "duration") {
+      this.duration = Duration.fromISO(newValue);
+    } else if (name === START_LABEL) {
+      (this.shadowRoot?.querySelector('.startlabel') as HTMLElement).textContent = newValue;
+    } else if (name === END_LABEL) {
+      (this.shadowRoot?.querySelector('.endlabel') as HTMLElement).textContent = newValue;
+    } else if (name === DUR_LABEL) {
+      (this.shadowRoot?.querySelector('.durationLabel') as HTMLElement).textContent = newValue;
+    } else {
+      console.log(`set unknown attribute: "${name}"`);
+    }
   }
   static get observedAttributes() {
     return ["start", "duration", "end", START_LABEL, END_LABEL, DUR_LABEL];
