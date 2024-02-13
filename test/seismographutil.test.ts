@@ -3,8 +3,12 @@ import {Seismogram, SeismogramDisplayData} from '../src/seismogram';
 import {Seismograph} from '../src/seismograph';
 import {SeismographConfig} from '../src/seismographconfig';
 import {isoToDateTime} from '../src/util';
+import {LuxonTimeScale} from '../src/axisutil';
+import { Interval} from 'luxon';
 
 import * as mseed3 from '../src/mseed3';
+import { scaleLinear as d3scaleLinear } from "d3-scale";
+
 import fs from 'fs';
 
 // eslint-disable-next-line no-undef
@@ -128,4 +132,46 @@ test("ref badspike mseed3 file", () => {
   expect(drawn.y[6]).toEqual(height);
   expect(drawn.x[7]).toEqual(width);
   expect(drawn.y[7]).toEqual(height);
+});
+
+
+test("bad triangle", () => {
+  // args: 1113, [2019-07-04T05:46:59.950Z – 2019-07-04T05:47:00.145Z), 0,1113
+
+  let sampleRate = 20;
+  const amp = .1; // 100 count amplitude
+  let dataArray = new Float32Array(1000).map(function(d, i) {
+    //return Math.sin(2 * Math.PI * i / sinePeriod) * amp;
+    if (i==0) {return amp}
+    if (i < 10) {return .2;}
+    if (i < 100) {return amp;}
+    if (i < 200) {return amp;}
+    if (i > 900) {return amp;}
+
+    return 0;
+  });
+  const start = isoToDateTime('2019-07-04T05:46:23');
+  const spikeTime = isoToDateTime('2019-07-04T05:47:00');
+  const spikeOffset = Interval.fromDateTimes(start, spikeTime).toDuration();
+  const spikeIdx = spikeOffset.toMillis()/1000.0*sampleRate;
+  dataArray[spikeIdx] = amp;
+  console.log(`spike: ${spikeIdx} of ${dataArray.length}`)
+  let myseismogram = Seismogram.fromContiguousData(dataArray, sampleRate, start);
+
+  const width = 1113;
+  const height = 100;
+  const s = isoToDateTime("2019-07-04T05:46:59.950Z");
+  const e = isoToDateTime("2019-07-04T05:47:00.145Z");
+  const seg = myseismogram.segments[0];
+  const interval = Interval.fromDateTimes(s,e);
+  const xScale = new LuxonTimeScale(interval, [0, 1113]);
+  const yScale = d3scaleLinear();
+  yScale.domain([0, amp]);
+  yScale.range([height, 0]);
+  const segLine = seismogramSegmentAsLine(seg, width, xScale, yScale);
+  console.log(segLine.x);
+  console.log(segLine.y);
+  expect(seg.y[740]).toBeCloseTo(amp, 2);
+  expect(segLine.x[0]).toBeLessThan(0);
+  expect(segLine.x[segLine.x.length-1]).toBeGreaterThan(width);
 });

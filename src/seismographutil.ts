@@ -210,7 +210,7 @@ export function seismogramSegmentAsLine(
 
   if (startPixel < 0) {
     leftVisibleSample =
-      Math.floor(-1 * startPixel * samplesPerPixel) - 1;
+      Math.floor(-1 * startPixel * samplesPerPixel) ;
     leftVisiblePixel = 0;
   }
 
@@ -218,12 +218,8 @@ export function seismogramSegmentAsLine(
     rightVisibleSample =
       leftVisibleSample +
       Math.ceil((width + 1) * samplesPerPixel) +
-      1;
+      2;
   }
-
-  let prevLastYPixel = Math.round(yScale(segment.y[leftVisibleSample])); // init to first sample
-  let lastYPixel = prevLastYPixel;
-  pushPoint(out, leftVisiblePixel, prevLastYPixel);
 
   if ( samplesPerPixel <= maxSamplePerPixelForLineDraw) {
     // draw all samples
@@ -232,13 +228,19 @@ export function seismogramSegmentAsLine(
       i < rightVisibleSample + 2 && i < segment.y.length;
       i++
     ) {
-      out.x.push(startPixel + i * pixelsPerSample);
-      out.y.push(Math.round(yScale(segment.y[i])));
+      pushPoint(out,
+        Math.round(xScale.for(segment.timeOfSample(i))),
+        Math.round(yScale(segment.y[i])));
     }
   } else {
     // draw min-max
     // this tends to be better even with as few as 3 point per pixel,
     // especially in near horizontal line
+    let prevLastYPixel = Math.round(yScale(segment.y[leftVisibleSample])); // init to first sample
+    let lastYPixel = prevLastYPixel;
+    // push left sample in case jump in amp just off edge of screen
+    pushPoint(out, leftVisiblePixel, prevLastYPixel);
+
     let i = leftVisibleSample;
     let inHorizontalLine = false;
     while (i < rightVisibleSample + 2 && i < segment.y.length) {
