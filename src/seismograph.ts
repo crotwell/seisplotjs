@@ -456,8 +456,8 @@ export class Seismograph extends SeisPlotElement {
         .classed("seismograph", true)
         .attr("x", this.seismographConfig.margin.left)
         .attr("y", this.seismographConfig.margin.top)
-        .attr("width", this.width)
-        .attr("height", this.height + 1);
+        .attr("width", this.width )
+        .attr("height", this.height );
       if (this.canvasHolder == null) { throw new Error("canvasHolder is null"); }
       const c = this.canvasHolder
         .append("xhtml:canvas")
@@ -465,8 +465,8 @@ export class Seismograph extends SeisPlotElement {
         .attr("xmlns", XHTML_NS)
         .attr("x", 0)
         .attr("y", 0)
-        .attr("width", this.width)
-        .attr("height", this.height + 1);
+        .attr("width", this.width )
+        .attr("height", this.height );
       this.canvas = (c as unknown) as Selection<HTMLCanvasElement, unknown, null, undefined>;
     }
 
@@ -606,8 +606,7 @@ export class Seismograph extends SeisPlotElement {
   }
 
   ampScaleForSeisDisplayData(sdd: SeismogramDisplayData): ScaleLinear<number, number, never> {
-    const ampScale = d3scaleLinear();
-    ampScale.range([this.height, 0]);
+    const ampScale = this.__initAmpScale();
     if (this.seismographConfig.linkedAmplitudeScale) {
       const drawHalfWidth = this.amp_scalable.drawHalfWidth;
       let sensitivityVal = 1;
@@ -692,9 +691,19 @@ export class Seismograph extends SeisPlotElement {
     this.drawLeftRightAxis();
   }
 
-  ampScaleForAxis(): ScaleLinear<number, number, never> {
+  /**
+   * Creates amp scale, set range based on height.
+   * @private
+   */
+  __initAmpScale(): ScaleLinear<number, number, never> {
     const ampAxisScale = d3scaleLinear();
-    ampAxisScale.range([this.height, 0]);
+    // don't use top,bot pixel, somehow line at top amp disappears if [this.height, 0]
+    ampAxisScale.range([this.height-1, 1]);
+    return ampAxisScale;
+  }
+
+  ampScaleForAxis(): ScaleLinear<number, number, never> {
+    const ampAxisScale = this.__initAmpScale();
     if (this.seismographConfig.fixedAmplitudeScale) {
       ampAxisScale.domain(this.seismographConfig.fixedAmplitudeScale);
     } else if (this.seismographConfig.linkedAmplitudeScale) {

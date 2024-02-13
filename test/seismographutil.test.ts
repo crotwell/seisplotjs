@@ -43,12 +43,12 @@ test("line create test", () => {
   seisConfig.margin.right = 0;
   const graph = new Seismograph([seisData], seisConfig);
   graph.width = width;
-  graph.height = 100;
+  graph.height = height;
   const maxSamplePerPixelForLineDraw = 3;
   const tScale = graph.timeScaleForSeisDisplayData(seisData);
   const yScale = graph.ampScaleForSeisDisplayData(seisData);
-  expect(yScale.range()[1]).toBe(0);
-  expect(yScale.range()[0]).toBe(100);
+  expect(yScale.range()[1]).toBe(1);
+  expect(yScale.range()[0]).toBe(height-1);
   const drawn = seismogramSegmentAsLine(segment,
     width,
     tScale,
@@ -60,15 +60,15 @@ test("line create test", () => {
   expect(drawn.y.length).toEqual(drawn.x.length);
   expect(drawn.x.length).toEqual(5);
   expect(drawn.x[0]).toEqual(0);
-  expect(drawn.y[0]).toEqual(height);
+  expect(drawn.y[0]).toEqual(height-1);
   expect(drawn.x[1]).toEqual(89);
-  expect(drawn.y[1]).toEqual(height);
+  expect(drawn.y[1]).toEqual(height-1);
   expect(drawn.x[2]).toEqual(90);
-  expect(drawn.y[2]).toEqual(height-amp);
+  expect(drawn.y[2]).toEqual(height-amp+1);
   expect(drawn.x[3]).toEqual(90);
-  expect(drawn.y[3]).toEqual(height);
+  expect(drawn.y[3]).toEqual(height-1);
   expect(drawn.x[4]).toEqual(width-1);
-  expect(drawn.y[4]).toEqual(height);
+  expect(drawn.y[4]).toEqual(height-1);
 });
 
 
@@ -101,8 +101,8 @@ test("ref badspike mseed3 file", () => {
   //const maxSamplePerPixelForLineDraw = 3;
   const tScale = graph.timeScaleForSeisDisplayData(seisData);
   const yScale = graph.ampScaleForSeisDisplayData(seisData);
-  expect(yScale.range()[1]).toBe(0);
-  expect(yScale.range()[0]).toBe(100);
+  expect(yScale.range()[1]).toBe(1);
+  expect(yScale.range()[0]).toBe(height-1);
 
   const segment = seisData.seismogram ? seisData.seismogram.segments[0] : null;
   const drawn = seismogramSegmentAsLine(segment,
@@ -117,21 +117,21 @@ test("ref badspike mseed3 file", () => {
   expect(drawn.y.length).toEqual(drawn.x.length);
   expect(drawn.x.length).toEqual(8);
   expect(drawn.x[0]).toEqual(0);
-  expect(drawn.y[0]).toEqual(height);
+  expect(drawn.y[0]).toEqual(height-1);
   expect(drawn.x[1]).toEqual(611);
-  expect(drawn.y[1]).toEqual(height);
+  expect(drawn.y[1]).toEqual(height-1);
   expect(drawn.x[2]).toEqual(611);
-  expect(drawn.y[2]).toEqual(height-amp);
+  expect(drawn.y[2]).toEqual(height-amp+1);
   expect(drawn.x[3]).toEqual(612);
-  expect(drawn.y[3]).toEqual(height);
+  expect(drawn.y[3]).toEqual(height-1);
   expect(drawn.x[4]).toEqual(1105);
-  expect(drawn.y[4]).toEqual(height);
+  expect(drawn.y[4]).toEqual(height-1);
   expect(drawn.x[5]).toEqual(1105);
-  expect(drawn.y[5]).toEqual(height-amp);
+  expect(drawn.y[5]).toEqual(height-amp+1);
   expect(drawn.x[6]).toEqual(1105);
-  expect(drawn.y[6]).toEqual(height);
+  expect(drawn.y[6]).toEqual(height-1);
   expect(drawn.x[7]).toEqual(width);
-  expect(drawn.y[7]).toEqual(height);
+  expect(drawn.y[7]).toEqual(height-1);
 });
 
 
