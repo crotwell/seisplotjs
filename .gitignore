@@ -14,3 +14,5 @@ es6example
 README_part.md
 __pycache__
 .DS_Store
+jest_html_reporters.html
+jest-html-reporters-attach

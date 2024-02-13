@@ -11,4 +11,5 @@ export default {
   moduleNameMapper: {
     "^d3-(.*)$": `<rootDir>/node_modules/d3-$1/dist/d3-$1.min.js`
   },
+  reporters: ["default", "jest-html-reporters"]
 };
