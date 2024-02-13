@@ -740,7 +740,7 @@ export function padZeros(val: number, len: number): string {
 }
 
 /**
- * creates a string from bytes in a DataView.
+ * creates a string from utf-8 bytes in a DataView.
  *
  * @param   dataView data bytes
  * @param   offset   offset to first byte to use
