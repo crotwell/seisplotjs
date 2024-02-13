@@ -1,9 +1,9 @@
 
-import { FedCatalogQuery } from '../src/irisfedcatalog.js';
-import { allChannels } from '../src/stationxml.js';
-import { isoToDateTime } from '../src/util.js';
-import { SeismogramDisplayData } from '../src/seismogram.js';
-import { isDef } from '../src/util.js';
+import { FedCatalogQuery } from '../src/irisfedcatalog';
+import { allChannels } from '../src/stationxml';
+import { isoToDateTime } from '../src/util';
+import { SeismogramDisplayData } from '../src/seismogram';
+import { isDef } from '../src/util';
 import {Interval} from 'luxon';
 
 // eslint-disable-next-line no-undef

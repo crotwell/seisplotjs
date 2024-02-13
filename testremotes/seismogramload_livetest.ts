@@ -1,8 +1,8 @@
-import { SeismogramLoader } from '../src/seismogramloader.js';
+import { SeismogramLoader } from '../src/seismogramloader';
 
-import {isoToDateTime} from '../src/util.js';
-import {EventQuery} from '../src/fdsnevent.js';
-import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation.js';
+import {isoToDateTime} from '../src/util';
+import {EventQuery} from '../src/fdsnevent';
+import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation';
 import { Duration, Interval} from 'luxon';
 
 // eslint-disable-next-line no-undef

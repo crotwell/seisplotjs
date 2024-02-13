@@ -1,5 +1,5 @@
 
-import * as fdsnstation from '../src/fdsnstation.js';
+import * as fdsnstation from '../src/fdsnstation';
 
 // eslint-disable-next-line no-undef
 const fetch = require('node-fetch');
