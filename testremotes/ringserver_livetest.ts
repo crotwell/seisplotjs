@@ -4,11 +4,10 @@ import {DataLinkConnection, DataLinkPacket} from '../src/datalink';
 import {SeedlinkConnection, SequencedDataRecord} from '../src/seedlink';
 import { DateTime, Duration} from 'luxon';
 
-// eslint-disable-next-line no-undef
-const fetch = require('node-fetch');
-// eslint-disable-next-line no-undef
-global.fetch = fetch;
 
+import {setDefaultFetch} from '../src/util';
+import fetch from 'cross-fetch';
+setDefaultFetch(fetch);
 
 
 test("do id test", () => {

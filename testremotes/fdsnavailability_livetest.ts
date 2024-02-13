@@ -1,11 +1,10 @@
 
 import {AvailabilityQuery} from '../src/fdsnavailability';
 import { SeismogramDisplayData} from '../src/seismogram';
+import {setDefaultFetch} from '../src/util';
 
-// eslint-disable-next-line no-undef
-const fetch = require('node-fetch');
-// eslint-disable-next-line no-undef
-global.fetch = fetch;
+import fetch from 'cross-fetch';
+setDefaultFetch(fetch);
 
 
 test("do test", () => {

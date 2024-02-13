@@ -6,10 +6,9 @@ import { SeismogramDisplayData } from '../src/seismogram';
 import { isDef } from '../src/util';
 import {Interval} from 'luxon';
 
-// eslint-disable-next-line no-undef
-const fetch = require('node-fetch');
-// eslint-disable-next-line no-undef
-global.fetch = fetch;
+import {setDefaultFetch} from '../src/util';
+import fetch from 'cross-fetch';
+setDefaultFetch(fetch);
 
 
 test("station queries test", () => {

@@ -1,10 +1,9 @@
 
 import * as fdsnstation from '../src/fdsnstation';
 
-// eslint-disable-next-line no-undef
-const fetch = require('node-fetch');
-// eslint-disable-next-line no-undef
-global.fetch = fetch;
+import {setDefaultFetch} from '../src/util';
+import fetch from 'cross-fetch';
+setDefaultFetch(fetch);
 
 
 test("do post test", () => {

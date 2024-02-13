@@ -5,11 +5,10 @@ import {EventQuery} from '../src/fdsnevent';
 import {StationQuery, LEVEL_CHANNEL} from '../src/fdsnstation';
 import { Duration, Interval} from 'luxon';
 
-// eslint-disable-next-line no-undef
-const fetch = require('node-fetch');
-// eslint-disable-next-line no-undef
-global.fetch = fetch;
 
+import {setDefaultFetch} from '../src/util';
+import fetch from 'cross-fetch';
+setDefaultFetch(fetch);
 
 test( "load HODGE for local eq test", () => {
   const localQueryTimeWindow = Interval.fromDateTimes(isoToDateTime('2020-08-21'), isoToDateTime('2020-08-22'));

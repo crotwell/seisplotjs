@@ -611,6 +611,28 @@ export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
   return out;
 }
 
+export function errorFetch(url: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response> {
+  throw new Error("There is no fetch!?!?!");
+}
+export let default_fetch: null|((url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>) = null;
+
+export function setDefaultFetch(fetcher: (url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>) {
+  if (!! fetcher) {
+    default_fetch = fetcher;
+  }
+}
+export function getFetch(): (url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response> {
+  if (default_fetch != null) {
+    return default_fetch;
+  } else if ( !! window) {
+    return window.fetch;
+  } else if ( !! global) {
+    return global.fetch;
+  } else {
+    return errorFetch;
+  }
+}
+
 /**
  * Does a fetch, but times out if it takes too long.
  *
@@ -624,10 +646,13 @@ export function doFetchWithTimeout(
   url: string | URL,
   fetchInit?: RequestInit,
   timeoutSec?: number,
+  fetcher?: (url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>,
 ): Promise<Response> {
   const controller = new AbortController();
   const signal = controller.signal;
 
+  if (!fetcher) { fetcher = getFetch();}
+  if (!fetcher) { fetcher = window.fetch;}
   let internalFetchInit = isDef(fetchInit) ? fetchInit : defaultFetchInitObj();
   internalFetchInit = cloneFetchInitObj(internalFetchInit);
   if (internalFetchInit.redirect === "follow" && internalFetchInit.method === "POST") {
@@ -662,7 +687,9 @@ export function doFetchWithTimeout(
       absoluteUrl,
     )}`,
   );
-  return fetch(absoluteUrl.href, internalFetchInit)
+  // save fetcher as const so typescript won't think it has become undef
+  const fetchForRedirect = fetcher;
+  return fetcher(absoluteUrl.href, internalFetchInit)
     .catch(err => {
       log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
       throw err;
@@ -676,7 +703,7 @@ export function doFetchWithTimeout(
           const httpsUrl = new URL(`https://${absoluteUrl.href.slice(7)}`);
           const method = internalFetchInit.method ? internalFetchInit.method : "";
           log(`attempt fetch redirect ${response.status} ${method} to ${stringify(httpsUrl)}`);
-          return fetch(httpsUrl.href, internalFetchInit).then(httpsResponse => {
+          return fetchForRedirect(httpsUrl.href, internalFetchInit).then(httpsResponse => {
             if (httpsResponse.ok || httpsResponse.status === 404) {
               return httpsResponse;
             } else {
