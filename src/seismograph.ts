@@ -1321,8 +1321,11 @@ export class Seismograph extends SeisPlotElement {
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       if (this.amp_scalable.middle !== oldMiddle || this.amp_scalable.halfWidth !== oldHalfWidth) {
-        Promise.all(this.seismographConfig.linkedAmplitudeScale.recalculate()) // sets yScale.domain
-        .catch(m => {throw new Error(`problem recalc amp scale: ${m}`);});
+        this.seismographConfig.linkedAmplitudeScale.recalculate() // sets yScale.domain
+        .catch(m => {
+          // eslint-disable-next-line no-console
+          console.warn(`problem recalc amp scale: ${m}`);
+        });
       }
     } else {
       this.redoDisplayYScale();

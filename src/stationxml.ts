@@ -1385,7 +1385,7 @@ export function extractComplex(el: Element): InstanceType<typeof Complex> {
  */
 export function* allStations(
   networks: Array<Network>,
-): Generator<Station, void, any> {
+): Generator<Station, void, unknown> {
   for (const n of networks) {
     for (const s of n.stations) {
       yield s;
@@ -1402,7 +1402,7 @@ export function* allStations(
  */
 export function* allChannels(
   networks: Array<Network>,
-): Generator<Channel, void, any> {
+): Generator<Channel, void, unknown> {
   for (const s of allStations(networks)) {
     for (const c of s.channels) {
       yield c;
@@ -1427,7 +1427,7 @@ export function* findChannels(
   staCode: string,
   locCode: string,
   chanCode: string,
-): Generator<Channel, void, any> {
+): Generator<Channel, void, unknown> {
   const netRE = new RegExp(`^${netCode}$`);
   const staRE = new RegExp(`^${staCode}$`);
   const locRE = new RegExp(`^${locCode}$`);

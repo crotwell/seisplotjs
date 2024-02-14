@@ -30,7 +30,7 @@ test("linear", () => {
   const dataLen = 10;
   const dataVal = 100;
   const slope = 3;
-  const orig = Array(dataLen).fill(dataVal).map((d,idx) => d+idx*slope);
+  const orig = new Float32Array(dataLen).fill(dataVal).map((d,idx) => d+idx*slope);
   const origseis = Seismogram.fromContiguousData(orig, 1, DateTime.utc());
   const bagrtr = filter.removeTrend(origseis);
   const lf = filter.lineFit(origseis);

@@ -32,7 +32,7 @@ test("amp scalable test", () => {
   expect(ampB.middle).toEqual(midB);
   expect(ampB.halfWidth).toEqual(hwB);
   const linkAmpScale = new LinkedAmplitudeScale([ampA, ampB]);
-  return Promise.all(linkAmpScale.recalculate()).then( () => {
+  return linkAmpScale.recalculate().then( () => {
     expect(linkAmpScale.halfWidth).toEqual(hwA);
   });
 });
@@ -58,7 +58,7 @@ test("gain scale test", () => {
   const seisConfig = new SeismographConfig();
   seisConfig.linkedAmplitudeScale = linkAmpScale;
   const graph = new Seismograph([sddA, sddB], seisConfig);
-  return Promise.all(linkAmpScale.recalculate()).then(() => {
+  return linkAmpScale.recalculate().then(() => {
     expect(linkAmpScale.halfWidth).toEqual(maxB/sensB.sensitivity);
     expect(graph.amp_scalable.halfWidth).toEqual(maxB/sensB.sensitivity);
     expect(graph.amp_scalable.middle).toEqual(0/sensB.sensitivity);
@@ -85,7 +85,7 @@ test("zero mean scale test", () => {
   const graph = new Seismograph([sddA, sddB], seisConfig);
   const linkAmp = seisConfig.linkedAmplitudeScale;
   if (!linkAmp) { throw new Error("linked amp is undef");}
-  return Promise.all(linkAmp.recalculate()).then(() => {
+  return linkAmp.recalculate().then(() => {
     // Mean centers, so middle is zero
     expect(graph.amp_scalable.halfWidth).toEqual(maxMeanVal); // nice rounds
     expect(linkAmp.halfWidth).toEqual(maxMeanVal); // 0 to mean is larger

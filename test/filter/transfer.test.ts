@@ -17,15 +17,15 @@ const ONE_COMPLEX = createComplex(1, 0);
 
 const WRITE_TEST_DATA = false;
 
-function isFloat32Array(obj: any): obj is Float32Array {
+function isFloat32Array(obj: unknown): obj is Float32Array {
   return obj !== null && typeof obj === "object" && obj instanceof Float32Array;
 }
-function ensureFloat32Array(a: any): Float32Array {
+function ensureFloat32Array(a: unknown): Float32Array {
   expect(a).toBeInstanceOf(Float32Array);
   if (isFloat32Array(a)) {
-    return a as Float32Array;
+    return a;
   }
-  throw new Error(`arg is not Float32Array: ${a}`);
+  throw new Error(`arg is not Float32Array`);
 }
 
 test("freq Taper", () => {

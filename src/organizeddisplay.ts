@@ -540,10 +540,10 @@ export class OrganizedDisplay extends SeisPlotElement {
     let timePromise: Promise<Array<TimeScalable>> = Promise.resolve([]);
     let ampPromise: Promise<Array<AmplitudeScalable>> = Promise.resolve([]);
     if (this.seismographConfig.linkedTimeScale) {
-      timePromise = Promise.all(this.seismographConfig.linkedTimeScale.notifyAll());
+      timePromise = this.seismographConfig.linkedTimeScale.notifyAll();
     }
     if (this.seismographConfig.linkedAmplitudeScale) {
-      ampPromise = Promise.all(this.seismographConfig.linkedAmplitudeScale.notifyAll());
+      ampPromise = this.seismographConfig.linkedAmplitudeScale.notifyAll();
     }
     return Promise.all([timePromise, ampPromise]);
   }
