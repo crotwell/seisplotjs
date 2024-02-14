@@ -2,6 +2,10 @@
 // git clone https://github.com/iris-edu/miniSEED3.git
 // cp -r miniSEED3/reference-data test/mseed3/.
 
+import { TextDecoder } from 'util'
+// @ts-expect-error
+global.TextDecoder = TextDecoder
+
 
 import { isDef } from '../../src/util';
 import * as mseed3 from '../../src/mseed3';

@@ -9,6 +9,10 @@ import { Interval} from 'luxon';
 import * as mseed3 from '../src/mseed3';
 import { scaleLinear as d3scaleLinear } from "d3-scale";
 
+import { TextDecoder } from 'util'
+// @ts-expect-error
+global.TextDecoder = TextDecoder
+
 import fs from 'fs';
 
 
