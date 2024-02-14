@@ -233,7 +233,7 @@ export class SeismographConfig {
 
   static fromJSON(json: SeismographConfigJsonType): SeismographConfig {
     const seisConfig = new SeismographConfig();
-    const tempJson: any = {};
+    const tempJson = {};
     Object.assign(tempJson, json);
     if (Object.hasOwn(tempJson, "fixedAmplitudeScale")) {
       delete tempJson.fixedAmplitudeScale;

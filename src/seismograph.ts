@@ -648,7 +648,11 @@ export class Seismograph extends SeisPlotElement {
     let plotInterval;
     if (this.seismographConfig.linkedTimeScale) {
       if (this.time_scalable.drawDuration.equals(ZERO_DURATION)) {
-        this.seismographConfig.linkedTimeScale.recalculate();
+        this.seismographConfig.linkedTimeScale.recalculate()
+          .catch(m => {
+            // eslint-disable-next-line no-console
+            console.warn(`problem recalc displayTimeRangeForSeisDisplayData: ${m}`);
+          });
       }
       // drawDuration should be set via recalculate now
       const startOffset = this.time_scalable.drawAlignmentTimeOffset;
