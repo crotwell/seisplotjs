@@ -634,7 +634,7 @@ export class TimeRangeChooser extends HTMLElement {
     } else if (name === DUR_LABEL) {
       (this.shadowRoot?.querySelector('.durationLabel') as HTMLElement).textContent = newValue;
     } else {
-      console.log(`set unknown attribute: "${name}"`);
+      throw new Error(`set unknown attribute: "${name}"`);
     }
   }
   static get observedAttributes() {

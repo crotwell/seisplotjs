@@ -348,7 +348,7 @@ export class QuakeStationMap extends SeisPlotElement {
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
 
     while (wrapper.firstChild) {
-      // @ts-ignore
+      // @ts-expect-error ok as we know if there is a firstChild, there is also lastChild
       wrapper.removeChild(wrapper.lastChild);
     }
     const divElement = wrapper.appendChild(document.createElement("div"));

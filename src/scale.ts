@@ -421,14 +421,16 @@ export class LinkedTimeScale {
     }
     this.notifyAll();
   }
-  notifyAll() {
-    this.graphList.forEach(graph => {
-      if (graph) {
-        // run later via event loop
+  notifyAll(): Array<Promise<TimeScalable>> {
+    return this.graphList.map(g => {
+      return new Promise(resolve => {
         setTimeout(() => {
-          graph.notifyTimeRangeChange(this.offset, this.duration);
-        });
-      }
+          if (g != null) {
+            g.notifyTimeRangeChange(this.offset, this.duration);
+          }
+          resolve(g);
+        }, 10);
+      });
     });
   }
   get graphList() {
@@ -460,11 +462,16 @@ export class AlignmentLinkedTimeScale extends LinkedTimeScale {
   recalculate() {
     this.notifyAll();
   }
-  notifyAll() {
-    this.graphList.forEach(graph => {
-      // run later via event loop
-      setTimeout(() => {
-        graph.notifyTimeRangeChange(this.offset, this.duration);
+
+  notifyAll(): Array<Promise<TimeScalable>> {
+    return this.graphList.map(g => {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          if (g != null) {
+            g.notifyTimeRangeChange(this.offset, this.duration);
+          }
+          resolve(g);
+        }, 10);
       });
     });
   }

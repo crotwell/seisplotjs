@@ -4,6 +4,7 @@ import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
 import * as leafletutil from "./leafletutil";
 import { MAP_ELEMENT, QuakeStationMap } from "./leafletutil";
 import { ParticleMotion, createParticleMotionConfig } from "./particlemotion";
+import { AmplitudeScalable, TimeScalable} from './scale';
 import { sort, SORT_NONE } from './sorting';
 import { SeisPlotElement } from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
@@ -100,7 +101,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
 
     while (wrapper.firstChild) {
-      // @ts-expect-error
+      // @ts-expect-error if there is a firstChild, there is also lastChild
       wrapper.removeChild(wrapper.lastChild);
     }
     const qIndex = this.plottype.indexOf("?");
@@ -536,12 +537,15 @@ export class OrganizedDisplay extends SeisPlotElement {
         });
       }
     });
+    let timePromise: Promise<Array<TimeScalable>> = Promise.resolve([]);
+    let ampPromise: Promise<Array<AmplitudeScalable>> = Promise.resolve([]);
     if (this.seismographConfig.linkedTimeScale) {
-      this.seismographConfig.linkedTimeScale.notifyAll();
+      timePromise = Promise.all(this.seismographConfig.linkedTimeScale.notifyAll());
     }
     if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.notifyAll();
+      ampPromise = Promise.all(this.seismographConfig.linkedAmplitudeScale.notifyAll());
     }
+    return Promise.all([timePromise, ampPromise]);
   }
   drawTools(sortedData: Array<SeismogramDisplayData>) {
     if (!this.isConnected) { return; }
