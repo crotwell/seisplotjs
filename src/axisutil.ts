@@ -173,7 +173,7 @@ export function drawYLabel(
  * @param  height             height of svg
  * @param  width              width of svg
  * @param  handlebarsInput    optional key-values for handlebars
- * @param  unitText          option label representing units if config.ySublabelIsUnit
+ * @param  unitsLabel          option label representing units if config.ySublabelIsUnit
  */
 export function drawYSublabel(
   svgEl: SVGElement,
@@ -280,7 +280,7 @@ export function drawTitle(
  * @param  height             height of svg
  * @param  width              width of svg
  * @param  handlebarsInput    optional key-values for handlebars
- * @param  unitText          option label representing units if config.ySublabelIsUnit
+ * @param  unitsLabel          option label representing units if config.ySublabelIsUnit
  */
 export function drawAxisLabels(
   svgEl: SVGElement,
