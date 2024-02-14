@@ -49,20 +49,20 @@ test("simple seismographconfig clone", () => {
 test("json round trip", () => {
   const seisConfig = new SeismographConfig();
   const jsonConfig = seisConfig.asJSON();
-  console.log(JSON.stringify(jsonConfig, null, 2));
   const rtConfig = SeismographConfig.fromJSON(jsonConfig);
 
+  expect(rtConfig.margin.top).toEqual(seisConfig.margin.top);
+  expect(rtConfig.margin.bottom).toEqual(seisConfig.margin.bottom);
+  expect(rtConfig.margin.left).toEqual(seisConfig.margin.left);
+  expect(rtConfig.margin.right).toEqual(seisConfig.margin.right);
+
   Object.getOwnPropertyNames(seisConfig).forEach(p => {
-    if (p === "margin") {
-      // special to avoid toString
-      expect(rtConfig.margin.top).toEqual(seisConfig.margin.top);
-      expect(rtConfig.margin.bottom).toEqual(seisConfig.margin.bottom);
-      expect(rtConfig.margin.left).toEqual(seisConfig.margin.left);
-      expect(rtConfig.margin.right).toEqual(seisConfig.margin.right);
-    } else if (! p.startsWith("_")) {
-      // @ts-expect-error typescript doesn't like reflection
-      expect(rtConfig[p]).toEqual(seisConfig[p]);
+    if (p === "margin" || p.startsWith("_")) {
+      // special to avoid toString and private fields
+      return;
     }
+    // @ts-expect-error typescript doesn't like reflection
+    expect(rtConfig[p]).toEqual(seisConfig[p]);
   });
   expect(rtConfig.asJSON()).toEqual(jsonConfig);
 
