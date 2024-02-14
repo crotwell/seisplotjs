@@ -236,19 +236,25 @@ export class SeismographConfig {
     const tempJson = {};
     Object.assign(tempJson, json);
     if (Object.hasOwn(tempJson, "fixedAmplitudeScale")) {
+      // @ts-expect-error ok as we just check hasOwn
       delete tempJson.fixedAmplitudeScale;
     }
     if (Object.hasOwn(tempJson, "fixedTimeScale")) {
+      // @ts-expect-error ok as we just check hasOwn
       delete tempJson.fixedTimeScale;
     }
     if (Object.hasOwn(tempJson, "isLinkedTimeScale")) {
+      // @ts-expect-error ok as we just check hasOwn
       delete tempJson.isLinkedTimeScale;
     }
     if (Object.hasOwn(tempJson, "isLinkedAmplitudeScale")) {
+      // @ts-expect-error ok as we just check hasOwn
       delete tempJson.isLinkedAmplitudeScale;
     }
+    // @ts-expect-error ok as we just check hasOwn
     if (Object.hasOwn(tempJson, "ySublabel") && tempJson.ySublabel.length === 0) {
       // don't set in case ySublabelIsUnits
+      // @ts-expect-error ok as we just check hasOwn
       delete tempJson.ySublabel;
     }
     Object.assign(seisConfig, tempJson);
