@@ -940,8 +940,14 @@ export class FedCatalogQuery extends FDSNCommon {
         r.stationQuery = stationQuery;
         fedCatalogResult.params.forEach((v, k) => {
           const field = `_${k}`;
-          // @ts-expect-error
-          stationQuery[field] = v;
+          if (field === "_level") {
+            // skip, level handled separately
+          } else if (field in stationQuery) {
+            // @ts-expect-error reflection on class breaks typescript
+            stationQuery[field] = v;
+          } else {
+            throw new Error(`field ${field} does not exist in StationQuery class`);
+          }
         });
 
         if (
@@ -987,8 +993,12 @@ export class FedCatalogQuery extends FDSNCommon {
       r.dataSelectQuery = dataSelectQuery;
       fedCatalogResult.params.forEach((k, v) => {
         const field = `_${k}`;
-        // @ts-expect-error
-        dataSelectQuery[field] = v;
+        if (field in dataSelectQuery) {
+          // @ts-expect-error reflection on class breaks typescript
+          dataSelectQuery[field] = v;
+        } else {
+          throw new Error(`field ${field} does not exist in DataSelectQuery class`);
+        }
       });
 
       if (!r.services.has("DATASELECTSERVICE")) {
