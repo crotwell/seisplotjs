@@ -1,5 +1,5 @@
 
-/**
+/*
  * @jest-environment jsdom
  */
 
@@ -51,20 +51,21 @@ test("convert to sac polezero", () => {
   expect(channels).not.toBeNull();
   const response = channels[0].response;
   expect(response).not.toBeNull();
-  if (response) {
-    const pz = convertToSacPoleZero(response);
-    expect(pz).toBeDefined();
-    expect(pz.zeros).toHaveLength(6);
-    pz.zeros.forEach( z => {
-      expect(z.real()).toBeFinite();
-      expect(z.imag()).toBeFinite();
-    });
-    expect(pz.poles).toHaveLength(7);
-    pz.poles.forEach( p => {
-      expect(p.real()).toBeFinite();
-      expect(p.imag()).toBeFinite();
-    });
+  if (response == null) {
+    throw new Error("response is null");
   }
+  const pz = convertToSacPoleZero(response);
+  expect(pz).toBeDefined();
+  expect(pz.zeros).toHaveLength(6);
+  pz.zeros.forEach( z => {
+    expect(z.real()).toBeFinite();
+    expect(z.imag()).toBeFinite();
+  });
+  expect(pz.poles).toHaveLength(7);
+  pz.poles.forEach( p => {
+    expect(p.real()).toBeFinite();
+    expect(p.imag()).toBeFinite();
+  });
 });
 
 test("findChannels", () => {

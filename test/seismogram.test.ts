@@ -217,27 +217,29 @@ test("cut clone sdd test", () => {
   const cutWindow = Interval.after( startTime, Duration.fromMillis(1000*10));
   const cutSeis = seis.cut(cutWindow);
   expect(cutSeis).toBeDefined();
-  if (cutSeis){
-    expect(cutSeis.endTime).toEqual(cutWindow.end);
-    const cutSeisSdd = sdd.cloneWithNewSeismogram(cutSeis);
-    cutSeisSdd.timeRange = cutWindow; // clone keeps the old time window
-    expect(cutSeisSdd.endTime).toEqual(cutWindow.end);
-    expect(cutSeisSdd.seismogram).toBeDefined();
-    const cutSeisSdd_seis = cutSeisSdd.seismogram;
-    expect(cutSeisSdd_seis).not.toBeNull();
-    expect(cutSeisSdd_seis?.endTime).toEqual(cutWindow.end);
-    expect(cutSeisSdd_seis).not.toBe(seis);
-    // sdd cut has new seismogram and new time window
-    const cutSdd = sdd.cut(cutWindow);
-    expect(cutSdd).toBeDefined();
-    const cutSdd_seis = isDef(cutSdd) ? cutSdd.seismogram: null;
-    expect(cutSdd_seis).toBeDefined();
-
-    expect(cutSdd?.endTime).toEqual(cutWindow.end);
-    expect(cutSdd_seis?.endTime).toEqual(cutWindow.end);
-    expect(cutSdd_seis).not.toEqual(seis);
-    expect(cutSdd?.quakeList).toHaveLength(sdd.quakeList.length);
+  if (cutSeis == null){
+    throw new Error("cutSeis is null");
   }
+  expect(cutSeis.endTime).toEqual(cutWindow.end);
+  const cutSeisSdd = sdd.cloneWithNewSeismogram(cutSeis);
+  cutSeisSdd.timeRange = cutWindow; // clone keeps the old time window
+  expect(cutSeisSdd.endTime).toEqual(cutWindow.end);
+  expect(cutSeisSdd.seismogram).toBeDefined();
+  const cutSeisSdd_seis = cutSeisSdd.seismogram;
+  expect(cutSeisSdd_seis).not.toBeNull();
+  expect(cutSeisSdd_seis?.endTime).toEqual(cutWindow.end);
+  expect(cutSeisSdd_seis).not.toBe(seis);
+  // sdd cut has new seismogram and new time window
+  const cutSdd = sdd.cut(cutWindow);
+  expect(cutSdd).toBeDefined();
+  const cutSdd_seis = isDef(cutSdd) ? cutSdd.seismogram: null;
+  expect(cutSdd_seis).toBeDefined();
+
+  expect(cutSdd?.endTime).toEqual(cutWindow.end);
+  expect(cutSdd_seis?.endTime).toEqual(cutWindow.end);
+  expect(cutSdd_seis).not.toEqual(seis);
+  expect(cutSdd?.quakeList).toHaveLength(sdd.quakeList.length);
+
 });
 
 test("find minmax test", () => {

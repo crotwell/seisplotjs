@@ -2,10 +2,6 @@
 // git clone https://github.com/iris-edu/miniSEED3.git
 // cp -r miniSEED3/reference-data test/mseed3/.
 
-// eslint-disable-next-line no-undef
-const TextDecoder = require('util').TextDecoder;
-// eslint-disable-next-line no-undef
-global.TextDecoder = TextDecoder;
 
 import { isDef } from '../../src/util';
 import * as mseed3 from '../../src/mseed3';
@@ -80,7 +76,7 @@ for (const filename of fileList) {
     expect(fs.existsSync(jsonFilename)).toEqual(true);
     const jsonAll = JSON.parse(fs.readFileSync(jsonFilename, 'utf8'));
     const jsonData = jsonAll[0];
-    expect(xh.identifier).toEqual(jsonData.SID);
+    expect(xh?.identifier).toEqual(jsonData.SID);
 
     // doesn't work as json is not identical after round trip
     // due to / being same as \/, also 1e-6 and .000001

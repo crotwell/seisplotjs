@@ -4,8 +4,7 @@ import * as seedcodec from '../../src/seedcodec';
 import {UTC_OPTIONS} from '../../src/util';
 import {DateTime} from 'luxon';
 
-// eslint-disable-next-line no-undef
-const fs = require('fs');
+import fs from 'fs';
 
 test("load miniseed file", () => {
 

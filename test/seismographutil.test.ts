@@ -11,28 +11,24 @@ import { scaleLinear as d3scaleLinear } from "d3-scale";
 
 import fs from 'fs';
 
-// eslint-disable-next-line no-undef
-const TextDecoder = require('util').TextDecoder;
-// eslint-disable-next-line no-undef
-global.TextDecoder = TextDecoder;
 
 test("line create test", () => {
 
   const width = 100;
   const height = 100;
-  let sampleRate = 20;
+  const sampleRate = 20;
   //const sinePeriod = 5*sampleRate; // 5 second period
   const amp = height;
-  let dataArray = new Float32Array(10000).map(function(d, i) {
+  const dataArray = new Float32Array(10000).map(function(d, i) {
     //return Math.sin(2 * Math.PI * i / sinePeriod) * amp;
     return 0;
   });
   dataArray[0] = 0;
   dataArray[9000] = amp;
-  let start = isoToDateTime('2019-07-04T05:46:23');
-  let myseismogram = Seismogram.fromContiguousData(dataArray, sampleRate, start);
+  const start = isoToDateTime('2019-07-04T05:46:23');
+  const myseismogram = Seismogram.fromContiguousData(dataArray, sampleRate, start);
   const segment = myseismogram.segments[0];
-  let seisData = SeismogramDisplayData.fromSeismogram(myseismogram);
+  const seisData = SeismogramDisplayData.fromSeismogram(myseismogram);
 
   const seisConfig = new SeismographConfig();
   seisConfig.fixedTimeScale = seisData.timeRange;
@@ -55,7 +51,6 @@ test("line create test", () => {
     yScale,
     maxSamplePerPixelForLineDraw);
   expect(drawn.samplesPerPixel).toBeCloseTo(dataArray.length/width, 1);
-  console.log(`line create test drawn: ${drawn.x.length}`)
 
   expect(drawn.y.length).toEqual(drawn.x.length);
   expect(drawn.x.length).toEqual(5);
@@ -138,11 +133,11 @@ test("ref badspike mseed3 file", () => {
 test("bad triangle", () => {
   // args: 1113, [2019-07-04T05:46:59.950Z – 2019-07-04T05:47:00.145Z), 0,1113
 
-  let sampleRate = 20;
+  const sampleRate = 20;
   const amp = .1; // 100 count amplitude
-  let dataArray = new Float32Array(1000).map(function(d, i) {
+  const dataArray = new Float32Array(1000).map(function(d, i) {
     //return Math.sin(2 * Math.PI * i / sinePeriod) * amp;
-    if (i==0) {return amp}
+    if (i===0) {return amp;}
     if (i < 10) {return .2;}
     if (i < 100) {return amp;}
     if (i < 200) {return amp;}
@@ -155,8 +150,7 @@ test("bad triangle", () => {
   const spikeOffset = Interval.fromDateTimes(start, spikeTime).toDuration();
   const spikeIdx = spikeOffset.toMillis()/1000.0*sampleRate;
   dataArray[spikeIdx] = amp;
-  console.log(`spike: ${spikeIdx} of ${dataArray.length}`)
-  let myseismogram = Seismogram.fromContiguousData(dataArray, sampleRate, start);
+  const myseismogram = Seismogram.fromContiguousData(dataArray, sampleRate, start);
 
   const width = 1113;
   const height = 100;
@@ -169,8 +163,6 @@ test("bad triangle", () => {
   yScale.domain([0, amp]);
   yScale.range([height, 0]);
   const segLine = seismogramSegmentAsLine(seg, width, xScale, yScale);
-  console.log(segLine.x);
-  console.log(segLine.y);
   expect(seg.y[740]).toBeCloseTo(amp, 2);
   expect(segLine.x[0]).toBeLessThan(0);
   expect(segLine.x[segLine.x.length-1]).toBeGreaterThan(width);

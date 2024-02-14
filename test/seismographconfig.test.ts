@@ -60,7 +60,7 @@ test("json round trip", () => {
       expect(rtConfig.margin.left).toEqual(seisConfig.margin.left);
       expect(rtConfig.margin.right).toEqual(seisConfig.margin.right);
     } else if (! p.startsWith("_")) {
-      // @ts-expect-error
+      // @ts-expect-error typescript doesn't like reflection
       expect(rtConfig[p]).toEqual(seisConfig[p]);
     }
   });
