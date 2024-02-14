@@ -396,7 +396,7 @@ export class Seismograph extends SeisPlotElement {
   enableZoom(): void {
     const mythis = this;
     const z = this.svg.call(
-      // @ts-expect-error
+      // @ts-expect-error typescript and d3 don't always place nice together
       d3zoom().on("zoom", function(e) {
         mythis.zoomed(e);
       }),
@@ -694,6 +694,7 @@ export class Seismograph extends SeisPlotElement {
   /**
    * Creates amp scale, set range based on height.
    * @private
+   * @returns amp scale with range set
    */
   __initAmpScale(): ScaleLinear<number, number, never> {
     const ampAxisScale = d3scaleLinear();
@@ -859,7 +860,7 @@ export class Seismograph extends SeisPlotElement {
             .select(".axis--y")
             .transition()
             .duration(delay / 2)
-            // @ts-expect-error
+            // @ts-expect-error typescript and d3 dont always play well together
             .call(yAxis);
         }
 
@@ -868,7 +869,7 @@ export class Seismograph extends SeisPlotElement {
             .select(".axis--y-right")
             .transition()
             .duration(delay / 2)
-            // @ts-expect-error
+            // @ts-expect-error typescript and d3 dont always play well together
             .call(yAxisRight);
         }
 
@@ -1320,7 +1321,8 @@ export class Seismograph extends SeisPlotElement {
 
     if (this.seismographConfig.linkedAmplitudeScale) {
       if (this.amp_scalable.middle !== oldMiddle || this.amp_scalable.halfWidth !== oldHalfWidth) {
-        this.seismographConfig.linkedAmplitudeScale.recalculate(); // sets yScale.domain
+        Promise.all(this.seismographConfig.linkedAmplitudeScale.recalculate()) // sets yScale.domain
+        .catch(m => {throw new Error(`problem recalc amp scale: ${m}`);});
       }
     } else {
       this.redoDisplayYScale();

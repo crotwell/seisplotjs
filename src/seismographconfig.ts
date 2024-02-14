@@ -748,12 +748,12 @@ export class SeismographConfig {
   clone(): SeismographConfig {
     const out = new SeismographConfig();
     Object.getOwnPropertyNames(this).forEach(name => {
-      // @ts-expect-error
+      // @ts-expect-error typescript can't handle reflections, but ok as just clone
       if (Array.isArray(this[name])) {
-        // @ts-expect-error
+        // @ts-expect-error typescript can't handle reflections, but ok as just clone
         out[name] = this[name].slice();
       } else {
-        // @ts-expect-error
+        // @ts-expect-error typescript can't handle reflections, but ok as just clone
         out[name] = this[name];
       }
 
@@ -785,7 +785,7 @@ export class SeismographConfig {
   toString(): string {
     let outS = "";
     Object.getOwnPropertyNames(this).forEach(name => {
-      // @ts-expect-error
+      // @ts-expect-error  typescript can't handle reflections, but ok for tostring?
       outS += `  seisConfig.${name} = ${JSON.stringify(this[name])}\n`;
     });
     return outS;

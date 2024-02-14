@@ -600,10 +600,10 @@ export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
   if (fetchInit) {
     for (const [key, value] of Object.entries(fetchInit)) {
       if (Array.isArray(value)) {
-        // @ts-expect-error
+        // @ts-expect-error typescript can't do reflection, but ok for clone
         out[key] = value.slice();
       } else {
-        // @ts-expect-error
+        // @ts-expect-error typescript can't do reflection, but ok for clone
         out[key] = value;
       }
     }
@@ -617,16 +617,16 @@ export function errorFetch(url: URL | RequestInfo, init?: RequestInit | undefine
 export let default_fetch: null|((url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>) = null;
 
 export function setDefaultFetch(fetcher: (url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>) {
-  if (!! fetcher) {
+  if (fetcher != null) {
     default_fetch = fetcher;
   }
 }
 export function getFetch(): (url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response> {
   if (default_fetch != null) {
     return default_fetch;
-  } else if ( !! window) {
+  } else if ( window != null) {
     return window.fetch;
-  } else if ( !! global) {
+  } else if ( global != null) {
     return global.fetch;
   } else {
     return errorFetch;
@@ -639,6 +639,7 @@ export function getFetch(): (url: URL | RequestInfo, init?: RequestInit | undefi
  * @param   url        url to retrieve
  * @param   fetchInit  fetch configuration, initialization
  * @param   timeoutSec maximum time to wait in seconds
+ * @param   fetcher optional fetch to use instead of global fetch
  * @returns             promise to the result
  * @throws Error if time out or other failure
  */
@@ -765,7 +766,7 @@ export function meanOfSlice(
   totalPts: number,
 ): number {
   if (dataSlice.length < 8) {
-    // @ts-expect-error
+      // @ts-expect-error different array types confuses typescript
     return dataSlice.reduce(function(acc: number, val: number): number {
       return acc + val;
     }, 0) / totalPts;

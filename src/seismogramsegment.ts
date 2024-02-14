@@ -248,8 +248,9 @@ export class SeismogramSegment {
    * @throws Error if data is not encoded
    */
   getEncoded(): Array<seedcodec.EncodedDataSegment> {
-    if (this.isEncoded()) {
-      return (this._compressed as any) as Array<seedcodec.EncodedDataSegment>;
+    const compressed = this._compressed;
+    if (this.isEncoded() && compressed != null) {
+      return compressed;
     } else {
       throw new Error("Data is not encoded.");
     }

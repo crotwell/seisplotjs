@@ -151,7 +151,7 @@ export class LinkedAmplitudeScale {
   set halfWidth(val: number) {
     if (this._halfWidth !== val) {
       this._halfWidth = val;
-      Promise.all(this.notifyAll());
+      Promise.all(this.notifyAll()).catch(m => {throw new Error(m);});
     }
   }
 
@@ -170,7 +170,7 @@ export class LinkedAmplitudeScale {
         // graph does not have notifyAmplitudeChange method or amp_scalable field, skipping
       }
     });
-    Promise.all(this.recalculate());
+    Promise.all(this.recalculate()).catch(m => {throw new Error(m);});
   }
   /**
    * Link new Seismograph with this amplitude scale.
@@ -189,7 +189,7 @@ export class LinkedAmplitudeScale {
   unlink(graph: AmplitudeScalable) {
     this._graphSet.delete(graph);
 
-    Promise.all(this.recalculate());
+    Promise.all(this.recalculate()).catch(m => {throw new Error(m);});
   }
 
   /**

@@ -338,7 +338,7 @@ export class Quake extends BaseElement {
       const magStr = this.hasMagnitude() ? this.magnitude.toString() : "";
       const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
       const depth = depthFormat.format(this.depth / 1000);
-      return `${this.time} ${latlon} ${depth} ${magStr}`;
+      return `${this.time.toISO()} ${latlon} ${depth} ${magStr}`;
     } else if (this.eventId != null) {
       return `Event: ${this.eventId}`;
     } else {
@@ -682,7 +682,7 @@ export class Origin extends BaseElement {
   toString(): string {
     const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
     const depth = depthFormat.format(this.depth / 1000);
-    return `${this.time} ${latlon} ${depth} km`;
+    return `${this.time.toISO()} ${latlon} ${depth} km`;
   }
 
   get time(): DateTime {

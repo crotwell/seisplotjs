@@ -1083,12 +1083,12 @@ export class SeismogramDisplayData {
     const handled = ["_seismogram", "_statsCache", "_sourceId"];
     Object.assign(out, this);
     Object.getOwnPropertyNames(this).forEach(name => {
-      // @ts-expect-error
+      // @ts-expect-error typscript can't handle reflection, but is ok here as just cloning
       const v = this[name];
       if (handled.find(n => name === n)) {
         // handled below
       } else if (Array.isArray(v)) {
-        // @ts-expect-error
+        // @ts-expect-error typscript can't handle reflection, but is ok here as just cloning
         out[name] = v.slice();
       }
     });

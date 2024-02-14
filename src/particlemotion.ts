@@ -374,18 +374,14 @@ export class ParticleMotion extends SeisPlotElement {
       .attr("marker-end", "url(#arrow)")
       .attr(
         "d",
-        // @ts-expect-error
+        // @ts-expect-error no idea why typescript thinks dd is [number, number] when it is just number
         d3line()
           .curve(d3curveLinear)
           .x((dd) => {
-            // no idea why typescript thinks dd is [number, number]
-            // when it is just number
-            // @ts-expect-error
+            // @ts-expect-error no idea why typescript thinks dd is [number, number] when it is just number
             return this.xScale(dd);
           })
           .y((d, i) => {
-            // no idea why typescript thinks dd is [number, number]
-            // when it is just number
             return this.yScale(segB.yAtIndex(idxB + i));
           }),
       );
