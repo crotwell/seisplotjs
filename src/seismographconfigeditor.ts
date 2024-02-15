@@ -242,10 +242,9 @@ function createBooleanOptionByKey(
     .append("input")
     .attr("type", "checkbox")
     .attr("id", key)
-    .attr("name", key) // @ts-expect-error
+    .attr("name", key)
     .property("checked", config[key])
     .on("change", function () {
-      // @ts-expect-error
       config[key] = d3select(this).property("checked");
       onChange();
     });
