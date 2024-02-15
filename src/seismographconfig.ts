@@ -8,9 +8,9 @@ import {
   IndividualAmplitudeScale,
   LinkedAmplitudeScale,
   LinkedTimeScale,
-  AMPLITUDE_MODE
+  AMPLITUDE_MODE,
 } from "./scale";
-import {DEFAULT_GRID_LINE_COLOR} from "./seismographutil";
+import { DEFAULT_GRID_LINE_COLOR } from "./seismographutil";
 import { SeismogramDisplayData, Seismogram } from "./seismogram";
 import { isDef, validStartTime, stringify } from "./util";
 import { Duration, Interval } from "luxon";
@@ -45,7 +45,9 @@ export class SeismographConfigCache {
   xLabelHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
   xSublabelHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
   yLabelHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
-  yLabelRightHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
+  yLabelRightHandlebarsCompiled:
+    | null
+    | ((arg0: object, arg1: object) => string);
   ySublabelHandlebarsCompiled: null | ((arg0: object, arg1: object) => string);
 
   constructor() {
@@ -183,7 +185,12 @@ export class SeismographConfig {
     this._fixedAmplitudeScale = null;
     this._fixedTimeScale = null;
     this._linkedAmplitudeScale = new IndividualAmplitudeScale();
-    this._linkedTimeScale = new LinkedTimeScale([], Duration.fromMillis(0), Duration.fromMillis(0), this.configId);
+    this._linkedTimeScale = new LinkedTimeScale(
+      [],
+      Duration.fromMillis(0),
+      Duration.fromMillis(0),
+      this.configId,
+    );
     this.isRelativeTime = false;
     this.doMarkers = true;
     this.markerTextOffset = 0.85;
@@ -199,7 +206,7 @@ export class SeismographConfig {
       right: 20,
       bottom: 42,
       left: 85,
-      toString: function() {
+      toString: function () {
         return `t: ${this.top} l: ${this.left} b: ${this.bottom} r: ${this.right}`;
       },
     };
@@ -251,8 +258,11 @@ export class SeismographConfig {
       // @ts-expect-error ok as we just check hasOwn
       delete tempJson.isLinkedAmplitudeScale;
     }
-    // @ts-expect-error ok as we just check hasOwn
-    if (Object.hasOwn(tempJson, "ySublabel") && tempJson.ySublabel.length === 0) {
+    if (
+      Object.hasOwn(tempJson, "ySublabel") &&
+      // @ts-expect-error ok as we just check hasOwn
+      tempJson.ySublabel.length === 0
+    ) {
       // don't set in case ySublabelIsUnits
       // @ts-expect-error ok as we just check hasOwn
       delete tempJson.ySublabel;
@@ -288,10 +298,12 @@ export class SeismographConfig {
     delete out._fixedTimeScale;
     delete out._linkedTimeScale;
     out.isLinkedTimeScale = isDef(this._linkedTimeScale);
-    out.isLinkedAmplitudeScale = isDef(this._linkedAmplitudeScale) && !(this._linkedAmplitudeScale instanceof IndividualAmplitudeScale);
+    out.isLinkedAmplitudeScale =
+      isDef(this._linkedAmplitudeScale) &&
+      !(this._linkedAmplitudeScale instanceof IndividualAmplitudeScale);
     delete out._linkedAmplitudeScale;
     delete out.__cache__;
-    Object.getOwnPropertyNames(out).forEach(p => {
+    Object.getOwnPropertyNames(out).forEach((p) => {
       if (p.startsWith("_")) {
         const tmp = out[p];
         delete out[p];
@@ -306,7 +318,9 @@ export class SeismographConfig {
   }
 
   set fixedAmplitudeScale(ts: null | Array<number>) {
-    if (!isDef(ts)) { throw new Error("amp scale must be defined setting fixed"); }
+    if (!isDef(ts)) {
+      throw new Error("amp scale must be defined setting fixed");
+    }
     this._fixedAmplitudeScale = ts;
     this._linkedAmplitudeScale = null;
   }
@@ -316,7 +330,9 @@ export class SeismographConfig {
   }
 
   set linkedAmplitudeScale(ts: null | LinkedAmplitudeScale) {
-    if (!isDef(ts)) { throw new Error("amp scale must be defined setting linked"); }
+    if (!isDef(ts)) {
+      throw new Error("amp scale must be defined setting linked");
+    }
     if (this._linkedAmplitudeScale) {
       ts.linkAll(this._linkedAmplitudeScale.graphList);
     }
@@ -370,8 +386,10 @@ export class SeismographConfig {
    * @returns if centered
    */
   isCenteredAmp() {
-    return this.amplitudeMode === AMPLITUDE_MODE.MinMax
-      || this.amplitudeMode === AMPLITUDE_MODE.Mean;
+    return (
+      this.amplitudeMode === AMPLITUDE_MODE.MinMax ||
+      this.amplitudeMode === AMPLITUDE_MODE.Mean
+    );
   }
 
   get fixedTimeScale(): null | Interval {
@@ -379,7 +397,9 @@ export class SeismographConfig {
   }
 
   set fixedTimeScale(ts: null | Interval) {
-    if (!isDef(ts)) { throw new Error("time scale must be defined"); }
+    if (!isDef(ts)) {
+      throw new Error("time scale must be defined");
+    }
     this._fixedTimeScale = ts;
     this._linkedTimeScale = null;
   }
@@ -389,7 +409,9 @@ export class SeismographConfig {
   }
 
   set linkedTimeScale(ts: null | LinkedTimeScale) {
-    if (!isDef(ts)) { throw new Error("time scale must be defined"); }
+    if (!isDef(ts)) {
+      throw new Error("time scale must be defined");
+    }
     if (this._linkedTimeScale) {
       ts.linkAll(this._linkedTimeScale.graphList);
     }
@@ -435,7 +457,9 @@ export class SeismographConfig {
         // empty title
         return "";
       } else if (this._title.length === 1) {
-        this.__cache__.titleHandlebarsCompiled = Handlebars.compile(this._title[0]);
+        this.__cache__.titleHandlebarsCompiled = Handlebars.compile(
+          this._title[0],
+        );
       } else {
         this.__cache__.titleHandlebarsCompiled = Handlebars.compile(
           "" + this._title.join(" "),
@@ -444,7 +468,9 @@ export class SeismographConfig {
     }
     // don't think this can happen, keep typescript happy
     if (!this.__cache__.titleHandlebarsCompiled) {
-      throw new Error(`Unable to compile handlebars title for ${stringify(this._title)}`);
+      throw new Error(
+        `Unable to compile handlebars title for ${stringify(this._title)}`,
+      );
     }
     return this.__cache__.titleHandlebarsCompiled(context, runtimeOptions);
   }
@@ -505,17 +531,20 @@ export class SeismographConfig {
         // empty label
         return "";
       } else {
-        this.__cache__.xLabelHandlebarsCompiled = Handlebars.compile(this._xLabel);
+        this.__cache__.xLabelHandlebarsCompiled = Handlebars.compile(
+          this._xLabel,
+        );
       }
     }
     // don't think this can happen, keep typescript happy
     if (!this.__cache__.xLabelHandlebarsCompiled) {
-      throw new Error(`Unable to compile handlebars xLabel for ${this._xLabel}`);
+      throw new Error(
+        `Unable to compile handlebars xLabel for ${this._xLabel}`,
+      );
     }
 
     return this.__cache__.xLabelHandlebarsCompiled(context, runtimeOptions);
   }
-
 
   handlebarsXSublabel(context: object, runtimeOptions: object): string {
     if (!isDef(this.__cache__.xSublabelHandlebarsCompiled)) {
@@ -523,12 +552,16 @@ export class SeismographConfig {
         // empty label
         return "";
       } else {
-        this.__cache__.xSublabelHandlebarsCompiled = Handlebars.compile(this._xSublabel);
+        this.__cache__.xSublabelHandlebarsCompiled = Handlebars.compile(
+          this._xSublabel,
+        );
       }
     }
     // don't think this can happen, keep typescript happy
     if (!this.__cache__.xSublabelHandlebarsCompiled) {
-      throw new Error(`Unable to compile handlebars xLabel for ${this._xSublabel}`);
+      throw new Error(
+        `Unable to compile handlebars xLabel for ${this._xSublabel}`,
+      );
     }
 
     return this.__cache__.xSublabelHandlebarsCompiled(context, runtimeOptions);
@@ -589,12 +622,16 @@ export class SeismographConfig {
         // empty label
         return "";
       } else {
-        this.__cache__.yLabelHandlebarsCompiled = Handlebars.compile(this._yLabel);
+        this.__cache__.yLabelHandlebarsCompiled = Handlebars.compile(
+          this._yLabel,
+        );
       }
     }
     // don't think this can happen, keep typescript happy
     if (!this.__cache__.yLabelHandlebarsCompiled) {
-      throw new Error(`Unable to compile handlebars yLabel for ${this._yLabel}`);
+      throw new Error(
+        `Unable to compile handlebars yLabel for ${this._yLabel}`,
+      );
     }
 
     return this.__cache__.yLabelHandlebarsCompiled(context, runtimeOptions);
@@ -606,12 +643,16 @@ export class SeismographConfig {
         // empty label
         return "";
       } else {
-        this.__cache__.ySublabelHandlebarsCompiled = Handlebars.compile(this._ySublabel);
+        this.__cache__.ySublabelHandlebarsCompiled = Handlebars.compile(
+          this._ySublabel,
+        );
       }
     }
     // don't think this can happen, keep typescript happy
     if (!this.__cache__.ySublabelHandlebarsCompiled) {
-      throw new Error(`Unable to compile handlebars yLabel for ${this._ySublabel}`);
+      throw new Error(
+        `Unable to compile handlebars yLabel for ${this._ySublabel}`,
+      );
     }
 
     return this.__cache__.ySublabelHandlebarsCompiled(context, runtimeOptions);
@@ -655,10 +696,15 @@ export class SeismographConfig {
     }
     // don't think this can happen, keep typescript happy
     if (!this.__cache__.yLabelRightHandlebarsCompiled) {
-      throw new Error(`Unable to compile handlebars yLabelRight for ${this._yLabelRight}`);
+      throw new Error(
+        `Unable to compile handlebars yLabelRight for ${this._yLabelRight}`,
+      );
     }
 
-    return this.__cache__.yLabelRightHandlebarsCompiled(context, runtimeOptions);
+    return this.__cache__.yLabelRightHandlebarsCompiled(
+      context,
+      runtimeOptions,
+    );
   }
 
   /**
@@ -689,7 +735,7 @@ export class SeismographConfig {
       min,
     ]);
     const fakeSampleRate =
-      1 / (1000 * timeRange.toDuration().toMillis() / (fakeData.length - 1));
+      1 / ((1000 * timeRange.toDuration().toMillis()) / (fakeData.length - 1));
     const fakeSeis = Seismogram.fromContiguousData(
       fakeData,
       fakeSampleRate,
@@ -742,7 +788,8 @@ export class SeismographConfig {
       // not used by actual waveform as default is canvas, not svg
       // is used by fftplot
       cssText += `
-        ${svgEl} g.${G_DATA_SELECTOR} g:nth-child(${numColors}n+${index + 1
+        ${svgEl} g.${G_DATA_SELECTOR} g:nth-child(${numColors}n+${
+          index + 1
         }) path {
           stroke: ${color};
         }
@@ -753,7 +800,7 @@ export class SeismographConfig {
 
   clone(): SeismographConfig {
     const out = new SeismographConfig();
-    Object.getOwnPropertyNames(this).forEach(name => {
+    Object.getOwnPropertyNames(this).forEach((name) => {
       // @ts-expect-error typescript can't handle reflections, but ok as just clone
       if (Array.isArray(this[name])) {
         // @ts-expect-error typescript can't handle reflections, but ok as just clone
@@ -769,7 +816,7 @@ export class SeismographConfig {
         right: this.margin.right,
         bottom: this.margin.bottom,
         left: this.margin.left,
-        toString: function() {
+        toString: function () {
           return (
             "t:" +
             this.top +
@@ -790,7 +837,7 @@ export class SeismographConfig {
 
   toString(): string {
     let outS = "";
-    Object.getOwnPropertyNames(this).forEach(name => {
+    Object.getOwnPropertyNames(this).forEach((name) => {
       // @ts-expect-error  typescript can't handle reflections, but ok for tostring?
       outS += `  seisConfig.${name} = ${JSON.stringify(this[name])}\n`;
     });
@@ -852,10 +899,12 @@ export type SeismographConfigJsonType = {
 
   isLinkedTimeScale: boolean;
   isRelativeTime: boolean;
-}
+};
 
-export function numberFormatWrapper(formater: (arg0: number) => string): ((domainValue: AxisDomain) => string) {
-  return function(domainValue: AxisDomain) {
+export function numberFormatWrapper(
+  formater: (arg0: number) => string,
+): (domainValue: AxisDomain) => string {
+  return function (domainValue: AxisDomain) {
     if (typeof domainValue === "number") {
       return formater(domainValue);
     } else {
@@ -865,7 +914,7 @@ export function numberFormatWrapper(formater: (arg0: number) => string): ((domai
 }
 export const formatCount: (arg0: number) => string = d3format("~s");
 export const formatExp: (arg0: number) => string = d3format(".2e");
-export const formatCountOrAmp = function(v: number): string {
+export const formatCountOrAmp = function (v: number): string {
   return -1 < v && v < 1 && v !== 0 ? formatExp(v) : formatCount(v);
 };
 export const formatMillisecond: (arg0: Date) => string = d3utcFormat(".%L");
@@ -875,20 +924,22 @@ export const formatHour: (arg0: Date) => string = d3utcFormat("%H:%M");
 export const formatDay: (arg0: Date) => string = d3utcFormat("%m/%d");
 export const formatMonth: (arg0: Date) => string = d3utcFormat("%Y/%m");
 export const formatYear: (arg0: Date) => string = d3utcFormat("%Y");
-export const multiFormatHour = function(date: Date): string {
-  return (d3utcSecond(date) < date
-    ? formatMillisecond
-    : d3utcMinute(date) < date
-      ? formatSecond
-      : d3utcHour(date) < date
-        ? formatMinute
-        : d3utcDay(date) < date
-          ? formatHour
-          : d3utcMonth(date) < date
-            ? formatDay
-            : d3utcYear(date) < date
-              ? formatMonth
-              : formatYear)(date);
+export const multiFormatHour = function (date: Date): string {
+  return (
+    d3utcSecond(date) < date
+      ? formatMillisecond
+      : d3utcMinute(date) < date
+        ? formatSecond
+        : d3utcHour(date) < date
+          ? formatMinute
+          : d3utcDay(date) < date
+            ? formatHour
+            : d3utcMonth(date) < date
+              ? formatDay
+              : d3utcYear(date) < date
+                ? formatMonth
+                : formatYear
+  )(date);
 };
 
 SeismographConfig._lastID = 0;

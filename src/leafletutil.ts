@@ -1,16 +1,20 @@
-import {kmPerDeg} from './distaz';
-import {Quake, createQuakeClickEvent} from './quakeml';
+import { kmPerDeg } from "./distaz";
+import { Quake, createQuakeClickEvent } from "./quakeml";
 import * as import_leaflet_css from "./leaflet_css";
-import {Station, createStationClickEvent} from "./stationxml";
-import {SeisPlotElement} from "./spelement";
-import { SeismogramDisplayData, uniqueQuakes, uniqueStations } from "./seismogram";
-import { SeismographConfig} from "./seismographconfig";
-import {LatLonBox, LatLonRadius} from './fdsncommon';
+import { Station, createStationClickEvent } from "./stationxml";
+import { SeisPlotElement } from "./spelement";
+import {
+  SeismogramDisplayData,
+  uniqueQuakes,
+  uniqueStations,
+} from "./seismogram";
+import { SeismographConfig } from "./seismographconfig";
+import { LatLonBox, LatLonRadius } from "./fdsncommon";
 
 import * as L from "leaflet";
-import {LatLngTuple} from "leaflet";
+import { LatLngTuple } from "leaflet";
 
-export const MAP_ELEMENT = 'sp-station-quake-map';
+export const MAP_ELEMENT = "sp-station-quake-map";
 export const triangle = "\u25B2";
 export const StationMarkerClassName = "stationMapMarker";
 export const InactiveStationMarkerClassName = "inactiveStationMapMarker";
@@ -68,15 +72,20 @@ export function createStationMarker(
   station: Station,
   classList?: Array<string>,
   isactive = true,
-  centerLon=0,
+  centerLon = 0,
 ) {
   const allClassList = classList ? classList.slice() : [];
-  allClassList.push(isactive ? StationMarkerClassName : InactiveStationMarkerClassName);
+  allClassList.push(
+    isactive ? StationMarkerClassName : InactiveStationMarkerClassName,
+  );
   allClassList.push(station.codes(STATION_CODE_SEP));
   const icon = L.divIcon({
     className: allClassList.join(" "),
   });
-  const sLon = station.longitude-centerLon <= 180 ? station.longitude : station.longitude-360;
+  const sLon =
+    station.longitude - centerLon <= 180
+      ? station.longitude
+      : station.longitude - 360;
   const m = L.marker([station.latitude, sLon], {
     icon: icon,
   });
@@ -95,14 +104,26 @@ export function createStationMarker(
  * @param  centerLon                    center longitude of the map
  * @returns leaflet circleMarker
  */
-export function createQuakeMarker(quake: Quake, magScaleFactor = 5, classList?: Array<string>, centerLon=0) {
+export function createQuakeMarker(
+  quake: Quake,
+  magScaleFactor = 5,
+  classList?: Array<string>,
+  centerLon = 0,
+) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(QuakeMarkerClassName);
   allClassList.push(cssClassForQuake(quake));
-  const qLon = quake.longitude-centerLon <= 180 ? quake.longitude : quake.longitude-360;
+  const qLon =
+    quake.longitude - centerLon <= 180
+      ? quake.longitude
+      : quake.longitude - 360;
   // in case no mag
-  let radius =quake.magnitude ? quake.magnitude.mag * magScaleFactor : magScaleFactor;
-  if (radius < 1) { radius = 1;}
+  let radius = quake.magnitude
+    ? quake.magnitude.mag * magScaleFactor
+    : magScaleFactor;
+  if (radius < 1) {
+    radius = 1;
+  }
   const circle = L.circleMarker([quake.latitude, qLon], {
     color: "currentColor",
     radius: radius,
@@ -114,7 +135,8 @@ export function createQuakeMarker(quake: Quake, magScaleFactor = 5, classList?: 
 }
 export const leaflet_css = import_leaflet_css.leaflet_css;
 export const TILE_TEMPLATE = "tileUrl";
-export const DEFAULT_TILE_TEMPLATE = "https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}";
+export const DEFAULT_TILE_TEMPLATE =
+  "https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}";
 export const TILE_ATTRIBUTION = "tileAttribution";
 export const MAX_ZOOM = "maxZoom";
 export const DEFAULT_MAX_ZOOM = 17;
@@ -140,7 +162,10 @@ export class QuakeStationMap extends SeisPlotElement {
   classToColor: Map<string, string>;
   stationClassMap: Map<string, Array<string>>;
   quakeClassMap: Map<string, Array<string>>;
-  constructor(seisData?: Array<SeismogramDisplayData>, seisConfig?: SeismographConfig) {
+  constructor(
+    seisData?: Array<SeismogramDisplayData>,
+    seisConfig?: SeismographConfig,
+  ) {
     super(seisData, seisConfig);
     this.map = null;
     this.classToColor = new Map<string, string>();
@@ -150,7 +175,7 @@ export class QuakeStationMap extends SeisPlotElement {
     this.addStyle(leaflet_css);
     this.addStyle(stationMarker_css);
 
-    const wrapper = document.createElement('div');
+    const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
     this.getShadowRoot().appendChild(wrapper);
   }
@@ -162,13 +187,13 @@ export class QuakeStationMap extends SeisPlotElement {
       classList = classname.split(re);
     }
     if (Array.isArray(quake)) {
-      quake.forEach(q => this.quakeList.push(q));
-      classList.forEach(cn => {
-        quake.forEach(q => this.quakeAddClass(q, cn));
+      quake.forEach((q) => this.quakeList.push(q));
+      classList.forEach((cn) => {
+        quake.forEach((q) => this.quakeAddClass(q, cn));
       });
     } else {
       this.quakeList.push(quake);
-      classList.forEach(cn => {
+      classList.forEach((cn) => {
         this.quakeAddClass(quake, cn);
       });
     }
@@ -189,8 +214,10 @@ export class QuakeStationMap extends SeisPlotElement {
     } else {
       this.quakeClassMap.set(cssClassForQuake(quake), [classname]);
     }
-    const circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
-    circleList.forEach(c => {
+    const circleList = this.getShadowRoot().querySelectorAll(
+      `path.${quakeIdStr}`,
+    );
+    circleList.forEach((c) => {
       c.classList.add(classname);
     });
   }
@@ -204,11 +231,13 @@ export class QuakeStationMap extends SeisPlotElement {
     const quakeIdStr = cssClassForQuake(quake);
     let classList = this.quakeClassMap.get(quakeIdStr);
     if (classList) {
-      classList = classList.filter(v => v !== classname);
+      classList = classList.filter((v) => v !== classname);
       this.quakeClassMap.set(cssClassForQuake(quake), classList);
     }
-    const circleList = this.getShadowRoot().querySelectorAll(`path.${quakeIdStr}`);
-    circleList.forEach(c => {
+    const circleList = this.getShadowRoot().querySelectorAll(
+      `path.${quakeIdStr}`,
+    );
+    circleList.forEach((c) => {
       c.classList.remove(classname);
     });
   }
@@ -218,7 +247,7 @@ export class QuakeStationMap extends SeisPlotElement {
    * @param  classname   class to remove
    */
   quakeRemoveAllClass(classname: string) {
-    this.quakeList.forEach(q => this.quakeRemoveClass(q, classname));
+    this.quakeList.forEach((q) => this.quakeRemoveClass(q, classname));
   }
 
   addStation(station: Station | Array<Station>, classname?: string) {
@@ -228,13 +257,13 @@ export class QuakeStationMap extends SeisPlotElement {
       classList = classname.split(re);
     }
     if (Array.isArray(station)) {
-      station.forEach(s => this.stationList.push(s));
-      classList.forEach(cn => {
-        station.forEach(s => this.stationAddClass(s, cn));
+      station.forEach((s) => this.stationList.push(s));
+      classList.forEach((cn) => {
+        station.forEach((s) => this.stationAddClass(s, cn));
       });
     } else {
       this.stationList.push(station);
-      classList.forEach(cn =>  this.stationAddClass(station, cn));
+      classList.forEach((cn) => this.stationAddClass(station, cn));
     }
   }
   /**
@@ -252,8 +281,10 @@ export class QuakeStationMap extends SeisPlotElement {
     } else {
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), [classname]);
     }
-    const markerList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
-    markerList.forEach(c => {
+    const markerList = this.getShadowRoot().querySelectorAll(
+      `div.${station.codes(STATION_CODE_SEP)}`,
+    );
+    markerList.forEach((c) => {
       c.classList.add(classname);
     });
   }
@@ -266,11 +297,13 @@ export class QuakeStationMap extends SeisPlotElement {
   stationRemoveClass(station: Station, classname: string) {
     let classList = this.stationClassMap.get(station.codes(STATION_CODE_SEP));
     if (classList) {
-      classList = classList.filter(v => v !== classname);
+      classList = classList.filter((v) => v !== classname);
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), classList);
     }
-    const markerList = this.getShadowRoot().querySelectorAll(`div.${station.codes(STATION_CODE_SEP)}`);
-    markerList.forEach(c => {
+    const markerList = this.getShadowRoot().querySelectorAll(
+      `div.${station.codes(STATION_CODE_SEP)}`,
+    );
+    markerList.forEach((c) => {
       c.classList.remove(classname);
     });
   }
@@ -292,49 +325,79 @@ export class QuakeStationMap extends SeisPlotElement {
     this.updateStationMarkerStyle();
   }
   get fitBounds(): boolean {
-    const fbAttr = this.hasAttribute(FIT_BOUNDS) ? this.getAttribute(FIT_BOUNDS) : "true";
+    const fbAttr = this.hasAttribute(FIT_BOUNDS)
+      ? this.getAttribute(FIT_BOUNDS)
+      : "true";
     let fb = true;
-    if (!fbAttr) { fb = true; } else { fb = fbAttr.toLowerCase() === "true";}
+    if (!fbAttr) {
+      fb = true;
+    } else {
+      fb = fbAttr.toLowerCase() === "true";
+    }
     return fb;
   }
   set fitBounds(val: number) {
     this.setAttribute(FIT_BOUNDS, `${val}`);
   }
   get centerLat(): number {
-    const ks = this.hasAttribute(CENTER_LAT) ? this.getAttribute(CENTER_LAT) : null;
+    const ks = this.hasAttribute(CENTER_LAT)
+      ? this.getAttribute(CENTER_LAT)
+      : null;
     // typescript null
     let k;
-    if (!ks) { k = DEFAULT_CENTER_LAT;} else { k= parseFloat(ks);}
+    if (!ks) {
+      k = DEFAULT_CENTER_LAT;
+    } else {
+      k = parseFloat(ks);
+    }
     return k;
   }
   set centerLat(val: number) {
     this.setAttribute(CENTER_LAT, `${val}`);
   }
   get centerLon(): number {
-    const ks = this.hasAttribute(CENTER_LON) ? this.getAttribute(CENTER_LON) : null;
+    const ks = this.hasAttribute(CENTER_LON)
+      ? this.getAttribute(CENTER_LON)
+      : null;
     let k;
     // typescript null
-    if (!ks) { k = DEFAULT_CENTER_LON;} else { k= parseFloat(ks);}
+    if (!ks) {
+      k = DEFAULT_CENTER_LON;
+    } else {
+      k = parseFloat(ks);
+    }
     return k;
   }
   set centerLon(val: number) {
     this.setAttribute(CENTER_LON, `${val}`);
   }
   get zoomLevel(): number {
-    const ks = this.hasAttribute(ZOOM_LEVEL) ? this.getAttribute(ZOOM_LEVEL) : null;
+    const ks = this.hasAttribute(ZOOM_LEVEL)
+      ? this.getAttribute(ZOOM_LEVEL)
+      : null;
     // typescript null
     let k;
-    if (!ks) { k = DEFAULT_ZOOM_LEVEL;} else { k= parseInt(ks);}
+    if (!ks) {
+      k = DEFAULT_ZOOM_LEVEL;
+    } else {
+      k = parseInt(ks);
+    }
     return k;
   }
   set zoomLevel(val: number) {
     this.setAttribute(ZOOM_LEVEL, `${val}`);
   }
   get magScale(): number {
-    const ks = this.hasAttribute(MAG_SCALE) ? this.getAttribute(MAG_SCALE) : null;
+    const ks = this.hasAttribute(MAG_SCALE)
+      ? this.getAttribute(MAG_SCALE)
+      : null;
     let k;
     // typescript null
-    if (!ks) { k = DEFAULT_MAG_SCALE;} else { k= parseFloat(ks);}
+    if (!ks) {
+      k = DEFAULT_MAG_SCALE;
+    } else {
+      k = parseFloat(ks);
+    }
     return k;
   }
   set magScale(val: number) {
@@ -342,17 +405,22 @@ export class QuakeStationMap extends SeisPlotElement {
   }
 
   draw() {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) {
+      return;
+    }
     this.updateQuakeMarkerStyle();
     this.updateStationMarkerStyle();
-    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
+    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
 
     while (wrapper.firstChild) {
       // @ts-expect-error if there is a firstChild, there is also lastChild
       wrapper.removeChild(wrapper.lastChild);
     }
     const divElement = wrapper.appendChild(document.createElement("div"));
-    const mymap = L.map(divElement).setView([this.centerLat, this.centerLon], this.zoomLevel);
+    const mymap = L.map(divElement).setView(
+      [this.centerLat, this.centerLon],
+      this.zoomLevel,
+    );
     this.map = mymap;
     if (this.seismographConfig.wheelZoom) {
       mymap.scrollWheelZoom.enable();
@@ -370,7 +438,7 @@ export class QuakeStationMap extends SeisPlotElement {
       maxZoom = Number.parseInt(maxZoomAttr);
     }
     const tileOptions: L.TileLayerOptions = {
-      maxZoom: maxZoom
+      maxZoom: maxZoom,
     };
     const tileAttributionAttr = this.getAttribute(TILE_ATTRIBUTION);
     if (tileAttributionAttr) {
@@ -379,43 +447,56 @@ export class QuakeStationMap extends SeisPlotElement {
     L.tileLayer(tileUrl, tileOptions).addTo(mymap);
     const magScale = this.magScale;
     const mapItems: Array<LatLngTuple> = [];
-    this.quakeList.concat(uniqueQuakes(this.seisData)).forEach(q => {
-      const circle = createQuakeMarker(q, magScale, this.quakeClassMap.get(cssClassForQuake(q)), this.centerLon);
+    this.quakeList.concat(uniqueQuakes(this.seisData)).forEach((q) => {
+      const circle = createQuakeMarker(
+        q,
+        magScale,
+        this.quakeClassMap.get(cssClassForQuake(q)),
+        this.centerLon,
+      );
       circle.addTo(mymap);
       mapItems.push([q.latitude, q.longitude]);
-      circle.addEventListener('click', evt => {
+      circle.addEventListener("click", (evt) => {
         const ce = createQuakeClickEvent(q, evt.originalEvent);
         this.dispatchEvent(ce);
       });
     });
-    this.stationList.concat(uniqueStations(this.seisData)).forEach(s => {
-      const m = createStationMarker(s, this.stationClassMap.get(s.codes(STATION_CODE_SEP)), true, this.centerLon);
+    this.stationList.concat(uniqueStations(this.seisData)).forEach((s) => {
+      const m = createStationMarker(
+        s,
+        this.stationClassMap.get(s.codes(STATION_CODE_SEP)),
+        true,
+        this.centerLon,
+      );
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
-      m.addEventListener('click', evt => {
+      m.addEventListener("click", (evt) => {
         const ce = createStationClickEvent(s, evt.originalEvent);
         this.dispatchEvent(ce);
       });
     });
     const regionBounds = this.drawGeoRegions(mymap);
-    regionBounds.forEach(b => mapItems.push(b));
+    regionBounds.forEach((b) => mapItems.push(b));
     if (this.fitBounds && mapItems.length > 1) {
       mymap.fitBounds(mapItems);
     }
   }
   updateQuakeMarkerStyle() {
     const quakeMarkerStyle = this.createQuakeMarkerColorStyle();
-    const quakeMarkerStyleEl = this.getShadowRoot().querySelector(`style#${QUAKE_MARKER_STYLE_EL}`);
+    const quakeMarkerStyleEl = this.getShadowRoot().querySelector(
+      `style#${QUAKE_MARKER_STYLE_EL}`,
+    );
     if (quakeMarkerStyleEl) {
       quakeMarkerStyleEl.textContent = quakeMarkerStyle;
     } else {
       this.addStyle(quakeMarkerStyle, QUAKE_MARKER_STYLE_EL);
     }
-
   }
   updateStationMarkerStyle() {
     const staMarkerStyle = this.createStationMarkerColorStyle();
-    const staMarkerStyleEl = this.getShadowRoot().querySelector(`style#${STATION_MARKER_STYLE_EL}`);
+    const staMarkerStyleEl = this.getShadowRoot().querySelector(
+      `style#${STATION_MARKER_STYLE_EL}`,
+    );
     if (staMarkerStyleEl) {
       staMarkerStyleEl.textContent = staMarkerStyle;
     } else {
@@ -424,30 +505,34 @@ export class QuakeStationMap extends SeisPlotElement {
   }
   drawGeoRegions(map: L.Map): Array<[number, number]> {
     const outLatLon: Array<[number, number]> = [];
-    this.geoRegionList.forEach(gr => {
+    this.geoRegionList.forEach((gr) => {
       if (gr instanceof LatLonBox) {
-        const llbox = gr ;
+        const llbox = gr;
         const bounds = llbox.asLeafletBounds();
-        const rect = L.rectangle(bounds, {color: "red", weight: 1});
+        const rect = L.rectangle(bounds, { color: "red", weight: 1 });
         rect.addTo(map);
         outLatLon.push(bounds[0]);
         outLatLon.push(bounds[1]);
       } else if (gr instanceof LatLonRadius) {
-        const llrad = gr ;
+        const llrad = gr;
         outLatLon.push([llrad.latitude, llrad.longitude]);
         if (llrad.minRadius > 0) {
-          L.circle([llrad.latitude, llrad.longitude], {radius: llrad.minRadius*1000*kmPerDeg}).addTo(map);
-          outLatLon.push([llrad.latitude+llrad.minRadius, llrad.longitude]);
-          outLatLon.push([llrad.latitude-llrad.minRadius, llrad.longitude]);
-          outLatLon.push([llrad.latitude, llrad.longitude+llrad.minRadius]);
-          outLatLon.push([llrad.latitude, llrad.longitude-llrad.minRadius]);
+          L.circle([llrad.latitude, llrad.longitude], {
+            radius: llrad.minRadius * 1000 * kmPerDeg,
+          }).addTo(map);
+          outLatLon.push([llrad.latitude + llrad.minRadius, llrad.longitude]);
+          outLatLon.push([llrad.latitude - llrad.minRadius, llrad.longitude]);
+          outLatLon.push([llrad.latitude, llrad.longitude + llrad.minRadius]);
+          outLatLon.push([llrad.latitude, llrad.longitude - llrad.minRadius]);
         }
         if (llrad.maxRadius < 180) {
-          L.circle([llrad.latitude, llrad.longitude], {radius: llrad.maxRadius*1000*kmPerDeg}).addTo(map);
-          outLatLon.push([llrad.latitude+llrad.maxRadius, llrad.longitude]);
-          outLatLon.push([llrad.latitude-llrad.maxRadius, llrad.longitude]);
-          outLatLon.push([llrad.latitude, llrad.longitude+llrad.maxRadius]);
-          outLatLon.push([llrad.latitude, llrad.longitude-llrad.maxRadius]);
+          L.circle([llrad.latitude, llrad.longitude], {
+            radius: llrad.maxRadius * 1000 * kmPerDeg,
+          }).addTo(map);
+          outLatLon.push([llrad.latitude + llrad.maxRadius, llrad.longitude]);
+          outLatLon.push([llrad.latitude - llrad.maxRadius, llrad.longitude]);
+          outLatLon.push([llrad.latitude, llrad.longitude + llrad.maxRadius]);
+          outLatLon.push([llrad.latitude, llrad.longitude - llrad.maxRadius]);
         }
       } else if (gr === null) {
         // null means whole world
@@ -461,7 +546,7 @@ export class QuakeStationMap extends SeisPlotElement {
   createStationMarkerColorStyle() {
     let style = "";
     this.classToColor.forEach((color, classname) => {
-        style = `${style}
+      style = `${style}
 div.leaflet-marker-icon.${classname} {
   color: ${color};
 }
@@ -472,7 +557,7 @@ div.leaflet-marker-icon.${classname} {
   createQuakeMarkerColorStyle() {
     let style = "";
     this.classToColor.forEach((color, classname) => {
-        style = `${style}
+      style = `${style}
 path.${classname} {
     stroke: ${color};
     fill: ${color};
@@ -485,7 +570,8 @@ path.${classname} {
     this.draw();
   }
   static get observedAttributes() {
-    return [TILE_TEMPLATE,
+    return [
+      TILE_TEMPLATE,
       TILE_ATTRIBUTION,
       MAX_ZOOM,
       CENTER_LAT,
@@ -507,5 +593,5 @@ export function cssClassForQuake(q: Quake): string {
   } else {
     out = `${q.origin.time.toISO()}_${q.magnitude.toString()}`;
   }
-  return "qid_"+out.replaceAll(badCSSChars, '_');
+  return "qid_" + out.replaceAll(badCSSChars, "_");
 }

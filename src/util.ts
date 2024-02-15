@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {version } from './version';
+import { version } from "./version";
 import { DateTime, Duration, Interval, FixedOffsetZone } from "luxon";
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
@@ -64,7 +64,7 @@ export interface StringDictionary {
   [index: string]: unknown;
 }
 export function asStringDictionary(inobj: unknown): StringDictionary {
-  if (typeof inobj !== 'object') {
+  if (typeof inobj !== "object") {
     throw new Error(`Expect obj to be object, but was ${stringify(inobj)}`);
   }
   const obj = inobj as StringDictionary;
@@ -217,7 +217,7 @@ export function log(msg: string): void {
   if (typeof document !== "undefined" && document !== null) {
     const p = document.createElement("p");
     p.textContent = `${stringify(msg)}`;
-    const divDebug = (document.querySelector("div#debug") as HTMLInputElement);
+    const divDebug = document.querySelector("div#debug") as HTMLInputElement;
     if (isDef(divDebug)) {
       divDebug.appendChild(p);
     }
@@ -231,11 +231,7 @@ export function log(msg: string): void {
  * @returns true if Error object
  */
 export function isError(error: unknown): error is Error {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    error instanceof Error
-  );
+  return typeof error === "object" && error !== null && error instanceof Error;
 }
 
 /**
@@ -273,8 +269,7 @@ export function warn(msg: string): void {
   if (typeof document !== "undefined" && document !== null) {
     const p = document.createElement("p");
     p.textContent = `${stringify(msg)}`;
-    (document.querySelector("div#debug") as HTMLInputElement)
-      .appendChild(p);
+    (document.querySelector("div#debug") as HTMLInputElement).appendChild(p);
   }
 }
 
@@ -299,10 +294,12 @@ export function stringify(value: unknown): string {
   } else if (typeof value === "object") {
     if (value) {
       if (DateTime.isDateTime(value)) {
-        const dateTimeValue = (value as unknown) as DateTime;
+        const dateTimeValue = value as unknown as DateTime;
         // typescript null check
         const s = dateTimeValue.toISO();
-        return (dateTimeValue.isValid && s) ? s : `Invalid DateTime: ${dateTimeValue.invalidReason}: ${dateTimeValue.invalidExplanation}`;
+        return dateTimeValue.isValid && s
+          ? s
+          : `Invalid DateTime: ${dateTimeValue.invalidReason}: ${dateTimeValue.invalidExplanation}`;
       } else {
         return `${value?.constructor?.name} ${String(value)}`;
       }
@@ -330,8 +327,10 @@ export function isoToDateTime(val: string): DateTime {
  * @param  end         end of the interval as string or DateTime
  * @returns          the interval
  */
-export function startEnd(start: string | DateTime,
-  end: string | DateTime): Interval {
+export function startEnd(
+  start: string | DateTime,
+  end: string | DateTime,
+): Interval {
   if (isStringArg(start)) {
     start = isoToDateTime(start);
   }
@@ -350,8 +349,10 @@ export function startEnd(start: string | DateTime,
  * @param  duration      duration of the interval as iso string, number of seconds, or Duration
  * @returns          the interval
  */
-export function startDuration(start: string | DateTime,
-  duration: string | Duration | number): Interval {
+export function startDuration(
+  start: string | DateTime,
+  duration: string | Duration | number,
+): Interval {
   if (isStringArg(start)) {
     start = isoToDateTime(start);
   }
@@ -376,8 +377,10 @@ export function startDuration(start: string | DateTime,
  * @param  end         end of the interval as string or DateTime
  * @returns          the interval
  */
-export function durationEnd(duration: string | Duration | number,
-  end: string | DateTime): Interval {
+export function durationEnd(
+  duration: string | Duration | number,
+  end: string | DateTime,
+): Interval {
   if (isStringArg(end)) {
     end = isoToDateTime(end);
   }
@@ -466,8 +469,10 @@ export function makePostParam(name: string, val: unknown): string {
 export function toIsoWoZ(date: DateTime): string {
   if (date.isValid) {
     let out = date.toISO();
-    if (out == null) { throw new Error(`Bad date: ${stringify(date)}`); }
-    if (out.endsWith('Z')) {
+    if (out == null) {
+      throw new Error(`Bad date: ${stringify(date)}`);
+    }
+    if (out.endsWith("Z")) {
       out = out.substring(0, out.length - 1);
     }
     return out;
@@ -484,7 +489,9 @@ export function toIsoWoZ(date: DateTime): string {
  */
 export function validStartTime(interval: Interval): DateTime {
   const d = interval.start;
-  if (d == null) { throw new Error(`Bad interval: ${stringify(interval)}`); }
+  if (d == null) {
+    throw new Error(`Bad interval: ${stringify(interval)}`);
+  }
   return d;
 }
 
@@ -496,7 +503,9 @@ export function validStartTime(interval: Interval): DateTime {
  */
 export function validEndTime(interval: Interval): DateTime {
   const d = interval.end;
-  if (d == null) { throw new Error(`Bad interval: ${stringify(interval)}`); }
+  if (d == null) {
+    throw new Error(`Bad interval: ${stringify(interval)}`);
+  }
   return d;
 }
 
@@ -526,14 +535,19 @@ export function toJSDate(d: DateTime | null | undefined) {
  * @param  msg               optional message to add to error
  * @returns  passed in object if valid
  */
-export function checkLuxonValid(d: null | DateTime | Interval | Duration, msg?: string) {
+export function checkLuxonValid(
+  d: null | DateTime | Interval | Duration,
+  msg?: string,
+) {
   if (d == null) {
     const m = msg ? msg : "";
     throw new Error(`Null luxon value: ${d} ${m}`);
   }
   if (!d.isValid) {
     const m = msg ? msg : "";
-    throw new Error(`Invalid Luxon: ${typeof d} ${d?.constructor?.name} ${d.invalidReason}: ${d.invalidExplanation} ${m}`);
+    throw new Error(
+      `Invalid Luxon: ${typeof d} ${d?.constructor?.name} ${d.invalidReason}: ${d.invalidExplanation} ${m}`,
+    );
   }
   return d;
 }
@@ -559,7 +573,6 @@ export function checkProtocol(): string {
 }
 
 export interface FetchInitObject {
-
   cache: string;
   redirect: string;
   mode: string;
@@ -611,22 +624,38 @@ export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
   return out;
 }
 
-export function errorFetch(url: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response> {
+export function errorFetch(
+  url: URL | RequestInfo,
+  init?: RequestInit | undefined,
+): Promise<Response> {
   throw new Error("There is no fetch!?!?!");
 }
-export let default_fetch: null|((url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>) = null;
+export let default_fetch:
+  | null
+  | ((
+      url: URL | RequestInfo,
+      init?: RequestInit | undefined,
+    ) => Promise<Response>) = null;
 
-export function setDefaultFetch(fetcher: (url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>) {
+export function setDefaultFetch(
+  fetcher: (
+    url: URL | RequestInfo,
+    init?: RequestInit | undefined,
+  ) => Promise<Response>,
+) {
   if (fetcher != null) {
     default_fetch = fetcher;
   }
 }
-export function getFetch(): (url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response> {
+export function getFetch(): (
+  url: URL | RequestInfo,
+  init?: RequestInit | undefined,
+) => Promise<Response> {
   if (default_fetch != null) {
     return default_fetch;
-  } else if ( window != null) {
+  } else if (window != null) {
     return window.fetch;
-  } else if ( global != null) {
+  } else if (global != null) {
     return global.fetch;
   } else {
     return errorFetch;
@@ -647,21 +676,30 @@ export function doFetchWithTimeout(
   url: string | URL,
   fetchInit?: RequestInit,
   timeoutSec?: number,
-  fetcher?: (url: URL | RequestInfo, init?: RequestInit | undefined) => Promise<Response>,
+  fetcher?: (
+    url: URL | RequestInfo,
+    init?: RequestInit | undefined,
+  ) => Promise<Response>,
 ): Promise<Response> {
   const controller = new AbortController();
   const signal = controller.signal;
 
-  if (!fetcher) { fetcher = getFetch();}
-  if (!fetcher) { fetcher = window.fetch;}
+  if (!fetcher) {
+    fetcher = getFetch();
+  }
+  if (!fetcher) {
+    fetcher = window.fetch;
+  }
   let internalFetchInit = isDef(fetchInit) ? fetchInit : defaultFetchInitObj();
   internalFetchInit = cloneFetchInitObj(internalFetchInit);
-  if (internalFetchInit.redirect === "follow" && internalFetchInit.method === "POST") {
+  if (
+    internalFetchInit.redirect === "follow" &&
+    internalFetchInit.method === "POST"
+  ) {
     // follow on POST is dangerous if the server returns 301, handle it ourselves
     // note this is assuming that the redirect is a simple http -> https.
     internalFetchInit.redirect = "manual";
   }
-
 
   if (!isDef(timeoutSec)) {
     timeoutSec = 30;
@@ -691,34 +729,43 @@ export function doFetchWithTimeout(
   // save fetcher as const so typescript won't think it has become undef
   const fetchForRedirect = fetcher;
   return fetcher(absoluteUrl.href, internalFetchInit)
-    .catch(err => {
+    .catch((err) => {
       log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
       throw err;
     })
-    .then(function(response) {
+    .then(function (response) {
       if (response.ok || response.status === 404) {
         return response;
       } else if (response.status >= 300 && response.status <= 399) {
-        if (checkProtocol() === 'http:' && absoluteUrl.href.startsWith("http://")) {
+        if (
+          checkProtocol() === "http:" &&
+          absoluteUrl.href.startsWith("http://")
+        ) {
           // maybe try https just in case
           const httpsUrl = new URL(`https://${absoluteUrl.href.slice(7)}`);
-          const method = internalFetchInit.method ? internalFetchInit.method : "";
-          log(`attempt fetch redirect ${response.status} ${method} to ${stringify(httpsUrl)}`);
-          return fetchForRedirect(httpsUrl.href, internalFetchInit).then(httpsResponse => {
-            if (httpsResponse.ok || httpsResponse.status === 404) {
-              return httpsResponse;
-            } else {
-              return response.text().then(text => {
-                throw new Error(
-                  `fetch response was redirect for http and failed for https. ${response.ok} ${response.status}, ${httpsResponse.ok} ${httpsResponse.status} \n${text}`,
-                );
-              });
-            }
-          });
+          const method = internalFetchInit.method
+            ? internalFetchInit.method
+            : "";
+          log(
+            `attempt fetch redirect ${response.status} ${method} to ${stringify(httpsUrl)}`,
+          );
+          return fetchForRedirect(httpsUrl.href, internalFetchInit).then(
+            (httpsResponse) => {
+              if (httpsResponse.ok || httpsResponse.status === 404) {
+                return httpsResponse;
+              } else {
+                return response.text().then((text) => {
+                  throw new Error(
+                    `fetch response was redirect for http and failed for https. ${response.ok} ${response.status}, ${httpsResponse.ok} ${httpsResponse.status} \n${text}`,
+                  );
+                });
+              }
+            },
+          );
         }
       }
 
-      return response.text().then(text => {
+      return response.text().then((text) => {
         throw new Error(
           `fetch response was not ok. ${response.ok} ${response.status}\n${text}`,
         );
@@ -734,24 +781,43 @@ export function doFetchWithTimeout(
  * @param  filename          default filename
  * @param  mimeType      mimeType, default application/octet-stream
  */
-export function downloadBlobAsFile(data: ArrayBuffer, filename: string, mimeType = 'application/octet-stream') {
+export function downloadBlobAsFile(
+  data: ArrayBuffer,
+  filename: string,
+  mimeType = "application/octet-stream",
+) {
   if (!data) {
     throw new Error("data is empty");
   }
 
-  if (!filename) filename = 'filetodownload.txt';
+  if (!filename) filename = "filetodownload.txt";
 
   const blob = new Blob([data], { type: mimeType });
-  const e = document.createEvent('MouseEvents');
-  const a = document.createElement('a');
+  const e = document.createEvent("MouseEvents");
+  const a = document.createElement("a");
 
   a.download = filename;
   a.href = window.URL.createObjectURL(blob);
-  a.dataset.downloadurl = [mimeType, a.download, a.href].join(':');
-  e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+  a.dataset.downloadurl = [mimeType, a.download, a.href].join(":");
+  e.initMouseEvent(
+    "click",
+    true,
+    false,
+    window,
+    0,
+    0,
+    0,
+    0,
+    0,
+    false,
+    false,
+    false,
+    false,
+    0,
+    null,
+  );
   a.dispatchEvent(e);
 }
-
 
 /**
  * Recursively calculates the mean of a slice of an array. This helps with
@@ -766,10 +832,12 @@ export function meanOfSlice(
   totalPts: number,
 ): number {
   if (dataSlice.length < 8) {
+    return (
       // @ts-expect-error different array types confuses typescript
-    return dataSlice.reduce(function(acc: number, val: number): number {
-      return acc + val;
-    }, 0) / totalPts;
+      dataSlice.reduce(function (acc: number, val: number): number {
+        return acc + val;
+      }, 0) / totalPts
+    );
   } else {
     const byTwo = Math.floor(dataSlice.length / 2);
     return (
@@ -787,7 +855,7 @@ export function createSVGElement(name: string): SVGElement {
 }
 
 export function updateVersionText(selector = "#sp-version") {
-  document.querySelectorAll(selector).forEach( el => {
+  document.querySelectorAll(selector).forEach((el) => {
     el.textContent = version;
   });
 }

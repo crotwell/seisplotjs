@@ -3,9 +3,9 @@
  * University of South Carolina, 2020
  * https://www.seis.sc.edu
  */
-import {FDSNCommon} from './fdsncommon';
-import {DateTime, Interval} from 'luxon';
-import {Network} from "./stationxml";
+import { FDSNCommon } from "./fdsncommon";
+import { DateTime, Interval } from "luxon";
+import { Network } from "./stationxml";
 import {
   LEVELS,
   LEVEL_NETWORK,
@@ -14,9 +14,9 @@ import {
   LEVEL_RESPONSE,
   StationQuery,
 } from "./fdsnstation";
-import {NslcId} from './fdsnsourceid';
-import {DataSelectQuery} from "./fdsndataselect";
-import {SeismogramDisplayData} from "./seismogram";
+import { NslcId } from "./fdsnsourceid";
+import { DataSelectQuery } from "./fdsndataselect";
+import { SeismogramDisplayData } from "./seismogram";
 import {
   TEXT_MIME,
   makeParam,
@@ -91,27 +91,21 @@ export class FedCatalogDataCenter {
    */
   queryNetworkList(): Promise<Array<Network>> {
     if (this.stationQuery) {
-      return this.stationQuery.postQuery(
-        this.level,
-        this.postLines,
-      );
+      return this.stationQuery.postQuery(this.level, this.postLines);
     } else {
       return Promise.all([] as Network[]);
     }
   }
   queryStationRawXml(): Promise<Document> {
-      if (isDef(this.stationQuery)) {
-        return this.stationQuery.postQueryRawXml(
-          this.level,
-          this.postLines,
-        );
-      } else {
-        throw new Error("this.stationQuery does not exist.");
-      }
+    if (isDef(this.stationQuery)) {
+      return this.stationQuery.postQueryRawXml(this.level, this.postLines);
+    } else {
+      throw new Error("this.stationQuery does not exist.");
+    }
   }
   querySDDList(): Promise<Array<SeismogramDisplayData>> {
     if (isDef(this.dataSelectQuery)) {
-      const sddList = this.postLines.map(line => {
+      const sddList = this.postLines.map((line) => {
         const items = line.split(" ");
         const start = isoToDateTime(items[4]);
         const end = isoToDateTime(items[5]);
@@ -154,81 +148,80 @@ export class FedCatalogResult {
  * @param host optional host to connect to, defaults to IRIS
  */
 export class FedCatalogQuery extends FDSNCommon {
+  /** @private */
+  _targetService: string | undefined;
 
   /** @private */
-  _targetService: string|undefined;
+  _level: string | undefined;
 
   /** @private */
-  _level: string|undefined;
+  _networkCode: string | undefined;
 
   /** @private */
-  _networkCode: string|undefined;
+  _stationCode: string | undefined;
 
   /** @private */
-  _stationCode: string|undefined;
+  _locationCode: string | undefined;
 
   /** @private */
-  _locationCode: string|undefined;
+  _channelCode: string | undefined;
 
   /** @private */
-  _channelCode: string|undefined;
+  _startTime: DateTime | undefined;
 
   /** @private */
-  _startTime: DateTime|undefined;
+  _endTime: DateTime | undefined;
 
   /** @private */
-  _endTime: DateTime|undefined;
+  _startBefore: DateTime | undefined;
 
   /** @private */
-  _startBefore: DateTime|undefined;
+  _endBefore: DateTime | undefined;
 
   /** @private */
-  _endBefore: DateTime|undefined;
+  _startAfter: DateTime | undefined;
 
   /** @private */
-  _startAfter: DateTime|undefined;
+  _endAfter: DateTime | undefined;
 
   /** @private */
-  _endAfter: DateTime|undefined;
+  _minLat: number | undefined;
 
   /** @private */
-  _minLat: number|undefined;
+  _maxLat: number | undefined;
 
   /** @private */
-  _maxLat: number|undefined;
+  _minLon: number | undefined;
 
   /** @private */
-  _minLon: number|undefined;
+  _maxLon: number | undefined;
 
   /** @private */
-  _maxLon: number|undefined;
+  _latitude: number | undefined;
 
   /** @private */
-  _latitude: number|undefined;
+  _longitude: number | undefined;
 
   /** @private */
-  _longitude: number|undefined;
+  _minRadius: number | undefined;
 
   /** @private */
-  _minRadius: number|undefined;
+  _maxRadius: number | undefined;
 
   /** @private */
-  _maxRadius: number|undefined;
+  _includeRestricted: boolean | undefined;
 
   /** @private */
-  _includeRestricted: boolean|undefined;
+  _includeAvailability: boolean | undefined;
 
   /** @private */
-  _includeAvailability: boolean|undefined;
+  _format: string | undefined;
 
   /** @private */
-  _format: string|undefined;
+  _updatedAfter: DateTime | undefined;
 
   /** @private */
-  _updatedAfter: DateTime|undefined;
-
-  /** @private */
-  _matchTimeseries: boolean|undefined;
+  _matchTimeseries: boolean | undefined;
 
   fedCatResult: Promise<FedCatalogResult> | null;
 
@@ -238,7 +231,7 @@ export class FedCatalogQuery extends FDSNCommon {
    * @param host the host to connect to , defaults to service.iris.edu
    */
   constructor(host?: string) {
-    if ( ! isNonEmptyStringArg(host)) {
+    if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
     super(host);
@@ -256,8 +249,7 @@ export class FedCatalogQuery extends FDSNCommon {
 
     if (!(stationQuery instanceof StationQuery)) {
       throw new Error(
-        "1st arg must be a StationQuery: " +
-          stringify(stationQuery),
+        "1st arg must be a StationQuery: " + stringify(stationQuery),
       );
     }
 
@@ -841,10 +833,18 @@ export class FedCatalogQuery extends FDSNCommon {
    */
   isSomeParameterSet(): boolean {
     return (
-      (isDef(this._networkCode) && this._networkCode.length >0 && this._networkCode!=='*') ||
-      (isDef(this._stationCode) && this._stationCode.length >0 && this._stationCode!=='*') ||
-      (isDef(this._locationCode) && this._locationCode.length >0 && this._locationCode!=='*') ||
-      (isDef(this._channelCode) && this._channelCode.length >0 && this._channelCode!=='*') ||
+      (isDef(this._networkCode) &&
+        this._networkCode.length > 0 &&
+        this._networkCode !== "*") ||
+      (isDef(this._stationCode) &&
+        this._stationCode.length > 0 &&
+        this._stationCode !== "*") ||
+      (isDef(this._locationCode) &&
+        this._locationCode.length > 0 &&
+        this._locationCode !== "*") ||
+      (isDef(this._channelCode) &&
+        this._channelCode.length > 0 &&
+        this._channelCode !== "*") ||
       isDef(this._startTime) ||
       isDef(this._endTime) ||
       isDef(this._startBefore) ||
@@ -911,15 +911,15 @@ export class FedCatalogQuery extends FDSNCommon {
    */
   queryFdsnStation(level: string): Promise<Array<Network>> {
     return this.setupQueryFdsnStation(level)
-      .then(fedCatalogResult => {
+      .then((fedCatalogResult) => {
         return Promise.all(
-          fedCatalogResult.queries.map(query => query.queryNetworkList())
+          fedCatalogResult.queries.map((query) => query.queryNetworkList()),
         );
       })
-      .then(netArrayArray => {
+      .then((netArrayArray) => {
         const out: Array<Network> = [];
-        netArrayArray.forEach(netArray => {
-          netArray.forEach(net => {
+        netArrayArray.forEach((netArray) => {
+          netArray.forEach((net) => {
             out.push(net);
           });
         });
@@ -946,7 +946,9 @@ export class FedCatalogQuery extends FDSNCommon {
             // @ts-expect-error reflection on class breaks typescript
             stationQuery[field] = v;
           } else {
-            throw new Error(`field ${field} does not exist in StationQuery class`);
+            throw new Error(
+              `field ${field} does not exist in StationQuery class`,
+            );
           }
         });
 
@@ -997,7 +999,9 @@ export class FedCatalogQuery extends FDSNCommon {
           // @ts-expect-error reflection on class breaks typescript
           dataSelectQuery[field] = v;
         } else {
-          throw new Error(`field ${field} does not exist in DataSelectQuery class`);
+          throw new Error(
+            `field ${field} does not exist in DataSelectQuery class`,
+          );
         }
       });
 
@@ -1029,10 +1033,10 @@ export class FedCatalogQuery extends FDSNCommon {
   queryFdsnDataselect(): Promise<Array<SeismogramDisplayData>> {
     this.targetService(TARGET_DATASELECT);
     return this.queryRaw()
-      .then(fedCatalogResult => {
+      .then((fedCatalogResult) => {
         return this.setupForFdnsDataSelect(fedCatalogResult);
       })
-      .then(fedCatalogResult => {
+      .then((fedCatalogResult) => {
         return this.postFdsnDataselectForFedCatResult(fedCatalogResult);
       });
   }
@@ -1041,11 +1045,11 @@ export class FedCatalogQuery extends FDSNCommon {
     fedCatalogResult: FedCatalogResult,
   ): Promise<Array<SeismogramDisplayData>> {
     return Promise.all(
-      fedCatalogResult.queries.map(query => query.querySDDList())
-    ).then(sddArrayArray => {
+      fedCatalogResult.queries.map((query) => query.querySDDList()),
+    ).then((sddArrayArray) => {
       const out: Array<SeismogramDisplayData> = [];
-      sddArrayArray.forEach(sddArray => {
-        sddArray.forEach(sdd => {
+      sddArrayArray.forEach((sddArray) => {
+        sddArray.forEach((sdd) => {
           out.push(sdd);
         });
       });
@@ -1078,7 +1082,7 @@ export class FedCatalogQuery extends FDSNCommon {
         for (const sdd of sddList) {
           const codes = sdd.codes();
           const matchSdd = sddResultArray.find(
-            s => s.codes() === codes && s.timeRange.overlaps(sdd.timeRange),
+            (s) => s.codes() === codes && s.timeRange.overlaps(sdd.timeRange),
           );
 
           if (matchSdd) {
@@ -1116,10 +1120,10 @@ export class FedCatalogQuery extends FDSNCommon {
       fetchInit,
       this._timeoutSec * 1000,
     )
-      .then(response => {
+      .then((response) => {
         return this.handleHttpResponseCodes(response);
       })
-      .then(rawText => {
+      .then((rawText) => {
         return this.parseRequest(rawText);
       });
   }
@@ -1143,7 +1147,7 @@ export class FedCatalogQuery extends FDSNCommon {
       fetchInit,
       this._timeoutSec * 1000,
     )
-      .then(response => {
+      .then((response) => {
         return this.handleHttpResponseCodes(response);
       })
       .then((rawText) => {
@@ -1236,7 +1240,7 @@ export class FedCatalogQuery extends FDSNCommon {
     const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      response => {
+      (response) => {
         if (response.status === 200) {
           return response.text();
         } else {
@@ -1295,7 +1299,11 @@ export class FedCatalogQuery extends FDSNCommon {
       url = url + makeParam("targetservice", this._targetService);
     }
 
-    if (isStringArg(this._networkCode) && this._networkCode.length >0 && this._networkCode!=='*') {
+    if (
+      isStringArg(this._networkCode) &&
+      this._networkCode.length > 0 &&
+      this._networkCode !== "*"
+    ) {
       url = url + makeParam("net", this._networkCode);
     } else {
       // this is dumb, just to workaround a bug with IRIS fedcat server requiring one
@@ -1303,15 +1311,27 @@ export class FedCatalogQuery extends FDSNCommon {
       url = url + makeParam("net", "*");
     }
 
-    if (isStringArg(this._stationCode) && this._stationCode.length >0 && this._stationCode!=='*') {
+    if (
+      isStringArg(this._stationCode) &&
+      this._stationCode.length > 0 &&
+      this._stationCode !== "*"
+    ) {
       url = url + makeParam("sta", this._stationCode);
     }
 
-    if (isStringArg(this._locationCode) && this._locationCode.length >0 && this._locationCode!=='*') {
+    if (
+      isStringArg(this._locationCode) &&
+      this._locationCode.length > 0 &&
+      this._locationCode !== "*"
+    ) {
       url = url + makeParam("loc", this._locationCode);
     }
 
-    if (isStringArg(this._channelCode) && this._channelCode.length >0 && this._channelCode!=='*') {
+    if (
+      isStringArg(this._channelCode) &&
+      this._channelCode.length > 0 &&
+      this._channelCode !== "*"
+    ) {
       url = url + makeParam("cha", this._channelCode);
     }
 
