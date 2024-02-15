@@ -1,54 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-     <meta charset="utf-8" />
-     <link rel="stylesheet" href="style.css">
-     <link rel="icon" type="image/png" href="../../flavicon.png" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../../flavicon.png" />
   </head>
   <body>
-    <h5><a href="../../index.html" class="">Seisplotjs</a> - <a href="../index.html" class="">Examples</a> - FIR Design</h5>
+    <h5>
+      <a href="../../index.html" class="">Seisplotjs</a> -
+      <a href="../index.html" class="">Examples</a> - FIR Design
+    </h5>
 
-    <h3><a href="https://github.com/crotwell/OregonDSP-kotlin">OregonDSP</a> Equiripple Lowpass FIR filter design</h3>
-    <p>Calculate a FIR filter. N is the half size of the filter, so the resulting
+    <h3>
+      <a href="https://github.com/crotwell/OregonDSP-kotlin">OregonDSP</a>
+      Equiripple Lowpass FIR filter design
+    </h3>
+    <p>
+      Calculate a FIR filter. N is the half size of the filter, so the resulting
       filter will have 2N+1 points. OmegaP is the end of the pass band, the
-      ripple in the pass band is weighted with Wp. OmegaS is the beginning
-      of the stop band, the stop band is weighted with Ws. Data npts just
-      controls the number of points to create the FFT for display, it does
-      not effect the filter.
+      ripple in the pass band is weighted with Wp. OmegaS is the beginning of
+      the stop band, the stop band is weighted with Ws. Data npts just controls
+      the number of points to create the FFT for display, it does not effect the
+      filter.
     </p>
     <div class="control">
       <div>
-        <label>N (half)</label><input name="N" type="text" value="20">
+        <label>N (half)</label><input name="N" type="text" value="20" />
       </div>
       <div>
-        <label>OmegaP</label><input name="OmegaP" type="text" value=".45">
-        <label>Wp</label><input name="Wp" type="text" value="1">
+        <label>OmegaP</label><input name="OmegaP" type="text" value=".45" />
+        <label>Wp</label><input name="Wp" type="text" value="1" />
       </div>
       <div>
-        <label>OmegaS</label><input name="OmegaS" type="text" value=".5">
-        <label>Ws</label><input name="Ws" type="text" value="1">
+        <label>OmegaS</label><input name="OmegaS" type="text" value=".5" />
+        <label>Ws</label><input name="Ws" type="text" value="1" />
       </div>
       <button id="load">Create</button>
-
     </div>
     <div class="control2">
-      <label>Data npts:</label><input name="NumPoints" type="text" value="1024">
-      <input id="loglog" name="loglog" type="checkbox" checked><label>LogLog</label>
+      <label>Data npts:</label
+      ><input name="NumPoints" type="text" value="1024" />
+      <input id="loglog" name="loglog" type="checkbox" checked /><label
+        >LogLog</label
+      >
     </div>
     <div class="message"></div>
 
     <h3>FFT FIR plot</h3>
-    <div class="fftplot fftfir">
-    </div>
+    <div class="fftplot fftfir"></div>
 
-    <div class="impulse">
-    </div>
+    <div class="impulse"></div>
 
     <h3 class="coefficients"></h3>
     <div class="coefficients">
       <pre><code></code></pre>
     </div>
-    <h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
+    <h5>
+      Generated with
+      <a href="https://github.com/crotwell/seisplotjs"
+        >Seisplotjs version <span id="version">3</span></a
+      >.
+    </h5>
 
     <script type="module" src="firDesign.js"></script>
   </body>

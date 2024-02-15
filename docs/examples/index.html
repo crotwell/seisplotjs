@@ -1,22 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8" />
     <title>seisplotjs 3.1 Examples</title>
-    <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
-    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <meta
+      name="description"
+      content="Javascript library for parsing, manipulating and displaying seismic data."
+    />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="icon" type="image/png" href="../flavicon.png" />
-    <link href='../bass.css' rel='stylesheet'>
-    <link href='../split.css' rel='stylesheet'>
+    <link href="../bass.css" rel="stylesheet" />
+    <link href="../split.css" rel="stylesheet" />
     <link href="../prism.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
-    <div class='flex'>
-      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
-        <div class='py1 px2'>
-          <div id='toc'>
-            <ul class='list-reset h5 py1-ul'>
+    <div class="flex">
+      <div id="split-left" class="overflow-auto fs0 height-viewport-100">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
               <li><a href="../index.html" class="">Seisplotjs</a></li>
               <li><a href="../api/index.html" class="">API JS Docs</a></li>
               <li><a href="../examples/index.html" class="">Examples</a></li>
@@ -26,36 +29,46 @@
           </div>
         </div>
       </div>
-      <div id='split-right' class='relative overflow-auto height-viewport-100'>
-              <section class='p2 mb2 clearfix bg-white minishadow'>
-        <div class='clearfix'>
+      <div id="split-right" class="relative overflow-auto height-viewport-100">
+        <section class="p2 mb2 clearfix bg-white minishadow">
+          <div class="clearfix">
+            <h1>
+              Seisplotjs Examples <span class="sp_version">3.1.4-alpha.1</span>
+            </h1>
+            <p>
+              These are larger examples of web applications using seisplotjs.
+            </p>
 
-          <h1>Seisplotjs Examples  <span class="sp_version">3.1.4-alpha.1</span></h1>
-          <p>These are larger examples of web applications using seisplotjs.</p>
-
-          <ul>
-
-            <li>
-              <h3>SCSN Helicorder</h3>
-              <h5>See it live in <a href="helicorder/index.html" target="_blank">helicorder/index.html</a>.</h5>
-              <p>This is the public
-                <a href="https://eeyore.seis.sc.edu/scsn/heli/">helicorder</a>
-                for the South Carolina Seismic Network. It is similar to the
-                <a href="../tutorial/6_helicorder.html">helicorder</a> in the
-                tutorial, but includes the selection of the time window and
-                station to display. It also uses the
-                <a href="../api/mseedarchive.html">mseedarchive</a> module
-                to directly load one hour miniseed records saved by the
-                <a href="https://github.com/iris-edu/ringserver">ringserver</a>
-                for the CO network. The South Carolina archiving system also
-                includes a process that saves the minimum and maximum values
-                for each second as a 2 sample per second data stream. This
-                derived channel effectively allows the helicorder to plot the
-                100 samples per second HHZ data streams without being overwhelmed
-                by the data volume.
-              </p>
-            </li>
-<!-- save - these examples not really working or ready...
+            <ul>
+              <li>
+                <h3>SCSN Helicorder</h3>
+                <h5>
+                  See it live in
+                  <a href="helicorder/index.html" target="_blank"
+                    >helicorder/index.html</a
+                  >.
+                </h5>
+                <p>
+                  This is the public
+                  <a href="https://eeyore.seis.sc.edu/scsn/heli/">helicorder</a>
+                  for the South Carolina Seismic Network. It is similar to the
+                  <a href="../tutorial/6_helicorder.html">helicorder</a> in the
+                  tutorial, but includes the selection of the time window and
+                  station to display. It also uses the
+                  <a href="../api/mseedarchive.html">mseedarchive</a> module to
+                  directly load one hour miniseed records saved by the
+                  <a href="https://github.com/iris-edu/ringserver"
+                    >ringserver</a
+                  >
+                  for the CO network. The South Carolina archiving system also
+                  includes a process that saves the minimum and maximum values
+                  for each second as a 2 sample per second data stream. This
+                  derived channel effectively allows the helicorder to plot the
+                  100 samples per second HHZ data streams without being
+                  overwhelmed by the data volume.
+                </p>
+              </li>
+              <!-- save - these examples not really working or ready...
             <li>
               <h3>EQView</h3>
               <h5>See it live in <a href="eqview/index.html" target="_blank">eqview/index.html</a>.</h5>
@@ -79,61 +92,83 @@
             </li>
 -->
 
-            <li>
-              <h3>Deconvolve Response</h3>
-              <h5>See it live in <a href="instResponse/index.html" target="_blank">instResponse/index.html</a>.</h5>
-              <p>
-                Remove the instrument response from seismograms.
-              </p>
-            </li>
+              <li>
+                <h3>Deconvolve Response</h3>
+                <h5>
+                  See it live in
+                  <a href="instResponse/index.html" target="_blank"
+                    >instResponse/index.html</a
+                  >.
+                </h5>
+                <p>Remove the instrument response from seismograms.</p>
+              </li>
 
-            <li>
-              <h3>FIR Equiripple Filter Design</h3>
-              <h5>See it live in <a href="firDesign/index.html" target="_blank">firDesign/index.html</a>.</h5>
-              <p>
-                Design a FIR lowpass filter using equiripple from OregonDSP.
-              </p>
-            </li>
+              <li>
+                <h3>FIR Equiripple Filter Design</h3>
+                <h5>
+                  See it live in
+                  <a href="firDesign/index.html" target="_blank"
+                    >firDesign/index.html</a
+                  >.
+                </h5>
+                <p>
+                  Design a FIR lowpass filter using equiripple from OregonDSP.
+                </p>
+              </li>
 
-            <li>
-              <h3>Ringserver Web</h3>
-              <h5>See it live in <a href="ringserver/index.html" target="_blank">ringserver/index.html</a>.</h5>
-              <p>
-                Ringserver web interface.
-              </p>
-            </li>
-            <li>
-              <h3>Responses</h3>
-              <h5>See it live in <a href="response/index.html" target="_blank">response/index.html</a>.</h5>
-              <p>
-                Plot frequency response for stages in a channel's instrument response.
-              </p>
-            </li>
-            <li>
-              <h3>MSeed3</h3>
-              <h5>See it live in <a href="mseed3/index.html" target="_blank">mseed3/index.html</a>.</h5>
-              <p>
-                Request mseed3 data records, display as a seismograph and as text.
-              </p>
-            </li>
-          </ul>
-
-        </div>
-      </section>
+              <li>
+                <h3>Ringserver Web</h3>
+                <h5>
+                  See it live in
+                  <a href="ringserver/index.html" target="_blank"
+                    >ringserver/index.html</a
+                  >.
+                </h5>
+                <p>Ringserver web interface.</p>
+              </li>
+              <li>
+                <h3>Responses</h3>
+                <h5>
+                  See it live in
+                  <a href="response/index.html" target="_blank"
+                    >response/index.html</a
+                  >.
+                </h5>
+                <p>
+                  Plot frequency response for stages in a channel's instrument
+                  response.
+                </p>
+              </li>
+              <li>
+                <h3>MSeed3</h3>
+                <h5>
+                  See it live in
+                  <a href="mseed3/index.html" target="_blank"
+                    >mseed3/index.html</a
+                  >.
+                </h5>
+                <p>
+                  Request mseed3 data records, display as a seismograph and as
+                  text.
+                </p>
+              </li>
+            </ul>
+          </div>
+        </section>
       </div>
     </div>
 
     <script type="module">
-      import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-      util.updateVersionText('.sp_version');
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      util.updateVersionText(".sp_version");
     </script>
     <script src="../prism.js"></script>
     <script>
       Prism.plugins.NormalizeWhitespace.setDefaults({
-      	'remove-trailing': true,
-      	'remove-indent': true,
-      	'left-trim': true,
-      	'right-trim': true
+        "remove-trailing": true,
+        "remove-indent": true,
+        "left-trim": true,
+        "right-trim": true,
       });
     </script>
   </body>

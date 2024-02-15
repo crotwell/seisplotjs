@@ -1,93 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <title>Deconvolved Seismograph</title>
-  <link rel="icon" type="image/png" href="../../flavicon.png" />
-  <style>
-    sp-organized-display {
-      height: 800px;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../../index.html" class="">Seisplotjs</a> - <a href="../index.html" class="">Examples</a> - Deconvolve Response</h5>
-  <p>An example of removing the instrument response from seismograms. Data
-    is from a velocity seismometer, HH? channels, and from an accelerometer, HN?
-    channels. Applying the correction from the instrument we convert both sets
-    of seismograms to displacement in meters using the response from metadata
-    pulled from the IRIS FDSN Station web service. Seismographs are displayed
-    overlain by component to compare north to north and east to east.
-  </p>
-  <h3>Seismograph:</h3>
-  <div>
-    <h5>plain</h5>
-    <sp-organized-display overlay="component"></sp-organized-display>
-  </div>
-
-  <script type="module">
-  import * as sp from '../../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-
-    const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
-    const eeyorePattern = "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H";
-
-
-    let archive = new sp.mseedarchive.MSeedArchive(MSEED_URL, eeyorePattern);
-    let timeWindow = sp.util.startDuration("2022-06-29T23:03:01Z", 60);
-
-    let sampleRate = 200;
-    let chanCodes = ['HNN', 'HNE', 'HNZ'];
-    let velChanCodes = ['HHE', 'HHN', 'HHZ'];
-    let staCodes = [ 'JSC']
-    let stationQuery = new sp.fdsnstation.StationQuery();
-    stationQuery.networkCode('CO')
-    .stationCode(staCodes.join(','))
-    .locationCode('00')
-    .channelCode(chanCodes.concat(velChanCodes).join(','))
-    .timeRange(timeWindow);
-    stationQuery.queryResponses().then(networkList => {
-      let sddList = [];
-      for (const c of sp.stationxml.allChannels(networkList)) {
-        let sdd = sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(c, timeWindow);
-        sddList.push(sdd);
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Deconvolved Seismograph</title>
+    <link rel="icon" type="image/png" href="../../flavicon.png" />
+    <style>
+      sp-organized-display {
+        height: 800px;
       }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../../index.html" class="">Seisplotjs</a> -
+      <a href="../index.html" class="">Examples</a> - Deconvolve Response
+    </h5>
+    <p>
+      An example of removing the instrument response from seismograms. Data is
+      from a velocity seismometer, HH? channels, and from an accelerometer, HN?
+      channels. Applying the correction from the instrument we convert both sets
+      of seismograms to displacement in meters using the response from metadata
+      pulled from the IRIS FDSN Station web service. Seismographs are displayed
+      overlain by component to compare north to north and east to east.
+    </p>
+    <h3>Seismograph:</h3>
+    <div>
+      <h5>plain</h5>
+      <sp-organized-display overlay="component"></sp-organized-display>
+    </div>
 
-      const seisConfig = new sp.seismographconfig.SeismographConfig();
-      seisConfig.isRelativeTime = false;
-      seisConfig.doGain = false;
-      seisConfig.enableLinkedAmplitude();
+    <script type="module">
+      import * as sp from "../../seisplotjs_3.1.4-alpha.1_standalone.mjs";
 
-      return archive.loadSeismograms(sddList).then(sddList => {
-        sddList.forEach(sdd => {
-          let butterworth = sp.filter.createButterworth(
-                                 2, // poles
-                                 sp.filter.BAND_PASS,
-                                 1, // low corner
-                                 10, // high corner
-                                 1/sdd.seismogram.sampleRate // delta (period)
-                        );
-          if (sdd.channelCode.charAt(1) === 'N') {
-            sdd.seismogram = sp.filter.mul(sdd.seismogram, 1/2);
-          }
-          sdd.seismogram = sp.filter.rMean(sdd.seismogram);
-          sdd.seismogram = sp.filter.removeTrend(sdd.seismogram);
-          sdd.seismogram = sp.filter.applyFilter(butterworth, sdd.seismogram);
-          sdd.seismogram = sp.taper.taper(sdd.seismogram);
-          sdd.seismogram = sp.transfer.transfer(sdd.seismogram,
-              sdd.channel.response, .1, .2, 250, 500);
+      const MSEED_URL = "https://eeyore.seis.sc.edu/mseed";
+      const eeyorePattern = "%n/%s/%Y/%j/%n.%s.%l.%c.%Y.%j.%H";
+
+      let archive = new sp.mseedarchive.MSeedArchive(MSEED_URL, eeyorePattern);
+      let timeWindow = sp.util.startDuration("2022-06-29T23:03:01Z", 60);
+
+      let sampleRate = 200;
+      let chanCodes = ["HNN", "HNE", "HNZ"];
+      let velChanCodes = ["HHE", "HHN", "HHZ"];
+      let staCodes = ["JSC"];
+      let stationQuery = new sp.fdsnstation.StationQuery();
+      stationQuery
+        .networkCode("CO")
+        .stationCode(staCodes.join(","))
+        .locationCode("00")
+        .channelCode(chanCodes.concat(velChanCodes).join(","))
+        .timeRange(timeWindow);
+      stationQuery.queryResponses().then((networkList) => {
+        let sddList = [];
+        for (const c of sp.stationxml.allChannels(networkList)) {
+          let sdd =
+            sp.seismogram.SeismogramDisplayData.fromChannelAndTimeWindow(
+              c,
+              timeWindow,
+            );
+          sddList.push(sdd);
+        }
+
+        const seisConfig = new sp.seismographconfig.SeismographConfig();
+        seisConfig.isRelativeTime = false;
+        seisConfig.doGain = false;
+        seisConfig.enableLinkedAmplitude();
+
+        return archive.loadSeismograms(sddList).then((sddList) => {
+          sddList.forEach((sdd) => {
+            let butterworth = sp.filter.createButterworth(
+              2, // poles
+              sp.filter.BAND_PASS,
+              1, // low corner
+              10, // high corner
+              1 / sdd.seismogram.sampleRate, // delta (period)
+            );
+            if (sdd.channelCode.charAt(1) === "N") {
+              sdd.seismogram = sp.filter.mul(sdd.seismogram, 1 / 2);
+            }
+            sdd.seismogram = sp.filter.rMean(sdd.seismogram);
+            sdd.seismogram = sp.filter.removeTrend(sdd.seismogram);
+            sdd.seismogram = sp.filter.applyFilter(butterworth, sdd.seismogram);
+            sdd.seismogram = sp.taper.taper(sdd.seismogram);
+            sdd.seismogram = sp.transfer.transfer(
+              sdd.seismogram,
+              sdd.channel.response,
+              0.1,
+              0.2,
+              250,
+              500,
+            );
+          });
+          document.querySelector("sp-organized-display").seismographConfig =
+            seisConfig;
+          const seismographList = document.querySelectorAll(
+            "sp-organized-display",
+          );
+          console.log(`before set data`);
+          seismographList.forEach((graph) => {
+            graph.seisData = sddList;
+            graph.draw();
+            console.log(
+              `scale ${graph.seismographConfig.title.slice(0, 5)}  ${graph.amp_scalable}`,
+            );
+          });
         });
-        document.querySelector('sp-organized-display').seismographConfig = seisConfig;
-        const seismographList = (document.querySelectorAll('sp-organized-display'));
-        console.log(`before set data`)
-        seismographList.forEach( graph => {
-          graph.seisData = sddList;
-          graph.draw();
-          console.log(`scale ${graph.seismographConfig.title.slice(0,5)}  ${graph.amp_scalable}`)
-        });
-      })
-    });
-
-  </script>
-</body>
+      });
+    </script>
+  </body>
 </html>
