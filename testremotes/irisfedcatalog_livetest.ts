@@ -62,6 +62,7 @@ test("run CO active stations", () => {
       expect(netArray[0]).toBeDefined();
       expect(netArray[0].networkCode).toBe(NET);
       expect(netArray[0].stations).toHaveLength(10);
+      expect(netArray[0].stations[0].channels).toHaveLength(0); // stations query, so no channels
     });
 });
 
@@ -135,10 +136,11 @@ test("seismograms for CO.BIRD for timewindow", () => {
     expect(sdd.channelCode).toEqual(CHAN);
     const seismogram = sdd.seismogram;
     expect(seismogram).toBeDefined();
-    if (isDef(seismogram)) {
-      expect(seismogram.isContiguous()).toBeTrue();
-      expect(seismogram.y).toHaveLength(sed.toDuration().toMillis()/1000*100+1);
+    if (! isDef(seismogram)) {
+      throw new Error("seis is null");
     }
+    expect(seismogram.isContiguous()).toBeTrue();
+    expect(seismogram.y).toHaveLength(sed.toDuration().toMillis()/1000*100+1);
   });
 });
 
@@ -173,9 +175,10 @@ test("sddlist seismograms for CO.BIRD for timewindow", () => {
 
     const seismogram = sdd.seismogram;
     expect(seismogram).toBeDefined();
-    if (isDef(seismogram)) {
-      expect(seismogram.isContiguous()).toBeTrue();
-      expect(seismogram.y).toHaveLength(sed.toDuration().toMillis()/1000*100+1);
+    if (! isDef(seismogram)) {
+      throw new Error("seis is null");
     }
+    expect(seismogram.isContiguous()).toBeTrue();
+    expect(seismogram.y).toHaveLength(sed.toDuration().toMillis()/1000*100+1);
   });
 });
