@@ -242,10 +242,11 @@ function createBooleanOptionByKey(
     .append("input")
     .attr("type", "checkbox")
     .attr("id", key)
-    .attr("name", key) // @ts-expect-error
+    .attr("name", key)
+    // @ts-expect-error typescrpt doesn't like reflection
     .property("checked", config[key])
     .on("change", function () {
-      // @ts-expect-error
+      // @ts-expect-error typescrpt doesn't like reflection
       config[key] = d3select(this).property("checked");
       onChange();
     });
