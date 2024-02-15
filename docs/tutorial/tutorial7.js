@@ -1,4 +1,4 @@
-import * as sp from '../seisplotjs_3.1.4-SNAPSHOT_standalone.mjs';
+import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
 document.querySelector('.sp_version').textContent = sp.version;
 
 // snip start vars

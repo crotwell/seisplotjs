@@ -43612,6 +43612,7 @@ __export(util_exports, {
   createSVGElement: () => createSVGElement,
   dataViewToString: () => dataViewToString,
   defaultFetchInitObj: () => defaultFetchInitObj,
+  default_fetch: () => default_fetch,
   doBoolGetterSetter: () => doBoolGetterSetter,
   doFetchWithTimeout: () => doFetchWithTimeout,
   doFloatGetterSetter: () => doFloatGetterSetter,
@@ -43620,6 +43621,8 @@ __export(util_exports, {
   doStringGetterSetter: () => doStringGetterSetter,
   downloadBlobAsFile: () => downloadBlobAsFile,
   durationEnd: () => durationEnd,
+  errorFetch: () => errorFetch,
+  getFetch: () => getFetch,
   hasArgs: () => hasArgs,
   hasNoArgs: () => hasNoArgs,
   isDef: () => isDef,
@@ -43634,6 +43637,7 @@ __export(util_exports, {
   makePostParam: () => makePostParam,
   meanOfSlice: () => meanOfSlice,
   reErrorWithMessage: () => reErrorWithMessage,
+  setDefaultFetch: () => setDefaultFetch,
   startDuration: () => startDuration,
   startEnd: () => startEnd,
   stringify: () => stringify,
@@ -43647,7 +43651,7 @@ __export(util_exports, {
 });
 
 // src/version.ts
-var version = "3.1.3";
+var version = "3.1.4-alpha.1";
 
 // src/util.ts
 var XML_MIME = "application/xml";
@@ -43962,7 +43966,7 @@ function checkLuxonValid(d, msg) {
   }
   if (!d.isValid) {
     const m = msg ? msg : "";
-    throw new Error(`Invalid Luxon: ${typeof d} ${d.constructor.name} ${d.invalidReason}: ${d.invalidExplanation} ${m}`);
+    throw new Error(`Invalid Luxon: ${typeof d} ${d?.constructor?.name} ${d.invalidReason}: ${d.invalidExplanation} ${m}`);
   }
   return d;
 }
@@ -43999,9 +44003,35 @@ function cloneFetchInitObj(fetchInit) {
   }
   return out;
 }
-function doFetchWithTimeout(url, fetchInit, timeoutSec2) {
+function errorFetch(url, init2) {
+  throw new Error("There is no fetch!?!?!");
+}
+var default_fetch = null;
+function setDefaultFetch(fetcher) {
+  if (fetcher != null) {
+    default_fetch = fetcher;
+  }
+}
+function getFetch() {
+  if (default_fetch != null) {
+    return default_fetch;
+  } else if (window != null) {
+    return window.fetch;
+  } else if (global != null) {
+    return global.fetch;
+  } else {
+    return errorFetch;
+  }
+}
+function doFetchWithTimeout(url, fetchInit, timeoutSec2, fetcher) {
   const controller = new AbortController();
   const signal = controller.signal;
+  if (!fetcher) {
+    fetcher = getFetch();
+  }
+  if (!fetcher) {
+    fetcher = window.fetch;
+  }
   let internalFetchInit = isDef(fetchInit) ? fetchInit : defaultFetchInitObj();
   internalFetchInit = cloneFetchInitObj(internalFetchInit);
   if (internalFetchInit.redirect === "follow" && internalFetchInit.method === "POST") {
@@ -44029,7 +44059,8 @@ function doFetchWithTimeout(url, fetchInit, timeoutSec2) {
       absoluteUrl
     )}`
   );
-  return fetch(absoluteUrl.href, internalFetchInit).catch((err) => {
+  const fetchForRedirect = fetcher;
+  return fetcher(absoluteUrl.href, internalFetchInit).catch((err) => {
     log("fetch failed, possible CORS or PrivacyBadger or NoScript?");
     throw err;
   }).then(function(response) {
@@ -44040,7 +44071,7 @@ function doFetchWithTimeout(url, fetchInit, timeoutSec2) {
         const httpsUrl = new URL(`https://${absoluteUrl.href.slice(7)}`);
         const method = internalFetchInit.method ? internalFetchInit.method : "";
         log(`attempt fetch redirect ${response.status} ${method} to ${stringify(httpsUrl)}`);
-        return fetch(httpsUrl.href, internalFetchInit).then((httpsResponse) => {
+        return fetchForRedirect(httpsUrl.href, internalFetchInit).then((httpsResponse) => {
           if (httpsResponse.ok || httpsResponse.status === 404) {
             return httpsResponse;
           } else {
@@ -44235,7 +44266,9 @@ var LinkedAmplitudeScale = class {
   set halfWidth(val) {
     if (this._halfWidth !== val) {
       this._halfWidth = val;
-      Promise.all(this.notifyAll());
+      this.notifyAll().catch((m) => {
+        console.warn(`problem recalc halfWidth: ${m}`);
+      });
     }
   }
   /**
@@ -44252,7 +44285,9 @@ var LinkedAmplitudeScale = class {
       } else {
       }
     });
-    Promise.all(this.recalculate());
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc linkAll: ${m}`);
+    });
   }
   /**
    * Link new Seismograph with this amplitude scale.
@@ -44269,7 +44304,9 @@ var LinkedAmplitudeScale = class {
    */
   unlink(graph) {
     this._graphSet.delete(graph);
-    Promise.all(this.recalculate());
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc unlink: ${m}`);
+    });
   }
   /**
    * Recalculate the best amplitude scale for all Seismographs. Causes a redraw.
@@ -44280,25 +44317,25 @@ var LinkedAmplitudeScale = class {
     const maxHalfRange = this.graphList.reduce((acc, cur) => {
       return acc > cur.halfWidth ? acc : cur.halfWidth;
     }, 0);
-    let promiseList;
+    let promiseOut;
     if (this.halfWidth !== maxHalfRange) {
       this.halfWidth = maxHalfRange;
-      promiseList = this._internalNotifyAll();
+      promiseOut = this._internalNotifyAll();
     } else {
-      promiseList = this.graphList.map((g) => Promise.resolve(g));
+      promiseOut = Promise.all(this.graphList.map((g) => Promise.resolve(g)));
     }
-    return promiseList;
+    return promiseOut;
   }
   _internalNotifyAll() {
     const hw = this.halfWidth;
-    return this.graphList.map((g) => {
+    return Promise.all(this.graphList.map((g) => {
       return new Promise((resolve) => {
         setTimeout(() => {
           g.notifyAmplitudeChange(g.middle, hw);
           resolve(g);
         }, 10);
       });
-    });
+    }));
   }
   notifyAll() {
     return this._internalNotifyAll();
@@ -44315,14 +44352,14 @@ var IndividualAmplitudeScale = class extends LinkedAmplitudeScale {
     return this.notifyAll();
   }
   notifyAll() {
-    return this.graphList.map((g) => {
+    return Promise.all(this.graphList.map((g) => {
       return new Promise((resolve) => {
         setTimeout(() => {
           g.notifyAmplitudeChange(g.middle, g.halfWidth);
           resolve(g);
         }, 10);
       });
-    });
+    }));
   }
 };
 var FixedHalfWidthAmplitudeScale = class extends LinkedAmplitudeScale {
@@ -44335,14 +44372,14 @@ var FixedHalfWidthAmplitudeScale = class extends LinkedAmplitudeScale {
   }
   notifyAll() {
     const hw = this.halfWidth;
-    return this.graphList.map((g) => {
+    return Promise.all(this.graphList.map((g) => {
       return new Promise((resolve) => {
         setTimeout(() => {
           g.notifyAmplitudeChange(g.middle, hw);
           resolve(g);
         }, 10);
       });
-    });
+    }));
   }
 };
 var LinkedTimeScale = class {
@@ -44380,7 +44417,9 @@ var LinkedTimeScale = class {
     } else {
       this._originalOffset = Duration.fromMillis(0);
     }
-    this.recalculate();
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc constructor: ${m}`);
+    });
   }
   /**
    * Link new TimeScalable with this time scale.
@@ -44406,7 +44445,9 @@ var LinkedTimeScale = class {
       } else {
       }
     });
-    this.recalculate();
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc linkAll: ${m}`);
+    });
   }
   /**
    * Unlink TimeScalable with this amplitude scale.
@@ -44415,17 +44456,23 @@ var LinkedTimeScale = class {
    */
   unlink(graph) {
     this._graphSet.delete(graph);
-    this.recalculate();
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc unlink: ${m}`);
+    });
   }
   zoom(startOffset, duration) {
     this._zoomedDuration = duration;
     this._zoomedOffset = startOffset;
-    this.notifyAll();
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc zoom: ${m}`);
+    });
   }
   unzoom() {
     this._zoomedDuration = null;
     this._zoomedOffset = null;
-    this.recalculate();
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc unzoom: ${m}`);
+    });
   }
   get offset() {
     return this._zoomedOffset ? this._zoomedOffset : this._originalOffset;
@@ -44433,7 +44480,9 @@ var LinkedTimeScale = class {
   set offset(offset2) {
     this._originalOffset = offset2;
     this._zoomedOffset = offset2;
-    this.recalculate();
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc set offset: ${m}`);
+    });
   }
   get duration() {
     return isDef(this._zoomedDuration) ? this._zoomedDuration : this._originalDuration;
@@ -44444,7 +44493,9 @@ var LinkedTimeScale = class {
     }
     this._originalDuration = duration;
     this._zoomedDuration = duration;
-    this.recalculate();
+    this.recalculate().catch((m) => {
+      console.warn(`problem recalc set duration: ${m}`);
+    });
   }
   get origOffset() {
     return this._originalOffset;
@@ -44454,6 +44505,7 @@ var LinkedTimeScale = class {
   }
   /**
    * Recalculate the best time scale for all Seismographs. Causes a redraw.
+   * @returns promise to array of all linked items
    */
   recalculate() {
     if (!isDef(this._zoomedDuration) || this._originalDuration.toMillis() === 0) {
@@ -44463,16 +44515,19 @@ var LinkedTimeScale = class {
         }
       });
     }
-    this.notifyAll();
+    return this.notifyAll();
   }
   notifyAll() {
-    this.graphList.forEach((graph) => {
-      if (graph) {
+    return Promise.all(this.graphList.map((g) => {
+      return new Promise((resolve) => {
         setTimeout(() => {
-          graph.notifyTimeRangeChange(this.offset, this.duration);
-        });
-      }
-    });
+          if (g != null) {
+            g.notifyTimeRangeChange(this.offset, this.duration);
+          }
+          resolve(g);
+        }, 10);
+      });
+    }));
   }
   get graphList() {
     return Array.from(this._graphSet.values());
@@ -44484,16 +44539,22 @@ var AlignmentLinkedTimeScale = class extends LinkedTimeScale {
   }
   /**
    * Does no calculation, just causes a redraw.
+   * @returns promise to all linked items
    */
   recalculate() {
-    this.notifyAll();
+    return this.notifyAll();
   }
   notifyAll() {
-    this.graphList.forEach((graph) => {
-      setTimeout(() => {
-        graph.notifyTimeRangeChange(this.offset, this.duration);
+    return Promise.all(this.graphList.map((g) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          if (g != null) {
+            g.notifyTimeRangeChange(this.offset, this.duration);
+          }
+          resolve(g);
+        }, 10);
       });
-    });
+    }));
   }
 };
 
@@ -45005,8 +45066,9 @@ var SeismogramSegment = class _SeismogramSegment {
    * @throws Error if data is not encoded
    */
   getEncoded() {
-    if (this.isEncoded()) {
-      return this._compressed;
+    const compressed = this._compressed;
+    if (this.isEncoded() && compressed != null) {
+      return compressed;
     } else {
       throw new Error("Data is not encoded.");
     }
@@ -45174,7 +45236,6 @@ __export(seismogram_exports, {
   findMinMaxOverTimeRange: () => findMinMaxOverTimeRange,
   findStartEnd: () => findStartEnd,
   findStartEndOfSeismograms: () => findStartEndOfSeismograms,
-  isValidMarker: () => isValidMarker,
   uniqueChannels: () => uniqueChannels,
   uniqueQuakes: () => uniqueQuakes,
   uniqueStations: () => uniqueStations2
@@ -45382,8 +45443,8 @@ __export(oregondsputil_exports, {
   complexFromPolar: () => complexFromPolar,
   createComplex: () => createComplex
 });
-var OregonDSPTop = __toESM(require_oregondsp(), 1);
-var OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
+var import_oregondsp = __toESM(require_oregondsp(), 1);
+var OregonDSP = import_oregondsp.default.com.oregondsp.signalProcessing;
 var fft = OregonDSP.fft;
 var equiripple = OregonDSP.filter.fir.equiripple;
 var fir = OregonDSP.filter.fir;
@@ -45427,10 +45488,10 @@ var Window = OregonDSP.Window;
 function complexFromPolar(amp, phase) {
   const real = amp * Math.cos(phase);
   const imag = amp * Math.sin(phase);
-  return new OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex(real, imag);
+  return new import_oregondsp.default.com.oregondsp.signalProcessing.filter.iir.Complex(real, imag);
 }
 function createComplex(real, imag) {
-  return new OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex(real, imag);
+  return new import_oregondsp.default.com.oregondsp.signalProcessing.filter.iir.Complex(real, imag);
 }
 
 // src/stationxml.ts
@@ -46617,13 +46678,6 @@ var parseUtil = {
 
 // src/seismogram.ts
 var COUNT_UNIT2 = "count";
-function isValidMarker(v) {
-  if (!v || typeof v !== "object") {
-    return false;
-  }
-  const m = v;
-  return typeof m.time === "string" && typeof m.name === "string" && typeof m.markertype === "string" && typeof m.description === "string" && (!("link" in m) || typeof m.link === "string");
-}
 var Seismogram = class _Seismogram {
   constructor(segmentArray) {
     __publicField(this, "_segmentArray");
@@ -47580,17 +47634,17 @@ function findMaxDurationOfType(type, sddList) {
     }
   }, Duration.fromMillis(0));
 }
-function findMinMax(sddList, doGain = false, ampCentering = "minmax" /* MinMax */) {
-  return findMinMaxOverTimeRange(sddList, null, doGain, ampCentering);
+function findMinMax(sddList, doGain = false, amplitudeMode = "minmax" /* MinMax */) {
+  return findMinMaxOverTimeRange(sddList, null, doGain, amplitudeMode);
 }
-function findMinMaxOverTimeRange(sddList, timeRange = null, doGain = false, ampCentering = "minmax" /* MinMax */) {
+function findMinMaxOverTimeRange(sddList, timeRange = null, doGain = false, amplitudeMode = "minmax" /* MinMax */) {
   if (sddList.length === 0) {
     return new MinMaxable(-1, 1);
   }
   const minMaxArr = sddList.map((sdd) => {
-    return calcMinMax(sdd, timeRange, doGain, ampCentering);
+    return calcMinMax(sdd, timeRange, doGain, amplitudeMode);
   }).filter((x2) => x2).reduce(function(p, v) {
-    if (ampCentering === "raw" /* Raw */ || ampCentering === "zero" /* Zero */) {
+    if (amplitudeMode === "raw" /* Raw */ || amplitudeMode === "zero" /* Zero */) {
       return p ? v ? p.union(v) : p : v;
     } else {
       let hw = 0;
@@ -47611,15 +47665,15 @@ function findMinMaxOverTimeRange(sddList, timeRange = null, doGain = false, ampC
   }
   return new MinMaxable(-1, 1);
 }
-function findMinMaxOverRelativeTimeRange(sddList, alignmentOffset, duration, doGain = false, ampCentering = "minmax" /* MinMax */) {
+function findMinMaxOverRelativeTimeRange(sddList, alignmentOffset, duration, doGain = false, amplitudeMode = "minmax" /* MinMax */) {
   if (sddList.length === 0) {
     return new MinMaxable(0, 0);
   }
   const minMaxArr = sddList.map((sdd) => {
     const timeRange = sdd.relativeTimeWindow(alignmentOffset, duration);
-    return calcMinMax(sdd, timeRange, doGain, ampCentering);
+    return calcMinMax(sdd, timeRange, doGain, amplitudeMode);
   }).filter((x2) => x2).reduce(function(p, v) {
-    if (ampCentering === "raw" /* Raw */ || ampCentering === "zero" /* Zero */) {
+    if (amplitudeMode === "raw" /* Raw */ || amplitudeMode === "zero" /* Zero */) {
       return p ? v ? p.union(v) : p : v;
     } else {
       let hw = 0;
@@ -47640,7 +47694,7 @@ function findMinMaxOverRelativeTimeRange(sddList, alignmentOffset, duration, doG
   }
   return new MinMaxable(-1, 1);
 }
-function calcMinMax(sdd, timeRange = null, doGain = false, ampCentering = "minmax" /* MinMax */) {
+function calcMinMax(sdd, timeRange = null, doGain = false, amplitudeMode = "minmax" /* MinMax */) {
   if (sdd.seismogram) {
     let cutSDD;
     if (timeRange) {
@@ -47655,19 +47709,19 @@ function calcMinMax(sdd, timeRange = null, doGain = false, ampCentering = "minma
       }
       let middle = 0;
       let halfWidth = 0;
-      if (ampCentering === "minmax" /* MinMax */ || ampCentering === "raw" /* Raw */) {
+      if (amplitudeMode === "minmax" /* MinMax */ || amplitudeMode === "raw" /* Raw */) {
         middle = cutSDD.middle;
         halfWidth = Math.max((middle - cutSDD.min) / sens, (cutSDD.max - middle) / sens);
-      } else if (ampCentering === "mean" /* Mean */) {
+      } else if (amplitudeMode === "mean" /* Mean */) {
         middle = sdd.mean;
         halfWidth = Math.max((middle - cutSDD.min) / sens, (cutSDD.max - middle) / sens);
-      } else if (ampCentering === "zero" /* Zero */) {
+      } else if (amplitudeMode === "zero" /* Zero */) {
         const minwz = Math.min(0, cutSDD.min);
         const maxwz = Math.max(0, cutSDD.max);
         middle = (minwz + maxwz) / 2;
         halfWidth = (maxwz - minwz) / 2 / sens;
       } else {
-        throw new Error(`Unknown ampCentering: ${stringify(ampCentering)}. Must be one of raw, zero, minmax, mean`);
+        throw new Error(`Unknown amplitudeMode: ${stringify(amplitudeMode)}. Must be one of raw, zero, minmax, mean`);
       }
       return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
     }
@@ -53422,6 +53476,473 @@ __export(seismographconfig_exports, {
   numberFormatWrapper: () => numberFormatWrapper
 });
 
+// src/seismographutil.ts
+var seismographutil_exports = {};
+__export(seismographutil_exports, {
+  DEFAULT_GRID_LINE_COLOR: () => DEFAULT_GRID_LINE_COLOR,
+  DEFAULT_MAX_SAMPLE_PER_PIXEL: () => DEFAULT_MAX_SAMPLE_PER_PIXEL,
+  clearCanvas: () => clearCanvas,
+  drawAllOnCanvas: () => drawAllOnCanvas,
+  drawSeismogramAsLine: () => drawSeismogramAsLine,
+  drawXScaleGridLines: () => drawXScaleGridLines,
+  drawYScaleGridLines: () => drawYScaleGridLines,
+  pushPoint: () => pushPoint,
+  rgbaForColorName: () => rgbaForColorName,
+  seismogramSegmentAsLine: () => seismogramSegmentAsLine
+});
+
+// src/axisutil.ts
+var axisutil_exports = {};
+__export(axisutil_exports, {
+  LuxonTimeScale: () => LuxonTimeScale,
+  drawAxisLabels: () => drawAxisLabels,
+  drawTitle: () => drawTitle,
+  drawXLabel: () => drawXLabel,
+  drawXSublabel: () => drawXSublabel,
+  drawYLabel: () => drawYLabel,
+  drawYSublabel: () => drawYSublabel
+});
+var LuxonTimeScale = class {
+  constructor(interval2, range) {
+    __publicField(this, "interval");
+    __publicField(this, "range");
+    checkLuxonValid(interval2);
+    this.interval = interval2;
+    this.range = range.slice();
+  }
+  for(d) {
+    return this.d3scale(toJSDate(d));
+  }
+  invert(v) {
+    return DateTime.fromJSDate(this.d3scale.invert(v));
+  }
+  domain() {
+    return this.interval;
+  }
+  get d3scale() {
+    checkLuxonValid(this.interval);
+    const d3TimeScale = utcTime();
+    const s2 = toJSDate(this.interval.start);
+    const e = toJSDate(this.interval.end);
+    d3TimeScale.domain([s2, e]);
+    d3TimeScale.range(this.range);
+    return d3TimeScale;
+  }
+  millisPerPixel() {
+    return this.interval.length("milliseconds") / (this.range[1] - this.range[0]);
+  }
+};
+function drawXLabel(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
+  const svg = select_default2(svgEl);
+  svg.selectAll("g.xLabel").remove();
+  if (seismographConfig.xLabel && seismographConfig.xLabel.length > 0) {
+    const svgText = svg.append("g").classed("xLabel", true).attr(
+      "transform",
+      `translate(${seismographConfig.margin.left + width / 2}, ${height + seismographConfig.margin.top + seismographConfig.margin.bottom * 2 / 3} )`
+    ).append("text").classed("x label", true).attr("text-anchor", "middle").text(seismographConfig.xLabel);
+    const handlebarOut = seismographConfig.handlebarsXLabel(handlebarsInput, {
+      allowProtoPropertiesByDefault: true
+      // this might be a security issue???
+    });
+    svgText.html(handlebarOut);
+  }
+}
+function drawXSublabel(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
+  const svg = select_default2(svgEl);
+  svg.selectAll("g.xSublabel").remove();
+  const svgText = svg.append("g").classed("xSublabel", true).attr(
+    "transform",
+    `translate(${seismographConfig.margin.left + width / 2}, ${height + seismographConfig.margin.top + seismographConfig.margin.bottom} )`
+  ).append("text").classed("x label sublabel", true).attr("text-anchor", "middle");
+  const handlebarOut = seismographConfig.handlebarsXSublabel(handlebarsInput, {
+    allowProtoPropertiesByDefault: true
+    // this might be a security issue???
+  });
+  svgText.html(handlebarOut);
+}
+function drawYLabel(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
+  const svg = select_default2(svgEl);
+  svg.selectAll("g.yLabel").remove();
+  for (const side of ["left", "right"]) {
+    const hTranslate = side === "left" ? 0 : seismographConfig.margin.left + width + 1;
+    const svgText = svg.append("g").classed("yLabel", true).classed(side, true).attr("x", 0).attr(
+      "transform",
+      `translate(${hTranslate}, ${seismographConfig.margin.top + height / 2})`
+    ).append("text");
+    svgText.classed("y label", true);
+    if (seismographConfig.yLabelOrientation === "vertical") {
+      svgText.attr("text-anchor", "middle").attr("dy", ".75em").attr("transform", "rotate(-90, 0, 0)");
+    } else {
+      if (side === "left") {
+        svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
+      } else {
+        svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
+        svgText.attr("x", seismographConfig.margin.right - 1);
+      }
+    }
+    if (side === "left") {
+      const handlebarOut = seismographConfig.handlebarsYLabel(handlebarsInput, {
+        allowProtoPropertiesByDefault: true
+        // this might be a security issue???
+      });
+      svgText.html(handlebarOut);
+    } else {
+      const handlebarOut = seismographConfig.handlebarsYLabelRight(
+        handlebarsInput,
+        {
+          allowProtoPropertiesByDefault: true
+          // this might be a security issue???
+        }
+      );
+      svgText.html(handlebarOut);
+    }
+  }
+}
+function drawYSublabel(svgEl, seismographConfig, height, width, handlebarsInput = {}, unitsLabel = "") {
+  const svg = select_default2(svgEl);
+  svg.selectAll("g.ySublabel").remove();
+  for (const side of ["left", "right"]) {
+    const svgText = svg.append("g").classed("ySublabel", true).attr("x", 0).attr(
+      "transform",
+      `translate( ${seismographConfig.ySublabelTrans}, ${seismographConfig.margin.top + height / 2} )`
+    ).append("text").classed("y label sublabel", true);
+    if (seismographConfig.yLabelOrientation === "vertical") {
+      svgText.attr("text-anchor", "middle").attr("dy", ".75em").attr("transform", "rotate(-90, 0, 0)");
+    } else {
+      if (side === "left") {
+        svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
+      } else {
+        svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
+        svgText.attr("x", seismographConfig.margin.right - 1);
+      }
+    }
+    if (seismographConfig.ySublabelIsUnits) {
+      svgText.html(unitsLabel);
+    } else {
+      const handlebarOut = seismographConfig.handlebarsYSublabel(handlebarsInput, {
+        allowProtoPropertiesByDefault: true
+        // this might be a security issue???
+      });
+      svgText.html(handlebarOut);
+    }
+  }
+}
+function drawTitle(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
+  if (!svgEl) {
+    return;
+  }
+  let titleG = svgEl.querySelector("g.title");
+  if (!seismographConfig.showTitle) {
+    if (titleG) {
+      svgEl.removeChild(titleG);
+    }
+    return;
+  }
+  if (!titleG) {
+    titleG = svgEl.appendChild(createSVGElement("g"));
+    titleG.setAttribute("class", "title");
+  }
+  titleG.setAttribute(
+    "transform",
+    `translate(${seismographConfig.margin.left + width / 2}, 0)`
+  );
+  let textEl;
+  const queryTextEl = titleG.querySelector("text");
+  if (!queryTextEl) {
+    textEl = createSVGElement("text");
+    titleG.appendChild(textEl);
+  } else {
+    textEl = queryTextEl;
+  }
+  textEl.setAttribute("class", "title label");
+  textEl.setAttribute("x", "0");
+  textEl.setAttribute("dy", "0.85em");
+  textEl.setAttribute("text-anchor", "middle");
+  if (!handlebarsInput.seisConfig) {
+    handlebarsInput.seisConfig = seismographConfig;
+  }
+  const handlebarOut = seismographConfig.handlebarsTitle(handlebarsInput, {
+    allowProtoPropertiesByDefault: true
+    // this might be a security issue???
+  });
+  textEl.innerHTML = handlebarOut;
+}
+function drawAxisLabels(svgEl, seismographConfig, height, width, handlebarsInput = {}, unitsLabel = "") {
+  if (!svgEl) {
+    return;
+  }
+  if (!(svgEl instanceof SVGElement)) {
+    return;
+  }
+  drawTitle(svgEl, seismographConfig, height, width, handlebarsInput);
+  drawXLabel(svgEl, seismographConfig, height, width, handlebarsInput);
+  drawXSublabel(svgEl, seismographConfig, height, width, handlebarsInput);
+  drawYLabel(svgEl, seismographConfig, height, width, handlebarsInput);
+  drawYSublabel(svgEl, seismographConfig, height, width, handlebarsInput, unitsLabel);
+}
+
+// src/seismographutil.ts
+var DEFAULT_MAX_SAMPLE_PER_PIXEL = 3;
+var DEFAULT_GRID_LINE_COLOR = "gainsboro";
+function clearCanvas(canvas) {
+  canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+}
+function drawXScaleGridLines(canvas, xScale, colorname = DEFAULT_GRID_LINE_COLOR, lineWidth = 1) {
+  if (canvas.height === 0) {
+    return;
+  }
+  const context = canvas.getContext("2d");
+  if (!isDef(context)) {
+    throw new Error("canvas 2d context is null, should not happen...");
+  }
+  let xScaleToDraw;
+  if (xScale instanceof LuxonTimeScale) {
+    xScaleToDraw = xScale.d3scale;
+  } else {
+    xScaleToDraw = xScale;
+  }
+  xScaleToDraw.ticks().forEach((t) => {
+    context.beginPath();
+    context.strokeStyle = colorname;
+    context.lineWidth = lineWidth;
+    context.moveTo(xScaleToDraw(t), 0);
+    context.lineTo(xScaleToDraw(t), canvas.height);
+    context.stroke();
+  });
+}
+function drawYScaleGridLines(canvas, yScale, colorname = DEFAULT_GRID_LINE_COLOR, lineWidth = 1) {
+  if (canvas.height === 0) {
+    return;
+  }
+  const context = canvas.getContext("2d");
+  if (!isDef(context)) {
+    throw new Error("canvas 2d context is null, should not happen...");
+  }
+  yScale.ticks().forEach((t) => {
+    context.beginPath();
+    context.strokeStyle = colorname;
+    context.lineWidth = lineWidth;
+    context.moveTo(0, yScale(t));
+    context.lineTo(canvas.width, yScale(t));
+    context.stroke();
+  });
+}
+function drawAllOnCanvas(canvas, sddList, xScaleList, yScaleList, colornameList, lineWidth = 1, connectSegments = false, maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL) {
+  if (canvas.height === 0) {
+    return;
+  }
+  const context = canvas.getContext("2d");
+  if (!isDef(context)) {
+    throw new Error("canvas 2d context is null, should not happen...");
+  }
+  sddList.forEach((sdd, i) => {
+    const xScale = xScaleList[i];
+    const yScale = yScaleList[i];
+    const s2 = xScale.domain().start?.valueOf();
+    const e = xScale.domain().end?.valueOf();
+    if (s2 == null || e == null || s2 === e) {
+      return;
+    } else {
+      const seismogram = sdd.seismogram;
+      if (!seismogram) {
+        return;
+      }
+      context.save();
+      drawSeismogramAsLine(
+        sdd,
+        context,
+        canvas.width,
+        xScale,
+        yScale,
+        colornameList[i],
+        lineWidth,
+        connectSegments,
+        maxSamplePerPixelForLineDraw
+      );
+      context.restore();
+    }
+  });
+}
+function drawSeismogramAsLine(sdd, context, width, xScale, yScale, color2, lineWidth = 1, connectSegments = false, maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL) {
+  const seismogram = sdd.seismogram;
+  if (!seismogram) {
+    return;
+  }
+  let firstTime = true;
+  const s2 = xScale.domain().start?.valueOf();
+  const e = xScale.domain().end?.valueOf();
+  if (s2 == null || e == null) {
+    throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
+  }
+  if (xScale.for(seismogram.startTime) > xScale.range[1] || xScale.for(seismogram.endTime) < xScale.range[0]) {
+    return;
+  }
+  seismogram.segments.forEach((segment) => {
+    const drawSeg = seismogramSegmentAsLine(
+      segment,
+      width,
+      xScale,
+      yScale,
+      maxSamplePerPixelForLineDraw
+    );
+    if (firstTime || !connectSegments) {
+      context.beginPath();
+      context.strokeStyle = color2;
+      context.lineWidth = lineWidth;
+      context.moveTo(
+        drawSeg.x[0],
+        drawSeg.y[0]
+      );
+      firstTime = false;
+    }
+    for (let i = 0; i < drawSeg.x.length; i++) {
+      context.lineTo(drawSeg.x[i], drawSeg.y[i]);
+    }
+    if (!connectSegments) {
+      context.stroke();
+    }
+  });
+  if (!firstTime && connectSegments) {
+    context.stroke();
+  }
+}
+function seismogramSegmentAsLine(segment, width, xScale, yScale, maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL) {
+  const out = {
+    x: [],
+    y: [],
+    samplesPerPixel: 0,
+    maxSamplePerPixelForLineDraw
+  };
+  if (!segment) {
+    return out;
+  }
+  const s2 = xScale.domain().start?.valueOf();
+  const e = xScale.domain().end?.valueOf();
+  if (s2 == null || e == null) {
+    throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
+  }
+  if (xScale.for(segment.startTime) > xScale.range[1] || xScale.for(segment.endTime) < xScale.range[0]) {
+    return out;
+  }
+  const secondsPerPixel = (e - s2) / 1e3 / (xScale.range[1] - xScale.range[0]);
+  const samplesPerPixel = 1 * segment.sampleRate * secondsPerPixel;
+  out.samplesPerPixel = samplesPerPixel;
+  out.maxSamplePerPixelForLineDraw = maxSamplePerPixelForLineDraw;
+  const pixelsPerSample = 1 / samplesPerPixel;
+  const startPixel = xScale.for(segment.startTime);
+  const endPixel = xScale.for(segment.endTime);
+  let leftVisibleSample = 0;
+  let rightVisibleSample = segment.y.length;
+  let leftVisiblePixel = startPixel;
+  if (startPixel < 0) {
+    leftVisibleSample = Math.floor(-1 * startPixel * samplesPerPixel);
+    leftVisiblePixel = 0;
+  }
+  if (endPixel > xScale.range[1] + 1) {
+    rightVisibleSample = leftVisibleSample + Math.ceil((width + 1) * samplesPerPixel) + 2;
+  }
+  if (samplesPerPixel <= maxSamplePerPixelForLineDraw) {
+    for (let i = leftVisibleSample; i < rightVisibleSample + 2 && i < segment.y.length; i++) {
+      pushPoint(
+        out,
+        Math.round(xScale.for(segment.timeOfSample(i))),
+        Math.round(yScale(segment.y[i]))
+      );
+    }
+  } else {
+    let prevLastYPixel = Math.round(yScale(segment.y[leftVisibleSample]));
+    let lastYPixel = prevLastYPixel;
+    pushPoint(out, leftVisiblePixel, prevLastYPixel);
+    let i = leftVisibleSample;
+    let inHorizontalLine = false;
+    while (i < rightVisibleSample + 2 && i < segment.y.length) {
+      const curPixel = Math.floor(startPixel + i * pixelsPerSample);
+      let min = segment.y[i];
+      let max = segment.y[i];
+      let minIdx = i;
+      let maxIdx = i;
+      const firstYPixel = Math.round(yScale(segment.y[i]));
+      while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
+        if (min > segment.y[i]) {
+          min = segment.y[i];
+          minIdx = i;
+        }
+        if (max < segment.y[i]) {
+          max = segment.y[i];
+          maxIdx = i;
+        }
+        i++;
+      }
+      lastYPixel = Math.round(yScale(segment.y[i - 1]));
+      const topPixelFlt = yScale(max);
+      const botPixelFlt = yScale(min);
+      const botPixel = Math.round(botPixelFlt);
+      const topPixel = Math.round(topPixelFlt);
+      if (topPixel === botPixel) {
+        if (prevLastYPixel === topPixel) {
+          inHorizontalLine = true;
+          continue;
+        } else {
+          pushPoint(out, curPixel, firstYPixel);
+          inHorizontalLine = false;
+        }
+      } else {
+        if (inHorizontalLine && prevLastYPixel !== firstYPixel) {
+          pushPoint(out, curPixel - 1, prevLastYPixel);
+        }
+        inHorizontalLine = false;
+        if (minIdx < maxIdx) {
+          if (firstYPixel !== botPixel) {
+            pushPoint(out, curPixel, firstYPixel);
+          }
+          pushPoint(out, curPixel, botPixel);
+          pushPoint(out, curPixel, topPixel);
+          if (lastYPixel !== topPixel) {
+            pushPoint(out, curPixel, lastYPixel);
+          }
+        } else {
+          if (firstYPixel !== topPixel) {
+            pushPoint(out, curPixel, firstYPixel);
+          }
+          pushPoint(out, curPixel, topPixel);
+          pushPoint(out, curPixel, botPixel);
+          if (lastYPixel !== botPixel) {
+            pushPoint(out, curPixel, lastYPixel);
+          }
+        }
+      }
+      prevLastYPixel = lastYPixel;
+    }
+    if (inHorizontalLine || i < segment.y.length) {
+      if (i >= segment.y.length) {
+        i = segment.y.length - 1;
+      }
+      const curPixel = Math.floor(startPixel + i * pixelsPerSample);
+      lastYPixel = Math.round(yScale(segment.y[i]));
+      pushPoint(out, curPixel, lastYPixel);
+    }
+  }
+  return out;
+}
+function pushPoint(out, xpixel, ypixel) {
+  out.x.push(xpixel);
+  out.y.push(ypixel);
+}
+function rgbaForColorName(name) {
+  const out = new Uint8ClampedArray(4);
+  const ctx = document.createElement("canvas").getContext("2d");
+  if (!ctx) {
+    return out;
+  }
+  ctx.fillStyle = name;
+  const color_rgb = ctx.fillStyle.substring(1);
+  out[0] = Number.parseInt(`0x${color_rgb.substring(0, 2)}`, 16);
+  out[1] = Number.parseInt(`0x${color_rgb.substring(2, 4)}`, 16);
+  out[2] = Number.parseInt(`0x${color_rgb.substring(4, 6)}`, 16);
+  out[3] = 255;
+  return out;
+}
+
 // src/handlebarshelpers.ts
 var handlebarshelpers_exports = {};
 __export(handlebarshelpers_exports, {
@@ -53545,19 +54066,29 @@ var _SeismographConfig = class _SeismographConfig {
     /** @private */
     __publicField(this, "isXAxis");
     __publicField(this, "isXAxisTop");
+    /** @private */
     __publicField(this, "_xLabel");
     __publicField(this, "xLabelOrientation");
+    /** @private */
     __publicField(this, "_xSublabel");
     __publicField(this, "xSublabelIsUnits");
+    /**
+     * Should grid lines be drawn for each tick on the x axis.
+     */
+    __publicField(this, "xGridLines");
     __publicField(this, "isYAxis");
     __publicField(this, "isYAxisRight");
     __publicField(this, "isYAxisNice");
+    /** @private */
     __publicField(this, "_yLabel");
+    /** @private */
     __publicField(this, "_yLabelRight");
     __publicField(this, "yLabelOrientation");
+    /** @private */
     __publicField(this, "_ySublabel");
     __publicField(this, "ySublabelTrans");
     __publicField(this, "ySublabelIsUnits");
+    __publicField(this, "yGridLines");
     __publicField(this, "doMarkers");
     __publicField(this, "markerTextOffset");
     __publicField(this, "markerTextAngle");
@@ -53575,6 +54106,7 @@ var _SeismographConfig = class _SeismographConfig {
     __publicField(this, "connectSegments");
     __publicField(this, "lineColors");
     __publicField(this, "lineWidth");
+    __publicField(this, "gridLineColor");
     __publicField(this, "wheelZoom");
     __publicField(this, "amplitudeMode");
     __publicField(this, "doGain");
@@ -53595,6 +54127,9 @@ var _SeismographConfig = class _SeismographConfig {
     this.isYAxisNice = true;
     this.isYAxis = true;
     this.isYAxisRight = false;
+    this.xGridLines = false;
+    this.yGridLines = false;
+    this.gridLineColor = DEFAULT_GRID_LINE_COLOR;
     this.timeFormat = multiFormatHour;
     this.relativeTimeFormat = formatCountOrAmp;
     this.amplitudeFormat = formatCountOrAmp;
@@ -53675,6 +54210,9 @@ var _SeismographConfig = class _SeismographConfig {
     if (Object.hasOwn(tempJson, "isLinkedAmplitudeScale")) {
       delete tempJson.isLinkedAmplitudeScale;
     }
+    if (Object.hasOwn(tempJson, "ySublabel") && tempJson.ySublabel.length === 0) {
+      delete tempJson.ySublabel;
+    }
     Object.assign(seisConfig, tempJson);
     if (json.isLinkedTimeScale) {
       seisConfig.linkedTimeScale = new LinkedTimeScale();
@@ -53742,15 +54280,33 @@ var _SeismographConfig = class _SeismographConfig {
   enableLinkedAmplitude() {
     this.linkedAmplitudeScale = new LinkedAmplitudeScale();
   }
+  /**
+   * Set Raw amplitude mode, plot absolute and
+   * goes from minimun to maximum of data
+   */
   amplitudeRaw() {
     this.amplitudeMode = "raw" /* Raw */;
   }
+  /**
+   * Set MinMax amplitude mode, plot is relative and
+   * centered on (minimun + maximum)/2
+   */
   amplitudeMinMax() {
     this.amplitudeMode = "minmax" /* MinMax */;
   }
+  /**
+   * Set Mean amplitude mode, plot is relative and
+   * centered on mean of data
+   */
   amplitudeMean() {
     this.amplitudeMode = "mean" /* Mean */;
   }
+  /**
+   * Set WithZero amplitude mode, plot is absolute and
+   * centered on mean of data like Raw, but also includes zero
+   * even if all data is positive. Useful when showing
+   * data compared to zero is helpful.
+   */
   amplitudeWithZero() {
     this.amplitudeMode = "zero" /* Zero */;
   }
@@ -53941,6 +54497,7 @@ var _SeismographConfig = class _SeismographConfig {
     } else {
       this._ySublabel = value;
     }
+    this.ySublabelIsUnits = false;
     this.__cache__.ySublabelHandlebarsCompiled = null;
   }
   handlebarsYLabel(context, runtimeOptions) {
@@ -54108,6 +54665,7 @@ var _SeismographConfig = class _SeismographConfig {
     return outS;
   }
 };
+/** @private */
 __publicField(_SeismographConfig, "_lastID");
 var SeismographConfig = _SeismographConfig;
 function numberFormatWrapper(formater) {
@@ -54136,181 +54694,100 @@ var multiFormatHour = function(date2) {
 };
 SeismographConfig._lastID = 0;
 
-// src/seismographutil.ts
-var seismographutil_exports = {};
-__export(seismographutil_exports, {
-  DEFAULT_MAX_SAMPLE_PER_PIXEL: () => DEFAULT_MAX_SAMPLE_PER_PIXEL,
-  clearCanvas: () => clearCanvas,
-  drawAllOnCanvas: () => drawAllOnCanvas,
-  drawSeismogramAsLine: () => drawSeismogramAsLine,
-  rgbaForColorName: () => rgbaForColorName
-});
-var DEFAULT_MAX_SAMPLE_PER_PIXEL = 3;
-function clearCanvas(canvas) {
-  canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+// src/seismographmarker.ts
+function isValidMarker(v) {
+  if (!v || typeof v !== "object") {
+    return false;
+  }
+  const m = v;
+  return typeof m.time === "string" && typeof m.name === "string" && typeof m.markertype === "string" && typeof m.description === "string" && (!("link" in m) || typeof m.link === "string");
 }
-function drawAllOnCanvas(canvas, sddList, xScaleList, yScaleList, colornameList, lineWidth = 1, connectSegments = false, maxSamplePerPixelForLineDraw = DEFAULT_MAX_SAMPLE_PER_PIXEL) {
-  if (canvas.height === 0) {
-    return;
-  }
-  const context = canvas.getContext("2d");
-  if (!isDef(context)) {
-    throw new Error("canvas 2d context is null, should not happen...");
-  }
-  sddList.forEach((sdd, i) => {
-    const xScale = xScaleList[i];
-    const yScale = yScaleList[i];
-    const s2 = xScale.domain().start?.valueOf();
-    const e = xScale.domain().end?.valueOf();
-    if (s2 == null || e == null || s2 === e) {
-      return;
-    } else {
-      const seismogram = sdd.seismogram;
-      if (!seismogram) {
-        return;
-      }
-      context.save();
-      drawSeismogramAsLine(
-        sdd,
-        context,
-        canvas.width,
-        xScale,
-        yScale,
-        colornameList[i],
-        lineWidth,
-        connectSegments,
-        maxSamplePerPixelForLineDraw
-      );
-      context.restore();
-    }
+function createMarkersForTravelTimes(quake, ttime) {
+  return ttime.arrivals.map((a) => {
+    return {
+      markertype: "predicted",
+      name: a.phase,
+      time: quake.time.plus(Duration.fromMillis(1e3 * a.time)),
+      description: ""
+    };
   });
 }
-function drawSeismogramAsLine(sdd, context, width, xScale, yScale, color2, lineWidth = 1, connectSegments = false, maxSamplePerPixelForLineDraw = 20) {
-  const seismogram = sdd.seismogram;
-  if (!seismogram) {
-    return;
-  }
-  let firstTime = true;
-  const s2 = xScale.domain().start?.valueOf();
-  const e = xScale.domain().end?.valueOf();
-  if (s2 == null || e == null) {
-    throw new Error(`Bad xscale domain: ${String(xScale.domain())}`);
-  }
-  let horizontalPixel = null;
-  seismogram.segments.forEach((segment) => {
-    if (xScale.for(segment.startTime) > xScale.range[1] || xScale.for(segment.endTime) < xScale.range[0]) {
-      return;
-    }
-    const secondsPerPixel = (e - s2) / 1e3 / (xScale.range[1] - xScale.range[0]);
-    const samplesPerPixel = 1 * segment.sampleRate * secondsPerPixel;
-    const pixelsPerSample = 1 / samplesPerPixel;
-    const startPixel = xScale.for(segment.startTime);
-    const endPixel = xScale.for(segment.endTime);
-    let leftVisibleSample = 0;
-    let rightVisibleSample = segment.y.length;
-    let leftVisiblePixel = startPixel;
-    if (startPixel < 0) {
-      leftVisibleSample = Math.floor(-1 * startPixel * samplesPerPixel) - 1;
-      leftVisiblePixel = 0;
-    }
-    if (endPixel > xScale.range[1] + 1) {
-      rightVisibleSample = leftVisibleSample + Math.ceil((width + 1) * samplesPerPixel) + 1;
-    }
-    if (firstTime || !connectSegments) {
-      context.beginPath();
-      context.strokeStyle = color2;
-      context.lineWidth = lineWidth;
-      horizontalPixel = yScale(segment.y[leftVisibleSample]);
-      context.moveTo(
-        leftVisiblePixel,
-        horizontalPixel
-      );
-      firstTime = false;
-    }
-    if (samplesPerPixel <= maxSamplePerPixelForLineDraw) {
-      for (let i = leftVisibleSample; i < rightVisibleSample + 2 && i < segment.y.length; i++) {
-        context.lineTo(
-          startPixel + i * pixelsPerSample,
-          Math.round(yScale(segment.y[i]))
-        );
-      }
-    } else {
-      let i = leftVisibleSample;
-      while (i < rightVisibleSample + 2 && i < segment.y.length) {
-        const curPixel = Math.floor(startPixel + i * pixelsPerSample);
-        let min = segment.y[i];
-        let max = segment.y[i];
-        let minIdx = i;
-        let maxIdx = i;
-        while (curPixel === Math.floor(startPixel + i * pixelsPerSample)) {
-          if (min > segment.y[i]) {
-            min = segment.y[i];
-            minIdx = i;
-          }
-          if (max < segment.y[i]) {
-            max = segment.y[i];
-            maxIdx = i;
-          }
-          i++;
-        }
-        const topPixelFlt = yScale(max);
-        const botPixelFlt = yScale(min);
-        const botPixel = Math.round(botPixelFlt);
-        const topPixel = Math.round(topPixelFlt);
-        if (topPixel === botPixel) {
-          if (horizontalPixel === topPixel) {
-            continue;
-          } else {
-            if (horizontalPixel !== null) {
-              const y2 = horizontalPixel;
-              context.lineTo(curPixel, y2);
-            }
-            horizontalPixel = topPixel;
-          }
-        } else if (botPixelFlt - topPixelFlt < 1.25) {
-          context.lineTo(curPixel, topPixel);
-          horizontalPixel = topPixel;
-        } else {
-          if (horizontalPixel !== null) {
-            const y2 = horizontalPixel;
-            context.lineTo(curPixel - 0.5, y2);
-            horizontalPixel = null;
-          }
-          if (minIdx < maxIdx) {
-            context.lineTo(curPixel - 0.5, botPixel - 0.5);
-            context.lineTo(curPixel + 0.5, topPixel + 0.5);
-          } else {
-            context.lineTo(curPixel - 0.5, topPixel + 0.5);
-            context.lineTo(curPixel + 0.5, botPixel - 0.5);
-          }
-        }
-      }
-      if (horizontalPixel !== null) {
-        const curPixel = Math.floor(startPixel + (rightVisibleSample + 1) * pixelsPerSample);
-        const y2 = horizontalPixel;
-        context.lineTo(curPixel - 0.5, y2);
-        horizontalPixel = null;
-      }
-    }
-    if (!connectSegments) {
-      context.stroke();
-    }
-  });
-  context.stroke();
+function createMarkerForOriginTime(quake) {
+  return {
+    markertype: "predicted",
+    name: "origin",
+    time: quake.time,
+    description: ""
+  };
 }
-function rgbaForColorName(name) {
-  const out = new Uint8ClampedArray(4);
-  const ctx = document.createElement("canvas").getContext("2d");
-  if (!ctx) {
-    return out;
+function createFullMarkersForQuakeAtStation(quake, station) {
+  const markers = [];
+  if (quake.hasOrigin()) {
+    const daz = distaz(
+      station.latitude,
+      station.longitude,
+      quake.latitude,
+      quake.longitude
+    );
+    let magVal = "";
+    let magStr = "";
+    if (quake.hasPreferredMagnitude()) {
+      magVal = quake.preferredMagnitude ? `${quake.preferredMagnitude.mag}` : "";
+      magStr = quake.preferredMagnitude ? quake.preferredMagnitude.toString() : "";
+    }
+    markers.push({
+      markertype: "predicted",
+      name: `M${magVal} ${quake.time.toFormat("HH:mm")}`,
+      time: quake.time,
+      link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
+      description: `${quake.time.toISO()}
+${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(quake.depth / 1e3).toFixed(2)} km
+${quake.description}
+${magStr}
+${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
+`
+    });
   }
-  ctx.fillStyle = name;
-  const color_rgb = ctx.fillStyle.substring(1);
-  out[0] = Number.parseInt(`0x${color_rgb.substring(0, 2)}`, 16);
-  out[1] = Number.parseInt(`0x${color_rgb.substring(2, 4)}`, 16);
-  out[2] = Number.parseInt(`0x${color_rgb.substring(4, 6)}`, 16);
-  out[3] = 255;
-  return out;
+  return markers;
+}
+function createFullMarkersForQuakeAtChannel(quake, channel) {
+  let markers = createFullMarkersForQuakeAtStation(quake, channel.station);
+  if (quake.preferredOrigin) {
+    markers = markers.concat(createMarkerForPicks(quake.preferredOrigin, channel));
+  }
+  return markers;
+}
+function createMarkerForQuakePicks(quake, channel) {
+  const markers = [];
+  if (quake.pickList) {
+    quake.pickList.forEach((pick2) => {
+      if (pick2 && pick2.isOnChannel(channel)) {
+        markers.push({
+          markertype: "pick",
+          name: "pick",
+          time: pick2.time,
+          description: ""
+        });
+      }
+    });
+  }
+  return markers;
+}
+function createMarkerForPicks(origin, channel) {
+  const markers = [];
+  if (origin.arrivals) {
+    origin.arrivals.forEach((arrival) => {
+      if (arrival && arrival.pick.isOnChannel(channel)) {
+        markers.push({
+          markertype: "pick",
+          name: arrival.phase,
+          time: arrival.pick.time,
+          description: ""
+        });
+      }
+    });
+  }
+  return markers;
 }
 
 // src/spelement.ts
@@ -54430,192 +54907,6 @@ function addStyleToElement(element, css, id2) {
   }
   element.shadowRoot?.insertBefore(styleEl, element.shadowRoot?.firstChild);
   return styleEl;
-}
-
-// src/axisutil.ts
-var axisutil_exports = {};
-__export(axisutil_exports, {
-  LuxonTimeScale: () => LuxonTimeScale,
-  drawAxisLabels: () => drawAxisLabels,
-  drawTitle: () => drawTitle,
-  drawXLabel: () => drawXLabel,
-  drawXSublabel: () => drawXSublabel,
-  drawYLabel: () => drawYLabel,
-  drawYSublabel: () => drawYSublabel
-});
-var LuxonTimeScale = class {
-  constructor(interval2, range) {
-    __publicField(this, "interval");
-    __publicField(this, "range");
-    checkLuxonValid(interval2);
-    this.interval = interval2;
-    this.range = range.slice();
-  }
-  for(d) {
-    return this.d3scale(toJSDate(d));
-  }
-  invert(v) {
-    return DateTime.fromJSDate(this.d3scale.invert(v));
-  }
-  domain() {
-    return this.interval;
-  }
-  get d3scale() {
-    checkLuxonValid(this.interval);
-    const d3TimeScale = utcTime();
-    const s2 = toJSDate(this.interval.start);
-    const e = toJSDate(this.interval.end);
-    d3TimeScale.domain([s2, e]);
-    d3TimeScale.range(this.range);
-    return d3TimeScale;
-  }
-  millisPerPixel() {
-    return this.interval.length("milliseconds") / (this.range[1] - this.range[0]);
-  }
-};
-function drawXLabel(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
-  const svg = select_default2(svgEl);
-  svg.selectAll("g.xLabel").remove();
-  if (seismographConfig.xLabel && seismographConfig.xLabel.length > 0) {
-    const svgText = svg.append("g").classed("xLabel", true).attr(
-      "transform",
-      `translate(${seismographConfig.margin.left + width / 2}, ${height + seismographConfig.margin.top + seismographConfig.margin.bottom * 2 / 3} )`
-    ).append("text").classed("x label", true).attr("text-anchor", "middle").text(seismographConfig.xLabel);
-    const handlebarOut = seismographConfig.handlebarsXLabel(handlebarsInput, {
-      allowProtoPropertiesByDefault: true
-      // this might be a security issue???
-    });
-    svgText.html(handlebarOut);
-  }
-}
-function drawXSublabel(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
-  const svg = select_default2(svgEl);
-  svg.selectAll("g.xSublabel").remove();
-  const svgText = svg.append("g").classed("xSublabel", true).attr(
-    "transform",
-    `translate(${seismographConfig.margin.left + width / 2}, ${height + seismographConfig.margin.top + seismographConfig.margin.bottom} )`
-  ).append("text").classed("x label sublabel", true).attr("text-anchor", "middle");
-  const handlebarOut = seismographConfig.handlebarsXSublabel(handlebarsInput, {
-    allowProtoPropertiesByDefault: true
-    // this might be a security issue???
-  });
-  svgText.html(handlebarOut);
-}
-function drawYLabel(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
-  const svg = select_default2(svgEl);
-  svg.selectAll("g.yLabel").remove();
-  for (const side of ["left", "right"]) {
-    const hTranslate = side === "left" ? 0 : seismographConfig.margin.left + width + 1;
-    const svgText = svg.append("g").classed("yLabel", true).classed(side, true).attr("x", 0).attr(
-      "transform",
-      `translate(${hTranslate}, ${seismographConfig.margin.top + height / 2})`
-    ).append("text");
-    svgText.classed("y label", true);
-    if (seismographConfig.yLabelOrientation === "vertical") {
-      svgText.attr("text-anchor", "middle").attr("dy", ".75em").attr("transform", "rotate(-90, 0, 0)");
-    } else {
-      if (side === "left") {
-        svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
-      } else {
-        svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
-        svgText.attr("x", seismographConfig.margin.right - 1);
-      }
-    }
-    if (side === "left") {
-      const handlebarOut = seismographConfig.handlebarsYLabel(handlebarsInput, {
-        allowProtoPropertiesByDefault: true
-        // this might be a security issue???
-      });
-      svgText.html(handlebarOut);
-    } else {
-      const handlebarOut = seismographConfig.handlebarsYLabelRight(
-        handlebarsInput,
-        {
-          allowProtoPropertiesByDefault: true
-          // this might be a security issue???
-        }
-      );
-      svgText.html(handlebarOut);
-    }
-  }
-}
-function drawYSublabel(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
-  const svg = select_default2(svgEl);
-  svg.selectAll("g.ySublabel").remove();
-  for (const side of ["left", "right"]) {
-    const svgText = svg.append("g").classed("ySublabel", true).attr("x", 0).attr(
-      "transform",
-      `translate( ${seismographConfig.ySublabelTrans}, ${seismographConfig.margin.top + height / 2} )`
-    ).append("text").classed("y label sublabel", true);
-    if (seismographConfig.yLabelOrientation === "vertical") {
-      svgText.attr("text-anchor", "middle").attr("dy", ".75em").attr("transform", "rotate(-90, 0, 0)");
-    } else {
-      if (side === "left") {
-        svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
-      } else {
-        svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
-        svgText.attr("x", seismographConfig.margin.right - 1);
-      }
-    }
-    const handlebarOut = seismographConfig.handlebarsYSublabel(handlebarsInput, {
-      allowProtoPropertiesByDefault: true
-      // this might be a security issue???
-    });
-    svgText.html(handlebarOut);
-  }
-}
-function drawTitle(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
-  if (!svgEl) {
-    return;
-  }
-  let titleG = svgEl.querySelector("g.title");
-  if (!seismographConfig.showTitle) {
-    if (titleG) {
-      svgEl.removeChild(titleG);
-    }
-    return;
-  }
-  if (!titleG) {
-    titleG = svgEl.appendChild(createSVGElement("g"));
-    titleG.setAttribute("class", "title");
-  }
-  titleG.setAttribute(
-    "transform",
-    `translate(${seismographConfig.margin.left + width / 2}, 0)`
-  );
-  let textEl;
-  const queryTextEl = titleG.querySelector("text");
-  if (!queryTextEl) {
-    textEl = createSVGElement("text");
-    titleG.appendChild(textEl);
-  } else {
-    textEl = queryTextEl;
-  }
-  textEl.setAttribute("class", "title label");
-  textEl.setAttribute("x", "0");
-  textEl.setAttribute("dy", "0.85em");
-  textEl.setAttribute("text-anchor", "middle");
-  if (!handlebarsInput.seisConfig) {
-    handlebarsInput.seisConfig = seismographConfig;
-  }
-  const handlebarOut = seismographConfig.handlebarsTitle(handlebarsInput, {
-    allowProtoPropertiesByDefault: true
-    // this might be a security issue???
-  });
-  textEl.innerHTML = handlebarOut;
-}
-function drawAxisLabels(svgEl, seismographConfig, height, width, handlebarsInput = {}) {
-  if (!svgEl) {
-    return;
-  }
-  if (!(svgEl instanceof SVGElement)) {
-    return;
-  }
-  drawTitle(svgEl, seismographConfig, height, width, handlebarsInput);
-  drawXLabel(svgEl, seismographConfig, height, width, handlebarsInput);
-  drawXSublabel(svgEl, seismographConfig, height, width);
-  drawYLabel(svgEl, seismographConfig, height, width, handlebarsInput);
-  drawYSublabel(svgEl, seismographConfig, height, width);
 }
 
 // src/seismograph.ts
@@ -54868,7 +55159,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
   enableZoom() {
     const mythis = this;
     const z = this.svg.call(
-      // @ts-expect-error
+      // @ts-expect-error typescript and d3 don't always place nice together
       zoom_default2().on("zoom", function(e) {
         mythis.zoomed(e);
       })
@@ -54902,7 +55193,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     this.calcWidthHeight(rect.width, calcHeight);
     this.g.attr(
       "transform",
-      "translate(" + this.seismographConfig.margin.left + "," + this.seismographConfig.margin.top + ")"
+      `translate(${this.seismographConfig.margin.left}, ${this.seismographConfig.margin.top} )`
     );
     if (this.canvas && this.canvasHolder) {
       this.canvasHolder.attr("width", this.width).attr("height", this.height);
@@ -54911,21 +55202,23 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
       this.canvas.attr("width", this.width).attr("height", this.height);
     } else {
       const svg = select_default2(svgEl);
-      this.canvasHolder = svg.insert("foreignObject", ":first-child").classed("seismograph", true).attr("x", this.seismographConfig.margin.left).attr("y", this.seismographConfig.margin.top).attr("width", this.width).attr("height", this.height + 1);
+      this.canvasHolder = svg.insert("foreignObject", ":first-child").classed("seismograph", true).attr("x", this.seismographConfig.margin.left).attr("y", this.seismographConfig.margin.top).attr("width", this.width).attr("height", this.height);
       if (this.canvasHolder == null) {
         throw new Error("canvasHolder is null");
       }
-      const c = this.canvasHolder.append("xhtml:canvas").classed("seismograph", true).attr("xmlns", XHTML_NS).attr("x", 0).attr("y", 0).attr("width", this.width).attr("height", this.height + 1);
+      const c = this.canvasHolder.append("xhtml:canvas").classed("seismograph", true).attr("xmlns", XHTML_NS).attr("x", 0).attr("y", 0).attr("width", this.width).attr("height", this.height);
       this.canvas = c;
     }
     this.drawSeismograms();
     this.drawAxis();
+    const unitsLabel = this.seismographConfig.ySublabelIsUnits ? this.createUnitsLabel() : "";
     drawAxisLabels(
       svgEl,
       this.seismographConfig,
       this.height,
       this.width,
-      this.createHandlebarsInput()
+      this.createHandlebarsInput(),
+      unitsLabel
     );
     if (this.seismographConfig.doMarkers) {
       this.drawMarkers();
@@ -54998,6 +55291,20 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
       return;
     }
     clearCanvas(canvas);
+    if (this.seismographConfig.xGridLines) {
+      drawXScaleGridLines(
+        canvas,
+        this.timeScaleForAxis(),
+        this.seismographConfig.gridLineColor
+      );
+    }
+    if (this.seismographConfig.yGridLines) {
+      drawYScaleGridLines(
+        canvas,
+        this.ampScaleForAxis(),
+        this.seismographConfig.gridLineColor
+      );
+    }
     drawAllOnCanvas(
       canvas,
       this._seisDataList,
@@ -55020,8 +55327,7 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     clip.append("rect").attr("width", this.width).attr("height", this.height);
   }
   ampScaleForSeisDisplayData(sdd) {
-    const ampScale = linear2();
-    ampScale.range([this.height, 0]);
+    const ampScale = this.__initAmpScale();
     if (this.seismographConfig.linkedAmplitudeScale) {
       const drawHalfWidth = this.amp_scalable.drawHalfWidth;
       let sensitivityVal = 1;
@@ -55059,7 +55365,9 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     let plotInterval;
     if (this.seismographConfig.linkedTimeScale) {
       if (this.time_scalable.drawDuration.equals(ZERO_DURATION)) {
-        this.seismographConfig.linkedTimeScale.recalculate();
+        this.seismographConfig.linkedTimeScale.recalculate().catch((m) => {
+          console.warn(`problem recalc displayTimeRangeForSeisDisplayData: ${m}`);
+        });
       }
       const startOffset = this.time_scalable.drawAlignmentTimeOffset;
       const duration = this.time_scalable.drawDuration;
@@ -55097,9 +55405,18 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     this.drawTopBottomAxis();
     this.drawLeftRightAxis();
   }
-  ampScaleForAxis() {
+  /**
+   * Creates amp scale, set range based on height.
+   * @private
+   * @returns amp scale with range set
+   */
+  __initAmpScale() {
     const ampAxisScale = linear2();
-    ampAxisScale.range([this.height, 0]);
+    ampAxisScale.range([this.height - 1, 1]);
+    return ampAxisScale;
+  }
+  ampScaleForAxis() {
+    const ampAxisScale = this.__initAmpScale();
     if (this.seismographConfig.fixedAmplitudeScale) {
       ampAxisScale.domain(this.seismographConfig.fixedAmplitudeScale);
     } else if (this.seismographConfig.linkedAmplitudeScale) {
@@ -55485,12 +55802,14 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
   drawYSublabel() {
     const wrapper = this.getShadowRoot().querySelector("div");
     const svgEl = wrapper.querySelector("svg");
+    const unitsLabel = this.seismographConfig.ySublabelIsUnits ? this.createUnitsLabel() : "";
     drawYSublabel(
       svgEl,
       this.seismographConfig,
       this.height,
       this.width,
-      this.createHandlebarsInput()
+      this.createHandlebarsInput(),
+      unitsLabel
     );
   }
   /**
@@ -55560,13 +55879,22 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
     this.amp_scalable.minMax = calcMidHW;
     if (this.seismographConfig.linkedAmplitudeScale) {
       if (this.amp_scalable.middle !== oldMiddle || this.amp_scalable.halfWidth !== oldHalfWidth) {
-        this.seismographConfig.linkedAmplitudeScale.recalculate();
+        this.seismographConfig.linkedAmplitudeScale.recalculate().catch((m) => {
+          console.warn(`problem recalc amp scale: ${m}`);
+        });
       }
     } else {
       this.redoDisplayYScale();
     }
   }
   redoDisplayYScale() {
+    this.rescaleYAxis();
+    if (this.seismographConfig.ySublabelIsUnits) {
+      this.drawYSublabel();
+    }
+  }
+  createUnitsLabel() {
+    let ySublabel = "";
     if (this.seismographConfig.doGain && this._seisDataList.length > 0 && this._seisDataList.every((sdd) => sdd.hasSensitivity()) && this._seisDataList.every(
       (sdd) => isDef(sdd.seismogram) && sdd.seismogram.yUnit === COUNT_UNIT2
     )) {
@@ -55577,35 +55905,31 @@ var _Seismograph = class _Seismograph extends SeisPlotElement {
       if (this.seismographConfig.ySublabelIsUnits) {
         const unitList = this._seisDataList.map((sdd) => sdd.sensitivity ? sdd.sensitivity.inputUnits : "uknown").join(",");
         if (!allSameUnits) {
-          this.seismographConfig.ySublabel = unitList;
+          ySublabel = unitList;
         } else {
-          this.seismographConfig.ySublabel = firstSensitivity.inputUnits;
+          ySublabel = firstSensitivity.inputUnits;
         }
       }
     } else {
       if (this.seismographConfig.ySublabelIsUnits) {
-        this.seismographConfig.ySublabel = "";
+        ySublabel = "";
         const allUnits = [];
         for (const t of this._seisDataList) {
           if (t.seismogram) {
             const u = t.seismogram.yUnit;
             allUnits.push(u);
-            this.seismographConfig.ySublabel += `${u} `;
           }
         }
         if (allUnits.length === 0) {
           allUnits.push("Count");
         }
-        this.seismographConfig.ySublabel = allUnits.join(" ");
+        ySublabel = allUnits.join(" ");
       }
     }
     if (this.seismographConfig.ySublabelIsUnits && this.seismographConfig.isCenteredAmp()) {
-      this.seismographConfig.ySublabel = `centered ${this.seismographConfig.ySublabel}`;
+      ySublabel = `centered ${ySublabel}`;
     }
-    this.rescaleYAxis();
-    if (this.seismographConfig.ySublabelIsUnits) {
-      this.drawYSublabel();
-    }
+    return ySublabel;
   }
   getSeismogramData() {
     return this._seisDataList;
@@ -55745,93 +56069,6 @@ var SeismographTimeScalable = class extends TimeScalable {
   }
 };
 Seismograph._lastID = 0;
-function createMarkersForTravelTimes(quake, ttime) {
-  return ttime.arrivals.map((a) => {
-    return {
-      markertype: "predicted",
-      name: a.phase,
-      time: quake.time.plus(Duration.fromMillis(1e3 * a.time)),
-      description: ""
-    };
-  });
-}
-function createMarkerForOriginTime(quake) {
-  return {
-    markertype: "predicted",
-    name: "origin",
-    time: quake.time,
-    description: ""
-  };
-}
-function createFullMarkersForQuakeAtStation(quake, station) {
-  const markers = [];
-  if (quake.hasOrigin()) {
-    const daz = distaz(
-      station.latitude,
-      station.longitude,
-      quake.latitude,
-      quake.longitude
-    );
-    let magVal = "";
-    let magStr = "";
-    if (quake.hasPreferredMagnitude()) {
-      magVal = quake.preferredMagnitude ? `${quake.preferredMagnitude.mag}` : "";
-      magStr = quake.preferredMagnitude ? quake.preferredMagnitude.toString() : "";
-    }
-    markers.push({
-      markertype: "predicted",
-      name: `M${magVal} ${quake.time.toFormat("HH:mm")}`,
-      time: quake.time,
-      link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
-      description: `${quake.time.toISO()}
-${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(quake.depth / 1e3).toFixed(2)} km
-${quake.description}
-${magStr}
-${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
-`
-    });
-  }
-  return markers;
-}
-function createFullMarkersForQuakeAtChannel(quake, channel) {
-  let markers = createFullMarkersForQuakeAtStation(quake, channel.station);
-  if (quake.preferredOrigin) {
-    markers = markers.concat(createMarkerForPicks(quake.preferredOrigin, channel));
-  }
-  return markers;
-}
-function createMarkerForQuakePicks(quake, channel) {
-  const markers = [];
-  if (quake.pickList) {
-    quake.pickList.forEach((pick2) => {
-      if (pick2 && pick2.isOnChannel(channel)) {
-        markers.push({
-          markertype: "pick",
-          name: "pick",
-          time: pick2.time,
-          description: ""
-        });
-      }
-    });
-  }
-  return markers;
-}
-function createMarkerForPicks(origin, channel) {
-  const markers = [];
-  if (origin.arrivals) {
-    origin.arrivals.forEach((arrival) => {
-      if (arrival && arrival.pick.isOnChannel(channel)) {
-        markers.push({
-          markertype: "pick",
-          name: arrival.phase,
-          time: arrival.pick.time,
-          description: ""
-        });
-      }
-    });
-  }
-  return markers;
-}
 function createNumberFormatWrapper(formatter) {
   return (nValue) => {
     if (typeof nValue === "number") {
@@ -56434,10 +56671,10 @@ __export(infotable_exports, {
   SeismogramTable: () => SeismogramTable,
   StationTable: () => StationTable,
   TABLE_CSS: () => TABLE_CSS,
-  depthFormat: () => depthFormat,
-  depthMeterFormat: () => depthMeterFormat,
-  latlonFormat: () => latlonFormat,
-  magFormat: () => magFormat
+  depthFormat: () => depthFormat2,
+  depthMeterFormat: () => depthMeterFormat2,
+  latlonFormat: () => latlonFormat2,
+  magFormat: () => magFormat2
 });
 
 // src/quakeml.ts
@@ -56488,6 +56725,39 @@ __export(quakeml_exports, {
   parseQuakeML: () => parseQuakeML,
   parseUtil: () => parseUtil2
 });
+
+// src/textformat.ts
+var lang = typeof navigator !== "undefined" && navigator?.language ? navigator?.language : "en-US";
+var latlonFormat = new Intl.NumberFormat(lang, {
+  style: "unit",
+  unit: "degree",
+  unitDisplay: "narrow",
+  maximumFractionDigits: 2
+});
+var magFormat = new Intl.NumberFormat(lang, {
+  style: "decimal",
+  maximumFractionDigits: 2
+});
+var depthNoUnitFormat = new Intl.NumberFormat(lang, {
+  style: "decimal",
+  maximumFractionDigits: 2
+});
+var depthFormat = new Intl.NumberFormat(lang, {
+  style: "unit",
+  unit: "kilometer",
+  unitDisplay: "narrow",
+  maximumFractionDigits: 2,
+  minimumFractionDigits: 2
+});
+var depthMeterFormat = new Intl.NumberFormat(lang, {
+  style: "unit",
+  unit: "meter",
+  unitDisplay: "narrow",
+  maximumFractionDigits: 1,
+  minimumFractionDigits: 1
+});
+
+// src/quakeml.ts
 var QML_NS = "http://quakeml.org/xmlns/quakeml/1.2";
 var BED_NS = "http://quakeml.org/xmlns/bed/1.2";
 var IRIS_NS = "http://service.iris.edu/fdsnws/event/1/";
@@ -56741,7 +57011,9 @@ var Quake = class _Quake extends BaseElement {
   toString() {
     if (this.hasOrigin()) {
       const magStr = this.hasMagnitude() ? this.magnitude.toString() : "";
-      return stringify(this.time) + " " + stringify(this.latitude) + "/" + stringify(this.longitude) + " " + stringify(this.depth / 1e3) + " km " + magStr;
+      const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
+      const depth = depthFormat.format(this.depth / 1e3);
+      return `${this.time.toISO()} ${latlon} ${depth} ${magStr}`;
     } else if (this.eventId != null) {
       return `Event: ${this.eventId}`;
     } else {
@@ -57001,7 +57273,9 @@ var Origin = class _Origin extends BaseElement {
     return out;
   }
   toString() {
-    return stringify(this.time) + " " + stringify(this.latitude) + " " + stringify(this.longitude) + " " + stringify(this.depth);
+    const latlon = `(${latlonFormat.format(this.latitude)}/${latlonFormat.format(this.longitude)})`;
+    const depth = depthFormat.format(this.depth / 1e3);
+    return `${this.time.toISO()} ${latlon} ${depth} km`;
   }
   get time() {
     return this.timeQuantity.value;
@@ -57268,7 +57542,7 @@ var Magnitude = class _Magnitude extends BaseElement {
     return out;
   }
   toString() {
-    return `${this.mag} ${this.type ? this.type : ""}`;
+    return `${magFormat.format(this.mag)} ${this.type ? this.type : ""}`;
   }
   get mag() {
     return this.magQuantity.value;
@@ -58432,17 +58706,22 @@ var QuakeTable = class _QuakeTable extends HTMLElement {
     if (h === "Time" /* TIME */) {
       return stringify(q.time.toISO());
     } else if (h === "Lat" /* LAT */) {
-      return latlonFormat.format(q.latitude);
+      return latlonFormat2.format(q.latitude);
     } else if (h === "Lon" /* LON */) {
-      return latlonFormat.format(q.longitude);
+      return latlonFormat2.format(q.longitude);
     } else if (h === "Depth" /* DEPTH */) {
-      return depthFormat.format(q.depthKm);
+      return depthFormat2.format(q.depthKm);
     } else if (h === "Mag" /* MAG */) {
-      return magFormat.format(q.magnitude.mag);
+      return magFormat2.format(q.magnitude.mag);
     } else if (h === "MagType" /* MAGTYPE */) {
       return q.magnitude.type ? q.magnitude.type : "";
     } else if (h === "Description" /* DESC */) {
-      return q.description;
+      const desc = q.description;
+      if (desc && desc.length > 0) {
+        return desc;
+      } else {
+        return stringify(q.time.toISO());
+      }
     } else if (h === "EventId" /* EVENTID */) {
       return `${q.eventId}`;
     } else {
@@ -58596,17 +58875,17 @@ var ChannelTable = class _ChannelTable extends HTMLElement {
     } else if (h === "End" /* END */) {
       return q.endDate ? stringify(q.endDate.toISO()) : "";
     } else if (h === "Lat" /* LAT */) {
-      return latlonFormat.format(q.latitude);
+      return latlonFormat2.format(q.latitude);
     } else if (h === "Lon" /* LON */) {
-      return latlonFormat.format(q.longitude);
+      return latlonFormat2.format(q.longitude);
     } else if (h === "Elev" /* ELEVATION */) {
-      return depthMeterFormat.format(q.elevation);
+      return depthMeterFormat2.format(q.elevation);
     } else if (h === "Depth" /* DEPTH */) {
-      return depthMeterFormat.format(q.depth);
+      return depthMeterFormat2.format(q.depth);
     } else if (h === "Az" /* AZIMUTH */) {
-      return latlonFormat.format(q.azimuth);
+      return latlonFormat2.format(q.azimuth);
     } else if (h === "Dip" /* DIP */) {
-      return latlonFormat.format(q.dip);
+      return latlonFormat2.format(q.dip);
     } else if (h === "SourceId" /* SOURCEID */) {
       return `${q.sourceId.toString()}`;
     } else if (h === "Code" /* CODE */) {
@@ -58780,11 +59059,11 @@ var StationTable = class _StationTable extends HTMLElement {
     } else if (h === "End" /* END */) {
       return q.endDate ? stringify(q.endDate.toISO()) : "";
     } else if (h === "Lat" /* LAT */) {
-      return latlonFormat.format(q.latitude);
+      return latlonFormat2.format(q.latitude);
     } else if (h === "Lon" /* LON */) {
-      return latlonFormat.format(q.longitude);
+      return latlonFormat2.format(q.longitude);
     } else if (h === "Elev" /* ELEVATION */) {
-      return depthMeterFormat.format(q.elevation);
+      return depthMeterFormat2.format(q.elevation);
     } else if (h === "SourceId" /* SOURCEID */) {
       return `${q.sourceId.toString()}`;
     } else if (h === "Code" /* CODE */) {
@@ -59027,30 +59306,10 @@ var SeismogramTable = class _SeismogramTable extends HTMLElement {
 };
 var SDD_INFO_ELEMENT = "sp-seismogram-table";
 customElements.define(SDD_INFO_ELEMENT, SeismogramTable);
-var latlonFormat = new Intl.NumberFormat(navigator.languages[0], {
-  style: "unit",
-  unit: "degree",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 2
-});
-var magFormat = new Intl.NumberFormat(navigator.languages[0], {
-  style: "decimal",
-  maximumFractionDigits: 2
-});
-var depthFormat = new Intl.NumberFormat(navigator.languages[0], {
-  style: "unit",
-  unit: "kilometer",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 2
-});
-var depthMeterFormat = new Intl.NumberFormat(navigator.languages[0], {
-  style: "unit",
-  unit: "meter",
-  unitDisplay: "narrow",
-  maximumFractionDigits: 1,
-  minimumFractionDigits: 1
-});
+var latlonFormat2 = latlonFormat;
+var magFormat2 = magFormat;
+var depthFormat2 = depthFormat;
+var depthMeterFormat2 = depthMeterFormat;
 
 // src/leafletutil.ts
 var leafletutil_exports = {};
@@ -59851,7 +60110,7 @@ div.wrapper {
   width: 100%;
 }
 
-.${InactiveStationMarkerClassName} {
+.${StationMarkerClassName}.${InactiveStationMarkerClassName} {
   color: darkgrey;
   font-size: large;
   z-index: 1;
@@ -60576,7 +60835,7 @@ var _ParticleMotion = class _ParticleMotion extends SeisPlotElement {
     path2.exit().remove();
     path2.enter().append("path").classed("seispath", true).attr("marker-end", "url(#arrow)").attr(
       "d",
-      // @ts-expect-error
+      // @ts-expect-error no idea why typescript thinks dd is [number, number] when it is just number
       line_default().curve(linear_default).x((dd) => {
         return this.xScale(dd);
       }).y((d, i) => {
@@ -61149,7 +61408,9 @@ var OrganizedDisplay = class extends SeisPlotElement {
     this.getShadowRoot().appendChild(wrapper);
   }
   static get observedAttributes() {
-    return [ORG_TYPE, WITH_TOOLS, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY];
+    const mine = [ORG_TYPE, WITH_TOOLS, WITH_MAP, WITH_INFO, OVERLAY_BY, SORT_BY];
+    const map3 = QuakeStationMap.observedAttributes;
+    return mine.concat(map3);
   }
   getDisplayItems() {
     const wrapper = this.getShadowRoot().querySelector("div");
@@ -61273,12 +61534,15 @@ var OrganizedDisplay = class extends SeisPlotElement {
         });
       }
     });
+    let timePromise = Promise.resolve([]);
+    let ampPromise = Promise.resolve([]);
     if (this.seismographConfig.linkedTimeScale) {
-      this.seismographConfig.linkedTimeScale.notifyAll();
+      timePromise = this.seismographConfig.linkedTimeScale.notifyAll();
     }
     if (this.seismographConfig.linkedAmplitudeScale) {
-      this.seismographConfig.linkedAmplitudeScale.notifyAll();
+      ampPromise = this.seismographConfig.linkedAmplitudeScale.notifyAll();
     }
+    return Promise.all([timePromise, ampPromise]);
   }
   drawTools(sortedData) {
     if (!this.isConnected) {
@@ -61305,6 +61569,12 @@ var OrganizedDisplay = class extends SeisPlotElement {
       wrapper.removeChild(mapElement);
     } else if (this.map === "true" && !isDef(mapElement)) {
       const mapdisp = new QuakeStationMap(sortedData, this.seismographConfig);
+      QuakeStationMap.observedAttributes.forEach((a) => {
+        const my_attr = this.getAttribute(a);
+        if (my_attr) {
+          mapdisp.setAttribute(a, my_attr);
+        }
+      });
       const toolsElement = wrapper.querySelector(ORG_DISP_TOOLS_ELEMENT);
       if (toolsElement) {
         if (toolsElement.nextElementSibling) {
@@ -61358,6 +61628,12 @@ var OrganizedDisplay = class extends SeisPlotElement {
     } else if (name === WITH_INFO) {
       const sortedData = sort(this.seisData, this.sortby);
       this.drawInfo(sortedData);
+    } else if (QuakeStationMap.observedAttributes.includes(name)) {
+      const wrapper = this.getShadowRoot().querySelector("div");
+      const mapElement = wrapper?.querySelector(MAP_ELEMENT);
+      if (mapElement) {
+        mapElement.setAttribute(name, newValue);
+      }
     } else {
       this.redraw();
     }
@@ -65764,6 +66040,11 @@ var DateTimeChooser = class extends HTMLElement {
     ntext.value = stringify(this.time.toISODate());
     this.hourMin._internalSetTime(newTime);
   }
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "date-time") {
+      this.time = isoToDateTime(newValue);
+    }
+  }
   static get observedAttributes() {
     return ["date-time"];
   }
@@ -65811,6 +66092,7 @@ var TimeRangeChooser = class extends HTMLElement {
     }
     const shadow = this.attachShadow({ mode: "open" });
     const wrapper = document.createElement("span");
+    wrapper.classList.add("wrapper");
     const style = document.createElement("style");
     style.textContent = `
           input.duration {
@@ -65824,6 +66106,7 @@ var TimeRangeChooser = class extends HTMLElement {
     shadow.appendChild(style);
     const startLabel = wrapper.appendChild(document.createElement("label"));
     startLabel.textContent = this.startLabel;
+    startLabel.classList.add("startlabel");
     const startChooser = wrapper.appendChild(new DateTimeChooser());
     this.startChooser = startChooser;
     startChooser.setAttribute("class", "start");
@@ -65831,11 +66114,13 @@ var TimeRangeChooser = class extends HTMLElement {
     durationDiv.setAttribute("class", "duration");
     const durationLabel = wrapper.appendChild(document.createElement("label"));
     durationLabel.textContent = this.durationLabel;
+    durationLabel.classList.add("durationlabel");
     const durationInput = wrapper.appendChild(document.createElement("input"));
     durationInput.value = `${this.duration.toISO()}`;
     durationInput.setAttribute("class", "duration");
     const endLabel = wrapper.appendChild(document.createElement("label"));
     endLabel.textContent = this.endLabel;
+    endLabel.classList.add("endlabel");
     const endChooser = wrapper.appendChild(new DateTimeChooser());
     this.endChooser = endChooser;
     endChooser.setAttribute("class", "end");
@@ -65922,18 +66207,30 @@ var TimeRangeChooser = class extends HTMLElement {
     return this.startChooser.time;
   }
   set start(time) {
+    if (typeof time === "string") {
+      time = DateTime.fromISO(time);
+    }
     checkLuxonValid(time);
     this.startChooser.updateTime(time);
-    this.setAttribute("start", stringify(time.toISO()));
+    const startStr = stringify(time.toISO());
+    if (startStr !== this.getAttribute("start")) {
+      this.setAttribute("start", startStr);
+    }
     this.resyncValues(START_CHANGED);
   }
   get end() {
     return this.endChooser.time;
   }
   set end(time) {
+    if (typeof time === "string") {
+      time = DateTime.fromISO(time);
+    }
     checkLuxonValid(time);
     this.endChooser.updateTime(time);
-    this.setAttribute("end", stringify(time.toISO()));
+    const endStr = stringify(time.toISO());
+    if (endStr !== this.getAttribute("end")) {
+      this.setAttribute("end", endStr);
+    }
     this.resyncValues(END_CHANGED);
   }
   set duration(duration) {
@@ -65944,14 +66241,23 @@ var TimeRangeChooser = class extends HTMLElement {
     return this._duration;
   }
   _updateDuration(duration) {
+    let durationStr;
+    if (typeof duration === "string") {
+      durationStr = duration;
+      duration = Duration.fromISO(duration);
+    } else {
+      durationStr = stringify(duration.toISO());
+    }
     checkLuxonValid(duration);
     this._duration = duration;
-    this.setAttribute("duration", stringify(duration.toISO()));
+    if (durationStr !== this.getAttribute("duration")) {
+      this.setAttribute("duration", durationStr);
+    }
     const dur_input = this.shadowRoot?.querySelector("input.duration");
     if (!dur_input) {
       throw new Error("can't find input.duration in sp-timerange");
     }
-    dur_input.value = stringify(this._duration.toISO());
+    dur_input.value = durationStr;
   }
   resyncValues(curChanged) {
     if (curChanged === START_CHANGED) {
@@ -65978,6 +66284,23 @@ var TimeRangeChooser = class extends HTMLElement {
     }
     this.dispatchEvent(new Event("change"));
     this.updateCallback(this.getTimeRange());
+  }
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "start") {
+      this.start = isoToDateTime(newValue);
+    } else if (name === "end") {
+      this.end = isoToDateTime(newValue);
+    } else if (name === "duration") {
+      this.duration = Duration.fromISO(newValue);
+    } else if (name === START_LABEL) {
+      (this.shadowRoot?.querySelector(".startlabel")).textContent = newValue;
+    } else if (name === END_LABEL) {
+      (this.shadowRoot?.querySelector(".endlabel")).textContent = newValue;
+    } else if (name === DUR_LABEL) {
+      (this.shadowRoot?.querySelector(".durationLabel")).textContent = newValue;
+    } else {
+      throw new Error(`set unknown attribute: "${name}"`);
+    }
   }
   static get observedAttributes() {
     return ["start", "duration", "end", START_LABEL, END_LABEL, DUR_LABEL];
@@ -67283,7 +67606,6 @@ function createDataSelectQuery(params) {
 // src/fdsnevent.ts
 var fdsnevent_exports = {};
 __export(fdsnevent_exports, {
-  EarthquakeSearch: () => EarthquakeSearch,
   EventQuery: () => EventQuery,
   SERVICE_NAME: () => SERVICE_NAME3,
   SERVICE_VERSION: () => SERVICE_VERSION3,
@@ -68105,215 +68427,10 @@ var EventQuery = class extends FDSNCommon {
     return url;
   }
 };
-var eqsearchHtml = `
-<div class="wrapper">
-  <div>
-  <label>Time Range </label>
-  <sp-timerange duration="P7D"></sp-timerange>
-  <button id="now">Now</button></div>
-  <div>
-  <button id="today">Today</button>
-  <button id="week">Week</button>
-  <button id="month">Month</button>
-  <button id="year">Year</button>
-  </div>
-  <div>
-    <label>Geo:</label>
-    <sp-latlon-choice></sp-latlon-choice>
-  </div>
-  <div><label>Magnitude</label><sp-minmax id="magnitude" min="-1" max="10"></sp-minmax></div>
-  <div><label>Depth</label><sp-minmax id="depth" min="0" max="1000"></sp-minmax><label>km</label></div>
-</div>
-`;
-var EarthquakeSearch = class extends HTMLElement {
-  constructor() {
-    super();
-    const shadow = this.attachShadow({ mode: "open" });
-    this.draw_element(shadow);
-  }
-  _registerEvent(wrapper, sel) {
-    const component = wrapper.querySelector(sel);
-    if (!component) {
-      throw new Error(`can't find ${sel}`);
-    }
-    component.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-  }
-  draw_element(shadow) {
-    const wrapper = document.createElement("div");
-    wrapper.setAttribute("class", "wrapper");
-    wrapper.innerHTML = eqsearchHtml;
-    shadow.appendChild(wrapper);
-    this._registerEvent(wrapper, "sp-timerange");
-    this._registerEvent(wrapper, "sp-latlon-choice");
-    this._registerEvent(wrapper, "sp-minmax#magnitude");
-    this._registerEvent(wrapper, "sp-minmax#depth");
-    const trChooser = wrapper.querySelector("sp-timerange");
-    if (!trChooser) {
-      throw new Error("can't find sp-timerange");
-    }
-    if (this.hasAttribute("start")) {
-      const s2 = this.getAttribute("start");
-      if (s2 !== null) {
-        trChooser.start = isoToDateTime(s2);
-      }
-    }
-    if (this.hasAttribute("end")) {
-      const e = this.getAttribute("end");
-      if (e !== null) {
-        trChooser.end = isoToDateTime(e);
-      }
-    }
-    if (this.hasAttribute("duration")) {
-      const d = this.getAttribute("duration");
-      if (d !== null) {
-        trChooser.duration = Duration.fromISO("" + d);
-      }
-    }
-    const magChooser = wrapper.querySelector("sp-minmax#magnitude");
-    if (!magChooser) {
-      throw new Error("can't find sp-minmax#magnitude");
-    }
-    if (this.hasAttribute("mag-min")) {
-      const m = this.getAttribute("mag-min");
-      if (m !== null) {
-        magChooser.min = parseFloat(m);
-      }
-    }
-    if (this.hasAttribute("mag-max")) {
-      const m = this.getAttribute("mag-max");
-      if (m !== null) {
-        magChooser.max = parseFloat(m);
-      }
-    }
-    const depthChooser = wrapper.querySelector("sp-minmax#depth");
-    if (!depthChooser) {
-      throw new Error("can't find sp-minmax#depth");
-    }
-    if (this.hasAttribute("depth-min")) {
-      const m = this.getAttribute("depth-min");
-      if (m !== null) {
-        depthChooser.min = parseFloat(m);
-      }
-    }
-    if (this.hasAttribute("depth-max")) {
-      const m = this.getAttribute("depth-max");
-      if (m !== null) {
-        depthChooser.max = parseFloat(m);
-      }
-    }
-    const latlonChooser = wrapper.querySelector("sp-latlon-choice");
-    if (!latlonChooser) {
-      throw new Error("can't find sp-latlon-choice");
-    }
-    LatLonChoice.observedAttributes.forEach((attr) => {
-      if (this.hasAttribute(attr)) {
-        const attrVal = this.getAttribute(attr);
-        if (attrVal) {
-          latlonChooser.setAttribute(attr, attrVal);
-        }
-      }
-    });
-    const nowBtn = wrapper.querySelector("#now");
-    if (!nowBtn) {
-      throw new Error("can't find button#now");
-    }
-    nowBtn.addEventListener("click", (event) => {
-      trChooser.end = DateTime.utc();
-    });
-    const todayBtn = wrapper.querySelector("#today");
-    if (!todayBtn) {
-      throw new Error("can't find button#today");
-    }
-    todayBtn.addEventListener("click", (event) => {
-      trChooser.duration = Duration.fromISO("P1D");
-    });
-    const weekBtn = wrapper.querySelector("#week");
-    if (!weekBtn) {
-      throw new Error("can't find button#week");
-    }
-    weekBtn.addEventListener("click", (event) => {
-      trChooser.duration = Duration.fromISO("P7D");
-    });
-    const monthBtn = wrapper.querySelector("#month");
-    if (!monthBtn) {
-      throw new Error("can't find button#month");
-    }
-    monthBtn.addEventListener("click", (event) => {
-      trChooser.duration = Duration.fromISO("P1M");
-    });
-    const yearBtn = wrapper.querySelector("#year");
-    if (!yearBtn) {
-      throw new Error("can't find button#year");
-    }
-    yearBtn.addEventListener("click", (event) => {
-      trChooser.duration = Duration.fromISO("P1Y");
-    });
-  }
-  populateQuery(query) {
-    if (!query) {
-      query = new EventQuery();
-    }
-    const wrapper = this.shadowRoot?.querySelector("div");
-    const trChooser = wrapper.querySelector("sp-timerange");
-    if (!trChooser) {
-      throw new Error("can't find sp-timerange");
-    }
-    query.startTime(trChooser.start);
-    query.endTime(trChooser.end);
-    const latlonchoice = wrapper.querySelector("sp-latlon-choice");
-    const choosenLatLon = latlonchoice.choosen();
-    if (choosenLatLon instanceof LatLonBoxEl) {
-      const latlonbox = choosenLatLon;
-      if (latlonbox.south > -90) {
-        query.minLat(latlonbox.south);
-      }
-      if (latlonbox.north < 90) {
-        query.maxLat(latlonbox.north);
-      }
-      if (latlonbox.west > -180 && latlonbox.west + 360 !== latlonbox.east) {
-        query.minLon(latlonbox.west);
-      }
-      if (latlonbox.east < 360 && latlonbox.west + 360 !== latlonbox.east) {
-        query.maxLon(latlonbox.east);
-      }
-    } else if (choosenLatLon instanceof LatLonRadiusEl) {
-      const latlonrad = choosenLatLon;
-      if (latlonrad.minRadius > 0 || latlonrad.maxRadius < 180) {
-        query.latitude(latlonrad.latitude);
-        query.longitude(latlonrad.longitude);
-        if (latlonrad.minRadius > 0) {
-          query.minRadius(latlonrad.minRadius);
-        }
-        if (latlonrad.maxRadius < 180) {
-          query.maxRadius(latlonrad.maxRadius);
-        }
-      }
-    } else {
-    }
-    const mag = wrapper.querySelector("sp-minmax#magnitude");
-    if (mag.min > 0) {
-      query.minMag(mag.min);
-    }
-    if (mag.max < 10) {
-      query.maxMag(mag.max);
-    }
-    const depth = wrapper.querySelector("sp-minmax#depth");
-    if (depth.min > 0) {
-      query.minDepth(depth.min);
-    }
-    if (depth.max < 1e3) {
-      query.maxDepth(depth.max);
-    }
-    return query;
-  }
-};
-customElements.define("sp-earthquake-search", EarthquakeSearch);
 
 // src/fdsnstation.ts
 var fdsnstation_exports = {};
 __export(fdsnstation_exports, {
-  CHANNEL_SEARCH_ELEMENT: () => CHANNEL_SEARCH_ELEMENT,
-  ChannelSearch: () => ChannelSearch,
   IRIS_HOST: () => IRIS_HOST,
   LEVELS: () => LEVELS,
   LEVEL_CHANNEL: () => LEVEL_CHANNEL,
@@ -69258,190 +69375,6 @@ var StationQuery = class extends FDSNCommon {
     return url;
   }
 };
-var channelsearchHtml = `
-<div class="wrapper">
-  <sp-channel-code-input></sp-channel-code-input>
-  <div>
-    <label>Time Range </label>
-    <sp-timerange duration="P1Y" prev-next=true ></sp-timerange>
-    <div>
-    <button id="today">Today</button>
-    <button id="week">Week</button>
-    <button id="month">Month</button>
-    <button id="year">Year</button>
-  </div>
-  <div>
-    <label>Geo:</label>
-    <sp-latlon-choice></sp-latlon-choice>
-  </div>
-</div>
-`;
-var ChannelSearch = class extends HTMLElement {
-  constructor() {
-    super();
-    const shadow = this.attachShadow({ mode: "open" });
-    this.draw_element(shadow);
-  }
-  _registerEvent(wrapper, sel) {
-    const component = wrapper.querySelector(sel);
-    if (!component) {
-      throw new Error(`can't find ${sel}`);
-    }
-    component.addEventListener("change", () => this.dispatchEvent(new Event("change")));
-  }
-  draw_element(shadow) {
-    const wrapper = document.createElement("div");
-    wrapper.setAttribute("class", "wrapper");
-    wrapper.innerHTML = channelsearchHtml;
-    shadow.appendChild(wrapper);
-    this._registerEvent(wrapper, "sp-timerange");
-    this._registerEvent(wrapper, "sp-latlon-choice");
-    const chanCodeEl = shadow.querySelector("sp-channel-code-input");
-    if (chanCodeEl) {
-      if (this.hasAttribute("network")) {
-        const v = this.getAttribute("network");
-        if (v) {
-          chanCodeEl.network = v;
-        }
-      }
-      if (this.hasAttribute("station")) {
-        const v = this.getAttribute("station");
-        if (v) {
-          chanCodeEl.station = v;
-        }
-      }
-      if (this.hasAttribute("location")) {
-        const v = this.getAttribute("location");
-        if (v) {
-          chanCodeEl.location = v;
-        }
-      }
-      if (this.hasAttribute("channel")) {
-        const v = this.getAttribute("channel");
-        if (v) {
-          chanCodeEl.channel = v;
-        }
-      }
-    }
-    const trChooser = wrapper.querySelector("sp-timerange");
-    if (!trChooser) {
-      throw new Error("can't find sp-timerange");
-    }
-    if (this.hasAttribute("start")) {
-      const s2 = this.getAttribute("start");
-      if (s2 !== null) {
-        trChooser.start = isoToDateTime(s2);
-      }
-    }
-    if (this.hasAttribute("end")) {
-      const e = this.getAttribute("end");
-      if (e !== null) {
-        trChooser.end = isoToDateTime(e);
-      }
-    }
-    if (this.hasAttribute("duration")) {
-      const d = this.getAttribute("duration");
-      if (d !== null) {
-        trChooser.duration = Duration.fromISO("" + d);
-      }
-    }
-    const todayBtn = wrapper.querySelector("#today");
-    if (!todayBtn) {
-      throw new Error("can't find button#today");
-    }
-    todayBtn.addEventListener("click", (event) => {
-      trChooser.duration = Duration.fromISO("P1D");
-    });
-    const weekBtn = wrapper.querySelector("#week");
-    if (!weekBtn) {
-      throw new Error("can't find button#week");
-    }
-    weekBtn.addEventListener("click", (event) => {
-      trChooser.duration = Duration.fromISO("P7D");
-    });
-    const monthBtn = wrapper.querySelector("#month");
-    if (!monthBtn) {
-      throw new Error("can't find button#month");
-    }
-    monthBtn.addEventListener("click", (event) => {
-      trChooser.duration = Duration.fromISO("P1M");
-    });
-    const yearBtn = wrapper.querySelector("#year");
-    if (!yearBtn) {
-      throw new Error("can't find button#year");
-    }
-    yearBtn.addEventListener("click", (event) => {
-      trChooser.duration = Duration.fromISO("P1Y");
-    });
-    const latlonChooser = wrapper.querySelector("sp-latlon-choice");
-    if (!latlonChooser) {
-      throw new Error("can't find sp-latlon-choice");
-    }
-    LatLonChoice.observedAttributes.forEach((attr) => {
-      if (this.hasAttribute(attr)) {
-        const attrVal = this.getAttribute(attr);
-        if (attrVal) {
-          latlonChooser.setAttribute(attr, attrVal);
-        }
-      }
-    });
-  }
-  populateQuery(query) {
-    if (!query) {
-      query = new StationQuery();
-    }
-    const wrapper = this.shadowRoot?.querySelector("div");
-    const codeChooser = wrapper.querySelector(CHANNEL_CODE_ELEMENT);
-    query.networkCode(codeChooser.network);
-    query.stationCode(codeChooser.station);
-    query.locationCode(codeChooser.location);
-    query.channelCode(codeChooser.channel);
-    const trChooser = wrapper.querySelector("sp-timerange");
-    if (!trChooser) {
-      throw new Error("can't find sp-timerange");
-    }
-    query.startTime(trChooser.start);
-    query.endTime(trChooser.end);
-    const latlonchoice = wrapper.querySelector("sp-latlon-choice");
-    const choosenLatLon = latlonchoice.choosen();
-    if (choosenLatLon instanceof LatLonBoxEl) {
-      const latlonbox = choosenLatLon.asLatLonBox();
-      if (latlonbox.south > -90) {
-        query.minLat(latlonbox.south);
-      }
-      if (latlonbox.north < 90) {
-        query.maxLat(latlonbox.north);
-      }
-      if (latlonbox.west > -180 && latlonbox.west + 360 !== latlonbox.east) {
-        query.minLon(latlonbox.west);
-      }
-      if (latlonbox.east < 360 && latlonbox.west + 360 !== latlonbox.east) {
-        query.maxLon(latlonbox.east);
-      }
-    } else if (choosenLatLon instanceof LatLonRadiusEl) {
-      const latlonrad = choosenLatLon;
-      if (latlonrad.minRadius > 0 || latlonrad.maxRadius < 180) {
-        query.latitude(latlonrad.latitude);
-        query.longitude(latlonrad.longitude);
-        if (latlonrad.minRadius > 0) {
-          query.minRadius(latlonrad.minRadius);
-        }
-        if (latlonrad.maxRadius < 180) {
-          query.maxRadius(latlonrad.maxRadius);
-        }
-      }
-    } else {
-    }
-    return query;
-  }
-  getGeoChoiceElement() {
-    const wrapper = this.shadowRoot?.querySelector("div");
-    const latlonchoice = wrapper.querySelector("sp-latlon-choice");
-    return latlonchoice;
-  }
-};
-var CHANNEL_SEARCH_ELEMENT = "sp-channel-search";
-customElements.define(CHANNEL_SEARCH_ELEMENT, ChannelSearch);
 
 // src/fdsndatacenters.ts
 var FDSN_HOST = "www.fdsn.org";
@@ -69828,6 +69761,406 @@ function isValidRootType2(jsonValue) {
     throw new TypeError("json is not valid for FDSN DataCenters");
   }
 }
+
+// src/fdsneventcomponent.ts
+var fdsneventcomponent_exports = {};
+__export(fdsneventcomponent_exports, {
+  EarthquakeSearch: () => EarthquakeSearch
+});
+var eqsearchHtml = `
+<div class="wrapper">
+  <div>
+  <label>Time Range </label>
+  <sp-timerange duration="P7D"></sp-timerange>
+  <button id="now">Now</button></div>
+  <div>
+  <button id="today">Today</button>
+  <button id="week">Week</button>
+  <button id="month">Month</button>
+  <button id="year">Year</button>
+  </div>
+  <div>
+    <label>Geo:</label>
+    <sp-latlon-choice></sp-latlon-choice>
+  </div>
+  <div><label>Magnitude</label><sp-minmax id="magnitude" min="-1" max="10"></sp-minmax></div>
+  <div><label>Depth</label><sp-minmax id="depth" min="0" max="1000"></sp-minmax><label>km</label></div>
+</div>
+`;
+var EarthquakeSearch = class extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: "open" });
+    this.draw_element(shadow);
+  }
+  _registerEvent(wrapper, sel) {
+    const component = wrapper.querySelector(sel);
+    if (!component) {
+      throw new Error(`can't find ${sel}`);
+    }
+    component.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+  }
+  draw_element(shadow) {
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("class", "wrapper");
+    wrapper.innerHTML = eqsearchHtml;
+    shadow.appendChild(wrapper);
+    this._registerEvent(wrapper, "sp-timerange");
+    this._registerEvent(wrapper, "sp-latlon-choice");
+    this._registerEvent(wrapper, "sp-minmax#magnitude");
+    this._registerEvent(wrapper, "sp-minmax#depth");
+    const trChooser = wrapper.querySelector("sp-timerange");
+    if (!trChooser) {
+      throw new Error("can't find sp-timerange");
+    }
+    if (this.hasAttribute("start")) {
+      const s2 = this.getAttribute("start");
+      if (s2 !== null) {
+        trChooser.start = isoToDateTime(s2);
+      }
+    }
+    if (this.hasAttribute("end")) {
+      const e = this.getAttribute("end");
+      if (e !== null) {
+        trChooser.end = isoToDateTime(e);
+      }
+    }
+    if (this.hasAttribute("duration")) {
+      const d = this.getAttribute("duration");
+      if (d !== null) {
+        trChooser.duration = Duration.fromISO("" + d);
+      }
+    }
+    const magChooser = wrapper.querySelector("sp-minmax#magnitude");
+    if (!magChooser) {
+      throw new Error("can't find sp-minmax#magnitude");
+    }
+    if (this.hasAttribute("mag-min")) {
+      const m = this.getAttribute("mag-min");
+      if (m !== null) {
+        magChooser.min = parseFloat(m);
+      }
+    }
+    if (this.hasAttribute("mag-max")) {
+      const m = this.getAttribute("mag-max");
+      if (m !== null) {
+        magChooser.max = parseFloat(m);
+      }
+    }
+    const depthChooser = wrapper.querySelector("sp-minmax#depth");
+    if (!depthChooser) {
+      throw new Error("can't find sp-minmax#depth");
+    }
+    if (this.hasAttribute("depth-min")) {
+      const m = this.getAttribute("depth-min");
+      if (m !== null) {
+        depthChooser.min = parseFloat(m);
+      }
+    }
+    if (this.hasAttribute("depth-max")) {
+      const m = this.getAttribute("depth-max");
+      if (m !== null) {
+        depthChooser.max = parseFloat(m);
+      }
+    }
+    const latlonChooser = wrapper.querySelector("sp-latlon-choice");
+    if (!latlonChooser) {
+      throw new Error("can't find sp-latlon-choice");
+    }
+    LatLonChoice.observedAttributes.forEach((attr) => {
+      if (this.hasAttribute(attr)) {
+        const attrVal = this.getAttribute(attr);
+        if (attrVal) {
+          latlonChooser.setAttribute(attr, attrVal);
+        }
+      }
+    });
+    const nowBtn = wrapper.querySelector("#now");
+    if (!nowBtn) {
+      throw new Error("can't find button#now");
+    }
+    nowBtn.addEventListener("click", (event) => {
+      trChooser.end = DateTime.utc();
+    });
+    const todayBtn = wrapper.querySelector("#today");
+    if (!todayBtn) {
+      throw new Error("can't find button#today");
+    }
+    todayBtn.addEventListener("click", (event) => {
+      trChooser.duration = Duration.fromISO("P1D");
+    });
+    const weekBtn = wrapper.querySelector("#week");
+    if (!weekBtn) {
+      throw new Error("can't find button#week");
+    }
+    weekBtn.addEventListener("click", (event) => {
+      trChooser.duration = Duration.fromISO("P7D");
+    });
+    const monthBtn = wrapper.querySelector("#month");
+    if (!monthBtn) {
+      throw new Error("can't find button#month");
+    }
+    monthBtn.addEventListener("click", (event) => {
+      trChooser.duration = Duration.fromISO("P1M");
+    });
+    const yearBtn = wrapper.querySelector("#year");
+    if (!yearBtn) {
+      throw new Error("can't find button#year");
+    }
+    yearBtn.addEventListener("click", (event) => {
+      trChooser.duration = Duration.fromISO("P1Y");
+    });
+  }
+  populateQuery(query) {
+    if (!query) {
+      query = new EventQuery();
+    }
+    const wrapper = this.shadowRoot?.querySelector("div");
+    const trChooser = wrapper.querySelector("sp-timerange");
+    if (!trChooser) {
+      throw new Error("can't find sp-timerange");
+    }
+    query.startTime(trChooser.start);
+    query.endTime(trChooser.end);
+    const latlonchoice = wrapper.querySelector("sp-latlon-choice");
+    const choosenLatLon = latlonchoice.choosen();
+    if (choosenLatLon instanceof LatLonBoxEl) {
+      const latlonbox = choosenLatLon;
+      if (latlonbox.south > -90) {
+        query.minLat(latlonbox.south);
+      }
+      if (latlonbox.north < 90) {
+        query.maxLat(latlonbox.north);
+      }
+      if (latlonbox.west > -180 && latlonbox.west + 360 !== latlonbox.east) {
+        query.minLon(latlonbox.west);
+      }
+      if (latlonbox.east < 360 && latlonbox.west + 360 !== latlonbox.east) {
+        query.maxLon(latlonbox.east);
+      }
+    } else if (choosenLatLon instanceof LatLonRadiusEl) {
+      const latlonrad = choosenLatLon;
+      if (latlonrad.minRadius > 0 || latlonrad.maxRadius < 180) {
+        query.latitude(latlonrad.latitude);
+        query.longitude(latlonrad.longitude);
+        if (latlonrad.minRadius > 0) {
+          query.minRadius(latlonrad.minRadius);
+        }
+        if (latlonrad.maxRadius < 180) {
+          query.maxRadius(latlonrad.maxRadius);
+        }
+      }
+    } else {
+    }
+    const mag = wrapper.querySelector("sp-minmax#magnitude");
+    if (mag.min > 0) {
+      query.minMag(mag.min);
+    }
+    if (mag.max < 10) {
+      query.maxMag(mag.max);
+    }
+    const depth = wrapper.querySelector("sp-minmax#depth");
+    if (depth.min > 0) {
+      query.minDepth(depth.min);
+    }
+    if (depth.max < 1e3) {
+      query.maxDepth(depth.max);
+    }
+    return query;
+  }
+};
+customElements.define("sp-earthquake-search", EarthquakeSearch);
+
+// src/fdsnstationcomponent.ts
+var fdsnstationcomponent_exports = {};
+__export(fdsnstationcomponent_exports, {
+  CHANNEL_SEARCH_ELEMENT: () => CHANNEL_SEARCH_ELEMENT,
+  ChannelSearch: () => ChannelSearch
+});
+var channelsearchHtml = `
+<div class="wrapper">
+  <sp-channel-code-input></sp-channel-code-input>
+  <div>
+    <label>Time Range </label>
+    <sp-timerange duration="P1Y" prev-next=true ></sp-timerange>
+    <div>
+    <button id="today">Today</button>
+    <button id="week">Week</button>
+    <button id="month">Month</button>
+    <button id="year">Year</button>
+  </div>
+  <div>
+    <label>Geo:</label>
+    <sp-latlon-choice></sp-latlon-choice>
+  </div>
+</div>
+`;
+var ChannelSearch = class extends HTMLElement {
+  constructor() {
+    super();
+    const shadow = this.attachShadow({ mode: "open" });
+    this.draw_element(shadow);
+  }
+  _registerEvent(wrapper, sel) {
+    const component = wrapper.querySelector(sel);
+    if (!component) {
+      throw new Error(`can't find ${sel}`);
+    }
+    component.addEventListener("change", () => this.dispatchEvent(new Event("change")));
+  }
+  draw_element(shadow) {
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("class", "wrapper");
+    wrapper.innerHTML = channelsearchHtml;
+    shadow.appendChild(wrapper);
+    this._registerEvent(wrapper, "sp-timerange");
+    this._registerEvent(wrapper, "sp-latlon-choice");
+    const chanCodeEl = shadow.querySelector("sp-channel-code-input");
+    if (chanCodeEl) {
+      if (this.hasAttribute("network")) {
+        const v = this.getAttribute("network");
+        if (v) {
+          chanCodeEl.network = v;
+        }
+      }
+      if (this.hasAttribute("station")) {
+        const v = this.getAttribute("station");
+        if (v) {
+          chanCodeEl.station = v;
+        }
+      }
+      if (this.hasAttribute("location")) {
+        const v = this.getAttribute("location");
+        if (v) {
+          chanCodeEl.location = v;
+        }
+      }
+      if (this.hasAttribute("channel")) {
+        const v = this.getAttribute("channel");
+        if (v) {
+          chanCodeEl.channel = v;
+        }
+      }
+    }
+    const trChooser = wrapper.querySelector("sp-timerange");
+    if (!trChooser) {
+      throw new Error("can't find sp-timerange");
+    }
+    if (this.hasAttribute("start")) {
+      const s2 = this.getAttribute("start");
+      if (s2 !== null) {
+        trChooser.start = isoToDateTime(s2);
+      }
+    }
+    if (this.hasAttribute("end")) {
+      const e = this.getAttribute("end");
+      if (e !== null) {
+        trChooser.end = isoToDateTime(e);
+      }
+    }
+    if (this.hasAttribute("duration")) {
+      const d = this.getAttribute("duration");
+      if (d !== null) {
+        trChooser.duration = Duration.fromISO("" + d);
+      }
+    }
+    const todayBtn = wrapper.querySelector("#today");
+    if (!todayBtn) {
+      throw new Error("can't find button#today");
+    }
+    todayBtn.addEventListener("click", (event) => {
+      trChooser.duration = Duration.fromISO("P1D");
+    });
+    const weekBtn = wrapper.querySelector("#week");
+    if (!weekBtn) {
+      throw new Error("can't find button#week");
+    }
+    weekBtn.addEventListener("click", (event) => {
+      trChooser.duration = Duration.fromISO("P7D");
+    });
+    const monthBtn = wrapper.querySelector("#month");
+    if (!monthBtn) {
+      throw new Error("can't find button#month");
+    }
+    monthBtn.addEventListener("click", (event) => {
+      trChooser.duration = Duration.fromISO("P1M");
+    });
+    const yearBtn = wrapper.querySelector("#year");
+    if (!yearBtn) {
+      throw new Error("can't find button#year");
+    }
+    yearBtn.addEventListener("click", (event) => {
+      trChooser.duration = Duration.fromISO("P1Y");
+    });
+    const latlonChooser = wrapper.querySelector("sp-latlon-choice");
+    if (!latlonChooser) {
+      throw new Error("can't find sp-latlon-choice");
+    }
+    LatLonChoice.observedAttributes.forEach((attr) => {
+      if (this.hasAttribute(attr)) {
+        const attrVal = this.getAttribute(attr);
+        if (attrVal) {
+          latlonChooser.setAttribute(attr, attrVal);
+        }
+      }
+    });
+  }
+  populateQuery(query) {
+    if (!query) {
+      query = new StationQuery();
+    }
+    const wrapper = this.shadowRoot?.querySelector("div");
+    const codeChooser = wrapper.querySelector(CHANNEL_CODE_ELEMENT);
+    query.networkCode(codeChooser.network);
+    query.stationCode(codeChooser.station);
+    query.locationCode(codeChooser.location);
+    query.channelCode(codeChooser.channel);
+    const trChooser = wrapper.querySelector("sp-timerange");
+    if (!trChooser) {
+      throw new Error("can't find sp-timerange");
+    }
+    query.startTime(trChooser.start);
+    query.endTime(trChooser.end);
+    const latlonchoice = wrapper.querySelector("sp-latlon-choice");
+    const choosenLatLon = latlonchoice.choosen();
+    if (choosenLatLon instanceof LatLonBoxEl) {
+      const latlonbox = choosenLatLon.asLatLonBox();
+      if (latlonbox.south > -90) {
+        query.minLat(latlonbox.south);
+      }
+      if (latlonbox.north < 90) {
+        query.maxLat(latlonbox.north);
+      }
+      if (latlonbox.west > -180 && latlonbox.west + 360 !== latlonbox.east) {
+        query.minLon(latlonbox.west);
+      }
+      if (latlonbox.east < 360 && latlonbox.west + 360 !== latlonbox.east) {
+        query.maxLon(latlonbox.east);
+      }
+    } else if (choosenLatLon instanceof LatLonRadiusEl) {
+      const latlonrad = choosenLatLon;
+      if (latlonrad.minRadius > 0 || latlonrad.maxRadius < 180) {
+        query.latitude(latlonrad.latitude);
+        query.longitude(latlonrad.longitude);
+        if (latlonrad.minRadius > 0) {
+          query.minRadius(latlonrad.minRadius);
+        }
+        if (latlonrad.maxRadius < 180) {
+          query.maxRadius(latlonrad.maxRadius);
+        }
+      }
+    } else {
+    }
+    return query;
+  }
+  getGeoChoiceElement() {
+    const wrapper = this.shadowRoot?.querySelector("div");
+    const latlonchoice = wrapper.querySelector("sp-latlon-choice");
+    return latlonchoice;
+  }
+};
+var CHANNEL_SEARCH_ELEMENT = "sp-channel-search";
+customElements.define(CHANNEL_SEARCH_ELEMENT, ChannelSearch);
 
 // src/filter.ts
 var filter_exports = {};
@@ -70282,6 +70615,9 @@ var Helicorder = class extends SeisPlotElement {
         } else {
           maxVariation = this.heliConfig.maxVariation;
         }
+        if (this.heliConfig.lineSeisConfig.linkedAmplitudeScale) {
+          this.heliConfig.lineSeisConfig.linkedAmplitudeScale.halfWidth = maxVariation;
+        }
       }
     }
     const startTime = validStartTime(timeRange);
@@ -70325,11 +70661,6 @@ var Helicorder = class extends SeisPlotElement {
       const lineSeisData = this.cutForLine(singleSeisData, lineInterval);
       if (this.heliConfig.fixedAmplitudeScale && (this.heliConfig.fixedAmplitudeScale[0] !== 0 || this.heliConfig.fixedAmplitudeScale[1] !== 0)) {
         lineSeisConfig.fixedAmplitudeScale = this.heliConfig.fixedAmplitudeScale;
-      } else {
-        lineSeisConfig.fixedAmplitudeScale = [
-          -1 * maxVariation,
-          maxVariation
-        ];
       }
       const seismograph = new Seismograph([lineSeisData], lineSeisConfig);
       seismograph.svg.classed(HELICORDER_SELECTOR, true);
@@ -70466,6 +70797,8 @@ var HelicorderConfig = class _HelicorderConfig extends SeismographConfig {
     this.margin.top = 40;
     this.lineColors = ["skyblue", "olivedrab", "goldenrod"];
     this.lineSeisConfig = new SeismographConfig();
+    this.lineSeisConfig.amplitudeMode = "minmax" /* MinMax */;
+    this.lineSeisConfig.linkedAmplitudeScale = new FixedHalfWidthAmplitudeScale(1);
     this.lineSeisConfig.ySublabel = ` `;
     this.lineSeisConfig.xLabel = " ";
     this.lineSeisConfig.yLabel = "";
@@ -72720,7 +73053,12 @@ var FedCatalogQuery = class _FedCatalogQuery extends FDSNCommon {
         r.stationQuery = stationQuery;
         fedCatalogResult.params.forEach((v, k) => {
           const field = `_${k}`;
-          stationQuery[field] = v;
+          if (field === "_level") {
+          } else if (field in stationQuery) {
+            stationQuery[field] = v;
+          } else {
+            throw new Error(`field ${field} does not exist in StationQuery class`);
+          }
         });
         if (!r.services.has("STATIONSERVICE") || !isDef(r.services.get("STATIONSERVICE"))) {
           throw new Error(
@@ -72757,7 +73095,11 @@ var FedCatalogQuery = class _FedCatalogQuery extends FDSNCommon {
       r.dataSelectQuery = dataSelectQuery;
       fedCatalogResult.params.forEach((k, v) => {
         const field = `_${k}`;
-        dataSelectQuery[field] = v;
+        if (field in dataSelectQuery) {
+          dataSelectQuery[field] = v;
+        } else {
+          throw new Error(`field ${field} does not exist in DataSelectQuery class`);
+        }
       });
       if (!r.services.has("DATASELECTSERVICE")) {
         throw new Error(
@@ -73718,7 +74060,7 @@ __export(transfer_exports, {
   transferSacPZSegment: () => transferSacPZSegment
 });
 
-// node_modules/convert-units/lib/esm/convert.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/convert.js
 var Converter = class {
   constructor(measures, value) {
     this.val = 0;
@@ -73768,8 +74110,8 @@ var Converter = class {
       result -= origin.unit.anchor_shift;
     }
     if (origin.system != destination.system) {
-      const measure29 = this.measureData[origin.measure];
-      const anchors = measure29.anchors;
+      const measure30 = this.measureData[origin.measure];
+      const anchors = measure30.anchors;
       if (anchors == null) {
         throw new Error(`Unable to convert units. Anchors are missing for "${origin.measure}" and "${destination.measure}" measures.`);
       }
@@ -73834,8 +74176,8 @@ var Converter = class {
    */
   getUnit(abbr) {
     const found = null;
-    for (const [measureName, measure29] of Object.entries(this.measureData)) {
-      for (const [systemName, system] of Object.entries(measure29.systems)) {
+    for (const [measureName, measure30] of Object.entries(this.measureData)) {
+      for (const [systemName, system] of Object.entries(measure30.systems)) {
         for (const [testAbbr, unit3] of Object.entries(system)) {
           if (testAbbr == abbr) {
             return {
@@ -73883,8 +74225,8 @@ var Converter = class {
   list(measureName) {
     const list = [];
     if (measureName == null) {
-      for (const [name, measure29] of Object.entries(this.measureData)) {
-        for (const [systemName, units] of Object.entries(measure29.systems)) {
+      for (const [name, measure30] of Object.entries(this.measureData)) {
+        for (const [systemName, units] of Object.entries(measure30.systems)) {
           for (const [abbr, unit3] of Object.entries(units)) {
             list.push(this.describeUnit({
               abbr,
@@ -73898,8 +74240,8 @@ var Converter = class {
     } else if (!(measureName in this.measureData)) {
       throw new Error(`Meausre "${measureName}" not found.`);
     } else {
-      const measure29 = this.measureData[measureName];
-      for (const [systemName, units] of Object.entries(measure29.systems)) {
+      const measure30 = this.measureData[measureName];
+      for (const [systemName, units] of Object.entries(measure30.systems)) {
         for (const [abbr, unit3] of Object.entries(units)) {
           list.push(this.describeUnit({
             abbr,
@@ -73914,8 +74256,8 @@ var Converter = class {
   }
   throwUnsupportedUnitError(what) {
     let validUnits = [];
-    for (const measure29 of Object.values(this.measureData)) {
-      for (const systems of Object.values(measure29.systems)) {
+    for (const measure30 of Object.values(this.measureData)) {
+      for (const systems of Object.values(measure30.systems)) {
         validUnits = validUnits.concat(Object.keys(systems));
       }
     }
@@ -73935,8 +74277,8 @@ var Converter = class {
     } else {
       list_measures = Object.keys(this.measureData);
     }
-    for (const measure29 of list_measures) {
-      const systems = this.measureData[measure29].systems;
+    for (const measure30 of list_measures) {
+      const systems = this.measureData[measure30].systems;
       for (const system of Object.values(systems)) {
         possibilities = [
           ...possibilities,
@@ -73958,7 +74300,10 @@ function convert_default(measures) {
   return (value) => new Converter(measures, value);
 }
 
-// node_modules/convert-units/lib/esm/definitions/acceleration.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/index.js
+var esm_default = convert_default;
+
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/acceleration.js
 var metric = {
   "g-force": {
     name: {
@@ -73982,7 +74327,7 @@ var measure = {
 };
 var acceleration_default = measure;
 
-// node_modules/convert-units/lib/esm/definitions/angle.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/angle.js
 var SI = {
   rad: {
     name: {
@@ -74027,7 +74372,7 @@ var measure2 = {
 };
 var angle_default = measure2;
 
-// node_modules/convert-units/lib/esm/definitions/apparentPower.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/apparentPower.js
 var SI2 = {
   VA: {
     name: {
@@ -74072,7 +74417,7 @@ var measure3 = {
 };
 var apparentPower_default = measure3;
 
-// node_modules/convert-units/lib/esm/definitions/area.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/area.js
 var metric2 = {
   nm2: {
     name: {
@@ -74181,7 +74526,7 @@ var measure4 = {
 };
 var area_default = measure4;
 
-// node_modules/convert-units/lib/esm/definitions/charge.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/charge.js
 var SI3 = {
   c: {
     name: {
@@ -74226,7 +74571,7 @@ var measure5 = {
 };
 var charge_default = measure5;
 
-// node_modules/convert-units/lib/esm/definitions/current.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/current.js
 var SI4 = {
   A: {
     name: {
@@ -74257,7 +74602,7 @@ var measure6 = {
 };
 var current_default = measure6;
 
-// node_modules/convert-units/lib/esm/definitions/digital.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/digital.js
 var bits = {
   b: {
     name: {
@@ -74352,7 +74697,7 @@ var measure7 = {
 };
 var digital_default = measure7;
 
-// node_modules/convert-units/lib/esm/definitions/each.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/each.js
 var metric3 = {
   ea: {
     name: {
@@ -74376,8 +74721,22 @@ var measure8 = {
 };
 var each_default2 = measure8;
 
-// node_modules/convert-units/lib/esm/definitions/energy.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/energy.js
 var SI5 = {
+  Ws: {
+    name: {
+      singular: "Watt-second",
+      plural: "Watt-seconds"
+    },
+    to_anchor: 1
+  },
+  Wm: {
+    name: {
+      singular: "Watt-minute",
+      plural: "Watt-minutes"
+    },
+    to_anchor: 60
+  },
   Wh: {
     name: {
       singular: "Watt-hour",
@@ -74442,14 +74801,43 @@ var SI5 = {
     to_anchor: 1e9
   }
 };
+var nutrition = {
+  cal: {
+    name: {
+      singular: "calorie",
+      plural: "calories"
+    },
+    to_anchor: 1
+  },
+  kcal: {
+    name: {
+      singular: "Kilocalorie",
+      plural: "Kilocalories"
+    },
+    to_anchor: 1e3
+  }
+};
 var measure9 = {
   systems: {
-    SI: SI5
+    SI: SI5,
+    nutrition
+  },
+  anchors: {
+    SI: {
+      nutrition: {
+        ratio: 1 / 4.184
+      }
+    },
+    nutrition: {
+      SI: {
+        ratio: 4.184
+      }
+    }
   }
 };
 var energy_default = measure9;
 
-// node_modules/convert-units/lib/esm/definitions/force.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/force.js
 var SI6 = {
   N: {
     name: {
@@ -74471,6 +74859,13 @@ var SI6 = {
       plural: "Pound-forces"
     },
     to_anchor: 4.44822
+  },
+  kgf: {
+    name: {
+      singular: "Kilogram-force",
+      plural: "Kilogram-forces"
+    },
+    to_anchor: 9.807
   }
 };
 var measure10 = {
@@ -74480,7 +74875,7 @@ var measure10 = {
 };
 var force_default = measure10;
 
-// node_modules/convert-units/lib/esm/definitions/frequency.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/frequency.js
 var SI7 = {
   mHz: {
     name: {
@@ -74553,7 +74948,7 @@ var measure11 = {
 };
 var frequency_default = measure11;
 
-// node_modules/convert-units/lib/esm/definitions/illuminance.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/illuminance.js
 var metric4 = {
   lx: {
     name: {
@@ -74592,7 +74987,7 @@ var measure12 = {
 };
 var illuminance_default = measure12;
 
-// node_modules/convert-units/lib/esm/definitions/length.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/length.js
 var metric5 = {
   nm: {
     name: {
@@ -74638,6 +75033,13 @@ var metric5 = {
   }
 };
 var imperial3 = {
+  mil: {
+    name: {
+      singular: "Mil",
+      plural: "Mils"
+    },
+    to_anchor: 1 / 12e3
+  },
   in: {
     name: {
       singular: "Inch",
@@ -74708,7 +75110,7 @@ var measure13 = {
 };
 var length_default = measure13;
 
-// node_modules/convert-units/lib/esm/definitions/mass.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/mass.js
 var metric6 = {
   mcg: {
     name: {
@@ -74761,6 +75163,13 @@ var imperial4 = {
     },
     to_anchor: 1
   },
+  st: {
+    name: {
+      singular: "Stone",
+      plural: "Stones"
+    },
+    to_anchor: 14
+  },
   t: {
     name: {
       singular: "Ton",
@@ -74789,7 +75198,7 @@ var measure14 = {
 };
 var mass_default = measure14;
 
-// node_modules/convert-units/lib/esm/definitions/massFlowRate.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/massFlowRate.js
 var metric7 = {
   "kg/s": {
     name: {
@@ -74849,7 +75258,7 @@ var measure15 = {
 };
 var massFlowRate_default = measure15;
 
-// node_modules/convert-units/lib/esm/definitions/pace.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/pace.js
 var metric8 = {
   "min/km": {
     name: {
@@ -74902,7 +75311,7 @@ var measure16 = {
 };
 var pace_default = measure16;
 
-// node_modules/convert-units/lib/esm/definitions/partsPer.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/partsPer.js
 var SI8 = {
   ppm: {
     name: {
@@ -74940,7 +75349,7 @@ var measure17 = {
 };
 var partsPer_default = measure17;
 
-// node_modules/convert-units/lib/esm/definitions/pieces.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/pieces.js
 var unit2 = {
   pcs: {
     name: {
@@ -75041,7 +75450,7 @@ var measure18 = {
 };
 var pieces_default = measure18;
 
-// node_modules/convert-units/lib/esm/definitions/power.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/power.js
 var metric9 = {
   W: {
     name: {
@@ -75129,7 +75538,7 @@ var measure19 = {
 };
 var power_default = measure19;
 
-// node_modules/convert-units/lib/esm/definitions/pressure.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/pressure.js
 var metric10 = {
   Pa: {
     name: {
@@ -75172,6 +75581,20 @@ var metric10 = {
       plural: "torr"
     },
     to_anchor: 101325 / 76e4
+  },
+  mH2O: {
+    name: {
+      singular: "meter of water @ 4\xB0C",
+      plural: "meters of water @ 4\xB0C"
+    },
+    to_anchor: 9.80665
+  },
+  mmHg: {
+    name: {
+      singular: "millimeter of mercury",
+      plural: "millimeters of mercury"
+    },
+    to_anchor: 0.133322
   }
 };
 var imperial8 = {
@@ -75217,7 +75640,7 @@ var measure20 = {
 };
 var pressure_default = measure20;
 
-// node_modules/convert-units/lib/esm/definitions/reactiveEnergy.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/reactiveEnergy.js
 var SI9 = {
   VARh: {
     name: {
@@ -75262,7 +75685,7 @@ var measure21 = {
 };
 var reactiveEnergy_default = measure21;
 
-// node_modules/convert-units/lib/esm/definitions/reactivePower.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/reactivePower.js
 var SI10 = {
   VAR: {
     name: {
@@ -75307,7 +75730,7 @@ var measure22 = {
 };
 var reactivePower_default = measure22;
 
-// node_modules/convert-units/lib/esm/definitions/speed.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/speed.js
 var metric11 = {
   "m/s": {
     name: {
@@ -75388,7 +75811,7 @@ var measure23 = {
 };
 var speed_default = measure23;
 
-// node_modules/convert-units/lib/esm/definitions/temperature.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/temperature.js
 var metric12 = {
   C: {
     name: {
@@ -75400,8 +75823,8 @@ var metric12 = {
   },
   K: {
     name: {
-      singular: "degree Kelvin",
-      plural: "degrees Kelvin"
+      singular: "Kelvin",
+      plural: "Kelvins"
     },
     to_anchor: 1,
     anchor_shift: 273.15
@@ -75448,7 +75871,7 @@ var measure24 = {
 };
 var temperature_default = measure24;
 
-// node_modules/convert-units/lib/esm/definitions/time.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/time.js
 var daysInYear2 = 365.25;
 var SI11 = {
   ns: {
@@ -75529,7 +75952,46 @@ var measure25 = {
 };
 var time_default = measure25;
 
-// node_modules/convert-units/lib/esm/definitions/voltage.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/torque.js
+var metric13 = {
+  Nm: {
+    name: {
+      singular: "Newton-meter",
+      plural: "Newton-meters"
+    },
+    to_anchor: 1
+  }
+};
+var imperial11 = {
+  "lbf-ft": {
+    name: {
+      singular: "Pound-foot",
+      plural: "Pound-feet"
+    },
+    to_anchor: 1
+  }
+};
+var measure26 = {
+  systems: {
+    metric: metric13,
+    imperial: imperial11
+  },
+  anchors: {
+    metric: {
+      imperial: {
+        ratio: 1 / 1.355818
+      }
+    },
+    imperial: {
+      metric: {
+        ratio: 1.355818
+      }
+    }
+  }
+};
+var torque_default = measure26;
+
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/voltage.js
 var SI12 = {
   V: {
     name: {
@@ -75553,15 +76015,15 @@ var SI12 = {
     to_anchor: 1e3
   }
 };
-var measure26 = {
+var measure27 = {
   systems: {
     SI: SI12
   }
 };
-var voltage_default = measure26;
+var voltage_default = measure27;
 
-// node_modules/convert-units/lib/esm/definitions/volume.js
-var metric13 = {
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/volume.js
+var metric14 = {
   mm3: {
     name: {
       singular: "Cubic Millimeter",
@@ -75683,7 +76145,7 @@ var metric13 = {
     to_anchor: 2.617
   }
 };
-var imperial11 = {
+var imperial12 = {
   tsp: {
     name: {
       singular: "Teaspoon",
@@ -75755,10 +76217,10 @@ var imperial11 = {
     to_anchor: 25852.7
   }
 };
-var measure27 = {
+var measure28 = {
   systems: {
-    metric: metric13,
-    imperial: imperial11
+    metric: metric14,
+    imperial: imperial12
   },
   anchors: {
     metric: {
@@ -75773,10 +76235,10 @@ var measure27 = {
     }
   }
 };
-var volume_default = measure27;
+var volume_default = measure28;
 
-// node_modules/convert-units/lib/esm/definitions/volumeFlowRate.js
-var metric14 = {
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/volumeFlowRate.js
+var metric15 = {
   "mm3/s": {
     name: {
       singular: "Cubic Millimeter per second",
@@ -75883,7 +76345,7 @@ var metric14 = {
     to_anchor: 1e12
   }
 };
-var imperial12 = {
+var imperial13 = {
   "tsp/s": {
     name: {
       singular: "Teaspoon per second",
@@ -76039,10 +76501,10 @@ var imperial12 = {
     to_anchor: 25852.7 / 3600
   }
 };
-var measure28 = {
+var measure29 = {
   systems: {
-    metric: metric14,
-    imperial: imperial12
+    metric: metric15,
+    imperial: imperial13
   },
   anchors: {
     metric: {
@@ -76057,9 +76519,9 @@ var measure28 = {
     }
   }
 };
-var volumeFlowRate_default = measure28;
+var volumeFlowRate_default = measure29;
 
-// node_modules/convert-units/lib/esm/definitions/index.js
+// ../../../GitHub/crotwell/convert-units/lib/esm/definitions/all.js
 var allMeasures = {
   acceleration: acceleration_default,
   angle: angle_default,
@@ -76084,19 +76546,17 @@ var allMeasures = {
   reactiveEnergy: reactiveEnergy_default,
   reactivePower: reactivePower_default,
   speed: speed_default,
+  torque: torque_default,
   temperature: temperature_default,
   time: time_default,
   voltage: voltage_default,
   volume: volume_default,
   volumeFlowRate: volumeFlowRate_default
 };
-var definitions_default = allMeasures;
-
-// node_modules/convert-units/lib/esm/index.js
-var esm_default = convert_default;
+var all_default = allMeasures;
 
 // src/transfer.ts
-var convert = esm_default(definitions_default);
+var convert = esm_default(all_default);
 function transfer(seis, response, lowCut, lowPass, highPass, highCut) {
   if (!response) {
     throw new Error("Response not exist???");
@@ -76771,8 +77231,10 @@ export {
   fdsndatacenters_exports as fdsndatacenters,
   fdsndataselect_exports as fdsndataselect,
   fdsnevent_exports as fdsnevent,
+  fdsneventcomponent_exports as fdsneventcomponent,
   fdsnsourceid_exports as fdsnsourceid,
   fdsnstation_exports as fdsnstation,
+  fdsnstationcomponent_exports as fdsnstationcomponent,
   fft_exports as fft,
   filter_exports as filter,
   handlebarshelpers_exports as handlebarshelpers,
