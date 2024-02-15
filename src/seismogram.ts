@@ -26,7 +26,6 @@ export type HighLowType = {
   highlowArray: Array<number>;
 };
 import type {MarkerType} from "./seismographmarker";
-export type {MarkerType};
 /**
  * Represents time window for a single channel that may
  * contain gaps or overlaps, but is otherwise more or less
