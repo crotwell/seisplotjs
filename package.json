@@ -2,23 +2,44 @@
   "name": "seisplotjs",
   "version": "3.1.4-SNAPSHOT",
   "description": "Javascript library for parsing, manipulating and displaying seismic data.",
-  "module": "./dist/index.esm.js",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
-  "browser": "./dist/index.esm.js",
-  "types": "./dist/index.d.ts",
-  "sideEffects": false,
+  "sideEffects": [
+    "animatedseismograph",
+    "axisutil",
+    "components",
+    "cssutil",
+    "datechooser",
+    "handlebarshelpers",
+    "helicorder",
+    "infotable",
+    "leafletutil",
+    "leaflet",
+    "organizeddisplay",
+    "particlemotion",
+    "seismograph",
+    "seismographutil",
+    "seismographconfig",
+    "seismographconfigeditor",
+    "spectraplot"
+  ],
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.esm.js"
-    }
+      "node": "./dist/index_node.mjs",
+      "import": "./dist/index.mjs"
+    },
+    "./nodeonly": {
+      "types": "./dist/index_node.d.ts",
+      "import": "./dist/index_node.mjs"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "./dist/index.js",
-    "./dist/index.esm.js",
+    "./dist/index.mjs",
     "./dist/index.d.ts",
+    "./dist/index_node.mjs",
+    "./dist/index_node.d.ts",
     "src/*.ts"
   ],
   "dependencies": {
@@ -47,11 +68,12 @@
     "srclint": "eslint 'src' --ext .js,.jsx,.ts,.tsx ",
     "lint": "eslint src test testremotes --ext .js,.jsx,.ts,.tsx ",
     "examplelint": "eslint -c .eslintrc.js 'docs/examples/viewobspy/www/[otv]*.js' 'docs/examples/*/[a-r]*.js'  'docs/examples/*/s[t-z]*.js'",
+    "publint": "npx publint",
     "test": "jest",
     "testremotes": "jest --config=jest_remote.config.js",
     "build:clean": "rimraf dist docs/seisplotjs_${npm_package_version}_standalone.mjs",
     "apidoc:clean": "rimraf docs/api",
-    "compile": "npm run build:clean && npm run version_to_src && npm run esmb && npm run standalone && (npm run dts || npm run tsc)",
+    "compile": "npm run build:clean && npm run version_to_src && npm run esmb && npm run standalone && ((npm run dts && npm run dts_node) || npm run tsc)",
     "tutorial_snippet": "python3 snippetToTutorial.py",
     "standalone": "npm run esstandalone && cp dist/seisplotjs_${npm_package_version}_standalone.mjs docs/.",
     "doc": "npm run standalone && npm run apidoc && npm run tutorial_snippet ",
@@ -65,7 +87,8 @@
     "prepublishOnly": "npm run compile && npm run test && npm run testremotes && echo skip npm outdated && echo skip lint && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code",
     "servedocs": "npx http-server ./docs -c-1 --cors -a 127.0.0.1",
     "tsc": "tsc --project tsconfig.json",
-    "dts": "npx npm-dts generate --output dist/index.d.ts"
+    "dts": "npx npm-dts generate --output dist/index.d.ts",
+    "dts_node": "npx npm-dts generate --entry src/index_node.ts --output dist/index_node.d.ts"
   },
   "repository": {
     "type": "git",

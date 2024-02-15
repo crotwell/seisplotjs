@@ -3,7 +3,8 @@ import { Duration } from "luxon";
 import * as mseed3 from "./mseed3";
 import { Quake, parseQuakeML } from "./quakeml";
 import { Network, parseStationXml, allChannels } from "./stationxml";
-import { SeismogramDisplayData, isValidMarker } from "./seismogram";
+import { SeismogramDisplayData } from "./seismogram";
+import {isValidMarker} from "./seismographmarker";
 import { isValidTraveltimeArrivalType } from './traveltime';
 import {
   downloadBlobAsFile,

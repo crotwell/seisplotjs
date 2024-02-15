@@ -25,27 +25,8 @@ export type HighLowType = {
   samplesPerPixel: number;
   highlowArray: Array<number>;
 };
-export type MarkerType = {
-  name: string;
-  time: DateTime;
-  markertype: string;
-  description: string;
-  link?: string;
-};
-
-export function isValidMarker(v: unknown): v is MarkerType {
-  if (!v || typeof v !== 'object') {
-    return false;
-  }
-  const m = v as Record<string, unknown>;
-
-  return typeof m.time === 'string' &&
-    typeof m.name === 'string' &&
-    typeof m.markertype === 'string' &&
-    typeof m.description === 'string' &&
-    (!("link" in m) || typeof m.link === 'string');
-}
-
+import type {MarkerType} from "./seismographmarker";
+export type {MarkerType};
 /**
  * Represents time window for a single channel that may
  * contain gaps or overlaps, but is otherwise more or less

@@ -14,7 +14,7 @@ import {SeismogramDisplayData} from "./seismogram";
 import {
   createMarkersForTravelTimes,
   createMarkerForOriginTime,
-} from "./seismograph";
+} from "./seismographmarker";
 import {isDef, isStringArg, stringify} from "./util";
 
 
