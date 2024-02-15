@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8" />
     <title>Tutorial 4: Arrival Times</title>
-    <link href="style.css" rel="stylesheet"/>
+    <link href="style.css" rel="stylesheet" />
     <style>
       sp-station-quake-map {
         height: 300px;
@@ -12,8 +12,8 @@
       sp-seismograph {
         height: 200px;
       }
-      sp-particle-motion  {
-        float:left;
+      sp-particle-motion {
+        float: left;
         width: 32vw;
         height: 32vw;
       }
@@ -24,19 +24,25 @@
     <link rel="icon" type="image/png" href="../flavicon.png" />
   </head>
   <body>
-    <h3>Tutorial 4: Arrival Times <span class="sp_version">3.1.4-alpha.1</span></h3>
-    <div >
-      <sp-station-quake-map centerLat="34" centerLon="-100" zoomLevel="5" fitBounds="false">
+    <h3>
+      Tutorial 4: Arrival Times <span class="sp_version">3.1.4-alpha.1</span>
+    </h3>
+    <div>
+      <sp-station-quake-map
+        centerLat="34"
+        centerLon="-100"
+        zoomLevel="5"
+        fitBounds="false"
+      >
       </sp-station-quake-map>
     </div>
-    <h3>A Seismograph recorded at <span id="stationCode"></span> for the <span id="earthquakeDescription"></span> earthquake!</h3>
-    <div  id="myseismograph">
-    </div>
-    <div  id="myparticlemotion">
-    </div>
-    <div id="traveltimes">
-    </div>
-    <script type="module" src="tutorial4.js">
-    </script>
+    <h3>
+      A Seismograph recorded at <span id="stationCode"></span> for the
+      <span id="earthquakeDescription"></span> earthquake!
+    </h3>
+    <div id="myseismograph"></div>
+    <div id="myparticlemotion"></div>
+    <div id="traveltimes"></div>
+    <script type="module" src="tutorial4.js"></script>
   </body>
 </html>

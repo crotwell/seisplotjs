@@ -1,59 +1,484 @@
-      <li><a href="../api/animatedseismograph.html">animatedseismograph</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/animatedseismograph.ts">source</a> ) - real time animated seismograph</li>
-      <li><a href="../api/areautil.html">areautil</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/areautil.ts">source</a> ) - area utils, lat,lon point inside area</li>
-      <li><a href="../api/axisutil.html">axisutil</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/axisutil.ts">source</a> ) - draw title and axis labels</li>
-      <li><a href="../api/components.html">components</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/components.ts">source</a> ) - simple web components</li>
-      <li><a href="../api/cssutil.html">cssutil</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/cssutil.ts">source</a> ) - simple util to inject css into web document</li>
-      <li><a href="../api/datalink.html">datalink</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/datalink.ts">source</a> ) - datalink protocol over web socket to a <a href="https://seiscode.iris.washington.edu/projects/ringserver">Ringserver</a> datalink server</li>
-      <li><a href="../api/dataset.html">dataset</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/dataset.ts">source</a> ) - load/save seismic data as zip file</li>
-      <li><a href="../api/datechooser.html">datechooser</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/datechooser.ts">source</a> ) - widget to choose dates and times</li>
-      <li><a href="../api/distaz.html">distaz</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/distaz.ts">source</a> ) - calculates distance between to lat/lon points</li>
-      <li><a href="../api/fdsnavailability.html">fdsnavailability</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnavailability.ts">source</a> ) - query data availability from an FDSN availability web service</li>
-      <li><a href="../api/fdsncommon.html">fdsncommon</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsncommon.ts">source</a> ) - common superclass for services following FDSN pattern</li>
-      <li><a href="../api/fdsndatacenters.html">fdsndatacenters</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsndatacenters.ts">source</a> ) - query FDSN data center registry</li>
-      <li><a href="../api/fdsndataselect.html">fdsndataselect</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsndataselect.ts">source</a> ) - query seismograms from an FDSN web service</li>
-      <li><a href="../api/fdsnevent.html">fdsnevent</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnevent.ts">source</a> ) - query earthquakes from an FDSN web service</li>
-      <li><a href="../api/fdsneventcomponent.html">fdsneventcomponent</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsneventcomponent.ts">source</a> ) - html component for FDSN Event web service options</li>
-      <li><a href="../api/fdsnsourceid.html">fdsnsourceid</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnsourceid.ts">source</a> ) - parse FDSN sourceId</li>
-      <li><a href="../api/fdsnstation.html">fdsnstation</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnstation.ts">source</a> ) - query networks, stations and channels from an FDSN web service</li>
-      <li><a href="../api/fdsnstationcomponent.html">fdsnstationcomponent</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnstationcomponent.ts">source</a> ) - html component for FDSN Station web service options</li>
-      <li><a href="../api/fft.html">fft</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fft.ts">source</a> ) - discrete fourier transforms via <a href="https://www.npmjs.com/package/oregondsp">OregonDSP</a></li>
-      <li><a href="../api/filter.html">filter</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/filter.ts">source</a> ) - timeseries filtering and utility functionality via <a href="https://www.npmjs.com/package/oregondsp">OregonDSP</a></li>
-      <li><a href="../api/handlebarshelpers.html">handlebarshelpers</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/handlebarshelpers.ts">source</a> ) - helpers for use with <a href="https://handlebarsjs.com/">handlebars</a>, eg in titles</li>
-      <li><a href="../api/helicorder.html">helicorder</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/helicorder.ts">source</a> ) - helicorder style 24 hour plots</li>
-      <li><a href="../api/infotable.html">infotable</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/infotable.ts">source</a> ) - component to display information about seismograms</li>
-      <li><a href="../api/irisfedcatalog.html">irisfedcatalog</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/irisfedcatalog.ts">source</a> ) - query IRIS fedcatalog web service</li>
-      <li><a href="../api/leaflet_css.html">leaflet_css</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/leaflet_css.ts">source</a> ) - standard css for leaflet</li>
-      <li><a href="../api/leafletutil.html">leafletutil</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/leafletutil.ts">source</a> ) - create leaflet maps with stations and earthquakes</li>
-      <li><a href="../api/miniseed.html">miniseed</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/miniseed.ts">source</a> ) - parsing miniseed files</li>
-      <li><a href="../api/mseed3.html">mseed3</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/mseed3.ts">source</a> ) - next generation miniseed file format for seismic data</li>
-      <li><a href="../api/mseedarchive.html">mseedarchive</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/mseedarchive.ts">source</a> ) - http access to remote miniseed files in a archive format</li>
-      <li><a href="../api/oregondsputil.html">oregondsputil</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/oregondsputil.ts">source</a> ) - utils for using the <a href="https://www.npmjs.com/package/oregondsp">OregonDSP</a> package</li>
-      <li><a href="../api/organizeddisplay.html">organizeddisplay</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/organizeddisplay.ts">source</a> ) - organize more complex displays composed of individual pieces</li>
-      <li><a href="../api/particlemotion.html">particlemotion</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/particlemotion.ts">source</a> ) - plot of particle motion from seismograms</li>
-      <li><a href="../api/quakeml.html">quakeml</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/quakeml.ts">source</a> ) - objects corresponding to elements in a QuakeML xml file</li>
-      <li><a href="../api/ringserverweb.html">ringserverweb</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/ringserverweb.ts">source</a> ) - presentation of data pulled from the web interface of a <a href="https://seiscode.iris.washington.edu/projects/ringserver">Ringserver</a></li>
-      <li><a href="../api/sacpolezero.html">sacpolezero</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/sacpolezero.ts">source</a> ) - parsing of SAC polezero response file</li>
-      <li><a href="../api/scale.html">scale</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/scale.ts">source</a> ) - time and amplitude scale change notification</li>
-      <li><a href="../api/seedcodec.html">seedcodec</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seedcodec.ts">source</a> ) - decompression for seismic data, often used from miniseed</li>
-      <li><a href="../api/seedlink.html">seedlink</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seedlink.ts">source</a> ) - seedlink protocol over web socket to a <a href="https://seiscode.iris.washington.edu/projects/ringserver">Ringserver</a> seedlink server</li>
-      <li><a href="../api/seedlink4.html">seedlink4</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seedlink4.ts">source</a> ) - seedlink version 4 protocol over web socket to a <a href="https://seiscode.iris.washington.edu/projects/ringserver">Ringserver</a> seedlink server</li>
-      <li><a href="../api/seismogram.html">seismogram</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismogram.ts">source</a> ) - objects representing seismograms and timeseries</li>
-      <li><a href="../api/seismogramloader.html">seismogramloader</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismogramloader.ts">source</a> ) - uses fdsnstation, fdsnevent, traveltime and fdsndataselect to load seismograms</li>
-      <li><a href="../api/seismogramsegment.html">seismogramsegment</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismogramsegment.ts">source</a> ) - objects representing contiguous segments of seismograms</li>
-      <li><a href="../api/seismograph.html">seismograph</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismograph.ts">source</a> ) - plotting of seismograms</li>
-      <li><a href="../api/seismographconfig.html">seismographconfig</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismographconfig.ts">source</a> ) - configuration of seismograph plots</li>
-      <li><a href="../api/seismographconfigeditor.html">seismographconfigeditor</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismographconfigeditor.ts">source</a> ) - editor for configuration of seismograph plots</li>
-      <li><a href="../api/seismographmarker.html">seismographmarker</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismographmarker.ts">source</a> ) - markers on seismograms</li>
-      <li><a href="../api/seismographutil.html">seismographutil</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismographutil.ts">source</a> ) - low level drawing functions for seismograph</li>
-      <li><a href="../api/sorting.html">sorting</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/sorting.ts">source</a> ) - sorting utilites for seismic data</li>
-      <li><a href="../api/spectraplot.html">spectraplot</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/spectraplot.ts">source</a> ) - plotting of specta output from the fft module</li>
-      <li><a href="../api/spelement.html">spelement</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/spelement.ts">source</a> ) - superclass for some custom elements</li>
-      <li><a href="../api/stationxml.html">stationxml</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/stationxml.ts">source</a> ) - objects corresponding to elements in a StationXML xml file</li>
-      <li><a href="../api/taper.html">taper</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/taper.ts">source</a> ) - tapering of timeseries</li>
-      <li><a href="../api/textformat.html">textformat</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/textformat.ts">source</a> ) - number formatting</li>
-      <li><a href="../api/transfer.html">transfer</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/transfer.ts">source</a> ) - instrument deconvolution of seismograms using response</li>
-      <li><a href="../api/traveltime.html">traveltime</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/traveltime.ts">source</a> ) - travel times of seismic waves via the IRIS traveltime web service</li>
-      <li><a href="../api/usgsgeojson.html">usgsgeojson</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/usgsgeojson.ts">source</a> ) - query and parse GeoJson from USGS</li>
-      <li><a href="../api/util.html">util</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/util.ts">source</a> ) - general utility functions</li>
-      <li><a href="../api/vector.html">vector</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/vector.ts">source</a> ) - vector process of seismograms</li>
-      <li><a href="../api/version.html">version</a> ( <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/version.ts">source</a> ) - version of this library</li>
+<li>
+  <a href="../api/animatedseismograph.html">animatedseismograph</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/animatedseismograph.ts"
+    >source</a
+  >
+  ) - real time animated seismograph
+</li>
+<li>
+  <a href="../api/areautil.html">areautil</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/areautil.ts"
+    >source</a
+  >
+  ) - area utils, lat,lon point inside area
+</li>
+<li>
+  <a href="../api/axisutil.html">axisutil</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/axisutil.ts"
+    >source</a
+  >
+  ) - draw title and axis labels
+</li>
+<li>
+  <a href="../api/components.html">components</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/components.ts"
+    >source</a
+  >
+  ) - simple web components
+</li>
+<li>
+  <a href="../api/cssutil.html">cssutil</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/cssutil.ts"
+    >source</a
+  >
+  ) - simple util to inject css into web document
+</li>
+<li>
+  <a href="../api/datalink.html">datalink</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/datalink.ts"
+    >source</a
+  >
+  ) - datalink protocol over web socket to a
+  <a href="https://seiscode.iris.washington.edu/projects/ringserver"
+    >Ringserver</a
+  >
+  datalink server
+</li>
+<li>
+  <a href="../api/dataset.html">dataset</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/dataset.ts"
+    >source</a
+  >
+  ) - load/save seismic data as zip file
+</li>
+<li>
+  <a href="../api/datechooser.html">datechooser</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/datechooser.ts"
+    >source</a
+  >
+  ) - widget to choose dates and times
+</li>
+<li>
+  <a href="../api/distaz.html">distaz</a> (
+  <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/distaz.ts"
+    >source</a
+  >
+  ) - calculates distance between to lat/lon points
+</li>
+<li>
+  <a href="../api/fdsnavailability.html">fdsnavailability</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnavailability.ts"
+    >source</a
+  >
+  ) - query data availability from an FDSN availability web service
+</li>
+<li>
+  <a href="../api/fdsncommon.html">fdsncommon</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsncommon.ts"
+    >source</a
+  >
+  ) - common superclass for services following FDSN pattern
+</li>
+<li>
+  <a href="../api/fdsndatacenters.html">fdsndatacenters</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsndatacenters.ts"
+    >source</a
+  >
+  ) - query FDSN data center registry
+</li>
+<li>
+  <a href="../api/fdsndataselect.html">fdsndataselect</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsndataselect.ts"
+    >source</a
+  >
+  ) - query seismograms from an FDSN web service
+</li>
+<li>
+  <a href="../api/fdsnevent.html">fdsnevent</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnevent.ts"
+    >source</a
+  >
+  ) - query earthquakes from an FDSN web service
+</li>
+<li>
+  <a href="../api/fdsneventcomponent.html">fdsneventcomponent</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsneventcomponent.ts"
+    >source</a
+  >
+  ) - html component for FDSN Event web service options
+</li>
+<li>
+  <a href="../api/fdsnsourceid.html">fdsnsourceid</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnsourceid.ts"
+    >source</a
+  >
+  ) - parse FDSN sourceId
+</li>
+<li>
+  <a href="../api/fdsnstation.html">fdsnstation</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnstation.ts"
+    >source</a
+  >
+  ) - query networks, stations and channels from an FDSN web service
+</li>
+<li>
+  <a href="../api/fdsnstationcomponent.html">fdsnstationcomponent</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fdsnstationcomponent.ts"
+    >source</a
+  >
+  ) - html component for FDSN Station web service options
+</li>
+<li>
+  <a href="../api/fft.html">fft</a> (
+  <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/fft.ts"
+    >source</a
+  >
+  ) - discrete fourier transforms via
+  <a href="https://www.npmjs.com/package/oregondsp">OregonDSP</a>
+</li>
+<li>
+  <a href="../api/filter.html">filter</a> (
+  <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/filter.ts"
+    >source</a
+  >
+  ) - timeseries filtering and utility functionality via
+  <a href="https://www.npmjs.com/package/oregondsp">OregonDSP</a>
+</li>
+<li>
+  <a href="../api/handlebarshelpers.html">handlebarshelpers</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/handlebarshelpers.ts"
+    >source</a
+  >
+  ) - helpers for use with <a href="https://handlebarsjs.com/">handlebars</a>,
+  eg in titles
+</li>
+<li>
+  <a href="../api/helicorder.html">helicorder</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/helicorder.ts"
+    >source</a
+  >
+  ) - helicorder style 24 hour plots
+</li>
+<li>
+  <a href="../api/infotable.html">infotable</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/infotable.ts"
+    >source</a
+  >
+  ) - component to display information about seismograms
+</li>
+<li>
+  <a href="../api/irisfedcatalog.html">irisfedcatalog</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/irisfedcatalog.ts"
+    >source</a
+  >
+  ) - query IRIS fedcatalog web service
+</li>
+<li>
+  <a href="../api/leaflet_css.html">leaflet_css</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/leaflet_css.ts"
+    >source</a
+  >
+  ) - standard css for leaflet
+</li>
+<li>
+  <a href="../api/leafletutil.html">leafletutil</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/leafletutil.ts"
+    >source</a
+  >
+  ) - create leaflet maps with stations and earthquakes
+</li>
+<li>
+  <a href="../api/miniseed.html">miniseed</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/miniseed.ts"
+    >source</a
+  >
+  ) - parsing miniseed files
+</li>
+<li>
+  <a href="../api/mseed3.html">mseed3</a> (
+  <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/mseed3.ts"
+    >source</a
+  >
+  ) - next generation miniseed file format for seismic data
+</li>
+<li>
+  <a href="../api/mseedarchive.html">mseedarchive</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/mseedarchive.ts"
+    >source</a
+  >
+  ) - http access to remote miniseed files in a archive format
+</li>
+<li>
+  <a href="../api/oregondsputil.html">oregondsputil</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/oregondsputil.ts"
+    >source</a
+  >
+  ) - utils for using the
+  <a href="https://www.npmjs.com/package/oregondsp">OregonDSP</a> package
+</li>
+<li>
+  <a href="../api/organizeddisplay.html">organizeddisplay</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/organizeddisplay.ts"
+    >source</a
+  >
+  ) - organize more complex displays composed of individual pieces
+</li>
+<li>
+  <a href="../api/particlemotion.html">particlemotion</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/particlemotion.ts"
+    >source</a
+  >
+  ) - plot of particle motion from seismograms
+</li>
+<li>
+  <a href="../api/quakeml.html">quakeml</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/quakeml.ts"
+    >source</a
+  >
+  ) - objects corresponding to elements in a QuakeML xml file
+</li>
+<li>
+  <a href="../api/ringserverweb.html">ringserverweb</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/ringserverweb.ts"
+    >source</a
+  >
+  ) - presentation of data pulled from the web interface of a
+  <a href="https://seiscode.iris.washington.edu/projects/ringserver"
+    >Ringserver</a
+  >
+</li>
+<li>
+  <a href="../api/sacpolezero.html">sacpolezero</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/sacpolezero.ts"
+    >source</a
+  >
+  ) - parsing of SAC polezero response file
+</li>
+<li>
+  <a href="../api/scale.html">scale</a> (
+  <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/scale.ts"
+    >source</a
+  >
+  ) - time and amplitude scale change notification
+</li>
+<li>
+  <a href="../api/seedcodec.html">seedcodec</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seedcodec.ts"
+    >source</a
+  >
+  ) - decompression for seismic data, often used from miniseed
+</li>
+<li>
+  <a href="../api/seedlink.html">seedlink</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seedlink.ts"
+    >source</a
+  >
+  ) - seedlink protocol over web socket to a
+  <a href="https://seiscode.iris.washington.edu/projects/ringserver"
+    >Ringserver</a
+  >
+  seedlink server
+</li>
+<li>
+  <a href="../api/seedlink4.html">seedlink4</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seedlink4.ts"
+    >source</a
+  >
+  ) - seedlink version 4 protocol over web socket to a
+  <a href="https://seiscode.iris.washington.edu/projects/ringserver"
+    >Ringserver</a
+  >
+  seedlink server
+</li>
+<li>
+  <a href="../api/seismogram.html">seismogram</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismogram.ts"
+    >source</a
+  >
+  ) - objects representing seismograms and timeseries
+</li>
+<li>
+  <a href="../api/seismogramloader.html">seismogramloader</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismogramloader.ts"
+    >source</a
+  >
+  ) - uses fdsnstation, fdsnevent, traveltime and fdsndataselect to load
+  seismograms
+</li>
+<li>
+  <a href="../api/seismogramsegment.html">seismogramsegment</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismogramsegment.ts"
+    >source</a
+  >
+  ) - objects representing contiguous segments of seismograms
+</li>
+<li>
+  <a href="../api/seismograph.html">seismograph</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismograph.ts"
+    >source</a
+  >
+  ) - plotting of seismograms
+</li>
+<li>
+  <a href="../api/seismographconfig.html">seismographconfig</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismographconfig.ts"
+    >source</a
+  >
+  ) - configuration of seismograph plots
+</li>
+<li>
+  <a href="../api/seismographconfigeditor.html">seismographconfigeditor</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismographconfigeditor.ts"
+    >source</a
+  >
+  ) - editor for configuration of seismograph plots
+</li>
+<li>
+  <a href="../api/seismographmarker.html">seismographmarker</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismographmarker.ts"
+    >source</a
+  >
+  ) - markers on seismograms
+</li>
+<li>
+  <a href="../api/seismographutil.html">seismographutil</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/seismographutil.ts"
+    >source</a
+  >
+  ) - low level drawing functions for seismograph
+</li>
+<li>
+  <a href="../api/sorting.html">sorting</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/sorting.ts"
+    >source</a
+  >
+  ) - sorting utilites for seismic data
+</li>
+<li>
+  <a href="../api/spectraplot.html">spectraplot</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/spectraplot.ts"
+    >source</a
+  >
+  ) - plotting of specta output from the fft module
+</li>
+<li>
+  <a href="../api/spelement.html">spelement</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/spelement.ts"
+    >source</a
+  >
+  ) - superclass for some custom elements
+</li>
+<li>
+  <a href="../api/stationxml.html">stationxml</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/stationxml.ts"
+    >source</a
+  >
+  ) - objects corresponding to elements in a StationXML xml file
+</li>
+<li>
+  <a href="../api/taper.html">taper</a> (
+  <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/taper.ts"
+    >source</a
+  >
+  ) - tapering of timeseries
+</li>
+<li>
+  <a href="../api/textformat.html">textformat</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/textformat.ts"
+    >source</a
+  >
+  ) - number formatting
+</li>
+<li>
+  <a href="../api/transfer.html">transfer</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/transfer.ts"
+    >source</a
+  >
+  ) - instrument deconvolution of seismograms using response
+</li>
+<li>
+  <a href="../api/traveltime.html">traveltime</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/traveltime.ts"
+    >source</a
+  >
+  ) - travel times of seismic waves via the IRIS traveltime web service
+</li>
+<li>
+  <a href="../api/usgsgeojson.html">usgsgeojson</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/usgsgeojson.ts"
+    >source</a
+  >
+  ) - query and parse GeoJson from USGS
+</li>
+<li>
+  <a href="../api/util.html">util</a> (
+  <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/util.ts"
+    >source</a
+  >
+  ) - general utility functions
+</li>
+<li>
+  <a href="../api/vector.html">vector</a> (
+  <a href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/vector.ts"
+    >source</a
+  >
+  ) - vector process of seismograms
+</li>
+<li>
+  <a href="../api/version.html">version</a> (
+  <a
+    href="https://github.com/crotwell/seisplotjs/blob/version3.1/src/version.ts"
+    >source</a
+  >
+  ) - version of this library
+</li>

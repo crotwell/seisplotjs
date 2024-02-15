@@ -1,122 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
- <head>
-  <meta charset="utf-8"/>
-  <title>
-   seisplotjs 3.1 Tutorial
-  </title>
-  <meta content="Javascript library for parsing, manipulating and displaying seismic data." name="description"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <link href="../bass.css" rel="stylesheet"/>
-  <link href="../split.css" rel="stylesheet"/>
-  <link href="../prism.css" rel="stylesheet"/>
-  <link href="style.css" rel="stylesheet"/>
-  <link href="../flavicon.png" rel="icon" type="image/png"/>
-  <style>
-   div.sssseismograph {
+  <head>
+    <meta charset="utf-8" />
+    <title>seisplotjs 3.1 Tutorial</title>
+    <meta
+      content="Javascript library for parsing, manipulating and displaying seismic data."
+      name="description"
+    />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <link href="../bass.css" rel="stylesheet" />
+    <link href="../split.css" rel="stylesheet" />
+    <link href="../prism.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <link href="../flavicon.png" rel="icon" type="image/png" />
+    <style>
+      div.sssseismograph {
         height: 450px;
       }
-  </style>
- </head>
- <body>
-  <div class="flex">
-   <div class="overflow-auto fs0 height-viewport-100" id="split-left">
-    <div class="py1 px2">
-     <div id="toc">
-      <ul class="list-reset h5 py1-ul">
-       <li>
-        <a class="" href="../index.html">
-         Seisplotjs
-        </a>
-       </li>
-       <li>
-        <a class="" href="../api/index.html">
-         API JS Docs
-        </a>
-       </li>
-       <li>
-        <a class="" href="../examples/index.html">
-         Examples
-        </a>
-       </li>
-       <li>
-        <a class="" href="../gallery/index.html">
-         Gallery
-        </a>
-       </li>
-       <li>
-        <a class="" href="../tutorial/index.html">
-         Tutorial
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/index.html">
-         Sine Wave
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/2_realdata.html">
-         Real data
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/3_quakesandchannels.html">
-         Quakes and Channels
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/4_arrivaltimes.html">
-         Arrival Times
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/5_filter.html">
-         Filtering
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/6_helicorder.html">
-         Helicorder
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/7_realtime.html">
-         Realtime
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/8_andmore.html">
-         ...and more
-        </a>
-       </li>
-      </ul>
-     </div>
-    </div>
-   </div>
-   <div class="relative overflow-auto height-viewport-100" id="split-right">
-    <section class="p2 mb2 clearfix bg-white minishadow">
-     <div class="clearfix">
-      <h1>
-       Seisplotjs Tutorial
-       <span class="sp_version">
-        3.1.4-alpha.1
-       </span>
-      </h1>
-      <h3>
-       Draw a Sine Wave:
-      </h3>
-      <h5>
-       See it live in
-       <a href="tutorial1.html" target="_blank">
-        tutorial1.html
-       </a>
-       .
-      </h5>
-      <p>
-       Lets start by plotting a seismogram. First we need an html file to
-            put the plot in, something like this:
-      </p>
-      <pre><code class="language-html">
+    </style>
+  </head>
+  <body>
+    <div class="flex">
+      <div class="overflow-auto fs0 height-viewport-100" id="split-left">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
+              <li>
+                <a class="" href="../index.html"> Seisplotjs </a>
+              </li>
+              <li>
+                <a class="" href="../api/index.html"> API JS Docs </a>
+              </li>
+              <li>
+                <a class="" href="../examples/index.html"> Examples </a>
+              </li>
+              <li>
+                <a class="" href="../gallery/index.html"> Gallery </a>
+              </li>
+              <li>
+                <a class="" href="../tutorial/index.html"> Tutorial </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/index.html"> Sine Wave </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/2_realdata.html">
+                  Real data
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/3_quakesandchannels.html">
+                  Quakes and Channels
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/4_arrivaltimes.html">
+                  Arrival Times
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/5_filter.html"> Filtering </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/6_helicorder.html">
+                  Helicorder
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/7_realtime.html"> Realtime </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/8_andmore.html">
+                  ...and more
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="relative overflow-auto height-viewport-100" id="split-right">
+        <section class="p2 mb2 clearfix bg-white minishadow">
+          <div class="clearfix">
+            <h1>
+              Seisplotjs Tutorial
+              <span class="sp_version"> 3.1.4-alpha.1 </span>
+            </h1>
+            <h3>Draw a Sine Wave:</h3>
+            <h5>
+              See it live in
+              <a href="tutorial1.html" target="_blank"> tutorial1.html </a>
+              .
+            </h5>
+            <p>
+              Lets start by plotting a seismogram. First we need an html file to
+              put the plot in, something like this:
+            </p>
+            <pre><code class="language-html">
 &lt;html lang="en"&gt;
   &lt;head&gt;
     &lt;meta charset="utf-8"&gt;
@@ -138,39 +117,36 @@
   &lt;/body&gt;
 &lt;/html&gt;
           </code></pre>
-      <p>
-       If this is to be hosted locally, then we need to download the standalone version of seisplotjs,
-            from here
-       <a href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.1.4-alpha.1_standalone.mjs">
-        http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs/seisplotjs_3.1.4-alpha.1_standalone.mjs
-       </a>
-       and put it in the same directory as our html file.
-              The
-       <code class="language-javascript">
-        import * as sp from "...";
-       </code>
-       code will also need to be changed to just the local link.
-      </p>
-      <p>
-       Now we need a seismogram to plot. In seisplotjs, we refer to the
-            machine that recorded the data as a seismometer, the actual data
-            as a seismogram, and the plot as a seismograph. The last one is not
-            as common, but it helps to have names for things. Also, seisplotjs
-            uses a container object, SeismogramDisplayData, to allow connecting
-            other data, like the station metadata or the earthquake to a
-            seismogram. We will create a
-            fake seismogram with a sine wave. You either put your javascript
-            in a separate file and load it via the
-       <code>
-        src
-       </code>
-       attribute, or just put out javascript directly inside the bottom
-       <code>
-        script
-       </code>
-       element.
-      </p>
-      <pre><code class="language-javascript" snippet="createseis">
+            <p>
+              If this is to be hosted locally, then we need to download the
+              standalone version of seisplotjs, from here
+              <a
+                href="http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs_3.1.4-alpha.1_standalone.mjs"
+              >
+                http://www.seis.sc.edu/downloads/seisplotjs/seisplotjs/seisplotjs_3.1.4-alpha.1_standalone.mjs
+              </a>
+              and put it in the same directory as our html file. The
+              <code class="language-javascript">
+                import * as sp from "...";
+              </code>
+              code will also need to be changed to just the local link.
+            </p>
+            <p>
+              Now we need a seismogram to plot. In seisplotjs, we refer to the
+              machine that recorded the data as a seismometer, the actual data
+              as a seismogram, and the plot as a seismograph. The last one is
+              not as common, but it helps to have names for things. Also,
+              seisplotjs uses a container object, SeismogramDisplayData, to
+              allow connecting other data, like the station metadata or the
+              earthquake to a seismogram. We will create a fake seismogram with
+              a sine wave. You either put your javascript in a separate file and
+              load it via the
+              <code> src </code>
+              attribute, or just put out javascript directly inside the bottom
+              <code> script </code>
+              element.
+            </p>
+            <pre><code class="language-javascript" snippet="createseis">
 import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
 sp.util.updateVersionText('.sp_version');
 
@@ -183,69 +159,49 @@ let dataArray = new Float32Array(10*sinePeriod).map(function(d, i) {
 let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
 let myseismogram = sp.seismogram.Seismogram.fromContiguousData(dataArray, sampleRate, start);
 </code></pre>
-      <p>
-       Now we have created a contiguous (no gaps) seismogram that represents
-            a sine wave with a period of 5 seconds in a seismogram with a
-            sample rate of 20 samples per second. This seismogram is long
-            enough to contain 10 cycles. The start time is given in UTC as all seismic
-            data should be. To display this data we need a
-       <code class="language-javascript">
-        Seismograph
-       </code>
-       to put it in and a
-       <code class="language-javascript">
-        SeismographConfig
-       </code>
-       to configure the Seismograph.
-            We also put the seismogram inside a
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       object. In this case it doesn"t matter much, but later we will want
-            to attach the
-       <code class="language-javascript">
-        Channel
-       </code>
-       ,
-            a
-       <code class="language-javascript">
-        Quake
-       </code>
-       and maybe
-            other items to the seismogram and the
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       object allows that. Note that the
-       <code class="language-javascript">
-        Seismograph
-       </code>
-       takes an array of
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       objects, allowing overlaying data.
-       Just for fun we add a title and give a bit of space
-        at the top for the title to be without overlapping the seismograph.
-      </p>
-      <pre><code class="language-javascript" snippet="draw">
+            <p>
+              Now we have created a contiguous (no gaps) seismogram that
+              represents a sine wave with a period of 5 seconds in a seismogram
+              with a sample rate of 20 samples per second. This seismogram is
+              long enough to contain 10 cycles. The start time is given in UTC
+              as all seismic data should be. To display this data we need a
+              <code class="language-javascript"> Seismograph </code>
+              to put it in and a
+              <code class="language-javascript"> SeismographConfig </code>
+              to configure the Seismograph. We also put the seismogram inside a
+              <code class="language-javascript"> SeismogramDisplayData </code>
+              object. In this case it doesn"t matter much, but later we will
+              want to attach the
+              <code class="language-javascript"> Channel </code>
+              , a
+              <code class="language-javascript"> Quake </code>
+              and maybe other items to the seismogram and the
+              <code class="language-javascript"> SeismogramDisplayData </code>
+              object allows that. Note that the
+              <code class="language-javascript"> Seismograph </code>
+              takes an array of
+              <code class="language-javascript"> SeismogramDisplayData </code>
+              objects, allowing overlaying data. Just for fun we add a title and
+              give a bit of space at the top for the title to be without
+              overlapping the seismograph.
+            </p>
+            <pre><code class="language-javascript" snippet="draw">
 let seisData = sp.seismogram.SeismogramDisplayData.fromSeismogram(myseismogram);
 const graph = document.querySelector('sp-seismograph');
 graph.seismographConfig.title = "A sine wave!";
 graph.seismographConfig.margin.top = 25;
 graph.seisData = [ seisData ];
 </code></pre>
-      <p>
-       A second way is to create a seismograph dynamically and then insert it into
-        the html. We will add a second display for the same data using this
-        method. They are equivalent, but some cases it makes more sense to
-        find the
-       <code class="language-javascript">
-        Seismograph
-       </code>
-       element and add data to it, other times it is
-        easier to create a new element as needed.
-       <pre><code class="language-javascript" snippet="divdraw">
+            <p>
+              A second way is to create a seismograph dynamically and then
+              insert it into the html. We will add a second display for the same
+              data using this method. They are equivalent, but some cases it
+              makes more sense to find the
+              <code class="language-javascript"> Seismograph </code>
+              element and add data to it, other times it is easier to create a
+              new element as needed.
+            </p>
+            <pre><code class="language-javascript" snippet="divdraw">
 const div = document.querySelector('div#sinewave');
 const seisConfig = new sp.seismographconfig.SeismographConfig();
 seisConfig.title = "Another sine wave!";
@@ -253,22 +209,16 @@ seisConfig.margin.top = 25;
 const div_graph = new sp.seismograph.Seismograph([seisData], seisConfig);
 div.appendChild(div_graph);
 </code></pre>
-      </p>
-      <p>
-       We should have a seismograph displayed. But it might be a bit small,
-            so let"s make it bigger. We will style it with CSS. In the
-       <code>
-        &lt;head&gt;
-       </code>
-       near the top of the html we will add a
-       <code>
-        &lt;style&gt;
-       </code>
-       element
-            to make the height be 300 pixels and the width be 100% of the
-            space available.
-      </p>
-      <pre><code class="language-html">
+            <p>
+              We should have a seismograph displayed. But it might be a bit
+              small, so let"s make it bigger. We will style it with CSS. In the
+              <code> &lt;head&gt; </code>
+              near the top of the html we will add a
+              <code> &lt;style&gt; </code>
+              element to make the height be 300 pixels and the width be 100% of
+              the space available.
+            </p>
+            <pre><code class="language-html">
 &lt;style&gt;
   sp-seismograph {
     height: 300px;
@@ -276,46 +226,41 @@ div.appendChild(div_graph);
   }
 &lt;/style&gt;
         </code></pre>
-      <p>
-       Note also that zoom in and out by double click and shift-double click
-          plus dragging left and right is enabled by default, give it a try.
-          The mouse wheel can also be set up to zoom,
-          although this can be a bit annoying at times. We can link the
-          time scale of the two seismographs so that they zoom and drag together.
-      </p>
-      <pre><code class="language-javascript" snippet="timescale">
+            <p>
+              Note also that zoom in and out by double click and shift-double
+              click plus dragging left and right is enabled by default, give it
+              a try. The mouse wheel can also be set up to zoom, although this
+              can be a bit annoying at times. We can link the time scale of the
+              two seismographs so that they zoom and drag together.
+            </p>
+            <pre><code class="language-javascript" snippet="timescale">
 graph.seismographConfig.linkedTimeScale.link(div_graph);
 </code></pre>
-      <h3>
-       See it live in
-       <a href="tutorial1.html" target="_blank">
-        tutorial1.html
-       </a>
-       .
-      </h3>
-      <p>
-       Next:
-       <a href="2_realdata.html">
-        Let"s get some real data
-       </a>
-      </p>
-     </div>
-    </section>
-   </div>
-  </div>
-  <script type="module">
-   import * as sp from './seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
-  </script>
-  <script src="../prism.js">
-  </script>
-  <script>
-   Prism.plugins.NormalizeWhitespace.setDefaults({
-      	"remove-trailing": true,
-      	"remove-indent": true,
-      	"left-trim": true,
-      	"right-trim": true
+            <h3>
+              See it live in
+              <a href="tutorial1.html" target="_blank"> tutorial1.html </a>
+              .
+            </h3>
+            <p>
+              Next:
+              <a href="2_realdata.html"> Let"s get some real data </a>
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script type="module">
+      import * as sp from "./seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
+    </script>
+    <script src="../prism.js"></script>
+    <script>
+      Prism.plugins.NormalizeWhitespace.setDefaults({
+        "remove-trailing": true,
+        "remove-indent": true,
+        "left-trim": true,
+        "right-trim": true,
       });
-  </script>
- </body>
+    </script>
+  </body>
 </html>

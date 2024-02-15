@@ -1,147 +1,120 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
- <head>
-  <meta charset="utf-8"/>
-  <title>
-   seisplotjs 3.1 Tutorial, p3
-  </title>
-  <meta content="Javascript library for parsing, manipulating and displaying seismic data." name="description"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <link href="../bass.css" rel="stylesheet"/>
-  <link href="../split.css" rel="stylesheet"/>
-  <link href="../prism.css" rel="stylesheet"/>
-  <link href="style.css" rel="stylesheet"/>
-  <link href="../flavicon.png" rel="icon" type="image/png"/>
- </head>
- <body>
-  <div class="flex">
-   <div class="overflow-auto fs0 height-viewport-100" id="split-left">
-    <div class="py1 px2">
-     <div id="toc">
-      <ul class="list-reset h5 py1-ul">
-       <li>
-        <a class="" href="../index.html">
-         Seisplotjs
-        </a>
-       </li>
-       <li>
-        <a class="" href="../api/index.html">
-         API JS Docs
-        </a>
-       </li>
-       <li>
-        <a class="" href="../gallery/index.html">
-         Gallery
-        </a>
-       </li>
-       <li>
-        <a class="" href="../examples/index.html">
-         Examples
-        </a>
-       </li>
-       <li>
-        <a class="" href="../tutorial/index.html">
-         Tutorial
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/index.html">
-         Sine Wave
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/2_realdata.html">
-         Real data
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/3_quakesandchannels.html">
-         Quakes and Channels
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/4_arrivaltimes.html">
-         Arrival Times
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/5_filter.html">
-         Filtering
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/6_helicorder.html">
-         Helicorder
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/7_realtime.html">
-         Realtime
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/8_andmore.html">
-         ...and more
-        </a>
-       </li>
-      </ul>
-     </div>
-    </div>
-   </div>
-   <div class="relative overflow-auto height-viewport-100" id="split-right">
-    <section class="p2 mb2 clearfix bg-white minishadow">
-     <div class="clearfix">
-      <h1>
-       Seisplotjs Tutorial
-       <span class="sp_version">
-        3.1.4-alpha.1
-       </span>
-      </h1>
-      <h3>
-       Quakes and Channels:
-      </h3>
-      <h5>
-       See it live in
-       <a href="tutorial3.html" target="_blank">
-        tutorial3.html
-       </a>
-       .
-      </h5>
-      <p>
-       It would be nicer if we could add some useful labels to this instead
-            of just a raw seismogram. Perhaps getting some information about
-            this particular earthquake and the station it was recorded at. We
-            will use the IRIS
-       <a href="https://service.iris.edu/fdsnws/station/1/">
-        FDSNWS
-            station
-       </a>
-       web service to get the station and channels and the USGS
-       <a href="https://earthquake.usgs.gov/fdsnws/event/1/">
-        FDSNWS
-           event
-       </a>
-       web service to get the earthquake. Since we will have the
-           locations for the quake and station, we might as well plot them on a
-           map. We can use
-       <a href="https://leafletjs.com">
-        Leaflet
-       </a>
-       , a
-           javascript map library
-           that creates nice looking maps and has lots of flexibility, for this.
-           Seisplotjs includes leaflet and provides helper functions in the
-       <code class="language-javascript">
-        seisplotjs.leafletutil
-       </code>
-       module.
-      </p>
-      <p>
-       We can add some additional styling to size the map. Because the quake and
-            the station are more or less east west of each other, we can use a
-            map that is relatively narrow vertically, but spans the entire window.
-      </p>
-      <pre><code class="language-css">
+  <head>
+    <meta charset="utf-8" />
+    <title>seisplotjs 3.1 Tutorial, p3</title>
+    <meta
+      content="Javascript library for parsing, manipulating and displaying seismic data."
+      name="description"
+    />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <link href="../bass.css" rel="stylesheet" />
+    <link href="../split.css" rel="stylesheet" />
+    <link href="../prism.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <link href="../flavicon.png" rel="icon" type="image/png" />
+  </head>
+  <body>
+    <div class="flex">
+      <div class="overflow-auto fs0 height-viewport-100" id="split-left">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
+              <li>
+                <a class="" href="../index.html"> Seisplotjs </a>
+              </li>
+              <li>
+                <a class="" href="../api/index.html"> API JS Docs </a>
+              </li>
+              <li>
+                <a class="" href="../gallery/index.html"> Gallery </a>
+              </li>
+              <li>
+                <a class="" href="../examples/index.html"> Examples </a>
+              </li>
+              <li>
+                <a class="" href="../tutorial/index.html"> Tutorial </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/index.html"> Sine Wave </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/2_realdata.html">
+                  Real data
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/3_quakesandchannels.html">
+                  Quakes and Channels
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/4_arrivaltimes.html">
+                  Arrival Times
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/5_filter.html"> Filtering </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/6_helicorder.html">
+                  Helicorder
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/7_realtime.html"> Realtime </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/8_andmore.html">
+                  ...and more
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="relative overflow-auto height-viewport-100" id="split-right">
+        <section class="p2 mb2 clearfix bg-white minishadow">
+          <div class="clearfix">
+            <h1>
+              Seisplotjs Tutorial
+              <span class="sp_version"> 3.1.4-alpha.1 </span>
+            </h1>
+            <h3>Quakes and Channels:</h3>
+            <h5>
+              See it live in
+              <a href="tutorial3.html" target="_blank"> tutorial3.html </a>
+              .
+            </h5>
+            <p>
+              It would be nicer if we could add some useful labels to this
+              instead of just a raw seismogram. Perhaps getting some information
+              about this particular earthquake and the station it was recorded
+              at. We will use the IRIS
+              <a href="https://service.iris.edu/fdsnws/station/1/">
+                FDSNWS station
+              </a>
+              web service to get the station and channels and the USGS
+              <a href="https://earthquake.usgs.gov/fdsnws/event/1/">
+                FDSNWS event
+              </a>
+              web service to get the earthquake. Since we will have the
+              locations for the quake and station, we might as well plot them on
+              a map. We can use
+              <a href="https://leafletjs.com"> Leaflet </a>
+              , a javascript map library that creates nice looking maps and has
+              lots of flexibility, for this. Seisplotjs includes leaflet and
+              provides helper functions in the
+              <code class="language-javascript"> seisplotjs.leafletutil </code>
+              module.
+            </p>
+            <p>
+              We can add some additional styling to size the map. Because the
+              quake and the station are more or less east west of each other, we
+              can use a map that is relatively narrow vertically, but spans the
+              entire window.
+            </p>
+            <pre><code class="language-css">
           &lt;style&gt;
             sp-station-quake-map {
               height: 300px;
@@ -152,50 +125,47 @@
             }
           &lt;/style&gt;
         </code></pre>
-      <p>
-       First, we will create the map in the html, centering it on 34/-100 and at
-       zoom level 5. The
-       <a href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer">
-        World Ocean Base
-       </a>
-       tile layer gives a nice background.
-      </p>
-      <pre><code class="language-html">
+            <p>
+              First, we will create the map in the html, centering it on 34/-100
+              and at zoom level 5. The
+              <a
+                href="https://services.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer"
+              >
+                World Ocean Base
+              </a>
+              tile layer gives a nice background.
+            </p>
+            <pre><code class="language-html">
       &lt;sp-station-quake-map centerLat="34" centerLon="-100" zoomLevel="5" fitBounds="false"
         tileUrl="https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}"
         tileAttribution="Tiles &copy; Esri &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri" &gt;
       &lt;/sp-station-quake-map&gt;
       </code></pre>
-      <p>
-       The markers on the map can also be styled with css, using the
-       <code class="language-javascript">
-        quakeMarker
-       </code>
-       and
-       <code class="language-javascript">
-        stationMarker
-       </code>
-       selectors. However, because we are using
-       <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements">
-        custom HTML elements
-       </a>
-       , they
-       are insulated from the CSS in the containing page, so we have to inject
-       the CSS into the element. Many of the seisplotjs elements have a
-       <code class="language-javascript">
-        addStyle()
-       </code>
-       method that will
-       put the CSS into the correct place.
-      </p>
-      <p>
-       We
-        will change the color from the default red and blue to illustrate. Note
-        that the station icon is actually a div that contains a triangle
-        unicode character, \u25B2, while the quake marker is a circle created
-        from an svg path element and so we use stoke and fill instead of color.
-      </p>
-      <pre><code class="language-javascript" snippet="mapcss">
+            <p>
+              The markers on the map can also be styled with css, using the
+              <code class="language-javascript"> quakeMarker </code>
+              and
+              <code class="language-javascript"> stationMarker </code>
+              selectors. However, because we are using
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements"
+              >
+                custom HTML elements
+              </a>
+              , they are insulated from the CSS in the containing page, so we
+              have to inject the CSS into the element. Many of the seisplotjs
+              elements have a
+              <code class="language-javascript"> addStyle() </code>
+              method that will put the CSS into the correct place.
+            </p>
+            <p>
+              We will change the color from the default red and blue to
+              illustrate. Note that the station icon is actually a div that
+              contains a triangle unicode character, \u25B2, while the quake
+              marker is a circle created from an svg path element and so we use
+              stoke and fill instead of color.
+            </p>
+            <pre><code class="language-javascript" snippet="mapcss">
 const mymap = document.querySelector('sp-station-quake-map');
 
 mymap.addStyle(`
@@ -210,23 +180,19 @@ mymap.addStyle(`
 `);
 
 </code></pre>
-      <p>
-       Then we will create the queries for the quake and station.
-        Again, both of these queries
-        are asynchronous and so we will have to use promises. We first create
-        both the
-       <code class="language-javascript">
-        EventQuery
-       </code>
-       and
-       <code class="language-javascript">
-        StationQuery
-       </code>
-       objects. The time range on the event query means the earthquake happened
-       within the window, but for the station query it means the station was
-       active (or at least existed) during some part of the window, i.e. it overlaps.
-      </p>
-      <pre><code class="language-javascript" snippet="quakechan">
+            <p>
+              Then we will create the queries for the quake and station. Again,
+              both of these queries are asynchronous and so we will have to use
+              promises. We first create both the
+              <code class="language-javascript"> EventQuery </code>
+              and
+              <code class="language-javascript"> StationQuery </code>
+              objects. The time range on the event query means the earthquake
+              happened within the window, but for the station query it means the
+              station was active (or at least existed) during some part of the
+              window, i.e. it overlaps.
+            </p>
+            <pre><code class="language-javascript" snippet="quakechan">
 let queryTimeWindow = sp.util.startEnd('2019-07-01', '2019-07-31');
 let eventQuery = new sp.fdsnevent.EventQuery()
   .timeRange(queryTimeWindow)
@@ -240,76 +206,54 @@ let stationQuery = new sp.fdsnstation.StationQuery()
   .channelCode('LH?')
   .timeRange(queryTimeWindow);
 </code></pre>
-      <p>
-       Next we call the
-       <code class="language-javascript">
-        query
-       </code>
-       methods for eventQuery and stationQuery, which each
-       return a Promise to an array of Network or Quake objects
-       and then use those to plot the earthquakes and stations on the map.
-       The station will be plotted as
-       a generic triangle as the map marker, but the quake is
-       plotted as a circle with the radius scaled by the magnitude.
-      </p>
-      <pre><code class="language-javascript" snippet="promise">
+            <p>
+              Next we call the
+              <code class="language-javascript"> query </code>
+              methods for eventQuery and stationQuery, which each return a
+              Promise to an array of Network or Quake objects and then use those
+              to plot the earthquakes and stations on the map. The station will
+              be plotted as a generic triangle as the map marker, but the quake
+              is plotted as a circle with the radius scaled by the magnitude.
+            </p>
+            <pre><code class="language-javascript" snippet="promise">
 let stationsPromise = stationQuery.queryChannels();
 let quakePromise = eventQuery.query();
 </code></pre>
-      <p>
-       We then use a separate
-       <code class="language-javascript">
-        then()
-       </code>
-       for the actual seismograms. Because we will need both the earthquake and
-       the chanenls, we use
-       <code class="language-javascript">
-        Promise.all()
-       </code>
-       to ensure both have successfully completed. We also set the content of
-       a couple of
-       <code class="language-html">
-        &lt;span&gt;
-       </code>
-       elements to hold the station codes and earthquake description,
-       assuming we will only get one of each.
-       The easiest way to use the more powerful POST method of the
-       <a href="https://service.iris.edu/fdsnws/dataselect/1/">
-        FDSNWS dataselect
-       </a>
-       web
-       service to get the seismograms is to first create an
-       array of
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       objects, which start out as just having a channel and a time range.
-      The time range starts at the origin time of the
-      earthquake and has a duration of 2400 seconds. Then
-       we manually attach the earthquake. The map knows to look for station and
-       earthquake locations within
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       objects, so we can plot both on the map by setting the
-       <code class="language-javascript">
-        seisData
-       </code>
-       field on the map.
-       Passing the array of
-       <code class="language-javascript">
-        SeismogramDisplayData
-       </code>
-       objects to the
-       <code class="language-javascript">
-        postQuerySeismograms()
-       </code>
-       function will query the remote DataSelect service and insert the
-       actual seismograms into each SeismogramDisplayData
-       when the DataSelect query returns. Of course this function will return
-       a Promise.
-      </p>
-      <pre><code class="language-javascript" snippet="seismogramload">
+            <p>
+              We then use a separate
+              <code class="language-javascript"> then() </code>
+              for the actual seismograms. Because we will need both the
+              earthquake and the chanenls, we use
+              <code class="language-javascript"> Promise.all() </code>
+              to ensure both have successfully completed. We also set the
+              content of a couple of
+              <code class="language-html"> &lt;span&gt; </code>
+              elements to hold the station codes and earthquake description,
+              assuming we will only get one of each. The easiest way to use the
+              more powerful POST method of the
+              <a href="https://service.iris.edu/fdsnws/dataselect/1/">
+                FDSNWS dataselect
+              </a>
+              web service to get the seismograms is to first create an array of
+              <code class="language-javascript"> SeismogramDisplayData </code>
+              objects, which start out as just having a channel and a time
+              range. The time range starts at the origin time of the earthquake
+              and has a duration of 2400 seconds. Then we manually attach the
+              earthquake. The map knows to look for station and earthquake
+              locations within
+              <code class="language-javascript"> SeismogramDisplayData </code>
+              objects, so we can plot both on the map by setting the
+              <code class="language-javascript"> seisData </code>
+              field on the map. Passing the array of
+              <code class="language-javascript"> SeismogramDisplayData </code>
+              objects to the
+              <code class="language-javascript"> postQuerySeismograms() </code>
+              function will query the remote DataSelect service and insert the
+              actual seismograms into each SeismogramDisplayData when the
+              DataSelect query returns. Of course this function will return a
+              Promise.
+            </p>
+            <pre><code class="language-javascript" snippet="seismogramload">
 Promise.all( [ quakePromise, stationsPromise ] )
 .then( ( [ quakeList, networkList ] ) =&gt; {
   document.querySelector("span#stationCode").textContent = networkList[0].stations[0].codes();
@@ -327,16 +271,16 @@ Promise.all( [ quakePromise, stationsPromise ] )
   let dsQuery = new sp.fdsndataselect.DataSelectQuery();
   return dsQuery.postQuerySeismograms(seismogramDataList);
 </code></pre>
-      <p>
-       Once the Promise returns, we will plot the seismograms
-        using the already existing sp-seismograph element. Because we have the
-        channel, we can also plot the seismograms corrected for overall
-        gain and in units of m/s.
-        The default text coloring colors the seismograms and the corresponding
-        array of strings in the title the same color, making them easier to
-        identify. Note the units on the left hand side are now m/s.
-      </p>
-      <pre><code class="language-javascript" snippet="seismogramplot">
+            <p>
+              Once the Promise returns, we will plot the seismograms using the
+              already existing sp-seismograph element. Because we have the
+              channel, we can also plot the seismograms corrected for overall
+              gain and in units of m/s. The default text coloring colors the
+              seismograms and the corresponding array of strings in the title
+              the same color, making them easier to identify. Note the units on
+              the left hand side are now m/s.
+            </p>
+            <pre><code class="language-javascript" snippet="seismogramplot">
 }).then( seismogramDataList =&gt; {
   seismogramDataList.forEach(sdd =&gt; {
     sdd.seismogram = sp.filter.rMean(sdd.seismogram);
@@ -356,42 +300,35 @@ Promise.all( [ quakePromise, stationsPromise ] )
   console.assert(false, error);
 });
 </code></pre>
-      <h3>
-       See it live in
-       <a href="tutorial3.html" target="_blank">
-        tutorial3.html
-       </a>
-       .
-      </h3>
-      <p>
-       Previous:
-       <a href="2_realdata.html">
-        Let"s get some real data
-       </a>
-      </p>
-      <p>
-       Next:
-       <a href="4_arrivaltimes.html">
-        Predicted phase arrival times
-       </a>
-      </p>
-     </div>
-    </section>
-   </div>
-  </div>
-  <script type="module">
-   import * as sp from './seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
-  </script>
-  <script src="../prism.js">
-  </script>
-  <script>
-   Prism.plugins.NormalizeWhitespace.setDefaults({
-      	"remove-trailing": true,
-      	"remove-indent": true,
-      	"left-trim": true,
-      	"right-trim": true
+            <h3>
+              See it live in
+              <a href="tutorial3.html" target="_blank"> tutorial3.html </a>
+              .
+            </h3>
+            <p>
+              Previous:
+              <a href="2_realdata.html"> Let"s get some real data </a>
+            </p>
+            <p>
+              Next:
+              <a href="4_arrivaltimes.html"> Predicted phase arrival times </a>
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script type="module">
+      import * as sp from "./seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
+    </script>
+    <script src="../prism.js"></script>
+    <script>
+      Prism.plugins.NormalizeWhitespace.setDefaults({
+        "remove-trailing": true,
+        "remove-indent": true,
+        "left-trim": true,
+        "right-trim": true,
       });
-  </script>
- </body>
+    </script>
+  </body>
 </html>

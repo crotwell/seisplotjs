@@ -1,152 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
- <head>
-  <meta charset="utf-8"/>
-  <title>
-   seisplotjs 3.1 Tutorial, p2
-  </title>
-  <meta content="Javascript library for parsing, manipulating and displaying seismic data." name="description"/>
-  <meta content="width=device-width,initial-scale=1" name="viewport"/>
-  <link href="../bass.css" rel="stylesheet"/>
-  <link href="../split.css" rel="stylesheet"/>
-  <link href="../prism.css" rel="stylesheet"/>
-  <link href="style.css" rel="stylesheet"/>
-  <link href="../flavicon.png" rel="icon" type="image/png"/>
- </head>
- <body>
-  <div class="flex">
-   <div class="overflow-auto fs0 height-viewport-100" id="split-left">
-    <div class="py1 px2">
-     <div id="toc">
-      <ul class="list-reset h5 py1-ul">
-       <li>
-        <a class="" href="../index.html">
-         Seisplotjs
-        </a>
-       </li>
-       <li>
-        <a class="" href="../api/index.html">
-         API JS Docs
-        </a>
-       </li>
-       <li>
-        <a class="" href="../gallery/index.html">
-         Gallery
-        </a>
-       </li>
-       <li>
-        <a class="" href="../examples/index.html">
-         Examples
-        </a>
-       </li>
-       <li>
-        <a class="" href="../tutorial/index.html">
-         Tutorial
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/index.html">
-         Sine Wave
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/2_realdata.html">
-         Real data
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/3_quakesandchannels.html">
-         Quakes and Channels
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/4_arrivaltimes.html">
-         Arrival Times
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/5_filter.html">
-         Filtering
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/6_helicorder.html">
-         Helicorder
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/7_realtime.html">
-         Realtime
-        </a>
-       </li>
-       <li class="sub">
-        <a class="sub" href="../tutorial/8_andmore.html">
-         ...and more
-        </a>
-       </li>
-      </ul>
-     </div>
-    </div>
-   </div>
-   <div class="relative overflow-auto height-viewport-100" id="split-right">
-    <section class="p2 mb2 clearfix bg-white minishadow">
-     <div class="clearfix">
-      <h1>
-       Seisplotjs Tutorial
-       <span class="sp_version">
-        3.1.4-alpha.1
-       </span>
-      </h1>
-      <h3>
-       Let"s Get Some Real Data:
-      </h3>
-      <h5>
-       See it live in
-       <a href="tutorial2.html" target="_blank">
-        tutorial2.html
-       </a>
-       .
-      </h5>
-      <p>
-       A sine wave is kind of boring, so perhaps some real data would be
-        more interesting. We will use the IRIS
-       <a href="https://service.iris.edu/fdsnws/dataselect/1/">
-        FDSNWS dataselect
-       </a>
-       web service to grab some actual seismic data.
-        Seisplotjs's util module has some helper functions to create
-       <a href="https://github.com/moment/luxon#readme">
-        Luxon
-       </a>
-       Intervals from
-        any combination of start, end and duration. The parameters
-        for the
-       <a href="../api/fdsndataselect.html#dataselectquery">
-        DataSelectQuery
-       </a>
-       match those listed in the
-       <a href="https://www.fdsn.org/webservices/">
-        fdsnws-dataselect
-       </a>
-       specification, along with some functions that can set multiple parameters
-       at once, such a timeRange. This example only uses the simple
-       <code class="language-html">
-        GET
-       </code>
-       style query, and so
-            is limited to a single channel (maybe wildcarded) and single time range.
-       <code class="language-javascript">
-        DataSelectQuery
-       </code>
-       also
-            supports the
-       <code class="language-html">
-        POST
-       </code>
-       style query
-            that allows many channel-time range pairs to be requested at once.
-      </p>
-      <pre><code class="language-javascript" snippet="querystation">
+  <head>
+    <meta charset="utf-8" />
+    <title>seisplotjs 3.1 Tutorial, p2</title>
+    <meta
+      content="Javascript library for parsing, manipulating and displaying seismic data."
+      name="description"
+    />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <link href="../bass.css" rel="stylesheet" />
+    <link href="../split.css" rel="stylesheet" />
+    <link href="../prism.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <link href="../flavicon.png" rel="icon" type="image/png" />
+  </head>
+  <body>
+    <div class="flex">
+      <div class="overflow-auto fs0 height-viewport-100" id="split-left">
+        <div class="py1 px2">
+          <div id="toc">
+            <ul class="list-reset h5 py1-ul">
+              <li>
+                <a class="" href="../index.html"> Seisplotjs </a>
+              </li>
+              <li>
+                <a class="" href="../api/index.html"> API JS Docs </a>
+              </li>
+              <li>
+                <a class="" href="../gallery/index.html"> Gallery </a>
+              </li>
+              <li>
+                <a class="" href="../examples/index.html"> Examples </a>
+              </li>
+              <li>
+                <a class="" href="../tutorial/index.html"> Tutorial </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/index.html"> Sine Wave </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/2_realdata.html">
+                  Real data
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/3_quakesandchannels.html">
+                  Quakes and Channels
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/4_arrivaltimes.html">
+                  Arrival Times
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/5_filter.html"> Filtering </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/6_helicorder.html">
+                  Helicorder
+                </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/7_realtime.html"> Realtime </a>
+              </li>
+              <li class="sub">
+                <a class="sub" href="../tutorial/8_andmore.html">
+                  ...and more
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="relative overflow-auto height-viewport-100" id="split-right">
+        <section class="p2 mb2 clearfix bg-white minishadow">
+          <div class="clearfix">
+            <h1>
+              Seisplotjs Tutorial
+              <span class="sp_version"> 3.1.4-alpha.1 </span>
+            </h1>
+            <h3>Let"s Get Some Real Data:</h3>
+            <h5>
+              See it live in
+              <a href="tutorial2.html" target="_blank"> tutorial2.html </a>
+              .
+            </h5>
+            <p>
+              A sine wave is kind of boring, so perhaps some real data would be
+              more interesting. We will use the IRIS
+              <a href="https://service.iris.edu/fdsnws/dataselect/1/">
+                FDSNWS dataselect
+              </a>
+              web service to grab some actual seismic data. Seisplotjs's util
+              module has some helper functions to create
+              <a href="https://github.com/moment/luxon#readme"> Luxon </a>
+              Intervals from any combination of start, end and duration. The
+              parameters for the
+              <a href="../api/fdsndataselect.html#dataselectquery">
+                DataSelectQuery
+              </a>
+              match those listed in the
+              <a href="https://www.fdsn.org/webservices/">
+                fdsnws-dataselect
+              </a>
+              specification, along with some functions that can set multiple
+              parameters at once, such a timeRange. This example only uses the
+              simple
+              <code class="language-html"> GET </code>
+              style query, and so is limited to a single channel (maybe
+              wildcarded) and single time range.
+              <code class="language-javascript"> DataSelectQuery </code>
+              also supports the
+              <code class="language-html"> POST </code>
+              style query that allows many channel-time range pairs to be
+              requested at once.
+            </p>
+            <pre><code class="language-javascript" snippet="querystation">
 import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
 sp.util.updateVersionText('.sp_version');
 
@@ -158,32 +128,26 @@ dsQuery.networkCode('CO')
   .channelCode('LH?')
   .timeRange(timeWindow);
 </code></pre>
-      <p>
-       One important difference here is that, unlike the previous example,
-            getting data remotely is inherently an asynchronous operation, and
-            so rather than return seismograms, the
-       <code class="language-javascript">
-        querySeismograms()
-       </code>
-       method returns a
-       <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">
-        Promise
-       </a>
-       .
-            The
-       <code class="language-javascript">
-        then()
-       </code>
-       method of the
-            promise, effectively a callback, is executed
-       <em>
-        after
-       </em>
-       the request returns. Since we know these seismograms are from the same
-       station and earthquake, we can plot them all overlayed in a single
-       seismograph.
-      </p>
-      <pre><code class="language-javascript" snippet="queryseis">
+            <p>
+              One important difference here is that, unlike the previous
+              example, getting data remotely is inherently an asynchronous
+              operation, and so rather than return seismograms, the
+              <code class="language-javascript"> querySeismograms() </code>
+              method returns a
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              >
+                Promise
+              </a>
+              . The
+              <code class="language-javascript"> then() </code>
+              method of the promise, effectively a callback, is executed
+              <em> after </em>
+              the request returns. Since we know these seismograms are from the
+              same station and earthquake, we can plot them all overlayed in a
+              single seismograph.
+            </p>
+            <pre><code class="language-javascript" snippet="queryseis">
 dsQuery.querySeismograms().then(seisArray =&gt; {
     const div = document.querySelector('div#myseismograph');
     let seisConfig = new sp.seismographconfig.SeismographConfig();
@@ -201,42 +165,35 @@ dsQuery.querySeismograms().then(seisArray =&gt; {
     console.assert(false, error);
   });
 </code></pre>
-      <h3>
-       See it live in
-       <a href="tutorial2.html" target="_blank">
-        tutorial2.html
-       </a>
-       .
-      </h3>
-      <p>
-       Previous:
-       <a href="index.html">
-        Sine wave
-       </a>
-      </p>
-      <p>
-       Next:
-       <a href="3_quakesandchannels.html">
-        Quakes and Channels
-       </a>
-      </p>
-     </div>
-    </section>
-   </div>
-  </div>
-  <script type="module">
-   import * as sp from './seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
-  </script>
-  <script src="../prism.js">
-  </script>
-  <script>
-   Prism.plugins.NormalizeWhitespace.setDefaults({
-      	"remove-trailing": true,
-      	"remove-indent": true,
-      	"left-trim": true,
-      	"right-trim": true
+            <h3>
+              See it live in
+              <a href="tutorial2.html" target="_blank"> tutorial2.html </a>
+              .
+            </h3>
+            <p>
+              Previous:
+              <a href="index.html"> Sine wave </a>
+            </p>
+            <p>
+              Next:
+              <a href="3_quakesandchannels.html"> Quakes and Channels </a>
+            </p>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script type="module">
+      import * as sp from "./seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
+    </script>
+    <script src="../prism.js"></script>
+    <script>
+      Prism.plugins.NormalizeWhitespace.setDefaults({
+        "remove-trailing": true,
+        "remove-indent": true,
+        "left-trim": true,
+        "right-trim": true,
       });
-  </script>
- </body>
+    </script>
+  </body>
 </html>
