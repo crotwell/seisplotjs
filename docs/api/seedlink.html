@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>seisplotjs 3.1.3 | Documentation</title>
+  <title>seisplotjs 3.1.4-SNAPSHOT | Documentation</title>
   <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>seisplotjs</h3>
-          <div class='mb1'><code>3.1.3</code></div>
+          <div class='mb1'><code>3.1.4-SNAPSHOT</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -197,7 +197,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L11-L11'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L11-L11'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -255,7 +255,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L12-L16'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L12-L16'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -336,7 +336,7 @@
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L38-L302'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L42-L306'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -350,6 +350,9 @@ sends the seedlink protocol over a websocket. Currently only the IRIS
 ringserver, <a href="https://github.com/iris-edu/ringserver">https://github.com/iris-edu/ringserver</a>,
 supports websockets, but it may be possible to use thrid party
 tools to proxy the websocket to a TCP seedlink socket.</p>
+<p>The seedlink (ver 3) protocol does not have an official spec document, but
+some details are here:
+<a href="https://www.seiscomp.de/doc/apps/seedlink.html">https://www.seiscomp.de/doc/apps/seedlink.html</a></p>
 
     <div class='pre p1 fill-light mt0'>new SeedlinkConnection(url: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, requestConfig: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>>, receiveMiniseedFn: function (packet: <a href="#sequenceddatarecord">SequencedDataRecord</a>): void, errorHandler: function (error: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Error">Error</a>): void)</div>
   
@@ -441,7 +444,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L39-L39'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L43-L43'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -503,7 +506,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L40-L40'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L44-L44'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -565,7 +568,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L41-L41'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L45-L45'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -627,7 +630,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L42-L42'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L46-L46'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -689,7 +692,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L43-L43'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L47-L47'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -751,7 +754,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L44-L44'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L48-L48'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -813,7 +816,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L45-L45'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L49-L49'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -875,7 +878,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L62-L65'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L66-L69'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -945,7 +948,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L67-L69'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L71-L73'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1015,7 +1018,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L71-L73'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L75-L77'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1085,7 +1088,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L75-L134'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L79-L138'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1142,7 +1145,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L136-L140'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L140-L144'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1204,7 +1207,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L142-L155'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L146-L159'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1279,7 +1282,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L157-L201'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L161-L205'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1354,7 +1357,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L203-L205'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L207-L209'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1416,7 +1419,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L212-L238'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L216-L242'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1482,7 +1485,7 @@ and 'miniseed', a single miniseed record.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L248-L254'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L252-L258'>
       <span>src/seedlink.ts</span>
       </a>
     
@@ -1564,7 +1567,7 @@ command if successful, or rejects on the first failure.
   <div class='clearfix'>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/5b86908d2cb0d961dfdd7d28d45a07ca55b4f0a8/src/seedlink.ts#L262-L287'>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/76cc5b00edf26d9eba0107a18d6f83b042d6a229/src/seedlink.ts#L266-L291'>
       <span>src/seedlink.ts</span>
       </a>
     
