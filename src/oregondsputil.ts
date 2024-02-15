@@ -1,4 +1,4 @@
-import * as OregonDSPTop from "oregondsp";
+import OregonDSPTop from "oregondsp";
 export const OregonDSP = OregonDSPTop.com.oregondsp.signalProcessing;
 const fft = OregonDSP.fft;
 const equiripple = OregonDSP.filter.fir.equiripple;
