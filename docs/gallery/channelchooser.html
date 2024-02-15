@@ -1,59 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-   <meta charset="utf-8" />
-   <link rel="stylesheet" href="style.css">
-   <link rel="icon" type="image/png" href="../flavicon.png" />
-   <title>Channel Choosers</title>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Channel Choosers</title>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
 
-  <h5 id="sp-channel-code-input">&lt;sp-channel-code-input&gt;</h5>
-  <div>
-    <label>Code: </label><sp-channel-code-input network="CO" station="CASEE" channel="HHZ"/>
-  </div>
-  <h5 id="sp-channel-list">&lt;sp-channel-list&gt;</h5>
-  <div>
-    <label>List: </label><sp-channel-list/>
-  </div>
-  <div>
-    <h5>Output:</h5>
-    <p id="output"></p>
-  </div>
+    <h5 id="sp-channel-code-input">&lt;sp-channel-code-input&gt;</h5>
+    <div>
+      <label>Code: </label
+      ><sp-channel-code-input network="CO" station="CASEE" channel="HHZ" />
+    </div>
+    <h5 id="sp-channel-list">&lt;sp-channel-list&gt;</h5>
+    <div><label>List: </label><sp-channel-list /></div>
+    <div>
+      <h5>Output:</h5>
+      <p id="output"></p>
+    </div>
 
-  <script type="module">
-    import {
-      components, fdsnstation, stationxml, util
-    } from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    util.updateVersionText('.sp_version');
+    <script type="module">
+      import {
+        components,
+        fdsnstation,
+        stationxml,
+        util,
+      } from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      util.updateVersionText(".sp_version");
 
-    const listInput = document.querySelector('sp-channel-list');
+      const listInput = document.querySelector("sp-channel-list");
 
-    const outputArea = document.querySelector('#output');
-    const codeInput = document.querySelector('sp-channel-code-input');
-    function doUpdateCodes() {
-      outputArea.textContent = `Codes: ${codeInput.network}_${codeInput.station}_${codeInput.location}_${codeInput.channel}`;
-      const query = new fdsnstation.StationQuery();
-      query.networkCode(codeInput.network);
-      query.stationCode(codeInput.station);
-      query.locationCode(codeInput.location);
-      query.channelCode(codeInput.channel);
-      query.queryChannels().then(netList => {
-        outputArea.textContent = ``;
-        listInput.setChannels(Array.from(stationxml.allChannels(netList)));
-      })
-    }
-    codeInput.addEventListener("change", doUpdateCodes);
-    listInput.addEventListener("change", () => {
-      outputArea.textContent = ``;
-      for (let chan of listInput.selectedChannels()) {
-        outputArea.textContent += ` ${chan.codes()} ${chan.timeRange}`;
+      const outputArea = document.querySelector("#output");
+      const codeInput = document.querySelector("sp-channel-code-input");
+      function doUpdateCodes() {
+        outputArea.textContent = `Codes: ${codeInput.network}_${codeInput.station}_${codeInput.location}_${codeInput.channel}`;
+        const query = new fdsnstation.StationQuery();
+        query.networkCode(codeInput.network);
+        query.stationCode(codeInput.station);
+        query.locationCode(codeInput.location);
+        query.channelCode(codeInput.channel);
+        query.queryChannels().then((netList) => {
+          outputArea.textContent = ``;
+          listInput.setChannels(Array.from(stationxml.allChannels(netList)));
+        });
       }
-    });
-    doUpdateCodes();
-  </script>
-</body>
+      codeInput.addEventListener("change", doUpdateCodes);
+      listInput.addEventListener("change", () => {
+        outputArea.textContent = ``;
+        for (let chan of listInput.selectedChannels()) {
+          outputArea.textContent += ` ${chan.codes()} ${chan.timeRange}`;
+        }
+      });
+      doUpdateCodes();
+    </script>
+  </body>
 </html>

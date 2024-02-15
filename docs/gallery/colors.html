@@ -1,56 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../flavicon.png" />
-  <title>Seismograph</title>
-  <style>
-    sp-seismograph {
-      height: 200px;
-    }
-    .colorbox {
-      float: left;
-      clear:both;
-      width:50px;
-      height:16px;
-      margin-right: 2px;
-    }
-    .coloritem {
-      margin: 2px;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Seismograph</title>
+    <style>
+      sp-seismograph {
+        height: 200px;
+      }
+      .colorbox {
+        float: left;
+        clear: both;
+        width: 50px;
+        height: 16px;
+        margin-right: 2px;
+      }
+      .coloritem {
+        margin: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
 
-  <h3>Default Colors:</h3>
-  <p>The default color list for seismograph, etc.</p>
-  <div id="colors">
-  </div>
+    <h3>Default Colors:</h3>
+    <p>The default color list for seismograph, etc.</p>
+    <div id="colors"></div>
 
-  <script type="module">
+    <script type="module">
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
 
-    import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
-
-    const colordiv = document.querySelector("#colors");
-    const seisConfig = new sp.seismographconfig.SeismographConfig();
-    for (const c of seisConfig.lineColors) {
-      const subdiv = document.createElement("div");
-      subdiv.setAttribute("class", "coloritem");
-      const rect = document.createElement("div");
-      rect.setAttribute("class", "colorbox");
-      rect.setAttribute("style", `background-color:${c};`);
-      const text = document.createElement("span");
-      text.setAttribute("style", `color:${c}`);
-      text.textContent = c;
-      subdiv.appendChild(rect);
-      subdiv.appendChild(text);
-      colordiv.appendChild(subdiv);
-    }
-  </script>
-</body>
+      const colordiv = document.querySelector("#colors");
+      const seisConfig = new sp.seismographconfig.SeismographConfig();
+      for (const c of seisConfig.lineColors) {
+        const subdiv = document.createElement("div");
+        subdiv.setAttribute("class", "coloritem");
+        const rect = document.createElement("div");
+        rect.setAttribute("class", "colorbox");
+        rect.setAttribute("style", `background-color:${c};`);
+        const text = document.createElement("span");
+        text.setAttribute("style", `color:${c}`);
+        text.textContent = c;
+        subdiv.appendChild(rect);
+        subdiv.appendChild(text);
+        colordiv.appendChild(subdiv);
+      }
+    </script>
+  </body>
 </html>

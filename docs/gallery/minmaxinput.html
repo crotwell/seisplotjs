@@ -1,40 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-   <meta charset="utf-8" />
-   <link rel="stylesheet" href="style.css">
-   <link rel="icon" type="image/png" href="../flavicon.png" />
-   <title>Min-max input</title>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a>
-     - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Min-max input</title>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
 
-  <h3>Min Max:</h3>
-  <h5 id="sp-minmax">&lt;sp-minmax&gt;</h5>
+    <h3>Min Max:</h3>
+    <h5 id="sp-minmax">&lt;sp-minmax&gt;</h5>
 
-  <div>
-    <label>MinMax: </label><sp-minmax lowerbound="0" upperbound="10" min="3" max="5"></sp-minmax>
-  </div>
-  <div>
-    <h5>Output:</h5>
-    <p id="output"></p>
-  </div>
+    <div>
+      <label>MinMax: </label
+      ><sp-minmax lowerbound="0" upperbound="10" min="3" max="5"></sp-minmax>
+    </div>
+    <div>
+      <h5>Output:</h5>
+      <p id="output"></p>
+    </div>
 
-  <script type="module">
-    import {
-      components, util
-    } from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    util.updateVersionText('.sp_version');
+    <script type="module">
+      import {
+        components,
+        util,
+      } from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      util.updateVersionText(".sp_version");
 
-    const outputArea = document.querySelector('#output');
-    const minmaxEl = document.querySelector('sp-minmax');
-    minmaxEl.addEventListener("change", () => {
-      outputArea.textContent = `Range: ${minmaxEl.min} ${minmaxEl.max} out of ${minmaxEl.lowerbound} ${minmaxEl.upperbound}`;
-    })
-
-  </script>
-</body>
+      const outputArea = document.querySelector("#output");
+      const minmaxEl = document.querySelector("sp-minmax");
+      minmaxEl.addEventListener("change", () => {
+        outputArea.textContent = `Range: ${minmaxEl.min} ${minmaxEl.max} out of ${minmaxEl.lowerbound} ${minmaxEl.upperbound}`;
+      });
+    </script>
+  </body>
 </html>

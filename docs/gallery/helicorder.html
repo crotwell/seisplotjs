@@ -1,46 +1,53 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../flavicon.png" />
-  <title>Helicorder</title>
-  <style>
-    sp-helicorder {
-      float:left;
-      width: 100%;
-      height: 600px;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a>
-     - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Helicorder</title>
+    <style>
+      sp-helicorder {
+        float: left;
+        width: 100%;
+        height: 600px;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
 
-  <h3>Helicorder:</h3>
-  <h5 id="sp-helicorder">&lt;sp-helicorder&gt;</h5>
-  <div>
-    <sp-helicorder></sp-helicorder>
-  </div>
+    <h3>Helicorder:</h3>
+    <h5 id="sp-helicorder">&lt;sp-helicorder&gt;</h5>
+    <div>
+      <sp-helicorder></sp-helicorder>
+    </div>
 
-  <script type="module">
-    import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
+    <script type="module">
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
 
-    let dataArray = new Float32Array(1000).map(function(d, i) {
-      return Math.sin(2*Math.PI*i/100) * 100;
-    });
-    let sampleRate = .1;
-    let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
-    const seis = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start,
-      sp.fdsnsourceid.FDSNSourceId.fromNslc("XX","STA","00","BHZ"));
-    const heli = (document.querySelector(sp.helicorder.HELICORDER_ELEMENT));
-    heli.seisData = [seis];
-    heli.heliConfig.fixedTimeScale = sp.luxon.Interval.after(start.startOf("day"),
-        sp.luxon.Duration.fromObject({hours: 24}));
-    heli.draw();
-  </script>
-</body>
+      let dataArray = new Float32Array(1000).map(function (d, i) {
+        return Math.sin((2 * Math.PI * i) / 100) * 100;
+      });
+      let sampleRate = 0.1;
+      let start = sp.util.isoToDateTime("2019-07-04T05:46:23");
+      const seis = sp.seismogram.SeismogramDisplayData.fromContiguousData(
+        dataArray,
+        sampleRate,
+        start,
+        sp.fdsnsourceid.FDSNSourceId.fromNslc("XX", "STA", "00", "BHZ"),
+      );
+      const heli = document.querySelector(sp.helicorder.HELICORDER_ELEMENT);
+      heli.seisData = [seis];
+      heli.heliConfig.fixedTimeScale = sp.luxon.Interval.after(
+        start.startOf("day"),
+        sp.luxon.Duration.fromObject({ hours: 24 }),
+      );
+      heli.draw();
+    </script>
+  </body>
 </html>

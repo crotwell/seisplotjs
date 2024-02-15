@@ -1,51 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../flavicon.png" />
-  <title>Organized Display</title>
-  <style>
-    spectra-plot {
-      height: 400px;
-      display: block;
-    }
-    sp-organized-display {
-      min-height: 200px;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a>
-     - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Organized Display</title>
+    <style>
+      spectra-plot {
+        height: 400px;
+        display: block;
+      }
+      sp-organized-display {
+        min-height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
 
-  <h3>Organized Display:</h3>
-  <h5 id="sp-organized-display">&lt;sp-organized-display&gt;</h5>
-  <div>
-    <sp-organized-display tools="true" map="false" info="false" overlay="individual" sort="distance"></sp-organized-display>
-  </div>
-  <script type="module">
+    <h3>Organized Display:</h3>
+    <h5 id="sp-organized-display">&lt;sp-organized-display&gt;</h5>
+    <div>
+      <sp-organized-display
+        tools="true"
+        map="false"
+        info="false"
+        overlay="individual"
+        sort="distance"
+      ></sp-organized-display>
+    </div>
+    <script type="module">
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
 
-    import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
-
-    sp.dataset.load('dataset.zip')
-      .then((ds) => {
+      sp.dataset.load("dataset.zip").then((ds) => {
         let seisConfig = new sp.seismographconfig.SeismographConfig();
         //seisConfig.linkedAmplitudeScale = new sp.scale.LinkedAmplitudeScale();
-        seisConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
+        seisConfig.linkedAmplitudeScale =
+          new sp.scale.IndividualAmplitudeScale();
         seisConfig.doGain = true;
         seisConfig.doRmean = true;
         //seisConfig.minHeight = 400;
         seisConfig.isRelativeTime = false;
-        console.log(`seisconfig in html: ${seisConfig.configId}  ${seisConfig.doGain}`)
-        document.querySelectorAll('sp-organized-display').forEach( graph => {
+        console.log(
+          `seisconfig in html: ${seisConfig.configId}  ${seisConfig.doGain}`,
+        );
+        document.querySelectorAll("sp-organized-display").forEach((graph) => {
           graph.seismographConfig = seisConfig;
           graph.seisData = ds.waveforms;
         });
       });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

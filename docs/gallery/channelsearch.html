@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8" />
     <title>Channel Search</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <link rel="icon" type="image/png" href="../flavicon.png" />
     <style>
       sp-station-quake-map {
@@ -13,18 +13,26 @@
     </style>
   </head>
   <body>
-    <h5><a href="../index.html" class="">Seisplotjs</a> - <a href="index.html" class="">Gallery</a>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
       <span class="sp_version">3.1.4-alpha.1</span>
     </h5>
 
-    <div id='message'>
+    <div id="message">
       <p></p>
     </div>
     <h3>Channel query: <span id="title"></span></h3>
     <h5 id="sp-channel-search">&lt;sp-channel-search&gt;</h5>
-    <sp-channel-search network="CO" channel="HHZ"
-      north="35" south="32" west="-82" east="-79"
-      geochoice="box"></sp-channel-search>
+    <sp-channel-search
+      network="CO"
+      channel="HHZ"
+      north="35"
+      south="32"
+      west="-82"
+      east="-79"
+      geochoice="box"
+    ></sp-channel-search>
     <button id="query">Query</button>
     <sp-station-quake-map></sp-station-quake-map>
     <sp-channel-table></sp-channel-table>
@@ -32,18 +40,26 @@
       <p></p>
     </div>
 
-    <div id="myseismograph">
-    </div>
+    <div id="myseismograph"></div>
 
-    <h5>Generated with <a href="https://github.com/crotwell/seisplotjs">Seisplotjs version <span id="version">3</span></a>.</h5>
+    <h5>
+      Generated with
+      <a href="https://github.com/crotwell/seisplotjs"
+        >Seisplotjs version <span id="version">3</span></a
+      >.
+    </h5>
 
-    <script type="module" >
+    <script type="module">
       import {
-        fdsnstation, stationxml, leafletutil, infotable, util
-      } from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-      util.updateVersionText('.sp_version');
+        fdsnstation,
+        stationxml,
+        leafletutil,
+        infotable,
+        util,
+      } from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      util.updateVersionText(".sp_version");
 
-      const chSearchEl = document.querySelector('sp-channel-search');
+      const chSearchEl = document.querySelector("sp-channel-search");
       chSearchEl.addEventListener("change", () => {
         const chQuery = chSearchEl.populateQuery();
         const queryURL = chQuery.formURL(fdsnstation.LEVEL_CHANNEL);
@@ -52,23 +68,28 @@
         const pEl = mesgDiv.querySelector("p");
         pEl.textContent = queryURL;
       });
-      const queryBtn = document.querySelector('#query');
-      if ( ! queryBtn) {throw new Error("can't find button#query");}
-      queryBtn.addEventListener('click', event => {
+      const queryBtn = document.querySelector("#query");
+      if (!queryBtn) {
+        throw new Error("can't find button#query");
+      }
+      queryBtn.addEventListener("click", (event) => {
         const chQuery = chSearchEl.populateQuery();
         const mesgDiv = document.querySelector("#messages");
         const pEl = mesgDiv.querySelector("p");
         pEl.textContent = chQuery.formURL(fdsnstation.LEVEL_CHANNEL);
-        chQuery.queryChannels().then(netList => {
-          const chanTable = document.querySelector("sp-channel-table");
-          chanTable.channelList = Array.from(stationxml.allChannels(netList));
-          const stationMap = document.querySelector("sp-station-quake-map");
-          stationMap.addStation(Array.from(stationxml.allStations(netList)));
-          stationMap.draw();
-        }).catch(e => {
-          pEl.textContent = e;
-          console.assert(false, e);
-        });
+        chQuery
+          .queryChannels()
+          .then((netList) => {
+            const chanTable = document.querySelector("sp-channel-table");
+            chanTable.channelList = Array.from(stationxml.allChannels(netList));
+            const stationMap = document.querySelector("sp-station-quake-map");
+            stationMap.addStation(Array.from(stationxml.allStations(netList)));
+            stationMap.draw();
+          })
+          .catch((e) => {
+            pEl.textContent = e;
+            console.assert(false, e);
+          });
       });
     </script>
   </body>

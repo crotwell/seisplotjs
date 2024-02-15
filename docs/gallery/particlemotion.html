@@ -1,70 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../flavicon.png" />
-  <title>Particle Motion</title>
-  <style>
-    sp-particle-motion {
-      float:left;
-      width: 32vw;
-      height: 32vw;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a>
-     - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
-  <h5 id="sp-particle-motion">&lt;sp-particle-motion&gt;</h5>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Particle Motion</title>
+    <style>
+      sp-particle-motion {
+        float: left;
+        width: 32vw;
+        height: 32vw;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
+    <h5 id="sp-particle-motion">&lt;sp-particle-motion&gt;</h5>
 
-  <h3>Particle Motion:</h3>
-  <div>
-    <sp-particle-motion></sp-particle-motion>
-    <sp-particle-motion></sp-particle-motion>
-    <sp-particle-motion></sp-particle-motion>
-  </div>
+    <h3>Particle Motion:</h3>
+    <div>
+      <sp-particle-motion></sp-particle-motion>
+      <sp-particle-motion></sp-particle-motion>
+      <sp-particle-motion></sp-particle-motion>
+    </div>
 
-  <script type="module">
+    <script type="module">
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
 
-    import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
+      let dataArray = new Float32Array(1000).map(function (d, i) {
+        return Math.sin((2 * Math.PI * i) / 100) * 100;
+      });
+      let dataArrayB = dataArray.map((d, i) => d * 10 + (i % 200) * 5);
+      let dataArrayC = new Float32Array(1000).map(function (d, i) {
+        return 1000 + Math.sin((-3 * Math.PI * i) / 200) * 800;
+      });
+      let sampleRate = 20;
+      let start = sp.util.isoToDateTime("2019-07-04T05:46:23");
 
-    let dataArray = new Float32Array(1000).map(function(d, i) {
-      return Math.sin(2*Math.PI*i/100) * 100;
-    });
-    let dataArrayB = dataArray.map((d,i) => d*10+(i%200)*5);
-    let dataArrayC = new Float32Array(1000).map(function(d, i) {
-      return 1000+Math.sin(-3*Math.PI*i/200) * 800;
-    });
-    let sampleRate = 20;
-    let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
-
-    let sidStr = "FDSN:XX_ABCD_00_B_H_Z";
-    let sid = sp.fdsnsourceid.FDSNSourceId.parse(sidStr);
-    let esidStr = "FDSN:XX_ABCD_00_B_H_E";
-    let esid = sp.fdsnsourceid.FDSNSourceId.parse(esidStr);
-    let nsidStr = "FDSN:XX_ABCD_00_B_H_N";
-    let nsid = sp.fdsnsourceid.FDSNSourceId.parse(nsidStr);
-    const seis = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start, sid);
-    const seisB = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, nsid);
-    const seisC = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayC, sampleRate, start, esid);
-    const seisConfig = sp.particlemotion.createParticleMotionConfig();
-    console.log(`manual seisconfig: ${seisConfig.configId}`)
-    const seismographList = (document.querySelectorAll(sp.particlemotion.PARTICLE_MOTION_ELEMENT));
-    seismographList[0].xSeisData = seisB;
-    seismographList[0].ySeisData = seis;
-    seismographList[1].xSeisData = seisC;
-    seismographList[1].ySeisData = seis;
-    seismographList[2].xSeisData = seisC;
-    seismographList[2].ySeisData = seisB;
-    seismographList.forEach( graph => {
-      graph.seismographConfig = seisConfig;
-      graph.seismographConfig.isRelativeTime = false;
-      graph.draw();
-    });
-  </script>
-</body>
+      let sidStr = "FDSN:XX_ABCD_00_B_H_Z";
+      let sid = sp.fdsnsourceid.FDSNSourceId.parse(sidStr);
+      let esidStr = "FDSN:XX_ABCD_00_B_H_E";
+      let esid = sp.fdsnsourceid.FDSNSourceId.parse(esidStr);
+      let nsidStr = "FDSN:XX_ABCD_00_B_H_N";
+      let nsid = sp.fdsnsourceid.FDSNSourceId.parse(nsidStr);
+      const seis = sp.seismogram.SeismogramDisplayData.fromContiguousData(
+        dataArray,
+        sampleRate,
+        start,
+        sid,
+      );
+      const seisB = sp.seismogram.SeismogramDisplayData.fromContiguousData(
+        dataArrayB,
+        sampleRate,
+        start,
+        nsid,
+      );
+      const seisC = sp.seismogram.SeismogramDisplayData.fromContiguousData(
+        dataArrayC,
+        sampleRate,
+        start,
+        esid,
+      );
+      const seisConfig = sp.particlemotion.createParticleMotionConfig();
+      console.log(`manual seisconfig: ${seisConfig.configId}`);
+      const seismographList = document.querySelectorAll(
+        sp.particlemotion.PARTICLE_MOTION_ELEMENT,
+      );
+      seismographList[0].xSeisData = seisB;
+      seismographList[0].ySeisData = seis;
+      seismographList[1].xSeisData = seisC;
+      seismographList[1].ySeisData = seis;
+      seismographList[2].xSeisData = seisC;
+      seismographList[2].ySeisData = seisB;
+      seismographList.forEach((graph) => {
+        graph.seismographConfig = seisConfig;
+        graph.seismographConfig.isRelativeTime = false;
+        graph.draw();
+      });
+    </script>
+  </body>
 </html>

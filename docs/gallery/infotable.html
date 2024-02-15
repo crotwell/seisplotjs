@@ -1,97 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../flavicon.png" />
-  <title>Info Table</title>
-  <style>
-    sp-station-quake-table {
-      height: 400px;
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Info Table</title>
+    <style>
+      sp-station-quake-table {
+        height: 400px;
+      }
 
-    }
+      sp-station-quake-table {
+        --even-row-background: aliceblue;
+        --odd-row-background: White;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
 
-    sp-station-quake-table
-    {
-      --even-row-background: aliceblue;
-      --odd-row-background: White;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a>
-     - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
+    <h3>Earthquake Table:</h3>
+    <h5 id="sp-quake-table">&lt;sp-quake-table&gt;</h5>
+    <div>
+      <sp-quake-table></sp-quake-table>
+    </div>
 
-  <h3>Earthquake Table:</h3>
-  <h5 id="sp-quake-table">&lt;sp-quake-table&gt;</h5>
-  <div>
-    <sp-quake-table ></sp-quake-table>
-  </div>
+    <h3>Station Table:</h3>
+    <h5 id="sp-station-table">&lt;sp-station-table&gt;</h5>
+    <div>
+      <sp-station-table></sp-station-table>
+    </div>
 
-  <h3>Station Table:</h3>
-  <h5 id="sp-station-table">&lt;sp-station-table&gt;</h5>
-  <div>
-    <sp-station-table ></sp-station-table>
-  </div>
+    <h3>Channel Table:</h3>
+    <h5 id="sp-channel-table">&lt;sp-channel-table&gt;</h5>
+    <div>
+      <sp-channel-table></sp-channel-table>
+    </div>
 
-  <h3>Channel Table:</h3>
-  <h5 id="sp-channel-table">&lt;sp-channel-table&gt;</h5>
-  <div>
-    <sp-channel-table ></sp-channel-table>
-  </div>
+    <h3>Seismogram Table:</h3>
+    <h5 id="sp-seismogram-table">&lt;sp-seismogram-table&gt;</h5>
+    <div>
+      <sp-seismogram-table></sp-seismogram-table>
+    </div>
 
-  <h3>Seismogram Table:</h3>
-  <h5 id="sp-seismogram-table">&lt;sp-seismogram-table&gt;</h5>
-  <div>
-    <sp-seismogram-table ></sp-seismogram-table>
-  </div>
+    <h3>Station-Event Table:</h3>
+    <div>
+      <h5 id="sp-station-quake-table">&lt;sp-station-quake-table&gt;</h5>
+      <sp-station-quake-table></sp-station-quake-table>
+    </div>
 
-  <h3>Station-Event Table:</h3>
-  <div>
-    <h5 id="sp-station-quake-table">&lt;sp-station-quake-table&gt;</h5>
-    <sp-station-quake-table ></sp-station-quake-table>
-  </div>
+    <script type="module">
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
 
-  <script type="module">
-
-    import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
-
-    sp.dataset.load('dataset.zip')
-    .then((ds) => {
-      document.querySelectorAll('sp-station-quake-table').forEach( graph => {
-        graph.seisData = ds.waveforms;
-        graph.draw();
-      });
-      return ds;
-    }).then((ds) => {
-        document.querySelectorAll('sp-quake-table').forEach( graph => {
-          graph.quakeList = sp.seismogram.uniqueQuakes(ds.waveforms);
+      sp.dataset
+        .load("dataset.zip")
+        .then((ds) => {
+          document
+            .querySelectorAll("sp-station-quake-table")
+            .forEach((graph) => {
+              graph.seisData = ds.waveforms;
+              graph.draw();
+            });
+          return ds;
+        })
+        .then((ds) => {
+          document.querySelectorAll("sp-quake-table").forEach((graph) => {
+            graph.quakeList = sp.seismogram.uniqueQuakes(ds.waveforms);
+          });
+          return ds;
+        })
+        .then((ds) => {
+          document.querySelectorAll("sp-channel-table").forEach((graph) => {
+            graph.channelList = sp.seismogram.uniqueChannels(ds.waveforms);
+          });
+          return ds;
+        })
+        .then((ds) => {
+          document.querySelectorAll("sp-station-table").forEach((graph) => {
+            graph.stationList = sp.seismogram.uniqueStations(ds.waveforms);
+          });
+          return ds;
+        })
+        .then((ds) => {
+          document.querySelectorAll("sp-seismogram-table").forEach((graph) => {
+            graph.seisData = ds.waveforms;
+          });
+          return ds;
+        })
+        .catch((er) => {
+          console.assert(false, `Problem in load data: ${er}`);
+          const errInfo = document.createElement("p");
+          errInfo.textContent = `Problem in load data: ${er}`;
+          document.querySelector("body").appendChild(errInfo);
         });
-        return ds;
-    }).then((ds) => {
-        document.querySelectorAll('sp-channel-table').forEach( graph => {
-          graph.channelList = sp.seismogram.uniqueChannels(ds.waveforms);
-        });
-        return ds;
-    }).then((ds) => {
-        document.querySelectorAll('sp-station-table').forEach( graph => {
-          graph.stationList = sp.seismogram.uniqueStations(ds.waveforms);
-        });
-        return ds;
-    }).then((ds) => {
-        document.querySelectorAll('sp-seismogram-table').forEach( graph => {
-          graph.seisData = ds.waveforms;
-        });
-        return ds;
-    }).catch( er => {
-        console.assert(false, `Problem in load data: ${er}`);
-        const errInfo = document.createElement("p");
-        errInfo.textContent = `Problem in load data: ${er}`;
-        document.querySelector('body').appendChild(errInfo);
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

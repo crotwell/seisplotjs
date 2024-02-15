@@ -1,75 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../flavicon.png" />
-  <title>Seismograph</title>
-  <style>
-    sp-seismograph {
-      height: 200px;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a>
-     - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
-  <h5 id="sp-seismograph">&lt;sp-seismograph&gt;</h5>
-  <div>
-    Mouse Time: <span id="mousetime">time</span>  Click: <span id="clicktime">time</span>
-  </div>
-  <h3>Seismograph:</h3>
-  <div>
-    <sp-seismograph id="raw"></sp-seismograph>
-    <sp-seismograph id="middle"></sp-seismograph>
-    <sp-seismograph id="mean"></sp-seismograph>
-  </div>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Seismograph</title>
+    <style>
+      sp-seismograph {
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
+    <h5 id="sp-seismograph">&lt;sp-seismograph&gt;</h5>
+    <div>
+      Mouse Time: <span id="mousetime">time</span> Click:
+      <span id="clicktime">time</span>
+    </div>
+    <h3>Seismograph:</h3>
+    <div>
+      <sp-seismograph id="raw"></sp-seismograph>
+      <sp-seismograph id="middle"></sp-seismograph>
+      <sp-seismograph id="mean"></sp-seismograph>
+    </div>
 
-  <script type="module">
+    <script type="module">
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
 
-    import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
-
-    let dataArray = new Float32Array(1000).map(function(d, i) {
-      return 200+Math.sin(2*Math.PI*i/100) * 100;
-    });
-    let dataArrayB = new Float32Array(1000).map(function(d, i) {
-      return Math.sin(-3*Math.PI*i/200) * 100;
-    });
-    dataArrayB[50] = -300; // make a spike so middle is not mean
-    let sampleRate = 20;
-    let start = sp.util.isoToDateTime('2019-07-04T05:46:23');
-    let sidA = sp.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "Z")
-    const sddA = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArray, sampleRate, start, sidA);
-    let sidB = sp.fdsnsourceid.FDSNSourceId.createUnknown(sampleRate, "H", "N")
-    const sddB = sp.seismogram.SeismogramDisplayData.fromContiguousData(dataArrayB, sampleRate, start, sidB);
-    const seisConfig = new sp.seismographconfig.SeismographConfig();
-    const seisConfig_middle = new sp.seismographconfig.SeismographConfig();
-    const seisConfig_mean = new sp.seismographconfig.SeismographConfig();
-    const def_title = seisConfig.title;
-    seisConfig.title = `Raw: ${def_title}`;
-    seisConfig.amplitudeRaw();
-    //seisConfig.amplitudeWithZero();
-    seisConfig_middle.title = `Centered Middle: ${def_title}`;
-    seisConfig_middle.amplitudeMinMax();
-    seisConfig_mean.title = `Centered Mean: ${def_title}`;
-    seisConfig_mean.amplitudeMean();
-    document.querySelector('sp-seismograph#raw').seismographConfig = seisConfig;
-    document.querySelector('sp-seismograph#middle').seismographConfig = seisConfig_middle;
-    document.querySelector('sp-seismograph#mean').seismographConfig = seisConfig_mean;
-    const seismographList = (document.querySelectorAll('sp-seismograph'));
-    seismographList.forEach( graph => {
-      graph.appendSeisData([sddA, sddB]);
-      graph.draw();
-      graph.addEventListener("seismousemove", evt => {
-        document.querySelector('#mousetime').textContent = evt.detail.time;
+      let dataArray = new Float32Array(1000).map(function (d, i) {
+        return 200 + Math.sin((2 * Math.PI * i) / 100) * 100;
       });
-      graph.addEventListener("seisclick", evt => {
-        document.querySelector('#clicktime').textContent = evt.detail.time;
+      let dataArrayB = new Float32Array(1000).map(function (d, i) {
+        return Math.sin((-3 * Math.PI * i) / 200) * 100;
       });
-    });
-  </script>
-</body>
+      dataArrayB[50] = -300; // make a spike so middle is not mean
+      let sampleRate = 20;
+      let start = sp.util.isoToDateTime("2019-07-04T05:46:23");
+      let sidA = sp.fdsnsourceid.FDSNSourceId.createUnknown(
+        sampleRate,
+        "H",
+        "Z",
+      );
+      const sddA = sp.seismogram.SeismogramDisplayData.fromContiguousData(
+        dataArray,
+        sampleRate,
+        start,
+        sidA,
+      );
+      let sidB = sp.fdsnsourceid.FDSNSourceId.createUnknown(
+        sampleRate,
+        "H",
+        "N",
+      );
+      const sddB = sp.seismogram.SeismogramDisplayData.fromContiguousData(
+        dataArrayB,
+        sampleRate,
+        start,
+        sidB,
+      );
+      const seisConfig = new sp.seismographconfig.SeismographConfig();
+      const seisConfig_middle = new sp.seismographconfig.SeismographConfig();
+      const seisConfig_mean = new sp.seismographconfig.SeismographConfig();
+      const def_title = seisConfig.title;
+      seisConfig.title = `Raw: ${def_title}`;
+      seisConfig.amplitudeRaw();
+      //seisConfig.amplitudeWithZero();
+      seisConfig_middle.title = `Centered Middle: ${def_title}`;
+      seisConfig_middle.amplitudeMinMax();
+      seisConfig_mean.title = `Centered Mean: ${def_title}`;
+      seisConfig_mean.amplitudeMean();
+      document.querySelector("sp-seismograph#raw").seismographConfig =
+        seisConfig;
+      document.querySelector("sp-seismograph#middle").seismographConfig =
+        seisConfig_middle;
+      document.querySelector("sp-seismograph#mean").seismographConfig =
+        seisConfig_mean;
+      const seismographList = document.querySelectorAll("sp-seismograph");
+      seismographList.forEach((graph) => {
+        graph.appendSeisData([sddA, sddB]);
+        graph.draw();
+        graph.addEventListener("seismousemove", (evt) => {
+          document.querySelector("#mousetime").textContent = evt.detail.time;
+        });
+        graph.addEventListener("seisclick", (evt) => {
+          document.querySelector("#clicktime").textContent = evt.detail.time;
+        });
+      });
+    </script>
+  </body>
 </html>

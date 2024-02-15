@@ -1,105 +1,116 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../flavicon.png" />
-  <title>Map</title>
-  <style>
-    sp-station-quake-map {
-      height: 400px;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a>
-     - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Map</title>
+    <style>
+      sp-station-quake-map {
+        height: 400px;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
 
-  <h3>Map:</h3>
-  <h5 id="sp-station-quake-map">&lt;sp-station-quake-map&gt;</h5>
-  <button id="changecolor">Change colors</button>
-  <div>
-    <sp-station-quake-map centerLat="34" centerLon="-80" zoomLevel="9"></sp-station-quake-map>
-    <sp-quake-table></sp-quake-table>
-  </div>
-  <script type="module">
-    import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
-    
-    const tileURL = 'https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}';
-    const tileAttrib = 'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
-    const mapList = document.querySelectorAll('sp-station-quake-map');
-    mapList.forEach( map => {
-      map.setAttribute(sp.leafletutil.TILE_TEMPLATE, tileURL);
-      map.setAttribute(sp.leafletutil.TILE_ATTRIBUTION, tileAttrib);
-    });
+    <h3>Map:</h3>
+    <h5 id="sp-station-quake-map">&lt;sp-station-quake-map&gt;</h5>
+    <button id="changecolor">Change colors</button>
+    <div>
+      <sp-station-quake-map
+        centerLat="34"
+        centerLon="-80"
+        zoomLevel="9"
+      ></sp-station-quake-map>
+      <sp-quake-table></sp-quake-table>
+    </div>
+    <script type="module">
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
 
-    let allStations = [];
-    sp.dataset.load('dataset.zip')
-    .then((ds) => {
-
-      mapList.forEach( map => {
-        // plot quakes and station from seismograms
-        //map.seisData = ds.waveforms;
-        // or plot other quakes
-        map.addQuake(ds.catalog, "quakecolor");
-        const quakesWithPicks = ds.catalog.filter(q => q.picks.length !== 0);
-        map.addQuake(quakesWithPicks, "withpicks");
-        // or plot other stations
-        allStations = Array.from(sp.stationxml.allStations(ds.inventory));
-        map.addStation(allStations, "customcolor");
-        map.colorClass("CO_BIRD", "orange");
-        map.colorClass("customcolor", "green");
-        map.colorClass("myquake", "green");
-        //map.colorClass("quakecolor", "blue");
-        map.colorClass("withpicks", "red");
-        map.colorClass("CO_JSC", "rebeccapurple");
-        map.draw();
+      const tileURL =
+        "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}";
+      const tileAttrib =
+        'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>';
+      const mapList = document.querySelectorAll("sp-station-quake-map");
+      mapList.forEach((map) => {
+        map.setAttribute(sp.leafletutil.TILE_TEMPLATE, tileURL);
+        map.setAttribute(sp.leafletutil.TILE_ATTRIBUTION, tileAttrib);
       });
-      document.querySelector("#changecolor").addEventListener("click", () => {
-        const mapList = document.querySelectorAll('sp-station-quake-map');
-        mapList.forEach( map => {
-          map.removeColorClass("customcolor");
-          map.colorClass("quakecolor", "yellow");
 
-          //map.stationRemoveClass(allStations[0], "customcolor");
+      let allStations = [];
+      sp.dataset.load("dataset.zip").then((ds) => {
+        mapList.forEach((map) => {
+          // plot quakes and station from seismograms
+          //map.seisData = ds.waveforms;
+          // or plot other quakes
+          map.addQuake(ds.catalog, "quakecolor");
+          const quakesWithPicks = ds.catalog.filter(
+            (q) => q.picks.length !== 0,
+          );
+          map.addQuake(quakesWithPicks, "withpicks");
+          // or plot other stations
+          allStations = Array.from(sp.stationxml.allStations(ds.inventory));
+          map.addStation(allStations, "customcolor");
+          map.colorClass("CO_BIRD", "orange");
+          map.colorClass("customcolor", "green");
+          map.colorClass("myquake", "green");
+          //map.colorClass("quakecolor", "blue");
+          map.colorClass("withpicks", "red");
+          map.colorClass("CO_JSC", "rebeccapurple");
+          map.draw();
         });
-      });
+        document.querySelector("#changecolor").addEventListener("click", () => {
+          const mapList = document.querySelectorAll("sp-station-quake-map");
+          mapList.forEach((map) => {
+            map.removeColorClass("customcolor");
+            map.colorClass("quakecolor", "yellow");
 
-      const SELECTED_ROW = "selectedRow";
-      const infoList = document.querySelectorAll('sp-quake-table');
-      infoList.forEach( it => {
-        it.quakeList = ds.catalog;
-        it.addStyle(`
+            //map.stationRemoveClass(allStations[0], "customcolor");
+          });
+        });
+
+        const SELECTED_ROW = "selectedRow";
+        const infoList = document.querySelectorAll("sp-quake-table");
+        infoList.forEach((it) => {
+          it.quakeList = ds.catalog;
+          it.addStyle(`
             table tbody tr.${SELECTED_ROW} td {
               background-color: green;
               color: white;
             }
-          `)
-        it.addEventListener("quakeclick", ce => {
-          mapList.forEach( map => {
-            map.quakeList.forEach(q => {
-              map.removeColorClass(sp.leafletutil.cssClassForQuake(q));
+          `);
+          it.addEventListener("quakeclick", (ce) => {
+            mapList.forEach((map) => {
+              map.quakeList.forEach((q) => {
+                map.removeColorClass(sp.leafletutil.cssClassForQuake(q));
+              });
+              map.colorClass(
+                sp.leafletutil.cssClassForQuake(ce.detail.quake),
+                "green",
+              );
+              let quakeRow = it.findRowForQuake(ce.detail.quake);
+              let allRows = quakeRow.parentNode.querySelectorAll(`tbody tr`);
+              console.log(`num rows: ${Array.from(allRows).length}`);
+              allRows.forEach((r) => {
+                console.log(`${r.classList.contains(SELECTED_ROW)}`);
+                r.classList.remove(SELECTED_ROW);
+              });
+              quakeRow.classList.add(SELECTED_ROW);
+              //ce.detail.mouseevent.currentTarget.setAttribute("style", "background-color: green");
             });
-            map.colorClass(sp.leafletutil.cssClassForQuake(ce.detail.quake), "green");
-            let quakeRow = it.findRowForQuake(ce.detail.quake);
-            let allRows= quakeRow.parentNode.querySelectorAll(`tbody tr`);
-            console.log(`num rows: ${Array.from(allRows).length}`)
-            allRows.forEach(r => {
-              console.log(`${r.classList.contains(SELECTED_ROW)}`)
-              r.classList.remove(SELECTED_ROW);
-            });
-            quakeRow.classList.add(SELECTED_ROW);
-            //ce.detail.mouseevent.currentTarget.setAttribute("style", "background-color: green");
           });
-
         });
+        console.log(
+          `${ds.catalog.length}  ${Array.from(sp.stationxml.allStations(ds.inventory)).length}`,
+        );
+        return ds;
       });
-      console.log(`${ds.catalog.length}  ${Array.from(sp.stationxml.allStations(ds.inventory)).length}`);
-      return ds;
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>

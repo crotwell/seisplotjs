@@ -1,49 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="../flavicon.png" />
-  <title>Spectra</title>
-  <style>
-    sp-spectra {
-      height: 300px;
-    }
-  </style>
-</head>
-<body>
-  <h5><a href="../index.html" class="">Seisplotjs</a>
-     - <a href="index.html" class="">Gallery</a>
-    <span class="sp_version">3.1.4-alpha.1</span>
-  </h5>
-  <h5 id="sp-spectra">&lt;sp-spectra&gt;</h5>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/png" href="../flavicon.png" />
+    <title>Spectra</title>
+    <style>
+      sp-spectra {
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <h5>
+      <a href="../index.html" class="">Seisplotjs</a> -
+      <a href="index.html" class="">Gallery</a>
+      <span class="sp_version">3.1.4-alpha.1</span>
+    </h5>
+    <h5 id="sp-spectra">&lt;sp-spectra&gt;</h5>
 
-  <h3>Spectra:</h3>
-  <h3>Amplitude:</h3>
-  <sp-spectra kind="amplitude" logfreq="false"></sp-spectra>
-  <sp-spectra kind="amplitude" logfreq="true"></sp-spectra>
-  <h3>Phase:</h3>
-  <sp-spectra kind="phase" logfreq="false"></sp-spectra>
-  <sp-spectra kind="phase" logfreq="true"></sp-spectra>
+    <h3>Spectra:</h3>
+    <h3>Amplitude:</h3>
+    <sp-spectra kind="amplitude" logfreq="false"></sp-spectra>
+    <sp-spectra kind="amplitude" logfreq="true"></sp-spectra>
+    <h3>Phase:</h3>
+    <sp-spectra kind="phase" logfreq="false"></sp-spectra>
+    <sp-spectra kind="phase" logfreq="true"></sp-spectra>
 
-  <script type="module">
-    import * as sp from '../seisplotjs_3.1.4-alpha.1_standalone.mjs';
-    sp.util.updateVersionText('.sp_version');
+    <script type="module">
+      import * as sp from "../seisplotjs_3.1.4-alpha.1_standalone.mjs";
+      sp.util.updateVersionText(".sp_version");
 
-    const ranData = [];
-    for( let i=0; i<1024; i++) {ranData.push((Math.random()-0.5)*1000);}
-    const fData = Float32Array.from(ranData);
-    const now = sp.luxon.DateTime.utc();
-    const seis = sp.seismogram.Seismogram.fromContiguousData(fData, 1, now);
-    const ampPhase = sp.fft.fftForward(seis);
-    const spectraList = (document.querySelectorAll('sp-spectra'));
-    spectraList.forEach( spectra => {
-      spectra.fftResults = [ ampPhase ];
-      //spectra.setAttribute("kind", "amplitude");
-    });
+      const ranData = [];
+      for (let i = 0; i < 1024; i++) {
+        ranData.push((Math.random() - 0.5) * 1000);
+      }
+      const fData = Float32Array.from(ranData);
+      const now = sp.luxon.DateTime.utc();
+      const seis = sp.seismogram.Seismogram.fromContiguousData(fData, 1, now);
+      const ampPhase = sp.fft.fftForward(seis);
+      const spectraList = document.querySelectorAll("sp-spectra");
+      spectraList.forEach((spectra) => {
+        spectra.fftResults = [ampPhase];
+        //spectra.setAttribute("kind", "amplitude");
+      });
 
-
-    //spectra.draw();
-  </script>
-</body>
+      //spectra.draw();
+    </script>
+  </body>
 </html>
