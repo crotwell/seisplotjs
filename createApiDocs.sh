@@ -35,8 +35,10 @@ desc_fdsncommon='common superclass for services following FDSN pattern'
 desc_fdsndatacenters='query FDSN data center registry'
 desc_fdsndataselect='query seismograms from an FDSN web service'
 desc_fdsnevent='query earthquakes from an FDSN web service'
+desc_fdsneventcomponent='html component for FDSN Event web service options'
 desc_fdsnsourceid='parse FDSN sourceId'
 desc_fdsnstation='query networks, stations and channels from an FDSN web service'
+desc_fdsnstationcomponent='html component for FDSN Station web service options'
 desc_fft='discrete fourier transforms via [OregonDSP](https://www.npmjs.com/package/oregondsp)'
 desc_filter='timeseries filtering and utility functionality via [OregonDSP](https://www.npmjs.com/package/oregondsp)'
 desc_handlebarshelpers='helpers for use with [handlebars](https://handlebarsjs.com/), eg in titles'
@@ -63,6 +65,7 @@ desc_seismogram='objects representing seismograms and timeseries'
 desc_seismogramloader='uses fdsnstation, fdsnevent, traveltime and fdsndataselect to load seismograms'
 desc_seismogramsegment='objects representing contiguous segments of seismograms'
 desc_seismograph='plotting of seismograms'
+desc_seismographmarker='markers on seismograms'
 desc_seismographutil='low level drawing functions for seismograph'
 desc_seismographconfig='configuration of seismograph plots'
 desc_seismographconfigeditor='editor for configuration of seismograph plots'
@@ -71,6 +74,7 @@ desc_spectraplot='plotting of specta output from the fft module'
 desc_spelement='superclass for some custom elements'
 desc_stationxml='objects corresponding to elements in a StationXML xml file'
 desc_taper='tapering of timeseries'
+desc_textformat='number formatting'
 desc_transfer='instrument deconvolution of seismograms using response'
 desc_traveltime='travel times of seismic waves via the IRIS traveltime web service'
 desc_usgsgeojson='query and parse GeoJson from USGS'
@@ -135,8 +139,8 @@ do
   f=${path##*/}
   jsfile=${f%.ts}
   flowfile=${jsfile%.flow}
-  if [ "${jsfile}" != "${flowfile}" ]  || [ "${jsfile}" == "index" ]; then
-    # skip .flow.js files
+  if [  "${jsfile}" == "index_node" ]  || [ "${jsfile}" == "index" ]; then
+    # skip index files
     continue
   fi
   if [ -e src/${jsfile}.ts ]
@@ -156,7 +160,7 @@ do
     while [[ $descTextHtml =~ $re ]]; do
       descTextHtml="${BASH_REMATCH[1]}<a href=\"${BASH_REMATCH[3]}\">${BASH_REMATCH[2]}</a>${BASH_REMATCH[4]}"
     done
-    if [ 'index' != "$jsfile" ]
+    if [ 'index' != "$jsfile" ] && [ 'index_node' != "$jsfile" ]
     then
       #echo npx documentation build --parse-extension ts -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.ts
       npx documentation build --parse-extension ts -f ${format} -o docs/api/${jsfile}${md} --document-exported --github  --project-name seisplotjs.${jsfile} src/${jsfile}.ts
