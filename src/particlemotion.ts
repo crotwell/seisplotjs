@@ -4,46 +4,39 @@
  * https://www.seis.sc.edu
  */
 //import * as d3 from "d3";
-import {select as d3select} from "d3-selection";
-import 'd3-transition';
-import {scaleLinear as d3scaleLinear } from "d3-scale";
-import {
-  line as d3line,
-  curveLinear as d3curveLinear
-} from "d3-shape";
-import {
-  axisLeft as d3axisLeft ,
-  axisBottom as d3axisBottom,
-} from "d3-axis";
-import {Interval} from "luxon";
-import {SeisPlotElement} from "./spelement";
-import {MinMaxable} from './scale';
-import {SeismographConfig, numberFormatWrapper } from "./seismographconfig";
+import { select as d3select } from "d3-selection";
+import "d3-transition";
+import { scaleLinear as d3scaleLinear } from "d3-scale";
+import { line as d3line, curveLinear as d3curveLinear } from "d3-shape";
+import { axisLeft as d3axisLeft, axisBottom as d3axisBottom } from "d3-axis";
+import { Interval } from "luxon";
+import { SeisPlotElement } from "./spelement";
+import { MinMaxable } from "./scale";
+import { SeismographConfig, numberFormatWrapper } from "./seismographconfig";
 import {
   Seismogram,
   SeismogramDisplayData,
   findMinMaxOfSDD,
 } from "./seismogram";
-import {SeismogramSegment} from "./seismogramsegment";
-import {COLOR_CSS_ID} from "./seismograph";
-import {isDef, isNumArg, SVG_NS, validStartTime, validEndTime} from "./util";
+import { SeismogramSegment } from "./seismogramsegment";
+import { COLOR_CSS_ID } from "./seismograph";
+import { isDef, isNumArg, SVG_NS, validStartTime, validEndTime } from "./util";
 import * as axisutil from "./axisutil";
-import type {HandlebarsInput} from "./axisutil";
+import type { HandlebarsInput } from "./axisutil";
 
-import type {Axis} from 'd3-axis';
-import type {ScaleLinear, NumberValue as d3NumberValue} from "d3-scale";
-import type {Selection} from 'd3-selection';
+import type { Axis } from "d3-axis";
+import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";
+import type { Selection } from "d3-selection";
 
 export const DEFAULT_TITLE =
   "<tspan>{{#each seisDataList}}{{onlyChangesChannel ../seisDataList @index}} {{else}}No Data{{/each}}</tspan>";
 export const DEFAULT_XLABEL =
-"{{#each seisXData}}<tspan>{{this.channelCode}}</tspan> {{else}}No Data{{/each}}";
+  "{{#each seisXData}}<tspan>{{this.channelCode}}</tspan> {{else}}No Data{{/each}}";
 
 export const DEFAULT_YLABEL =
-"{{#each seisYData}}<tspan>{{this.channelCode}}</tspan> {{else}}No Data{{/each}}";
+  "{{#each seisYData}}<tspan>{{this.channelCode}}</tspan> {{else}}No Data{{/each}}";
 
-export const PARTICLE_MOTION_ELEMENT = 'sp-particle-motion';
-
+export const PARTICLE_MOTION_ELEMENT = "sp-particle-motion";
 
 export const particleMotion_css = `
 
@@ -83,7 +76,7 @@ svg path.seispath {
 
 export function createParticleMotionConfig(
   timeRange?: Interval | null,
-  defaultSeisConfig?: SeismographConfig
+  defaultSeisConfig?: SeismographConfig,
 ): SeismographConfig {
   let seisConfig;
   if (defaultSeisConfig) {
@@ -133,18 +126,30 @@ export class ParticleMotion extends SeisPlotElement {
   g: Selection<SVGGElement, unknown, null, undefined>;
   static _lastID: number;
 
-  constructor(xSeisData?: Array<SeismogramDisplayData>,
-      ySeisData?: Array<SeismogramDisplayData>,
-      seisConfig?: SeismographConfig) {
-    if ( ! xSeisData) { xSeisData = [];}
+  constructor(
+    xSeisData?: Array<SeismogramDisplayData>,
+    ySeisData?: Array<SeismogramDisplayData>,
+    seisConfig?: SeismographConfig,
+  ) {
+    if (!xSeisData) {
+      xSeisData = [];
+    }
     if (xSeisData instanceof Seismogram) {
       xSeisData = [SeismogramDisplayData.fromSeismogram(xSeisData)];
     }
-    if ( ! Array.isArray(xSeisData)) {xSeisData = [ xSeisData];}
-    if ( ! ySeisData) { ySeisData = [];}
-    if ( ! Array.isArray(ySeisData)) {ySeisData = [ ySeisData];}
+    if (!Array.isArray(xSeisData)) {
+      xSeisData = [xSeisData];
+    }
+    if (!ySeisData) {
+      ySeisData = [];
+    }
+    if (!Array.isArray(ySeisData)) {
+      ySeisData = [ySeisData];
+    }
     const seisData = xSeisData.concat(ySeisData);
-    if ( ! seisConfig) {seisConfig = createParticleMotionConfig();}
+    if (!seisConfig) {
+      seisConfig = createParticleMotionConfig();
+    }
     super(seisData, seisConfig);
 
     this._xSeisData = xSeisData;
@@ -154,9 +159,11 @@ export class ParticleMotion extends SeisPlotElement {
     const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
     this.addStyle(lineColorsCSS, COLOR_CSS_ID);
 
-    const wrapper = document.createElement('div');
+    const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
-    const svgWrapped = wrapper.appendChild(document.createElementNS(SVG_NS, 'svg'));
+    const svgWrapped = wrapper.appendChild(
+      document.createElementNS(SVG_NS, "svg"),
+    );
     this.getShadowRoot().appendChild(wrapper);
 
     const svg = d3select(svgWrapped);
@@ -164,7 +171,9 @@ export class ParticleMotion extends SeisPlotElement {
     this.plotId = ++ParticleMotion._lastID;
 
     if (this.xSeisData.length !== this.ySeisData.length) {
-      throw new Error(`xSeisData and ySeisData should have same length: ${this.xSeisData.length} !== ${this.ySeisData.length}`);
+      throw new Error(
+        `xSeisData and ySeisData should have same length: ${this.xSeisData.length} !== ${this.ySeisData.length}`,
+      );
     }
 
     svg.attr("version", "1.1");
@@ -178,15 +187,19 @@ export class ParticleMotion extends SeisPlotElement {
     this.yScaleRmean = d3scaleLinear();
 
     if (this.seismographConfig.isCenteredAmp()) {
-      this.xAxis = d3axisBottom(this.xScaleRmean)
-        .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
-      this.yAxis = d3axisLeft(this.yScaleRmean)
-        .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
+      this.xAxis = d3axisBottom(this.xScaleRmean).tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
+      this.yAxis = d3axisLeft(this.yScaleRmean).tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
     } else {
-      this.xAxis = d3axisBottom(this.xScale)
-        .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
-      this.yAxis = d3axisLeft(this.yScale)
-        .tickFormat(numberFormatWrapper(this.seismographConfig.amplitudeFormat));
+      this.xAxis = d3axisBottom(this.xScale).tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
+      this.yAxis = d3axisLeft(this.yScale).tickFormat(
+        numberFormatWrapper(this.seismographConfig.amplitudeFormat),
+      );
     }
 
     this.width = 100;
@@ -230,7 +243,7 @@ export class ParticleMotion extends SeisPlotElement {
     if (Array.isArray(xsdd)) {
       this._xSeisData = xsdd;
     } else if (xsdd instanceof SeismogramDisplayData) {
-      this._xSeisData = [ xsdd ];
+      this._xSeisData = [xsdd];
     } else {
       throw new Error(`Unknown data for xSeisData`);
     }
@@ -243,7 +256,7 @@ export class ParticleMotion extends SeisPlotElement {
     if (Array.isArray(ysdd)) {
       this._ySeisData = ysdd;
     } else if (ysdd instanceof SeismogramDisplayData) {
-      this._ySeisData = [ ysdd ];
+      this._ySeisData = [ysdd];
     } else {
       throw new Error(`Unknown data for xSeisData:`);
     }
@@ -251,11 +264,12 @@ export class ParticleMotion extends SeisPlotElement {
   }
 
   draw() {
-
-    if ( ! this.isConnected) { return; }
-    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
-    const svgEl = wrapper.querySelector('svg') as SVGElement;
-    if (! svgEl) {
+    if (!this.isConnected) {
+      return;
+    }
+    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const svgEl = wrapper.querySelector("svg") as SVGElement;
+    if (!svgEl) {
       // svgEl is not def in particlemotion draw()?
       return;
     }
@@ -294,8 +308,8 @@ export class ParticleMotion extends SeisPlotElement {
   }
 
   checkResize(): boolean {
-    const wrapper = (this.getShadowRoot().querySelector('div') as HTMLDivElement);
-    const svgEl = wrapper.querySelector('svg') as SVGElement;
+    const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const svgEl = wrapper.querySelector("svg") as SVGElement;
     const rect = svgEl.getBoundingClientRect();
 
     if (rect.width !== this.outerWidth || rect.height !== this.outerHeight) {
@@ -307,18 +321,28 @@ export class ParticleMotion extends SeisPlotElement {
 
   drawParticleMotion() {
     this.g.selectAll("g.particleMotion").remove();
-    if ( ! this.xSeisData || this.xSeisData.length === 0
-        || ! this.ySeisData || this.ySeisData.length === 0) {
+    if (
+      !this.xSeisData ||
+      this.xSeisData.length === 0 ||
+      !this.ySeisData ||
+      this.ySeisData.length === 0
+    ) {
       // no data yet
       return;
     }
     const lineG = this.g.append("g");
-    let xOrientCode = 'X';
-    let yOrientCode = 'Y';
-    if (this.xSeisData[0].channelCode && this.xSeisData[0].channelCode.length > 2) {
+    let xOrientCode = "X";
+    let yOrientCode = "Y";
+    if (
+      this.xSeisData[0].channelCode &&
+      this.xSeisData[0].channelCode.length > 2
+    ) {
       xOrientCode = this.xSeisData[0].channelCode.charAt(2);
     }
-    if (this.ySeisData[0].channelCode && this.ySeisData[0].channelCode.length > 2) {
+    if (
+      this.ySeisData[0].channelCode &&
+      this.ySeisData[0].channelCode.length > 2
+    ) {
       yOrientCode = this.ySeisData[0].channelCode.charAt(2);
     }
     lineG
@@ -326,14 +350,14 @@ export class ParticleMotion extends SeisPlotElement {
       .classed("seisplotjsdata", true)
       .classed("seispath", true)
       .classed(this.xSeisData[0].codes(), true)
-      .classed("orient" +xOrientCode +"_" +yOrientCode, true);
+      .classed("orient" + xOrientCode + "_" + yOrientCode, true);
     let xSegments: Array<SeismogramSegment>;
     let ySegments: Array<SeismogramSegment>;
-    for(let i =0; i<this.xSeisData.length; i++) {
+    for (let i = 0; i < this.xSeisData.length; i++) {
       xSegments = this.xSeisData[i].segments;
       ySegments = this.ySeisData[i].segments;
-      xSegments.forEach(segX => {
-        ySegments.forEach(segY => {
+      xSegments.forEach((segX) => {
+        ySegments.forEach((segY) => {
           this.drawParticleMotionForSegment(lineG, segX, segY);
         });
       });
@@ -400,14 +424,24 @@ export class ParticleMotion extends SeisPlotElement {
 
   rescaleAxis() {
     const delay = 500;
-    const yaxisG = this.g
-      .select(".axis--y") as Selection<SVGGElement, unknown, null, undefined>;
-    yaxisG.transition()
+    const yaxisG = this.g.select(".axis--y") as Selection<
+      SVGGElement,
+      unknown,
+      null,
+      undefined
+    >;
+    yaxisG
+      .transition()
       .duration(delay / 2)
       .call(this.yAxis);
-    const xaxisG = this.g
-      .select(".axis--x") as Selection<SVGGElement, unknown, null, undefined>;
-    xaxisG.transition()
+    const xaxisG = this.g.select(".axis--x") as Selection<
+      SVGGElement,
+      unknown,
+      null,
+      undefined
+    >;
+    xaxisG
+      .transition()
       .duration(delay / 2)
       .call(this.xAxis);
   }
@@ -424,7 +458,7 @@ export class ParticleMotion extends SeisPlotElement {
       this.yScale.domain(this.seismographConfig.fixedAmplitudeScale).nice();
     } else {
       let xMinMax = new MinMaxable(-1, 1);
-      if (this.xSeisData ) {
+      if (this.xSeisData) {
         xMinMax = findMinMaxOfSDD(this.xSeisData);
       }
       let yMinMax = new MinMaxable(-1, 1);
@@ -490,7 +524,6 @@ export class ParticleMotion extends SeisPlotElement {
       seisYData: this.ySeisData,
     };
   }
-
 }
 
 // static ID for particle motion

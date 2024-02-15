@@ -3,9 +3,18 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, LatLonRegion, LatLonBox, LatLonRadius } from './fdsncommon';
-import { DateTime, Interval } from 'luxon';
-import { EventParameters, Quake, USGS_HOST, parseQuakeML,
+import {
+  FDSNCommon,
+  LatLonRegion,
+  LatLonBox,
+  LatLonRadius,
+} from "./fdsncommon";
+import { DateTime, Interval } from "luxon";
+import {
+  EventParameters,
+  Quake,
+  USGS_HOST,
+  parseQuakeML,
   FAKE_EMPTY_XML,
 } from "./quakeml";
 import {
@@ -50,7 +59,6 @@ export { USGS_HOST };
  * @param host optional host to connect to, defaults to USGS
  */
 export class EventQuery extends FDSNCommon {
-
   /** @private */
   _eventId: string | undefined;
 
@@ -708,13 +716,13 @@ export class EventQuery extends FDSNCommon {
    *  @returns Promise to an Array of Quake objects.
    */
   query(): Promise<Array<Quake>> {
-    return this.queryEventParameters().then(eventParameters => {
+    return this.queryEventParameters().then((eventParameters) => {
       return eventParameters.eventList;
     });
   }
 
   queryEventParameters(): Promise<EventParameters> {
-    return this.queryRawXml().then(rawXml => {
+    return this.queryRawXml().then((rawXml) => {
       return parseQuakeML(rawXml, this._host);
     });
   }
@@ -734,7 +742,7 @@ export class EventQuery extends FDSNCommon {
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then(response => {
+      .then((response) => {
         if (response.status === 200) {
           return response.text();
         } else if (
@@ -747,7 +755,7 @@ export class EventQuery extends FDSNCommon {
           throw new Error(`Status not successful: ${response.status}`);
         }
       })
-      .then(function(rawXmlText) {
+      .then(function (rawXmlText) {
         return new DOMParser().parseFromString(rawXmlText, XML_MIME);
       });
   }
@@ -799,7 +807,7 @@ export class EventQuery extends FDSNCommon {
     const url = this.formCatalogsURL();
     const fetchInit = defaultFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then(response => {
+      .then((response) => {
         if (response.status === 200) {
           return response.text();
         } else {
@@ -855,17 +863,17 @@ export class EventQuery extends FDSNCommon {
     const url = this.formContributorsURL();
     const fetchInit = defaultFetchInitObj(XML_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then(response => {
+      .then((response) => {
         if (response.status === 200) {
           return response.text();
         } else {
           throw new Error(`Status not 200: ${response.status}`);
         }
       })
-      .then(function(rawXmlText) {
+      .then(function (rawXmlText) {
         return new DOMParser().parseFromString(rawXmlText, XML_MIME);
       })
-      .then(function(rawXml) {
+      .then(function (rawXml) {
         const top = rawXml.documentElement;
 
         if (!top) {
@@ -907,7 +915,7 @@ export class EventQuery extends FDSNCommon {
     const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      response => {
+      (response) => {
         if (response.status === 200) {
           return response.text();
         } else {
@@ -996,7 +1004,7 @@ export class EventQuery extends FDSNCommon {
       } else {
         throw new Error(
           `Cannot use minRadius or maxRadius without latitude and longitude: lat=` +
-          `${this._latitude} lon= ${this._longitude}`,
+            `${this._latitude} lon= ${this._longitude}`,
         );
       }
     }
@@ -1026,8 +1034,7 @@ export class EventQuery extends FDSNCommon {
     }
 
     if (isDef(this._includeAllMagnitudes)) {
-      url =
-        url + makeParam("includeallmagnitudes", this._includeAllMagnitudes);
+      url = url + makeParam("includeallmagnitudes", this._includeAllMagnitudes);
     }
 
     if (isStringArg(this._format)) {

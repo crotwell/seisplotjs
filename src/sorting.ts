@@ -1,7 +1,6 @@
-
-import type {DateTime} from 'luxon';
-import { SeismogramDisplayData } from './seismogram';
-import {WAY_FUTURE} from './util';
+import type { DateTime } from "luxon";
+import { SeismogramDisplayData } from "./seismogram";
+import { WAY_FUTURE } from "./util";
 
 export const SORT_NONE = "none";
 export const SORT_DISTANCE = "distance";
@@ -17,10 +16,10 @@ export function sort(seisData: Array<SeismogramDisplayData>, key: string) {
   }
   const cache = new Map<SeismogramDisplayData, number | string | DateTime>();
   const calcSortValue = createSortValueFunction(key);
-  seisData.forEach(sdd => {
+  seisData.forEach((sdd) => {
     cache.set(sdd, calcSortValue(sdd));
   });
-  return seisData.slice().sort((sddA,sddB) => {
+  return seisData.slice().sort((sddA, sddB) => {
     const valA = cache.get(sddA);
     const valB = cache.get(sddB);
     if (!valA && !valB) {
@@ -39,13 +38,17 @@ export function sort(seisData: Array<SeismogramDisplayData>, key: string) {
   });
 }
 
-export function createSortValueFunction(key: string): (sdd: SeismogramDisplayData) => number | string | DateTime {
+export function createSortValueFunction(
+  key: string,
+): (sdd: SeismogramDisplayData) => number | string | DateTime {
   if (key === SORT_DISTANCE) {
     return (sdd: SeismogramDisplayData) => {
       let out = Number.MAX_VALUE;
       if (sdd.hasQuake() && sdd.hasChannel()) {
         const distaz = sdd.distaz;
-        out = distaz ? Math.min(Number.MAX_VALUE,distaz.delta) : Number.MAX_VALUE;
+        out = distaz
+          ? Math.min(Number.MAX_VALUE, distaz.delta)
+          : Number.MAX_VALUE;
       }
       return out;
     };
@@ -54,7 +57,7 @@ export function createSortValueFunction(key: string): (sdd: SeismogramDisplayDat
       let out = Number.MAX_VALUE;
       if (sdd.hasQuake() && sdd.hasChannel()) {
         const distaz = sdd.distaz;
-        out = distaz ? Math.min(Number.MAX_VALUE,distaz.az) : Number.MAX_VALUE;
+        out = distaz ? Math.min(Number.MAX_VALUE, distaz.az) : Number.MAX_VALUE;
       }
       return out;
     };
@@ -63,7 +66,9 @@ export function createSortValueFunction(key: string): (sdd: SeismogramDisplayDat
       let out = Number.MAX_VALUE;
       if (sdd.hasQuake() && sdd.hasChannel()) {
         const distaz = sdd.distaz;
-        out = distaz ? Math.min(Number.MAX_VALUE,distaz.baz) : Number.MAX_VALUE;
+        out = distaz
+          ? Math.min(Number.MAX_VALUE, distaz.baz)
+          : Number.MAX_VALUE;
       }
       return out;
     };
@@ -84,17 +89,22 @@ export function createSortValueFunction(key: string): (sdd: SeismogramDisplayDat
   }
 }
 
-function xyzCompareFun(a: SeismogramDisplayData, b: SeismogramDisplayData): number {
+function xyzCompareFun(
+  a: SeismogramDisplayData,
+  b: SeismogramDisplayData,
+): number {
   if (a.hasChannel() && b.hasChannel()) {
     // first, if dip is close to 90, sort by dip to look for vertical
-    if ((Math.abs(a.channel.dip) > 85 || Math.abs(b.channel.dip)>85)) {
+    if (Math.abs(a.channel.dip) > 85 || Math.abs(b.channel.dip) > 85) {
       if (a.channel.dip !== b.channel.dip) {
         return Math.abs(a.channel.dip) - Math.abs(b.channel.dip);
       }
     }
     // dips not vertical or are same
     // if az a ~= az b +90 deg, then b before a as x before y
-    const ninetyRot = Math.abs((a.channel.azimuth - b.channel.azimuth + 90) % 360);
+    const ninetyRot = Math.abs(
+      (a.channel.azimuth - b.channel.azimuth + 90) % 360,
+    );
     if (ninetyRot < 5 || ninetyRot > 355) {
       return 1;
     }
@@ -125,6 +135,8 @@ function xyzCompareFun(a: SeismogramDisplayData, b: SeismogramDisplayData): numb
  * @param  sddList  array representing compoment of motion
  * @returns     sorted array in x,y,z order
  */
-export function reorderXYZ(sddList: Array<SeismogramDisplayData>): Array<SeismogramDisplayData> {
+export function reorderXYZ(
+  sddList: Array<SeismogramDisplayData>,
+): Array<SeismogramDisplayData> {
   return sddList.slice().sort(xyzCompareFun);
 }

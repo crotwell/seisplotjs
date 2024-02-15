@@ -3,8 +3,8 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {Complex} from "./oregondsputil";
-import {isNumArg, stringify} from "./util";
+import { Complex } from "./oregondsputil";
+import { isNumArg, stringify } from "./util";
 
 /**
  * SAC style response file. This contains poles and zeros to represent the
@@ -29,7 +29,7 @@ export class SacPoleZero {
   constant: number;
 
   /** number of zeros added to convert to displacement, for debugging */
-  gamma: number|undefined;
+  gamma: number | undefined;
 
   /** hertz/radian factor, for debugging */
   mulFactor: number;
@@ -40,7 +40,11 @@ export class SacPoleZero {
   /** normalization factor for poles and zeros accounting for gamma, for debugging */
   A0: number;
 
-  constructor(poles: Array<InstanceType<typeof Complex>>, zeros: Array<InstanceType<typeof Complex>>, constant: number) {
+  constructor(
+    poles: Array<InstanceType<typeof Complex>>,
+    zeros: Array<InstanceType<typeof Complex>>,
+    constant: number,
+  ) {
     this.poles = poles;
     this.zeros = zeros;
     this.constant = constant;
@@ -119,7 +123,9 @@ export class SacPoleZero {
     let trimmedZeros = this.zeros.slice().reverse();
 
     for (let i = 0; i < gamma; i++) {
-      const idx = trimmedZeros.findIndex(d => d.real() === 0 && d.imag() === 0);
+      const idx = trimmedZeros.findIndex(
+        (d) => d.real() === 0 && d.imag() === 0,
+      );
       trimmedZeros.splice(idx, 1);
     }
 
@@ -152,7 +158,7 @@ export class SacPoleZero {
    * @returns  frequency response
    */
   calcForDisplay(freqs: Array<number>): Array<InstanceType<typeof Complex>> {
-    const out = freqs.map(freq => {
+    const out = freqs.map((freq) => {
       let respAtS = this.evalPoleZeroInverse(freq);
       respAtS = new Complex(1, 0).overComplex(respAtS);
       return respAtS;
@@ -257,7 +263,7 @@ export function logspace(
   stop: number,
   num: number,
 ): Array<number> {
-  return linspace(start, stop, num).map(n => Math.pow(10, n));
+  return linspace(start, stop, num).map((n) => Math.pow(10, n));
 }
 export function linspace(
   start: number,

@@ -3,17 +3,16 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {calcDFT, inverseDFT, FFTResult} from "./fft";
-import {SeismogramSegment} from "./seismogramsegment";
-import {Seismogram} from "./seismogram";
-import {SacPoleZero} from "./sacpolezero";
-import {Response, PolesZeros} from "./stationxml";
-import {Complex} from "./oregondsputil";
+import { calcDFT, inverseDFT, FFTResult } from "./fft";
+import { SeismogramSegment } from "./seismogramsegment";
+import { Seismogram } from "./seismogram";
+import { SacPoleZero } from "./sacpolezero";
+import { Response, PolesZeros } from "./stationxml";
+import { Complex } from "./oregondsputil";
 // `allMeasures` includes all the measures packaged with this library
-import configureMeasurements from 'convert-units';
-import allMeasures, {AllMeasuresUnits} from 'convert-units/definitions/all';
+import configureMeasurements from "convert-units";
+import allMeasures, { AllMeasuresUnits } from "convert-units/definitions/all";
 const convert = configureMeasurements(allMeasures);
-
 
 /**
  * Applies response, poles and zeros along with overall gain to the seismogram.
@@ -109,17 +108,17 @@ export function calcResponse(
   unit: string,
 ): FFTResult {
   const sacPoleZero = convertToSacPoleZero(response);
-  const siUnit = unit.replaceAll('**', '');
+  const siUnit = unit.replaceAll("**", "");
   const unitQty = convert(1).getUnit(siUnit as AllMeasuresUnits);
   let gamma = 0;
 
   if (unitQty === null) {
     throw new Error("unknown response unit: " + unit);
-  } else if (unitQty.measure === 'length') {
+  } else if (unitQty.measure === "length") {
     gamma = 0;
-  } else if (unitQty.measure === 'speed') {
+  } else if (unitQty.measure === "speed") {
     gamma = 1;
-  } else if (unitQty.measure === 'acceleration') {
+  } else if (unitQty.measure === "acceleration") {
     gamma = 2;
   } else {
     throw new Error(
@@ -318,11 +317,13 @@ export function applyFreqTaper(
 ): FFTResult {
   const deltaF = fftResult.fundamentalFrequency;
   return FFTResult.createFromAmpPhase(
-    fftResult.amplitudes().map((v, i) =>
-      i === 0
-        ? 0
-        : v * calcFreqTaper(i * deltaF, lowCut, lowPass, highPass, highCut),
-    ),
+    fftResult
+      .amplitudes()
+      .map((v, i) =>
+        i === 0
+          ? 0
+          : v * calcFreqTaper(i * deltaF, lowCut, lowPass, highPass, highCut),
+      ),
     fftResult.phases(),
     fftResult.origLength,
     fftResult.sampleRate,
@@ -342,11 +343,11 @@ export function calcGamma(unit: string): number {
   const unitQty = convert(1).getUnit(unit as AllMeasuresUnits);
   if (unitQty === null) {
     throw new Error("unknown response unit: " + unit);
-  } else if (unitQty.measure === 'length') {
+  } else if (unitQty.measure === "length") {
     gamma = 0;
-  } else if (unitQty.measure === 'speed') {
+  } else if (unitQty.measure === "speed") {
     gamma = 1;
-  } else if (unitQty.measure === 'acceleration') {
+  } else if (unitQty.measure === "acceleration") {
     gamma = 2;
   } else {
     throw new Error(
@@ -361,12 +362,18 @@ export function calcScaleUnit(unit: string): number {
   const unitQty = convert(1).getUnit(unit as AllMeasuresUnits);
   if (unitQty === null) {
     throw new Error("unknown response unit: " + unit);
-  } else if (unitQty.measure === 'length') {
-    scale = convert(1).from(unit as AllMeasuresUnits).to('m');
-  } else if (unitQty.measure === 'speed') {
-    scale = convert(1).from(unit as AllMeasuresUnits).to('m/s');
-  } else if (unitQty.measure === 'acceleration') {
-    scale = convert(1).from(unit as AllMeasuresUnits).to('m/s2');
+  } else if (unitQty.measure === "length") {
+    scale = convert(1)
+      .from(unit as AllMeasuresUnits)
+      .to("m");
+  } else if (unitQty.measure === "speed") {
+    scale = convert(1)
+      .from(unit as AllMeasuresUnits)
+      .to("m/s");
+  } else if (unitQty.measure === "acceleration") {
+    scale = convert(1)
+      .from(unit as AllMeasuresUnits)
+      .to("m/s2");
   } else {
     throw new Error(
       "response unit is not displacement (m), velocity (m/s) or acceleration (m/s^2): " +
@@ -399,7 +406,7 @@ export function convertToSacPoleZero(response: Response): SacPoleZero {
   }
 
   let unit = response.instrumentSensitivity.inputUnits;
-  unit = unit.replaceAll('**', ''); // change m/s**2 to m/s2
+  unit = unit.replaceAll("**", ""); // change m/s**2 to m/s2
 
   if (unit === "M") {
     unit = "m";

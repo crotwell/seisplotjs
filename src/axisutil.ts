@@ -1,21 +1,22 @@
-import {SeismographConfig} from "./seismographconfig";
-import {createSVGElement, checkLuxonValid, toJSDate} from "./util";
+import { SeismographConfig } from "./seismographconfig";
+import { createSVGElement, checkLuxonValid, toJSDate } from "./util";
 //import * as d3 from "d3";
-import {scaleUtc as d3scaleUtc } from "d3-scale";
-import {select as d3select} from "d3-selection";
-import 'd3-transition';
+import { scaleUtc as d3scaleUtc } from "d3-scale";
+import { select as d3select } from "d3-selection";
+import "d3-transition";
 import type {
   //ScaleLinear,
-  ScaleTime} from "d3-scale";
-import {DateTime, Interval} from "luxon";
+  ScaleTime,
+} from "d3-scale";
+import { DateTime, Interval } from "luxon";
 
 //import type {HandlebarsInput} from "./handlebarshelpers";
 
 export interface HandlebarsInput {
-  seisConfig?: SeismographConfig,
-  seisDataList?: unknown,
-  seisXData?: unknown,
-  seisYData?: unknown,
+  seisConfig?: SeismographConfig;
+  seisDataList?: unknown;
+  seisXData?: unknown;
+  seisYData?: unknown;
 }
 
 export class LuxonTimeScale {
@@ -42,10 +43,12 @@ export class LuxonTimeScale {
     const e = toJSDate(this.interval.end);
     d3TimeScale.domain([s, e]);
     d3TimeScale.range(this.range);
-  return d3TimeScale;
+    return d3TimeScale;
   }
   millisPerPixel(): number {
-    return this.interval.length('milliseconds')/(this.range[1]-this.range[0]);
+    return (
+      this.interval.length("milliseconds") / (this.range[1] - this.range[0])
+    );
   }
 }
 export function drawXLabel(
@@ -101,10 +104,10 @@ export function drawXSublabel(
     .append("text")
     .classed("x label sublabel", true)
     .attr("text-anchor", "middle");
-    const handlebarOut = seismographConfig.handlebarsXSublabel(handlebarsInput, {
-      allowProtoPropertiesByDefault: true, // this might be a security issue???
-    });
-    svgText.html(handlebarOut);
+  const handlebarOut = seismographConfig.handlebarsXSublabel(handlebarsInput, {
+    allowProtoPropertiesByDefault: true, // this might be a security issue???
+  });
+  svgText.html(handlebarOut);
 }
 export function drawYLabel(
   svgEl: SVGElement,
@@ -142,10 +145,12 @@ export function drawYLabel(
     } else {
       // horizontal
       if (side === "left") {
-        svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
+        svgText
+          .attr("text-anchor", "start")
+          .attr("dominant-baseline", "central");
       } else {
         svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
-        svgText.attr("x", seismographConfig.margin.right-1);
+        svgText.attr("x", seismographConfig.margin.right - 1);
       }
     }
 
@@ -187,41 +192,46 @@ export function drawYSublabel(
   svg.selectAll("g.ySublabel").remove();
 
   for (const side of ["left", "right"]) {
-  const svgText = svg
-    .append("g")
-    .classed("ySublabel", true)
-    .attr("x", 0)
-    .attr(
-      "transform",
-      `translate( ${seismographConfig.ySublabelTrans}, ${seismographConfig.margin.top + height / 2} )`,
-    )
-    .append("text")
-    .classed("y label sublabel", true);
+    const svgText = svg
+      .append("g")
+      .classed("ySublabel", true)
+      .attr("x", 0)
+      .attr(
+        "transform",
+        `translate( ${seismographConfig.ySublabelTrans}, ${seismographConfig.margin.top + height / 2} )`,
+      )
+      .append("text")
+      .classed("y label sublabel", true);
 
-  if (seismographConfig.yLabelOrientation === "vertical") {
-    // vertical
-    svgText
-      .attr("text-anchor", "middle")
-      .attr("dy", ".75em")
-      .attr("transform", "rotate(-90, 0, 0)");
-  } else {
-    // horizontal
-    if (side === "left") {
-      svgText.attr("text-anchor", "start").attr("dominant-baseline", "central");
+    if (seismographConfig.yLabelOrientation === "vertical") {
+      // vertical
+      svgText
+        .attr("text-anchor", "middle")
+        .attr("dy", ".75em")
+        .attr("transform", "rotate(-90, 0, 0)");
     } else {
-      svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
-      svgText.attr("x", seismographConfig.margin.right-1);
+      // horizontal
+      if (side === "left") {
+        svgText
+          .attr("text-anchor", "start")
+          .attr("dominant-baseline", "central");
+      } else {
+        svgText.attr("text-anchor", "end").attr("dominant-baseline", "central");
+        svgText.attr("x", seismographConfig.margin.right - 1);
+      }
     }
-  }
 
-  if (seismographConfig.ySublabelIsUnits) {
-    svgText.html(unitsLabel);
-  } else {
-    const handlebarOut = seismographConfig.handlebarsYSublabel(handlebarsInput, {
-      allowProtoPropertiesByDefault: true, // this might be a security issue???
-    });
-    svgText.html(handlebarOut);
-  }
+    if (seismographConfig.ySublabelIsUnits) {
+      svgText.html(unitsLabel);
+    } else {
+      const handlebarOut = seismographConfig.handlebarsYSublabel(
+        handlebarsInput,
+        {
+          allowProtoPropertiesByDefault: true, // this might be a security issue???
+        },
+      );
+      svgText.html(handlebarOut);
+    }
   }
 }
 export function drawTitle(
@@ -236,12 +246,14 @@ export function drawTitle(
     return;
   }
   let titleG = svgEl.querySelector("g.title");
-  if ( ! seismographConfig.showTitle) {
-    if (titleG) { svgEl.removeChild(titleG); }
+  if (!seismographConfig.showTitle) {
+    if (titleG) {
+      svgEl.removeChild(titleG);
+    }
     return;
   }
 
-  if ( ! titleG) {
+  if (!titleG) {
     titleG = svgEl.appendChild(createSVGElement("g"));
     titleG.setAttribute("class", "title");
   }
@@ -252,7 +264,7 @@ export function drawTitle(
   let textEl: SVGTextElement;
   // fighting with typescript null
   const queryTextEl = titleG.querySelector("text");
-  if ( ! queryTextEl) {
+  if (!queryTextEl) {
     textEl = createSVGElement("text") as SVGTextElement;
     titleG.appendChild(textEl);
   } else {
@@ -270,7 +282,6 @@ export function drawTitle(
   });
   textEl.innerHTML = handlebarOut;
 }
-
 
 /**
  * Draws axis labels and title, possibly reflecting units of seismograph.
@@ -302,5 +313,12 @@ export function drawAxisLabels(
   drawXLabel(svgEl, seismographConfig, height, width, handlebarsInput);
   drawXSublabel(svgEl, seismographConfig, height, width, handlebarsInput);
   drawYLabel(svgEl, seismographConfig, height, width, handlebarsInput);
-  drawYSublabel(svgEl, seismographConfig, height, width, handlebarsInput, unitsLabel);
+  drawYSublabel(
+    svgEl,
+    seismographConfig,
+    height,
+    width,
+    handlebarsInput,
+    unitsLabel,
+  );
 }

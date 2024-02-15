@@ -42,10 +42,16 @@ export const HanningWindow = OregonDSP.HanningWindow;
 export const Sequence = OregonDSP.Sequence;
 export const Window = OregonDSP.Window;
 export function complexFromPolar(amp: number, phase: number) {
-    const real = amp * Math.cos(phase);
-    const imag = amp * Math.sin(phase);
-    return new OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex(real, imag);
+  const real = amp * Math.cos(phase);
+  const imag = amp * Math.sin(phase);
+  return new OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex(
+    real,
+    imag,
+  );
 }
 export function createComplex(real: number, imag: number) {
-    return new OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex(real, imag);
+  return new OregonDSPTop.com.oregondsp.signalProcessing.filter.iir.Complex(
+    real,
+    imag,
+  );
 }

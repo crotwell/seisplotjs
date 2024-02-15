@@ -4,12 +4,12 @@
  * https://www.seis.sc.edu
  */
 
-import {DateTime, Duration} from "luxon";
-import { FDSNSourceId} from "./fdsnsourceid";
-import {SeismogramSegment} from "./seismogramsegment";
-import {Seismogram} from "./seismogram";
-import {EncodedDataSegment} from "./seedcodec";
-import {isDef, isNonEmptyStringArg, UTC_OPTIONS} from "./util";
+import { DateTime, Duration } from "luxon";
+import { FDSNSourceId } from "./fdsnsourceid";
+import { SeismogramSegment } from "./seismogramsegment";
+import { Seismogram } from "./seismogram";
+import { EncodedDataSegment } from "./seedcodec";
+import { isDef, isNonEmptyStringArg, UTC_OPTIONS } from "./util";
 export const MINISEED_MIME = "application/vnd.fdsn.mseed";
 // type codes as number (ascii)
 export const R_TYPECODE: number = "R".charCodeAt(0);
@@ -331,7 +331,9 @@ export class DataHeader {
    * @returns time at i-th sample as DateTime
    */
   timeOfSample(i: number): DateTime {
-    return this.startTime.plus(Duration.fromMillis(1000*i / this.sampleRate));//seconds
+    return this.startTime.plus(
+      Duration.fromMillis((1000 * i) / this.sampleRate),
+    ); //seconds
   }
 }
 export class Blockette {
@@ -484,8 +486,9 @@ export class BTime {
       "." +
       this.tenthMilli.toFixed().padStart(4, "0") +
       " " +
-      (this.microsecond !== 0 ? `usec: ${this.microsecond} ` : "")+
-      "iso: "+this.toDateTime().toISO()
+      (this.microsecond !== 0 ? `usec: ${this.microsecond} ` : "") +
+      "iso: " +
+      this.toDateTime().toISO()
     );
   }
 
@@ -502,16 +505,20 @@ export class BTime {
       // luxon doesn't handle leap seconds, so invalid???
       return DateTime.invalid(
         "Leap seconds not supported",
-        `seconds value ${this.sec} is a leap second, but luxon does not support`
+        `seconds value ${this.sec} is a leap second, but luxon does not support`,
       );
     }
-    const d = DateTime.fromObject({year: this.year,
-                                ordinal: this.jday,
-                                hour: this.hour,
-                                minute: this.min,
-                                second: this.sec,
-                                millisecond: 0},
-                              UTC_OPTIONS);
+    const d = DateTime.fromObject(
+      {
+        year: this.year,
+        ordinal: this.jday,
+        hour: this.hour,
+        minute: this.min,
+        second: this.sec,
+        millisecond: 0,
+      },
+      UTC_OPTIONS,
+    );
     return d.plus(millis);
   }
 }
@@ -560,15 +567,17 @@ export function createSeismogramSegment(
     contig = [contig];
   }
 
-  const contigData = contig.map(dr => dr.asEncodedDataSegment());
+  const contigData = contig.map((dr) => dr.asEncodedDataSegment());
   const out = new SeismogramSegment(
     contigData,
     contig[0].header.sampleRate,
     contig[0].header.startTime,
-    FDSNSourceId.fromNslc(contig[0].header.netCode,
-                          contig[0].header.staCode,
-                          contig[0].header.locCode,
-                          contig[0].header.chanCode)
+    FDSNSourceId.fromNslc(
+      contig[0].header.netCode,
+      contig[0].header.staCode,
+      contig[0].header.locCode,
+      contig[0].header.chanCode,
+    ),
   );
   return out;
 }
@@ -596,35 +605,37 @@ export function merge(drList: Array<DataRecord>): Seismogram {
  * @param drList array of data records
  * @returns array of SeismogramSegments for contiguous data
  */
-export function mergeSegments(drList: Array<DataRecord>): Array<SeismogramSegment> {
- const out = [];
- let currDR;
- drList.sort(function (a, b) {
-   return a.header.startTime.toMillis() - b.header.startTime.toMillis();
- });
- let contig: Array<DataRecord> = [];
+export function mergeSegments(
+  drList: Array<DataRecord>,
+): Array<SeismogramSegment> {
+  const out = [];
+  let currDR;
+  drList.sort(function (a, b) {
+    return a.header.startTime.toMillis() - b.header.startTime.toMillis();
+  });
+  let contig: Array<DataRecord> = [];
 
- for (let i = 0; i < drList.length; i++) {
-   currDR = drList[i];
+  for (let i = 0; i < drList.length; i++) {
+    currDR = drList[i];
 
-   if (contig.length === 0) {
-     contig.push(currDR);
-   } else if (areContiguous(contig[contig.length - 1], currDR)) {
-     contig.push(currDR);
-   } else {
-     //found a gap
-     out.push(createSeismogramSegment(contig));
-     contig = [currDR];
-   }
- }
+    if (contig.length === 0) {
+      contig.push(currDR);
+    } else if (areContiguous(contig[contig.length - 1], currDR)) {
+      contig.push(currDR);
+    } else {
+      //found a gap
+      out.push(createSeismogramSegment(contig));
+      contig = [currDR];
+    }
+  }
 
- if (contig.length > 0) {
-   // last segment
-   out.push(createSeismogramSegment(contig));
-   contig = [];
- }
+  if (contig.length > 0) {
+    // last segment
+    out.push(createSeismogramSegment(contig));
+    contig = [];
+  }
 
- return out;
+  return out;
 }
 
 /**
@@ -668,7 +679,9 @@ export function seismogramSegmentPerChannel(
 ): Array<SeismogramSegment> {
   let out = new Array<SeismogramSegment>(0);
   const byChannelMap = byChannel(drList);
-  byChannelMap.forEach(segments => out = out.concat(mergeSegments(segments)));
+  byChannelMap.forEach(
+    (segments) => (out = out.concat(mergeSegments(segments))),
+  );
   return out;
 }
 /**
@@ -683,6 +696,6 @@ export function seismogramPerChannel(
 ): Array<Seismogram> {
   const out: Array<Seismogram> = [];
   const byChannelMap = byChannel(drList);
-  byChannelMap.forEach(segments => out.push(merge(segments)));
+  byChannelMap.forEach((segments) => out.push(merge(segments)));
   return out;
 }

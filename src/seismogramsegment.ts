@@ -3,11 +3,11 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {DateTime, Duration, Interval} from "luxon";
-import {checkStringOrDate, isDef, checkLuxonValid} from "./util";
-import {MinMaxable} from './scale';
+import { DateTime, Duration, Interval } from "luxon";
+import { checkStringOrDate, isDef, checkLuxonValid } from "./util";
+import { MinMaxable } from "./scale";
 import * as seedcodec from "./seedcodec";
-import {FDSNSourceId, NslcId} from "./fdsnsourceid";
+import { FDSNSourceId, NslcId } from "./fdsnsourceid";
 export const COUNT_UNIT = "count";
 export type HighLowType = {
   xScaleDomain: Array<Date>;
@@ -42,7 +42,7 @@ export class SeismogramSegment {
   _endTime_cache_numPoints: number;
   _sourceId: FDSNSourceId;
   yUnit: string;
-  _highlow: HighLowType|undefined;
+  _highlow: HighLowType | undefined;
 
   constructor(
     yArray:
@@ -55,19 +55,26 @@ export class SeismogramSegment {
     startTime: DateTime,
     sourceId?: FDSNSourceId,
   ) {
-    if (yArray instanceof Int32Array ||
-        yArray instanceof Float32Array ||
-        yArray instanceof Float64Array) {
+    if (
+      yArray instanceof Int32Array ||
+      yArray instanceof Float32Array ||
+      yArray instanceof Float64Array
+    ) {
       this._y = yArray;
       this._compressed = null;
-    } else if (Array.isArray(yArray) &&
-              yArray.every(ee => ee instanceof seedcodec.EncodedDataSegment)) {
-      this._compressed = (yArray as unknown) as Array<seedcodec.EncodedDataSegment>;
+    } else if (
+      Array.isArray(yArray) &&
+      yArray.every((ee) => ee instanceof seedcodec.EncodedDataSegment)
+    ) {
+      this._compressed =
+        yArray as unknown as Array<seedcodec.EncodedDataSegment>;
       this._y = null;
-    } else if (Array.isArray(yArray) &&
-              yArray.every(ee => typeof ee === "number")) {
+    } else if (
+      Array.isArray(yArray) &&
+      yArray.every((ee) => typeof ee === "number")
+    ) {
       // numbers in js are 64bit, so...
-      this._y = Float64Array.from((yArray as unknown) as Array<number>);
+      this._y = Float64Array.from(yArray as unknown as Array<number>);
       this._compressed = null;
     } else {
       this._compressed = null;
@@ -80,7 +87,9 @@ export class SeismogramSegment {
     this._sampleRate = sampleRate;
     this._startTime = checkStringOrDate(startTime);
     this.yUnit = COUNT_UNIT;
-    this._sourceId = sourceId ? sourceId : FDSNSourceId.createUnknown(sampleRate);
+    this._sourceId = sourceId
+      ? sourceId
+      : FDSNSourceId.createUnknown(sampleRate);
     // to avoid recalc of end time as it is kind of expensive
     this._endTime_cache = null;
     this._endTime_cache_numPoints = 0;
@@ -193,7 +202,7 @@ export class SeismogramSegment {
   }
 
   get samplePeriod(): number {
-    return 1.0/this.sampleRate;
+    return 1.0 / this.sampleRate;
   }
 
   get numPoints(): number {
@@ -214,15 +223,15 @@ export class SeismogramSegment {
     return this._sourceId.networkCode;
   }
 
-  get stationCode(): string|null {
+  get stationCode(): string | null {
     return this._sourceId.stationCode;
   }
 
-  get locationCode(): string|null {
+  get locationCode(): string | null {
     return this._sourceId.locationCode;
   }
 
-  get channelCode(): string|null {
+  get channelCode(): string | null {
     return this._sourceId.formChannelCode();
   }
 
@@ -257,10 +266,10 @@ export class SeismogramSegment {
   }
 
   yAtIndex(i: number): number {
-    if (i >=0 ) {
+    if (i >= 0) {
       return this.y[i];
     } else {
-      return this.y[this.numPoints+i];
+      return this.y[this.numPoints + i];
     }
   }
 
@@ -306,9 +315,13 @@ export class SeismogramSegment {
    */
   timeOfSample(i: number): DateTime {
     if (i >= 0) {
-      return this.startTime.plus(Duration.fromMillis(1000*i / this.sampleRate));
+      return this.startTime.plus(
+        Duration.fromMillis((1000 * i) / this.sampleRate),
+      );
     } else {
-      return this.startTime.plus(Duration.fromMillis(1000*(this.numPoints+i) / this.sampleRate));
+      return this.startTime.plus(
+        Duration.fromMillis((1000 * (this.numPoints + i)) / this.sampleRate),
+      );
     }
   }
 
@@ -320,7 +333,9 @@ export class SeismogramSegment {
       return -1;
     }
 
-    return Math.round((t.diff(this.startTime).toMillis() * this.sampleRate) / 1000);
+    return Math.round(
+      (t.diff(this.startTime).toMillis() * this.sampleRate) / 1000,
+    );
   }
 
   hasCodes(): boolean {
@@ -361,8 +376,7 @@ export class SeismogramSegment {
 
   seisId(): string {
     const out = `${this.sourceId.toString()}_${this.startTime.toISO()}_${this.endTime.toISO()}`;
-    return out.replace(/\./g, "_")
-      .replace(/:/g, "");
+    return out.replace(/\./g, "_").replace(/:/g, "");
   }
 
   /**
@@ -370,14 +384,13 @@ export class SeismogramSegment {
    *
    * @returns FDSN source id
    */
-  get sourceId(): FDSNSourceId  {
+  get sourceId(): FDSNSourceId {
     return this._sourceId;
   }
 
   set sourceId(sid: FDSNSourceId) {
     this._sourceId = sid;
   }
-
 
   clone(): SeismogramSegment {
     let out: SeismogramSegment;
@@ -404,7 +417,7 @@ export class SeismogramSegment {
       clonedData,
       this.sampleRate,
       clonedStartTime,
-      this._sourceId.clone()
+      this._sourceId.clone(),
     );
     out.yUnit = this.yUnit;
     return out;
@@ -413,7 +426,8 @@ export class SeismogramSegment {
   cut(timeRange: Interval): SeismogramSegment | null {
     checkLuxonValid(timeRange);
     if (
-      timeRange.start == null || timeRange.end == null ||
+      timeRange.start == null ||
+      timeRange.end == null ||
       timeRange.end < this._startTime ||
       timeRange.start > this.endTime
     ) {
@@ -439,7 +453,9 @@ export class SeismogramSegment {
     const cutY = this.y.slice(sIndex, eIndex);
     const out = this.cloneWithNewData(
       cutY,
-      this._startTime.plus(Duration.fromMillis(1000 * sIndex / this.sampleRate)),
+      this._startTime.plus(
+        Duration.fromMillis((1000 * sIndex) / this.sampleRate),
+      ),
     );
     return out;
   }

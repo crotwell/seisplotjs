@@ -1,17 +1,15 @@
-
 import { isDef } from "./util";
 import { Duration } from "luxon";
 
 /** enum for amplitude modes, RAW, ZERO, MINMAX, MEAN */
 export enum AMPLITUDE_MODE {
-  Raw = "raw",       // raw values, no centering
-  Zero = "zero",     // same as Raw, but also includes zero
+  Raw = "raw", // raw values, no centering
+  Zero = "zero", // same as Raw, but also includes zero
   MinMax = "minmax", // centered on midpoint of min-max
-  Mean = "mean",     // centered on mean
+  Mean = "mean", // centered on mean
 }
 
 let _lastId = 0;
-
 
 export class MinMaxable {
   min: number;
@@ -24,20 +22,26 @@ export class MinMaxable {
     return (this.min + this.max) / 2;
   }
   get halfWidth(): number {
-    return (this.fullWidth) / 2;
+    return this.fullWidth / 2;
   }
   get fullWidth(): number {
-    return (this.max - this.min);
+    return this.max - this.min;
   }
   union(omm?: MinMaxable): MinMaxable {
     if (omm) {
-      return new MinMaxable(Math.min(this.min, omm.min), Math.max(this.max, omm.max));
+      return new MinMaxable(
+        Math.min(this.min, omm.min),
+        Math.max(this.max, omm.max),
+      );
     } else {
       return this;
     }
   }
   expandPercentage(percent: number): MinMaxable {
-    return MinMaxable.fromMiddleHalfWidth(this.middle, this.halfWidth * percent);
+    return MinMaxable.fromMiddleHalfWidth(
+      this.middle,
+      this.halfWidth * percent,
+    );
   }
   /**
    * This as a d3 style 2 element array.
@@ -106,19 +110,13 @@ export class TimeScalable {
   alignmentTimeOffset: Duration;
   duration: Duration;
 
-  constructor(
-    alignmentTimeOffset: Duration,
-    duration: Duration,
-  ) {
+  constructor(alignmentTimeOffset: Duration, duration: Duration) {
     this.alignmentTimeOffset = alignmentTimeOffset;
     this.duration = duration;
   }
 
   // eslint-disable-next-line no-unused-vars
-  notifyTimeRangeChange(
-    alignmentTimeOffset: Duration,
-    duration: Duration,
-  ) {
+  notifyTimeRangeChange(alignmentTimeOffset: Duration, duration: Duration) {
     // no-op
   }
 }
@@ -151,7 +149,7 @@ export class LinkedAmplitudeScale {
   set halfWidth(val: number) {
     if (this._halfWidth !== val) {
       this._halfWidth = val;
-      this.notifyAll().catch(m => {
+      this.notifyAll().catch((m) => {
         // eslint-disable-next-line no-console
         console.warn(`problem recalc halfWidth: ${m}`);
       });
@@ -163,8 +161,10 @@ export class LinkedAmplitudeScale {
    *
    * @param   graphList Array of AmplitudeScalable to link
    */
-  linkAll(graphList: Array<AmplitudeScalable | { amp_scalable: AmplitudeScalable }>) {
-    graphList.forEach(graph => {
+  linkAll(
+    graphList: Array<AmplitudeScalable | { amp_scalable: AmplitudeScalable }>,
+  ) {
+    graphList.forEach((graph) => {
       if ("notifyAmplitudeChange" in graph) {
         this._graphSet.add(graph);
       } else if ("amp_scalable" in graph) {
@@ -173,7 +173,7 @@ export class LinkedAmplitudeScale {
         // graph does not have notifyAmplitudeChange method or amp_scalable field, skipping
       }
     });
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc linkAll: ${m}`);
     });
@@ -195,7 +195,7 @@ export class LinkedAmplitudeScale {
   unlink(graph: AmplitudeScalable) {
     this._graphSet.delete(graph);
 
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc unlink: ${m}`);
     });
@@ -216,20 +216,22 @@ export class LinkedAmplitudeScale {
       promiseOut = this._internalNotifyAll();
     } else {
       // no change
-      promiseOut = Promise.all(this.graphList.map(g => Promise.resolve(g)));
+      promiseOut = Promise.all(this.graphList.map((g) => Promise.resolve(g)));
     }
     return promiseOut;
   }
   _internalNotifyAll(): Promise<Array<AmplitudeScalable>> {
     const hw = this.halfWidth;
-    return Promise.all(this.graphList.map(g => {
-      return new Promise<AmplitudeScalable>(resolve => {
-        setTimeout(() => {
-          g.notifyAmplitudeChange(g.middle, hw);
-          resolve(g);
-        }, 10);
-      });
-    }));
+    return Promise.all(
+      this.graphList.map((g) => {
+        return new Promise<AmplitudeScalable>((resolve) => {
+          setTimeout(() => {
+            g.notifyAmplitudeChange(g.middle, hw);
+            resolve(g);
+          }, 10);
+        });
+      }),
+    );
   }
   notifyAll(): Promise<Array<AmplitudeScalable>> {
     return this._internalNotifyAll();
@@ -248,17 +250,18 @@ export class IndividualAmplitudeScale extends LinkedAmplitudeScale {
     return this.notifyAll();
   }
   notifyAll(): Promise<Array<AmplitudeScalable>> {
-    return Promise.all(this.graphList.map(g => {
-      return new Promise<AmplitudeScalable>(resolve => {
-        setTimeout(() => {
-          g.notifyAmplitudeChange(g.middle, g.halfWidth);
-          resolve(g);
-        }, 10);
-      });
-    }));
+    return Promise.all(
+      this.graphList.map((g) => {
+        return new Promise<AmplitudeScalable>((resolve) => {
+          setTimeout(() => {
+            g.notifyAmplitudeChange(g.middle, g.halfWidth);
+            resolve(g);
+          }, 10);
+        });
+      }),
+    );
   }
 }
-
 
 export class FixedHalfWidthAmplitudeScale extends LinkedAmplitudeScale {
   constructor(halfWidth: number, graphList?: Array<AmplitudeScalable>) {
@@ -271,14 +274,16 @@ export class FixedHalfWidthAmplitudeScale extends LinkedAmplitudeScale {
   }
   notifyAll(): Promise<Array<AmplitudeScalable>> {
     const hw = this.halfWidth;
-    return Promise.all(this.graphList.map(g => {
-      return new Promise<AmplitudeScalable>(resolve => {
-        setTimeout(() => {
-          g.notifyAmplitudeChange(g.middle, hw);
-          resolve(g);
-        }, 10);
-      });
-    }));
+    return Promise.all(
+      this.graphList.map((g) => {
+        return new Promise<AmplitudeScalable>((resolve) => {
+          setTimeout(() => {
+            g.notifyAmplitudeChange(g.middle, hw);
+            resolve(g);
+          }, 10);
+        });
+      }),
+    );
   }
 }
 
@@ -304,7 +309,11 @@ export class LinkedTimeScale {
     originalOffset?: Duration,
     scaleId?: number,
   ) {
-    if (scaleId) { this._scaleId = scaleId; } else { this._scaleId = -1; }
+    if (scaleId) {
+      this._scaleId = scaleId;
+    } else {
+      this._scaleId = -1;
+    }
     const glist = graphList ? graphList : []; // in case null
 
     this._graphSet = new Set(glist);
@@ -320,9 +329,7 @@ export class LinkedTimeScale {
       this._zoomedDuration = originalDuration;
     } else if (glist.length > 0) {
       this._originalDuration = glist.reduce((acc, cur) => {
-        return acc > cur.duration
-          ? acc
-          : cur.duration;
+        return acc > cur.duration ? acc : cur.duration;
       }, Duration.fromMillis(0));
     }
 
@@ -331,7 +338,7 @@ export class LinkedTimeScale {
     } else {
       this._originalOffset = Duration.fromMillis(0);
     }
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc constructor: ${m}`);
     });
@@ -354,7 +361,7 @@ export class LinkedTimeScale {
    * @param   graphList Array of TimeScalable to link
    */
   linkAll(graphList: Array<TimeScalable | { time_scalable: TimeScalable }>) {
-    graphList.forEach(graph => {
+    graphList.forEach((graph) => {
       if ("notifyTimeRangeChange" in graph) {
         this._graphSet.add(graph);
       } else if ("time_scalable" in graph) {
@@ -363,7 +370,7 @@ export class LinkedTimeScale {
         //graph does not have notifyTimeRangeChange method or time_scalable field, skipping
       }
     });
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc linkAll: ${m}`);
     });
@@ -376,7 +383,7 @@ export class LinkedTimeScale {
    */
   unlink(graph: TimeScalable) {
     this._graphSet.delete(graph);
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc unlink: ${m}`);
     });
@@ -385,7 +392,7 @@ export class LinkedTimeScale {
   zoom(startOffset: Duration, duration: Duration) {
     this._zoomedDuration = duration;
     this._zoomedOffset = startOffset;
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc zoom: ${m}`);
     });
@@ -394,29 +401,29 @@ export class LinkedTimeScale {
   unzoom() {
     this._zoomedDuration = null;
     this._zoomedOffset = null;
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc unzoom: ${m}`);
     });
   }
 
   get offset(): Duration {
-    return this._zoomedOffset
-      ? this._zoomedOffset
-      : this._originalOffset;
+    return this._zoomedOffset ? this._zoomedOffset : this._originalOffset;
   }
 
   set offset(offset: Duration) {
     this._originalOffset = offset;
     this._zoomedOffset = offset;
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc set offset: ${m}`);
     });
   }
 
   get duration(): Duration {
-    return isDef(this._zoomedDuration) ? this._zoomedDuration : this._originalDuration;
+    return isDef(this._zoomedDuration)
+      ? this._zoomedDuration
+      : this._originalDuration;
   }
 
   set duration(duration: Duration) {
@@ -425,7 +432,7 @@ export class LinkedTimeScale {
     }
     this._originalDuration = duration;
     this._zoomedDuration = duration;
-    this.recalculate().catch(m => {
+    this.recalculate().catch((m) => {
       // eslint-disable-next-line no-console
       console.warn(`problem recalc set duration: ${m}`);
     });
@@ -443,8 +450,11 @@ export class LinkedTimeScale {
    * @returns promise to array of all linked items
    */
   recalculate(): Promise<Array<TimeScalable>> {
-    if (!isDef(this._zoomedDuration) || this._originalDuration.toMillis() === 0) {
-      this.graphList.forEach(graph => {
+    if (
+      !isDef(this._zoomedDuration) ||
+      this._originalDuration.toMillis() === 0
+    ) {
+      this.graphList.forEach((graph) => {
         if (graph && graph.duration > this._originalDuration) {
           this._originalDuration = graph.duration;
         }
@@ -453,16 +463,18 @@ export class LinkedTimeScale {
     return this.notifyAll();
   }
   notifyAll(): Promise<Array<TimeScalable>> {
-    return Promise.all(this.graphList.map(g => {
-      return new Promise<TimeScalable>(resolve => {
-        setTimeout(() => {
-          if (g != null) {
-            g.notifyTimeRangeChange(this.offset, this.duration);
-          }
-          resolve(g);
-        }, 10);
-      });
-    }));
+    return Promise.all(
+      this.graphList.map((g) => {
+        return new Promise<TimeScalable>((resolve) => {
+          setTimeout(() => {
+            if (g != null) {
+              g.notifyTimeRangeChange(this.offset, this.duration);
+            }
+            resolve(g);
+          }, 10);
+        });
+      }),
+    );
   }
   get graphList() {
     return Array.from(this._graphSet.values());
@@ -478,12 +490,12 @@ export class LinkedTimeScale {
  * @param scaleId              [description]
  */
 export class AlignmentLinkedTimeScale extends LinkedTimeScale {
-
   constructor(
     graphList?: Array<TimeScalable>,
     originalDuration?: Duration,
     originalOffset?: Duration,
-    scaleId?: number,) {
+    scaleId?: number,
+  ) {
     super(graphList, originalDuration, originalOffset, scaleId);
   }
 
@@ -495,15 +507,17 @@ export class AlignmentLinkedTimeScale extends LinkedTimeScale {
     return this.notifyAll();
   }
   notifyAll(): Promise<Array<TimeScalable>> {
-    return Promise.all(this.graphList.map(g => {
-      return new Promise<TimeScalable>(resolve => {
-        setTimeout(() => {
-          if (g != null) {
-            g.notifyTimeRangeChange(this.offset, this.duration);
-          }
-          resolve(g);
-        }, 10);
-      });
-    }));
+    return Promise.all(
+      this.graphList.map((g) => {
+        return new Promise<TimeScalable>((resolve) => {
+          setTimeout(() => {
+            if (g != null) {
+              g.notifyTimeRangeChange(this.offset, this.duration);
+            }
+            resolve(g);
+          }, 10);
+        });
+      }),
+    );
   }
 }

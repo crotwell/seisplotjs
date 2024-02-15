@@ -1,5 +1,7 @@
-
-const lang = ( typeof navigator!== "undefined" && navigator?.language ) ? navigator?.language : "en-US";
+const lang =
+  typeof navigator !== "undefined" && navigator?.language
+    ? navigator?.language
+    : "en-US";
 
 export const latlonFormat = new Intl.NumberFormat(lang, {
   style: "unit",

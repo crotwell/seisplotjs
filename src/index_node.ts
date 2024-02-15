@@ -46,7 +46,7 @@ import * as seismogramsegment from "./seismogramsegment";
 //import * as seismographutil from "./seismographutil";
 //import * as seismographconfig from "./seismographconfig";
 //import * as seismographconfigeditor from "./seismographconfigeditor";
-import * as sorting from './sorting';
+import * as sorting from "./sorting";
 //import * as spectraplot from "./spectraplot";
 import * as stationxml from "./stationxml";
 import * as taper from "./taper";

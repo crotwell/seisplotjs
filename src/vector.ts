@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {SeismogramSegment} from "./seismogramsegment";
-import {Seismogram} from "./seismogram";
-import {isDef} from "./util";
+import { SeismogramSegment } from "./seismogramsegment";
+import { Seismogram } from "./seismogram";
+import { isDef } from "./util";
 
 /**
  * const for degrees to radians, pi/180
@@ -188,11 +188,13 @@ export function vectorMagnitude(
   seisC: Seismogram,
   orientCode?: string | null,
 ): Seismogram {
-  if (seisA.segments.length !== seisB.segments.length ||
-    seisA.segments.length !== seisC.segments.length) {
+  if (
+    seisA.segments.length !== seisB.segments.length ||
+    seisA.segments.length !== seisC.segments.length
+  ) {
     throw new Error(
       "Seismograms do not have same number of segments: " +
-      `${seisA.segments.length}  !== ${seisB.segments.length}  !== ${seisC.segments.length}`,
+        `${seisA.segments.length}  !== ${seisB.segments.length}  !== ${seisC.segments.length}`,
     );
   }
 
@@ -228,16 +230,17 @@ function vectorMagnitudeSegment(
   seisC: SeismogramSegment,
   orientCode: string | null | undefined,
 ): SeismogramSegment {
-  if (seisA.y.length !== seisB.y.length ||
-    seisA.y.length !== seisC.y.length) {
+  if (seisA.y.length !== seisB.y.length || seisA.y.length !== seisC.y.length) {
     throw new Error(
       "seis should be of same length but was " +
         `${seisA.y.length} ${seisB.y.length} ${seisC.y.length}`,
     );
   }
 
-  if (seisA.sampleRate !== seisB.sampleRate ||
-    seisA.sampleRate !== seisC.sampleRate) {
+  if (
+    seisA.sampleRate !== seisB.sampleRate ||
+    seisA.sampleRate !== seisC.sampleRate
+  ) {
     throw new Error(
       "Expect sampleRate to be same, but was " +
         `${seisA.sampleRate} ${seisB.sampleRate} ${seisC.sampleRate}`,

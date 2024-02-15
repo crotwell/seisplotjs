@@ -3,12 +3,12 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {insertCSS,} from "./cssutil";
-import {SeismographConfig} from "./seismographconfig";
-import {isDef} from "./util";
-import { select as d3select} from "d3-selection";
+import { insertCSS } from "./cssutil";
+import { SeismographConfig } from "./seismographconfig";
+import { isDef } from "./util";
+import { select as d3select } from "d3-selection";
 
-import type {Selection} from 'd3-selection';
+import type { Selection } from "d3-selection";
 
 export function createEditor(
   div: Selection<HTMLElement, unknown, null, undefined>,
@@ -160,29 +160,31 @@ export function createEditor(
   colorDiv.append("label").text("Color:");
   let colorLineNum = 0;
   const perLine = 5;
-  while (colorLineNum*perLine < config.lineColors.length) {
+  while (colorLineNum * perLine < config.lineColors.length) {
     const subDiv = colorDiv.append("div");
-    config.lineColors.slice(colorLineNum*perLine, colorLineNum*perLine+perLine).forEach((color, index) => {
-      const colorspan = subDiv.append("span");
-      const cindex = index+colorLineNum*perLine;
-      colorspan.style("color", color);
-      colorspan.append("label").text(`${cindex + 1}:`);
-      colorspan
-        .append("input")
-        .classed("smallconfigtext", true)
-        .attr("type", "text")
-        .attr("name", `color${cindex + 1}`)
-        .property("value", color)
-        .on("change", function () {
-          const val = d3select(this).property("value");
-          config.lineColors[cindex] = val;
-          colorspan.style("color", val);
-          colorspan.select("input").style("color", val);
-          onChange();
-        });
-      colorspan.select("input").style("color", color);
-    });
-    colorLineNum+=1;
+    config.lineColors
+      .slice(colorLineNum * perLine, colorLineNum * perLine + perLine)
+      .forEach((color, index) => {
+        const colorspan = subDiv.append("span");
+        const cindex = index + colorLineNum * perLine;
+        colorspan.style("color", color);
+        colorspan.append("label").text(`${cindex + 1}:`);
+        colorspan
+          .append("input")
+          .classed("smallconfigtext", true)
+          .attr("type", "text")
+          .attr("name", `color${cindex + 1}`)
+          .property("value", color)
+          .on("change", function () {
+            const val = d3select(this).property("value");
+            config.lineColors[cindex] = val;
+            colorspan.style("color", val);
+            colorspan.select("input").style("color", val);
+            onChange();
+          });
+        colorspan.select("input").style("color", color);
+      });
+    colorLineNum += 1;
   }
   createNumberOption(
     div.append("div"),
@@ -230,7 +232,9 @@ export function createEditor(
     onChange,
   );
 }
-export type SEL_DIV_SPAN = Selection<HTMLDivElement, unknown, null, undefined> | Selection<HTMLSpanElement, unknown, null, undefined>
+export type SEL_DIV_SPAN =
+  | Selection<HTMLDivElement, unknown, null, undefined>
+  | Selection<HTMLSpanElement, unknown, null, undefined>;
 function createBooleanOptionByKey(
   myspan: SEL_DIV_SPAN,
   label: string,

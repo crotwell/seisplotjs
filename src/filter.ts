@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {Duration, DateTime} from "luxon";
-import {Seismogram} from "./seismogram";
-import {InstrumentSensitivity} from "./stationxml";
+import { Duration, DateTime } from "luxon";
+import { Seismogram } from "./seismogram";
+import { InstrumentSensitivity } from "./stationxml";
 import {
   Butterworth,
   ChebyshevI,
@@ -13,14 +13,16 @@ import {
   PassbandType,
   IIRFilter,
   CenteredHilbertTransform,
-  LOWPASS, BANDPASS, HIGHPASS
+  LOWPASS,
+  BANDPASS,
+  HIGHPASS,
 } from "./oregondsputil";
-import {isDef} from "./util";
+import { isDef } from "./util";
 
 /**
  * Constant for bandpass OregonDSP filter creation.
  */
-export const BAND_PASS = 'BANDPASS';
+export const BAND_PASS = "BANDPASS";
 
 /**
  * Constant for lowpass OregonDSP filter creation.
@@ -46,7 +48,7 @@ export function rMean(seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
     const meanVal = seis.mean();
     const rmeanSeismogram = new Seismogram(
-      seis.segments.map(s => {
+      seis.segments.map((s) => {
         const demeanY = s.y.map(function (d) {
           return d - meanVal;
         });
@@ -61,14 +63,14 @@ export function rMean(seis: Seismogram): Seismogram {
 }
 
 export type LineFitType = {
-  slope: number,
-  intercept: number,
-  reference_time: DateTime,
-  sigma: number,
-  sigma_a: number,
-  sigma_b: number,
-  correlation: number,
-}
+  slope: number;
+  intercept: number;
+  reference_time: DateTime;
+  sigma: number;
+  sigma_a: number;
+  sigma_b: number;
+  correlation: number;
+};
 
 /**
  * Calculate best fit line to seismogram. Limited to contiguous data currently.
@@ -79,61 +81,71 @@ export type LineFitType = {
  * @param  referenceTime               [description]
  * @returns               best fit line
  */
-export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType {
+export function lineFit(
+  seis: Seismogram,
+  referenceTime?: DateTime,
+): LineFitType {
   if (seis.numPoints === 0) {
     throw new Error(`cannot lineFit a seismogram with no points`);
   }
   /* - Initialize accumulators. */
   const rn = seis.numPoints;
-  let sumx = 0.;
-  let sumy = 0.;
-  let sumxy = 0.;
-  let sumx2 = 0.;
-  let sumy2 = 0.;
+  let sumx = 0;
+  let sumy = 0;
+  let sumxy = 0;
+  let sumx2 = 0;
+  let sumy2 = 0;
 
   /* - Loop on each data point. */
 
   referenceTime = referenceTime ? referenceTime : seis.start;
-  const x1 = referenceTime.toMillis()/1000; // seconds
-  seis.segments.forEach( seg => {
-    const seg_start_x = seg.start.toMillis()/1000-x1;
-    const dx = 1 / seg.sampleRate;  // seconds
+  const x1 = referenceTime.toMillis() / 1000; // seconds
+  seis.segments.forEach((seg) => {
+    const seg_start_x = seg.start.toMillis() / 1000 - x1;
+    const dx = 1 / seg.sampleRate; // seconds
     const Y = seg.y;
-    for(let i = 0; i < Y.length; i++ ){
+    for (let i = 0; i < Y.length; i++) {
       const yi = Y[i];
-      const xi = seg_start_x + (dx * i);
+      const xi = seg_start_x + dx * i;
       sumx = sumx + xi;
       sumy = sumy + yi;
-      sumxy = sumxy + xi*yi;
-      sumx2 = sumx2 + xi*xi;
-      sumy2 = sumy2 + yi*yi;
+      sumxy = sumxy + xi * yi;
+      sumx2 = sumx2 + xi * xi;
+      sumy2 = sumy2 + yi * yi;
     }
   });
 
   /* - Calculate linear fit. */
 
-  const d = rn*sumx2 - sumx*sumx;
-    // zero denominator would cause NaN, assume zero slope intercept
-  const b = d!==0 ? (sumx2*sumy - sumx*sumxy)/d : 0;
-  const a = d!==0 ? (rn*sumxy - sumx*sumy)/d : 0;
+  const d = rn * sumx2 - sumx * sumx;
+  // zero denominator would cause NaN, assume zero slope intercept
+  const b = d !== 0 ? (sumx2 * sumy - sumx * sumxy) / d : 0;
+  const a = d !== 0 ? (rn * sumxy - sumx * sumy) / d : 0;
 
   /* - Estimate standard deviation in data. */
 
-  const sig2 = (sumy2 + rn*b*b + a*a*sumx2 - 2.*b*sumy - 2.*a*sumxy +
-   2.*b*a*sumx)/(seis.numPoints-1);
-  const sig = Math.sqrt( sig2 );
+  const sig2 =
+    (sumy2 +
+      rn * b * b +
+      a * a * sumx2 -
+      2 * b * sumy -
+      2 * a * sumxy +
+      2 * b * a * sumx) /
+    (seis.numPoints - 1);
+  const sig = Math.sqrt(sig2);
 
   /* - Estimate errors in linear fit. */
 
-  const siga2 = rn*sig2/d;
-  const sigb2 = sig2*sumx2/d;
-  const siga = Math.sqrt( siga2 );
-  const sigb = Math.sqrt( sigb2 );
+  const siga2 = (rn * sig2) / d;
+  const sigb2 = (sig2 * sumx2) / d;
+  const siga = Math.sqrt(siga2);
+  const sigb = Math.sqrt(sigb2);
 
   /* - Calculate correlation coefficient between data and model. */
 
-  let cc = (rn*sumxy - sumx*sumy)/Math.sqrt( d*(rn*sumy2 - sumy*sumy) );
-  cc = Math.abs( cc );
+  let cc =
+    (rn * sumxy - sumx * sumy) / Math.sqrt(d * (rn * sumy2 - sumy * sumy));
+  cc = Math.abs(cc);
 
   return {
     slope: a,
@@ -144,7 +156,6 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
     sigma_b: sigb,
     correlation: cc,
   };
-
 }
 
 /**
@@ -155,19 +166,25 @@ export function lineFit(seis: Seismogram, referenceTime?: DateTime): LineFitType
  * @param fitLine optional fit type
  * @returns       seismogram with mean of zero and best fit line horizontal
  */
-export function removeTrend(seis: Seismogram, fitLine?: LineFitType): Seismogram {
+export function removeTrend(
+  seis: Seismogram,
+  fitLine?: LineFitType,
+): Seismogram {
   if (seis instanceof Seismogram) {
     const linfit = fitLine ? fitLine : lineFit(seis);
     if (Number.isNaN(linfit.slope) || Number.isNaN(linfit.intercept)) {
-      throw new Error(`Can't remove trend with NaN, slope: ${linfit.slope} int: ${linfit.intercept}`);
+      throw new Error(
+        `Can't remove trend with NaN, slope: ${linfit.slope} int: ${linfit.intercept}`,
+      );
     }
-    const ref_secs = linfit.reference_time.toMillis()/1000; // seconds
-    const rtr_segments = seis.segments.map(seg => {
-      const start_secs = seg.start.toMillis()/1000; // seconds
+    const ref_secs = linfit.reference_time.toMillis() / 1000; // seconds
+    const rtr_segments = seis.segments.map((seg) => {
+      const start_secs = seg.start.toMillis() / 1000; // seconds
       const start_offset = start_secs - ref_secs;
-      const dx = 1 / seg.sampleRate;  // seconds
-      const rtr_y = seg.y.map((y,idx) => {
-        const out = y-(start_offset+dx*idx)*linfit.slope-linfit.intercept;
+      const dx = 1 / seg.sampleRate; // seconds
+      const rtr_y = seg.y.map((y, idx) => {
+        const out =
+          y - (start_offset + dx * idx) * linfit.slope - linfit.intercept;
         return out;
       });
       const rtr_seg = seg.cloneWithNewData(rtr_y);
@@ -193,18 +210,15 @@ export function gainCorrect(
   instrumentSensitivity: InstrumentSensitivity,
 ): Seismogram {
   const gain = instrumentSensitivity.sensitivity;
-  const out = mul(seis, 1/gain);
-  out.segments.forEach(s => s.yUnit = instrumentSensitivity.inputUnits);
+  const out = mul(seis, 1 / gain);
+  out.segments.forEach((s) => (s.yUnit = instrumentSensitivity.inputUnits));
   return out;
 }
 
-export function mul(
-  seis: Seismogram,
-  factor: number,
-): Seismogram {
+export function mul(seis: Seismogram, factor: number): Seismogram {
   if (seis instanceof Seismogram) {
     const gainSeismogram = new Seismogram(
-      seis.segments.map(s => {
+      seis.segments.map((s) => {
         let gainY;
 
         if (s.y instanceof Int32Array || s.y instanceof Float32Array) {
@@ -226,13 +240,10 @@ export function mul(
   }
 }
 
-export function add(
-  seis: Seismogram,
-  factor: number,
-): Seismogram {
+export function add(seis: Seismogram, factor: number): Seismogram {
   if (seis instanceof Seismogram) {
     const gainSeismogram = new Seismogram(
-      seis.segments.map(s => {
+      seis.segments.map((s) => {
         let gainY;
 
         if (s.y instanceof Int32Array || s.y instanceof Float32Array) {
@@ -254,7 +265,9 @@ export function add(
   }
 }
 
-export function getPassband(type: string): (typeof LOWPASS | typeof BANDPASS | typeof HIGHPASS) {
+export function getPassband(
+  type: string,
+): typeof LOWPASS | typeof BANDPASS | typeof HIGHPASS {
   if (type === LOW_PASS) {
     return LOWPASS;
   } else if (type === BAND_PASS) {
@@ -364,8 +377,13 @@ export function applyFilter(
   seis: Seismogram,
 ): Seismogram {
   // check delta and samplePeriod with 0.1% of each other
-  if (Math.abs(iirFilter.getDelta() - seis.samplePeriod)/seis.samplePeriod > 0.001) {
-    throw new Error(`Filter, delta=${iirFilter.getDelta()}, has different delta from seis, ${1/seis.sampleRate}`);
+  if (
+    Math.abs(iirFilter.getDelta() - seis.samplePeriod) / seis.samplePeriod >
+    0.001
+  ) {
+    throw new Error(
+      `Filter, delta=${iirFilter.getDelta()}, has different delta from seis, ${1 / seis.sampleRate}`,
+    );
   }
   const filteredSegments = [];
 
@@ -432,7 +450,7 @@ export function hilbert(
 ): Seismogram {
   if (seis.isContiguous()) {
     let seisY: Float32Array;
-    if (seis.y instanceof Float32Array){
+    if (seis.y instanceof Float32Array) {
       seisY = seis.y;
     } else {
       seisY = Float32Array.from(seis.y);
@@ -477,7 +495,7 @@ export function hilbert(
 export function differentiate(seis: Seismogram): Seismogram {
   if (seis instanceof Seismogram) {
     const diffSeismogram = new Seismogram(
-      seis.segments.map(s => {
+      seis.segments.map((s) => {
         const origY = s.y;
         const sampRate = 1.0 * s.sampleRate; // same as 1/delta
 
@@ -488,7 +506,9 @@ export function differentiate(seis: Seismogram): Seismogram {
         }
 
         const out = s.cloneWithNewData(diffY);
-        out.startTime = out.startTime.plus(Duration.fromMillis(1000 / out.sampleRate / 2));// second
+        out.startTime = out.startTime.plus(
+          Duration.fromMillis(1000 / out.sampleRate / 2),
+        ); // second
         out.yUnit = out.yUnit + "/s";
         return out;
       }),

@@ -6,11 +6,11 @@
 import * as util from "./util"; // for util.log
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
-import {DataRecord} from "./miniseed";
-import {MSeed3Record} from "./mseed3";
-import {DateTime} from "luxon";
-import {version} from "./version";
-import {dataViewToString, isDef, stringify, toError} from "./util";
+import { DataRecord } from "./miniseed";
+import { MSeed3Record } from "./mseed3";
+import { DateTime } from "luxon";
+import { version } from "./version";
+import { dataViewToString, isDef, stringify, toError } from "./util";
 export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";
 export const MINISEED_2_FORMAT = "2";
 export const MINISEED_3_FORMAT = "3";
@@ -104,7 +104,10 @@ export class SEPacket {
       } else if (dataFormat === 74) {
         // ascii J = 74, json e.g. info packet
         // spec says must be json object
-        const jsonData = JSON.parse(dataViewToString(dataView)) as Record<string, unknown>;
+        const jsonData = JSON.parse(dataViewToString(dataView)) as Record<
+          string,
+          unknown
+        >;
         sePacket._json = jsonData;
       }
     } else {
@@ -179,10 +182,10 @@ export class SEPacket {
           this._rawPayload,
         );
       } else if (this.isMiniseed()) {
-          const ms2 = this.asMiniseed();
-          if (ms2) {
-            this._mseed3 = mseed3.convertMS2Record(ms2);
-          }
+        const ms2 = this.asMiniseed();
+        if (ms2) {
+          this._mseed3 = mseed3.convertMS2Record(ms2);
+        }
       } else {
         this._mseed3 = null;
       }
@@ -253,7 +256,10 @@ export class SeedlinkConnection {
     this.agent = agent.trim().replaceAll(/\w+/g, "_");
   }
 
-  createDataTimeCommand(startTime: DateTime, endTime: DateTime|undefined): string {
+  createDataTimeCommand(
+    startTime: DateTime,
+    endTime: DateTime | undefined,
+  ): string {
     const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
     return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
   }
@@ -300,9 +306,10 @@ export class SeedlinkConnection {
         this.webSocket.send(`${this.endCommand}\r`);
         return val;
       })
-      .catch(err => {
+      .catch((err) => {
         this.close();
-        const insureErr = err instanceof Error ? err : new Error(stringify(err));
+        const insureErr =
+          err instanceof Error ? err : new Error(stringify(err));
         if (this.errorHandler) {
           this.errorHandler(insureErr);
         } else {
@@ -350,7 +357,7 @@ export class SeedlinkConnection {
         reject(err);
       }
     }).then(function (sl4: unknown) {
-      return (sl4 as SeedlinkConnection);
+      return sl4 as SeedlinkConnection;
     });
   }
 
@@ -376,7 +383,7 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    if ( event.data instanceof ArrayBuffer) {
+    if (event.data instanceof ArrayBuffer) {
       const rawdata: ArrayBuffer = event.data;
       const data = new Uint8Array(rawdata);
 
@@ -385,7 +392,9 @@ export class SeedlinkConnection {
       } else {
         this.close();
         this.errorHandler(
-          new Error(`Packet does not look like SE packet: ${data[0]} ${data[1]}`),
+          new Error(
+            `Packet does not look like SE packet: ${data[0]} ${data[1]}`,
+          ),
         );
       }
     } else {
@@ -395,7 +404,7 @@ export class SeedlinkConnection {
   }
 
   handleSEPacket(event: MessageEvent): void {
-    if ( event.data instanceof ArrayBuffer) {
+    if (event.data instanceof ArrayBuffer) {
       const data: ArrayBuffer = event.data;
 
       try {
@@ -422,10 +431,10 @@ export class SeedlinkConnection {
    */
   sendHello(): Promise<Array<string>> {
     const webSocket = this.webSocket;
-    const promise: Promise<Array<string>> = new Promise( (resolve, reject) => {
+    const promise: Promise<Array<string>> = new Promise((resolve, reject) => {
       if (webSocket) {
-        webSocket.onmessage =  (event) => {
-          if ( event.data instanceof ArrayBuffer) {
+        webSocket.onmessage = (event) => {
+          if (event.data instanceof ArrayBuffer) {
             const data: ArrayBuffer = event.data;
             const replyMsg = dataViewToString(new DataView(data));
             const lines = replyMsg.trim().split("\r");
@@ -476,8 +485,8 @@ export class SeedlinkConnection {
     const webSocket = this.webSocket;
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
-        webSocket.onmessage =  (event) => {
-          if ( event.data instanceof ArrayBuffer) {
+        webSocket.onmessage = (event) => {
+          if (event.data instanceof ArrayBuffer) {
             const data: ArrayBuffer = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
 
@@ -486,10 +495,10 @@ export class SeedlinkConnection {
             } else {
               reject("msg not OK: " + replyMsg);
             }
-        } else {
-          mythis.close();
-          mythis.errorHandler(new Error("event.data is not ArrayBuffer"));
-        }
+          } else {
+            mythis.close();
+            mythis.errorHandler(new Error("event.data is not ArrayBuffer"));
+          }
         };
 
         webSocket.send(mycmd + "\r\n");

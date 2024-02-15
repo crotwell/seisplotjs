@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {Seismogram} from "./seismogram";
+import { Seismogram } from "./seismogram";
 
 /**
  * Applies a time domain taper of the given type.
@@ -40,7 +40,9 @@ export function taper(
 
     return seis.cloneWithNewData(outData);
   } else {
-    throw new Error(`Cannot take taper of non-contiguous seismogram: ${seis.segments.length}`);
+    throw new Error(
+      `Cannot take taper of non-contiguous seismogram: ${seis.segments.length}`,
+    );
   }
 }
 

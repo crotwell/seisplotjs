@@ -1,9 +1,8 @@
-
 /**
  * commonalities with all types of FDSN Web Services
  */
 
-import { isNonEmptyStringArg, checkProtocol,} from './util';
+import { isNonEmptyStringArg, checkProtocol } from "./util";
 
 export const IRIS_HOST = "service.iris.edu";
 
@@ -21,7 +20,7 @@ export class FDSNCommon {
   _port: number;
 
   /** @private */
-  _nodata: number|undefined;
+  _nodata: number | undefined;
 
   /** @private */
   _timeoutSec: number;
@@ -38,12 +37,9 @@ export class FDSNCommon {
     this._port = 80;
     this._timeoutSec = 30;
   }
-
 }
 
-export class LatLonRegion {
-
-}
+export class LatLonRegion {}
 export class LatLonBox extends LatLonRegion {
   west: number;
   east: number;
@@ -56,10 +52,10 @@ export class LatLonBox extends LatLonRegion {
     this.south = south;
     this.north = north;
   }
-  asLeafletBounds(): [[number, number],[number, number]] {
+  asLeafletBounds(): [[number, number], [number, number]] {
     return [
       [this.south, this.west],
-      [this.north,this.east]
+      [this.north, this.east],
     ];
   }
 }
@@ -68,7 +64,12 @@ export class LatLonRadius extends LatLonRegion {
   longitude: number;
   minRadius: number;
   maxRadius: number;
-  constructor(latitude: number, longitude: number, minRadius: number, maxRadius: number) {
+  constructor(
+    latitude: number,
+    longitude: number,
+    minRadius: number,
+    maxRadius: number,
+  ) {
     super();
     this.latitude = latitude;
     this.longitude = longitude;

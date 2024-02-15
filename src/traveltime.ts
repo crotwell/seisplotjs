@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {FDSNCommon} from './fdsncommon';
+import { FDSNCommon } from "./fdsncommon";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -19,8 +19,8 @@ import {
   defaultFetchInitObj,
   doFetchWithTimeout,
 } from "./util";
-import {Station, Channel} from "./stationxml";
-import {Quake} from "./quakeml";
+import { Station, Channel } from "./stationxml";
+import { Quake } from "./quakeml";
 export const IRIS_HOST = "service.iris.edu";
 export const TEXT_FORMAT = "text";
 export const JSON_FORMAT = "json";
@@ -55,17 +55,21 @@ export type TraveltimeArrivalType = {
  * @returns   true if matches expected structure
  */
 export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
-  if (!v || typeof v !== 'object') {
+  if (!v || typeof v !== "object") {
     return false;
   }
   const object = v as Record<string, unknown>;
 
   // IRIS web service uses sourceDepth, TauP uses sourcedepth
-  if ( ! ( typeof object.model === 'string' &&
-      (typeof object.sourcedepth === 'number' ||
-       typeof object.sourceDepth === 'number') &&
-      (typeof object.receiverdepth === 'number' ||
-      typeof object.receiverDepth === 'number'))) {
+  if (
+    !(
+      typeof object.model === "string" &&
+      (typeof object.sourcedepth === "number" ||
+        typeof object.sourceDepth === "number") &&
+      (typeof object.receiverdepth === "number" ||
+        typeof object.receiverDepth === "number")
+    )
+  ) {
     return false;
   }
   // fix to lower d
@@ -79,28 +83,32 @@ export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
     object.receiverdepth = object.receiverDepth;
     object.receiverDepth = undefined;
   }
-  if ( ! Array.isArray(object.phases)) {
+  if (!Array.isArray(object.phases)) {
     return false;
   }
-  if ( ! Array.isArray(object.arrivals)) {
+  if (!Array.isArray(object.arrivals)) {
     return false;
   }
   return true;
 }
-export function isValidTraveltimeArrivalType(v: unknown): v is TraveltimeArrivalType {
-  if (!v || typeof v !== 'object') {
+export function isValidTraveltimeArrivalType(
+  v: unknown,
+): v is TraveltimeArrivalType {
+  if (!v || typeof v !== "object") {
     return false;
   }
   const object = v as Record<string, unknown>;
 
-  return typeof object.distdeg === 'number' &&
-    typeof object.name === 'string' &&
-    typeof object.time === 'number' &&
-    typeof object.rayparam === 'number' &&
-    typeof object.takeoff === 'number' &&
-    typeof object.incident === 'number' &&
-    typeof object.puristdist === 'number' &&
-    typeof object.puristname === 'string';
+  return (
+    typeof object.distdeg === "number" &&
+    typeof object.name === "string" &&
+    typeof object.time === "number" &&
+    typeof object.rayparam === "number" &&
+    typeof object.takeoff === "number" &&
+    typeof object.incident === "number" &&
+    typeof object.puristdist === "number" &&
+    typeof object.puristname === "string"
+  );
 }
 
 /**
@@ -153,7 +161,6 @@ export function createOriginArrival(distdeg: number): TraveltimeArrivalType {
  * @param host optional host to connect to, defaults to IRIS
  */
 export class TraveltimeQuery extends FDSNCommon {
-
   /** @private */
   _evdepth: number;
 
@@ -188,14 +195,13 @@ export class TraveltimeQuery extends FDSNCommon {
   _noheader: boolean;
 
   constructor(host?: string | null) {
-    if ( ! isNonEmptyStringArg(host)) {
+    if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
     super(host);
     this._evdepth = 0;
     this._format = JSON_FORMAT;
     this._noheader = false; // only for text format
-
   }
 
   protocol(value?: string): TraveltimeQuery {
@@ -262,11 +268,7 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   evdepthInMeter(value?: number): TraveltimeQuery {
-    doFloatGetterSetter(
-      this,
-      "evdepth",
-      isDef(value) ? value / 1000 : value,
-    );
+    doFloatGetterSetter(this, "evdepth", isDef(value) ? value / 1000 : value);
     return this;
   }
 
@@ -275,7 +277,7 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   distdeg(value?: number | Array<number>): TraveltimeQuery {
-    if (typeof value === 'number') {
+    if (typeof value === "number") {
       this._distdeg = [value];
     } else {
       this._distdeg = value;
@@ -344,7 +346,7 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   receiverdepthFromChannel(channel: Channel): TraveltimeQuery {
-    return this.receiverdepth(channel.depth/1000);
+    return this.receiverdepth(channel.depth / 1000);
   }
 
   getReceiverdepth(): number | undefined {
@@ -436,8 +438,8 @@ export class TraveltimeQuery extends FDSNCommon {
     this.format(JSON_FORMAT);
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(JSON_MIME);
-    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      (response) => {
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
+      .then((response) => {
         if (
           response.status === 204 ||
           (isDef(this._nodata) && response.status === this._nodata)
@@ -447,14 +449,14 @@ export class TraveltimeQuery extends FDSNCommon {
         } else {
           return response.json();
         }
-      }).then(jsonValue => {
+      })
+      .then((jsonValue) => {
         if (isValidTraveltimeJsonType(jsonValue)) {
           return jsonValue;
         } else {
           throw new TypeError(`Oops, we did not get root traveltime JSON!`);
         }
-      },
-    );
+      });
   }
 
   querySvg(): Promise<Element> {
@@ -478,7 +480,7 @@ export class TraveltimeQuery extends FDSNCommon {
       .then(function (rawXmlText) {
         return new DOMParser().parseFromString(rawXmlText, SVG_MIME);
       })
-      .then(xml => {
+      .then((xml) => {
         const elArray = xml.getElementsByTagName("svg");
 
         if (elArray.length > 0) {
@@ -490,16 +492,16 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   queryWadl(): Promise<Document> {
-    return fetch(this.formWadlURL()).then(response => {
+    return fetch(this.formWadlURL()).then((response) => {
       if (response.ok) {
         return response
           .text()
-          .then(textResponse =>
+          .then((textResponse) =>
             new window.DOMParser().parseFromString(textResponse, "text/xml"),
           );
       } else {
         throw new Error(
-          `Fetching over network was not ok: ${response.status} ${response.statusText}`
+          `Fetching over network was not ok: ${response.status} ${response.statusText}`,
         );
       }
     });
@@ -570,7 +572,7 @@ export class TraveltimeQuery extends FDSNCommon {
     }
 
     if (isDef(this._distdeg)) {
-      url = url + makeParam("distdeg", this._distdeg.join(','));
+      url = url + makeParam("distdeg", this._distdeg.join(","));
     }
 
     if (isDef(this._model)) {
@@ -597,7 +599,7 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   queryTauPVersion(): Promise<string> {
-    return fetch(this.formTauPVersionURL()).then(response => {
+    return fetch(this.formTauPVersionURL()).then((response) => {
       if (response.ok) {
         return response.text();
       } else {
@@ -626,7 +628,9 @@ Distance   Depth   Phase   Travel    Ray Param  Takeoff  Incident  Purist    Pur
 -----------------------------------------------------------------------------------
 `;
 
-export function createEmptyTraveltimeJson(ttquery: TraveltimeQuery): TraveltimeJsonType {
+export function createEmptyTraveltimeJson(
+  ttquery: TraveltimeQuery,
+): TraveltimeJsonType {
   const out: TraveltimeJsonType = {
     model: isDef(ttquery._model) ? ttquery._model : "",
     sourcedepth: isDef(ttquery._evdepth) ? ttquery._evdepth : 0,

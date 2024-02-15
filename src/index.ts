@@ -49,7 +49,7 @@ import * as seismograph from "./seismograph";
 import * as seismographutil from "./seismographutil";
 import * as seismographconfig from "./seismographconfig";
 import * as seismographconfigeditor from "./seismographconfigeditor";
-import * as sorting from './sorting';
+import * as sorting from "./sorting";
 import * as stationxml from "./stationxml";
 import * as taper from "./taper";
 import * as transfer from "./transfer";

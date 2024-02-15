@@ -3,12 +3,12 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {DateTime, Duration, Interval} from "luxon";
+import { DateTime, Duration, Interval } from "luxon";
 import * as util from "./util";
 import * as miniseed from "./miniseed";
-import {SeismogramDisplayData} from "./seismogram";
-import {Channel} from "./stationxml";
-import {isDef} from "./util";
+import { SeismogramDisplayData } from "./seismogram";
+import { Channel } from "./stationxml";
+import { isDef } from "./util";
 
 export const Allowed_Flags = ["n", "s", "l", "c", "Y", "j", "H"];
 
@@ -105,14 +105,14 @@ export class MSeedArchive {
   loadSeismograms(
     channelTimeList: Array<SeismogramDisplayData>,
   ): Promise<Array<SeismogramDisplayData>> {
-    const promiseArray = channelTimeList.map(ct => {
+    const promiseArray = channelTimeList.map((ct) => {
       if (isDef(ct.channel)) {
-        const request =  ct;
+        const request = ct;
         const dataRecords = this.loadDataForChannel(
-            ct.channel,
-            ct.startTime,
-            ct.endTime,
-          );
+          ct.channel,
+          ct.startTime,
+          ct.endTime,
+        );
         // this fakes an RSVP.hash call
         return Promise.all([request, dataRecords]).then((pArray) => {
           return {
@@ -121,15 +121,15 @@ export class MSeedArchive {
           };
         });
       } else if (isDef(ct.sourceId)) {
-        const request =  ct;
+        const request = ct;
         const dataRecords = this.loadData(
-            ct.sourceId.networkCode,
-            ct.sourceId.stationCode,
-            ct.sourceId.locationCode,
-            ct.sourceId.formChannelCode(),
-            ct.startTime,
-            ct.endTime,
-          );
+          ct.sourceId.networkCode,
+          ct.sourceId.stationCode,
+          ct.sourceId.locationCode,
+          ct.sourceId.formChannelCode(),
+          ct.startTime,
+          ct.endTime,
+        );
         return Promise.all([request, dataRecords]).then((pArray) => {
           return {
             request: pArray[0],
@@ -140,9 +140,9 @@ export class MSeedArchive {
         throw new Error("channel is missing in loadSeismograms ");
       }
     });
-    return Promise.all(promiseArray).then(pArray => {
+    return Promise.all(promiseArray).then((pArray) => {
       const out: Array<SeismogramDisplayData> = [];
-      pArray.forEach(p => {
+      pArray.forEach((p) => {
         const seisArray = miniseed.seismogramPerChannel(p.dataRecords);
 
         // should only be one
@@ -215,7 +215,7 @@ export class MSeedArchive {
 
     while (t < endTime) {
       const url = this.rootUrl + "/" + this.fillTimePattern(basePattern, t);
-      t = t.plus(Duration.fromObject({hour: 1,}));
+      t = t.plus(Duration.fromObject({ hour: 1 }));
       urlList.push(url);
     }
 
@@ -224,12 +224,11 @@ export class MSeedArchive {
       urlList.push(url);
     }
 
-    return loadDataRecords(urlList).then(dataRecords => {
+    return loadDataRecords(urlList).then((dataRecords) => {
       if (dataRecords) {
         dataRecords = dataRecords.filter(
-          dr =>
-            dr.header.endTime >= startTime &&
-            dr.header.startTime <= endTime
+          (dr) =>
+            dr.header.endTime >= startTime && dr.header.startTime <= endTime,
         );
       } else {
         dataRecords = [];
@@ -275,13 +274,13 @@ export function loadDataRecords(
   fetchInit?: RequestInit,
   timeoutSec?: number,
 ): Promise<Array<miniseed.DataRecord>> {
-  const promiseArray = urlList.map(url => {
+  const promiseArray = urlList.map((url) => {
     return util
       .doFetchWithTimeout(url, fetchInit, timeoutSec)
-      .then(fetchResponse => {
+      .then((fetchResponse) => {
         if (fetchResponse.ok) {
           if (fetchResponse.status === 200 || fetchResponse.status === 304) {
-            return fetchResponse.arrayBuffer().then(ab => {
+            return fetchResponse.arrayBuffer().then((ab) => {
               let dataRecords: Array<miniseed.DataRecord> = [];
 
               if (ab.byteLength > 0) {
@@ -314,14 +313,14 @@ export function loadDataRecords(
           );
         }
       })
-      .catch(err => {
+      .catch((err) => {
         util.log("caught fetch err, continuing with empty: " + String(err));
         return [];
       });
   });
-  return Promise.all(promiseArray).then(pArray => {
+  return Promise.all(promiseArray).then((pArray) => {
     let dataRecords: Array<miniseed.DataRecord> = [];
-    pArray.forEach(p => {
+    pArray.forEach((p) => {
       dataRecords = dataRecords.concat(p);
     });
     return dataRecords;
@@ -452,5 +451,5 @@ export function maxTimeForRecord(
   recordSize: number,
   sampleRate: number,
 ): Duration {
-  return Duration.fromMillis(1000*((recordSize - 40) * 2) / sampleRate);
+  return Duration.fromMillis((1000 * ((recordSize - 40) * 2)) / sampleRate);
 }

@@ -3,8 +3,8 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {DateTime, Duration} from "luxon";
-import {NslcId} from "./fdsnsourceid";
+import { DateTime, Duration } from "luxon";
+import { NslcId } from "./fdsnsourceid";
 import * as util from "./util"; // for util.log
 
 import {
@@ -95,7 +95,6 @@ export class RingserverConnection {
     return this._host;
   }
 
-
   /**
    * Gets/Sets the remote port to connect to.
    *
@@ -133,7 +132,7 @@ export class RingserverConnection {
    * @returns Result as a Promise.
    */
   pullId(): Promise<RingserverVersion> {
-    return this.pullRaw(this.formIdURL()).then(raw => {
+    return this.pullRaw(this.formIdURL()).then((raw) => {
       const lines = raw.split("\n");
       let organization = lines[1];
 
@@ -175,8 +174,8 @@ export class RingserverConnection {
     }
 
     const url = this.formStreamIdsURL(queryParams);
-    return this.pullRaw(url).then(raw => {
-      return raw.split("\n").filter(line => line.length > 0);
+    return this.pullRaw(url).then((raw) => {
+      return raw.split("\n").filter((line) => line.length > 0);
     });
   }
 
@@ -198,7 +197,7 @@ export class RingserverConnection {
     }
 
     const url = this.formStreamsURL(queryParams);
-    return this.pullRaw(url).then(raw => {
+    return this.pullRaw(url).then((raw) => {
       const lines = raw.split("\n");
       const out: StreamsResult = {
         accessTime: DateTime.utc(),
@@ -236,7 +235,7 @@ export class RingserverConnection {
   pullRaw(url: string): Promise<string> {
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      response => {
+      (response) => {
         if (response.status === 200) {
           return response.text();
         } else {
@@ -399,7 +398,10 @@ export function nslcSplit(id: string): NslcWithType {
 
   if (nslc.length === 4) {
     // assume net, station, loc, chan
-    return new NslcWithType(split[1], new NslcId(nslc[0], nslc[1], nslc[2], nslc[3]));
+    return new NslcWithType(
+      split[1],
+      new NslcId(nslc[0], nslc[1], nslc[2], nslc[3]),
+    );
   } else {
     throw new Error("tried to split, did not find 4 elements in array: " + id);
   }

@@ -1,13 +1,12 @@
-
 import { DateTime, Duration, Interval } from "luxon";
-import { DataLinkPacket } from './datalink';
-import * as miniseed from './miniseed';
-import { OrganizedDisplay } from './organizeddisplay';
-import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from './scale';
-import { SeismogramDisplayData } from './seismogram';
-import { SeisPlotElement } from './spelement';
-import { SeismographConfig } from './seismographconfig';
-import { Network } from './stationxml';
+import { DataLinkPacket } from "./datalink";
+import * as miniseed from "./miniseed";
+import { OrganizedDisplay } from "./organizeddisplay";
+import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from "./scale";
+import { SeismogramDisplayData } from "./seismogram";
+import { SeisPlotElement } from "./spelement";
+import { SeismographConfig } from "./seismographconfig";
+import { Network } from "./stationxml";
 
 export class AnimatedTimeScaler {
   alignmentTime: DateTime;
@@ -16,20 +15,22 @@ export class AnimatedTimeScaler {
   goAnimation = true;
   previousStep: DOMHighResTimeStamp = Number.NEGATIVE_INFINITY;
   _animationId = 0;
-  constructor(timeScale: AlignmentLinkedTimeScale,
+  constructor(
+    timeScale: AlignmentLinkedTimeScale,
     alignmentTime?: DateTime,
-    minRedrawMillis = 100) {
+    minRedrawMillis = 100,
+  ) {
     this.timeScale = timeScale;
     this.alignmentTime = alignmentTime ? alignmentTime : DateTime.utc();
     this.minRedrawMillis = minRedrawMillis;
   }
   animate() {
     this.goAnimation = true;
-    window.requestAnimationFrame(timestamp => this.stepper(timestamp));
+    window.requestAnimationFrame((timestamp) => this.stepper(timestamp));
   }
   animateOnce() {
     this.goAnimation = false;
-    window.requestAnimationFrame(timestamp => {
+    window.requestAnimationFrame((timestamp) => {
       this.previousStep = timestamp;
       this.step();
     });
@@ -49,11 +50,18 @@ export class AnimatedTimeScaler {
     if (this.goAnimation) {
       // schedule next redraw
       const now = window.performance.now();
-      window.setTimeout(() => {
-        // in case we ask for second animation frame before first runs
-        if (this._animationId !== 0) { window.cancelAnimationFrame(this._animationId); }
-        this._animationId = window.requestAnimationFrame(timestamp => this.stepper(timestamp));
-      }, this.minRedrawMillis - (now - timestamp));
+      window.setTimeout(
+        () => {
+          // in case we ask for second animation frame before first runs
+          if (this._animationId !== 0) {
+            window.cancelAnimationFrame(this._animationId);
+          }
+          this._animationId = window.requestAnimationFrame((timestamp) =>
+            this.stepper(timestamp),
+          );
+        },
+        this.minRedrawMillis - (now - timestamp),
+      );
     }
   }
   step() {
@@ -64,19 +72,19 @@ export class AnimatedTimeScaler {
 }
 
 export type RTDisplayContainer = {
-  organizedDisplay: OrganizedDisplay,
-  animationScaler: AnimatedTimeScaler,
-  packetHandler: (packet: DataLinkPacket) => void,
-  config: RTConfig,
+  organizedDisplay: OrganizedDisplay;
+  animationScaler: AnimatedTimeScaler;
+  packetHandler: (packet: DataLinkPacket) => void;
+  config: RTConfig;
 };
 
 export type RTConfig = {
-        duration: Duration,
-        alignmentTime: DateTime,
-        offset: Duration,
-        minRedrawMillis: number,
-        networkList: Array<Network>,
-}
+  duration: Duration;
+  alignmentTime: DateTime;
+  offset: Duration;
+  minRedrawMillis: number;
+  networkList: Array<Network>;
+};
 
 /**
  * Validates the object for typescript and adds any missing required
@@ -85,12 +93,12 @@ export type RTConfig = {
  * @returns true if object has correct structure, with defaults populated
  */
 export function isValidRTConfig(configObj: unknown): configObj is RTConfig {
-  if (! configObj || typeof configObj !== 'object') {
+  if (!configObj || typeof configObj !== "object") {
     throw new TypeError("config is not object");
   }
   const config = configObj as Record<string, unknown>;
   if (typeof config.duration === "undefined") {
-    config.duration = Duration.fromISO('PT5M');
+    config.duration = Duration.fromISO("PT5M");
   }
   if (typeof config.alignmentTime === "undefined") {
     config.alignmentTime = DateTime.utc();
@@ -107,41 +115,57 @@ export function isValidRTConfig(configObj: unknown): configObj is RTConfig {
   return true;
 }
 export function createRealtimeDisplay(config: unknown): RTDisplayContainer {
-  if ( ! config) {
+  if (!config) {
     // this will create a default config
     config = {};
   }
-  if ( isValidRTConfig(config)) {
+  if (isValidRTConfig(config)) {
     return internalCreateRealtimeDisplay(config);
   } else {
     throw new Error("config is not valid");
   }
 }
 
-export function internalCreateRealtimeDisplay(config: RTConfig): RTDisplayContainer {
-  const timeScale = new AlignmentLinkedTimeScale([], config.duration.negate(), config.offset);
+export function internalCreateRealtimeDisplay(
+  config: RTConfig,
+): RTDisplayContainer {
+  const timeScale = new AlignmentLinkedTimeScale(
+    [],
+    config.duration.negate(),
+    config.offset,
+  );
   const seisPlotConfig = new SeismographConfig();
   seisPlotConfig.wheelZoom = false;
   seisPlotConfig.isYAxisNice = false;
   seisPlotConfig.linkedTimeScale = timeScale;
   seisPlotConfig.linkedAmplitudeScale = new LinkedAmplitudeScale();
-  const animationScaler = new AnimatedTimeScaler(timeScale, config.alignmentTime, config.minRedrawMillis);
+  const animationScaler = new AnimatedTimeScaler(
+    timeScale,
+    config.alignmentTime,
+    config.minRedrawMillis,
+  );
 
   const orgDisp = new OrganizedDisplay([], seisPlotConfig);
 
   const packetHandler = (packet: DataLinkPacket) => {
-    if (!packet) { return; }
+    if (!packet) {
+      return;
+    }
     if (packet.isMiniseed()) {
       const msr = packet.asMiniseed();
       if (msr) {
         const seisSegment = miniseed.createSeismogramSegment(msr);
         const codes = seisSegment.codes();
-        const matchSDD = orgDisp.seisData.find((sdd: SeismogramDisplayData) => sdd.codes() === codes);
+        const matchSDD = orgDisp.seisData.find(
+          (sdd: SeismogramDisplayData) => sdd.codes() === codes,
+        );
         if (matchSDD) {
           matchSDD.append(seisSegment);
         } else {
           const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
-          if (config.networkList) {sdd.associateChannel(config.networkList);}
+          if (config.networkList) {
+            sdd.associateChannel(config.networkList);
+          }
           sdd.alignmentTime = animationScaler.alignmentTime;
           orgDisp.seisData.push(sdd);
           // trigger redraw if new channel, but not for simple append.
@@ -168,7 +192,7 @@ export function internalCreateRealtimeDisplay(config: RTConfig): RTDisplayContai
  * @param  timeRange  time window to coarse trim the data to
  */
 export function trim(orgDisplay: OrganizedDisplay, timeRange: Interval) {
-  orgDisplay.seisData.forEach(sdd => {
+  orgDisplay.seisData.forEach((sdd) => {
     sdd.trimInPlace(timeRange);
     sdd.timeRange = timeRange;
   });
@@ -194,13 +218,23 @@ export function calcOnePixelDuration(seismograph: SeisPlotElement): Duration {
   } else {
     timerInterval = 1000;
   }
-  if (timerInterval < 0) { timerInterval *= -1; }
+  if (timerInterval < 0) {
+    timerInterval *= -1;
+  }
   let pixels = rect.width - margin.left - margin.right;
-  if (pixels <= 0) {pixels = 1000;}
+  if (pixels <= 0) {
+    pixels = 1000;
+  }
   timerInterval = timerInterval / pixels;
   // aim for updates between 50 and 250 milliseconds
-  if (timerInterval === 0) { timerInterval = 100; }
-  while (timerInterval > 0 && timerInterval < 50) { timerInterval *= 2; }
-  if (timerInterval > 250) { timerInterval /= 2;}
+  if (timerInterval === 0) {
+    timerInterval = 100;
+  }
+  while (timerInterval > 0 && timerInterval < 50) {
+    timerInterval *= 2;
+  }
+  if (timerInterval > 250) {
+    timerInterval /= 2;
+  }
   return Duration.fromMillis(timerInterval);
 }

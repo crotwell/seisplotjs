@@ -18,7 +18,13 @@ import {
   XML_MIME,
 } from "./util";
 import { Complex } from "./oregondsputil";
-import { FDSNSourceId, NetworkSourceId, StationSourceId, NslcId, SourceIdSorter } from "./fdsnsourceid";
+import {
+  FDSNSourceId,
+  NetworkSourceId,
+  StationSourceId,
+  NslcId,
+  SourceIdSorter,
+} from "./fdsnsourceid";
 import { DateTime, Interval } from "luxon";
 
 /** xml namespace for stationxml */
@@ -32,7 +38,6 @@ export const FAKE_START_DATE = DateTime.fromISO("1900-01-01T00:00:00Z");
 export const FAKE_EMPTY_XML =
   '<?xml version="1.0" encoding="ISO-8859-1"?> <FDSNStationXML xmlns="http://www.fdsn.org/xml/station/1" schemaVersion="1.0" xsi:schemaLocation="http://www.fdsn.org/xml/station/1 http://www.fdsn.org/xml/station/fdsn-station-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:iris="http://www.fdsn.org/xml/station/1/iris"> </FDSNStationXML>';
 
-
 export const CHANNEL_CLICK_EVENT = "channelclick";
 export const STATION_CLICK_EVENT = "stationclick";
 
@@ -44,7 +49,10 @@ export const STATION_CLICK_EVENT = "stationclick";
  * @param  mouseclick original mouse click Event
  * @returns            CustomEvent populated with channel field in detail.
  */
-export function createChannelClickEvent(sta: Channel, mouseclick: Event): CustomEvent {
+export function createChannelClickEvent(
+  sta: Channel,
+  mouseclick: Event,
+): CustomEvent {
   const detail = {
     mouseevent: mouseclick,
     channel: sta,
@@ -60,14 +68,16 @@ export function createChannelClickEvent(sta: Channel, mouseclick: Event): Custom
  * @param  mouseclick original mouse click Event
  * @returns            CustomEvent populated with station field in detail.
  */
-export function createStationClickEvent(sta: Station, mouseclick: Event): CustomEvent {
+export function createStationClickEvent(
+  sta: Station,
+  mouseclick: Event,
+): CustomEvent {
   const detail = {
     mouseevent: mouseclick,
     station: sta,
   };
   return new CustomEvent(STATION_CLICK_EVENT, { detail: detail });
 }
-
 
 // StationXML classes
 
@@ -187,8 +197,10 @@ export class Station {
   }
 
   get sourceId(): StationSourceId {
-    return new StationSourceId(this.networkCode ? this.networkCode : "",
-      (this.stationCode ? this.stationCode : ""));
+    return new StationSourceId(
+      this.networkCode ? this.networkCode : "",
+      this.stationCode ? this.stationCode : "",
+    );
   }
 
   get startDate(): DateTime {
@@ -279,7 +291,6 @@ export class Channel {
     this.elevation = 0;
     this.sampleRate = 0;
 
-
     if (channelCode.length !== 3) {
       throw new Error(`Channel code must be 3 chars: ${channelCode}`);
     }
@@ -303,18 +314,20 @@ export class Channel {
     if (this._sourceId) {
       return this._sourceId;
     }
-    return FDSNSourceId.fromNslc(this.networkCode,
+    return FDSNSourceId.fromNslc(
+      this.networkCode,
       this.stationCode,
       this.locationCode,
-      this.channelCode);
+      this.channelCode,
+    );
   }
 
   get nslcId(): NslcId {
     return new NslcId(
       this.networkCode ? this.networkCode : "",
       this.stationCode ? this.stationCode : "",
-      (this.locationCode && this.locationCode !== "--") ? this.locationCode : "",
-      this.channelCode ? this.channelCode : ""
+      this.locationCode && this.locationCode !== "--" ? this.locationCode : "",
+      this.channelCode ? this.channelCode : "",
     );
   }
 
@@ -663,7 +676,9 @@ export function convertToNetwork(xml: Element): Network {
       out.totalNumberStations = _grabFirstElInt(xml, "TotalNumberStations");
     }
 
-    const staArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Station"));
+    const staArray = Array.from(
+      xml.getElementsByTagNameNS(STAML_NS, "Station"),
+    );
     const stations = [];
 
     for (const s of staArray) {
@@ -747,29 +762,39 @@ export function convertToStation(network: Network, xml: Element): Station {
       out.description = description;
     }
 
-    const identifierList = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Identifier"));
-    out.identifierList = identifierList.map(el => { return el.textContent ? el.textContent : ""; });
+    const identifierList = Array.from(
+      xml.getElementsByTagNameNS(STAML_NS, "Identifier"),
+    );
+    out.identifierList = identifierList.map((el) => {
+      return el.textContent ? el.textContent : "";
+    });
 
     const dataAvailEl = _grabFirstEl(xml, "DataAvailability");
     if (isDef(dataAvailEl)) {
       out.dataAvailability = convertToDataAvailability(dataAvailEl);
     }
 
-    const commentArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Comment"));
+    const commentArray = Array.from(
+      xml.getElementsByTagNameNS(STAML_NS, "Comment"),
+    );
     const comments = [];
     for (const c of commentArray) {
       comments.push(convertToComment(c));
     }
     out.comments = comments;
 
-    const equipmentArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Equipment"));
+    const equipmentArray = Array.from(
+      xml.getElementsByTagNameNS(STAML_NS, "Equipment"),
+    );
     const equipmentList = [];
     for (const c of equipmentArray) {
       equipmentList.push(convertToEquipment(c));
     }
     out.equipmentList = equipmentList;
 
-    const chanArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Channel"));
+    const chanArray = Array.from(
+      xml.getElementsByTagNameNS(STAML_NS, "Channel"),
+    );
     const channels = [];
     for (const c of chanArray) {
       channels.push(convertToChannel(out, c));
@@ -854,7 +879,9 @@ export function convertToChannel(station: Station, xml: Element): Channel {
     }
 
     const desc = _grabFirstElText(xml, "Description");
-    if (desc) { out.description = desc; }
+    if (desc) {
+      out.description = desc;
+    }
 
     const sampleRate = _grabFirstElFloat(xml, "SampleRate");
 
@@ -901,22 +928,30 @@ export function convertToChannel(station: Station, xml: Element): Channel {
       out.description = description;
     }
 
-    const identifierList = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Identifier"));
-    out.identifierList = identifierList.map(el => { return el.textContent ? el.textContent : ""; });
+    const identifierList = Array.from(
+      xml.getElementsByTagNameNS(STAML_NS, "Identifier"),
+    );
+    out.identifierList = identifierList.map((el) => {
+      return el.textContent ? el.textContent : "";
+    });
 
     const dataAvailEl = _grabFirstEl(xml, "DataAvailability");
     if (isDef(dataAvailEl)) {
       out.dataAvailability = convertToDataAvailability(dataAvailEl);
     }
 
-    const commentArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Comment"));
+    const commentArray = Array.from(
+      xml.getElementsByTagNameNS(STAML_NS, "Comment"),
+    );
     const comments = [];
     for (const c of commentArray) {
       comments.push(convertToComment(c));
     }
     out.comments = comments;
 
-    const equipmentArray = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Equipment"));
+    const equipmentArray = Array.from(
+      xml.getElementsByTagNameNS(STAML_NS, "Equipment"),
+    );
     const equipmentList = [];
     for (const c of equipmentArray) {
       equipmentList.push(convertToEquipment(c));
@@ -946,7 +981,10 @@ export function convertToDataAvailability(xml: Element): DataAvailability {
     const s = _grabAttribute(extent, "start");
     const e = _grabAttribute(extent, "end");
     if (s && e) {
-      out.extent = Interval.fromDateTimes(DateTime.fromISO(s), DateTime.fromISO(e));
+      out.extent = Interval.fromDateTimes(
+        DateTime.fromISO(s),
+        DateTime.fromISO(e),
+      );
     }
   }
 
@@ -956,11 +994,17 @@ export function convertToDataAvailability(xml: Element): DataAvailability {
     const s = _grabAttribute(c, "start");
     const e = _grabAttribute(c, "end");
     if (s && e) {
-      const span = new Span(Interval.fromDateTimes(DateTime.fromISO(s), DateTime.fromISO(e)));
+      const span = new Span(
+        Interval.fromDateTimes(DateTime.fromISO(s), DateTime.fromISO(e)),
+      );
       const numSeg = _grabAttribute(c, "numberSegments");
-      if (numSeg) { span.numberSegments = parseInt(numSeg); }
+      if (numSeg) {
+        span.numberSegments = parseInt(numSeg);
+      }
       const maxTear = _grabAttribute(c, "maximumTimeTear");
-      if (maxTear) { span.maximumTimeTear = parseFloat(maxTear); }
+      if (maxTear) {
+        span.maximumTimeTear = parseFloat(maxTear);
+      }
       spanList.push(span);
     }
   }
@@ -971,27 +1015,41 @@ export function convertToDataAvailability(xml: Element): DataAvailability {
 
 export function convertToComment(xml: Element): Comment {
   let val = _grabFirstElText(xml, "Value");
-  if (!val) { val = ""; }
+  if (!val) {
+    val = "";
+  }
   const out = new Comment(val);
   const id = _grabAttribute(xml, "id");
-  if (id) { out.id = id; }
+  if (id) {
+    out.id = id;
+  }
   const subject = _grabAttribute(xml, "subject");
-  if (subject) { out.subject = subject; }
+  if (subject) {
+    out.subject = subject;
+  }
   const b = _grabFirstElText(xml, "BeginEffectiveTime");
-  if (b) { out.beginEffectiveTime = DateTime.fromISO(b); }
+  if (b) {
+    out.beginEffectiveTime = DateTime.fromISO(b);
+  }
   const e = _grabFirstElText(xml, "EndEffectiveTime");
-  if (e) { out.endEffectiveTime = DateTime.fromISO(e); }
+  if (e) {
+    out.endEffectiveTime = DateTime.fromISO(e);
+  }
   const authList = Array.from(xml.getElementsByTagNameNS(STAML_NS, "Author"));
-  out.authorList = authList.map(aEl => convertToAuthor(aEl));
+  out.authorList = authList.map((aEl) => convertToAuthor(aEl));
   return out;
 }
 
 export function convertToAuthor(xml: Element): Author {
   const out = new Author();
   const name = _grabFirstElText(xml, "Name");
-  if (name) { out.name = name; }
+  if (name) {
+    out.name = name;
+  }
   const agency = _grabFirstElText(xml, "Agency");
-  if (agency) { out.agency = agency; }
+  if (agency) {
+    out.agency = agency;
+  }
   const phEl = _grabFirstEl(xml, "Phone");
   if (phEl) {
     out.phone = `${_grabFirstElText(phEl, "CountryCode")}-${_grabFirstElText(phEl, "AreaCode")}-${_grabFirstElText(phEl, "PhoneNumber")}`;
@@ -1050,13 +1108,17 @@ export function convertToEquipment(xml: Element): Equipment {
     out.removalDate = checkStringOrDate(val);
   }
 
-  const calibXml = Array.from(xml.getElementsByTagNameNS(STAML_NS, "CalibrationDate"));
+  const calibXml = Array.from(
+    xml.getElementsByTagNameNS(STAML_NS, "CalibrationDate"),
+  );
   out.calibrationDateList = [];
 
   for (const cal of calibXml) {
     if (isDef(cal.textContent)) {
       const d = checkStringOrDate(cal.textContent);
-      if (isDef(d)) { out.calibrationDateList.push(d); }
+      if (isDef(d)) {
+        out.calibrationDateList.push(d);
+      }
     }
   }
 
@@ -1093,7 +1155,7 @@ export function convertToResponse(responseXml: Element): Response {
   const xmlStages = responseXml.getElementsByTagNameNS(STAML_NS, "Stage");
 
   if (xmlStages && xmlStages.length > 0) {
-    const jsStages = Array.from(xmlStages).map(function(stageXml) {
+    const jsStages = Array.from(xmlStages).map(function (stageXml) {
       return convertToStage(stageXml);
     });
     out.stages = jsStages;
@@ -1207,12 +1269,12 @@ export function convertToStage(stageXml: Element): Stage {
 
       const zeros = Array.from(
         stageXml.getElementsByTagNameNS(STAML_NS, "Zero"),
-      ).map(function(zeroEl) {
+      ).map(function (zeroEl) {
         return extractComplex(zeroEl);
       });
       const poles = Array.from(
         stageXml.getElementsByTagNameNS(STAML_NS, "Pole"),
-      ).map(function(poleEl) {
+      ).map(function (poleEl) {
         return extractComplex(poleEl);
       });
       pzFilter.zeros = zeros;
@@ -1230,14 +1292,22 @@ export function convertToStage(stageXml: Element): Stage {
 
       cFilter.numerator = Array.from(
         coeffXml.getElementsByTagNameNS(STAML_NS, "Numerator"),
-      ).map(function(numerEl) {
-        return isNonEmptyStringArg(numerEl.textContent) ? parseFloat(numerEl.textContent) : null;
-      }).filter(isDef);
+      )
+        .map(function (numerEl) {
+          return isNonEmptyStringArg(numerEl.textContent)
+            ? parseFloat(numerEl.textContent)
+            : null;
+        })
+        .filter(isDef);
       cFilter.denominator = Array.from(
         coeffXml.getElementsByTagNameNS(STAML_NS, "Denominator"),
-      ).map(function(denomEl) {
-        return isNonEmptyStringArg(denomEl.textContent) ? parseFloat(denomEl.textContent) : null;
-      }).filter(isDef);
+      )
+        .map(function (denomEl) {
+          return isNonEmptyStringArg(denomEl.textContent)
+            ? parseFloat(denomEl.textContent)
+            : null;
+        })
+        .filter(isDef);
       filter = cFilter;
     } else if (subEl.localName === "ResponseList") {
       throw new Error("ResponseList not supported: ");
@@ -1253,9 +1323,13 @@ export function convertToStage(stageXml: Element): Stage {
 
       firFilter.numerator = Array.from(
         firXml.getElementsByTagNameNS(STAML_NS, "NumeratorCoefficient"),
-      ).map(function(numerEl) {
-        return isNonEmptyStringArg(numerEl.textContent) ? parseFloat(numerEl.textContent) : null;
-      }).filter(isDef);
+      )
+        .map(function (numerEl) {
+          return isNonEmptyStringArg(numerEl.textContent)
+            ? parseFloat(numerEl.textContent)
+            : null;
+        })
+        .filter(isDef);
       filter = firFilter;
     } else if (subEl.localName === "Polynomial") {
       throw new Error("Polynomial not supported: ");
@@ -1300,7 +1374,7 @@ export function convertToStage(stageXml: Element): Stage {
   } else {
     throw new Error(
       "Did not find Gain in stage number " +
-      stringify(_grabAttribute(stageXml, "number")),
+        stringify(_grabAttribute(stageXml, "number")),
     );
   }
 
@@ -1323,7 +1397,9 @@ export function convertToDecimation(decXml: Element): Decimation {
   if (isNumArg(insr) && isNumArg(fac)) {
     out = new Decimation(insr, fac);
   } else {
-    throw new Error(`Decimation without InputSampleRate and Factor: ${insr} ${fac}`);
+    throw new Error(
+      `Decimation without InputSampleRate and Factor: ${insr} ${fac}`,
+    );
   }
 
   out.offset = _grabFirstElInt(decXml, "Offset");
@@ -1352,7 +1428,10 @@ export function convertToGain(gainXml: Element): Gain {
   return out;
 }
 
-export function createInterval(start: DateTime, end: null | DateTime): Interval {
+export function createInterval(
+  start: DateTime,
+  end: null | DateTime,
+): Interval {
   if (end) {
     return Interval.fromDateTimes(start, end);
   } else {
@@ -1433,10 +1512,10 @@ export function* findChannels(
   const locRE = new RegExp(`^${locCode}$`);
   const chanRE = new RegExp(`^${chanCode}$`);
 
-  for (const n of networks.filter(n => netRE.test(n.networkCode))) {
-    for (const s of n.stations.filter(s => staRE.test(s.stationCode))) {
+  for (const n of networks.filter((n) => netRE.test(n.networkCode))) {
+    for (const s of n.stations.filter((s) => staRE.test(s.stationCode))) {
       for (const c of s.channels.filter(
-        c => locRE.test(c.locationCode) && chanRE.test(c.channelCode),
+        (c) => locRE.test(c.locationCode) && chanRE.test(c.channelCode),
       )) {
         yield c;
       }
@@ -1444,7 +1523,9 @@ export function* findChannels(
   }
 }
 
-export function uniqueSourceIds(channelList: Iterable<Channel>): Array<FDSNSourceId> {
+export function uniqueSourceIds(
+  channelList: Iterable<Channel>,
+): Array<FDSNSourceId> {
   const out = new Map<string, FDSNSourceId>();
   for (const c of channelList) {
     if (c) {
@@ -1454,9 +1535,7 @@ export function uniqueSourceIds(channelList: Iterable<Channel>): Array<FDSNSourc
   return Array.from(out.values()).sort(SourceIdSorter);
 }
 
-export function uniqueStations(
-  channelList: Iterable<Channel>,
-): Array<Station> {
+export function uniqueStations(channelList: Iterable<Channel>): Array<Station> {
   const out = new Set<Station>();
   for (const c of channelList) {
     if (c) {
@@ -1466,9 +1545,7 @@ export function uniqueStations(
   return Array.from(out.values());
 }
 
-export function uniqueNetworks(
-  channelList: Iterable<Channel>,
-): Array<Network> {
+export function uniqueNetworks(channelList: Iterable<Channel>): Array<Network> {
   const out = new Set<Network>();
   for (const c of channelList) {
     if (c) {
@@ -1477,9 +1554,6 @@ export function uniqueNetworks(
   }
   return Array.from(out.values());
 }
-
-
-
 
 /**
  * Fetches and parses StationXML from a URL. This can be used in instances where
@@ -1490,10 +1564,14 @@ export function uniqueNetworks(
  * @param nodata        http code for no data
  * @returns             Promise to parsed StationXML as an Network array
  */
-export function fetchStationXml(url: string|URL, timeoutSec=10, nodata=204): Promise<Array<Network>> {
+export function fetchStationXml(
+  url: string | URL,
+  timeoutSec = 10,
+  nodata = 204,
+): Promise<Array<Network>> {
   const fetchInit = defaultFetchInitObj(XML_MIME);
   return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000)
-    .then(response => {
+    .then((response) => {
       if (response.status === 200) {
         return response.text();
       } else if (
@@ -1505,16 +1583,18 @@ export function fetchStationXml(url: string|URL, timeoutSec=10, nodata=204): Pro
       } else {
         throw new Error(`Status not successful: ${response.status}`);
       }
-    }).then(function(rawXmlText) {
+    })
+    .then(function (rawXmlText) {
       return new DOMParser().parseFromString(rawXmlText, XML_MIME);
-    }).then(rawXml => {
+    })
+    .then((rawXml) => {
       return parseStationXml(rawXml);
     });
 }
 
 // these are similar methods as in seisplotjs.quakeml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
-const _grabFirstEl = function(
+const _grabFirstEl = function (
   xml: Element | null | void,
   tagName: string,
 ): Element | null {
@@ -1608,7 +1688,7 @@ const _requireAttribute = function _requireAttribute(
   return out;
 };
 
-const _grabAttributeNS = function(
+const _grabAttributeNS = function (
   xml: Element | null | void,
   namespace: string,
   tagName: string,

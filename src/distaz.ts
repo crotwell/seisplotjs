@@ -30,10 +30,10 @@ export class DistAzOutput {
   delta: number;
   az: number;
   baz: number;
-  stalat: number|undefined;
-  stalon: number|undefined;
-  evtlat: number|undefined;
-  evtlon: number|undefined;
+  stalat: number | undefined;
+  stalon: number | undefined;
+  evtlat: number | undefined;
+  evtlon: number | undefined;
 
   constructor(delta: number, az: number, baz: number) {
     this.delta = delta ? delta : 0.0;
@@ -161,7 +161,8 @@ export function distaz(
    *
    */
   const baz_rhs1 = (aa - d) * (aa - d) + (bb - e) * (bb - e) + cc * cc - 2;
-  const baz_rhs2 = (aa - g) * (aa - g) + (bb - h) * (bb - h) + (cc - k) * (cc - k) - 2;
+  const baz_rhs2 =
+    (aa - g) * (aa - g) + (bb - h) * (bb - h) + (cc - k) * (cc - k) - 2;
   let dbaz = Math.atan2(baz_rhs1, baz_rhs2);
 
   if (dbaz < 0.0) {
@@ -178,7 +179,8 @@ export function distaz(
    *
    */
   const daz_rhs1 = (a - dd) * (a - dd) + (b - ee) * (b - ee) + c * c - 2;
-  const daz_rhs2 = (a - gg) * (a - gg) + (b - hh) * (b - hh) + (c - kk) * (c - kk) - 2;
+  const daz_rhs2 =
+    (a - gg) * (a - gg) + (b - hh) * (b - hh) + (c - kk) * (c - kk) - 2;
   let daz = Math.atan2(daz_rhs1, daz_rhs2);
 
   if (daz < 0.0) {

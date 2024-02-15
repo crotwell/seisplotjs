@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {Station, Channel} from "./stationxml";
+import { Station, Channel } from "./stationxml";
 import {
   isDef,
   isObject,
@@ -15,9 +15,9 @@ import {
   defaultFetchInitObj,
   XML_MIME,
 } from "./util";
-import {latlonFormat, depthFormat, magFormat} from "./textformat";
+import { latlonFormat, depthFormat, magFormat } from "./textformat";
 
-import {DateTime} from "luxon";
+import { DateTime } from "luxon";
 
 export const QML_NS = "http://quakeml.org/xmlns/quakeml/1.2";
 export const BED_NS = "http://quakeml.org/xmlns/bed/1.2";
@@ -32,7 +32,6 @@ export const FAKE_ORIGIN_TIME = DateTime.fromISO("1900-01-01T00:00:00Z");
 export const FAKE_EMPTY_XML =
   '<?xml version="1.0"?><q:quakeml xmlns="http://quakeml.org/xmlns/bed/1.2" xmlns:q="http://quakeml.org/xmlns/quakeml/1.2"><eventParameters publicID="quakeml:fake/empty"></eventParameters></q:quakeml>';
 
-
 export const QUAKE_CLICK_EVENT = "quakeclick";
 
 /**
@@ -43,12 +42,15 @@ export const QUAKE_CLICK_EVENT = "quakeclick";
  * @param  mouseclick original mouse click Event
  * @returns           CustomEvent populated with quake field in detail.
  */
-export function createQuakeClickEvent(q: Quake, mouseclick: Event): CustomEvent {
+export function createQuakeClickEvent(
+  q: Quake,
+  mouseclick: Event,
+): CustomEvent {
   const detail = {
     mouseevent: mouseclick,
     quake: q,
   };
-  return new CustomEvent(QUAKE_CLICK_EVENT, { detail: detail});
+  return new CustomEvent(QUAKE_CLICK_EVENT, { detail: detail });
 }
 
 // QuakeML classes
@@ -84,13 +86,20 @@ export class EventParameters extends BaseElement {
    * @param host optional source of the xml, helpful for parsing the eventid
    * @returns EventParameters instance
    */
-  static createFromXml(eventParametersQML: Element, host?: string): EventParameters {
+  static createFromXml(
+    eventParametersQML: Element,
+    host?: string,
+  ): EventParameters {
     if (eventParametersQML.localName !== "eventParameters") {
-      throw new Error(`Cannot extract, not a QuakeML event parameters: ${eventParametersQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML event parameters: ${eventParametersQML.localName}`,
+      );
     }
 
-    const eventEls = Array.from(eventParametersQML.getElementsByTagNameNS(BED_NS, "event"));
-    const events = eventEls.map(e => Quake.createFromXml(e, host));
+    const eventEls = Array.from(
+      eventParametersQML.getElementsByTagNameNS(BED_NS, "event"),
+    );
+    const events = eventEls.map((e) => Quake.createFromXml(e, host));
 
     const description = _grabFirstElText(eventParametersQML, "description");
 
@@ -109,7 +118,7 @@ export class EventParameters extends BaseElement {
  * other uses in javascript.
  */
 export class Quake extends BaseElement {
-  eventId: string|undefined;
+  eventId: string | undefined;
   descriptionList: EventDescription[] = [];
   amplitudeList: Array<Amplitude> = [];
   stationMagnitudeList: Array<StationMagnitude> = [];
@@ -137,12 +146,15 @@ export class Quake extends BaseElement {
       throw new Error(`Cannot extract, not a QuakeML Event: ${qml.localName}`);
     }
 
-
     const out = new Quake();
     out.populate(qml);
 
-    const descriptionEls = Array.from(qml.children).filter(e => e.tagName === "description");
-    out.descriptionList = descriptionEls.map(d => EventDescription.createFromXml(d));
+    const descriptionEls = Array.from(qml.children).filter(
+      (e) => e.tagName === "description",
+    );
+    out.descriptionList = descriptionEls.map((d) =>
+      EventDescription.createFromXml(d),
+    );
 
     //need picks before can do origins
     const allPickEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "pick"));
@@ -152,39 +164,53 @@ export class Quake extends BaseElement {
       allPicks.push(Pick.createFromXml(pickEl));
     }
 
-    const allAmplitudeEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "amplitude"));
+    const allAmplitudeEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "amplitude"),
+    );
     const allAmplitudes = [];
 
     for (const amplitudeEl of allAmplitudeEls) {
       allAmplitudes.push(Amplitude.createFromXml(amplitudeEl, allPicks));
     }
 
-    const allOriginEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "origin"));
+    const allOriginEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "origin"),
+    );
     const allOrigins = [];
 
     for (const originEl of allOriginEls) {
       allOrigins.push(Origin.createFromXml(originEl, allPicks));
     }
 
-    const allStationMagEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "stationMagnitude"));
+    const allStationMagEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "stationMagnitude"),
+    );
     const allStationMags = [];
 
     for (const stationMagEl of allStationMagEls) {
-      allStationMags.push(StationMagnitude.createFromXml(stationMagEl, allOrigins, allAmplitudes));
+      allStationMags.push(
+        StationMagnitude.createFromXml(stationMagEl, allOrigins, allAmplitudes),
+      );
     }
 
-    const allMagEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "magnitude"));
+    const allMagEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "magnitude"),
+    );
     const allMags = [];
 
     for (const magEl of allMagEls) {
       allMags.push(Magnitude.createFromXml(magEl, allOrigins, allStationMags));
     }
 
-    const allFocalMechEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "focalMechanism"));
+    const allFocalMechEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "focalMechanism"),
+    );
     const allFocalMechs = [];
 
     for (const focalMechEl of allFocalMechEls) {
-      allFocalMechs.push(FocalMechanism.createFromXml(focalMechEl, allOrigins, allMags));
+      allFocalMechs.push(
+        FocalMechanism.createFromXml(focalMechEl, allOrigins, allMags),
+      );
     }
 
     out.originList = allOrigins;
@@ -196,33 +222,40 @@ export class Quake extends BaseElement {
     out.eventId = Quake.extractEventId(qml, host);
     const preferredOriginId = _grabFirstElText(qml, "preferredOriginID");
     const preferredMagnitudeId = _grabFirstElText(qml, "preferredMagnitudeID");
-    const preferredFocalMechId = _grabFirstElText(qml, "preferredFocalMechanismID");
+    const preferredFocalMechId = _grabFirstElText(
+      qml,
+      "preferredFocalMechanismID",
+    );
 
     if (isNonEmptyStringArg(preferredOriginId)) {
-      out.preferredOrigin = allOrigins.find(o => o.publicId === preferredOriginId);
+      out.preferredOrigin = allOrigins.find(
+        (o) => o.publicId === preferredOriginId,
+      );
       if (!out.preferredOrigin) {
-        throw new Error(
-          `no preferredOriginId match: ${preferredOriginId}`,
-        );
+        throw new Error(`no preferredOriginId match: ${preferredOriginId}`);
       }
     }
 
     if (isNonEmptyStringArg(preferredMagnitudeId)) {
-      out.preferredMagnitude = allMags.find(m => m.publicId === preferredMagnitudeId);
+      out.preferredMagnitude = allMags.find(
+        (m) => m.publicId === preferredMagnitudeId,
+      );
       if (!out.preferredMagnitude) {
         throw new Error(`no match: ${preferredMagnitudeId}`);
       }
     }
 
     if (isNonEmptyStringArg(preferredFocalMechId)) {
-      out.preferredFocalMechanism = allFocalMechs.find(m => m.publicId === preferredFocalMechId);
+      out.preferredFocalMechanism = allFocalMechs.find(
+        (m) => m.publicId === preferredFocalMechId,
+      );
       if (!out.preferredFocalMechanism) {
         throw new Error(`no match: ${preferredFocalMechId}`);
       }
     }
 
-    out.type  =_grabFirstElText(qml, "type");
-    out.typeCertainty  =_grabFirstElText(qml, "typeCertainty");
+    out.type = _grabFirstElText(qml, "type");
+    out.typeCertainty = _grabFirstElText(qml, "typeCertainty");
 
     return out;
   }
@@ -366,7 +399,9 @@ export class EventDescription {
    */
   static createFromXml(descriptionQML: Element): EventDescription {
     if (descriptionQML.localName !== "description") {
-      throw new Error(`Cannot extract, not a QuakeML description ID: ${descriptionQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML description ID: ${descriptionQML.localName}`,
+      );
     }
 
     const text = _grabFirstElText(descriptionQML, "text");
@@ -417,10 +452,15 @@ export class Amplitude extends BaseElement {
    */
   static createFromXml(amplitudeQML: Element, allPicks: Pick[]): Amplitude {
     if (amplitudeQML.localName !== "amplitude") {
-      throw new Error(`Cannot extract, not a QuakeML amplitude: ${amplitudeQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML amplitude: ${amplitudeQML.localName}`,
+      );
     }
 
-    const genericAmplitude = _grabFirstElRealQuantity(amplitudeQML, "genericAmplitude");
+    const genericAmplitude = _grabFirstElRealQuantity(
+      amplitudeQML,
+      "genericAmplitude",
+    );
     if (!isDef(genericAmplitude)) {
       throw new Error("amplitude missing genericAmplitude");
     }
@@ -441,15 +481,19 @@ export class Amplitude extends BaseElement {
 
     out.snr = _grabFirstElFloat(amplitudeQML, "snr");
 
-    out.timeWindow = _grabFirstElType(TimeWindow.createFromXml.bind(TimeWindow))(amplitudeQML, "timeWindow");
+    out.timeWindow = _grabFirstElType(
+      TimeWindow.createFromXml.bind(TimeWindow),
+    )(amplitudeQML, "timeWindow");
 
     const pickID = _grabFirstElText(amplitudeQML, "pickID");
-    out.pick = allPicks.find(p => p.publicId === pickID);
+    out.pick = allPicks.find((p) => p.publicId === pickID);
     if (pickID && !out.pick) {
       throw new Error("No pick with ID " + pickID);
     }
 
-    out.waveformID = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(amplitudeQML, "waveformID");
+    out.waveformID = _grabFirstElType(
+      WaveformID.createFromXml.bind(WaveformID),
+    )(amplitudeQML, "waveformID");
 
     out.filterID = _grabFirstElText(amplitudeQML, "filterID");
 
@@ -488,16 +532,22 @@ export class StationMagnitude extends BaseElement {
    * @param allAmplitudes amplitudes already extracted from the xml for linking station magnitudes with amplitudes
    * @returns StationMagnitude instance
    */
-  static createFromXml(stationMagnitudeQML: Element, allOrigins: Origin[], allAmplitudes: Amplitude[]): StationMagnitude {
+  static createFromXml(
+    stationMagnitudeQML: Element,
+    allOrigins: Origin[],
+    allAmplitudes: Amplitude[],
+  ): StationMagnitude {
     if (stationMagnitudeQML.localName !== "stationMagnitude") {
-      throw new Error(`Cannot extract, not a QuakeML station magnitude: ${stationMagnitudeQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML station magnitude: ${stationMagnitudeQML.localName}`,
+      );
     }
 
     const originID = _grabFirstElText(stationMagnitudeQML, "originID");
     if (!isNonEmptyStringArg(originID)) {
       throw new Error("stationMagnitude missing origin ID");
     }
-    const origin = allOrigins.find(o => o.publicId === originID);
+    const origin = allOrigins.find((o) => o.publicId === originID);
     if (!isDef(origin)) {
       throw new Error("No origin with ID " + originID);
     }
@@ -514,14 +564,16 @@ export class StationMagnitude extends BaseElement {
     out.type = _grabFirstElText(stationMagnitudeQML, "type");
 
     const amplitudeID = _grabFirstElText(stationMagnitudeQML, "amplitudeID");
-    out.amplitude = allAmplitudes.find(a => a.publicId === amplitudeID);
+    out.amplitude = allAmplitudes.find((a) => a.publicId === amplitudeID);
     if (amplitudeID && !out.amplitude) {
       throw new Error("No amplitude with ID " + amplitudeID);
     }
 
     out.methodID = _grabFirstElText(stationMagnitudeQML, "methodID");
 
-    out.waveformID = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(stationMagnitudeQML, "waveformID");
+    out.waveformID = _grabFirstElType(
+      WaveformID.createFromXml.bind(WaveformID),
+    )(stationMagnitudeQML, "waveformID");
 
     return out;
   }
@@ -547,7 +599,9 @@ export class TimeWindow {
    */
   static createFromXml(timeWindowQML: Element): TimeWindow {
     if (timeWindowQML.localName !== "timeWindow") {
-      throw new Error(`Cannot extract, not a QuakeML time window: ${timeWindowQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML time window: ${timeWindowQML.localName}`,
+      );
     }
 
     const begin = _grabFirstElFloat(timeWindowQML, "begin");
@@ -592,9 +646,11 @@ export class Origin extends BaseElement {
   evaluationMode?: string;
   evaluationStatus?: string;
 
-  constructor(time: TimeQuantity | DateTime,
-              latitude: RealQuantity | number,
-              longitude: RealQuantity | number) {
+  constructor(
+    time: TimeQuantity | DateTime,
+    latitude: RealQuantity | number,
+    longitude: RealQuantity | number,
+  ) {
     super();
     this.compositeTimes = [];
     this.arrivalList = [];
@@ -647,10 +703,16 @@ export class Origin extends BaseElement {
 
     out.populate(qml);
 
-    out.originUncertainty = _grabFirstElType(OriginUncertainty.createFromXml.bind(OriginUncertainty))(qml, "originUncertainty");
+    out.originUncertainty = _grabFirstElType(
+      OriginUncertainty.createFromXml.bind(OriginUncertainty),
+    )(qml, "originUncertainty");
 
-    const allArrivalEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "arrival"));
-    out.arrivalList = allArrivalEls.map(arrivalEl => Arrival.createFromXml(arrivalEl, allPicks));
+    const allArrivalEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "arrival"),
+    );
+    out.arrivalList = allArrivalEls.map((arrivalEl) =>
+      Arrival.createFromXml(arrivalEl, allPicks),
+    );
 
     out.depthQuantity = _grabFirstElRealQuantity(qml, "depth");
 
@@ -666,7 +728,9 @@ export class Origin extends BaseElement {
 
     out.earthModelID = _grabFirstElText(qml, "earthModelID");
 
-    out.quality = _grabFirstElType(OriginQuality.createFromXml.bind(OriginQuality))(qml, "quality");
+    out.quality = _grabFirstElType(
+      OriginQuality.createFromXml.bind(OriginQuality),
+    )(qml, "quality");
 
     out.type = _grabFirstElText(qml, "type");
 
@@ -723,7 +787,7 @@ export class Origin extends BaseElement {
   }
   set depth(depth: RealQuantity | number) {
     if (typeof depth == "number") {
-      if ( ! this.depthQuantity) {
+      if (!this.depthQuantity) {
         this.depthQuantity = new Quantity(depth);
       } else {
         this.depthQuantity.value = depth;
@@ -732,7 +796,6 @@ export class Origin extends BaseElement {
       this.depthQuantity = depth;
     }
   }
-
 
   get arrivals(): Array<Arrival> {
     return this.arrivalList;
@@ -756,7 +819,9 @@ export class CompositeTime {
    */
   static createFromXml(qml: Element): CompositeTime {
     if (qml.localName !== "compositeTime") {
-      throw new Error(`Cannot extract, not a QuakeML Composite Time: ${qml.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML Composite Time: ${qml.localName}`,
+      );
     }
 
     const out = new CompositeTime();
@@ -795,20 +860,33 @@ export class OriginUncertainty {
    */
   static createFromXml(qml: Element): OriginUncertainty {
     if (qml.localName !== "originUncertainty") {
-      throw new Error(`Cannot extract, not a QuakeML Origin Uncertainty: ${qml.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML Origin Uncertainty: ${qml.localName}`,
+      );
     }
 
     const out = new OriginUncertainty();
 
     out.horizontalUncertainty = _grabFirstElFloat(qml, "horizontalUncertainty");
 
-    out.minHorizontalUncertainty = _grabFirstElFloat(qml, "minHorizontalUncertainty");
+    out.minHorizontalUncertainty = _grabFirstElFloat(
+      qml,
+      "minHorizontalUncertainty",
+    );
 
-    out.maxHorizontalUncertainty = _grabFirstElFloat(qml, "maxHorizontalUncertainty");
+    out.maxHorizontalUncertainty = _grabFirstElFloat(
+      qml,
+      "maxHorizontalUncertainty",
+    );
 
-    out.azimuthMaxHorizontalUncertainty = _grabFirstElFloat(qml, "azimuthMaxHorizontalUncertainty");
+    out.azimuthMaxHorizontalUncertainty = _grabFirstElFloat(
+      qml,
+      "azimuthMaxHorizontalUncertainty",
+    );
 
-    out.confidenceEllipsoid = _grabFirstElType(ConfidenceEllipsoid.createFromXml.bind(ConfidenceEllipsoid))(qml, "confidenceEllipsoid");
+    out.confidenceEllipsoid = _grabFirstElType(
+      ConfidenceEllipsoid.createFromXml.bind(ConfidenceEllipsoid),
+    )(qml, "confidenceEllipsoid");
 
     out.preferredDescription = _grabFirstElText(qml, "preferredDescription");
 
@@ -851,7 +929,9 @@ export class ConfidenceEllipsoid {
    */
   static createFromXml(qml: Element): ConfidenceEllipsoid {
     if (qml.localName !== "confidenceEllipsoid") {
-      throw new Error(`Cannot extract, not a QuakeML Confidence Ellipsoid: ${qml.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML Confidence Ellipsoid: ${qml.localName}`,
+      );
     }
 
     const semiMajorAxisLength = _grabFirstElFloat(qml, "semiMajorAxisLength");
@@ -864,7 +944,10 @@ export class ConfidenceEllipsoid {
       throw new Error("confidenceEllipsoid missing semiMinorAxisLength");
     }
 
-    const semiIntermediateAxisLength = _grabFirstElFloat(qml, "semiIntermediateAxisLength");
+    const semiIntermediateAxisLength = _grabFirstElFloat(
+      qml,
+      "semiIntermediateAxisLength",
+    );
     if (semiIntermediateAxisLength === undefined) {
       throw new Error("confidenceEllipsoid missing semiIntermediateAxisLength");
     }
@@ -920,7 +1003,9 @@ export class OriginQuality {
    */
   static createFromXml(qml: Element): OriginQuality {
     if (qml.localName !== "quality") {
-      throw new Error(`Cannot extract, not a QuakeML Origin Quality: ${qml.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML Origin Quality: ${qml.localName}`,
+      );
     }
 
     const out = new OriginQuality();
@@ -967,7 +1052,7 @@ export class Magnitude extends BaseElement {
 
   constructor(mag: RealQuantity | number, type?: string) {
     super();
-    if (typeof mag === "number" ) {
+    if (typeof mag === "number") {
       this.magQuantity = new Quantity(mag);
     } else {
       this.magQuantity = mag;
@@ -985,7 +1070,11 @@ export class Magnitude extends BaseElement {
    * @param allStationMagnitudes station magnitudes already extracted from the xml
    * @returns Magnitude instance
    */
-  static createFromXml(qml: Element, allOrigins: Origin[], allStationMagnitudes: StationMagnitude[]): Magnitude {
+  static createFromXml(
+    qml: Element,
+    allOrigins: Origin[],
+    allStationMagnitudes: StationMagnitude[],
+  ): Magnitude {
     if (qml.localName !== "magnitude") {
       throw new Error(
         `Cannot extract, not a QuakeML Magnitude: ${qml.localName}`,
@@ -1001,13 +1090,18 @@ export class Magnitude extends BaseElement {
 
     out.populate(qml);
 
-    const stationMagnitudeContributionEls = Array.from(qml.getElementsByTagNameNS(BED_NS, "stationMagnitudeContribution"));
-    out.stationMagnitudeContributions = stationMagnitudeContributionEls.map(smc => StationMagnitudeContribution.createFromXml(smc, allStationMagnitudes));
+    const stationMagnitudeContributionEls = Array.from(
+      qml.getElementsByTagNameNS(BED_NS, "stationMagnitudeContribution"),
+    );
+    out.stationMagnitudeContributions = stationMagnitudeContributionEls.map(
+      (smc) =>
+        StationMagnitudeContribution.createFromXml(smc, allStationMagnitudes),
+    );
 
     out.type = _grabFirstElText(qml, "type");
 
     const originID = _grabFirstElText(qml, "originID");
-    out.origin = allOrigins.find(o => o.publicId === originID);
+    out.origin = allOrigins.find((o) => o.publicId === originID);
     if (originID && !out.origin) {
       throw new Error("No origin with ID " + originID);
     }
@@ -1026,13 +1120,13 @@ export class Magnitude extends BaseElement {
   }
 
   toString(): string {
-    return `${magFormat.format(this.mag)} ${this.type?this.type:""}`;
+    return `${magFormat.format(this.mag)} ${this.type ? this.type : ""}`;
   }
   get mag(): number {
     return this.magQuantity.value;
   }
   set mag(value: RealQuantity | number) {
-    if (typeof value === "number" ) {
+    if (typeof value === "number") {
       this.magQuantity.value = value;
     } else {
       this.magQuantity = value;
@@ -1059,16 +1153,23 @@ export class StationMagnitudeContribution {
    * @param allStationMagnitudes station magnitudes already extracted from the xml for linking station magnitudes with station magnitude contributions
    * @returns StationMagnitudeContribution instance
    */
-  static createFromXml(qml: Element, allStationMagnitudes: Array<StationMagnitude>): StationMagnitudeContribution {
+  static createFromXml(
+    qml: Element,
+    allStationMagnitudes: Array<StationMagnitude>,
+  ): StationMagnitudeContribution {
     if (qml.localName !== "stationMagnitudeContribution") {
-      throw new Error(`Cannot extract, not a QuakeML StationMagnitudeContribution: ${qml.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML StationMagnitudeContribution: ${qml.localName}`,
+      );
     }
 
     const stationMagnitudeID = _grabFirstElText(qml, "stationMagnitudeID");
     if (!isNonEmptyStringArg(stationMagnitudeID)) {
       throw new Error("stationMagnitudeContribution missing stationMagnitude");
     }
-    const stationMagnitude = allStationMagnitudes.find(sm => sm.publicId === stationMagnitudeID);
+    const stationMagnitude = allStationMagnitudes.find(
+      (sm) => sm.publicId === stationMagnitudeID,
+    );
     if (!isDef(stationMagnitude)) {
       throw new Error("No stationMagnitude with ID " + stationMagnitudeID);
     }
@@ -1148,15 +1249,27 @@ export class Arrival extends BaseElement {
 
       out.timeResidual = _grabFirstElFloat(arrivalQML, "timeResidual");
 
-      out.horizontalSlownessResidual = _grabFirstElFloat(arrivalQML, "horizontalSlownessResidual");
+      out.horizontalSlownessResidual = _grabFirstElFloat(
+        arrivalQML,
+        "horizontalSlownessResidual",
+      );
 
-      out.backazimuthResidual = _grabFirstElFloat(arrivalQML, "backazimuthResidual");
+      out.backazimuthResidual = _grabFirstElFloat(
+        arrivalQML,
+        "backazimuthResidual",
+      );
 
       out.timeWeight = _grabFirstElFloat(arrivalQML, "timeWeight");
 
-      out.horizontalSlownessWeight = _grabFirstElFloat(arrivalQML, "horizontalSlownessWeight");
+      out.horizontalSlownessWeight = _grabFirstElFloat(
+        arrivalQML,
+        "horizontalSlownessWeight",
+      );
 
-      out.backazimuthWeight = _grabFirstElFloat(arrivalQML, "backazimuthWeight");
+      out.backazimuthWeight = _grabFirstElFloat(
+        arrivalQML,
+        "backazimuthWeight",
+      );
 
       out.earthModelID = _grabFirstElText(arrivalQML, "earthModelID");
 
@@ -1223,9 +1336,13 @@ export class Pick extends BaseElement {
     }
 
     const time = _grabFirstElTimeQuantity(pickQML, "time");
-    if (! isDef(time)) {throw new Error("Missing time");}
+    if (!isDef(time)) {
+      throw new Error("Missing time");
+    }
 
-    const waveformId = _grabFirstElType(WaveformID.createFromXml.bind(WaveformID))(pickQML, "waveformID");
+    const waveformId = _grabFirstElType(
+      WaveformID.createFromXml.bind(WaveformID),
+    )(pickQML, "waveformID");
     if (!isObject(waveformId)) {
       throw new Error("pick missing waveformID");
     }
@@ -1238,7 +1355,10 @@ export class Pick extends BaseElement {
 
     out.methodID = _grabFirstElText(pickQML, "methodID");
 
-    out.horizontalSlowness = _grabFirstElRealQuantity(pickQML, "horizontalSlowness");
+    out.horizontalSlowness = _grabFirstElRealQuantity(
+      pickQML,
+      "horizontalSlowness",
+    );
 
     out.backazimuth = _grabFirstElRealQuantity(pickQML, "backazimuth");
 
@@ -1266,11 +1386,11 @@ export class Pick extends BaseElement {
   }
 
   get locationCode(): string {
-    return this.waveformID.locationCode || '--';
+    return this.waveformID.locationCode || "--";
   }
 
   get channelCode(): string {
-    return this.waveformID.channelCode || '---';
+    return this.waveformID.channelCode || "---";
   }
 
   isAtStation(station: Station): boolean {
@@ -1289,7 +1409,10 @@ export class Pick extends BaseElement {
     );
   }
   toString(): string {
-    return stringify(this.time) + ` ${this.networkCode}.${this.stationCode}.${this.locationCode}.${this.channelCode}`;
+    return (
+      stringify(this.time) +
+      ` ${this.networkCode}.${this.stationCode}.${this.locationCode}.${this.channelCode}`
+    );
   }
 }
 
@@ -1310,7 +1433,6 @@ export class FocalMechanism extends BaseElement {
   evaluationMode?: string;
   evaluationStatus?: string;
 
-
   /**
    * Parses a QuakeML focal mechanism xml element into a FocalMechanism object.
    *
@@ -1319,38 +1441,67 @@ export class FocalMechanism extends BaseElement {
    * @param allMagnitudes magnitudes already extracted from the xml for linking moment tensors with magnitudes
    * @returns FocalMechanism instance
    */
-  static createFromXml(focalMechQML: Element, allOrigins: Origin[], allMagnitudes: Magnitude[]): FocalMechanism {
+  static createFromXml(
+    focalMechQML: Element,
+    allOrigins: Origin[],
+    allMagnitudes: Magnitude[],
+  ): FocalMechanism {
     if (focalMechQML.localName !== "focalMechanism") {
-      throw new Error(`Cannot extract, not a QuakeML focalMechanism: ${focalMechQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML focalMechanism: ${focalMechQML.localName}`,
+      );
     }
 
     const out = new FocalMechanism();
 
     out.populate(focalMechQML);
 
-    const waveformIDEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "waveformID"));
-    out.waveformIDList = waveformIDEls.map(wid => WaveformID.createFromXml(wid));
+    const waveformIDEls = Array.from(
+      focalMechQML.getElementsByTagNameNS(BED_NS, "waveformID"),
+    );
+    out.waveformIDList = waveformIDEls.map((wid) =>
+      WaveformID.createFromXml(wid),
+    );
 
-    const momentTensorEls = Array.from(focalMechQML.getElementsByTagNameNS(BED_NS, "momentTensor"));
-    out.momentTensorList = momentTensorEls.map(mt => MomentTensor.createFromXml(mt, allOrigins, allMagnitudes));
+    const momentTensorEls = Array.from(
+      focalMechQML.getElementsByTagNameNS(BED_NS, "momentTensor"),
+    );
+    out.momentTensorList = momentTensorEls.map((mt) =>
+      MomentTensor.createFromXml(mt, allOrigins, allMagnitudes),
+    );
 
-    const triggeringOriginID = _grabFirstElText(focalMechQML, "triggeringOriginID");
-    out.triggeringOrigin = allOrigins.find(o => o.publicId === triggeringOriginID);
+    const triggeringOriginID = _grabFirstElText(
+      focalMechQML,
+      "triggeringOriginID",
+    );
+    out.triggeringOrigin = allOrigins.find(
+      (o) => o.publicId === triggeringOriginID,
+    );
     if (triggeringOriginID && !out.triggeringOrigin) {
       throw new Error("No origin with ID " + triggeringOriginID);
     }
 
-    out.nodalPlanes = _grabFirstElType(NodalPlanes.createFromXml.bind(NodalPlanes))(focalMechQML, "nodalPlanes");
+    out.nodalPlanes = _grabFirstElType(
+      NodalPlanes.createFromXml.bind(NodalPlanes),
+    )(focalMechQML, "nodalPlanes");
 
-    out.principalAxes = _grabFirstElType(PrincipalAxes.createFromXml.bind(PrincipalAxes))(focalMechQML, "principalAxes");
+    out.principalAxes = _grabFirstElType(
+      PrincipalAxes.createFromXml.bind(PrincipalAxes),
+    )(focalMechQML, "principalAxes");
 
     out.azimuthalGap = _grabFirstElFloat(focalMechQML, "azimuthalGap");
 
-    out.stationPolarityCount = _grabFirstElInt(focalMechQML, "stationPolarityCount");
+    out.stationPolarityCount = _grabFirstElInt(
+      focalMechQML,
+      "stationPolarityCount",
+    );
 
     out.misfit = _grabFirstElFloat(focalMechQML, "misfit");
 
-    out.stationDistributionRatio = _grabFirstElFloat(focalMechQML, "stationDistributionRatio");
+    out.stationDistributionRatio = _grabFirstElFloat(
+      focalMechQML,
+      "stationDistributionRatio",
+    );
 
     out.methodID = _grabFirstElText(focalMechQML, "methodID");
 
@@ -1379,12 +1530,21 @@ export class NodalPlanes {
   static createFromXml(nodalPlanesQML: Element): NodalPlanes {
     const out = new NodalPlanes();
 
-    out.nodalPlane1 = _grabFirstElType(NodalPlane.createFromXml.bind(NodalPlane))(nodalPlanesQML, "nodalPlane1");
+    out.nodalPlane1 = _grabFirstElType(
+      NodalPlane.createFromXml.bind(NodalPlane),
+    )(nodalPlanesQML, "nodalPlane1");
 
-    out.nodalPlane2 = _grabFirstElType(NodalPlane.createFromXml.bind(NodalPlane))(nodalPlanesQML, "nodalPlane2");
+    out.nodalPlane2 = _grabFirstElType(
+      NodalPlane.createFromXml.bind(NodalPlane),
+    )(nodalPlanesQML, "nodalPlane2");
 
-    const preferredPlaneString = _grabAttribute(nodalPlanesQML, "preferredPlane");
-    out.preferredPlane = isNonEmptyStringArg(preferredPlaneString) ? parseInt(preferredPlaneString) : undefined;
+    const preferredPlaneString = _grabAttribute(
+      nodalPlanesQML,
+      "preferredPlane",
+    );
+    out.preferredPlane = isNonEmptyStringArg(preferredPlaneString)
+      ? parseInt(preferredPlaneString)
+      : undefined;
 
     return out;
   }
@@ -1453,22 +1613,33 @@ export class PrincipalAxes {
    */
   static createFromXml(princpalAxesQML: Element): PrincipalAxes {
     if (princpalAxesQML.localName !== "principalAxes") {
-      throw new Error(`Cannot extract, not a QuakeML princpalAxes: ${princpalAxesQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML princpalAxes: ${princpalAxesQML.localName}`,
+      );
     }
 
-    const tAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(princpalAxesQML, "tAxis");
+    const tAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
+      princpalAxesQML,
+      "tAxis",
+    );
     if (!isObject(tAxis)) {
       throw new Error("nodal plane missing tAxis");
     }
 
-    const pAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(princpalAxesQML, "pAxis");
+    const pAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
+      princpalAxesQML,
+      "pAxis",
+    );
     if (!isObject(pAxis)) {
       throw new Error("nodal plane missing pAxis");
     }
 
     const out = new PrincipalAxes(tAxis, pAxis);
 
-    out.nAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(princpalAxesQML, "nAxis");
+    out.nAxis = _grabFirstElType(Axis.createFromXml.bind(Axis))(
+      princpalAxesQML,
+      "nAxis",
+    );
 
     return out;
   }
@@ -1482,7 +1653,11 @@ export class Axis {
   plunge: RealQuantity;
   length: RealQuantity;
 
-  constructor(azimuth: RealQuantity, plunge: RealQuantity, length: RealQuantity) {
+  constructor(
+    azimuth: RealQuantity,
+    plunge: RealQuantity,
+    length: RealQuantity,
+  ) {
     this.azimuth = azimuth;
     this.plunge = plunge;
     this.length = length;
@@ -1550,16 +1725,27 @@ export class MomentTensor extends BaseElement {
    * @param allMagnitudes magnitudes already extracted from the xml for linking moment tensors with magnitudes
    * @returns MomentTensor instance
    */
-  static createFromXml(momentTensorQML: Element, allOrigins: Origin[], allMagnitudes: Magnitude[]): MomentTensor {
+  static createFromXml(
+    momentTensorQML: Element,
+    allOrigins: Origin[],
+    allMagnitudes: Magnitude[],
+  ): MomentTensor {
     if (momentTensorQML.localName !== "momentTensor") {
-      throw new Error(`Cannot extract, not a QuakeML momentTensor: ${momentTensorQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML momentTensor: ${momentTensorQML.localName}`,
+      );
     }
 
-    const derivedOriginID = _grabFirstElText(momentTensorQML, "derivedOriginID");
+    const derivedOriginID = _grabFirstElText(
+      momentTensorQML,
+      "derivedOriginID",
+    );
     if (!isNonEmptyStringArg(derivedOriginID)) {
       throw new Error("momentTensor missing derivedOriginID");
     }
-    const derivedOrigin = allOrigins.find(o => o.publicId === derivedOriginID);
+    const derivedOrigin = allOrigins.find(
+      (o) => o.publicId === derivedOriginID,
+    );
     if (!isDef(derivedOrigin)) {
       throw new Error("No origin with ID " + derivedOriginID);
     }
@@ -1568,22 +1754,38 @@ export class MomentTensor extends BaseElement {
 
     out.populate(momentTensorQML);
 
-    const dataUsedEls = Array.from(momentTensorQML.getElementsByTagNameNS(BED_NS, "dataUsed"));
+    const dataUsedEls = Array.from(
+      momentTensorQML.getElementsByTagNameNS(BED_NS, "dataUsed"),
+    );
     out.dataUsedList = dataUsedEls.map(DataUsed.createFromXml.bind(DataUsed));
 
-    const momentMagnitudeID = _grabFirstElText(momentTensorQML, "momentMagnitudeID");
-    out.momentMagnitude = allMagnitudes.find(o => o.publicId === momentMagnitudeID);
+    const momentMagnitudeID = _grabFirstElText(
+      momentTensorQML,
+      "momentMagnitudeID",
+    );
+    out.momentMagnitude = allMagnitudes.find(
+      (o) => o.publicId === momentMagnitudeID,
+    );
     if (momentMagnitudeID && !out.momentMagnitude) {
       throw new Error("No magnitude with ID " + momentMagnitudeID);
     }
 
-    out.scalarMoment = _grabFirstElRealQuantity(momentTensorQML, "scalarMoment");
+    out.scalarMoment = _grabFirstElRealQuantity(
+      momentTensorQML,
+      "scalarMoment",
+    );
 
-    out.tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(momentTensorQML, "tensor");
+    out.tensor = _grabFirstElType(Tensor.createFromXml.bind(Tensor))(
+      momentTensorQML,
+      "tensor",
+    );
 
     out.variance = _grabFirstElFloat(momentTensorQML, "variance");
 
-    out.varianceReduction = _grabFirstElFloat(momentTensorQML, "varianceReduction");
+    out.varianceReduction = _grabFirstElFloat(
+      momentTensorQML,
+      "varianceReduction",
+    );
 
     out.doubleCouple = _grabFirstElFloat(momentTensorQML, "doubleCouple");
 
@@ -1591,11 +1793,16 @@ export class MomentTensor extends BaseElement {
 
     out.iso = _grabFirstElFloat(momentTensorQML, "iso");
 
-    out.greensFunctionID = _grabFirstElText(momentTensorQML, "greensFunctionID");
+    out.greensFunctionID = _grabFirstElText(
+      momentTensorQML,
+      "greensFunctionID",
+    );
 
     out.filterID = _grabFirstElText(momentTensorQML, "filterID");
 
-    out.sourceTimeFunction = _grabFirstElType(SourceTimeFunction.createFromXml.bind(SourceTimeFunction))(momentTensorQML, "sourceTimeFunction");
+    out.sourceTimeFunction = _grabFirstElType(
+      SourceTimeFunction.createFromXml.bind(SourceTimeFunction),
+    )(momentTensorQML, "sourceTimeFunction");
 
     out.methodID = _grabFirstElText(momentTensorQML, "methodID");
 
@@ -1624,7 +1831,7 @@ export class Tensor {
     Mpp: RealQuantity,
     Mrt: RealQuantity,
     Mrp: RealQuantity,
-    Mtp: RealQuantity
+    Mtp: RealQuantity,
   ) {
     this.Mrr = Mrr;
     this.Mtt = Mtt;
@@ -1642,7 +1849,9 @@ export class Tensor {
    */
   static createFromXml(tensorQML: Element): Tensor {
     if (tensorQML.localName !== "tensor") {
-      throw new Error(`Cannot extract, not a QuakeML tensor: ${tensorQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML tensor: ${tensorQML.localName}`,
+      );
     }
 
     const Mrr = _grabFirstElRealQuantity(tensorQML, "Mrr");
@@ -1703,7 +1912,9 @@ export class SourceTimeFunction {
    */
   static createFromXml(sourceTimeFunctionQML: Element): SourceTimeFunction {
     if (sourceTimeFunctionQML.localName !== "sourceTimeFunction") {
-      throw new Error(`Cannot extract, not a QuakeML sourceTimeFunction: ${sourceTimeFunctionQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML sourceTimeFunction: ${sourceTimeFunctionQML.localName}`,
+      );
     }
 
     const type = _grabFirstElText(sourceTimeFunctionQML, "type");
@@ -1748,7 +1959,9 @@ export class DataUsed {
    */
   static createFromXml(dataUsedQML: Element): DataUsed {
     if (dataUsedQML.localName !== "dataUsed") {
-      throw new Error(`Cannot extract, not a QuakeML dataUsed: ${dataUsedQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML dataUsed: ${dataUsedQML.localName}`,
+      );
     }
 
     const waveType = _grabFirstElText(dataUsedQML, "waveType");
@@ -1792,7 +2005,9 @@ export class WaveformID {
    */
   static createFromXml(waveformQML: Element): WaveformID {
     if (waveformQML.localName !== "waveformID") {
-      throw new Error(`Cannot extract, not a QuakeML waveform ID: ${waveformQML.localName}`);
+      throw new Error(
+        `Cannot extract, not a QuakeML waveform ID: ${waveformQML.localName}`,
+      );
     }
 
     const networkCode = _grabAttribute(waveformQML, "networkCode");
@@ -1815,7 +2030,7 @@ export class WaveformID {
   }
 
   toString(): string {
-    return `${this.networkCode}.${this.stationCode}.${this.locationCode || '--'}.${this.channelCode || '---'}`;
+    return `${this.networkCode}.${this.stationCode}.${this.locationCode || "--"}.${this.channelCode || "---"}`;
   }
 }
 
@@ -1841,7 +2056,10 @@ export class Quantity<T> {
   static _createFromXml<T>(
     quantityQML: Element,
     grab: (xml: Element | null | void, tagName: string) => T | undefined,
-    grabUncertainty: (xml: Element | null | void, tagName: string) => number | undefined,
+    grabUncertainty: (
+      xml: Element | null | void,
+      tagName: string,
+    ) => number | undefined,
   ): Quantity<T> {
     const value = grab(quantityQML, "value");
     if (value === undefined) {
@@ -1868,7 +2086,11 @@ export class Quantity<T> {
    * @returns RealQuantity instance
    */
   static createRealQuantityFromXml(realQuantityQML: Element): RealQuantity {
-    return Quantity._createFromXml(realQuantityQML, _grabFirstElFloat, _grabFirstElFloat);
+    return Quantity._createFromXml(
+      realQuantityQML,
+      _grabFirstElFloat,
+      _grabFirstElFloat,
+    );
   }
 
   /**
@@ -1877,8 +2099,14 @@ export class Quantity<T> {
    * @param integerQuantityQML the integer quantity xml Element
    * @returns IntegerQuantity instance
    */
-  static createIntegerQuantityFromXml(integerQuantityQML: Element): IntegerQuantity {
-    return Quantity._createFromXml(integerQuantityQML, _grabFirstElFloat, _grabFirstElInt);
+  static createIntegerQuantityFromXml(
+    integerQuantityQML: Element,
+  ): IntegerQuantity {
+    return Quantity._createFromXml(
+      integerQuantityQML,
+      _grabFirstElFloat,
+      _grabFirstElInt,
+    );
   }
 
   /**
@@ -1888,7 +2116,11 @@ export class Quantity<T> {
    * @returns TimeQuantity instance
    */
   static createTimeQuantityFromXml(timeQuantityQML: Element): TimeQuantity {
-    return Quantity._createFromXml(timeQuantityQML, _grabFirstElDateTime, _grabFirstElFloat);
+    return Quantity._createFromXml(
+      timeQuantityQML,
+      _grabFirstElDateTime,
+      _grabFirstElFloat,
+    );
   }
 }
 
@@ -1974,29 +2206,35 @@ export function parseQuakeML(rawXml: Document, host?: string): EventParameters {
     throw new Error("Can't get documentElement");
   }
 
-  const eventParametersArray = Array.from(top.getElementsByTagName("eventParameters"));
+  const eventParametersArray = Array.from(
+    top.getElementsByTagName("eventParameters"),
+  );
   if (eventParametersArray.length !== 1) {
-    throw new Error(`Document has ${eventParametersArray.length} eventParameters elements`);
+    throw new Error(
+      `Document has ${eventParametersArray.length} eventParameters elements`,
+    );
   }
 
   return EventParameters.createFromXml(eventParametersArray[0], host);
 }
 
-export function createQuakeFromValues(publicId: string,
+export function createQuakeFromValues(
+  publicId: string,
   time: DateTime,
   latitude: number,
   longitude: number,
-  depth: number): Quake {
-    const origin = new Origin(
-      new Quantity(time),
-      new Quantity(latitude),
-      new Quantity(longitude)
-    );
-    origin.depth = new Quantity(depth);
-    const quake = new Quake();
-    quake.publicId = publicId;
-    quake.originList.push(origin);
-    return quake;
+  depth: number,
+): Quake {
+  const origin = new Origin(
+    new Quantity(time),
+    new Quantity(latitude),
+    new Quantity(longitude),
+  );
+  origin.depth = new Quantity(depth);
+  const quake = new Quake();
+  quake.publicId = publicId;
+  quake.originList.push(origin);
+  return quake;
 }
 
 /**
@@ -2008,11 +2246,15 @@ export function createQuakeFromValues(publicId: string,
  * @param nodata        nodata http error code
  * @returns             Promise to parsed quakeML as an EventParameters object
  */
-export function fetchQuakeML(url: string|URL, timeoutSec=10, nodata=204): Promise<EventParameters> {
+export function fetchQuakeML(
+  url: string | URL,
+  timeoutSec = 10,
+  nodata = 204,
+): Promise<EventParameters> {
   const fetchInit = defaultFetchInitObj(XML_MIME);
   const host = new URL(url).hostname;
   return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000)
-    .then(response => {
+    .then((response) => {
       if (response.status === 200) {
         return response.text();
       } else if (
@@ -2024,9 +2266,11 @@ export function fetchQuakeML(url: string|URL, timeoutSec=10, nodata=204): Promis
       } else {
         throw new Error(`Status not successful: ${response.status}`);
       }
-    }).then(function(rawXmlText) {
+    })
+    .then(function (rawXmlText) {
       return new DOMParser().parseFromString(rawXmlText, XML_MIME);
-    }).then(rawXml => {
+    })
+    .then((rawXml) => {
       return parseQuakeML(rawXml, host);
     });
 }
@@ -2038,11 +2282,12 @@ const _grabAllElComment = function (
   xml: Element | null | void,
   tagName: string,
 ): Comment[] {
-
   const out = [];
 
   if (isObject(xml)) {
-    const elList = Array.from(xml.children).filter(e => e.tagName === tagName);
+    const elList = Array.from(xml.children).filter(
+      (e) => e.tagName === tagName,
+    );
     for (const el of elList) {
       if (isObject(el)) {
         out.push(Comment.createFromXml(el));
@@ -2080,7 +2325,9 @@ const _grabFirstEl = function (
   tagName: string,
 ): Element | undefined {
   if (isObject(xml)) {
-    const elList = Array.from(xml.children).filter(e => e.tagName === tagName);
+    const elList = Array.from(xml.children).filter(
+      (e) => e.tagName === tagName,
+    );
 
     if (elList.length > 0) {
       const e = elList[0];
@@ -2104,7 +2351,9 @@ const _grabFirstElText = function (
 
   if (isObject(el)) {
     out = el.textContent;
-    if (out === null) {out = undefined;}
+    if (out === null) {
+      out = undefined;
+    }
   }
 
   return out;
@@ -2114,7 +2363,6 @@ const _grabFirstElBool = function (
   xml: Element | null | void,
   tagName: string,
 ): boolean | undefined {
-
   const el = _grabFirstElText(xml, tagName);
 
   if (!isStringArg(el)) {
@@ -2177,11 +2425,8 @@ const _grabFirstElDateTime = function (
   return out;
 };
 
-const _grabFirstElType = function<T>(createFromXml: (el: Element) => T) {
-  return function(
-    xml: Element | null | void,
-    tagName: string,
-  ): T | undefined {
+const _grabFirstElType = function <T>(createFromXml: (el: Element) => T) {
+  return function (xml: Element | null | void, tagName: string): T | undefined {
     let out = undefined;
 
     const el = _grabFirstEl(xml, tagName);
@@ -2194,11 +2439,19 @@ const _grabFirstElType = function<T>(createFromXml: (el: Element) => T) {
   };
 };
 
-const _grabFirstElRealQuantity = _grabFirstElType(Quantity.createRealQuantityFromXml.bind(Quantity));
-const _grabFirstElIntegerQuantity = _grabFirstElType(Quantity.createIntegerQuantityFromXml.bind(Quantity));
-const _grabFirstElTimeQuantity = _grabFirstElType(Quantity.createTimeQuantityFromXml.bind(Quantity));
+const _grabFirstElRealQuantity = _grabFirstElType(
+  Quantity.createRealQuantityFromXml.bind(Quantity),
+);
+const _grabFirstElIntegerQuantity = _grabFirstElType(
+  Quantity.createIntegerQuantityFromXml.bind(Quantity),
+);
+const _grabFirstElTimeQuantity = _grabFirstElType(
+  Quantity.createTimeQuantityFromXml.bind(Quantity),
+);
 
-const _grabFirstElCreationInfo = _grabFirstElType(CreationInfo.createFromXml.bind(CreationInfo));
+const _grabFirstElCreationInfo = _grabFirstElType(
+  CreationInfo.createFromXml.bind(CreationInfo),
+);
 
 const _grabAttribute = function (
   xml: Element | null | void,

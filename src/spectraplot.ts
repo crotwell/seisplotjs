@@ -3,30 +3,26 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {FFTResult} from "./fft";
-import {COLOR_CSS_ID} from "./seismograph";
-import {SeismographConfig} from "./seismographconfig";
-import {SeismogramDisplayData} from "./seismogram";
-import {addStyleToElement} from './spelement';
-import {Complex} from "./oregondsputil";
-import {SVG_NS} from "./util";
-import {extent as d3extent} from "d3-array";
-import {select as d3select} from "d3-selection";
+import { FFTResult } from "./fft";
+import { COLOR_CSS_ID } from "./seismograph";
+import { SeismographConfig } from "./seismographconfig";
+import { SeismogramDisplayData } from "./seismogram";
+import { addStyleToElement } from "./spelement";
+import { Complex } from "./oregondsputil";
+import { SVG_NS } from "./util";
+import { extent as d3extent } from "d3-array";
+import { select as d3select } from "d3-selection";
 import {
   scaleLinear as d3scaleLinear,
   ScaleContinuousNumeric as d3ScaleContinuousNumeric,
   scaleLog as d3scaleLog,
- } from "d3-scale";
-import {line as d3line } from "d3-shape";
-import {
-  axisLeft as d3axisLeft ,
-  axisBottom as d3axisBottom,
-} from "d3-axis";
-import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR} from "./cssutil";
-import {drawAxisLabels} from "./axisutil";
+} from "d3-scale";
+import { line as d3line } from "d3-shape";
+import { axisLeft as d3axisLeft, axisBottom as d3axisBottom } from "d3-axis";
+import { G_DATA_SELECTOR, AUTO_COLOR_SELECTOR } from "./cssutil";
+import { drawAxisLabels } from "./axisutil";
 
-export const SPECTRA_ELEMENT = 'sp-spectra';
-
+export const SPECTRA_ELEMENT = "sp-spectra";
 
 /**
  * Similar to FFTResult, but used for plotting non-fft generated data.
@@ -48,7 +44,9 @@ export class FreqAmp {
 
     this.seismogramDisplayData = null;
     if (freq.length !== values.length) {
-      throw new Error(`Frequencies and complex values must have same length: ${freq.length} ${values.length}`);
+      throw new Error(
+        `Frequencies and complex values must have same length: ${freq.length} ${values.length}`,
+      );
     }
   }
 
@@ -58,13 +56,13 @@ export class FreqAmp {
 
   amplitudes(): Float32Array {
     const out = new Float32Array(this.values.length);
-    this.values.forEach((c,i) => out[i] = c.abs());
+    this.values.forEach((c, i) => (out[i] = c.abs()));
     return out;
   }
 
   phases(): Float32Array {
     const out = new Float32Array(this.values.length);
-    this.values.forEach((c,i) => out[i] = c.angle());
+    this.values.forEach((c, i) => (out[i] = c.angle()));
     return out;
   }
 
@@ -148,7 +146,10 @@ export class SpectraPlot extends HTMLElement {
   _seismographConfig: SeismographConfig;
   _fftResults: Array<FFTResult | FreqAmp>;
 
-  constructor(fftResults?: Array<FFTResult | FreqAmp>, seismographConfig?: SeismographConfig) {
+  constructor(
+    fftResults?: Array<FFTResult | FreqAmp>,
+    seismographConfig?: SeismographConfig,
+  ) {
     super();
     if (seismographConfig) {
       this._seismographConfig = seismographConfig;
@@ -161,7 +162,7 @@ export class SpectraPlot extends HTMLElement {
       this._fftResults = [];
     }
 
-    const wrapper = document.createElement('div');
+    const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
     addStyleToElement(this, spectra_plot_css);
     const lineColorsCSS = this.seismographConfig.createCSSForLineColors();
@@ -186,16 +187,22 @@ export class SpectraPlot extends HTMLElement {
   get kind(): string {
     let k = this.hasAttribute(KIND) ? this.getAttribute(KIND) : AMPLITUDE;
     // typescript null
-    if (!k) { k = AMPLITUDE;}
+    if (!k) {
+      k = AMPLITUDE;
+    }
     return k;
   }
   set kind(val: string) {
     this.setAttribute(KIND, val);
   }
   get logfreq(): boolean {
-    if ( ! this.hasAttribute(LOGFREQ) ) { return true;}
+    if (!this.hasAttribute(LOGFREQ)) {
+      return true;
+    }
     const b = this.getAttribute(LOGFREQ);
-    if (b && b.toLowerCase()==="true") {return true;}
+    if (b && b.toLowerCase() === "true") {
+      return true;
+    }
     return false;
   }
   set logfreq(val: boolean) {
@@ -205,13 +212,17 @@ export class SpectraPlot extends HTMLElement {
     this.draw();
   }
 
-  static get observedAttributes() { return [LOGFREQ, KIND]; }
+  static get observedAttributes() {
+    return [LOGFREQ, KIND];
+  }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     this.draw();
   }
 
   draw() {
-    if ( ! this.isConnected) { return; }
+    if (!this.isConnected) {
+      return;
+    }
     const ampPhaseList = [];
     let maxFFTAmpLen = 0;
     const extentFFTData: Array<number> = [];
@@ -275,7 +286,7 @@ export class SpectraPlot extends HTMLElement {
         // replace zero with smallest non-zero / 10 for log amp plot
         currExtent[0] =
           0.1 *
-          ampSlice.reduce(function(acc: number, curr: number): number {
+          ampSlice.reduce(function (acc: number, curr: number): number {
             if (curr > 0 && curr < acc) {
               return curr;
             } else {
@@ -284,26 +295,30 @@ export class SpectraPlot extends HTMLElement {
           }, 1e-9);
       }
 
-      if (currExtent[0]) { extentFFTData.push(currExtent[0]); }
-      if (currExtent[1]) { extentFFTData.push(currExtent[1]); }
+      if (currExtent[0]) {
+        extentFFTData.push(currExtent[0]);
+      }
+      if (currExtent[1]) {
+        extentFFTData.push(currExtent[1]);
+      }
     }
     if (freqMinMax.length < 2) {
       freqMinMax.push(0.1);
       freqMinMax.push(10.0);
     }
 
-    if (extentFFTData.length < 2 ) {
+    if (extentFFTData.length < 2) {
       extentFFTData.push(0.1);
       extentFFTData.push(1);
     }
 
-    const wrapper = (this.shadowRoot?.querySelector('div') as HTMLDivElement);
+    const wrapper = this.shadowRoot?.querySelector("div") as HTMLDivElement;
 
     while (wrapper.lastChild) {
       wrapper.removeChild(wrapper.lastChild);
     }
 
-    const svg_element = document.createElementNS(SVG_NS,"svg");
+    const svg_element = document.createElementNS(SVG_NS, "svg");
     wrapper.appendChild(svg_element);
     const svg = d3select(svg_element);
     svg.classed("spectra_plot", true).classed(AUTO_COLOR_SELECTOR, true);
@@ -336,12 +351,15 @@ export class SpectraPlot extends HTMLElement {
     const freqMax = freqMinMax.reduce((acc, cur) => Math.max(acc, cur));
     xScale.domain([freqMin, freqMax]);
 
-    let fftMin = extentFFTData.reduce((acc, cur) => Math.min(acc, cur), Number.MAX_VALUE);
+    let fftMin = extentFFTData.reduce(
+      (acc, cur) => Math.min(acc, cur),
+      Number.MAX_VALUE,
+    );
     let fftMax = extentFFTData.reduce((acc, cur) => Math.max(acc, cur), -1.0);
-    if ((fftMax - fftMin) / fftMax < .1) {
+    if ((fftMax - fftMin) / fftMax < 0.1) {
       // min and max are close, expand range a bit
-      fftMin = fftMin*0.1;
-      fftMax = fftMax*2;
+      fftMin = fftMin * 0.1;
+      fftMax = fftMax * 2;
     }
     let yScale: d3ScaleContinuousNumeric<number, number, never>;
     if (this.kind === AMPLITUDE) {
@@ -349,20 +367,14 @@ export class SpectraPlot extends HTMLElement {
       yScale.domain([fftMin, fftMax]);
 
       if (yScale.domain()[0] === yScale.domain()[1]) {
-        yScale.domain([
-          yScale.domain()[0] / 2,
-          yScale.domain()[1] * 2,
-        ]);
+        yScale.domain([yScale.domain()[0] / 2, yScale.domain()[1] * 2]);
       }
     } else {
       yScale = d3scaleLinear().rangeRound([height, 0]);
       yScale.domain([fftMin, fftMax]);
 
       if (yScale.domain()[0] === yScale.domain()[1]) {
-        yScale.domain([
-          yScale.domain()[0] - 1,
-          yScale.domain()[1] + 1,
-        ]);
+        yScale.domain([yScale.domain()[0] - 1, yScale.domain()[1] + 1]);
       }
     }
     const xAxis = d3axisBottom(xScale);
@@ -431,7 +443,7 @@ export class SpectraPlot extends HTMLElement {
     }
 
     const handlebarInput = {
-      seisDataList: this.fftResults.map(f => f.seismogramDisplayData),
+      seisDataList: this.fftResults.map((f) => f.seismogramDisplayData),
       seisConfig: this.seismographConfig,
     };
     drawAxisLabels(

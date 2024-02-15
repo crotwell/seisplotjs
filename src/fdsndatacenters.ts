@@ -4,8 +4,8 @@
  * https://www.seis.sc.edu
  */
 
- import {FDSNCommon} from './fdsncommon';
- import {
+import { FDSNCommon } from "./fdsncommon";
+import {
   doStringGetterSetter,
   doBoolGetterSetter,
   doFloatGetterSetter,
@@ -36,19 +36,17 @@ export const FDSN_HOST = "www.fdsn.org";
  * @param host optional host to connect to, defaults to FDSN
  */
 export class DataCentersQuery extends FDSNCommon {
+  /** @private */
+  _name: string | undefined;
 
   /** @private */
-  _name: string|undefined;
+  _services: string | undefined;
 
   /** @private */
-  _services: string|undefined;
-
-  /** @private */
-  _includedatasets: boolean|undefined;
-
+  _includedatasets: boolean | undefined;
 
   constructor(host?: string) {
-    if ( ! isNonEmptyStringArg(host)) {
+    if (!isNonEmptyStringArg(host)) {
       host = FDSN_HOST;
     }
     super(host);
@@ -188,17 +186,20 @@ export class DataCentersQuery extends FDSNCommon {
   queryJson(): Promise<RootType> {
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(JSON_MIME);
-    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      (response) => {
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
+      .then((response) => {
         const contentType = response.headers.get("content-type");
 
-        if (isNonEmptyStringArg(contentType) &&
-            contentType.includes(JSON_MIME)) {
+        if (
+          isNonEmptyStringArg(contentType) &&
+          contentType.includes(JSON_MIME)
+        ) {
           return response.json();
         }
 
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
-      }).then(jsonValue => {
+      })
+      .then((jsonValue) => {
         if (isValidRootType(jsonValue)) {
           return jsonValue;
         } else {
@@ -225,14 +226,14 @@ export class DataCentersQuery extends FDSNCommon {
     }
 
     this.services(fdsnavailability.SERVICE_NAME);
-    return this.queryJson().then(json => {
+    return this.queryJson().then((json) => {
       const out = this.extractCompatibleServices(
         json,
         fdsnavailability.SERVICE_NAME,
         repoName,
       );
-      const sList = out.map(service => {
-        if ("url" in service && typeof service.url === 'string') {
+      const sList = out.map((service) => {
+        if ("url" in service && typeof service.url === "string") {
           const url = new URL(service.url);
           const q = new fdsnavailability.AvailabilityQuery(url.hostname);
 
@@ -245,7 +246,7 @@ export class DataCentersQuery extends FDSNCommon {
         }
       });
       // remove nulls
-      return sList.flatMap(f => f ? [f] : []);
+      return sList.flatMap((f) => (f ? [f] : []));
     });
   }
 
@@ -267,14 +268,14 @@ export class DataCentersQuery extends FDSNCommon {
     }
 
     this.services(fdsndataselect.SERVICE_NAME);
-    return this.queryJson().then(json => {
+    return this.queryJson().then((json) => {
       const out = this.extractCompatibleServices(
         json,
         fdsndataselect.SERVICE_NAME,
         repoName,
       );
-      const sList = out.map(service => {
-        if ("url" in service && typeof service.url === 'string') {
+      const sList = out.map((service) => {
+        if ("url" in service && typeof service.url === "string") {
           const url = new URL(service.url);
           const q = new fdsndataselect.DataSelectQuery(url.hostname);
 
@@ -288,7 +289,7 @@ export class DataCentersQuery extends FDSNCommon {
         }
       });
       // remove nulls
-      return sList.flatMap(f => f ? [f] : []);
+      return sList.flatMap((f) => (f ? [f] : []));
     });
   }
 
@@ -310,14 +311,14 @@ export class DataCentersQuery extends FDSNCommon {
     }
 
     this.services(fdsnevent.SERVICE_NAME);
-    return this.queryJson().then(json => {
+    return this.queryJson().then((json) => {
       const out = this.extractCompatibleServices(
         json,
         fdsnevent.SERVICE_NAME,
         repoName,
       );
-      const sList = out.map(service => {
-        if ("url" in service && typeof service.url === 'string') {
+      const sList = out.map((service) => {
+        if ("url" in service && typeof service.url === "string") {
           const url = new URL(service.url);
           const q = new fdsnevent.EventQuery(url.hostname);
 
@@ -331,7 +332,7 @@ export class DataCentersQuery extends FDSNCommon {
         }
       });
       // remove nulls
-      return sList.flatMap(f => f ? [f] : []);
+      return sList.flatMap((f) => (f ? [f] : []));
     });
   }
 
@@ -353,14 +354,14 @@ export class DataCentersQuery extends FDSNCommon {
     }
 
     this.services(fdsnstation.SERVICE_NAME);
-    return this.queryJson().then(json => {
+    return this.queryJson().then((json) => {
       const out = this.extractCompatibleServices(
         json,
         fdsnstation.SERVICE_NAME,
         repoName,
       );
-      const sList = out.map(service => {
-        if ("url" in service && typeof service.url === 'string') {
+      const sList = out.map((service) => {
+        if ("url" in service && typeof service.url === "string") {
           const url = new URL(service.url);
           const q = new fdsnstation.StationQuery(url.hostname);
 
@@ -374,7 +375,7 @@ export class DataCentersQuery extends FDSNCommon {
         }
       });
       // remove nulls
-      return sList.flatMap(f => f ? [f] : []);
+      return sList.flatMap((f) => (f ? [f] : []));
     });
   }
 
@@ -393,10 +394,10 @@ export class DataCentersQuery extends FDSNCommon {
     repoName?: string,
   ): Array<Service> {
     const out: Array<Service> = [];
-    json.datacenters.forEach(dc => {
-      dc.repositories.forEach(repo => {
+    json.datacenters.forEach((dc) => {
+      dc.repositories.forEach((repo) => {
         if (!isDef(repoName) || repoName === repo.name) {
-          repo.services.forEach(service => {
+          repo.services.forEach((service) => {
             if (
               service.name === compatibleName ||
               (isDef(service.compatibleWith) &&
@@ -452,7 +453,7 @@ export class DataCentersQuery extends FDSNCommon {
     const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      response => {
+      (response) => {
         if (response.status === 200) {
           return response.text();
         } else {
@@ -680,13 +681,15 @@ export type Service = {
 };
 
 export function isValidRootType(jsonValue: unknown): jsonValue is RootType {
-  if (! jsonValue || typeof jsonValue !== 'object') {
+  if (!jsonValue || typeof jsonValue !== "object") {
     throw new TypeError("json is not object");
   }
   const jsonObj = jsonValue as Record<string, unknown>;
-  if (Array.isArray(jsonObj.datacenters) &&
-      typeof jsonObj.version === 'number') {
-        return true;
+  if (
+    Array.isArray(jsonObj.datacenters) &&
+    typeof jsonObj.version === "number"
+  ) {
+    return true;
   } else {
     throw new TypeError("json is not valid for FDSN DataCenters");
   }

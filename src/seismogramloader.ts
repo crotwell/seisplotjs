@@ -1,22 +1,20 @@
-
-import {Dataset} from "./dataset";
-import { Duration, Interval} from 'luxon';
-import type {TraveltimeJsonType} from "./traveltime";
-import {distaz} from "./distaz";
-import {TraveltimeQuery, createOriginArrival} from "./traveltime";
-import {DataSelectQuery} from "./fdsndataselect";
-import {EventQuery} from "./fdsnevent";
-import {StationQuery} from "./fdsnstation";
-import {FedCatalogQuery} from "./irisfedcatalog";
-import {Quake} from "./quakeml";
-import {allStations, Network} from "./stationxml";
-import {SeismogramDisplayData} from "./seismogram";
+import { Dataset } from "./dataset";
+import { Duration, Interval } from "luxon";
+import type { TraveltimeJsonType } from "./traveltime";
+import { distaz } from "./distaz";
+import { TraveltimeQuery, createOriginArrival } from "./traveltime";
+import { DataSelectQuery } from "./fdsndataselect";
+import { EventQuery } from "./fdsnevent";
+import { StationQuery } from "./fdsnstation";
+import { FedCatalogQuery } from "./irisfedcatalog";
+import { Quake } from "./quakeml";
+import { allStations, Network } from "./stationxml";
+import { SeismogramDisplayData } from "./seismogram";
 import {
   createMarkersForTravelTimes,
   createMarkerForOriginTime,
 } from "./seismographmarker";
-import {isDef, isStringArg, stringify} from "./util";
-
+import { isDef, isStringArg, stringify } from "./util";
 
 /**
  * Loads seismograms based on queries to Station and Event web services.
@@ -45,10 +43,9 @@ export class SeismogramLoader {
     eventQuery: EventQuery | Array<Quake>,
     dataselectQuery?: DataSelectQuery,
   ) {
-
     if (stationQuery instanceof StationQuery) {
       this.stationQuery = stationQuery;
-    } else if ( Array.isArray(stationQuery)) {
+    } else if (Array.isArray(stationQuery)) {
       this.stationQuery = Promise.resolve(stationQuery);
     } else {
       throw new Error(
@@ -58,11 +55,14 @@ export class SeismogramLoader {
     }
 
     if (eventQuery instanceof EventQuery) {
-    this.eventQuery = eventQuery;
-    } else if ( Array.isArray(eventQuery)) {
+      this.eventQuery = eventQuery;
+    } else if (Array.isArray(eventQuery)) {
       this.eventQuery = Promise.resolve(eventQuery);
     } else {
-      throw new Error("2nd arg must be EventQuery or array of Quake: "+stringify(eventQuery));
+      throw new Error(
+        "2nd arg must be EventQuery or array of Quake: " +
+          stringify(eventQuery),
+      );
     }
 
     this.withFedCatalog = true;
@@ -77,8 +77,8 @@ export class SeismogramLoader {
     this._startPhaseList = ["p", "P", "Pdiff", "PKP"];
     this._endPhaseList = ["s", "S", "Sdiff", "SKS"];
     this._markedPhaseList = [];
-    this._startOffset = Duration.fromMillis(-30*1000);// seconds;
-    this._endOffset = Duration.fromMillis(60*1000); //seconds
+    this._startOffset = Duration.fromMillis(-30 * 1000); // seconds;
+    this._endOffset = Duration.fromMillis(60 * 1000); //seconds
   }
 
   get startPhaseList(): Array<string> {
@@ -107,7 +107,10 @@ export class SeismogramLoader {
     } else if (typeof val === "number") {
       this.startOffsetSeconds(val);
     } else {
-      throw new Error("startOffset must be luxon Duration or number of seconds: " + stringify(val));
+      throw new Error(
+        "startOffset must be luxon Duration or number of seconds: " +
+          stringify(val),
+      );
     }
   }
 
@@ -118,7 +121,7 @@ export class SeismogramLoader {
    * @returns     this
    */
   startOffsetSeconds(val: number): SeismogramLoader {
-    this._startOffset = Duration.fromMillis(val*1000); // seconds
+    this._startOffset = Duration.fromMillis(val * 1000); // seconds
     return this;
   }
 
@@ -148,7 +151,10 @@ export class SeismogramLoader {
     } else if (typeof val === "number") {
       this.endOffsetSeconds(val);
     } else {
-      throw new Error("startOffset must be luxon Duration or number of seconds: " + stringify(val));
+      throw new Error(
+        "startOffset must be luxon Duration or number of seconds: " +
+          stringify(val),
+      );
     }
   }
 
@@ -159,7 +165,7 @@ export class SeismogramLoader {
    * @returns     this
    */
   endOffsetSeconds(val: number): SeismogramLoader {
-    this._endOffset = Duration.fromMillis(val*1000); //seconds
+    this._endOffset = Duration.fromMillis(val * 1000); //seconds
     return this;
   }
 
@@ -186,7 +192,7 @@ export class SeismogramLoader {
   }
 
   loadSeismograms(): Promise<Array<SeismogramDisplayData>> {
-    return this.load().then(res => res.waveforms);
+    return this.load().then((res) => res.waveforms);
   }
 
   /**
@@ -198,10 +204,9 @@ export class SeismogramLoader {
    * @returns a Dataset
    */
   load(): Promise<Dataset> {
-
     let networkListPromise;
     if (this.stationQuery instanceof StationQuery) {
-      if ( !this.stationQuery.isSomeParameterSet()) {
+      if (!this.stationQuery.isSomeParameterSet()) {
         throw new Error(
           "Must set some station parameter to avoid asking for everything.",
         );
@@ -245,10 +250,10 @@ export class SeismogramLoader {
     }
 
     const allPhasesWithoutOrigin = allPhaseList
-      .filter(p => p !== "origin")
+      .filter((p) => p !== "origin")
       .join(",");
-    return Promise.all([networkListPromise, quakeListPromise]).then(
-      ([netList, quakeList]) => {
+    return Promise.all([networkListPromise, quakeListPromise])
+      .then(([netList, quakeList]) => {
         const ttpromiseList: Array<Promise<[Quake, TraveltimeJsonType]>> = [];
 
         for (const q of quakeList) {
@@ -270,140 +275,154 @@ export class SeismogramLoader {
             taupQuery.distdeg(allDistDeg);
             taupQuery.phases(allPhasesWithoutOrigin);
             // save quake along with result from traveltime
-            ttpromiseList.push(
-              Promise.all([q, taupQuery.queryJson()]),
-            );
+            ttpromiseList.push(Promise.all([q, taupQuery.queryJson()]));
           }
         }
 
         return Promise.all([Promise.all(ttpromiseList), netList, quakeList]);
-    }).then(([ttList, netList, quakeList]) => {
-      const ttMap = new Map<Quake, TraveltimeJsonType>();
-      for (const [q, tt] of ttList) {
-        ttMap.set(q, tt);
-      }
-      return Promise.all([ttMap, netList, quakeList]);
-    }).then(([ttMap, netList, quakeList]) => {
-      const seismogramDataList = [];
+      })
+      .then(([ttList, netList, quakeList]) => {
+        const ttMap = new Map<Quake, TraveltimeJsonType>();
+        for (const [q, tt] of ttList) {
+          ttMap.set(q, tt);
+        }
+        return Promise.all([ttMap, netList, quakeList]);
+      })
+      .then(([ttMap, netList, quakeList]) => {
+        const seismogramDataList = [];
 
-      for (const [quake, ttjson] of ttMap) {
-        for (const station of allStations(netList)) {
-          if ( ! station.timeRange.contains(quake.time)) {
-            // skip stations not active during quake
-            continue;
-          }
-          const daz = distaz(
-            station.latitude,
-            station.longitude,
-            quake.latitude,
-            quake.longitude,
-          );
-          // find arrivals for station, match distance
-          const stationArrivals = [];
-          for (const a of ttjson.arrivals) {
-            // look for station with same distance
-            if ((Math.abs((a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6 ||
-                 Math.abs(360-(a.distdeg % 360)-(daz.distanceDeg%360)) < 1e-6  )) {
-              stationArrivals.push(a);
+        for (const [quake, ttjson] of ttMap) {
+          for (const station of allStations(netList)) {
+            if (!station.timeRange.contains(quake.time)) {
+              // skip stations not active during quake
+              continue;
             }
-          }
-          const station_ttjson: TraveltimeJsonType = {
-            model: ttjson.model,
-            sourcedepth: ttjson.sourcedepth,
-            receiverdepth: ttjson.receiverdepth,
-            phases: ttjson.phases,
-            arrivals: stationArrivals
-          };
+            const daz = distaz(
+              station.latitude,
+              station.longitude,
+              quake.latitude,
+              quake.longitude,
+            );
+            // find arrivals for station, match distance
+            const stationArrivals = [];
+            for (const a of ttjson.arrivals) {
+              // look for station with same distance
+              if (
+                Math.abs((a.distdeg % 360) - (daz.distanceDeg % 360)) < 1e-6 ||
+                Math.abs(360 - (a.distdeg % 360) - (daz.distanceDeg % 360)) <
+                  1e-6
+              ) {
+                stationArrivals.push(a);
+              }
+            }
+            const station_ttjson: TraveltimeJsonType = {
+              model: ttjson.model,
+              sourcedepth: ttjson.sourcedepth,
+              receiverdepth: ttjson.receiverdepth,
+              phases: ttjson.phases,
+              arrivals: stationArrivals,
+            };
 
-          // find earliest start and end arrival
-          let startArrival = null;
-          let endArrival = null;
+            // find earliest start and end arrival
+            let startArrival = null;
+            let endArrival = null;
 
-          for (const pname of this.startPhaseList) {
-            if (pname === "origin" &&
-                (startArrival === null || startArrival.time > 0)) {
-              startArrival = createOriginArrival(daz.distanceDeg);
-            } else {
-              for (const a of stationArrivals) {
-                // look for station with same distance
-                if (a.phase === pname &&
-                    (startArrival===null || startArrival.time > a.time) ) {
-                  startArrival = a;
+            for (const pname of this.startPhaseList) {
+              if (
+                pname === "origin" &&
+                (startArrival === null || startArrival.time > 0)
+              ) {
+                startArrival = createOriginArrival(daz.distanceDeg);
+              } else {
+                for (const a of stationArrivals) {
+                  // look for station with same distance
+                  if (
+                    a.phase === pname &&
+                    (startArrival === null || startArrival.time > a.time)
+                  ) {
+                    startArrival = a;
+                  }
                 }
               }
             }
-          }
 
-          for (const pname of this.endPhaseList) {
-            // weird, but might as well allow origin to be the end phase
-            if (pname === "origin" &&
-                (endArrival===null || endArrival.time < 0)) {
-              endArrival = createOriginArrival(daz.distanceDeg);
-            } else {
-              for (const a of stationArrivals) {
-                if (a.phase === pname &&
-                    (endArrival===null || endArrival.time < a.time)) {
-                  endArrival = a;
+            for (const pname of this.endPhaseList) {
+              // weird, but might as well allow origin to be the end phase
+              if (
+                pname === "origin" &&
+                (endArrival === null || endArrival.time < 0)
+              ) {
+                endArrival = createOriginArrival(daz.distanceDeg);
+              } else {
+                for (const a of stationArrivals) {
+                  if (
+                    a.phase === pname &&
+                    (endArrival === null || endArrival.time < a.time)
+                  ) {
+                    endArrival = a;
+                  }
                 }
               }
             }
-          }
 
-          if (isDef(startArrival) && isDef(endArrival)) {
-            const startTime = quake.time
-              .plus(Duration.fromMillis(1000*startArrival.time)) // seconds
-              .plus(this.startOffset);
-            const endTime = quake.time
-              .plus(Duration.fromMillis(1000*endArrival.time)) // seconds
-              .plus(this.endOffset);
-            const timeRange = Interval.fromDateTimes(startTime, endTime);
-            const phaseMarkers = createMarkersForTravelTimes(quake, station_ttjson);
-
-            if (this.markOrigin) {
-              phaseMarkers.push(createMarkerForOriginTime(quake));
-            }
-            for (const chan of station.channels) {
-              if ( ! chan.timeRange.contains(quake.time)) {
-                // skip channels not active during quake
-                continue;
-              }
-              const sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
-                chan,
-                timeRange,
+            if (isDef(startArrival) && isDef(endArrival)) {
+              const startTime = quake.time
+                .plus(Duration.fromMillis(1000 * startArrival.time)) // seconds
+                .plus(this.startOffset);
+              const endTime = quake.time
+                .plus(Duration.fromMillis(1000 * endArrival.time)) // seconds
+                .plus(this.endOffset);
+              const timeRange = Interval.fromDateTimes(startTime, endTime);
+              const phaseMarkers = createMarkersForTravelTimes(
+                quake,
+                station_ttjson,
               );
-              sdd.addQuake(quake);
-              sdd.addTravelTimes(ttjson);
-              sdd.addMarkers(phaseMarkers);
-              seismogramDataList.push(sdd);
+
+              if (this.markOrigin) {
+                phaseMarkers.push(createMarkerForOriginTime(quake));
+              }
+              for (const chan of station.channels) {
+                if (!chan.timeRange.contains(quake.time)) {
+                  // skip channels not active during quake
+                  continue;
+                }
+                const sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
+                  chan,
+                  timeRange,
+                );
+                sdd.addQuake(quake);
+                sdd.addTravelTimes(ttjson);
+                sdd.addMarkers(phaseMarkers);
+                seismogramDataList.push(sdd);
+              }
             }
           }
         }
-      }
 
-      let sddListPromise;
-      if (this.dataselectQuery !== null) {
-        sddListPromise = this.dataselectQuery.postQuerySeismograms(
-          seismogramDataList,
-        );
-      } else if (this.withFedCatalog) {
-        // use IrisFedCat
-        const fedcatDS = new FedCatalogQuery();
-        sddListPromise = fedcatDS.postQuerySeismograms(seismogramDataList);
-      } else {
-        // use default dataselect
-        sddListPromise = new DataSelectQuery().postQuerySeismograms(
-          seismogramDataList,
-        );
-      }
+        let sddListPromise;
+        if (this.dataselectQuery !== null) {
+          sddListPromise =
+            this.dataselectQuery.postQuerySeismograms(seismogramDataList);
+        } else if (this.withFedCatalog) {
+          // use IrisFedCat
+          const fedcatDS = new FedCatalogQuery();
+          sddListPromise = fedcatDS.postQuerySeismograms(seismogramDataList);
+        } else {
+          // use default dataselect
+          sddListPromise = new DataSelectQuery().postQuerySeismograms(
+            seismogramDataList,
+          );
+        }
 
-      return Promise.all([sddListPromise, ttMap, netList, quakeList]);
-    }).then(([sddList, ttMap, networkList, quakeList]) => {
-      const dataset = new Dataset();
-      dataset.waveforms = sddList;
-      dataset.catalog = quakeList;
-      dataset.inventory = networkList;
-      dataset.extra.set("traveltimes", ttMap);
-      return dataset;
-    });
+        return Promise.all([sddListPromise, ttMap, netList, quakeList]);
+      })
+      .then(([sddList, ttMap, networkList, quakeList]) => {
+        const dataset = new Dataset();
+        dataset.waveforms = sddList;
+        dataset.catalog = quakeList;
+        dataset.inventory = networkList;
+        dataset.extra.set("traveltimes", ttMap);
+        return dataset;
+      });
   }
 }

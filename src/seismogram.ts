@@ -6,12 +6,23 @@
 import { DateTime, Duration, Interval } from "luxon";
 import { FDSNSourceId, NslcId } from "./fdsnsourceid";
 import {
-  meanOfSlice, isDef, stringify,
-  checkLuxonValid, validStartTime, validEndTime, startDuration
+  meanOfSlice,
+  isDef,
+  stringify,
+  checkLuxonValid,
+  validStartTime,
+  validEndTime,
+  startDuration,
 } from "./util";
 import * as seedcodec from "./seedcodec";
 import { distaz, DistAzOutput } from "./distaz";
-import { Network, Station, Channel, InstrumentSensitivity, findChannels } from "./stationxml";
+import {
+  Network,
+  Station,
+  Channel,
+  InstrumentSensitivity,
+  findChannels,
+} from "./stationxml";
 import { Quake } from "./quakeml";
 import { AMPLITUDE_MODE, MinMaxable } from "./scale";
 import { SeismogramSegment } from "./seismogramsegment";
@@ -25,7 +36,7 @@ export type HighLowType = {
   samplesPerPixel: number;
   highlowArray: Array<number>;
 };
-import type {MarkerType} from "./seismographmarker";
+import type { MarkerType } from "./seismographmarker";
 /**
  * Represents time window for a single channel that may
  * contain gaps or overlaps, but is otherwise more or less
@@ -80,7 +91,9 @@ export class Seismogram {
 
   checkSimilar(f: SeismogramSegment, s: SeismogramSegment) {
     if (!s.sourceId.equals(f.sourceId)) {
-      throw new Error(`SourceId not same: ${s.sourceId.toString()} !== ${f.sourceId.toString()}`);
+      throw new Error(
+        `SourceId not same: ${s.sourceId.toString()} !== ${f.sourceId.toString()}`,
+      );
     }
 
     if (s.yUnit !== f.yUnit) {
@@ -92,8 +105,10 @@ export class Seismogram {
     if (this._segmentArray.length === 0) {
       throw new Error("Seismogram is empty");
     }
-    return this._segmentArray.reduce((acc, cur) => acc.union(cur.timeRange),
-      this._segmentArray[0].timeRange);
+    return this._segmentArray.reduce(
+      (acc, cur) => acc.union(cur.timeRange),
+      this._segmentArray[0].timeRange,
+    );
   }
 
   findMinMax(minMaxAccumulator?: MinMaxable): MinMaxable {
@@ -175,7 +190,7 @@ export class Seismogram {
   }
 
   set sourceId(sid: FDSNSourceId) {
-    this._segmentArray.forEach(s => (s.sourceId = sid));
+    this._segmentArray.forEach((s) => (s.sourceId = sid));
   }
 
   get sampleRate(): number {
@@ -228,7 +243,7 @@ export class Seismogram {
 
   append(seismogram: SeismogramSegment | Seismogram) {
     if (seismogram instanceof Seismogram) {
-      seismogram._segmentArray.forEach(s => this.append(s));
+      seismogram._segmentArray.forEach((s) => this.append(s));
     } else {
       this.checkSimilar(this._segmentArray[0], seismogram);
       this._interval = this._interval.union(seismogram.timeRange);
@@ -249,7 +264,7 @@ export class Seismogram {
 
     if (out && out._segmentArray) {
       const cutSeisArray = this._segmentArray
-        .map(seg => seg.cut(timeRange))
+        .map((seg) => seg.cut(timeRange))
         .filter(isDef);
 
       if (cutSeisArray.length > 0) {
@@ -283,10 +298,10 @@ export class Seismogram {
 
     if (this._segmentArray) {
       const trimSeisArray = this._segmentArray
-        .filter(function(d) {
+        .filter(function (d) {
           return d.endTime >= timeRange_start;
         })
-        .filter(function(d) {
+        .filter(function (d) {
           return d.startTime <= timeRange_end;
         });
 
@@ -309,8 +324,9 @@ export class Seismogram {
       while (breakStart < this.endTime) {
         const breakWindow = Interval.after(breakStart, duration);
 
-        const cutSeisArray: Array<SeismogramSegment> =
-          this._segmentArray.map(seg => seg.cut(breakWindow)).filter(isDef);
+        const cutSeisArray: Array<SeismogramSegment> = this._segmentArray
+          .map((seg) => seg.cut(breakWindow))
+          .filter(isDef);
 
         out = out.concat(cutSeisArray);
         breakStart = breakStart.plus(duration);
@@ -334,9 +350,9 @@ export class Seismogram {
         prev &&
         !(
           prev.endTime < s.startTime &&
-          prev.endTime
-            .plus(Duration.fromMillis((1000 * 1.5) / prev.sampleRate))
-          > s.startTime
+          prev.endTime.plus(
+            Duration.fromMillis((1000 * 1.5) / prev.sampleRate),
+          ) > s.startTime
         )
       ) {
         return false;
@@ -359,21 +375,25 @@ export class Seismogram {
     let outArray: Int32Array | Float32Array | Float64Array;
 
     let idx = 0;
-    if (this._segmentArray.every(seg => seg.y instanceof Int32Array)) {
+    if (this._segmentArray.every((seg) => seg.y instanceof Int32Array)) {
       outArray = new Int32Array(this.numPoints);
-      this._segmentArray.forEach(seg => {
+      this._segmentArray.forEach((seg) => {
         outArray.set(seg.y, idx);
         idx += seg.y.length;
       });
-    } else if (this._segmentArray.every(seg => seg.y instanceof Float32Array)) {
+    } else if (
+      this._segmentArray.every((seg) => seg.y instanceof Float32Array)
+    ) {
       outArray = new Float32Array(this.numPoints);
-      this._segmentArray.forEach(seg => {
+      this._segmentArray.forEach((seg) => {
         outArray.set(seg.y, idx);
         idx += seg.y.length;
       });
-    } else if (this._segmentArray.every(seg => seg.y instanceof Float64Array)) {
+    } else if (
+      this._segmentArray.every((seg) => seg.y instanceof Float64Array)
+    ) {
       outArray = new Float64Array(this.numPoints);
-      this._segmentArray.forEach(seg => {
+      this._segmentArray.forEach((seg) => {
         outArray.set(seg.y, idx);
         idx += seg.y.length;
       });
@@ -414,7 +434,7 @@ export class Seismogram {
   }
 
   clone(): Seismogram {
-    const cloned = this._segmentArray.map(s => s.clone());
+    const cloned = this._segmentArray.map((s) => s.clone());
 
     return new Seismogram(cloned);
   }
@@ -468,11 +488,15 @@ export function ensureIsSeismogram(
     } else if (seisSeismogram instanceof SeismogramSegment) {
       return new Seismogram([seisSeismogram]);
     } else {
-      throw new Error("must be Seismogram or SeismogramSegment but " + stringify(seisSeismogram));
+      throw new Error(
+        "must be Seismogram or SeismogramSegment but " +
+          stringify(seisSeismogram),
+      );
     }
   } else {
     throw new Error(
-      "must be Seismogram or SeismogramSegment but not an object: " + stringify(seisSeismogram),
+      "must be Seismogram or SeismogramSegment but not an object: " +
+        stringify(seisSeismogram),
     );
   }
 }
@@ -516,10 +540,7 @@ export class SeismogramDisplayData {
 
   static fromSeismogram(seismogram: Seismogram): SeismogramDisplayData {
     const out = new SeismogramDisplayData(
-      Interval.fromDateTimes(
-        seismogram.startTime,
-        seismogram.endTime,
-      ),
+      Interval.fromDateTimes(seismogram.startTime, seismogram.endTime),
     );
     out.seismogram = seismogram;
     return out;
@@ -531,7 +552,9 @@ export class SeismogramDisplayData {
    * @param  seisSegment segment of contiguous data
    * @returns             new SeismogramDisplayData
    */
-  static fromSeismogramSegment(seisSegment: SeismogramSegment): SeismogramDisplayData {
+  static fromSeismogramSegment(
+    seisSegment: SeismogramSegment,
+  ): SeismogramDisplayData {
     return SeismogramDisplayData.fromSeismogram(new Seismogram([seisSegment]));
   }
 
@@ -555,7 +578,8 @@ export class SeismogramDisplayData {
     sourceId?: FDSNSourceId,
   ): SeismogramDisplayData {
     return SeismogramDisplayData.fromSeismogram(
-      Seismogram.fromContiguousData(yArray, sampleRate, startTime, sourceId));
+      Seismogram.fromContiguousData(yArray, sampleRate, startTime, sourceId),
+    );
   }
   static fromChannelAndTimeWindow(
     channel: Channel,
@@ -594,7 +618,6 @@ export class SeismogramDisplayData {
     return out;
   }
 
-
   static fromCodesAndTimes(
     networkCode: string,
     stationCode: string,
@@ -610,14 +633,14 @@ export class SeismogramDisplayData {
       networkCode,
       stationCode,
       locationCode,
-      channelCode
+      channelCode,
     );
     return out;
   }
 
   addQuake(quake: Quake | Array<Quake>) {
     if (Array.isArray(quake)) {
-      quake.forEach(q => this.quakeList.push(q));
+      quake.forEach((q) => this.quakeList.push(q));
     } else {
       this.quakeList.push(quake);
     }
@@ -638,7 +661,7 @@ export class SeismogramDisplayData {
 
   addMarkers(markers: MarkerType | Array<MarkerType>) {
     if (Array.isArray(markers)) {
-      markers.forEach(m => this.markerList.push(m));
+      markers.forEach((m) => this.markerList.push(m));
     } else {
       this.markerList.push(markers);
     }
@@ -651,9 +674,10 @@ export class SeismogramDisplayData {
       | Array<TraveltimeArrivalType>,
   ) {
     if (Array.isArray(ttimes)) {
-      ttimes.forEach(m => this.traveltimeList.push(m));
-    } else if ("arrivals" in ttimes) { //  TraveltimeJsonType
-      ttimes.arrivals.forEach(m => this.traveltimeList.push(m));
+      ttimes.forEach((m) => this.traveltimeList.push(m));
+    } else if ("arrivals" in ttimes) {
+      //  TraveltimeJsonType
+      ttimes.arrivals.forEach((m) => this.traveltimeList.push(m));
     } else {
       this.traveltimeList.push(ttimes);
     }
@@ -678,9 +702,14 @@ export class SeismogramDisplayData {
   append(seismogram: SeismogramSegment | Seismogram) {
     if (isDef(this._seismogram)) {
       this._seismogram.append(seismogram);
-      if (this.startTime > seismogram.startTime || this.endTime < seismogram.endTime) {
+      if (
+        this.startTime > seismogram.startTime ||
+        this.endTime < seismogram.endTime
+      ) {
         const startTime =
-          this.startTime < seismogram.startTime ? this.startTime : seismogram.startTime;
+          this.startTime < seismogram.startTime
+            ? this.startTime
+            : seismogram.startTime;
         const endTime =
           this.endTime > seismogram.endTime ? this.endTime : seismogram.endTime;
         this.timeRange = Interval.fromDateTimes(startTime, endTime);
@@ -817,8 +846,10 @@ export class SeismogramDisplayData {
       return new NslcId(
         this.networkCode ? this.networkCode : "",
         this.stationCode ? this.stationCode : "",
-        (this.locationCode && this.locationCode !== "--") ? this.locationCode : "",
-        this.channelCode ? this.channelCode : ""
+        this.locationCode && this.locationCode !== "--"
+          ? this.locationCode
+          : "",
+        this.channelCode ? this.channelCode : "",
       );
     }
   }
@@ -870,11 +901,13 @@ export class SeismogramDisplayData {
   }
 
   associateChannel(nets: Array<Network>) {
-    const matchChans = findChannels(nets,
+    const matchChans = findChannels(
+      nets,
       this.networkCode,
       this.stationCode,
       this.locationCode,
-      this.channelCode);
+      this.channelCode,
+    );
     for (const c of matchChans) {
       if (c.timeRange.overlaps(this.timeRange)) {
         this.channel = c;
@@ -906,15 +939,16 @@ export class SeismogramDisplayData {
 
     if (this.quake && this.traveltimeList) {
       const q = this.quake;
-      const matchArrival = this.traveltimeList.find(ttArrival => {
+      const matchArrival = this.traveltimeList.find((ttArrival) => {
         const match = intPhaseRegExp.exec(ttArrival.phase);
         // make sure regexp matches whole string, not just partial
         return match !== null && match[0] === ttArrival.phase;
       });
 
       if (matchArrival) {
-        this.alignmentTime = q.time
-          .plus(Duration.fromMillis(matchArrival.time * 1000)); //seconds
+        this.alignmentTime = q.time.plus(
+          Duration.fromMillis(matchArrival.time * 1000),
+        ); //seconds
       } else {
         this.alignmentTime = this.start;
       }
@@ -928,11 +962,10 @@ export class SeismogramDisplayData {
    * @param duration duration from the offset for the window
    * @returns time window as an Interval
    */
-  relativeTimeWindow(
-    alignmentOffset: Duration,
-    duration: Duration,
-  ): Interval {
-    const atime = this.alignmentTime ? this.alignmentTime.plus(alignmentOffset) : this.startTime.plus(alignmentOffset);
+  relativeTimeWindow(alignmentOffset: Duration, duration: Duration): Interval {
+    const atime = this.alignmentTime
+      ? this.alignmentTime.plus(alignmentOffset)
+      : this.startTime.plus(alignmentOffset);
     return startDuration(atime, duration);
   }
 
@@ -1023,7 +1056,7 @@ export class SeismogramDisplayData {
   get distazList(): Array<DistAzOutput> {
     if (this.quakeList.length > 0 && isDef(this.channel)) {
       const c = this.channel;
-      return this.quakeList.map(q =>
+      return this.quakeList.map((q) =>
         distaz(c.latitude, c.longitude, q.latitude, q.longitude),
       );
     }
@@ -1062,10 +1095,10 @@ export class SeismogramDisplayData {
     const out = new SeismogramDisplayData(this.timeRange);
     const handled = ["_seismogram", "_statsCache", "_sourceId"];
     Object.assign(out, this);
-    Object.getOwnPropertyNames(this).forEach(name => {
+    Object.getOwnPropertyNames(this).forEach((name) => {
       // @ts-expect-error typscript can't handle reflection, but is ok here as just cloning
       const v = this[name];
-      if (handled.find(n => name === n)) {
+      if (handled.find((n) => name === n)) {
         // handled below
       } else if (Array.isArray(v)) {
         // @ts-expect-error typscript can't handle reflection, but is ok here as just cloning
@@ -1119,7 +1152,9 @@ export class SeismogramDisplayData {
    * @returns           new seismogramDisplayData
    */
   trim(timeRange?: Interval): null | SeismogramDisplayData {
-    if (!timeRange) { timeRange = this.timeRange; }
+    if (!timeRange) {
+      timeRange = this.timeRange;
+    }
     let cutSeis = this.seismogram;
     let out;
 
@@ -1148,7 +1183,9 @@ export class SeismogramDisplayData {
    * @param  timeRange start and end of cut
    */
   trimInPlace(timeRange?: Interval) {
-    if (!timeRange) { timeRange = this.timeRange; }
+    if (!timeRange) {
+      timeRange = this.timeRange;
+    }
     const cutSeis = this.seismogram;
     if (cutSeis) {
       this.seismogram = cutSeis.trim(timeRange);
@@ -1175,15 +1212,15 @@ export class SeismogramDisplayStats {
     return (this.min + this.max) / 2;
   }
 }
-export function findStartEnd(
-  sddList: Array<SeismogramDisplayData>,
-): Interval {
+export function findStartEnd(sddList: Array<SeismogramDisplayData>): Interval {
   if (sddList.length === 0) {
     // just use zero length at now
     return Interval.before(DateTime.utc(), 0);
   }
-  return sddList.reduce((acc, sdd) => acc.union(sdd.timeRange),
-    sddList[0].timeRange);
+  return sddList.reduce(
+    (acc, sdd) => acc.union(sdd.timeRange),
+    sddList[0].timeRange,
+  );
 }
 export function findMaxDuration(
   sddList: Array<SeismogramDisplayData>,
@@ -1253,12 +1290,19 @@ export function findMinMaxOverTimeRange(
   doGain = false,
   amplitudeMode: AMPLITUDE_MODE = AMPLITUDE_MODE.MinMax,
 ): MinMaxable {
-  if (sddList.length === 0) { return new MinMaxable(-1, 1); }
-  const minMaxArr = sddList.map(sdd => {
-    return calcMinMax(sdd, timeRange, doGain, amplitudeMode);
-  }).filter(x => x) // remove nulls
-    .reduce(function(p, v) {
-      if (amplitudeMode === AMPLITUDE_MODE.Raw || amplitudeMode === AMPLITUDE_MODE.Zero) {
+  if (sddList.length === 0) {
+    return new MinMaxable(-1, 1);
+  }
+  const minMaxArr = sddList
+    .map((sdd) => {
+      return calcMinMax(sdd, timeRange, doGain, amplitudeMode);
+    })
+    .filter((x) => x) // remove nulls
+    .reduce(function (p, v) {
+      if (
+        amplitudeMode === AMPLITUDE_MODE.Raw ||
+        amplitudeMode === AMPLITUDE_MODE.Zero
+      ) {
         return p ? (v ? p.union(v) : p) : v;
       } else {
         // non-Raw mode assumes only halfwidth matters, middle will be zeroed
@@ -1291,13 +1335,18 @@ export function findMinMaxOverRelativeTimeRange(
   if (sddList.length === 0) {
     return new MinMaxable(0, 0);
   }
-  const minMaxArr = sddList.map(sdd => {
-    const timeRange = sdd.relativeTimeWindow(alignmentOffset, duration);
-    return calcMinMax(sdd, timeRange, doGain, amplitudeMode);
-  }).filter(x => x) // remove nulls
-    .reduce(function(p, v) {
+  const minMaxArr = sddList
+    .map((sdd) => {
+      const timeRange = sdd.relativeTimeWindow(alignmentOffset, duration);
+      return calcMinMax(sdd, timeRange, doGain, amplitudeMode);
+    })
+    .filter((x) => x) // remove nulls
+    .reduce(function (p, v) {
       // Raw and Zero are actual values, no centering
-      if (amplitudeMode === AMPLITUDE_MODE.Raw || amplitudeMode === AMPLITUDE_MODE.Zero) {
+      if (
+        amplitudeMode === AMPLITUDE_MODE.Raw ||
+        amplitudeMode === AMPLITUDE_MODE.Zero
+      ) {
         return p ? (v ? p.union(v) : p) : v;
       } else {
         // non-Raw mode assumes only halfwidth matters, middle will be zeroed
@@ -1341,19 +1390,30 @@ export function calcMinMax(
       }
       let middle = 0;
       let halfWidth = 0;
-      if (amplitudeMode === AMPLITUDE_MODE.MinMax || amplitudeMode === AMPLITUDE_MODE.Raw) {
+      if (
+        amplitudeMode === AMPLITUDE_MODE.MinMax ||
+        amplitudeMode === AMPLITUDE_MODE.Raw
+      ) {
         middle = cutSDD.middle;
-        halfWidth = Math.max((middle - cutSDD.min) / sens, (cutSDD.max - middle) / sens);
+        halfWidth = Math.max(
+          (middle - cutSDD.min) / sens,
+          (cutSDD.max - middle) / sens,
+        );
       } else if (amplitudeMode === AMPLITUDE_MODE.Mean) {
         middle = sdd.mean;
-        halfWidth = Math.max((middle - cutSDD.min) / sens, (cutSDD.max - middle) / sens);
+        halfWidth = Math.max(
+          (middle - cutSDD.min) / sens,
+          (cutSDD.max - middle) / sens,
+        );
       } else if (amplitudeMode === AMPLITUDE_MODE.Zero) {
         const minwz = Math.min(0, cutSDD.min);
         const maxwz = Math.max(0, cutSDD.max);
         middle = (minwz + maxwz) / 2.0;
         halfWidth = (maxwz - minwz) / 2.0 / sens;
       } else {
-        throw new Error(`Unknown amplitudeMode: ${stringify(amplitudeMode)}. Must be one of raw, zero, minmax, mean`);
+        throw new Error(
+          `Unknown amplitudeMode: ${stringify(amplitudeMode)}. Must be one of raw, zero, minmax, mean`,
+        );
       }
       return MinMaxable.fromMiddleHalfWidth(middle, halfWidth);
     }
@@ -1381,8 +1441,10 @@ export function findStartEndOfSeismograms(
   }
 
   if (Array.isArray(data)) {
-    return data.reduce((acc, cur) => acc.union(cur.timeRange),
-      data[0].timeRange);
+    return data.reduce(
+      (acc, cur) => acc.union(cur.timeRange),
+      data[0].timeRange,
+    );
   } else {
     throw new Error(`Expected Array as first arg but was: ${typeof data}`);
   }
@@ -1409,7 +1471,11 @@ export function findMinMaxOfSDD(
   minMaxAccumulator?: MinMaxable,
 ): MinMaxable {
   const seisData: Array<Seismogram> = [];
-  data.forEach(sdd => { if (!!sdd && !!sdd.seismogram) { seisData.push(sdd.seismogram); } });
+  data.forEach((sdd) => {
+    if (!!sdd && !!sdd.seismogram) {
+      seisData.push(sdd.seismogram);
+    }
+  });
   return findMinMaxOfSeismograms(seisData, minMaxAccumulator);
 }
 
@@ -1417,7 +1483,7 @@ export function uniqueStations(
   seisData: Array<SeismogramDisplayData>,
 ): Array<Station> {
   const out = new Set<Station>();
-  seisData.forEach(sdd => {
+  seisData.forEach((sdd) => {
     if (sdd.channel) {
       out.add(sdd.channel.station);
     }
@@ -1428,7 +1494,7 @@ export function uniqueChannels(
   seisData: Array<SeismogramDisplayData>,
 ): Array<Channel> {
   const out = new Set<Channel>();
-  seisData.forEach(sdd => {
+  seisData.forEach((sdd) => {
     if (sdd.channel) {
       out.add(sdd.channel);
     }
@@ -1439,8 +1505,8 @@ export function uniqueQuakes(
   seisData: Array<SeismogramDisplayData>,
 ): Array<Quake> {
   const out = new Set<Quake>();
-  seisData.forEach(sdd => {
-    sdd.quakeList.forEach(q => out.add(q));
+  seisData.forEach((sdd) => {
+    sdd.quakeList.forEach((q) => out.add(q));
   });
   return Array.from(out.values());
 }

@@ -1,4 +1,3 @@
-
 import type { TraveltimeJsonType } from "./traveltime";
 import { Quake, Origin } from "./quakeml";
 import { Station, Channel } from "./stationxml";
@@ -15,16 +14,18 @@ export type MarkerType = {
 };
 
 export function isValidMarker(v: unknown): v is MarkerType {
-  if (!v || typeof v !== 'object') {
+  if (!v || typeof v !== "object") {
     return false;
   }
   const m = v as Record<string, unknown>;
 
-  return typeof m.time === 'string' &&
-    typeof m.name === 'string' &&
-    typeof m.markertype === 'string' &&
-    typeof m.description === 'string' &&
-    (!("link" in m) || typeof m.link === 'string');
+  return (
+    typeof m.time === "string" &&
+    typeof m.name === "string" &&
+    typeof m.markertype === "string" &&
+    typeof m.description === "string" &&
+    (!("link" in m) || typeof m.link === "string")
+  );
 }
 
 /**
@@ -40,7 +41,7 @@ export function createMarkersForTravelTimes(
   quake: Quake,
   ttime: TraveltimeJsonType,
 ): Array<MarkerType> {
-  return ttime.arrivals.map(a => {
+  return ttime.arrivals.map((a) => {
     return {
       markertype: "predicted",
       name: a.phase,
@@ -79,8 +80,12 @@ export function createFullMarkersForQuakeAtStation(
     let magVal = "";
     let magStr = "";
     if (quake.hasPreferredMagnitude()) {
-      magVal = quake.preferredMagnitude ? `${quake.preferredMagnitude.mag}` : "";
-      magStr = quake.preferredMagnitude ? quake.preferredMagnitude.toString() : "";
+      magVal = quake.preferredMagnitude
+        ? `${quake.preferredMagnitude.mag}`
+        : "";
+      magStr = quake.preferredMagnitude
+        ? quake.preferredMagnitude.toString()
+        : "";
     }
     markers.push({
       markertype: "predicted",
@@ -89,8 +94,8 @@ export function createFullMarkersForQuakeAtStation(
       link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
       description: `${quake.time.toISO()}
 ${quake.latitude.toFixed(2)}/${quake.longitude.toFixed(2)} ${(
-          quake.depth / 1000
-        ).toFixed(2)} km
+        quake.depth / 1000
+      ).toFixed(2)} km
 ${quake.description}
 ${magStr}
 ${daz.delta.toFixed(2)} deg to ${station.stationCode} (${daz.distanceKm} km)
@@ -105,7 +110,9 @@ export function createFullMarkersForQuakeAtChannel(
 ): Array<MarkerType> {
   let markers = createFullMarkersForQuakeAtStation(quake, channel.station);
   if (quake.preferredOrigin) {
-    markers = markers.concat(createMarkerForPicks(quake.preferredOrigin, channel));
+    markers = markers.concat(
+      createMarkerForPicks(quake.preferredOrigin, channel),
+    );
   }
   return markers;
 }
@@ -124,7 +131,7 @@ export function createMarkerForQuakePicks(
   const markers: Array<MarkerType> = [];
 
   if (quake.pickList) {
-    quake.pickList.forEach(pick => {
+    quake.pickList.forEach((pick) => {
       if (pick && pick.isOnChannel(channel)) {
         markers.push({
           markertype: "pick",
@@ -152,7 +159,7 @@ export function createMarkerForPicks(
   const markers: Array<MarkerType> = [];
 
   if (origin.arrivals) {
-    origin.arrivals.forEach(arrival => {
+    origin.arrivals.forEach((arrival) => {
       if (arrival && arrival.pick.isOnChannel(channel)) {
         markers.push({
           markertype: "pick",

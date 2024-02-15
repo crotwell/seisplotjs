@@ -1,4 +1,3 @@
-
 import { SeismogramDisplayData } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
 import { isDef, stringify } from "./util";
@@ -9,22 +8,29 @@ export class SeisPlotElement extends HTMLElement {
   onRedraw: (el: SeisPlotElement) => void;
   _throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
 
-  constructor(seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>,
-    seisConfig?: SeismographConfig) {
+  constructor(
+    seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>,
+    seisConfig?: SeismographConfig,
+  ) {
     super();
-    this.onRedraw = (el: SeisPlotElement) => { };
+    this.onRedraw = (el: SeisPlotElement) => {};
     this._throttleRedraw = null;
     if (isDef(seisData)) {
       if (seisData instanceof SeismogramDisplayData) {
         this._seisDataList = [seisData];
-      } else if (Array.isArray(seisData) && (seisData.length === 0 || seisData[0] instanceof SeismogramDisplayData)) {
+      } else if (
+        Array.isArray(seisData) &&
+        (seisData.length === 0 || seisData[0] instanceof SeismogramDisplayData)
+      ) {
         this._seisDataList = seisData;
       } else {
         let msg = `length: ${seisData.length}  `;
         if (seisData.length > 0) {
           msg = `${msg} ${seisData[0].toString()}`;
         }
-        throw new Error(`first arg must be array of SeismogramDisplayData: ${msg}`);
+        throw new Error(
+          `first arg must be array of SeismogramDisplayData: ${msg}`,
+        );
       }
     } else {
       this._seisDataList = [];
@@ -34,7 +40,7 @@ export class SeisPlotElement extends HTMLElement {
     } else {
       this._seismographConfig = new SeismographConfig();
     }
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
   }
   get seisData() {
     return this._seisDataList;
@@ -92,12 +98,14 @@ export class SeisPlotElement extends HTMLElement {
    * onRedraw callback.
    */
   draw() {
-    if (!this.isConnected) { return; }
+    if (!this.isConnected) {
+      return;
+    }
   }
   getShadowRoot(autoAdd = true): ShadowRoot {
     if (!this.shadowRoot) {
       if (autoAdd) {
-        this.attachShadow({ mode: 'open' });
+        this.attachShadow({ mode: "open" });
         return this.getShadowRoot(false); // prevent inf recur
       } else {
         throw new Error("shadowRoot is missing");
@@ -108,11 +116,13 @@ export class SeisPlotElement extends HTMLElement {
   }
 }
 
-export function addStyleToElement(element: HTMLElement,
+export function addStyleToElement(
+  element: HTMLElement,
   css: string,
-  id?: string): HTMLStyleElement {
+  id?: string,
+): HTMLStyleElement {
   if (!element.shadowRoot) {
-    element.attachShadow({ mode: 'open' });
+    element.attachShadow({ mode: "open" });
   }
   const styleEl = document.createElement("style");
   styleEl.textContent = css;

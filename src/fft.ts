@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {Seismogram, SeismogramDisplayData} from "./seismogram";
-import {isDef} from "./util";
-import {RDFT, Complex, complexFromPolar} from "./oregondsputil";
+import { Seismogram, SeismogramDisplayData } from "./seismogram";
+import { isDef } from "./util";
+import { RDFT, Complex, complexFromPolar } from "./oregondsputil";
 
 /**
  * A higher level function to calculate DFT. Returns a
@@ -57,7 +57,7 @@ export function fftForward(
 export function calcDFT(
   timeseries: Int32Array | Float32Array | Float64Array,
 ): Float32Array {
-  let [N,log2N] = findPowerTwo(timeseries.length);
+  let [N, log2N] = findPowerTwo(timeseries.length);
   if (N < 16) {
     log2N = 4;
     N = 16;
@@ -94,7 +94,7 @@ export function inverseDFT(
     );
   }
 
-  let [N,log2N] = findPowerTwo(packedFreq.length);
+  let [N, log2N] = findPowerTwo(packedFreq.length);
   if (N < 16) {
     log2N = 4;
     N = 16;
@@ -117,14 +117,14 @@ export function inverseDFT(
  * @returns           tuple of N and log2N, like [16,4]
  */
 export function findPowerTwo(fftlength: number): [number, number] {
-    let log2N = 1;
-    let N = 2;
+  let log2N = 1;
+  let N = 2;
 
-    while (N < fftlength) {
-      log2N += 1;
-      N = 2 * N;
-    }
-    return [N,log2N];
+  while (N < fftlength) {
+    log2N += 1;
+    N = 2 * N;
+  }
+  return [N, log2N];
 }
 
 /**
@@ -143,13 +143,13 @@ export class FFTResult {
   sampleRate: number;
 
   /** optional units of the original data for display purposes. */
-  inputUnits: string|undefined;
+  inputUnits: string | undefined;
 
   /**
    * optional reference to SeismogramDisplayData when calculated from a seismogram.
    *  Useful for creating title, etc.
    */
-  seismogramDisplayData: SeismogramDisplayData|undefined;
+  seismogramDisplayData: SeismogramDisplayData | undefined;
 
   constructor(origLength: number, sampleRate: number) {
     this.origLength = origLength;
@@ -174,9 +174,11 @@ export class FFTResult {
     const fftResult = new FFTResult(origLength, sampleRate);
     fftResult.packedFreq = packedFreq;
     fftResult.numPoints = packedFreq.length;
-    const [N,log2N] = findPowerTwo(packedFreq.length);
+    const [N, log2N] = findPowerTwo(packedFreq.length);
     if (N < origLength) {
-      throw new Error(`Not enough freq points, ${packedFreq.length}, for orig length of ${origLength}, must be > and power two, (${N}, ${log2N})`);
+      throw new Error(
+        `Not enough freq points, ${packedFreq.length}, for orig length of ${origLength}, must be > and power two, (${N}, ${log2N})`,
+      );
     }
     return fftResult;
   }
@@ -195,7 +197,7 @@ export class FFTResult {
     sampleRate: number,
   ): FFTResult {
     // complex array will have 1 extra point, but first and last will have phase=0
-    const N = 2*(complexArray.length-1);
+    const N = 2 * (complexArray.length - 1);
     const modFreq = new Float32Array(N).fill(0);
     modFreq[0] = complexArray[0].real();
 
@@ -204,7 +206,7 @@ export class FFTResult {
       modFreq[N - i] = complexArray[i].imag();
     }
 
-    modFreq[N / 2] = complexArray[complexArray.length-1].real();
+    modFreq[N / 2] = complexArray[complexArray.length - 1].real();
     return FFTResult.createFromPackedFreq(modFreq, origLength, sampleRate);
   }
 
@@ -223,7 +225,6 @@ export class FFTResult {
     origLength: number,
     sampleRate: number,
   ): FFTResult {
-
     if (amp.length !== phase.length) {
       throw new Error(
         `amp and phase must be same length: ${amp.length} ${phase.length}`,
@@ -232,7 +233,7 @@ export class FFTResult {
 
     const modComplex = new Array<InstanceType<typeof Complex>>(amp.length);
     for (let i = 0; i < amp.length; i++) {
-      modComplex[i] = complexFromPolar(amp[i],phase[i]);
+      modComplex[i] = complexFromPolar(amp[i], phase[i]);
     }
     return FFTResult.createFromComplex(modComplex, origLength, sampleRate);
   }
@@ -265,8 +266,8 @@ export class FFTResult {
   }
 
   asAmpPhase(): [Float32Array, Float32Array] {
-    const amp = new Float32Array(1+this.packedFreq.length/2);
-    const phase = new Float32Array(1+this.packedFreq.length/2);
+    const amp = new Float32Array(1 + this.packedFreq.length / 2);
+    const phase = new Float32Array(1 + this.packedFreq.length / 2);
 
     let c = new Complex(this.packedFreq[0], 0);
     amp[0] = c.abs();
@@ -282,7 +283,7 @@ export class FFTResult {
     c = new Complex(this.packedFreq[L / 2], 0);
     amp[this.packedFreq.length / 2] = c.abs();
     phase[this.packedFreq.length / 2] = c.angle();
-    return [ amp, phase ];
+    return [amp, phase];
   }
 
   /**
@@ -317,12 +318,12 @@ export class FFTResult {
   }
 
   amplitudes(): Float32Array {
-    const [ amp ,] = this.asAmpPhase();
+    const [amp] = this.asAmpPhase();
     return amp;
   }
 
   phases(): Float32Array {
-    const [ , phase] = this.asAmpPhase();
+    const [, phase] = this.asAmpPhase();
     return phase;
   }
 

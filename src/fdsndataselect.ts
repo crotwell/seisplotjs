@@ -3,13 +3,13 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {FDSNCommon, IRIS_HOST} from './fdsncommon';
-import {NslcId} from './fdsnsourceid';
+import { FDSNCommon, IRIS_HOST } from "./fdsncommon";
+import { NslcId } from "./fdsnsourceid";
 import * as util from "./util"; // for util.log
-import {DateTime, Interval} from 'luxon';
+import { DateTime, Interval } from "luxon";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
-import {Seismogram, SeismogramDisplayData} from "./seismogram";
+import { Seismogram, SeismogramDisplayData } from "./seismogram";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -48,7 +48,7 @@ export const SERVICE_VERSION = 1;
 export const SERVICE_NAME = `fdsnws-dataselect-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
-export {IRIS_HOST};
+export { IRIS_HOST };
 
 /**
  * Query to a FDSN Dataselect web service.
@@ -57,42 +57,41 @@ export {IRIS_HOST};
  * @param host optional host to connect to, defaults to IRIS
  */
 export class DataSelectQuery extends FDSNCommon {
+  /** @private */
+  _networkCode: string | undefined;
 
   /** @private */
-  _networkCode: string|undefined;
+  _stationCode: string | undefined;
 
   /** @private */
-  _stationCode: string|undefined;
+  _locationCode: string | undefined;
 
   /** @private */
-  _locationCode: string|undefined;
+  _channelCode: string | undefined;
 
   /** @private */
-  _channelCode: string|undefined;
+  _startTime: DateTime | undefined;
 
   /** @private */
-  _startTime: DateTime|undefined;
+  _endTime: DateTime | undefined;
 
   /** @private */
-  _endTime: DateTime|undefined;
+  _quality: string | undefined;
 
   /** @private */
-  _quality: string|undefined;
+  _minimumLength: number | undefined;
 
   /** @private */
-  _minimumLength: number|undefined;
+  _longestOnly: boolean | undefined;
 
   /** @private */
-  _longestOnly: boolean|undefined;
+  _repository: string | undefined;
 
   /** @private */
-  _repository: string|undefined;
-
-  /** @private */
-  _format: string|undefined;
+  _format: string | undefined;
 
   constructor(host?: string) {
-    if ( ! isNonEmptyStringArg(host)) {
+    if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
     super(host);
@@ -390,7 +389,7 @@ export class DataSelectQuery extends FDSNCommon {
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then( (response) => {
+      .then((response) => {
         if (
           response.status === 204 ||
           (isDef(this._nodata) && response.status === this.getNodata())
@@ -418,7 +417,7 @@ export class DataSelectQuery extends FDSNCommon {
     const url = this.formURL();
     const fetchInit = defaultFetchInitObj(miniseed.MINISEED_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then( (response) => {
+      .then((response) => {
         if (
           response.status === 204 ||
           (isDef(this._nodata) && response.status === this.getNodata())
@@ -444,11 +443,11 @@ export class DataSelectQuery extends FDSNCommon {
    */
   querySeismograms(): Promise<Array<Seismogram>> {
     if (this._format === FORMAT_MINISEED_THREE) {
-      return this.queryMS3Records().then(dataRecords => {
+      return this.queryMS3Records().then((dataRecords) => {
         return mseed3.seismogramPerChannel(dataRecords);
       });
     } else {
-      return this.queryDataRecords().then(dataRecords => {
+      return this.queryDataRecords().then((dataRecords) => {
         return miniseed.seismogramPerChannel(dataRecords);
       });
     }
@@ -457,9 +456,9 @@ export class DataSelectQuery extends FDSNCommon {
   postQueryDataRecords(
     channelTimeList: Array<SeismogramDisplayData>,
   ): Promise<Array<miniseed.DataRecord>> {
-    return this.postQueryRaw(channelTimeList).then(fetchResponse => {
+    return this.postQueryRaw(channelTimeList).then((fetchResponse) => {
       if (fetchResponse.ok) {
-        return fetchResponse.arrayBuffer().then(ab => {
+        return fetchResponse.arrayBuffer().then((ab) => {
           return miniseed.parseDataRecords(ab);
         });
       } else {
@@ -472,9 +471,9 @@ export class DataSelectQuery extends FDSNCommon {
   postQueryMS3Records(
     channelTimeList: Array<SeismogramDisplayData>,
   ): Promise<Array<mseed3.MSeed3Record>> {
-    return this.postQueryRaw(channelTimeList).then(fetchResponse => {
+    return this.postQueryRaw(channelTimeList).then((fetchResponse) => {
       if (fetchResponse.ok) {
-        return fetchResponse.arrayBuffer().then(ab => {
+        return fetchResponse.arrayBuffer().then((ab) => {
           return mseed3.parseMSeed3Records(ab);
         });
       } else {
@@ -504,23 +503,24 @@ export class DataSelectQuery extends FDSNCommon {
 
     if (this._format === FORMAT_MINISEED_THREE) {
       seismogramPromise = this.postQueryMS3Records(sddList).then(
-        dataRecords => {
+        (dataRecords) => {
           return mseed3.seismogramSegmentPerChannel(dataRecords);
         },
       );
     } else {
       seismogramPromise = this.postQueryDataRecords(sddList).then(
-        dataRecords => {
+        (dataRecords) => {
           return miniseed.seismogramSegmentPerChannel(dataRecords);
         },
       );
     }
 
-    return seismogramPromise.then(seisArray => {
+    return seismogramPromise.then((seisArray) => {
       for (const sdd of sddList) {
         const sddNslc = sdd.nslcId;
         const segList = seisArray.filter(
-          s => s.nslcId.equals(sddNslc) && s.timeRange.overlaps(sdd.timeRange),
+          (s) =>
+            s.nslcId.equals(sddNslc) && s.timeRange.overlaps(sdd.timeRange),
         );
         if (segList.length > 0) {
           // do coarse trim in case multiple overlapping requests
@@ -535,9 +535,11 @@ export class DataSelectQuery extends FDSNCommon {
   postQueryRaw(sddList: Array<SeismogramDisplayData>): Promise<Response> {
     if (sddList.length === 0) {
       // return promise faking an not ok fetch response
-      return Promise.resolve(new Response(null, {
-        status: 204,
-      }));
+      return Promise.resolve(
+        new Response(null, {
+          status: 204,
+        }),
+      );
     } else {
       return this.postQueryRawWithBody(DataSelectQuery.createPostBody(sddList));
     }
@@ -599,7 +601,7 @@ export class DataSelectQuery extends FDSNCommon {
     const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      response => {
+      (response) => {
         if (response.status === 200) {
           return response.text();
         } else {
@@ -616,19 +618,35 @@ export class DataSelectQuery extends FDSNCommon {
   formURL(): string {
     let url = this.formBaseURL() + "/query?";
 
-    if (isStringArg(this._networkCode) && this._networkCode.length>0 && this._networkCode!=='*') {
+    if (
+      isStringArg(this._networkCode) &&
+      this._networkCode.length > 0 &&
+      this._networkCode !== "*"
+    ) {
       url = url + makeParam("net", this._networkCode);
     }
 
-    if (isStringArg(this._stationCode) && this._stationCode.length>0 && this._stationCode!=='*') {
+    if (
+      isStringArg(this._stationCode) &&
+      this._stationCode.length > 0 &&
+      this._stationCode !== "*"
+    ) {
       url = url + makeParam("sta", this._stationCode);
     }
 
-    if (isStringArg(this._locationCode) && this._locationCode.length>0 && this._locationCode!=='*') {
+    if (
+      isStringArg(this._locationCode) &&
+      this._locationCode.length > 0 &&
+      this._locationCode !== "*"
+    ) {
       url = url + makeParam("loc", this._locationCode);
     }
 
-    if (isStringArg(this._channelCode) && this._channelCode.length>0 && this._channelCode!=='*') {
+    if (
+      isStringArg(this._channelCode) &&
+      this._channelCode.length > 0 &&
+      this._channelCode !== "*"
+    ) {
       url = url + makeParam("cha", this._channelCode);
     }
 
@@ -751,7 +769,7 @@ export function createDataSelectQuery(
   }
 
   if (params.longestonly) {
-    out.longestOnly(params.longestonly.toLowerCase() === 'true');
+    out.longestOnly(params.longestonly.toLowerCase() === "true");
   }
 
   if (params.format) {

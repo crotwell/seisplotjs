@@ -3,9 +3,9 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {FDSNCommon, IRIS_HOST} from './fdsncommon';
-import {DateTime, Interval} from "luxon";
-import {SeismogramDisplayData} from "./seismogram";
+import { FDSNCommon, IRIS_HOST } from "./fdsncommon";
+import { DateTime, Interval } from "luxon";
+import { SeismogramDisplayData } from "./seismogram";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -27,7 +27,7 @@ import {
   validStartTime,
   validEndTime,
 } from "./util";
-import {Network, Station, Channel} from "./stationxml";
+import { Network, Station, Channel } from "./stationxml";
 
 /** const for json format, json */
 export const FORMAT_JSON = "json";
@@ -60,7 +60,7 @@ export const SERVICE_VERSION = 1;
 export const SERVICE_NAME = `fdsnws-availability-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
-export {IRIS_HOST};
+export { IRIS_HOST };
 
 /**
  * Query to a FDSN Availability web service.
@@ -80,51 +80,50 @@ export {IRIS_HOST};
  * @param host optional host to connect to, defaults to IRIS
  */
 export class AvailabilityQuery extends FDSNCommon {
+  /** @private */
+  _networkCode: string | undefined;
 
   /** @private */
-  _networkCode: string|undefined;
+  _stationCode: string | undefined;
 
   /** @private */
-  _stationCode: string|undefined;
+  _locationCode: string | undefined;
 
   /** @private */
-  _locationCode: string|undefined;
+  _channelCode: string | undefined;
 
   /** @private */
-  _channelCode: string|undefined;
+  _startTime: DateTime | undefined;
 
   /** @private */
-  _startTime: DateTime|undefined;
+  _endTime: DateTime | undefined;
 
   /** @private */
-  _endTime: DateTime|undefined;
+  _quality: string | undefined;
 
   /** @private */
-  _quality: string|undefined;
+  _merge: string | undefined;
 
   /** @private */
-  _merge: string|undefined;
+  _show: string | undefined;
 
   /** @private */
-  _show: string|undefined;
+  _mergeGaps: number | undefined;
 
   /** @private */
-  _mergeGaps: number|undefined;
+  _limit: number | undefined;
 
   /** @private */
-  _limit: number|undefined;
+  _orderby: string | undefined;
 
   /** @private */
-  _orderby: string|undefined;
+  _includerestricted: boolean | undefined;
 
   /** @private */
-  _includerestricted: boolean|undefined;
-
-  /** @private */
-  _format: string|undefined;
+  _format: string | undefined;
 
   constructor(host?: string) {
-    if ( ! isNonEmptyStringArg(host)) {
+    if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
     super(host);
@@ -162,7 +161,6 @@ export class AvailabilityQuery extends FDSNCommon {
   getProtocol(): string | undefined {
     return this._protocol;
   }
-
 
   /**
    * Gets/Sets the remote host to connect to.
@@ -457,7 +455,7 @@ export class AvailabilityQuery extends FDSNCommon {
    * a channel-time window
    */
   query(): Promise<Array<SeismogramDisplayData>> {
-    return this.queryJson().then( (json: RootType) => {
+    return this.queryJson().then((json: RootType) => {
       return this.extractFromJson(json);
     });
   }
@@ -471,8 +469,8 @@ export class AvailabilityQuery extends FDSNCommon {
     this.format(FORMAT_JSON);
     const url = this.formURL("query");
     const fetchInit = defaultFetchInitObj(JSON_MIME);
-    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-       (response) => {
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
+      .then((response) => {
         if (
           response.status === 204 ||
           (isDef(this._nodata) && response.status === this._nodata)
@@ -490,7 +488,8 @@ export class AvailabilityQuery extends FDSNCommon {
         }
 
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
-      }).then(jsonValue => {
+      })
+      .then((jsonValue) => {
         if (isValidRootType(jsonValue)) {
           return jsonValue;
         }
@@ -507,7 +506,7 @@ export class AvailabilityQuery extends FDSNCommon {
    * a channel-time window
    */
   extent(): Promise<Array<SeismogramDisplayData>> {
-    return this.extentJson().then( (json: RootType) => {
+    return this.extentJson().then((json: RootType) => {
       return this.extractFromJson(json);
     });
   }
@@ -521,8 +520,8 @@ export class AvailabilityQuery extends FDSNCommon {
     this.format(FORMAT_JSON);
     const url = this.formURL("extent");
     const fetchInit = defaultFetchInitObj(JSON_MIME);
-    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-       (response) => {
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
+      .then((response) => {
         if (
           response.status === 204 ||
           (isDef(this._nodata) && response.status === this._nodata)
@@ -540,7 +539,8 @@ export class AvailabilityQuery extends FDSNCommon {
         }
 
         throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
-      }).then(jsonValue => {
+      })
+      .then((jsonValue) => {
         if (isValidRootType(jsonValue)) {
           return jsonValue;
         }
@@ -561,7 +561,7 @@ export class AvailabilityQuery extends FDSNCommon {
   postQuery(
     channelTimeList: Array<SeismogramDisplayData>,
   ): Promise<Array<SeismogramDisplayData>> {
-    return this.postQueryJson(channelTimeList).then(json => {
+    return this.postQueryJson(channelTimeList).then((json) => {
       return this.extractFromJson(json);
     });
   }
@@ -569,7 +569,7 @@ export class AvailabilityQuery extends FDSNCommon {
   postExtent(
     channelTimeList: Array<SeismogramDisplayData>,
   ): Promise<Array<SeismogramDisplayData>> {
-    return this.postExtentJson(channelTimeList).then(json => {
+    return this.postExtentJson(channelTimeList).then((json) => {
       return this.extractFromJson(json);
     });
   }
@@ -591,27 +591,32 @@ export class AvailabilityQuery extends FDSNCommon {
     method: string,
   ): Promise<RootType> {
     this.format(FORMAT_JSON);
-    return this.postRaw(channelTimeList, method).then( (response) => {
-      if (
-        response.status === 204 ||
-        (isDef(this._nodata) && response.status === this._nodata)
-      ) {
-        return EMPTY_JSON;
-      }
+    return this.postRaw(channelTimeList, method)
+      .then((response) => {
+        if (
+          response.status === 204 ||
+          (isDef(this._nodata) && response.status === this._nodata)
+        ) {
+          return EMPTY_JSON;
+        }
 
-      const contentType = response.headers.get("content-type");
+        const contentType = response.headers.get("content-type");
 
-      if (isNonEmptyStringArg(contentType) && contentType.includes(JSON_MIME)) {
-        return response.json();
-      }
+        if (
+          isNonEmptyStringArg(contentType) &&
+          contentType.includes(JSON_MIME)
+        ) {
+          return response.json();
+        }
 
-      throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
-    }).then(jsonValue => {
-      if (isValidRootType(jsonValue)) {
-        return jsonValue;
-      }
-      throw new TypeError(`Oops, we did not get valid root type json`);
-    });
+        throw new TypeError(`Oops, we did not get JSON! ${contentType}`);
+      })
+      .then((jsonValue) => {
+        if (isValidRootType(jsonValue)) {
+          return jsonValue;
+        }
+        throw new TypeError(`Oops, we did not get valid root type json`);
+      });
   }
 
   postRaw(
@@ -620,9 +625,11 @@ export class AvailabilityQuery extends FDSNCommon {
   ): Promise<Response> {
     if (channelTimeList.length === 0) {
       // return promise faking an not ok fetch response
-      return Promise.resolve(new Response(null, {
-        status: 204,
-      }));
+      return Promise.resolve(
+        new Response(null, {
+          status: 204,
+        }),
+      );
     } else {
       const fetchInit = defaultFetchInitObj(JSON_MIME);
       fetchInit.method = "POST";
@@ -681,9 +688,12 @@ export class AvailabilityQuery extends FDSNCommon {
             );
           } else if (ds.timespans) {
             for (const ts of ds.timespans) {
-              if (Array.isArray(ts) && ts.length === 2 &&
-                  typeof ts[0] === 'string' &&
-                  typeof ts[1] === 'string') {
+              if (
+                Array.isArray(ts) &&
+                ts.length === 2 &&
+                typeof ts[0] === "string" &&
+                typeof ts[1] === "string"
+              ) {
                 out.push(
                   SeismogramDisplayData.fromChannelAndTimes(
                     c,
@@ -692,7 +702,7 @@ export class AvailabilityQuery extends FDSNCommon {
                   ),
                 );
               } else {
-                throw new TypeError("invalid timespans: "+stringify(ts));
+                throw new TypeError("invalid timespans: " + stringify(ts));
               }
             }
           }
@@ -797,7 +807,7 @@ export class AvailabilityQuery extends FDSNCommon {
     const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      response => {
+      (response) => {
         if (response.status === 200) {
           return response.text();
         } else {
@@ -924,27 +934,31 @@ export type Datasource = ({
   );
 
 export function isValidRootType(jsonValue: unknown): jsonValue is RootType {
-  if (! jsonValue || typeof jsonValue !== 'object') {
+  if (!jsonValue || typeof jsonValue !== "object") {
     throw new TypeError("json is not object");
   }
   const jsonObj = jsonValue as Record<string, unknown>;
-  if (Array.isArray(jsonObj.datasources) &&
-      jsonObj.datasources.every(isValidDatasource) &&
-      typeof jsonObj.version === 'number') {
-        return true;
+  if (
+    Array.isArray(jsonObj.datasources) &&
+    jsonObj.datasources.every(isValidDatasource) &&
+    typeof jsonObj.version === "number"
+  ) {
+    return true;
   } else {
     throw new TypeError("json is not valid for FDSN Availability");
   }
 }
 export function isValidDatasource(jsonValue: unknown): jsonValue is Datasource {
-  if (! jsonValue || typeof jsonValue !== 'object') {
+  if (!jsonValue || typeof jsonValue !== "object") {
     throw new TypeError("json is not object");
   }
   const jsonObj = jsonValue as Record<string, unknown>;
-  if (typeof jsonObj.network === 'string' &&
-      typeof jsonObj.station === 'string' &&
-      typeof jsonObj.location === 'string' &&
-      typeof jsonObj.channel === 'string') {
+  if (
+    typeof jsonObj.network === "string" &&
+    typeof jsonObj.station === "string" &&
+    typeof jsonObj.location === "string" &&
+    typeof jsonObj.channel === "string"
+  ) {
     return true;
   } else {
     throw new TypeError("json datasource is not valid for FDSN Availability");

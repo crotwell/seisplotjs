@@ -5,9 +5,9 @@
  */
 import * as util from "./util"; // for util.log
 import * as miniseed from "./miniseed";
-import {DataRecord} from "./miniseed";
-import {DateTime} from "luxon";
-import {dataViewToString, stringify, toError} from "./util";
+import { DataRecord } from "./miniseed";
+import { DateTime } from "luxon";
+import { dataViewToString, stringify, toError } from "./util";
 export const SEEDLINK_PROTOCOL = "SeedLink3.1";
 export type SequencedDataRecord = {
   rawsequence: string;
@@ -64,8 +64,7 @@ export class SeedlinkConnection {
   }
 
   setTimeCommand(startTime: DateTime) {
-    this.command =
-      "TIME " + startTime.toFormat("yyyy,LL,dd,HH,mm,ss");
+    this.command = "TIME " + startTime.toFormat("yyyy,LL,dd,HH,mm,ss");
   }
 
   setOnError(errorHandler: (error: Error) => void) {
@@ -103,9 +102,10 @@ export class SeedlinkConnection {
             webSocket.send("END\r");
             return val;
           })
-          .catch(err => {
+          .catch((err) => {
             this.close();
-            const insureErr = err instanceof Error ? err : new Error(stringify(err));
+            const insureErr =
+              err instanceof Error ? err : new Error(stringify(err));
             if (this.errorHandler) {
               this.errorHandler(insureErr);
             } else {
@@ -115,8 +115,8 @@ export class SeedlinkConnection {
       };
 
       webSocket.onerror = (event: Event) => {
-          this.handleError(new Error("" + stringify(event)));
-          this.close();
+        this.handleError(new Error("" + stringify(event)));
+        this.close();
       };
 
       webSocket.onclose = (closeEvent) => {
@@ -144,7 +144,7 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    if ( event.data instanceof ArrayBuffer) {
+    if (event.data instanceof ArrayBuffer) {
       const data: ArrayBuffer = event.data;
 
       if (data.byteLength < 64) {
@@ -159,7 +159,6 @@ export class SeedlinkConnection {
   }
 
   handleMiniseed(data: ArrayBuffer): void {
-
     try {
       if (data.byteLength < 64) {
         this.errorHandler(
@@ -213,18 +212,21 @@ export class SeedlinkConnection {
    *
    * @returns            Promise that resolves to the response from the server.
    */
-  sendHello(): Promise<[string,string]> {
+  sendHello(): Promise<[string, string]> {
     const webSocket = this.webSocket;
-    const promise: Promise<[string,string]> = new Promise(function (resolve, reject) {
+    const promise: Promise<[string, string]> = new Promise(function (
+      resolve,
+      reject,
+    ) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          if ( event.data instanceof ArrayBuffer) {
+          if (event.data instanceof ArrayBuffer) {
             const data: ArrayBuffer = event.data;
             const replyMsg = dataViewToString(new DataView(data));
             const lines = replyMsg.trim().split("\r");
 
             if (lines.length === 2) {
-              resolve([lines[0],lines[1]]);
+              resolve([lines[0], lines[1]]);
             } else {
               reject("not 2 lines: " + replyMsg);
             }
@@ -268,7 +270,7 @@ export class SeedlinkConnection {
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          if ( event.data instanceof ArrayBuffer) {
+          if (event.data instanceof ArrayBuffer) {
             const data: ArrayBuffer = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
 

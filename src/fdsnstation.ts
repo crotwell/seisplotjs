@@ -9,14 +9,10 @@ import {
   LatLonRegion,
   LatLonBox,
   LatLonRadius,
-} from './fdsncommon';
-import {NslcId} from './fdsnsourceid';
-import {DateTime, Interval} from 'luxon';
-import {
-  parseStationXml,
-  Network,
-  FAKE_EMPTY_XML,
-} from "./stationxml";
+} from "./fdsncommon";
+import { NslcId } from "./fdsnsourceid";
+import { DateTime, Interval } from "luxon";
+import { parseStationXml, Network, FAKE_EMPTY_XML } from "./stationxml";
 import {
   XML_MIME,
   TEXT_MIME,
@@ -62,7 +58,7 @@ export const SERVICE_VERSION = 1;
 export const SERVICE_NAME = `fdsnws-station-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
-export {IRIS_HOST};
+export { IRIS_HOST };
 
 /**
  * Query to a FDSN Station web service.
@@ -71,75 +67,74 @@ export {IRIS_HOST};
  * @param host optional host to connect to, defaults to IRIS
  */
 export class StationQuery extends FDSNCommon {
+  /** @private */
+  _networkCode: string | undefined;
 
   /** @private */
-  _networkCode: string|undefined;
+  _stationCode: string | undefined;
 
   /** @private */
-  _stationCode: string|undefined;
+  _locationCode: string | undefined;
 
   /** @private */
-  _locationCode: string|undefined;
+  _channelCode: string | undefined;
 
   /** @private */
-  _channelCode: string|undefined;
+  _startTime: DateTime | undefined;
 
   /** @private */
-  _startTime: DateTime|undefined;
+  _endTime: DateTime | undefined;
 
   /** @private */
-  _endTime: DateTime|undefined;
+  _startBefore: DateTime | undefined;
 
   /** @private */
-  _startBefore: DateTime|undefined;
+  _endBefore: DateTime | undefined;
 
   /** @private */
-  _endBefore: DateTime|undefined;
+  _startAfter: DateTime | undefined;
 
   /** @private */
-  _startAfter: DateTime|undefined;
+  _endAfter: DateTime | undefined;
 
   /** @private */
-  _endAfter: DateTime|undefined;
+  _minLat: number | undefined;
 
   /** @private */
-  _minLat: number|undefined;
+  _maxLat: number | undefined;
 
   /** @private */
-  _maxLat: number|undefined;
+  _minLon: number | undefined;
 
   /** @private */
-  _minLon: number|undefined;
+  _maxLon: number | undefined;
 
   /** @private */
-  _maxLon: number|undefined;
+  _latitude: number | undefined;
 
   /** @private */
-  _latitude: number|undefined;
+  _longitude: number | undefined;
 
   /** @private */
-  _longitude: number|undefined;
+  _minRadius: number | undefined;
 
   /** @private */
-  _minRadius: number|undefined;
+  _maxRadius: number | undefined;
 
   /** @private */
-  _maxRadius: number|undefined;
+  _includeRestricted: boolean | undefined;
 
   /** @private */
-  _includeRestricted: boolean|undefined;
+  _includeAvailability: boolean | undefined;
 
   /** @private */
-  _includeAvailability: boolean|undefined;
+  _format: string | undefined;
 
   /** @private */
-  _format: string|undefined;
+  _updatedAfter: DateTime | undefined;
 
   /** @private */
-  _updatedAfter: DateTime|undefined;
-
-  /** @private */
-  _matchTimeseries: boolean|undefined;
+  _matchTimeseries: boolean | undefined;
 
   /**
    * Construct a query
@@ -607,7 +602,7 @@ export class StationQuery extends FDSNCommon {
       this._maxLat = undefined;
       this._minLon = undefined;
       this._maxLon = undefined;
-    } else if ( ! isDef(value)) {
+    } else if (!isDef(value)) {
       // unset
       this._latitude = undefined;
       this._longitude = undefined;
@@ -657,10 +652,18 @@ export class StationQuery extends FDSNCommon {
    */
   isSomeParameterSet(): boolean {
     return (
-      (isDef(this._networkCode) && this._networkCode.length>0 && this._networkCode!=='*') ||
-      (isDef(this._stationCode) && this._stationCode.length>0 && this._stationCode!=='*') ||
-      (isDef(this._locationCode) && this._locationCode.length>0 && this._locationCode!=='*') ||
-      (isDef(this._channelCode) && this._channelCode.length>0 && this._channelCode!=='*') ||
+      (isDef(this._networkCode) &&
+        this._networkCode.length > 0 &&
+        this._networkCode !== "*") ||
+      (isDef(this._stationCode) &&
+        this._stationCode.length > 0 &&
+        this._stationCode !== "*") ||
+      (isDef(this._locationCode) &&
+        this._locationCode.length > 0 &&
+        this._locationCode !== "*") ||
+      (isDef(this._channelCode) &&
+        this._channelCode.length > 0 &&
+        this._channelCode !== "*") ||
       isDef(this._startTime) ||
       isDef(this._endTime) ||
       isDef(this._startBefore) ||
@@ -747,11 +750,11 @@ export class StationQuery extends FDSNCommon {
    * @returns a Promise to an Array of Network objects.
    */
   postQueryNetworks(postLines: Array<string>): Promise<Array<Network>> {
-    return this.postQueryRawXml(LEVEL_NETWORK, postLines).then(function (
-      rawXml,
-    ) {
-      return parseStationXml(rawXml);
-    });
+    return this.postQueryRawXml(LEVEL_NETWORK, postLines).then(
+      function (rawXml) {
+        return parseStationXml(rawXml);
+      },
+    );
   }
 
   /**
@@ -766,11 +769,11 @@ export class StationQuery extends FDSNCommon {
    * @returns a Promise to an Array of Network objects.
    */
   postQueryStations(postLines: Array<string>): Promise<Array<Network>> {
-    return this.postQueryRawXml(LEVEL_STATION, postLines).then(function (
-      rawXml,
-    ) {
-      return parseStationXml(rawXml);
-    });
+    return this.postQueryRawXml(LEVEL_STATION, postLines).then(
+      function (rawXml) {
+        return parseStationXml(rawXml);
+      },
+    );
   }
 
   /**
@@ -785,11 +788,11 @@ export class StationQuery extends FDSNCommon {
    * @returns a Promise to an Array of Network objects.
    */
   postQueryChannels(postLines: Array<string>): Promise<Array<Network>> {
-    return this.postQueryRawXml(LEVEL_CHANNEL, postLines).then(function (
-      rawXml,
-    ) {
-      return parseStationXml(rawXml);
-    });
+    return this.postQueryRawXml(LEVEL_CHANNEL, postLines).then(
+      function (rawXml) {
+        return parseStationXml(rawXml);
+      },
+    );
   }
 
   /**
@@ -804,11 +807,11 @@ export class StationQuery extends FDSNCommon {
    * @returns a Promise to an Array of Network objects.
    */
   postQueryResponses(postLines: Array<string>): Promise<Array<Network>> {
-    return this.postQueryRawXml(LEVEL_RESPONSE, postLines).then(function (
-      rawXml,
-    ) {
-      return parseStationXml(rawXml);
-    });
+    return this.postQueryRawXml(LEVEL_RESPONSE, postLines).then(
+      function (rawXml) {
+        return parseStationXml(rawXml);
+      },
+    );
   }
 
   /**
@@ -843,10 +846,9 @@ export class StationQuery extends FDSNCommon {
    * @returns a Promise to an xml Document.
    */
   queryRawXml(level: string): Promise<Document> {
-    return this.queryRawXmlText(level)
-      .then(function (rawXmlText) {
-        return new DOMParser().parseFromString(rawXmlText, "text/xml");
-      });
+    return this.queryRawXmlText(level).then(function (rawXmlText) {
+      return new DOMParser().parseFromString(rawXmlText, "text/xml");
+    });
   }
 
   /**
@@ -858,7 +860,7 @@ export class StationQuery extends FDSNCommon {
    * @param level the level to query at, network, station, channel or response.
    * @returns a Promise to string.
    */
-   queryRawXmlText(level: string): Promise<string> {
+  queryRawXmlText(level: string): Promise<string> {
     if (!this.isSomeParameterSet()) {
       throw new Error(
         "Must set some parameter to avoid asking for everything.",
@@ -867,8 +869,8 @@ export class StationQuery extends FDSNCommon {
 
     const url = this.formURL(level);
     const fetchInit = defaultFetchInitObj(XML_MIME);
-    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
-      .then(response => {
+    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
+      (response) => {
         if (response.status === 200) {
           return response.text();
         } else if (
@@ -880,7 +882,8 @@ export class StationQuery extends FDSNCommon {
         } else {
           throw new Error(`Status not successful: ${response.status}`);
         }
-      });
+      },
+    );
   }
 
   /**
@@ -898,8 +901,7 @@ export class StationQuery extends FDSNCommon {
   postQueryRawXml(level: string, postLines: Array<string>): Promise<Document> {
     if (postLines.length === 0) {
       // return promise faking an not ok fetch response
-      return Promise.resolve(FAKE_EMPTY_XML)
-      .then(function (rawXmlText) {
+      return Promise.resolve(FAKE_EMPTY_XML).then(function (rawXmlText) {
         return new DOMParser().parseFromString(rawXmlText, "text/xml");
       });
     } else {
@@ -911,7 +913,7 @@ export class StationQuery extends FDSNCommon {
         fetchInit,
         this._timeoutSec * 1000,
       )
-        .then(response => {
+        .then((response) => {
           if (response.status === 200) {
             return response.text();
           } else if (
@@ -1026,7 +1028,7 @@ export class StationQuery extends FDSNCommon {
       out = out + makePostParam("nodata", this._nodata);
     }
 
-    postLines.forEach(line => (out = out + line.trim() + "\n"));
+    postLines.forEach((line) => (out = out + line.trim() + "\n"));
     return out;
   }
 
@@ -1048,7 +1050,7 @@ export class StationQuery extends FDSNCommon {
     const url = this.formVersionURL();
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      response => {
+      (response) => {
         if (response.status === 200) {
           return response.text();
         } else {
@@ -1102,19 +1104,35 @@ export class StationQuery extends FDSNCommon {
 
     url = url + makeParam("level", level);
 
-    if (isStringArg(this._networkCode) && this._networkCode.length>0 && this._networkCode!=='*') {
+    if (
+      isStringArg(this._networkCode) &&
+      this._networkCode.length > 0 &&
+      this._networkCode !== "*"
+    ) {
       url = url + makeParam("net", this._networkCode);
     }
 
-    if (isStringArg(this._stationCode) && this._stationCode.length>0 && this._stationCode!=='*') {
+    if (
+      isStringArg(this._stationCode) &&
+      this._stationCode.length > 0 &&
+      this._stationCode !== "*"
+    ) {
       url = url + makeParam("sta", this._stationCode);
     }
 
-    if (isStringArg(this._locationCode) && this._locationCode.length>0 && this._locationCode!=='*') {
+    if (
+      isStringArg(this._locationCode) &&
+      this._locationCode.length > 0 &&
+      this._locationCode !== "*"
+    ) {
       url = url + makeParam("loc", this._locationCode);
     }
 
-    if (isStringArg(this._channelCode) && this._channelCode.length>0 && this._channelCode!=='*') {
+    if (
+      isStringArg(this._channelCode) &&
+      this._channelCode.length > 0 &&
+      this._channelCode !== "*"
+    ) {
       url = url + makeParam("cha", this._channelCode);
     }
 
