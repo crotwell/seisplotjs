@@ -13,7 +13,7 @@ export class SeisPlotElement extends HTMLElement {
     seisConfig?: SeismographConfig,
   ) {
     super();
-    this.onRedraw = (el: SeisPlotElement) => {};
+    this.onRedraw = (_el: SeisPlotElement) => {};
     this._throttleRedraw = null;
     if (isDef(seisData)) {
       if (seisData instanceof SeismogramDisplayData) {

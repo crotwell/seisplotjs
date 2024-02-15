@@ -356,7 +356,7 @@ export class QuakeTable extends HTMLElement {
       return `unknown: ${String(h)}`;
     }
   }
-  sort(h: QUAKE_COLUMN, headerCell: HTMLTableCellElement) {
+  sort(h: QUAKE_COLUMN, _headerCell: HTMLTableCellElement) {
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     const tbody = table.querySelector("tbody");
     if (tbody) {
@@ -541,7 +541,7 @@ export class ChannelTable extends HTMLElement {
       return `unknown: ${String(h)}`;
     }
   }
-  sort(h: CHANNEL_COLUMN, headerCell: HTMLTableCellElement) {
+  sort(h: CHANNEL_COLUMN, _headerCell: HTMLTableCellElement) {
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     const tbody = table.querySelector("tbody");
     if (tbody) {
@@ -728,7 +728,7 @@ export class StationTable extends HTMLElement {
       return `unknown: ${String(h)}`;
     }
   }
-  sort(h: STATION_COLUMN, headerCell: HTMLTableCellElement) {
+  sort(h: STATION_COLUMN, _headerCell: HTMLTableCellElement) {
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     const tbody = table.querySelector("tbody");
     if (tbody) {
@@ -917,7 +917,7 @@ export class SeismogramTable extends HTMLElement {
       return `unknown: ${String(h)}`;
     }
   }
-  sort(h: SEISMOGRAM_COLUMN, headerCell: HTMLTableCellElement) {
+  sort(h: SEISMOGRAM_COLUMN, _headerCell: HTMLTableCellElement) {
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     const tbody = table.querySelector("tbody");
     if (tbody) {

@@ -79,7 +79,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
   static get observedAttributes() {
     return [PLOT_TYPE];
   }
-  attributeChangedCallback(name: string, oldValue: unknown, newValue: unknown) {
+  attributeChangedCallback(_name: string, _oldValue: unknown, _newValue: unknown) {
     this.redraw();
   }
   setExtra(key: string, value: unknown) {
@@ -389,7 +389,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     });
     shadow?.querySelectorAll("fieldset.overlay input").forEach((i) => {
       const inEl = i as HTMLInputElement;
-      inEl.addEventListener("change", (e) => {
+      inEl.addEventListener("change", (_e) => {
         if (this._organizedDisplay) {
           this._organizedDisplay?.setAttribute("overlay", inEl.value);
         }
@@ -397,7 +397,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
     });
     shadow?.querySelectorAll("fieldset.sort input").forEach((i) => {
       const inEl = i as HTMLInputElement;
-      inEl.addEventListener("change", (e) => {
+      inEl.addEventListener("change", (_e) => {
         if (this._organizedDisplay) {
           this._organizedDisplay?.setAttribute("sort", inEl.value);
         }
@@ -619,7 +619,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.tools !== "true" && toolsElement) {
       wrapper.removeChild(toolsElement);
     } else if (this.tools === "true" && !isDef(toolsElement)) {
-      const sortedData = sort(this.seisData, this.sortby);
+      if (sortedData == null)  {sortedData = sort(this.seisData, this.sortby);}
       const toolsdisp = new OrganizedDisplayTools(
         sortedData,
         this.seismographConfig,

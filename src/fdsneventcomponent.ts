@@ -136,7 +136,7 @@ export class EarthquakeSearch extends HTMLElement {
     if (!nowBtn) {
       throw new Error("can't find button#now");
     }
-    nowBtn.addEventListener("click", (event) => {
+    nowBtn.addEventListener("click", (_event) => {
       trChooser.end = DateTime.utc();
     });
 
@@ -144,7 +144,7 @@ export class EarthquakeSearch extends HTMLElement {
     if (!todayBtn) {
       throw new Error("can't find button#today");
     }
-    todayBtn.addEventListener("click", (event) => {
+    todayBtn.addEventListener("click", (_event) => {
       trChooser.duration = Duration.fromISO("P1D");
     });
 
@@ -152,7 +152,7 @@ export class EarthquakeSearch extends HTMLElement {
     if (!weekBtn) {
       throw new Error("can't find button#week");
     }
-    weekBtn.addEventListener("click", (event) => {
+    weekBtn.addEventListener("click", (_event) => {
       trChooser.duration = Duration.fromISO("P7D");
     });
 
@@ -160,7 +160,7 @@ export class EarthquakeSearch extends HTMLElement {
     if (!monthBtn) {
       throw new Error("can't find button#month");
     }
-    monthBtn.addEventListener("click", (event) => {
+    monthBtn.addEventListener("click", (_event) => {
       trChooser.duration = Duration.fromISO("P1M");
     });
 
@@ -168,7 +168,7 @@ export class EarthquakeSearch extends HTMLElement {
     if (!yearBtn) {
       throw new Error("can't find button#year");
     }
-    yearBtn.addEventListener("click", (event) => {
+    yearBtn.addEventListener("click", (_event) => {
       trChooser.duration = Duration.fromISO("P1Y");
     });
   }

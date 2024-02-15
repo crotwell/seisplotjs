@@ -566,7 +566,7 @@ path.${classname} {
     });
     return style;
   }
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.draw();
   }
   static get observedAttributes() {

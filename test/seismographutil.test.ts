@@ -23,7 +23,7 @@ test("line create test", () => {
   const sampleRate = 20;
   //const sinePeriod = 5*sampleRate; // 5 second period
   const amp = height;
-  const dataArray = new Float32Array(10000).map(function(d, i) {
+  const dataArray = new Float32Array(10000).map(() => {
     //return Math.sin(2 * Math.PI * i / sinePeriod) * amp;
     return 0;
   });

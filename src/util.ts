@@ -625,8 +625,8 @@ export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
 }
 
 export function errorFetch(
-  url: URL | RequestInfo,
-  init?: RequestInit | undefined,
+  _url: URL | RequestInfo,
+  _init?: RequestInit | undefined,
 ): Promise<Response> {
   throw new Error("There is no fetch!?!?!");
 }

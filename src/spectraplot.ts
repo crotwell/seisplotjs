@@ -215,7 +215,7 @@ export class SpectraPlot extends HTMLElement {
   static get observedAttributes() {
     return [LOGFREQ, KIND];
   }
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.draw();
   }
 

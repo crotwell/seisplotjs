@@ -397,7 +397,7 @@ export class Seismograph extends SeisPlotElement {
       this.seismographConfig.linkedTimeScale.unlink(this.time_scalable);
     }
   }
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.redraw();
   }
 
@@ -548,7 +548,7 @@ export class Seismograph extends SeisPlotElement {
     }
     util.log(out);
   }
-  calcDetailForEvent(evt: MouseEvent, type?: string): SeisMouseEventType {
+  calcDetailForEvent(evt: MouseEvent, _type?: string): SeisMouseEventType {
     const margin = this.seismographConfig.margin;
     const mouseTimeVal = this.timeScaleForAxis().invert(
       evt.offsetX - margin.left,

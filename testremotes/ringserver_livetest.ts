@@ -54,7 +54,7 @@ test("do datalink test", () => {
     expect(packet.isMiniseed()).toBeTrue();
     dlConn.close();
   };
-  const dlerrorFun = function(e: any) {
+  const dlerrorFun = function(_e: any) {
     dlConn.close();
   };
   const start = DateTime.utc().minus(Duration.fromISO('PT10M'));
@@ -63,8 +63,8 @@ test("do datalink test", () => {
     expect(servId).toContain("DataLink");
     expect(servId).toContain("DLPROTO:1.0");
     return dlConn.id("seisplotjs", "anonymous", "0", "js");
-  }).then(servId => {
-    //expect(servId).toContain("DataLink");
+  }).then(_servId => {
+    //expect(_servId).toContain("DataLink");
     return dlConn.match("CO_.*_00_HHZ/MSEED");
   }).then(response => {
     expect(response.type).toContain("OK");
@@ -77,9 +77,9 @@ test("do datalink test", () => {
     expect(response.streams[0].name).toContain("CO_");
     expect(response.streams[0].dataLatency).toBeGreaterThan(0);
     return response;
-  }).then(response => {
+  }).then(_response => {
     return dlConn.close();
-  }).then(response => {
+  }).then(_response => {
     expect(dlConn.isConnected()).toBeFalse();
   });
 });

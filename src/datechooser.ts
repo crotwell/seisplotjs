@@ -43,7 +43,7 @@ export class HourMinChooser extends HTMLElement {
       this._time = isoToDateTime(attr_date_time);
       this._time.set({ second: 0, millisecond: 0 }); // only hour and min?
     }
-    this.updateCallback = function (time: DateTime) {
+    this.updateCallback = function (_time: DateTime) {
       // default do nothing
     };
     const shadow = this.attachShadow({ mode: "open" });
@@ -75,7 +75,7 @@ export class HourMinChooser extends HTMLElement {
     shadow.appendChild(style);
 
     const wrapper = document.createElement("span");
-    document.addEventListener("click", (e) => {
+    document.addEventListener("click", (_e) => {
       //console.log("mouseleave wrapper");
       this.hide();
     });
@@ -132,7 +132,7 @@ export class HourMinChooser extends HTMLElement {
     ntext.setAttribute("name", "hourMin");
     ntext.setAttribute("class", "hourMin");
     ntext.value = this.time.toFormat(HOUR_MIN_24);
-    ntext.onchange = (e: Event) => {
+    ntext.onchange = (_e: Event) => {
       let val = ntext.value;
       if (val === null) {
         val = this.time.toFormat(HOUR_MIN_24);
@@ -283,7 +283,7 @@ export class DateTimeChooser extends HTMLElement {
       this._time = DateTime.utc().set({ second: 0, millisecond: 0 });
     }
 
-    this.updateCallback = function (time: DateTime) {
+    this.updateCallback = function (_time: DateTime) {
       // default do nothing
     };
     const shadow = this.attachShadow({ mode: "open" });
@@ -411,7 +411,7 @@ export class TimeRangeChooser extends HTMLElement {
   constructor() {
     super();
     this._mostRecentChanged = "end";
-    this.updateCallback = (timerange: Interval) => {
+    this.updateCallback = (_timerange: Interval) => {
       // default do nothing
     };
     const endAttr = this.getAttribute("end");

@@ -25,7 +25,7 @@ module.exports = {
     semi: ["error", "always"],
     "no-var": ["error"],
     "no-console": ["error"],
-    "@typescript-eslint/no-unused-vars": ["error"],
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_.*" }],
     "@typescript-eslint/restrict-template-expressions": [
       "error",
       {

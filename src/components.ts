@@ -252,7 +252,7 @@ export class ChannelListChooser extends HTMLElement {
       throw new Error("must be one of checkbox or radio");
     }
   }
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.draw_element();
   }
   selectedChannels(): Array<Channel> {
@@ -288,7 +288,7 @@ export class SourceIdListChooser extends HTMLElement {
       const cb = div.appendChild(document.createElement("input"));
       cb.setAttribute("type", this.type);
       cb.setAttribute("name", "radiogroup");
-      cb.addEventListener("change", (event) => {
+      cb.addEventListener("change", (_event) => {
         if (this.type === "radio") {
           // radio, only one selected, notify only on select not unselect
           this.selected_sourceIds.clear();
@@ -333,7 +333,7 @@ export class SourceIdListChooser extends HTMLElement {
       throw new Error("must be one of checkbox or radio");
     }
   }
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.draw_element();
   }
   selectedSourceIds(): Array<FDSNSourceId> {
@@ -661,7 +661,7 @@ export class LatLonRadiusEl extends HTMLElement {
     );
     shadow.appendChild(wrapper);
   }
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.innerHTML = "";
     this.draw();
   }
@@ -798,7 +798,7 @@ export class LatLonBoxEl extends HTMLElement {
     super();
     this.draw();
   }
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
     this.innerHTML = "";
     this.draw();
   }
