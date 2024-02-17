@@ -3,77 +3,50 @@
 //import {MSeed3Record} from "./mseed3";
 import {Quake, createQuakeFromValues} from "./quakeml";
 import {isoToDateTime} from "./util";
+import {
+  MS3ExtraHeader,
+  Origin as EHOrigin,
+  Station as EHStation,
+  Bag as EHBag,
+} from "./ms3eh_bag";
 
-export const STD_EH = "std";
+export const STD_EH = "bag";
 
-export function ehToQuake(sacEH: SacJsonEHType): Quake|null {
-  const ev = sacEH.ev;
-  if (!!ev) {
+export function ehToQuake(exHead: MS3ExtraHeader): Quake|null {
+  const bag = extractBagEH(exHead);
+  const ev = bag?.ev;
+  if (isValidBagEventJsonEHType(ev)) {
     const time = isoToDateTime(ev.time);
     return createQuakeFromValues("extraheader", time, ev.la, ev.lo, ev.dp);
   }
   return null;
 }
 
-export function extractSacEH(jsonEH: Record<string, unknown>): SacJsonEHType|null {
+export function extractBagEH(jsonEH: Record<string, unknown>): EHBag|null {
   if (!jsonEH || typeof jsonEH !== 'object') {
     return null;
   }
-  const eh = jsonEH as ExtraHeaderType;
-  if (typeof eh.sac === 'undefined') {
+  const eh = jsonEH as MS3ExtraHeader;
+  if (typeof eh.bag != 'object') {
     return null
   }
-  const object = eh.sac as Record<string, unknown>;
-  if (isValidSacJsonEHType(object)) {
+  const object = eh.bag as Record<string, unknown>;
+  if (isValidBagJsonEHType(object)) {
     return object;
   } else {
-    throw new TypeError(`Oops, we did not get sac extra header JSON!`);
+    throw new TypeError(`Oops, we did not get Bag extra header JSON!`);
   }
 }
 
-export type StationEHType = {
-  la: number;
-  lo: number;
-  elev?: number;
-  dp?: number;
-  code?: string;
-};
-export type OriginEHType = {
-  la: number;
-  lo: number;
-  time: string;
-  dp: number;
-  mag?: number;
-  magtype?: string;
-}
-
-/**
- * Type for basic seismology json extra headers
- *
- */
-export type SacJsonEHType = {
-  st?: StationEHType;
-  ev?: OriginEHType;
-  gcarc?: number;
-  pick?: Array<PickEHType>;
-};
-export type PickEHType = {
-  time: string;
-  name: string;
-  amp: number;
-}
-export type ExtraHeaderType = {
-  sac: SacJsonEHType|undefined;
-}
 
 
 /**
  * Verifies that JSON matches the types we expect, for typescript.
  *
- * @param  v sac station JSON object, usually from MSeed3 extra headers
+ * @param  v Bag station JSON object, usually from MSeed3 extra headers
  * @returns   true if matches expected structure
  */
-export function isValidSacStationJsonEHType(v: unknown): v is StationEHType {
+export function isValidBagStationJsonEHType(v: unknown): v is EHStation {
   if (!v || typeof v !== 'object') {
     return false;
   }
@@ -88,10 +61,10 @@ export function isValidSacStationJsonEHType(v: unknown): v is StationEHType {
 /**
  * Verifies that JSON matches the types we expect, for typescript.
  *
- * @param  v sac station JSON object, usually from MSeed3 extra headers
+ * @param  v Bag origin JSON object, usually from MSeed3 extra headers
  * @returns   true if matches expected structure
  */
-export function isValidSacEventJsonEHType(v: unknown): v is OriginEHType {
+export function isValidBagEventJsonEHType(v: unknown): v is EHOrigin {
   if (!v || typeof v !== 'object') {
     return false;
   }
@@ -108,17 +81,17 @@ export function isValidSacEventJsonEHType(v: unknown): v is OriginEHType {
 /**
  * Verifies that JSON matches the types we expect, for typescript.
  *
- * @param  v sac JSON object, usually from MSeed3 extra headers
+ * @param  v Bag JSON object, usually from MSeed3 extra headers
  * @returns   true if matches expected structure
  */
-export function isValidSacJsonEHType(v: unknown): v is SacJsonEHType {
+export function isValidBagJsonEHType(v: unknown): v is EHBag {
   if (!v || typeof v !== 'object') {
     return false;
   }
   const object = v as Record<string, unknown>;
 
-  if ( ! ( (typeof object.st === 'undefined' || isValidSacStationJsonEHType(object.st)) &&
-      (typeof object.ev === 'undefined' || isValidSacEventJsonEHType(object.ev)) &&
+  if ( ! ( (typeof object.st === 'undefined' || isValidBagStationJsonEHType(object.st)) &&
+      (typeof object.ev === 'undefined' || isValidBagEventJsonEHType(object.ev)) &&
       (typeof object.gcarc === 'undefined' || typeof object.gcard === 'number') &&
       (typeof object.az === 'undefined' || typeof object.az === 'number') &&
       (typeof object.baz === 'undefined' || typeof object.baz === 'number')
