@@ -28,15 +28,15 @@ const fileList = [
 
 const fileSizeMap = new Map();
 fileSizeMap.set('test/mseed3/reference-data/reference-detectiononly.mseed3',328);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-All.mseed3',3792);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-Other.mseed3',1148);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-TQ-TC-ED.mseed3',1317);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-All.mseed3',4432);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-FDSN-Other.mseed3',1788);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-TQ-TC-ED.mseed3',1957);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-float32.mseed3',2059);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-float64.mseed3',4059);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int16.mseed3',859);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int16.mseed3',499);
 fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-int32.mseed3',2059);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1.mseed3',955);
-fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim2.mseed3',955);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim1.mseed3',1595);
+fileSizeMap.set('test/mseed3/reference-data/reference-sinusoid-steim2.mseed3',1595);
 fileSizeMap.set('test/mseed3/reference-data/reference-text.mseed3',294);
 
 //  fileList = fileList.slice(2,3);
@@ -149,15 +149,15 @@ test("crc-32c of a string", () => {
 
 test("text output vs mseed2text", function() {
   const ctext = [
-"FDSN:XX_TEST__M_H_Z, version 1, 955 bytes (format: 3)",
+"FDSN:XX_TEST__M_H_Z, version 1, 1595 bytes (format: 3)",
 "             start time: 2022-06-05T20:32:38.123456789Z (156)",
-"      number of samples: 500",
+"      number of samples: 499",
 "       sample rate (Hz): 5",
 "                  flags: [00000100] 8 bits",
 "                         [Bit 2] Clock locked",
-"                    CRC: 0xC282132F",
+"                    CRC: 0x90B59769",
 "    extra header length: 0 bytes",
-"    data payload length: 896 bytes",
+"    data payload length: 1536 bytes",
 "       payload encoding: STEIM-2 integer compression (val: 11)",
   ];
   const filename = 'test/mseed3/reference-data/reference-sinusoid-steim2.mseed3';
@@ -174,8 +174,8 @@ test("text output vs mseed2text", function() {
   expect(parsed.length).toEqual(1);
   const xr = parsed[0];
   const xh = xr.header;
-  expect(mseed3.crcToHexString(readCRC)).toEqual("0xC282132F");
-  expect(readCRC).toEqual(0xC282132F);
+  expect(mseed3.crcToHexString(readCRC)).toEqual("0x90B59769");
+  expect(readCRC).toEqual(0x90B59769);
   expect(readCRC).toEqual(xr.header.crc);
   const xhStr = xh.toString().split('\n');
   expect(xhStr.length).toEqual(ctext.length);

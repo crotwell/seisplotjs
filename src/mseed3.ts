@@ -160,6 +160,12 @@ export function parseMSeed3Records(
   let offset = 0;
 
   while (offset < arrayBuffer.byteLength) {
+    if (offset > arrayBuffer.byteLength - FIXED_HEADER_SIZE) {
+
+        throw new Error(
+          `Not enough bytes left for header, ${arrayBuffer.byteLength -offset} at offset=${offset}`,
+        );
+    }
     const dataView = new DataView(arrayBuffer, offset);
 
     if (!(dataView.getUint8(0) === 77 && dataView.getUint8(1) === 83)) {
