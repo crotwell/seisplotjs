@@ -2234,6 +2234,7 @@ export function createQuakeFromValues(
   const quake = new Quake();
   quake.publicId = publicId;
   quake.originList.push(origin);
+  quake.preferredOrigin = origin;
   return quake;
 }
 
