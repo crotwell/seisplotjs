@@ -6,47 +6,28 @@
  */
 
 /**
- * Standard metadata about a seismogram.
+ * Common metadata json about a seismogram.
  */
-export interface MS3ExtraHeader {
-  bag?: Bag;
+export interface BagExtraHeader {
+  y?: Timeseries;
+  st?: Station;
+  ev?: Event;
+  path?: Path;
+  mark?: Marker[];
   [k: string]: unknown;
 }
 /**
- * Common seismic values that are useful to embed in header
+ * timeseries amplitude and processing state
  */
-export interface Bag {
+export interface Timeseries {
   /**
-   * timeseries amplitude
+   * si units of the timeseries amplitude, ex m/s m/s2
    */
-  y?: {
-    /**
-     * si units of the timeseries amplitude, ex m/s m/s2
-     */
-    si?: string;
-    [k: string]: unknown;
-  };
-  st?: Station;
-  ev?: Origin;
+  si: string;
   /**
-   * path between source and receiver
+   * basic processing type. Raw is unprocessed, gain has scalar gain/units, corrected transfer of frequency response, processed further userlevel processing
    */
-  path?: {
-    /**
-     * great circle arc distance in degrees, for uses when only distance is needed
-     */
-    gcarc?: number;
-    /**
-     * great circle azimuth degrees from event to station, for uses when only distance is needed
-     */
-    az?: number;
-    /**
-     * great circle back azimuth in degrees back from station to event, for uses when only distance is needed
-     */
-    baz?: number;
-    [k: string]: unknown;
-  };
-  mark?: Marker[];
+  proc?: "raw" | "gain" | "corrected" | "synth" | "processed";
   [k: string]: unknown;
 }
 /**
@@ -74,6 +55,18 @@ export interface Station {
 /**
  * source earthquake
  */
+export interface Event {
+  /**
+   * public identifier for earthquake
+   */
+  id?: string;
+  origin?: Origin;
+  mag?: Magnitude;
+  [k: string]: unknown;
+}
+/**
+ * origin, location and time
+ */
 export interface Origin {
   /**
    * origin time as ISO8601
@@ -91,17 +84,44 @@ export interface Origin {
    * depth in kilometers
    */
   dp: number;
+  [k: string]: unknown;
+}
+/**
+ * magnitude
+ */
+export interface Magnitude {
   /**
    * magnitude value
    */
-  mag?: number;
+  val: number;
   /**
    * magnitude type
    */
-  magtype?: string;
+  type?: string;
+  [k: string]: unknown;
+}
+/**
+ * path between source and receiver
+ */
+export interface Path {
+  /**
+   * great circle arc distance in degrees, for uses when only distance is needed
+   */
+  gcarc?: number;
+  /**
+   * great circle azimuth degrees from event to station, for uses when only distance is needed
+   */
+  az?: number;
+  /**
+   * great circle back azimuth in degrees back from station to event, for uses when only distance is needed
+   */
+  baz?: number;
   [k: string]: unknown;
 }
 export interface Marker {
+  /**
+   * marker time as ISO8601
+   */
   time: string;
   name: string;
   amp?: number;
