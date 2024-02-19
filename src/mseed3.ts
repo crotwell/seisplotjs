@@ -511,6 +511,31 @@ export class MSeed3Header {
     return FIXED_HEADER_SIZE + this.identifier.length;
   }
 
+  encodingName(): string {
+    let encode_name = "unknown";
+
+    if (this.encoding === 0) {
+      encode_name = "Text";
+    } else if (this.encoding === 1) {
+      encode_name = "16-bit integer";
+    } else if (this.encoding === 3) {
+      encode_name = "32-bit integer";
+    } else if (this.encoding === 4) {
+      encode_name = "32-bit float";
+    } else if (this.encoding === 5) {
+      encode_name = "64-bit float";
+    } else if (this.encoding === 11) {
+      encode_name = "STEIM-2 integer compression";
+    } else if (this.encoding === 10) {
+      encode_name = "STEIM-1 integer compression";
+    } else if (this.encoding === 19) {
+      encode_name = "STEIM-3 integer compression";
+    } else if (this.encoding === 100) {
+      encode_name = "Opaque data";
+    }
+    return encode_name;
+  }
+
   /**
    * Text representation of the miniseed3 header. This is modeled after
    * the output of mseed3-text from the mseed3-utils package from IRIS.
@@ -535,15 +560,8 @@ export class MSeed3Header {
                   }
                 }
       */
-    let encode_name = "unknown";
+    let encode_name = this.encodingName();
 
-    if (this.encoding === 0) {
-      encode_name = "Text";
-    } else if (this.encoding === 11) {
-      encode_name = "STEIM-2 integer compression";
-    } else if (this.encoding === 10) {
-      encode_name = "STEIM-1 integer compression";
-    }
     let bitFlagStr = "";
     if (this.flags & 0x01) {
       bitFlagStr = `${bitFlagStr}
