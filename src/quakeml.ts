@@ -2223,14 +2223,14 @@ export function createQuakeFromValues(
   time: DateTime,
   latitude: number,
   longitude: number,
-  depth: number,
+  depth_meter: number,
 ): Quake {
   const origin = new Origin(
     new Quantity(time),
     new Quantity(latitude),
     new Quantity(longitude),
   );
-  origin.depth = new Quantity(depth);
+  origin.depth = new Quantity(depth_meter);
   const quake = new Quake();
   quake.publicId = publicId;
   quake.originList.push(origin);
