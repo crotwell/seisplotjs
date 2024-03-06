@@ -531,6 +531,8 @@ export class BTime {
  * @returns        true is byte order appears to be wrong, false if it seems ok
  */
 export function checkByteSwap(bTime: BTime): boolean {
+  // IRIS syngine uses 1900-01-01 start if no eq
+  if (bTime.year === 1900 && bTime.jday === 1 ) {return false;}
   return bTime.year < 1960 || bTime.year > 2055;
 }
 
