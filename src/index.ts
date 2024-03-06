@@ -46,6 +46,7 @@ import * as seismogram from "./seismogram";
 import * as seismogramloader from "./seismogramloader";
 import * as seismogramsegment from "./seismogramsegment";
 import * as seismograph from "./seismograph";
+import * as seismographmarker from "./seismographmarker";
 import * as seismographutil from "./seismographutil";
 import * as seismographconfig from "./seismographconfig";
 import * as seismographconfigeditor from "./seismographconfigeditor";
@@ -104,6 +105,7 @@ export {
   seismogramloader,
   seismogramsegment,
   seismograph,
+  seismographmarker,
   seismographutil,
   seismographconfig,
   seismographconfigeditor,
