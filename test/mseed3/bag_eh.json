@@ -1,0 +1,68 @@
+
+{
+  "bag": {
+    "st": {
+      "lo": 0,
+      "la": 0,
+      "elev": 0,
+      "dp": 0
+    },
+    "ev": {
+      "origin": {
+        "lo": 15,
+        "la": 0,
+        "time": "1970-01-01T00:00:00Z",
+        "dp": 10
+      },
+      "mag": {
+        "val": 1.2,
+        "type": "md"
+      }
+    },
+    "path": {
+      "gcarc": 15
+    },
+    "mark": [
+      {
+        "mtype": "predicted",
+        "name": "P",
+        "time": "1970-01-01T00:03:32.015Z"
+      },
+      {
+        "mtype": "predicted",
+        "name": "P",
+        "time": "1970-01-01T00:03:32.016Z"
+      },
+      {
+        "mtype": "predicted",
+        "name": "P",
+        "time": "1970-01-01T00:03:32.191Z"
+      },
+      {
+        "mtype": "predicted",
+        "name": "P",
+        "time": "1970-01-01T00:03:37.500Z"
+      },
+      {
+        "mtype": "predicted",
+        "name": "P",
+        "time": "1970-01-01T00:03:37.563Z"
+      },
+      {
+        "mtype": "predicted",
+        "name": "S",
+        "time": "1970-01-01T00:06:19.318Z"
+      },
+      {
+        "mtype": "predicted",
+        "name": "S",
+        "time": "1970-01-01T00:06:36.698Z"
+      },
+      {
+        "mtype": "predicted",
+        "name": "S",
+        "time": "1970-01-01T00:06:36.746Z"
+      }
+    ]
+  }
+}
