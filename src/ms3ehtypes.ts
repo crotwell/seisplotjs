@@ -6,7 +6,14 @@
  */
 
 /**
- * Common metadata json about a seismogram.
+ * Standard metadata about a seismogram.
+ */
+export interface MS3ExtraHeader {
+  bag?: BagExtraHeader;
+  [k: string]: unknown;
+}
+/**
+ * Common seismic values that are useful to embed in header
  */
 export interface BagExtraHeader {
   y?: Timeseries;
@@ -62,6 +69,7 @@ export interface Event {
   id?: string;
   origin?: Origin;
   mag?: Magnitude;
+  mt?: MomentTensor;
   [k: string]: unknown;
 }
 /**
@@ -101,6 +109,20 @@ export interface Magnitude {
   [k: string]: unknown;
 }
 /**
+ * moment tensor
+ */
+export interface MomentTensor {
+  /**
+   * scalar moment, M0
+   */
+  moment?: number;
+  /**
+   * 3x3 symmetric tensor, 6 values, often scaled by the scalar moment
+   */
+  tensor?: unknown[];
+  [k: string]: unknown;
+}
+/**
  * path between source and receiver
  */
 export interface Path {
@@ -124,6 +146,8 @@ export interface Marker {
    */
   time: string;
   name: string;
+  mtype?: string;
   amp?: number;
+  desc?: string;
   [k: string]: unknown;
 }

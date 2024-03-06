@@ -3,6 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
+import {ehToMarkers} from "./mseed3eh";
 import { FDSNSourceId } from "./fdsnsourceid";
 import { isDef, UTC_OPTIONS } from "./util";
 import {
@@ -14,7 +15,7 @@ import {
   STEIM2,
 } from "./seedcodec";
 import { SeismogramSegment } from "./seismogramsegment";
-import { Seismogram } from "./seismogram";
+import { Seismogram, SeismogramDisplayData } from "./seismogram";
 import {
   DataRecord,
   R_TYPECODE,
@@ -988,6 +989,31 @@ export function seismogramPerChannel(
   const out: Array<Seismogram> = [];
   const byChannelMap = byChannel(drList);
   byChannelMap.forEach((segments) => out.push(merge(segments)));
+  return out;
+}
+/**
+ * splits the MSeed3Records by channel and creates a single
+ * SeismogramDisplayData for each channel. BAG extra headers
+ * are extracted and Quake and Markers are created.
+ *
+ * @param   drList MSeed3Records array
+ * @returns         Map of code to Seismogram
+ */
+export function sddPerChannel(
+  drList: Array<MSeed3Record>,
+): Array<SeismogramDisplayData> {
+  const out: Array<SeismogramDisplayData> = [];
+  const byChannelMap = byChannel(drList);
+  byChannelMap.forEach((segments) => {
+    const sdd = SeismogramDisplayData.fromSeismogram(merge(segments));
+    out.push(sdd);
+    segments.forEach(seg => {
+      const marks = ehToMarkers(seg.extraHeaders);
+      marks.forEach(mark => sdd.addMarker(mark));
+            // maybe should dedup list???
+    });
+
+  });
   return out;
 }
 
