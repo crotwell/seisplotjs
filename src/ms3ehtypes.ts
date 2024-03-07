@@ -24,11 +24,11 @@ export interface BagExtraHeader {
   [k: string]: unknown;
 }
 /**
- * timeseries amplitude and processing state
+ * timeseries units and processing state
  */
 export interface Timeseries {
   /**
-   * si units of the timeseries amplitude, ex m/s m/s2
+   * si units of the timeseries amplitude, ex: count, m/s, m/s2
    */
   si: string;
   /**
@@ -52,7 +52,7 @@ export interface Station {
   /**
    * elevation in meters
    */
-  elev?: number;
+  el?: number;
   /**
    * depth below surface in meters
    */
@@ -67,7 +67,7 @@ export interface Event {
    * public identifier for earthquake
    */
   id?: string;
-  origin?: Origin;
+  or?: Origin;
   mag?: Magnitude;
   mt?: MomentTensor;
   [k: string]: unknown;
@@ -79,7 +79,7 @@ export interface Origin {
   /**
    * origin time as ISO8601
    */
-  time: string;
+  tm: string;
   /**
    * latitude in degrees
    */
@@ -101,11 +101,11 @@ export interface Magnitude {
   /**
    * magnitude value
    */
-  val: number;
+  v: number;
   /**
    * magnitude type
    */
-  type?: string;
+  t?: string;
   [k: string]: unknown;
 }
 /**
@@ -115,7 +115,7 @@ export interface MomentTensor {
   /**
    * scalar moment, M0
    */
-  moment?: number;
+  moment: number;
   /**
    * 3x3 symmetric tensor, 6 values, often scaled by the scalar moment
    */
@@ -144,8 +144,14 @@ export interface Marker {
   /**
    * marker time as ISO8601
    */
-  time: string;
-  name: string;
+  tm: string;
+  /**
+   * name of the marker, like P
+   */
+  n: string;
+  /**
+   * type of marker, usual 'pk' for measurement/pick on data or 'md' for predicted from model
+   */
   mtype?: string;
   amp?: number;
   desc?: string;

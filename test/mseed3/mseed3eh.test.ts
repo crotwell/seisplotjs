@@ -15,7 +15,7 @@ const filename = "test/mseed3/testeh.ms3";
 test("bag mseed3 extra headers"+filename, () => {
   expect(fs.existsSync(filename)).toEqual(true);
   const xData = fs.readFileSync(filename);
-  expect(xData.length).toEqual(269);
+  expect(xData.length).toEqual(4322);
   expect(xData[0]).toEqual(77);
   expect(xData[1]).toEqual(83);
   expect(xData[2]).toEqual(3);
@@ -27,12 +27,13 @@ test("bag mseed3 extra headers"+filename, () => {
   const parsed = mseed3.parseMSeed3Records(ab);
   expect(parsed.length).toEqual(1);
   const rec = parsed[0];
-  expect(mseed3.crcToHexString(rec.header.crc)).toEqual("0xF785D35F");
+  expect(mseed3.crcToHexString(rec.header.crc)).toEqual("0x4F8F5F90");
   const eh = rec.extraHeaders as MS3ExtraHeader; // fake out typescript
   expect(eh).toBeDefined();
   expect((typeof eh)).toEqual("object");
   console.log(eh);
-  expect(mseed3eh.isValidBagOriginJsonEHType(eh?.bag?.ev?.origin)).toBeTrue();
+  expect(eh?.bag?.ev?.or).toBeDefined();
+  expect(mseed3eh.isValidBagOriginJsonEHType(eh?.bag?.ev?.or)).toBeTrue();
   expect(mseed3eh.isValidBagMagJsonEHType(eh?.bag?.ev?.mag)).toBeTrue();
   expect(mseed3eh.isValidBagEventJsonEHType(eh?.bag?.ev)).toBeTrue();
 
@@ -51,7 +52,7 @@ test("validate bag mseed3 extra headers"+bag_eh_filename, () => {
     const dataView = new DataView(ab);
     const jsonEH = JSON.parse(mseed3.makeString(dataView, 0, dataView.byteLength));
     expect(mseed3eh.isValidBagStationJsonEHType(jsonEH.bag.st)).toBeTrue();
-    expect(mseed3eh.isValidBagOriginJsonEHType(jsonEH?.bag?.ev?.origin)).toBeTrue();
+    expect(mseed3eh.isValidBagOriginJsonEHType(jsonEH?.bag?.ev?.or)).toBeTrue();
     expect(mseed3eh.isValidBagMagJsonEHType(jsonEH?.bag?.ev?.mag)).toBeTrue();
     expect(mseed3eh.isValidBagEventJsonEHType(jsonEH?.bag?.ev)).toBeTrue();
     expect(mseed3eh.isValidBagJsonEHType(jsonEH)).toBeTrue();

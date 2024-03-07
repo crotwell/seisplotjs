@@ -1,7 +1,7 @@
 
 
 //import {MSeed3Record} from "./mseed3";
-import {Quake, createQuakeFromValues} from "./quakeml";
+import {Quake, createQuakeFromValues, Magnitude} from "./quakeml";
 import {
   MS3ExtraHeader,
   Marker as EHMarker,
@@ -19,12 +19,28 @@ export const STD_EH = "bag";
 
 export function ehToQuake(exHead: MS3ExtraHeader): Quake|null {
   const bag = extractBagEH(exHead);
-  const origin = bag?.ev?.origin;
+  const origin = bag?.ev?.or;
+  let q = null;
   if (origin != null) {
-    const time = isoToDateTime(origin.time);
-    return createQuakeFromValues("extraheader", time, origin.la, origin.lo, origin.dp);
+    const time = isoToDateTime(origin.tm);
+    q = createQuakeFromValues("extraheader", time, origin.la, origin.lo, origin.dp*1000);
+    if (bag?.ev?.mag?.v != null) {
+      const magtype = bag.ev.mag.t == null ? "" : bag.ev.mag.t;
+      const mag = new Magnitude(bag.ev.mag.v, magtype);
+      q.preferredMagnitude = mag;
+    }
   }
-  return null;
+  return q;
+}
+
+export function markerTypeFromEH(mtype: string): string {
+  if (mtype === "pk" || mtype === "pick") {
+    return "pick";
+  }
+  if (mtype === "md" || mtype === "predicted") {
+    return "predicted";
+  }
+  return mtype;
 }
 
 export function ehToMarkers(exHead: MS3ExtraHeader): Array<MarkerType> {
@@ -33,9 +49,9 @@ export function ehToMarkers(exHead: MS3ExtraHeader): Array<MarkerType> {
   if (markList != null) {
     return markList.map(m => {
       return {
-        time: isoToDateTime(m.time),
-        name: m.name,
-        markertype: m.mtype == null ? "unknown" : m.mtype,
+        time: isoToDateTime(m.tm),
+        name: m.n,
+        markertype: m.mtype == null ? "unknown" : markerTypeFromEH(m.mtype),
         description: m.desc == null ? "" : m.desc
       };
     });
@@ -80,8 +96,8 @@ export function isValidBagStationJsonEHType(v: unknown): v is EHStation {
   if (typeof object.lo !== 'number') {
     reason += `lo not numner: ${object.lo}`;
   }
-  if ( ! (typeof object.evel === 'undefined' || typeof object.evel === 'number')) {
-    reason += `elev not number: ${object.evel}`;
+  if ( ! (typeof object.el === 'undefined' || typeof object.el === 'number')) {
+    reason += `elev not number: ${object.el}`;
   }
   if ( ! (typeof object.dp === 'undefined' || typeof object.dp === 'number')) {
     reason += `dp not number: ${object.dp}`;
@@ -89,8 +105,11 @@ export function isValidBagStationJsonEHType(v: unknown): v is EHStation {
   const answer = typeof object.la === 'number' &&
     typeof object.lo === 'number' &&
     (typeof object.code === 'undefined' || typeof object.code === 'string') &&
-    (typeof object.evel === 'undefined' || typeof object.evel === 'number') &&
+    (typeof object.el === 'undefined' || typeof object.el === 'number') &&
     (typeof object.dp === 'undefined' || typeof object.dp === 'number');
+  if ( ! answer) {
+    console.log(`Station EH fail: ${reason}`);
+  }
   return answer;
 }
 
@@ -106,7 +125,7 @@ export function isValidBagEventJsonEHType(v: unknown): v is EHEvent {
   }
   const object = v as Record<string, unknown>;
   return (typeof object.id === 'undefined' || typeof object.id === 'string') &&
-    (typeof object.origin === 'undefined' || isValidBagOriginJsonEHType(object.origin)) &&
+    (typeof object.or === 'undefined' || isValidBagOriginJsonEHType(object.or)) &&
     (typeof object.mag === 'undefined' || isValidBagMagJsonEHType(object.mag)) &&
     (typeof object.mt === 'undefined' || typeof object.mt === 'object');
 }
@@ -125,10 +144,7 @@ export function isValidBagOriginJsonEHType(v: unknown): v is EHOrigin {
   return typeof object.la === 'number' &&
     typeof object.lo === 'number' &&
     typeof object.dp === 'number' &&
-    typeof object.time === 'string' &&
-    (typeof object.magtype === 'undefined' || typeof object.magtype === 'string') &&
-    (typeof object.mag === 'undefined' || typeof object.mag === 'number') &&
-    (typeof object.dp === 'undefined' || typeof object.dp === 'number');
+    typeof object.tm === 'string';
 }
 
 /**
@@ -142,8 +158,8 @@ export function isValidBagMagJsonEHType(v: unknown): v is EHMagnitude {
     return false;
   }
   const object = v as Record<string, unknown>;
-  return (typeof object.val === 'undefined' || typeof object.val === 'number') &&
-    (typeof object.type === 'undefined' || typeof object.type === 'string');
+  return (typeof object.v === 'undefined' || typeof object.v === 'number') &&
+    (typeof object.t === 'undefined' || typeof object.t === 'string');
 }
 
 /**
@@ -174,9 +190,10 @@ export function isValidBagMarkJsonEHType(v: unknown): v is EHMarker {
     return false;
   }
   const object = v as Record<string, unknown>;
-  return (typeof object.name === 'string') &&
-    (typeof object.time === 'string') &&
-    (typeof object.mtype === 'undefined' || typeof object.mtype === 'string');
+  return (typeof object.n === 'string') &&
+    (typeof object.tm === 'string') &&
+    (typeof object.mtype === 'undefined' || typeof object.mtype === 'string') &&
+    (typeof object.desc === 'undefined' || typeof object.desc === 'string');
 }
 
 /**

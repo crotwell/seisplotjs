@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {ehToMarkers} from "./mseed3eh";
+import {ehToMarkers, ehToQuake} from "./mseed3eh";
 import { FDSNSourceId } from "./fdsnsourceid";
 import { isDef, UTC_OPTIONS } from "./util";
 import {
@@ -1008,6 +1008,10 @@ export function sddPerChannel(
     const sdd = SeismogramDisplayData.fromSeismogram(merge(segments));
     out.push(sdd);
     segments.forEach(seg => {
+      const q = ehToQuake(seg.extraHeaders);
+      if (q != null) {
+        sdd.addQuake(q);
+      }
       const marks = ehToMarkers(seg.extraHeaders);
       marks.forEach(mark => sdd.addMarker(mark));
             // maybe should dedup list???
