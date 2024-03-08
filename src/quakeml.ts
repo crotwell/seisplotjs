@@ -782,6 +782,10 @@ export class Origin extends BaseElement {
     }
   }
 
+  get depthKm(): number {
+    return this.depth / 1000;
+  }
+  
   get depth(): number {
     return this.depthQuantity?.value ?? NaN;
   }

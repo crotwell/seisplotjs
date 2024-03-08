@@ -1,19 +1,21 @@
 
 
 //import {MSeed3Record} from "./mseed3";
+import {FDSNSourceId} from "./fdsnsourceid";
 import {Quake, createQuakeFromValues, Magnitude} from "./quakeml";
+import {Network, Station, Channel} from "./stationxml";
 import {
   MS3ExtraHeader,
   Marker as EHMarker,
   Event as EHEvent,
   Origin as EHOrigin,
   Magnitude as EHMagnitude,
-  Station as EHStation,
+  Channel as EHChannel,
   Timeseries as EHTimeseries,
   BagExtraHeader as EHBag,
 } from "./ms3ehtypes";
 import {MarkerType} from "./seismographmarker";
-import { isoToDateTime } from "./util";
+import { isoToDateTime, stringify } from "./util";
 
 export const STD_EH = "bag";
 
@@ -31,6 +33,63 @@ export function ehToQuake(exHead: MS3ExtraHeader): Quake|null {
     }
   }
   return q;
+}
+
+export function quakeToEH(quake: Quake): EHEvent {
+  const ehEvent = {} as EHEvent;
+  if (quake.publicId != null) { ehEvent.id = quake.publicId;}
+  if (quake.preferredOrigin != null) {
+    const or = quake.origin;
+    const isoTime = or.time.toISO();
+    if (isoTime == null) {
+      throw new Error(`Bad origin time: ${stringify(or.time)}`);
+    }
+    ehEvent.or = {
+      tm: isoTime,
+      la: or.latitude,
+      lo: or.longitude,
+      dp: or.depthKm
+    };
+  }
+  if (quake.preferredMagnitude != null) {
+    ehEvent.mag = {
+      v: quake.preferredMagnitude.mag,
+      t: quake.preferredMagnitude.type
+    };
+  }
+  return ehEvent;
+}
+
+export function channelToEH(channel: Channel): EHChannel {
+  return {
+    la: channel.latitude,
+    lo: channel.longitude,
+    el: channel.elevation,
+    dp: channel.depth,
+    az: channel.azimuth,
+    dip: channel.dip
+  }
+}
+
+export function ehToChannel(exHead: MS3ExtraHeader, sid: FDSNSourceId): Channel|null {
+  const bag = extractBagEH(exHead);
+  const ch = bag?.ch;
+  let channel = null;
+  if (ch != null) {
+    const net = new Network(sid.networkCode);
+    const sta = new Station(net, sid.stationCode);
+    sta.latitude = ch.la;
+    sta.longitude = ch.lo;
+    if (ch.el != null) { sta.elevation = ch.el;}
+    const channel = new Channel(sta, sid.locationCode, sid.formChannelCode());
+    channel.latitude = ch.la;
+    channel.longitude = ch.lo;
+    if (ch.dp != null) { channel.depth = ch.dp;}
+    if (ch.el != null) { channel.elevation = ch.el;}
+    if (ch.az != null) { channel.azimuth = ch.az;}
+    if (ch.dip != null) { channel.dip = ch.dip;}
+  }
+  return channel;
 }
 
 export function markerTypeFromEH(mtype: string): string {
@@ -83,7 +142,7 @@ export function extractBagEH(jsonEH: Record<string, unknown>): EHBag|null {
  * @param  v Bag station JSON object, usually from MSeed3 extra headers
  * @returns   true if matches expected structure
  */
-export function isValidBagStationJsonEHType(v: unknown): v is EHStation {
+export function isValidBagChannelJsonEHType(v: unknown): v is EHChannel {
   if (!v || typeof v !== 'object') {
     return false;
   }
@@ -223,7 +282,7 @@ export function isValidBagJsonEHType(v: unknown): v is EHBag {
   }
   const object = v as Record<string, unknown>;
 
-  if ( ! ( (typeof object.st === 'undefined' || isValidBagStationJsonEHType(object.st)) &&
+  if ( ! ( (typeof object.st === 'undefined' || isValidBagChannelJsonEHType(object.st)) &&
       (typeof object.ev === 'undefined' || isValidBagEventJsonEHType(object.ev)) &&
       (typeof object.path === 'undefined' || isValidBagPathJsonEHType(object.path)) &&
       (typeof object.y === 'undefined' || typeof object.y === 'object') &&

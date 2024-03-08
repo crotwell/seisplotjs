@@ -17,7 +17,7 @@ export interface MS3ExtraHeader {
  */
 export interface BagExtraHeader {
   y?: Timeseries;
-  st?: Station;
+  ch?: Channel;
   ev?: Event;
   path?: Path;
   mark?: Marker[];
@@ -38,9 +38,9 @@ export interface Timeseries {
   [k: string]: unknown;
 }
 /**
- * receiver station
+ * recording station/channel
  */
-export interface Station {
+export interface Channel {
   /**
    * latitude in degrees
    */
@@ -57,6 +57,14 @@ export interface Station {
    * depth below surface in meters
    */
   dp?: number;
+  /**
+   * channel azimuth from north in degrees
+   */
+  az?: number;
+  /**
+   * channel dip from horizontal in degrees, up is -90
+   */
+  dip?: number;
   [k: string]: unknown;
 }
 /**

@@ -51,7 +51,7 @@ test("validate bag mseed3 extra headers"+bag_eh_filename, () => {
     const ab = ehData.buffer.slice(ehData.byteOffset, ehData.byteOffset + ehData.byteLength);
     const dataView = new DataView(ab);
     const jsonEH = JSON.parse(mseed3.makeString(dataView, 0, dataView.byteLength));
-    expect(mseed3eh.isValidBagStationJsonEHType(jsonEH.bag.st)).toBeTrue();
+    expect(mseed3eh.isValidBagChannelJsonEHType(jsonEH.bag.ch)).toBeTrue();
     expect(mseed3eh.isValidBagOriginJsonEHType(jsonEH?.bag?.ev?.or)).toBeTrue();
     expect(mseed3eh.isValidBagMagJsonEHType(jsonEH?.bag?.ev?.mag)).toBeTrue();
     expect(mseed3eh.isValidBagEventJsonEHType(jsonEH?.bag?.ev)).toBeTrue();
