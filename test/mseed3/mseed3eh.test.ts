@@ -31,7 +31,6 @@ test("bag mseed3 extra headers"+filename, () => {
   const eh = rec.extraHeaders as MS3ExtraHeader; // fake out typescript
   expect(eh).toBeDefined();
   expect((typeof eh)).toEqual("object");
-  console.log(eh);
   expect(eh?.bag?.ev?.or).toBeDefined();
   expect(mseed3eh.isValidBagOriginJsonEHType(eh?.bag?.ev?.or)).toBeTrue();
   expect(mseed3eh.isValidBagMagJsonEHType(eh?.bag?.ev?.mag)).toBeTrue();
@@ -41,10 +40,10 @@ test("bag mseed3 extra headers"+filename, () => {
   const q = mseed3eh.ehToQuake(eh);
   expect(q).not.toBeNull();
   expect(q?.origin).toBeDefined();
-  expect(q?.origin?.time).toEqual(qtime)
+  expect(q?.origin?.time).toEqual(qtime);
 });
 
-const bag_eh_filename = "test/mseed3/bag_eh.json"
+const bag_eh_filename = "test/mseed3/bag_eh.json";
 test("validate bag mseed3 extra headers"+bag_eh_filename, () => {
     expect(fs.existsSync(bag_eh_filename)).toEqual(true);
     const ehData = fs.readFileSync(bag_eh_filename);

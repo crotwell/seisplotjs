@@ -68,13 +68,13 @@ export function channelToEH(channel: Channel): EHChannel {
     dp: channel.depth,
     az: channel.azimuth,
     dip: channel.dip
-  }
+  };
 }
 
 export function ehToChannel(exHead: MS3ExtraHeader, sid: FDSNSourceId): Channel|null {
   const bag = extractBagEH(exHead);
   const ch = bag?.ch;
-  let channel = null;
+  const channel = null;
   if (ch != null) {
     const net = new Network(sid.networkCode);
     const sta = new Station(net, sid.stationCode);
@@ -124,7 +124,7 @@ export function extractBagEH(jsonEH: Record<string, unknown>): EHBag|null {
   }
   const eh = jsonEH as MS3ExtraHeader;
   if (typeof eh.bag != 'object') {
-    return null
+    return null;
   }
   const object = eh.bag as Record<string, unknown>;
   if (isValidBagJsonEHType(object)) {
@@ -148,27 +148,27 @@ export function isValidBagChannelJsonEHType(v: unknown): v is EHChannel {
   }
   const object = v as Record<string, unknown>;
 
-  let reason = "";
-  if (typeof object.la !== 'number') {
-    reason += `la not numner: ${object.la}`;
-  }
-  if (typeof object.lo !== 'number') {
-    reason += `lo not numner: ${object.lo}`;
-  }
-  if ( ! (typeof object.el === 'undefined' || typeof object.el === 'number')) {
-    reason += `elev not number: ${object.el}`;
-  }
-  if ( ! (typeof object.dp === 'undefined' || typeof object.dp === 'number')) {
-    reason += `dp not number: ${object.dp}`;
-  }
   const answer = typeof object.la === 'number' &&
     typeof object.lo === 'number' &&
     (typeof object.code === 'undefined' || typeof object.code === 'string') &&
     (typeof object.el === 'undefined' || typeof object.el === 'number') &&
     (typeof object.dp === 'undefined' || typeof object.dp === 'number');
-  if ( ! answer) {
-    console.log(`Station EH fail: ${reason}`);
-  }
+  // if ( ! answer) {
+  //   let reason = "";
+  //   if (typeof object.la !== 'number') {
+  //     reason += `la not numner: ${typeof object.la}`;
+  //   }
+  //   if (typeof object.lo !== 'number') {
+  //     reason += `lo not numner: ${typeof object.lo}`;
+  //   }
+  //   if ( ! (typeof object.el === 'undefined' || typeof object.el === 'number')) {
+  //     reason += `elev not number: ${typeof object.el}`;
+  //   }
+  //   if ( ! (typeof object.dp === 'undefined' || typeof object.dp === 'number')) {
+  //     reason += `dp not number: ${typeof object.dp}`;
+  //   }
+  //   console.log(`Station EH fail: ${reason}`);
+  // }
   return answer;
 }
 

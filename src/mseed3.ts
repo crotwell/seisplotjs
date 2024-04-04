@@ -561,7 +561,7 @@ export class MSeed3Header {
                   }
                 }
       */
-    let encode_name = this.encodingName();
+    const encode_name = this.encodingName();
 
     let bitFlagStr = "";
     if (this.flags & 0x01) {
