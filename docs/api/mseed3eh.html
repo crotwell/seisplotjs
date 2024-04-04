@@ -1,0 +1,1376 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset='utf-8'>
+  <title>seisplotjs 3.1.4-alpha.2 | Documentation</title>
+  <meta name='description' content='Javascript library for parsing, manipulating and displaying seismic data.'>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <link href='assets/bass.css' rel='stylesheet'>
+  <link href='assets/style.css' rel='stylesheet'>
+  <link href='assets/github.css' rel='stylesheet'>
+  <link href='assets/split.css' rel='stylesheet'>
+</head>
+<body class='documentation m0'>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
+        <div class='py1 px2'>
+          <h3 class='mb0 no-anchor'>seisplotjs</h3>
+          <div class='mb1'><code>3.1.4-alpha.2</code></div>
+          <input
+            placeholder='Filter'
+            id='filter-input'
+            class='col12 block input'
+            spellcheck='false'
+            autocapitalize='off'
+            autocorrect='off'
+            type='text' />
+          <div id='toc'>
+            <ul class='list-reset h5 py1-ul'>
+              
+                
+                <li><a
+                  href='#std_eh'
+                  class="">
+                  STD_EH
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#ehtoquake'
+                  class="">
+                  ehToQuake
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#quaketoeh'
+                  class="">
+                  quakeToEH
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#channeltoeh'
+                  class="">
+                  channelToEH
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#ehtochannel'
+                  class="">
+                  ehToChannel
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#markertypefromeh'
+                  class="">
+                  markerTypeFromEH
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#ehtomarkers'
+                  class="">
+                  ehToMarkers
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#extractbageh'
+                  class="">
+                  extractBagEH
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isvalidbagchanneljsonehtype'
+                  class="">
+                  isValidBagChannelJsonEHType
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isvalidbageventjsonehtype'
+                  class="">
+                  isValidBagEventJsonEHType
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isvalidbagoriginjsonehtype'
+                  class="">
+                  isValidBagOriginJsonEHType
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isvalidbagmagjsonehtype'
+                  class="">
+                  isValidBagMagJsonEHType
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isvalidbagpathjsonehtype'
+                  class="">
+                  isValidBagPathJsonEHType
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isvalidbagmarkjsonehtype'
+                  class="">
+                  isValidBagMarkJsonEHType
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isvalidbagtimeseriesjsonehtype'
+                  class="">
+                  isValidBagTimeseriesJsonEHType
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#isvalidbagjsonehtype'
+                  class="">
+                  isValidBagJsonEHType
+                  
+                </a>
+                
+                </li>
+              
+            </ul>
+          </div>
+          <div class='mt1 h6 quiet'>
+            <a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
+          </div>
+        </div>
+      </div>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='std_eh'>
+      STD_EH
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L20-L20'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>STD_EH</div>
+  
+    <p>
+      Type:
+      <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>
+    </p>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='ehtoquake'>
+      ehToQuake
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L22-L36'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>ehToQuake(exHead: MS3ExtraHeader): (Quake | null)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>exHead</span> <code class='quiet'>(MS3ExtraHeader)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(Quake | null)</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='quaketoeh'>
+      quakeToEH
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L38-L61'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>quakeToEH(quake: Quake): EHEvent</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>quake</span> <code class='quiet'>(Quake)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>EHEvent</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='channeltoeh'>
+      channelToEH
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L63-L72'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>channelToEH(channel: Channel): EHChannel</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>channel</span> <code class='quiet'>(Channel)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>EHChannel</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='ehtochannel'>
+      ehToChannel
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L74-L93'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>ehToChannel(exHead: MS3ExtraHeader, sid: FDSNSourceId): (Channel | null)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>exHead</span> <code class='quiet'>(MS3ExtraHeader)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sid</span> <code class='quiet'>(FDSNSourceId)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(Channel | null)</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='markertypefromeh'>
+      markerTypeFromEH
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L95-L103'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>markerTypeFromEH(mtype: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>mtype</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='ehtomarkers'>
+      ehToMarkers
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L105-L119'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>ehToMarkers(exHead: MS3ExtraHeader): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;MarkerType></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>exHead</span> <code class='quiet'>(MS3ExtraHeader)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>&#x3C;MarkerType></code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='extractbageh'>
+      extractBagEH
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L121-L135'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>extractBagEH(jsonEH: Record&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, any>): (EHBag | null)</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>jsonEH</span> <code class='quiet'>(Record&#x3C;<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, any>)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(EHBag | null)</code>
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='isvalidbagchanneljsonehtype'>
+      isValidBagChannelJsonEHType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L145-L173'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Verifies that JSON matches the types we expect, for typescript.</p>
+
+    <div class='pre p1 fill-light mt0'>isValidBagChannelJsonEHType(v: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+	    Bag station JSON object, usually from MSeed3 extra headers
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        true if matches expected structure
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='isvalidbageventjsonehtype'>
+      isValidBagEventJsonEHType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L181-L190'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Verifies that JSON matches the types we expect, for typescript.</p>
+
+    <div class='pre p1 fill-light mt0'>isValidBagEventJsonEHType(v: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+	    Bag event JSON object, usually from MSeed3 extra headers
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        true if matches expected structure
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='isvalidbagoriginjsonehtype'>
+      isValidBagOriginJsonEHType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L198-L207'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Verifies that JSON matches the types we expect, for typescript.</p>
+
+    <div class='pre p1 fill-light mt0'>isValidBagOriginJsonEHType(v: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+	    Bag origin JSON object, usually from MSeed3 extra headers
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        true if matches expected structure
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='isvalidbagmagjsonehtype'>
+      isValidBagMagJsonEHType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L215-L222'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Verifies that JSON matches the types we expect, for typescript.</p>
+
+    <div class='pre p1 fill-light mt0'>isValidBagMagJsonEHType(v: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+	    Bag magnitude JSON object, usually from MSeed3 extra headers
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        true if matches expected structure
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='isvalidbagpathjsonehtype'>
+      isValidBagPathJsonEHType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L230-L238'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Verifies that JSON matches the types we expect, for typescript.</p>
+
+    <div class='pre p1 fill-light mt0'>isValidBagPathJsonEHType(v: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+	    Bag magnitude JSON object, usually from MSeed3 extra headers
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        true if matches expected structure
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='isvalidbagmarkjsonehtype'>
+      isValidBagMarkJsonEHType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L247-L256'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Verifies that JSON matches the types we expect, for typescript.</p>
+
+    <div class='pre p1 fill-light mt0'>isValidBagMarkJsonEHType(v: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+	    Bag magnitude JSON object, usually from MSeed3 extra headers
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        true if matches expected structure
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='isvalidbagtimeseriesjsonehtype'>
+      isValidBagTimeseriesJsonEHType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L264-L271'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Verifies that JSON matches the types we expect, for typescript.</p>
+
+    <div class='pre p1 fill-light mt0'>isValidBagTimeseriesJsonEHType(v: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+	    Bag magnitude JSON object, usually from MSeed3 extra headers
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        true if matches expected structure
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='isvalidbagjsonehtype'>
+      isValidBagJsonEHType
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/crotwell/seisplotjs/blob/78ec3e248d126532f39f4ac4073d9787e3e4735b/src/mseed3eh.ts#L279-L306'>
+      <span>src/mseed3eh.ts</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Verifies that JSON matches the types we expect, for typescript.</p>
+
+    <div class='pre p1 fill-light mt0'>isValidBagJsonEHType(v: any): any</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>v</span> <code class='quiet'>(any)</code>
+	    Bag JSON object, usually from MSeed3 extra headers
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>any</code>:
+        true if matches expected structure
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+      </div>
+    </div>
+  <script src='assets/anchor.js'></script>
+  <script src='assets/split.js'></script>
+  <script src='assets/site.js'></script>
+</body>
+</html>

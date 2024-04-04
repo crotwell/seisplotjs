@@ -1,140 +1,156 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>seisplotjs 3.1 Tutorial, p7</title>
-    <meta
-      content="Javascript library for parsing, manipulating and displaying seismic data."
-      name="description"
-    />
-    <meta content="width=device-width,initial-scale=1" name="viewport" />
-    <link href="../bass.css" rel="stylesheet" />
-    <link href="../split.css" rel="stylesheet" />
-    <link href="../prism.css" rel="stylesheet" />
-    <link href="style.css" rel="stylesheet" />
-    <link href="../flavicon.png" rel="icon" type="image/png" />
-  </head>
-  <body>
-    <div class="flex">
-      <div class="overflow-auto fs0 height-viewport-100" id="split-left">
-        <div class="py1 px2">
-          <div id="toc">
-            <ul class="list-reset h5 py1-ul">
-              <li>
-                <a class="" href="../index.html"> Seisplotjs </a>
-              </li>
-              <li>
-                <a class="" href="../api/index.html"> API JS Docs </a>
-              </li>
-              <li>
-                <a class="" href="../gallery/index.html"> Gallery </a>
-              </li>
-              <li>
-                <a class="" href="../examples/index.html"> Examples </a>
-              </li>
-              <li>
-                <a class="" href="../tutorial/index.html"> Tutorial </a>
-              </li>
-              <li class="sub">
-                <a class="sub" href="../tutorial/index.html"> Sine Wave </a>
-              </li>
-              <li class="sub">
-                <a class="sub" href="../tutorial/2_realdata.html">
-                  Real data
-                </a>
-              </li>
-              <li class="sub">
-                <a class="sub" href="../tutorial/3_quakesandchannels.html">
-                  Quakes and Channels
-                </a>
-              </li>
-              <li class="sub">
-                <a class="sub" href="../tutorial/4_arrivaltimes.html">
-                  Arrival Times
-                </a>
-              </li>
-              <li class="sub">
-                <a class="sub" href="../tutorial/5_filter.html"> Filtering </a>
-              </li>
-              <li class="sub">
-                <a class="sub" href="../tutorial/6_helicorder.html">
-                  Helicorder
-                </a>
-              </li>
-              <li class="sub">
-                <a class="sub" href="../tutorial/7_realtime.html"> Realtime </a>
-              </li>
-              <li class="sub">
-                <a class="sub" href="../tutorial/8_andmore.html">
-                  ...and more
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="relative overflow-auto height-viewport-100" id="split-right">
-        <section class="p2 mb2 clearfix bg-white minishadow">
-          <div class="clearfix">
-            <h1>
-              Seisplotjs Tutorial
-              <span class="sp_version"> 3.1.4-alpha.2 </span>
-            </h1>
-            <h3>Realtime Data</h3>
-            <h5>
-              See it live in
-              <a href="tutorial7.html" target="_blank"> tutorial7.html </a>
-              .
-            </h5>
-            <p>
-              Now for something else completely different. A realtime plot can
+ <head>
+  <meta charset="utf-8"/>
+  <title>
+   seisplotjs 3.1 Tutorial, p7
+  </title>
+  <meta content="Javascript library for parsing, manipulating and displaying seismic data." name="description"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <link href="../bass.css" rel="stylesheet"/>
+  <link href="../split.css" rel="stylesheet"/>
+  <link href="../prism.css" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+  <link href="../flavicon.png" rel="icon" type="image/png"/>
+ </head>
+ <body>
+  <div class="flex">
+   <div class="overflow-auto fs0 height-viewport-100" id="split-left">
+    <div class="py1 px2">
+     <div id="toc">
+      <ul class="list-reset h5 py1-ul">
+       <li>
+        <a class="" href="../index.html">
+         Seisplotjs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../api/index.html">
+         API JS Docs
+        </a>
+       </li>
+       <li>
+        <a class="" href="../gallery/index.html">
+         Gallery
+        </a>
+       </li>
+       <li>
+        <a class="" href="../examples/index.html">
+         Examples
+        </a>
+       </li>
+       <li>
+        <a class="" href="../tutorial/index.html">
+         Tutorial
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/index.html">
+         Sine Wave
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/2_realdata.html">
+         Real data
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/3_quakesandchannels.html">
+         Quakes and Channels
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/4_arrivaltimes.html">
+         Arrival Times
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/5_filter.html">
+         Filtering
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/6_helicorder.html">
+         Helicorder
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/7_realtime.html">
+         Realtime
+        </a>
+       </li>
+       <li class="sub">
+        <a class="sub" href="../tutorial/8_andmore.html">
+         ...and more
+        </a>
+       </li>
+      </ul>
+     </div>
+    </div>
+   </div>
+   <div class="relative overflow-auto height-viewport-100" id="split-right">
+    <section class="p2 mb2 clearfix bg-white minishadow">
+     <div class="clearfix">
+      <h1>
+       Seisplotjs Tutorial
+       <span class="sp_version">
+        3.1.4-alpha.2
+       </span>
+      </h1>
+      <h3>
+       Realtime Data
+      </h3>
+      <h5>
+       See it live in
+       <a href="tutorial7.html" target="_blank">
+        tutorial7.html
+       </a>
+       .
+      </h5>
+      <p>
+       Now for something else completely different. A realtime plot can
               be a crowd pleaser, but it is considered
-              <a href="https://ds.iris.edu/ds/nodes/dmc/services/usage/">
-                very rude
-              </a>
-              to rapidly request the same seismogram over and over from the FDSN
+       <a href="https://ds.iris.edu/ds/nodes/dmc/services/usage/">
+        very rude
+       </a>
+       to rapidly request the same seismogram over and over from the FDSN
               dataselect web service, and so we will use a web socket to the
-              <a href="https://github.com/EarthScope/ringserver">
-                IRIS ringserver
-              </a>
-              using the
-              <a
-                href="https://iris-edu.github.io/libdali/datalink-protocol.html"
-              >
-                DataLink
-              </a>
-              protocol. If you run your own ringserver and wish to configure it
+       <a href="https://github.com/EarthScope/ringserver">
+        IRIS ringserver
+       </a>
+       using the
+       <a href="https://iris-edu.github.io/libdali/datalink-protocol.html">
+        DataLink
+       </a>
+       protocol. If you run your own ringserver and wish to configure it
               to allow websocket access, some additional information is
-              <a
-                href="https://github.com/crotwell/seisplotjs/wiki/Proxy-seedlink-and-datalink-over-websockets-using-apache2"
-              >
-                here
-              </a>
-              .
-            </p>
-            <p>
-              First we need to set up a bunch of variables we will use to keep
+       <a href="https://github.com/crotwell/seisplotjs/wiki/Proxy-seedlink-and-datalink-over-websockets-using-apache2">
+        here
+       </a>
+       .
+      </p>
+      <p>
+       First we need to set up a bunch of variables we will use to keep
               track of the realtime data, including the regular expression
               pattern to match channels we wish to receive and the time window
               of our display.
-            </p>
-            <pre><code class="language-javascript" snippet="vars">
+      </p>
+      <pre><code class="language-javascript" snippet="vars">
 const matchPattern = `CO_BIRD_00_HH./MSEED`;
-document.querySelector('span#channel').textContent = matchPattern;
-const duration = sp.luxon.Duration.fromISO('PT5M');
+document.querySelector("span#channel").textContent = matchPattern;
+const duration = sp.luxon.Duration.fromISO("PT5M");
 
 let numPackets = 0;
 let paused = false;
 let stopped = true;
 let realtimeDiv = document.querySelector("div#realtime");
 
-
 </code></pre>
-            <p>
-              Here is the timer that will periodically update the current time.
+      <p>
+       Here is the timer that will periodically update the current time.
               Not required, but perhaps helpful.
-            </p>
-            <pre><code class="language-javascript" snippet="nowtime">
+      </p>
+      <pre><code class="language-javascript" snippet="nowtime">
 const n_span = document.querySelector("#nt");
 setInterval(() =&gt; {
   const seisConfig = rtDisp.organizedDisplay.seismographConfig;
@@ -142,10 +158,9 @@ setInterval(() =&gt; {
   n_span.textContent = sp.luxon.DateTime.utc().toISO();
 }, 1000);
 
-
 </code></pre>
-            <p>
-              Here we create the organized display element to show the
+      <p>
+       Here we create the organized display element to show the
               seismographs, and a timer that will periodically refresh the
               displays. The field minRedrawMillis on the animationScaler sets
               the timer interval so that hopefully it updates the display just
@@ -153,58 +168,65 @@ setInterval(() =&gt; {
               calculated after the organized display is drawn for the first time
               to know how many pixels wide it is. We then start the animation,
               although with no data this will not actually do anything useful.
-            </p>
-            <pre><code class="language-javascript" snippet="timer">
+      </p>
+      <pre><code class="language-javascript" snippet="timer">
 const rtConfig = {
   duration: sp.luxon.Duration.fromISO("PT5M"),
 };
 const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
 realtimeDiv.appendChild(rtDisp.organizedDisplay);
 rtDisp.organizedDisplay.draw();
-rtDisp.animationScaler.minRedrawMillis = sp.animatedseismograph.calcOnePixelDuration(rtDisp.organizedDisplay);
+rtDisp.animationScaler.minRedrawMillis =
+  sp.animatedseismograph.calcOnePixelDuration(rtDisp.organizedDisplay);
 
 rtDisp.animationScaler.animate();
 
 </code></pre>
-            <p>We will also need a couple of functions for error handling.</p>
-            <pre><code class="language-javascript" snippet="helpers">
+      <p>
+       We will also need a couple of functions for error handling.
+      </p>
+      <pre><code class="language-javascript" snippet="helpers">
 function updateNumPackets() {
   numPackets++;
   document.querySelector("#numPackets").textContent = numPackets;
 }
 function addToDebug(message) {
   const debugDiv = document.querySelector("div#debug");
-  if (!debugDiv) { return; }
+  if (!debugDiv) {
+    return;
+  }
   const pre = debugDiv.appendChild(document.createElement("pre"));
   const code = pre.appendChild(document.createElement("code"));
   code.textContent = message;
 }
 function errorFn(error) {
   console.assert(false, error);
-  if (datalink) { datalink.close(); }
+  if (datalink) {
+    datalink.close();
+  }
   addToDebug("Error: " + error);
-};
+}
 
 </code></pre>
-            <p>
-              Now we create function to toggle on and off the the actual
+      <p>
+       Now we create function to toggle on and off the the actual
               Datalink connection to the
-              <a
-                href="https://seiscode.iris.washington.edu/projects/ringserver"
-              >
-                IRIS ringserver
-              </a>
-              . This creates the Datalink connection the first time it is
+       <a href="https://seiscode.iris.washington.edu/projects/ringserver">
+        IRIS ringserver
+       </a>
+       . This creates the Datalink connection the first time it is
               toggled on. We are using a secure web socket, via
-              <code class="language-html"> wss:// </code>
-              , which is effectively a web socket over HTTPS.
-            </p>
-            <pre><code class="language-javascript" snippet="datalink">
+       <code class="language-html">
+        wss://
+       </code>
+       , which is effectively a web socket over HTTPS.
+      </p>
+      <pre><code class="language-javascript" snippet="datalink">
 let datalink = null;
-const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink"
-const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/ringserver/datalink"
+const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink";
+const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/ringserver/datalink";
 
-let toggleConnect = function() {
+let toggleConnect = function () {
   stopped = !stopped;
   if (stopped) {
     document.querySelector("button#disconnect").textContent = "Reconnect";
@@ -217,44 +239,53 @@ let toggleConnect = function() {
     if (!datalink) {
       datalink = new sp.datalink.DataLinkConnection(
         SCSN_DATALINK,
-        packet =&gt; {
+        (packet) =&gt; {
           rtDisp.packetHandler(packet);
           updateNumPackets();
         },
-        errorFn
+        errorFn,
       );
     }
     if (datalink) {
-      datalink.connect()
-        .then(serverId =&gt; {
+      datalink
+        .connect()
+        .then((serverId) =&gt; {
           return datalink.match(matchPattern);
-        }).then(response =&gt; {
-          addToDebug(`match response: ${response}`)
+        })
+        .then((response) =&gt; {
+          addToDebug(`match response: ${response}`);
           if (response.isError()) {
             addToDebug(`response is not OK, ignore... ${response}`);
           }
           const start = sp.luxon.DateTime.utc().minus(duration);
-          console.log(`start datalink at : ${start}`)
+          console.log(`start datalink at : ${start}`);
           return datalink.positionAfter(start);
-        }).then(response =&gt; {
+        })
+        .then((response) =&gt; {
           if (response.isError()) {
-            addToDebug(`Oops, positionAfter response is not OK, ignore... ${response}`);
+            addToDebug(
+              `Oops, positionAfter response is not OK, ignore... ${response}`,
+            );
             // bail, ignore, or do something about it...
           }
           return datalink.stream();
         });
     }
   }
-}
+};
 
 </code></pre>
-            <p>We wire up the pause button.</p>
-            <pre><code class="language-javascript" snippet="pause">
-document.querySelector("button#pause").addEventListener("click", function(evt) {
-  togglePause();
-});
+      <p>
+       We wire up the pause button.
+      </p>
+      <pre><code class="language-javascript" snippet="pause">
+document
+  .querySelector("button#pause")
+  .addEventListener("click", function (evt) {
+    togglePause();
+  });
 
-let togglePause = function() {
+let togglePause = function () {
   paused = !paused;
   if (paused) {
     document.querySelector("button#pause").textContent = "Play";
@@ -263,49 +294,62 @@ let togglePause = function() {
     document.querySelector("button#pause").textContent = "Pause";
     rtDisp.animationScaler.animate();
   }
-}
+};
 
 </code></pre>
-            <p>And wire up the disconnect button</p>
-            <pre><code class="language-javascript" snippet="disconnet">
-document.querySelector("button#disconnect").addEventListener("click", function(evt) {
-  toggleConnect();
-});
+      <p>
+       And wire up the disconnect button
+      </p>
+      <pre><code class="language-javascript" snippet="disconnet">
+document
+  .querySelector("button#disconnect")
+  .addEventListener("click", function (evt) {
+    toggleConnect();
+  });
 
 </code></pre>
-            <p>And then we start it going!</p>
-            <pre><code class="language-javascript" snippet="go">
+      <p>
+       And then we start it going!
+      </p>
+      <pre><code class="language-javascript" snippet="go">
 toggleConnect();
 </code></pre>
-            <h3>
-              See it live in
-              <a href="tutorial7.html" target="_blank"> tutorial7.html </a>
-              .
-            </h3>
-            <p>
-              Previous:
-              <a href="6_helicorder.html"> Helicorder </a>
-            </p>
-            <p>
-              Next:
-              <a class="sub" href="../tutorial/8_andmore.html"> ...and more </a>
-            </p>
-          </div>
-        </section>
-      </div>
-    </div>
-    <script type="module">
-      import * as sp from "./seisplotjs_3.1.4-alpha.2_standalone.mjs";
+      <h3>
+       See it live in
+       <a href="tutorial7.html" target="_blank">
+        tutorial7.html
+       </a>
+       .
+      </h3>
+      <p>
+       Previous:
+       <a href="6_helicorder.html">
+        Helicorder
+       </a>
+      </p>
+      <p>
+       Next:
+       <a class="sub" href="../tutorial/8_andmore.html">
+        ...and more
+       </a>
+      </p>
+     </div>
+    </section>
+   </div>
+  </div>
+  <script type="module">
+   import * as sp from "./seisplotjs_3.1.4-alpha.2_standalone.mjs";
       sp.util.updateVersionText(".sp_version");
-    </script>
-    <script src="../prism.js"></script>
-    <script>
-      Prism.plugins.NormalizeWhitespace.setDefaults({
+  </script>
+  <script src="../prism.js">
+  </script>
+  <script>
+   Prism.plugins.NormalizeWhitespace.setDefaults({
         "remove-trailing": true,
         "remove-indent": true,
         "left-trim": true,
         "right-trim": true,
       });
-    </script>
-  </body>
+  </script>
+ </body>
 </html>
