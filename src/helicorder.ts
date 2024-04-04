@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { DateTime, Duration, Interval } from "luxon";
+import { DateTime, Duration, Interval, Zone, FixedOffsetZone } from "luxon";
 import { removeTrend } from "./filter";
 import { AMPLITUDE_MODE, FixedHalfWidthAmplitudeScale } from "./scale";
 import {
@@ -268,8 +268,8 @@ export class Helicorder extends SeisPlotElement {
       }
 
       lineSeisConfig.fixedTimeScale = lineInterval;
-      lineSeisConfig.yLabel = `${startTime?.toFormat("HH:mm")}`;
-      lineSeisConfig.yLabelRight = `${endTime?.toFormat("HH:mm")}`;
+      lineSeisConfig.yLabel = `${startTime?.setZone(this.heliConfig.yLabelTimeZone).toFormat("HH:mm")}`;
+      lineSeisConfig.yLabelRight = `${endTime?.setZone(this.heliConfig.yLabelRightTimeZone).toFormat("HH:mm")}`;
       lineSeisConfig.lineColors = [
         this.heliConfig.lineColors[
           lineNumber % this.heliConfig.lineColors.length
@@ -331,12 +331,12 @@ export class Helicorder extends SeisPlotElement {
         const innerDiv = utcDiv.appendChild(document.createElement("div"));
         innerDiv.setAttribute("style", `top: ${lineSeisConfig.margin.top}px;`);
         const textEl = innerDiv.appendChild(document.createElement("text"));
-        textEl.textContent = "UTC";
+        textEl.textContent = nameForTimeZone(this.heliConfig.yLabelTimeZone);
         // and to top right
         const rightTextEl = innerDiv.appendChild(
           document.createElement("text"),
         );
-        rightTextEl.textContent = "UTC";
+        rightTextEl.textContent = nameForTimeZone(this.heliConfig.yLabelRightTimeZone);
         seismographWrapper.insertBefore(utcDiv, seismographWrapper.firstChild);
       }
 
@@ -448,6 +448,8 @@ export class HelicorderConfig extends SeismographConfig {
   numLines: number;
   maxVariation: number;
   detrendLines = false;
+  yLabelTimeZone: string|Zone<boolean> = FixedOffsetZone.utcInstance;
+  yLabelRightTimeZone: string|Zone<boolean> = FixedOffsetZone.utcInstance;
 
   constructor(timeRange: Interval) {
     super();
@@ -518,6 +520,18 @@ export class HeliTimeRange {
   constructor(startTime: DateTime, duration: Duration, lineNumber: number) {
     this.interval = startDuration(startTime, duration);
     this.lineNumber = lineNumber;
+  }
+}
+
+export function nameForTimeZone(zone: string|null|Zone): string {
+  if (zone == null ||
+    (zone instanceof Zone &&
+      FixedOffsetZone.utcInstance.equals(zone))) {
+    return "UTC";
+  } else if (typeof zone === 'string') {
+    return zone;
+  } else {
+    return zone.name;
   }
 }
 
