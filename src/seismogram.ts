@@ -667,6 +667,10 @@ export class SeismogramDisplayData {
     }
   }
 
+  getMarkers(): Array<MarkerType> {
+    return this.markerList;
+  }
+
   addTravelTimes(
     ttimes:
       | TraveltimeJsonType

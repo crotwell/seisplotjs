@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {ehToMarkers, ehToQuake} from "./mseed3eh";
+import {ehToMarkers, ehToQuake, extractBagEH} from "./mseed3eh";
 import { FDSNSourceId } from "./fdsnsourceid";
 import { isDef, UTC_OPTIONS } from "./util";
 import {
@@ -24,6 +24,7 @@ import {
   M_TYPECODE,
 } from "./miniseed";
 import { DateTime, Duration } from "luxon";
+
 export type json_object = Record<string, unknown>;
 export const MINISEED_THREE_MIME = "application/vnd.fdsn.mseed3";
 
@@ -874,6 +875,12 @@ export function createSeismogramSegment(
     contig[0].header.start,
     FDSNSourceId.parse(contig[0].header.identifier),
   );
+  const bag = extractBagEH(contig[0].extraHeaders);
+  if (bag?.y?.si) {
+    out.yUnit = bag?.y?.si;
+  } else {
+    console.log(`no yunit in seis ${contig[0].header.identifier}`)
+  }
   return out;
 }
 
