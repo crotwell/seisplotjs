@@ -9,10 +9,18 @@ import { Seismogram } from "./seismogram";
 import { SacPoleZero } from "./sacpolezero";
 import { Response, PolesZeros } from "./stationxml";
 import { Complex } from "./oregondsputil";
-// `allMeasures` includes all the measures packaged with this library
-import configureMeasurements from "convert-units";
-import allMeasures, { AllMeasuresUnits } from "convert-units/definitions/all";
-const convert = configureMeasurements(allMeasures);
+
+import configureMeasurements from 'convert-units';
+import allMeasures, {
+  AllMeasures,
+  AllMeasuresSystems,
+  AllMeasuresUnits,
+} from 'convert-units/definitions/all';
+const convert = configureMeasurements<
+  AllMeasures,
+  AllMeasuresSystems,
+  AllMeasuresUnits
+>(allMeasures);
 
 /**
  * Applies response, poles and zeros along with overall gain to the seismogram.
