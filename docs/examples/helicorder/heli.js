@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.1.4-alpha.3_standalone.mjs";
+import * as sp from "../../seisplotjs_3.1.4_standalone.mjs";
 import {
   HOURS_PER_LINE,
   doPlot,

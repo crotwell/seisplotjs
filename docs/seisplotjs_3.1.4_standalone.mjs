@@ -43689,7 +43689,7 @@ __export(util_exports, {
 });
 
 // src/version.ts
-var version = "3.1.4-alpha.2";
+var version = "3.1.4";
 
 // src/util.ts
 var XML_MIME = "application/xml";
@@ -47273,6 +47273,9 @@ var SeismogramDisplayData = class _SeismogramDisplayData {
     } else {
       this.markerList.push(markers);
     }
+  }
+  getMarkers() {
+    return this.markerList;
   }
   addTravelTimes(ttimes) {
     if (Array.isArray(ttimes)) {
@@ -58920,6 +58923,7 @@ var DEFAULT_TEMPLATE = `
         <th>End</th>
         <th>Num Pts</th>
         <th>Sample Rate</th>
+        <th>YUnit</th>
         <th>Seg</th>
 
         <th>Lat</th>
@@ -58948,6 +58952,7 @@ var DEFAULT_TEMPLATE = `
         <td>{{formatIsoDate sdd.seismogram.endTime}}</td>
         <td>{{sdd.seismogram.numPoints}}</td>
         <td>{{sdd.seismogram.sampleRate}}</td>
+        <td>{{sdd.seismogram.yUnit}}</td>
         <td>{{sdd.seismogram.segments.length}}</td>
 
         {{#if sdd.channel}}
@@ -64422,6 +64427,12 @@ function createSeismogramSegment2(contig) {
     contig[0].header.start,
     FDSNSourceId.parse(contig[0].header.identifier)
   );
+  const bag = extractBagEH(contig[0].extraHeaders);
+  if (bag?.y?.si) {
+    out.yUnit = bag?.y?.si;
+  } else {
+    console.log(`no yunit in seis ${contig[0].header.identifier}`);
+  }
   return out;
 }
 function merge2(drList) {
@@ -71163,6 +71174,7 @@ __export(filter_exports, {
   gainCorrect: () => gainCorrect,
   getPassband: () => getPassband,
   hilbert: () => hilbert,
+  integrate: () => integrate,
   lineFit: () => lineFit,
   mul: () => mul,
   rMean: () => rMean,
@@ -71441,6 +71453,36 @@ function differentiate(seis) {
     return diffSeismogram;
   } else {
     throw new Error("diff arg not a Seismogram");
+  }
+}
+function integrate(seis, integrationConst = 0) {
+  let prior = integrationConst;
+  if (seis instanceof Seismogram) {
+    const intSeismogram = new Seismogram(
+      seis.segments.map((s2) => {
+        const origY = s2.y;
+        const sampPeriod = s2.samplePeriod;
+        const intY = new Float32Array(origY.length + 1);
+        intY[0] = prior;
+        for (let i = 1; i < intY.length; i++) {
+          prior += sampPeriod * origY[i - 1];
+          intY[i] = prior;
+        }
+        const out = s2.cloneWithNewData(intY);
+        out.startTime = out.startTime.minus(
+          Duration.fromMillis(1e3 / out.sampleRate / 2)
+        );
+        if (out.yUnit.endsWith("/s")) {
+          out.yUnit = out.yUnit.slice(0, out.yUnit.length - 2);
+        } else {
+          out.yUnit += "s";
+        }
+        return out;
+      })
+    );
+    return intSeismogram;
+  } else {
+    throw new Error("integrate arg not a Seismogram");
   }
 }
 
