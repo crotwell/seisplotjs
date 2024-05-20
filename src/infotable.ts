@@ -86,6 +86,7 @@ export const DEFAULT_TEMPLATE = `
         <th>End</th>
         <th>Num Pts</th>
         <th>Sample Rate</th>
+        <th>YUnit</th>
         <th>Seg</th>
 
         <th>Lat</th>
@@ -114,6 +115,7 @@ export const DEFAULT_TEMPLATE = `
         <td>{{formatIsoDate sdd.seismogram.endTime}}</td>
         <td>{{sdd.seismogram.numPoints}}</td>
         <td>{{sdd.seismogram.sampleRate}}</td>
+        <td>{{sdd.seismogram.yUnit}}</td>
         <td>{{sdd.seismogram.segments.length}}</td>
 
         {{#if sdd.channel}}
