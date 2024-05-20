@@ -518,3 +518,43 @@ export function differentiate(seis: Seismogram): Seismogram {
     throw new Error("diff arg not a Seismogram");
   }
 }
+
+/**
+ * Integrate a seismogram.
+ *
+ * @param   seis input seismogram
+ * @param   integrationConst integration constant, optional, defaults to 0
+ * @returns       integrated seismogram
+ */
+export function integrate(seis: Seismogram, integrationConst=0): Seismogram {
+  let prior = integrationConst;
+  if (seis instanceof Seismogram) {
+    const intSeismogram = new Seismogram(
+      seis.segments.map((s) => {
+        const origY = s.y;
+        const sampPeriod = s.samplePeriod; // same as 1/delta
+
+        const intY = new Float32Array(origY.length +1);
+        intY[0] = prior;
+        for (let i = 1; i < intY.length; i++) {
+          prior += sampPeriod * origY[i-1];
+          intY[i] = prior;
+        }
+
+        const out = s.cloneWithNewData(intY);
+        out.startTime = out.startTime.minus(
+          Duration.fromMillis(1000 / out.sampleRate / 2),
+        ); // second
+        if (out.yUnit.endsWith("/s")) {
+          out.yUnit = out.yUnit.slice(0, out.yUnit.length-2);
+        } else {
+          out.yUnit += "s";
+        }
+        return out;
+      }),
+    );
+    return intSeismogram;
+  } else {
+    throw new Error("integrate arg not a Seismogram");
+  }
+}
