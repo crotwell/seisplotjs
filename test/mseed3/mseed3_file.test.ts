@@ -236,3 +236,19 @@ test("decomp HODGE", function() {
   }
 
 });
+
+test("mergeMseed3", () => {
+  const ms3filename = 'test/mseed3/bird_jsc.ms3';
+
+  expect(fs.existsSync(ms3filename)).toEqual(true);
+  const ms3Data = fs.readFileSync(ms3filename);
+  const ab = ms3Data.buffer;
+  const dataView = new DataView(ab);
+  expect(dataView.getUint8(0)).toEqual(77);
+  expect(dataView.getUint8(1)).toEqual(83);
+  expect(dataView.getUint8(2)).toEqual(3);
+  const drList = mseed3.parseMSeed3Records(ab);
+  expect(drList).toHaveLength(86);
+  const sddList = mseed3.sddPerChannel(drList);
+  expect(sddList).toBeDefined();
+})

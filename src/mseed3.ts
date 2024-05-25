@@ -480,6 +480,7 @@ export class MSeed3Header {
     header.extraHeadersLength = dataView.getUint16(34, headerLittleEndian);
     header.dataLength = dataView.getUint32(36, headerLittleEndian);
     header.identifier = makeString(dataView, 40, header.identifierLength);
+
     return header;
   }
 
@@ -651,7 +652,7 @@ export class MSeed3Header {
    * @param starttime start as DateTime
    */
   setStart(starttime: DateTime) {
-    this.nanosecond = starttime.millisecond * 1000;
+    this.nanosecond = starttime.millisecond * 1000000;
     this.year = starttime.year;
     this.dayOfYear = starttime.ordinal;
     this.hour = starttime.hour;
@@ -736,17 +737,24 @@ export class MSeed3Header {
    * @returns         start time as DateTime
    */
   startAsDateTime(): DateTime {
-    return DateTime.fromObject(
+    // in case millis rounds to 1000, use plus to avoid luxon invalid
+    let millis = Math.round(this.nanosecond / 1000000);
+    const d = DateTime.fromObject(
       {
         year: this.year,
         ordinal: this.dayOfYear,
         hour: this.hour,
         minute: this.minute,
         second: this.second,
-        millisecond: Math.round(this.nanosecond / 1000000),
+        millisecond: 0,
       },
       UTC_OPTIONS,
     );
+    return d.plus(millis);
+    if ( ! d.isValid) {
+      throw new Error(`Start is invalid: ${this.startFieldsInUtilFormat()} ${d.invalidReason} ${d.invalidExplanation}`)
+    }
+    return d;
   }
 }
 
@@ -878,8 +886,6 @@ export function createSeismogramSegment(
   const bag = extractBagEH(contig[0].extraHeaders);
   if (bag?.y?.si) {
     out.yUnit = bag?.y?.si;
-  } else {
-    console.log(`no yunit in seis ${contig[0].header.identifier}`)
   }
   return out;
 }
