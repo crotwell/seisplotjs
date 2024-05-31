@@ -74,14 +74,14 @@ export function channelToEH(channel: Channel): EHChannel {
 export function ehToChannel(exHead: MS3ExtraHeader, sid: FDSNSourceId): Channel|null {
   const bag = extractBagEH(exHead);
   const ch = bag?.ch;
-  const channel = null;
+  let channel = null;
   if (ch != null) {
     const net = new Network(sid.networkCode);
     const sta = new Station(net, sid.stationCode);
     sta.latitude = ch.la;
     sta.longitude = ch.lo;
     if (ch.el != null) { sta.elevation = ch.el;}
-    const channel = new Channel(sta, sid.locationCode, sid.formChannelCode());
+    channel = new Channel(sta, sid.formChannelCode(), sid.locationCode);
     channel.latitude = ch.la;
     channel.longitude = ch.lo;
     if (ch.dp != null) { channel.depth = ch.dp;}
