@@ -15,6 +15,8 @@ import {
   WAY_FUTURE,
   doFetchWithTimeout,
   defaultFetchInitObj,
+  mightBeXml,
+  dataViewToString,
   XML_MIME,
 } from "./util";
 import { Complex } from "./oregondsputil";
@@ -292,7 +294,7 @@ export class Channel {
     this.sampleRate = 0;
 
     if (channelCode.length !== 3) {
-      throw new Error(`Channel code must be 3 chars: ${channelCode}`);
+      throw new Error(`Channel code must be 3 chars: "${channelCode}"`);
     }
 
     this.channelCode = channelCode;
@@ -320,6 +322,10 @@ export class Channel {
       this.locationCode,
       this.channelCode,
     );
+  }
+
+  set sourceId(sid: FDSNSourceId) {
+    this._sourceId = sid;
   }
 
   get nslcId(): NslcId {
@@ -1590,6 +1596,19 @@ export function fetchStationXml(
     .then((rawXml) => {
       return parseStationXml(rawXml);
     });
+}
+
+
+
+export function mightBeStatonXml(buf: ArrayBuffer) {
+  if ( ! mightBeXml(buf)) {
+    return false;
+  }
+  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
+  if ( ! initialChars.includes("FDSNStationXML")) {
+    return false;
+  }
+  return true;
 }
 
 // these are similar methods as in seisplotjs.quakeml

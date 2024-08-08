@@ -854,6 +854,14 @@ export function createSVGElement(name: string): SVGElement {
   return document.createElementNS(SVG_NS, name);
 }
 
+export function mightBeXml(buf: ArrayBuffer): boolean {
+  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
+  if ( ! initialChars.startsWith("<?xml ")) {
+    return false;
+  }
+  return true;
+}
+
 export function updateVersionText(selector = "#sp-version") {
   document.querySelectorAll(selector).forEach((el) => {
     el.textContent = version;

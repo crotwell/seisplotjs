@@ -186,6 +186,37 @@ export function parseMSeed3Records(
   return dataRecords;
 }
 
+
+/**
+ * parse arrayBuffer into an array of MSeed3Records.
+ *
+ * @param arrayBuffer bytes to extract miniseed3 records from
+ * @returns array of all miniseed3 records contained in the buffer
+ */
+export function mightBeMSeed3Records(
+  arrayBuffer: ArrayBuffer,
+): boolean {
+
+  const dataView = new DataView(arrayBuffer);
+
+  if (!(dataView.getUint8(0) === 77 && dataView.getUint8(1) === 83)) {
+    //First bytes must be M=77 S=83
+    return false;
+  }
+  const header = MSeed3Header.createFromDataView(dataView);
+  if (header.formatVersion !== 3) { return false;}
+  if (header.year < 1900 || header.year > 2500) {
+    return false;
+  }
+  if (header.dayOfYear <= 0 || header.dayOfYear > 366) {
+    return false;
+  }
+  if (header.hour <= 0 || header.hour > 24) {
+    return false;
+  }
+  return true;
+}
+
 /**
  * Represents a MSEED3 Data Record, with header, extras and data.
  *
@@ -309,6 +340,13 @@ export class MSeed3Record {
    */
   codes(): string {
     return this.header.identifier;
+  }
+
+  /**
+   * Parses the identifier into an FDSNSourceId.
+   */
+  getSourceId() {
+    return FDSNSourceId.parse(this.header.identifier)
   }
 
   /**
@@ -881,7 +919,7 @@ export function createSeismogramSegment(
     contigData,
     contig[0].header.sampleRate,
     contig[0].header.start,
-    FDSNSourceId.parse(contig[0].header.identifier),
+    contig[0].getSourceId()
   );
   const bag = extractBagEH(contig[0].extraHeaders);
   if (bag?.y?.si) {

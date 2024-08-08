@@ -805,7 +805,7 @@ export function overlayByComponent(
   return overlayBySDDFunction(
     sddList,
     "component",
-    (sdd) => sdd.channelCode.charAt(2),
+    (sdd) => sdd.sourceId.subsourceCode,
     seisConfig,
   );
 }
@@ -816,7 +816,7 @@ export function overlayByStation(
   return overlayBySDDFunction(
     sddList,
     "station",
-    (sdd) => sdd.networkCode + "_" + sdd.stationCode,
+    (sdd) => sdd.sourceId.stationSourceId().toStringNoPrefix(),
     seisConfig,
   );
 }

@@ -1,5 +1,6 @@
 import { Duration } from "luxon";
 import * as mseed3 from "./mseed3";
+import {ehToMarkers, ehToQuake, extractBagEH} from "./mseed3eh";
 import { Quake, parseQuakeML } from "./quakeml";
 import { Network, parseStationXml, allChannels } from "./stationxml";
 import { SeismogramDisplayData } from "./seismogram";
@@ -188,7 +189,7 @@ export async function loadFromZip(zip: JSZip): Promise<Dataset> {
         if (file.name.endsWith(".ms3")) {
           const seisPromise = file.async("arraybuffer").then(function (buffer) {
             const ms3records = mseed3.parseMSeed3Records(buffer);
-            return sddFromMSeed3(ms3records);
+            return mseed3.sddPerChannel(ms3records);
           });
           promiseArray.push(seisPromise);
         }
@@ -265,11 +266,17 @@ export function insertExtraHeaders(
   key: string,
   ds?: Dataset,
 ) {
-  const myEH = eh[key];
+  const myEH = extractBagEH(eh);
   if (!myEH) {
     // key not in extra headers
     return;
   }
+  // use ehToQuake
+  let quake = ehToQuake(myEH);
+  if (quake) {
+    sdd.addQuake(quake);
+  }
+  sdd.addMarkers(ehToMarkers(myEH));
   if (typeof myEH === "object") {
     if ("quake" in myEH) {
       const qList = myEH["quake"];
@@ -295,6 +302,7 @@ export function insertExtraHeaders(
         }
       }
     }
+
     if ("markers" in myEH && Array.isArray(myEH["markers"])) {
       const markers = myEH["markers"];
       markers.forEach((m: unknown) => {
@@ -328,4 +336,18 @@ export function createExtraHeaders(
     h["markers"] = sdd.markerList;
   }
   return out;
+}
+
+export function mightBeZipFile(buf: ArrayBuffer): boolean {
+  const dataView = new DataView(buf);
+
+  if (!(dataView.getUint8(0) === 0x50
+        && dataView.getUint8(1) === 0x4b
+        && dataView.getUint8(2) === 0x03
+        && dataView.getUint8(3) === 0x04)) {
+    //First bytes must be \x50\x4b\x03\x04
+    console.log(`${dataView.getUint8(0)}${dataView.getUint8(1)}${dataView.getUint8(2)}${dataView.getUint8(3)}`)
+    return false;
+  }
+  return true;
 }

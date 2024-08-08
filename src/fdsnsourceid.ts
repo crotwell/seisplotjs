@@ -139,7 +139,7 @@ export class FDSNSourceId {
     return this.asNslc().channelCode;
   }
   toString(): string {
-    return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
+    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
   }
   toStringNoPrefix(): string {
     return `${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
@@ -184,7 +184,10 @@ export class NetworkSourceId {
   }
 
   toString(): string {
-    return `${FDSN_PREFIX}${this.networkCode}`;
+    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
+  }
+  toStringNoPrefix(): string {
+    return this.networkCode;
   }
   equals(other: NetworkSourceId): boolean {
     return this.toString() === other.toString();
@@ -213,7 +216,10 @@ export class StationSourceId {
     return new StationSourceId(items[0], items[1]);
   }
   toString(): string {
-    return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}`;
+    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
+  }
+  toStringNoPrefix(): string {
+    return `${this.networkCode}${SEP}${this.stationCode}`;
   }
   networkSourceId(): NetworkSourceId {
     return new NetworkSourceId(this.networkCode);

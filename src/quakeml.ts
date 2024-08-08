@@ -13,6 +13,8 @@ import {
   stringify,
   doFetchWithTimeout,
   defaultFetchInitObj,
+  mightBeXml,
+  dataViewToString,
   XML_MIME,
 } from "./util";
 import { latlonFormat, depthFormat, magFormat } from "./textformat";
@@ -785,7 +787,7 @@ export class Origin extends BaseElement {
   get depthKm(): number {
     return this.depth / 1000;
   }
-  
+
   get depth(): number {
     return this.depthQuantity?.value ?? NaN;
   }
@@ -2278,6 +2280,17 @@ export function fetchQuakeML(
     .then((rawXml) => {
       return parseQuakeML(rawXml, host);
     });
+}
+
+export function mightBeQuakeML(buf: ArrayBuffer) {
+  if ( ! mightBeXml(buf)) {
+    return false;
+  }
+  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
+  if ( ! initialChars.includes("quakeml")) {
+    return false;
+  }
+  return true;
 }
 
 // these are similar methods as in seisplotjs.stationxml
