@@ -272,7 +272,7 @@ export function insertExtraHeaders(
     return;
   }
   // use ehToQuake
-  let quake = ehToQuake(myEH);
+  const quake = ehToQuake(myEH);
   if (quake) {
     sdd.addQuake(quake);
   }
@@ -346,7 +346,6 @@ export function mightBeZipFile(buf: ArrayBuffer): boolean {
         && dataView.getUint8(2) === 0x03
         && dataView.getUint8(3) === 0x04)) {
     //First bytes must be \x50\x4b\x03\x04
-    console.log(`${dataView.getUint8(0)}${dataView.getUint8(1)}${dataView.getUint8(2)}${dataView.getUint8(3)}`)
     return false;
   }
   return true;

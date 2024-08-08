@@ -344,9 +344,11 @@ export class MSeed3Record {
 
   /**
    * Parses the identifier into an FDSNSourceId.
+   *
+   * @returns header identifier as source id
    */
   getSourceId() {
-    return FDSNSourceId.parse(this.header.identifier)
+    return FDSNSourceId.parse(this.header.identifier);
   }
 
   /**
@@ -776,7 +778,7 @@ export class MSeed3Header {
    */
   startAsDateTime(): DateTime {
     // in case millis rounds to 1000, use plus to avoid luxon invalid
-    let millis = Math.round(this.nanosecond / 1000000);
+    const millis = Math.round(this.nanosecond / 1000000);
     const d = DateTime.fromObject(
       {
         year: this.year,
@@ -790,7 +792,7 @@ export class MSeed3Header {
     );
     return d.plus(millis);
     if ( ! d.isValid) {
-      throw new Error(`Start is invalid: ${this.startFieldsInUtilFormat()} ${d.invalidReason} ${d.invalidExplanation}`)
+      throw new Error(`Start is invalid: ${this.startFieldsInUtilFormat()} ${d.invalidReason} ${d.invalidExplanation}`);
     }
     return d;
   }
