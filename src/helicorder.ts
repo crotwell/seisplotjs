@@ -15,7 +15,9 @@ import { SeismogramSegment } from "./seismogramsegment";
 import { Seismograph } from "./seismograph";
 import { SeismographConfig } from "./seismographconfig";
 import { SeisPlotElement } from "./spelement";
-import { isDef, validStartTime, validEndTime, startDuration } from "./util";
+import {
+  isDef, validStartTime, validEndTime, startDuration, nameForTimeZone
+} from "./util";
 
 export const HELICORDER_ELEMENT = "sp-helicorder";
 
@@ -264,9 +266,12 @@ export class Helicorder extends SeisPlotElement {
       } else if (lineNumber === nl - 1) {
         lineSeisConfig.isXAxis = this.heliConfig.isXAxis;
         lineSeisConfig.margin.bottom += this.heliConfig.margin.bottom;
+        lineSeisConfig.xLabel = this.heliConfig.xLabel;
+        lineSeisConfig.xSublabel = this.heliConfig.xSublabel;
         height += this.heliConfig.margin.bottom;
       }
 
+      lineSeisConfig.xAxisTimeZone = this.heliConfig.xAxisTimeZone;
       lineSeisConfig.fixedTimeScale = lineInterval;
       lineSeisConfig.yLabel = `${startTime?.setZone(this.heliConfig.yLabelTimeZone).toFormat("HH:mm")}`;
       lineSeisConfig.yLabelRight = `${endTime?.setZone(this.heliConfig.yLabelRightTimeZone).toFormat("HH:mm")}`;
@@ -523,17 +528,6 @@ export class HeliTimeRange {
   }
 }
 
-export function nameForTimeZone(zone: string|null|Zone): string {
-  if (zone == null ||
-    (zone instanceof Zone &&
-      FixedOffsetZone.utcInstance.equals(zone))) {
-    return "UTC";
-  } else if (typeof zone === 'string') {
-    return zone;
-  } else {
-    return zone.name;
-  }
-}
 
 /** default styling for helicorder plots. */
 export const helicorder_css = `

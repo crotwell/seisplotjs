@@ -4,7 +4,7 @@
  * https://www.seis.sc.edu
  */
 import { version } from "./version";
-import { DateTime, Duration, Interval, FixedOffsetZone } from "luxon";
+import { DateTime, Duration, Interval, Zone, FixedOffsetZone } from "luxon";
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";
@@ -550,6 +550,25 @@ export function checkLuxonValid(
     );
   }
   return d;
+}
+
+/**
+ * Create string name for a timezone. Uses zone name except for UTC, which
+ * returns "UTC".
+ *
+ * @param  zone  timezone to descript
+ * @return      string version of zone
+ */
+export function nameForTimeZone(zone: string|null|Zone): string {
+  if (zone == null ||
+    (zone instanceof Zone &&
+      FixedOffsetZone.utcInstance.equals(zone))) {
+    return "UTC";
+  } else if (typeof zone === 'string') {
+    return zone;
+  } else {
+    return zone.name;
+  }
 }
 
 /**
