@@ -87,7 +87,7 @@
     "prepublishOnly": "npm run compile && npm run test && npm run testremotes && echo skip npm outdated && echo skip lint && git update-index --no-skip-worktree docs/api/*.html  && git diff --exit-code",
     "servedocs": "npx http-server ./docs -c-1 --cors -a 127.0.0.1",
     "tsc": "tsc --project tsconfig.json",
-    "dts": "npx npm-dts generate --output dist/index.d.ts",
+    "dts": "npx npm-dts generate --entry src/index.ts --output dist/index.d.ts",
     "dts_node": "npx npm-dts generate --entry src/index_node.ts --output dist/index_node.d.ts"
   },
   "repository": {
