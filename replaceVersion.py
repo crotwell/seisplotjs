@@ -8,14 +8,14 @@ with Path("package.json").open() as infile:
     npmPackage = json.load(infile)
 
 
-old="3.1.4"
+old="3.1.5-SNAPSHOT"
 ver=npmPackage["version"]
 print(f"Update {old} to {ver}")
 
 replaceItems = {
   f"seisplotjs_{old}_standalone.mjs": f"seisplotjs_{ver}_standalone.mjs",
-  "seisplotjs 3.0": f"seisplotjs 3.1",
-  "Seisplotjs 3.0": f"Seisplotjs 3.1",
+  "seisplotjs 3.1": f"seisplotjs 3.1",
+  "Seisplotjs 3.1": f"Seisplotjs 3.1",
   old: ver,
 }
 
