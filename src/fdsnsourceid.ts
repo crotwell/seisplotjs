@@ -318,11 +318,17 @@ export class NslcId {
     this.locationCode = loc;
     this.channelCode = chan;
   }
+  /**
+   * Parse NSLC string like CO.JSC.00.HHZ into parts.
+   * @param  nslc     string to parse
+   * @param  sep="."  seperator, default is '.'
+   * @returns NslcId by splitting the string.
+   */
   static parse(nslc: string, sep = "."): NslcId {
-    const items = nslc.split(SEP);
+    const items = nslc.split(sep);
     if (items.length !== 4) {
       throw new Error(
-        `NSLC id must have 4 items; separated by '${sep}': ${nslc}`,
+        `NSLC id must have 4 items but was ${items.length}; separated by '${sep}': ${nslc}`,
       );
     }
     return new NslcId(items[0], items[1], items[2], items[3]);
