@@ -1,6 +1,9 @@
 import { DateTime, Duration, Interval } from "luxon";
 import { DataLinkPacket } from "./datalink";
+import type {SequencedDataRecord} from "./seedlink";
+import { SEPacket } from "./seedlink4";
 import * as miniseed from "./miniseed";
+import * as mseed3 from "./mseed3";
 import { OrganizedDisplay } from "./organizeddisplay";
 import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from "./scale";
 import { SeismogramDisplayData } from "./seismogram";
@@ -147,32 +150,57 @@ export function internalCreateRealtimeDisplay(
 
   const orgDisp = new OrganizedDisplay([], seisPlotConfig);
 
-  const packetHandler = (packet: DataLinkPacket) => {
+  // packet handler can accept datalink, seedlink or seedlinkv4 packets and
+  // either miniseed or miniseed3 data
+  const packetHandler = (packet: DataLinkPacket|SEPacket|SequencedDataRecord) => {
     if (!packet) {
       return;
     }
-    if (packet.isMiniseed()) {
-      const msr = packet.asMiniseed();
-      if (msr) {
-        const seisSegment = miniseed.createSeismogramSegment(msr);
-        const codes = seisSegment.codes();
-        const matchSDD = orgDisp.seisData.find(
-          (sdd: SeismogramDisplayData) => sdd.codes() === codes,
-        );
-        if (matchSDD) {
-          matchSDD.append(seisSegment);
-        } else {
-          const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
-          if (config.networkList) {
-            sdd.associateChannel(config.networkList);
-          }
-          sdd.alignmentTime = animationScaler.alignmentTime;
-          orgDisp.seisData.push(sdd);
-          // trigger redraw if new channel, but not for simple append.
-          orgDisp.seisDataUpdated();
-        }
+    let msr = null;
+    let ms3 = null;
+    if (packet instanceof DataLinkPacket) {
+      if (packet.isMiniseed()) {
+        msr = packet.asMiniseed();
+      } else if (packet.isMiniseed3()) {
+        ms3 = packet.asMiniseed3();
       }
+    } else if (packet instanceof SEPacket) {
+      // seedlink v4
+      if (packet.isMiniseed()) {
+        msr = packet.asMiniseed();
+      } else if (packet.isMiniseed3()) {
+        ms3 = packet.asMiniseed3();
+      }
+    } else  {
+      // SequencedDataRecord, seedlink v3
+      msr = packet.miniseed;
     }
+    let seisSegment = null;
+    if (msr) {
+      seisSegment = miniseed.createSeismogramSegment(msr);
+    } else if (ms3) {
+      seisSegment = mseed3.createSeismogramSegment([ms3]);
+    } else {
+      // no data?
+      return;
+    }
+    const codes = seisSegment.codes();
+    const matchSDD = orgDisp.seisData.find(
+      (sdd: SeismogramDisplayData) => sdd.codes() === codes,
+    );
+    if (matchSDD) {
+      matchSDD.append(seisSegment);
+    } else {
+      const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
+      if (config.networkList) {
+        sdd.associateChannel(config.networkList);
+      }
+      sdd.alignmentTime = animationScaler.alignmentTime;
+      orgDisp.seisData.push(sdd);
+      // trigger redraw if new channel, but not for simple append.
+      orgDisp.seisDataUpdated();
+    }
+
   };
 
   //animationScaler.animate();
