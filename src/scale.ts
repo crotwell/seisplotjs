@@ -82,7 +82,6 @@ export class AmplitudeScalable {
     }
   }
 
-  // eslint-disable-next-line no-unused-vars
   notifyAmplitudeChange(_middle: number, _halfWidth: number) {
     // no-op
   }
@@ -115,7 +114,6 @@ export class TimeScalable {
     this.duration = duration;
   }
 
-  // eslint-disable-next-line no-unused-vars
   notifyTimeRangeChange(_alignmentTimeOffset: Duration, _duration: Duration) {
     // no-op
   }

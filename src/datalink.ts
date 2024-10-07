@@ -155,8 +155,9 @@ export class DataLinkConnection {
       };
 
       webSocket.onerror = (event) => {
-        this.handleError(new Error("" + stringify(event)));
-        reject(event);
+        const evtError = toError(event);
+        this.handleError(evtError);
+        reject(evtError);
       };
 
       webSocket.onclose = (closeEvent) => {

@@ -208,7 +208,6 @@ export function dataViewToString(dataView: DataView): string {
  * @param   msg the message to log
  */
 export function log(msg: string): void {
-  // eslint-disable-next-line no-console
   if (console) {
     // eslint-disable-next-line no-console
     console.log(`${stringify(msg)}`);
@@ -260,7 +259,6 @@ export function toError(maybeError: unknown): Error {
  * @param   msg the message to log
  */
 export function warn(msg: string): void {
-  // eslint-disable-next-line no-console
   if (console) {
     // eslint-disable-next-line no-console
     console.assert(false, `${stringify(msg)}`);
@@ -645,7 +643,7 @@ export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
 
 export function errorFetch(
   _url: URL | RequestInfo,
-  _init?: RequestInit | undefined,
+  _init?: RequestInit,
 ): Promise<Response> {
   throw new Error("There is no fetch!?!?!");
 }
@@ -653,13 +651,13 @@ export let default_fetch:
   | null
   | ((
       url: URL | RequestInfo,
-      init?: RequestInit | undefined,
+      init?: RequestInit,
     ) => Promise<Response>) = null;
 
 export function setDefaultFetch(
   fetcher: (
     url: URL | RequestInfo,
-    init?: RequestInit | undefined,
+    init?: RequestInit,
   ) => Promise<Response>,
 ) {
   if (fetcher != null) {
@@ -668,7 +666,7 @@ export function setDefaultFetch(
 }
 export function getFetch(): (
   url: URL | RequestInfo,
-  init?: RequestInit | undefined,
+  init?: RequestInit,
 ) => Promise<Response> {
   if (default_fetch != null) {
     return default_fetch;
@@ -697,7 +695,7 @@ export function doFetchWithTimeout(
   timeoutSec?: number,
   fetcher?: (
     url: URL | RequestInfo,
-    init?: RequestInit | undefined,
+    init?: RequestInit,
   ) => Promise<Response>,
 ): Promise<Response> {
   const controller = new AbortController();

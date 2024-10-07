@@ -335,8 +335,9 @@ export class SeedlinkConnection {
         };
 
         webSocket.onerror = (event: Event) => {
-          this.handleError(new Error("" + stringify(event)));
-          reject(event);
+          const evtError = toError(event);
+          this.handleError(evtError);
+          reject(evtError);
         };
 
         webSocket.onclose = (closeEvent) => {
@@ -350,11 +351,12 @@ export class SeedlinkConnection {
         };
       } catch (err) {
         this.close();
+        const evtError = toError(err);
         if (this.errorHandler) {
-          this.errorHandler(toError(err));
+          this.errorHandler(evtError);
         }
 
-        reject(err);
+        reject(evtError);
       }
     }).then(function (sl4: unknown) {
       return sl4 as SeedlinkConnection;
@@ -442,7 +444,7 @@ export class SeedlinkConnection {
             if (lines.length === 2) {
               resolve(lines);
             } else {
-              reject("not 2 lines: " + replyMsg);
+              reject(new Error("not 2 lines: " + replyMsg));
             }
           } else {
             this.close();
@@ -452,7 +454,7 @@ export class SeedlinkConnection {
 
         webSocket.send(`${HELLO_COMMAND}\r`);
       } else {
-        reject("webSocket has been closed");
+        reject(new Error("webSocket has been closed"));
       }
     });
     return promise;
@@ -493,7 +495,7 @@ export class SeedlinkConnection {
             if (replyMsg === "OK") {
               resolve(replyMsg);
             } else {
-              reject("msg not OK: " + replyMsg);
+              reject(new Error("msg not OK: " + replyMsg));
             }
           } else {
             mythis.close();
@@ -503,7 +505,7 @@ export class SeedlinkConnection {
 
         webSocket.send(mycmd + "\r\n");
       } else {
-        reject("webSocket has been closed");
+        reject(new Error("webSocket has been closed"));
       }
     });
     return promise;

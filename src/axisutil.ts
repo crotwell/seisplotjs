@@ -87,7 +87,7 @@ export function drawXSublabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
-  width: number, // eslint-disable-next-line no-unused-vars
+  width: number,
   handlebarsInput: HandlebarsInput = {},
 ) {
   const svg = d3select(svgEl);
@@ -184,7 +184,7 @@ export function drawYSublabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
-  width: number, // eslint-disable-next-line no-unused-vars
+  width: number, 
   handlebarsInput: HandlebarsInput = {},
   unitsLabel: string = "",
 ) {

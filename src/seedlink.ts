@@ -228,16 +228,16 @@ export class SeedlinkConnection {
             if (lines.length === 2) {
               resolve([lines[0], lines[1]]);
             } else {
-              reject("not 2 lines: " + replyMsg);
+              reject(new Error("not 2 lines: " + replyMsg));
             }
           } else {
-            reject("event.data not ArrayBuffer?");
+            reject(new Error("event.data not ArrayBuffer?"));
           }
         };
 
         webSocket.send("HELLO\r");
       } else {
-        reject("webSocket has been closed");
+        reject(new Error("webSocket has been closed"));
       }
     });
     return promise;
@@ -277,16 +277,16 @@ export class SeedlinkConnection {
             if (replyMsg === "OK") {
               resolve(replyMsg);
             } else {
-              reject("msg not OK: " + replyMsg);
+              reject(new Error("msg not OK: " + replyMsg));
             }
           } else {
-            reject("event.data not ArrayBuffer?");
+            reject(new Error("event.data not ArrayBuffer?"));
           }
         };
 
         webSocket.send(mycmd + "\r\n");
       } else {
-        reject("webSocket has been closed");
+        reject(new Error("webSocket has been closed"));
       }
     });
     return promise;
