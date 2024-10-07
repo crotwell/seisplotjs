@@ -47,11 +47,16 @@ export class OrganizedDisplayItem extends SeisPlotElement {
       min-height: 50px;
       height: 100%;
     }
+    @property --sp-seismograph-height {
+      syntax: <length>;
+      initial-value: 200px;
+    }
     sp-station-quake-map {
       height: 400px;
     }
     sp-seismograph {
       min-height: 200px;
+      height: var(--sp-seismograph-height);
     }
     div.wrapper {
       height: 100%;
@@ -427,7 +432,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       height: var(--map-height, 400px);
     }
     sp-organized-display-item {
-      min-height: 200px;
+      min-height: var(--sp-seismograph-height, 200px);
     }
     sp-seismograph {
       min-height: 200px;
