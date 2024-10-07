@@ -6,6 +6,7 @@ import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import { OrganizedDisplay } from "./organizeddisplay";
 import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from "./scale";
+import { SORT_ALPHABETICAL} from "./sorting";
 import { SeismogramDisplayData } from "./seismogram";
 import { SeisPlotElement } from "./spelement";
 import { SeismographConfig } from "./seismographconfig";
@@ -149,6 +150,9 @@ export function internalCreateRealtimeDisplay(
   );
 
   const orgDisp = new OrganizedDisplay([], seisPlotConfig);
+    // default is to sort by order added, which will be random for real time
+  // alphabetical seems better for rt
+  orgDisp.sortby = SORT_ALPHABETICAL;
 
   // packet handler can accept datalink, seedlink or seedlinkv4 packets and
   // either miniseed or miniseed3 data

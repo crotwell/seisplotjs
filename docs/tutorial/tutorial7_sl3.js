@@ -14,12 +14,49 @@ let requestConfig = [ 'STATION ADO CI',
                       'SELECT 00HHZ.D',
                ];
 let stationText = "";
+let netCodeList = new Set();
+let staCodeList = new Set();
+let locCodeList = new Set();
+let chanCodeList = new Set();
 for (const rLine of requestConfig) {
   const items = rLine.split(/\s+/);
   if (items[0] === "STATION") {
     stationText += ` ${items[2]}.${items[1]}`;
+    netCodeList.add(items[2]);
+    staCodeList.add(items[1]);
+  } else if (items[0] === "SELECT") {
+    let locChan = items[1].split('.')[0];
+    if (locChan.length === 5) {
+      locCodeList.add(locChan.slice(0, 2));
+    } else {
+      locCodeList.add("--");
+    }
+    chanCodeList.add(locChan.slice(-3));
   }
 }
+
+let staxmlNetList = [];
+
+// optionally load stationxml to get count to earth units conversion
+// this will display seismographs in m/s instead of count
+let fdsnStaQuery = new sp.fdsnstation.StationQuery();
+let netStr = "";
+for (const n of netCodeList.values()) { netStr += `${n},`;}
+fdsnStaQuery.networkCode( netStr.slice(0, -1));
+let staStr = "";
+for (const s of staCodeList.values()) { staStr += `${s},`;}
+fdsnStaQuery.stationCode( staStr.slice(0, -1));
+let locStr = "";
+for (const l of locCodeList.values()) { locStr += `${l},`;}
+fdsnStaQuery.locationCode( locStr.slice(0, -1));
+let chanStr = "";
+for (const c of chanCodeList.values()) { chanStr += `${c},`;}
+fdsnStaQuery.channelCode( chanStr.slice(0, -1));
+console.log(fdsnStaQuery.formURL(sp.fdsnstation.LEVEL_CHANNEL));
+staxmlNetList = await fdsnStaQuery.queryChannels();
+// end load stationxml
+
+
 document.querySelector("span#station").textContent = stationText;
 const duration = sp.luxon.Duration.fromISO("PT5M");
 
@@ -31,16 +68,17 @@ let realtimeDiv = document.querySelector("div#realtime");
 // snip start timer
 const rtConfig = {
   duration: duration,
+  networkList: staxmlNetList,
 };
 const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
+// each seismograph on its own min-max amplitude scale, remove for all on same min-max
+//rtDisp.organizedDisplay.seismographConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
 realtimeDiv.appendChild(rtDisp.organizedDisplay);
 rtDisp.organizedDisplay.draw();
 rtDisp.animationScaler.minRedrawMillis =
   sp.animatedseismograph.calcOnePixelDuration(rtDisp.organizedDisplay);
 
 rtDisp.animationScaler.animate();
-
-rtDisp.organizedDisplay.sortby = sp.sorting.SORT_ALPHABETICAL;
 
 // snip start nowtime
 const n_span = document.querySelector("#nt");
