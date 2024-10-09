@@ -573,8 +573,11 @@ export function nameForTimeZone(zone: string|null|Zone): string {
  * @returns the protocol, http: or https: for the document if possible.
  * Note this includes the colon.
  */
-export function checkProtocol(): string {
+export function checkProtocol(defaultProtocol="http:"): string {
   let _protocol = "http:";
+  if (defaultProtocol.startsWith("https")) {
+    _protocol = "https:";
+  }
 
   if (
     typeof document !== "undefined" &&

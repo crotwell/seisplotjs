@@ -42,6 +42,9 @@ const ORG = "Organization: ";
  */
 export class RingserverConnection {
   /** @private */
+  _protocol: string;
+
+  /** @private */
   _host: string;
 
   /** @private */
@@ -60,6 +63,7 @@ export class RingserverConnection {
       const rs_url = new URL(hostStr);
       this._host = rs_url.hostname;
       this._port = parseInt(rs_url.port);
+      this._protocol = rs_url.protocol;
 
       if (!Number.isInteger(this._port)) {
         this._port = 80;
@@ -67,6 +71,7 @@ export class RingserverConnection {
 
       this._prefix = rs_url.pathname;
     } else {
+      this._protocol = "http:";
       this._host = hostStr;
       this._port = 80;
       this._prefix = "";
@@ -248,7 +253,7 @@ export class RingserverConnection {
   getDataLinkURL(): string {
     let proto = "ws:";
 
-    if (checkProtocol() === "https:") {
+    if (checkProtocol(this._protocol) === "https:") {
       proto = "wss:";
     }
 
@@ -265,7 +270,7 @@ export class RingserverConnection {
   getSeedLinkURL(): string {
     let proto = "ws:";
 
-    if (checkProtocol() === "https:") {
+    if (checkProtocol(this._protocol) === "https:") {
       proto = "wss:";
     }
 
@@ -290,7 +295,7 @@ export class RingserverConnection {
     }
 
     return (
-      checkProtocol() +
+      checkProtocol(this._protocol) +
       "//" +
       this._host +
       (this._port === 80 ? "" : ":" + this._port) +
