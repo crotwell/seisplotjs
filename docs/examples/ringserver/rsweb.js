@@ -25,6 +25,7 @@ document
       document.querySelector("div.results pre").textContent = o.join("\n");
     });
   });
+
 document
   .querySelector("button#streams")
   .addEventListener("click", function (evt) {
@@ -115,6 +116,10 @@ document
   });
 
 let toggleConnect = function (streamstat) {
+  if ( streamstat == null && stopped) {
+    // don't start up without channels
+    return;
+  }
   stopped = !stopped;
   if (stopped) {
     if (datalink) {
