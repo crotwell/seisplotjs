@@ -67,7 +67,7 @@
     "esmb": "node build.mjs",
     "srclint": "eslint src/* ",
     "lint": "eslint src/* test/** testremotes/**",
-    "examplelint": "eslint -c .eslintrc.js 'docs/examples/viewobspy/www/[otv]*.js' 'docs/examples/*/[a-r]*.js'  'docs/examples/*/s[t-z]*.js'",
+    "examplelint": "eslint -c .eslintrc.js'docs/examples/*/[a-r]*.js'  'docs/examples/*/s[t-z]*.js'",
     "publint": "npx publint",
     "test": "jest",
     "testremotes": "jest --config=jest_remote.config.js",
