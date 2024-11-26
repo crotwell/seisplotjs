@@ -656,7 +656,12 @@ export class SeismogramDisplayData {
   }
 
   addMarker(marker: MarkerType) {
-    this.addMarkers([marker]);
+    let mlist = [ marker ];
+    if (Array.isArray(marker)) {
+      // already an array, typeless languages gumble grumble ...
+      mlist = marker;
+    }
+    this.addMarkers(mlist);
   }
 
   addMarkers(markers: MarkerType | Array<MarkerType>) {
@@ -669,6 +674,10 @@ export class SeismogramDisplayData {
 
   getMarkers(): Array<MarkerType> {
     return this.markerList;
+  }
+
+  clearMarkers() {
+    this.markerList = [];
   }
 
   addTravelTimes(
