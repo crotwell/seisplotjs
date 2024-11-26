@@ -567,7 +567,7 @@ path.${classname} {
     return style;
   }
   attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
-    this.draw();
+    this.redraw();
   }
   static get observedAttributes() {
     return [
