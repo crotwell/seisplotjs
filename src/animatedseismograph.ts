@@ -133,9 +133,10 @@ export function createRealtimeDisplay(config: unknown): RTDisplayContainer {
 export function internalCreateRealtimeDisplay(
   config: RTConfig,
 ): RTDisplayContainer {
+  const negDuration = config.duration.negate();
   const timeScale = new AlignmentLinkedTimeScale(
     [],
-    config.duration.negate(),
+    negDuration,
     config.offset,
   );
   const seisPlotConfig = new SeismographConfig();
