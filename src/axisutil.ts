@@ -109,6 +109,12 @@ export function drawXSublabel(
   });
   svgText.html(handlebarOut);
 }
+export function removeYLabel(
+  svgEl: SVGElement,
+) {
+  const svg = d3select(svgEl);
+  svg.selectAll("g.yLabel").remove();
+}
 export function drawYLabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
