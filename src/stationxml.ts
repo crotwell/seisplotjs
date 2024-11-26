@@ -4,7 +4,6 @@
  * https://www.seis.sc.edu
  */
 import {
-  isObject,
   isDef,
   isStringArg,
   isNonEmptyStringArg,
@@ -1234,12 +1233,12 @@ export function convertToStage(stageXml: Element): Stage {
   } else {
     // shoudl be a filter of some kind, check for units
     const inputUnits = _grabFirstElText(
-      _grabFirstEl(stageXml, "InputUnits"),
+      _grabFirstEl(subEl, "InputUnits"),
       "Name",
     );
 
     const outputUnits = _grabFirstElText(
-      _grabFirstEl(stageXml, "OutputUnits"),
+      _grabFirstEl(subEl, "OutputUnits"),
       "Name",
     );
 
@@ -1620,13 +1619,13 @@ const _grabFirstEl = function (
   let out = null;
 
   if (xml instanceof Element) {
-    const el = xml.getElementsByTagName(tagName);
-
-    if (isObject(el) && el.length > 0) {
-      const e = el.item(0);
-
+    const elList = Array.from(xml.children).filter(
+      (e) => e.tagName === tagName,
+    );
+    if (elList.length > 0) {
+      const e = elList[0];
       if (e) {
-        out = e;
+        return e;
       }
     }
   }

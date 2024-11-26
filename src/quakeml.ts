@@ -2320,17 +2320,20 @@ const _grabFirstElNS = function (
   xml: Element | null | void,
   namespace: string,
   tagName: string,
-): Element | undefined {
-  let out = undefined;
+): Element | null {
+  let out = null;
 
   if (isObject(xml)) {
     const elList = xml.getElementsByTagNameNS(namespace, tagName);
 
-    if (isObject(elList) && elList.length > 0) {
-      const e = elList.item(0);
-
-      if (e) {
-        out = e;
+    for (let idx=0; idx<elList.length; idx++){
+      const e = elList.item(idx);
+      if (e!= null && e.parentElement === xml) {
+        // direct child element
+        if (e) {
+          out = e;
+          break;
+        }
       }
     }
   }
