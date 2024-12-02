@@ -81,6 +81,9 @@ export type MarkerHolderType = {
   bbox?: BBoxType;
 };
 
+export const SEIS_CLICK_EVENT = "seisclick";
+export const SEIS_MOVE_EVENT = "seismousemove";
+
 export const SEISMOGRAPH_ELEMENT = "sp-seismograph";
 export const seismograph_css = `
 
@@ -348,12 +351,24 @@ export class Seismograph extends SeisPlotElement {
     // event listener to transform mouse click into time
     this.addEventListener("click", (evt) => {
       const detail = this.calcDetailForEvent(evt, "click");
-      const event = new CustomEvent("seisclick", { detail: detail });
+      const event = new CustomEvent(SEIS_CLICK_EVENT,
+        { detail: detail,
+          bubbles: true,
+          cancelable: false,
+          composed: true
+        }
+      );
       this.dispatchEvent(event);
     });
     this.addEventListener("mousemove", (evt) => {
       const detail = this.calcDetailForEvent(evt, "mousemove");
-      const event = new CustomEvent("seismousemove", { detail: detail });
+      const event = new CustomEvent(SEIS_MOVE_EVENT,
+        { detail: detail,
+          bubbles: true,
+          cancelable: false,
+          composed: true
+        }
+      );
       this.dispatchEvent(event);
     });
   }

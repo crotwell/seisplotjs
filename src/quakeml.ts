@@ -52,7 +52,13 @@ export function createQuakeClickEvent(
     mouseevent: mouseclick,
     quake: q,
   };
-  return new CustomEvent(QUAKE_CLICK_EVENT, { detail: detail });
+  return new CustomEvent(QUAKE_CLICK_EVENT,
+    { detail: detail,
+      bubbles: true,
+      cancelable: false,
+      composed: true
+    }
+  );
 }
 
 // QuakeML classes

@@ -9,7 +9,6 @@ import { sort, SORT_NONE } from "./sorting";
 import { SeisPlotElement } from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import { Seismograph } from "./seismograph";
-import type { SeisMouseEventType } from "./seismograph";
 import { SeismographConfig } from "./seismographconfig";
 import { isDef, isStringArg, stringify } from "./util";
 import * as querystringify from "querystringify";
@@ -135,18 +134,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         this._seismographConfig,
       );
       wrapper.appendChild(seismograph);
-      seismograph.addEventListener("seismousemove", (sEvt) => {
-        const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
-        // bubble the event, not sure why this is needed???
-        const event = new CustomEvent("seismousemove", { detail: seisDetail });
-        this.dispatchEvent(event);
-      });
-      seismograph.addEventListener("seisclick", (sEvt) => {
-        const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
-        // bubble the event, not sure why this is needed???
-        const event = new CustomEvent("seisclick", { detail: seisDetail });
-        this.dispatchEvent(event);
-      });
+      
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
       const nonContigList = this.seisData.filter(
@@ -589,21 +577,6 @@ export class OrganizedDisplay extends SeisPlotElement {
       wrapper.appendChild(oi);
 
       oi.draw();
-      if (oi.plottype === SEISMOGRAPH) {
-        oi.addEventListener("seismousemove", (sEvt) => {
-          // bubble the event, not sure why this is needed???
-          const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
-          const event = new CustomEvent("seismousemove", {
-            detail: seisDetail,
-          });
-          this.dispatchEvent(event);
-        });
-        oi.addEventListener("seisclick", (sEvt) => {
-          const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
-          const event = new CustomEvent("seisclick", { detail: seisDetail });
-          this.dispatchEvent(event);
-        });
-      }
     });
     let timePromise: Promise<Array<TimeScalable>> = Promise.resolve([]);
     let ampPromise: Promise<Array<AmplitudeScalable>> = Promise.resolve([]);

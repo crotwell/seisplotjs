@@ -19,6 +19,9 @@ import {
   isDef, validStartTime, validEndTime, startDuration, nameForTimeZone
 } from "./util";
 
+export const HELI_CLICK_EVENT = "heliclick";
+export const HELI_MOUSE_MOVE_EVENT = "helimousemove";
+
 export const HELICORDER_ELEMENT = "sp-helicorder";
 
 /**
@@ -59,15 +62,27 @@ export class Helicorder extends SeisPlotElement {
     // event listener to transform mouse click into time
     this.addEventListener("click", (evt) => {
       const detail = this.calcDetailForEvent(evt);
-      const event = new CustomEvent("heliclick", { detail: detail });
+      const event = new CustomEvent(HELI_CLICK_EVENT,
+        { detail: detail,
+          bubbles: true,
+          cancelable: false,
+          composed: true
+        }
+      );
       this.dispatchEvent(event);
     });
     this.addEventListener("mousemove", (evt) => {
       const detail = this.calcDetailForEvent(evt);
-      const event = new CustomEvent("helimousemove", { detail: detail });
+      const event = new CustomEvent(HELI_MOUSE_MOVE_EVENT,
+        { detail: detail,
+          bubbles: true,
+          cancelable: false,
+          composed: true
+        }
+      );
       this.dispatchEvent(event);
     });
-    this.addEventListener("helimousemove", (hEvent) => {
+    this.addEventListener(HELI_MOUSE_MOVE_EVENT, (hEvent) => {
       const detail = (hEvent as CustomEvent).detail as HeliMouseEventType;
       wrapper.querySelectorAll(`sp-seismograph`).forEach((seismograph, idx) => {
         if (idx === detail.lineNum) {

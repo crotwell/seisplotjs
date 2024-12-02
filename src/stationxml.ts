@@ -58,7 +58,13 @@ export function createChannelClickEvent(
     mouseevent: mouseclick,
     channel: sta,
   };
-  return new CustomEvent(CHANNEL_CLICK_EVENT, { detail: detail });
+  return new CustomEvent(CHANNEL_CLICK_EVENT,
+    { detail: detail,
+      bubbles: true,
+      cancelable: false,
+      composed: true
+    }
+  );
 }
 
 /**
@@ -77,7 +83,13 @@ export function createStationClickEvent(
     mouseevent: mouseclick,
     station: sta,
   };
-  return new CustomEvent(STATION_CLICK_EVENT, { detail: detail });
+  return new CustomEvent(STATION_CLICK_EVENT,
+    { detail: detail,
+      bubbles: true,
+      cancelable: false,
+      composed: true
+    }
+  );
 }
 
 // StationXML classes
