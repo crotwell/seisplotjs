@@ -92,6 +92,18 @@ export function ehToChannel(exHead: MS3ExtraHeader, sid: FDSNSourceId): Channel|
   return channel;
 }
 
+export function markerToEH(mark: MarkerType): EHMarker {
+  let tm = mark.time.toISO();
+  tm = tm ? tm : "error";
+  const out = {
+    tm: tm,
+    n: mark.name,
+    mtype: mark.markertype,
+    desc: mark.description,
+  };
+  return out;
+}
+
 export function markerTypeFromEH(mtype: string): string {
   if (mtype === "pk" || mtype === "pick") {
     return "pick";
@@ -127,6 +139,15 @@ export function extractBagEH(jsonEH: Record<string, unknown>): EHBag|null {
     return null;
   }
   const object = eh.bag as Record<string, unknown>;
+  if (isValidBagJsonEHType(object)) {
+    return object;
+  } else {
+    throw new TypeError(`Oops, we did not get Bag extra header JSON!`);
+  }
+}
+
+export function createBagEH(): EHBag {
+  const object = {} as Record<string, unknown>;
   if (isValidBagJsonEHType(object)) {
     return object;
   } else {
