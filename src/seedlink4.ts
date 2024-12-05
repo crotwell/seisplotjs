@@ -11,7 +11,9 @@ import { MSeed3Record } from "./mseed3";
 import { DateTime } from "luxon";
 import { version } from "./version";
 import { dataViewToString, isDef, stringify, toError } from "./util";
-export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";
+export const SEEDLINK4_SLPROTO = "SLPROTO";
+export const SEEDLINK4_PROTOCOL = `${SEEDLINK4_SLPROTO}:4.0`;
+export const WS_SEEDLINK4_PROTOCOL = `${SEEDLINK4_SLPROTO}4.0`; // web socket procotol can't have :
 export const MINISEED_2_FORMAT = "2";
 export const MINISEED_3_FORMAT = "3";
 export const SE_PACKET_SIGNATURE = "SE";
@@ -26,6 +28,7 @@ export const SELECT_COMMAND = "SELECT";
 export const SLPROTO_COMMAND = "SLPROTO";
 export const STATION_COMMAND = "STATION";
 export const USERAGENT_COMMAND = "USERAGENT";
+export const SL_OK = "OK";
 
 const useLittleEndian = true;
 export class SEPacket {
@@ -326,7 +329,7 @@ export class SeedlinkConnection {
 
     return new Promise((resolve, reject) => {
       try {
-        const webSocket = new WebSocket(this.url, SEEDLINK4_PROTOCOL);
+        const webSocket = new WebSocket(this.url, WS_SEEDLINK4_PROTOCOL);
         this.webSocket = webSocket;
         webSocket.binaryType = "arraybuffer";
 
@@ -473,7 +476,7 @@ export class SeedlinkConnection {
       return accum.then(() => {
         return this.createCmdPromise(next);
       });
-    }, Promise.resolve("OK"));
+    }, Promise.resolve(SL_OK));
   }
 
   /**
@@ -492,7 +495,7 @@ export class SeedlinkConnection {
             const data: ArrayBuffer = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
 
-            if (replyMsg === "OK") {
+            if (replyMsg === SL_OK) {
               resolve(replyMsg);
             } else {
               reject(new Error("msg not OK: " + replyMsg));
