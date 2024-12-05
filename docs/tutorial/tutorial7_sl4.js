@@ -2,10 +2,6 @@
 import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
 sp.util.updateVersionText(".sp_version");
 
-const stationPattern = `CO JSC`;
-const selectPattern = `00.HH?`;
-document.querySelector("span#channel").textContent =
-  `${stationPattern} ${selectPattern}`;
 const duration = sp.luxon.Duration.fromISO("PT5M");
 const timeWindow = new sp.util.durationEnd(duration, sp.luxon.DateTime.utc());
 const seisPlotConfig = new sp.seismographconfig.SeismographConfig();
@@ -67,10 +63,14 @@ const packetHandler = function (packet) {
     console.log(`not a mseed packet: ${packet.streamId}`);
   }
 };
-let requstConfig = ["ACCEPT 2", "STATION WLF GE", "SELECT *.BH?"];
+let requstConfig = ["STATION CO_JSC", "SELECT 00_H_H_?", "END"];
+const LOCAL_SEEDLINK_V4 = "wss://eeyore.seis.sc.edu/testringserver/seedlink";
+
+document.querySelector("span#channel").textContent = requstConfig.join(" ");
+
 // snip start seedlink
 const seedlink = new sp.seedlink4.SeedlinkConnection(
-  "ws://geofon-open2.gfz-potsdam.de:18000",
+  LOCAL_SEEDLINK_V4,
   packetHandler,
   errorFn,
 );
@@ -146,20 +146,22 @@ let toggleConnect = function () {
       seedlink
         .interactiveConnect()
         .then(() => {
-          return that.sendHello();
+          return seedlink.sendHello();
         })
-        .then(function (lines) {
+        .then( (lines) => {
           console.log(`got lines: ${lines[0]}`);
-          if (this.checkProto(lines)) {
+          if (seedlink.checkProto(lines)) {
             addToDebug("HELLO: ");
             addToDebug(" " + lines[0]);
             addToDebug(" " + lines[1]);
             return true;
           } else {
-            throw new Exception(
-              `${SEEDLINK4_PROTOCOL} not found in HELLO response`,
+            throw new Error(
+              `${sp.seedlink4.SEEDLINK4_PROTOCOL} not found in HELLO response`,
             );
           }
+        }).then(() => {
+          return seedlink.sendCmdArray(requstConfig);
         })
         .catch(function (error) {
           addToDebug(`Error: ${error.name} - ${error.message}`);
