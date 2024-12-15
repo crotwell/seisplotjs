@@ -63,7 +63,7 @@ export class SEPacket {
   static parse(data: ArrayBuffer): SEPacket {
     let sePacket;
 
-    if (data.byteLength < 16) {
+    if (data.byteLength < 17) {
       throw new Error(
         "message too small to be SE packet: " +
           data.byteLength +
@@ -72,7 +72,7 @@ export class SEPacket {
       );
     }
 
-    const slHeader = new DataView(data, 0, 16);
+    const slHeader = new DataView(data, 0, 17);
     // check for 'SE' at start
     const sig = String.fromCharCode(slHeader.getUint8(0), slHeader.getUint8(1));
 
@@ -87,7 +87,7 @@ export class SEPacket {
       const dataView = new DataView(
         data,
         17 + stationIdLength,
-        data.byteLength - 16,
+        data.byteLength - (17 + stationIdLength),
       );
       sePacket = new SEPacket(
         String.fromCharCode(dataFormat),
@@ -276,7 +276,7 @@ export class SeedlinkConnection {
   }
 
   connect() {
-    this.interactiveConnect()
+    return this.interactiveConnect()
       .then(() => {
         return this.sendHello();
       })
@@ -288,15 +288,15 @@ export class SeedlinkConnection {
         }
       })
       .then(() => {
+        return this.sendSLProto("4.0");
+      })
+      .then(() => {
         return this.sendCmdArray([
           `${USERAGENT_COMMAND} ${this.agent}/${this.agentVersion} (seisplotjs/${version})`,
         ]);
       })
       .then(() => {
         return this.sendCmdArray(this.requestConfig);
-      })
-      .then(() => {
-        return this.sendCmdArray([this.endCommand]);
       })
       .then((val) => {
         if (this.webSocket === null) {
@@ -305,8 +305,7 @@ export class SeedlinkConnection {
         this.webSocket.onmessage = (event) => {
           this.handle(event);
         };
-
-        this.webSocket.send(`${this.endCommand}\r`);
+        this.webSocket.send(`${this.endCommand}\r\n`);
         return val;
       })
       .catch((err) => {
@@ -396,7 +395,7 @@ export class SeedlinkConnection {
         this.handleSEPacket(event);
       } else {
         this.close();
-        this.errorHandler(
+        this.handleError(
           new Error(
             `Packet does not look like SE packet: ${data[0]} ${data[1]}`,
           ),
@@ -404,7 +403,7 @@ export class SeedlinkConnection {
       }
     } else {
       this.close();
-      this.errorHandler(new Error("event.data is not ArrayBuffer"));
+      this.handleError(new Error("event.data is not ArrayBuffer"));
     }
   }
 
@@ -417,11 +416,11 @@ export class SeedlinkConnection {
         this.receivePacketFn(out);
       } catch (e) {
         this.close();
-        this.errorHandler(toError(e));
+        this.handleError(toError(e));
       }
     } else {
       this.close();
-      this.errorHandler(new Error("event.data is not ArrayBuffer"));
+      this.handleError(new Error("event.data is not ArrayBuffer"));
     }
   }
 
@@ -461,6 +460,10 @@ export class SeedlinkConnection {
       }
     });
     return promise;
+  }
+
+  sendSLProto(version: string): Promise<string> {
+    return this.createCmdPromise(`${SEEDLINK4_SLPROTO} ${version}`);
   }
 
   /**
