@@ -914,8 +914,11 @@ export function areContiguous(
  * @returns seismogram segment for the records
  */
 export function createSeismogramSegment(
-  contig: Array<MSeed3Record>,
+  contig: Array<MSeed3Record>|MSeed3Record,
 ): SeismogramSegment {
+  if (!Array.isArray(contig)) {
+    contig = [contig];
+  }
   const contigData = contig.map((dr) => dr.asEncodedDataSegment());
   const out = new SeismogramSegment(
     contigData,
