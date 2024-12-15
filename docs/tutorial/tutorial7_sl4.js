@@ -28,25 +28,37 @@ while (timerInterval < 50) {
 }
 const errorFn = function (error) {
   console.assert(false, error);
-  if (datalink) {
-    datalink.close();
+  if (seedlink) {
+    seedlink.close();
   }
-  document.querySelector("p#error").textContent = "Error: " + error;
+  addToDebug( "Error: " + error);
 };
 
 // snip start handle
 const packetHandler = function (packet) {
-  if (packet.isMiniseed()) {
+  console.log(`in packetHandler: ${packet}`)
+  if (packet.isMiniseed() || packet.isMiniseed3()) {
+    let seisSegment;
+    if (packet.isMiniseed()) {
+      const mseed = packet.asMiniseed();
+      console.log(`isMiniseed: ${mseed.header}`)
+
+      seisSegment = sp.miniseed.createSeismogramSegment(mseed);
+    } else if (packet.isMiniseed3()) {
+      const mseed = packet.asMiniseed3();
+      console.log(`isMiniseed3: ${mseed.header}`)
+
+      seisSegment = sp.miniseed3.createSeismogramSegment(mseed);
+    }
     numPackets++;
     document.querySelector("span#numPackets").textContent = numPackets;
-    let seisSegment = sp.miniseed.createSeismogramSegment(packet.miniseed);
     const codes = seisSegment.codes();
     let seisPlot = graphList.get(codes);
     if (!seisPlot) {
       let seismogram = new sp.seismogram.Seismogram([seisSegment]);
       let seisData =
         sp.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-      seisData.alignmentTime = sp.moment.utc();
+      seisData.alignmentTime = sp.util.utcnow();
       let plotDiv = realtimeDiv.append("div").classed("seismograph", true);
       seisPlot = new sp.seismograph.Seismograph(
         plotDiv,
@@ -63,17 +75,20 @@ const packetHandler = function (packet) {
     console.log(`not a mseed packet: ${packet.streamId}`);
   }
 };
-let requstConfig = ["STATION CO_JSC", "SELECT 00_H_H_?", "END"];
+let requestConfig = ["STATION CO_JSC", "SELECT 00_H_H_?"];
+let endCommand = "END";
 const LOCAL_SEEDLINK_V4 = "wss://eeyore.seis.sc.edu/testringserver/seedlink";
 
-document.querySelector("span#channel").textContent = requstConfig.join(" ");
+document.querySelector("span#channel").textContent = requestConfig.join(" ");
 
 // snip start seedlink
 const seedlink = new sp.seedlink4.SeedlinkConnection(
   LOCAL_SEEDLINK_V4,
+  requestConfig,
   packetHandler,
   errorFn,
 );
+seedlink.endCommand = endCommand;
 
 // snip start timer
 let timer = window.setInterval(function (elapsed) {
@@ -144,25 +159,7 @@ let toggleConnect = function () {
   } else {
     if (seedlink) {
       seedlink
-        .interactiveConnect()
-        .then(() => {
-          return seedlink.sendHello();
-        })
-        .then( (lines) => {
-          console.log(`got lines: ${lines[0]}`);
-          if (seedlink.checkProto(lines)) {
-            addToDebug("HELLO: ");
-            addToDebug(" " + lines[0]);
-            addToDebug(" " + lines[1]);
-            return true;
-          } else {
-            throw new Error(
-              `${sp.seedlink4.SEEDLINK4_PROTOCOL} not found in HELLO response`,
-            );
-          }
-        }).then(() => {
-          return seedlink.sendCmdArray(requstConfig);
-        })
+        .connect()
         .catch(function (error) {
           addToDebug(`Error: ${error.name} - ${error.message}`);
           console.assert(false, error);
