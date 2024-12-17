@@ -139,7 +139,9 @@ let toggleConnect = function () {
     if (seedlink) {
       const start = sp.luxon.DateTime.utc().minus(duration);
       seedlink.setTimeCommand(start)
-      seedlink.connect();
+      seedlink.connect().then( () => {
+        addToDebug("Hello: " + seedlink.helloLines);
+      });
     }
   }
 };

@@ -47,6 +47,7 @@ export class SeedlinkConnection {
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
   command: string;
+  helloLines: Array<string> = [];
 
   constructor(
     url: string,
@@ -75,66 +76,85 @@ export class SeedlinkConnection {
     this.closeFn = closeFn;
   }
 
+
   connect() {
+    return this.interactiveConnect()
+      .then(() => {
+        return this.sendHello();
+      })
+      .then((lines) => {
+        this.helloLines = lines;
+        return this.sendCmdArray(this.requestConfig);
+      })
+      .then(() => {
+        return this.sendCmdArray([this.command]);
+      })
+      .then((val) => {
+        if (this.webSocket === null) {
+          throw new Error("websocket is null");
+        }
+        this.webSocket.onmessage = (event) => {
+          this.handle(event);
+        };
+
+        this.webSocket.send("END\r");
+        return val;
+      })
+      .catch((err) => {
+        this.close();
+        const insureErr =
+          err instanceof Error ? err : new Error(stringify(err));
+        if (this.errorHandler) {
+          this.errorHandler(insureErr);
+        } else {
+          throw insureErr;
+        }
+      });
+  }
+
+  interactiveConnect(): Promise<SeedlinkConnection> {
     if (this.webSocket) {
       this.webSocket.close();
       this.webSocket = null;
     }
 
-    try {
-      const webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
-      this.webSocket = webSocket;
-      webSocket.binaryType = "arraybuffer";
+    return new Promise((resolve, reject) => {
+      try {
+        const webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
+        this.webSocket = webSocket;
+        webSocket.binaryType = "arraybuffer";
 
-      webSocket.onopen = () => {
-        this.sendHello()
-          .then(() => {
-            return this.sendCmdArray(this.requestConfig);
-          })
-          .then(() => {
-            return this.sendCmdArray([this.command]);
-          })
-          .then((val) => {
-            webSocket.onmessage = (event) => {
-              this.handle(event);
-            };
+        webSocket.onopen = () => {
+          resolve(this);
+        };
 
-            webSocket.send("END\r");
-            return val;
-          })
-          .catch((err) => {
-            this.close();
-            const insureErr =
-              err instanceof Error ? err : new Error(stringify(err));
-            if (this.errorHandler) {
-              this.errorHandler(insureErr);
-            } else {
-              throw insureErr;
-            }
-          });
-      };
+        webSocket.onerror = (event: Event) => {
+          const evtError = toError(event);
+          this.handleError(evtError);
+          reject(evtError);
+        };
 
-      webSocket.onerror = (event: Event) => {
-        this.handleError(new Error("" + stringify(event)));
+        webSocket.onclose = (closeEvent) => {
+          if (this.closeFn) {
+            this.closeFn(closeEvent);
+          }
+
+          if (this.webSocket) {
+            this.webSocket = null;
+          }
+        };
+      } catch (err) {
         this.close();
-      };
-
-      webSocket.onclose = (closeEvent) => {
-        if (this.closeFn) {
-          this.closeFn(closeEvent);
+        const evtError = toError(err);
+        if (this.errorHandler) {
+          this.errorHandler(evtError);
         }
 
-        if (this.webSocket) {
-          this.webSocket = null;
-        }
-      };
-    } catch (err) {
-      if (this.errorHandler) {
-        this.errorHandler(toError(err));
-      } else {
-        throw err;
+        reject(evtError);
       }
-    }
+    }).then(function (sl3: unknown) {
+      return sl3 as SeedlinkConnection;
+    });
   }
 
   close(): void {
