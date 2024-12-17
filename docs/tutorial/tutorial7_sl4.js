@@ -2,9 +2,6 @@ import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
 document.querySelector(".sp_version").textContent = sp.version;
 
 // snip start vars
-const matchPattern = `FDSN:CO_JSC_00_H_H_./MSEED`;
-//const matchPattern = `CO_JSC_00_HH./MSEED`;
-document.querySelector("span#channel").textContent = matchPattern;
 const duration = sp.luxon.Duration.fromISO("PT5M");
 
 let numPackets = 0;
@@ -57,7 +54,9 @@ function errorFn(error) {
 
 // snip start handle
 
-let requestConfig = ["STATION CO_JSC", "SELECT 00_H_H_?"];
+const start = sp.luxon.DateTime.utc().minus(duration);
+const dataCmd = sp.seedlink4.createDataTimeCommand(start);
+let requestConfig = ["STATION CO_JSC", "SELECT 00_H_H_?", dataCmd];
 let endCommand = "END";
 const LOCAL_SEEDLINK_V4 = "wss://eeyore.seis.sc.edu/testringserver/seedlink";
 
@@ -71,7 +70,6 @@ let toggleConnect = function () {
   if (stopped) {
     document.querySelector("button#disconnect").textContent = "Reconnect";
     if (seedlink) {
-      seedlink.endStream();
       seedlink.close();
     }
   } else {

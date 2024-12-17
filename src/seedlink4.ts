@@ -198,6 +198,14 @@ export class SEPacket {
   }
 }
 
+export function createDataTimeCommand(
+  startTime: DateTime,
+  endTime: DateTime | undefined,
+): string {
+  const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
+  return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
+}
+
 /**
  * A seedlink websocket connection to the given url.
  * The connection is not made until the connect() method is called.
