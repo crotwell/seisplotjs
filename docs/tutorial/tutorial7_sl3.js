@@ -3,16 +3,13 @@ import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
 document.querySelector(".sp_version").textContent = sp.version;
 
 // snip start vars
+let requestConfig = [
+  'STATION JSC CO',
+  'SELECT 00HHZ.D',
+  'STATION SNZO IU',
+  'SELECT 00BHZ.D',
+];
 
-let requestConfig = [ 'STATION ADO CI',
-                      'SELECT BHZ.D',
-                      'STATION ARV CI',
-                      'SELECT BHZ.D',
-                      'STATION BAR CI',
-                      'SELECT BHZ.D',
-                      'STATION JSC CO',
-                      'SELECT 00HHZ.D',
-               ];
 let stationText = "";
 let netCodeList = new Set();
 let staCodeList = new Set();
@@ -115,6 +112,7 @@ let seedlink = null;
 const IRIS_SEEDLINK = "wss://rtserve.iris.washington.edu/seedlink";
 const SCSN_SEEDLINK = "wss://eeyore.seis.sc.edu/ringserver/seedlink";
 
+const SEEDLINK = IRIS_SEEDLINK;
 
 let toggleConnect = function () {
   stopped = !stopped;
@@ -127,7 +125,7 @@ let toggleConnect = function () {
     document.querySelector("button#disconnect").textContent = "Disconnect";
     if (!seedlink) {
       seedlink = new sp.seedlink.SeedlinkConnection(
-        IRIS_SEEDLINK,
+        SEEDLINK,
         requestConfig,
         (packet) => {
           rtDisp.packetHandler(packet);

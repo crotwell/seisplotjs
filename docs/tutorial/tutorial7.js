@@ -2,7 +2,10 @@ import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
 document.querySelector(".sp_version").textContent = sp.version;
 
 // snip start vars
-const matchPattern = `CO_BIRD_00_HH./MSEED`;
+// Older versions of Ringserver, DLPROTO1.0, use ids like:
+//const matchPattern = `CO_JSC_00_HH./MSEED`;
+//while the newer v4
+const matchPattern = `FDSN:CO_JSC_00_H_H_./MSEED`;
 document.querySelector("span#channel").textContent = matchPattern;
 const duration = sp.luxon.Duration.fromISO("PT5M");
 
@@ -28,7 +31,8 @@ const n_span = document.querySelector("#nt");
 setInterval(() => {
   const seisConfig = rtDisp.organizedDisplay.seismographConfig;
   const lts = seisConfig.linkedTimeScale;
-  n_span.textContent = sp.luxon.DateTime.utc().toISO();
+  const now = sp.luxon.DateTime.utc().toISO();
+  n_span.textContent = `${now} ${rtDisp.animationScaler.alignmentTime} ts:${rtDisp.animationScaler.timeScale.offset}`;
 }, 1000);
 
 // snip start helpers
@@ -57,6 +61,7 @@ function errorFn(error) {
 let datalink = null;
 const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink";
 const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/ringserver/datalink";
+const DATALINK_URL = IRIS_DATALINK;
 
 let toggleConnect = function () {
   stopped = !stopped;
@@ -70,7 +75,7 @@ let toggleConnect = function () {
     document.querySelector("button#disconnect").textContent = "Disconnect";
     if (!datalink) {
       datalink = new sp.datalink.DataLinkConnection(
-        SCSN_DATALINK,
+        DATALINK_URL,
         (packet) => {
           rtDisp.packetHandler(packet);
           updateNumPackets();
@@ -82,6 +87,8 @@ let toggleConnect = function () {
       datalink
         .connect()
         .then((serverId) => {
+
+          addToDebug("ServerId: " + serverId);
           return datalink.match(matchPattern);
         })
         .then((response) => {
