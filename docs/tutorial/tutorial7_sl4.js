@@ -46,17 +46,23 @@ function addToDebug(message) {
 }
 function errorFn(error) {
   console.assert(false, error);
-  if (datalink) {
-    datalink.close();
+  if (seedlink) {
+    seedlink.close();
   }
   addToDebug("Error: " + error);
 }
 
 // snip start handle
 
-const start = sp.luxon.DateTime.utc().minus(duration);
-const dataCmd = sp.seedlink4.createDataTimeCommand(start);
-let requestConfig = ["STATION CO_JSC", "SELECT 00_H_H_?", dataCmd];
+let requestConfig = [
+  "STATION CO_JSC",
+  "SELECT 00_H_H_Z",
+  'STATION IU_SNZO',
+  'SELECT 00_B_H_Z'
+];
+let start = sp.luxon.DateTime.utc().minus(duration);
+let dataCmd = sp.seedlink4.createDataTimeCommand(start);
+let requestConfigWithData = requestConfig.concat([ dataCmd ])
 let endCommand = "END";
 const LOCAL_SEEDLINK_V4 = "wss://eeyore.seis.sc.edu/testringserver/seedlink";
 
@@ -77,7 +83,7 @@ let toggleConnect = function () {
     if (!seedlink) {
       seedlink = new sp.seedlink4.SeedlinkConnection(
         LOCAL_SEEDLINK_V4,
-        requestConfig,
+        requestConfigWithData,
         (packet) => {
           rtDisp.packetHandler(packet);
           updateNumPackets();
@@ -87,6 +93,10 @@ let toggleConnect = function () {
       seedlink.endCommand = endCommand;
     }
     if (seedlink) {
+      start = sp.luxon.DateTime.utc().minus(duration);
+      dataCmd = sp.seedlink4.createDataTimeCommand(start);
+      requestConfigWithData = requestConfig.concat([ dataCmd ])
+      seedlink.requestConfig = requestConfigWithData;
       seedlink
         .connect()
         .catch(function (error) {
