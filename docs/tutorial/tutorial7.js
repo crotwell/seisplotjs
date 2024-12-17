@@ -5,7 +5,9 @@ document.querySelector(".sp_version").textContent = sp.version;
 // Older versions of Ringserver, DLPROTO1.0, use ids like:
 //const matchPattern = `CO_JSC_00_HH./MSEED`;
 //while the newer v4
-const matchPattern = `FDSN:CO_JSC_00_H_H_./MSEED`;
+//const matchPattern = `FDSN:CO_JSC_00_H_H_./MSEED`;
+// this pattern will match both, but is a little clunky
+const matchPattern = `(FDSN:)?CO_JSC_00_H_?H_?./MSEED`;
 document.querySelector("span#channel").textContent = matchPattern;
 const duration = sp.luxon.Duration.fromISO("PT5M");
 
@@ -60,7 +62,7 @@ function errorFn(error) {
 // snip start datalink
 let datalink = null;
 const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink";
-const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/ringserver/datalink";
+const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/testringserver/datalink";
 const DATALINK_URL = IRIS_DATALINK;
 
 let toggleConnect = function () {
