@@ -4,7 +4,13 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration } from "luxon";
-import { NslcId } from "./fdsnsourceid";
+import {
+  FDSN_PREFIX,
+  FDSNSourceId,
+  StationSourceId,
+  NetworkSourceId,
+  NslcId,
+  parseSourceId } from "./fdsnsourceid";
 import * as util from "./util"; // for util.log
 
 import {
@@ -55,6 +61,8 @@ export class RingserverConnection {
 
   /** @private */
   _timeoutSec: number;
+
+  isFDSNSourceId = false;
 
   constructor(host?: string, port?: number) {
     const hostStr = isNonEmptyStringArg(host) ? host : IRIS_HOST;
@@ -132,17 +140,24 @@ export class RingserverConnection {
 
   /**
    * Pulls id result from ringserver /id parsed into an object with
-   * 'ringserverVersion' and 'serverId' fields.
+   * 'ringserverVersion' and 'serverId' fields. Also sets the
+   * isFDSNSourceId value as ringserver v4 uses new FDSN style ids
+   * while
    *
    * @returns Result as a Promise.
    */
   pullId(): Promise<RingserverVersion> {
     return this.pullRaw(this.formIdURL()).then((raw) => {
       const lines = raw.split("\n");
+      const ringserver_v4 = "ringserver/4";
+      const version = lines[0];
       let organization = lines[1];
 
       if (organization.startsWith(ORG)) {
         organization = organization.substring(ORG.length);
+      }
+      if (version.startsWith(ringserver_v4)) {
+        this.isFDSNSourceId = true;
       }
 
       return {
@@ -358,9 +373,13 @@ export function stationsFromStreams(
   const out: Map<string, StreamStat> = new Map();
 
   for (const s of streams) {
-    const nslc_type = nslcSplit(s.key);
-    const nslc = nslc_type.nslc;
-    const staKey = nslc.networkCode + "." + nslc.stationCode;
+    const sid = sidForId(s.key);
+    if (sid == null || sid instanceof NetworkSourceId) {
+      // oh well, doesn't look like a seismic channel?
+      continue;
+    }
+    const staSid = sid instanceof StationSourceId ? sid : sid.stationSourceId();
+    const staKey = staSid.networkCode + "." + staSid.stationCode;
     let stat = out.get(staKey);
 
     if (!isDef(stat)) {
@@ -381,6 +400,13 @@ export function stationsFromStreams(
 
   return Array.from(out.values());
 }
+/**
+ * Holds ringserver/datalink id split into nslc and type.
+ *
+ * @deprecated
+ * @param type  [description]
+ * @param nslc  [description]
+ */
 export class NslcWithType {
   type: string;
   nslc: NslcId;
@@ -391,14 +417,59 @@ export class NslcWithType {
 }
 
 /**
+ * extracts the type from a ringserver id, ie the type from
+ * xxx/type.
+ * @param  id   ringserver/datalink style id
+ * @return   type, usually MSEED, MSEED3, JSON or TEXT
+ */
+export function typeForId(id: string): string | null {
+  const split = id.split("/");
+  if (split.length >= 2) {
+    return split[split.length-1];
+  }
+  return null;
+}
+
+/**
+ * extracts the source id from a ringserver id, ie the source id from
+ * NN_SSSSS_LL_CCC/type or FDSN:NN_SSSSS_LL_B_S_S/type
+ * @param  id   ringserver/datalink style id
+ * @return   FDSN source id or null
+ */
+export function sidForId(id: string): FDSNSourceId | StationSourceId | NetworkSourceId | null {
+  const split = id.split("/");
+  if (split.length >= 1) {
+    const sidStr = split[0];
+    if (sidStr.startsWith(FDSN_PREFIX)) {
+      return parseSourceId(split[0]);
+    } else {
+      const items = split[0].split("_");
+      if (items.length == 4) {
+        // maybe old style NSLC
+        const nslc = NslcId.parse(split[0], "_");
+        return FDSNSourceId.fromNslcId(nslc);
+      }
+    }
+  }
+  return null;
+}
+
+
+
+/**
  * Split type, networkCode, stationCode, locationCode and channelCode
  * from a ringserver id formatted like net_sta_loc_chan/type
+ * or FDSN:net_sta_loc_b_s_s/type for new FDSN SourceIds
  *
+ * @deprecated
  * @param   id id string to split
  * @returns  object with the split fields
  */
 export function nslcSplit(id: string): NslcWithType {
   const split = id.split("/");
+  if (split[0].startsWith(FDSN_PREFIX)) {
+
+  }
   const nslc = split[0].split("_");
 
   if (nslc.length === 4) {
