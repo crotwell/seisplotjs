@@ -199,6 +199,12 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         getFromQueryParams(queryParams, "zoom", "1"),
       );
       seismap.setAttribute(leafletutil.ZOOM_LEVEL, `${mapZoomLevel}`);
+      const tileUrl =
+        getFromQueryParams(queryParams, leafletutil.TILE_TEMPLATE, leafletutil.DEFAULT_TILE_TEMPLATE);
+      seismap.setAttribute(leafletutil.TILE_TEMPLATE, `${tileUrl}`);
+      const tileAttr =
+        getFromQueryParams(queryParams, leafletutil.TILE_ATTRIBUTION, "");
+      seismap.setAttribute(leafletutil.TILE_ATTRIBUTION, `${tileAttr}`);
       const magScale = parseFloat(
         getFromQueryParams(queryParams, "magScale", "5.0"),
       );
