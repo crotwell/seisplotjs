@@ -379,7 +379,7 @@ export function stationsFromStreams(
       continue;
     }
     const staSid = sid instanceof StationSourceId ? sid : sid.stationSourceId();
-    const staKey = staSid.networkCode + "." + staSid.stationCode;
+    const staKey = staSid.networkCode + "_" + staSid.stationCode;
     let stat = out.get(staKey);
 
     if (!isDef(stat)) {
