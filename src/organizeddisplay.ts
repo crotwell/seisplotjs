@@ -44,10 +44,11 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     :host {
       display: block;
       min-height: 50px;
-      height: 100%;
+      
     }
     @property --sp-seismograph-height {
-      syntax: <length>;
+      syntax: "<length>";
+      inherits: true;
       initial-value: 200px;
     }
     sp-station-quake-map {
@@ -134,7 +135,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         this._seismographConfig,
       );
       wrapper.appendChild(seismograph);
-      
+
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
       const nonContigList = this.seisData.filter(
