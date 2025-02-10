@@ -1540,6 +1540,32 @@ export function* findChannels(
   }
 }
 
+export function* findChannelsForSourceId(
+  networks: Array<Network>,
+  sid: FDSNSourceId,
+): Generator<Channel, void, unknown> {
+  const netRE = new RegExp(`^${sid.networkCode}$`);
+  const staRE = new RegExp(`^${sid.stationCode}$`);
+  const locRE = new RegExp(`^${sid.locationCode}$`);
+  const bandRE = new RegExp(`^${sid.bandCode}$`);
+  const sourceRE = new RegExp(`^${sid.sourceCode}$`);
+  const subsourceRE = new RegExp(`^${sid.subsourceCode}$`);
+  for (const n of networks.filter((n) => netRE.test(n.networkCode))) {
+    for (const s of n.stations.filter((s) => staRE.test(s.stationCode))) {
+      for (const c of s.channels.filter(
+        (c) => locRE.test(c.locationCode),
+      )) {
+        const chanSid = c.sourceId;
+        if (bandRE.test(chanSid.bandCode)
+          && sourceRE.test(chanSid.sourceCode)
+          && subsourceRE.test(chanSid.subsourceCode)) {
+          yield c;
+        }
+      }
+    }
+  }
+}
+
 export function uniqueSourceIds(
   channelList: Iterable<Channel>,
 ): Array<FDSNSourceId> {
@@ -1562,11 +1588,18 @@ export function uniqueStations(channelList: Iterable<Channel>): Array<Station> {
   return Array.from(out.values());
 }
 
-export function uniqueNetworks(channelList: Iterable<Channel>): Array<Network> {
+export function uniqueNetworks(channelList: Iterable<Channel|Station>): Array<Network> {
   const out = new Set<Network>();
   for (const c of channelList) {
     if (c) {
-      out.add(c.station.network);
+      console.log(`uniqueNet ${c.constructor.name}`)
+      if (c instanceof Station) {
+        out.add(c.network)
+      } else if (c instanceof Channel) {
+        out.add(c.station.network);
+      } else {
+        throw new Error(`unknown type for uniqueNetworks: ${c}`);
+      }
     }
   }
   return Array.from(out.values());
