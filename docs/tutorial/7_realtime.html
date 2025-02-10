@@ -127,7 +127,17 @@
        <a href="https://github.com/crotwell/seisplotjs/wiki/Proxy-seedlink-and-datalink-over-websockets-using-apache2">
         here
        </a>
-       .
+       . There are similar examples using
+       <a href="tutorial7_sl3.html" target="_blank">
+        Seedlink version 3
+       </a>
+       and
+       <a href="tutorial7_sl4.html" target="_blank">
+        Seedlink version 4
+       </a>
+       . Datalink is better if a simple regular expression can match your
+       channels, Seedlink is better if you need to match different channels
+       at different stations.
       </p>
       <p>
        First we need to set up a bunch of variables we will use to keep
@@ -136,8 +146,15 @@
               of our display.
       </p>
       <pre><code class="language-javascript" snippet="vars">
-const matchPattern = `CO_BIRD_00_HH./MSEED`;
-document.querySelector("span#channel").textContent = matchPattern;
+// Datalink on older versions of Ringserver, DLPROTO1.0, use NSLC ids like:
+const matchPatternV3 = `CO_HAW_00_HH./MSEED`;
+// while datalink on version 4 of Ringserver, DLPROTO1.1, uses FDSN Source ids like:
+const matchPatternV4 = `FDSN:CO_HAW_00_H_H_./MSEED`;
+// this regex pattern will match both, but is a little clunky
+const matchPatternBoth = `(FDSN:)?CO_HAW_00_H_?H_?./MSEED`;
+// An alternative is to use a different pattern, V3 or V4, based on the
+// returned DLPTOTO version from the serverId. See below for an example.
+
 const duration = sp.luxon.Duration.fromISO("PT5M");
 
 let numPackets = 0;
@@ -155,7 +172,8 @@ const n_span = document.querySelector("#nt");
 setInterval(() =&gt; {
   const seisConfig = rtDisp.organizedDisplay.seismographConfig;
   const lts = seisConfig.linkedTimeScale;
-  n_span.textContent = sp.luxon.DateTime.utc().toISO();
+  const now = sp.luxon.DateTime.utc().toISO();
+  n_span.textContent = `Now: ${now}`;
 }, 1000);
 
 </code></pre>
@@ -224,7 +242,8 @@ function errorFn(error) {
       <pre><code class="language-javascript" snippet="datalink">
 let datalink = null;
 const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink";
-const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/ringserver/datalink";
+const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/testringserver/datalink";
+const DATALINK_URL = IRIS_DATALINK;
 
 let toggleConnect = function () {
   stopped = !stopped;
@@ -238,7 +257,7 @@ let toggleConnect = function () {
     document.querySelector("button#disconnect").textContent = "Disconnect";
     if (!datalink) {
       datalink = new sp.datalink.DataLinkConnection(
-        SCSN_DATALINK,
+        DATALINK_URL,
         (packet) =&gt; {
           rtDisp.packetHandler(packet);
           updateNumPackets();
@@ -250,7 +269,17 @@ let toggleConnect = function () {
       datalink
         .connect()
         .then((serverId) =&gt; {
-          return datalink.match(matchPattern);
+
+          addToDebug("ServerId: " + serverId);
+          // here we use the match pattern corresponding to the version of
+          // ringserver (via DLPROTO) that we are connecting to
+          if (serverId.includes("DLPROTO:1.0")) {
+            document.querySelector("span#channel").textContent = matchPatternV3;
+            return datalink.match(matchPatternV3);
+          } else {
+            document.querySelector("span#channel").textContent = matchPatternV4;
+            return datalink.match(matchPatternV4);
+          }
         })
         .then((response) =&gt; {
           addToDebug(`match response: ${response}`);

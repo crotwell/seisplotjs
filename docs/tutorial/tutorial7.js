@@ -2,13 +2,15 @@ import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
 document.querySelector(".sp_version").textContent = sp.version;
 
 // snip start vars
-// Older versions of Ringserver, DLPROTO1.0, use ids like:
-//const matchPattern = `CO_JSC_00_HH./MSEED`;
-//while the newer v4
-//const matchPattern = `FDSN:CO_JSC_00_H_H_./MSEED`;
-// this pattern will match both, but is a little clunky
-const matchPattern = `(FDSN:)?CO_JSC_00_H_?H_?./MSEED`;
-document.querySelector("span#channel").textContent = matchPattern;
+// Datalink on older versions of Ringserver, DLPROTO1.0, use NSLC ids like:
+const matchPatternV3 = `CO_HAW_00_HH./MSEED`;
+// while datalink on version 4 of Ringserver, DLPROTO1.1, uses FDSN Source ids like:
+const matchPatternV4 = `FDSN:CO_HAW_00_H_H_./MSEED`;
+// this regex pattern will match both, but is a little clunky
+const matchPatternBoth = `(FDSN:)?CO_HAW_00_H_?H_?./MSEED`;
+// An alternative is to use a different pattern, V3 or V4, based on the
+// returned DLPTOTO version from the serverId. See below for an example.
+
 const duration = sp.luxon.Duration.fromISO("PT5M");
 
 let numPackets = 0;
@@ -34,7 +36,7 @@ setInterval(() => {
   const seisConfig = rtDisp.organizedDisplay.seismographConfig;
   const lts = seisConfig.linkedTimeScale;
   const now = sp.luxon.DateTime.utc().toISO();
-  n_span.textContent = `${now} ${rtDisp.animationScaler.alignmentTime} ts:${rtDisp.animationScaler.timeScale.offset}`;
+  n_span.textContent = `Now: ${now}`;
 }, 1000);
 
 // snip start helpers
@@ -91,7 +93,15 @@ let toggleConnect = function () {
         .then((serverId) => {
 
           addToDebug("ServerId: " + serverId);
-          return datalink.match(matchPattern);
+          // here we use the match pattern corresponding to the version of
+          // ringserver (via DLPROTO) that we are connecting to
+          if (serverId.includes("DLPROTO:1.0")) {
+            document.querySelector("span#channel").textContent = matchPatternV3;
+            return datalink.match(matchPatternV3);
+          } else {
+            document.querySelector("span#channel").textContent = matchPatternV4;
+            return datalink.match(matchPatternV4);
+          }
         })
         .then((response) => {
           addToDebug(`match response: ${response}`);
