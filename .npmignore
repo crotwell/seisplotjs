@@ -2,5 +2,3 @@ example/
 .DS_Store
 .git/
 seisplotjs_*_standalone.js
-src/handlebarsimport.esbuild
-src/handlebarsimport.typescript
