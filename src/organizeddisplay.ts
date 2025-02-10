@@ -44,19 +44,13 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     :host {
       display: block;
       min-height: 50px;
-      
-    }
-    @property --sp-seismograph-height {
-      syntax: "<length>";
-      inherits: true;
-      initial-value: 200px;
+
     }
     sp-station-quake-map {
       height: 400px;
     }
     sp-seismograph {
-      min-height: 200px;
-      height: var(--sp-seismograph-height);
+      height: var(--sp-seismograph-height, 200px);
     }
     div.wrapper {
       height: 100%;
@@ -423,14 +417,16 @@ export class OrganizedDisplay extends SeisPlotElement {
       min-height: 50px;
       height: 100%;
     }
+    @property --sp-seismograph-height {
+      syntax: "<length>";
+      inherits: true;
+      initial-value: 200px;
+    }
     sp-station-quake-map {
       height: var(--map-height, 400px);
     }
     sp-organized-display-item {
       min-height: var(--sp-seismograph-height, 200px);
-    }
-    sp-seismograph {
-      min-height: 200px;
     }
     div.wrapper {
       height: 100%;
