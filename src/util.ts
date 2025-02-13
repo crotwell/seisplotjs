@@ -554,19 +554,26 @@ export function checkLuxonValid(
  * Create string name for a timezone. Uses zone name except for UTC, which
  * returns "UTC".
  *
- * @param  zone  timezone to descript
+ * @param  zone  timezone to describe
+ * @param  atTime optional time to calc name at ie EST vs EDT
  * @return      string version of zone
  */
-export function nameForTimeZone(zone: string|null|Zone): string {
+export function nameForTimeZone(zone: string|null|Zone, atTime?: DateTime|null): string {
   if (zone == null ||
     (zone instanceof Zone &&
       FixedOffsetZone.utcInstance.equals(zone))) {
     return "UTC";
   } else if (typeof zone === 'string') {
     return zone;
-  } else {
+  } else if (zone instanceof Zone) {
+    if (atTime != null){
+      const ofName = zone.offsetName(atTime.toMillis(), {format: "short"});
+      return ofName != null ? ofName : zone.name;
+    }
     return zone.name;
   }
+  // typescript is weird sometimes...
+  return "unknown";
 }
 
 /**

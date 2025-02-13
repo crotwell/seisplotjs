@@ -351,12 +351,12 @@ export class Helicorder extends SeisPlotElement {
         const innerDiv = utcDiv.appendChild(document.createElement("div"));
         innerDiv.setAttribute("style", `top: ${lineSeisConfig.margin.top}px;`);
         const textEl = innerDiv.appendChild(document.createElement("text"));
-        textEl.textContent = nameForTimeZone(this.heliConfig.yLabelTimeZone);
+        textEl.textContent = nameForTimeZone(this.heliConfig.yLabelTimeZone, startTime);
         // and to top right
         const rightTextEl = innerDiv.appendChild(
           document.createElement("text"),
         );
-        rightTextEl.textContent = nameForTimeZone(this.heliConfig.yLabelRightTimeZone);
+        rightTextEl.textContent = nameForTimeZone(this.heliConfig.yLabelRightTimeZone, startTime);
         seismographWrapper.insertBefore(utcDiv, seismographWrapper.firstChild);
       }
 

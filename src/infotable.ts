@@ -8,9 +8,10 @@ import {
 import { SeisPlotElement, addStyleToElement } from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
-import { stringify } from "./util";
+import { stringify, nameForTimeZone } from "./util";
 import * as textformat from "./textformat";
 import { Handlebars } from "./handlebarshelpers";
+import {DateTime, Zone} from "luxon";
 
 export const INFO_ELEMENT = "sp-station-quake-table";
 export const QUAKE_INFO_ELEMENT = "sp-quake-table";
@@ -19,6 +20,7 @@ export enum QUAKE_COLUMN {
   LAT = "Lat",
   LON = "Lon",
   TIME = "Time",
+  LOCALTIME = "Local Time",
   MAG = "Mag",
   MAGTYPE = "MagType",
   DEPTH = "Depth",
@@ -236,6 +238,7 @@ export class QuakeTable extends HTMLElement {
   _columnLabels: Map<QUAKE_COLUMN, string>;
   _quakeList: Array<Quake>;
   _rowToQuake: Map<HTMLTableRowElement, Quake>;
+  _timezone?: Zone;
   lastSortAsc = true;
   lastSortCol: QUAKE_COLUMN | undefined;
   constructor(
@@ -247,14 +250,7 @@ export class QuakeTable extends HTMLElement {
       quakeList = [];
     }
     if (!columnLabels) {
-      columnLabels = new Map();
-      columnLabels.set(QUAKE_COLUMN.TIME, "Time");
-      columnLabels.set(QUAKE_COLUMN.LAT, "Lat");
-      columnLabels.set(QUAKE_COLUMN.LON, "Lon");
-      columnLabels.set(QUAKE_COLUMN.MAG, "Mag");
-      columnLabels.set(QUAKE_COLUMN.MAGTYPE, "Type");
-      columnLabels.set(QUAKE_COLUMN.DEPTH, "Depth");
-      columnLabels.set(QUAKE_COLUMN.DESC, "Description");
+      columnLabels = QuakeTable.createDefaultColumnLabels();
     }
     this._quakeList = quakeList;
     this._columnLabels = columnLabels;
@@ -281,6 +277,24 @@ export class QuakeTable extends HTMLElement {
     this._columnLabels = cols;
     this.draw();
   }
+  get timeZone(): Zone|undefined {
+    return this._timezone;
+  }
+  set timeZone(timezone: Zone|undefined) {
+    this._timezone = timezone;
+    this.draw();
+  }
+  static createDefaultColumnLabels() {
+    let columnLabels = new Map();
+    columnLabels.set(QUAKE_COLUMN.TIME, "Time");
+    columnLabels.set(QUAKE_COLUMN.LAT, "Lat");
+    columnLabels.set(QUAKE_COLUMN.LON, "Lon");
+    columnLabels.set(QUAKE_COLUMN.MAG, "Mag");
+    columnLabels.set(QUAKE_COLUMN.MAGTYPE, "Type");
+    columnLabels.set(QUAKE_COLUMN.DEPTH, "Depth");
+    columnLabels.set(QUAKE_COLUMN.DESC, "Description");
+    return columnLabels;
+  }
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -302,7 +316,14 @@ export class QuakeTable extends HTMLElement {
     const theader = table.createTHead().insertRow();
     this.headers().forEach((h) => {
       const cell = theader.appendChild(document.createElement("th"));
-      cell.textContent = h;
+      cell.textContent = `${this._columnLabels.get(h)}`;
+      if (h === QUAKE_COLUMN.LOCALTIME) {
+        if (this.timeZone) {
+          cell.textContent = `${this._columnLabels.get(h)} ${nameForTimeZone(this.timeZone, DateTime.now())}`;
+        } else {
+          cell.textContent = `${this._columnLabels.get(h)} ${nameForTimeZone('local', DateTime.now())}`;
+        }
+      }
       cell.addEventListener("click", () => {
         this.sort(h, cell);
       });
@@ -326,7 +347,12 @@ export class QuakeTable extends HTMLElement {
     this._rowToQuake.set(row, q);
     this.headers().forEach((h) => {
       const cell = row.insertCell(index);
-      cell.textContent = QuakeTable.getQuakeValue(q, h);
+      if (h === QUAKE_COLUMN.LOCALTIME && this.timeZone) {
+        // special case if set timezone
+        cell.textContent = q.time.setZone(this.timeZone).toISO();
+      } else {
+        cell.textContent = QuakeTable.getQuakeValue(q, h);
+      }
       if (index !== -1) {
         index++;
       }
@@ -335,6 +361,8 @@ export class QuakeTable extends HTMLElement {
   static getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
     if (h === QUAKE_COLUMN.TIME) {
       return stringify(q.time.toISO());
+    } else if (h === QUAKE_COLUMN.LOCALTIME) {
+      return stringify(q.time.setZone('local').toISO());
     } else if (h === QUAKE_COLUMN.LAT) {
       return latlonFormat.format(q.latitude);
     } else if (h === QUAKE_COLUMN.LON) {
