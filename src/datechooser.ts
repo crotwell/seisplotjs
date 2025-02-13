@@ -26,6 +26,7 @@ export const END_LABEL = "endlabel";
 export const DEFAULT_END_LABEL = "End:";
 export const DUR_LABEL = "durLabel";
 export const DEFAULT_DUR_LABEL = "Dur:";
+export const PREV_NEXT = "prev-next";
 
 /**
  * Hour and Minute chooser.
@@ -495,35 +496,8 @@ export class TimeRangeChooser extends HTMLElement {
     });
     this.startChooser.updateTime(startTime);
     this.endChooser.updateTime(endTime);
-    if (this.getAttribute("prev-next")) {
-      const pastBtn = wrapper.insertBefore(
-        document.createElement("button"),
-        startLabel,
-      );
-      pastBtn.setAttribute("id", "pastButton");
-      pastBtn.textContent = "<";
-      pastBtn.addEventListener("click", () => {
-        this._mostRecentChanged = DURATION_CHANGED;
-        this.startChooser.time = this.startChooser.time.minus(
-          extractDuration(durationInput.value),
-        ); // causes event dispatch
-      });
-      const futureBtn = wrapper.appendChild(document.createElement("button"));
-      futureBtn.setAttribute("id", "futureButton");
-      futureBtn.textContent = ">";
-      futureBtn.addEventListener("click", () => {
-        this._mostRecentChanged = DURATION_CHANGED;
-        this.endChooser.time = this.endChooser.time.plus(
-          extractDuration(durationInput.value),
-        ); // causes event dispatch
-      });
-      const nowBtn = wrapper.appendChild(document.createElement("button"));
-      nowBtn.setAttribute("id", "nowButton");
-      nowBtn.textContent = "Now";
-      nowBtn.addEventListener("click", () => {
-        this._mostRecentChanged = DURATION_CHANGED;
-        this.endChooser.time = DateTime.utc(); // causes event dispatch
-      });
+    if (this.getAttribute(PREV_NEXT)) {
+      this.createPrevNext();
     }
 
     shadow.appendChild(wrapper);
@@ -666,6 +640,50 @@ export class TimeRangeChooser extends HTMLElement {
     this.dispatchEvent(new Event("change"));
     this.updateCallback(this.getTimeRange());
   }
+  createPrevNext() {
+    if (this.shadowRoot?.querySelector("#pastButton") != null) {
+      // already there?
+      return;
+    }
+    const wrapper = this.shadowRoot?.querySelector(".wrapper");
+    if (wrapper == null) {
+      // weird?
+      return;
+    }
+    const startLabel = wrapper.querySelector("label");
+    const durationInput = this.shadowRoot?.querySelector(
+      "input.duration",
+    ) as HTMLInputElement;
+    if (startLabel == null) { return;}
+    const pastBtn = wrapper.insertBefore(
+      document.createElement("button"),
+      startLabel,
+    );
+    pastBtn.setAttribute("id", "pastButton");
+    pastBtn.textContent = "<";
+    pastBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.startChooser.time = this.startChooser.time.minus(
+        extractDuration(durationInput.value),
+      ); // causes event dispatch
+    });
+    const futureBtn = wrapper.appendChild(document.createElement("button"));
+    futureBtn.setAttribute("id", "futureButton");
+    futureBtn.textContent = ">";
+    futureBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.endChooser.time = this.endChooser.time.plus(
+        extractDuration(durationInput.value),
+      ); // causes event dispatch
+    });
+    const nowBtn = wrapper.appendChild(document.createElement("button"));
+    nowBtn.setAttribute("id", "nowButton");
+    nowBtn.textContent = "Now";
+    nowBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.endChooser.time = DateTime.utc(); // causes event dispatch
+    });
+  }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === "start") {
       this.start = isoToDateTime(newValue);
@@ -684,12 +702,21 @@ export class TimeRangeChooser extends HTMLElement {
       (
         this.shadowRoot?.querySelector(".durationLabel") as HTMLElement
       ).textContent = newValue;
+    } else if (name === PREV_NEXT) {
+      if (this.getAttribute(PREV_NEXT) === "true") {
+        this.createPrevNext();
+      } else {
+        this.shadowRoot?.querySelector("#pastButton")?.remove();
+        this.shadowRoot?.querySelector("#futureButton")?.remove();
+        this.shadowRoot?.querySelector("#nowButton")?.remove();
+      }
     } else {
       throw new Error(`set unknown attribute: "${name}"`);
     }
   }
   static get observedAttributes() {
-    return ["start", "duration", "end", START_LABEL, END_LABEL, DUR_LABEL];
+    return ["start", "duration", "end",
+      START_LABEL, END_LABEL, DUR_LABEL, PREV_NEXT];
   }
 }
 customElements.define(TIMERANGE_ELEMENT, TimeRangeChooser);
