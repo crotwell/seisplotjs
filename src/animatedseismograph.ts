@@ -233,8 +233,7 @@ export function internalCreateRealtimeDisplay(
       sdd.alignmentTime = animationScaler.alignmentTime;
 
       if (config.removeTrend && sdd.seismogram) {
-        const dispSDD = SeismogramDisplayData.fromSeismogram(removeTrend(sdd.seismogram));
-        dispSDD.alignmentTime = animationScaler.alignmentTime;
+        const dispSDD = sdd.cloneWithNewSeismogram(removeTrend(sdd.seismogram));
         orgDisp.seisData.push(dispSDD);
       } else {
         orgDisp.seisData.push(sdd);
