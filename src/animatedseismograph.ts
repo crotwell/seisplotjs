@@ -4,6 +4,7 @@ import type {SequencedDataRecord} from "./seedlink";
 import { SEPacket } from "./seedlink4";
 import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
+import {removeTrend} from "./filter";
 import { OrganizedDisplay } from "./organizeddisplay";
 import { AlignmentLinkedTimeScale, LinkedAmplitudeScale } from "./scale";
 import { SORT_ALPHABETICAL} from "./sorting";
@@ -76,6 +77,7 @@ export class AnimatedTimeScaler {
 }
 
 export type RTDisplayContainer = {
+  rawSeisData: Array<SeismogramDisplayData>;
   organizedDisplay: OrganizedDisplay;
   animationScaler: AnimatedTimeScaler;
   packetHandler: (packet: DataLinkPacket) => void;
@@ -88,6 +90,7 @@ export type RTConfig = {
   offset: Duration;
   minRedrawMillis: number;
   networkList: Array<Network>;
+  removeTrend: boolean;
 };
 
 /**
@@ -115,6 +118,9 @@ export function isValidRTConfig(configObj: unknown): configObj is RTConfig {
   }
   if (typeof config.networkList === "undefined") {
     config.networkList = [];
+  }
+  if (typeof config.removeTrend === "undefined") {
+    config.removeTrend = false;
   }
   return true;
 }
@@ -150,6 +156,7 @@ export function internalCreateRealtimeDisplay(
     config.minRedrawMillis,
   );
 
+  const rawSeisData = new Array<SeismogramDisplayData>();
   const orgDisp = new OrganizedDisplay([], seisPlotConfig);
     // default is to sort by order added, which will be random for real time
   // alphabetical seems better for rt
@@ -190,18 +197,48 @@ export function internalCreateRealtimeDisplay(
       return;
     }
     const codes = seisSegment.codes();
-    const matchSDD = orgDisp.seisData.find(
+    const matchSDD = rawSeisData.find(
       (sdd: SeismogramDisplayData) => sdd.codes() === codes,
     );
     if (matchSDD) {
       matchSDD.append(seisSegment);
+      if (matchSDD.timeRange.toDuration().toMillis() > config.duration.toMillis()*1.5) {
+        const trimInterval =
+          Interval.fromDateTimes(DateTime.utc().minus(config.duration),
+                                 DateTime.utc());
+        matchSDD.trimInPlace(trimInterval);
+      }
+      const dispMatchSDD = orgDisp.seisData.find(
+        (sdd: SeismogramDisplayData) => sdd.codes() === codes,
+      );
+      if (dispMatchSDD) {
+        if (config.removeTrend && matchSDD.seismogram) {
+          const dtSeis = removeTrend(matchSDD.seismogram);
+          if (dtSeis) {
+            dispMatchSDD.seismogram = dtSeis;
+          }
+        } else {
+          dispMatchSDD.seismogram = matchSDD.seismogram;
+        }
+      } else {
+        // never happens, but typescipt
+
+      }
     } else {
       const sdd = SeismogramDisplayData.fromSeismogramSegment(seisSegment);
+      rawSeisData.push(sdd);
       if (config.networkList) {
         sdd.associateChannel(config.networkList);
       }
       sdd.alignmentTime = animationScaler.alignmentTime;
-      orgDisp.seisData.push(sdd);
+
+      if (config.removeTrend && sdd.seismogram) {
+        const dispSDD = SeismogramDisplayData.fromSeismogram(removeTrend(sdd.seismogram));
+        dispSDD.alignmentTime = animationScaler.alignmentTime;
+        orgDisp.seisData.push(dispSDD);
+      } else {
+        orgDisp.seisData.push(sdd);
+      }
       // trigger redraw if new channel, but not for simple append.
       orgDisp.seisDataUpdated();
     }
@@ -210,6 +247,7 @@ export function internalCreateRealtimeDisplay(
 
   //animationScaler.animate();
   return {
+    rawSeisData: rawSeisData,
     organizedDisplay: orgDisp,
     animationScaler: animationScaler,
     packetHandler: packetHandler,
