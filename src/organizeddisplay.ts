@@ -404,11 +404,15 @@ export const ORG_DISP_TOOLS_ELEMENT = "sp-orgdisp-tools";
 customElements.define(ORG_DISP_TOOLS_ELEMENT, OrganizedDisplayTools);
 
 export class OrganizedDisplay extends SeisPlotElement {
+  bottomSeismographConfig: SeismographConfig|null;
+  topSeismographConfig: SeismographConfig|null;
   constructor(
     seisData?: Array<SeismogramDisplayData>,
     seisConfig?: SeismographConfig,
   ) {
     super(seisData, seisConfig);
+    this.bottomSeismographConfig = null;
+    this.topSeismographConfig = null;
     const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
     this.addStyle(`
@@ -546,6 +550,7 @@ export class OrganizedDisplay extends SeisPlotElement {
 
     const sortedData = sort(this.seisData, this.sortby);
     let allOrgDispItems = new Array<OrganizedDisplayItem>();
+    let seisDispItems = new Array<OrganizedDisplayItem>();
     this.drawTools(sortedData);
     this.drawMap(sortedData);
     this.drawInfo(sortedData);
@@ -553,29 +558,36 @@ export class OrganizedDisplay extends SeisPlotElement {
       sortedData.forEach((sdd) => {
         const oi = new OrganizedDisplayItem([sdd], this.seismographConfig);
         oi.plottype = SEISMOGRAPH;
-        allOrgDispItems.push(oi);
+        seisDispItems.push(oi);
       });
     } else if (this.overlayby === OVERLAY_VECTOR) {
       const groupedSDD = groupComponentOfMotion(sortedData);
       groupedSDD.forEach((gsdd) => {
         const oi = new OrganizedDisplayItem(gsdd, this.seismographConfig);
-        allOrgDispItems.push(oi);
+        seisDispItems.push(oi);
       });
     } else if (this.overlayby === OVERLAY_COMPONENT) {
       const oitems = overlayByComponent(sortedData, this.seismographConfig);
-      allOrgDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = allOrgDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION) {
       const oitems = overlayByStation(sortedData, this.seismographConfig);
-      allOrgDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = allOrgDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_ALL) {
       const oi = new OrganizedDisplayItem(sortedData, this.seismographConfig);
-      allOrgDispItems.push(oi);
+      seisDispItems.push(oi);
     } else if (this.overlayby === OVERLAY_NONE) {
       // nothing to do here
     } else {
       throw new Error(`Unknown overlay: ${this.overlayby}`);
     }
 
+    if (this.topSeismographConfig != null && seisDispItems.length > 0) {
+      seisDispItems[0].seismographConfig = this.topSeismographConfig;
+    }
+    if (this.bottomSeismographConfig != null && seisDispItems.length > 1) {
+      seisDispItems[seisDispItems.length-1].seismographConfig = this.bottomSeismographConfig;
+    }
+    allOrgDispItems = allOrgDispItems.concat(seisDispItems);
     allOrgDispItems.forEach((oi) => {
       wrapper.appendChild(oi);
 
