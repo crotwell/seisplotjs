@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -51,7 +51,7 @@
           // or plot other quakes
           map.addQuake(ds.catalog, "quakecolor");
           const quakesWithPicks = ds.catalog.filter(
-            (q) => q.picks.length !== 0,
+            (q) => q.picks.length !== 0
           );
           map.addQuake(quakesWithPicks, "withpicks");
           // or plot other stations
@@ -85,6 +85,7 @@
               color: white;
             }
           `);
+          // Click on an info table row
           it.addEventListener("quakeclick", (ce) => {
             mapList.forEach((map) => {
               map.quakeList.forEach((q) => {
@@ -92,7 +93,7 @@
               });
               map.colorClass(
                 sp.leafletutil.cssClassForQuake(ce.detail.quake),
-                "green",
+                "green"
               );
               let quakeRow = it.findRowForQuake(ce.detail.quake);
               let allRows = quakeRow.parentNode.querySelectorAll(`tbody tr`);
@@ -106,8 +107,35 @@
             });
           });
         });
+        // Click on a quake location
+        mapList.forEach((map) => {
+          map.addEventListener("quakeclick", (mEvent) => {
+            map.quakeList.forEach((q) => {
+              map.removeColorClass(sp.leafletutil.cssClassForQuake(q));
+              map.colorClass(
+                sp.leafletutil.cssClassForQuake(mEvent.detail.quake),
+                "green"
+              );
+            });
+            infoList.forEach((it) => {
+              it.quakeList = ds.catalog;
+              let quakeRow = it.findRowForQuake(mEvent.detail.quake);
+              let allRows = quakeRow.parentNode.querySelectorAll(`tbody tr`);
+              allRows.forEach((r) => {
+                if (r.classList.contains(SELECTED_ROW)) {
+                  r.removeAttribute("style");
+                  r.classList.remove(SELECTED_ROW);
+                }
+              });
+              quakeRow.classList.add(SELECTED_ROW);
+              quakeRow.setAttribute("style", "color: green");
+            });
+          });
+        });
         console.log(
-          `${ds.catalog.length}  ${Array.from(sp.stationxml.allStations(ds.inventory)).length}`,
+          `${ds.catalog.length}  ${
+            Array.from(sp.stationxml.allStations(ds.inventory)).length
+          }`
         );
         return ds;
       });
