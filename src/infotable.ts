@@ -241,9 +241,13 @@ export class QuakeTable extends HTMLElement {
   _timezone?: Zone;
   lastSortAsc = true;
   lastSortCol: QUAKE_COLUMN | undefined;
+  _columnValues: Map<QUAKE_COLUMN, Function>;
+  _defaultColumnValues: Map<QUAKE_COLUMN, Function>;
+
   constructor(
     quakeList?: Array<Quake>,
     columnLabels?: Map<QUAKE_COLUMN, string>,
+    columnValues?: Map<QUAKE_COLUMN, Function>,
   ) {
     super();
     if (!quakeList) {
@@ -252,10 +256,18 @@ export class QuakeTable extends HTMLElement {
     if (!columnLabels) {
       columnLabels = QuakeTable.createDefaultColumnLabels();
     }
+    // Column Values are optional at the individual key level.
+    // For the columns that the user does not provide a function,
+    // use the default display style in getQuakeValue
+    this._defaultColumnValues = QuakeTable.createDefaultColumnValues();
+    if (!columnValues) {
+      columnValues = this._defaultColumnValues;
+    }
+
     this._quakeList = quakeList;
     this._columnLabels = columnLabels;
+    this._columnValues = columnValues;
     this._rowToQuake = new Map();
-
     const shadow = this.attachShadow({ mode: "open" });
     const table = document.createElement("table");
     table.setAttribute("class", "wrapper");
@@ -277,6 +289,13 @@ export class QuakeTable extends HTMLElement {
     this._columnLabels = cols;
     this.draw();
   }
+  get columnValues(): Map<QUAKE_COLUMN, Function> {
+    return this._columnValues;
+  }
+  set columnValues(cols: Map<QUAKE_COLUMN, Function>) {
+    this._columnValues = cols;
+    this.draw();
+  }
   get timeZone(): Zone|undefined {
     return this._timezone;
   }
@@ -295,6 +314,28 @@ export class QuakeTable extends HTMLElement {
     columnLabels.set(QUAKE_COLUMN.DESC, "Description");
     return columnLabels;
   }
+
+  static createDefaultColumnValues() {
+    let columnValues = new Map();
+    columnValues.set(QUAKE_COLUMN.TIME, q => stringify(q.time.toISO()));
+    columnValues.set(QUAKE_COLUMN.LOCALTIME, q => stringify(q.time.setZone('local').toISO()));
+    columnValues.set(QUAKE_COLUMN.LAT, q => latlonFormat.format(q.latitude));
+    columnValues.set(QUAKE_COLUMN.LON, q => latlonFormat.format(q.longitude));
+    columnValues.set(QUAKE_COLUMN.MAG, q => magFormat.format(q.magnitude.mag));
+    columnValues.set(QUAKE_COLUMN.MAGTYPE, q => q.magnitude.type ? q.magnitude.type : "");
+    columnValues.set(QUAKE_COLUMN.DEPTH, q => depthFormat.format(q.depthKm));
+    columnValues.set(QUAKE_COLUMN.EVENTID, q => stringify(q.eventId));
+    columnValues.set(QUAKE_COLUMN.DESC,
+      q => { const desc = q.description;
+        if (desc && desc.length > 0) {
+          return desc;
+        } else {
+          return stringify(q.time.toISO());
+        }
+      });
+    return columnValues;
+  }
+
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -343,6 +384,7 @@ export class QuakeTable extends HTMLElement {
   headers(): Array<QUAKE_COLUMN> {
     return Array.from(this._columnLabels.keys());
   }
+
   populateRow(q: Quake, row: HTMLTableRowElement, index: number) {
     this._rowToQuake.set(row, q);
     this.headers().forEach((h) => {
@@ -351,39 +393,25 @@ export class QuakeTable extends HTMLElement {
         // special case if set timezone
         cell.textContent = q.time.setZone(this.timeZone).toISO();
       } else {
-        cell.textContent = QuakeTable.getQuakeValue(q, h);
+        cell.textContent = this.getQuakeValue(q, h);
       }
       if (index !== -1) {
         index++;
       }
     });
   }
-  static getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
-    if (h === QUAKE_COLUMN.TIME) {
-      return stringify(q.time.toISO());
-    } else if (h === QUAKE_COLUMN.LOCALTIME) {
-      return stringify(q.time.setZone('local').toISO());
-    } else if (h === QUAKE_COLUMN.LAT) {
-      return latlonFormat.format(q.latitude);
-    } else if (h === QUAKE_COLUMN.LON) {
-      return latlonFormat.format(q.longitude);
-    } else if (h === QUAKE_COLUMN.DEPTH) {
-      return depthFormat.format(q.depthKm);
-    } else if (h === QUAKE_COLUMN.MAG) {
-      return magFormat.format(q.magnitude.mag);
-    } else if (h === QUAKE_COLUMN.MAGTYPE) {
-      return q.magnitude.type ? q.magnitude.type : "";
-    } else if (h === QUAKE_COLUMN.DESC) {
-      const desc = q.description;
-      if (desc && desc.length > 0) {
-        return desc;
-      } else {
-        return stringify(q.time.toISO());
-      }
-    } else if (h === QUAKE_COLUMN.EVENTID) {
-      return `${q.eventId}`;
-    } else {
-      return `unknown: ${String(h)}`;
+
+  getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
+    if (this._columnValues.has(h)) {
+      let fn = this._columnValues.get(h);
+      return fn(q);
+    }
+    else if (this._defaultColumnValues.has(h)) {
+      let fn = this._defaultColumnValues.get(h);
+      return fn(q);
+    }
+    else {
+      return `unknown: ${String(h)}`
     }
   }
   sort(h: QUAKE_COLUMN, _headerCell: HTMLTableCellElement) {
@@ -408,8 +436,8 @@ export class QuakeTable extends HTMLElement {
             out = qa.depthKm - qb.depthKm;
           } else {
             // just use string
-            const ta = QuakeTable.getQuakeValue(qa, h);
-            const tb = QuakeTable.getQuakeValue(qb, h);
+            const ta = this.getQuakeValue(qa, h);
+            const tb = this.getQuakeValue(qb, h);
             if (ta < tb) {
               out = -1;
             } else if (ta > tb) {
@@ -1021,4 +1049,5 @@ customElements.define(SDD_INFO_ELEMENT, SeismogramTable);
 export const latlonFormat = textformat.latlonFormat;
 export const magFormat = textformat.magFormat;
 export const depthFormat = textformat.depthFormat;
+export const depthNoUnitFormat = textformat.depthNoUnitFormat;
 export const depthMeterFormat = textformat.depthMeterFormat;
