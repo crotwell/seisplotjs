@@ -235,19 +235,18 @@ export class QuakeStationTable extends SeisPlotElement {
 customElements.define(INFO_ELEMENT, QuakeStationTable);
 
 export class QuakeTable extends HTMLElement {
-  _columnLabels: Map<QUAKE_COLUMN, string>;
+  _columnLabels: Map<string, string>;
   _quakeList: Array<Quake>;
   _rowToQuake: Map<HTMLTableRowElement, Quake>;
   _timezone?: Zone;
   lastSortAsc = true;
-  lastSortCol: QUAKE_COLUMN | undefined;
-  _columnValues: Map<QUAKE_COLUMN, (q: Quake) => string>;
-  _defaultColumnValues: Map<QUAKE_COLUMN, (q: Quake) => string>;
+  lastSortCol: string | undefined;
+  _columnValues: Map<string, (q: Quake) => string>;
 
   constructor(
     quakeList?: Array<Quake>,
-    columnLabels?: Map<QUAKE_COLUMN, string>,
-    columnValues?: Map<QUAKE_COLUMN, (q: Quake) => string>,
+    columnLabels?: Map<string, string>,
+    columnValues?: Map<string, (q: Quake) => string>,
   ) {
     super();
     if (!quakeList) {
@@ -259,9 +258,21 @@ export class QuakeTable extends HTMLElement {
     // Column Values are optional at the individual key level.
     // For the columns that the user does not provide a function,
     // use the default display style in getQuakeValue
-    this._defaultColumnValues = QuakeTable.createDefaultColumnValues();
     if (!columnValues) {
-      columnValues = this._defaultColumnValues;
+      columnValues = new Map<string, (q: Quake) => string>();
+      let defColumnValues = QuakeTable.createDefaultColumnValues();
+      for (const key of columnLabels.keys()) {
+        if (defColumnValues.has(key)) {
+          const fn = defColumnValues.get(key);
+          if (fn != null) {
+            columnValues.set(key, fn);
+          } else {
+            throw new Error(`QuakeTable function for key is missing: ${key}`);
+          }
+        } else {
+          throw new Error(`Unknown QuakeTable key: ${key}`);
+        }
+      }
     }
 
     this._quakeList = quakeList;
@@ -282,17 +293,17 @@ export class QuakeTable extends HTMLElement {
     this._quakeList = ql;
     this.draw();
   }
-  get columnLabels(): Map<QUAKE_COLUMN, string> {
+  get columnLabels(): Map<string, string> {
     return this._columnLabels;
   }
-  set columnLabels(cols: Map<QUAKE_COLUMN, string>) {
+  set columnLabels(cols: Map<string, string>) {
     this._columnLabels = cols;
     this.draw();
   }
-  get columnValues(): Map<QUAKE_COLUMN, (q: Quake) => string> {
+  get columnValues(): Map<string, (q: Quake) => string> {
     return this._columnValues;
   }
-  set columnValues(cols: Map<QUAKE_COLUMN, (q: Quake) => string>) {
+  set columnValues(cols: Map<string, (q: Quake) => string>) {
     this._columnValues = cols;
     this.draw();
   }
@@ -316,7 +327,7 @@ export class QuakeTable extends HTMLElement {
   }
 
   static createDefaultColumnValues() {
-    let columnValues = new Map();
+    let columnValues = new Map<string, (q: Quake) => string>();
     columnValues.set(QUAKE_COLUMN.TIME, (q: Quake) => stringify(q.time.toISO()));
     columnValues.set(QUAKE_COLUMN.LOCALTIME, (q: Quake) => stringify(q.time.setZone('local').toISO()));
     columnValues.set(QUAKE_COLUMN.LAT, (q: Quake) => latlonFormat.format(q.latitude));
@@ -357,7 +368,8 @@ export class QuakeTable extends HTMLElement {
     const theader = table.createTHead().insertRow();
     this.headers().forEach((h) => {
       const cell = theader.appendChild(document.createElement("th"));
-      cell.textContent = `${this._columnLabels.get(h)}`;
+      let label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      cell.textContent = `${label}`;
       if (h === QUAKE_COLUMN.LOCALTIME) {
         if (this.timeZone) {
           cell.textContent = `${this._columnLabels.get(h)} ${nameForTimeZone(this.timeZone, DateTime.now())}`;
@@ -381,8 +393,8 @@ export class QuakeTable extends HTMLElement {
       });
     });
   }
-  headers(): Array<QUAKE_COLUMN> {
-    return Array.from(this._columnLabels.keys());
+  headers(): Array<string> {
+    return Array.from(this._columnValues.keys());
   }
 
   populateRow(q: Quake, row: HTMLTableRowElement, index: number) {
@@ -401,11 +413,8 @@ export class QuakeTable extends HTMLElement {
     });
   }
 
-  getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
+  getQuakeValue(q: Quake, h: string): string {
     let fn = this._columnValues.has(h) ? this._columnValues.get(h) : null;
-    if (fn == null) {
-      fn = this._defaultColumnValues.has(h) ? this._defaultColumnValues.get(h) : null;
-    }
 
     if (fn != null) {
       return fn(q);
@@ -413,7 +422,7 @@ export class QuakeTable extends HTMLElement {
       return `unknown: ${String(h)}`
     }
   }
-  sort(h: QUAKE_COLUMN, _headerCell: HTMLTableCellElement) {
+  sort(h: string, _headerCell: HTMLTableCellElement) {
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     const tbody = table.querySelector("tbody");
     if (tbody) {
@@ -423,7 +432,7 @@ export class QuakeTable extends HTMLElement {
         const qa = this._rowToQuake.get(rowa);
         const qb = this._rowToQuake.get(rowb);
         if (qa && qb) {
-          if (h === QUAKE_COLUMN.TIME) {
+          if (h === QUAKE_COLUMN.TIME || h === QUAKE_COLUMN.LOCALTIME) {
             out = qa.time.toMillis() - qb.time.toMillis();
           } else if (h === QUAKE_COLUMN.LAT) {
             out = qa.latitude - qb.latitude;
@@ -670,31 +679,47 @@ export const CHANNEL_INFO_ELEMENT = "sp-channel-table";
 customElements.define(CHANNEL_INFO_ELEMENT, ChannelTable);
 
 export class StationTable extends HTMLElement {
-  _columnLabels: Map<STATION_COLUMN, string>;
+  _columnLabels: Map<string, string> = new Map();
   _stationList: Array<Station>;
   _rowToStation: Map<HTMLTableRowElement, Station>;
   lastSortAsc = true;
-  lastSortCol: STATION_COLUMN | undefined;
+  lastSortCol: string | undefined;
+  _columnValues: Map<string, (sta: Station) => string>;
   constructor(
     stationList?: Array<Station>,
-    columnLabels?: Map<STATION_COLUMN, string>,
+    columnLabels?: Map<string, string>,
+    columnValues?: Map<string, (sta: Station) => string>
   ) {
     super();
     if (!stationList) {
       stationList = [];
     }
+
     if (!columnLabels) {
-      columnLabels = new Map();
-      columnLabels.set(STATION_COLUMN.CODE, "Code");
-      columnLabels.set(STATION_COLUMN.START, "Start");
-      columnLabels.set(STATION_COLUMN.END, "End");
-      columnLabels.set(STATION_COLUMN.LAT, "Lat");
-      columnLabels.set(STATION_COLUMN.LON, "Lon");
-      columnLabels.set(STATION_COLUMN.ELEVATION, "Evel");
-      columnLabels.set(STATION_COLUMN.SOURCEID, "SourceId");
+      columnLabels = StationTable.createDefaultColumnLabels();
     }
-    this._stationList = stationList;
     this._columnLabels = columnLabels;
+
+    if (!columnValues) {
+      columnValues = new Map<string, (sta: Station) => string>();
+      let defColumnValues = StationTable.createDefaultColumnValues();
+      for (const key of columnLabels.keys()) {
+        if (defColumnValues.has(key)) {
+          const fn = defColumnValues.get(key);
+          if (fn != null) {
+            columnValues.set(key, fn);
+          } else {
+            throw new Error(`StationTable function for key is missing: ${key}`);
+          }
+        } else {
+          throw new Error(`Unknown StationTable key: ${key}`);
+        }
+      }
+    }
+    this._columnValues = columnValues;
+
+    this._stationList = stationList;
+
     this._rowToStation = new Map();
 
     const shadow = this.attachShadow({ mode: "open" });
@@ -711,13 +736,21 @@ export class StationTable extends HTMLElement {
     this._stationList = ql;
     this.draw();
   }
-  get columnLabels(): Map<STATION_COLUMN, string> {
+  get columnLabels(): Map<string, string> {
     return this._columnLabels;
   }
-  set columnLabels(cols: Map<STATION_COLUMN, string>) {
+  set columnLabels(cols: Map<string, string>) {
     this._columnLabels = cols;
     this.draw();
   }
+  get columnValues(): Map<string, (sta: Station) => string> {
+    return this._columnValues;
+  }
+  set columnValues(cols: Map<string, (sta: Station) => string>) {
+    this._columnValues = cols;
+    this.draw();
+  }
+
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -747,20 +780,52 @@ export class StationTable extends HTMLElement {
       });
     });
   }
-  headers(): Array<STATION_COLUMN> {
-    return Array.from(this._columnLabels.keys());
+  headers(): Array<string> {
+    return Array.from(this._columnValues.keys());
   }
   populateRow(q: Station, row: HTMLTableRowElement, index: number) {
     this._rowToStation.set(row, q);
     this.headers().forEach((h) => {
       const cell = row.insertCell(index);
-      cell.textContent = StationTable.getStationValue(q, h);
+      cell.textContent = this.getStationValue(q, h);
       if (index !== -1) {
         index++;
       }
     });
   }
-  static getStationValue(q: Station, h: STATION_COLUMN): string {
+
+  static createDefaultColumnLabels() {
+    const columnLabels = new Map<string, string>();
+    columnLabels.set(STATION_COLUMN.CODE, "Code");
+    columnLabels.set(STATION_COLUMN.START, "Start");
+    columnLabels.set(STATION_COLUMN.END, "End");
+    columnLabels.set(STATION_COLUMN.LAT, "Lat");
+    columnLabels.set(STATION_COLUMN.LON, "Lon");
+    columnLabels.set(STATION_COLUMN.ELEVATION, "Evel");
+    columnLabels.set(STATION_COLUMN.SOURCEID, "SourceId");
+    return columnLabels;
+  }
+  static createDefaultColumnValues() {
+    const columnValues = new Map<string, (sta: Station) => string>();
+    columnValues.set(STATION_COLUMN.START, (sta: Station) => stringify(sta.startDate.toISO()));
+    columnValues.set(STATION_COLUMN.END, (sta: Station) => sta.endDate ? stringify(sta.endDate.toISO()) : "");
+    columnValues.set(STATION_COLUMN.LAT, (sta: Station) => latlonFormat.format(sta.latitude));
+    columnValues.set(STATION_COLUMN.LON, (sta: Station) => latlonFormat.format(sta.longitude));
+    columnValues.set(STATION_COLUMN.ELEVATION, (sta: Station) => depthMeterFormat.format(sta.elevation));
+    columnValues.set(STATION_COLUMN.SOURCEID, (sta: Station) => `${sta.sourceId.toString()}`);
+    columnValues.set(STATION_COLUMN.CODE, (sta: Station) => `${sta.codes()}`);
+    columnValues.set(STATION_COLUMN.NETWORK_CODE, (sta: Station) => `${sta.networkCode}`);
+    columnValues.set(STATION_COLUMN.STATION_CODE, (sta: Station) => `${sta.stationCode}`);
+    columnValues.set(STATION_COLUMN.DESCRIPTION, (sta: Station) => `${sta.description}`);
+    return columnValues;
+  }
+  getStationValue(q: Station, h: string): string {
+    if (this._columnValues.has(h)) {
+      const fn = this._columnValues.get(h);
+      if (fn != null) {
+        return fn(q);
+      }
+    }
     if (h === STATION_COLUMN.START) {
       return stringify(q.startDate.toISO());
     } else if (h === STATION_COLUMN.END) {
@@ -785,7 +850,7 @@ export class StationTable extends HTMLElement {
       return `unknown: ${String(h)}`;
     }
   }
-  sort(h: STATION_COLUMN, _headerCell: HTMLTableCellElement) {
+  sort(h: string, _headerCell: HTMLTableCellElement) {
     const table = this.shadowRoot?.querySelector("table") as HTMLTableElement;
     const tbody = table.querySelector("tbody");
     if (tbody) {
@@ -813,8 +878,8 @@ export class StationTable extends HTMLElement {
             out = qa.elevation - qb.elevation;
           } else {
             // just use string
-            const ta = StationTable.getStationValue(qa, h);
-            const tb = StationTable.getStationValue(qb, h);
+            const ta = this.getStationValue(qa, h);
+            const tb = this.getStationValue(qb, h);
             if (ta < tb) {
               out = -1;
             } else if (ta > tb) {
@@ -855,7 +920,7 @@ export class SeismogramTable extends HTMLElement {
   _sddList: Array<SeismogramDisplayData>;
   _rowToSDD: Map<HTMLTableRowElement, SeismogramDisplayData>;
   lastSortAsc = true;
-  lastSortCol: SEISMOGRAM_COLUMN | undefined;
+  lastSortCol: string | undefined;
   constructor(
     sddList?: Array<SeismogramDisplayData>,
     columnLabels?: Map<SEISMOGRAM_COLUMN, string>,
