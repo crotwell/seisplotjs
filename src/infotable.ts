@@ -241,13 +241,13 @@ export class QuakeTable extends HTMLElement {
   _timezone?: Zone;
   lastSortAsc = true;
   lastSortCol: QUAKE_COLUMN | undefined;
-  _columnValues: Map<QUAKE_COLUMN, Function>;
-  _defaultColumnValues: Map<QUAKE_COLUMN, Function>;
+  _columnValues: Map<QUAKE_COLUMN, (q: Quake) => string>;
+  _defaultColumnValues: Map<QUAKE_COLUMN, (q: Quake) => string>;
 
   constructor(
     quakeList?: Array<Quake>,
     columnLabels?: Map<QUAKE_COLUMN, string>,
-    columnValues?: Map<QUAKE_COLUMN, Function>,
+    columnValues?: Map<QUAKE_COLUMN, (q: Quake) => string>,
   ) {
     super();
     if (!quakeList) {
@@ -289,10 +289,10 @@ export class QuakeTable extends HTMLElement {
     this._columnLabels = cols;
     this.draw();
   }
-  get columnValues(): Map<QUAKE_COLUMN, Function> {
+  get columnValues(): Map<QUAKE_COLUMN, (q: Quake) => string> {
     return this._columnValues;
   }
-  set columnValues(cols: Map<QUAKE_COLUMN, Function>) {
+  set columnValues(cols: Map<QUAKE_COLUMN, (q: Quake) => string>) {
     this._columnValues = cols;
     this.draw();
   }
@@ -317,16 +317,16 @@ export class QuakeTable extends HTMLElement {
 
   static createDefaultColumnValues() {
     let columnValues = new Map();
-    columnValues.set(QUAKE_COLUMN.TIME, q => stringify(q.time.toISO()));
-    columnValues.set(QUAKE_COLUMN.LOCALTIME, q => stringify(q.time.setZone('local').toISO()));
-    columnValues.set(QUAKE_COLUMN.LAT, q => latlonFormat.format(q.latitude));
-    columnValues.set(QUAKE_COLUMN.LON, q => latlonFormat.format(q.longitude));
-    columnValues.set(QUAKE_COLUMN.MAG, q => magFormat.format(q.magnitude.mag));
-    columnValues.set(QUAKE_COLUMN.MAGTYPE, q => q.magnitude.type ? q.magnitude.type : "");
-    columnValues.set(QUAKE_COLUMN.DEPTH, q => depthFormat.format(q.depthKm));
-    columnValues.set(QUAKE_COLUMN.EVENTID, q => stringify(q.eventId));
+    columnValues.set(QUAKE_COLUMN.TIME, (q: Quake) => stringify(q.time.toISO()));
+    columnValues.set(QUAKE_COLUMN.LOCALTIME, (q: Quake) => stringify(q.time.setZone('local').toISO()));
+    columnValues.set(QUAKE_COLUMN.LAT, (q: Quake) => latlonFormat.format(q.latitude));
+    columnValues.set(QUAKE_COLUMN.LON, (q: Quake) => latlonFormat.format(q.longitude));
+    columnValues.set(QUAKE_COLUMN.MAG, (q: Quake) => magFormat.format(q.magnitude.mag));
+    columnValues.set(QUAKE_COLUMN.MAGTYPE, (q: Quake) => q.magnitude.type ? q.magnitude.type : "");
+    columnValues.set(QUAKE_COLUMN.DEPTH, (q: Quake) => depthFormat.format(q.depthKm));
+    columnValues.set(QUAKE_COLUMN.EVENTID, (q: Quake) => stringify(q.eventId));
     columnValues.set(QUAKE_COLUMN.DESC,
-      q => { const desc = q.description;
+      (q: Quake) => { const desc = q.description;
         if (desc && desc.length > 0) {
           return desc;
         } else {
@@ -402,15 +402,14 @@ export class QuakeTable extends HTMLElement {
   }
 
   getQuakeValue(q: Quake, h: QUAKE_COLUMN): string {
-    if (this._columnValues.has(h)) {
-      let fn = this._columnValues.get(h);
-      return fn(q);
+    let fn = this._columnValues.has(h) ? this._columnValues.get(h) : null;
+    if (fn == null) {
+      fn = this._defaultColumnValues.has(h) ? this._defaultColumnValues.get(h) : null;
     }
-    else if (this._defaultColumnValues.has(h)) {
-      let fn = this._defaultColumnValues.get(h);
+
+    if (fn != null) {
       return fn(q);
-    }
-    else {
+    } else {
       return `unknown: ${String(h)}`
     }
   }
