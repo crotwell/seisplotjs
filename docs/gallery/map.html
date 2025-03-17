@@ -128,7 +128,12 @@
                 }
               });
               quakeRow.classList.add(SELECTED_ROW);
-              quakeRow.setAttribute("style", "color: green");
+              quakeRow.addStyle(`
+                table tbody tr.${SELECTED_ROW} td {
+                background-color: green;
+                color: white;
+                }
+              `);
             });
           });
         });
