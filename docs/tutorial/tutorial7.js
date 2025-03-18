@@ -25,16 +25,11 @@ const rtConfig = {
 const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
 realtimeDiv.appendChild(rtDisp.organizedDisplay);
 rtDisp.organizedDisplay.draw();
-rtDisp.animationScaler.minRedrawMillis =
-  sp.animatedseismograph.calcOnePixelDuration(rtDisp.organizedDisplay);
-
 rtDisp.animationScaler.animate();
 
 // snip start nowtime
 const n_span = document.querySelector("#nt");
 setInterval(() => {
-  const seisConfig = rtDisp.organizedDisplay.seismographConfig;
-  const lts = seisConfig.linkedTimeScale;
   const now = sp.luxon.DateTime.utc().toISO();
   n_span.textContent = `Now: ${now}`;
 }, 1000);

@@ -70,18 +70,15 @@ const rtConfig = {
 const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
 // each seismograph on its own min-max amplitude scale, remove for all on same min-max
 //rtDisp.organizedDisplay.seismographConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
+rtDisp.organizedDisplay.map = "false";
+
 realtimeDiv.appendChild(rtDisp.organizedDisplay);
 rtDisp.organizedDisplay.draw();
-rtDisp.animationScaler.minRedrawMillis =
-  sp.animatedseismograph.calcOnePixelDuration(rtDisp.organizedDisplay);
-
 rtDisp.animationScaler.animate();
 
 // snip start nowtime
 const n_span = document.querySelector("#nt");
 setInterval(() => {
-  const seisConfig = rtDisp.organizedDisplay.seismographConfig;
-  const lts = seisConfig.linkedTimeScale;
   n_span.textContent = sp.luxon.DateTime.utc().toISO();
 }, 1000);
 

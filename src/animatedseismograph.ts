@@ -16,18 +16,21 @@ import { Network } from "./stationxml";
 export class AnimatedTimeScaler {
   alignmentTime: DateTime;
   timeScale: AlignmentLinkedTimeScale;
-  minRedrawMillis = 100;
+  minRedrawMillis?: number;
+  _calcRedrawMillis?: number;
   goAnimation = true;
   previousStep: DOMHighResTimeStamp = Number.NEGATIVE_INFINITY;
   _animationId = 0;
   constructor(
     timeScale: AlignmentLinkedTimeScale,
     alignmentTime?: DateTime,
-    minRedrawMillis = 100,
+    minRedrawMillis?: number,
   ) {
     this.timeScale = timeScale;
     this.alignmentTime = alignmentTime ? alignmentTime : DateTime.utc();
-    this.minRedrawMillis = minRedrawMillis;
+    if (minRedrawMillis) {
+      this.minRedrawMillis = minRedrawMillis;
+    }
   }
   animate() {
     this.goAnimation = true;
@@ -46,8 +49,10 @@ export class AnimatedTimeScaler {
   stepper(timestamp: DOMHighResTimeStamp) {
     this._animationId = 0;
     const elapsed = timestamp - this.previousStep;
+    const redrawMillis = this.minRedrawMillis ? this.minRedrawMillis : (
+      this._calcRedrawMillis ? this._calcRedrawMillis : 100);
 
-    if (elapsed > this.minRedrawMillis) {
+    if (elapsed > redrawMillis) {
       this.previousStep = timestamp;
       this.step();
     }
@@ -65,7 +70,7 @@ export class AnimatedTimeScaler {
             this.stepper(timestamp),
           );
         },
-        this.minRedrawMillis - (now - timestamp),
+        redrawMillis - (now - timestamp),
       );
     }
   }
@@ -76,19 +81,49 @@ export class AnimatedTimeScaler {
   }
 }
 
-export type RTDisplayContainer = {
+export class RTDisplayContainer {
   rawSeisData: Array<SeismogramDisplayData>;
   organizedDisplay: OrganizedDisplay;
   animationScaler: AnimatedTimeScaler;
   packetHandler: (packet: DataLinkPacket) => void;
   config: RTConfig;
+  resizeObserver: ResizeObserver;
+  constructor(
+      rawSeisData: Array<SeismogramDisplayData>,
+      organizedDisplay: OrganizedDisplay,
+      animationScaler: AnimatedTimeScaler,
+      packetHandler: (packet: DataLinkPacket) => void,
+      config: RTConfig) {
+    this.rawSeisData = rawSeisData;
+    this.organizedDisplay = organizedDisplay;
+    this.animationScaler = animationScaler;
+    this.packetHandler = packetHandler;
+    this.config = config;
+    this.resizeObserver = new ResizeObserver((entries) => {
+      if ( ! config.minRedrawMillis) {
+        this.recalculateRedrawTime().then((rt) => {console.log(`resize an org disp: ${rt.animationScaler.minRedrawMillis}`)});
+      }
+    });
+    this.resizeObserver.observe(this.organizedDisplay);
+  }
+  recalculateRedrawTime(): Promise<RTDisplayContainer> {
+    const that = this;
+    const p = new Promise<RTDisplayContainer>((resolve) => {
+      setTimeout( () => {
+          const calcRedraw = calcOnePixelDuration(this.organizedDisplay).toMillis();
+          that.animationScaler._calcRedrawMillis = calcRedraw;
+        resolve(that);
+      }, 1000);
+    });
+    return p;
+  }
 };
 
 export type RTConfig = {
   duration: Duration;
   alignmentTime: DateTime;
   offset: Duration;
-  minRedrawMillis: number;
+  minRedrawMillis?: number;
   networkList: Array<Network>;
   removeTrend: boolean;
 };
@@ -114,7 +149,8 @@ export function isValidRTConfig(configObj: unknown): configObj is RTConfig {
     config.offset = Duration.fromMillis(0);
   }
   if (typeof config.minRedrawMillis === "undefined") {
-    config.minRedrawMillis = 100;
+    //config.minRedrawMillis = 100;
+    config.minRedrawMillis = null;
   }
   if (typeof config.networkList === "undefined") {
     config.networkList = [];
@@ -245,13 +281,13 @@ export function internalCreateRealtimeDisplay(
   };
 
   //animationScaler.animate();
-  return {
-    rawSeisData: rawSeisData,
-    organizedDisplay: orgDisp,
-    animationScaler: animationScaler,
-    packetHandler: packetHandler,
-    config: config,
-  };
+  return new RTDisplayContainer(
+    rawSeisData,
+    orgDisp,
+    animationScaler,
+    packetHandler,
+    config,
+  );
 }
 
 /**
