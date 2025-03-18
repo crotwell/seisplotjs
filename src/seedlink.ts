@@ -21,7 +21,7 @@ export type SequencedDataRecord = {
  * Note this cannot connect directly to a native TCP socket, instead it
  * sends the seedlink protocol over a websocket. Currently only the IRIS
  * ringserver, https://github.com/iris-edu/ringserver,
- * supports websockets, but it may be possible to use thrid party
+ * supports websockets, but it may be possible to use third party
  * tools to proxy the websocket to a TCP seedlink socket.
  *
  * The seedlink (ver 3) protocol does not have an official spec document, but
@@ -52,7 +52,7 @@ export class SeedlinkConnection {
     url: string,
     requestConfig: Array<string>,
     receiveMiniseedFn: (packet: SequencedDataRecord) => void,
-    errorHandler: (error: Error) => void,
+    errorHandler: (error: Error) => void
   ) {
     this.url = url;
     this.requestConfig = requestConfig;
@@ -166,8 +166,8 @@ export class SeedlinkConnection {
             "message too small to be miniseed: " +
               data.byteLength +
               " " +
-              dataViewToString(new DataView(data)),
-          ),
+              dataViewToString(new DataView(data))
+          )
         );
         return;
       }
@@ -194,7 +194,7 @@ export class SeedlinkConnection {
           "Not a seedlink packet, no starting SL: " +
             slHeader.getInt8(0) +
             " " +
-            slHeader.getInt8(1),
+            slHeader.getInt8(1)
         );
       }
     } catch (e) {
@@ -216,7 +216,7 @@ export class SeedlinkConnection {
     const webSocket = this.webSocket;
     const promise: Promise<[string, string]> = new Promise(function (
       resolve,
-      reject,
+      reject
     ) {
       if (webSocket) {
         webSocket.onmessage = function (event) {

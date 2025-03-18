@@ -25,7 +25,7 @@ export const stationIcon = L.divIcon({
 export const inactiveStationIcon = L.divIcon({
   className: InactiveStationMarkerClassName,
 });
-// note currentcolor is svg var that lets use use css, otherwise leaflet will
+// note currentcolor is svg var that lets us use css, otherwise leaflet will
 // put its default color, blue, which can't be overridden
 export const stationMarker_css = `
 
@@ -72,11 +72,11 @@ export function createStationMarker(
   station: Station,
   classList?: Array<string>,
   isactive = true,
-  centerLon = 0,
+  centerLon = 0
 ) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(
-    isactive ? StationMarkerClassName : InactiveStationMarkerClassName,
+    isactive ? StationMarkerClassName : InactiveStationMarkerClassName
   );
   allClassList.push(station.codes(STATION_CODE_SEP));
   const icon = L.divIcon({
@@ -108,7 +108,7 @@ export function createQuakeMarker(
   quake: Quake,
   magScaleFactor = 5,
   classList?: Array<string>,
-  centerLon = 0,
+  centerLon = 0
 ) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(QuakeMarkerClassName);
@@ -164,7 +164,7 @@ export class QuakeStationMap extends SeisPlotElement {
   quakeClassMap: Map<string, Array<string>>;
   constructor(
     seisData?: Array<SeismogramDisplayData>,
-    seisConfig?: SeismographConfig,
+    seisConfig?: SeismographConfig
   ) {
     super(seisData, seisConfig);
     this.map = null;
@@ -215,7 +215,7 @@ export class QuakeStationMap extends SeisPlotElement {
       this.quakeClassMap.set(cssClassForQuake(quake), [classname]);
     }
     const circleList = this.getShadowRoot().querySelectorAll(
-      `path.${quakeIdStr}`,
+      `path.${quakeIdStr}`
     );
     circleList.forEach((c) => {
       c.classList.add(classname);
@@ -235,7 +235,7 @@ export class QuakeStationMap extends SeisPlotElement {
       this.quakeClassMap.set(cssClassForQuake(quake), classList);
     }
     const circleList = this.getShadowRoot().querySelectorAll(
-      `path.${quakeIdStr}`,
+      `path.${quakeIdStr}`
     );
     circleList.forEach((c) => {
       c.classList.remove(classname);
@@ -282,7 +282,7 @@ export class QuakeStationMap extends SeisPlotElement {
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), [classname]);
     }
     const markerList = this.getShadowRoot().querySelectorAll(
-      `div.${station.codes(STATION_CODE_SEP)}`,
+      `div.${station.codes(STATION_CODE_SEP)}`
     );
     markerList.forEach((c) => {
       c.classList.add(classname);
@@ -301,7 +301,7 @@ export class QuakeStationMap extends SeisPlotElement {
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), classList);
     }
     const markerList = this.getShadowRoot().querySelectorAll(
-      `div.${station.codes(STATION_CODE_SEP)}`,
+      `div.${station.codes(STATION_CODE_SEP)}`
     );
     markerList.forEach((c) => {
       c.classList.remove(classname);
@@ -419,7 +419,7 @@ export class QuakeStationMap extends SeisPlotElement {
     const divElement = wrapper.appendChild(document.createElement("div"));
     const mymap = L.map(divElement).setView(
       [this.centerLat, this.centerLon],
-      this.zoomLevel,
+      this.zoomLevel
     );
     this.map = mymap;
     if (this.seismographConfig.wheelZoom) {
@@ -452,7 +452,7 @@ export class QuakeStationMap extends SeisPlotElement {
         q,
         magScale,
         this.quakeClassMap.get(cssClassForQuake(q)),
-        this.centerLon,
+        this.centerLon
       );
       circle.addTo(mymap);
       mapItems.push([q.latitude, q.longitude]);
@@ -466,7 +466,7 @@ export class QuakeStationMap extends SeisPlotElement {
         s,
         this.stationClassMap.get(s.codes(STATION_CODE_SEP)),
         true,
-        this.centerLon,
+        this.centerLon
       );
       m.addTo(mymap);
       mapItems.push([s.latitude, s.longitude]);
@@ -484,7 +484,7 @@ export class QuakeStationMap extends SeisPlotElement {
   updateQuakeMarkerStyle() {
     const quakeMarkerStyle = this.createQuakeMarkerColorStyle();
     const quakeMarkerStyleEl = this.getShadowRoot().querySelector(
-      `style#${QUAKE_MARKER_STYLE_EL}`,
+      `style#${QUAKE_MARKER_STYLE_EL}`
     );
     if (quakeMarkerStyleEl) {
       quakeMarkerStyleEl.textContent = quakeMarkerStyle;
@@ -495,7 +495,7 @@ export class QuakeStationMap extends SeisPlotElement {
   updateStationMarkerStyle() {
     const staMarkerStyle = this.createStationMarkerColorStyle();
     const staMarkerStyleEl = this.getShadowRoot().querySelector(
-      `style#${STATION_MARKER_STYLE_EL}`,
+      `style#${STATION_MARKER_STYLE_EL}`
     );
     if (staMarkerStyleEl) {
       staMarkerStyleEl.textContent = staMarkerStyle;
@@ -566,7 +566,11 @@ path.${classname} {
     });
     return style;
   }
-  attributeChangedCallback(_name: string, _oldValue: string, _newValue: string) {
+  attributeChangedCallback(
+    _name: string,
+    _oldValue: string,
+    _newValue: string
+  ) {
     this.draw();
   }
   static get observedAttributes() {
