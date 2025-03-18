@@ -27,7 +27,7 @@ export class RotatedSeismograms {
     azimuthRadial: number,
     transverse: Seismogram,
     azimuthTransverse: number,
-    rotation: number,
+    rotation: number
   ) {
     this.radial = radial;
     this.azimuthRadial = azimuthRadial;
@@ -53,12 +53,12 @@ export function rotate(
   azimuthA: number,
   seisB: Seismogram,
   azimuthB: number,
-  azimuth: number,
+  azimuth: number
 ): RotatedSeismograms {
   if (seisA.segments.length !== seisB.segments.length) {
     throw new Error(
       "Seismograms do not have same number of segments: " +
-        `${seisA.segments.length} !== ${seisB.segments.length}`,
+        `${seisA.segments.length} !== ${seisB.segments.length}`
     );
   }
 
@@ -71,7 +71,7 @@ export function rotate(
       azimuthA,
       seisB.segments[i],
       azimuthB,
-      azimuth,
+      azimuth
     );
     rotOutRad.push(result.radial);
     rotOutTrans.push(result.transverse);
@@ -82,7 +82,7 @@ export function rotate(
     azimuth % 360,
     new Seismogram(rotOutTrans),
     (azimuth + 90) % 360,
-    azimuth - azimuthA,
+    azimuth - azimuthA
   );
   return out;
 }
@@ -102,33 +102,33 @@ function rotateSeismogramSegment(
   azimuthA: number,
   seisB: SeismogramSegment,
   azimuthB: number,
-  azimuth: number,
+  azimuth: number
 ) {
   if (seisA.y.length !== seisB.y.length) {
     throw new Error(
       "seisA and seisB should be of same lenght but was " +
-        `${seisA.y.length} ${seisB.y.length}`,
+        `${seisA.y.length} ${seisB.y.length}`
     );
   }
 
   if (!seisA.startTime.equals(seisB.startTime)) {
     throw new Error(
       "Expect startTime to be same, but was " +
-        `${seisA.startTime.toISO()} ${seisB.startTime.toISO()}`,
+        `${seisA.startTime.toISO()} ${seisB.startTime.toISO()}`
     );
   }
 
   if (seisA.sampleRate !== seisB.sampleRate) {
     throw new Error(
       "Expect sampleRate to be same, but was " +
-        `${seisA.sampleRate} ${seisB.sampleRate}`,
+        `${seisA.sampleRate} ${seisB.sampleRate}`
     );
   }
 
   if ((azimuthA + 90) % 360 !== azimuthB % 360) {
     throw new Error(
       "Expect azimuthB to be azimuthA + 90, but was " +
-        `${azimuthA} ${azimuthB}`,
+        `${azimuthA} ${azimuthB}`
     );
   }
 
@@ -186,7 +186,7 @@ export function vectorMagnitude(
   seisA: Seismogram,
   seisB: Seismogram,
   seisC: Seismogram,
-  orientCode?: string | null,
+  orientCode?: string | null
 ): Seismogram {
   if (
     seisA.segments.length !== seisB.segments.length ||
@@ -194,7 +194,7 @@ export function vectorMagnitude(
   ) {
     throw new Error(
       "Seismograms do not have same number of segments: " +
-        `${seisA.segments.length}  !== ${seisB.segments.length}  !== ${seisC.segments.length}`,
+        `${seisA.segments.length}  !== ${seisB.segments.length}  !== ${seisC.segments.length}`
     );
   }
 
@@ -205,7 +205,7 @@ export function vectorMagnitude(
       seisA.segments[i],
       seisB.segments[i],
       seisC.segments[i],
-      orientCode,
+      orientCode
     );
     outData.push(result);
   }
@@ -220,7 +220,7 @@ export function vectorMagnitude(
  *
  * @param   seisA first seismogram
  * @param   seisB second perpendicular seismogram
- * @param   seisC thrid perpendicular seismogram
+ * @param   seisC third perpendicular seismogram
  * @param   orientCode optional orientation code for resulting seismogram, defaults to M
  * @returns         seismogram representing the vector magnitude, sqrt(x*x+y*y+z*z)
  */
@@ -228,12 +228,12 @@ function vectorMagnitudeSegment(
   seisA: SeismogramSegment,
   seisB: SeismogramSegment,
   seisC: SeismogramSegment,
-  orientCode: string | null | undefined,
+  orientCode: string | null | undefined
 ): SeismogramSegment {
   if (seisA.y.length !== seisB.y.length || seisA.y.length !== seisC.y.length) {
     throw new Error(
       "seis should be of same length but was " +
-        `${seisA.y.length} ${seisB.y.length} ${seisC.y.length}`,
+        `${seisA.y.length} ${seisB.y.length} ${seisC.y.length}`
     );
   }
 
@@ -243,7 +243,7 @@ function vectorMagnitudeSegment(
   ) {
     throw new Error(
       "Expect sampleRate to be same, but was " +
-        `${seisA.sampleRate} ${seisB.sampleRate} ${seisC.sampleRate}`,
+        `${seisA.sampleRate} ${seisB.sampleRate} ${seisC.sampleRate}`
     );
   }
 
@@ -259,7 +259,7 @@ function vectorMagnitudeSegment(
     y[i] = Math.sqrt(
       seisA.y[i] * seisA.y[i] +
         seisB.y[i] * seisB.y[i] +
-        seisC.y[i] * seisC.y[i],
+        seisC.y[i] * seisC.y[i]
     );
   }
 

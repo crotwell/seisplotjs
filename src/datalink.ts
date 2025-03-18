@@ -73,7 +73,7 @@ const defaultHandleResponse = function (dlResponse: DataLinkResponse) {
  *
  * Currently only the IRIS
  * ringserver, https://github.com/iris-edu/ringserver,
- * supports websockets, but it may be possible to use thrid party
+ * supports websockets, but it may be possible to use third party
  * tools to proxy the websocket to a TCP datalink socket.
  *
  * The datalink protocol is documented here
@@ -105,7 +105,7 @@ export class DataLinkConnection {
   constructor(
     url: string,
     packetHandler: (packet: DataLinkPacket) => void,
-    errorHandler: (error: Error) => void,
+    errorHandler: (error: Error) => void
   ) {
     this.webSocket = null;
     this.url = url ? url : IRIS_RINGSERVER_URL;
@@ -204,7 +204,7 @@ export class DataLinkConnection {
   stream(): Promise<DataLinkResponse> {
     this._mode = MODE.Stream;
     return this.awaitDLCommand(STREAM, "").then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
     );
   }
 
@@ -251,10 +251,10 @@ export class DataLinkConnection {
       this.programname,
       this.username,
       stringify(this.clientIdNum),
-      this.architecture,
+      this.architecture
     )
       .then((dlResponse) =>
-        DataLinkConnection.ensureDataLinkResponse(dlResponse),
+        DataLinkConnection.ensureDataLinkResponse(dlResponse)
       )
       .then((dlResponse) => {
         if (dlResponse.type === "ID") {
@@ -359,14 +359,14 @@ export class DataLinkConnection {
    */
   awaitDLBinary(
     header: string,
-    data?: Uint8Array,
+    data?: Uint8Array
   ): Promise<DataLinkResponse | DataLinkPacket> {
     const promise = new Promise(
       (resolve: (a: DataLinkResponse | DataLinkPacket) => void, reject) => {
         this._responseResolve = resolve;
         this._responseReject = reject;
         this.sendDLBinary(header, data);
-      },
+      }
     )
       .then((response) => {
         this._responseResolve = null;
@@ -391,7 +391,7 @@ export class DataLinkConnection {
    */
   awaitDLCommand(
     command: string,
-    dataString?: string,
+    dataString?: string
   ): Promise<DataLinkResponse | DataLinkPacket> {
     return this.awaitDLBinary(command, stringToUint8Array(dataString));
   }
@@ -409,10 +409,10 @@ export class DataLinkConnection {
     streamid: string,
     hpdatastart: DateTime,
     hpdataend: DateTime,
-    data?: Uint8Array,
+    data?: Uint8Array
   ): Promise<DataLinkResponse | DataLinkPacket> {
     const header = `WRITE ${streamid} ${dateTimeToHPTime(
-      hpdatastart,
+      hpdatastart
     )} ${dateTimeToHPTime(hpdataend)} A`;
     return this.awaitDLBinary(header, data);
   }
@@ -425,7 +425,7 @@ export class DataLinkConnection {
    * @throws Error if not a DataLinkResponse
    */
   static ensureDataLinkResponse(
-    dl: DataLinkResponse | DataLinkPacket,
+    dl: DataLinkResponse | DataLinkPacket
   ): DataLinkResponse {
     if (dl instanceof DataLinkResponse) {
       return dl;
@@ -442,7 +442,7 @@ export class DataLinkConnection {
    * @throws Error if not a DataLinkPacket
    */
   static ensureDataLinkPacket(
-    dl: DataLinkResponse | DataLinkPacket,
+    dl: DataLinkResponse | DataLinkPacket
   ): DataLinkPacket {
     if (dl instanceof DataLinkPacket) {
       return dl;
@@ -466,11 +466,11 @@ export class DataLinkConnection {
     programname: string,
     username: string,
     processid: string,
-    architecture: string,
+    architecture: string
   ): Promise<DataLinkResponse> {
     const command = `ID ${programname}:${username}:${processid}:${architecture}`;
     return this.awaitDLCommand(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
     );
   }
 
@@ -483,7 +483,7 @@ export class DataLinkConnection {
   info(infoType: string): Promise<DataLinkResponse> {
     const command = `INFO ${infoType}`;
     return this.awaitDLCommand(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
     );
   }
 
@@ -516,7 +516,7 @@ export class DataLinkConnection {
    */
   positionAfter(time: DateTime): Promise<DataLinkResponse> {
     return this.positionAfterHPTime(dateTimeToHPTime(time)).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
     );
   }
 
@@ -529,7 +529,7 @@ export class DataLinkConnection {
   positionAfterHPTime(hpTime: number): Promise<DataLinkResponse> {
     const command = `POSITION AFTER ${hpTime}`;
     return this.awaitDLCommand(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
     );
   }
 
@@ -542,7 +542,7 @@ export class DataLinkConnection {
   match(pattern: string): Promise<DataLinkResponse> {
     const command = `MATCH`;
     return this.awaitDLCommand(command, pattern).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
     );
   }
 
@@ -555,7 +555,7 @@ export class DataLinkConnection {
   reject(pattern: string): Promise<DataLinkResponse> {
     const command = `REJECT ${pattern}`;
     return this.awaitDLCommand(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkResponse(dlResponse),
+      DataLinkConnection.ensureDataLinkResponse(dlResponse)
     );
   }
 
@@ -568,7 +568,7 @@ export class DataLinkConnection {
   read(packetId: string): Promise<DataLinkPacket> {
     const command = `READ ${packetId}`;
     return this.awaitDLBinary(command).then((dlResponse) =>
-      DataLinkConnection.ensureDataLinkPacket(dlResponse),
+      DataLinkConnection.ensureDataLinkPacket(dlResponse)
     );
   }
 
@@ -598,7 +598,7 @@ export class DataLinkConnection {
       if (header.startsWith(PACKET)) {
         const packet = new DataLinkPacket(
           header,
-          new DataView(rawData, 3 + headerLen),
+          new DataView(rawData, 3 + headerLen)
         );
 
         if (this.packetHandler) {
@@ -691,7 +691,7 @@ export class DataLinkResponse {
 
       if (data) {
         message = dataViewToString(
-          new DataView(data.buffer, 3 + header.length),
+          new DataView(data.buffer, 3 + header.length)
         );
       }
     } else {
@@ -734,7 +734,7 @@ export class DataLinkPacket {
 
     if (dataview.byteLength < this.dataSize) {
       throw new Error(
-        `not enough bytes in dataview for packet:  ${this.dataSize}`,
+        `not enough bytes in dataview for packet:  ${this.dataSize}`
       );
     }
   }
@@ -847,7 +847,7 @@ export class DataLinkIdStats {
     const dlIdStats = new DataLinkIdStats(
       parseUtil._requireAttribute(statusEl, "Version"),
       parseUtil._requireAttribute(statusEl, "ServerID"),
-      parseUtil._requireAttribute(statusEl, "Capabilities").split(" "),
+      parseUtil._requireAttribute(statusEl, "Capabilities").split(" ")
     );
     return dlIdStats;
   }
@@ -940,7 +940,7 @@ export class DataLinkStats {
     latestPacketID: number,
     latestPacketCreationTime: DateTime,
     latestPacketDataStartTime: DateTime,
-    latestPacketDataEndTime: DateTime,
+    latestPacketDataEndTime: DateTime
   ) {
     this.startTime = startTime;
     this.ringVersion = ringVersion;
@@ -989,24 +989,24 @@ export class DataLinkStats {
       parseFloat(parseUtil._requireAttribute(statusEl, "RXByteRate")),
       parseInt(parseUtil._requireAttribute(statusEl, "EarliestPacketID")),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "EarliestPacketCreationTime"),
+        parseUtil._requireAttribute(statusEl, "EarliestPacketCreationTime")
       ),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime"),
+        parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime")
       ),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime"),
+        parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime")
       ),
       parseInt(parseUtil._requireAttribute(statusEl, "LatestPacketID")),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "LatestPacketCreationTime"),
+        parseUtil._requireAttribute(statusEl, "LatestPacketCreationTime")
       ),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "LatestPacketDataStartTime"),
+        parseUtil._requireAttribute(statusEl, "LatestPacketDataStartTime")
       ),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "LatestPacketDataEndTime"),
-      ),
+        parseUtil._requireAttribute(statusEl, "LatestPacketDataEndTime")
+      )
     );
 
     //    dlStats.startTime = statusEl.getAttribute("StartTime");
@@ -1065,12 +1065,14 @@ export class ThreadStat {
     const threadStats = new ThreadStat(
       parseUtil._requireAttribute(statusEl, "Flags").split(" "),
       parseUtil._requireAttribute(statusEl, "Type").split(" "),
-      parseInt(parseUtil._requireAttribute(statusEl, "Port")),
+      parseInt(parseUtil._requireAttribute(statusEl, "Port"))
     );
     return threadStats;
   }
   toString(): string {
-    return `Thread  Port: ${this.port} Flags: ${this.flags.join(" ")} Type: ${this.type.join(" ")}`;
+    return `Thread  Port: ${this.port} Flags: ${this.flags.join(
+      " "
+    )} Type: ${this.type.join(" ")}`;
   }
 }
 
@@ -1082,7 +1084,7 @@ export class StatusResponse {
   constructor(
     idStats: DataLinkIdStats,
     datalinkStats: DataLinkStats,
-    threadStats: Array<ThreadStat>,
+    threadStats: Array<ThreadStat>
   ) {
     this.idStats = idStats;
     this.datalinkStats = datalinkStats;
@@ -1092,7 +1094,7 @@ export class StatusResponse {
     if (daliResp.type === INFO) {
       const daliXml = new DOMParser().parseFromString(
         daliResp.message,
-        "text/xml",
+        "text/xml"
       );
       const sResp = StatusResponse.fromXML(daliXml.documentElement);
       sResp.rawXml = daliResp.message;
@@ -1104,13 +1106,13 @@ export class StatusResponse {
   static fromXML(daliXML: Element): StatusResponse {
     const idStats = DataLinkIdStats.parseXMLAttributes(daliXML);
     const dlStats = DataLinkStats.parseXMLAttributes(
-      daliXML.getElementsByTagName("Status")[0],
+      daliXML.getElementsByTagName("Status")[0]
     );
     const threadListEl = daliXML.getElementsByTagName("ServerThreads")[0];
     let threads: Array<ThreadStat> = [];
     if (threadListEl) {
       threads = Array.from(threadListEl.getElementsByTagName("Thread")).map(
-        (threadEl) => ThreadStat.parseXMLAttributes(threadEl),
+        (threadEl) => ThreadStat.parseXMLAttributes(threadEl)
       );
     }
     return new StatusResponse(idStats, dlStats, threads);
@@ -1151,7 +1153,7 @@ export class StreamStat {
     latestPacketID: number,
     latestPacketDataStartTime: DateTime,
     latestPacketDataEndTime: DateTime,
-    dataLatency: number,
+    dataLatency: number
   ) {
     this.name = name;
     this.earliestPacketID = earliestPacketID;
@@ -1167,19 +1169,19 @@ export class StreamStat {
       parseUtil._requireAttribute(statusEl, "Name"),
       parseInt(parseUtil._requireAttribute(statusEl, "EarliestPacketID")),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime"),
+        parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime")
       ),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime"),
+        parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime")
       ),
       parseInt(parseUtil._requireAttribute(statusEl, "LatestPacketID")),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "LatestPacketDataStartTime"),
+        parseUtil._requireAttribute(statusEl, "LatestPacketDataStartTime")
       ),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "LatestPacketDataEndTime"),
+        parseUtil._requireAttribute(statusEl, "LatestPacketDataEndTime")
       ),
-      parseFloat(parseUtil._requireAttribute(statusEl, "DataLatency")),
+      parseFloat(parseUtil._requireAttribute(statusEl, "DataLatency"))
     );
     return sStat;
   }
@@ -1208,7 +1210,7 @@ export class StreamsResponse {
     if (daliResp.type === INFO) {
       const daliXml = new DOMParser().parseFromString(
         daliResp.message,
-        "text/xml",
+        "text/xml"
       );
       return StreamsResponse.fromXML(daliXml.documentElement);
     } else {
@@ -1255,7 +1257,7 @@ Capabilities="DLPROTO:1.0 PACKETSIZE:512 WRITE">
     const streamListEl = daliXML.getElementsByTagName("StreamList")[0];
     const streamElList = streamListEl.getElementsByTagName("Stream");
     const streams = Array.from(streamElList).map((streamEl) =>
-      StreamStat.parseXMLAttributes(streamEl),
+      StreamStat.parseXMLAttributes(streamEl)
     );
     const streamResp = new StreamsResponse(dlStats, streams);
     return streamResp;

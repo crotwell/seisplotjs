@@ -44,7 +44,7 @@ export class SEPacket {
     dataSubformat: string,
     payloadLength: number,
     sequence: bigint,
-    stationId: string,
+    stationId: string
   ) {
     this.dataFormat = dataFormat;
     this.dataSubformat = dataSubformat;
@@ -65,7 +65,7 @@ export class SEPacket {
         "message too small to be SE packet: " +
           data.byteLength +
           " " +
-          dataViewToString(new DataView(data)),
+          dataViewToString(new DataView(data))
       );
     }
 
@@ -84,14 +84,14 @@ export class SEPacket {
       const dataView = new DataView(
         data,
         17 + stationIdLength,
-        data.byteLength - 16,
+        data.byteLength - 16
       );
       sePacket = new SEPacket(
         String.fromCharCode(dataFormat),
         String.fromCharCode(dataSubformat),
         payloadLength,
         sequenceNum,
-        stationId,
+        stationId
       );
       sePacket._rawPayload = dataView;
 
@@ -115,7 +115,7 @@ export class SEPacket {
         "Not a seedlink4 packet, no starting SE: " +
           slHeader.getInt8(0) +
           " " +
-          slHeader.getInt8(1),
+          slHeader.getInt8(1)
       );
     }
 
@@ -140,7 +140,7 @@ export class SEPacket {
   asMiniseed(): miniseed.DataRecord | null {
     if (!isDef(this._rawPayload)) {
       throw new Error(
-        `payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`,
+        `payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`
       );
     }
 
@@ -172,14 +172,14 @@ export class SEPacket {
   asMiniseed3(): mseed3.MSeed3Record | null {
     if (!isDef(this._rawPayload)) {
       throw new Error(
-        `payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`,
+        `payload is missing in packet from ${this.stationId}, seq: ${this.sequence}`
       );
     }
 
     if (!isDef(this._mseed3)) {
       if (this.dataFormat === MINISEED_3_FORMAT && isDef(this._rawPayload)) {
         this._mseed3 = mseed3.MSeed3Record.parseSingleDataRecord(
-          this._rawPayload,
+          this._rawPayload
         );
       } else if (this.isMiniseed()) {
         const ms2 = this.asMiniseed();
@@ -201,7 +201,7 @@ export class SEPacket {
  * Note this cannot connect directly to a native TCP socket, instead it
  * sends the seedlink protocol over a websocket. Currently only the IRIS
  * ringserver, https://github.com/iris-edu/ringserver,
- * supports websockets, but it may be possible to use thrid party
+ * supports websockets, but it may be possible to use third party
  * tools to proxy the websocket to a TCP seedlink socket.
  *
  * The spec is available via the FDSN, https://www.fdsn.org/publications/
@@ -239,7 +239,7 @@ export class SeedlinkConnection {
     url: string,
     requestConfig: Array<string>,
     receivePacketFn: (packet: SEPacket) => void,
-    errorHandler: (error: Error) => void,
+    errorHandler: (error: Error) => void
   ) {
     this.webSocket = null;
     this.url = url;
@@ -258,7 +258,7 @@ export class SeedlinkConnection {
 
   createDataTimeCommand(
     startTime: DateTime,
-    endTime: DateTime | undefined,
+    endTime: DateTime | undefined
   ): string {
     const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
     return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
@@ -393,8 +393,8 @@ export class SeedlinkConnection {
         this.close();
         this.errorHandler(
           new Error(
-            `Packet does not look like SE packet: ${data[0]} ${data[1]}`,
-          ),
+            `Packet does not look like SE packet: ${data[0]} ${data[1]}`
+          )
         );
       }
     } else {
