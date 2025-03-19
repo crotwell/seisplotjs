@@ -405,6 +405,7 @@ export function calcClockOffset(serverTimeUTC: DateTime): number {
   return DateTime.utc().diff(serverTimeUTC).toMillis() * 1000.0;
 }
 export const WAY_FUTURE: DateTime = DateTime.fromISO("2500-01-01T00:00:00Z");
+export const WAY_PAST: DateTime = DateTime.fromISO("1900-01-01T00:00:00Z");
 
 /**
  * converts the input value is a DateTime, throws Error if not
