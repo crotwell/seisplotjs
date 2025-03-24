@@ -49,8 +49,7 @@ export class AnimatedTimeScaler {
   stepper(timestamp: DOMHighResTimeStamp) {
     this._animationId = 0;
     const elapsed = timestamp - this.previousStep;
-    const redrawMillis = this.minRedrawMillis ? this.minRedrawMillis : (
-      this._calcRedrawMillis ? this._calcRedrawMillis : 100);
+    const redrawMillis = this._calcRedrawMillis ? this._calcRedrawMillis : 100;
 
     if (elapsed > redrawMillis) {
       this.previousStep = timestamp;
@@ -101,7 +100,7 @@ export class RTDisplayContainer {
     this.config = config;
     this.resizeObserver = new ResizeObserver((entries) => {
       if ( ! config.minRedrawMillis) {
-        this.recalculateRedrawTime().then((rt) => {console.log(`resize an org disp: ${rt.animationScaler.minRedrawMillis}`)});
+        this.recalculateRedrawTime().then((rt) => {console.log(`resize an org disp: ${rt.animationScaler.minRedrawMillis}`);});
       }
     });
     this.resizeObserver.observe(this.organizedDisplay);
@@ -110,7 +109,10 @@ export class RTDisplayContainer {
     const that = this;
     const p = new Promise<RTDisplayContainer>((resolve) => {
       setTimeout( () => {
-          const calcRedraw = calcOnePixelDuration(this.organizedDisplay).toMillis();
+          let calcRedraw = calcOnePixelDuration(this.organizedDisplay).toMillis();
+          while (this.minRedrawMillis && this.minRedrawMillis>calcRedraw) {
+            calcRedraw =  2*calcRedraw;
+          }
           that.animationScaler._calcRedrawMillis = calcRedraw;
         resolve(that);
       }, 1000);
