@@ -212,7 +212,7 @@ export function createDataTimeCommand(
  * Note this cannot connect directly to a native TCP socket, instead it
  * sends the seedlink protocol over a websocket. Currently only the IRIS
  * ringserver, https://github.com/iris-edu/ringserver,
- * supports websockets, but it may be possible to use thrid party
+ * supports websockets, but it may be possible to use third party
  * tools to proxy the websocket to a TCP seedlink socket.
  *
  * The spec is available via the FDSN, https://www.fdsn.org/publications/

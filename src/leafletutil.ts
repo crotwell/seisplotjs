@@ -25,7 +25,7 @@ export const stationIcon = L.divIcon({
 export const inactiveStationIcon = L.divIcon({
   className: InactiveStationMarkerClassName,
 });
-// note currentcolor is svg var that lets use use css, otherwise leaflet will
+// note currentcolor is svg var that lets us use css, otherwise leaflet will
 // put its default color, blue, which can't be overridden
 export const stationMarker_css = `
 
