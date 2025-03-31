@@ -164,8 +164,8 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    if (event.data instanceof ArrayBuffer) {
-      const data: ArrayBuffer = event.data;
+    if (event.data instanceof ArrayBuffer || event.data instanceof SharedArrayBuffer) {
+      const data: ArrayBufferLike = event.data;
 
       if (data.byteLength < 64) {
         //assume text
@@ -178,7 +178,7 @@ export class SeedlinkConnection {
     }
   }
 
-  handleMiniseed(data: ArrayBuffer): void {
+  handleMiniseed(data: ArrayBufferLike): void {
     try {
       if (data.byteLength < 64) {
         this.errorHandler(
@@ -240,8 +240,9 @@ export class SeedlinkConnection {
     ) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          if (event.data instanceof ArrayBuffer) {
-            const data: ArrayBuffer = event.data;
+          if (event.data instanceof ArrayBuffer
+            || event.data instanceof SharedArrayBuffer) {
+            const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data));
             const lines = replyMsg.trim().split("\r");
 
@@ -251,7 +252,7 @@ export class SeedlinkConnection {
               reject(new Error("not 2 lines: " + replyMsg));
             }
           } else {
-            reject(new Error("event.data not ArrayBuffer?"));
+            reject(new Error("event.data not ArrayBufferLike?"));
           }
         };
 
@@ -290,8 +291,9 @@ export class SeedlinkConnection {
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          if (event.data instanceof ArrayBuffer) {
-            const data: ArrayBuffer = event.data;
+          if (event.data instanceof ArrayBuffer
+              || event.data instanceof SharedArrayBuffer) {
+            const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
 
             if (replyMsg === "OK") {
@@ -300,7 +302,7 @@ export class SeedlinkConnection {
               reject(new Error("msg not OK: " + replyMsg));
             }
           } else {
-            reject(new Error("event.data not ArrayBuffer?"));
+            reject(new Error("event.data not ArrayBufferLike?"));
           }
         };
 

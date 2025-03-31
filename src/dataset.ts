@@ -338,7 +338,7 @@ export function createExtraHeaders(
   return out;
 }
 
-export function mightBeZipFile(buf: ArrayBuffer): boolean {
+export function mightBeZipFile(buf: ArrayBufferLike): boolean {
   const dataView = new DataView(buf);
 
   if (!(dataView.getUint8(0) === 0x50

@@ -60,7 +60,7 @@ export class SEPacket {
     this._rawPayload = null;
   }
 
-  static parse(data: ArrayBuffer): SEPacket {
+  static parse(data: ArrayBufferLike): SEPacket {
     let sePacket;
 
     if (data.byteLength < 17) {
@@ -395,8 +395,9 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    if (event.data instanceof ArrayBuffer) {
-      const rawdata: ArrayBuffer = event.data;
+    if (event.data instanceof ArrayBuffer
+        || event.data  instanceof SharedArrayBuffer) {
+      const rawdata: ArrayBufferLike = event.data;
       const data = new Uint8Array(rawdata);
 
       if (data[0] === 83 && data[1] === 69) {
@@ -411,13 +412,14 @@ export class SeedlinkConnection {
       }
     } else {
       this.close();
-      this.handleError(new Error("event.data is not ArrayBuffer"));
+      this.handleError(new Error("event.data is not ArrayBufferLike"));
     }
   }
 
   handleSEPacket(event: MessageEvent): void {
-    if (event.data instanceof ArrayBuffer) {
-      const data: ArrayBuffer = event.data;
+    if (event.data instanceof ArrayBuffer
+        || event.data instanceof SharedArrayBuffer) {
+      const data: ArrayBufferLike = event.data;
 
       try {
         const out = SEPacket.parse(data);
@@ -428,7 +430,7 @@ export class SeedlinkConnection {
       }
     } else {
       this.close();
-      this.handleError(new Error("event.data is not ArrayBuffer"));
+      this.handleError(new Error("event.data is not ArrayBufferLike"));
     }
   }
 
@@ -446,8 +448,9 @@ export class SeedlinkConnection {
     const promise: Promise<Array<string>> = new Promise((resolve, reject) => {
       if (webSocket) {
         webSocket.onmessage = (event) => {
-          if (event.data instanceof ArrayBuffer) {
-            const data: ArrayBuffer = event.data;
+          if (event.data instanceof ArrayBuffer
+              || event.data instanceof SharedArrayBuffer) {
+            const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data));
             const lines = replyMsg.trim().split("\r");
 
@@ -458,7 +461,7 @@ export class SeedlinkConnection {
             }
           } else {
             this.close();
-            this.errorHandler(new Error("event.data is not ArrayBuffer"));
+            this.errorHandler(new Error("event.data is not ArrayBufferLike"));
           }
         };
 
@@ -502,8 +505,9 @@ export class SeedlinkConnection {
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = (event) => {
-          if (event.data instanceof ArrayBuffer) {
-            const data: ArrayBuffer = event.data;
+          if (event.data instanceof ArrayBuffer
+              || event.data instanceof SharedArrayBuffer) {
+            const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
 
             if (replyMsg === SL_OK) {
@@ -513,7 +517,7 @@ export class SeedlinkConnection {
             }
           } else {
             mythis.close();
-            mythis.errorHandler(new Error("event.data is not ArrayBuffer"));
+            mythis.errorHandler(new Error("event.data is not ArrayBufferLike"));
           }
         };
 

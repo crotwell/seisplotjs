@@ -110,7 +110,7 @@ export class RTDisplayContainer {
     const p = new Promise<RTDisplayContainer>((resolve) => {
       setTimeout( () => {
           let calcRedraw = calcOnePixelDuration(this.organizedDisplay).toMillis();
-          while (this.minRedrawMillis && this.minRedrawMillis>calcRedraw) {
+          while (this.config.minRedrawMillis && this.config.minRedrawMillis>calcRedraw) {
             calcRedraw =  2*calcRedraw;
           }
           that.animationScaler._calcRedrawMillis = calcRedraw;

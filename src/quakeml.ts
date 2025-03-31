@@ -2288,7 +2288,7 @@ export function fetchQuakeML(
     });
 }
 
-export function mightBeQuakeML(buf: ArrayBuffer) {
+export function mightBeQuakeML(buf: ArrayBufferLike) {
   if ( ! mightBeXml(buf)) {
     return false;
   }

@@ -84,7 +84,7 @@ export function transferSacPZSegment(
 ): SeismogramSegment {
   const sampFreq = seis.sampleRate;
   const values = seis.y;
-  let outData = Float32Array.from(values);
+  let outData: Float32Array<ArrayBufferLike> = Float32Array.from(values);
 
   /* sac premultiplies the data by the sample period before doing the fft. Later it
    * seems to be cancled out by premultiplying the pole zeros by a similar factor.

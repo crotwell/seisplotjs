@@ -1644,7 +1644,7 @@ export function fetchStationXml(
 
 
 
-export function mightBeStatonXml(buf: ArrayBuffer) {
+export function mightBeStatonXml(buf: ArrayBufferLike) {
   if ( ! mightBeXml(buf)) {
     return false;
   }

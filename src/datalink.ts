@@ -274,9 +274,9 @@ export class DataLinkConnection {
    *
    * @param header the command/header string
    * @param data optional data portion
-   * @returns datalink packet as an ArrayBuffer
+   * @returns datalink packet as an ArrayBufferLike
    */
-  encodeDL(header: string, data?: Uint8Array): ArrayBuffer {
+  encodeDL(header: string, data?: Uint8Array): ArrayBufferLike {
     let cmdLen = header.length;
     let len = 3 + header.length;
     let lenStr = "";
@@ -581,12 +581,12 @@ export class DataLinkConnection {
    */
   handle(wsEvent: MessageEvent): void {
     const rawData: unknown = wsEvent.data;
-    if (rawData instanceof ArrayBuffer) {
+    if (rawData instanceof ArrayBuffer || rawData instanceof SharedArrayBuffer) {
       this.handleArrayBuffer(rawData);
     }
   }
 
-  handleArrayBuffer(rawData: ArrayBuffer): void {
+  handleArrayBuffer(rawData: ArrayBufferLike): void {
     const dlPreHeader = new DataView(rawData, 0, 3);
 
     if (

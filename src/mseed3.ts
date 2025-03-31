@@ -156,7 +156,7 @@ export function toMSeed3(
  * @returns array of all miniseed3 records contained in the buffer
  */
 export function parseMSeed3Records(
-  arrayBuffer: ArrayBuffer,
+  arrayBuffer: ArrayBufferLike,
 ): Array<MSeed3Record> {
   const dataRecords = [];
   let offset = 0;
@@ -194,7 +194,7 @@ export function parseMSeed3Records(
  * @returns array of all miniseed3 records contained in the buffer
  */
 export function mightBeMSeed3Records(
-  arrayBuffer: ArrayBuffer,
+  arrayBuffer: ArrayBufferLike,
 ): boolean {
 
   const dataView = new DataView(arrayBuffer);
@@ -1258,16 +1258,16 @@ const kCRCTable = new Int32Array([
  * @returns calculated crc32c value
  */
 export function calculateCRC32C(
-  buf: ArrayBuffer | Uint8Array,
+  buf: ArrayBufferLike | Uint8Array,
   initial = 0,
 ): number {
   let ubuf: Uint8Array;
-  if (buf instanceof ArrayBuffer) {
+  if (buf instanceof ArrayBuffer || buf instanceof SharedArrayBuffer) {
     ubuf = new Uint8Array(buf);
   } else if (buf instanceof Uint8Array) {
     ubuf = buf;
   } else {
-    throw new Error("arg must be ArrayBuffer or Uint8Array");
+    throw new Error("arg must be ArrayBufferLike or Uint8Array");
   }
 
   let crc = (initial | 0) ^ -1;

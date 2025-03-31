@@ -802,15 +802,15 @@ export function doFetchWithTimeout(
 }
 
 /**
- * Allows downloading of in memory data, as ArrayBuffer, to file as if
+ * Allows downloading of in memory data, as ArrayBufferLike, to file as if
  * the user clicked a download link.
  *
- * @param  data               ArrayBuffer to download
+ * @param  data               ArrayBufferLike to download
  * @param  filename          default filename
  * @param  mimeType      mimeType, default application/octet-stream
  */
 export function downloadBlobAsFile(
-  data: ArrayBuffer,
+  data: Uint8Array,
   filename: string,
   mimeType = "application/octet-stream",
 ) {
@@ -882,7 +882,7 @@ export function createSVGElement(name: string): SVGElement {
   return document.createElementNS(SVG_NS, name);
 }
 
-export function mightBeXml(buf: ArrayBuffer): boolean {
+export function mightBeXml(buf: ArrayBufferLike): boolean {
   const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
   if ( ! initialChars.startsWith("<?xml ")) {
     return false;
