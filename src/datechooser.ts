@@ -13,6 +13,7 @@ import {
   stringify,
 } from "./util";
 
+export const CLOCK_ELEMENT = "sp-clock";
 export const HOURMIN_ELEMENT = "sp-hourmin";
 export const DATETIME_ELEMENT = "sp-datetime";
 export const TIMERANGE_ELEMENT = "sp-timerange";
@@ -27,6 +28,36 @@ export const DEFAULT_END_LABEL = "End:";
 export const DUR_LABEL = "durLabel";
 export const DEFAULT_DUR_LABEL = "Dur:";
 export const PREV_NEXT = "prev-next";
+
+export class Clock extends HTMLElement {
+  _time: DateTime;
+  dateFormat = "yyyy-MM-dd HH:mm:ss";
+  updateMillis = 500;
+  _updater: ReturnType<typeof setTimeout>;
+  constructor() {
+    super();
+    this._time = DateTime.utc().set({ millisecond: 0 });
+    const shadow = this.attachShadow({ mode: "open" });
+    const wrapper = document.createElement("span");
+    shadow.appendChild(wrapper);
+    wrapper.textContent = this._time.toFormat(this.dateFormat);
+    this._updater = setInterval( () => {
+      this.updateNow();
+    }, this.updateMillis);
+  }
+  updateNow() {
+    this._time = DateTime.utc().set({ millisecond: 0 });
+    const el = this.shadowRoot?.querySelector("span");
+    if (el) {
+      const date = this._time.toFormat(this.dateFormat);
+      if (el.textContent !== date) {
+        el.textContent = date;
+      }
+    }
+  }
+}
+customElements.define(CLOCK_ELEMENT, Clock);
+
 
 /**
  * Hour and Minute chooser.
@@ -690,7 +721,8 @@ export class TimeRangeChooser extends HTMLElement {
     } else if (name === "end") {
       this.end = isoToDateTime(newValue);
     } else if (name === "duration") {
-      this.duration = Duration.fromISO(newValue);
+      console.log(`attr changed: ${name}  ${newValue}`)
+      this.duration = extractDuration(newValue);
     } else if (name === START_LABEL) {
       (
         this.shadowRoot?.querySelector(".startlabel") as HTMLElement
@@ -732,7 +764,7 @@ export function extractDuration(value: string): Duration {
   if (value.startsWith("P")) {
     dur = Duration.fromISO(value);
   } else {
-    const nDur = +Number.parseInt(value);
+    const nDur = +Number.parseFloat(value);
     dur = Duration.fromMillis(nDur * 1000);
   }
   return dur;
