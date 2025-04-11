@@ -1073,7 +1073,7 @@ export class Seismograph extends SeisPlotElement {
           return xpixel >= mh.xscale.range[0] && xpixel <= mh.xscale.range[1];
         });
 
-      if (undrawnMarkers.length !== 0) {
+      if (this.seismographConfig.doMarkers && undrawnMarkers.length !== 0) {
         this.drawMarkers();
       }
 
@@ -1221,7 +1221,10 @@ export class Seismograph extends SeisPlotElement {
         // let style be in css?
         //              .style("fill", "rgba(220,220,220,.4)");
         let markerPoleY = 0;
-        if (mythis.seismographConfig.markerFlagpoleBase === "center") {
+        if (mythis.seismographConfig.markerFlagpoleBase === "none") {
+          // no flagpole
+          markerPoleY = 0;
+        } else if (mythis.seismographConfig.markerFlagpoleBase === "center") {
           markerPoleY = (axisScale.range()[0] + axisScale.range()[1]) / 2;
         } else {
           markerPoleY = axisScale.range()[0];
