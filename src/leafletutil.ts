@@ -68,6 +68,10 @@ div.wrapper {
   fill-opacity: 0.15;
 }
 `;
+
+export function cssClassForStationCodes(station: Station): string {
+  return `sta_${station.codes(STATION_CODE_SEP)}`;
+}
 export function createStationMarker(
   station: Station,
   classList?: Array<string>,
@@ -78,7 +82,7 @@ export function createStationMarker(
   allClassList.push(
     isactive ? StationMarkerClassName : InactiveStationMarkerClassName,
   );
-  allClassList.push(station.codes(STATION_CODE_SEP));
+  allClassList.push(cssClassForStationCodes(station));
   const icon = L.divIcon({
     className: allClassList.join(" "),
   });
@@ -282,7 +286,7 @@ export class QuakeStationMap extends SeisPlotElement {
       this.stationClassMap.set(station.codes(STATION_CODE_SEP), [classname]);
     }
     const markerList = this.getShadowRoot().querySelectorAll(
-      `div.${station.codes(STATION_CODE_SEP)}`,
+      `div.${cssClassForStationCodes(station)}`,
     );
     markerList.forEach((c) => {
       c.classList.add(classname);
