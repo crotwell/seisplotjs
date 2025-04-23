@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import {ehToMarkers, ehToQuake, extractBagEH} from "./mseed3eh";
+import {ehToChannel, ehToMarkers, ehToQuake, extractBagEH} from "./mseed3eh";
 import { FDSNSourceId } from "./fdsnsourceid";
 import { isDef, UTC_OPTIONS } from "./util";
 import {
@@ -1067,6 +1067,10 @@ export function sddPerChannel(
       const q = ehToQuake(seg.extraHeaders);
       if (q != null) {
         sdd.addQuake(q);
+      }
+      const c = ehToChannel(seg.extraHeaders, seg.getSourceId());
+      if (c != null) {
+        sdd.channel =c;
       }
       const marks = ehToMarkers(seg.extraHeaders);
       marks.forEach(mark => sdd.addMarker(mark));

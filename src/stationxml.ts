@@ -28,6 +28,7 @@ import {
 } from "./fdsnsourceid";
 import { DateTime, Interval } from "luxon";
 
+export const STAXML_MIME="application/vnd.fdsn.stationxml+xml"
 /** xml namespace for stationxml */
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
 export const COUNT_UNIT_NAME = "count";
@@ -304,8 +305,8 @@ export class Channel {
     this.elevation = 0;
     this.sampleRate = 0;
 
-    if (channelCode.length !== 3) {
-      throw new Error(`Channel code must be 3 chars: "${channelCode}"`);
+    if (channelCode.length !== 3 && (channelCode.split('_').length !== 3)) {
+      throw new Error(`Channel code must be 3 chars or of form b_s_s: "${channelCode} ${channelCode.split('_').length}"`);
     }
 
     this.channelCode = channelCode;
