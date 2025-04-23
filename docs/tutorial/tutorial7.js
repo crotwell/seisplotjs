@@ -73,6 +73,7 @@ let toggleConnect = function () {
   } else {
     document.querySelector("button#disconnect").textContent = "Disconnect";
     if (!datalink) {
+      addToDebug("Datalink URL: " + DATALINK_URL);
       datalink = new sp.datalink.DataLinkConnection(
         DATALINK_URL,
         (packet) => {

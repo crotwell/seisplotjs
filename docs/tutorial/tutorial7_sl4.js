@@ -50,10 +50,10 @@ function errorFn(error) {
 // snip start handle
 
 let requestConfig = [
-  "STATION CO_JSC",
+  "STATION CO_HAW",
   "SELECT 00_H_H_Z",
-  'STATION IU_SNZO',
-  'SELECT 00_B_H_Z'
+  'STATION CO_JSC',
+  'SELECT 00_H_H_Z'
 ];
 let start = sp.luxon.DateTime.utc().minus(duration);
 let dataCmd = sp.seedlink4.createDataTimeCommand(start);
