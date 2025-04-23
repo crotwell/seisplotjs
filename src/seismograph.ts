@@ -98,6 +98,36 @@ div.wrapper {
   height: 100%;
 }
 
+@property --sp-seismograph-is-xlabel {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --sp-seismograph-is-xsublabel {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --sp-seismograph-is-ylabel {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --sp-seismograph-is-ysublabel {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --sp-seismograph-display-title {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
 .marker {
   opacity: 0.4;
 }
@@ -174,6 +204,7 @@ svg.seismograph text a {
   fill: #0000EE;
   text-decoration: underline;
 }
+
 
 `;
 
@@ -1286,66 +1317,91 @@ export class Seismograph extends SeisPlotElement {
 
   drawTitle() {
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const isTitleCSS = getComputedStyle(wrapper).getPropertyValue("--sp-seismograph-is-title");
     const svgEl = wrapper.querySelector("svg") as SVGElement;
-    axisutil.drawTitle(
-      svgEl,
-      this.seismographConfig,
-      this.height,
-      this.width,
-      this.createHandlebarsInput(),
-    );
+    if (isTitleCSS === "0") {
+      axisutil.removeTitle(svgEl);
+    } else {
+      axisutil.drawTitle(
+        svgEl,
+        this.seismographConfig,
+        this.height,
+        this.width,
+        this.createHandlebarsInput(),
+      );
+    }
   }
 
   drawXLabel() {
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const isXLabelCSS = getComputedStyle(wrapper).getPropertyValue("--sp-seismograph-is-xlabel");
     const svgEl = wrapper.querySelector("svg") as SVGElement;
-    axisutil.drawXLabel(
-      svgEl,
-      this.seismographConfig,
-      this.height,
-      this.width,
-      this.createHandlebarsInput(),
-    );
+    if (isXLabelCSS === "0") {
+      axisutil.removeXLabel(svgEl);
+    } else {
+      axisutil.drawXLabel(
+        svgEl,
+        this.seismographConfig,
+        this.height,
+        this.width,
+        this.createHandlebarsInput(),
+      );
+    }
   }
 
   drawXSublabel() {
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const isXSublabelCSS = getComputedStyle(wrapper).getPropertyValue("--sp-seismograph-is-xsublabel");
     const svgEl = wrapper.querySelector("svg") as SVGElement;
-    axisutil.drawXSublabel(
-      svgEl,
-      this.seismographConfig,
-      this.height,
-      this.width,
-      this.createHandlebarsInput(),
-    );
+    if (isXSublabelCSS === "0") {
+      axisutil.removeXSublabel(svgEl);
+    } else {
+      axisutil.drawXSublabel(
+        svgEl,
+        this.seismographConfig,
+        this.height,
+        this.width,
+        this.createHandlebarsInput(),
+      );
+    }
   }
 
   drawYLabel() {
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const isYLabelCSS = getComputedStyle(wrapper).getPropertyValue("--sp-seismograph-is-ylabel");
     const svgEl = wrapper.querySelector("svg") as SVGElement;
-    axisutil.drawYLabel(
-      svgEl,
-      this.seismographConfig,
-      this.height,
-      this.width,
-      this.createHandlebarsInput(),
-    );
+    if (isYLabelCSS === "0") {
+      axisutil.removeYLabel(svgEl);
+    } else {
+      axisutil.drawYLabel(
+        svgEl,
+        this.seismographConfig,
+        this.height,
+        this.width,
+        this.createHandlebarsInput(),
+      );
+    }
   }
 
   drawYSublabel() {
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
+    const isYSublabelCSS = getComputedStyle(wrapper).getPropertyValue("--sp-seismograph-is-ysublabel");
     const svgEl = wrapper.querySelector("svg") as SVGElement;
-    const unitsLabel = this.seismographConfig.ySublabelIsUnits
-      ? this.createUnitsLabel()
-      : "";
-    axisutil.drawYSublabel(
-      svgEl,
-      this.seismographConfig,
-      this.height,
-      this.width,
-      this.createHandlebarsInput(),
-      unitsLabel,
-    );
+    if (isYSublabelCSS === "0") {
+      axisutil.removeYSublabel(svgEl);
+    } else {
+      const unitsLabel = this.seismographConfig.ySublabelIsUnits
+        ? this.createUnitsLabel()
+        : "";
+      axisutil.drawYSublabel(
+        svgEl,
+        this.seismographConfig,
+        this.height,
+        this.width,
+        this.createHandlebarsInput(),
+        unitsLabel,
+      );
+    }
   }
 
   /**
