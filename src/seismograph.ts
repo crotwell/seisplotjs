@@ -98,6 +98,10 @@ div.wrapper {
   height: 100%;
 }
 
+.marker {
+  opacity: 0.4;
+}
+
 .marker .markerpath {
   fill: none;
   stroke: black;
@@ -1224,9 +1228,13 @@ export class Seismograph extends SeisPlotElement {
         if (mythis.seismographConfig.markerFlagpoleBase === "none") {
           // no flagpole
           markerPoleY = 0;
+        } else if (mythis.seismographConfig.markerFlagpoleBase === "short") {
+          // no flagpole
+          markerPoleY = (axisScale.range()[0] + axisScale.range()[1]) / 4;
         } else if (mythis.seismographConfig.markerFlagpoleBase === "center") {
           markerPoleY = (axisScale.range()[0] + axisScale.range()[1]) / 2;
         } else {
+          // bottom
           markerPoleY = axisScale.range()[0];
         }
         const markerPole = `M0,0l0,${markerPoleY}`;
