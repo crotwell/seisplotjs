@@ -8,6 +8,9 @@ export const FDSN_PREFIX = "FDSN:";
 
 export const SEP = "_";
 
+export const TESTING_NETWORK = "XX";
+export const TESTING_STATION = "ABC";
+
 export class FDSNSourceId {
   networkCode: string;
   stationCode: string;
@@ -37,7 +40,7 @@ export class FDSNSourceId {
   ): FDSNSourceId {
     const s = source ? source : "Y";
     const ss = subsource ? subsource : "X";
-    return new FDSNSourceId("XX", "ABC", "", bandCodeForRate(sampRate), s, ss);
+    return new FDSNSourceId(TESTING_NETWORK, TESTING_STATION, "", bandCodeForRate(sampRate), s, ss);
   }
   static parse(id: string): FDSNSourceId {
     if (!id.startsWith(FDSN_PREFIX)) {

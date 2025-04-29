@@ -408,9 +408,9 @@ export class DataSelectQuery extends FDSNCommon {
 
   /**
    * queries the web service using the configured parameters, parsing the response
-   * into miniseed data records.
+   * into miniseed3 data records.
    *
-   * @returns Promise to Array of miniseed.DataRecords
+   * @returns Promise to Array of mseed3.MSeed3Record
    */
   queryMS3Records(): Promise<Array<mseed3.MSeed3Record>> {
     this.format(FORMAT_MINISEED_THREE);

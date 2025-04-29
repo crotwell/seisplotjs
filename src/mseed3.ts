@@ -82,7 +82,8 @@ export function toMSeed3(
         if (!encoding) {
           throw new Error(`encoding is undefined`);
         }
-        if (INTEGER || FLOAT || DOUBLE) {
+        if (encoding === INTEGER || encoding === FLOAT || encoding === DOUBLE
+            || encoding === STEIM1 || encoding === STEIM2) {
           // safe to concat
           const totSize = encoded.reduce(
             (acc, cur) => acc + cur.dataView.byteLength,
@@ -1127,16 +1128,8 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   xHeader.encoding = ms2record.header.encoding;
   xHeader.publicationVersion = UNKNOWN_DATA_VERSION;
   xHeader.dataLength = ms2record.data.byteLength;
-  xHeader.identifier =
-    FDSN_PREFIX +
-    ":" +
-    ms2H.netCode +
-    SEP +
-    ms2H.staCode +
-    SEP +
-    (ms2H.locCode ? ms2H.locCode : "") +
-    SEP +
-    ms2H.chanCode;
+  const sid = FDSNSourceId.fromNslc(ms2H.netCode, ms2H.staCode, (ms2H.locCode ? ms2H.locCode : ""),  ms2H.chanCode);
+  xHeader.identifier = sid.toString();
   xHeader.identifierLength = xHeader.identifier.length;
   xHeader.numSamples = ms2H.numSamples;
   xHeader.crc = 0;
@@ -1185,15 +1178,25 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   }
 
   xHeader.extraHeadersLength = JSON.stringify(xExtras).length;
-  // need to convert if not steim1 or 2
-  const out = new MSeed3Record(xHeader, xExtras, ms2record.data);
+  // need to convert if not steim1 or 2 or little endian
+  let data;
+  if (ms2record.header.encoding==11 || ms2record.header.encoding == 12 ||
+    (ms2record.header.encoding<=5 && ms2record.header.littleEndian)) {
+    data = ms2record.data;
+  } else {
+    data = ms2record.decompress();
+    if (data instanceof Float32Array) {
+      xHeader.encoding = FLOAT;
+    } else if (data instanceof Int32Array) {
+      xHeader.encoding = INTEGER;
+    } else {
+      //data instanceof Float64Array
+      xHeader.encoding = DOUBLE;
+    }
+  }
+  const out = new MSeed3Record(xHeader, xExtras, new DataView(data.buffer));
   return out;
 }
-
-/**
- * Default separator for channel id.
- */
-const SEP = "_";
 
 /**
  * Copy from https://github.com/ashi009/node-fast-crc32c/blob/master/impls/js_crc32c.js
