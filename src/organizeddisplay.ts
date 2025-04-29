@@ -234,6 +234,7 @@ export const OVERLAY_INDIVIDUAL = "individual";
 export const OVERLAY_VECTOR = "vector";
 export const OVERLAY_COMPONENT = "component";
 export const OVERLAY_STATION = "station";
+export const OVERLAY_STATION_COMPONENT = "stationcomponent";
 export const OVERLAY_ALL = "all";
 export const OVERLAY_FUNCTION = "function";
 
@@ -265,6 +266,10 @@ export const TOOLS_HTML = `
     <span>
       <input type="radio" name="overlay" id="overlay_component" value="component">
       <label for="overlay_component">component</label>
+    </span>
+    <span>
+      <input type="radio" name="overlay" id="overlay_station_component" value="stationcomponent">
+      <label for="overlay_station_component">station component</label>
     </span>
     <span>
       <input type="radio" name="overlay" id="overlay_station" value="station">
@@ -799,6 +804,17 @@ export function overlayByComponent(
     sddList,
     "component",
     (sdd) => sdd.sourceId.subsourceCode,
+    seisConfig,
+  );
+}
+export function overlayByStationComponent(
+  sddList: Array<SeismogramDisplayData>,
+  seisConfig?: SeismographConfig,
+): Array<OrganizedDisplayItem> {
+  return overlayBySDDFunction(
+    sddList,
+    "stationcomponent",
+    (sdd) => `${sdd.sourceId.stationSourceId().toStringNoPrefix()} ${sdd.sourceId.subsourceCode}`,
     seisConfig,
   );
 }
