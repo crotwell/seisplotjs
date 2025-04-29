@@ -53,6 +53,7 @@ import * as seismographconfig from "./seismographconfig";
 import * as seismographconfigeditor from "./seismographconfigeditor";
 import * as sorting from "./sorting";
 import * as stationxml from "./stationxml";
+import * as syngine from "./syngine";
 import * as taper from "./taper";
 import * as transfer from "./transfer";
 import * as traveltime from "./traveltime";
@@ -114,6 +115,7 @@ export {
   sorting,
   spectraplot,
   stationxml,
+  syngine,
   taper,
   transfer,
   traveltime,
