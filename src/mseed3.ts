@@ -780,7 +780,7 @@ export class MSeed3Header {
   startAsDateTime(): DateTime {
     // in case millis rounds to 1000, use plus to avoid luxon invalid
     const millis = Math.round(this.nanosecond / 1000000);
-    const d = DateTime.fromObject(
+    let d = DateTime.fromObject(
       {
         year: this.year,
         ordinal: this.dayOfYear,
@@ -791,7 +791,7 @@ export class MSeed3Header {
       },
       UTC_OPTIONS,
     );
-    return d.plus(millis);
+    d = d.plus(millis);
     if ( ! d.isValid) {
       throw new Error(`Start is invalid: ${this.startFieldsInUtilFormat()} ${d.invalidReason} ${d.invalidExplanation}`);
     }
