@@ -68,7 +68,6 @@ div.wrapper {
   fill-opacity: 0.15;
 }
 `;
-
 export function cssClassForStationCodes(station: Station): string {
   return `sta_${station.codes(STATION_CODE_SEP)}`;
 }
@@ -97,6 +96,14 @@ export function createStationMarker(
   return m;
 }
 
+export function getRadiusForMag(magnitude, magScaleFactor) {
+  // in case no mag
+  let radius = magnitude ? magnitude * magScaleFactor : 1;
+  if (radius < 1) {
+    radius = 1;
+  }
+  return radius;
+}
 /**
  * Create a circle marker for Quake. Radius is linearly scaled by magnitude,
  * with min radius of 1 for very small magnitudes. Longitudes are adjusted
@@ -122,12 +129,9 @@ export function createQuakeMarker(
       ? quake.longitude
       : quake.longitude - 360;
   // in case no mag
-  let radius = quake.magnitude
-    ? quake.magnitude.mag * magScaleFactor
-    : magScaleFactor;
-  if (radius < 1) {
-    radius = 1;
-  }
+  let magnitude = quake.magnitude ? quake.magnitude.mag : 1;
+  let radius = getRadiusForMag(magnitude, magScaleFactor);
+
   const circle = L.circleMarker([quake.latitude, qLon], {
     color: "currentColor",
     radius: radius,
@@ -137,6 +141,7 @@ export function createQuakeMarker(
   circle.bindTooltip(`${quake.time.toISO()} ${magStr}`);
   return circle;
 }
+
 export const leaflet_css = import_leaflet_css.leaflet_css;
 export const TILE_TEMPLATE = "tileUrl";
 export const DEFAULT_TILE_TEMPLATE =
@@ -162,10 +167,16 @@ export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
   stationList: Array<Station> = [];
   geoRegionList: Array<LatLonBox | LatLonRadius> = [];
+  geoJsonLayerMap: Map<string, Object>;
+
   map: L.Map | null;
   classToColor: Map<string, string>;
+  mapItems: Array<LatLngTuple> = [];
+
   stationClassMap: Map<string, Array<string>>;
   quakeClassMap: Map<string, Array<string>>;
+  geoJsonLayerClassMap: Map<string, Array<string>>;
+  overlayLayerMap: Map<string, L.layerGroup>;
   constructor(
     seisData?: Array<SeismogramDisplayData>,
     seisConfig?: SeismographConfig,
@@ -175,6 +186,13 @@ export class QuakeStationMap extends SeisPlotElement {
     this.classToColor = new Map<string, string>();
     this.stationClassMap = new Map<string, Array<string>>();
     this.quakeClassMap = new Map<string, Array<string>>();
+    this.geoJsonLayerClassMap = new Map<string, Array<string>>();
+    this.geoJsonLayerMap = new Map<string, Object>();
+    this.overlayLayerMap = new Map<string, L.layerGroup>();
+
+    this.quakeLayer = L.layerGroup();
+    this.stationLayer = L.layerGroup();
+    this.layerControl = L.control.layers();
 
     this.addStyle(leaflet_css);
     this.addStyle(stationMarker_css);
@@ -311,6 +329,23 @@ export class QuakeStationMap extends SeisPlotElement {
       c.classList.remove(classname);
     });
   }
+
+  addGeoJsonLayer(layername: String, geoJsonData: Object, classname?: string) {
+    this.geoJsonLayerMap.set(layername, geoJsonData);
+    this.geoJsonLayerAddClass(layername, classname);
+  }
+  geoJsonLayerAddClass(layername: String, classname: string){
+    const re = /\s+/;
+    let classList = [];
+    if (this.geoJsonLayerClassMap.has(layername)) {
+      classList = this.geoJsonLayerClassMap.get(layername);
+    }
+    if (classname && classname.length > 0) {
+      classList = classList.concat(classname.split(re));
+    }
+    this.geoJsonLayerClassMap.set(layername, classList) ;
+  }
+
   /**
    * Set a color in css for the classname. This is a simple alternative
    * to full styling via addStyle().
@@ -421,11 +456,14 @@ export class QuakeStationMap extends SeisPlotElement {
       wrapper.removeChild(wrapper.lastChild);
     }
     const divElement = wrapper.appendChild(document.createElement("div"));
-    const mymap = L.map(divElement).setView(
+    const mymap = L.map(divElement,
+      {layers:[ this.quakeLayer, this.stationLayer]}).setView(
       [this.centerLat, this.centerLon],
       this.zoomLevel,
     );
     this.map = mymap;
+    this.layerControl.addTo(mymap);
+
     if (this.seismographConfig.wheelZoom) {
       mymap.scrollWheelZoom.enable();
     } else {
@@ -449,42 +487,87 @@ export class QuakeStationMap extends SeisPlotElement {
       tileOptions.attribution = tileAttributionAttr;
     }
     L.tileLayer(tileUrl, tileOptions).addTo(mymap);
-    const magScale = this.magScale;
-    const mapItems: Array<LatLngTuple> = [];
-    this.quakeList.concat(uniqueQuakes(this.seisData)).forEach((q) => {
+
+    const regionBounds = this.drawGeoRegions(mymap);
+    regionBounds.forEach((b) => this.mapItems.push(b));
+    this.drawGeoJsonLayers();
+    this.drawStationLayer(); //updates this.mapItems
+    // Draw quakeLayer last so it is the layer on the very top and will respond to click events.
+    this.drawQuakeLayer(); //updates this.mapItems
+
+    if (this.fitBounds && this.mapItems.length > 1) {
+      mymap.fitBounds(this.mapItems);
+    }
+  }
+
+  drawGeoJsonLayers() {
+    // Add geoJsonLayers if present
+    for (const [layername, jsondata] of this.geoJsonLayerMap) {
+      let classList = [];
+      if (this.geoJsonLayerClassMap.has(layername)) {
+        classList = this.geoJsonLayerClassMap.get(layername);
+      }
+      L.geoJSON(jsondata, {
+        className: classList.join(" "),
+      }).addTo(this.map);
+    }
+  }
+
+  drawQuakeLayer(){
+    this.quakeLayer.clearLayers();
+    let layername = "Quakes";
+    let quakes = this.quakeList.concat(uniqueQuakes(this.seisData));
+
+    quakes.forEach((q) => {
       const circle = createQuakeMarker(
         q,
-        magScale,
+        this.magScale,
         this.quakeClassMap.get(cssClassForQuake(q)),
         this.centerLon,
       );
-      circle.addTo(mymap);
-      mapItems.push([q.latitude, q.longitude]);
+      //circle.addTo(mymap);
+      circle.addTo(this.quakeLayer);
+      this.mapItems.push([q.latitude, q.longitude]);
       circle.addEventListener("click", (evt) => {
         const ce = createQuakeClickEvent(q, evt.originalEvent);
         this.dispatchEvent(ce);
       });
     });
-    this.stationList.concat(uniqueStations(this.seisData)).forEach((s) => {
+    this.quakeLayer.addTo(this.map);
+    // if quakes are present and the layer has not be added to the control do so.
+    if (quakes.length > 0 && !this.overlayLayerMap.has(layername)) {
+      this.overlayLayerMap.set(layername, this.quakeLayer);
+      this.layerControl.addOverlay(this.quakeLayer, layername);
+    }
+  }
+  drawStationLayer(){
+    this.stationLayer.clearLayers();
+    let layername = "Stations";
+    let stations = this.stationList.concat(uniqueStations(this.seisData));
+
+    stations.forEach((s) => {
       const m = createStationMarker(
         s,
         this.stationClassMap.get(s.codes(STATION_CODE_SEP)),
         true,
         this.centerLon,
       );
-      m.addTo(mymap);
-      mapItems.push([s.latitude, s.longitude]);
+      //m.addTo(mymap);
+      m.addTo(this.stationLayer);
+      this.mapItems.push([s.latitude, s.longitude]);
       m.addEventListener("click", (evt) => {
         const ce = createStationClickEvent(s, evt.originalEvent);
         this.dispatchEvent(ce);
       });
     });
-    const regionBounds = this.drawGeoRegions(mymap);
-    regionBounds.forEach((b) => mapItems.push(b));
-    if (this.fitBounds && mapItems.length > 1) {
-      mymap.fitBounds(mapItems);
+
+    this.stationLayer.addTo(this.map);
+    if (stations.length > 0 && !this.overlayLayerMap.has(layername)) {
+      this.overlayLayerMap.set(layername, this.stationLayer);
+      this.layerControl.addOverlay(this.stationLayer, layername);
     }
   }
+
   updateQuakeMarkerStyle() {
     const quakeMarkerStyle = this.createQuakeMarkerColorStyle();
     const quakeMarkerStyleEl = this.getShadowRoot().querySelector(
@@ -599,3 +682,4 @@ export function cssClassForQuake(q: Quake): string {
   }
   return "qid_" + out.replaceAll(badCSSChars, "_");
 }
+
