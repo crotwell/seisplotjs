@@ -990,12 +990,17 @@ export class DataLinkStats {
    * @returns  the stats
    */
   static parseXMLAttributes(statusEl: Element): DataLinkStats {
+    let maxPacketId = 0;
+    if (parseUtil._grabAttribute(statusEl, "MaximumPacketID")!=null) {
+      maxPacketId = parseInt(parseUtil._requireAttribute(statusEl, "MaximumPacketID"));
+    }
     const dlStats = new DataLinkStats(
       daliDateTime(parseUtil._requireAttribute(statusEl, "StartTime")),
       parseUtil._requireAttribute(statusEl, "RingVersion"),
       parseInt(parseUtil._requireAttribute(statusEl, "RingSize")),
       parseInt(parseUtil._requireAttribute(statusEl, "PacketSize")),
-      parseInt(parseUtil._requireAttribute(statusEl, "MaximumPacketID")),
+      //parseInt(parseUtil._grabAttribute(statusEl, "MaximumPacketID")),
+      maxPacketId,
       parseInt(parseUtil._requireAttribute(statusEl, "MaximumPackets")),
       parseUtil._requireAttribute(statusEl, "MemoryMappedRing") === "TRUE",
       parseUtil._requireAttribute(statusEl, "VolatileRing") === "TRUE",
@@ -1181,6 +1186,11 @@ export class StreamStat {
     this.dataLatency = dataLatency;
   }
   static parseXMLAttributes(statusEl: Element): StreamStat {
+    let earlyDataEnd = parseUtil._grabAttribute(statusEl, "EarliestPacketDataEndTime");
+    if (earlyDataEnd == null) {
+      // set to same as start???
+      earlyDataEnd = parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime");
+    }
     const sStat = new StreamStat(
       parseUtil._requireAttribute(statusEl, "Name"),
       parseInt(parseUtil._requireAttribute(statusEl, "EarliestPacketID")),
@@ -1188,7 +1198,8 @@ export class StreamStat {
         parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime"),
       ),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime"),
+        earlyDataEnd
+      //  parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime"),
       ),
       parseInt(parseUtil._requireAttribute(statusEl, "LatestPacketID")),
       daliDateTime(
