@@ -14,6 +14,8 @@ import { LatLonBox, LatLonRadius } from "./fdsncommon";
 import * as L from "leaflet";
 import { LatLngTuple } from "leaflet";
 
+import type {GeoJsonObject} from "geojson";
+
 export const MAP_ELEMENT = "sp-station-quake-map";
 export const triangle = "\u25B2";
 export const StationMarkerClassName = "stationMapMarker";
@@ -96,7 +98,7 @@ export function createStationMarker(
   return m;
 }
 
-export function getRadiusForMag(magnitude, magScaleFactor) {
+export function getRadiusForMag(magnitude: number, magScaleFactor: number): number {
   // in case no mag
   let radius = magnitude ? magnitude * magScaleFactor : 1;
   if (radius < 1) {
@@ -167,7 +169,7 @@ export class QuakeStationMap extends SeisPlotElement {
   quakeList: Array<Quake> = [];
   stationList: Array<Station> = [];
   geoRegionList: Array<LatLonBox | LatLonRadius> = [];
-  geoJsonLayerMap: Map<string, Object>;
+  geoJsonLayerMap: Map<string, GeoJsonObject>;
 
   map: L.Map | null;
   classToColor: Map<string, string>;
@@ -176,7 +178,10 @@ export class QuakeStationMap extends SeisPlotElement {
   stationClassMap: Map<string, Array<string>>;
   quakeClassMap: Map<string, Array<string>>;
   geoJsonLayerClassMap: Map<string, Array<string>>;
-  overlayLayerMap: Map<string, L.layerGroup>;
+  overlayLayerMap: Map<string, L.LayerGroup>;
+  quakeLayer = L.layerGroup();
+  stationLayer = L.layerGroup();
+  layerControl = L.control.layers();
   constructor(
     seisData?: Array<SeismogramDisplayData>,
     seisConfig?: SeismographConfig,
@@ -187,12 +192,8 @@ export class QuakeStationMap extends SeisPlotElement {
     this.stationClassMap = new Map<string, Array<string>>();
     this.quakeClassMap = new Map<string, Array<string>>();
     this.geoJsonLayerClassMap = new Map<string, Array<string>>();
-    this.geoJsonLayerMap = new Map<string, Object>();
-    this.overlayLayerMap = new Map<string, L.layerGroup>();
-
-    this.quakeLayer = L.layerGroup();
-    this.stationLayer = L.layerGroup();
-    this.layerControl = L.control.layers();
+    this.geoJsonLayerMap = new Map<string, GeoJsonObject>();
+    this.overlayLayerMap = new Map<string, L.LayerGroup>();
 
     this.addStyle(leaflet_css);
     this.addStyle(stationMarker_css);
@@ -330,15 +331,16 @@ export class QuakeStationMap extends SeisPlotElement {
     });
   }
 
-  addGeoJsonLayer(layername: String, geoJsonData: Object, classname?: string) {
+  addGeoJsonLayer(layername: string, geoJsonData: GeoJsonObject, classname?: string) {
     this.geoJsonLayerMap.set(layername, geoJsonData);
     this.geoJsonLayerAddClass(layername, classname);
   }
-  geoJsonLayerAddClass(layername: String, classname: string){
+  geoJsonLayerAddClass(layername: string, classname?: string){
     const re = /\s+/;
-    let classList = [];
-    if (this.geoJsonLayerClassMap.has(layername)) {
-      classList = this.geoJsonLayerClassMap.get(layername);
+    let classList: Array<string> = [];
+    const layerClass = this.geoJsonLayerClassMap.get(layername);
+    if (layerClass != null) {
+      classList = layerClass;
     }
     if (classname && classname.length > 0) {
       classList = classList.concat(classname.split(re));
@@ -503,13 +505,16 @@ export class QuakeStationMap extends SeisPlotElement {
   drawGeoJsonLayers() {
     // Add geoJsonLayers if present
     for (const [layername, jsondata] of this.geoJsonLayerMap) {
-      let classList = [];
-      if (this.geoJsonLayerClassMap.has(layername)) {
-        classList = this.geoJsonLayerClassMap.get(layername);
+      let classList: Array<string> = [];
+      const layerClass = this.geoJsonLayerClassMap.get(layername);
+      if (layerClass != null) {
+        classList = layerClass;
       }
-      L.geoJSON(jsondata, {
-        className: classList.join(" "),
-      }).addTo(this.map);
+      if (this.map) {
+        L.geoJSON(jsondata, {
+          className: classList.join(" "),
+        }).addTo(this.map);
+      }
     }
   }
 
@@ -533,7 +538,9 @@ export class QuakeStationMap extends SeisPlotElement {
         this.dispatchEvent(ce);
       });
     });
-    this.quakeLayer.addTo(this.map);
+    if (this.map){
+      this.quakeLayer.addTo(this.map);
+    }
     // if quakes are present and the layer has not be added to the control do so.
     if (quakes.length > 0 && !this.overlayLayerMap.has(layername)) {
       this.overlayLayerMap.set(layername, this.quakeLayer);
@@ -561,7 +568,9 @@ export class QuakeStationMap extends SeisPlotElement {
       });
     });
 
-    this.stationLayer.addTo(this.map);
+    if (this.map){
+      this.stationLayer.addTo(this.map);
+    }
     if (stations.length > 0 && !this.overlayLayerMap.has(layername)) {
       this.overlayLayerMap.set(layername, this.stationLayer);
       this.layerControl.addOverlay(this.stationLayer, layername);
@@ -682,4 +691,3 @@ export function cssClassForQuake(q: Quake): string {
   }
   return "qid_" + out.replaceAll(badCSSChars, "_");
 }
-
