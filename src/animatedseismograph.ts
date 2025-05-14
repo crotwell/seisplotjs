@@ -84,14 +84,14 @@ export class RTDisplayContainer {
   rawSeisData: Array<SeismogramDisplayData>;
   organizedDisplay: OrganizedDisplay;
   animationScaler: AnimatedTimeScaler;
-  packetHandler: (packet: DataLinkPacket) => void;
+  packetHandler: (packet: DataLinkPacket|SEPacket|SequencedDataRecord) => void;
   config: RTConfig;
   resizeObserver: ResizeObserver;
   constructor(
       rawSeisData: Array<SeismogramDisplayData>,
       organizedDisplay: OrganizedDisplay,
       animationScaler: AnimatedTimeScaler,
-      packetHandler: (packet: DataLinkPacket) => void,
+      packetHandler: (packet: DataLinkPacket|SEPacket|SequencedDataRecord) => void,
       config: RTConfig) {
     this.rawSeisData = rawSeisData;
     this.organizedDisplay = organizedDisplay;
