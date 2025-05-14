@@ -512,6 +512,7 @@ export class QuakeStationMap extends SeisPlotElement {
       }
       if (this.map) {
         L.geoJSON(jsondata, {
+          // @ts-ignore
           className: classList.join(" "),
         }).addTo(this.map);
       }
