@@ -61,6 +61,19 @@ export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
+export function extractDLProto(lines: Array<string>): string {
+  for (let line of lines) {
+    line = line.trim();
+    let items = line.split(/[ ,]+/);
+    for (const p of items) {
+      if (p.startsWith("DLPROTO:")) {
+        return p.substring(8);
+      }
+    }
+  }
+  return "1.0";
+}
+
 const defaultHandleResponse = function (dlResponse: DataLinkResponse) {
   util.log(`Unhandled datalink response: ${dlResponse.toString()}`);
 };
@@ -101,12 +114,14 @@ export class DataLinkConnection {
   /** @private */
   _responseReject: null | ((error: Error) => void);
   webSocket: WebSocket | null;
+  dlproto: string;
 
   constructor(
     url: string,
     packetHandler: (packet: DataLinkPacket) => void,
     errorHandler: (error: Error) => void,
   ) {
+    this.dlproto = "1.0";
     this.webSocket = null;
     this.url = url ? url : IRIS_RINGSERVER_URL;
     this._mode = MODE.Query;
@@ -260,6 +275,8 @@ export class DataLinkConnection {
       .then((dlResponse) => {
         if (dlResponse.type === "ID") {
           this.serverId = "" + dlResponse.message;
+          let lines = this.serverId.split(/\r?\n/g);
+          this.dlproto = extractDLProto(lines);
           return this.serverId;
         } else {
           throw new Error("not ID response: " + stringify(dlResponse.type));

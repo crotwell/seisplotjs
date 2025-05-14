@@ -4,6 +4,7 @@
  * https://www.seis.sc.edu
  */
 import { DateTime, Duration } from "luxon";
+import {extractDLProto} from "./datalink";
 import {
   FDSN_PREFIX,
   FDSNSourceId,
@@ -63,6 +64,8 @@ export class RingserverConnection {
   _timeoutSec: number;
 
   isFDSNSourceId = false;
+
+  dlproto = "1.0";
 
   constructor(host?: string, port?: number) {
     const hostStr = isNonEmptyStringArg(host) ? host : IRIS_HOST;
@@ -157,6 +160,18 @@ export class RingserverConnection {
         organization = organization.substring(ORG.length);
       }
       if (version.startsWith(ringserver_v4)) {
+        this.isFDSNSourceId = true;
+      }
+      this.dlproto = extractDLProto(lines);
+      if (this.dlproto == "1.0") {
+        if (version.startsWith(ringserver_v4)) {
+          // version 4.0 was FDSN Sid, but did not have DLPROTO:1.1
+          // version 4.1 and greater should have it
+          this.isFDSNSourceId = true;
+        } else {
+          this.isFDSNSourceId = false;
+        }
+      } else {
         this.isFDSNSourceId = true;
       }
 
