@@ -601,15 +601,7 @@ export class OrganizedDisplay extends SeisPlotElement {
 
       oi.draw();
     });
-    let timePromise: Promise<Array<TimeScalable>> = Promise.resolve([]);
-    let ampPromise: Promise<Array<AmplitudeScalable>> = Promise.resolve([]);
-    if (this.seismographConfig.linkedTimeScale) {
-      timePromise = this.seismographConfig.linkedTimeScale.notifyAll();
-    }
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      ampPromise = this.seismographConfig.linkedAmplitudeScale.notifyAll();
-    }
-    return Promise.all([timePromise, ampPromise]);
+    return;
   }
   drawTools(sortedData: Array<SeismogramDisplayData>) {
     if (!this.isConnected) {
