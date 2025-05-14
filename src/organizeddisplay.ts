@@ -574,6 +574,9 @@ export class OrganizedDisplay extends SeisPlotElement {
     } else if (this.overlayby === OVERLAY_COMPONENT) {
       const oitems = overlayByComponent(sortedData, this.seismographConfig);
       seisDispItems = allOrgDispItems.concat(oitems);
+    } else if (this.overlayby === OVERLAY_STATION_COMPONENT) {
+      const oitems = overlayByStationComponent(sortedData, this.seismographConfig);
+      seisDispItems = allOrgDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION) {
       const oitems = overlayByStation(sortedData, this.seismographConfig);
       seisDispItems = allOrgDispItems.concat(oitems);
