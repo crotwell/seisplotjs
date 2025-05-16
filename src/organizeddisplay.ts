@@ -4,7 +4,6 @@ import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
 import * as leafletutil from "./leafletutil";
 import { MAP_ELEMENT, QuakeStationMap } from "./leafletutil";
 import { ParticleMotion, createParticleMotionConfig } from "./particlemotion";
-import { AmplitudeScalable, TimeScalable } from "./scale";
 import { sort, SORT_NONE } from "./sorting";
 import { SeisPlotElement } from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
