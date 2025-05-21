@@ -177,7 +177,7 @@ export class QuakeStationMap extends SeisPlotElement {
 
   stationClassMap: Map<string, Array<string>>;
   quakeClassMap: Map<string, Array<string>>;
-  geoJsonLayerClassMap: Map<string, Array<string>>;
+  geoJsonLayerStyleFuncMap: Map<string, L.StyleFunction>;
   overlayLayerMap: Map<string, L.LayerGroup>;
   quakeLayer = L.layerGroup();
   stationLayer = L.layerGroup();
@@ -191,7 +191,7 @@ export class QuakeStationMap extends SeisPlotElement {
     this.classToColor = new Map<string, string>();
     this.stationClassMap = new Map<string, Array<string>>();
     this.quakeClassMap = new Map<string, Array<string>>();
-    this.geoJsonLayerClassMap = new Map<string, Array<string>>();
+    this.geoJsonLayerStyleFuncMap = new Map<string, L.StyleFunction>();
     this.geoJsonLayerMap = new Map<string, GeoJsonObject>();
     this.overlayLayerMap = new Map<string, L.LayerGroup>();
 
@@ -331,21 +331,14 @@ export class QuakeStationMap extends SeisPlotElement {
     });
   }
 
-  addGeoJsonLayer(layername: string, geoJsonData: GeoJsonObject, classname?: string) {
+  addGeoJsonLayer(layername: string, geoJsonData: GeoJsonObject, styleFunction?: L.StyleFunction) {
     this.geoJsonLayerMap.set(layername, geoJsonData);
-    this.geoJsonLayerAddClass(layername, classname);
+    if (styleFunction) {
+      this.geoJsonLayerSetStyleFunc(layername, styleFunction);
+    }
   }
-  geoJsonLayerAddClass(layername: string, classname?: string){
-    const re = /\s+/;
-    let classList: Array<string> = [];
-    const layerClass = this.geoJsonLayerClassMap.get(layername);
-    if (layerClass != null) {
-      classList = layerClass;
-    }
-    if (classname && classname.length > 0) {
-      classList = classList.concat(classname.split(re));
-    }
-    this.geoJsonLayerClassMap.set(layername, classList) ;
+  geoJsonLayerSetStyleFunc(layername: string, styleFunction: L.StyleFunction){
+    this.geoJsonLayerStyleFuncMap.set(layername, styleFunction);
   }
 
   /**
@@ -505,16 +498,9 @@ export class QuakeStationMap extends SeisPlotElement {
   drawGeoJsonLayers() {
     // Add geoJsonLayers if present
     for (const [layername, jsondata] of this.geoJsonLayerMap) {
-      let classList: Array<string> = [];
-      const layerClass = this.geoJsonLayerClassMap.get(layername);
-      if (layerClass != null) {
-        classList = layerClass;
-      }
       if (this.map) {
-        L.geoJSON(jsondata, {
-          // @ts-ignore
-          className: classList.join(" "),
-        }).addTo(this.map);
+        let styleFunction = this.geoJsonLayerStyleFuncMap.get(layername);
+        L.geoJSON(jsondata, {style: styleFunction}).addTo(this.map);
       }
     }
   }
