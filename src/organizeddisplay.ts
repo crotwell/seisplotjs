@@ -597,7 +597,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     allOrgDispItems = allOrgDispItems.concat(seisDispItems);
     allOrgDispItems.forEach((oi) => {
       wrapper.appendChild(oi);
-
+      oi.onRedraw = this.onRedraw;
       oi.draw();
     });
     return;
