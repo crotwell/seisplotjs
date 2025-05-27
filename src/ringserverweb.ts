@@ -7,11 +7,15 @@ import { DateTime, Duration } from "luxon";
 import {extractDLProto} from "./datalink";
 import {
   FDSN_PREFIX,
-  FDSNSourceId,
   StationSourceId,
   NetworkSourceId,
   NslcId,
-  parseSourceId } from "./fdsnsourceid";
+  parseSourceId
+} from "./fdsnsourceid";
+import {
+  sidForId,
+  //typeForId 
+} from "./ringserverweb4"
 import * as util from "./util"; // for util.log
 
 import {
@@ -178,6 +182,8 @@ export class RingserverConnection {
       return {
         ringserverVersion: lines[0],
         serverId: organization,
+        datalink: dlinfo,
+        seedlink: slinfo
       };
     });
   }
@@ -446,32 +452,6 @@ export function typeForId(id: string): string | null {
 }
 
 /**
- * extracts the source id from a ringserver id, ie the source id from
- * NN_SSSSS_LL_CCC/type or FDSN:NN_SSSSS_LL_B_S_S/type
- * @param  id   ringserver/datalink style id
- * @return   FDSN source id or null
- */
-export function sidForId(id: string): FDSNSourceId | StationSourceId | NetworkSourceId | null {
-  const split = id.split("/");
-  if (split.length >= 1) {
-    const sidStr = split[0];
-    if (sidStr.startsWith(FDSN_PREFIX)) {
-      return parseSourceId(split[0]);
-    } else {
-      const items = split[0].split("_");
-      if (items.length == 4) {
-        // maybe old style NSLC
-        const nslc = NslcId.parse(split[0], "_");
-        return FDSNSourceId.fromNslcId(nslc);
-      }
-    }
-  }
-  return null;
-}
-
-
-
-/**
  * Split type, networkCode, stationCode, locationCode and channelCode
  * from a ringserver id formatted like net_sta_loc_chan/type
  * or FDSN:net_sta_loc_b_s_s/type for new FDSN SourceIds
@@ -483,7 +463,8 @@ export function sidForId(id: string): FDSNSourceId | StationSourceId | NetworkSo
 export function nslcSplit(id: string): NslcWithType {
   const split = id.split("/");
   if (split[0].startsWith(FDSN_PREFIX)) {
-
+    const sid = parseSourceId(split[0]);
+    return sid.asNslc();
   }
   const nslc = split[0].split("_");
 
