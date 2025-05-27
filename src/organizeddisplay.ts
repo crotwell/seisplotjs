@@ -553,7 +553,6 @@ export class OrganizedDisplay extends SeisPlotElement {
       .forEach((item) => wrapper.removeChild(item));
 
     const sortedData = sort(this.seisData, this.sortby);
-    let allOrgDispItems = new Array<OrganizedDisplayItem>();
     let seisDispItems = new Array<OrganizedDisplayItem>();
     this.drawTools(sortedData);
     this.drawMap(sortedData);
@@ -572,13 +571,13 @@ export class OrganizedDisplay extends SeisPlotElement {
       });
     } else if (this.overlayby === OVERLAY_COMPONENT) {
       const oitems = overlayByComponent(sortedData, this.seismographConfig);
-      seisDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = seisDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION_COMPONENT) {
       const oitems = overlayByStationComponent(sortedData, this.seismographConfig);
-      seisDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = seisDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION) {
       const oitems = overlayByStation(sortedData, this.seismographConfig);
-      seisDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = seisDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_ALL) {
       const oi = new OrganizedDisplayItem(sortedData, this.seismographConfig);
       seisDispItems.push(oi);
@@ -594,10 +593,11 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.bottomSeismographConfig != null && seisDispItems.length > 1) {
       seisDispItems[seisDispItems.length-1].seismographConfig = this.bottomSeismographConfig;
     }
+
+    let allOrgDispItems = new Array<OrganizedDisplayItem>();
     allOrgDispItems = allOrgDispItems.concat(seisDispItems);
     allOrgDispItems.forEach((oi) => {
       wrapper.appendChild(oi);
-
       oi.draw();
     });
     return;
