@@ -121,14 +121,24 @@ export function addStyleToElement(
   css: string,
   id?: string,
 ): HTMLStyleElement {
-  if (!element.shadowRoot) {
-    element.attachShadow({ mode: "open" });
+  let shadowRoot = element.shadowRoot;
+  if (!shadowRoot) {
+    shadowRoot = element.attachShadow({ mode: "open" });
   }
   const styleEl = document.createElement("style");
   styleEl.textContent = css;
   if (id) {
     styleEl.setAttribute("id", id);
   }
-  element.shadowRoot?.insertBefore(styleEl, element.shadowRoot?.firstChild);
+  //Insert style at the end of the list of styles to maintain
+  //the typical css precedence rule (styles added later override previous)
+  let styleNodes = shadowRoot.querySelectorAll("style");
+  let lastStyle = styleNodes[styleNodes.length-1];
+  if (lastStyle) {
+    lastStyle.after(styleEl);
+  }
+  else {
+    shadowRoot.insertBefore(styleEl, shadowRoot.firstChild);
+  }
   return styleEl;
 }
