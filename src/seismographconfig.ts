@@ -118,6 +118,7 @@ export class SeismographConfig {
   lineColors: Array<string>;
   lineWidth: number;
   gridLineColor: string;
+  allowZoom: boolean;
   wheelZoom: boolean;
   amplitudeMode: AMPLITUDE_MODE;
   doGain: boolean;
@@ -209,6 +210,7 @@ export class SeismographConfig {
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample
 
     this.wheelZoom = false;
+    this.allowZoom = true;
     // separated by pixels
     this.connectSegments = false;
     this.lineColors = [
