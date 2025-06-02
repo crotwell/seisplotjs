@@ -100,7 +100,7 @@ export class RTDisplayContainer {
     this.config = config;
     this.resizeObserver = new ResizeObserver((entries) => {
       if ( ! config.minRedrawMillis) {
-        this.recalculateRedrawTime().then((rt) => {console.log(`resize an org disp: ${rt.animationScaler.minRedrawMillis}`);});
+        this.recalculateRedrawTime();
       }
     });
     this.resizeObserver.observe(this.organizedDisplay);

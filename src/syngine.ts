@@ -703,8 +703,6 @@ export class SyngineQuery extends FDSNCommon {
           for (let i=0; i<ms2Data.length; i++) {
             if (ms2Data[i] > max) { max = ms2Data[i];}
           }
-          console.log(`syngine dr ${dr.header.encoding} ${dr.header.startTime} to ${dr.header.endTime} ${dr.header.numSamples} max: ${max}`)
-          console.log(dr.toString());
         }
         return dataRecords;
       });
@@ -723,10 +721,6 @@ export class SyngineQuery extends FDSNCommon {
   queryMS3Records(): Promise<Array<mseed3.MSeed3Record>> {
     return this.queryDataRecords().then(msList => {
       const ms3List = mseed3.convertMS2toMSeed3(msList);
-      if (msList.length > 0) {
-        const ms3 = ms3List[0];
-        console.log(`first ms3: ${ms3.header.start} ${ms3.header.end}`)
-      }
       return ms3List;
     });
   }

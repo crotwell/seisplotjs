@@ -108,7 +108,6 @@ export class HourMinChooser extends HTMLElement {
 
     const wrapper = document.createElement("span");
     document.addEventListener("click", (_e) => {
-      //console.log("mouseleave wrapper");
       this.hide();
     });
 
@@ -721,7 +720,6 @@ export class TimeRangeChooser extends HTMLElement {
     } else if (name === "end") {
       this.end = isoToDateTime(newValue);
     } else if (name === "duration") {
-      console.log(`attr changed: ${name}  ${newValue}`)
       this.duration = extractDuration(newValue);
     } else if (name === START_LABEL) {
       (

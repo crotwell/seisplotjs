@@ -1593,7 +1593,6 @@ export function uniqueNetworks(channelList: Iterable<Channel|Station>): Array<Ne
   const out = new Set<Network>();
   for (const c of channelList) {
     if (c) {
-      console.log(`uniqueNet ${c.constructor.name}`)
       if (c instanceof Station) {
         out.add(c.network)
       } else if (c instanceof Channel) {
