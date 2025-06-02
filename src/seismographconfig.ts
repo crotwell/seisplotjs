@@ -88,6 +88,11 @@ export class SeismographConfig {
   isYAxis: boolean;
   isYAxisRight: boolean;
   isYAxisNice: boolean;
+  /**
+   * hint for number of ticks to show on y axis. Note this is not exact as
+   * trying to put ticks on "even" numbers may result in slightly more or less.
+   */
+  yAxisNumTickHint: number;
   /** @private */
   _yLabel: string;
 
@@ -145,6 +150,7 @@ export class SeismographConfig {
     this.isYAxisNice = true;
     this.isYAxis = true;
     this.isYAxisRight = false;
+    this.yAxisNumTickHint = 8;
     /**
      * Should grid lines be drawn for each tick on the X axis.
      * Defaults to false;

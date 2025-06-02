@@ -958,7 +958,8 @@ export class Seismograph extends SeisPlotElement {
         numberFormatWrapper(this.seismographConfig.amplitudeFormat),
       );
       yAxis.scale(axisScale);
-      yAxis.ticks(8, this.seismographConfig.amplitudeFormat);
+      yAxis.ticks(this.seismographConfig.yAxisNumTickHint,
+        this.seismographConfig.amplitudeFormat);
     }
 
     if (this.seismographConfig.isYAxisRight) {
@@ -966,7 +967,7 @@ export class Seismograph extends SeisPlotElement {
         numberFormatWrapper(this.seismographConfig.amplitudeFormat),
       );
       yAxisRight.scale(axisScale);
-      yAxisRight.ticks(8, this.seismographConfig.amplitudeFormat);
+      yAxisRight.ticks(this.seismographConfig.yAxisNumTickHint, this.seismographConfig.amplitudeFormat);
     }
     return [yAxis, yAxisRight];
   }
