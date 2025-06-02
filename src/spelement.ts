@@ -1,12 +1,23 @@
+import type { DateTime } from "luxon";
 import { SeismogramDisplayData } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
+import {
+  createDefaultSortingOptions,
+  SORT_NONE,
+  createSortValueFunction,
+  sortByFunction
+} from "./sorting";
 import { isDef, stringify } from "./util";
+
+export const SORT_BY = "sort";
 
 export class SeisPlotElement extends HTMLElement {
   _seisDataList: Array<SeismogramDisplayData>;
   _seismographConfig: SeismographConfig;
   onRedraw: (el: SeisPlotElement) => void;
   _throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
+  _sorting: Map<string,(sdd: SeismogramDisplayData) => number | string | DateTime>;
+
 
   constructor(
     seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>,
@@ -40,6 +51,7 @@ export class SeisPlotElement extends HTMLElement {
     } else {
       this._seismographConfig = new SeismographConfig();
     }
+    this._sorting = createDefaultSortingOptions();
     this.attachShadow({ mode: "open" });
   }
   get seisData() {
@@ -62,6 +74,48 @@ export class SeisPlotElement extends HTMLElement {
     this._seismographConfig = seismographConfig;
     this.seisDataUpdated();
   }
+
+  /**
+   * The sorting type to optionally sort the data by. New sort types may be
+   * added by supplying a key and function that takes an SeismogramDisplayData
+   * and returns a number, string or date. Sort of data is done using the
+   * calculated value for each waveform. This is stored as an attribute on
+   * the element, so changing the attribute has the same effect.
+   * Default is SORT_NONE = "none".
+   * @return sorting key
+   */
+  get sortby(): string {
+    let k = this.hasAttribute(SORT_BY) ? this.getAttribute(SORT_BY) : SORT_NONE;
+    // typescript null
+    if (!k) {
+      k = SORT_NONE;
+    }
+    return k;
+  }
+  set sortby(val: string) {
+    this.setAttribute(SORT_BY, val);
+  }
+  addSortingFunction(key: string, sddFunction: (sdd: SeismogramDisplayData) => number | string | DateTime) {
+    this._sorting.set(key, sddFunction);
+  }
+  getSortingFunction(key: string): (sdd: SeismogramDisplayData) => number | string | DateTime {
+    const sortFun = this._sorting.get(key);
+    if (sortFun) {
+      return sortFun;
+    }
+    return createSortValueFunction(key); // check for default sortings or error
+  }
+  /**
+   * Sorts seisData by the this.sortby sorting type.
+   * @return this.seisData sorted
+   */
+  sortedSeisData() {
+    if (this.sortby === SORT_NONE) {
+      return this.seisData;
+    }
+    return sortByFunction(this.seisData, this.getSortingFunction(this.sortby));
+  }
+
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -113,6 +167,13 @@ export class SeisPlotElement extends HTMLElement {
     } else {
       return this.shadowRoot;
     }
+  }
+
+  static get observedAttributes() {
+    const mine = [
+      SORT_BY,
+    ];
+    return mine;
   }
 }
 
