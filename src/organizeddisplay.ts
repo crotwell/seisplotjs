@@ -829,30 +829,6 @@ export function overlayAll(
 ): Array<OrganizedDisplayItem> {
   return overlayBySDDFunction(sddList, "all", () => "all", seisConfig);
 }
-export function sortByKey(
-  organized: Array<OrganizedDisplayItem>,
-  key: string,
-): Array<OrganizedDisplayItem> {
-  organized.sort((orgA, orgB) => {
-    const valA = orgA.getExtra(key);
-    const valB = orgB.getExtra(key);
-
-    if (!valA && !valB) {
-      return 0;
-    } else if (!valA) {
-      return 1;
-    } else if (!valB) {
-      return -1;
-    } else if (valA < valB) {
-      return -1;
-    } else if (valA > valB) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
-  return organized;
-}
 
 /**
  * Groups seismic data into subarrays where members of each subarray are
