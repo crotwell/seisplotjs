@@ -55,6 +55,7 @@ import * as sorting from "./sorting";
 import * as stationxml from "./stationxml";
 import * as syngine from "./syngine";
 import * as taper from "./taper";
+import * as taup3 from "./taup3";
 import * as transfer from "./transfer";
 import * as traveltime from "./traveltime";
 import * as usgsgeojson from "./usgsgeojson";
@@ -117,6 +118,7 @@ export {
   stationxml,
   syngine,
   taper,
+  taup3,
   transfer,
   traveltime,
   usgsgeojson,
