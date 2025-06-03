@@ -1,5 +1,5 @@
 
-
+import {IRIS_HOST} from '../src/fdsncommon';
 import {setDefaultFetch} from '../src/util';
 import fetch from 'cross-fetch';
 setDefaultFetch(fetch);
@@ -23,11 +23,11 @@ test("formURL", () => {
    'phases', 'format']) {
      expect(url).toContain('&'+k+'=');
    }
-   expect(url).toContain("http://"+traveltime.IRIS_HOST+"/irisws/traveltime/1/query?");
+   expect(url).toContain("http://"+IRIS_HOST+"/irisws/traveltime/1/query?");
    return query.queryJson().then( tt => {
      expect(tt.arrivals.length).toEqual(11);
-     expect(tt.sourcedepth).toEqual(query.evdepth());
-     expect(tt.receiverdepth).toEqual(query.receiverdepth());
+     expect(tt.sourcedepth).toEqual(query.getEvdepth());
+     expect(tt.receiverdepth).toEqual(0);
    });
 
 });

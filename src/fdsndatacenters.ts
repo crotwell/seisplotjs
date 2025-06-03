@@ -13,7 +13,6 @@ import {
   makeParam,
   isDef,
   isNonEmptyStringArg,
-  stringify,
 } from "./util";
 import {
   TEXT_MIME,
@@ -28,6 +27,10 @@ import * as fdsnstation from "./fdsnstation";
 
 /** const for fdsn web service host, www.fdsn.org */
 export const FDSN_HOST = "www.fdsn.org";
+
+/** const for service name */
+export const DATACENTERS_SERVICE = "datacenters";
+export const DATACENTERS_PATH_BASE = "ws";
 
 /**
  * Query to a FDSN Data Centers Registry web service.
@@ -49,7 +52,8 @@ export class DataCentersQuery extends FDSNCommon {
     if (!isNonEmptyStringArg(host)) {
       host = FDSN_HOST;
     }
-    super(host);
+    super(DATACENTERS_SERVICE, host);
+    this._path_base = DATACENTERS_PATH_BASE;
   }
 
   /**
@@ -415,24 +419,17 @@ export class DataCentersQuery extends FDSNCommon {
   /**
    * Forms the base of the url for accessing the datacenters service.
    *
-   * @returns         URL
+   * @returns         URL as string
    */
   formBaseURL(): string {
     let colon = ":";
 
     if (this._protocol.endsWith(colon)) {
-      colon = "";
+     colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : stringify(this._port)) +
-      "/ws/datacenters/" +
-      this._specVersion
-    );
+    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   /**

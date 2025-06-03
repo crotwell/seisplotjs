@@ -35,6 +35,9 @@ export const FORMAT_MINISEED = "miniseed";
 /** const for miniseed format, mseed */
 export const FORMAT_MINISEED_THREE = "miniseed3";
 
+/** const for service name */
+export const DATASELECT_SERVICE = "dataselect";
+
 /**
  * Major version of the FDSN spec supported here.
  * Currently is 1.
@@ -45,7 +48,7 @@ export const SERVICE_VERSION = 1;
  * Service name as used in the FDSN DataCenters registry,
  * https://www.fdsn.org/datacenters
  */
-export const SERVICE_NAME = `fdsnws-dataselect-${SERVICE_VERSION}`;
+export const SERVICE_NAME = `fdsnws-${DATASELECT_SERVICE}-${SERVICE_VERSION}`;
 
 /** const for the default IRIS web service host, service.iris.edu */
 export { IRIS_HOST };
@@ -94,7 +97,7 @@ export class DataSelectQuery extends FDSNCommon {
     if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
-    super(host);
+    super(DATASELECT_SERVICE, host);
   }
 
   /**
@@ -570,22 +573,20 @@ export class DataSelectQuery extends FDSNCommon {
     return out;
   }
 
+  /**
+   * Forms the base of the url for accessing the dataselect service.
+   *
+   * @returns         URL as string
+   */
   formBaseURL(): string {
     let colon = ":";
 
     if (this._protocol.endsWith(colon)) {
       colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + String(this._port)) +
-      "/fdsnws/dataselect/" +
-      this._specVersion
-    );
+    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formVersionURL(): string {

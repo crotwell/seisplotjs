@@ -3,7 +3,7 @@
  * University of South Carolina, 2025
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE } from "./fdsncommon";
 import { FORMAT_MINISEED } from "./fdsndataselect";
 import { TESTING_NETWORK } from "./fdsnsourceid";
 import { Quake } from "./quakeml";
@@ -29,6 +29,8 @@ import {
   TEXT_MIME
 } from "./util";
 
+/** const for service name */
+export const SYNGINE_SERVICE = "syngine";
 
 /**
  * Major version of the FDSN spec supported here.
@@ -40,7 +42,7 @@ export const SERVICE_VERSION = 1;
  * Service name as used in the FDSN DataCenters registry,
  * https://www.fdsn.org/datacenters
  */
-export const SERVICE_NAME = `irisws-syngine-${SERVICE_VERSION}`;
+export const SERVICE_NAME = `irisws-${SYNGINE_SERVICE}-${SERVICE_VERSION}`;
 
 export function calcMoment(Mw: number): number {
   return 10.0 ** ((Mw / 2.0 * 3.0 + 9.1));
@@ -154,7 +156,8 @@ export class SyngineQuery extends FDSNCommon {
     if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
-    super(host);
+    super(SYNGINE_SERVICE, host);
+    this._path_base = IRISWS_PATH_BASE;
   }
 
 
@@ -758,22 +761,21 @@ export class SyngineQuery extends FDSNCommon {
     });
   }
 
+
+  /**
+   * Forms the basic URL to contact the web service, without any query paramters
+   *
+   * @returns the url
+   */
   formBaseURL(): string {
     let colon = ":";
 
     if (this._protocol.endsWith(colon)) {
-      colon = "";
+    colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + String(this._port)) +
-      "/irisws/syngine/" +
-      this._specVersion
-    );
+    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formVersionURL(): string {

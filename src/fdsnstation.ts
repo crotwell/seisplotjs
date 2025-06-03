@@ -45,6 +45,9 @@ export const LEVELS = [
   LEVEL_RESPONSE,
 ];
 
+/** const for service name */
+export const STATION_SERVICE = "station";
+
 /**
  * Major version of the FDSN spec supported here.
  * Currently is 1.
@@ -142,7 +145,7 @@ export class StationQuery extends FDSNCommon {
    * @param host the host to connect to , defaults to service.iris.edu
    */
   constructor(host?: string) {
-    super(host);
+    super(STATION_SERVICE, host);
   }
 
   /**
@@ -1069,18 +1072,11 @@ export class StationQuery extends FDSNCommon {
     let colon = ":";
 
     if (this._protocol.endsWith(colon)) {
-      colon = "";
+    colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + String(this._port)) +
-      "/fdsnws/station/" +
-      this._specVersion
-    );
+    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formPostURL(): string {
