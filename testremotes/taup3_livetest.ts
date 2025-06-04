@@ -5,11 +5,10 @@ import fetch from 'cross-fetch';
 setDefaultFetch(fetch);
 
 import * as taup3 from '../src/taup3';
-import * as fdsncommon from '../src/fdsncommon';
 
 test("formURL", () => {
   const query = new taup3.TauPQuery(taup3.USC_HOST);
-  query._path_base = "uscws";
+  query.pathBase("uscws");
   query.format(taup3.JSON_FORMAT);
   expect(query.evdepth(50)).toBe(query);
   expect(query.stalat(34)).toBe(query);
@@ -38,9 +37,9 @@ test("formURL", () => {
 
 test("multiple distances", () => {
   const query = new taup3.TauPQuery(taup3.USC_HOST);
-  query._path_base = "uscws";
+  query.pathBase("uscws");
   //  const query = new taup3.TauPQuery("localhost");
-  //query._path_base = fdsncommon.LOCALWS_PATH_BASE;
+  //  query.pathBase(fdsncommon.LOCALWS_PATH_BASE);
   //query.port(7409);
   query.format(taup3.JSON_FORMAT);
   query.distdeg([ 10, 30, 60]);

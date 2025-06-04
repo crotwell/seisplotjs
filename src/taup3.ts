@@ -241,6 +241,15 @@ export class TauPQuery extends FDSNCommon {
     return this._port;
   }
 
+  pathBase(value?: string): TauPQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
+  }
+
   /**
    * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
    * the status code when no matching data is found by the service.

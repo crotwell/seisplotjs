@@ -240,6 +240,15 @@ export class SyngineQuery extends FDSNCommon {
     return this._port;
   }
 
+  pathBase(value?: string): SyngineQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
+  }
+
   format(value?: string): SyngineQuery {
     doStringGetterSetter(this, "format", value);
     return this;

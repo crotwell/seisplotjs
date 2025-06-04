@@ -121,6 +121,16 @@ export class DataCentersQuery extends FDSNCommon {
     return this._port;
   }
 
+  pathBase(value?: string): DataCentersQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
+  }
+
+
   /**
    * limits results to the named data center, default is all data centers
    *

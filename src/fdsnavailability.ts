@@ -211,6 +211,16 @@ export class AvailabilityQuery extends FDSNCommon {
     return this._port;
   }
 
+  pathBase(value?: string): AvailabilityQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
+  }
+
+
   /**
    * Gets/Sets the network code to check.
    *

@@ -179,6 +179,16 @@ export class DataSelectQuery extends FDSNCommon {
     return this._port;
   }
 
+  pathBase(value?: string): DataSelectQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
+  }
+
+
   /**
    * Get/Set the network query parameter.
    *
