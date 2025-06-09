@@ -6,6 +6,10 @@ import { isNonEmptyStringArg, checkProtocol } from "./util";
 
 export const IRIS_HOST = "service.iris.edu";
 
+export const FDSNWS_PATH_BASE = "fdsnws";
+export const IRISWS_PATH_BASE = "irisws";
+export const LOCALWS_PATH_BASE = "localws";
+
 export class FDSNCommon {
   /** @private */
   _specVersion: string;
@@ -17,6 +21,12 @@ export class FDSNCommon {
   _host: string;
 
   /** @private */
+  _path_base: string;
+
+  /** @private */
+  _service: string;
+
+  /** @private */
   _port: number;
 
   /** @private */
@@ -25,10 +35,12 @@ export class FDSNCommon {
   /** @private */
   _timeoutSec: number;
 
-  constructor(host?: string) {
+  constructor(service: string, host?: string) {
     this._specVersion = "1";
     this._host = IRIS_HOST;
     this._protocol = checkProtocol();
+    this._path_base = FDSNWS_PATH_BASE;
+    this._service = service;
 
     if (isNonEmptyStringArg(host)) {
       this._host = host;

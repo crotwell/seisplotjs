@@ -355,9 +355,7 @@ export class Seismograph extends SeisPlotElement {
       .append("g")
       .classed("allseismograms", true)
       .classed(AUTO_COLOR_SELECTOR, true);
-    if (!this.seismographConfig.fixedTimeScale) {
-      this.enableZoom();
-    }
+    this.enableZoom();
 
     // create marker g
     this.g
@@ -463,15 +461,23 @@ export class Seismograph extends SeisPlotElement {
     return false;
   }
   enableZoom(): void {
-    const mythis = this;
-    const z = this.svg.call(
-      // @ts-expect-error typescript and d3 don't always place nice together
-      d3zoom().on("zoom", function (e) {
-        mythis.zoomed(e);
-      }),
-    );
+    if (this.seismographConfig.allowZoom && !this.seismographConfig.fixedTimeScale) {
+      const mythis = this;
+      const z = this.svg.call(
+        // @ts-expect-error typescript and d3 don't always place nice together
+        d3zoom().on("zoom", function (e) {
+          mythis.zoomed(e);
+        }),
+      );
 
-    if (!this.seismographConfig.wheelZoom) {
+      if (!this.seismographConfig.wheelZoom) {
+        z.on("wheel.zoom", null);
+      }
+    } else {
+      const z = this.svg.call(
+        // @ts-expect-error typescript and d3 don't always place nice together
+        d3zoom().on("zoom", null),
+      );
       z.on("wheel.zoom", null);
     }
   }
@@ -952,7 +958,8 @@ export class Seismograph extends SeisPlotElement {
         numberFormatWrapper(this.seismographConfig.amplitudeFormat),
       );
       yAxis.scale(axisScale);
-      yAxis.ticks(8, this.seismographConfig.amplitudeFormat);
+      yAxis.ticks(this.seismographConfig.yAxisNumTickHint,
+        this.seismographConfig.amplitudeFormat);
     }
 
     if (this.seismographConfig.isYAxisRight) {
@@ -960,7 +967,7 @@ export class Seismograph extends SeisPlotElement {
         numberFormatWrapper(this.seismographConfig.amplitudeFormat),
       );
       yAxisRight.scale(axisScale);
-      yAxisRight.ticks(8, this.seismographConfig.amplitudeFormat);
+      yAxisRight.ticks(this.seismographConfig.yAxisNumTickHint, this.seismographConfig.amplitudeFormat);
     }
     return [yAxis, yAxisRight];
   }

@@ -4,7 +4,6 @@ import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
 import * as leafletutil from "./leafletutil";
 import { MAP_ELEMENT, QuakeStationMap } from "./leafletutil";
 import { ParticleMotion, createParticleMotionConfig } from "./particlemotion";
-import { sort, SORT_NONE } from "./sorting";
 import { SeisPlotElement } from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import { Seismograph } from "./seismograph";
@@ -225,8 +224,6 @@ export const DEFAULT_WITH_MAP = "false";
 export const WITH_TOOLS = "tools";
 export const DEFAULT_WITH_TOOLS = "true";
 
-export const SORT_BY = "sort";
-
 export const OVERLAY_BY = "overlay";
 export const OVERLAY_NONE = "none";
 export const OVERLAY_INDIVIDUAL = "individual";
@@ -283,37 +280,7 @@ export const TOOLS_HTML = `
       <label for="overlay_none">none</label>
     </span>
   </fieldset>
-  <fieldset class="sort">
-    <legend>Sort Type</legend>
-    <span>
-      <input type="radio" name="sort" id="sort_distance" value="distance">
-      <label for="sort_distance">distance</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_azimuth" value="azimuth">
-      <label for="sort_azimuth">azimuth</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_backazimuth" value="backazimuth">
-      <label for="sort_backazimuth">back azimuth</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_alphabetical" value="alphabetical">
-      <label for="sort_alphabetical">alphabetical</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_starttime" value="starttime">
-      <label for="sort_starttime">starttime</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_origin" value="origin">
-      <label for="sort_origin">origin</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_none" value="none" checked>
-      <label for="sort_none">none</label>
-    </span>
-  </fieldset>
+
   </form>
 </details>
 `;
@@ -357,10 +324,36 @@ export class OrganizedDisplayTools extends SeisPlotElement {
         const inEl = i as HTMLInputElement;
         inEl.checked = orgdisp.overlayby === inEl.value;
       });
-      shadow?.querySelectorAll("fieldset.sort input").forEach((i) => {
-        const inEl = i as HTMLInputElement;
-        inEl.checked = orgdisp.sortby === inEl.value;
-      });
+      const details = shadow?.querySelector("div.wrapper details");
+      details?.querySelector("fieldset.sort")?.remove();
+      const sortFS = document.createElement("fieldset");
+      sortFS.classList.add("sort");
+      const legend = document.createElement("legend");
+      legend.textContent = "Sort Type";
+      sortFS.appendChild(legend);
+      const sortKeyList = Array.from(orgdisp._sorting.keys());
+      sortKeyList.push("none");
+      for (const sortKey of sortKeyList) {
+        const span = document.createElement("span");
+        const input = document.createElement("input");
+        input.setAttribute("type", "radio");
+        input.setAttribute("name", "sort");
+        input.setAttribute("id", `sort_${sortKey}`);
+        input.setAttribute("value", sortKey);
+        input.checked = orgdisp.sortby === input.value;
+        input.addEventListener("change", (_e) => {
+          if (this._organizedDisplay) {
+            this._organizedDisplay?.setAttribute("sort", input.value);
+          }
+        });
+        span.appendChild(input);
+        const label = document.createElement("label");
+        label.setAttribute("for", `sort_${sortKey}`);
+        label.textContent = sortKey;
+        span.appendChild(label);
+        sortFS.appendChild(span);
+      }
+      details?.appendChild(sortFS);
     }
   }
   draw() {
@@ -401,6 +394,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
         }
       });
     });
+    // sort wired in initCheckboxes as is dynamic,so must be done later
     this.initCheckboxes(this._organizedDisplay);
   }
 }
@@ -443,14 +437,14 @@ export class OrganizedDisplay extends SeisPlotElement {
     this.getShadowRoot().appendChild(wrapper);
   }
   static get observedAttributes() {
-    const mine = [
+    const sup = super.observedAttributes;
+    const mine = sup.concat([
       ORG_TYPE,
       WITH_TOOLS,
       WITH_MAP,
       WITH_INFO,
       OVERLAY_BY,
-      SORT_BY,
-    ];
+    ]);
     const map = QuakeStationMap.observedAttributes;
     return mine.concat(map);
   }
@@ -531,17 +525,6 @@ export class OrganizedDisplay extends SeisPlotElement {
   set overlayby(val: string) {
     this.setAttribute(OVERLAY_BY, val);
   }
-  get sortby(): string {
-    let k = this.hasAttribute(SORT_BY) ? this.getAttribute(SORT_BY) : SORT_NONE;
-    // typescript null
-    if (!k) {
-      k = SORT_NONE;
-    }
-    return k;
-  }
-  set sortby(val: string) {
-    this.setAttribute(SORT_BY, val);
-  }
 
   draw() {
     if (!this.isConnected) {
@@ -552,8 +535,7 @@ export class OrganizedDisplay extends SeisPlotElement {
       .querySelectorAll(ORG_DISP_ITEM)
       .forEach((item) => wrapper.removeChild(item));
 
-    const sortedData = sort(this.seisData, this.sortby);
-    let allOrgDispItems = new Array<OrganizedDisplayItem>();
+    const sortedData = this.sortedSeisData();
     let seisDispItems = new Array<OrganizedDisplayItem>();
     this.drawTools(sortedData);
     this.drawMap(sortedData);
@@ -572,13 +554,13 @@ export class OrganizedDisplay extends SeisPlotElement {
       });
     } else if (this.overlayby === OVERLAY_COMPONENT) {
       const oitems = overlayByComponent(sortedData, this.seismographConfig);
-      seisDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = seisDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION_COMPONENT) {
       const oitems = overlayByStationComponent(sortedData, this.seismographConfig);
-      seisDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = seisDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION) {
       const oitems = overlayByStation(sortedData, this.seismographConfig);
-      seisDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = seisDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_ALL) {
       const oi = new OrganizedDisplayItem(sortedData, this.seismographConfig);
       seisDispItems.push(oi);
@@ -590,14 +572,23 @@ export class OrganizedDisplay extends SeisPlotElement {
 
     if (this.topSeismographConfig != null && seisDispItems.length > 0) {
       seisDispItems[0].seismographConfig = this.topSeismographConfig;
+      if (this.topSeismographConfig.margin.top > this.seismographConfig.margin.top) {
+        let sp_height = getComputedStyle(seisDispItems[0]).getPropertyValue("--sp-seismograph-height");
+        if (sp_height !== "") {
+          seisDispItems[0].addStyle(`sp-seismograph {
+            height: ${sp_height};
+          }`);
+        }
+      }
     }
     if (this.bottomSeismographConfig != null && seisDispItems.length > 1) {
       seisDispItems[seisDispItems.length-1].seismographConfig = this.bottomSeismographConfig;
     }
+
+    let allOrgDispItems = new Array<OrganizedDisplayItem>();
     allOrgDispItems = allOrgDispItems.concat(seisDispItems);
     allOrgDispItems.forEach((oi) => {
       wrapper.appendChild(oi);
-
       oi.draw();
     });
     return;
@@ -611,7 +602,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.tools !== "true" && toolsElement) {
       wrapper.removeChild(toolsElement);
     } else if (this.tools === "true" && !isDef(toolsElement)) {
-      if (sortedData == null)  {sortedData = sort(this.seisData, this.sortby);}
+      if (sortedData == null)  {sortedData = this.sortedSeisData();}
       const toolsdisp = new OrganizedDisplayTools(
         sortedData,
         this.seismographConfig,
@@ -664,7 +655,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.info !== "true" && infoElement) {
       wrapper.removeChild(infoElement);
     } else if (this.info === "true" && !isDef(infoElement)) {
-      const sortedData = sort(this.seisData, this.sortby);
+      const sortedData = this.sortedSeisData();
       const infoDisp = new QuakeStationTable(
         sortedData,
         this.seismographConfig,
@@ -693,10 +684,10 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === WITH_MAP) {
-      const sortedData = sort(this.seisData, this.sortby);
+      const sortedData = this.sortedSeisData();
       this.drawMap(sortedData);
     } else if (name === WITH_INFO) {
-      const sortedData = sort(this.seisData, this.sortby);
+      const sortedData = this.sortedSeisData();
       this.drawInfo(sortedData);
     } else if (QuakeStationMap.observedAttributes.includes(name)) {
       const wrapper = this.getShadowRoot().querySelector(
@@ -828,30 +819,6 @@ export function overlayAll(
   seisConfig?: SeismographConfig,
 ): Array<OrganizedDisplayItem> {
   return overlayBySDDFunction(sddList, "all", () => "all", seisConfig);
-}
-export function sortByKey(
-  organized: Array<OrganizedDisplayItem>,
-  key: string,
-): Array<OrganizedDisplayItem> {
-  organized.sort((orgA, orgB) => {
-    const valA = orgA.getExtra(key);
-    const valB = orgB.getExtra(key);
-
-    if (!valA && !valB) {
-      return 0;
-    } else if (!valA) {
-      return 1;
-    } else if (!valB) {
-      return -1;
-    } else if (valA < valB) {
-      return -1;
-    } else if (valA > valB) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
-  return organized;
 }
 
 /**

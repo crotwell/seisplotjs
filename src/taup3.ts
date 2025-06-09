@@ -3,7 +3,7 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE } from "./fdsncommon";
+import { FDSNCommon, LOCALWS_PATH_BASE } from "./fdsncommon";
 import {
   doStringGetterSetter,
   doBoolGetterSetter,
@@ -21,26 +21,31 @@ import {
 } from "./util";
 import { Station, Channel } from "./stationxml";
 import { Quake } from "./quakeml";
+export const USC_HOST = "www.seis.sc.edu";
 export const TEXT_FORMAT = "text";
 export const JSON_FORMAT = "json";
 export const SVG_FORMAT = "svg";
 
-
 /** const for service name */
-export const TRAVELTIME_SERVICE = "traveltime";
+export const TAUP_SERVICE = "taup";
+
+export const TAUP_TIME_TOOL = "time";
+export const TAUP_PATH_TOOL = "path";
 
 /**
  * Type for json returned by iris traveltime web service
  *
  */
-export type TraveltimeJsonType = {
+export type TauP3TimeJsonType = {
   model: string;
-  sourcedepth: number;
-  receiverdepth: number;
+  sourcedepthlist: Array<number>;
+  receiverdepthlist: Array<number>;
   phases: Array<string>;
   arrivals: Array<TraveltimeArrivalType>;
 };
 export type TraveltimeArrivalType = {
+  sourcedepth: number;
+  receiverdepth: number;
   distdeg: number;
   phase: string;
   time: number;
@@ -49,7 +54,11 @@ export type TraveltimeArrivalType = {
   incident: number;
   puristdist: number;
   puristname: string;
+  amp?:  TraveltimeAmplitudeType;
 };
+
+export type TraveltimeAmplitudeType = {
+}
 
 /**
  * Verifies that JSON matches the types we expect, for typescript.
@@ -57,39 +66,46 @@ export type TraveltimeArrivalType = {
  * @param  v JSON object, usually from the traveltime web service
  * @returns   true if matches expected structure
  */
-export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
+export function isValidTauP3TimeJsonType(v: unknown): v is TauP3TimeJsonType {
   if (!v || typeof v !== "object") {
     return false;
   }
   const object = v as Record<string, unknown>;
+  if ( ! (typeof object.model === "string") &&
+      Array.isArray(object.phases) &&
+      Array.isArray(object.arrivals) ) {
 
-  // IRIS web service uses sourceDepth, TauP uses sourcedepth
-  if (
-    !(
-      typeof object.model === "string" &&
-      (typeof object.sourcedepth === "number" ||
-        typeof object.sourceDepth === "number") &&
-      (typeof object.receiverdepth === "number" ||
-        typeof object.receiverDepth === "number")
-    )
-  ) {
     return false;
   }
-  // fix to lower d
+
+  // IRIS web service uses sourceDepth, TauP v uses sourcedepth
+  // fix to lower d from iris
   if (typeof object.sourceDepth === "number") {
     // fix IRIS typo D
-    object.sourcedepth = object.sourceDepth;
+    object.sourcedepthlist = [object.sourceDepth];
     object.sourceDepth = undefined;
   }
   if (typeof object.receiverDepth === "number") {
     // fix IRIS typo D
-    object.receiverdepth = object.receiverDepth;
+    object.receiverdepthlist = [object.receiverDepth];
     object.receiverDepth = undefined;
   }
-  if (!Array.isArray(object.phases)) {
-    return false;
+  if (typeof object.sourcedepth === "number") {
+    // fix IRIS typo D
+    object.sourcedepthlist = [object.sourcedepth];
+    object.sourcedepth = undefined;
   }
-  if (!Array.isArray(object.arrivals)) {
+  if (typeof object.receiverdepth === "number") {
+    // fix IRIS typo D
+    object.receiverdepthlist = [object.receiverdepth];
+    object.receiverdepth = undefined;
+  }
+  if (
+    !(
+      Array.isArray(object.sourcedepthlist) &&
+      Array.isArray(object.receiverdepthlist)
+    )
+  ) {
     return false;
   }
   return true;
@@ -103,6 +119,8 @@ export function isValidTraveltimeArrivalType(
   const object = v as Record<string, unknown>;
 
   return (
+    typeof object.sourcedepth === "number" &&
+    typeof object.receiverdepth === "number" &&
     typeof object.distdeg === "number" &&
     typeof object.name === "string" &&
     typeof object.time === "number" &&
@@ -115,29 +133,6 @@ export function isValidTraveltimeArrivalType(
 }
 
 /**
- * converts a text line from the text format into an
- *  TraveltimeArrivalType object like what is returned by the json format.
- *
- *  @param ttimeline travel time output line for an arrival
- *  @returns parsed travel time arrival
- */
-export function convertTravelTimeLineToObject(
-  ttimeline: string,
-): TraveltimeArrivalType {
-  const items = ttimeline.trim().split(/\s+/);
-  return {
-    distdeg: parseFloat(items[0]),
-    phase: items[2],
-    time: parseFloat(items[3]),
-    rayparam: parseFloat(items[4]),
-    takeoff: parseFloat(items[5]),
-    incident: parseFloat(items[6]),
-    puristdist: parseFloat(items[7]),
-    puristname: items[9],
-  };
-}
-
-/**
  * Creates a fake arrival for the origin time, useful to display a flag
  * at origin time similar to the P and S arrival.
  * @param  distdeg earthquake to station distance, in degrees
@@ -145,6 +140,8 @@ export function convertTravelTimeLineToObject(
  */
 export function createOriginArrival(distdeg: number): TraveltimeArrivalType {
   return {
+    sourcedepth: 0,
+    receiverdepth: 0,
     distdeg: distdeg,
     phase: "origin",
     time: 0,
@@ -157,15 +154,15 @@ export function createOriginArrival(distdeg: number): TraveltimeArrivalType {
 }
 
 /**
- * Query to the IRIS traveltime webservice, based on the TauP Toolkit. See
- * https://service.iris.edu/irisws/traveltime/1/ and
+ * Query to a TauP v3 webservice, based on the TauP Toolkit. See
+ * https://taup.readthedocs.io/en/latest/ and
  * https://www.seis.sc.edu/TauP/
  *
- * @param host optional host to connect to, defaults to IRIS
+ * @param host optional host to connect to, defaults to USC
  */
-export class TraveltimeQuery extends FDSNCommon {
+export class TauPQuery extends FDSNCommon {
   /** @private */
-  _evdepth: number;
+  _evdepth: Array<number> | undefined;
 
   /** @private */
   _distdeg: Array<number> | undefined;
@@ -183,7 +180,7 @@ export class TraveltimeQuery extends FDSNCommon {
   _stalon: number | undefined;
 
   /** @private */
-  _receiverdepth: number | undefined;
+  _receiverdepth: Array<number> | undefined;
 
   /** @private */
   _evlat: number | undefined;
@@ -199,16 +196,17 @@ export class TraveltimeQuery extends FDSNCommon {
 
   constructor(host?: string | null) {
     if (!isNonEmptyStringArg(host)) {
-      host = IRIS_HOST;
+      host = USC_HOST;
     }
-    super(TRAVELTIME_SERVICE, host);
-    this._path_base = IRISWS_PATH_BASE;
-    this._evdepth = 0;
+    super(TAUP_SERVICE, host);
+    this.specVersion("3");
+    this._path_base = LOCALWS_PATH_BASE;
+    this._evdepth = [0];
     this._format = JSON_FORMAT;
     this._noheader = false; // only for text format
   }
 
-  protocol(value?: string): TraveltimeQuery {
+  protocol(value?: string): TauPQuery {
     doStringGetterSetter(this, "protocol", value);
     return this;
   }
@@ -217,7 +215,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._protocol;
   }
 
-  host(value?: string): TraveltimeQuery {
+  host(value?: string): TauPQuery {
     doStringGetterSetter(this, "host", value);
     return this;
   }
@@ -232,7 +230,7 @@ export class TraveltimeQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  port(value?: number): TraveltimeQuery {
+  port(value?: number): TauPQuery {
     doIntGetterSetter(this, "port", value);
     return this;
   }
@@ -241,7 +239,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._port;
   }
 
-  pathBase(value?: string): TraveltimeQuery {
+  pathBase(value?: string): TauPQuery {
     doStringGetterSetter(this, "path_base", value);
     return this;
   }
@@ -257,7 +255,7 @@ export class TraveltimeQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  nodata(value?: number): TraveltimeQuery {
+  nodata(value?: number): TauPQuery {
     doIntGetterSetter(this, "nodata", value);
     return this;
   }
@@ -266,7 +264,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._nodata;
   }
 
-  specVersion(value?: string): TraveltimeQuery {
+  specVersion(value?: string): TauPQuery {
     doStringGetterSetter(this, "specVersion", value);
     return this;
   }
@@ -275,21 +273,31 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._specVersion;
   }
 
-  evdepth(value?: number): TraveltimeQuery {
-    doFloatGetterSetter(this, "evdepth", value);
+  evdepth(value?: number | Array<number>): TauPQuery {
+    if (typeof value === "number") {
+      this._evdepth = [value];
+    } else {
+      this._evdepth = value;
+    }
     return this;
   }
 
-  evdepthInMeter(value?: number): TraveltimeQuery {
-    doFloatGetterSetter(this, "evdepth", isDef(value) ? value / 1000 : value);
+  evdepthInMeter(value?: number | Array<number>): TauPQuery {
+    if (value == null) {
+      this._evdepth = [];
+    } else if (typeof value === "number") {
+        this._evdepth = [value/1000];
+      } else {
+      this._evdepth = value.map((d)=>d/1000);
+    }
     return this;
   }
 
-  getEvdepth(): number | undefined {
+  getEvdepth(): Array<number> | undefined {
     return this._evdepth;
   }
 
-  distdeg(value?: number | Array<number>): TraveltimeQuery {
+  distdeg(value?: number | Array<number>): TauPQuery {
     if (typeof value === "number") {
       this._distdeg = [value];
     } else {
@@ -302,7 +310,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._distdeg;
   }
 
-  model(value?: string): TraveltimeQuery {
+  model(value?: string): TauPQuery {
     doStringGetterSetter(this, "model", value);
     return this;
   }
@@ -311,7 +319,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._model;
   }
 
-  phases(value?: string): TraveltimeQuery {
+  phases(value?: string): TauPQuery {
     doStringGetterSetter(this, "phases", value);
     return this;
   }
@@ -320,7 +328,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._phases;
   }
 
-  stalat(value?: number): TraveltimeQuery {
+  stalat(value?: number): TauPQuery {
     doFloatGetterSetter(this, "stalat", value);
     return this;
   }
@@ -329,7 +337,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._stalat;
   }
 
-  stalon(value?: number): TraveltimeQuery {
+  stalon(value?: number): TauPQuery {
     doFloatGetterSetter(this, "stalon", value);
     return this;
   }
@@ -338,18 +346,18 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._stalon;
   }
 
-  latLonFromStation(station: Station): TraveltimeQuery {
+  latLonFromStation(station: Station): TauPQuery {
     this.stalat(station.latitude);
     this.stalon(station.longitude);
     return this;
   }
 
-  receiverdepth(value?: number): TraveltimeQuery {
+  receiverdepth(value?: number): TauPQuery {
     doFloatGetterSetter(this, "receiverdepth", value);
     return this;
   }
 
-  receiverdepthInMeter(value?: number): TraveltimeQuery {
+  receiverdepthInMeter(value?: number): TauPQuery {
     doFloatGetterSetter(
       this,
       "receiverdepth",
@@ -358,15 +366,15 @@ export class TraveltimeQuery extends FDSNCommon {
     return this;
   }
 
-  receiverdepthFromChannel(channel: Channel): TraveltimeQuery {
+  receiverdepthFromChannel(channel: Channel): TauPQuery {
     return this.receiverdepth(channel.depth / 1000);
   }
 
-  getReceiverdepth(): number | undefined {
+  getReceiverdepth(): Array<number> | undefined {
     return this._receiverdepth;
   }
 
-  evlat(value?: number): TraveltimeQuery {
+  evlat(value?: number): TauPQuery {
     doFloatGetterSetter(this, "evlat", value);
     return this;
   }
@@ -375,7 +383,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._evlat;
   }
 
-  evlon(value?: number): TraveltimeQuery {
+  evlon(value?: number): TauPQuery {
     doFloatGetterSetter(this, "evlon", value);
     return this;
   }
@@ -384,14 +392,14 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._evlon;
   }
 
-  latLonFromQuake(quake: Quake): TraveltimeQuery {
+  latLonFromQuake(quake: Quake): TauPQuery {
     this.evlat(quake.latitude);
     this.evlon(quake.longitude);
     this.evdepthInMeter(quake.depth);
     return this;
   }
 
-  format(value?: string): TraveltimeQuery {
+  format(value?: string): TauPQuery {
     doStringGetterSetter(this, "format", value);
     return this;
   }
@@ -400,7 +408,7 @@ export class TraveltimeQuery extends FDSNCommon {
     return this._format;
   }
 
-  noheader(value?: boolean): TraveltimeQuery {
+  noheader(value?: boolean): TauPQuery {
     doBoolGetterSetter(this, "noheader", value);
     return this;
   }
@@ -415,7 +423,7 @@ export class TraveltimeQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  timeout(value?: number): TraveltimeQuery {
+  timeout(value?: number): TauPQuery {
     doFloatGetterSetter(this, "timeoutSec", value);
     return this;
   }
@@ -426,7 +434,7 @@ export class TraveltimeQuery extends FDSNCommon {
 
   queryText(): Promise<string> {
     this.format(TEXT_FORMAT);
-    const url = this.formURL();
+    const url = this.formURL(TAUP_TIME_TOOL);
     const fetchInit = defaultFetchInitObj(TEXT_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
       (response) => {
@@ -447,9 +455,9 @@ export class TraveltimeQuery extends FDSNCommon {
     );
   }
 
-  queryJson(): Promise<TraveltimeJsonType> {
+  queryJson(): Promise<TauP3TimeJsonType> {
     this.format(JSON_FORMAT);
-    const url = this.formURL();
+    const url = this.formURL(TAUP_TIME_TOOL);
     const fetchInit = defaultFetchInitObj(JSON_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
@@ -464,17 +472,17 @@ export class TraveltimeQuery extends FDSNCommon {
         }
       })
       .then((jsonValue) => {
-        if (isValidTraveltimeJsonType(jsonValue)) {
+        if (isValidTauP3TimeJsonType(jsonValue)) {
           return jsonValue;
         } else {
-          throw new TypeError(`Oops, we did not get root traveltime JSON!`);
+          throw new TypeError(`Oops, we did not get root traveltime JSON! ${JSON.stringify(jsonValue)}`);
         }
       });
   }
 
   querySvg(): Promise<Element> {
     this.format(SVG_FORMAT);
-    const url = this.formURL();
+    const url = this.formURL(TAUP_PATH_TOOL);
     const fetchInit = defaultFetchInitObj(SVG_MIME);
     return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000)
       .then((response) => {
@@ -520,7 +528,7 @@ export class TraveltimeQuery extends FDSNCommon {
     });
   }
 
-  query(): Promise<TraveltimeJsonType | Element | string> {
+  query(): Promise<TauP3TimeJsonType | Element | string> {
     if (this._format === JSON_FORMAT) {
       return this.queryJson();
     } else if (this._format === SVG_FORMAT) {
@@ -549,27 +557,28 @@ export class TraveltimeQuery extends FDSNCommon {
     return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
-  formURL(): string {
-    let url = this.formBaseURL() + "/query?";
+  formURL(toolname?: string): string {
+    if (toolname == null) {toolname = TAUP_TIME_TOOL;}
+    let url = `${this.formBaseURL()}/${toolname}?`;
 
     if (isDef(this._noheader) && this._noheader) {
       url = url + "noheader=true&";
     }
 
-    if (isDef(this._evdepth) && this._evdepth !== 0) {
-      url = url + makeParam("evdepth", this._evdepth);
+    if (isDef(this._evdepth) && this._evdepth.length !== 0) {
+      url = url + makeParam("evdepth", this._evdepth.join(","));
     }
 
-    if (isDef(this._receiverdepth) && this._receiverdepth !== 0) {
-      url = url + makeParam("receiverdepth", this._receiverdepth);
+    if (isDef(this._receiverdepth) && this._receiverdepth.length !== 0) {
+      url = url + makeParam("receiverdepth", this._receiverdepth.join(","));
     }
 
     if (isDef(this._stalat) && isDef(this._stalon)) {
       url =
         url +
         makeParam(
-          "staloc",
-          "[" + stringify(this._stalat) + "," + stringify(this._stalon) + "]",
+          "station",
+          stringify(this._stalat) + "," + stringify(this._stalon),
         );
     }
 
@@ -577,13 +586,13 @@ export class TraveltimeQuery extends FDSNCommon {
       url =
         url +
         makeParam(
-          "evloc",
-          "[" + stringify(this._evlat) + "," + stringify(this._evlon) + "]",
+          "event",
+          stringify(this._evlat) + "," + stringify(this._evlon),
         );
     }
 
-    if (isDef(this._distdeg)) {
-      url = url + makeParam("distdeg", this._distdeg.join(","));
+    if (isDef(this._distdeg) && this._distdeg.length !== 0) {
+      url = url + makeParam("deg", this._distdeg.join(","));
     }
 
     if (isDef(this._model)) {
@@ -591,7 +600,7 @@ export class TraveltimeQuery extends FDSNCommon {
     }
 
     if (isDef(this._phases)) {
-      url = url + makeParam("phases", this._phases);
+      url = url + makeParam("phase", this._phases);
     }
 
     if (isDef(this._format)) {
@@ -625,7 +634,7 @@ export class TraveltimeQuery extends FDSNCommon {
   }
 
   formTauPVersionURL(): string {
-    return this.formBaseURL() + "/taupversion";
+    return this.formBaseURL() + "/version";
   }
 
   formWadlURL(): string {
@@ -640,12 +649,12 @@ Distance   Depth   Phase   Travel    Ray Param  Takeoff  Incident  Purist    Pur
 `;
 
 export function createEmptyTraveltimeJson(
-  ttquery: TraveltimeQuery,
-): TraveltimeJsonType {
-  const out: TraveltimeJsonType = {
+  ttquery: TauPQuery,
+): TauP3TimeJsonType {
+  const out: TauP3TimeJsonType = {
     model: isDef(ttquery._model) ? ttquery._model : "",
-    sourcedepth: isDef(ttquery._evdepth) ? ttquery._evdepth : 0,
-    receiverdepth: isDef(ttquery._receiverdepth) ? ttquery._receiverdepth : 0,
+    sourcedepthlist: isDef(ttquery._evdepth) ? ttquery._evdepth : [0],
+    receiverdepthlist: isDef(ttquery._receiverdepth) ? ttquery._receiverdepth : [0],
     phases: isDef(ttquery._phases) ? ttquery._phases.split(",") : [],
     arrivals: [],
   };

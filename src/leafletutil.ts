@@ -131,8 +131,8 @@ export function createQuakeMarker(
       ? quake.longitude
       : quake.longitude - 360;
   // in case no mag
-  let magnitude = quake.magnitude ? quake.magnitude.mag : 1;
-  let radius = getRadiusForMag(magnitude, magScaleFactor);
+  const magnitude = quake.magnitude ? quake.magnitude.mag : 1;
+  const radius = getRadiusForMag(magnitude, magScaleFactor);
 
   const circle = L.circleMarker([quake.latitude, qLon], {
     color: "currentColor",
@@ -180,7 +180,10 @@ export class QuakeStationMap extends SeisPlotElement {
   geoJsonLayerStyleFuncMap: Map<string, L.StyleFunction>;
   overlayLayerMap: Map<string, L.LayerGroup>;
   quakeLayer = L.layerGroup();
+
+  quakeLayerName = "Quakes";
   stationLayer = L.layerGroup();
+  stationLayerName = "Stations";
   layerControl = L.control.layers();
   constructor(
     seisData?: Array<SeismogramDisplayData>,
@@ -499,7 +502,7 @@ export class QuakeStationMap extends SeisPlotElement {
     // Add geoJsonLayers if present
     for (const [layername, jsondata] of this.geoJsonLayerMap) {
       if (this.map) {
-        let styleFunction = this.geoJsonLayerStyleFuncMap.get(layername);
+        const styleFunction = this.geoJsonLayerStyleFuncMap.get(layername);
         L.geoJSON(jsondata, {style: styleFunction}).addTo(this.map);
       }
     }
@@ -507,8 +510,7 @@ export class QuakeStationMap extends SeisPlotElement {
 
   drawQuakeLayer(){
     this.quakeLayer.clearLayers();
-    let layername = "Quakes";
-    let quakes = this.quakeList.concat(uniqueQuakes(this.seisData));
+    const quakes = this.quakeList.concat(uniqueQuakes(this.seisData));
 
     quakes.forEach((q) => {
       const circle = createQuakeMarker(
@@ -529,15 +531,14 @@ export class QuakeStationMap extends SeisPlotElement {
       this.quakeLayer.addTo(this.map);
     }
     // if quakes are present and the layer has not be added to the control do so.
-    if (quakes.length > 0 && !this.overlayLayerMap.has(layername)) {
-      this.overlayLayerMap.set(layername, this.quakeLayer);
-      this.layerControl.addOverlay(this.quakeLayer, layername);
+    if (quakes.length > 0 && !this.overlayLayerMap.has(this.quakeLayerName)) {
+      this.overlayLayerMap.set(this.quakeLayerName, this.quakeLayer);
+      this.layerControl.addOverlay(this.quakeLayer, this.quakeLayerName);
     }
   }
   drawStationLayer(){
     this.stationLayer.clearLayers();
-    let layername = "Stations";
-    let stations = this.stationList.concat(uniqueStations(this.seisData));
+    const stations = this.stationList.concat(uniqueStations(this.seisData));
 
     stations.forEach((s) => {
       const m = createStationMarker(
@@ -558,9 +559,9 @@ export class QuakeStationMap extends SeisPlotElement {
     if (this.map){
       this.stationLayer.addTo(this.map);
     }
-    if (stations.length > 0 && !this.overlayLayerMap.has(layername)) {
-      this.overlayLayerMap.set(layername, this.stationLayer);
-      this.layerControl.addOverlay(this.stationLayer, layername);
+    if (stations.length > 0 && !this.overlayLayerMap.has(this.stationLayerName)) {
+      this.overlayLayerMap.set(this.stationLayerName, this.stationLayer);
+      this.layerControl.addOverlay(this.stationLayer, this.stationLayerName);
     }
   }
 

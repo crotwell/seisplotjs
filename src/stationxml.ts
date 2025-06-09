@@ -28,7 +28,7 @@ import {
 } from "./fdsnsourceid";
 import { DateTime, Interval } from "luxon";
 
-export const STAXML_MIME="application/vnd.fdsn.stationxml+xml"
+export const STAXML_MIME="application/vnd.fdsn.stationxml+xml";
 /** xml namespace for stationxml */
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
 export const COUNT_UNIT_NAME = "count";
@@ -1593,9 +1593,8 @@ export function uniqueNetworks(channelList: Iterable<Channel|Station>): Array<Ne
   const out = new Set<Network>();
   for (const c of channelList) {
     if (c) {
-      console.log(`uniqueNet ${c.constructor.name}`)
       if (c instanceof Station) {
-        out.add(c.network)
+        out.add(c.network);
       } else if (c instanceof Channel) {
         out.add(c.station.network);
       } else {
@@ -1662,8 +1661,6 @@ const _grabFirstEl = function (
   xml: Element | null | void,
   tagName: string,
 ): Element | null {
-  let out = null;
-
   if (xml instanceof Element) {
     const elList = Array.from(xml.children).filter(
       (e) => e.tagName === tagName,
@@ -1676,7 +1673,7 @@ const _grabFirstEl = function (
     }
   }
 
-  return out;
+  return null;
 };
 
 const _grabFirstElText = function _grabFirstElText(

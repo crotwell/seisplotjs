@@ -39,6 +39,9 @@ import {
   stringify,
 } from "./util";
 
+/** const for service name */
+export const EVENT_SERVICE = "event";
+
 /**
  * Major version of the FDSN spec supported here.
  * Currently is 1.
@@ -141,7 +144,7 @@ export class EventQuery extends FDSNCommon {
     if (!isNonEmptyStringArg(host)) {
       host = USGS_HOST;
     }
-    super(host);
+    super(EVENT_SERVICE, host);
   }
 
   /**
@@ -206,6 +209,16 @@ export class EventQuery extends FDSNCommon {
   getPort(): number | undefined {
     return this._port;
   }
+
+  pathBase(value?: string): EventQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
+  }
+
 
   /**
    * Gets/Sets the nodata parameter, usually 404 or 204 (default), controlling
@@ -765,6 +778,8 @@ export class EventQuery extends FDSNCommon {
    *
    * @returns the url
    */
+
+
   formBaseURL(): string {
     let colon = ":";
 
@@ -775,18 +790,11 @@ export class EventQuery extends FDSNCommon {
     }
 
     if (this._protocol.endsWith(colon)) {
-      colon = "";
+     colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + stringify(this._port)) +
-      "/fdsnws/event/" +
-      this._specVersion
-    );
+    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   /**

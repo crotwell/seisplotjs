@@ -1180,7 +1180,7 @@ export function convertMS2Record(ms2record: DataRecord): MSeed3Record {
   xHeader.extraHeadersLength = JSON.stringify(xExtras).length;
   // need to convert if not steim1 or 2 or little endian
   let data;
-  if (ms2record.header.encoding==11 || ms2record.header.encoding == 12 ||
+  if (ms2record.header.encoding===11 || ms2record.header.encoding === 12 ||
     (ms2record.header.encoding<=5 && ms2record.header.littleEndian)) {
     data = ms2record.data;
   } else {

@@ -260,7 +260,7 @@ export class QuakeTable extends HTMLElement {
     // use the default display style in getQuakeValue
     if (!columnValues) {
       columnValues = new Map<string, (q: Quake) => string>();
-      let defColumnValues = QuakeTable.createDefaultColumnValues();
+      const defColumnValues = QuakeTable.createDefaultColumnValues();
       for (const key of columnLabels.keys()) {
         if (defColumnValues.has(key)) {
           const fn = defColumnValues.get(key);
@@ -315,7 +315,7 @@ export class QuakeTable extends HTMLElement {
     this.draw();
   }
   static createDefaultColumnLabels() {
-    let columnLabels = new Map();
+    const columnLabels = new Map();
     columnLabels.set(QUAKE_COLUMN.TIME, "Time");
     columnLabels.set(QUAKE_COLUMN.LAT, "Lat");
     columnLabels.set(QUAKE_COLUMN.LON, "Lon");
@@ -327,7 +327,7 @@ export class QuakeTable extends HTMLElement {
   }
 
   static createDefaultColumnValues() {
-    let columnValues = new Map<string, (q: Quake) => string>();
+    const columnValues = new Map<string, (q: Quake) => string>();
     columnValues.set(QUAKE_COLUMN.TIME, (q: Quake) => stringify(q.time.toISO()));
     columnValues.set(QUAKE_COLUMN.LOCALTIME, (q: Quake) => stringify(q.time.setZone('local').toISO()));
     columnValues.set(QUAKE_COLUMN.LAT, (q: Quake) => latlonFormat.format(q.latitude));
@@ -368,7 +368,7 @@ export class QuakeTable extends HTMLElement {
     const theader = table.createTHead().insertRow();
     this.headers().forEach((h) => {
       const cell = theader.appendChild(document.createElement("th"));
-      let label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
+      const label = this._columnLabels.has(h) ? this._columnLabels.get(h) : h;
       cell.textContent = `${label}`;
       if (h === QUAKE_COLUMN.LOCALTIME) {
         if (this.timeZone) {
@@ -414,12 +414,12 @@ export class QuakeTable extends HTMLElement {
   }
 
   getQuakeValue(q: Quake, h: string): string {
-    let fn = this._columnValues.has(h) ? this._columnValues.get(h) : null;
+    const fn = this._columnValues.has(h) ? this._columnValues.get(h) : null;
 
     if (fn != null) {
       return fn(q);
     } else {
-      return `unknown: ${String(h)}`
+      return `unknown: ${String(h)}`;
     }
   }
   sort(h: string, _headerCell: HTMLTableCellElement) {
@@ -702,7 +702,7 @@ export class StationTable extends HTMLElement {
 
     if (!columnValues) {
       columnValues = new Map<string, (sta: Station) => string>();
-      let defColumnValues = StationTable.createDefaultColumnValues();
+      const defColumnValues = StationTable.createDefaultColumnValues();
       for (const key of columnLabels.keys()) {
         if (defColumnValues.has(key)) {
           const fn = defColumnValues.get(key);

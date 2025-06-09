@@ -3,7 +3,7 @@
  * University of South Carolina, 2025
  * https://www.seis.sc.edu
  */
-import { FDSNCommon, IRIS_HOST } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE } from "./fdsncommon";
 import { FORMAT_MINISEED } from "./fdsndataselect";
 import { TESTING_NETWORK } from "./fdsnsourceid";
 import { Quake } from "./quakeml";
@@ -29,6 +29,8 @@ import {
   TEXT_MIME
 } from "./util";
 
+/** const for service name */
+export const SYNGINE_SERVICE = "syngine";
 
 /**
  * Major version of the FDSN spec supported here.
@@ -40,7 +42,7 @@ export const SERVICE_VERSION = 1;
  * Service name as used in the FDSN DataCenters registry,
  * https://www.fdsn.org/datacenters
  */
-export const SERVICE_NAME = `irisws-syngine-${SERVICE_VERSION}`;
+export const SERVICE_NAME = `irisws-${SYNGINE_SERVICE}-${SERVICE_VERSION}`;
 
 export function calcMoment(Mw: number): number {
   return 10.0 ** ((Mw / 2.0 * 3.0 + 9.1));
@@ -154,7 +156,8 @@ export class SyngineQuery extends FDSNCommon {
     if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
-    super(host);
+    super(SYNGINE_SERVICE, host);
+    this._path_base = IRISWS_PATH_BASE;
   }
 
 
@@ -235,6 +238,15 @@ export class SyngineQuery extends FDSNCommon {
 
   getPort(): number | undefined {
     return this._port;
+  }
+
+  pathBase(value?: string): SyngineQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
   }
 
   format(value?: string): SyngineQuery {
@@ -617,7 +629,7 @@ export class SyngineQuery extends FDSNCommon {
    * @returns new value if getting, this if setting
    */
   sourceMomentTensor(value?: Array<number>): SyngineQuery {
-    if (value && value.length != 6) {
+    if (value && value.length !== 6) {
       throw new Error(`Moment tensor must be 6 numbers, but given ${value.length}`);
     }
     this._sourcemomenttensor = value;
@@ -636,7 +648,7 @@ export class SyngineQuery extends FDSNCommon {
    * @returns new value if getting, this if setting
    */
   sourceDoubleCouple(value?: Array<number>): SyngineQuery {
-    if (value && (value.length != 3 && value.length != 4)) {
+    if (value && (value.length !== 3 && value.length !== 4)) {
       throw new Error(`Moment tensor must be 3-4 numbers, but given ${value.length}`);
     }
     this._sourcedoublecouple = value;
@@ -655,7 +667,7 @@ export class SyngineQuery extends FDSNCommon {
    * @returns new value if getting, this if setting
    */
   sourceForce(value?: Array<number>): SyngineQuery {
-    if (value && value.length != 3) {
+    if (value && value.length !== 3) {
       throw new Error(`sourceforce must be 3 numbers, but given ${value.length}`);
     }
     this._sourceforce = value;
@@ -703,8 +715,6 @@ export class SyngineQuery extends FDSNCommon {
           for (let i=0; i<ms2Data.length; i++) {
             if (ms2Data[i] > max) { max = ms2Data[i];}
           }
-          console.log(`syngine dr ${dr.header.encoding} ${dr.header.startTime} to ${dr.header.endTime} ${dr.header.numSamples} max: ${max}`)
-          console.log(dr.toString());
         }
         return dataRecords;
       });
@@ -723,10 +733,6 @@ export class SyngineQuery extends FDSNCommon {
   queryMS3Records(): Promise<Array<mseed3.MSeed3Record>> {
     return this.queryDataRecords().then(msList => {
       const ms3List = mseed3.convertMS2toMSeed3(msList);
-      if (msList.length > 0) {
-        const ms3 = ms3List[0];
-        console.log(`first ms3: ${ms3.header.start} ${ms3.header.end}`)
-      }
       return ms3List;
     });
   }
@@ -764,22 +770,21 @@ export class SyngineQuery extends FDSNCommon {
     });
   }
 
+
+  /**
+   * Forms the basic URL to contact the web service, without any query paramters
+   *
+   * @returns the url
+   */
   formBaseURL(): string {
     let colon = ":";
 
     if (this._protocol.endsWith(colon)) {
-      colon = "";
+    colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + String(this._port)) +
-      "/irisws/syngine/" +
-      this._specVersion
-    );
+    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   formVersionURL(): string {
@@ -840,7 +845,7 @@ export class SyngineQuery extends FDSNCommon {
       url = url + makeParam("endtime", toIsoWoZ(this._endTime));
     }
 
-    if (this._channel && this._channel.networkCode != TESTING_NETWORK) {
+    if (this._channel && this._channel.networkCode !== TESTING_NETWORK) {
       url = url + makeParam("network", this._channel.networkCode)
         + makeParam("station", this._channel.stationCode);
     } else if (isNumArg(this._receiverlatitude) && isNumArg(this._receiverlongitude)) {
@@ -887,7 +892,7 @@ export class SyngineQuery extends FDSNCommon {
         + makeParam("sourcelongitude", this._quake.longitude);
       url = url + makeParam("sourcedepthinmeters", this._quake.depth);
     } else if (isStringArg(this._eventid)) {
-      url = url + makeParam("eventid", this._eventid)
+      url = url + makeParam("eventid", this._eventid);
     } else {
       if (isObject(this._originTime)) {
         url = url + makeParam("origintime", toIsoWoZ(this._originTime));
@@ -916,14 +921,14 @@ export class SyngineQuery extends FDSNCommon {
         const mt = focMech.momentTensorList[0];
         if (isDef(mt.tensor)) {
           const t = mt.tensor;
-          url = url + makeParam("sourcemomenttensor", `${t.Mrr},${t.Mtt},${t.Mpp},${t.Mrt},${t.Mrp},${t.Mtp}`);
+          url = url + makeParam("sourcemomenttensor", `${t.Mrr.value},${t.Mtt.value},${t.Mpp.value},${t.Mrt.value},${t.Mrp.value},${t.Mtp.value}`);
         }
       } else if (isDef(this._quake?.preferredFocalMechanism?.nodalPlanes)) {
         const np = this._quake?.preferredFocalMechanism?.nodalPlanes.nodalPlane1;
         const magVal= this._quake?.preferredMagnitude?.magQuantity?.value;
         const momentArg = isDef(magVal) ? `,${calcMoment(magVal)}` : "";
         if (isDef(np)) {
-          url = url + makeParam("sourcedoublecouple", `${np.strike},${np.dip},${np.rake}${momentArg}`);
+          url = url + makeParam("sourcedoublecouple", `${np.strike.value},${np.dip.value},${np.rake.value}${momentArg}`);
         }
       }
     }

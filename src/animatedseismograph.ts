@@ -12,6 +12,7 @@ import { SeismogramDisplayData } from "./seismogram";
 import { SeisPlotElement } from "./spelement";
 import { SeismographConfig } from "./seismographconfig";
 import { Network } from "./stationxml";
+import {warn} from "./util";
 
 export class AnimatedTimeScaler {
   alignmentTime: DateTime;
@@ -98,9 +99,9 @@ export class RTDisplayContainer {
     this.animationScaler = animationScaler;
     this.packetHandler = packetHandler;
     this.config = config;
-    this.resizeObserver = new ResizeObserver((entries) => {
+    this.resizeObserver = new ResizeObserver((_entries) => {
       if ( ! config.minRedrawMillis) {
-        this.recalculateRedrawTime().then((rt) => {console.log(`resize an org disp: ${rt.animationScaler.minRedrawMillis}`);});
+        this.recalculateRedrawTime().catch(err => warn(`Error recalculateRedrawTime ${err}`));
       }
     });
     this.resizeObserver.observe(this.organizedDisplay);
