@@ -28,7 +28,7 @@ test("formURL", () => {
    return query.queryJson().then( tt => {
      expect(tt.arrivals.length).toEqual(11);
      expect(tt.sourcedepthlist).toEqual(query.getEvdepth());
-     let recDepthList = query.getReceiverdepth() ? query.getReceiverdepth() : [0];
+     const recDepthList = query.getReceiverdepth() ? query.getReceiverdepth() : [0];
      expect(tt.receiverdepthlist).toEqual(recDepthList);
    });
 

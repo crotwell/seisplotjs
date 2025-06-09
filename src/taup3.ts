@@ -36,7 +36,7 @@ export const TAUP_PATH_TOOL = "path";
  * Type for json returned by iris traveltime web service
  *
  */
-export type TraveltimeJsonType = {
+export type TauP3TimeJsonType = {
   model: string;
   sourcedepthlist: Array<number>;
   receiverdepthlist: Array<number>;
@@ -66,7 +66,7 @@ export type TraveltimeAmplitudeType = {
  * @param  v JSON object, usually from the traveltime web service
  * @returns   true if matches expected structure
  */
-export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
+export function isValidTauP3TimeJsonType(v: unknown): v is TauP3TimeJsonType {
   if (!v || typeof v !== "object") {
     return false;
   }
@@ -75,7 +75,6 @@ export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
       Array.isArray(object.phases) &&
       Array.isArray(object.arrivals) ) {
 
-          console.log(`mod phase arr not list: mod: ${(typeof object.model !== "string")}  ph: ${Array.isArray(object.phases)} ar: ${Array.isArray(object.arrivals)}`)
     return false;
   }
 
@@ -107,7 +106,6 @@ export function isValidTraveltimeJsonType(v: unknown): v is TraveltimeJsonType {
       Array.isArray(object.receiverdepthlist)
     )
   ) {
-    console.log("source rec depth not list")
     return false;
   }
   return true;
@@ -457,7 +455,7 @@ export class TauPQuery extends FDSNCommon {
     );
   }
 
-  queryJson(): Promise<TraveltimeJsonType> {
+  queryJson(): Promise<TauP3TimeJsonType> {
     this.format(JSON_FORMAT);
     const url = this.formURL(TAUP_TIME_TOOL);
     const fetchInit = defaultFetchInitObj(JSON_MIME);
@@ -474,7 +472,7 @@ export class TauPQuery extends FDSNCommon {
         }
       })
       .then((jsonValue) => {
-        if (isValidTraveltimeJsonType(jsonValue)) {
+        if (isValidTauP3TimeJsonType(jsonValue)) {
           return jsonValue;
         } else {
           throw new TypeError(`Oops, we did not get root traveltime JSON! ${JSON.stringify(jsonValue)}`);
@@ -530,7 +528,7 @@ export class TauPQuery extends FDSNCommon {
     });
   }
 
-  query(): Promise<TraveltimeJsonType | Element | string> {
+  query(): Promise<TauP3TimeJsonType | Element | string> {
     if (this._format === JSON_FORMAT) {
       return this.queryJson();
     } else if (this._format === SVG_FORMAT) {
@@ -652,8 +650,8 @@ Distance   Depth   Phase   Travel    Ray Param  Takeoff  Incident  Purist    Pur
 
 export function createEmptyTraveltimeJson(
   ttquery: TauPQuery,
-): TraveltimeJsonType {
-  const out: TraveltimeJsonType = {
+): TauP3TimeJsonType {
+  const out: TauP3TimeJsonType = {
     model: isDef(ttquery._model) ? ttquery._model : "",
     sourcedepthlist: isDef(ttquery._evdepth) ? ttquery._evdepth : [0],
     receiverdepthlist: isDef(ttquery._receiverdepth) ? ttquery._receiverdepth : [0],

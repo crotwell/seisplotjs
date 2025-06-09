@@ -9,6 +9,7 @@ import * as syngine from '../src/syngine';
 test("formURL", () => {
   const query = new syngine.SyngineQuery();
   query.format(syngine.FORMAT_MINISEED);
+  expect(query.host(IRIS_HOST)).toBe(query);
   expect(query.originTime('2010-02-27T06:30:00.000')).toBe(query);
   expect(query.sourceLatitude(-35.98)).toBe(query);
   expect(query.sourceLongitude(-73)).toBe(query);

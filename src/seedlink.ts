@@ -174,7 +174,7 @@ export class SeedlinkConnection {
       }
     } else {
       // ?? error??
-      this.handleError(new Error("Unknown message type" + String(event)));
+      this.handleError(new Error("Unknown message type" + JSON.stringify(event)));
     }
   }
 

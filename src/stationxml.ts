@@ -1661,8 +1661,6 @@ const _grabFirstEl = function (
   xml: Element | null | void,
   tagName: string,
 ): Element | null {
-  let out = null;
-
   if (xml instanceof Element) {
     const elList = Array.from(xml.children).filter(
       (e) => e.tagName === tagName,
@@ -1675,7 +1673,7 @@ const _grabFirstEl = function (
     }
   }
 
-  return out;
+  return null;
 };
 
 const _grabFirstElText = function _grabFirstElText(

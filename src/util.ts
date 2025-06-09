@@ -299,7 +299,7 @@ export function stringify(value: unknown): string {
           ? s
           : `Invalid DateTime: ${dateTimeValue.invalidReason}: ${dateTimeValue.invalidExplanation}`;
       } else {
-        return `${value?.constructor?.name} ${String(value)}`;
+        return `${value?.constructor?.name} ${JSON.stringify(value)}`;
       }
       //} else if (typeof value === 'symbol') {
       //  return value.toString();
