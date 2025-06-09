@@ -40,8 +40,9 @@ test("do seedlink test", done => {
   const start = DateTime.utc().minus(Duration.fromISO('PT3M'));
   slConn = new SeedlinkConnection(ring.getSeedLinkURL(), config, packetFun, errorFun);
   slConn.setTimeCommand(start);
-  slConn.connect();
-  expect(slConn.isConnected()).toBeTrue();
+  slConn.connect().then(servId => {
+    expect(slConn.isConnected()).toBeTrue();
+  });
 
 });
 

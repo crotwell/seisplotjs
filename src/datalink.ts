@@ -64,7 +64,7 @@ export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 export function extractDLProto(lines: Array<string>): string {
   for (let line of lines) {
     line = line.trim();
-    let items = line.split(/[ ,]+/);
+    const items = line.split(/[ ,]+/);
     for (const p of items) {
       if (p.startsWith("DLPROTO:")) {
         return p.substring(8);
@@ -275,7 +275,7 @@ export class DataLinkConnection {
       .then((dlResponse) => {
         if (dlResponse.type === "ID") {
           this.serverId = "" + dlResponse.message;
-          let lines = this.serverId.split(/\r?\n/g);
+          const lines = this.serverId.split(/\r?\n/g);
           this.dlproto = extractDLProto(lines);
           return this.serverId;
         } else {

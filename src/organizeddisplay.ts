@@ -333,7 +333,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
       sortFS.appendChild(legend);
       const sortKeyList = Array.from(orgdisp._sorting.keys());
       sortKeyList.push("none");
-      for (let sortKey of sortKeyList) {
+      for (const sortKey of sortKeyList) {
         const span = document.createElement("span");
         const input = document.createElement("input");
         input.setAttribute("type", "radio");

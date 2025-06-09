@@ -921,14 +921,14 @@ export class SyngineQuery extends FDSNCommon {
         const mt = focMech.momentTensorList[0];
         if (isDef(mt.tensor)) {
           const t = mt.tensor;
-          url = url + makeParam("sourcemomenttensor", `${t.Mrr},${t.Mtt},${t.Mpp},${t.Mrt},${t.Mrp},${t.Mtp}`);
+          url = url + makeParam("sourcemomenttensor", `${t.Mrr.value},${t.Mtt.value},${t.Mpp.value},${t.Mrt.value},${t.Mrp.value},${t.Mtp.value}`);
         }
       } else if (isDef(this._quake?.preferredFocalMechanism?.nodalPlanes)) {
         const np = this._quake?.preferredFocalMechanism?.nodalPlanes.nodalPlane1;
         const magVal= this._quake?.preferredMagnitude?.magQuantity?.value;
         const momentArg = isDef(magVal) ? `,${calcMoment(magVal)}` : "";
         if (isDef(np)) {
-          url = url + makeParam("sourcedoublecouple", `${np.strike},${np.dip},${np.rake}${momentArg}`);
+          url = url + makeParam("sourcedoublecouple", `${np.strike.value},${np.dip.value},${np.rake.value}${momentArg}`);
         }
       }
     }

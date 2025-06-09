@@ -193,8 +193,8 @@ export function addStyleToElement(
   }
   //Insert style at the end of the list of styles to maintain
   //the typical css precedence rule (styles added later override previous)
-  let styleNodes = shadowRoot.querySelectorAll("style");
-  let lastStyle = styleNodes[styleNodes.length-1];
+  const styleNodes = shadowRoot.querySelectorAll("style");
+  const lastStyle = styleNodes[styleNodes.length-1];
   if (lastStyle) {
     lastStyle.after(styleEl);
   }
