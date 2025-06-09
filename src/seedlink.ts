@@ -160,6 +160,7 @@ export class SeedlinkConnection {
   close(): void {
     if (this.webSocket) {
       this.webSocket.close();
+      this.webSocket = null;
     }
   }
 
