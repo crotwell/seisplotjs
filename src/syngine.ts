@@ -385,7 +385,7 @@ export class SyngineQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  originTime(value?: DateTime): SyngineQuery {
+  originTime(value?: DateTime | string): SyngineQuery {
     doMomentGetterSetter(this, "originTime", value);
     return this;
   }
@@ -400,7 +400,7 @@ export class SyngineQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  startTime(value?: DateTime): SyngineQuery {
+  startTime(value?: DateTime | string): SyngineQuery {
     doMomentGetterSetter(this, "startTime", value);
     return this;
   }
@@ -415,7 +415,7 @@ export class SyngineQuery extends FDSNCommon {
    * @param value optional new value if setting
    * @returns new value if getting, this if setting
    */
-  endTime(value?: DateTime): SyngineQuery {
+  endTime(value?: DateTime | string): SyngineQuery {
     doMomentGetterSetter(this, "endTime", value);
     return this;
   }
