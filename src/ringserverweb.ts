@@ -10,7 +10,8 @@ import {
   StationSourceId,
   NetworkSourceId,
   NslcId,
-  parseSourceId
+  parseSourceId,
+  FDSNSourceId
 } from "./fdsnsourceid";
 import {
   sidForId,
@@ -26,10 +27,8 @@ import {
   isNonEmptyStringArg,
   isNumArg,
   isDef,
-  TEXT_MIME,
-  doFetchWithTimeout,
-  defaultFetchInitObj,
   isoToDateTime,
+  pullText
 } from "./util";
 export const SEEDLINK_PATH = "/seedlink";
 export const DATALINK_PATH = "/datalink";
@@ -118,16 +117,34 @@ export class RingserverConnection {
   /**
    * Gets/Sets the remote port to connect to.
    *
-   * @param value optional new value if setting
-   * @returns new value if getting, this if setting
+   * @param value  new value to set
+   * @returns this
    */
-  port(value?: number): number | RingserverConnection {
+  port(value?: number): RingserverConnection {
     doIntGetterSetter(this, "port", value);
     return this;
   }
 
   getPort(): number | undefined {
     return this._port;
+  }
+
+  /**
+   * Sets the prefix for the URL path.
+   *
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
+   */
+  prefix(value?: string): RingserverConnection {
+    if (value && ! value.startsWith("/")) {
+      value = "/"+value;
+    }
+    doStringGetterSetter(this, "prefix", value);
+    return this;
+  }
+
+  getPrefix(): string {
+    return this._prefix;
   }
 
   /**
@@ -154,7 +171,7 @@ export class RingserverConnection {
    * @returns Result as a Promise.
    */
   pullId(): Promise<RingserverVersion> {
-    return this.pullRaw(this.formIdURL()).then((raw) => {
+    return pullText(this.formIdURL(), this._timeoutSec).then((raw) => {
       const lines = raw.split("\n");
       const ringserver_v4 = "ringserver/4";
       const version = lines[0];
@@ -203,19 +220,19 @@ export class RingserverConnection {
    * @param matchPattern regular expression to match
    * @returns Result as a Promise.
    */
-  pullStreamIds(level: number, matchPattern: string): Promise<Array<string>> {
+  pullStreamIds(level: number, matchPattern?: string): Promise<Array<string>> {
     let queryParams = "level=6";
 
     if (isNumArg(level) && level > 0) {
       queryParams = "level=" + level;
     }
 
-    if (matchPattern) {
+    if (matchPattern && matchPattern.length > 0) {
       queryParams = queryParams + "&match=" + matchPattern;
     }
 
     const url = this.formStreamIdsURL(queryParams);
-    return this.pullRaw(url).then((raw) => {
+    return pullText(url, this._timeoutSec).then((raw) => {
       return raw.split("\n").filter((line) => line.length > 0);
     });
   }
@@ -230,15 +247,15 @@ export class RingserverConnection {
    * @returns promise to object with 'accessTime' as a DateTime
    * and 'streams' as an array of StreamStat objects.
    */
-  pullStreams(matchPattern: string): Promise<StreamsResult> {
+  pullStreams(matchPattern?: string): Promise<StreamsResult> {
     let queryParams = "";
 
-    if (matchPattern) {
+    if (matchPattern && matchPattern.length >0) {
       queryParams = "match=" + matchPattern;
     }
 
     const url = this.formStreamsURL(queryParams);
-    return this.pullRaw(url).then((raw) => {
+    return pullText(url, this._timeoutSec).then((raw) => {
       const lines = raw.split("\n");
       const out: StreamsResult = {
         accessTime: DateTime.utc(),
@@ -264,26 +281,6 @@ export class RingserverConnection {
 
       return out;
     });
-  }
-
-  /**
-   * Utility method to pull raw result from ringserver url.
-   * Result returned is an Promise.
-   *
-   * @param url the url
-   * @returns promise to string result
-   */
-  pullRaw(url: string): Promise<string> {
-    const fetchInit = defaultFetchInitObj(TEXT_MIME);
-    return doFetchWithTimeout(url, fetchInit, this._timeoutSec * 1000).then(
-      (response) => {
-        if (response.status === 200) {
-          return response.text();
-        } else {
-          throw new Error(`Status not 200: ${response.status}`);
-        }
-      },
-    );
   }
 
   getDataLinkURL(): string {
@@ -464,7 +461,13 @@ export function nslcSplit(id: string): NslcWithType {
   const split = id.split("/");
   if (split[0].startsWith(FDSN_PREFIX)) {
     const sid = parseSourceId(split[0]);
-    return sid.asNslc();
+    if (sid instanceof FDSNSourceId) {
+      return new NslcWithType(
+        split[1],
+        sid.asNslc());
+    } else {
+      throw new Error("tried to split, not an FDSN SourceId: " + id);
+    }
   }
   const nslc = split[0].split("_");
 

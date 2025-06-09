@@ -578,6 +578,46 @@ export function nameForTimeZone(zone: string|null|Zone, atTime?: DateTime|null):
 }
 
 /**
+ * Utility method to pull raw text result from a url.
+ * Result returned is an Promise.
+ *
+ * @param url the url
+ * @returns promise to string result
+ */
+export function pullText(url: string, timeoutSec?: number): Promise<string> {
+  if (!timeoutSec) { timeoutSec = 30;}
+  const fetchInit = defaultFetchInitObj(TEXT_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000).then(
+    (response) => {
+      if (response.status === 200) {
+        return response.text();
+      } else {
+        throw new Error(`Status not 200: ${response.status}`);
+      }
+    });
+}
+
+/**
+ * Utility method to pull raw json result from a url.
+ * Result returned is an Promise.
+ *
+ * @param url the url
+ * @returns promise to string result
+ */
+export function pullJson(url: string, timeoutSec?: number): Promise<Record<string, unknown>> {
+  if (!timeoutSec) { timeoutSec = 30;}
+  const fetchInit = defaultFetchInitObj(JSON_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000).then(
+    (response) => {
+      if (response.status === 200) {
+        return response.json() as unknown as Record<string, unknown>;
+      } else {
+        throw new Error(`Status not 200: ${response.status}`);
+      }
+    });
+}
+
+/**
  * @returns the protocol, http: or https: for the document if possible.
  * Note this includes the colon.
  */

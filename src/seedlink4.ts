@@ -200,7 +200,7 @@ export class SEPacket {
 
 export function createDataTimeCommand(
   startTime: DateTime,
-  endTime: DateTime | undefined,
+  endTime?: DateTime,
 ): string {
   const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
   return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
@@ -265,14 +265,6 @@ export class SeedlinkConnection {
 
   setAgent(agent: string) {
     this.agent = agent.trim().replaceAll(/\w+/g, "_");
-  }
-
-  createDataTimeCommand(
-    startTime: DateTime,
-    endTime: DateTime | undefined,
-  ): string {
-    const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
-    return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
   }
 
   setOnError(errorHandler: (error: Error) => void) {
