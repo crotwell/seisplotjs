@@ -182,8 +182,8 @@ export class RingserverConnection {
       return {
         ringserverVersion: lines[0],
         serverId: organization,
-        datalink: dlinfo,
-        seedlink: slinfo
+        datalink: "DLPROTO:1.0",
+        seedlink: "SLPROTO:3.1"
       };
     });
   }
@@ -450,32 +450,6 @@ export function typeForId(id: string): string | null {
   }
   return null;
 }
-
-/**
- * extracts the source id from a ringserver id, ie the source id from
- * NN_SSSSS_LL_CCC/type or FDSN:NN_SSSSS_LL_B_S_S/type
- * @param  id   ringserver/datalink style id
- * @return   FDSN source id or null
- */
-export function sidForId(id: string): FDSNSourceId | StationSourceId | NetworkSourceId | null {
-  const split = id.split("/");
-  if (split.length >= 1) {
-    const sidStr = split[0];
-    if (sidStr.startsWith(FDSN_PREFIX)) {
-      return parseSourceId(split[0]);
-    } else {
-      const items = split[0].split("_");
-      if (items.length === 4) {
-        // maybe old style NSLC
-        const nslc = NslcId.parse(split[0], "_");
-        return FDSNSourceId.fromNslcId(nslc);
-      }
-    }
-  }
-  return null;
-}
-
-
 
 /**
  * Split type, networkCode, stationCode, locationCode and channelCode
