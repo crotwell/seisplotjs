@@ -28,7 +28,7 @@ import {
 } from "./fdsnsourceid";
 import { DateTime, Interval } from "luxon";
 
-export const STAXML_MIME="application/vnd.fdsn.stationxml+xml"
+export const STAXML_MIME="application/vnd.fdsn.stationxml+xml";
 /** xml namespace for stationxml */
 export const STAML_NS = "http://www.fdsn.org/xml/station/1";
 export const COUNT_UNIT_NAME = "count";
@@ -1594,7 +1594,7 @@ export function uniqueNetworks(channelList: Iterable<Channel|Station>): Array<Ne
   for (const c of channelList) {
     if (c) {
       if (c instanceof Station) {
-        out.add(c.network)
+        out.add(c.network);
       } else if (c instanceof Channel) {
         out.add(c.station.network);
       } else {

@@ -163,7 +163,7 @@ export class RingserverConnection {
         this.isFDSNSourceId = true;
       }
       this.dlproto = extractDLProto(lines);
-      if (this.dlproto == "1.0") {
+      if (this.dlproto === "1.0") {
         if (version.startsWith(ringserver_v4)) {
           // version 4.0 was FDSN Sid, but did not have DLPROTO:1.1
           // version 4.1 and greater should have it
@@ -459,7 +459,7 @@ export function sidForId(id: string): FDSNSourceId | StationSourceId | NetworkSo
       return parseSourceId(split[0]);
     } else {
       const items = split[0].split("_");
-      if (items.length == 4) {
+      if (items.length === 4) {
         // maybe old style NSLC
         const nslc = NslcId.parse(split[0], "_");
         return FDSNSourceId.fromNslcId(nslc);
@@ -482,9 +482,6 @@ export function sidForId(id: string): FDSNSourceId | StationSourceId | NetworkSo
  */
 export function nslcSplit(id: string): NslcWithType {
   const split = id.split("/");
-  if (split[0].startsWith(FDSN_PREFIX)) {
-
-  }
   const nslc = split[0].split("_");
 
   if (nslc.length === 4) {

@@ -419,7 +419,7 @@ export class QuakeTable extends HTMLElement {
     if (fn != null) {
       return fn(q);
     } else {
-      return `unknown: ${String(h)}`
+      return `unknown: ${String(h)}`;
     }
   }
   sort(h: string, _headerCell: HTMLTableCellElement) {

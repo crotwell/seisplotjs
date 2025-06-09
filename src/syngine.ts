@@ -629,7 +629,7 @@ export class SyngineQuery extends FDSNCommon {
    * @returns new value if getting, this if setting
    */
   sourceMomentTensor(value?: Array<number>): SyngineQuery {
-    if (value && value.length != 6) {
+    if (value && value.length !== 6) {
       throw new Error(`Moment tensor must be 6 numbers, but given ${value.length}`);
     }
     this._sourcemomenttensor = value;
@@ -648,7 +648,7 @@ export class SyngineQuery extends FDSNCommon {
    * @returns new value if getting, this if setting
    */
   sourceDoubleCouple(value?: Array<number>): SyngineQuery {
-    if (value && (value.length != 3 && value.length != 4)) {
+    if (value && (value.length !== 3 && value.length !== 4)) {
       throw new Error(`Moment tensor must be 3-4 numbers, but given ${value.length}`);
     }
     this._sourcedoublecouple = value;
@@ -667,7 +667,7 @@ export class SyngineQuery extends FDSNCommon {
    * @returns new value if getting, this if setting
    */
   sourceForce(value?: Array<number>): SyngineQuery {
-    if (value && value.length != 3) {
+    if (value && value.length !== 3) {
       throw new Error(`sourceforce must be 3 numbers, but given ${value.length}`);
     }
     this._sourceforce = value;
@@ -845,7 +845,7 @@ export class SyngineQuery extends FDSNCommon {
       url = url + makeParam("endtime", toIsoWoZ(this._endTime));
     }
 
-    if (this._channel && this._channel.networkCode != TESTING_NETWORK) {
+    if (this._channel && this._channel.networkCode !== TESTING_NETWORK) {
       url = url + makeParam("network", this._channel.networkCode)
         + makeParam("station", this._channel.stationCode);
     } else if (isNumArg(this._receiverlatitude) && isNumArg(this._receiverlongitude)) {
@@ -892,7 +892,7 @@ export class SyngineQuery extends FDSNCommon {
         + makeParam("sourcelongitude", this._quake.longitude);
       url = url + makeParam("sourcedepthinmeters", this._quake.depth);
     } else if (isStringArg(this._eventid)) {
-      url = url + makeParam("eventid", this._eventid)
+      url = url + makeParam("eventid", this._eventid);
     } else {
       if (isObject(this._originTime)) {
         url = url + makeParam("origintime", toIsoWoZ(this._originTime));

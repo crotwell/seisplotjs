@@ -326,7 +326,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
       });
       const details = shadow?.querySelector("div.wrapper details");
       details?.querySelector("fieldset.sort")?.remove();
-      const sortFS = document.createElement("fieldset")
+      const sortFS = document.createElement("fieldset");
       sortFS.classList.add("sort");
       const legend = document.createElement("legend");
       legend.textContent = "Sort Type";
