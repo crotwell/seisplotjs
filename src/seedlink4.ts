@@ -13,7 +13,7 @@ import { version } from "./version";
 import { dataViewToString, isDef, stringify, toError } from "./util";
 export const SEEDLINK4_SLPROTO = "SLPROTO";
 export const SEEDLINK4_PROTOCOL = `${SEEDLINK4_SLPROTO}:4.0`;
-export const WS_SEEDLINK4_PROTOCOL = `${SEEDLINK4_SLPROTO}4.0`; // web socket procotol can't have :
+export const WS_SEEDLINK4_SUBPROTOCOL = `SeedLink4.0`; // web socket procotol can't have :
 export const MINISEED_2_FORMAT = "2";
 export const MINISEED_3_FORMAT = "3";
 export const SE_PACKET_SIGNATURE = "SE";
@@ -217,8 +217,6 @@ export function createDataTimeCommand(
  *
  * The spec is available via the FDSN, https://www.fdsn.org/publications/
  *
- * Note as of 2023, this is largely untested as there are now servers
- * available to test against.
  *
  * @param url websocket URL to connect to
  * @param requestConfig an array of seedlink commands
@@ -242,6 +240,7 @@ export class SeedlinkConnection {
   errorHandler: (error: Error) => void;
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
+  subprotocol: string | Array<string>;
   endCommand: string;
   agent: string;
   agentVersion: string;
@@ -261,6 +260,7 @@ export class SeedlinkConnection {
     this.endCommand = END_COMMAND;
     this.agent = "seisplotjs";
     this.agentVersion = version;
+    this.subprotocol = WS_SEEDLINK4_SUBPROTOCOL;
   }
 
   setAgent(agent: string) {
@@ -284,7 +284,7 @@ export class SeedlinkConnection {
         if (this.checkProto(lines)) {
           return true;
         } else {
-          throw new Error(`${SEEDLINK4_PROTOCOL} not found in HELLO response`);
+          throw new Error(`${SEEDLINK4_PROTOCOL} not found in HELLO response: ${lines.join("\n")}`);
         }
       })
       .then(() => {
@@ -328,7 +328,7 @@ export class SeedlinkConnection {
 
     return new Promise((resolve, reject) => {
       try {
-        const webSocket = new WebSocket(this.url, WS_SEEDLINK4_PROTOCOL);
+        const webSocket = new WebSocket(this.url, this.subprotocol);
         this.webSocket = webSocket;
         webSocket.binaryType = "arraybuffer";
 
@@ -352,16 +352,19 @@ export class SeedlinkConnection {
           }
         };
       } catch (err) {
+        let evtError = toError(err);
         this.close();
-        const evtError = toError(err);
-        if (this.errorHandler) {
-          this.errorHandler(evtError);
-        }
 
         reject(evtError);
       }
+
     }).then(function (sl4: unknown) {
       return sl4 as SeedlinkConnection;
+    }).catch( e => {
+      if (!this.webSocket?.protocol || this.webSocket.protocol.length === 0) {
+        throw new Error(`fail to create websocket, possible due to subprotocol: sent subprotocol=${this.subprotocol} received empty`);
+      }
+      throw e;
     });
   }
 

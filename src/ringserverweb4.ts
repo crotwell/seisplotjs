@@ -145,6 +145,22 @@ export class RingserverConnection {
   }
 
   /**
+   * Gets/Sets the protocol, http or https. This should match the protocol
+   *  of the page loaded, but is autocalculated and generally need not be set.
+   *
+   * @param value protocol, usually http or https
+   * @returns the query when setting, the current value when no argument
+   */
+  protocol(value?: string): RingserverConnection {
+    doStringGetterSetter(this, "protocol", value);
+    return this;
+  }
+
+  getProtocol(): string | undefined {
+    return this._protocol;
+  }
+
+  /**
    * Sets the prefix for the URL path.
    *
    * @param value optional new value if setting

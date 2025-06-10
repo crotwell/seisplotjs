@@ -8,7 +8,7 @@ import * as miniseed from "./miniseed";
 import { DataRecord } from "./miniseed";
 import { DateTime } from "luxon";
 import { dataViewToString, stringify, toError } from "./util";
-export const SEEDLINK_PROTOCOL = "SeedLink3.1";
+export const WS_SEEDLINK3_SUBPROTOCOL = "SeedLink3.1";
 export type SequencedDataRecord = {
   rawsequence: string;
   sequence: number;
@@ -46,6 +46,7 @@ export class SeedlinkConnection {
   errorHandler: (error: Error) => void;
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
+  subprotocol: string | Array<string>;
   command: string;
   helloLines: Array<string> = [];
 
@@ -62,6 +63,7 @@ export class SeedlinkConnection {
     this.closeFn = null;
     this.command = "DATA";
     this.webSocket = null;
+    this.subprotocol = WS_SEEDLINK3_SUBPROTOCOL;
   }
 
   setTimeCommand(startTime: DateTime) {
@@ -120,7 +122,7 @@ export class SeedlinkConnection {
 
     return new Promise((resolve, reject) => {
       try {
-        const webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
+        const webSocket = new WebSocket(this.url, this.subprotocol);
         this.webSocket = webSocket;
         webSocket.binaryType = "arraybuffer";
 
@@ -154,6 +156,11 @@ export class SeedlinkConnection {
       }
     }).then(function (sl3: unknown) {
       return sl3 as SeedlinkConnection;
+    }).catch( e => {
+      if (!this.webSocket?.protocol || this.webSocket.protocol.length === 0) {
+        throw new Error(`fail to create websocket, possible due to subprotocol: sent subprotocol=${this.subprotocol} received empty`);
+      }
+      throw e;
     });
   }
 
