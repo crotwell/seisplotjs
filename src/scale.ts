@@ -549,13 +549,13 @@ export class PanZoomer {
       (event: Event) => {
         const me = event as MouseEvent;
         this.isMouseDown = true;
-        this.linkedTimeScale._prev_zoom_x = me.x;
+        this.linkedTimeScale._prev_zoom_x = me.offsetX;
       });
     target.addEventListener("mousemove",
       (event: Event) => {
         const me = event as MouseEvent;
         if (this.isMouseDown) {
-          this.doZoom(this.linkedTimeScale._prev_zoom_k, me.x, this.width);
+          this.doZoom(this.linkedTimeScale._prev_zoom_k, me.offsetX, this.width);
         }
       });
     target.addEventListener("mouseup", (event: Event) => {
@@ -567,18 +567,19 @@ export class PanZoomer {
     target.addEventListener("dblclick", (event: Event) => {
       this.isMouseDown = false;
       const me = event as MouseEvent;
+      let factor = 1.5;
       if (me.shiftKey) {
-        this.doZoom(this.linkedTimeScale._prev_zoom_k/1.5, me.x, this.width);
-      } else {
-        this.doZoom(this.linkedTimeScale._prev_zoom_k*1.5, me.x, this.width);
+        factor = 1/factor;
       }
+      this.doZoom(this.linkedTimeScale._prev_zoom_k*factor, me.offsetX, this.width);
+
     });
     target.addEventListener("wheel", (event: Event) => {
       const we = event as WheelEvent;
       let scale = this.linkedTimeScale._prev_zoom_k+we.deltaY * -0.01;
       scale = Math.min(Math.max(1/64, scale), 64);
       this.doZoom(scale,
-        this.linkedTimeScale._prev_zoom_x, this.width);
+        we.offsetX, this.width);
     });
 
     const rect = target.getBoundingClientRect();
