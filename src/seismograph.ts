@@ -15,7 +15,10 @@ import {
   axisRight as d3axisRight,
 } from "d3-axis";
 
-import { zoom as d3zoom } from "d3-zoom";
+import { zoom as d3zoom,
+  //ZoomTransform 
+} from "d3-zoom";
+
 import { AUTO_COLOR_SELECTOR } from "./cssutil";
 import { AmplitudeScalable, TimeScalable, MinMaxable } from "./scale";
 import { SeismographConfig, numberFormatWrapper } from "./seismographconfig";
@@ -49,8 +52,9 @@ import type { HandlebarsInput } from "./axisutil";
 import type { Axis } from "d3-axis";
 import type { ScaleLinear, NumberValue as d3NumberValue } from "d3-scale";
 import type { Selection } from "d3-selection";
-import type { ZoomTransform } from "d3-zoom";
+import type {  D3ZoomEvent } from "d3-zoom";
 
+import {PanZoomer} from "./scale";
 import {
   SeismogramDisplayData,
   calcMinMax,
@@ -225,7 +229,6 @@ export class Seismograph extends SeisPlotElement {
   static _lastID: number;
   plotId: number;
   beforeFirstDraw: boolean;
-
   /** @private */
   _debugAlignmentSeisData: Array<SeismogramDisplayData>;
   width: number;
@@ -247,6 +250,8 @@ export class Seismograph extends SeisPlotElement {
   time_scalable: SeismographTimeScalable;
   amp_scalable: SeismographAmplitudeScalable;
 
+  panZoomer?: PanZoomer;
+
   _resizeObserver: ResizeObserver;
   minmax_sample_pixels = DEFAULT_MAX_SAMPLE_PER_PIXEL;
   constructor(
@@ -266,6 +271,7 @@ export class Seismograph extends SeisPlotElement {
     this.width = 200;
     this.height = 100;
 
+
     const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
     this.addStyle(seismograph_css);
@@ -275,6 +281,7 @@ export class Seismograph extends SeisPlotElement {
 
     this.canvas = null;
     this.canvasHolder = null;
+
     this.svg = d3select(wrapper).append("svg").style("z-index", 100);
     const svgNode = this.svg.node();
     if (svgNode != null) {
@@ -461,13 +468,16 @@ export class Seismograph extends SeisPlotElement {
     return false;
   }
   enableZoom(): void {
-    if (this.seismographConfig.allowZoom && !this.seismographConfig.fixedTimeScale) {
+    if (true) { return;}
+    if (this.seismographConfig.allowZoom
+      && !this.seismographConfig.fixedTimeScale) {
+
       const mythis = this;
       const z = this.svg.call(
         // @ts-expect-error typescript and d3 don't always place nice together
         d3zoom().on("zoom", function (e) {
           mythis.zoomed(e);
-        }),
+        })
       );
 
       if (!this.seismographConfig.wheelZoom) {
@@ -485,6 +495,10 @@ export class Seismograph extends SeisPlotElement {
   draw(): void {
     if (!this.isConnected) {
       return;
+    }
+    if (this.panZoomer && this.seismographConfig.linkedTimeScale) {
+      // in case update in seisConfig after creation
+      this.panZoomer.linkedTimeScale = this.seismographConfig.linkedTimeScale;
     }
     const wrapper = this.getShadowRoot().querySelector("div") as HTMLDivElement;
     const svgEl = wrapper.querySelector("svg") as SVGElement;
@@ -551,6 +565,14 @@ export class Seismograph extends SeisPlotElement {
         null,
         undefined
       >;
+      if (this.seismographConfig.linkedTimeScale) {
+        const canvasHolderNode = this.canvasHolder.node();
+        if (!this.panZoomer && canvasHolderNode) {
+          this.panZoomer = new PanZoomer(canvasHolderNode, this.seismographConfig.linkedTimeScale);
+        } else if (this.panZoomer && canvasHolderNode) {
+          this.panZoomer.target = canvasHolderNode;
+        }
+      }
     }
 
     this.drawSeismograms();
@@ -1028,32 +1050,8 @@ export class Seismograph extends SeisPlotElement {
     }
   }
 
-  zoomed(e: any): void {
-    const t: ZoomTransform = e.transform;
-
-    if (isDef(this.seismographConfig.linkedTimeScale)) {
-      const linkedTS = this.seismographConfig.linkedTimeScale;
-
-      const origOffset = linkedTS.origOffset.toMillis() / 1000;
-      const origDuration = linkedTS.origDuration.toMillis() / 1000;
-      const origXScale = d3scaleLinear();
-      origXScale.range([0, this.width]);
-      if (origDuration > 0) {
-        origXScale.domain([origOffset, origOffset + origDuration]);
-      } else {
-        origXScale.domain([origOffset + origDuration, origOffset]);
-      }
-      const xt = t.rescaleX(origXScale);
-      const startDelta =
-        xt.domain()[0].valueOf() - origXScale.domain()[0].valueOf();
-      const duration = xt.domain()[1] - xt.domain()[0];
-      linkedTS.zoom(
-        Duration.fromMillis(startDelta * 1000),
-        Duration.fromMillis(duration * 1000),
-      );
-    } else {
-      throw new Error("can't zoom fixedTimeScale");
-    }
+  zoomed(e: D3ZoomEvent<SVGSVGElement, unknown>): void {
+    //const t: ZoomTransform = e.transform;
   }
 
   redrawWithXScale(): void {
@@ -1319,6 +1317,9 @@ export class Seismograph extends SeisPlotElement {
     }
     if (this.canvas) {
       this.canvas.attr("width", this.width).attr("height", this.height + 1);
+    }
+    if (this.panZoomer) {
+      this.panZoomer.width = this.width;
     }
   }
 
@@ -1719,7 +1720,6 @@ export class SeismographTimeScalable extends TimeScalable {
   graph: Seismograph;
   drawAlignmentTimeOffset: Duration;
   drawDuration: Duration;
-
   constructor(
     graph: Seismograph,
     alignmentTimeOffset: Duration,

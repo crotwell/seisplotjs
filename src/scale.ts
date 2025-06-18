@@ -301,6 +301,9 @@ export class LinkedTimeScale {
   _zoomedOffset: null | Duration;
   _scaleId: number;
 
+  _prev_zoom_k: number = 1;
+  _prev_zoom_x: number = 0;
+
   constructor(
     graphList?: Array<TimeScalable>,
     originalDuration?: Duration,
@@ -396,6 +399,9 @@ export class LinkedTimeScale {
     });
   }
 
+  /**
+   * Return to original no-zoom zoom level
+   */
   unzoom() {
     this._zoomedDuration = null;
     this._zoomedOffset = null;
@@ -517,5 +523,92 @@ export class AlignmentLinkedTimeScale extends LinkedTimeScale {
         });
       }),
     );
+  }
+}
+
+export class PanZoomer {
+  isMouseDown: boolean = false;
+  _target: HTMLElement|SVGSVGElement|SVGForeignObjectElement;
+  width: number;
+  linkedTimeScale: LinkedTimeScale;
+  _prev_zoom_k: number = 1;
+  _prev_zoom_x: number = 0;
+  constructor(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement,
+              linkedTimeScale: LinkedTimeScale) {
+    this._target = target;
+    this.target = target; // run setter
+    const rect = target.getBoundingClientRect();
+    this.width = rect.width;
+    console.log(`PanZoomer rect width ${rect.width} `)
+    this.linkedTimeScale = linkedTimeScale;
+  }
+  set target(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement) {
+    this._target = target;
+
+    target.addEventListener("mousedown",
+      (event: Event) => {
+        const me = event as MouseEvent;
+        this.isMouseDown = true;
+        this.linkedTimeScale._prev_zoom_x = me.x;
+      });
+    target.addEventListener("mousemove",
+      (event: Event) => {
+        const me = event as MouseEvent;
+        if (this.isMouseDown) {
+          this.doZoom(this.linkedTimeScale._prev_zoom_k, me.x, this.width);
+        }
+      });
+    target.addEventListener("mouseup", (event: Event) => {
+      this.isMouseDown = false;
+    });
+    target.addEventListener("mouseleave", (event: Event) => {
+      this.isMouseDown = false;
+    });
+    target.addEventListener("dblclick", (event: Event) => {
+      this.isMouseDown = false;
+      const me = event as MouseEvent;
+      if (me.shiftKey) {
+        this.doZoom(this.linkedTimeScale._prev_zoom_k/1.5, me.x, this.width);
+      } else {
+        this.doZoom(this.linkedTimeScale._prev_zoom_k*1.5, me.x, this.width);
+      }
+    });
+    target.addEventListener("wheel", (event: Event) => {
+      const we = event as WheelEvent;
+      this.doZoom(this.linkedTimeScale._prev_zoom_k+we.deltaY * -0.01,
+        this.linkedTimeScale._prev_zoom_x, this.width);
+    });
+
+    const rect = target.getBoundingClientRect();
+    this.width = rect.width;
+  }
+  get target(): HTMLElement|SVGSVGElement|SVGForeignObjectElement {
+    return this._target
+  }
+  doZoom(k: number, x: number, width: number) {
+      const linkedTS = this.linkedTimeScale;
+      //const currStart = linkedTS.offset;
+      const currDuration = linkedTS.duration;
+
+      let zoomDuration = currDuration;
+      const zoomDurationMillis = linkedTS.origDuration.toMillis() / k ;
+      let timeShift = 0;
+
+      if (k != this.linkedTimeScale._prev_zoom_k) {
+        // zoom in, keep click time at same pixel
+        zoomDuration = Duration.fromMillis(zoomDurationMillis);
+        timeShift = (x/width)*(currDuration.toMillis()-zoomDurationMillis);
+      } else {
+        // pan seismogram, shift by pixel difference
+        timeShift = zoomDurationMillis * (this.linkedTimeScale._prev_zoom_x-x)/width;
+        this.linkedTimeScale._prev_zoom_x = x;
+      }
+      const zoomStart = linkedTS.offset.plus(Duration.fromMillis(timeShift));
+      linkedTS.zoom(
+        zoomStart,
+        zoomDuration
+      );
+      this.linkedTimeScale._prev_zoom_k = k;
+      this.linkedTimeScale._prev_zoom_x = x;
   }
 }
