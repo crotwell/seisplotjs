@@ -575,7 +575,9 @@ export class PanZoomer {
     });
     target.addEventListener("wheel", (event: Event) => {
       const we = event as WheelEvent;
-      this.doZoom(this.linkedTimeScale._prev_zoom_k+we.deltaY * -0.01,
+      let scale = this.linkedTimeScale._prev_zoom_k+we.deltaY * -0.01;
+      scale = Math.min(Math.max(1/64, scale), 64);
+      this.doZoom(scale,
         this.linkedTimeScale._prev_zoom_x, this.width);
     });
 
