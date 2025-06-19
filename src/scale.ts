@@ -1,4 +1,5 @@
 import { isDef } from "./util";
+import * as util from "./util";
 import {transition} from "./transition";
 import { Duration } from "luxon";
 
@@ -153,8 +154,7 @@ export class LinkedAmplitudeScale {
     if (this._halfWidth !== val) {
       this._halfWidth = val;
       this.notifyAll().catch((m) => {
-        // eslint-disable-next-line no-console
-        console.warn(`problem recalc halfWidth: ${m}`);
+        util.warn(`problem recalc halfWidth: ${m}`);
       });
     }
   }
@@ -177,8 +177,7 @@ export class LinkedAmplitudeScale {
       }
     });
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc linkAll: ${m}`);
+      util.warn(`problem recalc linkAll: ${m}`);
     });
   }
   /**
@@ -199,8 +198,7 @@ export class LinkedAmplitudeScale {
     this._graphSet.delete(graph);
 
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc unlink: ${m}`);
+      util.warn(`problem recalc unlink: ${m}`);
     });
   }
 
@@ -345,8 +343,7 @@ export class LinkedTimeScale {
       this._originalOffset = Duration.fromMillis(0);
     }
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc constructor: ${m}`);
+      util.warn(`problem recalc constructor: ${m}`);
     });
   }
 
@@ -377,8 +374,7 @@ export class LinkedTimeScale {
       }
     });
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc linkAll: ${m}`);
+      util.warn(`problem recalc linkAll: ${m}`);
     });
   }
 
@@ -390,8 +386,7 @@ export class LinkedTimeScale {
   unlink(graph: TimeScalable) {
     this._graphSet.delete(graph);
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc unlink: ${m}`);
+      util.warn(`problem recalc unlink: ${m}`);
     });
   }
 
@@ -399,8 +394,7 @@ export class LinkedTimeScale {
     this._zoomedDuration = duration;
     this._zoomedOffset = startOffset;
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc zoom: ${m}`);
+      util.warn(`problem recalc zoom: ${m}`);
     });
   }
 
@@ -411,8 +405,7 @@ export class LinkedTimeScale {
     this._zoomedDuration = null;
     this._zoomedOffset = null;
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc unzoom: ${m}`);
+      util.warn(`problem recalc unzoom: ${m}`);
     });
   }
 
@@ -424,8 +417,7 @@ export class LinkedTimeScale {
     this._originalOffset = offset;
     this._zoomedOffset = offset;
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc set offset: ${m}`);
+      util.warn(`problem recalc set offset: ${m}`);
     });
   }
 
@@ -442,8 +434,7 @@ export class LinkedTimeScale {
     this._originalDuration = duration;
     this._zoomedDuration = duration;
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc set duration: ${m}`);
+      util.warn(`problem recalc set duration: ${m}`);
     });
   }
 
