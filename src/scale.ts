@@ -1,4 +1,5 @@
 import { isDef } from "./util";
+import {transition} from "./transition";
 import { Duration } from "luxon";
 
 /** enum for amplitude modes, RAW, ZERO, MINMAX, MEAN */
@@ -10,6 +11,10 @@ export enum AMPLITUDE_MODE {
 }
 
 let _lastId = 0;
+
+/** The Golden ratio. */
+export const PHI = (1 + Math.sqrt(5)) / 2;
+export const SQRT_PHI = Math.sqrt(PHI)
 
 export class MinMaxable {
   min: number;
@@ -533,13 +538,13 @@ export class PanZoomer {
   linkedTimeScale: LinkedTimeScale;
   _prev_zoom_k: number = 1;
   _prev_zoom_x: number = 0;
+  min_k = 1/8192;
+  max_k = 8192
   constructor(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement,
               linkedTimeScale: LinkedTimeScale) {
     this._target = target;
     this.target = target; // run setter
-    const rect = target.getBoundingClientRect();
-    this.width = rect.width;
-    console.log(`PanZoomer rect width ${rect.width} `)
+    this.width = target.getBoundingClientRect().width;
     this.linkedTimeScale = linkedTimeScale;
   }
   set target(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement) {
@@ -566,53 +571,77 @@ export class PanZoomer {
     });
     target.addEventListener("dblclick", (event: Event) => {
       this.isMouseDown = false;
+      event.preventDefault();
       const me = event as MouseEvent;
-      let factor = 1.5;
+      let factor = PHI;
       if (me.shiftKey) {
         factor = 1/factor;
       }
-      this.doZoom(this.linkedTimeScale._prev_zoom_k*factor, me.offsetX, this.width);
-      event.preventDefault();
+      const offsetX = me.offsetX;
+
+      this.transitionZoom(factor, offsetX);
+
     });
     target.addEventListener("wheel", (event: Event) => {
+      this.isMouseDown = false;
       const we = event as WheelEvent;
-      let scale = this.linkedTimeScale._prev_zoom_k+we.deltaY * -0.01;
-      scale = Math.min(Math.max(1/64, scale), 64);
-      this.doZoom(scale,
-        we.offsetX, this.width);
       event.preventDefault();
+      const offsetX = we.offsetX;
+      // wheel does fire mousedown, so need to set prev offsetX
+      this.linkedTimeScale._prev_zoom_x = offsetX;
+      //const factor = we.deltaY>=0 ? 1/SQRT_PHI : SQRT_PHI;
+      const factor = we.deltaY>=0 ? SQRT_PHI : 1/SQRT_PHI;
+
+      this.transitionZoom(factor, offsetX, 100);
     });
 
-    const rect = target.getBoundingClientRect();
-    this.width = rect.width;
+    this.width = target.getBoundingClientRect().width;
   }
   get target(): HTMLElement|SVGSVGElement|SVGForeignObjectElement {
     return this._target
   }
-  doZoom(k: number, x: number, width: number) {
-      const linkedTS = this.linkedTimeScale;
-      //const currStart = linkedTS.offset;
-      const currDuration = linkedTS.duration;
+  transitionZoom(factor: number, offsetX: number, duration: number=250) {
+    const start_k = this.linkedTimeScale._prev_zoom_k;
+    const end_k = this.linkedTimeScale._prev_zoom_k*factor;
+    const width = this.width;
 
-      let zoomDuration = currDuration;
-      const zoomDurationMillis = linkedTS.origDuration.toMillis() / k ;
-      let timeShift = 0;
-
-      if (k != this.linkedTimeScale._prev_zoom_k) {
-        // zoom in, keep click time at same pixel
-        zoomDuration = Duration.fromMillis(zoomDurationMillis);
-        timeShift = (x/width)*(currDuration.toMillis()-zoomDurationMillis);
-      } else {
-        // pan seismogram, shift by pixel difference
-        timeShift = zoomDurationMillis * (this.linkedTimeScale._prev_zoom_x-x)/width;
-        this.linkedTimeScale._prev_zoom_x = x;
+    transition((step) => {
+      let transK = start_k+(end_k-start_k)*step;
+      this.doZoom(transK, offsetX, width);
+      if (step === 1.0) {
       }
-      const zoomStart = linkedTS.offset.plus(Duration.fromMillis(timeShift));
-      linkedTS.zoom(
-        zoomStart,
-        zoomDuration
-      );
-      this.linkedTimeScale._prev_zoom_k = k;
+    }, duration);
+  }
+  doZoom(k: number, x: number, width: number) {
+    if (k < this.min_k) { k=this.min_k;}
+    if (k > this.max_k) { k=this.max_k;}
+    if (this.linkedTimeScale._prev_zoom_k === k &&
+        this.linkedTimeScale._prev_zoom_x === x) {
+      return;
+    }
+    const linkedTS = this.linkedTimeScale;
+    //const currStart = linkedTS.offset;
+    const currDuration = linkedTS.duration;
+
+    let zoomDuration = currDuration;
+    const zoomDurationMillis = linkedTS.origDuration.toMillis() / k ;
+    let timeShift = 0;
+
+    if (k != this.linkedTimeScale._prev_zoom_k) {
+      // zoom in, keep click time at same pixel
+      zoomDuration = Duration.fromMillis(zoomDurationMillis);
+      timeShift = (x/width)*(currDuration.toMillis()-zoomDurationMillis);
+    } else {
+      // pan seismogram, shift by pixel difference
+      timeShift = zoomDurationMillis * (this.linkedTimeScale._prev_zoom_x-x)/width;
       this.linkedTimeScale._prev_zoom_x = x;
+    }
+    const zoomStart = linkedTS.offset.plus(Duration.fromMillis(timeShift));
+    linkedTS.zoom(
+      zoomStart,
+      zoomDuration
+    );
+    this.linkedTimeScale._prev_zoom_k = k;
+    this.linkedTimeScale._prev_zoom_x = x;
   }
 }
