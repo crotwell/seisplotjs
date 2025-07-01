@@ -177,7 +177,7 @@ export class QuakeStationMap extends SeisPlotElement {
 
   stationClassMap: Map<string, Array<string>>;
   quakeClassMap: Map<string, Array<string>>;
-  geoJsonLayerStyleFuncMap: Map<string, L.StyleFunction>;
+  geoJsonLayerOptionsMap: Map<string, L.GeoJSONOptions>;
   overlayLayerMap: Map<string, L.LayerGroup>;
   quakeLayer = L.layerGroup();
 
@@ -194,7 +194,7 @@ export class QuakeStationMap extends SeisPlotElement {
     this.classToColor = new Map<string, string>();
     this.stationClassMap = new Map<string, Array<string>>();
     this.quakeClassMap = new Map<string, Array<string>>();
-    this.geoJsonLayerStyleFuncMap = new Map<string, L.StyleFunction>();
+    this.geoJsonLayerOptionsMap = new Map<string, L.GeoJSONOptions>();
     this.geoJsonLayerMap = new Map<string, GeoJsonObject>();
     this.overlayLayerMap = new Map<string, L.LayerGroup>();
 
@@ -334,14 +334,17 @@ export class QuakeStationMap extends SeisPlotElement {
     });
   }
 
-  addGeoJsonLayer(layername: string, geoJsonData: GeoJsonObject, styleFunction?: L.StyleFunction) {
+  addGeoJsonLayer(layername: string, geoJsonData: GeoJsonObject, geoJsonOptions?: L.GeoJSONOptions) {
     this.geoJsonLayerMap.set(layername, geoJsonData);
-    if (styleFunction) {
-      this.geoJsonLayerSetStyleFunc(layername, styleFunction);
+    if (geoJsonOptions) {
+      this.setGeoJsonLayerOptions(layername, geoJsonOptions);
     }
   }
-  geoJsonLayerSetStyleFunc(layername: string, styleFunction: L.StyleFunction){
-    this.geoJsonLayerStyleFuncMap.set(layername, styleFunction);
+  setGeoJsonLayerOptions(layername: string, geoJsonOptions: L.GeoJSONOptions){
+    this.geoJsonLayerOptionsMap.set(layername, geoJsonOptions);
+  }
+  getGeoJsonLayerOptions(layername: string): L.GeoJSONOptions|undefined {
+    return this.geoJsonLayerOptionsMap.get(layername);
   }
 
   /**
@@ -502,8 +505,8 @@ export class QuakeStationMap extends SeisPlotElement {
     // Add geoJsonLayers if present
     for (const [layername, jsondata] of this.geoJsonLayerMap) {
       if (this.map) {
-        const styleFunction = this.geoJsonLayerStyleFuncMap.get(layername);
-        L.geoJSON(jsondata, {style: styleFunction}).addTo(this.map);
+        const options = this.geoJsonLayerOptionsMap.get(layername);
+        L.geoJSON(jsondata, options).addTo(this.map);
       }
     }
   }
