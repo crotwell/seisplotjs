@@ -78,6 +78,7 @@ export function createStationMarker(
   classList?: Array<string>,
   isactive = true,
   centerLon = 0,
+  tooltipOpts?: L.TooltipOptions,
 ) {
   const allClassList = classList ? classList.slice() : [];
   allClassList.push(
@@ -94,7 +95,8 @@ export function createStationMarker(
   const m = L.marker([station.latitude, sLon], {
     icon: icon,
   });
-  m.bindTooltip(station.codes());
+  const ttOpts = tooltipOpts ? tooltipOpts : {};
+  m.bindTooltip(station.codes(), ttOpts);
   return m;
 }
 
@@ -539,16 +541,17 @@ export class QuakeStationMap extends SeisPlotElement {
       this.layerControl.addOverlay(this.quakeLayer, this.quakeLayerName);
     }
   }
-  drawStationLayer(){
+  drawStationLayer(tooltipOpts?:L.TooltipOptions){
     this.stationLayer.clearLayers();
     const stations = this.stationList.concat(uniqueStations(this.seisData));
-
+    const ttOpts = tooltipOpts ? tooltipOpts : {};
     stations.forEach((s) => {
       const m = createStationMarker(
         s,
         this.stationClassMap.get(s.codes(STATION_CODE_SEP)),
         true,
         this.centerLon,
+        ttOpts,
       );
       //m.addTo(mymap);
       m.addTo(this.stationLayer);
