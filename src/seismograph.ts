@@ -16,7 +16,7 @@ import {
 } from "d3-axis";
 
 import { zoom as d3zoom,
-  //ZoomTransform 
+  //ZoomTransform
 } from "d3-zoom";
 
 import { AUTO_COLOR_SELECTOR } from "./cssutil";
@@ -413,13 +413,6 @@ export class Seismograph extends SeisPlotElement {
     });
   }
 
-  get seisData() {
-    return super.seisData;
-  }
-  set seisData(seisData: Array<SeismogramDisplayData>) {
-    this._seisDataList = [];
-    this.appendSeisData(seisData);
-  }
   get seismographConfig() {
     return super.seismographConfig;
   }
@@ -1576,54 +1569,6 @@ export class Seismograph extends SeisPlotElement {
 
   getSeismogramData(): Array<SeismogramDisplayData> {
     return this._seisDataList;
-  }
-
-  /**
-   * can append single seismogram segment or an array of segments.
-   *
-   * @param sddList array or single SeismogramDisplayData or Seismogram
-   * @private
-   */
-  _internalAppend(
-    sddList:
-      | Array<SeismogramDisplayData>
-      | SeismogramDisplayData
-      | Array<Seismogram>
-      | Seismogram,
-  ): void {
-    if (!sddList) {
-      // don't append a null
-    } else if (Array.isArray(sddList)) {
-      for (const s of sddList) {
-        if (s instanceof SeismogramDisplayData) {
-          this._seisDataList.push(s);
-        } else {
-          this._seisDataList.push(SeismogramDisplayData.fromSeismogram(s));
-        }
-      }
-    } else {
-      if (sddList instanceof SeismogramDisplayData) {
-        this._seisDataList.push(sddList);
-      } else {
-        this._seisDataList.push(SeismogramDisplayData.fromSeismogram(sddList));
-      }
-    }
-  }
-
-  /**
-   * appends the seismogram(s) or SeismogramDisplayData as separate time series.
-   *
-   * @param seismogram data to append
-   */
-  appendSeisData(
-    seismogram:
-      | Array<Seismogram>
-      | Array<SeismogramDisplayData>
-      | Seismogram
-      | SeismogramDisplayData,
-  ) {
-    this._internalAppend(seismogram);
-    this.seisDataUpdated();
   }
 
   /**

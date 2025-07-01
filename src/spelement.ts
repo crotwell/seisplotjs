@@ -1,5 +1,5 @@
 import type { DateTime } from "luxon";
-import { SeismogramDisplayData } from "./seismogram";
+import { SeismogramDisplayData, Seismogram } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
 import {
   createDefaultSortingOptions,
@@ -7,7 +7,7 @@ import {
   createSortValueFunction,
   sortByFunction
 } from "./sorting";
-import { isDef, stringify } from "./util";
+import { isDef } from "./util";
 
 export const SORT_BY = "sort";
 
@@ -58,12 +58,39 @@ export class SeisPlotElement extends HTMLElement {
     return this._seisDataList;
   }
   set seisData(seisData: Array<SeismogramDisplayData>) {
-    if (seisData instanceof SeismogramDisplayData) {
-      this._seisDataList = [seisData];
-    } else if (Array.isArray(seisData)) {
-      this._seisDataList = seisData;
+    this._seisDataList = [];
+    this.appendSeisData(seisData);
+  }
+
+
+  /**
+   * appends the seismogram(s) or SeismogramDisplayData as separate time series.
+   *
+   * @param seismogram data to append
+   */
+  appendSeisData(
+    sddList:
+      | Array<SeismogramDisplayData>
+      | SeismogramDisplayData
+      | Array<Seismogram>
+      | Seismogram,
+  ): void {
+    if (!sddList) {
+      // don't append a null
+    } else if (Array.isArray(sddList)) {
+      for (const s of sddList) {
+        if (s instanceof SeismogramDisplayData) {
+          this._seisDataList.push(s);
+        } else {
+          this._seisDataList.push(SeismogramDisplayData.fromSeismogram(s));
+        }
+      }
     } else {
-      throw new Error(`Unknown type for seisData: ${stringify(seisData)}`);
+      if (sddList instanceof SeismogramDisplayData) {
+        this._seisDataList.push(sddList);
+      } else {
+        this._seisDataList.push(SeismogramDisplayData.fromSeismogram(sddList));
+      }
     }
     this.seisDataUpdated();
   }
