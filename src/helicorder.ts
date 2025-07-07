@@ -25,6 +25,26 @@ export const HELI_MOUSE_MOVE_EVENT = "helimousemove";
 export const HELICORDER_ELEMENT = "sp-helicorder";
 
 /**
+ * Calculates the end time for a helicorder with now being on the last line
+ * @return end time
+ */
+export function getNowLineEndTime(hoursPerLine?: number): DateTime {
+  if (! hoursPerLine) { hoursPerLine = 2;}
+  let e = DateTime.utc().endOf("hour").plus({ milliseconds: 1 });
+  e.plus({ hours: e.hour % hoursPerLine });
+  return e;
+}
+
+export function createNowHelicorderInterval(hours?: number, hoursPerLine?: number): Interval {
+  const endTime = getNowLineEndTime(hoursPerLine);
+  if (!hours) { hours = 24;}
+  return Interval.before(
+    endTime,
+    Duration.fromObject({ hours: hours }),
+  );
+}
+
+/**
  * A helicorder-like multi-line seismogram display usually covering 24 hours
  *
  * @param inSvgParent the parent element, usually a div tag
@@ -38,10 +58,7 @@ export class Helicorder extends SeisPlotElement {
   ) {
     let heliConfig;
     if (!seisConfig) {
-      const timeWindow = Interval.before(
-        DateTime.utc(),
-        Duration.fromObject({ hours: 24 }),
-      );
+      const timeWindow = createNowHelicorderInterval();
       heliConfig = new HelicorderConfig(timeWindow);
     } else if (seisConfig instanceof HelicorderConfig) {
       heliConfig = seisConfig;
