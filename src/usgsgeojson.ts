@@ -57,6 +57,9 @@ export const monthSummaryM1_0Url =
 export const monthSummaryAllUrl =
   "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
 
+export const USGS_TECTONIC_SUMMARY_URL =
+  "https://earthquake.usgs.gov/ws/geoserve/layers.json?type=tectonic";
+
 export function loadHourSummarySignificant(): Promise<Array<Quake>> {
   return loadUSGSSummary(hourSummarySignificantUrl);
 }
@@ -353,6 +356,115 @@ export function isValidUSGSGeoJsonQuake(
     );
   }
   if (!(typeof jsonObj.id === "string")) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, id should be string",
+    );
+  }
+  return true;
+}
+
+
+export interface USGSTectonicGeoJsonProperties {
+  name: string;
+  summary: string;
+  type: string;
+}
+
+export interface USGSTectonicGeoJsonFeature
+  extends Feature<Point, USGSTectonicGeoJsonProperties> {}
+
+// subtype of FeatureCollection
+export interface USGSTectonicGeoJsonSummary {
+  type: "FeatureCollection";
+  metadata: USGSGeoJsonMetaData;
+  features: Array<USGSTectonicGeoJsonFeature>;
+}
+
+export function loadUSGSTectonicLayer(
+  url?: string,
+): Promise<USGSTectonicGeoJsonSummary> {
+  if (! url) {
+    url = USGS_TECTONIC_SUMMARY_URL;
+  }
+  const fetchInit = defaultFetchInitObj(JSON_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000)
+    .then((response) => {
+      if (response.status !== 200) {
+        // no data
+        return [];
+      } else {
+        return response.json();
+      }
+    })
+    .then((jsonValue) => {
+      if (isValidUSGSTectonicGeoJsonSummary(jsonValue)) {
+        return jsonValue;
+      } else {
+        throw new TypeError(`Oops, we did not get roottype JSON!`);
+      }
+    });
+}
+
+
+export function isValidUSGSTectonicGeoJsonSummary(
+  jsonValue: unknown,
+): jsonValue is USGSTectonicGeoJsonSummary {
+  if (!jsonValue || typeof jsonValue !== "object") {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+
+  if (!jsonObj.tectonic || typeof jsonObj.tectonic !== "object") {
+    throw new TypeError("json.tectonic is not object");
+  }
+  const tectonic = jsonObj.tectonic as Record<string, unknown>;
+  if (
+    !(typeof tectonic.type === "string"
+        && tectonic.type === "FeatureCollection")
+  ) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, tectonic should be FeatureCollection",
+    );
+  }
+  if (!(typeof jsonObj.metadata === "object")) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, missing metadata",
+    );
+  }
+  if (!Array.isArray(tectonic.features)) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, features should be array",
+    );
+  } else {
+    // should check for subobjects have name, summary, type
+    if (!tectonic.features.every(isValidUSGSTectonic)) {
+      throw new TypeError(
+        "geojson is not valid for USGS GeoJson, feature should be USGSTectonicGeoJsonFeature",
+      );
+    }
+  }
+  return true;
+}
+
+
+export function isValidUSGSTectonic(
+  jsonValue: unknown,
+): jsonValue is USGSTectonicGeoJsonFeature {
+  if (!jsonValue || typeof jsonValue !== "object") {
+    throw new TypeError("json is not object");
+  }
+  const jsonObj = jsonValue as Record<string, unknown>;
+  if (!(typeof jsonObj.type === "string" && jsonObj.type === "Feature")) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, type should be Feature",
+    );
+  }
+  if (!(typeof jsonObj.properties === "object")) {
+    throw new TypeError(
+      "geojson is not valid for USGS GeoJson, missing properties",
+    );
+  }
+  if (!(typeof jsonObj.id === "string" || typeof jsonObj.id === "number")) {
     throw new TypeError(
       "geojson is not valid for USGS GeoJson, id should be string",
     );
