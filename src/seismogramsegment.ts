@@ -43,6 +43,8 @@ export class SeismogramSegment {
   _sourceId: FDSNSourceId;
   yUnit: string;
   _highlow: HighLowType | undefined;
+  _maxAmplitude: number | undefined;
+  _replaceAmplitudeValue: number;
 
   constructor(
     yArray:
@@ -54,7 +56,11 @@ export class SeismogramSegment {
     sampleRate: number,
     startTime: DateTime,
     sourceId?: FDSNSourceId,
+    maxValue?: number,
+    replaceValue?: number,
   ) {
+    this._maxAmplitude = maxValue;
+    this._replaceAmplitudeValue = replaceValue || 0;
     if (
       yArray instanceof Int32Array ||
       yArray instanceof Float32Array ||
@@ -112,7 +118,6 @@ export class SeismogramSegment {
 
       // data is still compressed
       const outLen = this.numPoints;
-
       if (this._compressed === null) {
         throw new Error("Seismogram not y as TypedArray or encoded.");
       }
@@ -126,20 +131,33 @@ export class SeismogramSegment {
       }
 
       let currIdx = 0;
-
-      for (const c of this._compressed) {
-        const cData = c.decode();
-
-        for (let i = 0; i < c.numSamples; i++) {
-          out[currIdx + i] = cData[i];
+      if(this._maxAmplitude){
+        for (const c of this._compressed) {
+          const cData = c.decode();
+  
+          for (let i = 0; i < c.numSamples; i++) {
+            const value = cData[i];
+            out[currIdx + i] = Math.abs(value) > this._maxAmplitude ? this._replaceAmplitudeValue : value; // avoid -0
+          }
+  
+          currIdx += c.numSamples;
         }
-
-        currIdx += c.numSamples;
+      } else {
+        for (const c of this._compressed) {
+          const cData = c.decode();
+  
+          for (let i = 0; i < c.numSamples; i++) {
+            out[currIdx + i] = cData[i];
+          }
+  
+          currIdx += c.numSamples;
+        }
       }
 
       this._y = out;
       this._compressed = null;
     }
+    // console.log(out)
 
     return out;
   }

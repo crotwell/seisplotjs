@@ -560,10 +560,14 @@ export function areContiguous(dr1: DataRecord, dr2: DataRecord): boolean {
  * DataRecord are used.
  *
  * @param contig array of data records
+ * @param maxValue if set, replaces all values equal to this with replaceValue
+ * @param replaceValue if set, replaces all values equal to maxValue with this value.
  * @returns SeismogramSegment instance
  */
 export function createSeismogramSegment(
   contig: Array<DataRecord> | DataRecord,
+  maxValue?: number,
+  replaceValue?: number,
 ): SeismogramSegment {
   if (!Array.isArray(contig)) {
     contig = [contig];
@@ -580,6 +584,8 @@ export function createSeismogramSegment(
       contig[0].header.locCode,
       contig[0].header.chanCode,
     ),
+    maxValue,
+    replaceValue,
   );
   return out;
 }
@@ -600,17 +606,21 @@ export function createSeismogramSegment(
  * @returns Seismogram instance
  */
 export function merge(drList: Array<DataRecord>, maxValue?: number, replaceValue?: number): Seismogram {
-  return new Seismogram(mergeSegments(drList), maxValue, replaceValue);
+  return new Seismogram(mergeSegments(drList, maxValue, replaceValue));
 }
 
 /**
  * merges contiguous DataRecords into SeismogramSegments.
  *
  * @param drList array of data records
+ * @param maxValue if set, replaces all values equal to this with replaceValue
+ * @param replaceValue if set, replaces all values equal to maxValue with this value.
  * @returns array of SeismogramSegments for contiguous data
  */
 export function mergeSegments(
   drList: Array<DataRecord>,
+  maxValue?: number,
+  replaceValue?: number,
 ): Array<SeismogramSegment> {
   const out = [];
   let currDR;
@@ -628,14 +638,14 @@ export function mergeSegments(
       contig.push(currDR);
     } else {
       //found a gap
-      out.push(createSeismogramSegment(contig));
+      out.push(createSeismogramSegment(contig, maxValue, replaceValue));
       contig = [currDR];
     }
   }
 
   if (contig.length > 0) {
     // last segment
-    out.push(createSeismogramSegment(contig));
+    out.push(createSeismogramSegment(contig, maxValue, replaceValue));
     contig = [];
   }
 
@@ -676,15 +686,19 @@ export function byChannel(
  * SeismogramSegment for each contiguous window from each channel.
  *
  * @param   drList DataRecords array
+ * @param   maxValue if set, replaces all values equal to this with replaceValue
+ * @param   replaceValue if set, replaces all values equal to maxValue with this value
  * @returns         Array of SeismogramSegment
  */
 export function seismogramSegmentPerChannel(
   drList: Array<DataRecord>,
+  maxValue?: number,
+  replaceValue?: number,
 ): Array<SeismogramSegment> {
   let out = new Array<SeismogramSegment>(0);
   const byChannelMap = byChannel(drList);
   byChannelMap.forEach(
-    (segments) => (out = out.concat(mergeSegments(segments))),
+    (segments) => (out = out.concat(mergeSegments(segments, maxValue, replaceValue))),
   );
   return out;
 }

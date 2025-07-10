@@ -49,13 +49,9 @@ export class Seismogram {
   _segmentArray: Array<SeismogramSegment>;
   _interval: Interval;
   _y: null | Int32Array | Float32Array | Float64Array;
-  maxAmplitudeValue: number | null;
-  replaceAmplitudeValue: number;
 
-  constructor(segmentArray: SeismogramSegment | Array<SeismogramSegment>, maxValue?: number, replaceValue?: number) {
+  constructor(segmentArray: SeismogramSegment | Array<SeismogramSegment>) {
     this._y = null;
-    this.maxAmplitudeValue = maxValue || null;
-    this.replaceAmplitudeValue = replaceValue || 0;
     if (
       Array.isArray(segmentArray) &&
       segmentArray[0] instanceof SeismogramSegment
@@ -381,8 +377,7 @@ export class Seismogram {
     if (this._segmentArray.every((seg) => seg.y instanceof Int32Array)) {
       outArray = new Int32Array(this.numPoints);
       this._segmentArray.forEach((seg) => {
-        const y = this.maxAmplitudeValue ? seg.y.map((v) => v === this.maxAmplitudeValue ? this.replaceAmplitudeValue : v) : seg.y;
-        outArray.set(y, idx);
+        outArray.set(seg.y, idx);
         idx += seg.y.length;
       });
     } else if (
@@ -390,8 +385,7 @@ export class Seismogram {
     ) {
       outArray = new Float32Array(this.numPoints);
       this._segmentArray.forEach((seg) => {
-        const y = this.maxAmplitudeValue ? seg.y.map((v) => v === this.maxAmplitudeValue ? this.replaceAmplitudeValue : v) : seg.y;
-        outArray.set(y, idx);
+        outArray.set(seg.y, idx);
         idx += seg.y.length;
       });
     } else if (
@@ -399,8 +393,7 @@ export class Seismogram {
     ) {
       outArray = new Float64Array(this.numPoints);
       this._segmentArray.forEach((seg) => {
-        const y = this.maxAmplitudeValue ? seg.y.map((v) => v === this.maxAmplitudeValue ? this.replaceAmplitudeValue : v) : seg.y;
-        outArray.set(y, idx);
+        outArray.set(seg.y, idx);
         idx += seg.y.length;
       });
     } else {

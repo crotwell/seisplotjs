@@ -871,10 +871,14 @@ export function areContiguous(
  * Header values from the first MSeed3 Record are used.
  *
  * @param contig array of miniseed3 records
+ * @param maxValue optional maximum value for the data, if set, values above this will be replaced with replaceValue
+ * @param replaceValue optional value to replace values above maxValue, default is NaN
  * @returns seismogram segment for the records
  */
 export function createSeismogramSegment(
   contig: Array<MSeed3Record>,
+  maxValue?: number,
+  replaceValue?: number,
 ): SeismogramSegment {
   const contigData = contig.map((dr) => dr.asEncodedDataSegment());
   const out = new SeismogramSegment(
@@ -882,6 +886,8 @@ export function createSeismogramSegment(
     contig[0].header.sampleRate,
     contig[0].header.start,
     FDSNSourceId.parse(contig[0].header.identifier),
+    maxValue,
+    replaceValue,
   );
   const bag = extractBagEH(contig[0].extraHeaders);
   if (bag?.y?.si) {
@@ -899,20 +905,26 @@ export function createSeismogramSegment(
  * can be used first if multiple channels may be present. Gaps may be present.
  *
  * @param drList list of miniseed3 records to convert
+ * @param maxValue optional maximum value for the data, if set, values above this will be replaced with replaceValue
+ * @param replaceValue optional value to replace values above maxValue, default is NaN
  * @returns the seismogram
  */
-export function merge(drList: Array<MSeed3Record>): Seismogram {
-  return new Seismogram(mergeSegments(drList));
+export function merge(drList: Array<MSeed3Record>, maxValue?: number, replaceValue?: number): Seismogram {
+  return new Seismogram(mergeSegments(drList, maxValue, replaceValue));
 }
 
 /**
  * merges contiguous MSeed3Record into SeismogramSegments.
  *
  * @param drList array of data records
+ * @param maxValue optional maximum value for the data, if set, values above this will be replaced with replaceValue
+ * @param replaceValue optional value to replace values above maxValue, default is NaN
  * @returns array of SeismogramSegments for contiguous data
  */
 export function mergeSegments(
   drList: Array<MSeed3Record>,
+  maxValue?: number,
+  replaceValue?: number,
 ): Array<SeismogramSegment> {
   const out = [];
   let currDR;
@@ -930,14 +942,14 @@ export function mergeSegments(
       contig.push(currDR);
     } else {
       //found a gap
-      out.push(createSeismogramSegment(contig));
+      out.push(createSeismogramSegment(contig, maxValue, replaceValue));
       contig = [currDR];
     }
   }
 
   if (contig.length > 0) {
     // last segment
-    out.push(createSeismogramSegment(contig));
+    out.push(createSeismogramSegment(contig, maxValue, replaceValue));
     contig = [];
   }
   return out;
@@ -994,14 +1006,18 @@ export function seismogramSegmentPerChannel(
  * Seismogram for each channel.
  *
  * @param   drList MSeed3Records array
+ * @param   maxValue optional maximum value for the data, if set, values above this will be replaced with replaceValue
+ * @param   replaceValue optional value to replace values above maxValue, default is NaN
  * @returns         Map of code to Seismogram
  */
 export function seismogramPerChannel(
   drList: Array<MSeed3Record>,
+  maxValue?: number,
+  replaceValue?: number,
 ): Array<Seismogram> {
   const out: Array<Seismogram> = [];
   const byChannelMap = byChannel(drList);
-  byChannelMap.forEach((segments) => out.push(merge(segments)));
+  byChannelMap.forEach((segments) => out.push(merge(segments, maxValue, replaceValue)));
   return out;
 }
 /**
@@ -1010,15 +1026,19 @@ export function seismogramPerChannel(
  * are extracted and Quake and Markers are created.
  *
  * @param   drList MSeed3Records array
+ * @param   maxValue optional maximum value for the data, if set, values above this will be replaced with replaceValue
+ * @param   replaceValue optional value to replace values above maxValue, default is NaN
  * @returns         Map of code to Seismogram
  */
 export function sddPerChannel(
   drList: Array<MSeed3Record>,
+  maxValue?: number,
+  replaceValue?: number,
 ): Array<SeismogramDisplayData> {
   const out: Array<SeismogramDisplayData> = [];
   const byChannelMap = byChannel(drList);
   byChannelMap.forEach((segments) => {
-    const sdd = SeismogramDisplayData.fromSeismogram(merge(segments));
+    const sdd = SeismogramDisplayData.fromSeismogram(merge(segments, maxValue, replaceValue));
     out.push(sdd);
     segments.forEach(seg => {
       const q = ehToQuake(seg.extraHeaders);
