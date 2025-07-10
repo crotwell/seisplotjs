@@ -595,10 +595,12 @@ export function createSeismogramSegment(
  * when getting data from the same channel for multiple earthquakes.
  *
  * @param drList array of data records
+ * @param maxValue if set, replaces all values equal to this with replaceValue
+ * @param replaceValue if set, replaces all values equal to maxValue with this value.
  * @returns Seismogram instance
  */
-export function merge(drList: Array<DataRecord>): Seismogram {
-  return new Seismogram(mergeSegments(drList));
+export function merge(drList: Array<DataRecord>, maxValue?: number, replaceValue?: number): Seismogram {
+  return new Seismogram(mergeSegments(drList), maxValue, replaceValue);
 }
 
 /**
@@ -691,13 +693,17 @@ export function seismogramSegmentPerChannel(
  * Seismogram for each channel.
  *
  * @param   drList DataRecords array
+ * @param   maxValue if set, replaces all values equal to this with replaceValue
+ * @param   replaceValue if set, replaces all values equal to maxValue with this value.
  * @returns         Array of Seismogram
  */
 export function seismogramPerChannel(
   drList: Array<DataRecord>,
+  maxValue?: number,
+  replaceValue?: number,
 ): Array<Seismogram> {
   const out: Array<Seismogram> = [];
   const byChannelMap = byChannel(drList);
-  byChannelMap.forEach((segments) => out.push(merge(segments)));
+  byChannelMap.forEach((segments) => out.push(merge(segments, maxValue, replaceValue)));
   return out;
 }
