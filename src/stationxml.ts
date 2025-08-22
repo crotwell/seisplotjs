@@ -1490,6 +1490,25 @@ export function* allStations(
   }
 }
 
+
+/**
+ * Generator function to access all active stations within all networks in the array.
+ *
+ * @param      networks array of Networks
+ * @param      atTime time for station to be active, defaults to now
+ * @yields           generator yeiding stations
+ */
+export function* activeStations(
+  networks: Array<Network>,
+  atTime: DateTime
+): Generator<Station, void, unknown> {
+  for (const s of allStations(networks)) {
+    if (s.isActiveAt(atTime)) {
+      yield s;
+    }
+  }
+}
+
 /**
  * Generator function to access all channels within all stations
  * within all networks in the array.
@@ -1502,6 +1521,25 @@ export function* allChannels(
 ): Generator<Channel, void, unknown> {
   for (const s of allStations(networks)) {
     for (const c of s.channels) {
+      yield c;
+    }
+  }
+}
+
+
+/**
+ * Generator function to access all active channels within all networks in the array.
+ *
+ * @param      networks array of Networks
+ * @param      atTime time for channel to be active, defaults to now
+ * @yields           generator yeiding channels
+ */
+export function* activeChannels(
+  networks: Array<Network>,
+  atTime: DateTime
+): Generator<Channel, void, unknown> {
+  for (const c of allChannels(networks)) {
+    if (c.isActiveAt(atTime)) {
       yield c;
     }
   }
