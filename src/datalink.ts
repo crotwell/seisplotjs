@@ -59,6 +59,7 @@ export const STREAM = "STREAM";
 export const ENDSTREAM = "ENDSTREAM";
 export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
+export const JSON_TYPE = "/JSON";
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
 export function extractDLProto(lines: Array<string>): string {
@@ -741,10 +742,12 @@ export class DataLinkPacket {
   dataSize: number;
   _miniseed: null | miniseed.DataRecord;
   _mseed3: null | mseed3.MSeed3Record;
+  _json: null | object;
 
   constructor(header: string, dataview: DataView) {
     this._miniseed = null;
     this._mseed3 = null;
+    this._json = null;
     this.header = header;
     this.data = dataview;
     const split = this.header.split(" ");
@@ -845,6 +848,34 @@ export class DataLinkPacket {
     }
 
     return this._mseed3;
+  }
+
+
+
+  /**
+   * is this packet a json packet
+   *
+   * @returns          true if it is json
+   */
+  isJson(): boolean {
+    return isDef(this._json) || this.streamId.endsWith(JSON_TYPE);
+  }
+
+  /**
+   * Parsed payload as a json if is json, null otherwise.
+   *
+   * @returns JSON object or null
+   */
+  asJson(): object | null {
+    if (!isDef(this._json)) {
+      if (this.streamId.endsWith(JSON_TYPE)) {
+        this._json = JSON.parse(dataViewToString(this.data));
+      } else {
+        this._json = null;
+      }
+    }
+
+    return this._json;
   }
 }
 
