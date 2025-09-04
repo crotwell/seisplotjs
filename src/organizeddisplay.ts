@@ -73,6 +73,16 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     this.redraw();
   }
 
+
+  set seismographConfig(seismographConfig: SeismographConfig) {
+    this._seismographConfig = seismographConfig;
+    this.getContainedPlotElements().forEach( (spe: SeisPlotElement) => {
+      spe.seismographConfig = seismographConfig;
+    });
+    this.seisDataUpdated();
+
+  }
+
   static get observedAttributes() {
     return [PLOT_TYPE];
   }
