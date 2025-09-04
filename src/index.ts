@@ -58,6 +58,7 @@ import * as syngine from "./syngine";
 import * as taper from "./taper";
 import * as taup3 from "./taup3";
 import * as transfer from "./transfer";
+import * as transition from "./transition";
 import * as traveltime from "./traveltime";
 import * as usgsgeojson from "./usgsgeojson";
 import * as util from "./util";
@@ -122,6 +123,7 @@ export {
   taper,
   taup3,
   transfer,
+  transition,
   traveltime,
   usgsgeojson,
   util,
