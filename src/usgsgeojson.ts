@@ -6,7 +6,7 @@ import {
   EventDescription,
   EventParameters,
 } from "./quakeml";
-import { JSON_MIME, doFetchWithTimeout,
+import { JSON_MIME, doFetchWithTimeout, UTC_OPTIONS,
   defaultFetchInitObj, stringify } from "./util";
 import { DateTime } from "luxon";
 
@@ -220,7 +220,7 @@ export function parseGeoJSON(geojson: USGSGeoJsonSummary): EventParameters {
   out.creationInfo = new CreationInfo();
   out.creationInfo.agencyURI = geojson.metadata.url;
   out.creationInfo.creationTime = DateTime.fromMillis(
-    geojson.metadata.generated,
+    geojson.metadata.generated, UTC_OPTIONS
   );
   out.eventList = quakeList;
   out.description = description;
@@ -243,7 +243,7 @@ export function parseFeatureAsQuake(feature: USGSGeoJsonFeature): Quake {
   quake.eventId=stringify(feature.id);
   quake.descriptionList.push(new EventDescription(p.title));
   const origin = new Origin(
-    DateTime.fromMillis(p.time),
+    DateTime.fromMillis(p.time, UTC_OPTIONS),
     feature.geometry.coordinates[1],
     feature.geometry.coordinates[0],
   );
