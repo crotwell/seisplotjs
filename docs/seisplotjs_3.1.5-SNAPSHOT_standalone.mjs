@@ -38428,23 +38428,29 @@ var Formatter = class _Formatter {
       }
     }, era = (length) => knownEnglish ? eraForDateTime(dt, length) : string({ era: length }, "era"), tokenToString = (token) => {
       switch (token) {
+        // ms
         case "S":
           return this.num(dt.millisecond);
         case "u":
+        // falls through
         case "SSS":
           return this.num(dt.millisecond, 3);
+        // seconds
         case "s":
           return this.num(dt.second);
         case "ss":
           return this.num(dt.second, 2);
+        // fractional seconds
         case "uu":
           return this.num(Math.floor(dt.millisecond / 10), 2);
         case "uuu":
           return this.num(Math.floor(dt.millisecond / 100));
+        // minutes
         case "m":
           return this.num(dt.minute);
         case "mm":
           return this.num(dt.minute, 2);
+        // hours
         case "h":
           return this.num(dt.hour % 12 === 0 ? 12 : dt.hour % 12);
         case "hh":
@@ -38453,6 +38459,7 @@ var Formatter = class _Formatter {
           return this.num(dt.hour);
         case "HH":
           return this.num(dt.hour, 2);
+        // offset
         case "Z":
           return formatOffset2({ format: "narrow", allowZ: this.opts.allowZ });
         case "ZZ":
@@ -38463,14 +38470,18 @@ var Formatter = class _Formatter {
           return dt.zone.offsetName(dt.ts, { format: "short", locale: this.loc.locale });
         case "ZZZZZ":
           return dt.zone.offsetName(dt.ts, { format: "long", locale: this.loc.locale });
+        // zone
         case "z":
           return dt.zoneName;
+        // meridiems
         case "a":
           return meridiem();
+        // dates
         case "d":
           return useDateTimeFormatter ? string({ day: "numeric" }, "day") : this.num(dt.day);
         case "dd":
           return useDateTimeFormatter ? string({ day: "2-digit" }, "day") : this.num(dt.day, 2);
+        // weekdays - standalone
         case "c":
           return this.num(dt.weekday);
         case "ccc":
@@ -38479,6 +38490,7 @@ var Formatter = class _Formatter {
           return weekday("long", true);
         case "ccccc":
           return weekday("narrow", true);
+        // weekdays - format
         case "E":
           return this.num(dt.weekday);
         case "EEE":
@@ -38487,6 +38499,7 @@ var Formatter = class _Formatter {
           return weekday("long", false);
         case "EEEEE":
           return weekday("narrow", false);
+        // months - standalone
         case "L":
           return useDateTimeFormatter ? string({ month: "numeric", day: "numeric" }, "month") : this.num(dt.month);
         case "LL":
@@ -38497,6 +38510,7 @@ var Formatter = class _Formatter {
           return month("long", true);
         case "LLLLL":
           return month("narrow", true);
+        // months - format
         case "M":
           return useDateTimeFormatter ? string({ month: "numeric" }, "month") : this.num(dt.month);
         case "MM":
@@ -38507,6 +38521,7 @@ var Formatter = class _Formatter {
           return month("long", false);
         case "MMMMM":
           return month("narrow", false);
+        // years
         case "y":
           return useDateTimeFormatter ? string({ year: "numeric" }, "year") : this.num(dt.year);
         case "yy":
@@ -38515,6 +38530,7 @@ var Formatter = class _Formatter {
           return useDateTimeFormatter ? string({ year: "numeric" }, "year") : this.num(dt.year, 4);
         case "yyyyyy":
           return useDateTimeFormatter ? string({ year: "numeric" }, "year") : this.num(dt.year, 6);
+        // eras
         case "G":
           return era("short");
         case "GG":
@@ -40520,10 +40536,12 @@ function unitForToken(token, loc) {
       return literal(t);
     }
     switch (t.val) {
+      // era
       case "G":
         return oneOf(loc.eras("short"), 0);
       case "GG":
         return oneOf(loc.eras("long"), 0);
+      // years
       case "y":
         return intUnit(oneToSix);
       case "yy":
@@ -40534,6 +40552,7 @@ function unitForToken(token, loc) {
         return intUnit(fourToSix);
       case "yyyyyy":
         return intUnit(six);
+      // months
       case "M":
         return intUnit(oneOrTwo);
       case "MM":
@@ -40550,14 +40569,17 @@ function unitForToken(token, loc) {
         return oneOf(loc.months("short", false), 1);
       case "LLLL":
         return oneOf(loc.months("long", false), 1);
+      // dates
       case "d":
         return intUnit(oneOrTwo);
       case "dd":
         return intUnit(two);
+      // ordinals
       case "o":
         return intUnit(oneToThree);
       case "ooo":
         return intUnit(three);
+      // time
       case "HH":
         return intUnit(two);
       case "H":
@@ -40588,16 +40610,20 @@ function unitForToken(token, loc) {
         return simple(oneOrTwo);
       case "uuu":
         return intUnit(one2);
+      // meridiem
       case "a":
         return oneOf(loc.meridiems(), 0);
+      // weekYear (k)
       case "kkkk":
         return intUnit(four);
       case "kk":
         return intUnit(twoToFour, untruncateYear);
+      // weekNumber (W)
       case "W":
         return intUnit(oneOrTwo);
       case "WW":
         return intUnit(two);
+      // weekdays
       case "E":
       case "c":
         return intUnit(one2);
@@ -40609,13 +40635,18 @@ function unitForToken(token, loc) {
         return oneOf(loc.weekdays("short", true), 1);
       case "cccc":
         return oneOf(loc.weekdays("long", true), 1);
+      // offset/zone
       case "Z":
       case "ZZ":
         return offset(new RegExp(`([+-]${oneOrTwo.source})(?::(${two.source}))?`), 2);
       case "ZZZ":
         return offset(new RegExp(`([+-]${oneOrTwo.source})(${two.source})?`), 2);
+      // we don't support ZZZZ (PST) or ZZZZZ (Pacific Standard Time) in parsing
+      // because we don't have any way to figure out what they are
       case "z":
         return simple(/[a-z_+-/]{1,256}?/i);
+      // this special-case "token" represents a place where a macro-token expanded into a white-space literal
+      // in this case we accept any non-newline white-space
       case " ":
         return simple(/[^\S\n\r]/);
       default:
@@ -42108,16 +42139,21 @@ var DateTime = class _DateTime {
     switch (normalizedUnit) {
       case "years":
         o.month = 1;
+      // falls through
       case "quarters":
       case "months":
         o.day = 1;
+      // falls through
       case "weeks":
       case "days":
         o.hour = 0;
+      // falls through
       case "hours":
         o.minute = 0;
+      // falls through
       case "minutes":
         o.second = 0;
+      // falls through
       case "seconds":
         o.millisecond = 0;
         break;
@@ -42959,7 +42995,7 @@ var FDSNSourceId = class _FDSNSourceId {
     return this.asNslc().channelCode;
   }
   toString() {
-    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
+    return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
   }
   toStringNoPrefix() {
     return `${this.networkCode}${SEP}${this.stationCode}${SEP}${this.locationCode}${SEP}${this.bandCode}${SEP}${this.sourceCode}${SEP}${this.subsourceCode}`;
@@ -43001,10 +43037,7 @@ var NetworkSourceId = class _NetworkSourceId {
     return new _NetworkSourceId(items[0]);
   }
   toString() {
-    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
-  }
-  toStringNoPrefix() {
-    return this.networkCode;
+    return `${FDSN_PREFIX}${this.networkCode}`;
   }
   equals(other) {
     return this.toString() === other.toString();
@@ -43032,10 +43065,7 @@ var StationSourceId = class _StationSourceId {
     return new _StationSourceId(items[0], items[1]);
   }
   toString() {
-    return `${FDSN_PREFIX}${this.toStringNoPrefix()}`;
-  }
-  toStringNoPrefix() {
-    return `${this.networkCode}${SEP}${this.stationCode}`;
+    return `${FDSN_PREFIX}${this.networkCode}${SEP}${this.stationCode}`;
   }
   networkSourceId() {
     return new NetworkSourceId(this.networkCode);
@@ -43245,7 +43275,6 @@ __export(util_exports, {
   makeParam: () => makeParam,
   makePostParam: () => makePostParam,
   meanOfSlice: () => meanOfSlice,
-  mightBeXml: () => mightBeXml,
   reErrorWithMessage: () => reErrorWithMessage,
   setDefaultFetch: () => setDefaultFetch,
   startDuration: () => startDuration,
@@ -43755,13 +43784,6 @@ var SVG_NS = "http://www.w3.org/2000/svg";
 var XHTML_NS = "http://www.w3.org/1999/xhtml";
 function createSVGElement(name) {
   return document.createElementNS(SVG_NS, name);
-}
-function mightBeXml(buf) {
-  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
-  if (!initialChars.startsWith("<?xml ")) {
-    return false;
-  }
-  return true;
 }
 function updateVersionText(selector = "#sp-version") {
   document.querySelectorAll(selector).forEach((el) => {
@@ -45053,7 +45075,6 @@ __export(stationxml_exports, {
   extractComplex: () => extractComplex,
   fetchStationXml: () => fetchStationXml,
   findChannels: () => findChannels,
-  mightBeStatonXml: () => mightBeStatonXml,
   parseStationXml: () => parseStationXml,
   parseUtil: () => parseUtil,
   uniqueNetworks: () => uniqueNetworks,
@@ -45364,7 +45385,7 @@ var Channel = class {
     this.elevation = 0;
     this.sampleRate = 0;
     if (channelCode.length !== 3) {
-      throw new Error(`Channel code must be 3 chars: "${channelCode}"`);
+      throw new Error(`Channel code must be 3 chars: ${channelCode}`);
     }
     this.channelCode = channelCode;
     this._locationCode = locationCode;
@@ -45387,9 +45408,6 @@ var Channel = class {
       this.locationCode,
       this.channelCode
     );
-  }
-  set sourceId(sid) {
-    this._sourceId = sid;
   }
   get nslcId() {
     return new NslcId(
@@ -46296,16 +46314,6 @@ function fetchStationXml(url, timeoutSec2 = 10, nodata = 204) {
   }).then((rawXml) => {
     return parseStationXml(rawXml);
   });
-}
-function mightBeStatonXml(buf) {
-  if (!mightBeXml(buf)) {
-    return false;
-  }
-  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
-  if (!initialChars.includes("FDSNStationXML")) {
-    return false;
-  }
-  return true;
 }
 var _grabFirstEl = function(xml, tagName) {
   let out = null;
@@ -55773,6 +55781,7 @@ Linear.prototype = {
         break;
       case 1:
         this._point = 2;
+      // falls through
       default:
         this._context.lineTo(x2, y2);
         break;
@@ -56237,7 +56246,6 @@ __export(quakeml_exports, {
   createQuakeClickEvent: () => createQuakeClickEvent,
   createQuakeFromValues: () => createQuakeFromValues,
   fetchQuakeML: () => fetchQuakeML,
-  mightBeQuakeML: () => mightBeQuakeML,
   parseQuakeML: () => parseQuakeML,
   parseUtil: () => parseUtil2
 });
@@ -57983,16 +57991,6 @@ function fetchQuakeML(url, timeoutSec2 = 10, nodata = 204) {
   }).then((rawXml) => {
     return parseQuakeML(rawXml, host);
   });
-}
-function mightBeQuakeML(buf) {
-  if (!mightBeXml(buf)) {
-    return false;
-  }
-  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
-  if (!initialChars.includes("quakeml")) {
-    return false;
-  }
-  return true;
 }
 var _grabAllElComment = function(xml, tagName) {
   const out = [];
@@ -61524,7 +61522,7 @@ function overlayByComponent(sddList, seisConfig) {
   return overlayBySDDFunction(
     sddList,
     "component",
-    (sdd) => sdd.sourceId.subsourceCode,
+    (sdd) => sdd.channelCode.charAt(2),
     seisConfig
   );
 }
@@ -61532,7 +61530,7 @@ function overlayByStation(sddList, seisConfig) {
   return overlayBySDDFunction(
     sddList,
     "station",
-    (sdd) => sdd.sourceId.stationSourceId().toStringNoPrefix(),
+    (sdd) => sdd.networkCode + "_" + sdd.stationCode,
     seisConfig
   );
 }
@@ -62861,7 +62859,6 @@ __export(mseed3_exports, {
   makeString: () => makeString2,
   merge: () => merge2,
   mergeSegments: () => mergeSegments2,
-  mightBeMSeed3Records: () => mightBeMSeed3Records,
   padZeros: () => padZeros,
   parseExtraHeaders: () => parseExtraHeaders,
   parseMSeed3Records: () => parseMSeed3Records,
@@ -62955,7 +62952,6 @@ function ehToChannel(exHead, sid) {
     if (ch.el != null) {
       sta.elevation = ch.el;
     }
-    console.log(`ehToChannel ${sid.formChannelCode()}`);
     channel = new Channel(sta, sid.formChannelCode(), sid.locationCode);
     channel.latitude = ch.la;
     channel.longitude = ch.lo;
@@ -63212,26 +63208,6 @@ function parseMSeed3Records(arrayBuffer) {
   }
   return dataRecords;
 }
-function mightBeMSeed3Records(arrayBuffer) {
-  const dataView = new DataView(arrayBuffer);
-  if (!(dataView.getUint8(0) === 77 && dataView.getUint8(1) === 83)) {
-    return false;
-  }
-  const header = MSeed3Header.createFromDataView(dataView);
-  if (header.formatVersion !== 3) {
-    return false;
-  }
-  if (header.year < 1900 || header.year > 2500) {
-    return false;
-  }
-  if (header.dayOfYear <= 0 || header.dayOfYear > 366) {
-    return false;
-  }
-  if (header.hour <= 0 || header.hour > 24) {
-    return false;
-  }
-  return true;
-}
 var MSeed3Record = class _MSeed3Record {
   constructor(header, extraHeaders, rawData) {
     __publicField(this, "header");
@@ -63324,12 +63300,6 @@ var MSeed3Record = class _MSeed3Record {
    */
   codes() {
     return this.header.identifier;
-  }
-  /**
-   * Parses the identifier into an FDSNSourceId.
-   */
-  getSourceId() {
-    return FDSNSourceId.parse(this.header.identifier);
   }
   /**
    * Saves miniseed3 record into a DataView, recalculating crc.
@@ -63755,7 +63725,7 @@ function createSeismogramSegment2(contig) {
     contigData,
     contig[0].header.sampleRate,
     contig[0].header.start,
-    contig[0].getSourceId()
+    FDSNSourceId.parse(contig[0].header.identifier)
   );
   const bag = extractBagEH(contig[0].extraHeaders);
   if (bag?.y?.si) {
@@ -65225,7 +65195,6 @@ __export(dataset_exports, {
   load: () => load,
   loadFromFile: () => loadFromFile,
   loadFromZip: () => loadFromZip,
-  mightBeZipFile: () => mightBeZipFile,
   sddFromMSeed3: () => sddFromMSeed3
 });
 
@@ -65867,7 +65836,7 @@ async function loadFromZip(zip) {
         if (file.name.endsWith(".ms3")) {
           const seisPromise = file.async("arraybuffer").then(function(buffer) {
             const ms3records = parseMSeed3Records(buffer);
-            return sddPerChannel(ms3records);
+            return sddFromMSeed3(ms3records);
           });
           promiseArray.push(seisPromise);
         }
@@ -65927,15 +65896,10 @@ function sddFromMSeed3(ms3records, ds) {
   return out;
 }
 function insertExtraHeaders(eh, sdd, key, ds) {
-  const myEH = extractBagEH(eh);
+  const myEH = eh[key];
   if (!myEH) {
     return;
   }
-  let quake = ehToQuake(myEH);
-  if (quake) {
-    sdd.addQuake(quake);
-  }
-  sdd.addMarkers(ehToMarkers(myEH));
   if (typeof myEH === "object") {
     if ("quake" in myEH) {
       const qList = myEH["quake"];
@@ -65989,14 +65953,6 @@ function createExtraHeaders(key, sdd) {
     h["markers"] = sdd.markerList;
   }
   return out;
-}
-function mightBeZipFile(buf) {
-  const dataView = new DataView(buf);
-  if (!(dataView.getUint8(0) === 80 && dataView.getUint8(1) === 75 && dataView.getUint8(2) === 3 && dataView.getUint8(3) === 4)) {
-    console.log(`${dataView.getUint8(0)}${dataView.getUint8(1)}${dataView.getUint8(2)}${dataView.getUint8(3)}`);
-    return false;
-  }
-  return true;
 }
 
 // src/datechooser.ts
@@ -70838,6 +70794,7 @@ __export(helicorder_exports, {
   HeliTimeRange: () => HeliTimeRange,
   Helicorder: () => Helicorder,
   HelicorderConfig: () => HelicorderConfig,
+  anplusb: () => anplusb,
   helicorder_css: () => helicorder_css,
   nameForTimeZone: () => nameForTimeZone
 });
@@ -71019,6 +70976,7 @@ var Helicorder = class extends SeisPlotElement {
     const nl = this.heliConfig.numLines;
     const maxHeight = this.heliConfig.maxHeight !== null ? this.heliConfig.maxHeight : DEFAULT_MAX_HEIGHT;
     const baseHeight = (maxHeight - margin.top - margin.bottom) / (nl - (nl - 1) * this.heliConfig.overlap);
+    const [timeLabelSpacing, timeLabelOffset] = anplusb(this.heliConfig.timeLabelSpacing);
     for (const lineTime of lineTimes) {
       const lineNumber = lineTime.lineNumber;
       const lineInterval = lineTime.interval;
@@ -71040,8 +70998,12 @@ var Helicorder = class extends SeisPlotElement {
         height += this.heliConfig.margin.bottom;
       }
       lineSeisConfig.fixedTimeScale = lineInterval;
-      lineSeisConfig.yLabel = `${startTime2?.setZone(this.heliConfig.yLabelTimeZone).toFormat("HH:mm")}`;
-      lineSeisConfig.yLabelRight = `${endTime?.setZone(this.heliConfig.yLabelRightTimeZone).toFormat("HH:mm")}`;
+      const yLabelStep = (lineNumber - timeLabelOffset) / timeLabelSpacing;
+      const doYLabels = Number.isInteger(yLabelStep) && yLabelStep >= 0 && yLabelStep < nl;
+      if (doYLabels) {
+        lineSeisConfig.yLabel = `${startTime2?.setZone(this.heliConfig.yLabelTimeZone).toFormat("HH:mm")}`;
+        lineSeisConfig.yLabelRight = `${endTime?.setZone(this.heliConfig.yLabelRightTimeZone).toFormat("HH:mm")}`;
+      }
       lineSeisConfig.lineColors = [
         this.heliConfig.lineColors[lineNumber % this.heliConfig.lineColors.length]
       ];
@@ -71181,6 +71143,7 @@ var HelicorderConfig = class _HelicorderConfig extends SeismographConfig {
     __publicField(this, "detrendLines", false);
     __publicField(this, "yLabelTimeZone", FixedOffsetZone.utcInstance);
     __publicField(this, "yLabelRightTimeZone", FixedOffsetZone.utcInstance);
+    __publicField(this, "timeLabelSpacing");
     if (!isDef(timeRange)) {
       throw new Error("Helicorder config must have fixedTimeScale set");
     }
@@ -71200,6 +71163,7 @@ var HelicorderConfig = class _HelicorderConfig extends SeismographConfig {
     this.margin.left = 0;
     this.margin.right = 0;
     this.margin.top = 40;
+    this.timeLabelSpacing = 1;
     this.lineColors = ["skyblue", "olivedrab", "goldenrod"];
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.amplitudeMode = "minmax" /* MinMax */;
@@ -71246,6 +71210,22 @@ function nameForTimeZone(zone) {
   } else {
     return zone.name;
   }
+}
+function anplusb(value) {
+  let a = 1;
+  let b = 0;
+  if (typeof value === "number" && Number.isSafeInteger(value)) {
+    a = value;
+  } else if (typeof value === "string") {
+    const re2 = /^(\d*)n(?:\+(\d+))?$/;
+    const m = re2.exec(value.trim());
+    if (m === null) {
+      throw new Error(`Unable to parse as 'an+b' (ex. '3n+1'), got: '${value}'`);
+    }
+    a = m[1] ? +m[1] : a;
+    b = m[2] ? +m[2] : b;
+  }
+  return [a, b];
 }
 var helicorder_css = `
 :host {
@@ -71555,10 +71535,13 @@ function minSampleRate(chan) {
       return 1;
     case "L":
       return 1;
+    // maybe wrong, seed manual not clear
     case "V":
       return 0.1;
+    // maybe wrong, seed manual not clear
     case "U":
       return 0.01;
+    // maybe wrong, seed manual not clear
     case "R":
       return 1e-4;
     case "P":

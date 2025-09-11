@@ -241,6 +241,7 @@ export class Helicorder extends SeisPlotElement {
       (maxHeight - margin.top - margin.bottom) /
       (nl - (nl - 1) * this.heliConfig.overlap);
 
+    const [timeLabelSpacing, timeLabelOffset] = anplusb(this.heliConfig.timeLabelSpacing);
     for (const lineTime of lineTimes) {
       const lineNumber = lineTime.lineNumber;
       const lineInterval = lineTime.interval;
@@ -268,8 +269,15 @@ export class Helicorder extends SeisPlotElement {
       }
 
       lineSeisConfig.fixedTimeScale = lineInterval;
-      lineSeisConfig.yLabel = `${startTime?.setZone(this.heliConfig.yLabelTimeZone).toFormat("HH:mm")}`;
-      lineSeisConfig.yLabelRight = `${endTime?.setZone(this.heliConfig.yLabelRightTimeZone).toFormat("HH:mm")}`;
+      // Transform current label index into our desired "label grid space" by translating
+      // and scaling it. If the result is a whole number within our original range, current
+      // line is configured to have a label
+      const yLabelStep = (lineNumber - timeLabelOffset) / timeLabelSpacing;
+      const doYLabels = Number.isInteger(yLabelStep) && yLabelStep >= 0 && yLabelStep < nl;
+      if (doYLabels) {
+        lineSeisConfig.yLabel = `${startTime?.setZone(this.heliConfig.yLabelTimeZone).toFormat("HH:mm")}`;
+        lineSeisConfig.yLabelRight = `${endTime?.setZone(this.heliConfig.yLabelRightTimeZone).toFormat("HH:mm")}`;
+      }
       lineSeisConfig.lineColors = [
         this.heliConfig.lineColors[
           lineNumber % this.heliConfig.lineColors.length
@@ -450,6 +458,7 @@ export class HelicorderConfig extends SeismographConfig {
   detrendLines = false;
   yLabelTimeZone: string|Zone<boolean> = FixedOffsetZone.utcInstance;
   yLabelRightTimeZone: string|Zone<boolean> = FixedOffsetZone.utcInstance;
+  timeLabelSpacing: string|number;
 
   constructor(timeRange: Interval) {
     super();
@@ -474,6 +483,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.margin.left = 0;
     this.margin.right = 0;
     this.margin.top = 40;
+    this.timeLabelSpacing = 1;
     this.lineColors = ["skyblue", "olivedrab", "goldenrod"];
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.amplitudeMode = AMPLITUDE_MODE.MinMax;
@@ -533,6 +543,33 @@ export function nameForTimeZone(zone: string|null|Zone): string {
   } else {
     return zone.name;
   }
+}
+
+/**
+ * Parses a string of the form 'an+b', where 'a' is a positive integer (can be omitted if 1), 'n' is a
+ * literal character, and 'b' is a positive integer (or omitted for zero). Examples include: '3n+1',
+ * 'n', '2n'.
+ * @param value String of the form 'an+b'
+ * @returns The 'a' and 'b' values parsed from the given 'value' string, returned as an array
+ */
+export function anplusb(value: string | number): Array<number> {
+  let a = 1;
+  let b = 0;
+  if (typeof value === "number" && Number.isSafeInteger(value)) {
+    // If value is given as a number, return it as 'a'
+    a = value;
+  } else if (typeof value === "string") {
+    // Find values in the format of 'an+b', making a and b optional
+    const re = /^(\d*)n(?:\+(\d+))?$/;
+    const m = re.exec(value.trim());
+    if (m === null) {
+      throw new Error(`Unable to parse as 'an+b' (ex. '3n+1'), got: '${value}'`);
+    }
+    // If values are defined, parse to integers. Otherwise, keep defaults
+    a = m[1] ? +m[1] : a;
+    b = m[2] ? +m[2] : b;
+  }
+  return [ a, b ];
 }
 
 /** default styling for helicorder plots. */
