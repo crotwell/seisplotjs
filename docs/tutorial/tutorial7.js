@@ -2,8 +2,15 @@ import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
 document.querySelector(".sp_version").textContent = sp.version;
 
 // snip start vars
-const matchPattern = `CO_BIRD_00_HH./MSEED`;
-document.querySelector("span#channel").textContent = matchPattern;
+// Datalink on older versions of Ringserver, DLPROTO1.0, use NSLC ids like:
+const matchPatternV3 = `CO_HAW_00_HH./MSEED`;
+// while datalink on version 4 of Ringserver, DLPROTO1.1, uses FDSN Source ids like:
+const matchPatternV4 = `FDSN:CO_HAW_00_H_H_./MSEED`;
+// this regex pattern will match both, but is a little clunky
+const matchPatternBoth = `(FDSN:)?CO_HAW_00_H_?H_?./MSEED`;
+// An alternative is to use a different pattern, V3 or V4, based on the
+// returned DLPTOTO version from the serverId. See below for an example.
+
 const duration = sp.luxon.Duration.fromISO("PT5M");
 
 let numPackets = 0;
@@ -18,17 +25,13 @@ const rtConfig = {
 const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
 realtimeDiv.appendChild(rtDisp.organizedDisplay);
 rtDisp.organizedDisplay.draw();
-rtDisp.animationScaler.minRedrawMillis =
-  sp.animatedseismograph.calcOnePixelDuration(rtDisp.organizedDisplay);
-
 rtDisp.animationScaler.animate();
 
 // snip start nowtime
 const n_span = document.querySelector("#nt");
 setInterval(() => {
-  const seisConfig = rtDisp.organizedDisplay.seismographConfig;
-  const lts = seisConfig.linkedTimeScale;
-  n_span.textContent = sp.luxon.DateTime.utc().toISO();
+  const now = sp.luxon.DateTime.utc().toISO();
+  n_span.textContent = `Now: ${now}`;
 }, 1000);
 
 // snip start helpers
@@ -56,7 +59,8 @@ function errorFn(error) {
 // snip start datalink
 let datalink = null;
 const IRIS_DATALINK = "wss://rtserve.iris.washington.edu/datalink";
-const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/ringserver/datalink";
+const SCSN_DATALINK = "wss://eeyore.seis.sc.edu/testringserver/datalink";
+const DATALINK_URL = IRIS_DATALINK;
 
 let toggleConnect = function () {
   stopped = !stopped;
@@ -69,8 +73,9 @@ let toggleConnect = function () {
   } else {
     document.querySelector("button#disconnect").textContent = "Disconnect";
     if (!datalink) {
+      addToDebug("Datalink URL: " + DATALINK_URL);
       datalink = new sp.datalink.DataLinkConnection(
-        SCSN_DATALINK,
+        DATALINK_URL,
         (packet) => {
           rtDisp.packetHandler(packet);
           updateNumPackets();
@@ -82,7 +87,17 @@ let toggleConnect = function () {
       datalink
         .connect()
         .then((serverId) => {
-          return datalink.match(matchPattern);
+
+          addToDebug("ServerId: " + serverId);
+          // here we use the match pattern corresponding to the version of
+          // ringserver (via DLPROTO) that we are connecting to
+          if (serverId.includes("DLPROTO:1.0")) {
+            document.querySelector("span#channel").textContent = matchPatternV3;
+            return datalink.match(matchPatternV3);
+          } else {
+            document.querySelector("span#channel").textContent = matchPatternV4;
+            return datalink.match(matchPatternV4);
+          }
         })
         .then((response) => {
           addToDebug(`match response: ${response}`);

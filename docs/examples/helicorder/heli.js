@@ -19,6 +19,7 @@ const luxon = sp.luxon;
 
 const staList = [
   "BARN",
+  "BELLE",
   "BIRD",
   "C1SC",
   "CASEE",
@@ -27,6 +28,7 @@ const staList = [
   "HODGE",
   "JKYD",
   "JSC",
+  "PARR",
   "PAULI",
   "SUMMV",
   "TEEBA",

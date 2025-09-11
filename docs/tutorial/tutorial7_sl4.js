@@ -1,105 +1,112 @@
-// snip start vars
 import * as sp from "../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
-sp.util.updateVersionText(".sp_version");
+document.querySelector(".sp_version").textContent = sp.version;
 
-const stationPattern = `CO JSC`;
-const selectPattern = `00.HH?`;
-document.querySelector("span#channel").textContent =
-  `${stationPattern} ${selectPattern}`;
+// snip start vars
 const duration = sp.luxon.Duration.fromISO("PT5M");
-const timeWindow = new sp.util.durationEnd(duration, sp.luxon.DateTime.utc());
-const seisPlotConfig = new sp.seismographconfig.SeismographConfig();
-seisPlotConfig.wheelZoom = false;
-seisPlotConfig.isYAxisNice = false;
-seisPlotConfig.linkedTimeScale.offset = sp.luxon.Duration.fromMillis(
-  -1 * duration.toMillis(),
-);
-seisPlotConfig.linkedTimeScale.duration = duration;
-seisPlotConfig.linkedAmplitudeScale = new sp.scale.IndividualAmplitudeScale();
-seisPlotConfig.doGain = true;
-let graphList = new Map();
+
 let numPackets = 0;
 let paused = false;
 let stopped = true;
-let redrawInProgress = false;
 let realtimeDiv = document.querySelector("div#realtime");
-let rect = realtimeDiv.getBoundingClientRect();
-let timerInterval =
-  duration.toMillis() /
-  (rect.width - seisPlotConfig.margin.left - seisPlotConfig.margin.right);
-while (timerInterval < 50) {
-  timerInterval *= 2;
-}
-const errorFn = function (error) {
-  console.assert(false, error);
-  if (datalink) {
-    datalink.close();
-  }
-  document.querySelector("p#error").textContent = "Error: " + error;
-};
-
-// snip start handle
-const packetHandler = function (packet) {
-  if (packet.isMiniseed()) {
-    numPackets++;
-    document.querySelector("span#numPackets").textContent = numPackets;
-    let seisSegment = sp.miniseed.createSeismogramSegment(packet.miniseed);
-    const codes = seisSegment.codes();
-    let seisPlot = graphList.get(codes);
-    if (!seisPlot) {
-      let seismogram = new sp.seismogram.Seismogram([seisSegment]);
-      let seisData =
-        sp.seismogram.SeismogramDisplayData.fromSeismogram(seismogram);
-      seisData.alignmentTime = sp.moment.utc();
-      let plotDiv = realtimeDiv.append("div").classed("seismograph", true);
-      seisPlot = new sp.seismograph.Seismograph(
-        plotDiv,
-        seisPlotConfig,
-        seisData,
-      );
-      graphList.set(codes, seisPlot);
-      console.log(`new plot: ${codes}`);
-    } else {
-      seisPlot.seisDataList[0].seismogram.append(seisSegment);
-    }
-    seisPlot.draw();
-  } else {
-    console.log(`not a mseed packet: ${packet.streamId}`);
-  }
-};
-let requstConfig = ["ACCEPT 2", "STATION WLF GE", "SELECT *.BH?"];
-// snip start seedlink
-const seedlink = new sp.seedlink4.SeedlinkConnection(
-  "ws://geofon-open2.gfz-potsdam.de:18000",
-  packetHandler,
-  errorFn,
-);
 
 // snip start timer
-let timer = window.setInterval(function (elapsed) {
-  if (paused || redrawInProgress) {
+const rtConfig = {
+  duration: sp.luxon.Duration.fromISO("PT5M"),
+};
+const rtDisp = sp.animatedseismograph.createRealtimeDisplay(rtConfig);
+realtimeDiv.appendChild(rtDisp.organizedDisplay);
+rtDisp.organizedDisplay.draw();
+rtDisp.animationScaler.animate();
+
+// snip start nowtime
+const n_span = document.querySelector("#nt");
+setInterval(() => {
+  const now = sp.luxon.DateTime.utc().toISO();
+  n_span.textContent = `${now} ${rtDisp.animationScaler.alignmentTime} ts:${rtDisp.animationScaler.timeScale.offset}`;
+}, 1000);
+
+// snip start helpers
+function updateNumPackets() {
+  numPackets++;
+  document.querySelector("#numPackets").textContent = numPackets;
+}
+function addToDebug(message) {
+  const debugDiv = document.querySelector("div#debug");
+  if (!debugDiv) {
     return;
   }
-  redrawInProgress = true;
-  window.requestAnimationFrame((timestamp) => {
-    try {
-      const now = sp.util.isoToDateTime("now");
-      graphList.forEach(function (graph, key) {
-        graph.seisDataList.forEach((sdd) => {
-          sdd.alignmentTime = now;
-        });
-        graph.calcTimeScaleDomain();
-        graph.calcAmpScaleDomain();
-        graph.draw();
-      });
-    } catch (err) {
-      console.assert(false, err);
-    }
-    redrawInProgress = false;
-  });
-}, timerInterval);
+  const pre = debugDiv.appendChild(document.createElement("pre"));
+  const code = pre.appendChild(document.createElement("code"));
+  code.textContent = message;
+}
+function errorFn(error) {
+  console.assert(false, error);
+  if (seedlink) {
+    seedlink.close();
+  }
+  addToDebug("Error: " + error);
+}
 
-// snip start pause
+// snip start handle
+
+let requestConfig = [
+  "STATION CO_HAW",
+  "SELECT 00_H_H_Z",
+  'STATION CO_JSC',
+  'SELECT 00_H_H_Z'
+];
+let start = sp.luxon.DateTime.utc().minus(duration);
+let dataCmd = sp.seedlink4.createDataTimeCommand(start);
+let requestConfigWithData = requestConfig.concat([ dataCmd ])
+let endCommand = "END";
+const LOCAL_SEEDLINK_V4 = "wss://eeyore.seis.sc.edu/testringserver/seedlink";
+
+document.querySelector("span#channel").textContent = requestConfig.join(" ");
+
+// snip start seedlink
+let seedlink = null;
+
+let toggleConnect = function () {
+  stopped = !stopped;
+  if (stopped) {
+    document.querySelector("button#disconnect").textContent = "Reconnect";
+    if (seedlink) {
+      seedlink.close();
+    }
+  } else {
+    document.querySelector("button#disconnect").textContent = "Disconnect";
+    if (!seedlink) {
+      seedlink = new sp.seedlink4.SeedlinkConnection(
+        LOCAL_SEEDLINK_V4,
+        requestConfigWithData,
+        (packet) => {
+          rtDisp.packetHandler(packet);
+          updateNumPackets();
+        },
+        errorFn,
+      );
+      seedlink.endCommand = endCommand;
+    }
+    if (seedlink) {
+      start = sp.luxon.DateTime.utc().minus(duration);
+      dataCmd = sp.seedlink4.createDataTimeCommand(start);
+      requestConfigWithData = requestConfig.concat([ dataCmd ])
+      seedlink.requestConfig = requestConfigWithData;
+      seedlink
+        .connect()
+        .catch(function (error) {
+          addToDebug(`Error: ${error.name} - ${error.message}`);
+          console.assert(false, error);
+        });    }
+  }
+};
+
+// snip start disconnet
+document
+  .querySelector("button#disconnect")
+  .addEventListener("click", function (evt) {
+    toggleConnect();
+  });
 
 // snip start pause
 document
@@ -112,62 +119,12 @@ let togglePause = function () {
   paused = !paused;
   if (paused) {
     document.querySelector("button#pause").textContent = "Play";
+    rtDisp.animationScaler.pause();
   } else {
     document.querySelector("button#pause").textContent = "Pause";
+    rtDisp.animationScaler.animate();
   }
 };
 
-// snip start disconnet
-document
-  .querySelector("button#disconnect")
-  .addEventListener("click", function (evt) {
-    toggleConnect();
-  });
-
-function addToDebug(message) {
-  const debugDiv = document.querySelector("div#debug");
-  if (!debugDiv) {
-    return;
-  }
-  const pre = debugDiv.appendChild(document.createElement("pre"));
-  const code = pre.appendChild(document.createElement("code"));
-  code.textContent = message;
-}
-
-let toggleConnect = function () {
-  stopped = !stopped;
-  if (stopped) {
-    if (seedlink) {
-      seedlink.close();
-    }
-    document.querySelector("button#disconnect").textContent = "Reconnect";
-  } else {
-    if (seedlink) {
-      seedlink
-        .interactiveConnect()
-        .then(() => {
-          return that.sendHello();
-        })
-        .then(function (lines) {
-          console.log(`got lines: ${lines[0]}`);
-          if (this.checkProto(lines)) {
-            addToDebug("HELLO: ");
-            addToDebug(" " + lines[0]);
-            addToDebug(" " + lines[1]);
-            return true;
-          } else {
-            throw new Exception(
-              `${SEEDLINK4_PROTOCOL} not found in HELLO response`,
-            );
-          }
-        })
-        .catch(function (error) {
-          addToDebug(`Error: ${error.name} - ${error.message}`);
-          console.assert(false, error);
-        });
-    }
-    document.querySelector("button#disconnect").textContent = "Disconnect";
-  }
-};
 // snip start go
 toggleConnect();

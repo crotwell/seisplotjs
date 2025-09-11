@@ -251,4 +251,4 @@ test("mergeMseed3", () => {
   expect(drList).toHaveLength(86);
   const sddList = mseed3.sddPerChannel(drList);
   expect(sddList).toBeDefined();
-})
+});

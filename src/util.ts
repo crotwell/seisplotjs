@@ -4,7 +4,7 @@
  * https://www.seis.sc.edu
  */
 import { version } from "./version";
-import { DateTime, Duration, Interval, FixedOffsetZone } from "luxon";
+import { DateTime, Duration, Interval, Zone, FixedOffsetZone } from "luxon";
 export const XML_MIME = "application/xml";
 export const JSON_MIME = "application/json";
 export const JSONAPI_MIME = "application/vnd.api+json";
@@ -208,7 +208,6 @@ export function dataViewToString(dataView: DataView): string {
  * @param   msg the message to log
  */
 export function log(msg: string): void {
-  // eslint-disable-next-line no-console
   if (console) {
     // eslint-disable-next-line no-console
     console.log(`${stringify(msg)}`);
@@ -260,7 +259,6 @@ export function toError(maybeError: unknown): Error {
  * @param   msg the message to log
  */
 export function warn(msg: string): void {
-  // eslint-disable-next-line no-console
   if (console) {
     // eslint-disable-next-line no-console
     console.assert(false, `${stringify(msg)}`);
@@ -301,7 +299,7 @@ export function stringify(value: unknown): string {
           ? s
           : `Invalid DateTime: ${dateTimeValue.invalidReason}: ${dateTimeValue.invalidExplanation}`;
       } else {
-        return `${value?.constructor?.name} ${String(value)}`;
+        return `${value?.constructor?.name} ${JSON.stringify(value)}`;
       }
       //} else if (typeof value === 'symbol') {
       //  return value.toString();
@@ -407,6 +405,7 @@ export function calcClockOffset(serverTimeUTC: DateTime): number {
   return DateTime.utc().diff(serverTimeUTC).toMillis() * 1000.0;
 }
 export const WAY_FUTURE: DateTime = DateTime.fromISO("2500-01-01T00:00:00Z");
+export const WAY_PAST: DateTime = DateTime.fromISO("1900-01-01T00:00:00Z");
 
 /**
  * converts the input value is a DateTime, throws Error if not
@@ -553,11 +552,80 @@ export function checkLuxonValid(
 }
 
 /**
+ * Create string name for a timezone. Uses zone name except for UTC, which
+ * returns "UTC".
+ *
+ * @param  zone  timezone to describe
+ * @param  atTime optional time to calc name at ie EST vs EDT
+ * @return      string version of zone
+ */
+export function nameForTimeZone(zone: string|null|Zone, atTime?: DateTime|null): string {
+  if (zone == null ||
+    (zone instanceof Zone &&
+      FixedOffsetZone.utcInstance.equals(zone))) {
+    return "UTC";
+  } else if (typeof zone === 'string') {
+    return zone;
+  } else if (zone instanceof Zone) {
+    if (atTime != null){
+      const ofName = zone.offsetName(atTime.toMillis(), {format: "short"});
+      return ofName != null ? ofName : zone.name;
+    }
+    return zone.name;
+  }
+  // typescript is weird sometimes...
+  return "unknown";
+}
+
+/**
+ * Utility method to pull raw text result from a url.
+ * Result returned is an Promise.
+ *
+ * @param url the url
+ * @returns promise to string result
+ */
+export function pullText(url: string, timeoutSec?: number): Promise<string> {
+  if (!timeoutSec) { timeoutSec = 30;}
+  const fetchInit = defaultFetchInitObj(TEXT_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000).then(
+    (response) => {
+      if (response.status === 200) {
+        return response.text();
+      } else {
+        throw new Error(`Status not 200: ${response.status}`);
+      }
+    });
+}
+
+/**
+ * Utility method to pull raw json result from a url.
+ * Result returned is an Promise.
+ *
+ * @param url the url
+ * @returns promise to string result
+ */
+export function pullJson(url: string, timeoutSec?: number): Promise<Record<string, unknown>> {
+  if (!timeoutSec) { timeoutSec = 30;}
+  const fetchInit = defaultFetchInitObj(JSON_MIME);
+  return doFetchWithTimeout(url, fetchInit, timeoutSec * 1000).then(
+    (response) => {
+      if (response.status === 200) {
+        return response.json() as unknown as Record<string, unknown>;
+      } else {
+        throw new Error(`Status not 200: ${response.status}`);
+      }
+    });
+}
+
+/**
  * @returns the protocol, http: or https: for the document if possible.
  * Note this includes the colon.
  */
-export function checkProtocol(): string {
+export function checkProtocol(defaultProtocol="http:"): string {
   let _protocol = "http:";
+  if (defaultProtocol.startsWith("https")) {
+    _protocol = "https:";
+  }
 
   if (
     typeof document !== "undefined" &&
@@ -626,7 +694,7 @@ export function cloneFetchInitObj(fetchInit: RequestInit): RequestInit {
 
 export function errorFetch(
   _url: URL | RequestInfo,
-  _init?: RequestInit | undefined,
+  _init?: RequestInit,
 ): Promise<Response> {
   throw new Error("There is no fetch!?!?!");
 }
@@ -634,13 +702,13 @@ export let default_fetch:
   | null
   | ((
       url: URL | RequestInfo,
-      init?: RequestInit | undefined,
+      init?: RequestInit,
     ) => Promise<Response>) = null;
 
 export function setDefaultFetch(
   fetcher: (
     url: URL | RequestInfo,
-    init?: RequestInit | undefined,
+    init?: RequestInit,
   ) => Promise<Response>,
 ) {
   if (fetcher != null) {
@@ -649,7 +717,7 @@ export function setDefaultFetch(
 }
 export function getFetch(): (
   url: URL | RequestInfo,
-  init?: RequestInit | undefined,
+  init?: RequestInit,
 ) => Promise<Response> {
   if (default_fetch != null) {
     return default_fetch;
@@ -678,7 +746,7 @@ export function doFetchWithTimeout(
   timeoutSec?: number,
   fetcher?: (
     url: URL | RequestInfo,
-    init?: RequestInit | undefined,
+    init?: RequestInit,
   ) => Promise<Response>,
 ): Promise<Response> {
   const controller = new AbortController();
@@ -774,15 +842,15 @@ export function doFetchWithTimeout(
 }
 
 /**
- * Allows downloading of in memory data, as ArrayBuffer, to file as if
+ * Allows downloading of in memory data, as ArrayBufferLike, to file as if
  * the user clicked a download link.
  *
- * @param  data               ArrayBuffer to download
+ * @param  data               ArrayBufferLike to download
  * @param  filename          default filename
  * @param  mimeType      mimeType, default application/octet-stream
  */
 export function downloadBlobAsFile(
-  data: ArrayBuffer,
+  data: Uint8Array,
   filename: string,
   mimeType = "application/octet-stream",
 ) {
@@ -852,6 +920,14 @@ export const XHTML_NS = "http://www.w3.org/1999/xhtml";
 
 export function createSVGElement(name: string): SVGElement {
   return document.createElementNS(SVG_NS, name);
+}
+
+export function mightBeXml(buf: ArrayBufferLike): boolean {
+  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
+  if ( ! initialChars.startsWith("<?xml ")) {
+    return false;
+  }
+  return true;
 }
 
 export function updateVersionText(selector = "#sp-version") {

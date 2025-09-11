@@ -56,13 +56,13 @@
           map.addQuake(quakesWithPicks, "withpicks");
           // or plot other stations
           allStations = Array.from(sp.stationxml.allStations(ds.inventory));
+          map.colorClass("sta_CO_BIRD", "orange");
           map.addStation(allStations, "customcolor");
-          map.colorClass("CO_BIRD", "orange");
           map.colorClass("customcolor", "green");
           map.colorClass("myquake", "green");
           //map.colorClass("quakecolor", "blue");
           map.colorClass("withpicks", "red");
-          map.colorClass("CO_JSC", "rebeccapurple");
+          map.colorClass("sta_CO_JSC", "rebeccapurple");
           map.draw();
         });
         document.querySelector("#changecolor").addEventListener("click", () => {

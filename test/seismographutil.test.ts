@@ -109,28 +109,33 @@ test("ref badspike mseed3 file", () => {
     tScale,
     yScale,
   );
+  expect(drawn.samplesPerPixel).toBeCloseTo(13.5, 0.1);
   expect(drawn.maxSamplePerPixelForLineDraw).toBe(3);
   const dataArray = segment ? segment.y : [];
   expect(dataArray).not.toBeNull();
   expect(drawn.samplesPerPixel).toBeCloseTo(dataArray.length/width, 1);
   expect(drawn.y.length).toEqual(drawn.x.length);
-  expect(drawn.x.length).toEqual(8);
+  expect(drawn.x.length).toEqual(10);
   expect(drawn.x[0]).toEqual(0);
   expect(drawn.y[0]).toEqual(height-1);
-  expect(drawn.x[1]).toEqual(611);
+  expect(drawn.x[1]).toEqual(610);
   expect(drawn.y[1]).toEqual(height-1);
   expect(drawn.x[2]).toEqual(611);
-  expect(drawn.y[2]).toEqual(height-amp+1);
-  expect(drawn.x[3]).toEqual(612);
-  expect(drawn.y[3]).toEqual(height-1);
-  expect(drawn.x[4]).toEqual(1105);
+  expect(drawn.y[2]).toEqual(height-1);
+  expect(drawn.x[3]).toEqual(611);
+  expect(drawn.y[3]).toEqual(height-amp+1);
+  expect(drawn.x[4]).toEqual(612);
   expect(drawn.y[4]).toEqual(height-1);
-  expect(drawn.x[5]).toEqual(1105);
-  expect(drawn.y[5]).toEqual(height-amp+1);
+  expect(drawn.x[5]).toEqual(1104);
+  expect(drawn.y[5]).toEqual(height-1);
   expect(drawn.x[6]).toEqual(1105);
   expect(drawn.y[6]).toEqual(height-1);
-  expect(drawn.x[7]).toEqual(width);
-  expect(drawn.y[7]).toEqual(height-1);
+  expect(drawn.x[7]).toEqual(1105);
+  expect(drawn.y[7]).toEqual(height-amp+1);
+  expect(drawn.x[8]).toEqual(1105);
+  expect(drawn.y[8]).toEqual(height-1);
+  expect(drawn.x[9]).toEqual(width);
+  expect(drawn.y[9]).toEqual(height-1);
 });
 
 

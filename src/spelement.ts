@@ -1,12 +1,23 @@
-import { SeismogramDisplayData } from "./seismogram";
+import type { DateTime } from "luxon";
+import { SeismogramDisplayData, Seismogram } from "./seismogram";
 import { SeismographConfig } from "./seismographconfig";
-import { isDef, stringify } from "./util";
+import {
+  createDefaultSortingOptions,
+  SORT_NONE,
+  createSortValueFunction,
+  sortByFunction
+} from "./sorting";
+import { isDef } from "./util";
+
+export const SORT_BY = "sort";
 
 export class SeisPlotElement extends HTMLElement {
   _seisDataList: Array<SeismogramDisplayData>;
   _seismographConfig: SeismographConfig;
   onRedraw: (el: SeisPlotElement) => void;
   _throttleRedraw: ReturnType<typeof requestAnimationFrame> | null;
+  _sorting: Map<string,(sdd: SeismogramDisplayData) => number | string | DateTime>;
+
 
   constructor(
     seisData?: SeismogramDisplayData | Array<SeismogramDisplayData>,
@@ -40,18 +51,46 @@ export class SeisPlotElement extends HTMLElement {
     } else {
       this._seismographConfig = new SeismographConfig();
     }
+    this._sorting = createDefaultSortingOptions();
     this.attachShadow({ mode: "open" });
   }
   get seisData() {
     return this._seisDataList;
   }
   set seisData(seisData: Array<SeismogramDisplayData>) {
-    if (seisData instanceof SeismogramDisplayData) {
-      this._seisDataList = [seisData];
-    } else if (Array.isArray(seisData)) {
-      this._seisDataList = seisData;
+    this._seisDataList = [];
+    this.appendSeisData(seisData);
+  }
+
+
+  /**
+   * appends the seismogram(s) or SeismogramDisplayData as separate time series.
+   *
+   * @param seismogram data to append
+   */
+  appendSeisData(
+    sddList:
+      | Array<SeismogramDisplayData>
+      | SeismogramDisplayData
+      | Array<Seismogram>
+      | Seismogram,
+  ): void {
+    if (!sddList) {
+      // don't append a null
+    } else if (Array.isArray(sddList)) {
+      for (const s of sddList) {
+        if (s instanceof SeismogramDisplayData) {
+          this._seisDataList.push(s);
+        } else {
+          this._seisDataList.push(SeismogramDisplayData.fromSeismogram(s));
+        }
+      }
     } else {
-      throw new Error(`Unknown type for seisData: ${stringify(seisData)}`);
+      if (sddList instanceof SeismogramDisplayData) {
+        this._seisDataList.push(sddList);
+      } else {
+        this._seisDataList.push(SeismogramDisplayData.fromSeismogram(sddList));
+      }
     }
     this.seisDataUpdated();
   }
@@ -62,6 +101,48 @@ export class SeisPlotElement extends HTMLElement {
     this._seismographConfig = seismographConfig;
     this.seisDataUpdated();
   }
+
+  /**
+   * The sorting type to optionally sort the data by. New sort types may be
+   * added by supplying a key and function that takes an SeismogramDisplayData
+   * and returns a number, string or date. Sort of data is done using the
+   * calculated value for each waveform. This is stored as an attribute on
+   * the element, so changing the attribute has the same effect.
+   * Default is SORT_NONE = "none".
+   * @return sorting key
+   */
+  get sortby(): string {
+    let k = this.hasAttribute(SORT_BY) ? this.getAttribute(SORT_BY) : SORT_NONE;
+    // typescript null
+    if (!k) {
+      k = SORT_NONE;
+    }
+    return k;
+  }
+  set sortby(val: string) {
+    this.setAttribute(SORT_BY, val);
+  }
+  addSortingFunction(key: string, sddFunction: (sdd: SeismogramDisplayData) => number | string | DateTime) {
+    this._sorting.set(key, sddFunction);
+  }
+  getSortingFunction(key: string): (sdd: SeismogramDisplayData) => number | string | DateTime {
+    const sortFun = this._sorting.get(key);
+    if (sortFun) {
+      return sortFun;
+    }
+    return createSortValueFunction(key); // check for default sortings or error
+  }
+  /**
+   * Sorts seisData by the this.sortby sorting type.
+   * @return this.seisData sorted
+   */
+  sortedSeisData() {
+    if (this.sortby === SORT_NONE) {
+      return this.seisData;
+    }
+    return sortByFunction(this.seisData, this.getSortingFunction(this.sortby));
+  }
+
   addStyle(css: string, id?: string): HTMLStyleElement {
     return addStyleToElement(this, css, id);
   }
@@ -114,6 +195,13 @@ export class SeisPlotElement extends HTMLElement {
       return this.shadowRoot;
     }
   }
+
+  static get observedAttributes() {
+    const mine = [
+      SORT_BY,
+    ];
+    return mine;
+  }
 }
 
 export function addStyleToElement(
@@ -121,14 +209,24 @@ export function addStyleToElement(
   css: string,
   id?: string,
 ): HTMLStyleElement {
-  if (!element.shadowRoot) {
-    element.attachShadow({ mode: "open" });
+  let shadowRoot = element.shadowRoot;
+  if (!shadowRoot) {
+    shadowRoot = element.attachShadow({ mode: "open" });
   }
   const styleEl = document.createElement("style");
   styleEl.textContent = css;
   if (id) {
     styleEl.setAttribute("id", id);
   }
-  element.shadowRoot?.insertBefore(styleEl, element.shadowRoot?.firstChild);
+  //Insert style at the end of the list of styles to maintain
+  //the typical css precedence rule (styles added later override previous)
+  const styleNodes = shadowRoot.querySelectorAll("style");
+  const lastStyle = styleNodes[styleNodes.length-1];
+  if (lastStyle) {
+    lastStyle.after(styleEl);
+  }
+  else {
+    shadowRoot.insertBefore(styleEl, shadowRoot.firstChild);
+  }
   return styleEl;
 }

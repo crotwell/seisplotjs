@@ -1,6 +1,7 @@
 
 import fs from 'fs';
 
+import {IRIS_HOST} from '../../src/fdsncommon';
 import * as traveltime from '../../src/traveltime';
 
 test("formURL", () => {
@@ -20,7 +21,7 @@ test("formURL", () => {
    'phases', 'format']) {
      expect(url).toContain('&'+k+'=');
    }
-   expect(url).toContain("https://"+traveltime.IRIS_HOST+"/irisws/traveltime/1/query?");
+   expect(url).toContain("https://"+IRIS_HOST+"/irisws/traveltime/1/query?");
 
 });
 

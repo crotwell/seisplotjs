@@ -11,7 +11,9 @@ import { MSeed3Record } from "./mseed3";
 import { DateTime } from "luxon";
 import { version } from "./version";
 import { dataViewToString, isDef, stringify, toError } from "./util";
-export const SEEDLINK4_PROTOCOL = "SLPROTO4.0";
+export const SEEDLINK4_SLPROTO = "SLPROTO";
+export const SEEDLINK4_PROTOCOL = `${SEEDLINK4_SLPROTO}:4.0`;
+export const WS_SEEDLINK4_SUBPROTOCOL = `SeedLink4.0`; // web socket procotol can't have :
 export const MINISEED_2_FORMAT = "2";
 export const MINISEED_3_FORMAT = "3";
 export const SE_PACKET_SIGNATURE = "SE";
@@ -26,6 +28,7 @@ export const SELECT_COMMAND = "SELECT";
 export const SLPROTO_COMMAND = "SLPROTO";
 export const STATION_COMMAND = "STATION";
 export const USERAGENT_COMMAND = "USERAGENT";
+export const SL_OK = "OK";
 
 const useLittleEndian = true;
 export class SEPacket {
@@ -57,10 +60,10 @@ export class SEPacket {
     this._rawPayload = null;
   }
 
-  static parse(data: ArrayBuffer): SEPacket {
+  static parse(data: ArrayBufferLike): SEPacket {
     let sePacket;
 
-    if (data.byteLength < 16) {
+    if (data.byteLength < 17) {
       throw new Error(
         "message too small to be SE packet: " +
           data.byteLength +
@@ -69,7 +72,7 @@ export class SEPacket {
       );
     }
 
-    const slHeader = new DataView(data, 0, 16);
+    const slHeader = new DataView(data, 0, 17);
     // check for 'SE' at start
     const sig = String.fromCharCode(slHeader.getUint8(0), slHeader.getUint8(1));
 
@@ -84,7 +87,7 @@ export class SEPacket {
       const dataView = new DataView(
         data,
         17 + stationIdLength,
-        data.byteLength - 16,
+        data.byteLength - (17 + stationIdLength),
       );
       sePacket = new SEPacket(
         String.fromCharCode(dataFormat),
@@ -195,19 +198,25 @@ export class SEPacket {
   }
 }
 
+export function createDataTimeCommand(
+  startTime: DateTime,
+  endTime?: DateTime,
+): string {
+  const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
+  return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
+}
+
 /**
  * A seedlink websocket connection to the given url.
  * The connection is not made until the connect() method is called.
  * Note this cannot connect directly to a native TCP socket, instead it
  * sends the seedlink protocol over a websocket. Currently only the IRIS
  * ringserver, https://github.com/iris-edu/ringserver,
- * supports websockets, but it may be possible to use thrid party
+ * supports websockets, but it may be possible to use third party
  * tools to proxy the websocket to a TCP seedlink socket.
  *
  * The spec is available via the FDSN, https://www.fdsn.org/publications/
  *
- * Note as of 2023, this is largely untested as there are now servers
- * available to test against.
  *
  * @param url websocket URL to connect to
  * @param requestConfig an array of seedlink commands
@@ -231,6 +240,7 @@ export class SeedlinkConnection {
   errorHandler: (error: Error) => void;
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
+  subprotocol: string | Array<string>;
   endCommand: string;
   agent: string;
   agentVersion: string;
@@ -250,18 +260,11 @@ export class SeedlinkConnection {
     this.endCommand = END_COMMAND;
     this.agent = "seisplotjs";
     this.agentVersion = version;
+    this.subprotocol = WS_SEEDLINK4_SUBPROTOCOL;
   }
 
   setAgent(agent: string) {
     this.agent = agent.trim().replaceAll(/\w+/g, "_");
-  }
-
-  createDataTimeCommand(
-    startTime: DateTime,
-    endTime: DateTime | undefined,
-  ): string {
-    const endTimeStr = isDef(endTime) ? endTime.toISO() : "";
-    return `DATA ALL ${startTime.toISO()} ${endTimeStr}`;
   }
 
   setOnError(errorHandler: (error: Error) => void) {
@@ -273,7 +276,7 @@ export class SeedlinkConnection {
   }
 
   connect() {
-    this.interactiveConnect()
+    return this.interactiveConnect()
       .then(() => {
         return this.sendHello();
       })
@@ -281,8 +284,11 @@ export class SeedlinkConnection {
         if (this.checkProto(lines)) {
           return true;
         } else {
-          throw new Error(`${SEEDLINK4_PROTOCOL} not found in HELLO response`);
+          throw new Error(`${SEEDLINK4_PROTOCOL} not found in HELLO response: ${lines.join("\n")}`);
         }
+      })
+      .then(() => {
+        return this.sendSLProto("4.0");
       })
       .then(() => {
         return this.sendCmdArray([
@@ -292,9 +298,6 @@ export class SeedlinkConnection {
       .then(() => {
         return this.sendCmdArray(this.requestConfig);
       })
-      .then(() => {
-        return this.sendCmdArray([this.endCommand]);
-      })
       .then((val) => {
         if (this.webSocket === null) {
           throw new Error("websocket is null");
@@ -302,8 +305,7 @@ export class SeedlinkConnection {
         this.webSocket.onmessage = (event) => {
           this.handle(event);
         };
-
-        this.webSocket.send(`${this.endCommand}\r`);
+        this.webSocket.send(`${this.endCommand}\r\n`);
         return val;
       })
       .catch((err) => {
@@ -326,7 +328,7 @@ export class SeedlinkConnection {
 
     return new Promise((resolve, reject) => {
       try {
-        const webSocket = new WebSocket(this.url, SEEDLINK4_PROTOCOL);
+        const webSocket = new WebSocket(this.url, this.subprotocol);
         this.webSocket = webSocket;
         webSocket.binaryType = "arraybuffer";
 
@@ -335,8 +337,9 @@ export class SeedlinkConnection {
         };
 
         webSocket.onerror = (event: Event) => {
-          this.handleError(new Error("" + stringify(event)));
-          reject(event);
+          const evtError = toError(event);
+          this.handleError(evtError);
+          reject(evtError);
         };
 
         webSocket.onclose = (closeEvent) => {
@@ -349,15 +352,19 @@ export class SeedlinkConnection {
           }
         };
       } catch (err) {
+        let evtError = toError(err);
         this.close();
-        if (this.errorHandler) {
-          this.errorHandler(toError(err));
-        }
 
-        reject(err);
+        reject(evtError);
       }
+
     }).then(function (sl4: unknown) {
       return sl4 as SeedlinkConnection;
+    }).catch( e => {
+      if (!this.webSocket?.protocol || this.webSocket.protocol.length === 0) {
+        throw new Error(`fail to create websocket, possible due to subprotocol: sent subprotocol=${this.subprotocol} received empty`);
+      }
+      throw e;
     });
   }
 
@@ -383,15 +390,16 @@ export class SeedlinkConnection {
   }
 
   handle(event: MessageEvent): void {
-    if (event.data instanceof ArrayBuffer) {
-      const rawdata: ArrayBuffer = event.data;
+    if (event.data instanceof ArrayBuffer
+        || event.data  instanceof SharedArrayBuffer) {
+      const rawdata: ArrayBufferLike = event.data;
       const data = new Uint8Array(rawdata);
 
       if (data[0] === 83 && data[1] === 69) {
         this.handleSEPacket(event);
       } else {
         this.close();
-        this.errorHandler(
+        this.handleError(
           new Error(
             `Packet does not look like SE packet: ${data[0]} ${data[1]}`,
           ),
@@ -399,24 +407,25 @@ export class SeedlinkConnection {
       }
     } else {
       this.close();
-      this.errorHandler(new Error("event.data is not ArrayBuffer"));
+      this.handleError(new Error("event.data is not ArrayBufferLike"));
     }
   }
 
   handleSEPacket(event: MessageEvent): void {
-    if (event.data instanceof ArrayBuffer) {
-      const data: ArrayBuffer = event.data;
+    if (event.data instanceof ArrayBuffer
+        || event.data instanceof SharedArrayBuffer) {
+      const data: ArrayBufferLike = event.data;
 
       try {
         const out = SEPacket.parse(data);
         this.receivePacketFn(out);
       } catch (e) {
         this.close();
-        this.errorHandler(toError(e));
+        this.handleError(toError(e));
       }
     } else {
       this.close();
-      this.errorHandler(new Error("event.data is not ArrayBuffer"));
+      this.handleError(new Error("event.data is not ArrayBufferLike"));
     }
   }
 
@@ -434,28 +443,33 @@ export class SeedlinkConnection {
     const promise: Promise<Array<string>> = new Promise((resolve, reject) => {
       if (webSocket) {
         webSocket.onmessage = (event) => {
-          if (event.data instanceof ArrayBuffer) {
-            const data: ArrayBuffer = event.data;
+          if (event.data instanceof ArrayBuffer
+              || event.data instanceof SharedArrayBuffer) {
+            const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data));
             const lines = replyMsg.trim().split("\r");
 
             if (lines.length === 2) {
               resolve(lines);
             } else {
-              reject("not 2 lines: " + replyMsg);
+              reject(new Error("not 2 lines: " + replyMsg));
             }
           } else {
             this.close();
-            this.errorHandler(new Error("event.data is not ArrayBuffer"));
+            this.errorHandler(new Error("event.data is not ArrayBufferLike"));
           }
         };
 
         webSocket.send(`${HELLO_COMMAND}\r`);
       } else {
-        reject("webSocket has been closed");
+        reject(new Error("webSocket has been closed"));
       }
     });
     return promise;
+  }
+
+  sendSLProto(version: string): Promise<string> {
+    return this.createCmdPromise(`${SEEDLINK4_SLPROTO} ${version}`);
   }
 
   /**
@@ -471,7 +485,7 @@ export class SeedlinkConnection {
       return accum.then(() => {
         return this.createCmdPromise(next);
       });
-    }, Promise.resolve("OK"));
+    }, Promise.resolve(SL_OK));
   }
 
   /**
@@ -486,24 +500,25 @@ export class SeedlinkConnection {
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = (event) => {
-          if (event.data instanceof ArrayBuffer) {
-            const data: ArrayBuffer = event.data;
+          if (event.data instanceof ArrayBuffer
+              || event.data instanceof SharedArrayBuffer) {
+            const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
 
-            if (replyMsg === "OK") {
+            if (replyMsg === SL_OK) {
               resolve(replyMsg);
             } else {
-              reject("msg not OK: " + replyMsg);
+              reject(new Error("msg not OK: " + replyMsg));
             }
           } else {
             mythis.close();
-            mythis.errorHandler(new Error("event.data is not ArrayBuffer"));
+            mythis.errorHandler(new Error("event.data is not ArrayBufferLike"));
           }
         };
 
         webSocket.send(mycmd + "\r\n");
       } else {
-        reject("webSocket has been closed");
+        reject(new Error("webSocket has been closed"));
       }
     });
     return promise;

@@ -5,6 +5,9 @@ import * as distaz from "./distaz";
 
 import { DateTime, Duration } from "luxon";
 
+export const MARKERTYPE_PICK = "pick";
+export const MARKERTYPE_PREDICTED = "predicted";
+
 export type MarkerType = {
   name: string;
   time: DateTime;
@@ -43,7 +46,7 @@ export function createMarkersForTravelTimes(
 ): Array<MarkerType> {
   return ttime.arrivals.map((a) => {
     return {
-      markertype: "predicted",
+      markertype: MARKERTYPE_PREDICTED,
       name: a.phase,
       time: quake.time.plus(Duration.fromMillis(1000 * a.time)),
       description: "",
@@ -59,7 +62,7 @@ export function createMarkersForTravelTimes(
  */
 export function createMarkerForOriginTime(quake: Quake): MarkerType {
   return {
-    markertype: "predicted",
+    markertype: MARKERTYPE_PREDICTED,
     name: "origin",
     time: quake.time,
     description: "",
@@ -88,7 +91,7 @@ export function createFullMarkersForQuakeAtStation(
         : "";
     }
     markers.push({
-      markertype: "predicted",
+      markertype: MARKERTYPE_PREDICTED,
       name: `M${magVal} ${quake.time.toFormat("HH:mm")}`,
       time: quake.time,
       link: `https://earthquake.usgs.gov/earthquakes/eventpage/${quake.eventId}/executive`,
@@ -134,7 +137,7 @@ export function createMarkerForQuakePicks(
     quake.pickList.forEach((pick) => {
       if (pick && pick.isOnChannel(channel)) {
         markers.push({
-          markertype: "pick",
+          markertype: MARKERTYPE_PICK,
           name: "pick",
           time: pick.time,
           description: "",
@@ -162,7 +165,7 @@ export function createMarkerForPicks(
     origin.arrivals.forEach((arrival) => {
       if (arrival && arrival.pick.isOnChannel(channel)) {
         markers.push({
-          markertype: "pick",
+          markertype: MARKERTYPE_PICK,
           name: arrival.phase,
           time: arrival.pick.time,
           description: "",

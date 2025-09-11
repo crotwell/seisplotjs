@@ -3,21 +3,16 @@
  * University of South Carolina, 2019
  * https://www.seis.sc.edu
  */
-import { DateTime, Duration } from "luxon";
-import {extractDLProto} from "./datalink";
+import { DateTime } from "luxon";
+import { z } from "zod/v4";
 import {
   FDSN_PREFIX,
+  FDSNSourceId,
   StationSourceId,
   NetworkSourceId,
   NslcId,
-  parseSourceId,
-  FDSNSourceId
-} from "./fdsnsourceid";
-import {
-  sidForId,
-  //typeForId
-} from "./ringserverweb4"
-import * as util from "./util"; // for util.log
+  parseSourceId } from "./fdsnsourceid";
+//import * as util from "./util"; // for util.log
 
 import {
   doIntGetterSetter,
@@ -28,20 +23,40 @@ import {
   isNumArg,
   isDef,
   isoToDateTime,
+  pullJson,
   pullText
 } from "./util";
-export const SEEDLINK_PATH = "/seedlink";
-export const DATALINK_PATH = "/datalink";
-export type RingserverVersion = {
-  ringserverVersion: string;
-  serverId: string;
-};
-export type StreamsResult = {
-  accessTime: DateTime;
-  streams: Array<StreamStat>;
-};
+export const SEEDLINK_PATH = "seedlink";
+export const DATALINK_PATH = "datalink";
+const RingserverId = z.object({
+    software: z.string(),
+    organization: z.string(),
+    server_start: z.string(),
+    datalink_protocol: z.array(z.string()),
+    seedlink_protocol: z.array(z.string()),
+});
+export type RingserverIdType = z.infer<typeof RingserverId>;
+
+const StreamStat = z.object({
+  id: z.string(),
+  start_time: z.iso.datetime().transform(isoToDateTime),
+  end_time: z.iso.datetime().transform(isoToDateTime),
+  earliest_packet_id: z.number(),
+  earliest_packet_time: z.iso.datetime().transform(isoToDateTime),
+  latest_packet_time: z.iso.datetime().transform(isoToDateTime),
+  latest_packet_id: z.number(),
+  data_latency: z.number()
+});
+export type StreamStatType = z.infer<typeof StreamStat>;
+const StreamsResult=  z.object({
+  software: z.string(),
+  organization: z.string(),
+  stream: z.array(StreamStat),
+  accessTime: z.custom<DateTime>((d)=> d instanceof DateTime).optional()
+});
+export type StreamsResultType = z.infer<typeof StreamsResult>;
+
 export const IRIS_HOST = "rtserve.iris.washington.edu";
-const ORG = "Organization: ";
 
 /**
  * Web connection to a Ringserver.
@@ -88,7 +103,7 @@ export class RingserverConnection {
       this._protocol = "http:";
       this._host = hostStr;
       this._port = 80;
-      this._prefix = "";
+      this._prefix = "/";
     }
 
     // override port in URL if given
@@ -117,8 +132,8 @@ export class RingserverConnection {
   /**
    * Gets/Sets the remote port to connect to.
    *
-   * @param value  new value to set
-   * @returns this
+   * @param value optional new value if setting
+   * @returns new value if getting, this if setting
    */
   port(value?: number): RingserverConnection {
     doIntGetterSetter(this, "port", value);
@@ -130,6 +145,22 @@ export class RingserverConnection {
   }
 
   /**
+   * Gets/Sets the protocol, http or https. This should match the protocol
+   *  of the page loaded, but is autocalculated and generally need not be set.
+   *
+   * @param value protocol, usually http or https
+   * @returns the query when setting, the current value when no argument
+   */
+  protocol(value?: string): RingserverConnection {
+    doStringGetterSetter(this, "protocol", value);
+    return this;
+  }
+
+  getProtocol(): string | undefined {
+    return this._protocol;
+  }
+
+  /**
    * Sets the prefix for the URL path.
    *
    * @param value optional new value if setting
@@ -138,6 +169,9 @@ export class RingserverConnection {
   prefix(value?: string): RingserverConnection {
     if (value && ! value.startsWith("/")) {
       value = "/"+value;
+    }
+    if (value && ! value.endsWith("/")) {
+      value = value+"/";
     }
     doStringGetterSetter(this, "prefix", value);
     return this;
@@ -162,6 +196,16 @@ export class RingserverConnection {
     return this._timeoutSec;
   }
 
+/*  .../id/json
+{
+"software":"ringserver/4.1.0-RC",
+"organization":"Test Ring Server 4",
+"server_start":"2025-05-14T00:33:11Z",
+"datalink_protocol":["DLPROTO:1.1"],
+"seedlink_protocol":["SLPROTO:4.0","SLPROTO:3.1"]
+}
+ */
+
   /**
    * Pulls id result from ringserver /id parsed into an object with
    * 'ringserverVersion' and 'serverId' fields. Also sets the
@@ -170,49 +214,39 @@ export class RingserverConnection {
    *
    * @returns Result as a Promise.
    */
-  pullId(): Promise<RingserverVersion> {
-    return pullText(this.formIdURL(), this._timeoutSec).then((raw) => {
-      const lines = raw.split("\n");
-      const ringserver_v4 = "ringserver/4";
-      const version = lines[0];
-      let organization = lines[1];
-
-      if (organization.startsWith(ORG)) {
-        organization = organization.substring(ORG.length);
-      }
-      if (version.startsWith(ringserver_v4)) {
-        this.isFDSNSourceId = true;
-      }
-      this.dlproto = extractDLProto(lines);
-      if (this.dlproto === "1.0") {
-        if (version.startsWith(ringserver_v4)) {
+  pullId(): Promise<RingserverIdType> {
+    return pullJson(this.formIdURL(), this._timeoutSec).catch((err) => {
+      // failed to get /id/json, try just /id text like ringserver3
+      return pullText(this.formBaseURL()+"id", this._timeoutSec).then( rawlines => {
+        const lines = rawlines.split("\n");
+        let dlinfo = [`DLPROTO:1.0`];
+        let slinfo = ["SLPROTO:3.1" ];
+        let version = lines[0];
+        if (version.startsWith("ringserver/4.0")) {
           // version 4.0 was FDSN Sid, but did not have DLPROTO:1.1
-          // version 4.1 and greater should have it
+          // version 4.1 and greater should go via /id/json
           this.isFDSNSourceId = true;
+          dlinfo = [`DLPROTO:1.1`];
+          slinfo = ["SLPROTO:3.1", "SLPROTO:4.0"];
         } else {
           this.isFDSNSourceId = false;
         }
-      } else {
-        this.isFDSNSourceId = true;
-      }
-
-      return {
-        ringserverVersion: lines[0],
-        serverId: organization,
-        datalink: "DLPROTO:1.0",
-        seedlink: "SLPROTO:3.1"
-      };
+        let organization = lines[1].substring("Organization: ".length);
+        let serverStart = "";
+        return {
+          software: version,
+          organization: organization,
+          server_start: serverStart,
+          datalink_protocol: dlinfo,
+          seedlink_protocol: slinfo
+        };
+      });
+    }).then(rawJson => {
+        return RingserverId.parse(rawJson);
     });
   }
 
   /**
-   *  Use numeric level (1-6) to pull just IDs from ringserver.
-   *  In a default ringserver,
-   *  level=1 would return all networks like
-   *  CO
-   *  and level=2 would return all stations like
-   *  CO_JSC
-   *  If level is falsy/missing, level=6 is used.
    *  The optional matchPattern is a regular expression, so for example
    *  '.+_JSC_00_HH.' would get all HH? channels from any station name JSC.
    *
@@ -220,13 +254,8 @@ export class RingserverConnection {
    * @param matchPattern regular expression to match
    * @returns Result as a Promise.
    */
-  pullStreamIds(level: number, matchPattern?: string): Promise<Array<string>> {
-    let queryParams = "level=6";
-
-    if (isNumArg(level) && level > 0) {
-      queryParams = "level=" + level;
-    }
-
+  pullStreamIds(matchPattern?: string): Promise<Array<string>> {
+    let queryParams = "";
     if (matchPattern && matchPattern.length > 0) {
       queryParams = queryParams + "&match=" + matchPattern;
     }
@@ -236,6 +265,24 @@ export class RingserverConnection {
       return raw.split("\n").filter((line) => line.length > 0);
     });
   }
+
+/*  .../streams/json
+{
+  "software": "ringserver/4.1.0-RC",
+  "organization": "Test Ring Server 4",
+  "stream": [
+    {
+      "id": "FDSN:CO_BARN_00_H_N_E/MSEED",
+      "start_time": "2025-05-20T22:20:58.425000Z",
+      "end_time": "2025-05-21T19:09:14.015000Z",
+      "earliest_packet_id": 191770832,
+      "earliest_packet_time": "2025-05-20T22:21:01.423953Z",
+      "latest_packet_time": "2025-05-21T19:09:15.537190Z",
+      "latest_packet_id": 193469736,
+      "data_latency": 2.159491
+    },
+ */
+
 
   /**
    * Pull streams, including start and end times, from the ringserver.
@@ -247,38 +294,18 @@ export class RingserverConnection {
    * @returns promise to object with 'accessTime' as a DateTime
    * and 'streams' as an array of StreamStat objects.
    */
-  pullStreams(matchPattern?: string): Promise<StreamsResult> {
+  pullStreams(matchPattern?: string): Promise<StreamsResultType> {
     let queryParams = "";
 
-    if (matchPattern && matchPattern.length >0) {
+    if (matchPattern && matchPattern.length > 0) {
       queryParams = "match=" + matchPattern;
     }
 
     const url = this.formStreamsURL(queryParams);
-    return pullText(url, this._timeoutSec).then((raw) => {
-      const lines = raw.split("\n");
-      const out: StreamsResult = {
-        accessTime: DateTime.utc(),
-        streams: [],
-      };
-
-      for (const line of lines) {
-        if (line.length === 0) {
-          continue;
-        }
-
-        const vals = line.split(/\s+/);
-
-        if (vals.length === 0) {
-          // blank line, skip
-          continue;
-        } else if (vals.length >= 2) {
-          out.streams.push(new StreamStat(vals[0], vals[1], vals[2]));
-        } else {
-          util.log("Bad /streams line, skipping: '" + line + "'");
-        }
-      }
-
+    return pullJson(url, this._timeoutSec).then((raw) => {
+      const accessTime = DateTime.utc();
+      const out = StreamsResult.parse(raw);
+      out.accessTime = accessTime;
       return out;
     });
   }
@@ -337,28 +364,24 @@ export class RingserverConnection {
   }
 
   /**
-   * Forms the ringserver id url.
+   * Forms the ringserver id/json url.
    *
    * @returns the id url
    */
   formIdURL(): string {
-    return this.formBaseURL() + "/id";
+    return this.formBaseURL() + "id/json";
   }
 
   /**
-   * Forms the ringserver streams url using the query parameters.
+   * Forms the ringserver streams/json url using the query parameters.
    *
    * @param queryParams optional string of query parameters
    * @returns the streams url
    */
   formStreamsURL(queryParams?: string): string {
-    return (
-      this.formBaseURL() +
-      "/streams" +
+    return this.formBaseURL() +"streams/json" +
       (isNonEmptyStringArg(queryParams) && queryParams.length > 0
-        ? "?" + queryParams
-        : "")
-    );
+        ? "?" + queryParams   : "");
   }
 
   /**
@@ -368,11 +391,8 @@ export class RingserverConnection {
    * @returns the stream ids url
    */
   formStreamIdsURL(queryParams: string): string {
-    return (
-      this.formBaseURL() +
-      "/streamids" +
-      (queryParams && queryParams.length > 0 ? "?" + queryParams : "")
-    );
+    return this.formBaseURL() +"streamids" +
+      (queryParams && queryParams.length > 0 ? "?" + queryParams : "");
   }
 }
 
@@ -386,12 +406,12 @@ export class RingserverConnection {
  * @returns array of station level StreamStats
  */
 export function stationsFromStreams(
-  streams: Array<StreamStat>,
-): Array<StreamStat> {
-  const out: Map<string, StreamStat> = new Map();
+  streams: Array<StreamStatType>,
+): Array<StreamStatType> {
+  const out: Map<string, StreamStatType> = new Map();
 
   for (const s of streams) {
-    const sid = sidForId(s.key);
+    const sid = sidForId(s.id);
     if (sid == null || sid instanceof NetworkSourceId) {
       // oh well, doesn't look like a seismic channel?
       continue;
@@ -401,37 +421,29 @@ export function stationsFromStreams(
     let stat = out.get(staKey);
 
     if (!isDef(stat)) {
-      stat = new StreamStat(staKey, s.startRaw, s.endRaw);
+      stat = StreamStat.parse({
+        id: staKey,
+        start_time: s.start_time,
+        end_time: s.end_time,
+        earliest_packet_id: s.earliest_packet_id,
+        earliest_packet_time: s.earliest_packet_time,
+        latest_packet_time: s.latest_packet_time,
+        latest_packet_id: s.latest_packet_id,
+        data_latency: s.data_latency
+      });
       out.set(staKey, stat);
     } else {
-      if (stat.start > s.start) {
-        stat.start = s.start;
-        stat.startRaw = s.startRaw;
+      if (stat.start_time > s.start_time) {
+        stat.start_time = s.start_time;
       }
 
-      if (stat.end < s.end) {
-        stat.end = s.end;
-        stat.endRaw = s.endRaw;
+      if (stat.end_time < s.end_time) {
+        stat.end_time = s.end_time;
       }
     }
   }
 
   return Array.from(out.values());
-}
-/**
- * Holds ringserver/datalink id split into nslc and type.
- *
- * @deprecated
- * @param type  [description]
- * @param nslc  [description]
- */
-export class NslcWithType {
-  type: string;
-  nslc: NslcId;
-  constructor(type: string, nslc: NslcId) {
-    this.type = type;
-    this.nslc = nslc;
-  }
 }
 
 /**
@@ -449,98 +461,25 @@ export function typeForId(id: string): string | null {
 }
 
 /**
- * Split type, networkCode, stationCode, locationCode and channelCode
- * from a ringserver id formatted like net_sta_loc_chan/type
- * or FDSN:net_sta_loc_b_s_s/type for new FDSN SourceIds
- *
- * @deprecated
- * @param   id id string to split
- * @returns  object with the split fields
+ * extracts the source id from a ringserver id, ie the source id from
+ * NN_SSSSS_LL_CCC/type or FDSN:NN_SSSSS_LL_B_S_S/type
+ * @param  id   ringserver/datalink style id
+ * @return   FDSN source id or null
  */
-export function nslcSplit(id: string): NslcWithType {
+export function sidForId(id: string): FDSNSourceId | StationSourceId | NetworkSourceId | null {
   const split = id.split("/");
-  if (split[0].startsWith(FDSN_PREFIX)) {
-    const sid = parseSourceId(split[0]);
-    if (sid instanceof FDSNSourceId) {
-      return new NslcWithType(
-        split[1],
-        sid.asNslc());
+  if (split.length >= 1) {
+    const sidStr = split[0];
+    if (sidStr.startsWith(FDSN_PREFIX)) {
+      return parseSourceId(split[0]);
     } else {
-      throw new Error("tried to split, not an FDSN SourceId: " + id);
+      const items = split[0].split("_");
+      if (items.length == 4) {
+        // maybe old style NSLC
+        const nslc = NslcId.parse(split[0], "_");
+        return FDSNSourceId.fromNslcId(nslc);
+      }
     }
   }
-  const nslc = split[0].split("_");
-
-  if (nslc.length === 4) {
-    // assume net, station, loc, chan
-    return new NslcWithType(
-      split[1],
-      new NslcId(nslc[0], nslc[1], nslc[2], nslc[3]),
-    );
-  } else {
-    throw new Error("tried to split, did not find 4 elements in array: " + id);
-  }
-}
-
-/**
- * Object to hold start and end times for a key, usually channel or station.
- *
- * @param key id, usually station or channel
- * @param start start time
- * @param end end time
- */
-export class StreamStat {
-  key: string;
-  startRaw: string;
-  endRaw: string;
-  start: DateTime;
-  end: DateTime;
-
-  constructor(key: string, start: string, end: string) {
-    this.key = key;
-    this.startRaw = start;
-    this.endRaw = end;
-
-    if (
-      this.startRaw.indexOf(".") !== -1 &&
-      this.startRaw.indexOf(".") < this.startRaw.length - 4
-    ) {
-      this.startRaw = this.startRaw.substring(
-        0,
-        this.startRaw.indexOf(".") + 4,
-      );
-    }
-
-    if (this.startRaw.charAt(this.startRaw.length - 1) !== "Z") {
-      this.startRaw = this.startRaw + "Z";
-    }
-
-    if (
-      this.endRaw.indexOf(".") !== -1 &&
-      this.endRaw.indexOf(".") < this.endRaw.length - 4
-    ) {
-      this.endRaw = this.endRaw.substring(0, this.endRaw.indexOf(".") + 4);
-    }
-
-    if (this.endRaw.charAt(this.endRaw.length - 1) !== "Z") {
-      this.endRaw = this.endRaw + "Z";
-    }
-
-    this.start = isoToDateTime(this.startRaw);
-    this.end = isoToDateTime(this.endRaw);
-    this.startRaw = start; // reset to unchanged strings
-
-    this.endRaw = end;
-  }
-
-  /**
-   * Calculates latency time difference between last packet and current time.
-   *
-   * @param accessTime time latency is calculated relative to
-   * @returns latency
-   */
-  calcLatency(accessTime?: DateTime): Duration {
-    if (!accessTime) accessTime = DateTime.utc();
-    return this.end.diff(accessTime);
-  }
+  return null;
 }

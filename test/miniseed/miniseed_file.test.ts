@@ -34,7 +34,8 @@ test("load miniseed file", () => {
     expect(decomp).toBeInstanceOf(Int32Array);
     expect(decomp).toBeDefined();
     // msi -n 1 -pp -D  CO_JSC.mseed
-    const firstRecordData = [       -42,         411,         382,         106,          84,         488,
+    const firstRecordData = [
+       -42,         411,         382,         106,          84,         488,
        251,         -74,         378,         459,         -56,         211,
        540,         -93,         264,         537,        -155,         354,
        507,         -13,         312,         312,          99,         295,

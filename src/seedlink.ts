@@ -8,7 +8,7 @@ import * as miniseed from "./miniseed";
 import { DataRecord } from "./miniseed";
 import { DateTime } from "luxon";
 import { dataViewToString, stringify, toError } from "./util";
-export const SEEDLINK_PROTOCOL = "SeedLink3.1";
+export const WS_SEEDLINK3_SUBPROTOCOL = "SeedLink3.1";
 export type SequencedDataRecord = {
   rawsequence: string;
   sequence: number;
@@ -21,7 +21,7 @@ export type SequencedDataRecord = {
  * Note this cannot connect directly to a native TCP socket, instead it
  * sends the seedlink protocol over a websocket. Currently only the IRIS
  * ringserver, https://github.com/iris-edu/ringserver,
- * supports websockets, but it may be possible to use thrid party
+ * supports websockets, but it may be possible to use third party
  * tools to proxy the websocket to a TCP seedlink socket.
  *
  * The seedlink (ver 3) protocol does not have an official spec document, but
@@ -46,7 +46,9 @@ export class SeedlinkConnection {
   errorHandler: (error: Error) => void;
   closeFn: null | ((close: CloseEvent) => void);
   webSocket: null | WebSocket;
+  subprotocol: string | Array<string>;
   command: string;
+  helloLines: Array<string> = [];
 
   constructor(
     url: string,
@@ -61,6 +63,7 @@ export class SeedlinkConnection {
     this.closeFn = null;
     this.command = "DATA";
     this.webSocket = null;
+    this.subprotocol = WS_SEEDLINK3_SUBPROTOCOL;
   }
 
   setTimeCommand(startTime: DateTime) {
@@ -75,77 +78,102 @@ export class SeedlinkConnection {
     this.closeFn = closeFn;
   }
 
+
   connect() {
+    return this.interactiveConnect()
+      .then(() => {
+        return this.sendHello();
+      })
+      .then((lines) => {
+        this.helloLines = lines;
+        return this.sendCmdArray(this.requestConfig);
+      })
+      .then(() => {
+        return this.sendCmdArray([this.command]);
+      })
+      .then((val) => {
+        if (this.webSocket === null) {
+          throw new Error("websocket is null");
+        }
+        this.webSocket.onmessage = (event) => {
+          this.handle(event);
+        };
+
+        this.webSocket.send("END\r");
+        return val;
+      })
+      .catch((err) => {
+        this.close();
+        const insureErr =
+          err instanceof Error ? err : new Error(stringify(err));
+        if (this.errorHandler) {
+          this.errorHandler(insureErr);
+        } else {
+          throw insureErr;
+        }
+      });
+  }
+
+  interactiveConnect(): Promise<SeedlinkConnection> {
     if (this.webSocket) {
       this.webSocket.close();
       this.webSocket = null;
     }
 
-    try {
-      const webSocket = new WebSocket(this.url, SEEDLINK_PROTOCOL);
-      this.webSocket = webSocket;
-      webSocket.binaryType = "arraybuffer";
+    return new Promise((resolve, reject) => {
+      try {
+        const webSocket = new WebSocket(this.url, this.subprotocol);
+        this.webSocket = webSocket;
+        webSocket.binaryType = "arraybuffer";
 
-      webSocket.onopen = () => {
-        this.sendHello()
-          .then(() => {
-            return this.sendCmdArray(this.requestConfig);
-          })
-          .then(() => {
-            return this.sendCmdArray([this.command]);
-          })
-          .then((val) => {
-            webSocket.onmessage = (event) => {
-              this.handle(event);
-            };
+        webSocket.onopen = () => {
+          resolve(this);
+        };
 
-            webSocket.send("END\r");
-            return val;
-          })
-          .catch((err) => {
-            this.close();
-            const insureErr =
-              err instanceof Error ? err : new Error(stringify(err));
-            if (this.errorHandler) {
-              this.errorHandler(insureErr);
-            } else {
-              throw insureErr;
-            }
-          });
-      };
+        webSocket.onerror = (event: Event) => {
+          const evtError = toError(event);
+          this.handleError(evtError);
+          reject(evtError);
+        };
 
-      webSocket.onerror = (event: Event) => {
-        this.handleError(new Error("" + stringify(event)));
+        webSocket.onclose = (closeEvent) => {
+          if (this.closeFn) {
+            this.closeFn(closeEvent);
+          }
+
+          if (this.webSocket) {
+            this.webSocket = null;
+          }
+        };
+      } catch (err) {
         this.close();
-      };
-
-      webSocket.onclose = (closeEvent) => {
-        if (this.closeFn) {
-          this.closeFn(closeEvent);
+        const evtError = toError(err);
+        if (this.errorHandler) {
+          this.errorHandler(evtError);
         }
 
-        if (this.webSocket) {
-          this.webSocket = null;
-        }
-      };
-    } catch (err) {
-      if (this.errorHandler) {
-        this.errorHandler(toError(err));
-      } else {
-        throw err;
+        reject(evtError);
       }
-    }
+    }).then(function (sl3: unknown) {
+      return sl3 as SeedlinkConnection;
+    }).catch( e => {
+      if (!this.webSocket?.protocol || this.webSocket.protocol.length === 0) {
+        throw new Error(`fail to create websocket, possible due to subprotocol: sent subprotocol=${this.subprotocol} received empty`);
+      }
+      throw e;
+    });
   }
 
   close(): void {
     if (this.webSocket) {
       this.webSocket.close();
+      this.webSocket = null;
     }
   }
 
   handle(event: MessageEvent): void {
-    if (event.data instanceof ArrayBuffer) {
-      const data: ArrayBuffer = event.data;
+    if (event.data instanceof ArrayBuffer || event.data instanceof SharedArrayBuffer) {
+      const data: ArrayBufferLike = event.data;
 
       if (data.byteLength < 64) {
         //assume text
@@ -154,11 +182,11 @@ export class SeedlinkConnection {
       }
     } else {
       // ?? error??
-      this.handleError(new Error("Unknown message type" + String(event)));
+      this.handleError(new Error("Unknown message type" + JSON.stringify(event)));
     }
   }
 
-  handleMiniseed(data: ArrayBuffer): void {
+  handleMiniseed(data: ArrayBufferLike): void {
     try {
       if (data.byteLength < 64) {
         this.errorHandler(
@@ -220,24 +248,25 @@ export class SeedlinkConnection {
     ) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          if (event.data instanceof ArrayBuffer) {
-            const data: ArrayBuffer = event.data;
+          if (event.data instanceof ArrayBuffer
+            || event.data instanceof SharedArrayBuffer) {
+            const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data));
             const lines = replyMsg.trim().split("\r");
 
             if (lines.length === 2) {
               resolve([lines[0], lines[1]]);
             } else {
-              reject("not 2 lines: " + replyMsg);
+              reject(new Error("not 2 lines: " + replyMsg));
             }
           } else {
-            reject("event.data not ArrayBuffer?");
+            reject(new Error("event.data not ArrayBufferLike?"));
           }
         };
 
         webSocket.send("HELLO\r");
       } else {
-        reject("webSocket has been closed");
+        reject(new Error("webSocket has been closed"));
       }
     });
     return promise;
@@ -270,23 +299,24 @@ export class SeedlinkConnection {
     const promise: Promise<string> = new Promise(function (resolve, reject) {
       if (webSocket) {
         webSocket.onmessage = function (event) {
-          if (event.data instanceof ArrayBuffer) {
-            const data: ArrayBuffer = event.data;
+          if (event.data instanceof ArrayBuffer
+              || event.data instanceof SharedArrayBuffer) {
+            const data: ArrayBufferLike = event.data;
             const replyMsg = dataViewToString(new DataView(data)).trim();
 
             if (replyMsg === "OK") {
               resolve(replyMsg);
             } else {
-              reject("msg not OK: " + replyMsg);
+              reject(new Error("msg not OK: " + replyMsg));
             }
           } else {
-            reject("event.data not ArrayBuffer?");
+            reject(new Error("event.data not ArrayBufferLike?"));
           }
         };
 
         webSocket.send(mycmd + "\r\n");
       } else {
-        reject("webSocket has been closed");
+        reject(new Error("webSocket has been closed"));
       }
     });
     return promise;

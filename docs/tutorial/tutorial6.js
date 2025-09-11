@@ -22,7 +22,7 @@ new sp.fdsndatacenters.DataCentersQuery()
   .then((dataSelectArray) => {
     return dataSelectArray[0]
       .networkCode("CO")
-      .stationCode("JSC")
+      .stationCode("HAW")
       .locationCode("00")
       .channelCode("LHZ")
       .timeRange(timeWindow)

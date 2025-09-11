@@ -1,5 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
+  testMatch: ["<rootDir>/test/**/*.ts", "!**/jestRatioMatchers.ts", "!**/sacfile.ts"],
   preset: "ts-jest",
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts", "jest-expect-message"],

@@ -3,7 +3,7 @@
  * University of South Carolina, 2020
  * https://www.seis.sc.edu
  */
-import { FDSNCommon } from "./fdsncommon";
+import { FDSNCommon, IRIS_HOST, IRISWS_PATH_BASE } from "./fdsncommon";
 import { DateTime, Interval } from "luxon";
 import { Network } from "./stationxml";
 import {
@@ -39,6 +39,9 @@ import {
   validEndTime,
 } from "./util";
 
+
+/** const for service name */
+export const IRISFEDCAT_SERVICE = "fedcatalog";
 /**
  * Major version of the IRIS web service supported here.
  * Currently is 1.
@@ -49,8 +52,7 @@ export const SERVICE_VERSION = 1;
  * Service name as used in the FDSN DataCenters registry,
  * https://www.fdsn.org/datacenters
  */
-export const SERVICE_NAME = `irisws-fedcatalog-${SERVICE_VERSION}`;
-export const IRIS_HOST = "service.iris.edu";
+export const SERVICE_NAME = `irisws-${IRISFEDCAT_SERVICE}-${SERVICE_VERSION}`;
 export const TARGET_DATASELECT = "dataselect";
 export const TARGET_STATION = "station";
 
@@ -234,7 +236,8 @@ export class FedCatalogQuery extends FDSNCommon {
     if (!isNonEmptyStringArg(host)) {
       host = IRIS_HOST;
     }
-    super(host);
+    super(IRISFEDCAT_SERVICE, host);
+    this._path_base = IRISWS_PATH_BASE;
     this.fedCatResult = null;
   }
 
@@ -411,6 +414,15 @@ export class FedCatalogQuery extends FDSNCommon {
 
   getPort(): number | undefined {
     return this._port;
+  }
+
+  pathBase(value?: string): FedCatalogQuery {
+    doStringGetterSetter(this, "path_base", value);
+    return this;
+  }
+
+  getPathBase(): string {
+    return this._path_base;
   }
 
   /**
@@ -1251,9 +1263,9 @@ export class FedCatalogQuery extends FDSNCommon {
   }
 
   /**
-   * Forms the basic URL to contact the web service, without any query paramters
+   * Forms the base of the url for accessing the dataselect service.
    *
-   * @returns the url
+   * @returns         URL as string
    */
   formBaseURL(): string {
     let colon = ":";
@@ -1261,16 +1273,9 @@ export class FedCatalogQuery extends FDSNCommon {
     if (this._protocol.endsWith(colon)) {
       colon = "";
     }
-
-    return (
-      this._protocol +
-      colon +
-      "//" +
-      this._host +
-      (this._port === 80 ? "" : ":" + String(this._port)) +
-      "/irisws/fedcatalog/" +
-      this._specVersion
-    );
+    const port = (this._port === 80 ? "" : ":" + String(this._port));
+    const path = `${this._path_base}/${this._service}/${this._specVersion}`;
+    return `${this._protocol}${colon}//${this._host}${port}/${path}`;
   }
 
   /**

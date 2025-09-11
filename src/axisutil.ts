@@ -51,6 +51,14 @@ export class LuxonTimeScale {
     );
   }
 }
+
+export function removeXLabel(
+  svgEl: SVGElement,
+) {
+  const svg = d3select(svgEl);
+  svg.selectAll("g.xLabel").remove();
+}
+
 export function drawXLabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
@@ -83,11 +91,19 @@ export function drawXLabel(
     svgText.html(handlebarOut);
   }
 }
+
+export function removeXSublabel(
+  svgEl: SVGElement,
+) {
+  const svg = d3select(svgEl);
+  svg.selectAll("g.xSublabel").remove();
+}
+
 export function drawXSublabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
-  width: number, // eslint-disable-next-line no-unused-vars
+  width: number,
   handlebarsInput: HandlebarsInput = {},
 ) {
   const svg = d3select(svgEl);
@@ -109,6 +125,14 @@ export function drawXSublabel(
   });
   svgText.html(handlebarOut);
 }
+
+export function removeYLabel(
+  svgEl: SVGElement,
+) {
+  const svg = d3select(svgEl);
+  svg.selectAll("g.yLabel").remove();
+}
+
 export function drawYLabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
@@ -170,6 +194,14 @@ export function drawYLabel(
     }
   }
 }
+
+export function removeYSublabel(
+  svgEl: SVGElement,
+) {
+  const svg = d3select(svgEl);
+  svg.selectAll("g.ySublabel").remove();
+}
+
 /**
  * Draws Y axis sublabel, possibly reflecting units of seismograph.
  *
@@ -184,7 +216,7 @@ export function drawYSublabel(
   svgEl: SVGElement,
   seismographConfig: SeismographConfig,
   height: number,
-  width: number, // eslint-disable-next-line no-unused-vars
+  width: number,
   handlebarsInput: HandlebarsInput = {},
   unitsLabel: string = "",
 ) {
@@ -233,6 +265,12 @@ export function drawYSublabel(
       svgText.html(handlebarOut);
     }
   }
+}
+export function removeTitle(
+  svgEl: SVGElement,
+) {
+  const svg = d3select(svgEl);
+  svg.selectAll("g.title").remove();
 }
 export function drawTitle(
   svgEl: SVGElement,

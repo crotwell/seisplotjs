@@ -13,6 +13,7 @@ import {
   stringify,
 } from "./util";
 
+export const CLOCK_ELEMENT = "sp-clock";
 export const HOURMIN_ELEMENT = "sp-hourmin";
 export const DATETIME_ELEMENT = "sp-datetime";
 export const TIMERANGE_ELEMENT = "sp-timerange";
@@ -26,6 +27,37 @@ export const END_LABEL = "endlabel";
 export const DEFAULT_END_LABEL = "End:";
 export const DUR_LABEL = "durLabel";
 export const DEFAULT_DUR_LABEL = "Dur:";
+export const PREV_NEXT = "prev-next";
+
+export class Clock extends HTMLElement {
+  _time: DateTime;
+  dateFormat = "yyyy-MM-dd HH:mm:ss";
+  updateMillis = 500;
+  _updater: ReturnType<typeof setTimeout>;
+  constructor() {
+    super();
+    this._time = DateTime.utc().set({ millisecond: 0 });
+    const shadow = this.attachShadow({ mode: "open" });
+    const wrapper = document.createElement("span");
+    shadow.appendChild(wrapper);
+    wrapper.textContent = this._time.toFormat(this.dateFormat);
+    this._updater = setInterval( () => {
+      this.updateNow();
+    }, this.updateMillis);
+  }
+  updateNow() {
+    this._time = DateTime.utc().set({ millisecond: 0 });
+    const el = this.shadowRoot?.querySelector("span");
+    if (el) {
+      const date = this._time.toFormat(this.dateFormat);
+      if (el.textContent !== date) {
+        el.textContent = date;
+      }
+    }
+  }
+}
+customElements.define(CLOCK_ELEMENT, Clock);
+
 
 /**
  * Hour and Minute chooser.
@@ -76,7 +108,6 @@ export class HourMinChooser extends HTMLElement {
 
     const wrapper = document.createElement("span");
     document.addEventListener("click", (_e) => {
-      //console.log("mouseleave wrapper");
       this.hide();
     });
 
@@ -495,35 +526,8 @@ export class TimeRangeChooser extends HTMLElement {
     });
     this.startChooser.updateTime(startTime);
     this.endChooser.updateTime(endTime);
-    if (this.getAttribute("prev-next")) {
-      const pastBtn = wrapper.insertBefore(
-        document.createElement("button"),
-        startLabel,
-      );
-      pastBtn.setAttribute("id", "pastButton");
-      pastBtn.textContent = "<";
-      pastBtn.addEventListener("click", () => {
-        this._mostRecentChanged = DURATION_CHANGED;
-        this.startChooser.time = this.startChooser.time.minus(
-          extractDuration(durationInput.value),
-        ); // causes event dispatch
-      });
-      const futureBtn = wrapper.appendChild(document.createElement("button"));
-      futureBtn.setAttribute("id", "futureButton");
-      futureBtn.textContent = ">";
-      futureBtn.addEventListener("click", () => {
-        this._mostRecentChanged = DURATION_CHANGED;
-        this.endChooser.time = this.endChooser.time.plus(
-          extractDuration(durationInput.value),
-        ); // causes event dispatch
-      });
-      const nowBtn = wrapper.appendChild(document.createElement("button"));
-      nowBtn.setAttribute("id", "nowButton");
-      nowBtn.textContent = "Now";
-      nowBtn.addEventListener("click", () => {
-        this._mostRecentChanged = DURATION_CHANGED;
-        this.endChooser.time = DateTime.utc(); // causes event dispatch
-      });
+    if (this.getAttribute(PREV_NEXT)) {
+      this.createPrevNext();
     }
 
     shadow.appendChild(wrapper);
@@ -666,13 +670,57 @@ export class TimeRangeChooser extends HTMLElement {
     this.dispatchEvent(new Event("change"));
     this.updateCallback(this.getTimeRange());
   }
+  createPrevNext() {
+    if (this.shadowRoot?.querySelector("#pastButton") != null) {
+      // already there?
+      return;
+    }
+    const wrapper = this.shadowRoot?.querySelector(".wrapper");
+    if (wrapper == null) {
+      // weird?
+      return;
+    }
+    const startLabel = wrapper.querySelector("label");
+    const durationInput = this.shadowRoot?.querySelector(
+      "input.duration",
+    ) as HTMLInputElement;
+    if (startLabel == null) { return;}
+    const pastBtn = wrapper.insertBefore(
+      document.createElement("button"),
+      startLabel,
+    );
+    pastBtn.setAttribute("id", "pastButton");
+    pastBtn.textContent = "<";
+    pastBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.startChooser.time = this.startChooser.time.minus(
+        extractDuration(durationInput.value),
+      ); // causes event dispatch
+    });
+    const futureBtn = wrapper.appendChild(document.createElement("button"));
+    futureBtn.setAttribute("id", "futureButton");
+    futureBtn.textContent = ">";
+    futureBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.endChooser.time = this.endChooser.time.plus(
+        extractDuration(durationInput.value),
+      ); // causes event dispatch
+    });
+    const nowBtn = wrapper.appendChild(document.createElement("button"));
+    nowBtn.setAttribute("id", "nowButton");
+    nowBtn.textContent = "Now";
+    nowBtn.addEventListener("click", () => {
+      this._mostRecentChanged = DURATION_CHANGED;
+      this.endChooser.time = DateTime.utc(); // causes event dispatch
+    });
+  }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === "start") {
       this.start = isoToDateTime(newValue);
     } else if (name === "end") {
       this.end = isoToDateTime(newValue);
     } else if (name === "duration") {
-      this.duration = Duration.fromISO(newValue);
+      this.duration = extractDuration(newValue);
     } else if (name === START_LABEL) {
       (
         this.shadowRoot?.querySelector(".startlabel") as HTMLElement
@@ -684,12 +732,21 @@ export class TimeRangeChooser extends HTMLElement {
       (
         this.shadowRoot?.querySelector(".durationLabel") as HTMLElement
       ).textContent = newValue;
+    } else if (name === PREV_NEXT) {
+      if (this.getAttribute(PREV_NEXT) === "true") {
+        this.createPrevNext();
+      } else {
+        this.shadowRoot?.querySelector("#pastButton")?.remove();
+        this.shadowRoot?.querySelector("#futureButton")?.remove();
+        this.shadowRoot?.querySelector("#nowButton")?.remove();
+      }
     } else {
       throw new Error(`set unknown attribute: "${name}"`);
     }
   }
   static get observedAttributes() {
-    return ["start", "duration", "end", START_LABEL, END_LABEL, DUR_LABEL];
+    return ["start", "duration", "end",
+      START_LABEL, END_LABEL, DUR_LABEL, PREV_NEXT];
   }
 }
 customElements.define(TIMERANGE_ELEMENT, TimeRangeChooser);
@@ -705,7 +762,7 @@ export function extractDuration(value: string): Duration {
   if (value.startsWith("P")) {
     dur = Duration.fromISO(value);
   } else {
-    const nDur = +Number.parseInt(value);
+    const nDur = +Number.parseFloat(value);
     dur = Duration.fromMillis(nDur * 1000);
   }
   return dur;

@@ -19,8 +19,8 @@ import * as mseed3 from "./mseed3";
 import { parseUtil } from "./stationxml";
 import { DateTime } from "luxon";
 
-/** const for datalink protocol for web sockets, DataLink1.0 */
-export const DATALINK_PROTOCOL = "DataLink1.0";
+/** const for websocket subprotocol for datalink, DataLink1.0 */
+export const WS_DATALINK_SUBPROTOCOL = "DataLink1.0";
 
 /** enum for modes, either QUERY or STREAM */
 export enum MODE {
@@ -61,6 +61,19 @@ export const MSEED_TYPE = "/MSEED";
 export const MSEED3_TYPE = "/MSEED3";
 export const IRIS_RINGSERVER_URL = "ws://rtserve.iris.washington.edu/datalink";
 
+export function extractDLProto(lines: Array<string>): string {
+  for (let line of lines) {
+    line = line.trim();
+    const items = line.split(/[ ,]+/);
+    for (const p of items) {
+      if (p.startsWith("DLPROTO:")) {
+        return p.substring(8);
+      }
+    }
+  }
+  return "1.0";
+}
+
 const defaultHandleResponse = function (dlResponse: DataLinkResponse) {
   util.log(`Unhandled datalink response: ${dlResponse.toString()}`);
 };
@@ -73,7 +86,7 @@ const defaultHandleResponse = function (dlResponse: DataLinkResponse) {
  *
  * Currently only the IRIS
  * ringserver, https://github.com/iris-edu/ringserver,
- * supports websockets, but it may be possible to use thrid party
+ * supports websockets, but it may be possible to use third party
  * tools to proxy the websocket to a TCP datalink socket.
  *
  * The datalink protocol is documented here
@@ -101,13 +114,17 @@ export class DataLinkConnection {
   /** @private */
   _responseReject: null | ((error: Error) => void);
   webSocket: WebSocket | null;
+  subprotocol: string;
+  dlproto: string;
 
   constructor(
     url: string,
     packetHandler: (packet: DataLinkPacket) => void,
     errorHandler: (error: Error) => void,
   ) {
+    this.dlproto = "1.0";
     this.webSocket = null;
+    this.subprotocol = WS_DATALINK_SUBPROTOCOL;
     this.url = url ? url : IRIS_RINGSERVER_URL;
     this._mode = MODE.Query;
     this.packetHandler = packetHandler;
@@ -146,7 +163,7 @@ export class DataLinkConnection {
       if (this.webSocket) {
         this.webSocket.close();
       }
-      const webSocket = new WebSocket(this.url, DATALINK_PROTOCOL);
+      const webSocket = new WebSocket(this.url, this.subprotocol);
       this.webSocket = webSocket;
       webSocket.binaryType = "arraybuffer";
 
@@ -155,8 +172,9 @@ export class DataLinkConnection {
       };
 
       webSocket.onerror = (event) => {
-        this.handleError(new Error("" + stringify(event)));
-        reject(event);
+        const evtError = toError(event);
+        this.handleError(evtError);
+        reject(evtError);
       };
 
       webSocket.onclose = (closeEvent) => {
@@ -172,14 +190,17 @@ export class DataLinkConnection {
       webSocket.onopen = () => {
         resolve(this);
       };
-    })
-      .then((datalink: unknown) => {
+    }).then((datalink: unknown) => {
         return (datalink as DataLinkConnection).sendId();
-      })
-      .then((idmsg: string) => {
-        this.serverId = idmsg;
-        return idmsg;
-      });
+    }).catch( e => {
+      if (!this.webSocket?.protocol || this.webSocket.protocol.length === 0) {
+        throw new Error(`fail to create websocket, possible due to subprotocol: sent subprotocol=${this.subprotocol} received empty`);
+      }
+      throw e;
+    }).then((idmsg: string) => {
+      this.serverId = idmsg;
+      return idmsg;
+    });
   }
 
   /**
@@ -259,6 +280,8 @@ export class DataLinkConnection {
       .then((dlResponse) => {
         if (dlResponse.type === "ID") {
           this.serverId = "" + dlResponse.message;
+          const lines = this.serverId.split(/\r?\n/g);
+          this.dlproto = extractDLProto(lines);
           return this.serverId;
         } else {
           throw new Error("not ID response: " + stringify(dlResponse.type));
@@ -273,9 +296,9 @@ export class DataLinkConnection {
    *
    * @param header the command/header string
    * @param data optional data portion
-   * @returns datalink packet as an ArrayBuffer
+   * @returns datalink packet as an ArrayBufferLike
    */
-  encodeDL(header: string, data?: Uint8Array): ArrayBuffer {
+  encodeDL(header: string, data?: Uint8Array): ArrayBufferLike {
     let cmdLen = header.length;
     let len = 3 + header.length;
     let lenStr = "";
@@ -580,12 +603,12 @@ export class DataLinkConnection {
    */
   handle(wsEvent: MessageEvent): void {
     const rawData: unknown = wsEvent.data;
-    if (rawData instanceof ArrayBuffer) {
+    if (rawData instanceof ArrayBuffer || rawData instanceof SharedArrayBuffer) {
       this.handleArrayBuffer(rawData);
     }
   }
 
-  handleArrayBuffer(rawData: ArrayBuffer): void {
+  handleArrayBuffer(rawData: ArrayBufferLike): void {
     const dlPreHeader = new DataView(rawData, 0, 3);
 
     if (
@@ -972,12 +995,17 @@ export class DataLinkStats {
    * @returns  the stats
    */
   static parseXMLAttributes(statusEl: Element): DataLinkStats {
+    let maxPacketId = 0;
+    if (parseUtil._grabAttribute(statusEl, "MaximumPacketID")!=null) {
+      maxPacketId = parseInt(parseUtil._requireAttribute(statusEl, "MaximumPacketID"));
+    }
     const dlStats = new DataLinkStats(
       daliDateTime(parseUtil._requireAttribute(statusEl, "StartTime")),
       parseUtil._requireAttribute(statusEl, "RingVersion"),
       parseInt(parseUtil._requireAttribute(statusEl, "RingSize")),
       parseInt(parseUtil._requireAttribute(statusEl, "PacketSize")),
-      parseInt(parseUtil._requireAttribute(statusEl, "MaximumPacketID")),
+      //parseInt(parseUtil._grabAttribute(statusEl, "MaximumPacketID")),
+      maxPacketId,
       parseInt(parseUtil._requireAttribute(statusEl, "MaximumPackets")),
       parseUtil._requireAttribute(statusEl, "MemoryMappedRing") === "TRUE",
       parseUtil._requireAttribute(statusEl, "VolatileRing") === "TRUE",
@@ -1163,6 +1191,11 @@ export class StreamStat {
     this.dataLatency = dataLatency;
   }
   static parseXMLAttributes(statusEl: Element): StreamStat {
+    let earlyDataEnd = parseUtil._grabAttribute(statusEl, "EarliestPacketDataEndTime");
+    if (earlyDataEnd == null) {
+      // set to same as start???
+      earlyDataEnd = parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime");
+    }
     const sStat = new StreamStat(
       parseUtil._requireAttribute(statusEl, "Name"),
       parseInt(parseUtil._requireAttribute(statusEl, "EarliestPacketID")),
@@ -1170,7 +1203,8 @@ export class StreamStat {
         parseUtil._requireAttribute(statusEl, "EarliestPacketDataStartTime"),
       ),
       daliDateTime(
-        parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime"),
+        earlyDataEnd
+      //  parseUtil._requireAttribute(statusEl, "EarliestPacketDataEndTime"),
       ),
       parseInt(parseUtil._requireAttribute(statusEl, "LatestPacketID")),
       daliDateTime(

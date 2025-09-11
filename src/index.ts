@@ -38,6 +38,7 @@ import * as organizeddisplay from "./organizeddisplay";
 import * as particlemotion from "./particlemotion";
 import * as quakeml from "./quakeml";
 import * as ringserverweb from "./ringserverweb";
+import * as ringserverweb4 from "./ringserverweb4";
 import * as sacPoleZero from "./sacpolezero";
 import * as scale from "./scale";
 import * as seedcodec from "./seedcodec";
@@ -53,7 +54,9 @@ import * as seismographconfig from "./seismographconfig";
 import * as seismographconfigeditor from "./seismographconfigeditor";
 import * as sorting from "./sorting";
 import * as stationxml from "./stationxml";
+import * as syngine from "./syngine";
 import * as taper from "./taper";
+import * as taup3 from "./taup3";
 import * as transfer from "./transfer";
 import * as traveltime from "./traveltime";
 import * as usgsgeojson from "./usgsgeojson";
@@ -98,6 +101,7 @@ export {
   particlemotion,
   quakeml,
   ringserverweb,
+  ringserverweb4,
   sacPoleZero,
   scale,
   seedcodec,
@@ -114,7 +118,9 @@ export {
   sorting,
   spectraplot,
   stationxml,
+  syngine,
   taper,
+  taup3,
   transfer,
   traveltime,
   usgsgeojson,

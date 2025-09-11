@@ -13,6 +13,8 @@ import {
   stringify,
   doFetchWithTimeout,
   defaultFetchInitObj,
+  mightBeXml,
+  dataViewToString,
   XML_MIME,
 } from "./util";
 import { latlonFormat, depthFormat, magFormat } from "./textformat";
@@ -50,7 +52,13 @@ export function createQuakeClickEvent(
     mouseevent: mouseclick,
     quake: q,
   };
-  return new CustomEvent(QUAKE_CLICK_EVENT, { detail: detail });
+  return new CustomEvent(QUAKE_CLICK_EVENT,
+    { detail: detail,
+      bubbles: true,
+      cancelable: false,
+      composed: true
+    }
+  );
 }
 
 // QuakeML classes
@@ -785,7 +793,7 @@ export class Origin extends BaseElement {
   get depthKm(): number {
     return this.depth / 1000;
   }
-  
+
   get depth(): number {
     return this.depthQuantity?.value ?? NaN;
   }
@@ -2280,6 +2288,17 @@ export function fetchQuakeML(
     });
 }
 
+export function mightBeQuakeML(buf: ArrayBufferLike) {
+  if ( ! mightBeXml(buf)) {
+    return false;
+  }
+  const initialChars = dataViewToString(new DataView(buf.slice(0, 100))).trimStart();
+  if ( ! initialChars.includes("quakeml")) {
+    return false;
+  }
+  return true;
+}
+
 // these are similar methods as in seisplotjs.stationxml
 // duplicate here to avoid dependency and diff NS, yes that is dumb...
 
@@ -2307,17 +2326,20 @@ const _grabFirstElNS = function (
   xml: Element | null | void,
   namespace: string,
   tagName: string,
-): Element | undefined {
-  let out = undefined;
+): Element | null {
+  let out = null;
 
   if (isObject(xml)) {
     const elList = xml.getElementsByTagNameNS(namespace, tagName);
 
-    if (isObject(elList) && elList.length > 0) {
-      const e = elList.item(0);
-
-      if (e) {
-        out = e;
+    for (let idx=0; idx<elList.length; idx++){
+      const e = elList.item(idx);
+      if (e!= null && e.parentElement === xml) {
+        // direct child element
+        if (e) {
+          out = e;
+          break;
+        }
       }
     }
   }

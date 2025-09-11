@@ -1,4 +1,6 @@
 import { isDef } from "./util";
+import * as util from "./util";
+import {transition} from "./transition";
 import { Duration } from "luxon";
 
 /** enum for amplitude modes, RAW, ZERO, MINMAX, MEAN */
@@ -10,6 +12,10 @@ export enum AMPLITUDE_MODE {
 }
 
 let _lastId = 0;
+
+/** The Golden ratio. */
+export const PHI = (1 + Math.sqrt(5)) / 2;
+export const SQRT_PHI = Math.sqrt(PHI)
 
 export class MinMaxable {
   min: number;
@@ -82,7 +88,6 @@ export class AmplitudeScalable {
     }
   }
 
-  // eslint-disable-next-line no-unused-vars
   notifyAmplitudeChange(_middle: number, _halfWidth: number) {
     // no-op
   }
@@ -115,7 +120,6 @@ export class TimeScalable {
     this.duration = duration;
   }
 
-  // eslint-disable-next-line no-unused-vars
   notifyTimeRangeChange(_alignmentTimeOffset: Duration, _duration: Duration) {
     // no-op
   }
@@ -150,8 +154,7 @@ export class LinkedAmplitudeScale {
     if (this._halfWidth !== val) {
       this._halfWidth = val;
       this.notifyAll().catch((m) => {
-        // eslint-disable-next-line no-console
-        console.warn(`problem recalc halfWidth: ${m}`);
+        util.warn(`problem recalc halfWidth: ${m}`);
       });
     }
   }
@@ -174,8 +177,7 @@ export class LinkedAmplitudeScale {
       }
     });
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc linkAll: ${m}`);
+      util.warn(`problem recalc linkAll: ${m}`);
     });
   }
   /**
@@ -196,8 +198,7 @@ export class LinkedAmplitudeScale {
     this._graphSet.delete(graph);
 
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc unlink: ${m}`);
+      util.warn(`problem recalc unlink: ${m}`);
     });
   }
 
@@ -303,6 +304,9 @@ export class LinkedTimeScale {
   _zoomedOffset: null | Duration;
   _scaleId: number;
 
+  _prev_zoom_k: number = 1;
+  _prev_zoom_x: number = 0;
+
   constructor(
     graphList?: Array<TimeScalable>,
     originalDuration?: Duration,
@@ -339,8 +343,7 @@ export class LinkedTimeScale {
       this._originalOffset = Duration.fromMillis(0);
     }
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc constructor: ${m}`);
+      util.warn(`problem recalc constructor: ${m}`);
     });
   }
 
@@ -371,8 +374,7 @@ export class LinkedTimeScale {
       }
     });
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc linkAll: ${m}`);
+      util.warn(`problem recalc linkAll: ${m}`);
     });
   }
 
@@ -384,8 +386,7 @@ export class LinkedTimeScale {
   unlink(graph: TimeScalable) {
     this._graphSet.delete(graph);
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc unlink: ${m}`);
+      util.warn(`problem recalc unlink: ${m}`);
     });
   }
 
@@ -393,17 +394,18 @@ export class LinkedTimeScale {
     this._zoomedDuration = duration;
     this._zoomedOffset = startOffset;
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc zoom: ${m}`);
+      util.warn(`problem recalc zoom: ${m}`);
     });
   }
 
+  /**
+   * Return to original no-zoom zoom level
+   */
   unzoom() {
     this._zoomedDuration = null;
     this._zoomedOffset = null;
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc unzoom: ${m}`);
+      util.warn(`problem recalc unzoom: ${m}`);
     });
   }
 
@@ -415,8 +417,7 @@ export class LinkedTimeScale {
     this._originalOffset = offset;
     this._zoomedOffset = offset;
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc set offset: ${m}`);
+      util.warn(`problem recalc set offset: ${m}`);
     });
   }
 
@@ -433,8 +434,7 @@ export class LinkedTimeScale {
     this._originalDuration = duration;
     this._zoomedDuration = duration;
     this.recalculate().catch((m) => {
-      // eslint-disable-next-line no-console
-      console.warn(`problem recalc set duration: ${m}`);
+      util.warn(`problem recalc set duration: ${m}`);
     });
   }
 
@@ -519,5 +519,120 @@ export class AlignmentLinkedTimeScale extends LinkedTimeScale {
         });
       }),
     );
+  }
+}
+
+export class PanZoomer {
+  isMouseDown: boolean = false;
+  _target: HTMLElement|SVGSVGElement|SVGForeignObjectElement;
+  width: number;
+  linkedTimeScale: LinkedTimeScale;
+  _prev_zoom_k: number = 1;
+  _prev_zoom_x: number = 0;
+  min_k = 1/8192;
+  max_k = 8192
+  constructor(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement,
+              linkedTimeScale: LinkedTimeScale) {
+    this._target = target;
+    this.target = target; // run setter
+    this.width = target.getBoundingClientRect().width;
+    this.linkedTimeScale = linkedTimeScale;
+  }
+  set target(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement) {
+    this._target = target;
+
+    target.addEventListener("mousedown",
+      (event: Event) => {
+        const me = event as MouseEvent;
+        this.isMouseDown = true;
+        this.linkedTimeScale._prev_zoom_x = me.offsetX;
+      });
+    target.addEventListener("mousemove",
+      (event: Event) => {
+        const me = event as MouseEvent;
+        if (this.isMouseDown) {
+          this.doZoom(this.linkedTimeScale._prev_zoom_k, me.offsetX, this.width);
+        }
+      });
+    target.addEventListener("mouseup", (event: Event) => {
+      this.isMouseDown = false;
+    });
+    target.addEventListener("mouseleave", (event: Event) => {
+      this.isMouseDown = false;
+    });
+    target.addEventListener("dblclick", (event: Event) => {
+      this.isMouseDown = false;
+      event.preventDefault();
+      const me = event as MouseEvent;
+      let factor = PHI;
+      if (me.shiftKey) {
+        factor = 1/factor;
+      }
+      const offsetX = me.offsetX;
+
+      this.transitionZoom(factor, offsetX);
+
+    });
+    target.addEventListener("wheel", (event: Event) => {
+      this.isMouseDown = false;
+      const we = event as WheelEvent;
+      event.preventDefault();
+      const offsetX = we.offsetX;
+      // wheel does fire mousedown, so need to set prev offsetX
+      this.linkedTimeScale._prev_zoom_x = offsetX;
+      //const factor = we.deltaY>=0 ? 1/SQRT_PHI : SQRT_PHI;
+      const factor = we.deltaY>=0 ? SQRT_PHI : 1/SQRT_PHI;
+
+      this.transitionZoom(factor, offsetX, 100);
+    });
+
+    this.width = target.getBoundingClientRect().width;
+  }
+  get target(): HTMLElement|SVGSVGElement|SVGForeignObjectElement {
+    return this._target
+  }
+  transitionZoom(factor: number, offsetX: number, duration: number=250) {
+    const start_k = this.linkedTimeScale._prev_zoom_k;
+    const end_k = this.linkedTimeScale._prev_zoom_k*factor;
+    const width = this.width;
+
+    transition((step) => {
+      let transK = start_k+(end_k-start_k)*step;
+      this.doZoom(transK, offsetX, width);
+      if (step === 1.0) {
+      }
+    }, duration);
+  }
+  doZoom(k: number, x: number, width: number) {
+    if (k < this.min_k) { k=this.min_k;}
+    if (k > this.max_k) { k=this.max_k;}
+    if (this.linkedTimeScale._prev_zoom_k === k &&
+        this.linkedTimeScale._prev_zoom_x === x) {
+      return;
+    }
+    const linkedTS = this.linkedTimeScale;
+    //const currStart = linkedTS.offset;
+    const currDuration = linkedTS.duration;
+
+    let zoomDuration = currDuration;
+    const zoomDurationMillis = linkedTS.origDuration.toMillis() / k ;
+    let timeShift = 0;
+
+    if (k != this.linkedTimeScale._prev_zoom_k) {
+      // zoom in, keep click time at same pixel
+      zoomDuration = Duration.fromMillis(zoomDurationMillis);
+      timeShift = (x/width)*(currDuration.toMillis()-zoomDurationMillis);
+    } else {
+      // pan seismogram, shift by pixel difference
+      timeShift = zoomDurationMillis * (this.linkedTimeScale._prev_zoom_x-x)/width;
+      this.linkedTimeScale._prev_zoom_x = x;
+    }
+    const zoomStart = linkedTS.offset.plus(Duration.fromMillis(timeShift));
+    linkedTS.zoom(
+      zoomStart,
+      zoomDuration
+    );
+    this.linkedTimeScale._prev_zoom_k = k;
+    this.linkedTimeScale._prev_zoom_x = x;
   }
 }

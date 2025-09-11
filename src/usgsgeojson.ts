@@ -6,7 +6,8 @@ import {
   EventDescription,
   EventParameters,
 } from "./quakeml";
-import { JSON_MIME, doFetchWithTimeout, defaultFetchInitObj } from "./util";
+import { JSON_MIME, doFetchWithTimeout,
+  defaultFetchInitObj, stringify } from "./util";
 import { DateTime } from "luxon";
 
 import type { Feature, Point } from "geojson";
@@ -231,11 +232,12 @@ export function parseGeoJSON(geojson: USGSGeoJsonSummary): EventParameters {
  */
 export function parseFeatureAsQuake(feature: USGSGeoJsonFeature): Quake {
   const quake = new Quake();
-  quake.publicId = `quakeml:earthquake.usgs.gov/fdsnws/event/1/query?eventid={feature.id}`;
+  quake.publicId = `quakeml:earthquake.usgs.gov/fdsnws/event/1/query?eventid=${feature.id}`;
   const p = feature.properties;
   if (p == null) {
     throw new Error("Geojson missing properties");
   }
+  quake.eventId=stringify(feature.id);
   quake.descriptionList.push(new EventDescription(p.title));
   const origin = new Origin(
     DateTime.fromMillis(p.time),

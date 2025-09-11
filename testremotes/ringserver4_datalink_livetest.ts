@@ -1,7 +1,6 @@
 
-import {RingserverConnection} from '../src/ringserverweb';
+import {RingserverConnection} from '../src/ringserverweb4';
 import {DataLinkConnection, DataLinkPacket} from '../src/datalink';
-import {SeedlinkConnection, SequencedDataRecord} from '../src/seedlink';
 import { DateTime, Duration} from 'luxon';
 
 
@@ -9,55 +8,28 @@ import {setDefaultFetch} from '../src/util';
 import fetch from 'cross-fetch';
 setDefaultFetch(fetch);
 
-
 test("do id test", () => {
   // def is IRIS
   const ring = new RingserverConnection();
+  const USC_HOST = "eeyore.seis.sc.edu";
+  ring.host(USC_HOST);
+  ring.prefix("testringserver");
   return ring.pullId().then(id => {
-    expect(id.serverId).toContain("IRIS");
+    expect(id.organization).toContain("Test");
   });
 
 });
 
-let slConn: SeedlinkConnection;
 let dlConn: DataLinkConnection;
-
-test("do seedlink test", done => {
-  // def is IRIS
-  const ring = new RingserverConnection();
-  expect(ring.getSeedLinkURL()).toEqual("ws://rtserve.iris.washington.edu/seedlink");
-  const config = ['STATION JSC CO',
-                  'SELECT 00HHZ.D' ];
-  function packetFun(mseedPacket: SequencedDataRecord) {
-    expect(mseedPacket).toBeDefined();
-    slConn.close();
-    done();
-  }
-  function errorFun(e: any) {
-    slConn.close();
-    done(e);
-  }
-  const start = DateTime.utc().minus(Duration.fromISO('PT3M'));
-  slConn = new SeedlinkConnection(ring.getSeedLinkURL(), config, packetFun, errorFun);
-  slConn.setTimeCommand(start);
-  slConn.connect().then(servId => {
-    expect(servId).toBeDefined();
-    expect(slConn.isConnected()).toBeTrue();
-  }).then(()=> {
-    return slConn.close();
-  }).then(_response => {
-    expect(slConn.isConnected()).toBeFalse();
-    done();
-  }).catch( err=> {
-    done(err);
-  });
-
-});
 
 test("do datalink test", () => {
   // def is IRIS
   const ring = new RingserverConnection();
-  expect(ring.getDataLinkURL()).toEqual("ws://rtserve.iris.washington.edu/datalink");
+  const USC_HOST = "eeyore.seis.sc.edu";
+  const USC_PREFIX = "testringserver"
+  ring.host(USC_HOST);
+  ring.prefix(USC_PREFIX);
+  expect(ring.getDataLinkURL()).toEqual(`ws://${USC_HOST}/${USC_PREFIX}/datalink`);
   const dlpacketFun = function(packet: DataLinkPacket) {
     expect(packet).toBeDefined();
     expect(packet.isMiniseed()).toBeTrue();
@@ -70,11 +42,11 @@ test("do datalink test", () => {
   dlConn = new DataLinkConnection(ring.getDataLinkURL(), dlpacketFun, dlerrorFun);
   return dlConn.connect().then(servId => {
     expect(servId).toContain("DataLink");
-    expect(servId).toContain("DLPROTO:1.0");
+    expect(servId).toContain("DLPROTO:1.1");
     return dlConn.id("seisplotjs", "anonymous", "0", "js");
   }).then(_servId => {
     //expect(_servId).toContain("DataLink");
-    return dlConn.match("CO_.*_00_HHZ/MSEED");
+    return dlConn.match("CO_.*_00_H_H_Z/MSEED");
   }).then(response => {
     expect(response.type).toContain("OK");
     return dlConn.positionAfter(start);
@@ -94,6 +66,5 @@ test("do datalink test", () => {
 });
 
 afterEach(() => {
-  if (slConn) { slConn.close();}
   if (dlConn) { dlConn.close();}
 });

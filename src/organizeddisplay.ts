@@ -4,12 +4,9 @@ import { INFO_ELEMENT, QuakeStationTable } from "./infotable";
 import * as leafletutil from "./leafletutil";
 import { MAP_ELEMENT, QuakeStationMap } from "./leafletutil";
 import { ParticleMotion, createParticleMotionConfig } from "./particlemotion";
-import { AmplitudeScalable, TimeScalable } from "./scale";
-import { sort, SORT_NONE } from "./sorting";
 import { SeisPlotElement } from "./spelement";
 import { SeismogramDisplayData } from "./seismogram";
 import { Seismograph } from "./seismograph";
-import type { SeisMouseEventType } from "./seismograph";
 import { SeismographConfig } from "./seismographconfig";
 import { isDef, isStringArg, stringify } from "./util";
 import * as querystringify from "querystringify";
@@ -45,13 +42,13 @@ export class OrganizedDisplayItem extends SeisPlotElement {
     :host {
       display: block;
       min-height: 50px;
-      height: 100%;
+
     }
     sp-station-quake-map {
       height: 400px;
     }
     sp-seismograph {
-      min-height: 200px;
+      height: var(--sp-seismograph-height, 200px);
     }
     div.wrapper {
       height: 100%;
@@ -130,18 +127,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         this._seismographConfig,
       );
       wrapper.appendChild(seismograph);
-      seismograph.addEventListener("seismousemove", (sEvt) => {
-        const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
-        // bubble the event, not sure why this is needed???
-        const event = new CustomEvent("seismousemove", { detail: seisDetail });
-        this.dispatchEvent(event);
-      });
-      seismograph.addEventListener("seisclick", (sEvt) => {
-        const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
-        // bubble the event, not sure why this is needed???
-        const event = new CustomEvent("seisclick", { detail: seisDetail });
-        this.dispatchEvent(event);
-      });
+
     } else if (this.plottype.startsWith(SPECTRA)) {
       const loglog = getFromQueryParams(queryParams, "loglog", "true");
       const nonContigList = this.seisData.filter(
@@ -206,6 +192,12 @@ export class OrganizedDisplayItem extends SeisPlotElement {
         getFromQueryParams(queryParams, "zoom", "1"),
       );
       seismap.setAttribute(leafletutil.ZOOM_LEVEL, `${mapZoomLevel}`);
+      const tileUrl =
+        getFromQueryParams(queryParams, leafletutil.TILE_TEMPLATE, leafletutil.DEFAULT_TILE_TEMPLATE);
+      seismap.setAttribute(leafletutil.TILE_TEMPLATE, `${tileUrl}`);
+      const tileAttr =
+        getFromQueryParams(queryParams, leafletutil.TILE_ATTRIBUTION, "");
+      seismap.setAttribute(leafletutil.TILE_ATTRIBUTION, `${tileAttr}`);
       const magScale = parseFloat(
         getFromQueryParams(queryParams, "magScale", "5.0"),
       );
@@ -232,14 +224,13 @@ export const DEFAULT_WITH_MAP = "false";
 export const WITH_TOOLS = "tools";
 export const DEFAULT_WITH_TOOLS = "true";
 
-export const SORT_BY = "sort";
-
 export const OVERLAY_BY = "overlay";
 export const OVERLAY_NONE = "none";
 export const OVERLAY_INDIVIDUAL = "individual";
 export const OVERLAY_VECTOR = "vector";
 export const OVERLAY_COMPONENT = "component";
 export const OVERLAY_STATION = "station";
+export const OVERLAY_STATION_COMPONENT = "stationcomponent";
 export const OVERLAY_ALL = "all";
 export const OVERLAY_FUNCTION = "function";
 
@@ -273,6 +264,10 @@ export const TOOLS_HTML = `
       <label for="overlay_component">component</label>
     </span>
     <span>
+      <input type="radio" name="overlay" id="overlay_station_component" value="stationcomponent">
+      <label for="overlay_station_component">station component</label>
+    </span>
+    <span>
       <input type="radio" name="overlay" id="overlay_station" value="station">
       <label for="overlay_station">station</label>
     </span>
@@ -285,37 +280,7 @@ export const TOOLS_HTML = `
       <label for="overlay_none">none</label>
     </span>
   </fieldset>
-  <fieldset class="sort">
-    <legend>Sort Type</legend>
-    <span>
-      <input type="radio" name="sort" id="sort_distance" value="distance">
-      <label for="sort_distance">distance</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_azimuth" value="azimuth">
-      <label for="sort_azimuth">azimuth</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_backazimuth" value="backazimuth">
-      <label for="sort_backazimuth">back azimuth</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_alphabetical" value="alphabetical">
-      <label for="sort_alphabetical">alphabetical</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_starttime" value="starttime">
-      <label for="sort_starttime">starttime</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_origin" value="origin">
-      <label for="sort_origin">origin</label>
-    </span>
-    <span>
-      <input type="radio" name="sort" id="sort_none" value="none" checked>
-      <label for="sort_none">none</label>
-    </span>
-  </fieldset>
+
   </form>
 </details>
 `;
@@ -359,10 +324,36 @@ export class OrganizedDisplayTools extends SeisPlotElement {
         const inEl = i as HTMLInputElement;
         inEl.checked = orgdisp.overlayby === inEl.value;
       });
-      shadow?.querySelectorAll("fieldset.sort input").forEach((i) => {
-        const inEl = i as HTMLInputElement;
-        inEl.checked = orgdisp.sortby === inEl.value;
-      });
+      const details = shadow?.querySelector("div.wrapper details");
+      details?.querySelector("fieldset.sort")?.remove();
+      const sortFS = document.createElement("fieldset");
+      sortFS.classList.add("sort");
+      const legend = document.createElement("legend");
+      legend.textContent = "Sort Type";
+      sortFS.appendChild(legend);
+      const sortKeyList = Array.from(orgdisp._sorting.keys());
+      sortKeyList.push("none");
+      for (const sortKey of sortKeyList) {
+        const span = document.createElement("span");
+        const input = document.createElement("input");
+        input.setAttribute("type", "radio");
+        input.setAttribute("name", "sort");
+        input.setAttribute("id", `sort_${sortKey}`);
+        input.setAttribute("value", sortKey);
+        input.checked = orgdisp.sortby === input.value;
+        input.addEventListener("change", (_e) => {
+          if (this._organizedDisplay) {
+            this._organizedDisplay?.setAttribute("sort", input.value);
+          }
+        });
+        span.appendChild(input);
+        const label = document.createElement("label");
+        label.setAttribute("for", `sort_${sortKey}`);
+        label.textContent = sortKey;
+        span.appendChild(label);
+        sortFS.appendChild(span);
+      }
+      details?.appendChild(sortFS);
     }
   }
   draw() {
@@ -403,6 +394,7 @@ export class OrganizedDisplayTools extends SeisPlotElement {
         }
       });
     });
+    // sort wired in initCheckboxes as is dynamic,so must be done later
     this.initCheckboxes(this._organizedDisplay);
   }
 }
@@ -410,11 +402,15 @@ export const ORG_DISP_TOOLS_ELEMENT = "sp-orgdisp-tools";
 customElements.define(ORG_DISP_TOOLS_ELEMENT, OrganizedDisplayTools);
 
 export class OrganizedDisplay extends SeisPlotElement {
+  bottomSeismographConfig: SeismographConfig|null;
+  topSeismographConfig: SeismographConfig|null;
   constructor(
     seisData?: Array<SeismogramDisplayData>,
     seisConfig?: SeismographConfig,
   ) {
     super(seisData, seisConfig);
+    this.bottomSeismographConfig = null;
+    this.topSeismographConfig = null;
     const wrapper = document.createElement("div");
     wrapper.setAttribute("class", "wrapper");
     this.addStyle(`
@@ -423,14 +419,16 @@ export class OrganizedDisplay extends SeisPlotElement {
       min-height: 50px;
       height: 100%;
     }
+    @property --sp-seismograph-height {
+      syntax: "<length>";
+      inherits: true;
+      initial-value: 200px;
+    }
     sp-station-quake-map {
       height: var(--map-height, 400px);
     }
     sp-organized-display-item {
-      min-height: 200px;
-    }
-    sp-seismograph {
-      min-height: 200px;
+      min-height: var(--sp-seismograph-height, 200px);
     }
     div.wrapper {
       height: 100%;
@@ -439,14 +437,14 @@ export class OrganizedDisplay extends SeisPlotElement {
     this.getShadowRoot().appendChild(wrapper);
   }
   static get observedAttributes() {
-    const mine = [
+    const sup = super.observedAttributes;
+    const mine = sup.concat([
       ORG_TYPE,
       WITH_TOOLS,
       WITH_MAP,
       WITH_INFO,
       OVERLAY_BY,
-      SORT_BY,
-    ];
+    ]);
     const map = QuakeStationMap.observedAttributes;
     return mine.concat(map);
   }
@@ -527,17 +525,6 @@ export class OrganizedDisplay extends SeisPlotElement {
   set overlayby(val: string) {
     this.setAttribute(OVERLAY_BY, val);
   }
-  get sortby(): string {
-    let k = this.hasAttribute(SORT_BY) ? this.getAttribute(SORT_BY) : SORT_NONE;
-    // typescript null
-    if (!k) {
-      k = SORT_NONE;
-    }
-    return k;
-  }
-  set sortby(val: string) {
-    this.setAttribute(SORT_BY, val);
-  }
 
   draw() {
     if (!this.isConnected) {
@@ -548,8 +535,8 @@ export class OrganizedDisplay extends SeisPlotElement {
       .querySelectorAll(ORG_DISP_ITEM)
       .forEach((item) => wrapper.removeChild(item));
 
-    const sortedData = sort(this.seisData, this.sortby);
-    let allOrgDispItems = new Array<OrganizedDisplayItem>();
+    const sortedData = this.sortedSeisData();
+    let seisDispItems = new Array<OrganizedDisplayItem>();
     this.drawTools(sortedData);
     this.drawMap(sortedData);
     this.drawInfo(sortedData);
@@ -557,58 +544,54 @@ export class OrganizedDisplay extends SeisPlotElement {
       sortedData.forEach((sdd) => {
         const oi = new OrganizedDisplayItem([sdd], this.seismographConfig);
         oi.plottype = SEISMOGRAPH;
-        allOrgDispItems.push(oi);
+        seisDispItems.push(oi);
       });
     } else if (this.overlayby === OVERLAY_VECTOR) {
       const groupedSDD = groupComponentOfMotion(sortedData);
       groupedSDD.forEach((gsdd) => {
         const oi = new OrganizedDisplayItem(gsdd, this.seismographConfig);
-        allOrgDispItems.push(oi);
+        seisDispItems.push(oi);
       });
     } else if (this.overlayby === OVERLAY_COMPONENT) {
       const oitems = overlayByComponent(sortedData, this.seismographConfig);
-      allOrgDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = seisDispItems.concat(oitems);
+    } else if (this.overlayby === OVERLAY_STATION_COMPONENT) {
+      const oitems = overlayByStationComponent(sortedData, this.seismographConfig);
+      seisDispItems = seisDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_STATION) {
       const oitems = overlayByStation(sortedData, this.seismographConfig);
-      allOrgDispItems = allOrgDispItems.concat(oitems);
+      seisDispItems = seisDispItems.concat(oitems);
     } else if (this.overlayby === OVERLAY_ALL) {
       const oi = new OrganizedDisplayItem(sortedData, this.seismographConfig);
-      allOrgDispItems.push(oi);
+      seisDispItems.push(oi);
     } else if (this.overlayby === OVERLAY_NONE) {
       // nothing to do here
     } else {
       throw new Error(`Unknown overlay: ${this.overlayby}`);
     }
 
+    if (this.topSeismographConfig != null && seisDispItems.length > 0) {
+      seisDispItems[0].seismographConfig = this.topSeismographConfig;
+      if (this.topSeismographConfig.margin.top > this.seismographConfig.margin.top) {
+        let sp_height = getComputedStyle(seisDispItems[0]).getPropertyValue("--sp-seismograph-height");
+        if (sp_height !== "") {
+          seisDispItems[0].addStyle(`sp-seismograph {
+            height: ${sp_height};
+          }`);
+        }
+      }
+    }
+    if (this.bottomSeismographConfig != null && seisDispItems.length > 1) {
+      seisDispItems[seisDispItems.length-1].seismographConfig = this.bottomSeismographConfig;
+    }
+
+    let allOrgDispItems = new Array<OrganizedDisplayItem>();
+    allOrgDispItems = allOrgDispItems.concat(seisDispItems);
     allOrgDispItems.forEach((oi) => {
       wrapper.appendChild(oi);
-
       oi.draw();
-      if (oi.plottype === SEISMOGRAPH) {
-        oi.addEventListener("seismousemove", (sEvt) => {
-          // bubble the event, not sure why this is needed???
-          const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
-          const event = new CustomEvent("seismousemove", {
-            detail: seisDetail,
-          });
-          this.dispatchEvent(event);
-        });
-        oi.addEventListener("seisclick", (sEvt) => {
-          const seisDetail = (sEvt as CustomEvent).detail as SeisMouseEventType;
-          const event = new CustomEvent("seisclick", { detail: seisDetail });
-          this.dispatchEvent(event);
-        });
-      }
     });
-    let timePromise: Promise<Array<TimeScalable>> = Promise.resolve([]);
-    let ampPromise: Promise<Array<AmplitudeScalable>> = Promise.resolve([]);
-    if (this.seismographConfig.linkedTimeScale) {
-      timePromise = this.seismographConfig.linkedTimeScale.notifyAll();
-    }
-    if (this.seismographConfig.linkedAmplitudeScale) {
-      ampPromise = this.seismographConfig.linkedAmplitudeScale.notifyAll();
-    }
-    return Promise.all([timePromise, ampPromise]);
+    return;
   }
   drawTools(sortedData: Array<SeismogramDisplayData>) {
     if (!this.isConnected) {
@@ -619,7 +602,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.tools !== "true" && toolsElement) {
       wrapper.removeChild(toolsElement);
     } else if (this.tools === "true" && !isDef(toolsElement)) {
-      if (sortedData == null)  {sortedData = sort(this.seisData, this.sortby);}
+      if (sortedData == null)  {sortedData = this.sortedSeisData();}
       const toolsdisp = new OrganizedDisplayTools(
         sortedData,
         this.seismographConfig,
@@ -672,7 +655,7 @@ export class OrganizedDisplay extends SeisPlotElement {
     if (this.info !== "true" && infoElement) {
       wrapper.removeChild(infoElement);
     } else if (this.info === "true" && !isDef(infoElement)) {
-      const sortedData = sort(this.seisData, this.sortby);
+      const sortedData = this.sortedSeisData();
       const infoDisp = new QuakeStationTable(
         sortedData,
         this.seismographConfig,
@@ -701,10 +684,10 @@ export class OrganizedDisplay extends SeisPlotElement {
   }
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === WITH_MAP) {
-      const sortedData = sort(this.seisData, this.sortby);
+      const sortedData = this.sortedSeisData();
       this.drawMap(sortedData);
     } else if (name === WITH_INFO) {
-      const sortedData = sort(this.seisData, this.sortby);
+      const sortedData = this.sortedSeisData();
       this.drawInfo(sortedData);
     } else if (QuakeStationMap.observedAttributes.includes(name)) {
       const wrapper = this.getShadowRoot().querySelector(
@@ -805,7 +788,18 @@ export function overlayByComponent(
   return overlayBySDDFunction(
     sddList,
     "component",
-    (sdd) => sdd.channelCode.charAt(2),
+    (sdd) => sdd.sourceId.subsourceCode,
+    seisConfig,
+  );
+}
+export function overlayByStationComponent(
+  sddList: Array<SeismogramDisplayData>,
+  seisConfig?: SeismographConfig,
+): Array<OrganizedDisplayItem> {
+  return overlayBySDDFunction(
+    sddList,
+    "stationcomponent",
+    (sdd) => `${sdd.sourceId.stationSourceId().toStringNoPrefix()} ${sdd.sourceId.subsourceCode}`,
     seisConfig,
   );
 }
@@ -816,7 +810,7 @@ export function overlayByStation(
   return overlayBySDDFunction(
     sddList,
     "station",
-    (sdd) => sdd.networkCode + "_" + sdd.stationCode,
+    (sdd) => sdd.sourceId.stationSourceId().toStringNoPrefix(),
     seisConfig,
   );
 }
@@ -825,30 +819,6 @@ export function overlayAll(
   seisConfig?: SeismographConfig,
 ): Array<OrganizedDisplayItem> {
   return overlayBySDDFunction(sddList, "all", () => "all", seisConfig);
-}
-export function sortByKey(
-  organized: Array<OrganizedDisplayItem>,
-  key: string,
-): Array<OrganizedDisplayItem> {
-  organized.sort((orgA, orgB) => {
-    const valA = orgA.getExtra(key);
-    const valB = orgB.getExtra(key);
-
-    if (!valA && !valB) {
-      return 0;
-    } else if (!valA) {
-      return 1;
-    } else if (!valB) {
-      return -1;
-    } else if (valA < valB) {
-      return -1;
-    } else if (valA > valB) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
-  return organized;
 }
 
 /**

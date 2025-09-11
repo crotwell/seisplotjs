@@ -12,19 +12,11 @@ import {
 } from "./scale";
 import { DEFAULT_GRID_LINE_COLOR } from "./seismographutil";
 import { SeismogramDisplayData, Seismogram } from "./seismogram";
-import { isDef, validStartTime, stringify } from "./util";
-import { Duration, Interval } from "luxon";
-import { format as d3format } from "d3-format";
-import { utcFormat as d3utcFormat } from "d3-time-format";
 import {
-  utcSecond as d3utcSecond,
-  utcMinute as d3utcMinute,
-  utcHour as d3utcHour,
-  utcDay as d3utcDay,
-  utcMonth as d3utcMonth,
-  utcYear as d3utcYear,
-} from "d3-time";
-
+  isDef, validStartTime, stringify, isStringArg, nameForTimeZone
+ } from "./util";
+import { DateTime, Duration, Interval, Zone, FixedOffsetZone, IANAZone } from "luxon";
+import { format as d3format } from "d3-format";
 import type { AxisDomain } from "d3-axis";
 import { Handlebars, registerHelpers } from "./handlebarshelpers";
 registerHelpers();
@@ -70,7 +62,7 @@ export class SeismographConfig {
   /** @private */
   __cache__: SeismographConfigCache;
 
-  timeFormat: (date: Date) => string;
+  _timeFormat: null | ((date: Date) => string);
   relativeTimeFormat: (value: number) => string;
   amplitudeFormat: (value: number) => string;
   showTitle: boolean;
@@ -80,6 +72,7 @@ export class SeismographConfig {
 
   /** @private */
   isXAxis: boolean;
+  xAxisTimeZone: null|string|Zone;
   isXAxisTop: boolean;
   /** @private */
   _xLabel: string;
@@ -95,6 +88,11 @@ export class SeismographConfig {
   isYAxis: boolean;
   isYAxisRight: boolean;
   isYAxisNice: boolean;
+  /**
+   * hint for number of ticks to show on y axis. Note this is not exact as
+   * trying to put ticks on "even" numbers may result in slightly more or less.
+   */
+  yAxisNumTickHint: number;
   /** @private */
   _yLabel: string;
 
@@ -125,6 +123,7 @@ export class SeismographConfig {
   lineColors: Array<string>;
   lineWidth: number;
   gridLineColor: string;
+  allowZoom: boolean;
   wheelZoom: boolean;
   amplitudeMode: AMPLITUDE_MODE;
   doGain: boolean;
@@ -147,9 +146,11 @@ export class SeismographConfig {
     this.__cache__ = new SeismographConfigCache();
     this.isXAxis = true;
     this.isXAxisTop = false;
+    this.xAxisTimeZone = null; // defaults to UTC
     this.isYAxisNice = true;
     this.isYAxis = true;
     this.isYAxisRight = false;
+    this.yAxisNumTickHint = 8;
     /**
      * Should grid lines be drawn for each tick on the X axis.
      * Defaults to false;
@@ -164,7 +165,7 @@ export class SeismographConfig {
      * Color for gridlines. Defaults to gainsboro, a very light grey.
      */
     this.gridLineColor = DEFAULT_GRID_LINE_COLOR;
-    this.timeFormat = multiFormatHour;
+    this._timeFormat = null;
     this.relativeTimeFormat = formatCountOrAmp;
     this.amplitudeFormat = formatCountOrAmp;
     this._title = [DEFAULT_TITLE];
@@ -215,6 +216,7 @@ export class SeismographConfig {
     this.maxZoomPixelPerSample = 20; // no zoom in past point of sample
 
     this.wheelZoom = false;
+    this.allowZoom = true;
     // separated by pixels
     this.connectSegments = false;
     this.lineColors = [
@@ -258,6 +260,10 @@ export class SeismographConfig {
       // @ts-expect-error ok as we just check hasOwn
       delete tempJson.isLinkedAmplitudeScale;
     }
+    if (Object.hasOwn(tempJson, "xAxisTimeZone")) {
+      // @ts-expect-error ok as we just check hasOwn
+      delete tempJson.xAxisTimeZone;
+    }
     if (
       Object.hasOwn(tempJson, "ySublabel") &&
       // @ts-expect-error ok as we just check hasOwn
@@ -283,6 +289,9 @@ export class SeismographConfig {
       // neither fixed nor linked, so individual
       seisConfig.linkedAmplitudeScale = new IndividualAmplitudeScale();
     }
+    if (json.xAxisTimeZone) {
+      seisConfig.xAxisTimeZone = new IANAZone(json.xAxisTimeZone);
+    }
 
     return seisConfig;
   }
@@ -292,6 +301,8 @@ export class SeismographConfig {
     const out = JSON.parse(JSON.stringify(this));
     out.title = out._title;
     delete out._title;
+    out.xAxisTimeZone = isDef(this.xAxisTimeZone) ? (
+      isStringArg(this.xAxisTimeZone) ? this.xAxisTimeZone : this.xAxisTimeZone.name) : null;
     out.fixedAmplitudeScale = out._fixedAmplitudeScale;
     delete out._fixedAmplitudeScale;
     out.fixedTimeScale = out._fixedTimeScale;
@@ -417,6 +428,54 @@ export class SeismographConfig {
     }
     this._linkedTimeScale = ts;
     this._fixedTimeScale = null;
+  }
+
+  /**
+   * Configures the time axis to show times in the given time zone. This
+   * replaces timeFormat with createTimeFormatterForZone() and
+   * sets xSublabel to be the zone name. If zone is null, uses UTC.
+   *
+   * @param  zone string like "US/Eastern" or luxon Zone
+   */
+  enableXAxisTimeZone(zone: null | Zone | string) {
+    let zoneName: string;
+    let tz: Zone;
+    if (isStringArg(zone)) {
+      zoneName = zone;
+      tz = new IANAZone(zone);
+    } else if (zone instanceof Zone) {
+      tz = zone;
+      zoneName = nameForTimeZone(tz.name);
+    } else {
+      tz = FixedOffsetZone.utcInstance;
+      zoneName = "UTC";
+    }
+    this.timeFormat = createTimeFormatterForZone(tz);
+    this.xSublabel = zoneName;
+  }
+
+  /**
+   * Time formatter used by the x axis. Defaults to UTC via
+   * createTimeFormatterForZone(zone).
+   * Set xAxisTimeZone to change the time zone.
+   * @return formatter for x axis time labels
+   */
+  get timeFormat() {
+    let tz: Zone;
+    if (this._timeFormat != null) {
+      return this._timeFormat;
+    } else if (isStringArg(this.xAxisTimeZone)) {
+        tz = new IANAZone(this.xAxisTimeZone);
+      } else if (this.xAxisTimeZone instanceof Zone) {
+        tz = this.xAxisTimeZone;
+      } else {
+        tz = FixedOffsetZone.utcInstance;
+      }
+    return createTimeFormatterForZone(tz);
+  }
+
+  set timeFormat(formatter: (arg0: Date) => string) {
+    this._timeFormat = formatter;
   }
 
   /**
@@ -853,6 +912,7 @@ export type SeismographConfigJsonType = {
   title: Array<string>;
 
   isXAxis: boolean;
+  xAxisTimeZone: string;
   isXAxisTop: boolean;
   xLabel: string;
 
@@ -917,29 +977,27 @@ export const formatExp: (arg0: number) => string = d3format(".2e");
 export const formatCountOrAmp = function (v: number): string {
   return -1 < v && v < 1 && v !== 0 ? formatExp(v) : formatCount(v);
 };
-export const formatMillisecond: (arg0: Date) => string = d3utcFormat(".%L");
-export const formatSecond: (arg0: Date) => string = d3utcFormat(":%S");
-export const formatMinute: (arg0: Date) => string = d3utcFormat("%H:%M");
-export const formatHour: (arg0: Date) => string = d3utcFormat("%H:%M");
-export const formatDay: (arg0: Date) => string = d3utcFormat("%m/%d");
-export const formatMonth: (arg0: Date) => string = d3utcFormat("%Y/%m");
-export const formatYear: (arg0: Date) => string = d3utcFormat("%Y");
-export const multiFormatHour = function (date: Date): string {
-  return (
-    d3utcSecond(date) < date
-      ? formatMillisecond
-      : d3utcMinute(date) < date
-        ? formatSecond
-        : d3utcHour(date) < date
-          ? formatMinute
-          : d3utcDay(date) < date
-            ? formatHour
-            : d3utcMonth(date) < date
-              ? formatDay
-              : d3utcYear(date) < date
-                ? formatMonth
-                : formatYear
-  )(date);
-};
+
+export function createTimeFormatterForZone(timezone: Zone): (arg0: Date) => string {
+  return (date: Date) => {
+    if (timezone == null) {timezone = FixedOffsetZone.utcInstance;}
+    const dt = DateTime.fromJSDate(date, {zone: timezone});
+    if (dt.millisecond !== 0) {
+      return dt.toFormat(".SSS");
+    } else if (dt.second !== 0) {
+      return dt.toFormat(":ss");
+    } else if (dt.minute !== 0) {
+      return dt.toFormat("HH:mm");
+    } else if (dt.hour !== 0) {
+      return dt.toFormat("HH:mm");
+    } else if (dt.day !== 0) {
+      return dt.toFormat("LL/dd");
+    } else if (dt.month !== 0) {
+      return dt.toFormat("yyyy/LL");
+    } else  {
+      return dt.toFormat("yyyy");
+    }
+  };
+}
 
 SeismographConfig._lastID = 0;

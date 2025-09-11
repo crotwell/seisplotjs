@@ -31,7 +31,7 @@ export function readDataView(filename: string): Promise<DataView> {
     return fh.close().then( () => out);
   })
   .then((b: Buffer) => b.buffer)
-  .then((data: ArrayBuffer) => new DataView(data));
+  .then((data: ArrayBufferLike) => new DataView(data));
 }
 
 export function readSac(filename: string): Promise<sacType> {

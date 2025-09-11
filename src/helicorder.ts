@@ -15,7 +15,12 @@ import { SeismogramSegment } from "./seismogramsegment";
 import { Seismograph } from "./seismograph";
 import { SeismographConfig } from "./seismographconfig";
 import { SeisPlotElement } from "./spelement";
-import { isDef, validStartTime, validEndTime, startDuration } from "./util";
+import {
+  isDef, validStartTime, validEndTime, startDuration, nameForTimeZone
+} from "./util";
+
+export const HELI_CLICK_EVENT = "heliclick";
+export const HELI_MOUSE_MOVE_EVENT = "helimousemove";
 
 export const HELICORDER_ELEMENT = "sp-helicorder";
 
@@ -57,15 +62,27 @@ export class Helicorder extends SeisPlotElement {
     // event listener to transform mouse click into time
     this.addEventListener("click", (evt) => {
       const detail = this.calcDetailForEvent(evt);
-      const event = new CustomEvent("heliclick", { detail: detail });
+      const event = new CustomEvent(HELI_CLICK_EVENT,
+        { detail: detail,
+          bubbles: true,
+          cancelable: false,
+          composed: true
+        }
+      );
       this.dispatchEvent(event);
     });
     this.addEventListener("mousemove", (evt) => {
       const detail = this.calcDetailForEvent(evt);
-      const event = new CustomEvent("helimousemove", { detail: detail });
+      const event = new CustomEvent(HELI_MOUSE_MOVE_EVENT,
+        { detail: detail,
+          bubbles: true,
+          cancelable: false,
+          composed: true
+        }
+      );
       this.dispatchEvent(event);
     });
-    this.addEventListener("helimousemove", (hEvent) => {
+    this.addEventListener(HELI_MOUSE_MOVE_EVENT, (hEvent) => {
       const detail = (hEvent as CustomEvent).detail as HeliMouseEventType;
       wrapper.querySelectorAll(`sp-seismograph`).forEach((seismograph, idx) => {
         if (idx === detail.lineNum) {
@@ -265,9 +282,12 @@ export class Helicorder extends SeisPlotElement {
       } else if (lineNumber === nl - 1) {
         lineSeisConfig.isXAxis = this.heliConfig.isXAxis;
         lineSeisConfig.margin.bottom += this.heliConfig.margin.bottom;
+        lineSeisConfig.xLabel = this.heliConfig.xLabel;
+        lineSeisConfig.xSublabel = this.heliConfig.xSublabel;
         height += this.heliConfig.margin.bottom;
       }
 
+      lineSeisConfig.xAxisTimeZone = this.heliConfig.xAxisTimeZone;
       lineSeisConfig.fixedTimeScale = lineInterval;
       // Transform current label index into our desired "label grid space" by translating
       // and scaling it. If the result is a whole number within our original range, current
@@ -339,12 +359,12 @@ export class Helicorder extends SeisPlotElement {
         const innerDiv = utcDiv.appendChild(document.createElement("div"));
         innerDiv.setAttribute("style", `top: ${lineSeisConfig.margin.top}px;`);
         const textEl = innerDiv.appendChild(document.createElement("text"));
-        textEl.textContent = nameForTimeZone(this.heliConfig.yLabelTimeZone);
+        textEl.textContent = nameForTimeZone(this.heliConfig.yLabelTimeZone, startTime);
         // and to top right
         const rightTextEl = innerDiv.appendChild(
           document.createElement("text"),
         );
-        rightTextEl.textContent = nameForTimeZone(this.heliConfig.yLabelRightTimeZone);
+        rightTextEl.textContent = nameForTimeZone(this.heliConfig.yLabelRightTimeZone, startTime);
         seismographWrapper.insertBefore(utcDiv, seismographWrapper.firstChild);
       }
 
@@ -533,17 +553,6 @@ export class HeliTimeRange {
   }
 }
 
-export function nameForTimeZone(zone: string|null|Zone): string {
-  if (zone == null ||
-    (zone instanceof Zone &&
-      FixedOffsetZone.utcInstance.equals(zone))) {
-    return "UTC";
-  } else if (typeof zone === 'string') {
-    return zone;
-  } else {
-    return zone.name;
-  }
-}
 
 /**
  * Parses a string of the form 'an+b', where 'a' is a positive integer (can be omitted if 1), 'n' is a
