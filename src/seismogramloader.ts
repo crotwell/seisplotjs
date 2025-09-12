@@ -305,12 +305,12 @@ export class SeismogramLoader {
             );
             // find arrivals for station, match distance
             const stationArrivals = [];
+            const DIST_TOL = 1e-4;
             for (const a of ttjson.arrivals) {
               // look for station with same distance
               if (
-                Math.abs((a.distdeg % 360) - (daz.distanceDeg % 360)) < 1e-6 ||
-                Math.abs(360 - (a.distdeg % 360) - (daz.distanceDeg % 360)) <
-                  1e-6
+                Math.abs((a.distdeg % 360) - (daz.distanceDeg % 360)) < DIST_TOL ||
+                Math.abs(360 - (a.distdeg % 360) - (daz.distanceDeg % 360)) < DIST_TOL
               ) {
                 stationArrivals.push(a);
               }
