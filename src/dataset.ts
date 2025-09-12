@@ -57,8 +57,6 @@ export class Dataset {
       throw new Error("unable to create subfolder in zip file: " + dirname);
     }
 
-    zip.file("Hello.txt", "Hello World\n");
-
     const seisFolder = zip.folder(SEISMOGRAM_DIR);
     if (seisFolder === null) {
       throw new Error("can't make folder");
