@@ -125,11 +125,11 @@ export function doIntGetterSetter(
     obj[hiddenField] = undefined;
   } else if (isNumArg(value)) {
     obj[hiddenField] = value;
-  } else if (isStringArg(value) && Number.isFinite(Number(value))) {
+  } else if (isStringArg(value) && Number.isSafeInteger(Number(value))) {
     obj[hiddenField] = parseInt(value);
   } else {
     throw new Error(
-      `${field} value argument is optional or number, but was type ${typeof value}, '${value}' `,
+      `${field} value argument is optional or integer, but was type ${typeof value}, '${value}' `,
     );
   }
 
