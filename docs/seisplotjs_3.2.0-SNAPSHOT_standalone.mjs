@@ -43204,7 +43204,6 @@ __export(util_exports, {
   WAY_PAST: () => WAY_PAST,
   XHTML_NS: () => XHTML_NS,
   XML_MIME: () => XML_MIME,
-  anplusb: () => anplusb,
   asStringDictionary: () => asStringDictionary,
   calcClockOffset: () => calcClockOffset,
   checkLuxonValid: () => checkLuxonValid,
@@ -43811,26 +43810,6 @@ function updateVersionText(selector = "#sp-version") {
   document.querySelectorAll(selector).forEach((el) => {
     el.textContent = version;
   });
-}
-function anplusb(value) {
-  let a;
-  let b = 0;
-  if (typeof value === "number" && Number.isSafeInteger(value)) {
-    a = value;
-  } else if (typeof value === "string") {
-    const re2 = /(\d+)\s*n\s*(?:\+\s*(\d+))?/;
-    const m = re2.exec(value.trim());
-    if (m != null) {
-      a = parseInt(m[1]);
-      if (isDef(m[2])) {
-        b = parseInt(m[2]);
-      }
-    }
-  }
-  if (!isDef(a)) {
-    throw new Error(`Unable to parse as 'an+b' like '3n+1', ${stringify(value)}`);
-  }
-  return [a, b];
 }
 
 // src/miniseed.ts
@@ -64367,7 +64346,6 @@ var QuakeStationMap = class extends SeisPlotElement {
     __publicField(this, "stationList", []);
     __publicField(this, "geoRegionList", []);
     __publicField(this, "geoJsonLayerMap");
-    __publicField(this, "tileLayers");
     __publicField(this, "map");
     __publicField(this, "classToColor");
     __publicField(this, "mapItems", []);
@@ -64386,7 +64364,6 @@ var QuakeStationMap = class extends SeisPlotElement {
     this.quakeClassMap = /* @__PURE__ */ new Map();
     this.geoJsonLayerOptionsMap = /* @__PURE__ */ new Map();
     this.geoJsonLayerMap = /* @__PURE__ */ new Map();
-    this.tileLayers = /* @__PURE__ */ new Map();
     this.overlayLayerMap = /* @__PURE__ */ new Map();
     this.addStyle(leaflet_css2);
     this.addStyle(stationMarker_css);
@@ -64656,9 +64633,7 @@ var QuakeStationMap = class extends SeisPlotElement {
     if (tileAttributionAttr) {
       tileOptions.attribution = tileAttributionAttr;
     }
-    console.log(`tileUrl: ${tileUrl}  attrUrl: ${tileUrlAttr}  ${this.getAttribute(TILE_TEMPLATE)}`);
     L2.tileLayer(tileUrl, tileOptions).addTo(mymap);
-    this.drawTileLayers();
     const regionBounds = this.drawGeoRegions(mymap);
     regionBounds.forEach((b) => this.mapItems.push(b));
     this.drawGeoJsonLayers();
@@ -64668,37 +64643,11 @@ var QuakeStationMap = class extends SeisPlotElement {
       mymap.fitBounds(this.mapItems);
     }
   }
-  /**
-   * Draws any additional tile layers (usually partially transparent) over
-   * the base tile layer.
-   */
-  drawTileLayers() {
-    console.log(`drawTileLayers ${this.overlayLayerMap.size} ${!!this.map}`);
-    for (const [layername, _layer] of this.overlayLayerMap) {
-      console.log(`  ${layername}`);
-    }
-    if (this.map) {
-      for (const [layername, tileLayerUrl] of this.tileLayers) {
-        const tileOptions = {};
-        if (!this.overlayLayerMap.has(layername)) {
-          const layer = L2.tileLayer(tileLayerUrl, tileOptions);
-          const layerGroup2 = L2.layerGroup([layer]);
-          layerGroup2.addTo(this.map);
-          this.overlayLayerMap.set(layername, layerGroup2);
-          this.layerControl.addOverlay(layerGroup2, layername);
-        } else {
-          console.log(`drawTileLayers, not adding ${layername}`);
-        }
-      }
-    }
-  }
   drawGeoJsonLayers() {
     for (const [layername, jsondata] of this.geoJsonLayerMap) {
-      if (this.map && !this.overlayLayerMap.has(layername)) {
+      if (this.map) {
         const options = this.geoJsonLayerOptionsMap.get(layername);
-        const geojsonLayer = L2.geoJSON(jsondata, options).addTo(this.map);
-        this.overlayLayerMap.set(layername, geojsonLayer);
-        this.layerControl.addOverlay(geojsonLayer, layername);
+        L2.geoJSON(jsondata, options).addTo(this.map);
       }
     }
   }
@@ -88402,11 +88351,9 @@ var SeismogramLoader = class {
     const allPhasesWithoutOrigin = allPhaseList.filter((p) => p !== "origin").join(",");
     return Promise.all([networkListPromise, quakeListPromise]).then(([netList, quakeList]) => {
       const ttpromiseList = [];
-      console.log(`allPhasesWithoutOrigin: ${allPhasesWithoutOrigin}`);
       for (const q of quakeList) {
         const allDistDeg = [];
         for (const s2 of allStations(netList)) {
-          console.log(`before ttime: ${s2.sourceId}`);
           if (s2.timeRange.contains(q.time)) {
             const daz = distaz(
               s2.latitude,
@@ -88415,7 +88362,6 @@ var SeismogramLoader = class {
               q.longitude
             );
             allDistDeg.push(daz.distanceDeg);
-            console.log(`allDistDeg ${daz.distanceDeg}`);
           }
         }
         if (allDistDeg.length > 0) {
@@ -88436,9 +88382,7 @@ var SeismogramLoader = class {
       const seismogramDataList = [];
       for (const [quake, ttjson] of ttMap) {
         for (const station of allStations(netList)) {
-          console.log(`WORK ON ${station.sourceId}, ch: ${station.channels.length}`);
           if (!station.timeRange.contains(quake.time)) {
-            console.log(`skip sta not active: ${station.sourceId}`);
             continue;
           }
           const daz = distaz(
@@ -88448,12 +88392,9 @@ var SeismogramLoader = class {
             quake.longitude
           );
           const stationArrivals = [];
-          const DIST_TOL = 1e-4;
           for (const a of ttjson.arrivals) {
-            if (Math.abs(a.distdeg % 360 - daz.distanceDeg % 360) < DIST_TOL || Math.abs(360 - a.distdeg % 360 - daz.distanceDeg % 360) < DIST_TOL) {
+            if (Math.abs(a.distdeg % 360 - daz.distanceDeg % 360) < 1e-6 || Math.abs(360 - a.distdeg % 360 - daz.distanceDeg % 360) < 1e-6) {
               stationArrivals.push(a);
-            } else if (Math.abs(a.distdeg % 360 - daz.distanceDeg % 360) < 1e-3 || Math.abs(360 - a.distdeg % 360 - daz.distanceDeg % 360) < 1e-3) {
-              console.log(`maybe close station dist: ${a.distdeg}  ${daz.distanceDeg}`);
             }
           }
           const station_ttjson = {
@@ -88487,11 +88428,7 @@ var SeismogramLoader = class {
               }
             }
           }
-          if (!isDef(startArrival) || !isDef(endArrival)) {
-            console.log(`no start, end arrival for ${station.sourceId}`);
-          }
           if (isDef(startArrival) && isDef(endArrival)) {
-            console.log(`has start, end arrival for ${station.sourceId}`);
             const startTime = quake.time.plus(Duration.fromMillis(1e3 * startArrival.time)).plus(this.startOffset);
             const endTime = quake.time.plus(Duration.fromMillis(1e3 * endArrival.time)).plus(this.endOffset);
             const timeRange = Interval.fromDateTimes(startTime, endTime);
@@ -88504,7 +88441,6 @@ var SeismogramLoader = class {
             }
             for (const chan of station.channels) {
               if (!chan.timeRange.contains(quake.time)) {
-                console.log(`skip not active at quake time: ${chan.sourceId} ${chan.timeRange}`);
                 continue;
               }
               const sdd = SeismogramDisplayData.fromChannelAndTimeWindow(
@@ -88515,7 +88451,6 @@ var SeismogramLoader = class {
               sdd.addTravelTimes(ttjson);
               sdd.addMarkers(phaseMarkers);
               seismogramDataList.push(sdd);
-              console.log(`create SDD: ${sdd}`);
             }
           }
         }
@@ -93577,8 +93512,7 @@ __export(usgsgeojson_exports, {
   weekSummaryM1_0Url: () => weekSummaryM1_0Url,
   weekSummaryM2_5Url: () => weekSummaryM2_5Url,
   weekSummaryM4_5Url: () => weekSummaryM4_5Url,
-  weekSummarySignificantUrl: () => weekSummarySignificantUrl,
-  yearSignificant: () => yearSignificant
+  weekSummarySignificantUrl: () => weekSummarySignificantUrl
 });
 var timeoutSec = 10;
 var hourSummarySignificantUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_hour.geojson";
@@ -93601,7 +93535,6 @@ var monthSummaryM4_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/sum
 var monthSummaryM2_5Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson";
 var monthSummaryM1_0Url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/1.0_month.geojson";
 var monthSummaryAllUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
-var yearSignificant = " https://earthquake.usgs.gov/fdsnws/event/1/query.geojson?callback=eqfeed_callback&endtime=2026-01-01T00:00:00.000Z&minsig=600&starttime=2025-01-01T00:00:00.000Z";
 var USGS_TECTONIC_SUMMARY_URL = "https://earthquake.usgs.gov/ws/geoserve/layers.json?type=tectonic";
 function loadHourSummarySignificant() {
   return loadUSGSSummary(hourSummarySignificantUrl);
