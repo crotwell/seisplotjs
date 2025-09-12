@@ -850,7 +850,7 @@ export function doFetchWithTimeout(
  * @param  mimeType      mimeType, default application/octet-stream
  */
 export function downloadBlobAsFile(
-  data: Uint8Array,
+  data: Uint8Array<ArrayBuffer>,
   filename: string,
   mimeType = "application/octet-stream",
 ) {
@@ -860,7 +860,7 @@ export function downloadBlobAsFile(
 
   if (!filename) filename = "filetodownload.txt";
 
-  const blob = new Blob([data], { type: mimeType });
+  const blob = new Blob([data.buffer], { type: mimeType });
   const e = document.createEvent("MouseEvents");
   const a = document.createElement("a");
 

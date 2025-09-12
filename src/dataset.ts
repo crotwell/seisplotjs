@@ -70,7 +70,7 @@ export class Dataset {
       type: "uint8array",
       compression: "DEFLATE",
     });
-    downloadBlobAsFile(content, filename);
+    downloadBlobAsFile(content as Uint8Array<ArrayBuffer>, filename);
   }
   waveformsToMSeed3(): Map<string, ArrayBuffer> {
     const out = new Map<string, ArrayBuffer>();
