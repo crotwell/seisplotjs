@@ -461,7 +461,6 @@ export class Seismograph extends SeisPlotElement {
     return false;
   }
   enableZoom(): void {
-    if (true) { return;}
     if (this.seismographConfig.allowZoom
       && !this.seismographConfig.fixedTimeScale) {
 
