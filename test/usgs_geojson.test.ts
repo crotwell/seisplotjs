@@ -1,5 +1,4 @@
 import { parseGeoJSON, isValidUSGSGeoJsonSummary }  from '../src/usgsgeojson';
-import { DateTime } from 'luxon';
 import {EventParameters} from '../src/quakeml';
 import {checkStringOrDate} from '../src/util';
 
