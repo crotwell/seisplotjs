@@ -1,4 +1,4 @@
-import * as sp from "../../seisplotjs_3.1.5-SNAPSHOT_standalone.mjs";
+import * as sp from "../../seisplotjs_3.2.0-SNAPSHOT_standalone.mjs";
 
 const hostUrl = "https://eeyore.seis.sc.edu/testringserver";
 const rs = new sp.ringserverweb.RingserverConnection(hostUrl);
