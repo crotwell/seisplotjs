@@ -951,7 +951,7 @@ export function anplusb(value: string | number): Array<number> {
     a = value;
   } else if (typeof value === "string") {
     // Find values in the format of 'an+b', making a and b optional
-    const re = /^(\d*)n(?:\+(\d+))?$/;
+    const re = /^\s*(\d*)\s*n\s*(?:\+\s*(\d+)\s*)?$/;
     const m = re.exec(value.trim());
     if (m === null) {
       throw new Error(`Unable to parse as 'an+b' (ex. '3n+1'), got: '${value}'`);
