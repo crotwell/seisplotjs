@@ -935,3 +935,30 @@ export function updateVersionText(selector = "#sp-version") {
     el.textContent = version;
   });
 }
+
+/**
+ * Parses a string of the form 'an+b', where 'a' is a positive integer (can be omitted if 1), 'n' is a
+ * literal character, and 'b' is a positive integer (or omitted for zero). Examples include: '3n+1',
+ * 'n', '2n'.
+ * @param value String of the form 'an+b'
+ * @returns The 'a' and 'b' values parsed from the given 'value' string, returned as an array
+ */
+export function anplusb(value: string | number): Array<number> {
+  let a = 1;
+  let b = 0;
+  if (typeof value === "number" && Number.isSafeInteger(value)) {
+    // If value is given as a number, return it as 'a'
+    a = value;
+  } else if (typeof value === "string") {
+    // Find values in the format of 'an+b', making a and b optional
+    const re = /^(\d*)n(?:\+(\d+))?$/;
+    const m = re.exec(value.trim());
+    if (m === null) {
+      throw new Error(`Unable to parse as 'an+b' (ex. '3n+1'), got: '${value}'`);
+    }
+    // If values are defined, parse to integers. Otherwise, keep defaults
+    a = m[1] ? +m[1] : a;
+    b = m[2] ? +m[2] : b;
+  }
+  return [ a, b ];
+}
