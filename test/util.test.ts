@@ -65,6 +65,10 @@ test("anplusb", () => {
   expect(ans[0]).toEqual(2);
   expect(ans[1]).toEqual(1);
 
+  ans = util.anplusb(" 3 n - 1 ");
+  expect(ans[0]).toEqual(3);
+  expect(ans[1]).toEqual(2);
+
   expect(()=>{util.anplusb(" 3 n + 2abc ")}).toThrow(Error);
   expect(()=>{util.anplusb(" 3 + 2 ")}).toThrow(Error);
 });

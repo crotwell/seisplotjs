@@ -938,10 +938,12 @@ export function updateVersionText(selector = "#sp-version") {
 
 /**
  * Parses a string of the form 'an+b', where 'a' is a positive integer (can be omitted if 1), 'n' is a
- * literal character, and 'b' is a positive integer (or omitted for zero). Examples include: '3n+1',
- * 'n', '2n'.
+ * literal character, and 'b' is an integer (or omitted for zero). Examples include: '3n+1',
+ * 'n', '2n', '4n-2'. The resulting 'b' value will be reduced to its smallest positive form; for
+ * example, the previous example would return [4, 2] (-2 % 4 = 2), which is an equivalent representation
+ * when considering the bias for an infinite series.
  * @param value String of the form 'an+b'
- * @returns The 'a' and 'b' values parsed from the given 'value' string, returned as an array
+ * @returns The 'a' and 'b' values parsed and reduced from the given 'value' string, returned as an array
  */
 export function anplusb(value: string | number): Array<number> {
   let a = 1;
@@ -951,14 +953,16 @@ export function anplusb(value: string | number): Array<number> {
     a = value;
   } else if (typeof value === "string") {
     // Find values in the format of 'an+b', making a and b optional
-    const re = /^\s*(\d*)\s*n\s*(?:\+\s*(\d+)\s*)?$/;
-    const m = re.exec(value.trim());
+    const re = /^(\d*)n(?:([+-]\d+))?$/;
+    const m = re.exec(value.replaceAll(/\s/g, ""));
     if (m === null) {
       throw new Error(`Unable to parse as 'an+b' (ex. '3n+1'), got: '${value}'`);
     }
     // If values are defined, parse to integers. Otherwise, keep defaults
     a = m[1] ? +m[1] : a;
-    b = m[2] ? +m[2] : b;
+    let parsedB = m[2] ? +m[2] : b;
+    // When parsing b, b can be a negative value, so we take the positive modulo
+    b = parsedB < 0 ? parsedB + a : parsedB
   }
   return [ a, b ];
 }
