@@ -19,7 +19,9 @@
     "declarationDir": "dist/dts",
     "outDir": "dist/dts"
   },
-  "files": ["global.d.ts"],
+  "files": ["global.d.ts",
+    "node_modules/jest-expect-message/types/index.d.ts"
+  ],
   "include": ["src", "test", "testremotes"],
   "sourceMap": true
 }
