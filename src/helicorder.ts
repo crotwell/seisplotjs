@@ -16,7 +16,8 @@ import { Seismograph } from "./seismograph";
 import { SeismographConfig } from "./seismographconfig";
 import { SeisPlotElement } from "./spelement";
 import {
-  isDef, validStartTime, validEndTime, startDuration, nameForTimeZone
+  isDef, validStartTime, validEndTime, startDuration, nameForTimeZone,
+  anplusb
 } from "./util";
 
 export const HELI_CLICK_EVENT = "heliclick";
@@ -275,6 +276,7 @@ export class Helicorder extends SeisPlotElement {
       (maxHeight - margin.top - margin.bottom) /
       (nl - (nl - 1) * this.heliConfig.overlap);
 
+    const [timeLabelSpacing, timeLabelOffset] = anplusb(this.heliConfig.timeLabelSpacing);
     for (const lineTime of lineTimes) {
       const lineNumber = lineTime.lineNumber;
       const lineInterval = lineTime.interval;
@@ -305,8 +307,15 @@ export class Helicorder extends SeisPlotElement {
 
       lineSeisConfig.xAxisTimeZone = this.heliConfig.xAxisTimeZone;
       lineSeisConfig.fixedTimeScale = lineInterval;
-      lineSeisConfig.yLabel = `${startTime?.setZone(this.heliConfig.yLabelTimeZone).toFormat("HH:mm")}`;
-      lineSeisConfig.yLabelRight = `${endTime?.setZone(this.heliConfig.yLabelRightTimeZone).toFormat("HH:mm")}`;
+      // Transform current label index into our desired "label grid space" by translating
+      // and scaling it. If the result is a whole number within our original range, current
+      // line is configured to have a label
+      const yLabelStep = (lineNumber - timeLabelOffset) / timeLabelSpacing;
+      const doYLabels = Number.isInteger(yLabelStep) && yLabelStep >= 0 && yLabelStep < nl;
+      if (doYLabels) {
+        lineSeisConfig.yLabel = `${startTime?.setZone(this.heliConfig.yLabelTimeZone).toFormat("HH:mm")}`;
+        lineSeisConfig.yLabelRight = `${endTime?.setZone(this.heliConfig.yLabelRightTimeZone).toFormat("HH:mm")}`;
+      }
       lineSeisConfig.lineColors = [
         this.heliConfig.lineColors[
           lineNumber % this.heliConfig.lineColors.length
@@ -487,6 +496,7 @@ export class HelicorderConfig extends SeismographConfig {
   detrendLines = false;
   yLabelTimeZone: string|Zone<boolean> = FixedOffsetZone.utcInstance;
   yLabelRightTimeZone: string|Zone<boolean> = FixedOffsetZone.utcInstance;
+  timeLabelSpacing: string|number;
 
   constructor(timeRange: Interval) {
     super();
@@ -511,6 +521,7 @@ export class HelicorderConfig extends SeismographConfig {
     this.margin.left = 0;
     this.margin.right = 0;
     this.margin.top = 40;
+    this.timeLabelSpacing = 1;
     this.lineColors = ["skyblue", "olivedrab", "goldenrod"];
     this.lineSeisConfig = new SeismographConfig();
     this.lineSeisConfig.amplitudeMode = AMPLITUDE_MODE.MinMax;
@@ -559,7 +570,6 @@ export class HeliTimeRange {
     this.lineNumber = lineNumber;
   }
 }
-
 
 /** default styling for helicorder plots. */
 export const helicorder_css = `
