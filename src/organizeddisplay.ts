@@ -75,7 +75,7 @@ export class OrganizedDisplayItem extends SeisPlotElement {
 
 
   set seismographConfig(seismographConfig: SeismographConfig) {
-    this._seismographConfig = seismographConfig;
+    super.seismographConfig = seismographConfig;
     this.getContainedPlotElements().forEach( (spe: SeisPlotElement) => {
       spe.seismographConfig = seismographConfig;
     });

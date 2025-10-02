@@ -527,16 +527,19 @@ export class PanZoomer {
   _target: HTMLElement|SVGSVGElement|SVGForeignObjectElement;
   width: number;
   linkedTimeScale: LinkedTimeScale;
+  wheelZoom: boolean = false;
   _prev_zoom_k: number = 1;
   _prev_zoom_x: number = 0;
   min_k = 1/8192;
   max_k = 8192
   constructor(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement,
-              linkedTimeScale: LinkedTimeScale) {
+              linkedTimeScale: LinkedTimeScale,
+              wheelZoom?: boolean) {
     this._target = target;
     this.target = target; // run setter
     this.width = target.getBoundingClientRect().width;
     this.linkedTimeScale = linkedTimeScale;
+    this.wheelZoom = (wheelZoom)?true:false;
   }
   set target(target: HTMLElement|SVGSVGElement|SVGForeignObjectElement) {
     this._target = target;
@@ -573,17 +576,20 @@ export class PanZoomer {
       this.transitionZoom(factor, offsetX);
 
     });
-    target.addEventListener("wheel", (event: Event) => {
-      this.isMouseDown = false;
-      const we = event as WheelEvent;
-      event.preventDefault();
-      const offsetX = we.offsetX;
-      // wheel does fire mousedown, so need to set prev offsetX
-      this.linkedTimeScale._prev_zoom_x = offsetX;
-      //const factor = we.deltaY>=0 ? 1/SQRT_PHI : SQRT_PHI;
-      const factor = we.deltaY>=0 ? SQRT_PHI : 1/SQRT_PHI;
 
-      this.transitionZoom(factor, offsetX, 100);
+    target.addEventListener("wheel", (event: Event) => {
+      if (this.wheelZoom) {
+        this.isMouseDown = false;
+        const we = event as WheelEvent;
+        event.preventDefault();
+        const offsetX = we.offsetX;
+        // wheel does fire mousedown, so need to set prev offsetX
+        this.linkedTimeScale._prev_zoom_x = offsetX;
+        //const factor = we.deltaY>=0 ? 1/SQRT_PHI : SQRT_PHI;
+        const factor = we.deltaY>=0 ? SQRT_PHI : 1/SQRT_PHI;
+
+        this.transitionZoom(factor, offsetX, 100);
+      }
     });
 
     this.width = target.getBoundingClientRect().width;
