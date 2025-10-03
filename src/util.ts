@@ -640,6 +640,19 @@ export function checkProtocol(defaultProtocol="http:"): string {
   return _protocol;
 }
 
+/**
+ * Upgrade url protocol to https if document location is https
+ * @param  url  url to upgrade
+ * @return     upgraded url
+ */
+export function fixProtocolInUrl(url: string): string {
+  const protocol = checkProtocol();
+  if (url.startsWith("http:") && protocol == "https:") {
+    return `${protocol}${url.substring(5)}`;
+  }
+  return url;
+}
+
 export interface FetchInitObject {
   cache: string;
   redirect: string;
