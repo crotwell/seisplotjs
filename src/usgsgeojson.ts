@@ -10,7 +10,7 @@ import { JSON_MIME, doFetchWithTimeout, UTC_OPTIONS,
   defaultFetchInitObj, stringify } from "./util";
 import { DateTime } from "luxon";
 
-import type { Feature, Point } from "geojson";
+import type { Feature, Point, Polygon, FeatureCollection } from "geojson";
 
 const timeoutSec = 10;
 export const hourSummarySignificantUrl =
@@ -371,13 +371,13 @@ export interface USGSTectonicGeoJsonProperties {
 }
 
 export interface USGSTectonicGeoJsonFeature
-  extends Feature<Point, USGSTectonicGeoJsonProperties> {}
+  extends FeatureCollection<Polygon, USGSTectonicGeoJsonProperties> {}
 
 // subtype of FeatureCollection
 export interface USGSTectonicGeoJsonSummary {
   type: "FeatureCollection";
   metadata: USGSGeoJsonMetaData;
-  features: Array<USGSTectonicGeoJsonFeature>;
+  tectonic: USGSTectonicGeoJsonFeature;
 }
 
 export function loadUSGSTectonicLayer(
