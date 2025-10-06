@@ -1474,6 +1474,25 @@ export function extractComplex(el: Element): InstanceType<typeof Complex> {
   }
 }
 
+
+/**
+ * Generator function to access all active stations within all networks in the array.
+ *
+ * @param      networks array of Networks
+ * @param      atTime time for station to be active, defaults to now
+ * @yields           generator yeiding stations
+ */
+export function* activeNetworks(
+  networks: Array<Network>,
+  atTime?: DateTime
+): Generator<Network, void, unknown> {
+  for (const n of networks) {
+    if (n.isActiveAt(atTime)) {
+      yield n;
+    }
+  }
+}
+
 /**
  * Generator function to access all stations within all networks in the array.
  *
@@ -1500,7 +1519,7 @@ export function* allStations(
  */
 export function* activeStations(
   networks: Array<Network>,
-  atTime: DateTime
+  atTime?: DateTime
 ): Generator<Station, void, unknown> {
   for (const s of allStations(networks)) {
     if (s.isActiveAt(atTime)) {
@@ -1536,7 +1555,7 @@ export function* allChannels(
  */
 export function* activeChannels(
   networks: Array<Network>,
-  atTime: DateTime
+  atTime?: DateTime
 ): Generator<Channel, void, unknown> {
   for (const c of allChannels(networks)) {
     if (c.isActiveAt(atTime)) {
