@@ -755,7 +755,7 @@ export function getFetch(): (
  */
 export function doFetchWithTimeout(
   url: string | URL,
-  fetchInit?: RequestInit,
+  fetchInit?: RequestInit|null,
   timeoutSec?: number,
   fetcher?: (
     url: URL | RequestInfo,
@@ -801,6 +801,8 @@ export function doFetchWithTimeout(
   } else {
     throw new Error(`url must be string or URL, ${stringify(url)}`);
   }
+  // see if we need to fetch via https due to document being https
+  absoluteUrl.protocol = checkProtocol(absoluteUrl.protocol);
 
   log(
     `attempt to fetch ${internalFetchInit.method ? internalFetchInit.method : ""} ${stringify(
