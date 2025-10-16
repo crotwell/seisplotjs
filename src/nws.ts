@@ -116,6 +116,7 @@ export const NWSForecastPeriod = z.object({
   endTime: z.iso.datetime({ offset: true }),
   shortForecast: z.string(),
   detailedForecast: z.string(),
+  icon: z.url(),
 });
 export type NWSForecastPeriod = z.infer<typeof NWSForecastPeriod>;
 
