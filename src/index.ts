@@ -33,6 +33,7 @@ import * as miniseed from "./miniseed";
 import * as mseed3 from "./mseed3";
 import * as mseed3eh from "./mseed3eh";
 import * as mseedarchive from "./mseedarchive";
+import * as nws from "./nws";
 import * as oregondsputil from "./oregondsputil";
 import * as organizeddisplay from "./organizeddisplay";
 import * as particlemotion from "./particlemotion";
@@ -97,6 +98,7 @@ export {
   mseed3,
   mseed3eh,
   mseedarchive,
+  nws,
   oregondsputil,
   organizeddisplay,
   particlemotion,
