@@ -367,7 +367,7 @@ export class Seismogram {
   /**
    * Merges all segments into a single array of the same type as the first
    * segment. No checking is done for gaps or overlaps, this is a simple
-   * congatination. Be careful!
+   * concatination. Be careful!
    *
    * @returns contatenated data
    */
