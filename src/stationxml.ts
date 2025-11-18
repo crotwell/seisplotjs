@@ -1267,31 +1267,31 @@ export function convertToStage(stageXml: Element): Stage {
     if (subEl.localName === "PolesZeros") {
       const pzFilter = new PolesZeros(inputUnits, outputUnits);
 
-      const pzt = _grabFirstElText(stageXml, "PzTransferFunctionType");
+      const pzt = _grabFirstElText(subEl, "PzTransferFunctionType");
 
       if (isNonEmptyStringArg(pzt)) {
         pzFilter.pzTransferFunctionType = pzt;
       }
 
-      const nfa = _grabFirstElFloat(stageXml, "NormalizationFactor");
+      const nfa = _grabFirstElFloat(subEl, "NormalizationFactor");
 
       if (isNumArg(nfa)) {
         pzFilter.normalizationFactor = nfa;
       }
 
-      const nfr = _grabFirstElFloat(stageXml, "NormalizationFrequency");
+      const nfr = _grabFirstElFloat(subEl, "NormalizationFrequency");
 
       if (isNumArg(nfr)) {
         pzFilter.normalizationFrequency = nfr;
       }
 
       const zeros = Array.from(
-        stageXml.getElementsByTagNameNS(STAML_NS, "Zero"),
+        subEl.getElementsByTagNameNS(STAML_NS, "Zero"),
       ).map(function (zeroEl) {
         return extractComplex(zeroEl);
       });
       const poles = Array.from(
-        stageXml.getElementsByTagNameNS(STAML_NS, "Pole"),
+        subEl.getElementsByTagNameNS(STAML_NS, "Pole"),
       ).map(function (poleEl) {
         return extractComplex(poleEl);
       });
